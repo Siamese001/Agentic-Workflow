@@ -1789,7 +1789,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         if file_path is not None:
             _is_agent = False
             try:
-                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
                     classify_file_standalone,
                 )
 
@@ -1903,7 +1903,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         is_agent_type = False
         if file_path is not None:
             try:
-                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
                     classify_file_standalone,
                 )
 

@@ -180,7 +180,7 @@ def load_classification_kernel():
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "load_classification_kernel")
     import importlib
 
-    return importlib.import_module("agentic_core.L5_safety.core_kernel.classification_kernel")
+    return importlib.import_module("agentic_core.L5_safety.reasoning.core_kernel.classification_kernel")
 
 
 def get_classification_cache_context():

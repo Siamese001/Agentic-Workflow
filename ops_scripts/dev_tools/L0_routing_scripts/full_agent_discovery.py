@@ -34,13 +34,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# CRITICAL SSOT Imports - ALL directory constants MUST come from L0 config
+# CRITICAL SSOT Imports - ALL directory constants MUST come from L0 config.
+# SCRIPTS_DIR / TESTS_DIR / DASHBOARD_DIR / ARCHIVES_DIR are re-exported here
+# because three production consumers import them from this module:
+#   agentic_core/L5_safety/utils/guard_ddd_alignment_util.py
+#   agentic_core/L5_safety/utils/verify_no_mock_data_util.py
+#   agentic_core/config/non_conforming_agent_finder_config.py
 from agentic_core.L0_routing.config import (
     AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    DASHBOARD_DIR,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
@@ -48,8 +55,40 @@ from agentic_core.L0_routing.config import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
+    SCRIPTS_DIR,
+    TESTS_DIR,
     get_validated_project_root,
 )
+
+__all__ = [
+    "AGENT_DISCOVERY_JSON",
+    "AGENTIC_CORE_DIR",
+    "APPS_LIC_DIR",
+    "APPS_RG_DIR",
+    "APPS_SHARED_DIR",
+    "ARCHIVES_DIR",
+    "DASHBOARD_DIR",
+    "L0_MAINTENANCE_DIR",
+    "L1_COGNITION_DIR",
+    "L2_EXECUTION_DIR",
+    "L3_ORCHESTRATION_DIR",
+    "L4_STATE_DIR",
+    "L5_SAFETY_DIR",
+    "L6_OBSERVABILITY_DIR",
+    "SCRIPTS_DIR",
+    "TESTS_DIR",
+    "get_validated_project_root",
+    "AgentIntegrityReport",
+    "DiscoveryError",
+    "analyze_agent_integrity",
+    "check_compliance_gate",
+    "discover_all_agents",
+    "get_agent_discovery_summary",
+    "get_structured_agent_paths",
+    "perform_deep_integrity_scan",
+    "refresh_discovery_cache",
+    "main",
+]
 from agentic_core.L0_routing.enforcement.safety_kernel_seam import (
     get_classification_cache_context,
 )
@@ -246,16 +285,6 @@ _emit_writes_through("p1", "full_agent_discovery", "write_through_2")
 _emit_validated_by_safety_plane("p1", "full_agent_discovery", "safety_validation")
 _emit_invokes_eval("p1", "full_agent_discovery", "eval_call")
 _emit_proposal_commits_routing("p1", "full_agent_discovery", "routing_commit")
-from agentic_core.config.constants_config import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
 from tqdm import tqdm
 
@@ -340,7 +369,10 @@ def get_git_commit(root: Path) -> str:
             allow_protected_root_mutation=True,
         )
         return out.strip()
-    except (ValueError, TypeError):  # guardian: allow-silent-swallow
+    except (OSError, ValueError, TypeError) as e:
+        # guardian: allow-broad-exception -- offline tooling; missing git or non-repo
+        # checkout is non-fatal, falls back to empty commit hash for the report.
+        Logger.debug(f"[GIT] commit lookup failed: {e}")
         return ""
 
 
@@ -357,7 +389,7 @@ def main() -> bool:
         # Validate project root integrity (treat validator as raising, not bool-return)
         try:
             validate_path_within_project(project_root, project_root)
-        except Exception as e:  # guardian: allow-broad-exception -- offline tooling, reports failure
+        except (OSError, ValueError, TypeError) as e:
             raise DiscoveryError(f"Project root validation failed: {e}") from e
 
         # Run discovery inside a cache context so classifications are fresh
@@ -394,10 +426,11 @@ def main() -> bool:
         Logger.info("[DISCOVERY] Agent discovery and verification completed successfully")
         return True
 
-    except DiscoveryError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+    except DiscoveryError as e:
+        # Logged-and-converted: report and return False so the CLI exits non-zero.
         Logger.error(f"[DISCOVERY] Discovery operation failed: {e}")
         return False
-    except (ValueError, TypeError) as e:
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[DISCOVERY] Unexpected error during discovery: {e}")
         return False
 
@@ -420,6 +453,11 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     1. Kernel classification (AGENT vs other FileType)
     2. AST metadata extraction (inheritance, decorators, methods)
     3. Integrity report generation
+
+    progress_bar: not applicable — bounded AST traversal of a single file
+    (≤4 nested for-loops over class_nodes / decorators / methods, each
+    yielding ≤O(10) items). Adding tqdm would emit noise per file. Caller
+    iterators (perform_deep_integrity_scan) carry the progress bar.
     """
     from agentic_core.L0_routing.enforcement.safety_kernel_seam import (
         load_classification_kernel,
@@ -475,7 +513,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         stem_clean = _re.sub(r"[^a-zA-Z0-9]", "", file_path.stem.lower())
         chosen = class_nodes[0]
-        for node in tqdm(class_nodes, desc="Processing", unit="item"):
+        for node in class_nodes:
             if _re.sub(r"[^a-zA-Z0-9]", "", node.name.lower()) == stem_clean:
                 chosen = node
                 break
@@ -522,7 +560,9 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         return report
 
-    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
+    except (OSError, ValueError, TypeError) as e:
+        # Logged-on-report: capture rejection reason on the integrity report
+        # so callers see the failure mode without aborting the broader scan.
         report.rejection_reason = f"Analysis failed: {e}"
         return report
 
@@ -547,12 +587,10 @@ def perform_deep_integrity_scan(
             continue
 
         full_path = project_root / rel_path
-        try:
-            validate_path_within_project(project_root, full_path)
-        # guardian: allow-silent-swallow
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
+        # Path-traversal validator raises on violation; let it propagate so a
+        # malformed registry entry hard-fails the scan instead of silently
+        # being counted as invalid.
+        validate_path_within_project(project_root, full_path)
         # Run Analysis
         report = analyze_agent_integrity(full_path)
 
@@ -665,7 +703,7 @@ def check_compliance_gate(scan_stats: dict[str, int] | None = None) -> bool:
         Logger.info("[COMPLIANCE] All compliance checks passed")
         return True
 
-    except (ValueError, TypeError) as e:
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[COMPLIANCE] Compliance check failed: {e}")
         return False
 
@@ -699,11 +737,7 @@ def discover_all_agents(strict_mode: bool = True) -> list[dict[str, Any]]:
         Logger.debug(f"[DISCOVERY] Returning {len(verified_agents)} verified agents")
         return verified_agents
 
-    except (
-        OSError,
-        ValueError,
-        TypeError,
-    ) as e:  # guardian: allow-specific -- agent discovery failure returns empty
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
         return []
 
@@ -744,11 +778,7 @@ def get_agent_discovery_summary() -> dict[str, Any]:
 
         return summary
 
-    except (
-        OSError,
-        ValueError,
-        TypeError,
-    ) as e:  # guardian: allow-specific -- summary generation failure returns error dict
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[DISCOVERY] Failed to generate summary: {e}")
         return {"error": str(e)}
 
@@ -769,11 +799,7 @@ def refresh_discovery_cache() -> bool:
 
         return True
 
-    except (
-        OSError,
-        ValueError,
-        TypeError,
-    ) as e:  # guardian: allow-specific -- cache refresh failure returns False
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[CACHE] Cache refresh failed: {e}")
         return False
 
@@ -794,11 +820,7 @@ def get_structured_agent_paths() -> list[str]:
 
         return paths
 
-    except (
-        OSError,
-        ValueError,
-        TypeError,
-    ) as e:  # guardian: allow-specific -- path generation failure returns empty
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[PATHS] Failed to generate structured paths: {e}")
         return []
 
@@ -907,8 +929,7 @@ def cli_interface() -> None:
     except KeyboardInterrupt:
         Logger.info("[DISCOVERY] Operation cancelled by user")
         sys.exit(130)
-    # guardian: allow-silent-swallow
-    except (OSError, ValueError, TypeError) as e:  # guardian: allow-specific -- CLI operation errors
+    except (OSError, ValueError, TypeError) as e:
         Logger.error(f"[DISCOVERY] CLI operation failed: {e}")
         sys.exit(1)
 

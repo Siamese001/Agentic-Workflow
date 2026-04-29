@@ -23,7 +23,7 @@ def get_python_files(path):
 
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
+from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import is_agent_file
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -206,9 +206,11 @@ class AgentRegistry:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.discover_all")
 
+        from tqdm import tqdm  # noqa: PLC0415
+
         agents = []
         python_files = get_python_files(self.project_root)
-        for file_path in python_files:
+        for file_path in tqdm(python_files, desc="Scanning agents", unit="file"):
             try:
                 file_agents = self._scan_file_for_agents(file_path)
                 agents.extend(file_agents)

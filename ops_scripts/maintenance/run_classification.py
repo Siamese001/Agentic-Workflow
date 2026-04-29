@@ -33,7 +33,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
 
 
 def classify_file(path: Path) -> str:
-    from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
+    from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import classify_file_standalone
 
     file_type = classify_file_standalone(path)
     if file_type in {

@@ -213,7 +213,9 @@ class PascalSovereigntyFixer:
         [REFACTORED 2026-02-08] Replaced FCA instantiation with lightweight
         kernel delegation. Maps kernel's rich FileType to PSF's simpler set.
         """
-        from agentic_core.L5_safety.core_kernel.classification_kernel import classify_file_standalone
+        from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
+            classify_file_standalone,
+        )
 
         kernel_type = classify_file_standalone(path)
 
