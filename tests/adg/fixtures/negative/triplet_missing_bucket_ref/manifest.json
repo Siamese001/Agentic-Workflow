@@ -1,0 +1,7 @@
+{
+  "slug": "triplet_missing_bucket_ref",
+  "description": "AUTHORITATIVE_RUNTIME row whose static_edge_id points to nothing.",
+  "target_gate": "cross_bucket.impossible_states",
+  "expected_fail_reason": "I4_FAIL_TRIPLET_MISSING_BUCKET_REF",
+  "extra_args": []
+}

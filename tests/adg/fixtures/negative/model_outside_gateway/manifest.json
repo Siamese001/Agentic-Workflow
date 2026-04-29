@@ -1,0 +1,7 @@
+{
+  "slug": "model_outside_gateway",
+  "description": "Model/provider declared with wildcard scope \u2014 D4 widening.",
+  "target_gate": "registry.graph_integrity",
+  "expected_fail_reason": "",
+  "extra_args": []
+}

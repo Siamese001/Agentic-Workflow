@@ -1,0 +1,7 @@
+{
+  "slug": "stale_snapshot_vs_gap_report",
+  "description": "Gap report references a different snapshot than the one under test.",
+  "target_gate": "cross_bucket.impossible_states",
+  "expected_fail_reason": "I8_FAIL_STALE_SNAPSHOT_VS_GAP_REPORT",
+  "extra_args": []
+}

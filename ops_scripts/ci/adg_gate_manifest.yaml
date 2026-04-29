@@ -1,0 +1,405 @@
+# ADG Three-Graph Gate Manifest — canonical SSOT for the manifest-driven runner.
+#
+# Plan: .windsurf/plans/adg-three-graph-harness-e57cc7.md
+#
+# Schema (per gate)
+# -----------------
+# gate_id              REQUIRED unique identifier (e.g. "static.snapshot_has_mvs")
+# bucket               REQUIRED one of: static | registry | runtime |
+#                                       cross_bucket | provenance | schema |
+#                                       preflight
+# script               OPTIONAL path to existing CI script under ops_scripts/ci.
+#                      EITHER `script` OR `view_rule` MUST be set.
+# view_rule            OPTIONAL inline SQL-rule definition consumed by
+#                      check_adg_view_rules.py. Mutually exclusive with `script`.
+# reads                REQUIRED list of artifacts/views the gate reads from.
+# evidence_mode        REQUIRED proof | risk | inventory.
+# enforcement_mode     REQUIRED strict | advisory | ratchet | audit.
+# assertion            REQUIRED short prose describing what the gate asserts.
+# thresholds           OPTIONAL map of named thresholds (count/pct/min/max).
+# strict_env           OPTIONAL env var that flips advisory -> strict.
+# bypass_env           OPTIONAL env var that short-circuits the gate to PASS.
+#                      RUNNER ENFORCES: in --strict mode, a detected bypass_env
+#                      causes the gate to be marked FAIL unless allowed_to_skip.
+# allowed_to_skip      OPTIONAL bool (default false). When true, a SKIP from
+#                      the gate is NOT a failure even in --strict.
+# expected_fail_reason OPTIONAL string — only used by negative-control
+#                      manifests (see tests/adg/fixtures/negative/).
+# output_artifact      OPTIONAL relative path of the gate's own report file
+#                      (kept for legacy gates that emit their own JSON).
+# legacy               OPTIONAL bool (default false). True = also wrapped by
+#                      check_adg_certified.py; runner runs both for parity.
+# suite                OPTIONAL list — which suite(s) include this gate.
+#                      Default: ["full"]. Examples: ["quick","full","negative"].
+# timeout_s            OPTIONAL subprocess timeout (default 60).
+# accepts_runner_flags OPTIONAL bool (default true). When false, the runner
+#                      does NOT pass --snapshot / --json-out to the gate.
+#                      Set false for legacy gates whose argparse rejects
+#                      these flags. The runner falls back to reading the
+#                      gate's ``output_artifact`` for JSON parsing.
+
+version: 1
+schema: adg_gate_manifest_v1
+
+# ---------------------------------------------------------------------------
+# 0. PREFLIGHT
+# ---------------------------------------------------------------------------
+gates:
+
+  - gate_id: preflight.snapshot_present
+    bucket: preflight
+    view_rule:
+      kind: scalar
+      sql: "SELECT 1"
+      expect: 1
+    reads: ["artifacts/adg/adg_indexed_*.sqlite"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: "Latest static ADG snapshot exists and is queryable"
+    suite: ["quick", "full", "changed", "negative"]
+
+  - gate_id: preflight.schema_version
+    bucket: preflight
+    view_rule:
+      kind: scalar
+      sql: "SELECT value FROM meta WHERE key='schema_version'"
+      expect_regex: "^4\\."
+    reads: ["meta"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: "snapshot schema_version is 4.x"
+    suite: ["quick", "full"]
+
+  # ---------------------------------------------------------------------------
+  # 1. STATIC GRAPH
+  # ---------------------------------------------------------------------------
+
+  - gate_id: static.snapshot_has_mvs
+    bucket: static
+    script: ops_scripts/ci/check_snapshot_has_mvs.py
+    reads: ["sqlite_master (mv_*, v_p*, infra views)", "meta.artifact_digest"]
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: "Snapshot ships >=30 mv_*, >=3 v_p*, >=1 infra view; projection digest matches"
+    thresholds:
+      min_mv: 30
+      min_pview: 3
+      min_infra: 1
+    output_artifact: artifacts/windsurf/snapshot_mv_violations.jsonl
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["quick", "full"]
+
+  - gate_id: static.edge_authority_well_formed
+    bucket: static
+    script: ops_scripts/ci/check_edge_authority_well_formed.py
+    reads: ["edges.authority"]
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: "Every edge has non-NULL authority drawn from the closed enum"
+    bypass_env: EDGE_AUTHORITY_BYPASS
+    output_artifact: artifacts/windsurf/edge_authority_violations.jsonl
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["quick", "full"]
+
+  - gate_id: static.consumer_mode_declared
+    bucket: static
+    script: ops_scripts/ci/check_consumer_mode_declared.py
+    reads: ["agentic_core/adg/**/*.py", "tools/adg/**/*.py", "ops_scripts/ci/check_*.py"]
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: "Every ADG consumer declares __adg_consumer_mode__ in {proof,risk,inventory}"
+    strict_env: CONSUMER_MODE_GATE_STRICT
+    bypass_env: CONSUMER_MODE_BYPASS
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["full"]
+
+  - gate_id: static.authority_boundary_breaches
+    bucket: static
+    script: ops_scripts/ci/check_authority_boundary_breaches.py
+    reads: ["mv_authority_boundary_breaches"]
+    evidence_mode: inventory
+    enforcement_mode: ratchet
+    assertion: "ADR-071 disposition: <=17 breaches, all in exempt sources"
+    thresholds:
+      max_breaches: 17
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["full"]
+
+  - gate_id: static.mv_count_floor
+    bucket: static
+    view_rule:
+      kind: scalar
+      sql: "SELECT COUNT(*) FROM sqlite_master WHERE type IN ('table','view') AND name LIKE 'mv_%'"
+      expect_min: 30
+    reads: ["sqlite_master"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: "snapshot ships at least 30 mv_* views (graph-layer overlay)"
+    thresholds:
+      min_count: 30
+    suite: ["quick", "full"]
+
+  - gate_id: static.pview_count_floor
+    bucket: static
+    view_rule:
+      kind: scalar
+      sql: "SELECT COUNT(*) FROM sqlite_master WHERE type='view' AND name LIKE 'v_p%'"
+      expect_min: 3
+    reads: ["sqlite_master"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: "snapshot ships at least 3 v_p* P-views"
+    thresholds:
+      min_count: 3
+    suite: ["quick", "full"]
+
+  - gate_id: static.no_null_triplet
+    bucket: static
+    view_rule:
+      kind: scalar
+      sql: "SELECT COUNT(*) FROM edges WHERE bucket IS NULL OR resolution_status IS NULL OR authority_status IS NULL"
+      expect: 0
+    reads: ["edges (bucket, resolution_status, authority_status)"]
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: "No edge has NULL in (bucket, resolution_status, authority_status)"
+    suite: ["quick", "full"]
+
+  # ---------------------------------------------------------------------------
+  # 2. REGISTRY GRAPH (NEW DEDICATED LANE — W2.P1)
+  # ---------------------------------------------------------------------------
+
+  - gate_id: registry.graph_integrity
+    bucket: registry
+    script: ops_scripts/ci/check_registry_graph_integrity.py
+    reads:
+      - "edges WHERE bucket='registry'"
+      - "nodes WHERE entity_type='registry_node'"
+      - "mcp_config_servers"
+      - ".windsurf/mcp_config.json"
+      - "agent_specs/*.yaml"
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: |
+      Registry graph well-formedness:
+        - registry edges have bucket='registry'
+        - registry nodes carry owner|version|digest|declared_surface
+        - every agent has execution_profile
+        - every tool has capability binding
+        - every model/provider path resolves through approved gateway
+        - every MCP connector has transport + scope declaration
+        - every registry decl maps to static impl, allowed external endpoint,
+          or test_only fixture
+        - no duplicate active registry decls for same logical target
+        - no stale registry_digest relative to snapshot meta
+        - no registry decl widens authority beyond policy/blueprint
+    bypass_env: REGISTRY_INTEGRITY_BYPASS
+    output_artifact: docs/reports/adg/registry_graph_integrity.json
+    suite: ["quick", "full"]
+
+  - gate_id: registry.bucket_count_floor
+    bucket: registry
+    view_rule:
+      kind: scalar
+      sql: "SELECT COUNT(*) FROM edges WHERE bucket='registry'"
+      expect_min: 1
+    reads: ["edges WHERE bucket='registry'"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: "Registry bucket is non-empty"
+    thresholds:
+      min_count: 1
+    suite: ["quick", "full"]
+
+  - gate_id: registry.declared_relations_complete
+    bucket: registry
+    view_rule:
+      kind: scalar
+      # Registry edges should span all 5 declared/reference relation types.
+      sql: |
+        SELECT COUNT(DISTINCT relation_type) FROM edges
+         WHERE bucket='registry'
+           AND relation_type IN
+            ('MCP_SERVER_DECLARED','AGENT_SPEC_DECLARED','ROUTE_CONTRACT_DECLARED',
+             'references_mcp_server','references_agent_spec')
+      expect_min: 3
+    reads: ["edges WHERE bucket='registry'"]
+    evidence_mode: inventory
+    enforcement_mode: advisory
+    assertion: "At least 3 of 5 expected registry relation_types are present"
+    thresholds:
+      min_count: 3
+    suite: ["full"]
+
+  # ---------------------------------------------------------------------------
+  # 3. RUNTIME GRAPH
+  # ---------------------------------------------------------------------------
+
+  - gate_id: runtime.proof_view_well_formed
+    bucket: runtime
+    script: ops_scripts/ci/check_runtime_proof_view_well_formed.py
+    reads: ["v_runtime_proof"]
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: |
+      v_runtime_proof rows: bucket='runtime'; authority_status in closed enum;
+      AUTHORITATIVE_RUNTIME has trace_id + attesting_trace_count>=1;
+      src_name/dst_name non-empty.
+    strict_env: RUNTIME_PROOF_VIEW_STRICT
+    bypass_env: RUNTIME_PROOF_VIEW_BYPASS
+    output_artifact: docs/reports/adg/runtime_proof_view_gate_report.json
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["quick", "full"]
+
+  - gate_id: runtime.trace_topology
+    bucket: runtime
+    script: ops_scripts/ci/check_runtime_trace_topology.py
+    reads:
+      - "v_runtime_proof (latest_trace_id, latest_span_id, evidence_refs)"
+      - "agentic_core/L4_state/memory/runtime_adg/*/spans.json (when present)"
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: |
+      Runtime topology: every authoritative runtime edge maps to raw OTel span
+      refs; parent_span_id chain continuous; root span exists; timestamps
+      monotonic; required fields trace_id|span_id|parent_span_id|policy_hash|
+      blueprint_hash|registry_digest present; app_id for app paths; route_id
+      for routed paths; scenario_id for proof scenarios; synthetic_fixture
+      cannot satisfy production runtime proof.
+    bypass_env: RUNTIME_TOPOLOGY_BYPASS
+    output_artifact: docs/reports/adg/runtime_trace_topology.json
+    suite: ["quick", "full"]
+
+  - gate_id: runtime.genai_semconv_coverage
+    bucket: runtime
+    script: ops_scripts/ci/check_otel_genai_semconv_coverage.py
+    reads:
+      - "agentic_core/**/*.py"
+      - "system_learning/**/*.py"
+      - "tools/otel/**/*.py"
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: ">=80% of detected emitters use gen_ai.* semconv attributes"
+    strict_env: GENAI_SEMCONV_STRICT
+    bypass_env: GENAI_SEMCONV_BYPASS
+    thresholds:
+      coverage_floor_pct: 80.0
+    output_artifact: docs/reports/adg/otel_genai_semconv_gate_report.json
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["full"]
+
+  - gate_id: runtime.no_synthetic_in_production
+    bucket: runtime
+    view_rule:
+      kind: scalar
+      # Synthetic trace_ids start with "synth-"; in real production runs this
+      # count should drop. For the harness, this is ADVISORY-mode reporting:
+      # the value should be visible in CI output but not block the harness.
+      sql: |
+        SELECT COUNT(*) FROM v_runtime_proof
+         WHERE authority_status='AUTHORITATIVE_RUNTIME'
+           AND latest_trace_id LIKE 'synth-%'
+      expect_max: 999999
+    reads: ["v_runtime_proof"]
+    evidence_mode: inventory
+    enforcement_mode: advisory
+    assertion: "Synthetic-trace count is reported (advisory until production OTel runs)"
+    thresholds:
+      max_count: 999999
+    suite: ["full"]
+
+  # ---------------------------------------------------------------------------
+  # 4. CROSS-BUCKET
+  # ---------------------------------------------------------------------------
+
+  - gate_id: cross_bucket.gap_thresholds
+    bucket: cross_bucket
+    script: ops_scripts/ci/check_three_bucket_gap_thresholds.py
+    reads: ["docs/reports/adg/THREE_BUCKET_GAP_REPORT.json"]
+    evidence_mode: inventory
+    enforcement_mode: strict
+    assertion: |
+      Per-class thresholds: SHADOW_CHANNEL=0; REGISTRY_DRIFT<=5%;
+      DEAD_PATH<=10%; DYNAMIC_DISPATCH<=20%; CONFIG_BLOAT<=1%.
+    strict_env: THREE_BUCKET_GAP_STRICT
+    bypass_env: THREE_BUCKET_GAP_BYPASS
+    output_artifact: docs/reports/adg/three_bucket_gap_gate_report.json
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["quick", "full"]
+
+  - gate_id: cross_bucket.impossible_states
+    bucket: cross_bucket
+    script: ops_scripts/ci/check_three_bucket_impossible_states.py
+    reads:
+      - "edges (bucket, evidence_refs, source_file)"
+      - "nodes (entity_type)"
+      - "v_runtime_proof (latest_trace_id, latest_span_id, static_edge_id)"
+      - "docs/reports/adg/THREE_BUCKET_GAP_REPORT.json"
+      - "meta.artifact_digest"
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: |
+      No impossible-state rows: runtime row without trace_id;
+      registry row without registry_digest; static row without source ref;
+      TRIPLET_ATTESTED missing static/registry/runtime ref;
+      AUTHORITATIVE_RUNTIME without raw_span_ref; registry-only production
+      route without static or runtime; static-only production-critical edge
+      excluded from DEAD_PATH calc; gap report stale vs snapshot.
+    bypass_env: IMPOSSIBLE_STATES_BYPASS
+    output_artifact: docs/reports/adg/three_bucket_impossible_states.json
+    suite: ["quick", "full"]
+
+  # ---------------------------------------------------------------------------
+  # 5. PROVENANCE & SCHEMA
+  # ---------------------------------------------------------------------------
+
+  - gate_id: provenance.snapshot_signed
+    bucket: provenance
+    script: ops_scripts/ci/check_adg_snapshot_signed.py
+    reads:
+      - "artifacts/adg/adg_indexed_*.sqlite"
+      - "artifacts/adg/*.intoto.jsonl"
+      - "artifacts/adg/keys/ed25519_*.pub"
+    evidence_mode: proof
+    enforcement_mode: strict
+    assertion: "Latest snapshot has a verified DSSE Ed25519 in-toto attestation"
+    strict_env: ADG_SIGNATURE_GATE_STRICT
+    bypass_env: ADG_SIGNATURE_BYPASS
+    output_artifact: docs/reports/adg/adg_snapshot_signed_gate_report.json
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["full"]
+
+  - gate_id: schema.graduation_readiness
+    bucket: schema
+    script: ops_scripts/ci/check_schema_graduation_readiness.py
+    reads: ["edges PRAGMA table_info"]
+    evidence_mode: inventory
+    enforcement_mode: advisory
+    assertion: "(bucket, resolution_status, authority_status) ready for NOT NULL flip"
+    strict_env: SCHEMA_GRADUATION_READINESS_STRICT
+    bypass_env: SCHEMA_GRADUATION_READINESS_BYPASS
+    output_artifact: docs/reports/adg/schema_graduation_readiness_gate.json
+    legacy: true
+    accepts_runner_flags: false
+    suite: ["full"]
+
+# ---------------------------------------------------------------------------
+# Suite definitions (used by --suite flag)
+# ---------------------------------------------------------------------------
+suites:
+  quick:
+    description: "Fast smoke (preflight + static floors + registry integrity + runtime + cross-bucket impossibles)"
+  full:
+    description: "All gates (legacy + new + view-rules)"
+  changed:
+    description: "Subset rewritten by the runner based on git diff (W3.future)"
+  negative:
+    description: "Negative-control fixtures from tests/adg/fixtures/negative/"

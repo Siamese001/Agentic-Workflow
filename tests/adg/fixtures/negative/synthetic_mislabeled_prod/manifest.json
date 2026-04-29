@@ -1,0 +1,9 @@
+{
+  "slug": "synthetic_mislabeled_prod",
+  "description": "Synthetic trace_id satisfies AUTHORITATIVE_RUNTIME under --require-production.",
+  "target_gate": "runtime.trace_topology",
+  "expected_fail_reason": "T9_FAIL_SYNTHETIC_IN_PRODUCTION_MODE",
+  "extra_args": [
+    "--require-production"
+  ]
+}

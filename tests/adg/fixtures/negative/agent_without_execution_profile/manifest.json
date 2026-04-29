@@ -1,0 +1,9 @@
+{
+  "slug": "agent_without_execution_profile",
+  "description": "AGENT_SPEC_DECLARED edge missing execution_profile field.",
+  "target_gate": "registry.graph_integrity",
+  "expected_fail_reason": "C_WARN_RELATION_FIELDS_ASPIRATIONAL",
+  "extra_args": [
+    "--strict"
+  ]
+}

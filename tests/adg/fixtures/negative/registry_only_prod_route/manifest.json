@@ -1,0 +1,7 @@
+{
+  "slug": "registry_only_prod_route",
+  "description": "Registry decl in production source with no static or runtime support.",
+  "target_gate": "cross_bucket.impossible_states",
+  "expected_fail_reason": "I6_FAIL_REGISTRY_ONLY_PROD_ROUTE",
+  "extra_args": []
+}

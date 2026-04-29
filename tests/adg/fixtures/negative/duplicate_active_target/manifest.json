@@ -1,0 +1,7 @@
+{
+  "slug": "duplicate_active_target",
+  "description": "Two MCP_SERVER_DECLARED rows with identical (relation_type, symbol, source_file).",
+  "target_gate": "registry.graph_integrity",
+  "expected_fail_reason": "D2_FAIL_DUPLICATE_ACTIVE_DECLARATION",
+  "extra_args": []
+}

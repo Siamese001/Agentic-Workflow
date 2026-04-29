@@ -1,0 +1,7 @@
+{
+  "slug": "null_edge_authority",
+  "description": "A static edge with NULL authority \u2014 must trip edge_authority_well_formed.",
+  "target_gate": "static.edge_authority_well_formed",
+  "expected_fail_reason": "legacy_exit_code:1",
+  "extra_args": []
+}

@@ -1,0 +1,9 @@
+{
+  "slug": "missing_parent_span_chain",
+  "description": "parent_span_id chain broken inside a trace.",
+  "target_gate": "runtime.trace_topology",
+  "expected_fail_reason": "T2_FAIL_BROKEN_PARENT_CHAIN",
+  "extra_args": [
+    "--require-production"
+  ]
+}
