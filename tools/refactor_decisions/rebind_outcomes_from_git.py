@@ -39,6 +39,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    from tqdm import tqdm  # type: ignore[import-not-found]
+except ImportError:  # pragma: no cover
+
+    def tqdm(x, **_kwargs):  # type: ignore[no-redef]
+        return x
+
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
@@ -160,7 +168,7 @@ def rebind(db_path: Path, max_walk: int, dry_run: bool) -> dict[str, int]:
             )
         )
         counters["scanned"] = len(rows)
-        for row in rows:
+        for row in tqdm(rows, desc="Rebinding outcomes", unit="row"):
             shas_json = row["commit_shas_json"] or "[]"
             try:
                 shas = json.loads(shas_json)
