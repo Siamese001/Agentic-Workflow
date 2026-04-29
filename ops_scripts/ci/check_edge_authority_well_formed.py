@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Gate G-EDGE-AUTHORITY — every edge must have a well-formed authority value.
 
+ADG consumer mode: ``proof`` — this gate's verdict is enforcement-grade.
+It reads ``edges.authority`` directly (not via a view) and its output
+drives a CI fail/pass decision; consumers may treat the verdict as truth.
+
 Per the 2026-04-28 graph-authority directive ("The ADG generator must stop
 emitting unqualified edges. Every edge must be typed as verified, unresolved,
 dynamic, external, test-only, or runtime-observed"), every row in the canonical
@@ -21,6 +25,10 @@ unresolved edges specifically, see ``check_unresolved_edges_ratchet.py``.
 """
 
 from __future__ import annotations
+
+# W4 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md
+# §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "proof"
 
 import glob
 import json

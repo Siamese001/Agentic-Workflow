@@ -340,6 +340,109 @@ configured AND was actually called") MUST emit an SSOTDecisionRecord
 rather than infer from one bucket alone. Single-bucket claims continue
 to use `proof_view` directly.
 
+## Registry-bucket resolvers (W3)
+
+The REGISTRY graph is populated by per-source resolvers in
+``agentic_core/adg/registry/registry_resolvers.py``. Each resolver reads
+one declarative source and returns a list of ``RegistryEdge`` records.
+
+### Implemented resolvers (W3)
+
+| Source | Resolver | Edge `relation_type` | Live count |
+|---|---|---|---|
+| `.windsurf/mcp_config.json` | `resolve_mcp_config` | `MCP_SERVER_DECLARED` | 13 servers |
+| `apps_*/config/agent_specs*.json` | `resolve_agent_specs` | `AGENT_SPEC_DECLARED` | varies per app |
+
+### Resolution-status mapping
+
+| Source state | `resolution_status` | `authority_status` |
+|---|---|---|
+| Stable + present + parsed | `STABLE_REGISTRY` | `AUTHORITATIVE_REGISTRY` |
+| Disabled (`disabled: true`) | `DISABLED_REGISTRY` | `RISK_SIGNAL_ONLY` |
+| Stale digest (W3-tail) | `STALE_REGISTRY` | `RISK_SIGNAL_ONLY` |
+| Schema mismatch (W3-tail) | `MISMATCHED_REGISTRY` | `RISK_SIGNAL_ONLY` |
+| Lookup failure / missing | (no edge emitted) | n/a |
+
+### Per-edge `evidence_refs`
+
+Every registry edge ships with:
+
+```json
+{
+  "registry_path": "<repo-relative source>",
+  "registry_digest": "<sha256 of the entry's config JSON>",
+  "declaration_key": "<json-pointer-style key>",
+  "disabled": false,
+  "command": "..."
+}
+```
+
+The full `registry_digest_set` for an SSOTDecisionRecord is built via
+`compute_registry_digest_set(edges)` — sorted unique digests across all
+contributing resolvers.
+
+### Lift utility
+
+`tools/adg/registry_bucket_lift.py` invokes `resolve_all_registries()`
+and INSERTs the resulting edges into the static snapshot's `edges` table
+with `bucket='registry'` and `authority='registry_declared'`. The lift
+is idempotent on `(src_id, dst_id, relation_type, source_file, authority='registry_declared')`.
+
+### Deferred (W3-tail)
+
+* Route-contract registry resolver (no canonical source file yet)
+* Prompt-slot registry resolver
+* Stale-digest detection (compare against last-known-good baseline)
+
+## Consumer-mode contract (W4)
+
+Every file that reads or queries the ADG MUST declare its consumer mode
+via a module-level `__adg_consumer_mode__` constant. Spec lives in
+`agentic_core/adg/artifact/consumer_mode.py`.
+
+### The three modes
+
+| Mode | What it allows reading | Output authority |
+|---|---|---|
+| `proof` | `proof_view`, `risk_view`, `inventory_view` | enforcement-grade verdict |
+| `risk` | `risk_view`, `inventory_view` (NOT `proof_view`) | hygiene signal, never a verdict |
+| `inventory` | `inventory_view` only | sizing only — never policy or enforcement |
+
+Authority rank: `inventory < risk < proof`. A consumer at LOWER level
+reading a higher view is a mode-mismatch violation flagged by the gate.
+
+### CI gate
+
+`ops_scripts/ci/check_consumer_mode_declared.py` (gate ID
+`G-CONSUMER-MODE-DECLARED`) scans `agentic_core/adg/`, `tools/adg/`,
+`tools/analysis/`, `ops_scripts/ci/`, and `apps_*/integrations/` for
+files containing ADG read signatures, then validates each:
+
+1. Has a module-level `__adg_consumer_mode__` constant
+2. The constant value is one of the three canonical modes
+3. The declared mode is compatible with the views the file reads
+
+The gate runs in **advisory mode** by default (exit 0, prints
+violations). Set `CONSUMER_MODE_GATE_STRICT=1` to upgrade to blocking.
+Bypass via `CONSUMER_MODE_BYPASS=1`. JSON report:
+`docs/reports/adg/consumer_mode_gate_report.json`.
+
+### Exemplar declarations (W4)
+
+| File | Mode | Justification |
+|---|---|---|
+| `ops_scripts/ci/check_edge_authority_well_formed.py` | `proof` | Drives the well-formed-edge enforcement verdict |
+| `ops_scripts/ci/check_unresolved_edges_ratchet.py` | `risk` | Ratchets `RISK_SIGNAL_ONLY` edges — hygiene signal |
+| `ops_scripts/ci/check_dangling_imports.py` | `risk` | Surfaces `UNRESOLVED_STATIC` edges — investigation prompt |
+| `ops_scripts/ci/check_call_multiplicity.py` | `inventory` | Counts duplicate top-level calls — sizing |
+| `ops_scripts/ci/check_w6_new_orphans_delta.py` | `risk` | Tracks orphan-set delta — hygiene signal |
+
+### Deferred (W4-tail)
+
+127 of 130 detected consumers still lack declarations. Per-file owners
+add their own declaration; gate flips to strict once coverage reaches
+acceptable threshold (W5 candidate exit criterion).
+
 ## ADG certification
 
 A snapshot is **ADG_CERTIFIED** when ALL of the following hold:

@@ -1,13 +1,12 @@
 {
   "model": "ADG Three-Bucket Authority",
-  "phase": "W2 — Runtime hardening + SSOTDecisionRecord (landed 2026-04-29)",
+  "phase": "W3 (Registry resolver) + W4 advisory (Consumer-mode gate) — landed 2026-04-29",
   "certification_status": "ADG_NOT_CERTIFIED",
   "certification_blockers": [
-    "registry resolver not implemented; bucket=registry count=0 in current snapshot (W3 work)",
-    "consumer mode declarations not enforced (W4 work)",
-    "consumer-mode CI gate (check_consumer_mode_declared.py) not written (W4 work)",
+    "consumer-mode CI gate is in ADVISORY mode (CONSUMER_MODE_GATE_STRICT=1 not yet default); 127 of 130 detected consumers lack declarations (W4-tail)",
     "deterministic-digest test not implemented (W5 work)",
-    "bucket / resolution_status / authority_status columns are NULLABLE; cannot graduate to NOT NULL until W5"
+    "bucket / resolution_status / authority_status columns are NULLABLE; cannot graduate to NOT NULL until W5",
+    "route-contract registry + prompt-slot registry resolvers not implemented (W3-tail; deferred)"
   ],
 
   "w2_landed": {
@@ -30,6 +29,61 @@
       },
       "idempotency": "duplicate-row check on (src_id, dst_id, relation_type, source_file, line_no, authority='runtime_observed')",
       "hidden_path_handling": "stub static node with empty resolved_path when runtime references node not in static graph"
+    }
+  },
+
+  "w3_landed": {
+    "registry_resolvers": {
+      "module": "agentic_core/adg/registry/registry_resolvers.py",
+      "resolvers_implemented": ["resolve_mcp_config", "resolve_agent_specs"],
+      "resolvers_deferred": ["route_contract_registry", "prompt_slot_registry"],
+      "edge_dataclass": "RegistryEdge",
+      "registry_roots": ["Registry::MCP::root", "Registry::Agent::root"],
+      "live_mcp_servers_resolved": 13,
+      "classification": {
+        "stable_present": "STABLE_REGISTRY / AUTHORITATIVE_REGISTRY",
+        "disabled_true": "DISABLED_REGISTRY / RISK_SIGNAL_ONLY",
+        "missing_unparseable": "(empty list returned, no placeholder edge)"
+      },
+      "evidence_refs_per_edge": ["registry_path", "registry_digest", "declaration_key", "disabled?", "command?"]
+    },
+    "registry_bucket_lift": {
+      "utility": "tools/adg/registry_bucket_lift.py",
+      "purpose": "lift RegistryEdge list into static snapshot edges table with bucket=registry + authority='registry_declared'",
+      "idempotency": "duplicate-row check on (src_id, dst_id, relation_type, source_file, authority='registry_declared')",
+      "node_stubbing": "auto-stub registry root + entry nodes when not in static graph (HIDDEN_PATH-equivalent for missing registry nodes)"
+    }
+  },
+
+  "w4_landed": {
+    "consumer_mode_spec": {
+      "module": "agentic_core/adg/artifact/consumer_mode.py",
+      "declaration_name": "__adg_consumer_mode__",
+      "modes": ["proof", "risk", "inventory"],
+      "mode_authority_rank": {"inventory": 0, "risk": 1, "proof": 2},
+      "compatibility_rule": "proof may read all 3 views; risk may read risk + inventory views; inventory may read inventory view only"
+    },
+    "consumer_mode_gate": {
+      "gate": "ops_scripts/ci/check_consumer_mode_declared.py",
+      "gate_id": "G-CONSUMER-MODE-DECLARED",
+      "tier": "B (advisory until CONSUMER_MODE_GATE_STRICT=1)",
+      "live_scan_result": {
+        "consumers_scanned": 130,
+        "declared": 3,
+        "missing": 127,
+        "invalid": 0,
+        "mode_mismatch": 0
+      },
+      "exemplars_landed": [
+        {"file": "ops_scripts/ci/check_edge_authority_well_formed.py", "mode": "proof"},
+        {"file": "ops_scripts/ci/check_unresolved_edges_ratchet.py", "mode": "risk"},
+        {"file": "ops_scripts/ci/check_dangling_imports.py", "mode": "risk"},
+        {"file": "ops_scripts/ci/check_call_multiplicity.py", "mode": "inventory"},
+        {"file": "ops_scripts/ci/check_w6_new_orphans_delta.py", "mode": "risk"}
+      ],
+      "bypass_envvar": "CONSUMER_MODE_BYPASS=1",
+      "strict_mode_envvar": "CONSUMER_MODE_GATE_STRICT=1",
+      "report_path": "docs/reports/adg/consumer_mode_gate_report.json"
     }
   },
 
@@ -106,8 +160,10 @@
     "test_edge_authority.py (preserved)": 43,
     "test_ssot_decision_record.py (W2)": 45,
     "test_runtime_bucket_lift.py (W2)": 10,
-    "total_authority_surface_passing": 131,
-    "total_in_artifact_dir_passing": 183,
+    "test_registry_resolvers.py (W3)": 16,
+    "test_check_consumer_mode_declared.py (W4)": 32,
+    "total_authority_surface_passing": 179,
+    "total_in_artifact_dir_passing": 215,
     "test_classes": [
       "TestClosedEnums",
       "TestAuthorityLaw",

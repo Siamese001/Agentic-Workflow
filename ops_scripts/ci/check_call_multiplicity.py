@@ -24,6 +24,11 @@ edge multiplicity. See ``docs/reports/plans/`` for the full RCA.
 
 from __future__ import annotations
 
+# W4 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md
+# §6 + agentic_core/adg/artifact/consumer_mode.py).
+# Counts top-level call duplication — sizing/inventory analysis, not a verdict.
+__adg_consumer_mode__ = "inventory"
+
 import ast
 import json
 import os

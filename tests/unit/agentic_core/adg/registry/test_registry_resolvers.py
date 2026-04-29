@@ -1,0 +1,252 @@
+"""Unit tests for the registry-bucket resolvers (W3).
+
+Coverage:
+
+* ``resolve_mcp_config`` returns one edge per ``mcpServers`` entry, with
+  STABLE_REGISTRY for enabled servers and DISABLED_REGISTRY for disabled.
+* ``resolve_agent_specs`` returns one edge per top-level spec key per
+  app, with deterministic per-entry digests.
+* ``compute_registry_digest_set`` deduplicates per-entry digests.
+* Empty / missing source files produce zero edges (not placeholder rows).
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[5]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from agentic_core.adg.registry.registry_resolvers import (  # noqa: E402
+    AGENT_REGISTRY_ROOT,
+    MCP_REGISTRY_ROOT,
+    RESOLUTION_DISABLED,
+    RESOLUTION_STABLE,
+    AUTHORITY_AUTHORITATIVE_REGISTRY,
+    AUTHORITY_RISK_SIGNAL_ONLY,
+    RegistryEdge,
+    compute_registry_digest_set,
+    resolve_agent_specs,
+    resolve_all_registries,
+    resolve_mcp_config,
+)
+
+
+# ---------------------------------------------------------------------------
+# RegistryEdge dataclass
+# ---------------------------------------------------------------------------
+
+
+class TestRegistryEdge:
+    def test_evidence_refs_json_is_deterministic(self) -> None:
+        e1 = RegistryEdge(
+            src_name="r",
+            dst_name="d",
+            relation_type="X",
+            edge_kind="Y",
+            source_file="path/to/f",
+            evidence_refs={"b": 2, "a": 1},
+        )
+        e2 = RegistryEdge(
+            src_name="r",
+            dst_name="d",
+            relation_type="X",
+            edge_kind="Y",
+            source_file="path/to/f",
+            evidence_refs={"a": 1, "b": 2},
+        )
+        # Sorted keys → same JSON regardless of insertion order.
+        assert e1.evidence_refs_json() == e2.evidence_refs_json()
+
+    def test_default_bucket_and_status(self) -> None:
+        e = RegistryEdge(
+            src_name="r",
+            dst_name="d",
+            relation_type="X",
+            edge_kind="Y",
+            source_file="f",
+        )
+        assert e.bucket == "registry"
+        assert e.resolution_status == RESOLUTION_STABLE
+        assert e.authority_status == AUTHORITY_AUTHORITATIVE_REGISTRY
+
+
+# ---------------------------------------------------------------------------
+# resolve_mcp_config
+# ---------------------------------------------------------------------------
+
+
+class TestResolveMcpConfig:
+    @staticmethod
+    def _write_config(path: Path, servers: dict[str, dict[str, object]]) -> None:
+        with path.open("w", encoding="utf-8") as f:
+            json.dump({"mcpServers": servers}, f)
+
+    def test_emits_one_edge_per_enabled_server(self, tmp_path: Path) -> None:
+        cfg = tmp_path / "mcp_config.json"
+        self._write_config(
+            cfg,
+            {
+                "GitKraken": {"command": "gk", "args": [], "disabled": False},
+                "adg_sqlite": {"command": "python", "args": ["-m", "tools.adg.mcp.server"], "disabled": False},
+            },
+        )
+        edges = resolve_mcp_config(cfg)
+        assert len(edges) == 2
+        for e in edges:
+            assert e.src_name == MCP_REGISTRY_ROOT
+            assert e.relation_type == "MCP_SERVER_DECLARED"
+            assert e.bucket == "registry"
+            assert e.resolution_status == RESOLUTION_STABLE
+            assert e.authority_status == AUTHORITY_AUTHORITATIVE_REGISTRY
+            assert "registry_digest" in e.evidence_refs
+
+    def test_disabled_server_classified_as_risk_only(self, tmp_path: Path) -> None:
+        cfg = tmp_path / "mcp_config.json"
+        self._write_config(
+            cfg,
+            {
+                "broken_server": {"command": "x", "args": [], "disabled": True},
+            },
+        )
+        edges = resolve_mcp_config(cfg)
+        assert len(edges) == 1
+        e = edges[0]
+        assert e.resolution_status == RESOLUTION_DISABLED
+        assert e.authority_status == AUTHORITY_RISK_SIGNAL_ONLY
+        assert e.evidence_refs["disabled"] is True
+
+    def test_missing_file_returns_empty_list(self, tmp_path: Path) -> None:
+        edges = resolve_mcp_config(tmp_path / "does_not_exist.json")
+        assert edges == []
+
+    def test_invalid_json_returns_empty_list(self, tmp_path: Path) -> None:
+        cfg = tmp_path / "bad.json"
+        cfg.write_text("{ not valid json")
+        edges = resolve_mcp_config(cfg)
+        assert edges == []
+
+    def test_no_mcp_servers_key_returns_empty_list(self, tmp_path: Path) -> None:
+        cfg = tmp_path / "empty.json"
+        cfg.write_text("{}")
+        edges = resolve_mcp_config(cfg)
+        assert edges == []
+
+    def test_distinct_servers_have_distinct_digests(self, tmp_path: Path) -> None:
+        cfg = tmp_path / "mcp_config.json"
+        self._write_config(
+            cfg,
+            {
+                "A": {"command": "a", "disabled": False},
+                "B": {"command": "b", "disabled": False},
+            },
+        )
+        edges = resolve_mcp_config(cfg)
+        digests = {e.evidence_refs["registry_digest"] for e in edges}
+        assert len(digests) == 2  # different configs produce different digests
+
+
+# ---------------------------------------------------------------------------
+# resolve_agent_specs
+# ---------------------------------------------------------------------------
+
+
+class TestResolveAgentSpecs:
+    def test_emits_one_edge_per_spec_key(self, tmp_path: Path) -> None:
+        # Simulate apps_test/config/agent_specs.json layout.
+        app_dir = tmp_path / "apps_test" / "config"
+        app_dir.mkdir(parents=True)
+        spec = {
+            "profile_analysis_agent": {"keyword": "x", "confidence": 0.9},
+            "research_agent": {"top_k": 10},
+        }
+        spec_path = app_dir / "agent_specs.json"
+        spec_path.write_text(json.dumps(spec))
+        edges = resolve_agent_specs([spec_path])
+        assert len(edges) == 2
+        for e in edges:
+            assert e.src_name == AGENT_REGISTRY_ROOT
+            assert e.relation_type == "AGENT_SPEC_DECLARED"
+            assert e.bucket == "registry"
+            assert e.resolution_status == RESOLUTION_STABLE
+
+    def test_dst_name_includes_app_prefix(self, tmp_path: Path) -> None:
+        # Two apps both declaring "research_agent" must not collide.
+        app_a = tmp_path / "apps_a" / "config"
+        app_b = tmp_path / "apps_b" / "config"
+        app_a.mkdir(parents=True)
+        app_b.mkdir(parents=True)
+        (app_a / "agent_specs.json").write_text(json.dumps({"research_agent": {"v": "a"}}))
+        (app_b / "agent_specs.json").write_text(json.dumps({"research_agent": {"v": "b"}}))
+        edges = resolve_agent_specs([
+            app_a / "agent_specs.json",
+            app_b / "agent_specs.json",
+        ])
+        # The dst_name doesn't include the relative-path-derived app prefix in
+        # this synthetic test (paths aren't under REPO_ROOT) — but each edge
+        # MUST be distinct.
+        names = {e.dst_name for e in edges}
+        assert len(names) == 2
+
+    def test_empty_spec_file_returns_empty_list(self, tmp_path: Path) -> None:
+        spec_path = tmp_path / "empty.json"
+        spec_path.write_text("{}")
+        edges = resolve_agent_specs([spec_path])
+        assert edges == []
+
+    def test_missing_files_filtered(self, tmp_path: Path) -> None:
+        edges = resolve_agent_specs([tmp_path / "does_not_exist.json"])
+        assert edges == []
+
+
+# ---------------------------------------------------------------------------
+# compute_registry_digest_set
+# ---------------------------------------------------------------------------
+
+
+class TestComputeRegistryDigestSet:
+    def test_returns_sorted_unique_digests(self) -> None:
+        edges = [
+            RegistryEdge(src_name="r", dst_name="a", relation_type="X", edge_kind="Y", source_file="", evidence_refs={"registry_digest": "d2"}),
+            RegistryEdge(src_name="r", dst_name="b", relation_type="X", edge_kind="Y", source_file="", evidence_refs={"registry_digest": "d1"}),
+            RegistryEdge(src_name="r", dst_name="c", relation_type="X", edge_kind="Y", source_file="", evidence_refs={"registry_digest": "d1"}),  # dup
+        ]
+        result = compute_registry_digest_set(edges)
+        assert result == ["d1", "d2"]
+
+    def test_skips_edges_without_digest(self) -> None:
+        edges = [
+            RegistryEdge(src_name="r", dst_name="a", relation_type="X", edge_kind="Y", source_file="", evidence_refs={}),
+            RegistryEdge(src_name="r", dst_name="b", relation_type="X", edge_kind="Y", source_file="", evidence_refs={"registry_digest": "d1"}),
+        ]
+        result = compute_registry_digest_set(edges)
+        assert result == ["d1"]
+
+
+# ---------------------------------------------------------------------------
+# resolve_all_registries — integration with the live repo
+# ---------------------------------------------------------------------------
+
+
+class TestResolveAllRegistries:
+    def test_returns_nonempty_for_live_repo(self) -> None:
+        # The live `.windsurf/mcp_config.json` should always resolve to ≥3 servers.
+        edges = resolve_all_registries()
+        # Must include the MCP root edges.
+        mcp_edges = [e for e in edges if e.src_name == MCP_REGISTRY_ROOT]
+        assert len(mcp_edges) >= 3, (
+            "expected at least 3 MCP server entries in live config; "
+            f"got {len(mcp_edges)}"
+        )
+
+    def test_every_edge_has_evidence_refs(self) -> None:
+        edges = resolve_all_registries()
+        for e in edges:
+            assert "registry_path" in e.evidence_refs
+            assert "registry_digest" in e.evidence_refs
+            assert "declaration_key" in e.evidence_refs

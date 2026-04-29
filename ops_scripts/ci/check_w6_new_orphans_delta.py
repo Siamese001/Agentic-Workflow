@@ -12,6 +12,11 @@ post-commit delta should normalize to zero new orphans).
 
 from __future__ import annotations
 
+# W4 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md
+# §6 + agentic_core/adg/artifact/consumer_mode.py).
+# Tracks orphan-set delta across snapshots — hygiene signal, not a verdict.
+__adg_consumer_mode__ = "risk"
+
 import sqlite3
 import sys
 from pathlib import Path

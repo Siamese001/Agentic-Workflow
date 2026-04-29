@@ -1,0 +1,903 @@
+{
+  "gate": "G-CONSUMER-MODE-DECLARED",
+  "tier": "B",
+  "timestamp": "2026-04-29T10:36:43.735832+00:00",
+  "snapshot_used": "n/a (gate is filesystem-only)",
+  "consumers_scanned": 130,
+  "declared": 3,
+  "missing": 127,
+  "invalid": 0,
+  "mode_mismatch": 0,
+  "violation_count": 127,
+  "violations": [
+    {
+      "rel_path": "agentic_core/adg/artifact/builder.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/artifact/builder_types.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/artifact/layer_splitter.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/artifact/SplitArtifact.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/extraction/optimized_tools.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/processing/phase2_disposition_processor.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/processing/phase3_enhanced_test_coverage.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/processing/phase3_intelligent_disposition.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "agentic_core/adg/runtime/behavioral_index.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/adg_redis_ingest.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/audit_three_bucket_counts.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/incremental_reindex.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/mv_runtime_spine.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/refactor_accelerator.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/runtime_query.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/select_tests.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/structural_outputs.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/_q_future_run.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/_q_future_run_detail.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/_q_gates_all.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/_q_gates_promotion.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/analysis/materialized_views.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/analysis/networkx_analysis.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/analysis/sqlite_direct.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/core/p0_wave_plan.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/core/sqlite_backend.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/mcp/server.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/mcp/tool_handlers.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query2.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query3.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query4.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query5.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query6.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/queries/adg_align_query7.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/repair/sqlite_analyzer.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/adg/prompt_assembly/retrieval/adapters.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/hotspot_coverage_report.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/mixin_audit.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/test_adg_classifier.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/test_concentration_risk.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/test_inventory_builder.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_a12_regex_probe.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_adg_gate_drift_probe.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_adg_rca_probe.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_list_audit2_modules.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_phase3_fanin.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_phase4_fanout.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_phase5_ssot.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_phase6_legacy.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_phases_1_2_8_to_16.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_audit_validate_uncovered.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_edges_schema.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_enriched_inspect.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_overlay_inspect.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_burndown.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_burndown_targets.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_high_violations.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_post_regen.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q1.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q1b.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q1c.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q6.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q6b.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q6_fanout.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q6_fanout2.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_q6_fanout3.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_probe_violations_check.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_qwen_adoption_audit.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_r6_inspect.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_schema_inspect.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_truth_inspect.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "tools/analysis/_violations_ddl.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_authority_boundary_breaches.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_canonical_pipeline_wiring.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_cross_mainline_dispatcher.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_cyclomatic_ceiling.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_dead_folder_detector.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_dead_methods_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_dead_symbols_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_env_var_in_config_layer.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_exception_contract.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_graph_island.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_graph_reach.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_graph_reach_archival.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_l5_hotspot_fanin_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_layer_skip.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_lpg_drift_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_module_loc_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_observability_on_high_fanin.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_overlay_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_role_dedup.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_ssot_magic_constants.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_test_concentration_ratio.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_test_harness_coverage.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_trace_stub_modules.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_unused_imports_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_exit_disposition.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_guardrail_separation.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_l5_bypass.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_policy_without_audit.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_replay_surface_gaps.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_silent_writes.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_tool_call_parity.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_unresolved_callsites.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w4_uwg_bypass_pview.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w5_broken_contract.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w5_missing_adapter.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w5_structured_output.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w5_taint_actionable.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w5_untyped_seam.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w6_ap_velocity_kpi.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w6_fanin_collapse.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w6_mv_staleness.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/check_w6_trace_theater_kpi.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/executor_theater_gate.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_authority.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_capability_egress.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_critical_path.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_determinism.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_text_to_action.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p0_write_sovereignty.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p1_architecture_witness.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p1_lifecycle.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p1_prompt_wiring.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    },
+    {
+      "rel_path": "ops_scripts/ci/adg_gates/gate_p1_trace_replay.py",
+      "kind": "missing",
+      "declared_mode": null,
+      "views_used": [],
+      "message": "missing module-level `__adg_consumer_mode__` declaration (views_used=[])"
+    }
+  ]
+}
