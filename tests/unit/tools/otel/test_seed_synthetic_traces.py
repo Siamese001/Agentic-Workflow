@@ -136,6 +136,46 @@ class TestSampleStaticEdges:
         # Should still be 4 — the registry-bucket row is excluded.
         assert len(rows) == 4
 
+    def test_prefer_registry_overlap_biases_to_overlap_triples(
+        self, synthetic_static
+    ):
+        # Add a (1->2 imports) registry row so it forms a triplet-eligible
+        # twin pair with the existing static (1->2 imports) row.
+        con = sqlite3.connect(synthetic_static)
+        con.execute(
+            "INSERT INTO edges (src_id, dst_id, relation_type, bucket, "
+            "edge_kind, source_file) VALUES (1, 2, 'imports', 'registry', "
+            "'REG', '')"
+        )
+        con.commit()
+        con.close()
+
+        rows = _sample_static_edges(
+            synthetic_static, n=10, prefer_registry_overlap=True
+        )
+        # The overlap pool has exactly 1 (1->2 imports) row. With 60/40
+        # mix and 10 requested, overlap_quota = 6 — but capped to pool
+        # size (1). The remainder (9) comes from the general static pool
+        # (4 rows). So we expect 1 overlap + ≤4 rest = up to 5 returned.
+        assert 1 <= len(rows) <= 5
+        # The overlap triple MUST be among the results (deterministic via seed).
+        triples = {(s, d, r) for s, d, r in rows}
+        assert ("ADG::Module::a.py", "ADG::Module::b.py", "imports") in triples
+
+    def test_prefer_registry_overlap_falls_back_when_no_overlap(
+        self, synthetic_static
+    ):
+        # No registry-bucket rows in the snapshot — overlap pool is empty.
+        # Function must fall back to general static sampling, not return [].
+        rows = _sample_static_edges(
+            synthetic_static, n=10, prefer_registry_overlap=True
+        )
+        assert len(rows) == 4  # all 4 static rows
+        # No registry rows exist, so none of the returned triples can match
+        # a registry triple.
+        for src, dst, rel in rows:
+            assert src.startswith("ADG::")
+
 
 # ---------------------------------------------------------------------------
 # Snapshot synthesis

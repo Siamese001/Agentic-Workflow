@@ -242,6 +242,80 @@ digest: `074d06d055e1411b…`.
   enum columns; graduation script ready, advisory readiness gate ships.
   Flip after the 4-week green window.
 
+## W1.future Close-Out — 2026-04-29 evening
+
+All three deferred items above (except real-OTel) closed end-to-end on
+snapshot `adg_indexed_04292026_1606.sqlite`.
+
+### Code shipped
+
+| File | Purpose |
+|---|---|
+| `agentic_core/adg/registry/registry_consumer_resolver.py` | NEW — emits 248 (consumer_module, registry_anchor) twin pairs in static+registry buckets so the gap classifier can flip them to TRIPLET_ATTESTED once runtime attests. |
+| `tools/adg/registry_bucket_lift.py` | Extended — bucket-aware INSERT for the (static, registry) twins; new `--include-consumer-edges=True` default. |
+| `tools/adg/backfill_edge_authority_nulls.py` | NEW — fills the 32 gate_self_test NULL rows the supplementary scanner left after the canonical edge_authority backfill. |
+| `tools/adg/graduate_schema_not_null.py` | Fixed — now drops ALL views (not just direct dependents) before the rename to handle transitive view-to-view deps (e.g., `v_infra_violations_summary` → `v_p0_l0_raw_execution`). |
+| `tools/adg/run_three_graph_smoke_test.py` | NEW — unified three-graph test runner. 7 deterministic checks: each bucket non-empty, SHADOW_CHANNEL == 0, TRIPLET ≥ floor, REGISTRY_DRIFT% ≤ ceiling, CONFIG_BLOAT% ≤ ceiling. Optional `--top-up` re-seeds + rebuilds. |
+| `tools/otel/seed_synthetic_traces.py` | Fixed — overlap query rewritten to drive from registry (~hundreds of rows) not static (~731k), SQL-level random sampling replaces full fetch + Python sampling. New `--prefer-registry-overlap` flag biases sampling toward triplet-eligible triples. **1.2s vs indefinite hang.** |
+
+### Tests landed (32 new)
+
+| Test file | Cases |
+|---|---:|
+| `tests/unit/agentic_core/adg/registry/test_registry_consumer_resolver.py` | 12 |
+| `tests/unit/tools/adg/test_run_three_graph_smoke_test.py` | 13 |
+| `tests/unit/tools/adg/test_backfill_edge_authority_nulls.py` | 6 |
+| `tests/unit/tools/otel/test_seed_synthetic_traces.py` (additions) | +2 |
+
+### Schema graduation flipped
+
+All 4 closed-enum columns now `NOT NULL`:
+
+| Column | Before | After |
+|---|---|---|
+| `authority` | `NULL` allowed (32 rows) | `NOT NULL` |
+| `bucket` | `NULL` allowed | `NOT NULL` |
+| `resolution_status` | `NULL` allowed | `NOT NULL` |
+| `authority_status` | `NULL` allowed | `NOT NULL` |
+
+33 dependent views recreated; 730,757 edges preserved (zero data loss).
+
+### Three-graph state after W1.future
+
+| Class | Count | Δ vs W8 close-out |
+|---|---:|---:|
+| TRIPLET_ATTESTED | **248** | +248 (was 0) |
+| REGISTRY_DRIFT | 2,825 | +2,698 |
+| DEAD_PATH | **0** | −0 (consumer twins fully attested) |
+| UNOBSERVED_CODE | 397,784 | −2,518 |
+| DYNAMIC_DISPATCH | 0 | unchanged |
+| SHADOW_CHANNEL | 0 | unchanged (P1 — never tolerated) |
+| CONFIG_BLOAT | 33 | unchanged |
+
+All 7 smoke-test checks pass:
+```
+[PASS] static_graph_non_empty           static_edges=731,005
+[PASS] registry_graph_non_empty         registry_edges=281
+[PASS] runtime_graph_non_empty          runtime_attested_rows=3,073
+[PASS] shadow_channel_zero              shadow_channel=0 (must be 0 — P1)
+[PASS] triplet_floor                    triplet_attested=248 floor=200
+[PASS] registry_drift_pct_ceiling       registry_drift_pct=0.70 ceiling=5.0
+[PASS] config_bloat_pct_ceiling         config_bloat_pct=0.01 ceiling=1.0
+```
+
+### Snapshot re-signed
+
+`adg_indexed_04292026_1606.sqlite.intoto.jsonl` re-signed after the
+schema graduation + consumer-edge lift. End-to-end DSSE Ed25519
+verification passes.
+
+### Still deferred (intentional)
+
+- **Real OTel emitter traces in production runs** — synthetic traces and
+  the three-graph smoke runner serve as the bridge today. Convert once
+  W3-migrated emitters fire from real production paths instead of test
+  fixtures.
+
 ## Definition of Done
 
 This plan is complete when:

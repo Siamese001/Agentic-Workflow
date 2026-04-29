@@ -41,6 +41,10 @@ from agentic_core.adg.registry.registry_resolvers import (  # noqa: E402
     RegistryEdge,
     resolve_all_registries,
 )
+from agentic_core.adg.registry.registry_consumer_resolver import (  # noqa: E402
+    consumer_edge_to_registry_edges,
+    resolve_all_consumer_edges,
+)
 
 
 @dataclass
@@ -49,6 +53,7 @@ class LiftStats:
     nodes_stubbed: int = 0
     edges_inserted: int = 0
     edges_skipped_duplicate: int = 0
+    consumer_edges_inserted: int = 0
     by_resolution_status: dict[str, int] = None  # type: ignore[assignment]
 
     def __post_init__(self) -> None:
@@ -112,11 +117,37 @@ def _registry_edge_exists(
     return row is not None
 
 
+def _consumer_edge_exists(
+    con: sqlite3.Connection,
+    *,
+    src_id: int,
+    dst_id: int,
+    relation_type: str,
+    bucket: str,
+    authority: str,
+) -> bool:
+    """Dedup check for consumer-edge pairs (static + registry twins)."""
+    row = con.execute(
+        """
+        SELECT 1 FROM edges
+        WHERE src_id = ?
+          AND dst_id = ?
+          AND relation_type = ?
+          AND bucket = ?
+          AND authority = ?
+        LIMIT 1
+        """,
+        (src_id, dst_id, relation_type, bucket, authority),
+    ).fetchone()
+    return row is not None
+
+
 def lift(
     *,
     static_snapshot: Path,
     dry_run: bool = False,
     edges: list[RegistryEdge] | None = None,
+    include_consumer_edges: bool = True,
 ) -> LiftStats:
     """Lift registry edges into the static snapshot.
 
@@ -125,6 +156,13 @@ def lift(
         dry_run:         if True, transaction is rolled back.
         edges:           optional pre-resolved edge list (used by tests).
                          When None, ``resolve_all_registries()`` is called.
+        include_consumer_edges:
+                         when True (default), also call
+                         ``resolve_all_consumer_edges()`` and emit
+                         (consumer, registry_anchor) twin edges
+                         (bucket='static' + bucket='registry') so the
+                         gap classifier can score them as TRIPLET_ATTESTED
+                         once the runtime bucket also attests.
     """
     if not static_snapshot.exists():
         raise FileNotFoundError(f"static snapshot not found: {static_snapshot}")
@@ -188,6 +226,57 @@ def lift(
             )
             stats.edges_inserted += 1
 
+        # Consumer edges — bucket-aware INSERT for the (static, registry)
+        # twin pairs. Each ConsumerEdge produces 2 RegistryEdges with
+        # different `bucket` values; we route to authority='static_canonical'
+        # for bucket='static' twins and authority='registry_declared' for
+        # bucket='registry' twins.
+        if include_consumer_edges:
+            consumer_edges_raw = resolve_all_consumer_edges()
+            for consumer in consumer_edges_raw:
+                twins = consumer_edge_to_registry_edges(consumer)
+                for twin in twins:
+                    src_id = _ensure_static_node(con, adg_name=twin.src_name)
+                    dst_id = _ensure_static_node(con, adg_name=twin.dst_name)
+                    authority = (
+                        "static_canonical" if twin.bucket == "static"
+                        else "registry_declared"
+                    )
+                    if _consumer_edge_exists(
+                        con,
+                        src_id=src_id,
+                        dst_id=dst_id,
+                        relation_type=twin.relation_type,
+                        bucket=twin.bucket,
+                        authority=authority,
+                    ):
+                        stats.edges_skipped_duplicate += 1
+                        continue
+                    con.execute(
+                        """
+                        INSERT INTO edges (
+                            src_id, dst_id, relation_type, edge_kind,
+                            source_file, line_no, symbol,
+                            authority, bucket, resolution_status, authority_status, evidence_refs
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            src_id,
+                            dst_id,
+                            twin.relation_type,
+                            twin.edge_kind,
+                            twin.source_file,
+                            twin.line_no,
+                            twin.symbol,
+                            authority,
+                            twin.bucket,
+                            twin.resolution_status,
+                            twin.authority_status,
+                            twin.evidence_refs_json(),
+                        ),
+                    )
+                    stats.consumer_edges_inserted += 1
+
         if dry_run:
             con.rollback()
         else:
@@ -222,6 +311,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[OK] edges_resolved          = {stats.edges_resolved}")
     print(f"[OK] nodes_stubbed           = {stats.nodes_stubbed}")
     print(f"[OK] edges_inserted          = {stats.edges_inserted}")
+    print(f"[OK] consumer_edges_inserted = {stats.consumer_edges_inserted}")
     print(f"[OK] edges_skipped_duplicate = {stats.edges_skipped_duplicate}")
     print("[OK] by_resolution_status:")
     for k in sorted(stats.by_resolution_status):

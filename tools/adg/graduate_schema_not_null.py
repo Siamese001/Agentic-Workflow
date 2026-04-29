@@ -143,6 +143,25 @@ def _build_indexes(con: sqlite3.Connection) -> list[str]:
     return [r[0] for r in rows]
 
 
+def _build_dependent_views(con: sqlite3.Connection) -> list[tuple[str, str]]:
+    """Capture (name, sql) for every view in the database.
+
+    Why ALL views, not just those that mention 'edges': SQLite views can
+    transitively depend on other views (e.g., `v_infra_violations_summary`
+    selects from `v_p0_l0_raw_execution`). Dropping only direct-dependents
+    before the rename leaves intermediate views referencing now-vanished
+    intermediate views. The clean recipe is drop-all → swap-table →
+    recreate-all. SQLite resolves view-to-object references at QUERY
+    time, so recreation order does not matter.
+    """
+    rows = con.execute(
+        "SELECT name, sql FROM sqlite_master "
+        "WHERE type='view' AND sql IS NOT NULL "
+        "ORDER BY name"
+    ).fetchall()
+    return [(r[0], r[1]) for r in rows if r[1]]
+
+
 def graduate(snapshot: Path) -> GraduationStats:
     """Perform the SQLite NOT NULL graduation. CALLER guarantees stats.status='ready'."""
     stats = assess(snapshot)
@@ -150,12 +169,17 @@ def graduate(snapshot: Path) -> GraduationStats:
         return stats  # caller already knows how to interpret 'blocked'/'already_graduated'
 
     stats.dry_run = False
-    indexes = []
     con = sqlite3.connect(str(snapshot))
     try:
         con.execute("BEGIN")
         indexes = _build_indexes(con)
+        dependent_views = _build_dependent_views(con)
         info = _column_info(con, "edges")
+
+        # Drop dependent views BEFORE rename (SQLite resolves view-to-table
+        # references at execute time; the rename would break them).
+        for view_name, _view_sql in dependent_views:
+            con.execute(f"DROP VIEW IF EXISTS {view_name}")
 
         # Build the new column definition list, applying NOT NULL to TARGET_COLUMNS.
         col_defs: list[str] = []
@@ -186,6 +210,14 @@ def graduate(snapshot: Path) -> GraduationStats:
                 con.execute(idx_sql)
             except sqlite3.OperationalError as exc:
                 stats.blockers.append(f"index recreate failed: {exc}")
+
+        # Recreate dependent views (idempotent — DROP IF EXISTS first to be safe).
+        for view_name, view_sql in dependent_views:
+            try:
+                con.execute(f"DROP VIEW IF EXISTS {view_name}")
+                con.execute(view_sql)
+            except sqlite3.OperationalError as exc:
+                stats.blockers.append(f"view recreate failed for {view_name}: {exc}")
 
         if stats.blockers:
             con.execute("ROLLBACK")

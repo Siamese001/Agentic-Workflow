@@ -1,6 +1,6 @@
 {
   "snapshot": "artifacts\\adg\\adg_indexed_04292026_1606.sqlite",
-  "timestamp": "2026-04-29T20:48:26.431170+00:00",
+  "timestamp": "2026-04-29T21:04:31.509346+00:00",
   "target_columns": [
     "bucket",
     "resolution_status",
@@ -8,25 +8,20 @@
     "authority"
   ],
   "null_counts": {
-    "bucket": 32,
-    "resolution_status": 32,
-    "authority_status": 32,
-    "authority": 32
+    "bucket": 0,
+    "resolution_status": 0,
+    "authority_status": 0,
+    "authority": 0
   },
-  "already_graduated": [],
-  "needs_graduation": [
+  "already_graduated": [
     "bucket",
     "resolution_status",
     "authority_status",
     "authority"
   ],
-  "blockers": [
-    "column 'bucket' has 32 NULL rows; backfill before graduation",
-    "column 'resolution_status' has 32 NULL rows; backfill before graduation",
-    "column 'authority_status' has 32 NULL rows; backfill before graduation",
-    "column 'authority' has 32 NULL rows; backfill before graduation"
-  ],
-  "committed": false,
-  "dry_run": true,
-  "status": "blocked"
+  "needs_graduation": [],
+  "blockers": [],
+  "committed": true,
+  "dry_run": false,
+  "status": "graduated"
 }

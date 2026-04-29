@@ -1,0 +1,62 @@
+{
+  "snapshot": "adg_indexed_04292026_1606.sqlite",
+  "snapshot_size_bytes": 682065920,
+  "timestamp_utc": "2026-04-29T22:41:35.296935+00:00",
+  "counts": {
+    "static_edges": 731005,
+    "registry_edges": 281,
+    "runtime_attested_rows": 3073
+  },
+  "gap_distribution": {
+    "triplet_attested": 248,
+    "registry_drift": 2825,
+    "dead_path": 0,
+    "unobserved_code": 397784,
+    "dynamic_dispatch": 0,
+    "shadow_channel": 0,
+    "config_bloat": 33,
+    "total": 400890
+  },
+  "top_up": {
+    "applied": false,
+    "traces_added": 0
+  },
+  "checks": [
+    {
+      "name": "static_graph_non_empty",
+      "passed": true,
+      "detail": "static_edges=731005"
+    },
+    {
+      "name": "registry_graph_non_empty",
+      "passed": true,
+      "detail": "registry_edges=281"
+    },
+    {
+      "name": "runtime_graph_non_empty",
+      "passed": true,
+      "detail": "runtime_attested_rows=3073"
+    },
+    {
+      "name": "shadow_channel_zero",
+      "passed": true,
+      "detail": "shadow_channel=0 (must be 0 \u2014 P1)"
+    },
+    {
+      "name": "triplet_floor",
+      "passed": true,
+      "detail": "triplet_attested=248 floor=200"
+    },
+    {
+      "name": "registry_drift_pct_ceiling",
+      "passed": true,
+      "detail": "registry_drift_pct=0.70 ceiling=5.0"
+    },
+    {
+      "name": "config_bloat_pct_ceiling",
+      "passed": true,
+      "detail": "config_bloat_pct=0.01 ceiling=1.0"
+    }
+  ],
+  "overall_passed": true
+}

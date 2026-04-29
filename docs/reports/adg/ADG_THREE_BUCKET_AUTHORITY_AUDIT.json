@@ -377,5 +377,45 @@
       "real_otel_emitter_traces_in_production": "synthetic traces unblock pipeline today; replace with real production OTel spans once W3-migrated emitters run in execution paths.",
       "schema_not_null_graduation_flip": "32 NULL rows remain in closed-enum columns; graduation script ready, advisory readiness gate ships. Flip after the 4-week green window."
     }
+  },
+  "post_remediation_w1_future_2026_04_29_evening": {
+    "plan": ".windsurf/plans/three-bucket-gap-remediation-069806.md",
+    "status": "Done — three deferred items closed end-to-end on snapshot adg_indexed_04292026_1606.sqlite",
+    "shipped": {
+      "registry_consumer_edge_resolver": "agentic_core/adg/registry/registry_consumer_resolver.py + tools/adg/registry_bucket_lift.py extension; emits 248 (consumer, registry_anchor) twin pairs in static+registry buckets",
+      "schema_graduation_actually_committed": "all 4 closed-enum columns (bucket / resolution_status / authority_status / authority) now NOT NULL; 33 dependent views recreated; 730k+ edges preserved",
+      "edge_authority_null_backfill": "tools/adg/backfill_edge_authority_nulls.py — fills the 32 gate_self_test NULL rows that arrived after the canonical pipeline backfill stage",
+      "three_graph_smoke_test_runner": "tools/adg/run_three_graph_smoke_test.py — unified end-to-end probe + 7 deterministic checks; the 'test script' for the three-bucket pipeline",
+      "seeder_perf_fix": "tools/otel/seed_synthetic_traces.py — overlap query rewritten to drive from registry side (281 rows) not static side (731k); SQL-level random sampling replaces fetchall()+rng.sample(); 1.2s vs indefinite hang"
+    },
+    "test_count_added": 32,
+    "test_files_added": [
+      "tests/unit/agentic_core/adg/registry/test_registry_consumer_resolver.py (12 tests)",
+      "tests/unit/tools/adg/test_run_three_graph_smoke_test.py (13 tests)",
+      "tests/unit/tools/adg/test_backfill_edge_authority_nulls.py (6 tests)",
+      "tests/unit/tools/otel/test_seed_synthetic_traces.py (+2 tests for prefer_registry_overlap mode)"
+    ],
+    "incidental_bug_fixes": {
+      "graduate_schema_view_dependency": "graduate_schema_not_null.py was dropping only views that mention 'edges' but views can transitively depend on each other (v_infra_violations_summary -> v_p0_l0_raw_execution). Fix: drop ALL views before swap, recreate ALL views after.",
+      "seed_synthetic_traces_n_squared_join": "_sample_static_edges overlap query drove from 731k static rows × index probe to small registry table — O(N×log(M)) hung indefinitely. Fix: CTE-materialize the small registry side first; SQLite uses small-side cardinality.",
+      "seed_synthetic_traces_full_table_fetch": "non-overlap path fetched ALL 731k static rows before sampling. Fix: SQL-level ORDER BY RANDOM() LIMIT N×4 caps the materialization."
+    },
+    "gap_report_state_post_w1_future": {
+      "snapshot": "adg_indexed_04292026_1606.sqlite",
+      "TRIPLET_ATTESTED": 248,
+      "REGISTRY_DRIFT": 2825,
+      "DEAD_PATH": 0,
+      "UNOBSERVED_CODE": 397784,
+      "DYNAMIC_DISPATCH": 0,
+      "SHADOW_CHANNEL": 0,
+      "CONFIG_BLOAT": 33,
+      "schema_graduated_to_not_null": true,
+      "snapshot_signed_intoto": true,
+      "snapshot_signature_verified_e2e": true,
+      "all_smoke_test_checks_pass": true
+    },
+    "still_deferred": {
+      "real_otel_emitter_traces_in_production": "synthetic traces unblock pipeline today and produce 248 TRIPLET_ATTESTED rows. Replace with real production OTel spans once W3-migrated emitters run in execution paths. Synthetic seeder + smoke test runner now serve as the bridge until real traces flow."
+    }
   }
 }

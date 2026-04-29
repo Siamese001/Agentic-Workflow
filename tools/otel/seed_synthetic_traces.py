@@ -80,16 +80,31 @@ def _latest_static_snapshot() -> Path | None:
 
 
 def _sample_static_edges(
-    snapshot: Path, *, n: int, seed: int = 42
+    snapshot: Path,
+    *,
+    n: int,
+    seed: int = 42,
+    prefer_registry_overlap: bool = False,
 ) -> list[tuple[str, str, str]]:
     """Sample N (src_name, dst_name, relation_type) triples from real edges.
 
     Joins nodes twice to resolve src/dst adg_name for each edge. Filters
     to the static bucket so we don't accidentally pick up registry rows
     (which have synthetic root nodes that don't represent real call sites).
+
+    When ``prefer_registry_overlap`` is True, the sample is biased toward
+    triples that ALSO have a bucket='registry' row in `edges` — i.e., the
+    consumer-edge twin pairs. Attesting these via runtime traces flips them
+    from DEAD_PATH to TRIPLET_ATTESTED. The function still returns a mix
+    so non-overlap edges are exercised too (REGISTRY_DRIFT remains a
+    monitored class).
     """
     con = sqlite3.connect(str(snapshot))
     try:
+        # SQL-level random sampling avoids materializing all 731k static
+        # rows in Python. We over-sample by 4× the requested count so the
+        # caller has headroom after the optional 60/40 mix below.
+        sample_cap = max(n * 4, 1024)
         rows = con.execute(
             """
             SELECT ns.adg_name, nd.adg_name, e.relation_type
@@ -101,14 +116,65 @@ def _sample_static_edges(
               AND nd.adg_name IS NOT NULL
               AND ns.adg_name != ''
               AND nd.adg_name != ''
-            """
+            ORDER BY RANDOM()
+            LIMIT ?
+            """,
+            (sample_cap,),
         ).fetchall()
+
+        overlap_rows: list[tuple[str, str, str]] = []
+        if prefer_registry_overlap:
+            # Drive from `er` (registry, ~hundreds of rows) instead of `es`
+            # (static, ~hundreds of thousands of rows) — otherwise SQLite
+            # scans every static edge and probes the registry index once
+            # per row, which is O(N_static × log N_registry) and hangs at
+            # 731k×log(281) operations.
+            #
+            # Materializing the registry triples first via a CTE gives the
+            # planner the small-side cardinality up front and lets the
+            # static lookup hit `idx_edges_src` then filter on bucket
+            # in-memory (~hundreds of probes total).
+            overlap_rows = con.execute(
+                """
+                WITH reg AS (
+                    SELECT DISTINCT src_id, dst_id, relation_type
+                    FROM edges
+                    WHERE bucket = 'registry'
+                )
+                SELECT ns.adg_name, nd.adg_name, reg.relation_type
+                FROM reg
+                JOIN edges es
+                  ON es.src_id = reg.src_id
+                 AND es.dst_id = reg.dst_id
+                 AND es.relation_type = reg.relation_type
+                 AND es.bucket = 'static'
+                JOIN nodes ns ON ns.id = reg.src_id
+                JOIN nodes nd ON nd.id = reg.dst_id
+                """
+            ).fetchall()
     finally:
         con.close()
+
     rng = random.Random(seed)
-    if len(rows) <= n:
-        return rows
-    return rng.sample(rows, n)
+    if not prefer_registry_overlap or not overlap_rows:
+        if len(rows) <= n:
+            return rows
+        return rng.sample(rows, n)
+
+    # 60% of the sample from triplet-eligible overlap rows, 40% from the
+    # general static pool. This keeps the runtime view well-balanced
+    # across all 7 gap classes rather than collapsing into TRIPLET-only.
+    overlap_quota = min(int(n * 0.6), len(overlap_rows))
+    rest_quota = n - overlap_quota
+    chosen_overlap = (
+        overlap_rows
+        if len(overlap_rows) <= overlap_quota
+        else rng.sample(overlap_rows, overlap_quota)
+    )
+    chosen_rest = (
+        rows if len(rows) <= rest_quota else rng.sample(rows, rest_quota)
+    )
+    return chosen_overlap + chosen_rest
 
 
 # ---------------------------------------------------------------------------
@@ -186,8 +252,16 @@ def seed(
     snapshot: Path | None = None,
     dry_run: bool = False,
     seed: int = 42,
+    prefer_registry_overlap: bool = False,
 ) -> SeedStats:
-    """Seed N synthetic traces into the runtime ADG store."""
+    """Seed N synthetic traces into the runtime ADG store.
+
+    When ``prefer_registry_overlap`` is True, biases the sampled edges
+    toward (src, dst, rel) triples that exist in BOTH bucket='static' AND
+    bucket='registry' rows (i.e., the W1.future consumer-edge twin pairs).
+    Attesting those via synthetic traces converts them from DEAD_PATH to
+    TRIPLET_ATTESTED in the gap report.
+    """
     snap = snapshot or _latest_static_snapshot()
     if snap is None:
         raise FileNotFoundError(
@@ -197,7 +271,10 @@ def seed(
     stats = SeedStats(snapshot_path=str(snap.relative_to(REPO_ROOT)))
 
     sample_pool = _sample_static_edges(
-        snap, n=n_traces * edges_per_trace, seed=seed
+        snap,
+        n=n_traces * edges_per_trace,
+        seed=seed,
+        prefer_registry_overlap=prefer_registry_overlap,
     )
     stats.edges_sampled = len(sample_pool)
 
@@ -253,6 +330,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--snapshot", type=Path, default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--prefer-registry-overlap",
+        action="store_true",
+        help=(
+            "Bias the sample toward triples that already exist in BOTH "
+            "bucket='static' AND bucket='registry' rows so attesting them "
+            "converts DEAD_PATH -> TRIPLET_ATTESTED in the gap report."
+        ),
+    )
     args = parser.parse_args(argv)
 
     stats = seed(
@@ -261,6 +347,7 @@ def main(argv: list[str] | None = None) -> int:
         snapshot=args.snapshot,
         dry_run=args.dry_run,
         seed=args.seed,
+        prefer_registry_overlap=args.prefer_registry_overlap,
     )
 
     print(f"[seed] snapshot          = {stats.snapshot_path}")

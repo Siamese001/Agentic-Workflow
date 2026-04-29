@@ -2,7 +2,7 @@
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
   "advisory_mode": false,
-  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5406\\popen-gw13\\test_gate_passes_when_clean0\\clean.sqlite",
+  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5410\\popen-gw23\\test_gate_passes_when_clean0\\clean.sqlite",
   "status": "ready",
   "needs_graduation": [
     "bucket",
@@ -18,5 +18,5 @@
     "authority": 0
   },
   "blockers": [],
-  "timestamp": "2026-04-29T20:51:41.240513+00:00"
+  "timestamp": "2026-04-29T22:43:12.630219+00:00"
 }
