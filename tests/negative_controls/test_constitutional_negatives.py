@@ -52,26 +52,18 @@ PRE_RUN_NEGATIVES: list[NegativeCase] = [
         case_id="powershell_exe_with_path",
         gate=PRE_RUN_GATE,
         stdin_payload={
-            "command_line": (
-                "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile"
-            )
+            "command_line": ("C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile")
         },
     ),
     NegativeCase(
         case_id="python_dash_c_escaped_triple_quote",
         gate=PRE_RUN_GATE,
-        stdin_payload={
-            "command_line": (
-                'python -c "import re; pat=r\\"\\"\\"x\\"\\"\\"; print(pat)"'
-            )
-        },
+        stdin_payload={"command_line": ('python -c "import re; pat=r\\"\\"\\"x\\"\\"\\"; print(pat)"')},
     ),
     NegativeCase(
         case_id="python_dash_c_escaped_dquote",
         gate=PRE_RUN_GATE,
-        stdin_payload={
-            "command_line": 'python -c "print(\\"hi\\")"'
-        },
+        stdin_payload={"command_line": 'python -c "print(\\"hi\\")"'},
     ),
     NegativeCase(
         case_id="pipe_to_more",
@@ -169,9 +161,7 @@ LIVE_REPO_NEGATIVES: list[NegativeCase] = [
 # Combined suite — pytest parametrization.
 # -------------------------------------------------------------------------
 
-ALL_NEGATIVES: list[NegativeCase] = (
-    PRE_RUN_NEGATIVES + RUNTIME_TRACE_NEGATIVES + LIVE_REPO_NEGATIVES
-)
+ALL_NEGATIVES: list[NegativeCase] = PRE_RUN_NEGATIVES + RUNTIME_TRACE_NEGATIVES + LIVE_REPO_NEGATIVES
 
 
 @pytest.mark.parametrize("case", ALL_NEGATIVES, ids=lambda c: c.case_id)

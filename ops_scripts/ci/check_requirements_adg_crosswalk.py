@@ -55,8 +55,7 @@ def main() -> int:
         rc = 1
 
     unresolved = [
-        o for o in crosswalk["obligations"]
-        if not o["gate_script_resolved"] or o["unresolved_test_ids"]
+        o for o in crosswalk["obligations"] if not o["gate_script_resolved"] or o["unresolved_test_ids"]
     ]
     if unresolved:
         print("❌ unresolved obligations:")

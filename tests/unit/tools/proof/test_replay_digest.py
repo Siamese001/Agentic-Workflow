@@ -28,11 +28,7 @@ class TestDeterminism:
 
     def test_gate_decision_order_does_not_matter(self) -> None:
         d1 = compute_digest(**_basic())
-        d2 = compute_digest(
-            **_basic(
-                gate_decisions=[("gate_b", "pass"), ("gate_a", "pass")]
-            )
-        )
+        d2 = compute_digest(**_basic(gate_decisions=[("gate_b", "pass"), ("gate_a", "pass")]))
         assert d1 == d2, "gate_decisions must be order-invariant"
 
     def test_evidence_packet_order_does_not_matter(self) -> None:
@@ -47,9 +43,7 @@ class TestDeterminism:
 
     def test_dict_form_of_gate_decisions(self) -> None:
         d_pairs = compute_digest(**_basic())
-        d_dict = compute_digest(
-            **_basic(gate_decisions={"gate_a": "pass", "gate_b": "pass"})
-        )
+        d_dict = compute_digest(**_basic(gate_decisions={"gate_a": "pass", "gate_b": "pass"}))
         assert d_pairs == d_dict
 
 
@@ -61,11 +55,7 @@ class TestSensitivity:
 
     def test_gate_verdict_change_changes_digest(self) -> None:
         d1 = compute_digest(**_basic())
-        d2 = compute_digest(
-            **_basic(
-                gate_decisions=[("gate_a", "fail"), ("gate_b", "pass")]
-            )
-        )
+        d2 = compute_digest(**_basic(gate_decisions=[("gate_a", "fail"), ("gate_b", "pass")]))
         assert d1 != d2
 
     def test_evidence_packet_change_changes_digest(self) -> None:

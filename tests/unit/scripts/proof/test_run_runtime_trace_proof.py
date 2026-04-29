@@ -64,12 +64,15 @@ class TestRunProofNegativeControl:
         # Patch in BOTH the source module (canary_emitter) and the
         # re-export at the package surface — run_proof imports from the
         # latter, but unittest.mock can only resolve the actual lookup.
-        with patch(
-            "agentic_core.L6_observability.runtime_trace.canary_emitter.build_canary_lic_spans",
-            side_effect=_truncated,
-        ), patch(
-            "agentic_core.L6_observability.runtime_trace.build_canary_lic_spans",
-            side_effect=_truncated,
+        with (
+            patch(
+                "agentic_core.L6_observability.runtime_trace.canary_emitter.build_canary_lic_spans",
+                side_effect=_truncated,
+            ),
+            patch(
+                "agentic_core.L6_observability.runtime_trace.build_canary_lic_spans",
+                side_effect=_truncated,
+            ),
         ):
             result = run_proof(contract_id="canary.lic.v1")
 
@@ -86,18 +89,14 @@ class TestMainCli:
         out = capsys.readouterr().out
         assert "PASS" in out
 
-    def test_main_returns_two_on_missing_contract(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_main_returns_two_on_missing_contract(self, capsys: pytest.CaptureFixture) -> None:
         rc = main(["--contract", "nope.does.not.exist.v1"])
         assert rc == 2
         out = capsys.readouterr().out
         assert "FAIL" in out
         assert "contract_load_failed" in out
 
-    def test_main_json_emits_valid_json(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_main_json_emits_valid_json(self, capsys: pytest.CaptureFixture) -> None:
         import json as _json
 
         rc = main(["--contract", "canary.lic.v1", "--json"])

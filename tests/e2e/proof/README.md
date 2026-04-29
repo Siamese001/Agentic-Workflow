@@ -21,28 +21,28 @@ This package owns **acceptance proof**, not runtime authority.
 
 ```bash
 # Full E2E proof suite
-python -m tests.e2e.run_agentic_runtime_proof --scenario-set all \
+python -m tests.e2e.harnesses.run_agentic_runtime_proof --scenario-set all \
     --emit-proof-bundle artifacts/e2e/latest
 
 # Golden path only
-python -m tests.e2e.run_agentic_runtime_proof --scenario GP-001 \
+python -m tests.e2e.harnesses.run_agentic_runtime_proof --scenario GP-001 \
     --emit-proof-bundle artifacts/e2e/gp_001
 
 # Route coverage
-python -m tests.e2e.run_route_coverage_proof --all-routes \
+python -m tests.e2e.harnesses.run_route_coverage_proof --all-routes \
     --emit-proof-bundle artifacts/e2e/routes
 
 # Per-axis validators (consume an existing bundle)
-python -m tests.e2e.validate_trace_tree     --proof-bundle artifacts/e2e/latest --strict
-python -m tests.e2e.validate_replay         --proof-bundle artifacts/e2e/latest --strict
-python -m tests.e2e.validate_no_bypass      --proof-bundle artifacts/e2e/latest --strict
-python -m tests.e2e.validate_grounded_output --proof-bundle artifacts/e2e/latest --strict
+python -m tests.e2e.validators.validate_trace_tree     --proof-bundle artifacts/e2e/latest --strict
+python -m tests.e2e.validators.validate_replay         --proof-bundle artifacts/e2e/latest --strict
+python -m tests.e2e.validators.validate_no_bypass      --proof-bundle artifacts/e2e/latest --strict
+python -m tests.e2e.validators.validate_grounded_output --proof-bundle artifacts/e2e/latest --strict
 ```
 
 ## Pytest
 
 ```bash
-python -m pytest tests/e2e/test_runtime_proof_harness.py -v
+python -m pytest tests/e2e/suites/test_runtime_proof_harness.py -v
 ```
 
 39 tests, < 2 seconds. Covers:

@@ -1,7 +1,7 @@
 """Runner: route coverage proof (per 99.8 §3 and 99.2).
 
 Usage:
-    python -m tests.e2e.run_route_coverage_proof --all-routes \
+    python -m tests.e2e.harnesses.run_route_coverage_proof --all-routes \
         --emit-proof-bundle artifacts/e2e/routes
 """
 
@@ -11,13 +11,13 @@ import argparse
 import sys
 from pathlib import Path
 
-from .proof.bundle import E2EProofBundle, now_iso, repo_commit, write_bundle
-from .proof.contracts import ProofStatus
-from .proof.digests import digest, short_id
-from .proof.runner import run_scenario
-from .proof.scenarios import route_coverage_scenarios
-from .proof.validators import validate_route_coverage
-from .proof.harness import emit_run
+from ..proof.bundle import E2EProofBundle, now_iso, repo_commit, write_bundle
+from ..proof.contracts import ProofStatus
+from ..proof.digests import digest, short_id
+from ..proof.runner import run_scenario
+from ..proof.scenarios import route_coverage_scenarios
+from ..proof.validators import validate_route_coverage
+from ..proof.harness import emit_run
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

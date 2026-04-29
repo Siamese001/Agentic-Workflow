@@ -16,6 +16,11 @@
 
  [DECODER] Models (Generative Planning, Reasoning, Tool-Calling, Evaluation)
    ► Produces 🔶 gen_text      (natural language, plans, judgments, tool proposals)
+
+ [00D] EVAL PRIMITIVES (LLM-as-Judge, Deterministic Validators, Schema Checkers)
+   ► Emits scorecard / critique / judge evidence
+   ► Primary placement: 05 Exit | Light use: 00C, L2 | Post-run: 06 L6
+   ► Does NOT route, execute, approve by itself, or write to L4
  ----------------------------------------------------------------------------------------------------------------------
 ========================================================================================================================
 
@@ -26,6 +31,7 @@
 
 [ 00C RUNTIME GATES ] ──────────────────────────────────────────────────────────────────────────────────────────────────
  │ Emits GateVerdict. UNKNOWN is never PASS. Does not emit final X3 or write L4.
+ │ • May invoke 00D judge for live gate evidence, but gates emit GateVerdict, not final X3
  ▼
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -105,14 +111,21 @@
 │  - Heal repository = approved repair menu for this agent/tool/route                                                  │
 │  - Heal function = live same-authority repair governor for this failure                                              │
 │  - Cannot heal missing authority, blocked ACL, policy conflict, route mismatch, stale policy, or HITL need           │
+│                                                                                                                      │
+│ • Optional local critique (00D) before E5 Seal, same-authority only, no approval power                               │
 └───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
         │ [sealed artifacts / proposed_state_diff if any]
         ▼
 ┌───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 5. EXIT EVAL & CONTROL                                                          [DECODER] 🔶 gen_text (Output Grade) │
 │                                                                         [ENCODER] 🔵 intent vector vs 🟠 fact vector │
-│ - Final policy & safety review                                                    (Semantic Safety Checks)           │
-│ - X1 checks sealed result                                                                                            │
+│ ★ LLM-AS-JUDGE PRIMARY LIVE USE (00D)                                             (Semantic Safety Checks)           │
+│   • Scores candidate against rubric, evidence, schema, safety, false-confidence, citation integrity                  │
+│   • Emits judge scorecard as X1 evidence; X3 owns final disposition                                                  │
+│   • Does not retrieve, execute, route, approve by itself, or write L4                                                │
+│                                                                                                                      │
+│ - Final policy & safety review                                                                                       │
+│ - X1 checks sealed result (incorporates Judge Scorecard)                                                             │
 │ - X2 aggregates verdicts                                                                                             │
 │ - X3 emits exactly one outcome                                                                                       │
 │ - ★ Gate: output/replay/write                                                                                        │
@@ -146,6 +159,7 @@
 │ 6. L6 SHADOW LEARNING                                                                    [DECODER] 🔶 gen_text (RCA) │
 │                                                                                  [ENCODER] 🟢 graph_sig (Clustering) │
 │ - Completed-run eval only                                                                                            │
+│ - May reuse judge (00D) for post-run grading, RCA, calibration, and future-run proposals only                        │
 │ - RCA / drift / calibration                                                                                          │
 │ - Future-run proposals                                                                                               │
 │ - Sends promotion request to UWG                                                                                     │

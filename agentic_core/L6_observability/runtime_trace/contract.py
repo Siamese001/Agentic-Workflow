@@ -40,9 +40,7 @@ _LAYER_RANK: Mapping[str, int] = {
 }
 
 # Default registry root. Tests may override.
-_DEFAULT_CONTRACT_ROOT = (
-    Path(__file__).resolve().parents[3] / "config" / "runtime_trace" / "contracts"
-)
+_DEFAULT_CONTRACT_ROOT = Path(__file__).resolve().parents[3] / "config" / "runtime_trace" / "contracts"
 
 
 class ContractValidationError(Exception):
@@ -86,8 +84,8 @@ class RuntimeTraceContract:
 class Violation:
     """A single contract violation found in a trace."""
 
-    kind: str          # e.g., "missing_span", "wrong_parent", "cross_layer_skip"
-    detail: str        # human-readable specifics
+    kind: str  # e.g., "missing_span", "wrong_parent", "cross_layer_skip"
+    detail: str  # human-readable specifics
     span_name: str | None = None
 
 
@@ -128,34 +126,24 @@ def load_contract(
     filename = contract_id.replace(".", "_") + ".yaml"
     path = registry_root / filename
     if not path.is_file():
-        raise FileNotFoundError(
-            f"runtime_trace_contract_unresolved: {contract_id} "
-            f"(expected {path})"
-        )
+        raise FileNotFoundError(f"runtime_trace_contract_unresolved: {contract_id} (expected {path})")
 
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
-        raise ContractValidationError(
-            f"contract {contract_id}: invalid YAML: {exc}"
-        ) from exc
+        raise ContractValidationError(f"contract {contract_id}: invalid YAML: {exc}") from exc
 
     if not isinstance(raw, dict):
-        raise ContractValidationError(
-            f"contract {contract_id}: top-level must be a mapping"
-        )
+        raise ContractValidationError(f"contract {contract_id}: top-level must be a mapping")
 
     if raw.get("contract_id") != contract_id:
         raise ContractValidationError(
-            f"contract_id mismatch: file declares "
-            f"{raw.get('contract_id')!r}, requested {contract_id!r}"
+            f"contract_id mismatch: file declares {raw.get('contract_id')!r}, requested {contract_id!r}"
         )
 
     version = raw.get("version")
     if version != 1:
-        raise ContractValidationError(
-            f"contract {contract_id}: unsupported version {version!r} (only 1)"
-        )
+        raise ContractValidationError(f"contract {contract_id}: unsupported version {version!r} (only 1)")
 
     return RuntimeTraceContract(
         contract_id=contract_id,
@@ -172,19 +160,14 @@ def _parse_required_span(raw: Mapping[str, Any]) -> RequiredSpan:
     name = raw.get("name")
     layer = raw.get("layer")
     if not isinstance(name, str) or not isinstance(layer, str):
-        raise ContractValidationError(
-            f"required_spans entry missing name/layer: {raw!r}"
-        )
+        raise ContractValidationError(f"required_spans entry missing name/layer: {raw!r}")
     if layer not in _LAYER_RANK:
         raise ContractValidationError(
-            f"span {name!r}: unknown layer {layer!r} "
-            f"(expected one of {sorted(_LAYER_RANK)})"
+            f"span {name!r}: unknown layer {layer!r} (expected one of {sorted(_LAYER_RANK)})"
         )
     parent = raw.get("parent")
     if parent is not None and not isinstance(parent, str):
-        raise ContractValidationError(
-            f"span {name!r}: parent must be string or null"
-        )
+        raise ContractValidationError(f"span {name!r}: parent must be string or null")
     return RequiredSpan(
         name=name,
         layer=layer,
@@ -199,14 +182,11 @@ def _parse_required_edge(raw: Mapping[str, Any]) -> RequiredEdge:
     to_span = raw.get("to")
     kind = raw.get("kind")
     if not (isinstance(from_span, str) and isinstance(to_span, str) and isinstance(kind, str)):
-        raise ContractValidationError(
-            f"required_edges entry malformed: {raw!r}"
-        )
+        raise ContractValidationError(f"required_edges entry malformed: {raw!r}")
     valid_kinds = {"parent_child", "writes_to", "flows_to", "emits_side_effect"}
     if kind not in valid_kinds:
         raise ContractValidationError(
-            f"edge {from_span}->{to_span}: unknown kind {kind!r} "
-            f"(expected one of {sorted(valid_kinds)})"
+            f"edge {from_span}->{to_span}: unknown kind {kind!r} (expected one of {sorted(valid_kinds)})"
         )
     return RequiredEdge(from_span=from_span, to_span=to_span, kind=kind)
 
@@ -244,17 +224,14 @@ def validate_trace(
     for req in contract.required_spans:
         actual = by_name.get(req.name)
         if actual is None:
-            violations.append(
-                Violation("missing_span", f"required span {req.name!r} not found", req.name)
-            )
+            violations.append(Violation("missing_span", f"required span {req.name!r} not found", req.name))
             continue
         actual_layer = actual.get("layer")
         if actual_layer != req.layer:
             violations.append(
                 Violation(
                     "wrong_layer",
-                    f"span {req.name!r}: expected layer {req.layer!r}, "
-                    f"got {actual_layer!r}",
+                    f"span {req.name!r}: expected layer {req.layer!r}, got {actual_layer!r}",
                     req.name,
                 )
             )
@@ -263,8 +240,7 @@ def validate_trace(
             violations.append(
                 Violation(
                     "wrong_parent",
-                    f"span {req.name!r}: expected parent {req.parent!r}, "
-                    f"got {actual_parent!r}",
+                    f"span {req.name!r}: expected parent {req.parent!r}, got {actual_parent!r}",
                     req.name,
                 )
             )
@@ -274,8 +250,7 @@ def validate_trace(
                 violations.append(
                     Violation(
                         "missing_attribute",
-                        f"span {req.name!r}: missing required attribute "
-                        f"{required_attr!r}",
+                        f"span {req.name!r}: missing required attribute {required_attr!r}",
                         req.name,
                     )
                 )
@@ -292,8 +267,7 @@ def validate_trace(
                 violations.append(
                     Violation(
                         "missing_edge",
-                        f"parent_child edge {req_edge.from_span} -> "
-                        f"{req_edge.to_span} not present",
+                        f"parent_child edge {req_edge.from_span} -> {req_edge.to_span} not present",
                         req_edge.from_span,
                     )
                 )
@@ -350,7 +324,9 @@ def validate_trace(
 
 
 def _has_semantic_edge(
-    edges: Sequence[Mapping[str, Any]], to_span: str, kind: str,
+    edges: Sequence[Mapping[str, Any]],
+    to_span: str,
+    kind: str,
 ) -> bool:
     for edge in edges:
         if edge.get("to") == to_span and edge.get("kind") == kind:
@@ -407,23 +383,19 @@ def _check_direct_l4_write(spans: Sequence[Mapping[str, Any]]) -> list[Violation
         # The UWG span itself is the canonical write boundary; it does not
         # need a UWG parent.
         own_name = span.get("name") or ""
-        if isinstance(own_name, str) and (
-            own_name.startswith("uwg.") or attrs.get("uwg") is True
-        ):
+        if isinstance(own_name, str) and (own_name.startswith("uwg.") or attrs.get("uwg") is True):
             continue
         # L4 writes must have a parent that is a UWG span.
         parent_name = span.get("parent_name") or ""
         parent = by_name.get(parent_name)
-        is_uwg = (
-            parent_name.startswith("uwg.")
-            or (parent is not None and (parent.get("attributes") or {}).get("uwg") is True)
+        is_uwg = parent_name.startswith("uwg.") or (
+            parent is not None and (parent.get("attributes") or {}).get("uwg") is True
         )
         if not is_uwg:
             out.append(
                 Violation(
                     "direct_l4_write_outside_uwg",
-                    f"L4 write span {span.get('name')!r} has non-UWG parent "
-                    f"{parent_name!r}",
+                    f"L4 write span {span.get('name')!r} has non-UWG parent {parent_name!r}",
                     span.get("name"),
                 )
             )
@@ -445,15 +417,12 @@ def _check_swallowed_exception(spans: Sequence[Mapping[str, Any]]) -> list[Viola
         if span.get("status") != "error":
             continue
         siblings = by_parent.get(span.get("parent_name"), [])
-        has_recover = any(
-            (sib.get("name") or "").startswith("recover.") for sib in siblings
-        )
+        has_recover = any((sib.get("name") or "").startswith("recover.") for sib in siblings)
         if not has_recover:
             out.append(
                 Violation(
                     "swallowed_exception",
-                    f"span {span.get('name')!r} status=error with no "
-                    f"recover.* sibling",
+                    f"span {span.get('name')!r} status=error with no recover.* sibling",
                     span.get("name"),
                 )
             )

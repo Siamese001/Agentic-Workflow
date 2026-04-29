@@ -204,7 +204,13 @@ class GapClosureEngine(BaseRGEngine):
         mission.get("job_description_keywords", [])
         self._mcp_audit("k9_generation_start")
         job_description = mission.get("job_description", "")
-        skill_analysis = self.skill_extractor(job_description, enrichment)
+        # Bug fix (2026-04-28): SkillExtractorNode._extract_skills_from_profile
+        # expects a candidate profile with shape {experience, skills, summary,
+        # education} — the master_resume shape, not the HOP2 enrichment shape.
+        # Passing enrichment yielded 0 skills extracted → 0% match → CRITICAL
+        # gap on every run. Prefer master_resume; fall back to enrichment.
+        candidate_profile = mission.get("master_resume") or enrichment
+        skill_analysis = self.skill_extractor(job_description, candidate_profile)
         gap_skills = skill_analysis.gap_result.missing_skills[:6]
         competencies = self._generate_competencies(gap_skills)
         if len(competencies) != 6:

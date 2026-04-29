@@ -127,15 +127,11 @@ class TestSnapshotToSpans:
             edges=(
                 RuntimeADGEdge(src_id="__root__", dst_id="a", relation="parent_child"),
                 # write_edge dst is NOT a span_id - keep as literal string.
-                RuntimeADGEdge(
-                    src_id="a", dst_id="external.kafka.topic", relation="write_edge"
-                ),
+                RuntimeADGEdge(src_id="a", dst_id="external.kafka.topic", relation="write_edge"),
             ),
         )
         spans = snapshot_to_spans(snap)
-        assert spans[0]["edges"] == [
-            {"to": "external.kafka.topic", "kind": "writes_to"}
-        ]
+        assert spans[0]["edges"] == [{"to": "external.kafka.topic", "kind": "writes_to"}]
 
     def test_dependency_translated_to_flows_to(self) -> None:
         snap = create_runtime_adg_snapshot(
@@ -175,9 +171,7 @@ class TestSnapshotToSpans:
         )
         spans = snapshot_to_spans(snap)
         for s in spans:
-            assert all(
-                e.get("kind") != "temporal_sequence" for e in s["edges"]
-            )
+            assert all(e.get("kind") != "temporal_sequence" for e in s["edges"])
 
     def test_unknown_edge_kind_passed_through(self) -> None:
         snap = create_runtime_adg_snapshot(
@@ -188,15 +182,11 @@ class TestSnapshotToSpans:
             nodes=(_node(node_id="a", name="src"),),
             edges=(
                 RuntimeADGEdge(src_id="__root__", dst_id="a", relation="parent_child"),
-                RuntimeADGEdge(
-                    src_id="a", dst_id="other-target", relation="custom_relation"
-                ),
+                RuntimeADGEdge(src_id="a", dst_id="other-target", relation="custom_relation"),
             ),
         )
         spans = snapshot_to_spans(snap)
-        assert spans[0]["edges"] == [
-            {"to": "other-target", "kind": "custom_relation"}
-        ]
+        assert spans[0]["edges"] == [{"to": "other-target", "kind": "custom_relation"}]
 
     def test_status_carries_through(self) -> None:
         snap = create_runtime_adg_snapshot(

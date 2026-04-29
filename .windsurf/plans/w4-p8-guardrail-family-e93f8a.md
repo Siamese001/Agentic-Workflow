@@ -17,6 +17,43 @@ W1 P8.01 (catalog & ADR) executed against ADG snapshot `adg_indexed_04282026_215
 
 ADG_GRAPH_LAYER_EVIDENCE section below populated. Subsequent W2–W6 phases now have a real starting point.
 
+## ADG_HOTSPOT_REPORT
+
+| Rank | Module | Layer | fan_in | Archetype | Surface Reference | Impact |
+|---:|---|:---:|---:|---|---|---:|
+| 1 | `L5_safety/runtime_gates/types.py` | L5 | 198 | CENTRAL_DEPENDENCY | Security Surface | High |
+| 2 | `L5_safety/v5/__init__.py` | L5 | 115 | ORCHESTRATOR | Security Surface | High |
+| 3 | `L5_safety/types/cst_transformers_types.py` | L5 | 107 | CENTRAL_DEPENDENCY | State Surface | Medium |
+| 4 | `L5_safety/config/structure_blueprint/__init__.py` | L5 | 106 | CENTRAL_DEPENDENCY | State Surface | Medium |
+| 5 | `L5_safety/v5/types.py` | L5 | 103 | CENTRAL_DEPENDENCY | Security Surface | Medium |
+| 6 | `L5_safety/config/structure_blueprint/ssot.py` | L5 | 80 | STATE_NODE | State Surface | Medium |
+| 7 | `L5_safety/runtime_gates/__init__.py` | L5 | 61 | SAFETY_GATEKEEPER | Security Surface | High |
+| 8 | `L5_safety/adapters/human_approval_adapter.py` | L5 | 50 | SAFETY_GATEKEEPER | Security Surface | High |
+| 9 | `L5_safety/enforcement/ingress_envelope_check.py` | L5 | 49 | SAFETY_GATEKEEPER | Security Surface | High |
+| 10 | `L5_safety/runtime_gates/base.py` | L5 | 48 | SAFETY_GATEKEEPER | Security Surface | High |
+
+Top hotspots cluster under G01 (runtime_gates), G14 (config blueprint), G16 (v5), and G02 (approval adapters) — these drive Wave 2 and Wave 5 prioritization.
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+**Materialized views consulted (≥3, per constitutional §22):**
+
+1. **`mv_hotspot_centrality`** (filtered to `layer = 'L5'`) — produced the top-10 hotspot table above. Used to rank G01 (runtime_gates) ahead of G16 (v5) for Wave 2 because fan_in=198 (gates/types) dominates fan_in=115 (v5/__init__).
+2. **`mv_authority_boundary_breaches`** — confirmed L5 has no authority-boundary breaches (all 17 attribute to `L_APP→core` from `apps_shared/proof/scenario_base.py`, not L5). L5 cleanup does not interact with the L0 burndown.
+3. **`mv_hitl_reclearance_gaps`** — surfaces missing HITL reclearance flows for high-fan-in safety gatekeepers. Drives the G02 (layered guardrail banks) phase ordering — `human_approval_adapter.py` is fan_in=50 and is the closest module to a reclearance gap.
+
+**Semantic edges used (beyond `imports`):**
+- `flows_to` — for tracing how guardrail decisions reach UWG commit paths
+- `controls_flow` — for identifying SAFETY_GATEKEEPER nodes (top 4/10 hotspots)
+- `emits_side_effect` — for distinguishing G09 (audit emission) from G12 (enforcement chokepoint)
+
+**P-views cross-referenced:**
+- `v_p0_write_bypass_uwg` — empty (0 rows) → confirms no L5 module is bypassing UWG, so G06 permission ladder work is greenfield rather than retrofit
+- `v_p2_duplicated_adapters` — surfaces approval adapter duplication candidates for G02 consolidation
+- `v_p3_isolated_experimental` — flags red-team modules (G11) that may be safe to merge under W6 P8.11
+
+ADG snapshot: `adg_indexed_04282026_2152.sqlite`. Inventory CSV: `docs/reports/maintenance/l5_guardrail_family_catalog.csv` (447 modules, 100% classified).
+
 ## Context
 
 The Backlog Snapshot regenerated 2026-04-28 surfaced **14 of the top 25 open P1 items** as members of the **W4 P8.x guardrail family** — a coherent L5 security/write architecture decomposition that has accumulated as separate Notion rows but constitutes one architectural deliverable.

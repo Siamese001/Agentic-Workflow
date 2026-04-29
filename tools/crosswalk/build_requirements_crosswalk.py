@@ -109,22 +109,16 @@ def _find_duplicate_ids(rows: list[ResolvedObligation]) -> list[str]:
     return sorted(rid for rid, n in seen.items() if n > 1)
 
 
-def write_crosswalk(
-    crosswalk: dict[str, Any], output_path: Path = DEFAULT_OUTPUT
-) -> None:
+def write_crosswalk(crosswalk: dict[str, Any], output_path: Path = DEFAULT_OUTPUT) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(crosswalk, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    output_path.write_text(json.dumps(crosswalk, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--registry", default=str(DEFAULT_REGISTRY))
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
-    parser.add_argument(
-        "--no-write", action="store_true", help="Validate only; do not write artifact."
-    )
+    parser.add_argument("--no-write", action="store_true", help="Validate only; do not write artifact.")
     args = parser.parse_args(argv)
 
     try:

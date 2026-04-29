@@ -40,8 +40,7 @@ class TestPassesOnLiveConfig:
         """The current repo's hooks.json + mcp_config.json must pass §27."""
         result = _run_gate(REPO_ROOT)
         assert result.returncode == 0, (
-            f"live config rejected; stdout={result.stdout!r}, "
-            f"stderr={result.stderr!r}"
+            f"live config rejected; stdout={result.stdout!r}, stderr={result.stderr!r}"
         )
 
 
@@ -69,9 +68,7 @@ class TestRejectsUnknownFieldInHooks:
                 }
             ]
         }
-        (fake_repo / ".windsurf" / "hooks.json").write_text(
-            json.dumps(tampered, indent=2), encoding="utf-8"
-        )
+        (fake_repo / ".windsurf" / "hooks.json").write_text(json.dumps(tampered, indent=2), encoding="utf-8")
         # Minimal valid mcp_config.json so the mcp validator does not error.
         (fake_repo / ".windsurf" / "mcp_config.json").write_text(
             json.dumps({"mcpServers": {}}, indent=2), encoding="utf-8"
@@ -79,8 +76,7 @@ class TestRejectsUnknownFieldInHooks:
 
         result = _run_gate(fake_repo, gate_path=gate_copy)
         assert result.returncode != 0, (
-            "gate must reject hooks.json with unknown 'powershell' field; "
-            f"stdout={result.stdout!r}"
+            f"gate must reject hooks.json with unknown 'powershell' field; stdout={result.stdout!r}"
         )
 
 
@@ -92,9 +88,7 @@ class TestRejectsUnknownFieldInMcp:
         gate_copy = fake_repo / "ops_scripts" / "ci" / GATE.name
         shutil.copy2(GATE, gate_copy)
 
-        (fake_repo / ".windsurf" / "hooks.json").write_text(
-            json.dumps({}, indent=2), encoding="utf-8"
-        )
+        (fake_repo / ".windsurf" / "hooks.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
         # Tampered mcp_config.json with unknown `platform` field on a server.
         tampered = {
             "mcpServers": {
@@ -110,6 +104,4 @@ class TestRejectsUnknownFieldInMcp:
         )
 
         result = _run_gate(fake_repo, gate_path=gate_copy)
-        assert result.returncode != 0, (
-            "gate must reject mcp_config.json with unknown 'platform' field"
-        )
+        assert result.returncode != 0, "gate must reject mcp_config.json with unknown 'platform' field"

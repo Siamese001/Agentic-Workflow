@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .proof.bundle import read_bundle
+from ..proof.bundle import read_bundle
 
 
 def parse_args(description: str, argv: list[str] | None = None) -> argparse.Namespace:

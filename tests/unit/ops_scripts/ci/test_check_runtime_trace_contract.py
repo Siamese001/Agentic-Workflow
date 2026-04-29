@@ -52,9 +52,7 @@ class TestRunProofForContract:
         payload = {
             "ok": False,
             "contract_id": "canary.lic.v1",
-            "violations": [
-                {"kind": "missing_span", "detail": "x", "span_name": "foo"}
-            ],
+            "violations": [{"kind": "missing_span", "detail": "x", "span_name": "foo"}],
             "error": None,
         }
         with patch(
@@ -99,25 +97,19 @@ class TestRunProofForContract:
 
 
 class TestMain:
-    def test_main_passes_for_real_canary(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_main_passes_for_real_canary(self, capsys: pytest.CaptureFixture) -> None:
         rc = main(["--contract", "canary.lic.v1"])
         assert rc == 0
         out = capsys.readouterr().out
         assert "PASS" in out
 
-    def test_main_returns_two_on_missing_contract(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_main_returns_two_on_missing_contract(self, capsys: pytest.CaptureFixture) -> None:
         rc = main(["--contract", "nope.does.not.exist.v1"])
         assert rc == 2  # contract_load_failed -> infra error
         out = capsys.readouterr().out
         assert "INFRA-ERROR" in out or "FAIL" in out
 
-    def test_main_json_emits_results_array(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_main_json_emits_results_array(self, capsys: pytest.CaptureFixture) -> None:
         rc = main(["--contract", "canary.lic.v1", "--json"])
         assert rc == 0
         parsed = json.loads(capsys.readouterr().out)

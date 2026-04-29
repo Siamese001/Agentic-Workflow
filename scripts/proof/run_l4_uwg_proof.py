@@ -930,7 +930,7 @@ def section_proof_packet(happy: dict, blocked: dict, anti_bypass: dict, rollback
             blueprint_hash="bh:proof",
             replay_key="rk:proof",
             acceptance_summary="L4/UWG doctrinal pack 00.1-00.8 — 104/104 tests pass + runtime proof harness green + lookup APIs live",
-            test_command_results=("python -m pytest tests/l4 tests/uwg -q :: 104 passed",),
+            test_command_results=("python -m pytest tests/unit/agentic_core/L4_state/uwg_acceptance tests/uwg -q :: 104 passed",),
             otel_trace_refs=("see section.otel_spans",),
             direct_write_block_receipts=tuple(
                 anti_bypass["block_receipts"][s]["blocked_commit_receipt_id"]
@@ -948,7 +948,7 @@ def section_proof_packet(happy: dict, blocked: dict, anti_bypass: dict, rollback
             rollback_receipts=(rollback["rollback_receipt"]["rollback_receipt_id"],),
             replay_reconstruction_receipts=("see section.replay_reconstruction",),
             audit_ledger_refs=tuple(happy["audit_ledger_events"]),
-            read_scope_test_refs=("tests/l4/test_read_scope_and_otel.py",),
+            read_scope_test_refs=("tests/unit/agentic_core/L4_state/uwg_acceptance/test_read_scope_and_otel.py",),
         )
     )
     return _record_to_jsonable(packet)

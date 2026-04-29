@@ -34,9 +34,7 @@ _EDGE_KIND_TRANSLATION: dict[str, str] = {
     "tool_invocation_edge": "emits_side_effect",
 }
 
-_DROPPED_RELATIONS: frozenset[str] = frozenset(
-    {"parent_child", "temporal_sequence"}
-)
+_DROPPED_RELATIONS: frozenset[str] = frozenset({"parent_child", "temporal_sequence"})
 
 
 def snapshot_to_spans(snapshot: RuntimeADGSnapshot) -> list[dict[str, Any]]:

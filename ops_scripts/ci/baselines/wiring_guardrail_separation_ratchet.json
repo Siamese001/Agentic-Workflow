@@ -1,12 +1,12 @@
 {
   "gate_id": "N_guardrail_separation_ratchet",
-  "count": 464,
+  "count": 112,
   "seeded_at": "2026-04-23T16:07:25.886178+00:00",
-  "snapshot": "adg_indexed_04242026_1027.sqlite",
+  "snapshot": "adg_indexed_04282026_2058.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-04-28T21:53:29.331278+00:00",
-  "last_run_snapshot": "adg_indexed_04282026_1746.sqlite",
-  "tightened_at": "2026-04-24T14:30:40.493181+00:00",
+  "last_run_at": "2026-04-29T09:41:31.026421+00:00",
+  "last_run_snapshot": "adg_indexed_04292026_0533.sqlite",
+  "tightened_at": "2026-04-29T01:07:15.662816+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T22:30:14.749730+00:00",
@@ -19,6 +19,12 @@
       "snapshot": "adg_indexed_04242026_1027.sqlite",
       "from": 457,
       "to": 451
+    },
+    {
+      "at": "2026-04-29T01:07:15.662816+00:00",
+      "snapshot": "adg_indexed_04282026_2058.sqlite",
+      "from": 464,
+      "to": 112
     }
   ],
   "loosen_history": [

@@ -1,10 +1,10 @@
 """Runner: full E2E proof suite (per 99.8 §RECOMMENDED COMMAND SURFACES #1, #2).
 
 Usage:
-    python -m tests.e2e.run_agentic_runtime_proof --scenario-set all \
+    python -m tests.e2e.harnesses.run_agentic_runtime_proof --scenario-set all \
         --emit-proof-bundle artifacts/e2e/latest
 
-    python -m tests.e2e.run_agentic_runtime_proof --scenario GP-001 \
+    python -m tests.e2e.harnesses.run_agentic_runtime_proof --scenario GP-001 \
         --emit-proof-bundle artifacts/e2e/gp_001
 """
 
@@ -14,11 +14,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from .proof.bundle import E2EProofBundle, now_iso, repo_commit, write_bundle
-from .proof.contracts import ProofStatus
-from .proof.digests import digest, short_id
-from .proof.runner import run_scenario
-from .proof.scenarios import GOLDEN_PATH_ID, all_scenarios, by_ids
+from ..proof.bundle import E2EProofBundle, now_iso, repo_commit, write_bundle
+from ..proof.contracts import ProofStatus
+from ..proof.digests import digest, short_id
+from ..proof.runner import run_scenario
+from ..proof.scenarios import GOLDEN_PATH_ID, all_scenarios, by_ids
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

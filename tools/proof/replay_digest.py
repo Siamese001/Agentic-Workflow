@@ -45,12 +45,9 @@ class ReplayInvariant:
         return {
             "route_id": _norm_str(self.route_id),
             "gate_decisions": [
-                [_norm_str(g), _norm_str(v)]
-                for g, v in sorted(self.gate_decisions, key=lambda gv: gv[0])
+                [_norm_str(g), _norm_str(v)] for g, v in sorted(self.gate_decisions, key=lambda gv: gv[0])
             ],
-            "evidence_packet_ids": sorted(
-                {_norm_str(e) for e in self.evidence_packet_ids}
-            ),
+            "evidence_packet_ids": sorted({_norm_str(e) for e in self.evidence_packet_ids}),
             "final_disposition": _norm_str(self.final_disposition),
             "extra": _normalize_mapping(self.extra),
         }

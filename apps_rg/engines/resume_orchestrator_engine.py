@@ -256,7 +256,32 @@ class ResumeOrchestratorEngine(BaseRGEngine):
                 # Engines write to ctx.buffer; ContentQualityAgent expects ctx.current_resume.
                 ranked = self.ctx.buffer.read("ranked_content")
                 optimized = self.ctx.buffer.read("optimized_content")
-                self.ctx.current_resume = ranked or optimized or self.ctx.master_resume
+                processed = ranked or optimized
+                # Passthrough: ranking/optimization engines transform `experience`
+                # but do not handle flat sections (skills, summary, headline,
+                # contact_info, competencies, certifications_and_credentials,
+                # education). Without merging master_resume back in, those
+                # sections reach ContentQualityAgent as empty and trip the
+                # MIN_SECTION_LENGTHS check. Merge: master as base, processed
+                # overrides per-key, but never with an empty value.
+                if processed and isinstance(processed, dict):
+                    merged: dict = dict(self.ctx.master_resume or {})
+                    for k, v in processed.items():
+                        if v not in (None, "", [], {}):
+                            merged[k] = v
+                    self.ctx.current_resume = merged
+                    # Re-publish merged artifact so the final save
+                    # (ctx.buffer.read("ranked_content")) includes passthrough
+                    # sections (skills, summary, headline, contact_info,
+                    # competencies, certifications_and_credentials, education).
+                    try:
+                        self.ctx.buffer.write(
+                            "ranked_content", merged, source_agent=self.name
+                        )
+                    except (PermissionError, AttributeError):
+                        pass
+                else:
+                    self.ctx.current_resume = self.ctx.master_resume
                 quality_engine = ContentQualityEngine()
                 quality_engine.ctx = self.ctx
                 await quality_engine.execute()
@@ -302,11 +327,18 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             status = "SUCCESS"
             if not final_ats.get("valid", False):
                 status = "WARNING"
-            if final_quality.get("score", 0) < (
-                self.rg_specs.validation.min_quality_score * 100
-                if self.rg_specs and hasattr(self.rg_specs, "validation")
-                else 70
-            ):
+            # quality_report.score is on a 0.0-1.0 scale (see
+            # ContentQualityAgent.execute(): score = max(0.0, 1.0 - issues/20)).
+            # Normalize the threshold to the same scale:
+            #   - if rg_specs supplies min_quality_score in 0.0-1.0, use as-is
+            #   - if rg_specs supplies it in 0-100 (legacy), divide by 100
+            #   - default 0.70 (= 70%)
+            if self.rg_specs and hasattr(self.rg_specs, "validation"):
+                _mqs = self.rg_specs.validation.min_quality_score
+                quality_threshold = _mqs / 100.0 if _mqs > 1.0 else _mqs
+            else:
+                quality_threshold = 0.70
+            if final_quality.get("score", 0) < quality_threshold:
                 status = "WARNING"
             final_artifact = self.ctx.buffer.read("ranked_content", {})
             return {

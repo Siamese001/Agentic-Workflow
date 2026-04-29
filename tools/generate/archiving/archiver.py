@@ -22,30 +22,41 @@ from tools.generate.utils.file_utils import _is_file_locked
 # they live in the same directory. Deletion is age-gated (default 3 days)
 # so in-flight work is never touched.
 # ---------------------------------------------------------------------------
-_SESSION_SCRATCH_GLOBS: tuple[str, ...] = (
-    # Ad-hoc redirect logs (e.g. `python tools/generate_full_adg.py > _w1_regen.log`)
+# Fast-cycle scratch — produced by single foreground commands (e.g.
+# ``python tools/generate_full_adg.py > _w1_regen.log``). Once the command
+# exits, the file is reference material at most; after 1 hour it's stale.
+_SESSION_SCRATCH_FAST_GLOBS: tuple[str, ...] = (
     "_*.log",
     "_*.txt",
     "_*.py",
-    # Wave queue and triage artifacts (manually generated during burndown waves)
+    "_*.err",
+)
+
+# Slow-cycle scratch — produced by analysis sessions, may be referenced
+# across a workday. 24-hour floor.
+_SESSION_SCRATCH_SLOW_GLOBS: tuple[str, ...] = (
     "wave_*.tsv",
     "wave_*.txt",
     "wave_queue_*.tsv",
     "tech_debt_*.txt",
     "dead_*scan*.txt",
     "*_scan_*.txt",
-    # Stub / archival candidate manifests (manual triage outputs)
     "stub_archive_candidates.json",
 )
 
 # Bare-SHA256 JSON filenames produced by the scan-result fingerprint cache
 # (64 hex chars + ``.json``). These accumulate one per distinct scan config.
+# 24-hour floor (overlaps slow group conceptually).
 _SHA256_JSON_RE = re.compile(r"^[0-9a-f]{64}\.json$")
 
 # Sentinel SQLite files (e.g. ``adg_indexed_99999999_9999.sqlite``) whose
 # timestamp cannot be parsed. Age-gated deletion default.
 _STALE_UNPARSEABLE_AGE_DAYS_DEFAULT = 7
-_SCRATCH_AGE_DAYS_DEFAULT = 3
+# Default ages — fast group cleared aggressively, slow group preserved a day.
+_SCRATCH_FAST_AGE_HOURS_DEFAULT = 1.0
+_SCRATCH_SLOW_AGE_HOURS_DEFAULT = 24.0
+# Back-compat alias for callers (and the docstring header).
+_SCRATCH_AGE_DAYS_DEFAULT = _SCRATCH_SLOW_AGE_HOURS_DEFAULT / 24.0
 
 
 def _extract_timestamp(filename: str) -> str | None:
@@ -267,6 +278,31 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     sorted_timestamps = [ts for ts, _dt in sorted(valid_timestamps, key=lambda item: item[1], reverse=True)]
     to_archive = sorted_timestamps[keep_runs:]
 
+    # 2026-04-28 RCA: the run that just completed (``current_ts``) MUST NEVER
+    # be archived, even if a sub-builder artifact in a different timezone
+    # has a numerically larger timestamp. Sub-builders use UTC
+    # (YYYYMMDD_HHMMSS) while the main run uses local time (MMDDYYYY_HHMM);
+    # naive datetime comparison can rank UTC sub-builder timestamps from
+    # the same wall-clock moment as "newer" than the main run, causing
+    # the current run's zip + sqlite to be moved to ``_archive/`` and the
+    # downstream Redis/git-commit steps to fail with "SQLite artifact not
+    # found". Belt-and-suspenders: also exclude any bucket whose files
+    # belong to the current run by filename.
+    if current_ts in to_archive:
+        to_archive.remove(current_ts)
+        print(f"[ADG] Archive: protecting current run {current_ts} from archival (TZ-safe guard)")
+    # Exclude buckets that contain a file with current_ts in its name —
+    # catches sub-builder artifacts from the same run that landed in a
+    # different timestamp bucket due to TZ skew.
+    safe_to_archive: list[str] = []
+    for ts in to_archive:
+        files = runs.get(ts, [])
+        if any(current_ts in p.name for p in files):
+            print(f"[ADG] Archive: protecting bucket {ts} — contains current_ts={current_ts} files")
+            continue
+        safe_to_archive.append(ts)
+    to_archive = safe_to_archive
+
     if not to_archive:
         return
 
@@ -387,46 +423,71 @@ def _purge_unparseable_buckets(
                 print(f"[ADG] Archive: failed to purge {path.name}: {exc}")
 
 
-def _cleanup_session_scratch(adg_dir: Path, max_age_days: int = _SCRATCH_AGE_DAYS_DEFAULT) -> None:
-    """Delete ad-hoc session scratch files older than ``max_age_days``.
+def _cleanup_session_scratch(
+    adg_dir: Path,
+    max_age_days: float | None = None,
+    *,
+    fast_age_hours: float = _SCRATCH_FAST_AGE_HOURS_DEFAULT,
+    slow_age_hours: float = _SCRATCH_SLOW_AGE_HOURS_DEFAULT,
+) -> None:
+    """Delete ad-hoc session scratch files older than the appropriate age floor.
 
-    Targets files that accumulate in ``artifacts/adg/`` but are NOT produced
-    by the generator (manual redirect logs, wave queue TSVs, triage TXTs,
-    bare-SHA256 cache fingerprints). See module-level ``_SESSION_SCRATCH_GLOBS``
-    for the canonical pattern list.
+    Two age tiers, applied per pattern group:
 
-    Age-gating ensures the current session's files are never deleted: a 3-day
-    floor is a conservative default that survives multi-day wave execution.
+    - **Fast** (default 1 hour): single-command redirect outputs — ``_*.log``,
+      ``_*.txt``, ``_*.py``, ``_*.err``. Once the producing command exits the
+      file is reference material at most; an hour is generous.
+    - **Slow** (default 24 hours): multi-step analysis artifacts —
+      ``wave_*.tsv``/``.txt``, ``tech_debt_*.txt``, ``*_scan_*.txt``,
+      ``stub_archive_candidates.json``, bare-SHA256 ``.json`` fingerprints.
+      May be referenced across a workday.
+
+    Args:
+        adg_dir: ``artifacts/adg/`` (or test-injected equivalent).
+        max_age_days: Back-compat — when provided, applies a single uniform
+            floor (in days) to ALL pattern groups. If ``None`` (default),
+            the two-tier behavior is used.
+        fast_age_hours: Override the fast-tier floor.
+        slow_age_hours: Override the slow-tier floor.
     """
     if not adg_dir.exists():
         return
 
-    cutoff = time.time() - (max_age_days * 86400)
-    candidates: set[Path] = set()
+    if max_age_days is not None:
+        # Back-compat: uniform floor — both tiers use the same cutoff.
+        fast_cutoff = slow_cutoff = time.time() - (max_age_days * 86400)
+    else:
+        now = time.time()
+        fast_cutoff = now - (fast_age_hours * 3600)
+        slow_cutoff = now - (slow_age_hours * 3600)
 
-    for pattern in _SESSION_SCRATCH_GLOBS:
+    fast_candidates: set[Path] = set()
+    for pattern in _SESSION_SCRATCH_FAST_GLOBS:
         for path in adg_dir.glob(pattern):
-            if not path.is_file():
+            if not path.is_file() or "_archive" in path.parts:
                 continue
-            if "_archive" in path.parts:
-                continue
-            candidates.add(path)
+            fast_candidates.add(path)
 
-    # Bare-SHA256 json files (scan fingerprint cache)
+    slow_candidates: set[Path] = set()
+    for pattern in _SESSION_SCRATCH_SLOW_GLOBS:
+        for path in adg_dir.glob(pattern):
+            if not path.is_file() or "_archive" in path.parts:
+                continue
+            slow_candidates.add(path)
+
+    # Bare-SHA256 json files (scan fingerprint cache) — slow tier
     for path in adg_dir.glob("*.json"):
-        if not path.is_file():
-            continue
-        if "_archive" in path.parts:
+        if not path.is_file() or "_archive" in path.parts:
             continue
         if _SHA256_JSON_RE.match(path.name):
-            candidates.add(path)
-
-    if not candidates:
-        return
+            slow_candidates.add(path)
 
     deleted = 0
     bytes_freed = 0
-    for path in candidates:
+    for path, cutoff in (
+        [(p, fast_cutoff) for p in fast_candidates]
+        + [(p, slow_cutoff) for p in slow_candidates]
+    ):
         try:
             st = path.stat()
         except OSError:
@@ -442,6 +503,8 @@ def _cleanup_session_scratch(adg_dir: Path, max_age_days: int = _SCRATCH_AGE_DAY
 
     if deleted:
         mb = bytes_freed / (1024 * 1024)
-        print(
-            f"[ADG] Archive: cleaned {deleted} session scratch files ({mb:.1f} MB freed, >{max_age_days}d old)"
-        )
+        if max_age_days is not None:
+            tier_msg = f">{max_age_days}d old"
+        else:
+            tier_msg = f"fast>{fast_age_hours}h, slow>{slow_age_hours}h"
+        print(f"[ADG] Archive: cleaned {deleted} session scratch files ({mb:.1f} MB freed, {tier_msg})")

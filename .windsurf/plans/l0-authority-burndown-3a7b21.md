@@ -16,6 +16,33 @@ ADG snapshot `adg_indexed_04282026_2152.sqlite` reveals:
 
 **Net remaining work**: Wave 1 only — apply guardian exemption header to `scenario_base.py` (done in commit accompanying ADR-071) + close the 2 stale Notion rows.
 
+## ADG_HOTSPOT_REPORT
+
+| Rank | Source File | Layer | breach_count | Archetype | Surface Reference | Disposition |
+|---:|---|:---:|---:|---|---|---|
+| 1 | `apps_shared/proof/scenario_base.py` | L_APP | 17 | ORCHESTRATOR | Execution Surface | Guardian-exempt (ADR-071) |
+
+Single-file concentration: 17/17 (100%) of all `mv_authority_boundary_breaches` rows attribute to one proof harness. No CENTRAL_DEPENDENCY or SAFETY_GATEKEEPER hotspots remain in L0 after upstream commits cleared `v_p0_l0_raw_execution` to 0.
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+**Materialized views consulted (≥3, per constitutional §22):**
+
+1. **`mv_authority_boundary_breaches`** — produced the 17-breach inventory. Grouped by `breach_class` (all `L_APP_core_bypass`) and by `(src_layer, dst_layer)` (14×L_APP→L0, 2×L_APP→L2, 1×L_APP→L1). Drives ADR-071 disposition.
+2. **`mv_hotspot_centrality`** (filtered to `layer = 'L0'`) — confirms top L0 hotspots (`config/path_constants.py` fan_in=1136, `config/__init__.py` fan_in=257, `c0_retrieval/__init__.py` fan_in=191) are NOT involved in the authority breach. The breaches target L0 routing modules from outside the layer; the hotspots are inside the layer.
+3. **`mv_critical_path_segments`** — `scenario_base.py` does not appear on any critical path because it is internal proof infrastructure, not a runtime dependency. Validates the guardian-exemption disposition: cross-layer imports here cannot poison production runtime.
+
+**Semantic edges used (beyond `imports`):**
+- `controls_flow` — confirms scenario_base orchestrates layer-by-layer execution (its purpose), not a covert side channel
+- `resolves_callsite` — every L0/L1/L2 callsite resolved from `scenario_base` is direct invocation of public layer entry points, not access to internals
+
+**P-views cross-referenced:**
+- `v_p0_l0_raw_execution` — **0 rows** (was 3 at Notion-row creation). Defect already closed upstream.
+- `v_p0_apps_direct_infra` — **0 rows**. Confirms no other apps_*/proof code is replicating the same pattern.
+- `v_p1_mis_layered_infra` — surveyed, no L0 entries that would chain off the resolved breaches.
+
+ADG snapshot: `adg_indexed_04282026_2152.sqlite`. Inventory CSV: `docs/reports/maintenance/l0_authority_breaches_catalog.csv` (17 rows, all single-source). CI gate: `ops_scripts/ci/check_authority_boundary_breaches.py` enforces total ≤17 + all-exempt-source invariant.
+
 ## Context
 
 Three top-25 P1 items concentrate in **L0 routing/authority surface**:

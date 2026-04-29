@@ -327,7 +327,7 @@ def _run_cli(module: str, args: list[str], cwd: Path) -> subprocess.CompletedPro
 def test_run_agentic_runtime_proof_cli(tmp_path, args, bundle_subdir):
     bundle_dir = tmp_path / bundle_subdir
     result = _run_cli(
-        "tests.e2e.run_agentic_runtime_proof",
+        "tests.e2e.harnesses.run_agentic_runtime_proof",
         [*args, "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -340,7 +340,7 @@ def test_run_agentic_runtime_proof_cli(tmp_path, args, bundle_subdir):
 def test_run_route_coverage_proof_cli(tmp_path):
     bundle_dir = tmp_path / "routes"
     result = _run_cli(
-        "tests.e2e.run_route_coverage_proof",
+        "tests.e2e.harnesses.run_route_coverage_proof",
         ["--all-routes", "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -353,16 +353,16 @@ def test_run_route_coverage_proof_cli(tmp_path):
 @pytest.mark.parametrize(
     "module",
     [
-        "tests.e2e.validate_trace_tree",
-        "tests.e2e.validate_replay",
-        "tests.e2e.validate_no_bypass",
-        "tests.e2e.validate_grounded_output",
+        "tests.e2e.validators.validate_trace_tree",
+        "tests.e2e.validators.validate_replay",
+        "tests.e2e.validators.validate_no_bypass",
+        "tests.e2e.validators.validate_grounded_output",
     ],
 )
 def test_validate_axis_runners_pass_on_clean_bundle(tmp_path, module):
     bundle_dir = tmp_path / "all"
     seed_result = _run_cli(
-        "tests.e2e.run_agentic_runtime_proof",
+        "tests.e2e.harnesses.run_agentic_runtime_proof",
         ["--scenario-set", "all", "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -376,7 +376,7 @@ def test_validate_axis_runners_pass_on_clean_bundle(tmp_path, module):
 def _seed_bundle(tmp_path: Path, scope: str = "all") -> Path:
     bundle_dir = tmp_path / scope
     seed = _run_cli(
-        "tests.e2e.run_agentic_runtime_proof",
+        "tests.e2e.harnesses.run_agentic_runtime_proof",
         ["--scenario-set", scope, "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -399,7 +399,7 @@ def test_validate_trace_tree_strict_fails_on_missing_attribute(tmp_path):
 
     _tamper_bundle(bundle_dir, mutate)
     result = _run_cli(
-        "tests.e2e.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
+        "tests.e2e.validators.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
     )
     assert result.returncode == 1, result.stdout + result.stderr
     assert "policy_hash" in result.stderr
@@ -417,7 +417,7 @@ def test_validate_trace_tree_strict_fails_on_missing_model_attrs(tmp_path):
 
     _tamper_bundle(bundle_dir, mutate)
     result = _run_cli(
-        "tests.e2e.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
+        "tests.e2e.validators.validate_trace_tree", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT
     )
     assert result.returncode == 1, result.stdout + result.stderr
     assert "missing model attrs" in result.stderr
@@ -432,7 +432,7 @@ def test_validate_replay_strict_fails_on_digest_mismatch_receipt(tmp_path):
         receipt["route_digest_match"] = False
 
     _tamper_bundle(bundle_dir, mutate)
-    result = _run_cli("tests.e2e.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
+    result = _run_cli("tests.e2e.validators.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
     assert result.returncode == 1, result.stdout + result.stderr
     assert "route_digest_match=False" in result.stderr
 
@@ -447,7 +447,7 @@ def test_validate_grounded_output_strict_fails_on_unsupported_claim(tmp_path):
 
     _tamper_bundle(bundle_dir, mutate)
     result = _run_cli(
-        "tests.e2e.validate_grounded_output",
+        "tests.e2e.validators.validate_grounded_output",
         ["--proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -463,7 +463,7 @@ def test_validate_grounded_output_strict_fails_on_boundary_violation(tmp_path):
 
     _tamper_bundle(bundle_dir, mutate)
     result = _run_cli(
-        "tests.e2e.validate_grounded_output",
+        "tests.e2e.validators.validate_grounded_output",
         ["--proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -474,7 +474,7 @@ def test_validate_grounded_output_strict_fails_on_boundary_violation(tmp_path):
 def test_validate_no_bypass_strict_fails_on_violation_injection(tmp_path):
     bundle_dir = tmp_path / "all"
     seed_result = _run_cli(
-        "tests.e2e.run_agentic_runtime_proof",
+        "tests.e2e.harnesses.run_agentic_runtime_proof",
         ["--scenario-set", "golden", "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -488,7 +488,7 @@ def test_validate_no_bypass_strict_fails_on_violation_injection(tmp_path):
     bundle_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
     result = _run_cli(
-        "tests.e2e.validate_no_bypass",
+        "tests.e2e.validators.validate_no_bypass",
         ["--proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -499,7 +499,7 @@ def test_validate_no_bypass_strict_fails_on_violation_injection(tmp_path):
 def test_proof_bundle_contains_99_1_required_artifacts(tmp_path):
     bundle_dir = tmp_path / "gp"
     result = _run_cli(
-        "tests.e2e.run_agentic_runtime_proof",
+        "tests.e2e.harnesses.run_agentic_runtime_proof",
         ["--scenario", GOLDEN_PATH_ID, "--emit-proof-bundle", str(bundle_dir), "--strict"],
         REPO_ROOT,
     )
@@ -706,7 +706,7 @@ def test_replay_validator_catches_digest_tamper_via_cli_run(tmp_path):
         p["scenarios"][0]["replay_receipts"][0]["replay_status"] = "FAIL"
 
     _tamper_bundle(bundle_dir, mutate)
-    result = _run_cli("tests.e2e.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
+    result = _run_cli("tests.e2e.validators.validate_replay", ["--proof-bundle", str(bundle_dir), "--strict"], REPO_ROOT)
     assert result.returncode == 1
 
 
@@ -720,7 +720,7 @@ def test_two_independent_runs_produce_identical_bundles(tmp_path):
     b = tmp_path / "b"
     for d in (a, b):
         result = _run_cli(
-            "tests.e2e.run_agentic_runtime_proof",
+            "tests.e2e.harnesses.run_agentic_runtime_proof",
             ["--scenario-set", "all", "--emit-proof-bundle", str(d), "--strict"],
             REPO_ROOT,
         )

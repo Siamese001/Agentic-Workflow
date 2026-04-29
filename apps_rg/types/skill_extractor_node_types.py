@@ -287,6 +287,78 @@ class SkillExtractorNode:
                 "tableau",
                 "power bi",
                 "excel",
+                "mlops",
+                "data science",
+                "deep learning",
+                "neural networks",
+                "feature engineering",
+                "model training",
+                "data lineage",
+                "data governance",
+            ],
+            "generative_ai": [
+                "generative ai",
+                "genai",
+                "large language model",
+                "large language models",
+                "llm",
+                "llms",
+                "llmops",
+                "agentic",
+                "agentic systems",
+                "agentic ai",
+                "multi-agent",
+                "multi-agent orchestration",
+                "agent orchestration",
+                "rag",
+                "retrieval-augmented generation",
+                "graphrag",
+                "vector database",
+                "vector databases",
+                "vector indexing",
+                "embedding",
+                "embeddings",
+                "embedding pipelines",
+                "semantic retrieval",
+                "semantic search",
+                "prompt engineering",
+                "prompt injection",
+                "evaluation harness",
+                "llm-as-a-judge",
+                "ai governance",
+                "ai runtime governance",
+                "model risk management",
+                "human-in-the-loop",
+                "drift detection",
+                "anomaly detection",
+                "ai ci/cd",
+                "ai cicd",
+                "tool use",
+                "tool-augmented reasoning",
+                "sandboxed execution",
+                "policy enforcement",
+                "guardrails",
+                "replayable traces",
+                "deterministic routing",
+                "aws bedrock",
+                "azure ai",
+                "azure openai",
+                "vertex ai",
+                "google vertex ai",
+                "openai",
+                "anthropic",
+                "claude",
+                "gemini",
+                "gpt",
+                "langchain",
+                "llamaindex",
+                "huggingface",
+                "transformers",
+                "fine-tuning",
+                "fine tuning",
+                "rlhf",
+                "context engineering",
+                "context assembly",
             ],
         }
         self.soft_skills = [
@@ -441,18 +513,20 @@ class SkillExtractorNode:
         logger.info("Analyzing skills from job description and candidate profile")
         jd_skills = self._extract_skills_from_text(job_description)
         logger.info(
-            f"Extracted {len(jd_skills.technical_skills) + len(jd_skills.soft_skills)} skills from job description",
+            "Extracted %d skills from job description",
+            len(jd_skills.technical_skills) + len(jd_skills.soft_skills),
         )
         candidate_skills = self._extract_skills_from_profile(candidate_profile)
         logger.info(
-            f"Extracted {len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills)} skills from candidate profile",
+            "Extracted %d skills from candidate profile",
+            len(candidate_skills.technical_skills) + len(candidate_skills.soft_skills),
         )
         gap_result = self._analyze_skill_gaps(jd_skills, candidate_skills)
-        logger.info(f"Skill gap analysis: {gap_result.gap_severity} severity ({gap_result.gap_score:.2f})")
+        logger.info("Skill gap analysis: %s severity (%.2f)", gap_result.gap_severity, gap_result.gap_score)
         match_result = self._match_skills(jd_skills, candidate_skills)
-        logger.info(f"Skill matching: {match_result.match_percentage:.1f}% match")
+        logger.info("Skill matching: %.1f%% match", match_result.match_percentage)
         recommendations = self._generate_recommendations(gap_result, match_result)
-        logger.info(f"Generated {len(recommendations)} recommendations")
+        logger.info("Generated %d recommendations", len(recommendations))
         output = SkillAnalysisOutput(
             extraction_result=jd_skills,
             gap_result=gap_result,
@@ -613,7 +687,6 @@ class SkillExtractorNode:
             + jd_skills.domain_skills
             + jd_skills.tool_skills
         )
-        [skill.lower() for skill in all_jd_skills]
         unmatched_skills = [skill for skill in all_jd_skills if skill.lower() not in all_matched_skills]
         total_jd_skills = len(all_jd_skills)
         match_percentage = len(all_matched_skills) / total_jd_skills if total_jd_skills > 0 else 0.0

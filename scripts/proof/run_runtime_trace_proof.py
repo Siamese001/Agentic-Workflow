@@ -108,9 +108,7 @@ def run_proof(
     # 3. Materialize spans into a runtime ADG snapshot (in-process, hermetic).
     _emit(f"[3/5] Materializing {len(spans)} spans")
     try:
-        snapshot = RuntimeADGMaterializer().materialize(
-            spans, mission="lic.canary"
-        )
+        snapshot = RuntimeADGMaterializer().materialize(spans, mission="lic.canary")
     except (OSError, ValueError, TypeError, KeyError) as exc:
         result["error"] = f"materialize_failed: {exc}"
         return result

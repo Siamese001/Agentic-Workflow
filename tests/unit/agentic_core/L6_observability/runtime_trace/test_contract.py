@@ -150,8 +150,7 @@ class TestLoadContract:
     def test_unknown_edge_kind_raises(self, tmp_path: Path) -> None:
         path = tmp_path / "x_v1.yaml"
         path.write_text(
-            "contract_id: x.v1\nversion: 1\nrequired_edges:\n"
-            "  - from: a\n    to: b\n    kind: bogus\n",
+            "contract_id: x.v1\nversion: 1\nrequired_edges:\n  - from: a\n    to: b\n    kind: bogus\n",
             encoding="utf-8",
         )
         with pytest.raises(ContractValidationError, match="unknown kind"):
@@ -205,15 +204,10 @@ class TestValidateTrace:
         spans = _valid_lic_trace()
         for s in spans:
             if s["name"] == "uwg.commit":
-                s["attributes"] = {
-                    k: v for k, v in s["attributes"].items() if k != "evidence_hash"
-                }
+                s["attributes"] = {k: v for k, v in s["attributes"].items() if k != "evidence_hash"}
         result = validate_trace(contract, spans)
         assert not result.ok
-        assert any(
-            v.kind == "missing_attribute" and "evidence_hash" in v.detail
-            for v in result.violations
-        )
+        assert any(v.kind == "missing_attribute" and "evidence_hash" in v.detail for v in result.violations)
 
     def test_missing_semantic_edge_flagged(self) -> None:
         contract = load_contract("canary.lic.v1")
@@ -223,10 +217,7 @@ class TestValidateTrace:
                 s["edges"] = []  # remove writes_to edge
         result = validate_trace(contract, spans)
         assert not result.ok
-        assert any(
-            v.kind == "missing_edge" and "writes_to" in v.detail
-            for v in result.violations
-        )
+        assert any(v.kind == "missing_edge" and "writes_to" in v.detail for v in result.violations)
 
     def test_cross_layer_skip_flagged(self) -> None:
         # Synthetic mini-contract enabling cross_layer_skip detection.
@@ -264,9 +255,7 @@ class TestValidateTrace:
         )
         result = validate_trace(contract, spans)
         assert not result.ok
-        assert any(
-            v.kind == "direct_l4_write_outside_uwg" for v in result.violations
-        )
+        assert any(v.kind == "direct_l4_write_outside_uwg" for v in result.violations)
 
     def test_swallowed_exception_flagged(self) -> None:
         contract = RuntimeTraceContract(
@@ -330,9 +319,7 @@ class TestValidateTrace:
                 s["attributes"]["trace_id"] = "T_DIFFERENT"
         result = validate_trace(contract, spans)
         assert not result.ok
-        assert any(
-            v.kind == "invariant_attribute_drift" for v in result.violations
-        )
+        assert any(v.kind == "invariant_attribute_drift" for v in result.violations)
 
     def test_missing_trace_id_attribute_flagged(self) -> None:
         contract = RuntimeTraceContract(
@@ -349,9 +336,7 @@ class TestValidateTrace:
         ]
         result = validate_trace(contract, spans)
         assert not result.ok
-        assert any(
-            v.kind == "missing_trace_id_attribute" for v in result.violations
-        )
+        assert any(v.kind == "missing_trace_id_attribute" for v in result.violations)
 
     def test_parent_child_required_edge(self) -> None:
         contract = RuntimeTraceContract(
@@ -395,6 +380,5 @@ class TestShippedContract:
         for span in contract.required_spans:
             if span.parent is not None:
                 assert span.parent in names, (
-                    f"contract canary.lic.v1: span {span.name!r} references "
-                    f"unknown parent {span.parent!r}"
+                    f"contract canary.lic.v1: span {span.name!r} references unknown parent {span.parent!r}"
                 )

@@ -39,9 +39,7 @@ DEFAULT_CONTRACTS: tuple[str, ...] = ("canary.lic.v1",)
 DEFAULT_TIMEOUT_S = 60
 
 
-def run_proof_for_contract(
-    contract_id: str, *, timeout: int = DEFAULT_TIMEOUT_S
-) -> dict[str, Any]:
+def run_proof_for_contract(contract_id: str, *, timeout: int = DEFAULT_TIMEOUT_S) -> dict[str, Any]:
     """Invoke the proof script for ``contract_id`` and return the parsed result.
 
     Returns a dict with at minimum::
@@ -134,9 +132,7 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         help="Canary contract id (may be repeated). Default: all known contracts.",
     )
-    parser.add_argument(
-        "--json", action="store_true", help="Emit machine-readable JSON to stdout."
-    )
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout.")
     parser.add_argument(
         "--timeout",
         type=int,
@@ -150,9 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     contracts = tuple(args.contract) if args.contract else DEFAULT_CONTRACTS
-    results = [
-        run_proof_for_contract(c, timeout=args.timeout) for c in contracts
-    ]
+    results = [run_proof_for_contract(c, timeout=args.timeout) for c in contracts]
 
     if args.json:
         print(json.dumps({"results": results}, indent=2, sort_keys=True))

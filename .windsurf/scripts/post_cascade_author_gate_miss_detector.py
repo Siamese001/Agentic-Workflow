@@ -77,13 +77,20 @@ _FILE_EDIT_PATTERNS = (
     r"TargetFile[=:]\s*[\"'](?P<p2>[^\"']+\.py)[\"']",
 )
 
-# Anti-signals — presence of any zeros out the miss score
+# Anti-signals — presence of a fully-formed marker zeros the miss score.
+# An ``ask_user_question`` invocation alone is NOT proof of compliance — the
+# packet must also carry the AG-10 header and gold-star convention from
+# author-gate-enforcement.md, otherwise it is a shape violation.
 _CAPTURE_MARKERS = (
     re.compile(r"^DECISION_CAPTURED:\s*type=", re.MULTILINE),
     re.compile(r"^AUTHOR_GATE_PACKET:\s*\{", re.MULTILINE),
     re.compile(r"^HITL_PACKET:\s*\{", re.MULTILINE),
-    re.compile(r"<invoke\s+name=\"ask_user_question\">"),
 )
+_ASK_INVOKE_RE = re.compile(r"<invoke\s+name=\"ask_user_question\">")
+_AG10_HEADER_RE = re.compile(
+    r"AUTHOR-GATE\s+DECISION\s+[—\-:]\s*\w+", re.IGNORECASE
+)
+_AG10_GOLD_STAR_RE = re.compile(r"⭐\s*Recommended\s*[:—\-]")
 _TRIVIAL_TIER_HINTS = re.compile(
     r"\b(?:T0\b|T1\b|trivial\b|single-file\b|single file\b|typo\b|formatting\b)",
     re.IGNORECASE,
@@ -93,8 +100,10 @@ _USER_DIRECTIVE = re.compile(
     re.IGNORECASE,
 )
 
-# Threshold: miss_score >= this counts as a suspected miss
-MISS_SCORE_THRESHOLD = 3
+# Threshold: miss_score >= this counts as a suspected miss.
+# Lowered from 3 to 2 (2026-04-28) so a non-AG-10 decision question alone
+# (which scores 2 from keywords) is sufficient to log a violation.
+MISS_SCORE_THRESHOLD = 2
 
 
 # --------------------------------------------------------------------- #
@@ -157,7 +166,8 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
             score += 1
             positive_signals.append("sr_plan_without_approval")
 
-    # Anti-signals
+    # Anti-signals — capture markers (DECISION_CAPTURED / AUTHOR_GATE_PACKET /
+    # HITL_PACKET) prove a refactor-class decision was logged, so clear score.
     capture_hits = _has_capture_marker(text)
     if capture_hits:
         return 0, {
@@ -165,6 +175,23 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
             "anti_signal": "capture_marker_present",
             "capture_marker_patterns": capture_hits,
         }
+
+    # ask_user_question shape check — AG-10 packet must include both the
+    # AUTHOR-GATE DECISION header and the ⭐ gold-star recommendation.
+    has_ask = bool(_ASK_INVOKE_RE.search(text))
+    if has_ask:
+        has_header = bool(_AG10_HEADER_RE.search(text))
+        has_star = bool(_AG10_GOLD_STAR_RE.search(text))
+        if has_header and has_star:
+            return 0, {
+                "positive_signals": positive_signals,
+                "anti_signal": "ag10_compliant_ask_user_question",
+            }
+        score += 2
+        positive_signals.append(
+            "ask_user_question_without_ag10_shape:"
+            f"header={has_header},star={has_star}"
+        )
 
     if _TRIVIAL_TIER_HINTS.search(text):
         # reduce by 2 but don't zero out — trivial-tier could still miss

@@ -117,9 +117,15 @@ class TestHasCaptureMarker:
         text = 'HITL_PACKET: {"version": 1, "options": []}'
         assert _has_capture_marker(text) != []
 
-    def test_ask_user_question_invoke_detected(self):
+    def test_ask_user_question_invoke_NOT_capture_marker(self):
+        """Per 2026-04-28 fix: ask_user_question alone is not a capture marker.
+
+        AG-10 shape (header + gold-star) is checked separately in
+        _compute_miss_score, not here. _has_capture_marker only matches
+        durable post-decision markers (DECISION_CAPTURED / *_PACKET).
+        """
         text = 'Some analysis\n<invoke name="ask_user_question">\n<parameter name="question">...</parameter>'
-        assert _has_capture_marker(text) != []
+        assert _has_capture_marker(text) == []
 
     def test_no_marker_returns_empty(self):
         assert _has_capture_marker("A plain response with no markers") == []
@@ -191,6 +197,50 @@ class TestComputeMissScore:
         text = 'edit(file_path="x.py") mentions refactor once'
         score, _ = _compute_miss_score(text)
         assert score < MISS_SCORE_THRESHOLD
+
+    # ----- AG-10 shape validation (added 2026-04-28) ------------------- #
+
+    def test_ask_user_question_with_ag10_shape_clears_score(self):
+        """A compliant AG-10 packet (header + gold-star) zeros score."""
+        text = (
+            'Refactoring scope. delete archive cross-layer subprocess '
+            '<invoke name="ask_user_question">\n'
+            'AUTHOR-GATE DECISION \u2014 refactor_scope\n'
+            '\u2b50 Recommended: Archive\n'
+            'Why it wins: precedent fits.\n'
+        )
+        score, report = _compute_miss_score(text)
+        assert score == 0
+        assert report.get("anti_signal") == "ag10_compliant_ask_user_question"
+
+    def test_ask_user_question_without_ag10_header_flagged(self):
+        """ask_user_question without AUTHOR-GATE header is a shape violation."""
+        text = (
+            'Refactor scope decision. delete archive '
+            '<invoke name="ask_user_question">\n'
+            '<parameter name="question">pick one</parameter>\n'
+        )
+        score, report = _compute_miss_score(text)
+        assert score >= MISS_SCORE_THRESHOLD
+        assert any(
+            s.startswith("ask_user_question_without_ag10_shape")
+            for s in report["positive_signals"]
+        )
+
+    def test_ask_user_question_with_header_but_no_star_flagged(self):
+        """Header alone is not enough \u2014 gold-star is also required."""
+        text = (
+            'delete archive refactor '
+            '<invoke name="ask_user_question">\n'
+            'AUTHOR-GATE DECISION \u2014 refactor_scope\n'
+            'Recommended: option A\n'  # no gold star
+        )
+        score, report = _compute_miss_score(text)
+        assert score >= MISS_SCORE_THRESHOLD
+        assert any(
+            "ag10_shape" in s and "star=False" in s
+            for s in report["positive_signals"]
+        )
 
 
 # --------------------------------------------------------------------- #

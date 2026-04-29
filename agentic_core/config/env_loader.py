@@ -17,8 +17,16 @@ class SovereignEnv:
         if cls._instance is None:
             if normalized_root is None:
                 raise ValueError("[L6 CRITICAL] SovereignEnv requires project_root on first init")
+            # Atomic init: if _load() raises, roll back _instance so the next
+            # caller can retry instead of inheriting a half-initialized
+            # singleton with _loaded_env_path=None (which produced the
+            # misleading "already initialized from None" cascade).
             cls._instance = super().__new__(cls)
-            cls._instance._load(normalized_root)
+            try:
+                cls._instance._load(normalized_root)
+            except Exception:
+                cls._instance = None
+                raise
             cls._loaded_env_path = normalized_root / ".env"
         elif normalized_root is not None:
             expected_env_path = normalized_root / ".env"
@@ -51,6 +59,12 @@ class SovereignEnv:
 
         load_dotenv(dotenv_path=env_path, override=False)
 
+        # Accept GOOGLE_API_KEY as an alias for GEMINI_API_KEY. The Google
+        # Generative AI SDK accepts both; canonical docs use GOOGLE_API_KEY,
+        # internal code uses GEMINI_API_KEY. If only GOOGLE_API_KEY is set,
+        # mirror it so downstream code keeps reading GEMINI_API_KEY.
+        if not os.getenv("GEMINI_API_KEY") and os.getenv("GOOGLE_API_KEY"):
+            os.environ["GEMINI_API_KEY"] = os.environ["GOOGLE_API_KEY"]
         self.GEMINI_API_KEY = self._require("GEMINI_API_KEY")
         self.GEMINI_MODEL = self._require("GEMINI_MODEL")
         inactive_keys = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY"]

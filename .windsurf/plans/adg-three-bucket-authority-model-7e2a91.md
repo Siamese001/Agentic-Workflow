@@ -100,9 +100,9 @@ P-views referenced: `v_p0_apps_direct_infra`, `v_p0_write_bypass_uwg`, `v_p1_mis
 
 | Rank | File | Layer | Fan-in | Archetype | Surface | Impact |
 |---|---|---|---|---|---|---|
-| 1 | `agentic_core/adg/artifact/edge_authority.py` | L_ADG | 3 (ArtifactPaths, multi_writer, generate_full_adg) | CENTRAL_DEPENDENCY | Observability | Core classifier; bug here poisons every snapshot |
-| 2 | `agentic_core/adg/artifact/ArtifactPaths.py` | L_ADG | ~15 | ORCHESTRATOR | Observability+State | Schema definition; consumed by every ADG writer/reader |
-| 3 | `tools/generate/generate_full_adg.py` | L_TOOLS | ~5 | ORCHESTRATOR | Observability | Final-stage backfill; misses here mean unclassified edges in shipped snapshots |
+| 1 | `agentic_core/adg/artifact/edge_authority.py` | L_ADG | 3 (ArtifactPaths, multi_writer, generate_full_adg) | CENTRAL_DEPENDENCY | Observability Surface | Core classifier; bug here poisons every snapshot |
+| 2 | `agentic_core/adg/artifact/ArtifactPaths.py` | L_ADG | ~15 | STATE_NODE | State Surface | Schema definition; consumed by every ADG writer/reader |
+| 3 | `tools/generate/generate_full_adg.py` | L_TOOLS | ~5 | ORCHESTRATOR | Observability Surface | Final-stage backfill; misses here mean unclassified edges in shipped snapshots |
 
 Layer multipliers: L_ADG ≈ 1.75 (state-criticality of canonical truth). All 3 hotspots cleared by Phase 1 by re-running the existing backfill mechanism with expanded SQL.
 

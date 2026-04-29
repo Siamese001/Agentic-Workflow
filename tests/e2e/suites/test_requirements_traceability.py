@@ -47,11 +47,11 @@ from tests.e2e.proof.validators import (
     validate_route_coverage,
     validate_trace,
 )
-from tests.e2e.test_boundary_fault_matrix import (
+from tests.e2e.suites.test_boundary_fault_matrix import (
     FAULT_MATRIX,
     _emit_boundary_fault_bundle,
 )
-from tests.e2e.test_fixture_families import FIXTURES, _emit_runtime_proof_packet
+from tests.e2e.suites.test_fixture_families import FIXTURES, _emit_runtime_proof_packet
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -775,12 +775,12 @@ class TestSpec998AcceptanceCommands:
     @pytest.mark.parametrize(
         "command_token",
         [
-            "tests.e2e.run_agentic_runtime_proof",
-            "tests.e2e.run_route_coverage_proof",
-            "tests.e2e.validate_trace_tree",
-            "tests.e2e.validate_replay",
-            "tests.e2e.validate_no_bypass",
-            "tests.e2e.validate_grounded_output",
+            "tests.e2e.harnesses.run_agentic_runtime_proof",
+            "tests.e2e.harnesses.run_route_coverage_proof",
+            "tests.e2e.validators.validate_trace_tree",
+            "tests.e2e.validators.validate_replay",
+            "tests.e2e.validators.validate_no_bypass",
+            "tests.e2e.validators.validate_grounded_output",
         ],
     )
     def test_998_command_module_is_importable(self, command_token: str) -> None:
@@ -900,7 +900,7 @@ class TestSpec999BoundaryFaults:
         # The local BoundaryFault dataclass uses minor field-name renames
         # (expected_validator <-> expected_blocking_layer); the canonical names
         # 99.9 demands are aliased here.
-        from tests.e2e.test_boundary_fault_matrix import BoundaryFault
+        from tests.e2e.suites.test_boundary_fault_matrix import BoundaryFault
         annotations = BoundaryFault.__annotations__
         alias_map = {
             "expected_blocking_layer": "expected_validator",
