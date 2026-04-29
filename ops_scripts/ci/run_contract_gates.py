@@ -320,15 +320,21 @@ def main():
         ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
         ("W3 replay determinism proof", "ops_scripts/ci/check_replay_proof.py"),
         ("W4 requirements ↔ ADG crosswalk", "ops_scripts/ci/check_requirements_adg_crosswalk.py"),
+        # Runtime-evidence stack (plan: runtime-evidence-foundation-54ad39).
+        # All three close the static-only-proof gap that the OTEL emission RCA
+        # surfaced. Pact-style contract verifier is the master gate; the orphan
+        # report is informational; the lifecycle gate enforces OTel-style
+        # experimental→stable governance for closure claims.
+        ("RE1 REQ coverage contracts (Pact-style)", "ops_scripts/ci/check_req_coverage_contracts.py"),
+        ("RE2 orphan observability nodes", "ops_scripts/ci/check_orphan_observability_nodes.py"),
+        ("RE3 closure lifecycle (experimental→stable)", "ops_scripts/ci/check_closure_lifecycle.py"),
     ]
     for label, script in assurance_gates:
         if not (ROOT / script).is_file():
             # Optional gate not yet shipped — skip without blocking.
             print(f"⚠️  {label}: script missing ({script}) — skipped")
             continue
-        returncode, stdout, stderr = run_cmd(
-            [sys.executable, str(_script(script))], cwd=ROOT
-        )
+        returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
         if returncode != 0:
             print(f"❌ {label} failed (exit={returncode})")
             if stdout:

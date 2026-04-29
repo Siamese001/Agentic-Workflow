@@ -1,0 +1,21 @@
+req_id: REQ-L6-MEMORY-PROMOTION-IFACE-001
+description: |
+  Memory promotion via the canonical interface — runs that touch persistent
+  memory must emit memory-promotion spans through the typed interface
+  (no direct cache writes bypassing the audit surface).
+status: experimental
+owner: agentic-workflow
+created: 2026-04-28
+last_promoted: null
+freshness_sla_days: 7
+expects_spans:
+  layers:
+    - L6_OBSERVABILITY
+  apps:
+    - apps_rg
+  edge_kinds:
+    - memory_promotion
+  min_count_per_run: 1
+  must_carry_trace_id: true
+references:
+  - agentic_core/runtime/contracts/req_evidence.py::emit_memory_promotion

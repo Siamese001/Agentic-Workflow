@@ -33,8 +33,15 @@ from __future__ import annotations
 import logging
 from typing import Iterable
 
-# Dedicated logger so the bridge can detect req_evidence-class records cheaply.
-_REQ_EVIDENCE_LOG = logging.getLogger("adg.req_evidence")
+def _logger_for(edge_kind: str) -> logging.Logger:
+    """Return the ``adg.<edge_kind>`` logger.
+
+    The bridge reads ``record.name[len('adg.'):]`` to derive the edge_kind,
+    so we emit on a per-edge_kind logger to preserve the semantic name in
+    the captured span (rather than collapsing every REQ emission under
+    a single ``adg.req_evidence`` channel).
+    """
+    return logging.getLogger(f"adg.{edge_kind}")
 
 
 def emit_req_evidence(
@@ -47,9 +54,10 @@ def emit_req_evidence(
 ) -> None:
     """Emit a runtime evidence marker tying the current code path to REQ_IDs.
 
-    The marker is a single DEBUG log line on ``adg.req_evidence``. The OTEL
-    lifecycle bridge captures it, extracts ``req_ids=...`` via regex, and
-    persists one row per REQ_ID to the coverage ledger.
+    Emits on ``adg.<edge_kind>`` (dynamic), so the bridge captures the
+    semantic edge_kind in the span attributes. Bridge regex pulls
+    ``req_ids=...`` from the message body and promotes to
+    ``attributes["agentic.req.ids"]``.
 
     Parameters
     ----------
@@ -83,7 +91,7 @@ def emit_req_evidence(
         return  # nothing to record
     # Comma-separated, no spaces — the bridge regex requires this format.
     req_ids_str = ",".join(req_id_tuple)
-    _REQ_EVIDENCE_LOG.debug(
+    _logger_for(edge_kind).debug(
         "req_evidence root_trace_id=%s layer=%s edge_kind=%s op=%s req_ids=%s",
         root_trace_id or "auto",
         layer,

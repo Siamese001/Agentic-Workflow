@@ -1,11 +1,11 @@
 # Static↔Runtime ADG Gap Report
 
-- **Generated:** 2026-04-29 00:55:43 UTC
-- **Static snapshot:** `C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04282026_2000.sqlite`
+- **Generated:** 2026-04-29 01:02:10 UTC
+- **Static snapshot:** `C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04282026_2058.sqlite`
 - **Lookback:** 30 days
-- **Static L5/L6 nodes scanned:** 100
+- **Static L5/L6 nodes scanned:** 200
 - **Runtime observed layers:** L0_ROUTING, L4_STATE, L6_OBSERVABILITY
-- **Orphan count:** 100
+- **Orphan count:** 200
 - **Observability coverage:** 0.0%
 
 ## Top Orphans (static-only, never observed at runtime)
