@@ -62,12 +62,29 @@ def _latest_static_snapshot() -> Path | None:
 
 
 def _ensure_static_node(con: sqlite3.Connection, *, adg_name: str) -> int:
+    """Ensure a node row exists for ``adg_name``; return its id.
+
+    Populates the 5 NOT NULL columns required by the canonical ``nodes``
+    schema (``adg_name``, ``entity_type``, ``layer``, ``identity_kind``,
+    ``confidence``, ``resolved_path``) with sensible defaults for
+    registry-virtual nodes:
+
+        entity_type='registry_node'  — synthetic, not a Python construct
+        layer='L_REGISTRY'           — registry surface (declarative)
+        identity_kind='virtual'      — synthetic root, not a real symbol
+        confidence='HIGH'            — declarative source = authoritative
+        resolved_path=''             — virtual nodes have no file path
+    """
     row = con.execute("SELECT id FROM nodes WHERE adg_name = ?", (adg_name,)).fetchone()
     if row is not None:
         return int(row[0])
     cur = con.execute(
-        "INSERT INTO nodes (adg_name, resolved_path) VALUES (?, ?)",
-        (adg_name, ""),
+        """
+        INSERT INTO nodes (
+            adg_name, entity_type, layer, identity_kind, confidence, resolved_path
+        ) VALUES (?, 'registry_node', 'L_REGISTRY', 'virtual', 'HIGH', '')
+        """,
+        (adg_name,),
     )
     return int(cur.lastrowid or 0)
 

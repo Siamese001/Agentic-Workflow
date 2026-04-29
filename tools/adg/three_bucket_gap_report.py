@@ -130,12 +130,14 @@ def _classify_query(con: sqlite3.Connection) -> str:
     runtime_join = ""
     runtime_present_col = "0 AS in_runtime"
     if has_runtime:
+        # v_runtime_proof exposes static_edge_id (FK to edges.id) — clean
+        # 1:1 join, no name-resolution needed. Falls back to a name-based
+        # join if static_edge_id is NULL/unset on a row.
         runtime_join = (
             "LEFT JOIN ("
-            "  SELECT src_id, dst_id, relation_type, 1 AS rt FROM v_runtime_proof "
-            "  WHERE attesting_trace_count >= 1"
-            ") rt ON rt.src_id = e.src_id AND rt.dst_id = e.dst_id "
-            "AND rt.relation_type = e.relation_type "
+            "  SELECT static_edge_id, 1 AS rt FROM v_runtime_proof "
+            "  WHERE attesting_trace_count >= 1 AND static_edge_id IS NOT NULL"
+            ") rt ON rt.static_edge_id = e.id "
         )
         runtime_present_col = "MAX(COALESCE(rt.rt,0)) AS in_runtime"
 

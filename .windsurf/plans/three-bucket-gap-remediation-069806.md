@@ -1,6 +1,6 @@
 # Three-Bucket ADG Gap Remediation
 
-Status: **Active**
+Status: **Active — W1 complete, W2-W8 pending**
 Created: 2026-04-29
 Owner: Cascade
 Plan slug: `three-bucket-gap-remediation-069806`
@@ -44,7 +44,7 @@ Per the bucket-coverage table (chat 2026-04-29 13:50 UTC):
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| **W1 — Wire registry resolvers** | P1.1 stage call, P1.2 edge persistence, P1.3 tests, P1.4 verify | Add `resolve_all_registries()` invocation into `generate_full_adg.py` final-stage block; persist returned edges into `edges` with `bucket='registry'`, `authority_status='AUTHORITATIVE_REGISTRY'`; add round-trip test | ~6,000 | `resolve_all_registries()` returns the documented shape (route_contract + agent_spec + mcp_config edges); `edges` schema accepts `bucket='registry'` (already does, per W7 schema) | Pending | Next snapshot reports `bucket='registry'` count > 0; `three_bucket_gap_report.py` shows REGISTRY_DRIFT and CONFIG_BLOAT classes populated |
+| **W1 — Wire registry resolvers** | P1.1 stage call, P1.2 edge persistence, P1.3 tests, P1.4 verify | Add `resolve_all_registries()` invocation into `generate_full_adg.py` final-stage block; persist returned edges into `edges` with `bucket='registry'`, `authority_status='AUTHORITATIVE_REGISTRY'`; add round-trip test | ~6,000 | `resolve_all_registries()` returns the documented shape (route_contract + agent_spec + mcp_config edges); `edges` schema accepts `bucket='registry'` (already does, per W7 schema) | **Done 2026-04-29** | ✅ Live snapshot now has 33 registry edges; gap report shows CONFIG_BLOAT=33; 12/12 new tests + 23/23 existing resolver tests green |
 | **W2 — Synthetic OTel traces** | P2.1 pytest OTel exporter fixture, P2.2 `runtime_adg_store` seeder, P2.3 regen + verify | Build a pytest plugin / conftest that exports OTel spans into `runtime_adg_store` during a designated test run (`pytest -m runtime_observability`); regenerate ADG against the seeded store to validate the W1 runtime view path produces non-empty `v_runtime_proof` | ~10,000 | `runtime_adg_store` exposes a writable interface (or has a seed helper); pytest's OTel plugin (`pytest-opentelemetry`) is acceptable | Pending | After test run + regen: `v_runtime_proof.attesting_trace_count >= 1` for at least 50 distinct (src,dst,relation) tuples; gap report classes DEAD_PATH and TRIPLET_ATTESTED both populated |
 | **W3 — GenAI emitter migration** | P3.1 inventory 20 sites, P3.2 migrate top-10 by call density, P3.3 migrate remaining 10, P3.4 advisory→threshold flip preview | Replace ad-hoc OTel span emission across the 20 detected sites with imports from `agentic_core.L6_observability.semconv.gen_ai`; closes the W9 deferred-scope item | ~14,000 | `gen_ai.py` helper API stable (it is — 27/27 tests pass); migration is mechanical (helper exposes attribute keys + span builders) | Pending | `check_otel_genai_semconv_coverage` reports ≥80% emitter alignment; coverage gate ready to flip strict |
 | **W4 — Strict-mode flip** | P4.1 set `CONSUMER_MODE_GATE_STRICT=1` default, P4.2 set `RUNTIME_PROOF_STRICT=1` default, P4.3 set `OTEL_SEMCONV_STRICT=1` default, P4.4 ADG_CERTIFIED strict run | Flip the three currently-advisory gates to fail-closed defaults; update `run_contract_gates.py` and `check_adg_certified.py` env-var wiring; document the rollback knob | ~3,000 | W1, W2, W3 all green so strict mode does not regress | Pending | `python ops_scripts/ci/check_adg_certified.py` exits 0 in strict mode against current snapshot; CI surfaces strict-mode failure on any regression |
@@ -57,10 +57,10 @@ Per the bucket-coverage table (chat 2026-04-29 13:50 UTC):
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| **P1.1** | Pipeline stage call | `tools/generate/generate_full_adg.py` (~30 lines added between W1 view-builder block and P4 watchlist) | Determining canonical insertion point — must run after backfill, before MV materialization re-runs | 2,000 | Pending |
-| **P1.2** | Edge persistence | `agentic_core/adg/registry/registry_resolvers.py` (add SQLite writer if not present) + `tools/generate/generate_full_adg.py` (call site) | Schema invariants — registry edges must satisfy `bucket='registry'`, `authority='registry'`, `authority_status='AUTHORITATIVE_REGISTRY'` | 2,500 | Pending |
-| **P1.3** | Round-trip test | `tests/integration/tools/generate/test_registry_pipeline_integration.py` (new) | Need a synthetic registry fixture; cannot rely on live MCP config in tests | 1,000 | Pending |
-| **P1.4** | Verify | regen + read snapshot via `audit_three_bucket_counts.py` | — | 500 | Pending |
+| **P1.1** | Pipeline stage call | `tools/generate/generate_full_adg.py` (~30 lines inserted after r6 enrichment, before final edge-authority backfill) | Insertion site picked to mirror A6/A12/r6 supplementary-scanner pattern | 2,000 | **Done** |
+| **P1.2** | Edge persistence | `tools/adg/registry_bucket_lift.py` `_ensure_static_node()` updated to satisfy 5 NOT NULL columns on `nodes` (entity_type/layer/identity_kind/confidence/resolved_path) | Schema drift — original lift predated NOT NULL columns; caught by live regen | 2,500 | **Done** |
+| **P1.3** | Round-trip test | `tests/unit/tools/adg/test_registry_bucket_lift.py` (12 tests; canonical NOT NULL fixture mirrors prod schema) | Synthetic fixture must match prod schema or false greens hide schema drift | 1,000 | **Done** |
+| **P1.4** | Verify | Live lift against `adg_indexed_04292026_1513.sqlite` → 33 edges inserted, 36 nodes stubbed; gap report confirms CONFIG_BLOAT=33 | — | 500 | **Done** |
 | **P2.1** | OTel pytest fixture | `tests/conftest.py` (add `pytest_opentelemetry` exporter wiring under `--otel-export` flag) | OTel exporter coexistence with existing logging | 4,000 | Pending |
 | **P2.2** | Trace seeder | `tests/fixtures/runtime_adg_seeder.py` (new) | Seeder needs to write to `runtime_adg_store` API (or its underlying SQLite if writer interface absent) | 4,000 | Pending |
 | **P2.3** | Regen + verify | run `pytest -m runtime_observability` then `python tools/generate/generate_full_adg.py` | Test isolation — seeded traces must not leak into prod traces | 2,000 | Pending |

@@ -972,6 +972,35 @@ def generate_full_adg(
     except (ImportError, OSError, _phase2_sqlite3.Error) as _e:
         print(f"[ADG] r6 enrichment: SKIPPED ({type(_e).__name__}: {_e})")
 
+    # --- Registry-bucket lift (W1 of plan three-bucket-gap-remediation-069806) ---
+    # Resolvers in agentic_core/adg/registry/registry_resolvers.py read
+    # declarative sources (.windsurf/mcp_config.json, apps_*/config/agent_specs*.json,
+    # agentic_core/L0_routing/config/v15_policy_pack.json) and emit
+    # RegistryEdge records. tools/adg/registry_bucket_lift.lift() persists
+    # them into `edges` with bucket='registry',
+    # authority='registry_declared', and the W1 closed-enum resolution_status
+    # / authority_status. Idempotent: dedup by (src_id, dst_id, relation_type,
+    # source_file, authority='registry_declared').
+    #
+    # Positioning: AFTER the supplementary scanners (A6/A12/r6) and BEFORE
+    # the final edge-authority backfill. The lift writes its own
+    # authority/bucket/resolution columns, so the final backfill (which fills
+    # NULL authority for the supplementary-scanner rows) does not disturb
+    # registry rows. Fail-soft per the supplementary-scanner contract.
+    try:
+        from tools.adg.registry_bucket_lift import lift as _registry_lift  # noqa: PLC0415
+
+        _reg_stats = _registry_lift(static_snapshot=paths.sqlite, dry_run=False)
+        print(
+            f"[ADG] registry-bucket lift: "
+            f"resolved={_reg_stats.edges_resolved} "
+            f"inserted={_reg_stats.edges_inserted} "
+            f"deduped={_reg_stats.edges_skipped_duplicate} "
+            f"nodes_stubbed={_reg_stats.nodes_stubbed}"
+        )
+    except (ImportError, OSError, _phase2_sqlite3.Error, FileNotFoundError) as _e:
+        print(f"[ADG] registry-bucket lift: SKIPPED ({type(_e).__name__}: {_e})")
+
     # --- Final edge-authority backfill (2026-04-28 graph-authority directive) ---
     # The supplementary scanners above (entrypoint, gate_self_test, r6) insert
     # edges into the canonical `edges` table AFTER ArtifactPaths._write_sqlite
