@@ -108,6 +108,15 @@ _v2_override_re = re.compile(r"override\s*=\s*(?P<v>true|false)", re.IGNORECASE)
 _v2_latency_re = re.compile(r"latency_ms\s*=\s*(?P<v>\d+)")
 _v2_principle_re = re.compile(r"principle\s*=\s*(?P<v>[^,\n]{1,80})")
 _v2_precedent_re = re.compile(r"precedent\s*=\s*(?P<v>strong|suggestive|none)", re.IGNORECASE)
+# W3.1 — exit_criteria=<JSON-or-text>; supports two forms:
+#   exit_criteria={"tests_must_pass": ["..."], "p_count_max": 0}
+#   exit_criteria=tests_pass; p_count_max:0; rollback_window_h:24
+# Stored verbatim in exit_criteria_json (string column). Parser is permissive;
+# downstream binders normalise. Stops at the next ", <key>=" boundary.
+_v2_exit_criteria_re = re.compile(
+    r"exit_criteria\s*=\s*(?P<v>(?:\{[^}]*\}|[^,\n][^,\n]*?))(?=,\s*\w+\s*=|\s*$)",
+    re.MULTILINE,
+)
 
 
 def _parse_v2_tail(tail: str) -> dict[str, object]:
@@ -143,6 +152,12 @@ def _parse_v2_tail(tail: str) -> dict[str, object]:
     m = _v2_precedent_re.search(tail)
     if m:
         out["precedent_verdict"] = m.group("v").strip().lower()
+    # W3.1 — exit_criteria_json (string; downstream binders normalise to JSON)
+    m = _v2_exit_criteria_re.search(tail)
+    if m:
+        raw = m.group("v").strip()
+        if raw:
+            out["exit_criteria_json"] = raw[:500]
     return out
 
 
@@ -249,8 +264,7 @@ def _read_fresh_test_signal() -> dict[str, object] | None:
     return data if isinstance(data, dict) else None
 
 
-def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str,
-                         commit_sha: str, status: str) -> None:
+def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str, commit_sha: str, status: str) -> None:
     """W3.3 — Bind an outcome row IMMEDIATELY at capture time.
 
     Runs only when the marker carried status='executed' AND a commit SHA is
@@ -275,8 +289,13 @@ def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str,
         r = subprocess.run(
             ["git", "show", "-s", "--format=%s", commit_sha],
             cwd=str(repo_root),
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            shell=False, timeout=5, check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,
+            timeout=5,
+            check=False,
         )
         if r.returncode == 0:
             subject = r.stdout.strip()
@@ -319,7 +338,10 @@ def _direct_bind_outcome(conn: sqlite3.Connection, decision_id: str,
                     pattern_promotion_eligible, outcome_label, bound_at, outcome_notes)
                VALUES (?, 1, ?, ?, ?, 0, ?, '[]', '[]', 0, 0, ?, ?, ?)""",
             (
-                decision_id, tests_passed, regression_found, rollback_required,
+                decision_id,
+                tests_passed,
+                regression_found,
+                rollback_required,
                 json.dumps([commit_sha]),
                 label,
                 datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -354,6 +376,7 @@ def _insert_scope_row(conn: sqlite3.Connection, decision_id: str, repo_area: str
     except sqlite3.Error:
         # guardian: allow-silent-swallow -- scope insert: non-fatal, capture already succeeded
         pass
+
 
 _DECISION_TYPE_KEYWORDS: list[tuple[str, str]] = [
     ("architecture", "architecture_choice"),
@@ -403,7 +426,9 @@ CREATE TABLE IF NOT EXISTS decisions (
     principle_at_stake         TEXT,
     -- meta-learning W1 (plan c8f4a2): precedent injection telemetry
     precedent_verdict          TEXT,
-    precedent_match_count      INTEGER
+    precedent_match_count      INTEGER,
+    -- W3.1 (plan 1f4c8a): per-decision testable success conditions
+    exit_criteria_json         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS decision_scope (
@@ -616,14 +641,14 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
              selected_option_id, options_json, status,
              confidence_top, confidence_dominance_gap, override_vs_recommendation,
              selection_latency_ms, principle_at_stake,
-             precedent_verdict, precedent_match_count)
+             precedent_verdict, precedent_match_count, exit_criteria_json)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
              :selected_option_id, :options_json, :status,
              :confidence_top, :confidence_dominance_gap, :override_vs_recommendation,
              :selection_latency_ms, :principle_at_stake,
-             :precedent_verdict, :precedent_match_count)
+             :precedent_verdict, :precedent_match_count, :exit_criteria_json)
         """,
         {
             "decision_id": decision_id,
@@ -644,6 +669,7 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
             "principle_at_stake": v2.get("principle_at_stake"),
             "precedent_verdict": v2.get("precedent_verdict"),
             "precedent_match_count": v2.get("precedent_match_count"),
+            "exit_criteria_json": v2.get("exit_criteria_json"),
         },
     )
     conn.execute(
@@ -659,7 +685,10 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
-        except (sqlite3.Error, TypeError):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
+        except (
+            sqlite3.Error,
+            TypeError,
+        ):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
             pass
     return True
 
@@ -736,7 +765,10 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     if _ensure_row_hash is not None:
         try:
             _ensure_row_hash(conn, decision_id)
-        except (sqlite3.Error, TypeError):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
+        except (
+            sqlite3.Error,
+            TypeError,
+        ):  # guardian: allow-specific-multi -- integrity seal: fail-open (capture succeeded); TypeError covers in-memory conns without row_factory
             pass
     return True
 
@@ -778,8 +810,7 @@ def main() -> int:
                 report = _validate_marker(text)
                 if not report["valid"]:
                     _log_marker_violation(report, context="capture_hook")
-                    _debug_log(f"marker_validator: valid={report['valid']} "
-                               f"found={report['markers_found']}")
+                    _debug_log(f"marker_validator: valid={report['valid']} found={report['markers_found']}")
             except (ValueError, OSError):  # guardian: allow-specific-multi -- validator: non-fatal, fail-open
                 pass
 
@@ -796,7 +827,10 @@ def main() -> int:
         finally:
             conn.close()
 
-    except (OSError, ValueError):  # guardian: allow-silent-swallow -- Author-Gate capture main: non-fatal, fail-open
+    except (
+        OSError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- Author-Gate capture main: non-fatal, fail-open
         pass
 
     return 0

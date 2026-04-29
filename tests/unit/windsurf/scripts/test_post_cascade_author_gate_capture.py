@@ -464,6 +464,49 @@ class TestRealPayloadEndToEnd:
         assert len(rows) >= 1
         conn.close()
 
+    def test_v2_exit_criteria_extracted_simple(self):
+        """W3.1: exit_criteria=<text> populates exit_criteria_json column."""
+        marker = (
+            "DECISION_CAPTURED: type=refactor_scope, repo_area=tools/foo, "
+            "selected=opt-A, outcome=executed, "
+            "exit_criteria=tests_pass; p_count_max:0; rollback_window_h:24"
+        )
+        conn = _make_in_memory_conn()
+        assert detect_and_capture(marker, conn) is True
+        ec = conn.execute("SELECT exit_criteria_json FROM decisions").fetchone()[0]
+        assert ec is not None
+        assert "tests_pass" in ec
+        assert "p_count_max:0" in ec
+        conn.close()
+
+    def test_v2_exit_criteria_extracted_json(self):
+        """W3.1: exit_criteria={...} JSON form is preserved verbatim."""
+        marker = (
+            "DECISION_CAPTURED: type=refactor_scope, repo_area=tools/bar, "
+            "selected=opt-B, outcome=executed, "
+            'exit_criteria={"tests_must_pass": ["tests/unit/foo/"], "p_count_max": 0}, '
+            "principle=test-discipline"
+        )
+        conn = _make_in_memory_conn()
+        assert detect_and_capture(marker, conn) is True
+        row = conn.execute("SELECT exit_criteria_json, principle_at_stake FROM decisions").fetchone()
+        assert row[0] is not None
+        assert "tests_must_pass" in row[0]
+        assert row[1] == "test-discipline"
+        conn.close()
+
+    def test_v2_exit_criteria_absent_leaves_null(self):
+        """No exit_criteria= field => exit_criteria_json stays NULL."""
+        marker = (
+            "DECISION_CAPTURED: type=refactor_scope, repo_area=tools/baz, "
+            "selected=opt-C, outcome=executed, principle=foo"
+        )
+        conn = _make_in_memory_conn()
+        assert detect_and_capture(marker, conn) is True
+        ec = conn.execute("SELECT exit_criteria_json FROM decisions").fetchone()[0]
+        assert ec is None
+        conn.close()
+
     def test_real_payload_dedup(self):
         """Sending the same payload twice produces exactly one DB row."""
         text = _extract_response_text(_REAL_HOOK_PAYLOAD)
