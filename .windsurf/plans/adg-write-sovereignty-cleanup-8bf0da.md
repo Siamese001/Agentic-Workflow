@@ -509,7 +509,130 @@ The 345 residue is now small enough for a single-wave refactor session:
 - L_APP enterprise orchestrators (4 files × 4-6 violations) — wrap report
   writes in a thin `ReportWriter` adapter that internally uses UWG
 - L0 `GOLDEN_SEAL_FILE.write_text` — design decision (integrity sealing)
-- L5 `ViolationConstraint` (residual class-instantiation false positive
-  not caught by W3) — needs visitor change to skip PascalCase Call targets
+- ~~L5 `ViolationConstraint` (residual class-instantiation false positive
+  not caught by W3) — needs visitor change to skip PascalCase Call targets~~
+  ✅ **CLOSED in W4 (2026-04-28)** — see W4 Outcome below
 - L_APP `apps_underwriting_ai/integrations/storage_adapter.py` — genuine
   refactor through UWG
+
+## W4 Outcome (2026-04-28) — PascalCase class-instantiation MV exclusion
+
+**Commit**: `92813989f4`
+**Snapshot**: `adg_indexed_04282026_2148.sqlite`
+
+### Root cause
+
+`_GovernancePlaneVisitor` (`agentic_core/adg/extraction/visitors/governance.py`)
+emits `writes_through` edges for **any Call** to a symbol in
+`GOVERNANCE_WRITE_SYMBOLS`. That set intentionally includes 22 PascalCase
+dataclass types (`ViolationConstraint`, `CorpusRecord`, `ExecutionContext`,
+`SurgicalContext`, `ProposalCommitter`, `TraceFeatureRecord`, `KeyRecord`,
+`MutationDiffRecord`, `ReplayFailureRecord`, `PromptOutcomeRecord`,
+`HealingOutcomeIntakeRecord`, `PolicyUpdateProposal`, `HealingInput`,
+`HealingSuccessRateStore`, etc.) for governance-symbol-traffic tracking.
+
+These are **type instantiations** returning new objects, NOT write side
+effects. But `mv_write_sovereignty_paths` (and downstream
+`mv_new_write_bypass_paths`) treated all `writes_through` with
+`is_uwg_routed=0` as bypass candidates → 54 false positives.
+
+### Fix
+
+MV-side exclusion in `tools/generate/materialized_views/phase_a_path_authority.py`:
+
+```sql
+AND NOT (
+    e.relation_type = 'writes_through'
+    AND e.symbol NOT LIKE '%.%'                             -- single identifier
+    AND substr(e.symbol, 1, 1) BETWEEN 'A' AND 'Z'          -- starts uppercase
+    AND lower(e.symbol) != e.symbol                         -- has uppercase
+    AND upper(e.symbol) != e.symbol                         -- has lowercase
+)
+```
+
+This keeps `writes_through` real writes flagged:
+- `obj.write_text` (has dot)
+- `execute_write`, `commit_write` (lowercase start)
+
+while removing PascalCase class-instantiation false positives:
+- `ViolationConstraint`, `CorpusRecord`, `ExecutionContext`, etc.
+
+### Impact
+
+| Metric | Pre-W4 (2133) | Post-W4 (2148) | Δ |
+|---|---:|---:|---:|
+| `is_new=1` violations | 345 | **291** | **−54 (−15.7%)** |
+| `writes_to`+`writes_through` edges | 4003 | 4005 | +2 (noise) |
+
+### Cumulative across full series
+
+| Stage | Violations | Δ |
+|---|---:|---:|
+| Pre-W1.1 baseline | 1483 | — |
+| Post-W1.1 (`ad0ee4f`) | 1370 | −113 |
+| Post-W1.2 (`69d22c9`) | 905 | −465 |
+| Post-W2 (`975570c`) | 795 | −110 |
+| Post-W3 (`520ee86`) | 345 | −450 |
+| Post-W4 (`92813989`) | **291** | −54 |
+| **Total** | | **−1192 (−80.4%)** |
+
+### Top-15 GENUINE residue post-W4 (cleaner — pure real writes)
+
+| Rank | Count | Layer | Symbol | File |
+|---:|---:|---|---|---|
+| 1 | 6 | L0 | `cls.GOLDEN_SEAL_FILE.write_text` | `agentic_core/L0_routing/utils/core_integrity_util.py` |
+| 2 | 6 | L_APP | `path.write_text` | `apps_eval/reasoning/enterprise_eval_orchestrator.py` |
+| 3 | 6 | L_APP | `path.write_text` | `apps_rfp/reasoning/enterprise_orchestrator.py` |
+| 4 | 4 | L2 | `open` | `agentic_core/L2_execution/utils/async_file_ops.py` |
+| 5 | 4 | L_UNKNOWN | `open` | `apps_underwriting_ai/integrations/storage_adapter.py` |
+| 6 | 4 | L_APP | `path.write_text` | `apps_exec/reasoning/enterprise_brief_orchestrator.py` |
+| 7 | 4 | L_APP | `path.write_text` | `apps_research/reasoning/enterprise_research_orchestrator.py` |
+| 8 | 4 | L5 | `write_text` | `agentic_core/L5_safety/validators/dependencygraph_validator.py` |
+| 9 | 3 | L_SL | `compute_content_hash` | `system_learning/engines/embedding_corpus_extraction.py` |
+| 10 | 3 | L_SHARED | `create_artifact` | `agentic_core/utils/workflow_engines/drift_monitor.py` |
+| 11 | 3 | L0 | `get_validated_project_root` | `agentic_core/L0_routing/config/path_constants.py` |
+| 12 | 3 | L_PG | `open` | `agentic_core/knowledge/canonical/canonical_store.py` |
+| 13 | 3 | L_SL | `open` | `system_learning/ml_integration/training_pipeline.py` |
+| 14 | 3 | L_APP | `self.log_event` | `apps_shared/utils/security_config_util.py` |
+| 15 | 3 | L_SL | `self.open` | `system_learning/engines/local_faiss_store.py` |
+
+The `ViolationConstraint`, `CorpusRecord`, `ExecutionContext`, `SurgicalContext`,
+`ProposalCommitter`, etc. that dominated the W3 top-15 are GONE.
+
+### Layer rollup post-W4
+
+| Layer | Pre-W4 | Post-W4 | Δ |
+|---|---:|---:|---:|
+| L_APP | 79 | 79 | 0 |
+| L5 | 75 | 55 | −20 |
+| L_SL | 70 | 51 | −19 |
+| L0 | 41 | 34 | −7 |
+| L2 | 25 | 23 | −2 |
+| L3 | 13 | 7 | −6 |
+| L_SHARED | 17 | 17 | 0 |
+| L6 | 9 | 9 | 0 |
+| L_PG | 7 | 7 | 0 |
+| L_UNKNOWN | 5 | 5 | 0 |
+| L1 | 3 | 3 | 0 |
+| L_RUNTIME | 1 | 1 | 0 |
+| **TOTAL** | **345** | **291** | **−54** |
+
+L5 and L_SL took the biggest hits — these are precisely the layers where
+`ViolationConstraint`, `CorpusRecord`, `HealingInput`, etc. were instantiated.
+
+### Regression test coverage
+
+47/47 phase A MV tests passing including new W4 regression
+`test_write_sovereignty_excludes_pascalcase_class_instantiation` that
+verifies:
+- 7 PascalCase no-dot symbols → excluded (not flagged)
+- 1 PascalCase WITH dot (`self.path.write_text`) → still flagged
+- 2 lowercase top-level (`execute_write`, `commit_write`) → still flagged
+
+### Remaining 291 violations — all genuine, ready for refactor
+
+All four W4-original-scope items remain valid follow-ups (now smaller):
+- L_APP enterprise orchestrators (~24 violations) — `ReportWriter` adapter
+- L0 `GOLDEN_SEAL_FILE.write_text` (6) — integrity-sealing design decision
+- `apps_underwriting_ai/integrations/storage_adapter.py` (~4) — UWG refactor
+- L5 `dependencygraph_validator.py` `write_text` (4) — UWG or sanctioned adapter
