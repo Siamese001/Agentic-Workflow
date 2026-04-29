@@ -112,6 +112,33 @@ _UWG_SYMBOL_FRAGMENTS = (
     "UniversalWrite",
 )
 
+# Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations
+# produce report artifacts, proof bundles, or output renderings, not durable
+# state mutations per the canonical DurableWriteContext definition in
+# docs/reference/00B_L4_State_Archive_and_UWG/00B.7a_L4_UWG_Durable_Write_Context_Invariant.md.
+# Excluded as a 2026-04-28 W1.2 finding when the Author-Gate revisit (option D)
+# tightened mv_write_sovereignty_paths scope. The canonical durable-write
+# pipeline binds Exit CommitRequest -> UWG -> L4 state store -> audit ledger
+# -> replay snapshot -> retrieval/cache invalidation; output artifacts are
+# none of these surfaces.
+_NON_DURABLE_WRITER_PATH_FRAGMENTS = (
+    "/runtime/prove_requirements/",  # Runtime proof writers (proof artifacts only)
+    "/proof/",                        # Proof-harness writers
+    "/outputs/",                      # App-layer rendered outputs (briefs, reports)
+    "/reports/",                      # Report rendering files
+)
+
+# Path fragments identifying CANONICAL LAYER-WRITER ABSTRACTIONS — these files
+# implement the layer's own write abstraction and should not be flagged for
+# writing to their own layer. The MV scope is bypasses BY upstream callers,
+# not the implementations of the layer's own state-store. Caught alongside
+# the within-layer (src.layer == dst.layer) filter applied at MV construction.
+_CANONICAL_LAYER_WRITER_PATH_FRAGMENTS = (
+    "/L4_state/",         # L4 state store implementations
+    "system_learning/engines/l4_state_writer",  # System-learning L4 writer impls
+    "/L4_state/uwg/",     # UWG itself sits inside L4
+)
+
 _L2_PHASE_KEYWORDS: list[tuple[str, str]] = [
     ("pre_audit", "pre_audit"),
     ("discovery", "discovery"),
@@ -156,6 +183,30 @@ def _build_uwg_symbol_clause(col: str) -> str:
 def _build_uwg_routed_clause(path_col: str, symbol_col: str) -> str:
     """Combined UWG-routed predicate: caller path OR symbol matches a UWG fragment."""
     return f"({_build_uwg_path_clause(path_col)} OR {_build_uwg_symbol_clause(symbol_col)})"
+
+
+def _build_non_durable_target_clause(col: str) -> str:
+    """SQL fragment matching ``col`` against any NON-DURABLE write target path.
+
+    A row matched by this clause should be EXCLUDED from
+    ``mv_write_sovereignty_paths`` because the write produces a report or proof
+    artifact, not a durable state mutation. See
+    ``_NON_DURABLE_WRITER_PATH_FRAGMENTS`` for the canonical list.
+    """
+    frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _NON_DURABLE_WRITER_PATH_FRAGMENTS)
+    return f"({frags})"
+
+
+def _build_canonical_layer_writer_clause(col: str) -> str:
+    """SQL fragment matching ``col`` against any CANONICAL layer-writer path.
+
+    A row matched by this clause is the layer's own state-store implementation
+    and should be EXCLUDED from ``mv_write_sovereignty_paths``. UWG sits inside
+    L4 and authorizes upstream callers; flagging L4's own writer for writing to
+    L4 surfaces is a within-layer false positive.
+    """
+    frags = " OR ".join(f"{col} LIKE '%{f}%'" for f in _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS)
+    return f"({frags})"
 
 
 def _spine_layers_in() -> str:
@@ -424,6 +475,12 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           AND src.resolved_path NOT LIKE 'tests/%'
           AND src.resolved_path NOT LIKE 'tools/%'
           AND src.resolved_path NOT LIKE 'ops_scripts/%'
+          -- 2026-04-28 W1.2 option D extension: exclude nested tests and
+          -- scripts directories anywhere in the tree. Apps and shared modules
+          -- ship their own `tests/` and `scripts/` subtrees that are NOT
+          -- runtime code and cannot route through UWG by construction.
+          AND src.resolved_path NOT LIKE '%/tests/%'
+          AND src.resolved_path NOT LIKE '%/scripts/%'
           -- Non-runtime tooling / hook exclusions (2026-04-23):
           -- These paths execute outside the agentic runtime and cannot route through
           -- UWG by construction. They must still satisfy their own disciplines
@@ -438,6 +495,15 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           AND e.symbol NOT LIKE '%.mkdir'
           AND e.symbol NOT LIKE '%.copy'
           AND e.symbol NOT LIKE '%.create'
+          -- 2026-04-28 W1.2 Author-Gate option D: tighten MV scope to canonical
+          -- durable-write definition. Exclude (a) writes from non-durable target
+          -- paths (proof/, outputs/, reports/, runtime/prove_requirements/) and
+          -- (b) the layer's own canonical writer abstractions (within-L4 writes
+          -- where src is L4's own state-store impl). Refer to
+          -- _NON_DURABLE_WRITER_PATH_FRAGMENTS and
+          -- _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS for the canonical lists.
+          AND NOT {_build_non_durable_target_clause("src.resolved_path")}
+          AND NOT {_build_canonical_layer_writer_clause("src.resolved_path")}
         ORDER BY severity, writer_layer
     """)
 

@@ -330,6 +330,107 @@ class TestPhaseAAuthority:
         assert row[0] == 1, "_wg.write_text MUST be UWG-routed (symbol-based detection)"
         assert row[1] == "ok", "is_uwg_routed=1 implies severity=ok, not warning"
 
+    def test_write_sovereignty_excludes_non_durable_targets(self, tmp_path: Path) -> None:
+        """Writes from runtime/prove_requirements/, proof/, outputs/, and reports/
+        paths are EXCLUDED from mv_write_sovereignty_paths because they produce
+        report/proof artifacts, not durable state per the canonical
+        DurableWriteContext invariant.
+
+        2026-04-28 W1.2 Author-Gate option D regression.
+        """
+        non_durable_paths = [
+            "agentic_core/runtime/prove_requirements/writers.py",
+            "apps_eval/proof/proof_runner.py",
+            "apps_rg/outputs/brief_renderer.py",
+            "apps_research/reports/render.py",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, path in enumerate(non_durable_paths, start=1):
+            _node(conn, i, f"writer{i}", "L_APP", path)
+            _edge(conn, i, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for path in non_durable_paths:
+            assert path not in flagged, (
+                f"non-durable write target {path!r} MUST be excluded "
+                f"from mv_write_sovereignty_paths"
+            )
+
+    def test_write_sovereignty_excludes_nested_tests_and_scripts(self, tmp_path: Path) -> None:
+        """Files under any */tests/* or */scripts/* path are EXCLUDED.
+
+        Apps and shared modules ship their own `tests/` and `scripts/` subtrees
+        that are NOT runtime code and cannot route through UWG by construction.
+
+        2026-04-28 W1.2 Author-Gate option D extension regression.
+        """
+        non_runtime_paths = [
+            "apps_shared/tests/test_shared_services.py",
+            "apps_eval/tests/test_engines.py",
+            "apps_rg/scripts/rg_json_miner.py",
+            "apps_research/scripts/export_to_docx.py",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for i, path in enumerate(non_runtime_paths, start=1):
+            _node(conn, i, f"writer{i}", "L_APP", path)
+            _edge(conn, i, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute("SELECT writer_file FROM mv_write_sovereignty_paths").fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for path in non_runtime_paths:
+            assert path not in flagged, (
+                f"non-runtime path {path!r} (nested tests/ or scripts/) MUST be "
+                f"excluded from mv_write_sovereignty_paths"
+            )
+
+    def test_write_sovereignty_excludes_canonical_layer_writers(self, tmp_path: Path) -> None:
+        """The canonical layer-writer abstractions are EXCLUDED. UWG sits inside
+        L4 and authorizes upstream callers; flagging L4's own state-store impl
+        for writing to L4 is a within-layer false positive.
+
+        2026-04-28 W1.2 Author-Gate option D regression.
+        """
+        canonical_writers = [
+            "agentic_core/L4_state/store.py",
+            "agentic_core/L4_state/uwg/durable_write_gateway.py",
+            "system_learning/engines/l4_state_writer.py",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/sink.py")
+        for i, path in enumerate(canonical_writers, start=1):
+            _node(conn, i, f"writer{i}", "L4", path)
+            _edge(conn, i, 99, "writes_to", symbol="self._write")
+        conn.commit()
+        conn.close()
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for path in canonical_writers:
+            assert path not in flagged, (
+                f"canonical layer-writer {path!r} MUST be excluded from "
+                f"mv_write_sovereignty_paths (within-layer false positive)"
+            )
+
     def test_write_sovereignty_uwg_symbol_variants(self, tmp_path: Path) -> None:
         """Validate every documented UWG symbol fragment is detected."""
         variants = [
