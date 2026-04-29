@@ -125,7 +125,28 @@ class UniversalWriteGateway:
         actor_id: str = "uwg",
         run_id: str = "",
         parent_snapshot_hash: str = "",
+        *,
+        permission_ladder: object | None = None,
+        egress_firewall: object | None = None,
     ):
+        """Construct UWG.
+
+        Optional L5 wiring (added 2026-04-29 per ADR-070 production-wiring deferred-scope):
+
+            permission_ladder: any object implementing the L5
+                `PermissionLadder` Protocol (see ``agentic_core.L5_safety.permissions``).
+                When non-None, ``write_through()`` consults ``ladder.check(actor_id,
+                path, MUTATE)`` BEFORE the existing path/permission checks. Default
+                None preserves legacy behavior — no L5 enforcement applied.
+
+            egress_firewall: any object implementing the L5 `EgressFirewall`
+                Protocol (see ``agentic_core.L5_safety.egress``). When non-None
+                AND the write target is recognized as user-facing (path under
+                ``artifacts/published/`` or starting with ``egress:``), the
+                firewall inspects the data via ``inspect(text, target_kind)``
+                before commit. Findings = HARD BLOCK (PermissionError raised).
+                Default None preserves legacy behavior.
+        """
         self.replay_mode = replay_mode
         self.actor_id = actor_id
         self.run_id = run_id
@@ -143,6 +164,9 @@ class UniversalWriteGateway:
             "code_interpreter.run_python",
         }
         self._guardrail_gate: GuardrailGate = GuardrailGate(policy_hash=policy_hash, strict_mode=False)
+        # L5 wiring (optional, default None = no behavior change)
+        self._permission_ladder = permission_ladder
+        self._egress_firewall = egress_firewall
 
         # Wave 5: Enforce 4-field requirement for ADG writes
         self._validate_four_field_requirements()
@@ -243,6 +267,29 @@ class UniversalWriteGateway:
         self._guardrail_gate.check(operation="write_through", target=path)
         if self._frozen:
             raise PermissionError("REQ-091: UWG write_through blocked — gateway is frozen.")
+
+        # L5/G06 — graduated permission ladder check (no-op if ladder=None)
+        if self._permission_ladder is not None:
+            from agentic_core.L5_safety.permissions import PermissionRung  # lazy import
+            verdict = self._permission_ladder.check(
+                actor_id or self.actor_id, path, PermissionRung.MUTATE,
+            )
+            if not verdict.allowed:
+                raise PermissionError(
+                    f"REQ-L5-G06: UWG write_through blocked by PermissionLadder — {verdict.reason}",
+                )
+
+        # L5/G08 — egress firewall scan for user-facing writes (no-op if firewall=None)
+        if self._egress_firewall is not None and (
+            path.startswith("artifacts/published/") or path.startswith("egress:")
+        ):
+            text = data if isinstance(data, str) else (data.decode("utf-8", errors="replace") if data else "")
+            inspection = self._egress_firewall.inspect(text, target_kind="user")
+            if inspection.blocked:
+                raise PermissionError(
+                    f"REQ-L5-G08: UWG write_through blocked by EgressFirewall — "
+                    f"findings={list(inspection.findings)[:3]} risk={inspection.risk_score:.2f}",
+                )
         effective_actor = actor_id or self.actor_id
         effective_run = run_id or self.run_id
         if self.replay_mode:
