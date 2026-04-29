@@ -761,6 +761,18 @@ def generate_full_adg(
     # Orchestrator runs inline here. No SQLite contention with temp directory.
     prod_sqlite_path = _resolve_post_commit_sqlite(paths, adg_artifacts_dir, ts)
 
+    # --- Redis hot-cache repoint (early, fail-soft) ---
+    # The canonical SQLite snapshot exists on disk by this point. Repoint
+    # Redis NOW, before any Tier-2 gate (closure validation at L1481, P0
+    # runner, P1/dead-imports/SC/agentic gates, post-ADG gate fleet) can
+    # sys.exit(1) and strand consumers on the prior snapshot. The ingest
+    # walks only `nodes`/`edges` (see tools/adg/adg_redis_ingest.py) — no
+    # MV/P-view dependency — so position before enrichment is safe. The
+    # function is fail-soft: any Redis error logs a WARNING and returns
+    # without blocking ADG generation.
+    if not _env_flag("ADG_SKIP_REDIS"):
+        _auto_ingest_to_redis(adg_artifacts_dir, prod_sqlite_path)
+
     # --- W5.2 (plan repo-tech-debt-wave1-b3c8d1): Phase-2 auto-disposition ---
     # Close the two-pipeline divergence between `agentic_core.adg.client.cli`
     # (which already ran phase2) and this generator (which did not). Every
@@ -842,6 +854,27 @@ def generate_full_adg(
         print(f"[WARN] coverage_ingest failed (continuing): {_coverage_exc}")
 
     _materialize_adg_views(paths.sqlite)
+
+    # --- Runtime-as-VIEW: populate v_runtime_proof from OTel store ---
+    # Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W1.P1.3)
+    # Doctrinal source: 2026-04-29 user critique — OTel IS the runtime
+    # graph; runtime_adg lift was a fake indirection. Validated against
+    # OTel GenAI SIG, OpenAI Agents SDK, Anthropic Claude Code OTel docs.
+    # Fail-soft: missing/empty OTel store produces an empty v_runtime_proof
+    # and the pipeline continues — runtime evidence is optional, not a
+    # correctness gate. Same pattern as coverage ingest above.
+    try:
+        from tools.otel.runtime_view_builder import build_runtime_view  # noqa: PLC0415
+
+        rv_stats = build_runtime_view(paths.sqlite, fail_soft=True)
+        print(
+            f"[ADG] runtime_view_builder: snapshots={rv_stats.snapshots_read} "
+            f"aggregates={rv_stats.edges_aggregated} "
+            f"rows_written={rv_stats.rows_written} "
+            f"error={rv_stats.error or 'none'}"
+        )
+    except Exception as _rv_exc:  # guardian: allow-broad-exception -- runtime view fail-soft
+        print(f"[WARN] runtime_view_builder failed (continuing): {_rv_exc}")
 
     # --- Overlay enrichment (RCA 2026-04-24, R1-R4 upstream) ---
     # Adds `nodes.body_hash`, `overlay_violations` table, and 4 mv_*_overlay
@@ -1483,8 +1516,9 @@ def generate_full_adg(
     # Print P1-P4 defect table (including semantic warnings as P4)
     _print_defect_table(routing_summary, semantic_warnings, sqlite_path=paths.sqlite)
 
-    if not _env_flag("ADG_SKIP_REDIS"):
-        _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
+    # NOTE: Redis hot-cache repoint moved to immediately after prod_sqlite_path
+    # is resolved (above, ~L764) so it fires regardless of any Tier-2 gate
+    # sys.exit. Do not re-add a call here.
 
     # --- Fail-fast: Repo state change check (before auto-commit so ADG's own commit is excluded) ---
     end_repo_state_hash = _git_rev_parse("HEAD^{tree}")

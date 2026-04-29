@@ -173,12 +173,17 @@ class AdgEmissionToOtelBridge(logging.Handler):
                     _evicted[_name] = _sys.modules.pop(_name)
             # Force repo root to the FRONT so it beats apps_rg/ at sys.path[0].
             _sys.path.insert(0, _repo_root_str)
+            # guardian: allow-layer-violation -- otel_lifecycle_bridge MUST import tools.otel.* to
+            # flush captured ``adg.*`` debug records into the runtime ADG store; this is the
+            # documented purpose of the bridge (see module docstring lines 1-29). The shadow-
+            # eviction logic above (lines 161-188) is what makes this safe — it forces resolution
+            # against the canonical repo-root tools/otel package, never the apps_rg shadow.
             try:
-                from tools.otel import otel_config as _otel_config  # noqa: PLC0415
-                from tools.otel.otel_loaders import OTelLoaderBundle  # noqa: PLC0415
-                from tools.otel.otel_services_ingest import OTelIngestService  # noqa: PLC0415
-                from tools.otel.otel_state import RuntimeMetrics  # noqa: PLC0415
-                from tools.otel.otel_write_gateway import RuntimeADGWriteGateway  # noqa: PLC0415
+                from tools.otel import otel_config as _otel_config  # noqa: PLC0415  # guardian: allow-layer-violation -- sanctioned OTEL bridge
+                from tools.otel.otel_loaders import OTelLoaderBundle  # noqa: PLC0415  # guardian: allow-layer-violation -- sanctioned OTEL bridge
+                from tools.otel.otel_services_ingest import OTelIngestService  # noqa: PLC0415  # guardian: allow-layer-violation -- sanctioned OTEL bridge
+                from tools.otel.otel_state import RuntimeMetrics  # noqa: PLC0415  # guardian: allow-layer-violation -- sanctioned OTEL bridge
+                from tools.otel.otel_write_gateway import RuntimeADGWriteGateway  # noqa: PLC0415  # guardian: allow-layer-violation -- sanctioned OTEL bridge
             finally:
                 # Restore sys.path. Keep newly-loaded tools.otel.* in sys.modules
                 # (they're correct repo-root copies) but put back the shadow

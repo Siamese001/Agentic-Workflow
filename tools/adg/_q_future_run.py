@@ -1,3 +1,6 @@
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
 import sqlite3
 import glob
 from agentic_core.L0_routing.config.path_constants import ADG_ARTIFACTS_DIR

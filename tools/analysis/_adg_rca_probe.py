@@ -1,5 +1,9 @@
 """Probe the ADG snapshot to RCA gaps that miss tech-debt patterns."""
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import sqlite3, glob, os
 
 db = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"), key=os.path.getmtime)[-1]

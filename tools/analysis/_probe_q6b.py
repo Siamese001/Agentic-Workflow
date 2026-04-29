@@ -1,3 +1,6 @@
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
 # Probe: how module nodes relate to symbol nodes for edge joins.
 import sqlite3
 

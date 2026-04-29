@@ -116,6 +116,9 @@ SANCTIONED_ADAPTER_FILES = {
     "l2_capable_agent_registry.py",  # L2 ADG-snapshot reader for L2-capable agent discovery (read-only consumer of artifacts/adg/*.sqlite per constitutional §28)
     "sqlite_ledger.py",  # L3 exit-eval v6 hash-chain ledger (drop-in replacement for InMemoryLedger; implements LedgerProtocol from v6.uwg)
     "assembly_stage.py",  # L0 GAP-03 assembly stage — anthropic SDK lazy-loaded inside try/except for token-budget computation (peer of openai/google branches in same function)
+    # 2026-04-29 P0 unblock — ADR-070 L5 Guardrail Family canonical sqlite adapters:
+    "consumed_token_registry.py",  # L5 G07 capability-token single-use registry; sqlite-backed per-process durable ledger (peer of permissions/sqlite_backend.py)
+    "sqlite_backend.py",  # L5 G06 durable PermissionLadder; sqlite UPSERT with (agent_id, target_resource) UNIQUE index (canonical sibling of InMemoryPermissionLadder)
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

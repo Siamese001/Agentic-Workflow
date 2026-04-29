@@ -64,6 +64,11 @@ _GATEWAY_APPROVED_PATHS = (
     "agentic_core/L4_state/utils/memory/canonical_store.py",  # canonical S3 store adapter
     "agentic_core/evaluation/judges/claude_judge.py",  # Claude judge adapter
     "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",  # Hardened Anthropic executor
+    # 2026-04-29 P0 unblock — same file is already on infra_wiring_scan.SANCTIONED_ADAPTER_FILES
+    # (line 118: "L0 GAP-03 assembly stage — anthropic SDK lazy-loaded inside try/except for
+    # token-budget computation"). Propagating that approval to the parallel
+    # mv_gateway_bypass_paths gate so the two MVs agree on what is a sanctioned provider invoker.
+    "agentic_core/L0_routing/reasoning/assembly_stage.py",
 )
 
 

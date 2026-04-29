@@ -1,5 +1,9 @@
 """Inspect truth-expansion detection quality."""
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import sqlite3
 
 con = sqlite3.connect("artifacts/adg/adg_truth_test.sqlite")

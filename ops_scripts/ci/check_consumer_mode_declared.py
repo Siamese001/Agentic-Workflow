@@ -87,8 +87,12 @@ EXCLUDE_FILES: Final[tuple[str, ...]] = (
     "agentic_core/adg/artifact/consumer_mode.py",
     "agentic_core/adg/registry/registry_resolvers.py",
     "agentic_core/adg/registry/__init__.py",
-    "tools/adg/runtime_bucket_lift.py",
+    # tools/adg/runtime_bucket_lift.py — RETIRED 2026-04-29 (plan
+    # three-bucket-otel-view-5db409 W2). Replaced by runtime VIEW pattern in
+    # tools/otel/runtime_view_builder.py — see ADR-074. Archived to
+    # archives/tools_adg_lift_5db409/.
     "tools/adg/registry_bucket_lift.py",
+    "tools/otel/runtime_view_builder.py",
 )
 
 # Read-signature regex — matches every common ADG read pattern.

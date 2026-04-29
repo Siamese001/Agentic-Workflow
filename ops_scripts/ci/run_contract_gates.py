@@ -341,6 +341,17 @@ def main():
         ("RE1 REQ coverage contracts (Pact-style)", "ops_scripts/ci/check_req_coverage_contracts.py"),
         ("RE2 orphan observability nodes", "ops_scripts/ci/check_orphan_observability_nodes.py"),
         ("RE3 closure lifecycle (experimental→stable)", "ops_scripts/ci/check_closure_lifecycle.py"),
+        # Three-bucket OTEL view gates (plan: three-bucket-otel-view-5db409, ADR-074).
+        # Both are advisory (Tier B) until the runtime store is populated and the
+        # GenAI semconv migration completes. Strict mode envvars to flip:
+        #   RUNTIME_PROOF_VIEW_STRICT=1
+        #   GENAI_SEMCONV_STRICT=1
+        ("3B1 runtime proof view well-formed", "ops_scripts/ci/check_runtime_proof_view_well_formed.py"),
+        ("3B2 OTel GenAI semconv coverage", "ops_scripts/ci/check_otel_genai_semconv_coverage.py"),
+        # Aggregate three-bucket certification gate (plan three-bucket-otel-view-5db409 W7).
+        # Advisory by default; flip via ADG_CERTIFIED_STRICT=1 once the consumer-mode
+        # gate is permanently strict-mode and runtime evidence is consistently flowing.
+        ("3B3 ADG_CERTIFIED aggregate gate", "ops_scripts/ci/check_adg_certified.py"),
     ]
     for label, script in assurance_gates:
         if not (ROOT / script).is_file():

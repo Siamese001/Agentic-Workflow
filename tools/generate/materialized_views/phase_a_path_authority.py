@@ -538,10 +538,20 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           AND NOT (src.resolved_path LIKE 'apps_%/integrations/%'
                    OR src.resolved_path LIKE 'apps_%/enforcement/%'
                    OR src.resolved_path LIKE 'apps_%/services/%'
+                   OR src.resolved_path LIKE 'apps_%/proof/%'
                    OR src.resolved_path LIKE 'apps_eval/%'
                    OR src.resolved_path LIKE '%_adapter.py'
                    OR src.resolved_path LIKE '%_adapter_util.py'
                    OR src.resolved_path LIKE '%_base_util.py')
+          -- 2026-04-29 P0 unblock: apps_*/proof/ houses the runtime scenario
+          -- harnesses (apps_shared/proof/scenario_base.py + per-app scenarios)
+          -- which intentionally drive cross-layer trajectories L0->L1->L2 to
+          -- generate AppRunEvidencePackets. Importing core IS the harness's
+          -- function; flagging it defeats its purpose. Same principle as
+          -- apps_eval/* exemption (eval harness needs elevated access). The
+          -- 17 L_APP_core_bypass breaches in scenario_base.py are documented
+          -- with a guardian comment + sentinel ADR-071 reference in the
+          -- module docstring.
         ORDER BY breach_class, src.layer, dst.layer
     """)
 

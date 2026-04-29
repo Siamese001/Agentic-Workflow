@@ -18,6 +18,10 @@ Tier
 
 from __future__ import annotations
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import fnmatch
 import sqlite3
 import sys

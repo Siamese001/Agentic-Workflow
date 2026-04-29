@@ -828,11 +828,13 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # ------------------------------------------------------------------
         from agentic_core.adg.artifact.edge_authority import (  # noqa: PLC0415
             SQL_AUTHORITY_BACKFILL,
+            SQL_CREATE_V_RUNTIME_PROOF,
             SQL_INVENTORY_VIEW,
             SQL_MV_GOVERNANCE,
             SQL_MV_UNRESOLVED,
             SQL_MV_VERIFIED,
             SQL_PROOF_VIEW,
+            SQL_PROOF_VIEW_ALL,
             SQL_RISK_VIEW,
             SQL_TRIPLET_BACKFILL,
         )
@@ -854,6 +856,47 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executescript(SQL_MV_VERIFIED)
         conn.executescript(SQL_MV_UNRESOLVED)
         conn.executescript(SQL_MV_GOVERNANCE)
+        # 6) Runtime-as-VIEW (2026-04-29 Mid-Day Pivot — replace lift with view)
+        # SSOT: agentic_core/adg/artifact/edge_authority.py
+        # Plan: .windsurf/plans/three-bucket-otel-view-5db409.md
+        # Doctrinal source: 2026-04-29 user critique — OTel IS the runtime
+        # graph; runtime_adg lift was a fake indirection. Validated against
+        # OTel GenAI SIG, OpenAI Agents SDK, Anthropic Claude Code OTel docs.
+        # The TABLE is created here (empty); it is populated at snapshot
+        # generation time by tools/otel/runtime_view_builder.py reading from
+        # the runtime_adg_store (the local OTel sink).
+        conn.executescript(SQL_CREATE_V_RUNTIME_PROOF)
+        conn.executescript(SQL_PROOF_VIEW_ALL)
+
+        # 7) Three-bucket schema graduation assertion (W7 of plan
+        # three-bucket-otel-view-5db409). After SQL_TRIPLET_BACKFILL has run
+        # successfully, every edge MUST have a non-null
+        # (bucket, resolution_status, authority_status) triplet — that is
+        # the "graduated" invariant for ADG_CERTIFIED. We assert this as a
+        # runtime check rather than a column-level NOT NULL constraint to
+        # avoid breaking older snapshot upgrade paths; the assertion is
+        # equivalent at certification-time and will graduate to a hard
+        # column constraint when ADG_CERTIFIED has been green for ≥4 weeks.
+        # Disable via ADG_TRIPLET_GRADUATION_BYPASS=1 for emergency rebuilds.
+        import os as _os  # noqa: PLC0415
+
+        if _os.environ.get("ADG_TRIPLET_GRADUATION_BYPASS") != "1":
+            null_count = conn.execute(
+                "SELECT COUNT(*) FROM edges WHERE bucket IS NULL "
+                "OR resolution_status IS NULL OR authority_status IS NULL"
+            ).fetchone()[0]
+            if null_count > 0:
+                # Sample rows for diagnosability — schema invariant violation.
+                samples = conn.execute(
+                    "SELECT id, src_id, dst_id, relation_type, authority "
+                    "FROM edges WHERE bucket IS NULL "
+                    "OR resolution_status IS NULL OR authority_status IS NULL LIMIT 5"
+                ).fetchall()
+                raise RuntimeError(
+                    f"ADG triplet graduation assertion failed: {null_count} "
+                    f"edges have NULL in bucket/resolution_status/authority_status "
+                    f"after SQL_TRIPLET_BACKFILL. Samples: {samples}"
+                )
 
         # Meta
         authority_hist = dict(

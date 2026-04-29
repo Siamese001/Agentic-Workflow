@@ -12,6 +12,10 @@ Detects:
 
 Read-only. No code modifications.
 """
+
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
 import json
 import sqlite3
 from pathlib import Path

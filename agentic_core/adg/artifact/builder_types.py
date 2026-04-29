@@ -15,6 +15,10 @@ delegate to ``module_path_to_layer`` from ``agentic_core.adg.schema_util``.
 
 from __future__ import annotations
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import hashlib
 import logging
 import uuid

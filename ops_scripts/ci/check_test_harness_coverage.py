@@ -44,6 +44,10 @@ Exit 0 on clean, 1 on net-new uncovered modules, 2 on config error.
 
 from __future__ import annotations
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import argparse
 import fnmatch
 import json

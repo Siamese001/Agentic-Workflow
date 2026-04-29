@@ -1,0 +1,56 @@
+{
+  "gate": "G-ADG-CERTIFIED",
+  "tier": "B",
+  "verdict": "ADG_NOT_CERTIFIED",
+  "strict_mode": true,
+  "timestamp": "2026-04-29T16:34:27.072664+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_0825.sqlite",
+  "blockers": [
+    "graph-layer evidence (snapshot)"
+  ],
+  "sub_gates": [
+    {
+      "label": "triplet completeness (read-time)",
+      "ok": true,
+      "details": "all 728814 edges have populated triplet",
+      "null_triplet_count": 0,
+      "total_edges": 728814
+    },
+    {
+      "ok": false,
+      "exit_code": 2,
+      "details": "",
+      "stdout_tail": "[ERROR] snapshot not found: C:\\Git\\Agentic-Workflow-FRESH\\--strict\n",
+      "label": "graph-layer evidence (snapshot)",
+      "script": "ops_scripts/ci/check_snapshot_has_mvs.py",
+      "contributes_to_certification": true
+    },
+    {
+      "ok": true,
+      "exit_code": 0,
+      "details": "",
+      "stdout_tail": "[runtime_proof_view] v_runtime_proof table missing \u2014 W1 schema not applied\n",
+      "label": "runtime proof view well-formed",
+      "script": "ops_scripts/ci/check_runtime_proof_view_well_formed.py",
+      "contributes_to_certification": true
+    },
+    {
+      "ok": false,
+      "exit_code": 1,
+      "details": "",
+      "stdout_tail": " (\\bstart_as_current_span\\b)\n  - agentic_core/L2_execution/observability/l2_resolution_spans.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_control/hitl_spans.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_eval/otel_sdk_sink.py (\\bstart_as_current_span\\b)\n  - agentic_core/L3_orchestration/exit_eval/v6/otel.py (\\bstart_as_current_span\\b)\n  ... +10 more\n",
+      "label": "OTel GenAI semconv coverage",
+      "script": "ops_scripts/ci/check_otel_genai_semconv_coverage.py",
+      "contributes_to_certification": false
+    },
+    {
+      "ok": true,
+      "exit_code": 0,
+      "details": "",
+      "stdout_tail": "[INFO] consumers_scanned=131  declared=131  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
+      "label": "consumer mode declared",
+      "script": "ops_scripts/ci/check_consumer_mode_declared.py",
+      "contributes_to_certification": true
+    }
+  ]
+}

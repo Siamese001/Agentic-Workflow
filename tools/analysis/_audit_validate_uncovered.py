@@ -6,6 +6,10 @@ Each category gets a cross-check that catches false positives:
   - Constant naming false positives (Phase 14)
   - Same-layer-type-name aliasing (Phase 2)
 """
+
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
 import json
 import sqlite3
 from pathlib import Path

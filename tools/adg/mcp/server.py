@@ -7,6 +7,10 @@ runtime lifecycle and tool behavior split into dedicated helper modules.
 
 from __future__ import annotations
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 from typing import Any
 
 from tools.mcp.mcp_bootstrap import create_mcp_server

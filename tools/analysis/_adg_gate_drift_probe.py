@@ -1,5 +1,9 @@
 """Probe gate_self_consistency + A12 edges."""
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import sqlite3
 
 c = sqlite3.connect("artifacts/adg/adg_indexed_04252026_0843.sqlite")

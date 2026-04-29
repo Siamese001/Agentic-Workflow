@@ -270,6 +270,109 @@ def resolve_agent_specs(spec_paths: list[Path] | None = None) -> list[RegistryEd
 
 
 # ---------------------------------------------------------------------------
+# Resolver: Route-contract policy pack  (agentic_core/L0_routing/config/v15_policy_pack.json)
+# ---------------------------------------------------------------------------
+# Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W5).
+#
+# The route-contract surface declared in `route_contract_v15.py` is realized
+# at runtime by the v15 policy pack. Each rule entry in the JSON is a
+# declarative gate that the pipeline MUST honor — registry-bucket evidence
+# in its purest form.
+#
+# Prompt-slot resolver: DEFERRED. There is no canonical prompt-slot
+# registry file at this time (slots are resolved at runtime via
+# `agentic_core/prompt_governance/`). When/if a declarative slot manifest
+# lands, this is the natural sibling resolver.
+
+
+ROUTE_CONTRACT_REGISTRY_ROOT: Final[str] = "Registry::RouteContract::root"
+DEFAULT_V15_POLICY_PACK: Final[Path] = (
+    REPO_ROOT / "agentic_core" / "L0_routing" / "config" / "v15_policy_pack.json"
+)
+
+
+def resolve_route_contracts(
+    policy_pack_path: Path | None = None,
+) -> list[RegistryEdge]:
+    """Resolve the v15 route-contract policy pack into registry-bucket edges.
+
+    Each rule in the policy pack becomes one edge::
+
+        Registry::RouteContract::root --ROUTE_CONTRACT_DECLARED--> Registry::RouteContract::<rule_id>
+
+    Disabled rules (``enabled: false``) are emitted with
+    ``resolution_status='DISABLED_REGISTRY'`` and
+    ``authority_status='RISK_SIGNAL_ONLY'`` — they are declared but not
+    permitted to fire. Missing or unparseable policy pack returns ``[]``
+    consistent with the resolver convention from W3.
+
+    Returns
+    -------
+    list[RegistryEdge]
+        One edge per rule. Empty list when policy pack is missing /
+        unparseable / has no ``rules`` array.
+    """
+    if policy_pack_path is None:
+        policy_pack_path = DEFAULT_V15_POLICY_PACK
+
+    if not policy_pack_path.exists():
+        return []
+
+    try:
+        with policy_pack_path.open("r", encoding="utf-8") as f:
+            pack = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+    rules = pack.get("rules", [])
+    if not isinstance(rules, list):
+        return []
+
+    rel_source = _rel_path(policy_pack_path)
+    pack_version = str(pack.get("version", ""))
+
+    edges: list[RegistryEdge] = []
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        rule_id = rule.get("rule_id")
+        if not isinstance(rule_id, str) or not rule_id:
+            continue
+
+        enabled = bool(rule.get("enabled", True))
+        digest = _digest_json(rule)
+        res_status, auth_status = _classify_entry_status(
+            present=True, disabled=not enabled
+        )
+
+        evidence = {
+            "registry_path": rel_source,
+            "registry_digest": digest,
+            "declaration_key": f"rules.{rule_id}",
+            "applies_to": rule.get("applies_to", ""),
+            "severity": rule.get("severity", ""),
+            "policy_pack_version": pack_version,
+            "enabled": enabled,
+        }
+
+        edges.append(
+            RegistryEdge(
+                src_name=ROUTE_CONTRACT_REGISTRY_ROOT,
+                dst_name=f"Registry::RouteContract::{rule_id}",
+                relation_type="ROUTE_CONTRACT_DECLARED",
+                edge_kind="REGISTRY_DECLARATION",
+                source_file=rel_source,
+                symbol=rule_id,
+                resolution_status=res_status,
+                authority_status=auth_status,
+                evidence_refs=evidence,
+            )
+        )
+
+    return edges
+
+
+# ---------------------------------------------------------------------------
 # Aggregate registry digest (ties an SSOTDecisionRecord to a snapshot)
 # ---------------------------------------------------------------------------
 
@@ -298,4 +401,5 @@ def resolve_all_registries() -> list[RegistryEdge]:
     return [
         *resolve_mcp_config(),
         *resolve_agent_specs(),
+        *resolve_route_contracts(),
     ]

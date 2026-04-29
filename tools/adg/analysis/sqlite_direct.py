@@ -5,6 +5,10 @@ Provides low-level SQLite access for ad-hoc graph queries and
 analysis when MCP tools are not available or for performance-critical operations.
 """
 
+# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+__adg_consumer_mode__ = "inventory"
+
+
 import sqlite3
 import logging
 import re

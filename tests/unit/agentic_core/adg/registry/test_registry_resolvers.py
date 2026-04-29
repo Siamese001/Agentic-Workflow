@@ -250,3 +250,147 @@ class TestResolveAllRegistries:
             assert "registry_path" in e.evidence_refs
             assert "registry_digest" in e.evidence_refs
             assert "declaration_key" in e.evidence_refs
+
+
+# ---------------------------------------------------------------------------
+# resolve_route_contracts — W5 (plan three-bucket-otel-view-5db409)
+# ---------------------------------------------------------------------------
+
+
+class TestResolveRouteContracts:
+    """Resolver for agentic_core/L0_routing/config/v15_policy_pack.json."""
+
+    @staticmethod
+    def _write_pack(path: Path, rules: list[dict]) -> None:
+        with path.open("w", encoding="utf-8") as f:
+            json.dump({"version": "1.0.0", "rules": rules}, f)
+
+    def test_missing_pack_returns_empty(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        edges = resolve_route_contracts(policy_pack_path=tmp_path / "missing.json")
+        assert edges == []
+
+    def test_one_edge_per_rule(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            ROUTE_CONTRACT_REGISTRY_ROOT,
+            resolve_route_contracts,
+        )
+
+        pack = tmp_path / "policy_pack.json"
+        self._write_pack(
+            pack,
+            [
+                {
+                    "rule_id": "R_001",
+                    "applies_to": "PIPE",
+                    "severity": "WARN",
+                    "enabled": True,
+                    "description": "test 1",
+                },
+                {
+                    "rule_id": "R_002",
+                    "applies_to": "POLICY",
+                    "severity": "ERROR",
+                    "enabled": True,
+                    "description": "test 2",
+                },
+            ],
+        )
+        edges = resolve_route_contracts(policy_pack_path=pack)
+        assert len(edges) == 2
+        for e in edges:
+            assert e.src_name == ROUTE_CONTRACT_REGISTRY_ROOT
+            assert e.relation_type == "ROUTE_CONTRACT_DECLARED"
+            assert e.bucket == "registry"
+            assert e.authority_status == "AUTHORITATIVE_REGISTRY"
+            assert "policy_pack_version" in e.evidence_refs
+
+    def test_disabled_rule_marked_risk(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        pack = tmp_path / "pack.json"
+        self._write_pack(
+            pack,
+            [
+                {
+                    "rule_id": "DISABLED_X",
+                    "applies_to": "POLICY",
+                    "severity": "WARN",
+                    "enabled": False,
+                    "description": "test disabled",
+                },
+            ],
+        )
+        edges = resolve_route_contracts(policy_pack_path=pack)
+        assert len(edges) == 1
+        assert edges[0].resolution_status == "DISABLED_REGISTRY"
+        assert edges[0].authority_status == "RISK_SIGNAL_ONLY"
+
+    def test_skips_malformed_rule_entries(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        pack = tmp_path / "pack.json"
+        with pack.open("w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "version": "1.0.0",
+                    "rules": [
+                        {"rule_id": "good"},
+                        "not a dict",
+                        {"rule_id": ""},  # empty rule_id
+                        {"no_rule_id_field": "x"},
+                        {"rule_id": "good_2"},
+                    ],
+                },
+                f,
+            )
+        edges = resolve_route_contracts(policy_pack_path=pack)
+        rule_ids = {e.symbol for e in edges}
+        assert rule_ids == {"good", "good_2"}
+
+    def test_unparseable_pack_returns_empty(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        pack = tmp_path / "bad.json"
+        pack.write_text("{not json")
+        assert resolve_route_contracts(policy_pack_path=pack) == []
+
+    def test_live_v15_policy_pack_resolves(self) -> None:
+        # The shipped agentic_core/L0_routing/config/v15_policy_pack.json
+        # is the canonical source — must resolve cleanly.
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        edges = resolve_route_contracts()
+        assert len(edges) >= 1, "expected ≥1 rule in live policy pack"
+        for e in edges:
+            assert e.bucket == "registry"
+            assert e.relation_type == "ROUTE_CONTRACT_DECLARED"
+
+    def test_each_edge_has_unique_digest(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_route_contracts,
+        )
+
+        pack = tmp_path / "pack.json"
+        self._write_pack(
+            pack,
+            [
+                {"rule_id": "A", "severity": "W", "applies_to": "X"},
+                {"rule_id": "B", "severity": "W", "applies_to": "X"},
+            ],
+        )
+        edges = resolve_route_contracts(policy_pack_path=pack)
+        digests = {e.evidence_refs["registry_digest"] for e in edges}
+        # Two different rule_ids → two distinct digests.
+        assert len(digests) == 2

@@ -1,107 +1,13 @@
 {
-    "git.ignoreLimitWarning": true,
-    "python.testing.pytestArgs": [
-        "tests"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.testing.autoTestDiscoverOnSaveEnabled": true,
-    "python.pythonPath": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
-    "python.testing.autoDiscoverEnabled": true,
-    "python.testing.filter": "",
-    "python.analysis.exclude": [
-        "**/archives/**",
-        "**/.healing_backups/**",
-        "**/artifacts/**",
-        "**/__pycache__/**",
-        "**/.pytest_cache/**",
-        "**/.mypy_cache/**"
-    ],
-    "python.analysis.ignore": [
-        "**/archives/**",
-        "**/.healing_backups/**",
-        "**/artifacts/**"
-    ],
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportUnusedExpression": "none"
-    },
-    "github.copilot.enable": {
-        "*": true,
-        "yaml": false,
-        "plaintext": false,
-        "markdown": false
-    },
-    "gitlens.advanced.messages": {
-        "suppressCommitHasNoPreviousCommitWarning": false,
-        "suppressCommitNotFoundWarning": false,
-        "suppressFileNotUnderSourceControlWarning": false,
-        "suppressGitVersionWarning": false,
-        "suppressLineUncommittedWarning": false,
-        "suppressNoRepositoryWarning": false,
-        "suppressResultsExplorerNotice": false,
-        "suppressShowKeyBindingsNotice": true,
-        "suppressUpdateNotice": false,
-        "suppressWelcomeNotice": false
-    },
-    "gitlens.currentLine.enabled": false,
-    "gitlens.hovers.currentLine.enabled": false,
-    "gitlens.annotations.lineBreaks.enabled": false,
-    "gitlens.suggests.enabled": false,
-    "gitlens.statusBar.enabled": false,
-    "git.commit.showInlineActions": false,
-    "gitlens.codeLens.enabled": false,
-    "gitlens.currentLine.autohide": true,
-    "gitlens.blame.line.enabled": false,
-    "gitlens.views.repositories.enabled": false,
-    "gitlens.views.fileHistory.enabled": false,
-    "gitlens.views.lineHistory.enabled": false,
-    "gitlens.views.compare.enabled": false,
-    "gitlens.views.search.enabled": false,
-    "gitlens.views.commits.enabled": false,
-    "gitlens.views.branches.enabled": false,
-    "gitlens.views.remotes.enabled": false,
-    "gitlens.views.stashes.enabled": false,
-    "gitlens.views.tags.enabled": false,
-    "gitlens.views.contributors.enabled": false,
-    "gitlens.views.cloud.enabled": false,
-    "gitlens.autocomplete.enabled": false,
-    "gitlens.integrations.enabled": false,
-    "files.exclude": {
-        "**/archives/**": true,
-        "**/.healing_backups/**": true,
-        "**/artifacts/**": true,
-        "**/data/golden_state/**": true,
-        "**/__pycache__/**": true,
-        "**/*.pyc": true,
-        "**/docs/**/*.png": true,
-        "**/docs/**/*.jpg": true,
-        "**/docs/**/*.jpeg": true,
-        "**/docs/**/*.gif": true,
-        "**/docs/**/*.svg": true,
-        "**/docs/**/*.pdf": true
-    },
-    "files.watcherExclude": {
-        "**/archives/**": true,
-        "**/.healing_backups/**": true,
-        "**/artifacts/**": true,
-        "**/data/golden_state/**": true,
-        "**/__pycache__/**": true,
-        "**/.pytest_cache/**": true,
-        "**/.mypy_cache/**": true,
-        "**/.ruff_cache/**": true
-    },
-    "search.exclude": {
-        "**/archives/**": true,
-        "**/.healing_backups/**": true,
-        "**/artifacts/**": true,
-        "**/data/golden_state/**": true,
-        "**/__pycache__/**": true,
-        "**/*.pyc": true,
-        "**/docs/**/*.png": true,
-        "**/docs/**/*.jpg": true,
-        "**/docs/**/*.jpeg": true,
-        "**/docs/**/*.gif": true,
-        "**/docs/**/*.svg": true,
-        "**/docs/**/*.pdf": true
-    }
+  "python.defaultInterpreterPath": "C:\\Git\\Agentic-Workflow-FRESH\\.venv\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.exclude": [
+    "**/.venv/**",
+    "**/.git/**",
+    "**/__pycache__/**",
+    "**/artifacts/**",
+    "**/data/**"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestPath": "C:\\Git\\Agentic-Workflow-FRESH\\.venv\\Scripts\\pytest.exe"
 }
