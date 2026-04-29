@@ -277,6 +277,19 @@ def main():
         print("❌ Author-gate ledger integrity check failed")
         print(stdout or stderr)
         sys.exit(1)
+
+    # Gate: Author-Gate v2/W4 completeness (plan 1f4c8a W5) — advisory by
+    # default; emits warnings without blocking. Set AUTHOR_GATE_V2_STRICT=1
+    # to fail closed once the ledger is clean for one full 7-day window.
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("ops_scripts/ci/check_author_gate_v2_completeness.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate v2 completeness check failed (strict mode)")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate v2 completeness check ran")
     print("✅ Author-gate ledger integrity validated")
 
     # Gate: P0 two-pass (preflight + full ADG enforcement)
