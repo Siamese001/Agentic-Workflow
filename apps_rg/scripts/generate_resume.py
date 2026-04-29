@@ -184,6 +184,17 @@ def load_data_file(filename: str) -> dict:
 
 async def main():
     Logger.info("🎯 RESUME GENERATION STARTED...")
+    # Install OTEL lifecycle bridge so adg.* DEBUG emissions are buffered as
+    # spans and flushed to the runtime ADG store at end-of-run. This closes
+    # the documented gap in ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md:181-185
+    # ("Real OTEL emission proof"). Fail-open: bridge installation never
+    # raises; flush failures only log a warning.
+    try:
+        from agentic_core.runtime.contracts.otel_lifecycle_bridge import install_bridge  # noqa: PLC0415
+
+        _otel_bridge = install_bridge()
+    except ImportError:  # guardian: allow-otel-optional -- bridge module absent in stripped builds
+        _otel_bridge = None
     start_time = datetime.now()
     jd_data = load_data_file("job_description.json")
     resume_data = load_data_file("your_resume_updated.json")
@@ -219,6 +230,23 @@ async def main():
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         Logger.error(f"❌ Generation failed: {e}")
         raise
+    finally:
+        # Flush OTEL lifecycle bridge regardless of success/failure so partial
+        # telemetry still reaches the runtime ADG store on crash. Closes
+        # ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md:181-185 ("Real OTEL emission
+        # proof"). Bridge is fail-open — never raises.
+        if _otel_bridge is not None:
+            stats = _otel_bridge.stats()
+            ingest = _otel_bridge.flush_to_runtime_adg(mission="apps_rg.generate_resume")
+            Logger.info("-" * 50)
+            Logger.info(
+                "📡 OTEL bridge: buffered=%d spans, ingested=%d, success=%s",
+                stats["buffered"],
+                ingest.get("spans_ingested", 0),
+                ingest.get("success", False),
+            )
+            if not ingest.get("success"):
+                Logger.warning("OTEL ingest issue: %s", ingest.get("error"))
 
 
 if __name__ == "__main__":

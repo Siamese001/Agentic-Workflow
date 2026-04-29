@@ -265,8 +265,11 @@ class SystemLearningMemoryBridge:
             return None
         if self._sqlite_memory is not None:
             return self._sqlite_memory
-        from tools.implement_unified_memory import UnifiedMemoryManager
-
+        try:
+            from tools.implement_unified_memory import UnifiedMemoryManager  # noqa: PLC0415
+        except ImportError:  # guardian: allow-graveyarded-module -- tools.implement_unified_memory was moved to tools/archive/ in W5.12; downstream callers must tolerate absence
+            self._sqlite_memory = False  # poison sentinel; do not retry
+            return None
         self._sqlite_memory = UnifiedMemoryManager()
         return self._sqlite_memory
 
