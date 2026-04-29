@@ -99,6 +99,10 @@ tools/archive/
 *.pyo
 *.so
 *.sqlite
+
+# W4: Author-Gate ledger HMAC signing key (per-machine, never commit)
+.windsurf/state/refactor_decisions/.signing_key
+.env
 *.tmp
 *.zip
 *_test/
@@ -130,4 +134,3 @@ agentic_core/L4_state/memory/runtime_adg/
 
 # External bundler regenerates this on every run; UPDATED_MANIFEST.json (built by tools/build_parent_thinning_artifacts.py) is the canonical local manifest.
 docs/reference/MANIFEST.json
-

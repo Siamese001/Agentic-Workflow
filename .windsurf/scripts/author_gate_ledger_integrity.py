@@ -62,6 +62,10 @@ HASH_ALGO = "sha256"
 SIGNING_KEY_ENV = "AUTHOR_GATE_SIGNING_KEY"  # guardian: allow-hardcoded-secret -- env-var NAME, not a secret value; actual signing key loaded from os.environ at runtime
 SIG_ALG_NONE = "none"
 SIG_ALG_HMAC = "hmac-sha256"
+# Sentinel user_version that disarms the append-only triggers installed by
+# apply_append_only_triggers.py — administrative writers (resign, schema
+# migration) set it before mutating, then restore the original.
+BYPASS_PRAGMA_MARKER = 99999
 # ed25519 upgrade path: when cryptography lib is available + pubkey distributed,
 # sig_alg = "ed25519" with signature = hex(ed25519.sign(row_hash)). The sig_alg
 # column already accepts arbitrary strings so the schema is forward-compatible.
@@ -73,7 +77,7 @@ _EXCLUDED_COLUMNS: frozenset[str] = frozenset(
         "row_hash",
         "sig_alg",
         "signature",
-        "status",              # mutable lifecycle flag (surfaced -> executed)
+        "status",  # mutable lifecycle flag (surfaced -> executed)
         "exit_criteria_json",  # W5.1 — amendable post-hoc as criteria evolve
     }
 )
@@ -453,10 +457,7 @@ def rebuild_chain(db_path: Path = DB_PATH, confirm: bool = False) -> ChainResult
 
         # Pass 1: null every seal so the chain re-seals from genesis chronologically
         conn.execute("BEGIN IMMEDIATE")
-        conn.execute(
-            "UPDATE decisions SET row_hash=NULL, prev_hash=NULL, "
-            "sig_alg=NULL, signature=NULL"
-        )
+        conn.execute("UPDATE decisions SET row_hash=NULL, prev_hash=NULL, sig_alg=NULL, signature=NULL")
         conn.execute("COMMIT")
 
         # Pass 2: walk chronologically and seal every row from genesis
@@ -540,6 +541,10 @@ def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
     conn.isolation_level = None
     signed = 0
     total = 0
+    # Append-only triggers (W4.1) bypass: resign only mutates sig_alg/signature
+    # columns — administrative writer per apply_append_only_triggers.py contract.
+    original_user_version = int(conn.execute("PRAGMA user_version").fetchone()[0])
+    conn.execute(f"PRAGMA user_version = {BYPASS_PRAGMA_MARKER}")
     try:
         conn.execute("BEGIN IMMEDIATE")
         for row in _iter_rows(conn):
@@ -567,6 +572,10 @@ def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
             reason=f"sqlite error: {exc}",
         )
     finally:
+        try:
+            conn.execute(f"PRAGMA user_version = {original_user_version}")
+        except sqlite3.Error:  # guardian: allow-pragma-restore-failure -- best-effort
+            pass
         conn.close()
     return ChainResult(
         ok=True,
