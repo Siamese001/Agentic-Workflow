@@ -27,14 +27,18 @@ class _CallVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import (
             EMBEDDING_SYMBOLS,
             NETWORK_SYMBOLS,
+            OPEN_READ_MODE_PREFIXES,
             PROVIDER_SDK_SYMBOLS,
             WRITE_SIDE_EFFECT_EXCLUSIONS,
             WRITE_SIDE_EFFECT_SYMBOLS,
+            WRITE_SIDE_EFFECT_TAIL_SYMBOLS,
         )
 
         self._embedding_symbols = EMBEDDING_SYMBOLS
         self._write_symbols = WRITE_SIDE_EFFECT_SYMBOLS
+        self._write_tail_symbols = WRITE_SIDE_EFFECT_TAIL_SYMBOLS
         self._write_exclusions = WRITE_SIDE_EFFECT_EXCLUSIONS
+        self._open_read_mode_prefixes = OPEN_READ_MODE_PREFIXES
         self._network_symbols = NETWORK_SYMBOLS
         self._provider_symbols = PROVIDER_SDK_SYMBOLS
 
@@ -48,7 +52,7 @@ class _CallVisitor(BaseStructuralVisitor):
                 self.generic_visit(node)
                 return
 
-            edge_kind, relation = self._classify_call(sym)
+            edge_kind, relation = self._classify_call(sym, node)
             if edge_kind:
                 from agentic_core.adg.contracts.schema_util import canonical_name
                 from agentic_core.adg.extraction.static_scanner import Edge as _Edge
@@ -82,15 +86,39 @@ class _CallVisitor(BaseStructuralVisitor):
             return ".".join(reversed(parts))
         return ""
 
-    def _classify_call(self, sym: str) -> tuple[str, str]:
-        """Classify call edge kind and relation type."""
+    def _classify_call(self, sym: str, node: ast.Call | None = None) -> tuple[str, str]:
+        """Classify call edge kind and relation type.
+
+        2026-04-28 W3 — two-tier write classification + ``open()`` mode awareness:
+          1. ``WRITE_SIDE_EFFECT_SYMBOLS`` — exact full-symbol match
+          2. ``WRITE_SIDE_EFFECT_TAIL_SYMBOLS`` — tail-only match against a curated
+             narrow list (excludes ambiguous tails like ``run``, ``call``, ``copy``).
+          3. ``open(...)`` and ``aiofiles.open(...)`` — special-cased; only emit a
+             write edge when the ``mode`` arg's first non-``b``/non-``+`` character
+             is NOT a read prefix. Default mode (no second arg) = ``r`` = read.
+        """
         if sym in self._embedding_symbols or any(sym.endswith(e) for e in self._embedding_symbols):
             return "embedding", "instantiates"
-        if sym in self._write_symbols or any(sym.endswith(w.split(".")[-1]) for w in self._write_symbols):
-            # G3: exclude false-positive write symbols
-            if sym in self._write_exclusions:
+
+        # G3: pre-existing exclusions (asyncio.run, copy.deepcopy, etc.)
+        if sym in self._write_exclusions:
+            return "", ""
+
+        # W3 special case: open() / aiofiles.open() / Path.open() — mode-aware
+        sym_tail = sym.rsplit(".", 1)[-1] if "." in sym else sym
+        if sym_tail == "open":
+            if node is not None and not self._open_call_is_write(node):
                 return "", ""
             return "write", "writes_to"
+
+        # Tier 1: exact full-symbol match
+        if sym in self._write_symbols:
+            return "write", "writes_to"
+
+        # Tier 2: tail-only match against the curated narrow list
+        if sym_tail in self._write_tail_symbols:
+            return "write", "writes_to"
+
         if sym in self._network_symbols or any(
             sym.startswith(n.split(".")[0]) for n in self._network_symbols
         ):
@@ -101,6 +129,60 @@ class _CallVisitor(BaseStructuralVisitor):
             return "network", "invokes_provider"
 
         return "", ""
+
+    def _open_call_is_write(self, node: ast.Call) -> bool:
+        """Return True if an ``open(...)`` call uses a write-mode argument.
+
+        Handles three call shapes:
+          * builtin ``open(path, mode)``                — mode at positional index 1
+          * ``aiofiles.open(path, mode)``               — mode at positional index 1
+          * ``Path.open(mode)`` (instance method call)  — mode at positional index 0
+
+        Default mode (no positional mode arg, no ``mode=`` kwarg) is ``r`` and
+        therefore returns False (read).
+
+        Read+write mode (``+`` anywhere in mode string) is treated as a write
+        because the call CAN write.
+
+        Conservatively returns True (treat as write) when the mode is not a
+        string literal (e.g. a variable) since we cannot prove read-only.
+        """
+        # ``mode=`` keyword always wins, regardless of call shape.
+        mode_arg: ast.expr | None = None
+        for kw in node.keywords:
+            if kw.arg == "mode":
+                mode_arg = kw.value
+                break
+
+        if mode_arg is None:
+            # Determine the positional mode index by call shape.
+            sym = self._extract_symbol(node.func)
+            if sym == "open" or sym.endswith("aiofiles.open"):
+                # Builtin / aiofiles convention: open(path, mode)
+                mode_pos = 1
+            elif "." in sym:
+                # Path-like instance method: p.open(mode)
+                mode_pos = 0
+            else:
+                mode_pos = 1
+            if len(node.args) > mode_pos:
+                mode_arg = node.args[mode_pos]
+
+        if mode_arg is None:
+            # No mode arg supplied => default 'r' => read.
+            return False
+        if isinstance(mode_arg, ast.Constant) and isinstance(mode_arg.value, str):
+            mode = mode_arg.value
+            # ``+`` enables read+write — treat as a write because the call CAN write.
+            if "+" in mode:
+                return True
+            # Otherwise, the PRIMARY mode char is the first character not 'b'.
+            primary = next((c for c in mode if c != "b"), "r")
+            if primary in self._open_read_mode_prefixes:
+                return False
+            return True
+        # Variable or computed mode => can't prove read-only => treat as write.
+        return True
 
     def extract_edges(self) -> list[Edge]:
         return self.edges

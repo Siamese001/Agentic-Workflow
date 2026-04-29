@@ -1050,6 +1050,38 @@ SEAM_MODULE_PATTERNS: tuple[str, ...] = ("agentic_core/L0_routing/seams/", "agen
 WRITE_SIDE_EFFECT_EXCLUSIONS: frozenset[str] = frozenset(
     {"asyncio.run", "copy.deepcopy", "deepcopy", "assert_no_persistent_write", "copy"},
 )
+
+# 2026-04-28 W3 — Tail-pattern matching for write side-effect classification.
+#
+# Background: the original ``WRITE_SIDE_EFFECT_SYMBOLS`` set was matched via
+# ``sym.endswith(symbol.split('.')[-1])`` which produced large numbers of false
+# positives:
+#   - ``orch.run(...)``        matched because its tail is ``run`` (subprocess.run)
+#   - ``self.runner.call(...)``  matched because its tail is ``call`` (subprocess.call)
+#   - ``violation.copy(...)``   matched because its tail is ``copy`` (shutil.copy)
+#
+# The W3 fix is two-tier matching:
+#   1. Exact full-symbol match (e.g. ``subprocess.run``)        → write
+#   2. Tail-only match against this CURATED narrow list         → write
+#   3. Anything else                                            → not a write
+#
+# This list intentionally excludes ambiguous tails (``run``, ``call``, ``copy``,
+# ``move``, ``write``, ``open``) — those tails have many non-write meanings
+# (orchestrator dispatch, function callbacks, dict.copy, etc).
+WRITE_SIDE_EFFECT_TAIL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "write_text",      # pathlib.Path.write_text — unambiguous write
+        "write_bytes",     # pathlib.Path.write_bytes — unambiguous write
+        "writelines",      # file-like writelines — unambiguous write
+        "makedirs",        # os.makedirs — directory creation (unambiguous)
+        "rmtree",          # shutil.rmtree — recursive delete (unambiguous)
+    },
+)
+# Read-mode prefix tokens for ``open(path, mode)`` mode-arg inspection. If
+# the mode arg is a string constant whose first non-``b`` non-``+`` character
+# is one of these, the call is a READ and MUST NOT emit a writes_to edge.
+# Default mode (no second arg) is ``r`` => read.
+OPEN_READ_MODE_PREFIXES: frozenset[str] = frozenset({"r"})
 RULE_ID_PREFIXES: dict[str, str] = {
     "LAYER_GRAVITY": "Layer gravity violation (upward import)",
     "UWG_BYPASS": "Write bypasses UniversalWriteGateway",
