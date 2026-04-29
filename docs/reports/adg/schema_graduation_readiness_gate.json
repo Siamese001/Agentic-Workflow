@@ -2,8 +2,8 @@
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
   "advisory_mode": false,
-  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5410\\popen-gw23\\test_gate_passes_when_clean0\\clean.sqlite",
-  "status": "ready",
+  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5413\\popen-gw18\\test_gate_strict_blocks_on_blo0\\with_nulls.sqlite",
+  "status": "blocked",
   "needs_graduation": [
     "bucket",
     "resolution_status",
@@ -12,11 +12,16 @@
   ],
   "already_graduated": [],
   "null_counts": {
-    "bucket": 0,
-    "resolution_status": 0,
-    "authority_status": 0,
-    "authority": 0
+    "bucket": 1,
+    "resolution_status": 1,
+    "authority_status": 1,
+    "authority": 1
   },
-  "blockers": [],
-  "timestamp": "2026-04-29T22:43:12.630219+00:00"
+  "blockers": [
+    "column 'bucket' has 1 NULL rows; backfill before graduation",
+    "column 'resolution_status' has 1 NULL rows; backfill before graduation",
+    "column 'authority_status' has 1 NULL rows; backfill before graduation",
+    "column 'authority' has 1 NULL rows; backfill before graduation"
+  ],
+  "timestamp": "2026-04-29T23:02:25.964697+00:00"
 }

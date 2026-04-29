@@ -1,11 +1,11 @@
 {
   "snapshot": "adg_indexed_04292026_1606.sqlite",
   "snapshot_size_bytes": 682065920,
-  "timestamp_utc": "2026-04-29T22:41:35.296935+00:00",
+  "timestamp_utc": "2026-04-29T23:01:25.060415+00:00",
   "counts": {
     "static_edges": 731005,
     "registry_edges": 281,
-    "runtime_attested_rows": 3073
+    "runtime_attested_rows": 5619
   },
   "gap_distribution": {
     "triplet_attested": 248,
@@ -18,8 +18,8 @@
     "total": 400890
   },
   "top_up": {
-    "applied": false,
-    "traces_added": 0
+    "applied": true,
+    "traces_added": 121
   },
   "checks": [
     {
@@ -35,7 +35,7 @@
     {
       "name": "runtime_graph_non_empty",
       "passed": true,
-      "detail": "runtime_attested_rows=3073"
+      "detail": "runtime_attested_rows=5619"
     },
     {
       "name": "shadow_channel_zero",

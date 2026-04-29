@@ -240,21 +240,52 @@ def probe_gap_distribution(con: sqlite3.Connection) -> GapDistribution:
 # ---------------------------------------------------------------------------
 
 
-def top_up_runtime(snapshot: Path, *, traces: int, edges_per_trace: int, seed: int) -> int:
-    """Seed N triplet-eligible synthetic traces and rebuild v_runtime_proof.
+def top_up_runtime(
+    snapshot: Path,
+    *,
+    traces: int,
+    edges_per_trace: int,
+    seed: int,
+    use_real_otel: bool = False,
+) -> int:
+    """Seed N triplet-eligible traces and rebuild v_runtime_proof.
+
+    When ``use_real_otel`` is True, drives the production W3-migrated
+    emitter exerciser at ``tools.otel.exercise_real_otel_pipeline`` —
+    spans flow through the same ingest helper used by ``heal_router_otel``,
+    ``consensus_otel``, and ``runtime_span_emitter`` in production.
+
+    Otherwise falls back to the synthetic seeder.
 
     Returns number of trace snapshots persisted.
     """
     from tools.otel.runtime_view_builder import build_runtime_view  # noqa: WPS433
-    from tools.otel.seed_synthetic_traces import seed as seed_traces  # noqa: WPS433
 
-    stats = seed_traces(
-        n_traces=traces,
-        edges_per_trace=edges_per_trace,
-        snapshot=snapshot,
-        seed=seed,
-        prefer_registry_overlap=True,
-    )
+    if use_real_otel:
+        from tools.otel.exercise_real_otel_pipeline import run as run_real  # noqa: WPS433
+
+        rstats = run_real(
+            snapshot=snapshot,
+            skip_emitters=False,
+            skip_consumer_aligned=False,
+            n_traces=traces,
+            edges_per_trace=edges_per_trace,
+            rebuild=False,  # we rebuild below for parity with synthetic path
+        )
+        persisted = rstats.consumer_edge_snapshots_persisted + sum(
+            r.spans_persisted for r in rstats.emitter_results
+        )
+    else:
+        from tools.otel.seed_synthetic_traces import seed as seed_traces  # noqa: WPS433
+
+        stats = seed_traces(
+            n_traces=traces,
+            edges_per_trace=edges_per_trace,
+            snapshot=snapshot,
+            seed=seed,
+            prefer_registry_overlap=True,
+        )
+        persisted = stats.snapshots_persisted
 
     # Rebuild v_runtime_proof from scratch so the gap classifier sees the
     # latest attestations. Idempotent — safe even if v_runtime_proof had
@@ -267,7 +298,7 @@ def top_up_runtime(snapshot: Path, *, traces: int, edges_per_trace: int, seed: i
         con.close()
     build_runtime_view(snapshot, fail_soft=False)
 
-    return stats.snapshots_persisted
+    return persisted
 
 
 # ---------------------------------------------------------------------------
@@ -434,6 +465,7 @@ def run(
     traces: int = 100,
     edges_per_trace: int = 5,
     seed: int = 42,
+    use_real_otel: bool = False,
     triplet_floor: int = 1,
     drift_pct_ceiling: float = 5.0,
     bloat_pct_ceiling: float = 1.0,
@@ -457,7 +489,11 @@ def run(
 
     if top_up:
         report.top_up_traces_added = top_up_runtime(
-            snap, traces=traces, edges_per_trace=edges_per_trace, seed=seed
+            snap,
+            traces=traces,
+            edges_per_trace=edges_per_trace,
+            seed=seed,
+            use_real_otel=use_real_otel,
         )
         report.top_up_applied = True
 
@@ -494,6 +530,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--edges-per-trace", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
+        "--use-real-otel",
+        action="store_true",
+        help=(
+            "When --top-up is set, drive the production W3-migrated emitter "
+            "exerciser instead of the synthetic seeder. Spans flow through "
+            "emit_spans_to_runtime_adg — the same ingest helper used by "
+            "heal_router_otel / consensus_otel / runtime_span_emitter."
+        ),
+    )
+    parser.add_argument(
         "--triplet-floor",
         type=int,
         default=1,
@@ -525,6 +571,7 @@ def main(argv: list[str] | None = None) -> int:
         traces=args.traces,
         edges_per_trace=args.edges_per_trace,
         seed=args.seed,
+        use_real_otel=args.use_real_otel,
         triplet_floor=args.triplet_floor,
         drift_pct_ceiling=args.drift_pct_ceiling,
         bloat_pct_ceiling=args.bloat_pct_ceiling,

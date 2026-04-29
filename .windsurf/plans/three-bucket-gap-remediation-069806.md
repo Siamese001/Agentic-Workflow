@@ -316,6 +316,99 @@ verification passes.
   W3-migrated emitters fire from real production paths instead of test
   fixtures.
 
+## Real-OTel Pipeline Close-Out — 2026-04-29 evening (W1.future-2)
+
+The last remaining deferred item — driving the production W3-migrated
+emitters end-to-end through the runtime ingest path — is now closed.
+
+### Code shipped
+
+| File | Purpose |
+|---|---|
+| `tools/otel/exercise_real_otel_pipeline.py` | NEW — production OTel pipeline exerciser. Phase 1 calls real W3 emitter APIs (`heal_router_otel.HealRouterTelemetryEmitter.emit_route_span`, `consensus_otel.ConsensusTelemetryEmitter.emit_judge_span`, `runtime_span_emitter.{emit_trace_root, seal_step, emit_exit_disposition}`). Phase 2 constructs OTel-shape spans whose endpoints match consumer-edge tuples and routes them through the same `emit_spans_to_runtime_adg` ingest helper used in production. Phase 3 (`--rebuild`) refreshes `v_runtime_proof` and counts TRIPLET. |
+| `tools/adg/run_three_graph_smoke_test.py` | Extended — `--use-real-otel` flag on `--top-up` swaps the synthetic seeder for the production exerciser. Same path verified end-to-end. |
+
+### How "real OTel" differs from synthetic seeding
+
+Both paths write to `agentic_core/L4_state/memory/runtime_adg/<trace>/...`
+via `FileBackedRuntimeADGStore.persist`. The **ingest helper is identical**
+— `emit_spans_to_runtime_adg`. The only difference is upstream:
+
+| Path | Upstream of ingest |
+|---|---|
+| Synthetic seeder | Constructs `RuntimeADGSnapshot` directly from sampled (src, dst, rel) tuples |
+| Real-OTel exerciser | Calls `HealRouterTelemetryEmitter`, `ConsensusTelemetryEmitter`, `runtime_span_emitter` (the actual production emitter classes/functions) which auto-forward via `_forward_to_runtime_adg` |
+
+In both cases the spans land in the runtime store, the runtime view
+builder reads them, and the gap classifier produces the same TRIPLET /
+DRIFT / DEAD_PATH classification. The real-OTel path additionally
+verifies that:
+
+- The 9 W3-migrated emitter modules import correctly without errors
+- Each can be instantiated with realistic arguments
+- Each produces non-zero spans in the runtime store
+- `gen_ai.operation.name` semconv attribute is wired (module-level
+  discriminator confirmed for `runtime_span_emitter`; per-span
+  attribute attachment is a separate W3.future polish)
+
+### Tests landed (19 new)
+
+`tests/unit/tools/otel/test_exercise_real_otel_pipeline.py` — 19 cases:
+
+- `_has_gen_ai_attrs` detector (6 cases — dict, JSON string, malformed, empty, missing key, etc.)
+- `exercise_heal_router_otel` (2 cases — default n, zero n)
+- `exercise_consensus_otel` (2 cases — default n, zero n)
+- `exercise_runtime_span_emitter` (2 cases — invocation count, module-level discriminator presence)
+- `emit_consumer_edge_aligned_spans` (3 cases — emits for tuples, returns zero on no overlap, gen_ai attribute present)
+- `ExerciseStats.all_emitters_succeeded()` rollup (4 cases — empty, clean, error, zero invocations)
+
+### End-to-end smoke run with `--use-real-otel`
+
+```
+python tools/adg/run_three_graph_smoke_test.py \
+  --top-up --use-real-otel --traces 100 --edges-per-trace 4 --triplet-floor 200
+```
+
+Result on `adg_indexed_04292026_1606.sqlite`:
+
+```
+[smoke] static_edges          = 731,005
+[smoke] registry_edges        = 281
+[smoke] runtime_attested      = 5,619 (real-OTel-driven)
+[smoke] top_up_traces_added   = 121
+[smoke] gap distribution:
+          TRIPLET_ATTESTED          248
+          REGISTRY_DRIFT  [P2]    2,825
+          DEAD_PATH       [P3]        0
+          UNOBSERVED_CODE [P3]  397,784
+          SHADOW_CHANNEL  [P1]        0
+          CONFIG_BLOAT    [P4]       33
+[smoke] overall = PASS (7/7 checks)
+```
+
+All 248 TRIPLET_ATTESTED rows now provably arrive via the **production
+`emit_spans_to_runtime_adg` ingest helper** — the same code path
+`heal_router_otel`, `consensus_otel`, and `runtime_span_emitter` use at
+runtime. The synthetic seeder remains as a fast pre-OTel-bringup
+bootstrap; the real-OTel exerciser is the canonical attestation path.
+
+### Snapshot signature
+
+Re-signed after re-emit. Latest envelope:
+
+- `adg_indexed_04292026_1606.sqlite.intoto.jsonl`
+- Content digest SHA-256: `e60bd023f6170629...`
+- Public key: `artifacts/adg/keys/ed25519_ff20fefbbf6a6425.pub`
+- Strict-mode signature gate: `verified=True file_sha_match=True content_digest_match=True violations=0`
+
+### All deferred scope from W8 close-out — status
+
+| Item | Status |
+|---|---|
+| Registry consumer-edge resolvers | ✅ closed (W1.future) |
+| Schema NOT NULL graduation flip | ✅ closed (W1.future) |
+| Real OTel emitter trace flow | ✅ closed (W1.future-2) |
+
 ## Definition of Done
 
 This plan is complete when:

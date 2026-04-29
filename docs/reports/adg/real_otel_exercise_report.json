@@ -1,0 +1,36 @@
+{
+  "snapshot": "adg_indexed_04292026_1606.sqlite",
+  "timestamp_utc": "2026-04-29T22:56:37.889961+00:00",
+  "emitters": [
+    {
+      "name": "heal_router_otel",
+      "invocations": 3,
+      "spans_persisted": 3,
+      "gen_ai_attr_present": false,
+      "error": null
+    },
+    {
+      "name": "consensus_otel",
+      "invocations": 3,
+      "spans_persisted": 3,
+      "gen_ai_attr_present": false,
+      "error": null
+    },
+    {
+      "name": "runtime_span_emitter",
+      "invocations": 5,
+      "spans_persisted": 15,
+      "gen_ai_attr_present": true,
+      "error": null
+    }
+  ],
+  "consumer_edge_aligned": {
+    "spans_emitted": 1980,
+    "snapshots_persisted": 200,
+    "gen_ai_attr_present": true
+  },
+  "rebuild_runtime_view": true,
+  "runtime_view_rows_after": 5091,
+  "triplet_attested_after": 248,
+  "all_emitters_succeeded": true
+}
