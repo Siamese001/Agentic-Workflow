@@ -5,6 +5,7 @@
   "constitutional_section": 22,
   "grandfathered_plans": [
     ".windsurf/plans/adg-antipattern-hardening-e5a569.md",
+    ".windsurf/plans/adg-write-sovereignty-cleanup-8bf0da.md",
     ".windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md",
     ".windsurf/plans/adg-gap-remediation-wave-plan-ae5b42.md",
     ".windsurf/plans/adg-generation-rca-351a91.md",
