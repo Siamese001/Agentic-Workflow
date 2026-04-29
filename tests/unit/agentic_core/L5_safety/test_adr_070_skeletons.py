@@ -33,9 +33,9 @@ def test_g05_a2a_imports() -> None:
     assert ctx.source_agent == "a"
     verdict = HandoffVerdict(allowed=True, reason_code="ok", detail="d")
     assert verdict.allowed is True
-
-    with pytest.raises(NotImplementedError, match=r"ADR-070"):
-        default_validator()
+    # default_validator now returns a real validator (not NotImplementedError)
+    v = default_validator()
+    assert v is not None
 
 
 def test_g06_permissions_imports() -> None:
@@ -61,8 +61,9 @@ def test_g06_permissions_imports() -> None:
     )
     assert verdict.allowed is True
 
-    with pytest.raises(NotImplementedError, match=r"ADR-070"):
-        default_ladder()
+    # default_ladder now returns a real ladder (not NotImplementedError)
+    ladder = default_ladder()
+    assert ladder is not None
 
 
 def test_g13_sanitization_imports() -> None:

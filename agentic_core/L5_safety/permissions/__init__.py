@@ -64,12 +64,84 @@ class PermissionLadder(Protocol):
         ...
 
 
+def _now_iso() -> str:
+    """Wall-clock UTC ISO-8601 (Z-suffixed)."""
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+class InMemoryPermissionLadder:
+    """Production-grade in-memory ladder.
+
+    A grant is keyed by (agent_id, target_resource). Granting a higher rung
+    overwrites a lower rung for the same key. Higher rungs implicitly
+    confer all lower rungs (READ < SUGGEST < MUTATE < EXECUTE).
+
+    Expiry is enforced by string-comparing ``expires_at_iso`` against
+    the current ISO timestamp — both are UTC Z-suffixed so lexicographic
+    order matches chronological order. Expired grants behave as if absent.
+
+    Thread-safe: a single lock guards all reads/writes. The grant set is
+    expected to be small (≤10⁴ entries) so a single lock is fine; switch
+    to per-shard locks if scale demands.
+    """
+
+    def __init__(self) -> None:
+        import threading
+        self._lock = threading.Lock()
+        self._grants: dict[tuple[str, str], PermissionGrant] = {}
+
+    def grant(self, grant: PermissionGrant) -> None:
+        """Record a grant; overwrites any prior grant for the same (agent, target)."""
+        key = (grant.agent_id, grant.target_resource)
+        with self._lock:
+            self._grants[key] = grant
+
+    def revoke(self, agent_id: str, target_resource: str) -> bool:
+        """Remove a grant. Returns True if a grant was removed."""
+        with self._lock:
+            return self._grants.pop((agent_id, target_resource), None) is not None
+
+    def check(
+        self,
+        agent_id: str,
+        target: str,
+        requested: PermissionRung,
+    ) -> PermissionVerdict:
+        with self._lock:
+            grant = self._grants.get((agent_id, target))
+
+        if grant is None:
+            return PermissionVerdict(
+                allowed=False, held_rung=None, requested_rung=requested,
+                reason="no grant exists for (agent, target)",
+            )
+        if grant.expires_at_iso <= _now_iso():
+            return PermissionVerdict(
+                allowed=False, held_rung=grant.rung, requested_rung=requested,
+                reason=f"grant expired at {grant.expires_at_iso}",
+            )
+        if grant.rung >= requested:
+            return PermissionVerdict(
+                allowed=True, held_rung=grant.rung, requested_rung=requested,
+                reason=f"held {grant.rung.name} ≥ requested {requested.name}",
+            )
+        return PermissionVerdict(
+            allowed=False, held_rung=grant.rung, requested_rung=requested,
+            reason=f"held {grant.rung.name} < requested {requested.name}",
+        )
+
+
 def default_ladder() -> PermissionLadder:
-    """Production ladder. Implementation is W4 P8 W5 work."""
-    raise NotImplementedError(
-        "G06 graduated permission ladder implementation pending — see ADR-070 + "
-        ".windsurf/plans/w4-p8-guardrail-family-e93f8a.md W5 P8.06"
-    )
+    """Return a fresh in-memory ladder. Production wires this to a durable backend later."""
+    return InMemoryPermissionLadder()
 
 
-__all__ = ["PermissionRung", "PermissionGrant", "PermissionVerdict", "PermissionLadder", "default_ladder"]
+__all__ = [
+    "PermissionRung",
+    "PermissionGrant",
+    "PermissionVerdict",
+    "PermissionLadder",
+    "InMemoryPermissionLadder",
+    "default_ladder",
+]
