@@ -35,6 +35,7 @@ from apps_rfp._compat.lifecycle_trace import (
 from apps_rfp.engines.proposal_retrieval_engine import (
     create_retrieval_engine,
 )
+from apps_rfp.outputs import enterprise_rfp_renderer
 
 # Import enterprise components
 from apps_rfp.engines.rfp_ingestion_engine import RfpIngestionEngine, extract_rfp_summary
@@ -426,151 +427,23 @@ class EnterpriseRfpOrchestrator:
 
         # 1. Main proposal
         proposal_path = out_dir / f"enterprise_proposal_{result.trace_id[:8]}.md"
-        self._write_proposal_markdown(result, proposal_path)
+        enterprise_rfp_renderer.write_proposal_markdown(result, proposal_path)
         result.proposal_path = str(proposal_path)
 
         # 2. Source register
         register_path = out_dir / f"source_register_{result.trace_id[:8]}.json"
-        self._write_source_register(result, register_path)
+        enterprise_rfp_renderer.write_source_register(result, register_path)
         result.source_register_path = str(register_path)
 
         # 3. Validation report
         if result.compliance_result:
             validation_path = out_dir / f"validation_report_{result.trace_id[:8]}.json"
-            self._write_validation_report(result, validation_path)
+            enterprise_rfp_renderer.write_validation_report(result, validation_path)
             result.validation_report_path = str(validation_path)
 
-    def _write_proposal_markdown(self, result: EnterpriseRfpResult, path: Path) -> None:
-        """Write the proposal as markdown."""
-        lines: list[str] = []
-
-        lines.append("# AI Platform Proposal")
-        lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        lines.append(f"**Trace ID:** `{result.trace_id}`")
-        lines.append(f"**Status:** {result.status.upper()}")
-        lines.append("")
-
-        # Proposal sections
-        for section in tqdm(result.proposal.get("sections", []), desc="Processing", unit="item"):
-            lines.append(f"## {section.get('heading', 'Section')}")
-            lines.append("")
-            lines.append(section.get("body", ""))
-            lines.append("")
-
-            # Evidence section
-            evidence = section.get("evidence_cited", [])
-            if evidence:
-                lines.append("*Evidence:* " + ", ".join(evidence))
-                lines.append("")
-
-        # Implementation summary
-        lines.append("## Implementation Summary")
-        lines.append("")
-        lines.append(f"- **Estimated Hours:** {result.implementation_plan.get('total_estimated_hours', 0)}")
-        lines.append(
-            f"- **Sprint Estimate:** {result.implementation_plan.get('estimated_sprints', 0)} sprints",
-        )
-        lines.append(
-            f"- **High Complexity Items:** {len(result.implementation_plan.get('high_complexity_items', []))}",
-        )
-        lines.append("")
-
-        # Compliance summary
-        if result.compliance_result:
-            lines.append("## Compliance Summary")
-            lines.append("")
-            passed = result.compliance_result.get("passed", False)
-            lines.append(f"- **Validation Status:** {'✅ PASSED' if passed else '⚠️ REVIEW REQUIRED'}")
-            lines.append(f"- **Quality Score:** {result.compliance_result.get('quality_score', 0):.0%}")
-            lines.append(f"- **Violations:** {len(result.compliance_result.get('violations', []))}")
-            lines.append("")
-
-        # Repository operational context
-        if result.repo_signals:
-            lines.append("## Repository Operational Signals")
-            lines.append("")
-            adg = result.repo_signals.get("adg", {})
-            tests = result.repo_signals.get("tests", {})
-            ci = result.repo_signals.get("ci", {})
-            governance = result.repo_signals.get("governance", {})
-
-            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
-            lines.append(
-                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}",
-            )
-            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
-            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
-            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
-            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
-            lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
-            )
-            lines.append("")
-
-        path.write_text("\n".join(lines), encoding="utf-8")
-
-    def _write_source_register(self, result: EnterpriseRfpResult, path: Path) -> None:
-        """Write the source register."""
-        register = {
-            "trace_id": result.trace_id,
-            "generated_at": datetime.now().isoformat(),
-            "repo_signals": result.repo_signals,
-            "sources": [
-                {
-                    "type": "rfp_input",
-                    "organization": result.parsed_rfp.get("organization"),
-                    "requirements_count": len(result.requirements),
-                },
-                {
-                    "type": "past_proposals",
-                    "similar_proposals_consulted": len(result.similar_proposals),
-                    "proposals": result.similar_proposals,
-                },
-                {
-                    "type": "decomposition_analysis",
-                    "components_identified": result.implementation_plan.get("total_components", 0),
-                    "estimated_hours": result.implementation_plan.get("total_estimated_hours", 0),
-                },
-                {
-                    "type": "compliance_validation",
-                    "validator": "L5_ComplianceValidator",
-                    "passed": result.compliance_result.get("passed"),
-                    "violations_count": len(result.compliance_result.get("violations", [])),
-                },
-            ],
-            "claim_verifications": [
-                {
-                    "claim_id": c.get("claim_id"),
-                    "confidence": c.get("confidence"),
-                    "has_evidence": c.get("has_evidence"),
-                }
-                for c in result.compliance_result.get("claim_verifications", [])
-            ],
-        }
-
-        path.write_text(json.dumps(register, indent=2), encoding="utf-8")
-
-    def _write_validation_report(self, result: EnterpriseRfpResult, path: Path) -> None:
-        """Write the validation report."""
-        report = {
-            "trace_id": result.trace_id,
-            "validation_timestamp": datetime.now().isoformat(),
-            "compliance_result": result.compliance_result,
-            "violations_detail": [
-                {
-                    "id": v.get("violation_id"),
-                    "rule": v.get("rule_id"),
-                    "severity": v.get("severity"),
-                    "message": v.get("message"),
-                    "suggestion": v.get("suggestion"),
-                }
-                for v in result.compliance_result.get("violations", [])
-            ],
-            "risk_flags": result.compliance_result.get("risk_flags", []),
-            "regulatory_gaps": result.compliance_result.get("regulatory_gaps", []),
-        }
-
-        path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    # W5.1 (2026-04-29): _write_proposal_markdown / _write_source_register /
+    # _write_validation_report moved to apps_rfp/outputs/enterprise_rfp_renderer.py
+    # to keep orchestration logic separate from artifact emission.
 
     def _log_step(
         self,

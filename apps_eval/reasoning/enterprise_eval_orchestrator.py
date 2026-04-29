@@ -33,6 +33,7 @@ from apps_eval._telemetry import (
 from apps_eval.engines.evaluation_retrieval_engine import (
     create_retrieval_engine,
 )
+from apps_eval.outputs import enterprise_eval_renderer
 
 # Import enterprise components
 from apps_eval.reasoning.criteria_decomposition_agent import (
@@ -379,147 +380,23 @@ class EnterpriseEvalOrchestrator:
 
         # 1. Main report
         report_path = out_dir / f"enterprise_eval_{result.trace_id[:8]}.md"
-        self._write_evaluation_markdown(result, report_path)
+        enterprise_eval_renderer.write_evaluation_markdown(result, report_path)
         result.report_path = str(report_path)
 
         # 2. Manifest
         manifest_path = out_dir / f"eval_manifest_{result.trace_id[:8]}.json"
-        self._write_manifest(result, manifest_path)
+        enterprise_eval_renderer.write_manifest(result, manifest_path)
         result.manifest_path = str(manifest_path)
 
         # 3. Baseline (if updating)
         if request.update_baseline:
             baseline_path = out_dir / f"baseline_{result.trace_id[:8]}.json"
-            self._write_baseline(result, baseline_path)
+            enterprise_eval_renderer.write_baseline(result, baseline_path)
             result.baseline_path = str(baseline_path)
 
-    def _write_evaluation_markdown(self, result: EnterpriseEvalResult, path: Path) -> None:
-        """Write the evaluation report as markdown."""
-        lines: list[str] = []
-
-        lines.append("# Enterprise Evaluation Report")
-        lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        lines.append(f"**Trace ID:** `{result.trace_id}`")
-        lines.append(f"**Status:** {result.status.upper()}")
-        lines.append("")
-
-        # Executive summary
-        lines.append("## Executive Summary")
-        lines.append("")
-        eval_results = result.evaluation_results
-        lines.append(f"- **Overall Score:** {eval_results.get('overall_score', 0):.0%}")
-        lines.append(f"- **Agents Executed:** {eval_results.get('agents_executed', 0)}")
-        lines.append(f"- **Gates Passed:** {'✅' if result.gate_result.get('gates_passed') else '❌'}")
-        lines.append(
-            f"- **Validation:** {'✅ PASSED' if result.validation_result.get('passed') else '⚠️ REVIEW'}"
-        )
-        lines.append("")
-
-        # Test plan summary
-        if result.test_plan:
-            lines.append("## Test Plan")
-            lines.append("")
-            lines.append(f"- **Total Components:** {result.test_plan.get('total_components', 0)}")
-            lines.append(f"- **Unit Tests:** {result.test_plan.get('unit_tests', 0)}")
-            lines.append(f"- **Integration Tests:** {result.test_plan.get('integration_tests', 0)}")
-            lines.append(f"- **Benchmarks:** {result.test_plan.get('benchmarks', 0)}")
-            lines.append(f"- **Execution Batches:** {result.test_plan.get('execution_batches', 0)}")
-            lines.append("")
-
-        # Dimension scores
-        dimension_scores = (
-            eval_results.get("results_by_type", {})
-            .get("scorecard_compute", [{}])[0]
-            .get("dimension_scores", {})
-        )
-        if dimension_scores:
-            lines.append("## Dimension Scores")
-            lines.append("")
-            lines.append("| Dimension | Score |")
-            lines.append("|-----------|-------|")
-            for dim, score in dimension_scores.items():
-                lines.append(f"| {dim} | {score:.0%} |")
-            lines.append("")
-
-        # Validation results
-        if result.validation_result:
-            lines.append("## Validation Results")
-            lines.append("")
-            lines.append(f"- **Quality Score:** {result.validation_result.get('quality_score', 0):.0%}")
-            lines.append(f"- **Violations:** {len(result.validation_result.get('violations', []))}")
-            lines.append(f"- **Anomaly Flags:** {len(result.validation_result.get('anomaly_flags', []))}")
-            lines.append("")
-
-        # Repository operational context
-        if result.repo_signals:
-            lines.append("## Repository Operational Signals")
-            lines.append("")
-            adg = result.repo_signals.get("adg", {})
-            tests = result.repo_signals.get("tests", {})
-            ci = result.repo_signals.get("ci", {})
-            governance = result.repo_signals.get("governance", {})
-
-            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
-            lines.append(
-                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
-            )
-            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
-            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
-            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
-            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
-            lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
-            )
-            lines.append("")
-
-        # Execution lineage
-        lines.append("## Execution Lineage")
-        lines.append("")
-        for entry in result.execution_log:
-            status_icon = (
-                "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
-            )
-            lines.append(f"{status_icon} **{entry['step']}**: {entry['status']}")
-        lines.append("")
-
-        path.write_text("\n".join(lines), encoding="utf-8")
-
-    def _write_manifest(self, result: EnterpriseEvalResult, path: Path) -> None:
-        """Write the evaluation manifest."""
-        manifest = {
-            "trace_id": result.trace_id,
-            "generated_at": datetime.now().isoformat(),
-            "status": result.status,
-            "test_plan": result.test_plan,
-            "evaluation_results": {
-                "overall_score": result.evaluation_results.get("overall_score"),
-                "regression_detected": result.evaluation_results.get("regression_detected"),
-                "gates_passed": result.evaluation_results.get("gates_passed"),
-            },
-            "validation": {
-                "passed": result.validation_result.get("passed"),
-                "quality_score": result.validation_result.get("quality_score"),
-                "violation_count": len(result.validation_result.get("violations", [])),
-            },
-            "gate_result": result.gate_result,
-            "repo_signals": result.repo_signals,
-            "execution_log": result.execution_log,
-        }
-
-        path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-
-    def _write_baseline(self, result: EnterpriseEvalResult, path: Path) -> None:
-        """Write the baseline for future comparisons."""
-        baseline = {
-            "trace_id": result.trace_id,
-            "created_at": datetime.now().isoformat(),
-            "overall_score": result.evaluation_results.get("overall_score", 0.0),
-            "dimension_scores": result.evaluation_results.get("results_by_type", {})
-            .get("scorecard_compute", [{}])[0]
-            .get("dimension_scores", {}),
-        }
-
-        path.write_text(json.dumps(baseline, indent=2), encoding="utf-8")
+    # W5.1 (2026-04-29): _write_evaluation_markdown / _write_manifest /
+    # _write_baseline moved to apps_eval/outputs/enterprise_eval_renderer.py
+    # to keep orchestration logic separate from artifact emission.
 
     def _log_step(
         self,

@@ -33,6 +33,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from apps_exec.engines.brief_retrieval_engine import (
     create_retrieval_engine,
 )
+from apps_exec.outputs import enterprise_brief_renderer
 
 # Import enterprise components
 from apps_exec.reasoning.brief_decomposition_agent import (
@@ -430,124 +431,17 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
 
         # 1. Main report
         report_path = out_dir / f"enterprise_brief_{result.trace_id[:8]}.md"
-        self._write_brief_markdown(result, report_path)
+        enterprise_brief_renderer.write_brief_markdown(result, report_path)
         result.report_path = str(report_path)
 
         # 2. Manifest
         manifest_path = out_dir / f"brief_manifest_{result.trace_id[:8]}.json"
-        self._write_manifest(result, manifest_path)
+        enterprise_brief_renderer.write_manifest(result, manifest_path)
         result.manifest_path = str(manifest_path)
 
-    def _write_brief_markdown(self, result: EnterpriseBriefResult, path: Path) -> None:
-        """Write the brief report as markdown."""
-        lines: list[str] = []
-
-        lines.append("# Enterprise Executive Brief Generation Report")
-        lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        lines.append(f"**Trace ID:** `{result.trace_id}`")
-        lines.append(f"**Status:** {result.status.upper()}")
-        lines.append("")
-
-        # Executive summary
-        lines.append("## Executive Summary")
-        lines.append("")
-        lines.append(f"- **Target Personas:** {len(result.decompositions)}")
-        lines.append(f"- **Total Sections:** {result.production_plan.get('total_sections', 0)}")
-        lines.append(f"- **Agents Executed:** {result.generation_results.get('agents_executed', 0)}")
-        lines.append(f"- **Avg Quality Score:** {result.avg_quality_score:.0%}")
-        lines.append(
-            f"- **Gates Passed:** {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
-        )
-        lines.append("")
-
-        # Persona breakdown
-        if result.decompositions:
-            lines.append("## Persona Breakdown")
-            lines.append("")
-            for decomp in result.decompositions:
-                lines.append(f"### {decomp.audience_persona.upper()}")
-                lines.append(f"- Sections: {len(decomp.components)}")
-                lines.append(f"- Tone: {decomp.suggested_tone}")
-                lines.append(f"- Evidence Gaps: {len(decomp.evidence_gaps)}")
-                lines.append("")
-
-        # Style benchmarks
-        if result.style_benchmarks:
-            lines.append("## Style Benchmarks")
-            lines.append("")
-            for persona, benchmark in result.style_benchmarks.items():
-                if isinstance(benchmark, dict) and "error" not in benchmark:
-                    lines.append(f"**{persona}:**")
-                    lines.append(f"- Avg Quality: {benchmark.get('avg_quality_score', 0):.0%}")
-                    lines.append(f"- Sample Size: {benchmark.get('sample_size', 0)}")
-                    lines.append("")
-
-        # Validation results
-        if result.validation_results:
-            lines.append("## Validation Results")
-            lines.append("")
-            for i, (validation, gates) in enumerate(zip(result.validation_results, result.gate_results)):
-                lines.append(f"**Brief {i + 1}:**")
-                lines.append(f"- Quality Score: {validation.get('quality_score', 0):.0%}")
-                lines.append(f"- Gates Passed: {'✅' if gates.get('gates_passed') else '❌'}")
-                lines.append("")
-
-        # Repository operational context
-        if result.repo_signals:
-            lines.append("## Repository Operational Signals")
-            lines.append("")
-            adg = result.repo_signals.get("adg", {})
-            tests = result.repo_signals.get("tests", {})
-            ci = result.repo_signals.get("ci", {})
-            governance = result.repo_signals.get("governance", {})
-
-            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
-            lines.append(
-                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
-            )
-            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
-            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
-            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
-            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
-            lines.append(
-                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
-            )
-            lines.append("")
-
-        # Execution lineage
-        lines.append("## Execution Lineage")
-        lines.append("")
-        for entry in result.execution_log:
-            status_icon = (
-                "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
-            )
-            lines.append(f"{status_icon} **{entry['step']}**: {entry['status']}")
-        lines.append("")
-
-        path.write_text("\n".join(lines), encoding="utf-8")
-
-    def _write_manifest(self, result: EnterpriseBriefResult, path: Path) -> None:
-        """Write the brief manifest."""
-        manifest = {
-            "trace_id": result.trace_id,
-            "generated_at": datetime.now().isoformat(),
-            "status": result.status,
-            "target_personas": [d.audience_persona for d in result.decompositions],
-            "production_plan": result.production_plan,
-            "generation_results": {
-                "agents_executed": result.generation_results.get("agents_executed"),
-                "quality_score": result.generation_results.get("quality_score"),
-            },
-            "validation_summary": {
-                "validations_run": len(result.validation_results),
-                "gates_passed": sum(1 for g in result.gate_results if g.get("gates_passed")),
-                "avg_quality_score": result.avg_quality_score,
-            },
-            "repo_signals": result.repo_signals,
-            "execution_log": result.execution_log,
-        }
-
-        path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    # W5.1 (2026-04-29): _write_brief_markdown / _write_manifest moved to
+    # apps_exec/outputs/enterprise_brief_renderer.py to keep orchestration
+    # logic separate from artifact emission.
 
     def _log_step(
         self,
