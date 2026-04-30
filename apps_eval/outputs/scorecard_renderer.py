@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import csv
 import io
 import logging
@@ -23,6 +27,7 @@ _log = logging.getLogger(__name__)
 class ScorecardRenderer:
     """Renderer for evaluation scorecards."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render_csv(self, rows: list[ScorecardRow]) -> str:
         """Render scorecard as CSV."""
         if not rows:

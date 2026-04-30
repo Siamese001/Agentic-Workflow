@@ -30,14 +30,26 @@ class TestRequiredSpansGate(unittest.TestCase):
                 f"{app} has empty required_spans list",
             )
 
+    def _required_names(self, manifest: dict, app: str) -> set[str]:
+        """Extract span names from manifest, accepting both legacy (string)
+        and new (dict with name/layer) entry shapes."""
+        out: set[str] = set()
+        for entry in manifest[app]["required_spans"]:
+            if isinstance(entry, str):
+                out.add(entry)
+            elif isinstance(entry, dict) and "name" in entry:
+                out.add(str(entry["name"]))
+        return out
+
     def test_apps_eval_spans_match_decorators(self) -> None:
         from ops_scripts.ci.check_required_spans_coverage import (
             _candidate_modules, _collect_decorated_qualnames, _load_manifest,
         )
 
         manifest = _load_manifest()
-        required = set(manifest["apps_eval"]["required_spans"])
-        decorated = _collect_decorated_qualnames(_candidate_modules("apps_eval"))
+        required = self._required_names(manifest, "apps_eval")
+        # _collect_decorated_qualnames now returns dict[name, layer].
+        decorated = set(_collect_decorated_qualnames(_candidate_modules("apps_eval")).keys())
         missing = required - decorated
         self.assertEqual(
             missing, set(),
@@ -50,10 +62,28 @@ class TestRequiredSpansGate(unittest.TestCase):
         )
 
         manifest = _load_manifest()
-        required = set(manifest["apps_underwriting_ai"]["required_spans"])
-        decorated = _collect_decorated_qualnames(_candidate_modules("apps_underwriting_ai"))
+        required = self._required_names(manifest, "apps_underwriting_ai")
+        decorated = set(_collect_decorated_qualnames(_candidate_modules("apps_underwriting_ai")).keys())
         missing = required - decorated
         self.assertEqual(missing, set(), f"missing: {missing}")
+
+    def test_layer_validation_catches_mismatch(self) -> None:
+        """Layer validation (P5 schema rigor) — manifest layer must match decorator."""
+        from ops_scripts.ci.check_required_spans_coverage import _parse_span_entry
+
+        # Legacy string form returns layer=None (no validation).
+        name, layer = _parse_span_entry("Foo.bar")
+        self.assertEqual(name, "Foo.bar")
+        self.assertIsNone(layer)
+
+        # New dict form carries the expected layer.
+        name, layer = _parse_span_entry({"name": "Foo.bar", "layer": "L3_ORCHESTRATION"})
+        self.assertEqual(name, "Foo.bar")
+        self.assertEqual(layer, "L3_ORCHESTRATION")
+
+        # Malformed raises.
+        with self.assertRaises(ValueError):
+            _parse_span_entry({"layer": "L3_ORCHESTRATION"})  # missing name
 
     def test_gate_exits_zero_on_full_coverage(self) -> None:
         from ops_scripts.ci.check_required_spans_coverage import main

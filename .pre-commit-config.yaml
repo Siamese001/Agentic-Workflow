@@ -193,15 +193,32 @@ repos:
         require_serial: true
 
       # -- T6c1c: 10C Proof-Ledger Validation ----------------------------------------
-      # Enforces the proof-grade ledger schema: 200 rows, 35 columns, owner vocabulary,
-      # CRITICAL/HIGH rows have all mandatory proof fields populated, ACCEPTED status
-      # only when proof complete. Triggered when the ledger or its tooling changes.
+      # Enforces the proof-grade ledger schema: 200 rows, 43 columns (W4d-2), owner
+      # vocabulary, CRITICAL/HIGH rows have all 8 mandatory proof fields populated,
+      # ACCEPTED status only when proof field-complete AND evidence-present.
+      # Triggered when the ledger or its tooling changes.
       - id: ten-c-proof-ledger
         name: "T6c1c: 10C proof-ledger validation"
         entry: py tools/requirements/validate_10c_proof_ledger.py
         language: system
         pass_filenames: false
         files: ^(docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger\.csv|tools/requirements/(harden_10c_ledger|validate_10c_proof_ledger)\.py)$
+        always_run: false
+        require_serial: true
+
+      # -- T6c1d: 10C Cross-File Consistency (W4d-3) ---------------------------------
+      # Validates the four-file bundle agrees: ledger ↔ requirements_vs_10a matrix
+      # ↔ metric_obligation matrix ↔ model_binding+nonmodel_control_binding split.
+      # 8 checks: REQ ID parity, CRITICAL/HIGH proof fields, metric→REQ linkage,
+      # binding→REQ linkage, owner-vocab canonicality (across 5 files), new-best-
+      # practice proof-pack coverage, model/nonmodel split well-formedness,
+      # coverage_status_normalized vocabulary.
+      - id: ten-c-cross-file-consistency
+        name: "T6c1d: 10C cross-file consistency (W4d-3)"
+        entry: py ops_scripts/ci/check_10c_cross_file_consistency.py
+        language: system
+        pass_filenames: false
+        files: ^(docs/reports/design/10c_reconciliation/.*\.csv|tools/requirements/harden_10c_matrices\.py|ops_scripts/ci/check_10c_cross_file_consistency\.py)$
         always_run: false
         require_serial: true
 

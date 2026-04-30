@@ -8,6 +8,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import html
 import json
 import logging
@@ -25,6 +29,7 @@ class SectionRenderer:
     def _safe_markdown(value: str) -> str:
         return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
 
+    @traces_execute(layer="L1_COGNITION")
     def render_json(self, section: ResearchSection) -> str:
         """Render section as formatted JSON."""
         return json.dumps(section.model_dump(), indent=2, sort_keys=True, ensure_ascii=False, default=str)

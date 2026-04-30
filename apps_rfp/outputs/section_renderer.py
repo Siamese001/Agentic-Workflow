@@ -8,6 +8,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 from typing import Any
@@ -20,6 +24,7 @@ _log = logging.getLogger(__name__)
 class SectionRenderer:
     """Renderer for individual proposal sections."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render_json(self, section: ProposalSection) -> str:
         """Render section as formatted JSON."""
         return json.dumps(

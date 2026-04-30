@@ -1,70 +1,160 @@
 # Required OTEL spans per app — Layer 3 of the apps_* OTEL coverage strategy.
 #
-# Each entry in `required_spans` MUST appear as an `__adg_traces_execute__`
-# marker on a method reachable via that app's import surface. The CI gate
-# `ops_scripts/ci/check_required_spans_coverage.py` enforces this — removing
-# a `@traces_execute` decorator from a manifest-listed method becomes a
-# fail-closed CI failure.
+# Each entry MUST appear as an `__adg_traces_execute__` marker on a method
+# reachable via that app's import surface, AND its `layer` MUST match the
+# layer kwarg of the @traces_execute decorator on that method.
 #
-# Maintenance:
-#   * Add a row when a new engine entry-point becomes part of the
-#     contract surface (a method whose absence would mean a critical
-#     audit/observability gap).
-#   * Remove a row only via Author-Gate decision (deletion is a
-#     breaking observability contract change).
+# Gate: ops_scripts/ci/check_required_spans_coverage.py
+# Layers: L1_COGNITION, L3_ORCHESTRATION, L4_STATE, L6_OBSERVABILITY
+#
+# Auto-generated from __adg_traces_execute__ markers + decorator layer kwargs.
+# Regenerate via: python tools/_oneoff/generate_required_spans_yaml.py
 #
 # Strategy layers:
-#   L1 (static gate)  : `check_apps_otel_coverage.py` — every module emits
-#   L2 (runtime probe): `test_apps_otel_runtime_coverage.py` — emits flow
-#                       through the OTEL bridge at runtime
-#   L3 (this manifest): `check_required_spans_coverage.py` — named methods
-#                       carry @traces_execute, locked declaratively
+#   L1 (static gate)  : check_apps_otel_coverage.py
+#   L2 (runtime probe): test_apps_otel_runtime_coverage.py
+#   L3 (this manifest): check_required_spans_coverage.py
 #
-# Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+# Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md
+
 
 apps_eval:
   required_spans:
-    - "BaseEvalEngine.execute"
-    - "InMemoryEvaluationStore.add_evaluation"
-    - "HitlDecisionQualityEngine.score_ledger"
-    - "RegressionDetector.detect"
-    - "ScenarioRunner.run_suite"
-    - "ScorecardEngine.compute"
+    - name: "BaseEvalEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ExecutionAdapter.submit"
+      layer: "L4_STATE"
+    - name: "GovernedEvalException.get_exception_record"
+      layer: "L1_COGNITION"
+    - name: "HitlDecisionQualityEngine.score_ledger"
+      layer: "L3_ORCHESTRATION"
+    - name: "InMemoryEvaluationStore.add_evaluation"
+      layer: "L4_STATE"
+    - name: "ObservabilityAdapter.emit_eval_start"
+      layer: "L6_OBSERVABILITY"
+    - name: "RegressionDetector.detect"
+      layer: "L3_ORCHESTRATION"
+    - name: "RunSummaryRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "ScenarioRunner.run_suite"
+      layer: "L3_ORCHESTRATION"
+    - name: "ScorecardEngine.compute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ScorecardRenderer.render_csv"
+      layer: "L1_COGNITION"
 
 apps_exec:
   required_spans:
-    - "BaseExecEngine.execute"
-    - "BriefAssemblyEngine.execute"
-    - "InMemoryBriefStore.add_brief"
-    - "CapabilityExtractionEngine.execute"
-    - "IngestionEngine.execute"
+    - name: "BaseExecEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "BriefAssemblyEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "BriefRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "CapabilityExtractionEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ExecutionAdapter.submit"
+      layer: "L4_STATE"
+    - name: "GovernedExecRun.run_governed_e2e"
+      layer: "L3_ORCHESTRATION"
+    - name: "InMemoryBriefStore.add_brief"
+      layer: "L4_STATE"
+    - name: "IngestionEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ObservabilityAdapter.emit_brief_start"
+      layer: "L6_OBSERVABILITY"
+    - name: "SectionRenderer.render_json"
+      layer: "L1_COGNITION"
 
 apps_lic:
   required_spans:
-    - "ControlPlane.evaluate_input"
+    - name: "CampaignRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "ControlPlane.evaluate_input"
+      layer: "L3_ORCHESTRATION"
+    - name: "DraftRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "ExecutionAdapter.submit_campaign"
+      layer: "L4_STATE"
+    - name: "GovernedLicRun.run_governed_e2e"
+      layer: "L3_ORCHESTRATION"
+    - name: "ObservabilityAdapter.emit_campaign_start"
+      layer: "L6_OBSERVABILITY"
+    - name: "ValidationReportRenderer.render_json"
+      layer: "L1_COGNITION"
 
 apps_research:
   required_spans:
-    - "BaseResearchEngine.execute"
-    - "ResearchAssemblyEngine.execute"
-    - "InMemoryResearchStore.add_research"
+    - name: "BaseResearchEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "GovernedExecutionSeam.run_governed"
+      layer: "L3_ORCHESTRATION"
+    - name: "GovernedResearchRun.run_governed_e2e"
+      layer: "L3_ORCHESTRATION"
+    - name: "InMemoryResearchStore.add_research"
+      layer: "L4_STATE"
+    - name: "ObservabilityAdapter.emit_research_start"
+      layer: "L6_OBSERVABILITY"
+    - name: "ResearchAssemblyEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ResearchRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "SectionRenderer.render_json"
+      layer: "L1_COGNITION"
 
 apps_rfp:
   required_spans:
-    - "BaseRfpEngine.execute"
-    - "ProposalAssemblyEngine.execute"
-    - "EmbeddingStore.add_proposal"
-    - "DocumentParser.can_parse"
+    - name: "BaseRfpEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "DocumentParser.can_parse"
+      layer: "L1_COGNITION"
+    - name: "EmbeddingStore.add_proposal"
+      layer: "L4_STATE"
+    - name: "ExecutionAdapter.submit"
+      layer: "L4_STATE"
+    - name: "GovernedRfpRun.run_governed_e2e"
+      layer: "L3_ORCHESTRATION"
+    - name: "ObservabilityAdapter.emit_rfp_start"
+      layer: "L6_OBSERVABILITY"
+    - name: "ProposalAssemblyEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ProposalRenderer.render_json"
+      layer: "L1_COGNITION"
+    - name: "SectionRenderer.render_json"
+      layer: "L1_COGNITION"
 
 apps_underwriting_ai:
   required_spans:
-    - "UnderwritingEngine.run"
-    - "DecisionPacketAssembler.assemble"
-    - "DocumentReconciliationEngine.reconcile"
-    - "EvidenceRegister.add_entry"
-    - "FeatureDerivationEngine.derive_features"
+    - name: "AuditTraceRenderer.render"
+      layer: "L1_COGNITION"
+    - name: "CoreAdapter.prepare_handoff"
+      layer: "L4_STATE"
+    - name: "DecisionPacketAssembler.assemble"
+      layer: "L3_ORCHESTRATION"
+    - name: "DocumentReconciliationEngine.reconcile"
+      layer: "L3_ORCHESTRATION"
+    - name: "EvidenceRegister.add_entry"
+      layer: "L4_STATE"
+    - name: "ExceptionRenderer.render"
+      layer: "L1_COGNITION"
+    - name: "ExecutionAdapter.create_execution_request"
+      layer: "L4_STATE"
+    - name: "FeatureDerivationEngine.derive_features"
+      layer: "L3_ORCHESTRATION"
+    - name: "GovernedUwException.get_exception_record"
+      layer: "L1_COGNITION"
+    - name: "MemoRenderer.render"
+      layer: "L1_COGNITION"
+    - name: "ObservabilityAdapter.emit_telemetry"
+      layer: "L6_OBSERVABILITY"
+    - name: "PacketRenderer.render"
+      layer: "L1_COGNITION"
+    - name: "PolicyAdapter.prepare_policy_context"
+      layer: "L4_STATE"
+    - name: "RetrievalAdapter.prepare_evidence_requests"
+      layer: "L4_STATE"
+    - name: "StorageAdapter.save_decision_memo"
+      layer: "L4_STATE"
+    - name: "UnderwritingEngine.run"
+      layer: "L3_ORCHESTRATION"
 
-# apps_rg is omitted intentionally — its 49 engines are managed by the
-# legacy lifecycle_trace_contract pattern and tracked separately in
-# `apps_rg/SVP_ENGINEERING_REVIEW.md`. When apps_rg engines migrate
-# to @traces_execute, add them here.

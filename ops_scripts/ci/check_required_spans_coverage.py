@@ -42,59 +42,75 @@ def _load_manifest() -> dict[str, dict[str, list[str]]]:
 
 
 def _candidate_modules(app: str) -> list[str]:
-    """Return dotted module ids in `<app>/engines/`."""
+    """Return dotted module ids in `<app>/engines/`, `<app>/integrations/`,
+    and `<app>/outputs/`. Phase B Wave 2 expanded contract surface beyond
+    engines."""
     out: list[str] = []
-    d = REPO / app / "engines"
-    if not d.is_dir():
-        return out
-    for f in sorted(d.glob("*.py")):
-        if f.name.startswith(("_", ".")) or f.name == "__init__.py":
+    for sub in ("engines", "integrations", "outputs"):
+        d = REPO / app / sub
+        if not d.is_dir():
             continue
-        out.append(f"{app}.engines.{f.stem}")
+        for f in sorted(d.glob("*.py")):
+            if f.name.startswith(("_", ".")) or f.name == "__init__.py":
+                continue
+            out.append(f"{app}.{sub}.{f.stem}")
     return out
 
 
-def _collect_decorated_qualnames(modules: Iterable[str]) -> set[str]:
-    """Return the set of ``ClassName.method`` strings that carry the
-    ``__adg_traces_execute__`` marker across the given modules.
+def _collect_decorated_qualnames(modules: Iterable[str]) -> dict[str, str]:
+    """Return ``{qualname: layer}`` for every method carrying
+    ``__adg_traces_execute__`` across the given modules.
 
     Uses ``vars(cls)`` rather than ``getattr(cls, attr)`` to avoid
     invoking descriptors / Pydantic field machinery that can throw
     DeprecationWarnings or recursion. The marker is set directly on the
     function object inside the class ``__dict__``, so vars() is the
-    canonical lookup.
+    canonical lookup. Layer is read from the explicit
+    ``__adg_traces_layer__`` attribute set by the decorator (avoids
+    closure-cell introspection — see decorator docstring).
     """
-    found: set[str] = set()
+    found: dict[str, str] = {}
     for mod_id in modules:
         try:
             mod = importlib.import_module(mod_id)
         except ImportError:
-            # Heavy-deps modules can fail import in some envs; skip rather
-            # than fail. The L2 runtime probe also tolerates this.
             continue
 
         for name in dir(mod):
             try:
                 obj = getattr(mod, name, None)
-            except Exception:  # noqa: BLE001 — getattr can raise on dynamic descriptors
+            except Exception:  # noqa: BLE001
                 continue
             if not isinstance(obj, type):
                 continue
             cls_vars = vars(obj)
             for attr_name, attr in cls_vars.items():
                 marker = getattr(attr, "__adg_traces_execute__", None)
-                if marker:
-                    for qual in marker:
-                        found.add(qual)
-                        parts = qual.split(".")
-                        if len(parts) >= 2:
-                            found.add(".".join(parts[-2:]))
+                if not marker:
+                    continue
+                layer = getattr(attr, "__adg_traces_layer__", "UNKNOWN")
+                for qual in marker:
+                    found[qual] = layer
+                    parts = qual.split(".")
+                    if len(parts) >= 2:
+                        found.setdefault(".".join(parts[-2:]), layer)
     return found
+
+
+def _parse_span_entry(entry) -> tuple[str, str | None]:
+    """Accept either ``"ClassName.method"`` (legacy) or
+    ``{name: "...", layer: "..."}`` (new). Returns (name, expected_layer).
+    """
+    if isinstance(entry, str):
+        return entry, None
+    if isinstance(entry, dict) and "name" in entry:
+        return str(entry["name"]), entry.get("layer")
+    raise ValueError(f"malformed required_spans entry: {entry!r}")
 
 
 def main() -> int:
     manifest = _load_manifest()
-    print("[B_required_spans] verifying Layer 3 contract")
+    print("[B_required_spans] verifying Layer 3 contract (name + layer)")
     failures: list[str] = []
     total = 0
     for app, spec in manifest.items():
@@ -108,12 +124,28 @@ def main() -> int:
         modules = _candidate_modules(app)
         decorated = _collect_decorated_qualnames(modules)
         ok = 0
-        for span in required:
+        for entry in required:
             total += 1
-            if span in decorated:
-                ok += 1
-            else:
-                failures.append(f"{app}: required span '{span}' has no @traces_execute marker")
+            try:
+                span_name, expected_layer = _parse_span_entry(entry)
+            except ValueError as exc:
+                failures.append(f"{app}: {exc}")
+                continue
+            actual_layer = decorated.get(span_name)
+            if actual_layer is None:
+                failures.append(
+                    f"{app}: required span '{span_name}' has no @traces_execute marker"
+                )
+                continue
+            # Layer validation (P5 — schema rigor). If manifest declares a
+            # layer, the decorator's layer kwarg MUST match.
+            if expected_layer is not None and actual_layer != expected_layer:
+                failures.append(
+                    f"{app}: span '{span_name}' layer mismatch — "
+                    f"manifest declares '{expected_layer}' but decorator carries '{actual_layer}'"
+                )
+                continue
+            ok += 1
         print(f"  {app:<24} {ok}/{len(required)}")
 
     if failures:

@@ -23,6 +23,10 @@ GovernedAppRunRecord into the app-specific GovernedE2ERunRecord.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import uuid
 from dataclasses import dataclass
 from typing import Any
@@ -165,6 +169,7 @@ class GovernedResearchRun(GovernedAppRunner):
     def __init__(self, collection: str = "process_docs") -> None:
         super().__init__(collection=collection)
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def run_governed_e2e(
         self,
         request: ResearchRequest,

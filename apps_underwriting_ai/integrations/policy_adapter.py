@@ -2,6 +2,9 @@
 Policy Adapter - Reads underwriting policy context and prepares compliance payload.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
@@ -31,6 +34,7 @@ class PolicyAdapter:
     - Prepare domain compliance payload
     """
 
+    @traces_execute(layer="L4_STATE")
     def prepare_policy_context(
         self,
         request: UnderwritingRequest,

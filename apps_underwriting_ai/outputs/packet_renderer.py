@@ -2,6 +2,9 @@
 Packet Renderer - Renders decision packet as formatted output.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 import json
 from typing import Any, Dict
 
@@ -11,6 +14,7 @@ from ..types import DecisionPacket
 class PacketRenderer:
     """Renders DecisionPacket as formatted JSON."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render(self, packet: DecisionPacket) -> str:
         """Render packet as formatted JSON string."""
         return json.dumps(packet.dict(), indent=2, default=str)

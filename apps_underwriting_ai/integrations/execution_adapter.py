@@ -2,6 +2,9 @@
 Execution Adapter - Handles execution handoff to agentic_core.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
@@ -54,6 +57,7 @@ class ExecutionAdapter:
     - Prepare for L2 execution authority
     """
 
+    @traces_execute(layer="L4_STATE")
     def create_execution_request(
         self,
         request: UnderwritingRequest,

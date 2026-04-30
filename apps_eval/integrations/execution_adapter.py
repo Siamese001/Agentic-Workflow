@@ -15,6 +15,10 @@ Do not add canonical pipeline wiring here.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -49,6 +53,7 @@ class ExecutionAdapter:
         self.config = config or {}
         self._execution_log: list[dict] = []
 
+    @traces_execute(layer="L4_STATE")
     def submit(self, request: EvalRequest, result: EvalResult) -> dict[str, Any]:
         """
         Submit evaluation result for execution tracking.

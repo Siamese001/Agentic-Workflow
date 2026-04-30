@@ -2,6 +2,9 @@
 Core Adapter - Packages app results for handoff to agentic_core.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
@@ -44,6 +47,7 @@ class CoreAdapter:
     - Do not duplicate trace_id or policy_hash issuance
     """
 
+    @traces_execute(layer="L4_STATE")
     def prepare_handoff(
         self,
         request: UnderwritingRequest,

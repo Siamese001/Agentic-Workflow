@@ -2,6 +2,9 @@
 Storage Adapter - Persists domain artifacts through approved repo seam.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 import json
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +30,7 @@ class StorageAdapter:
     def __init__(self, base_path: Optional[Path] = None):
         self.base_path = base_path or Path("artifacts/underwriting")
 
+    @traces_execute(layer="L4_STATE")
     def save_decision_memo(
         self,
         memo: DecisionMemo,

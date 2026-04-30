@@ -17,6 +17,10 @@ or apps_shared.integrations.governed_app_runner to preserve the boundary.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import uuid
 from dataclasses import dataclass
@@ -99,6 +103,7 @@ class GovernedEvalException:
     APP_NAME = "apps_eval"
     EXCEPTION_REASON_CODE = EXCEPTION_REASON_CODE
 
+    @traces_execute(layer="L1_COGNITION")
     def get_exception_record(self) -> EvalExceptionRecord:
         """Return the formal exception record for the conformance gate."""
         return EvalExceptionRecord()

@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -24,6 +28,7 @@ class ObservabilityAdapter:
         self.config = config or {}
         self._metrics: list[dict] = []
 
+    @traces_execute(layer="L6_OBSERVABILITY")
     def emit_campaign_start(self, request: CampaignRequest) -> dict[str, Any]:
         """Emit campaign start event."""
         event = {

@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 from typing import Any
@@ -25,6 +29,7 @@ class ResearchRenderer:
     def _safe_markdown(value: str) -> str:
         return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
 
+    @traces_execute(layer="L1_COGNITION")
     def render_json(self, result: ResearchResult) -> str:
         """Render result as formatted JSON."""
         return json.dumps(result.model_dump(), indent=2, sort_keys=True, ensure_ascii=False, default=str)

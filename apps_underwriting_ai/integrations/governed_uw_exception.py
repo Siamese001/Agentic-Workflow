@@ -23,6 +23,10 @@ Blocked surfaces and their domain equivalents
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import uuid
 from dataclasses import dataclass
@@ -115,6 +119,7 @@ class GovernedUwException:
     # escalation is invoked from CoreAdapter at the covenant-exception point.
     HITL_ENABLED = True
 
+    @traces_execute(layer="L1_COGNITION")
     def get_exception_record(self) -> UwExceptionRecord:
         """Return the formal exception record for the conformance gate."""
         return UwExceptionRecord()

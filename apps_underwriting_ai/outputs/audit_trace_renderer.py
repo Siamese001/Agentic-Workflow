@@ -2,6 +2,9 @@
 Audit Trace Renderer - Renders audit trace as formatted output.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 import json
 from typing import Any, Dict
 
@@ -11,6 +14,7 @@ from ..types import AuditTrace
 class AuditTraceRenderer:
     """Renders AuditTrace as formatted JSON."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render(self, trace: AuditTrace) -> str:
         """Render audit trace as formatted JSON string."""
         data = {

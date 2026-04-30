@@ -14,6 +14,10 @@ Contract:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from dataclasses import dataclass
 from typing import Any
 from uuid import uuid4
@@ -121,6 +125,7 @@ class GovernedRfpRun(GovernedAppRunner):
     # Governed E2E entry point
     # ------------------------------------------------------------------
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def run_governed_e2e(
         self,
         request: RfpRequest,

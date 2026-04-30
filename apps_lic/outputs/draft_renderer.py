@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 from typing import Any
@@ -21,6 +25,7 @@ _log = logging.getLogger(__name__)
 class DraftRenderer:
     """Renderer for LIC drafts."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render_json(self, draft_package: DraftPackage) -> str:
         """Render draft as formatted JSON."""
         return json.dumps(draft_package.model_dump(), indent=2, default=str)

@@ -2,6 +2,9 @@
 Retrieval Adapter - Prepares evidence requests for existing retrieval stack.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -44,6 +47,7 @@ class RetrievalAdapter:
     - Do not become a new retrieval engine
     """
 
+    @traces_execute(layer="L4_STATE")
     def prepare_evidence_requests(
         self,
         request: UnderwritingRequest,

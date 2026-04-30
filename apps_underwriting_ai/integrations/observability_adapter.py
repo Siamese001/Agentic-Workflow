@@ -2,6 +2,9 @@
 Observability Adapter - Emits app-specific telemetry fields.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
@@ -44,6 +47,7 @@ class ObservabilityAdapter:
     Does not replace existing L6 observability.
     """
 
+    @traces_execute(layer="L6_OBSERVABILITY")
     def emit_telemetry(
         self,
         request: UnderwritingRequest,

@@ -2,12 +2,16 @@
 Exception Renderer - Renders exception summary as markdown.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from ..reasoning.exception_summarizer import ExceptionSummary
 
 
 class ExceptionRenderer:
     """Renders exception and escalation summary."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render(self, summary: ExceptionSummary) -> str:
         """Render exception summary as markdown."""
         if not summary.has_exceptions and not summary.escalation_required:

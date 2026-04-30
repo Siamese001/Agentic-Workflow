@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 from typing import Any
@@ -22,6 +26,7 @@ _log = logging.getLogger(__name__)
 class ProposalRenderer:
     """Renderer for RFP proposals."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render_json(self, result: RfpResult) -> str:
         """Render result as formatted JSON."""
         return json.dumps(

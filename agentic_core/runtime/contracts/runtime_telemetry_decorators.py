@@ -281,9 +281,15 @@ def traces_execute(
                 _LOGGER.debug("traces_execute success emit failed for %s", op_name, exc_info=True)
             return result
 
-        # Static-introspection marker (parallel to __adg_side_effects__).
+        # Static-introspection markers (parallel to __adg_side_effects__).
+        # `__adg_traces_execute__` holds the qualnames so the AST walker
+        # can produce explicit per-call edges. `__adg_traces_layer__`
+        # stores the layer kwarg so Layer 3 manifest validation can
+        # check it without closure introspection (which is fragile —
+        # closure-cell ordering depends on Python's compile output).
         existing = getattr(func, "__adg_traces_execute__", ())
         wrapper.__adg_traces_execute__ = existing + (op_name,)  # type: ignore[attr-defined]
+        wrapper.__adg_traces_layer__ = layer  # type: ignore[attr-defined]
         for attr in _INTENT_ATTRS:
             if hasattr(func, attr):
                 setattr(wrapper, attr, getattr(func, attr))

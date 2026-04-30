@@ -9,6 +9,10 @@ SVP Standards:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import uuid
 from dataclasses import dataclass, field
@@ -149,6 +153,7 @@ class GovernedExecutionSeam:
     Future-run only.  No durable writes.  No UWG bypass.  Non-blocking sidecar.
     """
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def run_governed(
         self,
         request: "ResearchRequest",  # type: ignore[name-defined]

@@ -2,12 +2,16 @@
 Memo Renderer - Renders decision memo as markdown.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 from ..types import DecisionMemo
 
 
 class MemoRenderer:
     """Renders DecisionMemo as formatted markdown."""
 
+    @traces_execute(layer="L1_COGNITION")
     def render(self, memo: DecisionMemo) -> str:
         """Render memo as markdown string."""
         sections = [
