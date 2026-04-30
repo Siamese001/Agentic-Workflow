@@ -26,6 +26,12 @@ from jinja2 import (
 from apps_qna import __version__ as _BUILDER_VERSION
 from apps_qna.config.build_config import QnaBuildConfig
 from apps_qna.config.route_registry import RouteRegistry, load_route_registry
+from apps_qna.integrations.spine_adapter import (
+    ensure_pack_dir,
+    pack_build_span,
+    write_card_text,
+    write_pack_manifest_json,
+)
 from apps_qna.types.qna_types import (
     BuildMetadata,
     CardPackManifest,
@@ -137,30 +143,54 @@ class CardPackBuilder:
                 referenced an undefined variable.
             FileExistsError: output dir is non-empty and force=False.
         """
-        if output_dir.exists() and any(output_dir.iterdir()):
-            if not self._config.force:
-                raise FileExistsError(
-                    f"Output directory not empty: {output_dir} (use --force)"
-                )
-        output_dir.mkdir(parents=True, exist_ok=True)
+        with pack_build_span(
+            "apps_qna.v1.pack.build",
+            attributes={
+                "qna.slug": interview.build_metadata.interview_slug
+                if interview.build_metadata
+                else "unknown",
+                "qna.template_set": TEMPLATE_SET_VERSION,
+                "qna.builder_version": _BUILDER_VERSION,
+                "qna.output_dir": str(output_dir),
+            },
+        ) as span:
+            if output_dir.exists() and any(output_dir.iterdir()):
+                if not self._config.force:
+                    raise FileExistsError(
+                        f"Output directory not empty: {output_dir} (use --force)"
+                    )
+            # UWG-routed directory creation (constitutional §3 — all
+            # filesystem mutations go through the L2 write gateway).
+            ensure_pack_dir(output_dir)
 
-        renders = self._render_all(interview, extra_context or {})
-        for r in renders:
-            self._write(output_dir / r.filename, r.content)
+            renders = self._render_all(interview, extra_context or {})
+            span.set_attribute("qna.cards_rendered", len(renders))
+            for r in renders:
+                self._write(output_dir / r.filename, r.content)
 
-        manifest = self._build_manifest(interview, renders, output_dir)
-        manifest_path = output_dir / "pack_manifest.json"
-        self._write(
-            manifest_path,
-            json.dumps(manifest.model_dump(mode="json"), indent=2, default=str)
-            + "\n",
-        )
-        _log.info(
-            "Built %d-card pack at %s (template_set=%s)",
-            len(renders),
-            output_dir,
-            TEMPLATE_SET_VERSION,
-        )
+            manifest = self._build_manifest(interview, renders, output_dir)
+            manifest_path = output_dir / "pack_manifest.json"
+            # Manifest write through the dedicated UWG facade — same atomic
+            # contract as cards, but flagged as the canonical pack-manifest
+            # write for future audit-trail filtering.
+            manifest_payload = (
+                json.dumps(manifest.model_dump(mode="json"), indent=2, default=str)
+                + "\n"
+            )
+            if self._config.line_ending == "crlf":
+                manifest_payload = manifest_payload.replace("\n", "\r\n")
+            write_pack_manifest_json(manifest_path, manifest_payload)
+            span.set_attribute("qna.routes_covered", len(manifest.routes_covered))
+            span.set_attribute(
+                "qna.paste_exceeds_chatgpt_limit",
+                bool(manifest.paste_exceeds_chatgpt_limit),
+            )
+            _log.info(
+                "Built %d-card pack at %s (template_set=%s)",
+                len(renders),
+                output_dir,
+                TEMPLATE_SET_VERSION,
+            )
         return manifest
 
     # ---------- internal ----------
@@ -387,12 +417,19 @@ class CardPackBuilder:
         return ctx
 
     def _write(self, path: Path, content: str) -> None:
-        # Normalize line endings deterministically.
+        # Normalize line endings deterministically. The actual durable byte
+        # write is delegated to the spine adapter (UWG), which gives us
+        # atomic writes, mutation-ledger audit trail, and source-root
+        # protection. apps_qna pack output lives in reports/qna/<slug>/,
+        # which is not a UWG-protected source root.
         if self._config.line_ending == "lf":
             content = content.replace("\r\n", "\n")
         else:
             content = content.replace("\r\n", "\n").replace("\n", "\r\n")
-        path.write_bytes(content.encode("utf-8"))
+        # Manifest is JSON; cards are markdown. Both flow through UWG via
+        # the same write_card_text helper — the manifest helper is reserved
+        # for the explicit pack_manifest.json call below.
+        write_card_text(path, content, encoding="utf-8")
 
     def _build_manifest(
         self,
