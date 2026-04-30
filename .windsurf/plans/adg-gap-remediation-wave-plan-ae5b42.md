@@ -50,7 +50,7 @@ P1–P4 table extensions in scope:
 | W1 | Layer classification (L_UNKNOWN) | 1.1–1.3 | `L_UNKNOWN` count ≤ 10 in P1 table row | ✅ DONE — was � IN PROGRESS |
 | W2 | P1 layer inversion fix | 2.1–2.2 | `GovernanceAgent` `violates` edge = 0 | ✅ DONE |
 | W3 | P1–P4 table augmentation (SQLite-only) | 3.1–3.4 | New rows visible in terminal on every ADG run | ✅ DONE |
-| W4 | God module decomposition | 4.1–4.3 | `sovereign_severity_types.py` fan-out < 200 | 🔴 TODO |
+| W4 | God module decomposition | 4.1–4.3 | `sovereign_severity_types.py` fan-out < 200 | ✅ DONE |
 | W5 | P2 hotspot reduction | 5.1–5.2 | P2 ratchet ceiling reduced ≥ 20% | 🔴 TODO |
 | W6 | M1–M3 enforce-mode promotion | 6.1–6.2 | M1, M2, M3 in `enforce` mode; CI green | 🔴 TODO |
 | W7 | Write-path runtime audit | 7.1–7.2 | `writes_through`/`writes_to` ratio ≥ 0.50 | 🔴 TODO |
@@ -78,9 +78,9 @@ P1–P4 table extensions in scope:
 | 3.2 | Add L_UNKNOWN + critical_edge rows to P1 | 1 | SQLite queries only | ~800 | ✅ DONE |
 | 3.3 | Add writes ratio + star_import to P2 | 1 | SQLite queries only | ~600 | ✅ DONE |
 | 3.4 | Add M-gate status section after P4 | 1 | Read `wave0_baseline.json` + GPC | ✅ DONE |
-| 4.1 | Extract `severity_enums.py` | 2 | Pure types, no emit calls | ~2500 | 🔴 TODO |
-| 4.2 | Extract `governance_declarations.py` | 2 | Emit-call hub, documented | ~2000 | 🔴 TODO |
-| 4.3 | Update L0–L5 importers + regen | N | Wide blast radius | ~2000 | 🔴 TODO |
+| 4.1 | Extract `severity_enums.py` | 2 | Pure types, no emit calls | ~2500 | ✅ DONE |
+| 4.2 | Extract `governance_declarations.py` | 2 | Emit-call hub, documented | ~2000 | ✅ DONE |
+| 4.3 | Update L0–L5 importers + regen | N | Wide blast radius | ~2000 | ✅ DONE (shim re-exports all; zero direct importers) |
 | 5.1 | Fix top-3 P2 L5 agent hotspots | 3 | broad_exception / silent_swallow | ~3000 | 🔴 TODO |
 | 5.2 | Lower P2 ratchet ceiling | 0 | Ratchet auto-updates | ~200 | 🔴 TODO |
 | 6.1 | Audit M1–M3 current pass/fail on latest GPC | 0 | Read SQLite + baseline | ~500 | 🔴 TODO |
