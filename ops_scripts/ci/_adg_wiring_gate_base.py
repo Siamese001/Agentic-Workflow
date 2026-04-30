@@ -83,8 +83,33 @@ class GateResult:
 # ---------------------------------------------------------------------------
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Return True iff the SQLite file has a `nodes` base table.
+
+    Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
+    pipeline outputs) can be present in artifacts/adg/ without the nodes
+    table. Picking such a stub by mtime would crash every wiring-CI gate
+    with `sqlite3.OperationalError: no such table: nodes`. This helper
+    rejects them. Mirrors the fix in executor_theater_gate.py.
+    """
+    try:
+        import sqlite3 as _sq
+        with _sq.connect(str(p)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:
+        return False
+
+
 def latest_snapshot() -> Path:
-    """Return the most-recently modified adg_indexed_*.sqlite, or ADG_SNAPSHOT override."""
+    """Return the most-recently modified adg_indexed_*.sqlite that has a
+    `nodes` base table (skips stub/sentinel snapshots).
+
+    Honors ``ADG_SNAPSHOT`` env override unconditionally — operators who
+    explicitly point at a stub for testing get what they ask for.
+    """
     override = os.environ.get("ADG_SNAPSHOT", "").strip()
     if override:
         p = Path(override).expanduser().resolve()
@@ -92,12 +117,19 @@ def latest_snapshot() -> Path:
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
     pattern = str(ADG_DIR / "adg_indexed_*.sqlite")
-    matches = sorted(glob.glob(pattern), key=os.path.getmtime)
+    matches = sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True)
     if not matches:
         raise FileNotFoundError(
             f"no adg_indexed_*.sqlite under {ADG_DIR}; regenerate via `python tools/generate_full_adg.py`",
         )
-    return Path(matches[-1])
+    # Pick the newest candidate that has a real schema; skip stubs.
+    for m in matches:
+        if _has_nodes_table(Path(m)):
+            return Path(m)
+    # All candidates are stubs — return the newest so the gate produces a
+    # deterministic FAIL with a useful schema error rather than crashing
+    # silently.
+    return Path(matches[0])
 
 
 def _load_waivers() -> dict[str, Any]:

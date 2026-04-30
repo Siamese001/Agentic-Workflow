@@ -189,9 +189,32 @@ def _ensure_keypair(
 # ---------------------------------------------------------------------------
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Skip stub/sentinel snapshots that lack the `nodes` base table."""
+    try:
+        import sqlite3 as _sq
+        with _sq.connect(str(p)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:
+        return False
+
+
 def _latest_snapshot() -> Path | None:
-    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Newest snapshot with a `nodes` base table; skip stubs / sentinels.
+
+    Must agree with ops_scripts/ci/check_adg_snapshot_signed.py:_latest_snapshot
+    so the signed envelope lands on the same file the check gate verifies.
+    """
+    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"), reverse=True)
+    if not snaps:
+        return None
+    for s in snaps:
+        if _has_nodes_table(s):
+            return s
+    return snaps[0]
 
 
 def _safe_relative(p: Path) -> str:

@@ -66,9 +66,33 @@ class GateResult:
     status: str = "ok"
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Skip stub/sentinel snapshots that lack the `nodes` base table."""
+    try:
+        import sqlite3 as _sq
+        with _sq.connect(str(p)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:
+        return False
+
+
 def _latest_snapshot() -> Path | None:
-    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Return the newest snapshot with a `nodes` base table; skip stubs.
+
+    Sorting by name (`adg_indexed_99999999_9999.sqlite` is a sentinel future
+    date) AND skipping snapshots without `nodes` ensures the gate operates
+    on a real signable artifact rather than a placeholder.
+    """
+    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"), reverse=True)
+    if not snaps:
+        return None
+    for s in snaps:
+        if _has_nodes_table(s):
+            return s
+    return snaps[0]
 
 
 def _find_public_key() -> Path | None:

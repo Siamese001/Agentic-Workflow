@@ -30,13 +30,17 @@ from contextlib import closing
 from pathlib import Path
 from typing import Any
 
-from tools.runtime_evidence.contract_verifier import (
+# Allow direct script invocation. Mirrors the sys.path shim used in
+# check_req_coverage_contracts.py and tools/requirements/emit_proof_bundles.py.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from tools.runtime_evidence.contract_verifier import (  # noqa: E402
     DEFAULT_CONTRACTS_DIR,
     load_contracts,
 )
-from tools.runtime_evidence.ledger_writer import DEFAULT_LEDGER_PATH
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from tools.runtime_evidence.ledger_writer import DEFAULT_LEDGER_PATH  # noqa: E402
 CALIBRATION_DIR = REPO_ROOT / "docs" / "reports" / "calibration"
 
 # How many consecutive weekly fitness reports a contract must have passed

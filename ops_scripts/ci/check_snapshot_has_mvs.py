@@ -96,11 +96,32 @@ PROJECTION_CHECK_MODE = (
 )
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Return True iff the SQLite file has a `nodes` base table.
+
+    Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
+    pipeline outputs) can be present in artifacts/adg/ without the nodes
+    table. Picking such a stub by mtime would cause this gate to fail with
+    `mv_* count 0 < 30` even when a real snapshot exists nearby. Mirrors the
+    fix in executor_theater_gate.py:_has_nodes_table.
+    """
+    try:
+        import sqlite3 as _sq
+        with _sq.connect(str(p)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:
+        return False
+
+
 def _resolve_snapshot(argv_path: str | None) -> Path:
     """Return the snapshot file to inspect.
 
     If argv_path is given, resolve it. Otherwise pick the most-recently
-    modified adg_indexed_*.sqlite under artifacts/adg/.
+    modified adg_indexed_*.sqlite under artifacts/adg/ that has a `nodes`
+    base table (skips stub/sentinel snapshots).
     """
     if argv_path:
         p = Path(argv_path).expanduser().resolve()
@@ -109,12 +130,18 @@ def _resolve_snapshot(argv_path: str | None) -> Path:
         return p
 
     pattern = str(ADG_DIR / "adg_indexed_*.sqlite")
-    candidates = sorted(glob.glob(pattern), key=os.path.getmtime)
+    candidates = sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True)
     if not candidates:
         raise FileNotFoundError(
             f"no adg_indexed_*.sqlite under {ADG_DIR}; regenerate via `python tools/generate_full_adg.py`",
         )
-    return Path(candidates[-1])
+    # Pick the most recent candidate that has a `nodes` base table; skip stubs.
+    for c in candidates:
+        if _has_nodes_table(Path(c)):
+            return Path(c)
+    # All candidates are stubs — return the most recent so the gate still
+    # produces a deterministic FAIL with a useful message rather than crashing.
+    return Path(candidates[0])
 
 
 def _classify_objects(snapshot: Path) -> dict[str, list[str]]:

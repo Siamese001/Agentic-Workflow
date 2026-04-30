@@ -53,12 +53,41 @@ DEFAULT_LEDGER = REPO_ROOT / "artifacts" / "runtime" / "req_emission_ledger.sqli
 _OBSERVABILITY_LAYERS = {"L5_safety", "L6_observability", "L5", "L6"}
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Return True iff the SQLite file has a `nodes` base table.
+
+    Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
+    pipeline outputs) can be present in artifacts/adg/ without the nodes
+    table. Picking such a stub by mtime would crash downstream queries.
+    Mirrors the fix in ops_scripts/ci/executor_theater_gate.py.
+    """
+    try:
+        import sqlite3 as _sq
+        with _sq.connect(str(p)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:
+        return False
+
+
 def latest_static_snapshot(adg_dir: Path = DEFAULT_ADG_DIR) -> Path | None:
-    """Return the newest ``adg_indexed_*.sqlite`` snapshot, or None."""
+    """Return the newest ``adg_indexed_*.sqlite`` snapshot with a `nodes`
+    table, or None. Skips stub/sentinel snapshots so downstream queries
+    don't fail on missing schema.
+    """
     if not adg_dir.exists():
         return None
-    snaps = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    snaps = sorted(adg_dir.glob("adg_indexed_*.sqlite"), reverse=True)
+    if not snaps:
+        return None
+    for s in snaps:
+        if _has_nodes_table(s):
+            return s
+    # All stubs — fall through to the newest one so callers still get a
+    # deterministic file rather than None when at least one snapshot exists.
+    return snaps[0]
 
 
 def _load_runtime_observed_paths(

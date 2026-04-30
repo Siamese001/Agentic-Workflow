@@ -42,6 +42,7 @@ root_directories:
   - infrastructure
   - logs
   - reports
+  - requirements   # frozen requirement files (constraints*.txt etc.)
   - scripts
   - templates
   - test_artifacts
@@ -67,6 +68,8 @@ root_file_patterns:
   - "*.bat"
   - "*.sh"
   - "*.csv"
+  - "*.lock"        # uv.lock, poetry.lock, package-lock.json equivalents
+  - "CODEOWNERS"    # GitHub governance file (no extension by convention)
   - ".*"            # dotfiles (.gitignore, .env, etc.)
 
 # --- Layer structure ---
@@ -115,6 +118,7 @@ excluded_directories:
   - dist
   - build
   - .egg-info
+  - agentic_workflow.egg-info  # setuptools build artifact (regenerated on `pip install -e .`)
   - archives
   - logs
   - artifacts
