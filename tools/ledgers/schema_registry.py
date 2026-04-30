@@ -319,6 +319,23 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
             "AND 4 consecutive in-band weekly calibration reports"
         ),
     ),
+    LedgerSpec(
+        name="apps_qna_pack_lifecycle",
+        purpose=(
+            "apps_qna pack build / lint / self-eval / route-select / paste-set "
+            "/ promotion decisions — durable record surface that W4 NamespaceBandit "
+            "+ Wilson CI promotion gates + W5 system_learning consume for "
+            "cross-interview transfer per constitutional §29."
+        ),
+        schema_file="apps_qna_pack_lifecycle_ledger.schema.sql",
+        writer_hook="apps_qna/builder/card_pack_builder.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md",
+        wave="W1.4",
+        sunset_criterion=(
+            "apps_qna spine integration plan W5 closes "
+            "AND 4 consecutive interview-outcome calibration reports stable"
+        ),
+    ),
 )
 
 

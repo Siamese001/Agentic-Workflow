@@ -27,6 +27,7 @@ from apps_qna import __version__ as _BUILDER_VERSION
 from apps_qna.config.build_config import QnaBuildConfig
 from apps_qna.config.route_registry import RouteRegistry, load_route_registry
 from apps_qna.integrations.spine_adapter import (
+    emit_pack_lifecycle_event,
     ensure_pack_dir,
     pack_build_span,
     write_card_text,
@@ -191,6 +192,39 @@ class CardPackBuilder:
                 output_dir,
                 TEMPLATE_SET_VERSION,
             )
+        # W1.4 — emit pack-lifecycle ledger row. Constitutional §29
+        # paired-marker contract: the OTEL span above IS the marker side;
+        # this is the library-write half. Fail-soft per the helper's
+        # contract — ledger errors never abort the build.
+        slug = (
+            interview.build_metadata.interview_slug
+            if interview.build_metadata
+            else "unknown"
+        )
+        primary_interviewer = (
+            interview.interviewers[0].name if interview.interviewers else None
+        )
+        emit_pack_lifecycle_event(
+            event_kind="pack_build",
+            prediction={
+                "interview_slug": slug,
+                "interviewer": primary_interviewer,
+                "card_count": len(renders),
+                "routes_covered": list(manifest.routes_covered),
+                "paste_set_size": len(manifest.pasted_cards),
+                "paste_exceeds_chatgpt_limit": bool(
+                    manifest.paste_exceeds_chatgpt_limit
+                ),
+                "template_set_version": TEMPLATE_SET_VERSION,
+                "builder_version": _BUILDER_VERSION,
+            },
+            score_band=(
+                "clean"
+                if not manifest.paste_exceeds_chatgpt_limit
+                else "self_eval_drift"
+            ),
+            repo_area=str(output_dir),
+        )
         return manifest
 
     # ---------- internal ----------

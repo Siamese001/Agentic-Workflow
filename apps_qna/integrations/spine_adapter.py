@@ -354,9 +354,88 @@ def classify_section_topic(
     return (best_key, best_score, "keyword")
 
 
+# ---- L6 Observability surface: pack-lifecycle ledger writer (Wave 1.4) -----
+#
+# Every apps_qna pack build / lint / self-eval / route-select / paste-set /
+# promote decision routes through this helper. The L6 ledger
+# ``apps_qna_pack_lifecycle`` is the durable record surface W4 routers
+# (NamespaceBandit, paste-set bandit, Wilson CI promotion) and W5
+# system_learning consume for cross-interview transfer per constitutional
+# §29 closed-loop router enforcement.
+#
+# Fail-soft contract: any ledger error is logged at debug and swallowed.
+# Build pipelines NEVER crash because of ledger issues (matches
+# tools.ledgers.hook_helpers.emit_ledger_event's own fail-soft envelope).
+
+
+_PACK_LIFECYCLE_LEDGER_NAME: str = "apps_qna_pack_lifecycle"
+
+
+def emit_pack_lifecycle_event(
+    *,
+    event_kind: str,
+    prediction: Any = None,
+    outcome: Any = None,
+    score_band: str | None = None,
+    score_numeric: float | None = None,
+    repo_area: str = "",
+    latency_ms: int | None = None,
+    metadata: Any = None,
+) -> str:
+    """Emit one row to the apps_qna_pack_lifecycle ledger.
+
+    Args:
+        event_kind: one of ``pack_build``, ``pack_lint``,
+            ``pack_self_eval``, ``route_select``, ``paste_set_select``,
+            ``promote_decision``, ``interview_outcome`` (per the schema
+            file's documented taxonomy).
+        prediction: ledger-specific JSON-serializable dict; see schema
+            comments for per-event_kind shapes.
+        outcome: optional JSON-serializable dict bound at outcome time.
+            None means "outcome not yet known"; can be late-bound via
+            ``tools.ledgers.hook_helpers.bind_ledger_outcome``.
+        score_band: per-event_kind banding (see schema comments).
+        score_numeric: raw score before banding.
+        repo_area: file/module path most relevant to the event. For
+            ``pack_build``, this is typically ``reports/qna/<slug>/``.
+        latency_ms: prediction-to-write duration when applicable.
+        metadata: freeform JSON dict.
+
+    Returns:
+        The event_id on success, an empty string on any error or when
+        ``LEDGER_WRITER_BYPASS=1`` is set.
+
+    Notes:
+        Constitutional §29 contract: this helper is the LIBRARY-CALL
+        half of the paired ``ROUTER_DECISION:`` marker + ledger write.
+        W4 routers (W4.1 NamespaceBandit, W4.2 paste-set bandit, W4.3
+        promotion_decision) MUST emit both the marker AND call this
+        helper in the same code path; missing either side is a §29
+        violation logged by post_cascade_router_decision_audit.py.
+    """
+    try:
+        from tools.ledgers.hook_helpers import emit_ledger_event
+
+        return emit_ledger_event(
+            ledger=_PACK_LIFECYCLE_LEDGER_NAME,
+            event_kind=event_kind,
+            prediction=prediction,
+            outcome=outcome,
+            score_band=score_band,
+            score_numeric=score_numeric,
+            repo_area=repo_area,
+            latency_ms=latency_ms,
+            metadata=metadata,
+        )
+    except Exception as exc:  # guardian: allow-broad-except -- ledger emit MUST be fail-soft per §29 contract; build pipeline cannot abort because of telemetry-emission error; the underlying emit_ledger_event already swallows exceptions but we double-wrap to also catch ImportError on environments where tools.ledgers is unavailable
+        logger.debug("emit_pack_lifecycle_event suppressed: %r", exc)
+        return ""
+
+
 __all__ = [
     "SPAN_NAMESPACE",
     "classify_section_topic",
+    "emit_pack_lifecycle_event",
     "ensure_pack_dir",
     "get_tracer",
     "pack_build_span",
