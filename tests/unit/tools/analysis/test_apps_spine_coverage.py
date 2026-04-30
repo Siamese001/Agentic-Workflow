@@ -1789,16 +1789,18 @@ def test_apps_shared_does_not_have_spine_handoff_module() -> None:
 
 
 def test_apps_shared_compensating_controls_have_expected_prefix() -> None:
-    """The 4 CC-SHARED-* compensating controls must all be present and
-    cite the expected substrate / registry / proof-harness / quarterly-
-    review themes."""
+    """All CC-SHARED-* compensating controls (>=5 after the shim
+    addendum) must be present and cite the expected substrate /
+    registry / proof-harness / quarterly-review / shim themes."""
     repo_root = Path(__file__).resolve().parents[4]
     apps_shared = repo_root / "apps_shared"
     if not apps_shared.is_dir():
         pytest.skip("apps_shared not present in this checkout")
     _runtime_mode, _evidence, sc = _classify(apps_shared)
     controls = sc["manifest_compensating_controls"]
-    assert len(controls) >= 4
+    assert len(controls) >= 5, (
+        f"expected >=5 controls after CC-SHARED-05 addendum; got {len(controls)}"
+    )
     # Every control must start with CC-SHARED-NN: prefix.
     for cc in controls:
         assert cc.startswith("CC-SHARED-"), (
@@ -1810,6 +1812,48 @@ def test_apps_shared_compensating_controls_have_expected_prefix() -> None:
     assert "app_registry" in joined or "registry" in joined
     assert "proof" in joined or "scenario_base" in joined
     assert "quarterly" in joined
+
+
+def test_apps_shared_cc_shared_05_documents_agentic_core_shim() -> None:
+    """CC-SHARED-05 must explicitly document apps_shared/_compat/agentic_core_shim.py
+    as a tolerated compensating control: the full-stack no-op / early-return
+    behavior, the standalone-only fallback branch, and the explicit statement
+    that standalone mode is not runtime-certified / must not be used for
+    risk-bearing execution."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_shared)
+    controls = sc["manifest_compensating_controls"]
+    # Find the CC-SHARED-05 entry.
+    cc05 = next((cc for cc in controls if cc.startswith("CC-SHARED-05:")), None)
+    assert cc05 is not None, (
+        f"CC-SHARED-05 not present in manifest compensating_controls; "
+        f"got prefixes={[cc.split(':', 1)[0] for cc in controls]}"
+    )
+    cc05_lower = cc05.lower()
+    # Mentions the shim by name.
+    assert "agentic_core_shim" in cc05_lower, (
+        f"CC-SHARED-05 must reference agentic_core_shim by name: {cc05!r}"
+    )
+    # Mentions the full-stack no-op / early return behavior.
+    assert "no-op" in cc05_lower or "early" in cc05_lower or "returns early" in cc05_lower, (
+        f"CC-SHARED-05 must document the full-stack no-op / early-return behavior: {cc05!r}"
+    )
+    # Mentions standalone mode.
+    assert "standalone" in cc05_lower, (
+        f"CC-SHARED-05 must explicitly mention standalone mode: {cc05!r}"
+    )
+    # Mentions the non-certification / non-risk-bearing posture.
+    assert (
+        "not runtime-certified" in cc05_lower
+        or "not runtime certified" in cc05_lower
+        or "risk-bearing" in cc05_lower
+    ), (
+        f"CC-SHARED-05 must state standalone mode is not runtime-certified or "
+        f"not risk-bearing: {cc05!r}"
+    )
 
 
 def test_apps_shared_review_cadence_is_quarterly() -> None:

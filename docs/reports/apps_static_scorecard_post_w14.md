@@ -65,6 +65,41 @@ required contracts surfaced, or a formal-exception charter with
 - **After W14**: `apps_shared/spine_manifest.yaml` declares `claimed_routes: [core_adjacent_utility]` with an explicit `exception` block carrying `reason_code: shared_library_surface` (a **new** reason code distinct from apps_underwriting_ai's `regulatory_domain`), 4 compensating controls, `review_cadence: quarterly`, `safe_layers: [substrate, proof_harness, registry]`, and `blocked_layers: []` (apps_shared HAS to touch many layers — it IS the substrate).
 - **No `spine_handoff.py` was created for apps_shared**, and this was intentional. apps_shared is the **host** of the `GovernedAppRunner` substrate (it *defines* `GovernedAppRunner`, `GovernedAppRunRecord`, `APP_REGISTRY`, `runtime_hitl_integration`), not a *consumer* of it. Making it import the 8 R3 contracts directly would understate its role and conflict with the formal-exception charter. The empty required-contract set is the architecturally honest classification.
 - **`apps_shared/_compat/agentic_core_shim.py` was intentionally NOT touched.** The shim is materially heavier than the retired `apps_rfp/_compat/lifecycle_trace.py` was (5,649 bytes vs 60 lines; it modifies the `agentic_core` import surface at package load via `_install_agentic_core_shim()`). Retiring or modifying it requires a separate focused audit of (a) what `install()` actually does, (b) which `agentic_core` consumers depend on the post-install surface, (c) whether retirement requires touching `agentic_core` itself rather than just apps_shared. This audit is out of scope for W14; the manifest pass is independent of the shim's fate.
+
+### apps_shared `_compat` shim — documented as CC-SHARED-05 (post-W14 addendum)
+
+A read-only audit of `apps_shared/_compat/agentic_core_shim.py` concluded
+that the shim should be **kept and documented** rather than retired now.
+Its presence is acknowledged in the apps_shared formal-exception
+manifest as a fifth compensating control:
+
+- **CC-SHARED-05** (now in `apps_shared/spine_manifest.yaml`) records that
+  `apps_shared/__init__.py` calls `agentic_core_shim.install()` on every
+  `apps_shared` import.
+- **Full-stack mode** (the only mode this workspace exercises): `install()`
+  probes `agentic_core` via `__import__`, succeeds, and returns early with
+  **zero `sys.modules` mutation**. The shim's fallback branch is dead code
+  in this mode.
+- **Standalone mode only** (apps_shared imported without `agentic_core`):
+  `install()` synthesizes **12 thin fallback modules** in `sys.modules`,
+  including no-op lifecycle emitters and a null `ConfCalibRiskGate` that
+  returns `allow=True`. Standalone mode is **not runtime-certified**, is
+  **not covered by production tests**, and **must not be used for
+  risk-bearing execution**.
+- **Retirement** is deferred until standalone-mode use is empirically
+  ruled out. The required future audit evidence consists of: (a) a
+  packaging review confirming no PyPI-distributable or pip-installable
+  target ships `apps_shared` without `agentic_core`; (b) a CI matrix
+  audit confirming every CI job installs the full repo;
+  (c) a deployment-guide audit confirming no README or operational
+  runbook instructs standalone-mode usage. If all three evidence
+  categories rule out standalone mode, the shim may be retired
+  mechanically (delete `apps_shared/_compat/`, trim `apps_shared/__init__.py`,
+  delete `tests/test_agentic_core_shim.py`, and remove the entry in
+  `ops_scripts/ci/check_hardcoded_exclusions.py`).
+- **Classification**: the shim remains `tolerated_special_case G6-S007`
+  in the `docs/wave_g/G6_taxonomy_cleanup/` taxonomy. CC-SHARED-05 links
+  the formal-exception manifest to that taxonomy entry.
 - **Git reference**: commit `0812a51` (shared with W13).
 
 ### 3. Cohort-wide consequence
