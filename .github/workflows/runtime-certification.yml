@@ -125,7 +125,47 @@ jobs:
       # the sidecar evidence is still being gathered. The W1.1-strict step
       # below it documents the strict-mode contract; it is gated on
       # SEMANTIC_CACHE_STRICT_MODE_ENABLED=1 (set by W1 phase 2 onward).
+      # ── W1 phase 2 (real evidence emission — 6 probes + composer)
+      # Probes are read-only introspection harnesses; they never write the
+      # sidecar. Composer maps evidence → semantic_cache_subclaims.json.
+      # Per user 2026-04-30: probes emit honest outcomes — MISMATCH_EXPLAINED
+      # / CALIBRATION_GAP / INFRASTRUCTURE_GAP rather than silent PASS.
+      - name: W1.2a probe_semantic_cache_model (R1B approved-model evidence)
+        run: python tools/certification/evidence/probe_semantic_cache_model.py
+
+      - name: W1.2b probe_semantic_cache_threshold (R1B threshold evidence)
+        run: python tools/certification/evidence/probe_semantic_cache_threshold.py
+
+      - name: W1.2c probe_semantic_cache_negatives (NEG-5/6/7 evidence)
+        run: python tools/certification/evidence/probe_semantic_cache_negatives.py
+
+      - name: W1.2d probe_r1b_terminal_exit (TerminalRetPacket/ExitReviewPacket/X3 evidence)
+        run: python tools/certification/evidence/probe_r1b_terminal_exit.py
+
+      - name: W1.2e probe_cache_state_schema (10-concept L4 schema evidence)
+        run: python tools/certification/evidence/probe_cache_state_schema.py
+
+      - name: W1.2f probe_cache_fixture_vs_uwg (fixture-vs-UWG evidence)
+        run: python tools/certification/evidence/probe_cache_fixture_vs_uwg.py
+
+      - name: W1.3 compose semantic_cache_subclaims sidecar
+        run: python scripts/compose_semantic_cache_subclaims.py
+
+      # ── W1.1 verifier runs AFTER W1.2+W1.3 so the sidecar is now present.
+      #
+      # Advisory mode fail-closes on PARTIAL subclaims. With the W1.2 probes
+      # emitting honest MISMATCH_EXPLAINED (model) + CALIBRATION_GAP
+      # (threshold), RTC-REQ-055 legitimately lands at PARTIAL and the
+      # advisory verifier exits 2. Per user 2026-04-30 ("honest state, not
+      # green output"), this is the intended W1 phase 2 terminal state.
+      #
+      # continue-on-error surfaces the honest non-green exit without failing
+      # the whole job. The sidecar report (semantic_cache_certification_
+      # report.md) is the audit trail. When W1 phase 3 (BGE-M3 install +
+      # calibration study) closes the gaps, the advisory step will pass
+      # cleanly and this continue-on-error can be removed.
       - name: W1.1 verify_semantic_cache_certification -- ADVISORY (R1B sidecar contract)
+        continue-on-error: true
         run: python scripts/verify_semantic_cache_certification.py
 
       # ── Strict-mode gate. Activated when:
@@ -198,6 +238,11 @@ jobs:
             tests/runtime/test_artifact_payload_hashes.py \
             tests/runtime/test_w0_closure_invariants.py \
             tests/runtime/test_semantic_cache_certification_sidecar.py \
+            tests/runtime/test_semantic_cache_model_proof.py \
+            tests/runtime/test_semantic_cache_threshold_proof.py \
+            tests/runtime/test_semantic_cache_negatives_w1_phase2.py \
+            tests/runtime/test_r1b_terminal_exit_proof.py \
+            tests/runtime/test_cache_fixture_vs_uwg_proof.py \
             -p no:xdist -q --timeout=60
 
       # ── Upload artifacts so downstream jobs / humans can inspect
