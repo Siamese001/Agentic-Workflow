@@ -136,6 +136,18 @@ Full rules: `.windsurf/rules/` and `.windsurf/RULES_INDEX.md`
 
 See `.windsurf/rules/windsurf-config-lookup.md` for the full local-first lookup order. Local docs mirror: `docs/windsurf/`. Plans SSOT: `.windsurf/plans/<name>-<6hex>.md` — never `C:\Users\*\` or `docs/reports/plans/`.
 
+## Test Environment — `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`
+
+The dev environment sets `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` globally as a security-conscious hardening measure (prevents pytest from auto-loading plugins via `setuptools` entry points). With autoload disabled, pytest plugins must be loaded **explicitly** via the `-p` flag in `pytest.ini` `addopts`, otherwise pytest reports plugin-supplied flags as "unrecognized arguments" even when the plugins ARE installed in `site-packages`.
+
+The fix lives in `pytest.ini`:
+
+```
+addopts = -p xdist -n 24 --dist=worksteal --timeout=180 ...
+```
+
+**If you add a new pytest plugin** (e.g. `pytest-mock`, `pytest-cov`), prepend `-p <import-name>` to `addopts` BEFORE any flag the plugin supplies. Caveat: if the plugin is already loaded transitively (e.g. via a `conftest.py` `pytest_plugins = [...]` entry, like `pytest-timeout` is here), do NOT add an explicit `-p` for it — pytest will refuse to register the same module under two different names. Failure precedent: 2026-04-30 — `pytest-xdist 3.8.0` and `pytest-timeout 2.4.0` were installed but pytest 9.0.3 refused to recognize `-n` / `--dist` / `--timeout` until `-p xdist` was added explicitly. Adding `-p pytest_timeout` triggered a duplicate-registration error because pytest-timeout was already being loaded by a conftest.
+
 ## Intelligence Ledger Family (ADR-050)
 
 Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture prediction vs outcome for every high-leverage decision Cascade makes. Use `LedgerConsulter("<name>").lookup(...)` to pull precedent **before** acting.

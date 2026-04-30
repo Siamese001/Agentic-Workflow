@@ -82,7 +82,12 @@ jobs:
             echo "window=${{ github.event.inputs.time_window_hours || '168' }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Poll observed spans (best-effort — no MCP in CI)
+      - name: Export runtime ADG snapshots to spans.jsonl
+        run: |
+          python ops_scripts/calibration/otel_runtime_adg_exporter.py || \
+            echo "::notice::Runtime ADG exporter produced no data; spans.jsonl will be empty"
+
+      - name: Poll observed spans
         run: |
           python ops_scripts/calibration/otel_span_poller.py --time-window-hours "${{ steps.mode.outputs.window }}" || \
             echo "::notice::OTEL span poller produced no data; reconciliation will run with empty observation set"
