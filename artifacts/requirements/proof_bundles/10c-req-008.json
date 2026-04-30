@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-008",
+  "selected_at_utc": "2026-04-30T15:25:26.947335+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:25:26.947335+00:00",
+  "canonical_owner_surface": "00B_L4_State_Archive_and_UWG",
+  "runtime_artifact_ref": "CommitRequest",
+  "otel_span_ref": "uwg.commit.validated",
+  "replay_digest": "49182f1c1a8f816bcd14e6288889cb3fe7f1a967d2e32feb94ff76c728cfd044",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L4_state/test_10c_req_008.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L4_state/test_10c_req_008.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_uwg_write_admission_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "3324888db4e60267618b09af1a40525642fcea86",
+  "git_dirty_at_test_time": false,
+  "content_hash": "dca41c9fffdcd17748f998d7bb1dfa62082981395e7ba0045696c4594f03b674"
+}
