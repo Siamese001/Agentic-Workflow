@@ -276,6 +276,101 @@ at rollout. Apps SHOULD declare a manifest; until they do, the
 classification is approximate and the evidence string mentions "declare
 a manifest to enable route-typed validation".
 
+---
+
+## Route-Shape Taxonomy for `apps_*`
+
+The route-shape taxonomy is the **canonical vocabulary** apps use to
+declare what they actually do. It is the public contract of the
+manifest's `claimed_routes[].type` field. Six shapes:
+
+| Route shape | Required contracts | When to declare |
+|---|---|---|
+| **`build_time_compiler`** | (none) | Offline artifact builder. Produces a context pack the operator pastes into an external agent. The spine is **not** in the runtime path of the pasted answer. A `ValidatedRequest` envelope **may** be acceptable as defensive intake-validation evidence (apps_qna shape), but is **not required**. |
+| **`R3_grounded_read`** | `ValidatedRequest`, `L1PlanContract`, `RouteContract`, `RetrievalPlan`, `FinalEvidenceContract`, `CompiledPromptArtifact` (or `PromptEnvelope`), `SealedArtifact`, `ExitReviewPacket` | Grounded read with retrieval + sealed answer; no durable side effect. The full R3 contract chain is required because the spine **is** in the runtime path. Examples in this codebase: `apps_research`, `apps_exec`. |
+| **`R3R4_managed_workflow`** | R3 contract chain **+ `CommitRequest`** | Multi-step / workflow with downstream durable write. The R3 chain handles the read-and-synthesize half; `CommitRequest` covers the L4 admission half. Examples: `apps_lic`, `apps_rfp`. |
+| **`evaluator_only`** | (none, **but exception record required**) | Evaluation surface. Routing eval through `evaluate_and_emit` (L5/L6) creates a circular evaluation-of-evaluator loop. Generic spine wrapping is structurally inappropriate here, so the empty required-contract set is justified by a **recorded exception charter**, not by absence of a runtime path. Example: `apps_eval`. |
+| **`core_adjacent_utility`** | (none, **but exception record required**) | Library-style or regulated-domain protocol with its own governance. Generic spine wrapping would be **contract theater** — the app already provides equivalent guarantees via a domain-specific protocol (e.g., `CoreAdapter` + `CoreHandoffPayload`). The empty required-set is justified by the same exception-charter mechanism as `evaluator_only`. Example: `apps_underwriting_ai`. |
+| **`UNKNOWN_NEEDS_RUNTIME_TRACE`** | n/a | **Classification bucket, not a route type.** Apps that cannot prove a route shape from static analysis (no domain-runtime markers, or a formal-exception route declared without the supporting exception record) land here. Future runtime-trace evidence (OTel spans, ledger rows) is required to re-classify. |
+
+### The empty-required-set distinction (important)
+
+`build_time_compiler`, `evaluator_only`, and `core_adjacent_utility` all
+have **empty required-contract sets**, but they are **not semantically
+equivalent**. The scanner treats them differently:
+
+| Route | Empty set is justified by | Scanner bucket when honored | Scanner bucket when manifest is missing exception fields |
+|---|---|---|---|
+| `build_time_compiler` | The spine is not in the runtime path. The pack is consumed by an external agent. | `APP_OVERLAY_STATIC_EVIDENCE` | `APP_OVERLAY_STATIC_EVIDENCE` (manifest is self-justifying) |
+| `evaluator_only` | The runtime path WOULD circularly invoke the evaluator. The exception charter is what makes the empty set defensible. | `FORMAL_EXCEPTION_STATIC_EVIDENCE` | **`UNKNOWN_NEEDS_RUNTIME_TRACE`** — formal claim cannot be verified |
+| `core_adjacent_utility` | The app's domain protocol (e.g., `CoreAdapter` + `CoreHandoffPayload`) provides equivalent guarantees; generic spine wrapping would duplicate the surface without semantic gain. | `FORMAL_EXCEPTION_STATIC_EVIDENCE` | **`UNKNOWN_NEEDS_RUNTIME_TRACE`** — formal claim cannot be verified |
+
+### `FORMAL_EXCEPTION_STATIC_EVIDENCE` bucket
+
+Introduced in W8. Distinct from `APP_OVERLAY_STATIC_EVIDENCE` because
+the empty required-set is **not** a property of the route — it's a
+property of the **recorded exception charter**.
+
+A manifest qualifies for `FORMAL_EXCEPTION_STATIC_EVIDENCE` only when
+**all three** conditions hold:
+
+1. At least one declared route is in `{evaluator_only, core_adjacent_utility}`.
+2. `exception.reason_code` is non-empty (e.g., `circular_dependency`, `regulatory_domain`).
+3. `exception.compensating_controls` is a non-empty list.
+
+The scanner emoji is **📜** to visually distinguish it from
+`APP_OVERLAY_STATIC_EVIDENCE` (✅) and `PARTIAL_SPINE_STATIC_ONLY` (🟠).
+
+### Manifest shape for formal exceptions
+
+```yaml
+schema_version: 1
+app: apps_<name>
+
+claimed_routes:
+  - type: evaluator_only         # or: core_adjacent_utility
+    description: ...
+
+exception:
+  reason_code: circular_dependency  # or: regulatory_domain
+  exception_record_class: GovernedEvalException
+  exception_record_module: apps_eval.integrations.governed_eval_exception
+  blocked_layers: [L0, L1, C0, L2, L5, L6]
+  safe_layers: [BUS_T_telemetry, conformance_metadata]
+  compensating_controls:
+    - "CC-EVAL-01: ..."
+    - "CC-EVAL-02: ..."
+    - "CC-EVAL-03: ..."
+    - "CC-EVAL-04: ..."
+  review_cadence: annual
+  owner: <team>
+
+notes:
+  - "no ValidatedRequest wrapper required; no app-code migration in this pass"
+```
+
+### Why apps_qna's pattern does NOT generalize
+
+The apps_qna `build_time_compiler + ValidatedRequest envelope` shape
+worked because:
+
+- apps_qna's runtime path goes **outside** the spine (operator pastes into ChatGPT)
+- A `ValidatedRequest` envelope adds **defensive intake validation** that
+  the build-time invocation genuinely benefits from
+
+For the runtime-coupled apps (apps_research, apps_exec, apps_lic,
+apps_rfp), copying that pattern would understate the delegation
+evidence: those apps' actual route shapes are `R3_grounded_read` or
+`R3R4_managed_workflow` and need the **full R3 contract chain**, not
+just `ValidatedRequest`.
+
+For the formal-exception apps (apps_eval, apps_underwriting_ai),
+copying the pattern would be **contract theater**: a `ValidatedRequest`
+envelope would either duplicate an existing domain-specific intake
+contract (apps_underwriting_ai's `UnderwritingRequest`) or paper over a
+fundamental architectural exemption (apps_eval's circularity boundary).
+The honest move is the manifest's `exception` block — no wrapper code.
+
 ## See also
 
 - `docs/reference/_notes/agentic_system_process_map_exec.md` — canonical spine flow

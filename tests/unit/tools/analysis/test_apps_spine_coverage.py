@@ -501,3 +501,372 @@ def test_canonical_contracts_constant_is_frozen() -> None:
         assert required in CANONICAL_CONTRACTS, (
             f"canonical contract {required!r} missing from CANONICAL_CONTRACTS"
         )
+
+
+# ===========================================================================
+# W8 -- Route-shape taxonomy + FORMAL_EXCEPTION_STATIC_EVIDENCE
+# ===========================================================================
+
+
+def test_route_type_table_has_canonical_taxonomy() -> None:
+    """The five canonical route types must all be registered."""
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    for canonical in (
+        "build_time_compiler",
+        "evaluator_only",
+        "core_adjacent_utility",
+        "R3_grounded_read",
+        "R3R4_managed_workflow",
+    ):
+        assert canonical in ROUTE_TYPE_CONTRACT_REQUIREMENTS, (
+            f"missing canonical route type {canonical!r}"
+        )
+
+
+def test_R3_grounded_read_requires_full_R3_chain() -> None:
+    """R3_grounded_read requires the documented 8-contract chain."""
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    required = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3_grounded_read"]
+    for c in (
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "RetrievalPlan", "FinalEvidenceContract",
+        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
+    ):
+        assert c in required, f"R3_grounded_read missing required {c!r}"
+    # CommitRequest is NOT in R3_grounded_read.
+    assert "CommitRequest" not in required
+
+
+def test_R3R4_managed_workflow_adds_commit_request_to_R3_chain() -> None:
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    r3 = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3_grounded_read"]
+    r3r4 = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3R4_managed_workflow"]
+    assert r3.issubset(r3r4)
+    assert "CommitRequest" in r3r4
+    # The exact difference is just CommitRequest.
+    assert (r3r4 - r3) == frozenset({"CommitRequest"})
+
+
+def test_formal_exception_route_types_are_empty_required_set() -> None:
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    assert ROUTE_TYPE_CONTRACT_REQUIREMENTS["evaluator_only"] == frozenset()
+    assert ROUTE_TYPE_CONTRACT_REQUIREMENTS["core_adjacent_utility"] == frozenset()
+
+
+def test_evaluator_only_with_exception_record_is_formal_exception(
+    tmp_path: Path,
+) -> None:
+    """evaluator_only + reason_code + compensating_controls -> FORMAL_EXCEPTION."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_evaluator",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_evaluator
+                claimed_routes:
+                  - type: evaluator_only
+                    description: "Synthetic evaluator surface."
+                exception:
+                  reason_code: circular_dependency
+                  exception_record_class: SyntheticEvalException
+                  compensating_controls:
+                    - "CC-EVAL-01: telemetry without evaluate_and_emit"
+                    - "CC-EVAL-02: exception record accessible"
+                  review_cadence: annual
+                  owner: synthetic-team
+            """,
+            "engines/__init__.py": "",
+            "engines/runner.py": "def evaluate(): return None\n",
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE", (
+        f"got {runtime_mode}; evidence={evidence}"
+    )
+    assert sc["manifest_has_formal_exception"] is True
+    assert sc["manifest_exception_reason_code"] == "circular_dependency"
+    assert sc["manifest_compensating_controls_count"] == 2
+    assert "circular_dependency" in evidence
+
+
+def test_core_adjacent_utility_with_exception_record_is_formal_exception(
+    tmp_path: Path,
+) -> None:
+    """core_adjacent_utility + reason_code + compensating_controls -> FORMAL_EXCEPTION."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_core_adjacent",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_core_adjacent
+                claimed_routes:
+                  - type: core_adjacent_utility
+                    description: "Synthetic regulated-domain library."
+                exception:
+                  reason_code: regulatory_domain
+                  exception_record_class: SyntheticUwException
+                  compensating_controls:
+                    - "CC-UW-01: ObservabilityAdapter telemetry"
+                    - "CC-UW-02: CoreAdapter equivalent governance"
+                    - "CC-UW-03: exception record accessible"
+                  review_cadence: annual
+                  owner: synthetic-team
+            """,
+            "engines/__init__.py": "",
+            "engines/lib.py": "def underwrite(): return None\n",
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+    assert sc["manifest_has_formal_exception"] is True
+    assert sc["manifest_exception_reason_code"] == "regulatory_domain"
+    assert sc["manifest_compensating_controls_count"] == 3
+
+
+def test_evaluator_only_without_exception_record_does_not_pass(
+    tmp_path: Path,
+) -> None:
+    """evaluator_only manifest WITHOUT an exception block must NOT classify
+    as FORMAL_EXCEPTION_STATIC_EVIDENCE; an unverified formal claim is
+    UNKNOWN_NEEDS_RUNTIME_TRACE."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_evaluator_naked",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_evaluator_naked
+                claimed_routes:
+                  - type: evaluator_only
+                    description: "No exception block; should be rejected."
+            """,
+            "engines/__init__.py": "",
+            "engines/x.py": "def f(): return None\n",
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode != "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+    assert runtime_mode != "APP_OVERLAY_STATIC_EVIDENCE"
+    assert runtime_mode == "UNKNOWN_NEEDS_RUNTIME_TRACE"
+    assert sc["manifest_has_formal_exception"] is False
+    assert "exception" in evidence.lower()
+
+
+def test_core_adjacent_with_reason_code_but_empty_controls_does_not_pass(
+    tmp_path: Path,
+) -> None:
+    """Reason code alone is not sufficient; compensating_controls must be non-empty."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_partial_exception",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_partial_exception
+                claimed_routes:
+                  - type: core_adjacent_utility
+                exception:
+                  reason_code: regulatory_domain
+                  compensating_controls: []
+            """,
+            "engines/__init__.py": "",
+            "engines/x.py": "def f(): return None\n",
+        },
+    )
+    runtime_mode, _evidence, sc = _classify(app)
+    assert runtime_mode == "UNKNOWN_NEEDS_RUNTIME_TRACE"
+    assert sc["manifest_has_formal_exception"] is False
+
+
+def test_build_time_compiler_remains_overlay_static_not_formal_exception(
+    tmp_path: Path,
+) -> None:
+    """build_time_compiler is NOT a formal-exception route; the empty
+    required-set is self-justifying. Even if an exception block is also
+    present, the route type must classify as APP_OVERLAY_STATIC_EVIDENCE,
+    not FORMAL_EXCEPTION_STATIC_EVIDENCE."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_build_time",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_build_time
+                claimed_routes:
+                  - type: build_time_compiler
+                    description: "Build-time pack compiler."
+            """,
+            "engines/__init__.py": "",
+            "engines/builder.py": "def build(): return 'pack'\n",
+        },
+    )
+    runtime_mode, _evidence, sc = _classify(app)
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
+    assert runtime_mode != "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+    assert sc["manifest_has_formal_exception"] is False
+
+
+def test_unknown_routes_field_is_populated_for_typos(tmp_path: Path) -> None:
+    """Unknown route-type strings still surface via manifest_unknown_routes."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_typo",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_typo
+                claimed_routes:
+                  - type: not_a_real_route_shape
+            """,
+            "engines/__init__.py": "",
+            "engines/x.py": "def f(): return None\n",
+        },
+    )
+    _runtime_mode, _evidence, sc = _classify(app)
+    assert "not_a_real_route_shape" in sc["manifest_unknown_routes"]
+
+
+def test_prompt_envelope_is_accepted_equivalent_for_compiled_prompt_artifact(
+    tmp_path: Path,
+) -> None:
+    """An app importing PromptEnvelope satisfies a CompiledPromptArtifact requirement."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_prompt_envelope_equiv",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_prompt_envelope_equiv
+                claimed_routes:
+                  - type: R3_grounded_read
+            """,
+            "engines/__init__.py": "",
+            "engines/full_r3.py": """
+                from agentic_core.contracts import (
+                    ValidatedRequest, L1PlanContract, RouteContract,
+                    RetrievalPlan, FinalEvidenceContract,
+                    PromptEnvelope, SealedArtifact, ExitReviewPacket,
+                )
+            """,
+        },
+    )
+    runtime_mode, _evidence, sc = _classify(app)
+    # CompiledPromptArtifact is NOT in distinct_contracts, but PromptEnvelope is.
+    assert "PromptEnvelope" in sc["distinct_contracts"]
+    assert "CompiledPromptArtifact" not in sc["distinct_contracts"]
+    # The equivalence rule must let R3_grounded_read pass anyway.
+    assert sc["manifest_missing_contracts"] == []
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
+
+
+def test_R3R4_managed_workflow_missing_commit_request_is_partial(
+    tmp_path: Path,
+) -> None:
+    """R3R4_managed_workflow with the R3 chain present but no CommitRequest
+    must classify as PARTIAL_SPINE_STATIC_ONLY, missing CommitRequest."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_r3r4_no_commit",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_r3r4_no_commit
+                claimed_routes:
+                  - type: R3R4_managed_workflow
+            """,
+            "engines/__init__.py": "",
+            "engines/full_r3.py": """
+                from agentic_core.contracts import (
+                    ValidatedRequest, L1PlanContract, RouteContract,
+                    RetrievalPlan, FinalEvidenceContract,
+                    CompiledPromptArtifact, SealedArtifact, ExitReviewPacket,
+                )
+            """,
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "PARTIAL_SPINE_STATIC_ONLY"
+    assert "CommitRequest" in sc["manifest_missing_contracts"]
+    assert "CommitRequest" in evidence
+
+
+def test_unknown_needs_runtime_trace_remains_available_for_ambiguous_manifest(
+    tmp_path: Path,
+) -> None:
+    """An app with no domain-runtime markers + a manifest that has no
+    contract-bearing claim still falls through to UNKNOWN_NEEDS_RUNTIME_TRACE
+    rather than being treated as APP_OVERLAY_STATIC_EVIDENCE."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_ambiguous",
+        files={
+            # No engines/integrations/scripts/CLI -- this is a passive package.
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_ambiguous
+                claimed_routes:
+                  - type: evaluator_only
+            """,
+            "types.py": "class Marker: pass\n",
+        },
+    )
+    runtime_mode, _evidence, sc = _classify(app)
+    # No exception block -> formal-exception path rejects -> UNKNOWN.
+    assert runtime_mode == "UNKNOWN_NEEDS_RUNTIME_TRACE"
+
+
+# ===========================================================================
+# Live workspace -- apps_eval and apps_underwriting_ai (W8 manifests)
+# ===========================================================================
+
+
+def test_apps_eval_live_classifies_as_formal_exception_static_evidence() -> None:
+    """apps_eval/spine_manifest.yaml + governed_eval_exception.py must combine
+    to classify as FORMAL_EXCEPTION_STATIC_EVIDENCE."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_eval = repo_root / "apps_eval"
+    if not apps_eval.is_dir():
+        pytest.skip("apps_eval not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_eval)
+    assert sc["manifest_present"] is True, "apps_eval/spine_manifest.yaml missing"
+    assert "evaluator_only" in sc["manifest_claimed_routes"]
+    assert sc["manifest_exception_reason_code"] == "circular_dependency"
+    assert sc["manifest_compensating_controls_count"] >= 4, (
+        f"got {sc['manifest_compensating_controls_count']} controls; "
+        "expected the 4 CC-EVAL-* compensating controls"
+    )
+    assert sc["manifest_has_formal_exception"] is True
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE", (
+        f"got {runtime_mode}; evidence={evidence}"
+    )
+
+
+def test_apps_underwriting_ai_live_classifies_as_formal_exception_static_evidence() -> None:
+    """apps_underwriting_ai/spine_manifest.yaml + governed_uw_exception.py must
+    combine to classify as FORMAL_EXCEPTION_STATIC_EVIDENCE."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_uw = repo_root / "apps_underwriting_ai"
+    if not apps_uw.is_dir():
+        pytest.skip("apps_underwriting_ai not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_uw)
+    assert sc["manifest_present"] is True
+    assert "core_adjacent_utility" in sc["manifest_claimed_routes"]
+    assert sc["manifest_exception_reason_code"] == "regulatory_domain"
+    assert sc["manifest_compensating_controls_count"] >= 4, (
+        f"got {sc['manifest_compensating_controls_count']} controls; "
+        "expected the 4 CC-UW-* compensating controls"
+    )
+    assert sc["manifest_has_formal_exception"] is True
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE", (
+        f"got {runtime_mode}; evidence={evidence}"
+    )

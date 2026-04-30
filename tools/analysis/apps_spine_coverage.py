@@ -127,46 +127,93 @@ CANONICAL_CONTRACTS: frozenset[str] = frozenset({
 # logic. Buckets stay stable; the requirement matrix is the calibration
 # surface.
 # ---------------------------------------------------------------------------
+# Canonical R3 contract chain. The spine's evidence-grounded read path:
+# intake -> plan -> route -> retrieval -> evidence -> prompt -> seal -> exit.
+_R3_CONTRACT_CHAIN: frozenset[str] = frozenset({
+    "ValidatedRequest",
+    "L1PlanContract",
+    "RouteContract",
+    "RetrievalPlan",
+    "FinalEvidenceContract",
+    "CompiledPromptArtifact",  # PromptEnvelope is an accepted equivalent;
+                               # see CONTRACT_EQUIVALENT_GROUPS below.
+    "SealedArtifact",
+    "ExitReviewPacket",
+})
+
 ROUTE_TYPE_CONTRACT_REQUIREMENTS: dict[str, frozenset[str]] = {
-    # R1: cache lookup. Validated request only; no model exec.
+    # ===========================================================
+    # Canonical taxonomy (W7c rename + W8 expansion)
+    # ===========================================================
+    # Grounded read with retrieval + sealed answer; no durable side effect.
+    # Examples (per docs/reports/apps_runtime_mode_scorecard.md):
+    #   apps_research, apps_exec.
+    "R3_grounded_read": _R3_CONTRACT_CHAIN,
+    # Multi-step / workflow with downstream durable write. Adds
+    # ``CommitRequest`` to the R3 chain. Examples: apps_lic, apps_rfp.
+    "R3R4_managed_workflow": _R3_CONTRACT_CHAIN | frozenset({"CommitRequest"}),
+    # Evaluator surface. Wrapping eval in the generic spine substrate
+    # creates a circular evaluation-of-evaluator loop. Empty required-
+    # contract set; MUST be paired with an exception record in the
+    # manifest to qualify for FORMAL_EXCEPTION_STATIC_EVIDENCE.
+    "evaluator_only": frozenset(),
+    # Library-style or regulated-domain protocol with its own
+    # governance. Generic spine wrapping would be contract theater.
+    # Empty required-set; MUST be paired with an exception record to
+    # qualify for FORMAL_EXCEPTION_STATIC_EVIDENCE.
+    "core_adjacent_utility": frozenset(),
+    # Build-time context pack compilers (apps_qna shape). The pack is
+    # an output the operator pastes into an external agent; the spine
+    # is not in the runtime path of the pasted answer. Empty required
+    # set is honored DIRECTLY -- no exception record required, because
+    # the build-time tool is not claiming any runtime delegation.
+    "build_time_compiler": frozenset(),
+
+    # ===========================================================
+    # Legacy / fine-grained route types (back-compat -- kept so any
+    # existing manifest references continue to validate). New apps
+    # SHOULD use the canonical taxonomy above.
+    # ===========================================================
     "R1_cache": frozenset({"ValidatedRequest"}),
-    # R2: grounded read. Retrieve evidence; produce answer artifact.
-    "R2_grounded_read": frozenset({
-        "ValidatedRequest", "L1PlanContract", "RouteContract",
-        "RetrievalPlan", "FinalEvidenceContract",
-        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
-    }),
-    # R3: action. Bounded execution with side effects; needs L4 admission.
+    "R2_grounded_read": _R3_CONTRACT_CHAIN,
     "R3_action": frozenset({
         "ValidatedRequest", "L1PlanContract", "RouteContract",
         "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
         "CommitRequest",
     }),
-    # R4: workflow / multi-step.
     "R4_workflow": frozenset({
         "ValidatedRequest", "L1PlanContract", "RouteContract",
         "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
         "CommitRequest",
     }),
-    # R5: fallback / HITL. Escape hatch; the spine takes over.
     "R5_fallback": frozenset({"ValidatedRequest"}),
-    # Domain-only synthesis (no routing decision; e.g., apps_eval
-    # generating a scorecard from already-resolved inputs).
     "domain_synthesis": frozenset({
         "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
     }),
-    # Durable-write-only adapters (e.g., a writer that takes already-
-    # resolved data and admits it to L4).
     "durable_write": frozenset({"CommitRequest"}),
-    # Post-run learning writeback (e.g., apps_qna's flywheel snapshot).
     "learning_writeback": frozenset({"RuntimeExhaustBundle"}),
-    # Build-time context pack compilers (apps_qna shape). The pack is
-    # an output the operator pastes into an external agent; the spine
-    # is not in the runtime path of the pasted answer. NO contract
-    # handoff required, but the existence of this route type means the
-    # app must explicitly declare it -- the scanner does not assume.
-    "build_time_compiler": frozenset(),
 }
+
+# Contracts that are functionally interchangeable for the purpose of
+# satisfying a route's required set. When ANY member of an equivalence
+# group is imported, the entire group is considered satisfied. The first
+# entry in each tuple is the canonical name (used in error messages).
+CONTRACT_EQUIVALENT_GROUPS: tuple[frozenset[str], ...] = (
+    # apps_rg uses ``PromptEnvelope`` as its prompt artifact; the
+    # canonical name elsewhere is ``CompiledPromptArtifact``. Both
+    # represent the L1->L2 prompt handoff contract.
+    frozenset({"CompiledPromptArtifact", "PromptEnvelope"}),
+)
+
+# Route types that MUST be backed by an exception record (with a
+# reason_code AND non-empty compensating_controls in the manifest)
+# before they qualify for FORMAL_EXCEPTION_STATIC_EVIDENCE. An app that
+# claims one of these route types without the exception fields is
+# UNKNOWN_NEEDS_RUNTIME_TRACE -- the formal claim cannot be verified.
+_FORMAL_EXCEPTION_ROUTE_TYPES: frozenset[str] = frozenset({
+    "evaluator_only",
+    "core_adjacent_utility",
+})
 
 MANIFEST_FILENAMES: tuple[str, ...] = ("spine_manifest.yaml", "spine_manifest.yml")
 
@@ -307,6 +354,103 @@ def _required_contracts_for_routes(claimed_routes: list[str]) -> set[str]:
     return required
 
 
+def _missing_required_contracts(
+    required: set[str], imported: set[str]
+) -> list[str]:
+    """Return required contracts NOT satisfied by the imported set.
+
+    A required contract is satisfied when EITHER the contract itself OR
+    any of its equivalents (per ``CONTRACT_EQUIVALENT_GROUPS``) is in
+    the imported set. The canonical name (the missing one) is what gets
+    returned, not the equivalent names.
+    """
+    imported_norm: set[str] = set(imported)
+    for group in CONTRACT_EQUIVALENT_GROUPS:
+        if group & set(imported):
+            imported_norm |= set(group)
+    return sorted(required - imported_norm)
+
+
+def _extract_exception_fields(manifest: dict | None) -> dict[str, object]:
+    """Pull formal-exception fields from a manifest, if present.
+
+    Recognized shape (under top-level ``exception`` key)::
+
+        exception:
+          reason_code: circular_dependency
+          exception_record_class: GovernedEvalException
+          exception_record_module: apps_eval.integrations.governed_eval_exception
+          blocked_layers: [L0, L1, C0, L2, L5, L6]
+          safe_layers: [BUS_T_telemetry, conformance_metadata]
+          compensating_controls:
+            - "CC-EVAL-01: ..."
+            - "CC-EVAL-02: ..."
+          review_cadence: annual
+          owner: eval-platform team
+
+    Returns a dict with normalized keys; missing fields default to
+    empty/falsy values so callers can do ``.get("reason_code")`` safely.
+    """
+    out: dict[str, object] = {
+        "reason_code": "",
+        "exception_record_class": "",
+        "exception_record_module": "",
+        "compensating_controls": [],
+        "blocked_layers": [],
+        "safe_layers": [],
+        "review_cadence": "",
+        "owner": "",
+    }
+    if not manifest:
+        return out
+    block = manifest.get("exception")
+    if not isinstance(block, dict):
+        return out
+    rc = block.get("reason_code")
+    if isinstance(rc, str):
+        out["reason_code"] = rc.strip()
+    rec_cls = block.get("exception_record_class")
+    if isinstance(rec_cls, str):
+        out["exception_record_class"] = rec_cls.strip()
+    rec_mod = block.get("exception_record_module")
+    if isinstance(rec_mod, str):
+        out["exception_record_module"] = rec_mod.strip()
+    cc = block.get("compensating_controls") or []
+    if isinstance(cc, list):
+        out["compensating_controls"] = [str(c) for c in cc if c]
+    bl = block.get("blocked_layers") or []
+    if isinstance(bl, list):
+        out["blocked_layers"] = [str(c) for c in bl if c]
+    sl = block.get("safe_layers") or []
+    if isinstance(sl, list):
+        out["safe_layers"] = [str(c) for c in sl if c]
+    rev = block.get("review_cadence")
+    if isinstance(rev, str):
+        out["review_cadence"] = rev.strip()
+    own = block.get("owner")
+    if isinstance(own, str):
+        out["owner"] = own.strip()
+    return out
+
+
+def _has_formal_exception(
+    claimed_routes: list[str], exception_fields: dict[str, object]
+) -> bool:
+    """Decide whether the manifest qualifies for FORMAL_EXCEPTION_STATIC_EVIDENCE.
+
+    Conditions (all required):
+      1. At least one declared route is a formal-exception route type
+         (``evaluator_only`` or ``core_adjacent_utility``).
+      2. ``exception.reason_code`` is non-empty.
+      3. ``exception.compensating_controls`` is a non-empty list.
+    """
+    if not any(rt in _FORMAL_EXCEPTION_ROUTE_TYPES for rt in claimed_routes):
+        return False
+    reason_code = exception_fields.get("reason_code") or ""
+    controls = exception_fields.get("compensating_controls") or []
+    return bool(reason_code) and bool(controls)
+
+
 def _safe_relative_path(py: Path, app_dir: Path) -> str:
     """Return a stable string path for an audited file.
 
@@ -426,13 +570,16 @@ def scan_app(app_dir: Path) -> dict:
 
     manifest = _load_manifest(app_dir)
     claimed_routes = _claimed_route_types_from_manifest(manifest)
-    required_contracts = sorted(_required_contracts_for_routes(claimed_routes))
-    missing_contracts = sorted(
-        set(required_contracts) - set(contract_imports.keys())
+    required_set = _required_contracts_for_routes(claimed_routes)
+    required_contracts = sorted(required_set)
+    missing_contracts = _missing_required_contracts(
+        required_set, set(contract_imports.keys())
     )
     unknown_routes = sorted(
         rt for rt in claimed_routes if rt not in ROUTE_TYPE_CONTRACT_REQUIREMENTS
     )
+    exception_fields = _extract_exception_fields(manifest)
+    has_formal_exception = _has_formal_exception(claimed_routes, exception_fields)
 
     return {
         "app": app_dir.name,
@@ -468,29 +615,52 @@ def scan_app(app_dir: Path) -> dict:
         "manifest_required_contracts": required_contracts,
         "manifest_missing_contracts": missing_contracts,
         "manifest_unknown_routes": unknown_routes,
+        # NEW (W8): formal-exception fields. Populated when manifest
+        # carries a top-level ``exception`` block; empty otherwise.
+        "manifest_exception_reason_code": exception_fields.get("reason_code", ""),
+        "manifest_exception_record_class": exception_fields.get(
+            "exception_record_class", ""
+        ),
+        "manifest_exception_record_module": exception_fields.get(
+            "exception_record_module", ""
+        ),
+        "manifest_compensating_controls": exception_fields.get(
+            "compensating_controls", []
+        ),
+        "manifest_compensating_controls_count": len(
+            exception_fields.get("compensating_controls", []) or []
+        ),
+        "manifest_blocked_layers": exception_fields.get("blocked_layers", []),
+        "manifest_safe_layers": exception_fields.get("safe_layers", []),
+        "manifest_review_cadence": exception_fields.get("review_cadence", ""),
+        "manifest_exception_owner": exception_fields.get("owner", ""),
+        "manifest_has_formal_exception": has_formal_exception,
     }
 
 
 def classify_app(scorecard: dict) -> tuple[str, str]:
     """Return (runtime_mode, evidence) per APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md.
 
-    Five-bucket classification with manifest-aware route-typed evaluation:
+    Six-bucket classification with manifest-aware route-typed evaluation:
 
     - APP_OVERLAY_STATIC_EVIDENCE: when a manifest is present, app
       imports the FULL set of contracts its declared routes require.
-      Without a manifest, app imports >= 1 canonical contract (legacy
-      lenient fallback during rollout). Note the bucket name -- this is
-      STATIC evidence; runtime trace is required to prove the contracts
-      are actually exercised at runtime.
+      ``build_time_compiler`` legitimately falls into this bucket with an
+      empty required-set because the spine is not in the runtime path of
+      its output (apps_qna shape).
+    - FORMAL_EXCEPTION_STATIC_EVIDENCE: manifest declares ``evaluator_only``
+      or ``core_adjacent_utility`` AND carries a non-empty
+      ``exception.reason_code`` AND non-empty
+      ``exception.compensating_controls``. The empty required-contract set
+      is justified by the recorded exception charter, not by an absent
+      runtime path.
     - APP_STANDALONE_FORBIDDEN: app claims a domain runtime AND has zero
       contract imports AND has zero meaningful spine import edges.
-    - PARTIAL_SPINE_STATIC_ONLY: app imports infrastructure (UWG/ledger/
-      BGE) but does not satisfy the contract requirements its routes
-      claim. When a manifest is present and lists declared routes, this
-      is the most common bucket for in-flight migrations.
-    - UNKNOWN_NEEDS_RUNTIME_TRACE: app does NOT claim a domain runtime
-      (no engines/integrations/router/CLI), so static analysis cannot
-      decide.
+    - PARTIAL_SPINE_STATIC_ONLY: app imports infrastructure but does not
+      satisfy the route's contract requirements.
+    - UNKNOWN_NEEDS_RUNTIME_TRACE: static evidence is ambiguous (e.g., a
+      formal-exception route declared without the supporting exception
+      record, or an app with no domain-runtime markers).
     - CORE_ONLY_VALID: reserved (not assigned to apps).
     """
     has_contracts = scorecard["contract_count"] > 0
@@ -500,23 +670,44 @@ def classify_app(scorecard: dict) -> tuple[str, str]:
     claimed_routes: list[str] = scorecard.get("manifest_claimed_routes", []) or []
     required: list[str] = scorecard.get("manifest_required_contracts", []) or []
     missing: list[str] = scorecard.get("manifest_missing_contracts", []) or []
+    has_formal_exception: bool = scorecard.get(
+        "manifest_has_formal_exception", False
+    )
+    reason_code: str = scorecard.get("manifest_exception_reason_code", "") or ""
+    cc_count: int = scorecard.get("manifest_compensating_controls_count", 0) or 0
+    declares_formal_route = any(
+        rt in _FORMAL_EXCEPTION_ROUTE_TYPES for rt in claimed_routes
+    )
 
     # Manifest-aware path runs FIRST. A manifest is the operator's
-    # explicit declaration of intent; even an "empty" package is a
-    # legitimate APP_OVERLAY_STATIC_EVIDENCE if the manifest declares
-    # build_time_compiler / R5_fallback / similar zero-requirement
-    # routes.
+    # explicit declaration of intent.
     if manifest_present:
-        # Empty required-set is legitimate (e.g., R5_fallback,
-        # build_time_compiler, durable_write_only without those routes
-        # being claimed). The app explicitly opted in to this minimal
-        # surface; we honor it.
+        # Branch 1: formal-exception routes. evaluator_only and
+        # core_adjacent_utility have empty required-sets, but the
+        # operator MUST back the empty-set claim with an exception
+        # record + compensating controls. Without those, the manifest
+        # is unverified and we refuse to grant any "valid" classification.
+        if declares_formal_route:
+            if has_formal_exception:
+                return (
+                    "FORMAL_EXCEPTION_STATIC_EVIDENCE",
+                    f"manifest declares formal-exception routes {claimed_routes} "
+                    f"with reason_code={reason_code!r} and "
+                    f"{cc_count} compensating control(s); recorded charter honored",
+                )
+            return (
+                "UNKNOWN_NEEDS_RUNTIME_TRACE",
+                f"manifest declares formal-exception routes {claimed_routes} "
+                "but is missing the supporting exception record "
+                "(exception.reason_code and/or exception.compensating_controls); "
+                "formal exception cannot be verified statically",
+            )
+
+        # Branch 2: empty required-set, non-formal route. This is the
+        # build_time_compiler shape -- the route legitimately requires
+        # no canonical contract handoff and the manifest is
+        # self-justifying.
         if not required:
-            # No contracts required for the declared route set, but the
-            # app still benefits from at-least-some delegation evidence
-            # if it claims a runtime. Apps with empty-requirement routes
-            # AND zero contracts are valid overlays of the
-            # build_time_compiler / R5_fallback shape.
             return (
                 "APP_OVERLAY_STATIC_EVIDENCE",
                 f"manifest declares routes {claimed_routes} which require no "
@@ -633,6 +824,9 @@ _RUNTIME_MODE_EMOJI: dict[str, str] = {
     "APP_OVERLAY_STATIC_EVIDENCE": "✅",
     # Legacy alias for one release cycle; same emoji.
     "APP_OVERLAY_VALID": "✅",
+    # W8: formal-exception bucket -- structurally valid via recorded
+    # charter rather than via canonical-contract delegation.
+    "FORMAL_EXCEPTION_STATIC_EVIDENCE": "📜",
     "APP_STANDALONE_FORBIDDEN": "🔴",
     "PARTIAL_SPINE_STATIC_ONLY": "🟠",
     "UNKNOWN_NEEDS_RUNTIME_TRACE": "❔",

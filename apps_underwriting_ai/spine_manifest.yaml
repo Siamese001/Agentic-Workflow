@@ -1,0 +1,73 @@
+# apps_underwriting_ai spine manifest — FORMAL EXCEPTION
+#
+# apps_underwriting_ai is permanently exempt from the generic spine
+# substrate (GovernedAppRunner) because its decisions are
+# legally-binding commercial-credit determinations. Injecting them
+# through a generic evidence-retrieval substrate (L1 -> C0 -> L2) is
+# inappropriate and a regulatory-compliance risk. The app provides
+# equivalent guarantees through its own typed governance protocol:
+# CoreAdapter + CoreHandoffPayload + retrieval_adapter + policy_adapter
+# + storage_adapter.
+#
+# This manifest is the load-bearing static evidence for the
+# FORMAL_EXCEPTION_STATIC_EVIDENCE classification. The compensating-
+# controls list mirrors what `GovernedUwException.check_compensating_controls()`
+# verifies at runtime; the exception_reason_code mirrors
+# `GovernedUwException.EXCEPTION_REASON_CODE`.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md §"Manifest shape for formal exceptions"
+
+schema_version: 1
+app: apps_underwriting_ai
+
+claimed_routes:
+  - type: core_adjacent_utility
+    description: >-
+      apps_underwriting_ai is a regulated-domain library. It exposes
+      typed engines (UnderwritingEngine, DecisionPacketAssembler,
+      FeatureDerivationEngine, etc.) consumed as a Python library
+      surface (no __main__.py / CLI). Its governance equivalents are
+      domain-specialized: structured UnderwritingRequest replaces L0/L1
+      generic intake; retrieval_adapter with typed DocumentSet replaces
+      C0 generic retrieval; policy_adapter + domain validators replace
+      L2 generic chokepoint; review_required + human_review_reason
+      replace the L5 generic safety gate; storage_adapter replaces L4
+      generic admission. Routing this app through generic spine
+      machinery would duplicate every one of these surfaces without
+      semantic gain — contract theater.
+
+exception:
+  reason_code: regulatory_domain
+  exception_record_class: GovernedUwException
+  exception_record_module: apps_underwriting_ai.integrations.governed_uw_exception
+  exception_record_dataclass: UwExceptionRecord
+  blocked_layers:
+    - L0
+    - L1
+    - C0
+    - L2
+    - L5
+  safe_layers:
+    - BUS_T_telemetry
+    - conformance_metadata
+  compensating_controls:
+    - "CC-UW-01: all decisions emit L6-compatible telemetry via ObservabilityAdapter"
+    - "CC-UW-02: CoreAdapter.prepare_handoff() provides equivalent L2 governance guarantees"
+    - "CC-UW-03: get_exception_record() exposes machine-readable ExceptionRecord"
+    - "CC-UW-04: governance protocol reviewed annually with regulatory compliance sign-off"
+  review_cadence: annual
+  owner: underwriting-ai team
+  target_phase: "N/A — permanent exception"
+
+notes:
+  - "No generic L0/L1/C0/L2 wrapper required; no app-code migration in this pass."
+  - "Runtime HITL is opt-in for covenant-exception decisions only (W5 P5.2). It does NOT reopen the other blocked layers; the escalation is invoked from CoreAdapter at the covenant-exception decision point and routes through apps_shared.integrations.runtime_hitl_integration."
+  - "Compensating-controls list mirrors GovernedUwException.COMPENSATING_CONTROLS as of 2026-04-30."
+
+# References:
+# - apps_underwriting_ai/integrations/governed_uw_exception.py (the runtime exception record)
+# - apps_underwriting_ai/integrations/core_adapter.py (CoreAdapter + CoreHandoffPayload)
+# - apps_underwriting_ai/integrations/policy_adapter.py (domain L2 equivalent)
+# - apps_underwriting_ai/integrations/storage_adapter.py (domain L4 equivalent)
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py (FORMAL_EXCEPTION_STATIC_EVIDENCE classification)
