@@ -63,7 +63,7 @@ def _build_snapshot_with_nullable_columns(path: Path, *, with_nulls: bool) -> No
             "INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, "
             "source_file, line_no, authority, bucket, resolution_status, "
             "authority_status) VALUES (1, 2, 'imports', 'static', 'a.py', 10, "
-            "'static_canonical', 'static', 'authority_resolved', 'AUTHORITATIVE_STATIC')"
+            "'verified', 'static', 'authority_resolved', 'AUTHORITATIVE_STATIC')"
         )
     con.commit()
     con.close()

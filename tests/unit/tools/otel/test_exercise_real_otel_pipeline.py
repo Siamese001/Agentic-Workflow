@@ -79,12 +79,13 @@ def _build_snapshot_with_consumer_edges(path: Path) -> None:
     con.execute("INSERT INTO nodes (adg_name) VALUES ('ADG::Module::other.py')")
     con.execute("INSERT INTO nodes (adg_name) VALUES ('Registry::MCP::tavily')")
 
-    # Consumer-edge twin: bucket='static' + bucket='registry' on same triple
+    # Consumer-edge twin: bucket='static' + bucket='registry' on same triple.
+    # Both twins carry authority='verified' (in-enum) post-W7-remediation.
     rows = [
-        (1, 2, "references_agent_spec", "static_canonical", "static"),
-        (1, 2, "references_agent_spec", "registry_declared", "registry"),
-        (3, 4, "references_mcp_server", "static_canonical", "static"),
-        (3, 4, "references_mcp_server", "registry_declared", "registry"),
+        (1, 2, "references_agent_spec", "verified", "static"),
+        (1, 2, "references_agent_spec", "verified", "registry"),
+        (3, 4, "references_mcp_server", "verified", "static"),
+        (3, 4, "references_mcp_server", "verified", "registry"),
     ]
     for src, dst, rel, auth, bucket in rows:
         con.execute(

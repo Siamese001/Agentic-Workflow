@@ -180,7 +180,18 @@ class TestRollup:
         )
         assert rollup.overall_status == "FAIL"
 
-    def test_strict_promotes_warn_to_fail(self):
+    def test_strict_does_not_promote_warn_to_fail(self):
+        """WARN is a gate's intentional advisory state. --strict should
+        fail-close on real invariant violations (FAIL) and infrastructure
+        problems (ERROR), but should NOT promote WARNs that the gate
+        deliberately emitted as non-failure advisory signals.
+
+        Conflating WARN→FAIL at the rollup level loses the gate-author's
+        intent: the gate already chose WARN because the condition is not
+        a real defect (e.g., aspirational schema fields, topology data
+        unavailable). Per-gate code is responsible for choosing FAIL vs
+        WARN; the rollup merely aggregates.
+        """
         results = [
             GateResult(gate_id="a", bucket="static", status="WARN").finalize(),
         ]
@@ -188,7 +199,7 @@ class TestRollup:
         rollup = _runner.build_rollup(
             "quick", None, datetime.now(timezone.utc), results, strict=True
         )
-        assert rollup.overall_status == "FAIL"
+        assert rollup.overall_status == "WARN"
 
     def test_warn_left_alone_in_non_strict(self):
         results = [
@@ -199,6 +210,22 @@ class TestRollup:
             "quick", None, datetime.now(timezone.utc), results, strict=False
         )
         assert rollup.overall_status == "WARN"
+
+    def test_strict_still_fails_on_real_fail(self):
+        """Sanity check: strict still raises overall FAIL when any gate
+        reports a real FAIL (not a WARN)."""
+        results = [
+            GateResult(gate_id="a", bucket="static", status="WARN").finalize(),
+            GateResult(
+                gate_id="b", bucket="static", status="FAIL",
+                actual_fail_reason="real_defect",
+            ).finalize(),
+        ]
+        from datetime import datetime, timezone
+        rollup = _runner.build_rollup(
+            "quick", None, datetime.now(timezone.utc), results, strict=True
+        )
+        assert rollup.overall_status == "FAIL"
 
     def test_error_dominates(self):
         results = [

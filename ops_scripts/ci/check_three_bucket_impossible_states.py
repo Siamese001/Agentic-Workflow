@@ -269,19 +269,42 @@ def _check_i5_auth_runtime_span(con: sqlite3.Connection) -> tuple[list[str], lis
     return ["I5_FAIL_AUTH_RUNTIME_NO_SPAN_REF"], samples, total
 
 
+def _is_policy_rule_evidence(refs: str | None) -> bool:
+    """True if the evidence_refs identify the row as a declarative policy
+    rule rather than a route contract. Policy rules carry an
+    ``applies_to`` field stamped by the v15-policy-pack resolver; their
+    consumption model is "policy pack reader applies all rules" rather
+    than "code references rule by name", so the I6 invariant (which
+    looks for missing by-name consumers) does not apply.
+    """
+    if not refs:
+        return False
+    try:
+        d = json.loads(refs)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(d, dict) and bool(d.get("applies_to"))
+
+
 def _check_i6_registry_only_prod_route(
     con: sqlite3.Connection,
 ) -> tuple[list[str], list[dict], int]:
-    """I6 — registry edge in a production source has neither static twin nor runtime."""
-    # registry_consumer_resolver emits TWIN edges (one bucket=static, one
-    # bucket=registry). If a *_DECLARED registry edge in a production source
-    # has NO sibling static edge AND NO runtime evidence at the same dst,
-    # it is an unmounted production wire.
+    """I6 — registry edge in a production source has neither static twin
+    nor runtime, and is not a declarative policy rule.
+
+    registry_consumer_resolver emits TWIN edges (one bucket=static, one
+    bucket=registry). Reference relations covered include
+    ``references_mcp_server``, ``references_agent_spec``, and
+    ``references_route_contract``. If a *_DECLARED registry edge in a
+    production source has NO sibling static edge AND NO runtime evidence
+    at the same dst AND is not a policy-pack rule (see
+    ``_is_policy_rule_evidence``), it is an unmounted production wire.
+    """
     prefix_clause = " OR ".join(["source_file LIKE ?"] * len(PRODUCTION_ROOT_PREFIXES))
     prefix_args = [f"{p}%" for p in PRODUCTION_ROOT_PREFIXES]
     rows = con.execute(
         f"""
-        SELECT e.id, e.relation_type, e.source_file, e.dst_id
+        SELECT e.id, e.relation_type, e.source_file, e.dst_id, e.evidence_refs
           FROM edges e
          WHERE e.bucket='registry'
            AND e.relation_type IN ('MCP_SERVER_DECLARED','AGENT_SPEC_DECLARED','ROUTE_CONTRACT_DECLARED')
@@ -290,23 +313,30 @@ def _check_i6_registry_only_prod_route(
              SELECT 1 FROM edges e2
               WHERE e2.bucket='static'
                 AND e2.dst_id = e.dst_id
-                AND e2.relation_type IN ('references_mcp_server','references_agent_spec')
+                AND e2.relation_type IN (
+                    'references_mcp_server',
+                    'references_agent_spec',
+                    'references_route_contract'
+                )
            )
            AND NOT EXISTS (
              SELECT 1 FROM v_runtime_proof v WHERE v.static_edge_id = e.id
            )
-         LIMIT ?
         """,
-        (*prefix_args, SAMPLE_LIMIT),
+        prefix_args,
     ).fetchall()
-    if not rows:
+
+    # Filter out policy-rule rows in Python (the discriminator lives in
+    # the JSON evidence_refs, not in a column).
+    real_violators = [r for r in rows if not _is_policy_rule_evidence(r[4])]
+    if not real_violators:
         return [], [], 0
     samples = [{
         "code": "I6_FAIL_REGISTRY_ONLY_PROD_ROUTE",
         "edge_id": r[0], "relation_type": r[1], "source_file": r[2],
         "dst_id": r[3],
-    } for r in rows]
-    return ["I6_FAIL_REGISTRY_ONLY_PROD_ROUTE"], samples, len(rows)
+    } for r in real_violators[:SAMPLE_LIMIT]]
+    return ["I6_FAIL_REGISTRY_ONLY_PROD_ROUTE"], samples, len(real_violators)
 
 
 def _check_i7_static_only_prod_critical(

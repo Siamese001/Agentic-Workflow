@@ -1,0 +1,55 @@
+{
+  "timestamp_utc": "2026-04-30T00:07:01.702774+00:00",
+  "snapshot": "adg_indexed_04292026_1606.sqlite",
+  "canonical_artifact_digest": "aeb49abb308ab4cbea47ede4dc2b10459b3f1930271887e97ae777b1c174c716",
+  "dry_run": false,
+  "d1_projection_digest": {
+    "canonical_digest": "aeb49abb308ab4cbea47ede4",
+    "before_projection": "adg_graph_04292026_0825.sqlite",
+    "before_projection_digest": "5585c019ae922cc7cee8af03",
+    "before_match": false,
+    "after_projection": "adg_graph_04292026_1606.sqlite",
+    "after_projection_digest": "aeb49abb308ab4cbea47ede4",
+    "after_match": true,
+    "fix_applied": true,
+    "rebuild_log_tail": "ality: 102218 rows\n[graph_projection] proj_scc  : 0 rows\n[graph_projection] proj_violations: 9008 rows\n[graph_projection] proj_reachability: 373401 rows\n[graph_projection] proj_diff : 911 rows\n[graph_projection] Written   : C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_graph_04292026_1606.sqlite\n\n[graph_projection] Done: C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_graph_04292026_1606.sqlite\n",
+    "rebuild_exit_code": 0
+  },
+  "d2_authority_enum": {
+    "before_distribution": {
+      "dynamic": 97,
+      "external": 351130,
+      "registry_declared": 281,
+      "static_canonical": 248,
+      "test_only": 164500,
+      "unresolved": 14483,
+      "verified": 200547
+    },
+    "out_of_enum_before": {
+      "registry_declared": 281,
+      "static_canonical": 248
+    },
+    "null_authority_before": 0,
+    "migrations_applied": {
+      "static_canonical->verified": 248,
+      "registry_declared->verified": 281
+    },
+    "after_distribution": {
+      "dynamic": 97,
+      "external": 351130,
+      "test_only": 164500,
+      "unresolved": 14483,
+      "verified": 201076
+    },
+    "out_of_enum_after": {},
+    "null_authority_after": 0,
+    "fix_applied": true
+  },
+  "d3_impossible_states_i3": {
+    "before_violators": 29,
+    "rows_updated": 29,
+    "after_violators": 0,
+    "fix_applied": true
+  },
+  "overall_status": "OK"
+}

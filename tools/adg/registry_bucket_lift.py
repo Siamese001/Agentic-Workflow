@@ -11,12 +11,18 @@ canonical static ADG snapshot's ``edges`` table with:
     bucket            = 'registry'
     resolution_status = STABLE_REGISTRY / DISABLED_REGISTRY / ...
     authority_status  = AUTHORITATIVE_REGISTRY / RISK_SIGNAL_ONLY / ...
-    authority         = 'registry_declared' (registry-bucket back-compat)
+    authority         = 'verified' (in-enum classification per
+                        agentic_core/adg/artifact/edge_authority.py:ALL_AUTHORITIES;
+                        registry declarations are AST-validated by the resolver
+                        and therefore carry verified-tier authority)
     evidence_refs     = JSON {registry_path, registry_digest, declaration_key, ...}
 
 Idempotency: dedup is keyed by (src_id, dst_id, relation_type,
-source_file, authority='registry_declared') so repeated runs do not
-duplicate rows.
+source_file) restricted to bucket='registry' so repeated runs do not
+duplicate rows. The authority enum was migrated from the legacy
+'registry_declared'/'static_canonical' labels to the in-enum 'verified'
+label; existing snapshots can be migrated via
+``tools/adg/remediate_three_graph_defects.py``.
 
 Usage:
 
@@ -109,7 +115,7 @@ def _registry_edge_exists(
           AND dst_id = ?
           AND relation_type = ?
           AND source_file = ?
-          AND authority = 'registry_declared'
+          AND bucket = 'registry'
         LIMIT 1
         """,
         (src_id, dst_id, relation_type, source_file),
@@ -209,7 +215,7 @@ def lift(
                     src_id, dst_id, relation_type, edge_kind,
                     source_file, line_no, symbol,
                     authority, bucket, resolution_status, authority_status, evidence_refs
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'registry_declared', 'registry', ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'verified', 'registry', ?, ?, ?)
                 """,
                 (
                     src_id,
@@ -228,9 +234,10 @@ def lift(
 
         # Consumer edges — bucket-aware INSERT for the (static, registry)
         # twin pairs. Each ConsumerEdge produces 2 RegistryEdges with
-        # different `bucket` values; we route to authority='static_canonical'
-        # for bucket='static' twins and authority='registry_declared' for
-        # bucket='registry' twins.
+        # different `bucket` values. Both twins carry authority='verified'
+        # (the in-enum SSOT label per agentic_core/adg/artifact/edge_authority.py);
+        # the bucket field is the discriminator between code-side and
+        # registry-side membership.
         if include_consumer_edges:
             consumer_edges_raw = resolve_all_consumer_edges()
             for consumer in consumer_edges_raw:
@@ -238,10 +245,10 @@ def lift(
                 for twin in twins:
                     src_id = _ensure_static_node(con, adg_name=twin.src_name)
                     dst_id = _ensure_static_node(con, adg_name=twin.dst_name)
-                    authority = (
-                        "static_canonical" if twin.bucket == "static"
-                        else "registry_declared"
-                    )
+                    # Both twins carry the in-enum 'verified' label; bucket
+                    # remains the discriminator between code-side and
+                    # registry-side membership.
+                    authority = "verified"
                     if _consumer_edge_exists(
                         con,
                         src_id=src_id,

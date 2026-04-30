@@ -150,10 +150,13 @@ class TestLiftBasicPersistence:
         ).fetchall()
         con.close()
 
-        # Both edges must satisfy the closed-enum invariant.
+        # Both edges must satisfy the closed-enum invariant. The legacy
+        # 'registry_declared' label was migrated to the in-enum 'verified'
+        # label per ALL_AUTHORITIES (commit post-8a0f78bdf7 — see
+        # tools/adg/remediate_three_graph_defects.py).
         for bucket, res, auth_status, auth in rows:
             assert bucket == "registry"
-            assert auth == "registry_declared"
+            assert auth == "verified"
             assert res in (RESOLUTION_STABLE, RESOLUTION_DISABLED)
             assert auth_status in (
                 AUTHORITY_AUTHORITATIVE_REGISTRY,

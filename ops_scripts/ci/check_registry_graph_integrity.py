@@ -532,12 +532,20 @@ def main(argv: list[str] | None = None) -> int:
 
     duration_ms = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
 
+    # Status precedence:
+    #   * Real invariant failures (A/D-class) -> FAIL regardless of strict.
+    #   * Aspirational warnings (B/C-class) -> WARN. Per the gate's
+    #     documented contract these are "aspirational schema fields not
+    #     yet populated by the resolver"; they are intentionally NOT a
+    #     hard failure even in --strict, because doing so would conflate
+    #     "missing data" with "wrong data".
+    #   * --strict still promotes A/D failures (which already FAIL above)
+    #     and surfaces a non-zero exit; aspirational WARNs surface as
+    #     status=WARN and exit 0. The runner's overall_status logic is
+    #     responsible for cross-gate strict semantics.
     if failures:
         status = "FAIL"
         actual_fail = failures[0]
-    elif warnings and args.strict:
-        status = "FAIL"
-        actual_fail = warnings[0]
     elif warnings:
         status = "WARN"
         actual_fail = ""

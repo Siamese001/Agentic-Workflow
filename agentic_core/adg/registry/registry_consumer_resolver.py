@@ -200,10 +200,22 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
 def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
     """Mine code that loads or references agent_specs.json keys.
 
-    Detection heuristic: any source line that contains a quoted-string
-    literal matching one of the spec keys declared in any
-    apps_*/config/agent_specs*.json file. Each match produces one
-    consumer-edge to the Registry::Agent::<app>::<spec_key> anchor.
+    Two detection heuristics, restricted to .py files under apps_*/ to
+    bound search cost and false positives:
+
+    1. Quoted-string match — ``"<spec_key>"`` or ``'<spec_key>'``
+       (covers ``load_spec("clerk_extraction")``-style consumption).
+    2. Bare-identifier-with-safe-context match — ``\\b<spec_key>\\b``
+       followed by one of ``: = (`` (TypedDict field, assignment, or
+       call). This catches the apps_lic/apps_rg pattern where spec keys
+       appear as Python attribute names in TypedDict-like declarations
+       (``sender_grounding_agent: SenderGroundingConfig``).
+
+    Spec keys shorter than 6 characters are skipped to avoid colliding
+    with common identifiers. The legacy ``"_agent" not in spec_key``
+    filter was removed (post-W7 remediation) — apps_rg-style keys like
+    ``clerk_extraction`` are now also detected, closing the
+    ``cross_bucket.impossible_states`` I6 gap for app-side specs.
     """
     spec_paths = list(REPO_ROOT.glob("apps_*/config/agent_specs.json")) + list(
         REPO_ROOT.glob("apps_*/config/*_agent_specs.json")
@@ -225,13 +237,20 @@ def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
             app_prefix = "unknown"
 
         for spec_key in spec.keys():
-            if not isinstance(spec_key, str) or len(spec_key) < 4:
+            # Bare-identifier matching is collision-prone for short keys
+            # (e.g. "spec", "agent"); enforce a 6-char floor.
+            if not isinstance(spec_key, str) or len(spec_key) < 6:
                 continue
-            # Only consume agent_spec keys that look like agent-class-ish
-            # names (snake_case + ends with _agent or contains _agent_).
-            if "_agent" not in spec_key:
-                continue
-            pattern = re.escape(f'"{spec_key}"') + r"|" + re.escape(f"'{spec_key}'")
+
+            quoted = re.escape(f'"{spec_key}"') + r"|" + re.escape(f"'{spec_key}'")
+            # Bare identifier followed by one of the safe-context tokens
+            # — TypedDict field (``: ``), assignment (``=``), or call
+            # (``(``). These are syntactic shapes that strongly indicate
+            # the bare name is being USED, not a string literal mention.
+            bare_with_ctx = (
+                r"\b" + re.escape(spec_key) + r"\b\s*[:=(]"
+            )
+            pattern = f"{quoted}|{bare_with_ctx}"
             hits = _scan_files(REPO_ROOT, pattern)
             anchor = f"Registry::Agent::{app_prefix}::{spec_key}"
             for rel_path, line_nos in hits.items():
@@ -239,6 +258,11 @@ def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
                     "agent_specs"
                 ):
                     continue  # registry source itself
+                # Restrict to the SAME app as the spec source (apps_lic
+                # specs only count when consumed under apps_lic/...).
+                # This bounds false positives across apps.
+                if not rel_path.startswith(f"{app_prefix}/"):
+                    continue
                 consumer_module = _module_adg_name(rel_path)
                 key = (consumer_module, anchor)
                 if key in seen:
@@ -263,6 +287,76 @@ def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
     return edges
 
 
+def resolve_route_contract_consumer_edges() -> list[ConsumerEdge]:
+    """Mine code that references route-contract identifiers declared in
+    ``agentic_core/L0_routing/config/v15_policy_pack.json`` (or successors).
+
+    Detection heuristic: quoted-string match for each top-level route-id
+    key. Route IDs are upper_snake_case and bounded in length; bare-
+    identifier matching is intentionally NOT enabled here because route
+    IDs are too short to safely match without context, and the policy
+    pack itself contains the canonical declarations.
+
+    Closes the ROUTE_CONTRACT side of cross-bucket impossible-states I6.
+    """
+    pack_paths = list(
+        REPO_ROOT.glob("agentic_core/L0_routing/config/*_policy_pack.json")
+    )
+    edges: list[ConsumerEdge] = []
+    seen: set[tuple[str, str]] = set()
+
+    for path in pack_paths:
+        try:
+            pack = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        if not isinstance(pack, dict):
+            continue
+
+        # Route IDs may live under a top-level "routes" or "contracts" key,
+        # or directly. Tolerate both shapes.
+        candidate_dicts = [pack]
+        for key in ("routes", "contracts", "route_contracts"):
+            sub = pack.get(key)
+            if isinstance(sub, dict):
+                candidate_dicts.append(sub)
+
+        route_ids: set[str] = set()
+        for d in candidate_dicts:
+            for k in d.keys():
+                if isinstance(k, str) and k.isupper() and "_" in k and len(k) >= 8:
+                    route_ids.add(k)
+
+        for route_id in route_ids:
+            pattern = re.escape(f'"{route_id}"') + r"|" + re.escape(f"'{route_id}'")
+            hits = _scan_files(REPO_ROOT, pattern)
+            anchor = f"Registry::RouteContract::{route_id}"
+            for rel_path, line_nos in hits.items():
+                if rel_path.endswith(".json"):
+                    continue  # registry source itself
+                consumer_module = _module_adg_name(rel_path)
+                key = (consumer_module, anchor)
+                if key in seen:
+                    continue
+                seen.add(key)
+                edges.append(
+                    ConsumerEdge(
+                        consumer_file=rel_path,
+                        consumer_module=consumer_module,
+                        registry_anchor=anchor,
+                        relation_type="references_route_contract",
+                        line_no=line_nos[0],
+                        evidence={
+                            "route_id": route_id,
+                            "first_match_line": line_nos[0],
+                            "match_count": len(line_nos),
+                        },
+                    )
+                )
+
+    return edges
+
+
 # ---------------------------------------------------------------------------
 # Aggregator
 # ---------------------------------------------------------------------------
@@ -273,6 +367,7 @@ def resolve_all_consumer_edges() -> list[ConsumerEdge]:
     return [
         *resolve_mcp_consumer_edges(),
         *resolve_agent_spec_consumer_edges(),
+        *resolve_route_contract_consumer_edges(),
     ]
 
 
@@ -303,9 +398,11 @@ def consumer_edge_to_registry_edges(c: ConsumerEdge) -> list[RegistryEdge]:
         authority_status=AUTHORITY_AUTHORITATIVE_REGISTRY,
         evidence_refs=dict(c.evidence),
     )
-    # Static-bucket twin — same endpoints, different bucket. The lift will
-    # use a separate authority value ('static_canonical') to keep the
-    # legacy backfill quiet about it.
+    # Static-bucket twin — same endpoints, different bucket. The lift
+    # writes both twins with authority='verified' (in-enum SSOT label
+    # per agentic_core/adg/artifact/edge_authority.py:ALL_AUTHORITIES);
+    # the bucket field is the discriminator between code-side and
+    # registry-side membership.
     static_twin = RegistryEdge(
         src_name=c.consumer_module,
         dst_name=c.registry_anchor,

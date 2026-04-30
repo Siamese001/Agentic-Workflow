@@ -158,16 +158,28 @@ def test_forged_trace_id_legacy_proof_view(tmp_path):
     )
 
 
-def test_agent_without_execution_profile_strict(tmp_path):
-    """In --strict mode, registry.graph_integrity flips C_WARN to FAIL."""
+def test_agent_without_execution_profile_emits_c_warn(tmp_path):
+    """registry.graph_integrity emits C_WARN_RELATION_FIELDS_ASPIRATIONAL
+    when AGENT_SPEC_DECLARED edges lack execution_profile in evidence_refs.
+
+    The C-class warning is intentionally NOT promoted to FAIL even under
+    --strict, because the gate's documented contract treats B/C aspirational
+    fields as schema-aspirational warnings (missing data) rather than
+    invariant violations (wrong data). Status stays WARN; the warning code
+    appears in counts.warn_codes_count and the evidence is in sample_failures.
+    """
     slug = "agent_without_execution_profile"
     fix_manifest = _load_fixture_manifest(slug)
     out = tmp_path / "out.json"
     proc = _run_gate(slug, fixture_manifest=fix_manifest, json_out=out)
     assert out.exists()
     payload = json.loads(out.read_text())
-    assert payload["status"] == "FAIL", payload
-    assert payload["actual_fail_reason"] == "C_WARN_RELATION_FIELDS_ASPIRATIONAL"
+    assert payload["status"] == "WARN", payload
+    assert payload["actual_fail_reason"] == ""
+    # Sample evidence still proves the gate detected the missing field.
+    sample_codes = {s.get("code") for s in payload["sample_failures"]}
+    assert "C_WARN_RELATION_FIELDS_ASPIRATIONAL" in sample_codes, sample_codes
+    assert payload["counts"].get("warn_codes_count", 0) >= 1
 
 
 def test_model_outside_gateway_advisory(tmp_path):

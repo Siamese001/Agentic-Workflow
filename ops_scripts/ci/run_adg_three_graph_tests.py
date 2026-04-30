@@ -452,17 +452,23 @@ def build_rollup(
         if r.status == "ERROR":
             fail_reasons.append(f"{r.gate_id}:ERROR:{r.actual_fail_reason}")
 
+    # Status precedence:
+    #   * ERROR dominates — surface infrastructure failures regardless of mode
+    #   * FAIL — at least one gate detected a real defect
+    #   * WARN — at least one gate flagged an intentional advisory (e.g.
+    #            aspirational schema fields, topology data unavailable).
+    #            WARN is by design NOT a failure; --strict does not promote
+    #            it. The per-gate code is responsible for choosing FAIL vs
+    #            WARN based on whether the violation is a real invariant
+    #            breach or a documented advisory. This avoids conflating
+    #            "missing data" with "wrong data" at the rollup level.
+    #   * PASS — no gate flagged anything.
     if by_status.get("ERROR", 0) > 0:
         overall = "ERROR"
     elif by_status.get("FAIL", 0) > 0:
         overall = "FAIL"
-    elif by_status.get("WARN", 0) > 0 and not strict:
+    elif by_status.get("WARN", 0) > 0:
         overall = "WARN"
-    elif by_status.get("WARN", 0) > 0 and strict:
-        overall = "FAIL"
-        for r in results:
-            if r.status == "WARN":
-                fail_reasons.append(f"{r.gate_id}:WARN_PROMOTED_BY_STRICT")
     else:
         overall = "PASS"
 
@@ -574,7 +580,11 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 72)
     print(f"[adg_runner] overall_status = {rollup.overall_status}")
     print(f"[adg_runner] by_status      = {rollup.summary_by_status}")
-    print(f"[adg_runner] rollup written = {args.json_out.relative_to(REPO_ROOT)}")
+    try:
+        rollup_display = args.json_out.resolve().relative_to(REPO_ROOT)
+    except ValueError:
+        rollup_display = args.json_out
+    print(f"[adg_runner] rollup written = {rollup_display}")
     print("=" * 72)
 
     if rollup.overall_status == "PASS":

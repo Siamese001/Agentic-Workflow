@@ -75,12 +75,12 @@ def _build_synthetic_snapshot(
         con.execute(
             "INSERT INTO edges (src_id, dst_id, relation_type, authority, "
             "bucket, resolution_status, authority_status) "
-            "VALUES (1, 2, 'imports', 'static_canonical', 'static', 'V', 'A')"
+            "VALUES (1, 2, 'imports', 'verified', 'static', 'V', 'A')"
         )
         con.execute(
             "INSERT INTO edges (src_id, dst_id, relation_type, authority, "
             "bucket, resolution_status, authority_status) "
-            "VALUES (1, 2, 'imports', 'registry_declared', 'registry', 'S', 'AR')"
+            "VALUES (1, 2, 'imports', 'verified', 'registry', 'S', 'AR')"
         )
 
     # REGISTRY_DRIFT: static + runtime, no registry — (3->4 calls)
@@ -95,7 +95,7 @@ def _build_synthetic_snapshot(
         con.execute(
             "INSERT INTO edges (src_id, dst_id, relation_type, authority, "
             "bucket, resolution_status, authority_status) "
-            "VALUES (5, 1, 'declared', 'registry_declared', 'registry', 'S', 'AR')"
+            "VALUES (5, 1, 'declared', 'verified', 'registry', 'S', 'AR')"
         )
 
     if add_runtime_view:

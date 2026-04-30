@@ -2005,6 +2005,13 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
                     symbol="depth=1",
                     semantic_type="violation_trace",
                     confidence=0.8,
+                    # Mark as derived: this edge is computed from the import
+                    # graph, not extracted from a source file. Without this
+                    # tag, the cross-bucket impossible-states gate (I3) would
+                    # flag every propagation row as "static edge with no
+                    # source_file ref" — which is a false positive because
+                    # the row IS legitimately source-less by construction.
+                    dynamic_resolution="derived",
                 ),
             )
             if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
@@ -2033,6 +2040,8 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
                                 symbol=f"depth={depth}",
                                 semantic_type="violation_trace",
                                 confidence=max(0.5, 1.0 - depth * 0.2),
+                                # See depth=1 emission above — derived edge.
+                                dynamic_resolution="derived",
                             ),
                         )
                         if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
