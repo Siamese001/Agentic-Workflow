@@ -1,0 +1,112 @@
+# Nightly L3 ↔ runtime OTEL contract reconciliation.
+#
+# Runs the OTEL span poller followed by the L3 runtime reconciliation gate.
+# Surfaces drift between source-side `required_spans.yaml` declarations and
+# actual production OTEL traces (from `otel_mcp.spans_by_agent` exports).
+#
+# Two failure modes flagged:
+#   * manifest_only — declared but never observed (dead code / broken decorator)
+#   * runtime_only  — observed but not declared (manifest stale / contract bypassed)
+#
+# Mode escalation:
+#   * Nightly cron     — strict mode (fails the workflow if drift detected)
+#   * PR runs          — advisory mode (annotation only, no fail)
+#   * workflow_dispatch — operator-selectable
+#
+# Pairs with constitutional §22 (graph-layer primary driver) and the four-layer
+# OTEL coverage strategy (L1 static, L2 runtime probe, L3 manifest, L3-runtime
+# reconciliation = THIS workflow).
+#
+# Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+
+name: l3-otel-reconciliation
+
+on:
+  schedule:
+    # Nightly at 07:00 UTC. Stagger from calibration-drift (06:00) to avoid
+    # contending for self-hosted runner slots.
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Gate mode (strict | advisory | report-only)"
+        required: false
+        default: "advisory"
+      time_window_hours:
+        description: "Observation window for the OTEL poller"
+        required: false
+        default: "168"
+  pull_request:
+    paths:
+      - "config/observability/required_spans.yaml"
+      - "agentic_core/runtime/contracts/runtime_telemetry_decorators.py"
+      - "ops_scripts/ci/check_l3_runtime_reconciliation.py"
+      - "ops_scripts/calibration/otel_span_poller.py"
+      - ".github/workflows/l3-otel-reconciliation.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install runtime deps
+        run: |
+          python -m pip install --upgrade pip
+          # Minimal deps for the gate + poller. Both scripts are stdlib + pyyaml.
+          pip install pyyaml
+
+      - name: Determine gate mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "mode=strict" >> "$GITHUB_OUTPUT"
+            echo "window=168"  >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "mode=advisory" >> "$GITHUB_OUTPUT"
+            echo "window=168"    >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=${{ github.event.inputs.mode || 'advisory' }}"            >> "$GITHUB_OUTPUT"
+            echo "window=${{ github.event.inputs.time_window_hours || '168' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Poll observed spans (best-effort — no MCP in CI)
+        run: |
+          python ops_scripts/calibration/otel_span_poller.py --time-window-hours "${{ steps.mode.outputs.window }}" || \
+            echo "::notice::OTEL span poller produced no data; reconciliation will run with empty observation set"
+
+      - name: Run L3 runtime reconciliation gate
+        id: reconcile
+        run: |
+          python ops_scripts/ci/check_l3_runtime_reconciliation.py --mode "${{ steps.mode.outputs.mode }}" --time-window-days 7
+
+      - name: Upload reconciliation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: l3-otel-reconciliation-${{ github.run_id }}
+          path: |
+            artifacts/observability/l3_runtime_reconciliation.md
+            artifacts/observability/l3_runtime_reconciliation.jsonl
+            artifacts/observability/last_observed_spans.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Surface drift on PR
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          if [ -f artifacts/observability/l3_runtime_reconciliation.md ]; then
+            head -50 artifacts/observability/l3_runtime_reconciliation.md >> "$GITHUB_STEP_SUMMARY"
+          fi
