@@ -1,0 +1,16 @@
+{
+  "req_id": "10C-REQ-089",
+  "selected_at_utc": "2026-04-30T12:39:39.596753+00:00",
+  "canonical_owner_surface": "04_L2_Execute",
+  "runtime_artifact_ref": "ExecutionResult",
+  "otel_span_ref": "l2.execution.attempt",
+  "replay_digest": "2a7994f5fe51ef9697db389cf5fa2549095b61426f5dc8aafbd74b129b67de24",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L2_execution/test_10c_req_089.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L2_execution/test_10c_req_089.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l2_execution_proof.py",
+  "proof_status": "EVIDENCE_STAGED",
+  "git_head_at_test_time": "5756ef5d942aef5f0399b9a4a19d18251be67ade",
+  "git_dirty_at_test_time": true,
+  "content_hash": "5f13c2076342cd95cb4f774f3423d0c377e503951a12aef31069bc9d75a02bc3"
+}

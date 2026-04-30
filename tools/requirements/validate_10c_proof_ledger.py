@@ -304,10 +304,14 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
         r["req_id"] for r in rows if "PEDAGOGICAL_ROW" in (r.get("hardening_notes") or "")
     ]
 
-    # CRITICAL/HIGH proof field completeness vs evidence presence
+    # CRITICAL/HIGH proof field completeness vs evidence presence vs staged.
+    # W4d-4: proof-evidence-staged counts rows where test/CI/bundle paths exist
+    # AND evidence_status is PROOF_PARTIAL or PROOF_PRESENT, but
+    # last_passed_commit is empty (commit-binding pending).
     proof_field_complete_critical_high = 0
     proof_field_partial_critical_high = 0
     proof_evidence_present_critical_high = 0
+    proof_evidence_staged_critical_high = 0
     for r in rows:
         sev = r.get("severity_if_missing", "").strip().upper()
         if sev not in {"CRITICAL", "HIGH"}:
@@ -320,6 +324,20 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
             proof_field_partial_critical_high += 1
         if evid_ok:
             proof_evidence_present_critical_high += 1
+        # Staged: paths exist + evidence_status is PROOF_PARTIAL/PRESENT, but
+        # last_passed_commit empty. PROOF_PARTIAL alone qualifies even if
+        # full evidence path checks fail (commit-pending state).
+        paths_present = all(
+            (r.get(f) or "").strip().lower() == "true"
+            for f in EVIDENCE_PATH_FIELDS
+        )
+        evid_status = (r.get("evidence_status") or "").strip()
+        if (
+            paths_present
+            and evid_status in {"PROOF_PARTIAL", "PROOF_PRESENT"}
+            and not (r.get("last_passed_commit") or "").strip()
+        ):
+            proof_evidence_staged_critical_high += 1
 
     # Source-locking coverage
     source_lock_complete = 0
@@ -383,6 +401,7 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
         "proof_field_complete_critical_high": proof_field_complete_critical_high,
         "proof_field_partial_critical_high": proof_field_partial_critical_high,
         "proof_evidence_present_critical_high": proof_evidence_present_critical_high,
+        "proof_evidence_staged_critical_high": proof_evidence_staged_critical_high,
         "source_lock_complete": source_lock_complete,
         "source_lock_missing": source_lock_missing,
         "coverage_doctrine": coverage_doctrine,
@@ -413,6 +432,7 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
             "proof_field_complete_critical_high": report["proof_field_complete_critical_high"],
             "proof_field_partial_critical_high": report["proof_field_partial_critical_high"],
             "proof_evidence_present_critical_high": report["proof_evidence_present_critical_high"],
+            "proof_evidence_staged_critical_high": report["proof_evidence_staged_critical_high"],
             "ambiguous_owner_count": report["ambiguous_owner_count"],
             "pedagogical_row_count": report["pedagogical_row_count"],
             "source_lock_complete": report["source_lock_complete"],
@@ -456,9 +476,11 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
     md.append("")
     md.append(f"- CRITICAL/HIGH **proof-field-complete**: **{s['proof_field_complete_critical_high']}**")
     md.append(f"- CRITICAL/HIGH **proof-field-incomplete**: **{s['proof_field_partial_critical_high']}**")
+    md.append(f"- CRITICAL/HIGH **proof-evidence-staged**: **{s['proof_evidence_staged_critical_high']}**")
     md.append(f"- CRITICAL/HIGH **proof-evidence-present**: **{s['proof_evidence_present_critical_high']}**")
     md.append("")
     md.append("> *Proof-field-complete* means every required column is populated. ")
+    md.append("> *Proof-evidence-staged* means tests + bundles + paths all exist; commit-binding pending. ")
     md.append("> *Proof-evidence-present* means the test/CI/bundle paths exist on disk ")
     md.append("> AND `last_passed_commit` is recorded. Until the latter rises, no row should be `ACCEPTED`.")
     md.append("")
@@ -556,6 +578,7 @@ def main() -> int:
     print(f"  needs_proof / needs_owner_review    : {report['needs_proof_count']} / {report['needs_owner_review_count']}")
     print(f"  CRITICAL/HIGH proof-field-complete  : {report['proof_field_complete_critical_high']}")
     print(f"  CRITICAL/HIGH proof-field-partial   : {report['proof_field_partial_critical_high']}")
+    print(f"  CRITICAL/HIGH proof-evidence-staged : {report['proof_evidence_staged_critical_high']}")
     print(f"  CRITICAL/HIGH proof-evidence-present: {report['proof_evidence_present_critical_high']}")
     print(f"  ambiguous-owner rows                : {report['ambiguous_owner_count']}")
     print(f"  pedagogical rows                    : {report['pedagogical_row_count']}")

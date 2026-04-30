@@ -222,6 +222,21 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6c1e: 10C Pilot Proof-Evidence (W4d-4) -----------------------------------
+      # Narrow gate enforcing real proof evidence for the 5 pilot CRITICAL REQs
+      # (10C-REQ-049/086/089/122/167). Each REQ must have:
+      # P1 a proof bundle, P2 ledger-bundle metadata match, P3 valid content_hash,
+      # P4 valid proof_status, P5 a real test file on disk, P6 the test passes.
+      # Triggered when any pilot test, fixture, bundle, or pilot tooling changes.
+      - id: ten-c-pilot-proof-evidence
+        name: "T6c1e: 10C pilot proof-evidence (W4d-4)"
+        entry: py ops_scripts/ci/check_10c_pilot_proof_evidence.py
+        language: system
+        pass_filenames: false
+        files: ^(artifacts/requirements/proof_bundles/.*\.json|tests/fixtures/proof_evidence/.*\.py|tests/unit/agentic_core/L[125]_.*test_10c_req_(049|086|089|122|167)\.py|tests/unit/agentic_core/L4_state/test_10c_req_122\.py|ops_scripts/ci/check_10c_pilot_proof_evidence\.py|tools/requirements/(emit_proof_bundles|update_pilot_ledger)\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T6c2: Requirements Universe Inventory (advisory in pre-commit) ------------
       # Discovers all 14 requirement-bearing artifact families and verifies each
       # has at least one CI link. Runs whenever any requirement-bearing file is

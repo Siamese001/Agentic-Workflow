@@ -1,0 +1,16 @@
+{
+  "req_id": "10C-REQ-049",
+  "selected_at_utc": "2026-04-30T12:39:39.595193+00:00",
+  "canonical_owner_surface": "01_U0_Request_Intake",
+  "runtime_artifact_ref": "ValidatedRequest",
+  "otel_span_ref": "u0.intake.invariant_enforced",
+  "replay_digest": "4b9ce37df5f7a4bf8959e7987a69ca07ecf8a70a4fabbafa8db36a6da5a7aa54",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L1_cognition/intake/test_10c_req_049.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L1_cognition/intake/test_10c_req_049.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_u0_intake_proof.py",
+  "proof_status": "EVIDENCE_STAGED",
+  "git_head_at_test_time": "5756ef5d942aef5f0399b9a4a19d18251be67ade",
+  "git_dirty_at_test_time": true,
+  "content_hash": "98d1e24c87221447effa835e6ffb51e0ca53cf488eefd7c4a125959517b0dd88"
+}

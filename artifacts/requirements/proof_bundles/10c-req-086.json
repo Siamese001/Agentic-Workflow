@@ -1,0 +1,16 @@
+{
+  "req_id": "10C-REQ-086",
+  "selected_at_utc": "2026-04-30T12:39:39.596753+00:00",
+  "canonical_owner_surface": "03B_PA_Prompt_Assembly",
+  "runtime_artifact_ref": "CompiledPromptArtifact",
+  "otel_span_ref": "pa.prompt.compiled_artifact_emitted",
+  "replay_digest": "ce7ea95a87f39f17fbbf56898b0aec1463c03df249470b5b068c106c229f025a",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L1_cognition/prompt_assembly/test_10c_req_086.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L1_cognition/prompt_assembly/test_10c_req_086.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_pa_compiled_artifact_proof.py",
+  "proof_status": "EVIDENCE_STAGED",
+  "git_head_at_test_time": "5756ef5d942aef5f0399b9a4a19d18251be67ade",
+  "git_dirty_at_test_time": true,
+  "content_hash": "df84722d77da7d6ea5a01feeb4fa339fdea5af4121d3b70e5ab17b3d57c72fc5"
+}

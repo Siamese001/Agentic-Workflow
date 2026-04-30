@@ -43,7 +43,17 @@ test_artifacts/
 .sovereign_healing_backup/
 archive/
 archives/
-artifacts/
+# W4d-5: artifacts/ is ignored EXCEPT for proof bundles, which are durable
+# evidence and MUST travel with commits so that proof_bundle_exists=true
+# means the same thing on every CI checkout.
+# Ignoring the dir contents (artifacts/*) instead of the dir itself
+# (artifacts/) because git doesn't recurse into a wholly-ignored dir,
+# which would make the ! negation below a no-op.
+artifacts/*
+!artifacts/requirements/
+artifacts/requirements/*
+!artifacts/requirements/proof_bundles/
+!artifacts/requirements/proof_bundles/*.json
 
 # IDE & Editor
 .DS_Store/
