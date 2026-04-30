@@ -392,6 +392,25 @@ User/API Request
 
 ---
 
+## Application Portfolio
+
+Eight applications built on the governed control plane. Every app ships the same governance quartet — a **Runbook** (operations), an **SLO** (performance budget), and an **SVP Engineering Review** (architecture certification). Four apps also ship a formal **Threat Model**. This is what "governed app contract" means in practice.
+
+| App | What it does | README | Runbook | SLO | SVP Review | Threat Model |
+|---|---|:-:|:-:|:-:|:-:|:-:|
+| [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | [→](apps_eval/RUNBOOK.md) | [→](apps_eval/SLO.md) | [→](apps_eval/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_exec`](apps_exec/) | Executive Brief Generator — persona-targeted briefs from the repo's architecture | [→](apps_exec/README.md) | [→](apps_exec/RUNBOOK.md) | [→](apps_exec/SLO.md) | [→](apps_exec/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_lic`](apps_lic/) | LIC campaign engine (governed draft + campaign orchestration) | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
+| [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
+| [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_rfp`](apps_rfp/) | AI Proposal / RFP Generator — full proposals from a client problem statement | [→](apps_rfp/README.md) | [→](apps_rfp/RUNBOOK.md) | [→](apps_rfp/SLO.md) | [→](apps_rfp/SVP_ENGINEERING_REVIEW.md) | — |
+| [`apps_shared`](apps_shared/) | Shared adapters, guardian registry, and cross-app facades | — | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/proof/THREAT_MODEL.md) |
+| [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
+
+Consolidated SVP Engineering reviews for the most recent cycle also live under [`docs/reports/`](docs/reports/) — see the per-app subfolders for the latest certification status.
+
+---
+
 ## Enterprise Impact
 
 | Capability              | Outcome                 |
@@ -476,14 +495,32 @@ python ops_scripts/ci/run_architecture_proof.py   # S1 + S2 + S3  (~17s, exit 0 
 
 ## Documentation
 
-* **Reviewer Guide:** `docs/architecture/REVIEWER_GUIDE.md` — Start here for architecture review
-* **Architecture Proof Pack:** `docs/architecture/architecture-proof-pack.md` — Proof command map, runtime loop, app registry
-* **Rollout Closeout:** `docs/architecture/ROLLOUT_CLOSEOUT.md` — Final status, command matrix, known gaps
-* **Release Readiness:** `docs/architecture/RELEASE_READINESS.md` — Cleanup log, tracked gap register
-* **Governed-App Contract:** `docs/architecture/governed-app-contract.md` — `GovernedAppRunner` + `FormalExceptionEntry` schema
-* **Full Process Map (v28):** `docs/reference/agentic_process_mapping_v28.md` — Complete ASCII runtime flow with L0-L6 personas
-* **Architecture ADRs:** `docs/architecture/adr/` — Architectural decision records
-* **Standards:** `docs/STANDARDS.md` — Code and design standards
+### Architecture & governance
+
+* **Reviewer Guide:** [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) — Start here for architecture review
+* **Architecture Proof Pack:** [`docs/architecture/architecture-proof-pack.md`](docs/architecture/architecture-proof-pack.md) — Proof command map, runtime loop, app registry
+* **Rollout Closeout:** [`docs/architecture/ROLLOUT_CLOSEOUT.md`](docs/architecture/ROLLOUT_CLOSEOUT.md) — Final status, command matrix, known gaps
+* **Release Readiness:** [`docs/architecture/RELEASE_READINESS.md`](docs/architecture/RELEASE_READINESS.md) — Cleanup log, tracked gap register
+* **Governed-App Contract:** [`docs/architecture/governed-app-contract.md`](docs/architecture/governed-app-contract.md) — `GovernedAppRunner` + `FormalExceptionEntry` schema
+* **Full Process Map (v38):** [`docs/reference/_notes/agentic_process_mapping_v38.md`](docs/reference/_notes/agentic_process_mapping_v38.md) — Complete ASCII runtime flow with L0–L6 personas
+* **Architecture ADRs:** [`docs/architecture/adr/`](docs/architecture/adr/) — Architectural decision records
+* **Standards:** [`docs/STANDARDS.md`](docs/STANDARDS.md) — Code and design standards
+
+### Subsystem & tooling docs
+
+* **ADG — prompt-assembly subsystem:** [`tools/adg/prompt_assembly/README.md`](tools/adg/prompt_assembly/README.md)
+* **Calibration (weekly Wilson-CI reports, ledger binders):** [`tools/calibration/README.md`](tools/calibration/README.md)
+* **Local LLM (vLLM on WSL2 GPU):** [`tools/vllm/README.md`](tools/vllm/README.md)
+* **OpenTelemetry refactor notes:** [`tools/otel/README_REFACTOR.md`](tools/otel/README_REFACTOR.md)
+* **MCP servers & SDK wrappers:** [`infrastructure/sdks_mcps/README.md`](infrastructure/sdks_mcps/README.md)
+* **Reference-docs root:** [`docs/reference/README.md`](docs/reference/README.md)
+* **SVP Engineering hub:** [`docs/svp/README.md`](docs/svp/README.md)
+* **Author-Gate reports:** [`docs/reports/author-gate/README.md`](docs/reports/author-gate/README.md)
+* **Calibration reports:** [`docs/reports/calibration/README.md`](docs/reports/calibration/README.md)
+
+### By app
+
+See the [Application Portfolio](#application-portfolio) table above for per-app README / Runbook / SLO / SVP Review / Threat Model.
 
 ---
 
