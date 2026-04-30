@@ -27,7 +27,11 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = REPO_ROOT / "config" / "crosswalk" / "obligations.yaml"
-DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "crosswalk" / "requirements_crosswalk.json"
+# Consolidated 2026-04-30: requirements_crosswalk.json moved from
+# artifacts/crosswalk/ into the canonical artifacts/requirements/ root
+# alongside the other 10C requirement evidence (proof_bundles/,
+# 10c_pilot_merkle_root.json, etc.). See artifacts/requirements/INVENTORY.md.
+DEFAULT_OUTPUT = REPO_ROOT / "artifacts" / "requirements" / "requirements_crosswalk.json"
 
 
 @dataclass
