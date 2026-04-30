@@ -24,6 +24,7 @@ import csv
 import hashlib
 import json
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,7 +32,22 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER = REPO_ROOT / "docs" / "reports" / "design" / "10c_reconciliation" / "10c_semantic_requirement_ledger.csv"
 BUNDLES_DIR = REPO_ROOT / "artifacts" / "requirements" / "proof_bundles"
 
-PILOT_REQ_IDS: tuple[str, ...] = (
+# Allow direct script invocation (`python tools/requirements/emit_proof_bundles.py`)
+# in addition to module invocation (`python -m tools.requirements.emit_proof_bundles`).
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from tools.requirements._binding_scope import (
+    CRITICAL_BINDING_SCOPE as _CRITICAL_BINDING_SCOPE,
+    CRITICAL_REQ_IDS as _CRITICAL_REQ_IDS,
+)
+
+# Names retained for back-compat with existing call sites; sourced from the
+# shared single-source-of-truth module so emit/update/CI-gate stay in sync.
+PILOT_REQ_IDS: tuple[str, ...] = _CRITICAL_REQ_IDS
+
+# (Original 5-row pilot tuple retained as documentation comment for history.)
+_HISTORICAL_PILOT_REQ_IDS: tuple[str, ...] = (
     "10C-REQ-049",  # U0 ingress invariant
     "10C-REQ-167",  # L5 policy plane
     "10C-REQ-086",  # PA.2 slot composition
@@ -115,28 +131,11 @@ def _git_is_dirty() -> bool:
         return True
 
 
-# W4d-5: scope-limited dirty check. The proof-evidence binding only requires
-# that the surface that proves the 5 pilot REQs is clean — the test files,
-# their fixtures, the proof bundles themselves, the ledger CSV, the bundle
-# emitter, and the pilot gate. Unrelated working-tree dirt (apps_qna, etc.)
-# does NOT invalidate the binding because none of it can affect the test
-# outcomes or the bundle contents.
-PILOT_BINDING_SCOPE: tuple[str, ...] = (
-    "tests/fixtures/proof_evidence/",
-    "tests/fixtures/__init__.py",
-    "tests/unit/agentic_core/L1_cognition/intake/test_10c_req_049.py",
-    "tests/unit/agentic_core/L1_cognition/intake/__init__.py",
-    "tests/unit/agentic_core/L1_cognition/prompt_assembly/test_10c_req_086.py",
-    "tests/unit/agentic_core/L1_cognition/prompt_assembly/__init__.py",
-    "tests/unit/agentic_core/L2_execution/test_10c_req_089.py",
-    "tests/unit/agentic_core/L4_state/test_10c_req_122.py",
-    "tests/unit/agentic_core/L5_safety/test_10c_req_167.py",
-    "tools/requirements/emit_proof_bundles.py",
-    "tools/requirements/validate_10c_proof_ledger.py",
-    "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
-    "docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger.csv",
-    "artifacts/requirements/proof_bundles/",
-)
+# Wave 1: scope-limited dirty check. The proof-evidence binding requires
+# only that the binding surface (test files, fixtures, validators, bundle
+# emitter, CI gate, ledger CSV, bundle dir) is clean. Unrelated working-tree
+# dirt does NOT invalidate the binding. SSOT: tools/requirements/_binding_scope.py.
+PILOT_BINDING_SCOPE: tuple[str, ...] = _CRITICAL_BINDING_SCOPE
 
 
 def _scoped_dirty_paths() -> list[str]:
@@ -165,6 +164,34 @@ def _deterministic_digest(payload: object) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _default_replay_payload(req_id: str, ledger_row: dict[str, str]) -> dict:
+    """Derive a deterministic replay payload from the ledger row when the
+    req_id isn't in PILOT_REPLAY_PAYLOADS (Wave 1+ rows).
+
+    The seed must be reproducible from the ledger row alone — it does NOT
+    depend on git state or test execution. Any change to the ledger row's
+    artifact/owner/spec changes the digest deterministically.
+    """
+    runtime_expected = (ledger_row.get("runtime_artifact_expected") or "").strip()
+    # Take first PascalCase token as the artifact_type — same heuristic as
+    # the test generator; keeps cross-binding with test fixtures.
+    import re as _re
+    m = _re.search(r"\b([A-Z][A-Za-z0-9]+(?:[A-Z][A-Za-z0-9]+)+)\b", runtime_expected)
+    artifact_type = m.group(1) if m else "GenericArtifact"
+    owner_surface = (ledger_row.get("canonical_owner_surface") or "").strip()
+    return {
+        "artifact_type": artifact_type,
+        "owner_surface": owner_surface,
+        "req_id": req_id,
+        "ledger_artifact_schema_ref": (ledger_row.get("artifact_schema_ref") or "").strip(),
+        "ledger_otel_span": (ledger_row.get("otel_span_expected") or "").strip(),
+        "ledger_required_attrs": (ledger_row.get("otel_required_attributes") or "").strip(),
+        "ledger_negative_control_specific":
+            (ledger_row.get("negative_control_specific") or "").strip(),
+        "fixture_marker": f"wave1-{req_id.lower()}",
+    }
+
+
 def emit_bundle(
     req_id: str,
     ledger_row: dict[str, str],
@@ -174,7 +201,7 @@ def emit_bundle(
     gate_result: str = "PASS",
     preserve_selected_at: dict | None = None,
 ) -> Path:
-    payload_seed = PILOT_REPLAY_PAYLOADS[req_id]
+    payload_seed = PILOT_REPLAY_PAYLOADS.get(req_id) or _default_replay_payload(req_id, ledger_row)
     replay_digest = _deterministic_digest(payload_seed)
     now_utc = datetime.now(timezone.utc).isoformat()
 

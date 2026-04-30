@@ -61,7 +61,6 @@ _CARD_SPECS: list[tuple[str, str, bool, str, str, int, str]] = [
     ("15_RCA.md", "15_rca.md.j2", False, "skill", "should", 15, "primary"),
     ("16_CROSS_EXAM.md", "16_cross_exam.md.j2", False, "skill", "should", 16, "primary"),
     ("17_QUESTIONS_AND_90_DAY_PLAN.md", "17_questions_and_90_day_plan.md.j2", False, "skill", "should", 17, "primary"),
-    ("18_ETHICS_AND_DISCLOSURE.md", "18_ethics_and_disclosure.md.j2", False, "rule", "must", 18, "always_on"),
     ("19_SOURCE_REGISTER.md", "19_source_register.md.j2", False, "rule", "must", 19, "always_on"),
     ("20_GLOSSARY.md", "20_glossary.md.j2", False, "rule", "should", 20, "always_on"),
     ("21_LIKELY_QUESTIONS.md", "21_likely_questions.md.j2", False, "rule", "may", 21, "always_on"),

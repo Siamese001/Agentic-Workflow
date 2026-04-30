@@ -37,17 +37,7 @@ python -m apps_qna lint reports/qna/drew-clements
 python -m apps_qna --interview drew-clements --company dentsu --dry-run
 ```
 
-## Prep tool, not a real-time copilot
-
-This builder is for **rehearsal-time prep**: cards are pasted into a ChatGPT
-Project workspace **before** the interview. The candidate reads answers
-aloud at their own pace.
-
-It is **not** a real-time copilot — no audio capture, no hidden earpiece, no
-covert text feed during a live interview. See
-`templates/18_ethics_and_disclosure.md.j2` for the full disclosure stance.
-
-## Card Pack Anatomy (23 cards)
+## Card Pack Anatomy (22 cards)
 
 The pack mirrors the validated Drew Clements layout. Each card is a small,
 focused markdown file with a routing-manifest-defined role.
@@ -72,7 +62,6 @@ focused markdown file with a routing-manifest-defined role.
 | 15 | Failure RCA and Recovery | Route 3 (RCA) primary card |
 | 16 | Cross-Exam Technical Depth | Route 9 (Cross-Exam) primary card |
 | 17 | Questions and 90-Day Plan | Closing: questions Amit asks them |
-| 18 | Ethics and Disclosure | Always-on: prep-tool boundary, disclosure stance |
 | 19 | Source Register | Always-on: `[S#]` citation backbone for research claims |
 | 20 | Glossary | Always-on: company- and role-specific term definitions |
 | 21 | Likely Questions | Always-on: predicted-questions list grouped by route |

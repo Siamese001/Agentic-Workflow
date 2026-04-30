@@ -76,6 +76,87 @@ REQUIRED_FIELDS: Mapping[str, tuple[str, ...]] = {
         "owner_surface",
         "single_writer_attestation",  # MUST be True for UWG
     ),
+    # --- Wave 1 additions (24 CRITICAL NEEDS_PROOF rows) ---
+    "ChunkSealedEnvelope": (
+        # Offline ingestion: REQ-005, REQ-163. Metadata MUST be bound BEFORE
+        # embedding (constitutional ingestion invariant).
+        "chunk_id",
+        "tenant_id",
+        "acl",
+        "confidentiality_tier",
+        "freshness_band",
+        "effective_date",
+        "expiry_date",
+        "embedding_schema_version",
+        "embedding_emitted",  # MUST be False until metadata-bound
+        "metadata_bound_before_embedding",  # MUST be True
+        "owner_surface",
+    ),
+    "L1PlanContract": (
+        # L1 plan output: REQ-064, REQ-074. L1 produces notepad plan only,
+        # no execution / no retrieval / no routing.
+        "proposed_route",
+        "query_spec",
+        "task_spec",
+        "route_risk",
+        "confidence",
+        "grounding_required",
+        "declared_assumptions",
+        "unresolved_gaps",
+        "no_execution_assertion",  # MUST be True
+        "no_retrieval_assertion",  # MUST be True
+        "no_routing_assertion",    # MUST be True
+        "owner_surface",
+    ),
+    "RouteContract": (
+        # L0 route decision: REQ-075. Pre-routing gate must check ACL +
+        # region + confidentiality + dates + bind policy with pre-filter.
+        "route_id",
+        "route_class",
+        "decision_record_id",
+        "tenant_acl_checked",        # MUST be True
+        "region_checked",             # MUST be True
+        "confidentiality_checked",    # MUST be True
+        "effective_dates_checked",    # MUST be True
+        "freshness_band_checked",     # MUST be True
+        "policy_bound",               # MUST be True
+        "single_route_per_request",   # MUST be True (no multi-route emission)
+        "owner_surface",
+    ),
+    "X3DispositionPacket": (
+        # Exit control: REQ-099. Disposition must be from explicit set,
+        # no silent fallback / no hidden commit / no ungated human mod.
+        "disposition_id",
+        "disposition",  # MUST be in {ALLOW, DENY, RETURN, ESCALATE_TO_HITL, COMMIT_TO_UWG}
+        "owner_surface",
+        "no_silent_fallback_assertion",     # MUST be True
+        "no_hidden_commit_path_assertion",  # MUST be True
+        "no_ungated_human_mod_assertion",   # MUST be True
+        "single_disposition_per_request",   # MUST be True
+    ),
+    "L6EvalRecord": (
+        # L6 shadow eval: REQ-191. Replay-tied, no current-run mutation.
+        "eval_record_id",
+        "owner_surface",
+        "is_shadow",  # MUST be True (or replay-only)
+        "no_current_run_mutation_assertion",  # MUST be True
+        "judge_calibrated",  # MUST be True (calibration provenance)
+        "replay_tied",       # MUST be True
+        "calibration_age_days",  # MUST be int and within budget
+    ),
+    "OtelTraceAuditRecord": (
+        # Cross-cutting OTEL: REQ-165, REQ-166. Replay-key audit + W3C
+        # TraceContext propagation. Every span must carry replay_key, owner
+        # surface; all decisions must be reachable from a trace.
+        "trace_id",
+        "replay_key",
+        "owner_surface",
+        "w3c_traceparent",
+        "w3c_tracestate",
+        "replay_key_audit_present",  # MUST be True
+        "policy_hash",
+        "blueprint_hash",
+    ),
 }
 
 
@@ -167,4 +248,148 @@ def assert_u0_no_authority_leak(record: Mapping[str, Any]) -> None:
         raise ArtifactShapeError(
             f"ValidatedRequest carries forbidden L1/L0/C0/L2/L5/UWG keys "
             f"in U0 surface: {leaked}; U0 owns identity/transport/schema only"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Wave 1 additions: 6 boundary-invariant helpers for the 24 CRITICAL rows
+# ---------------------------------------------------------------------------
+
+def assert_chunk_metadata_bound_before_embedding(record: Mapping[str, Any]) -> None:
+    """Ingestion MUST bind ACL/tenant/confidentiality/freshness BEFORE embedding."""
+    if record.get("metadata_bound_before_embedding") is not True:
+        raise ArtifactShapeError(
+            "ChunkSealedEnvelope.metadata_bound_before_embedding must be True; "
+            "constitutional ingestion invariant: metadata-binding precedes embedding"
+        )
+    if record.get("embedding_emitted") is True and record.get("metadata_bound_before_embedding") is not True:
+        raise ArtifactShapeError(
+            "ChunkSealedEnvelope: embedding emitted before metadata bound"
+        )
+    required_metadata = ("tenant_id", "acl", "confidentiality_tier", "freshness_band",
+                         "effective_date", "expiry_date", "embedding_schema_version")
+    missing = [k for k in required_metadata if not record.get(k)]
+    if missing:
+        raise ArtifactShapeError(
+            f"ChunkSealedEnvelope missing pre-embedding metadata: {missing}"
+        )
+
+
+def assert_l1_no_authority_leak(record: Mapping[str, Any]) -> None:
+    """L1 plan MUST NOT execute / retrieve / route — notepad plan only."""
+    for flag in ("no_execution_assertion", "no_retrieval_assertion", "no_routing_assertion"):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"L1PlanContract.{flag} must be True; "
+                f"L1 invariant: notepad plan only, no execution/retrieval/routing"
+            )
+
+
+def assert_l0_route_pre_filter_invariants(record: Mapping[str, Any]) -> None:
+    """L0 pre-routing gate MUST check ACL/region/confidentiality/dates and bind policy."""
+    for flag in ("tenant_acl_checked", "region_checked", "confidentiality_checked",
+                 "effective_dates_checked", "freshness_band_checked", "policy_bound",
+                 "single_route_per_request"):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"RouteContract.{flag} must be True; "
+                f"L0 invariant: pre-routing gate enforces all checks before bind"
+            )
+
+
+_ALLOWED_X3_DISPOSITIONS = frozenset({
+    "ALLOW", "DENY", "RETURN", "ESCALATE_TO_HITL", "COMMIT_TO_UWG",
+    # legacy aliases used in some doctrine sections:
+    "ALLOW_RESPONSE", "DENY_RETURN",
+})
+
+
+def assert_x3_disposition_explicit(record: Mapping[str, Any]) -> None:
+    """Exit X3 disposition MUST be from the explicit set, with no silent fallback."""
+    disp = record.get("disposition")
+    if disp not in _ALLOWED_X3_DISPOSITIONS:
+        raise ArtifactShapeError(
+            f"X3DispositionPacket.disposition '{disp}' not in allowed set "
+            f"{sorted(_ALLOWED_X3_DISPOSITIONS)}"
+        )
+    for flag in ("no_silent_fallback_assertion", "no_hidden_commit_path_assertion",
+                 "no_ungated_human_mod_assertion", "single_disposition_per_request"):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"X3DispositionPacket.{flag} must be True; exit-gate invariant"
+            )
+
+
+def assert_l6_eval_no_current_run_mutation(record: Mapping[str, Any]) -> None:
+    """L6 shadow eval MUST NOT mutate current run; must be replay-tied + calibrated."""
+    for flag in ("is_shadow", "no_current_run_mutation_assertion",
+                 "judge_calibrated", "replay_tied"):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"L6EvalRecord.{flag} must be True; "
+                f"L6 invariant: shadow + replay-tied + calibrated, no current-run mutation"
+            )
+    age = record.get("calibration_age_days")
+    if not isinstance(age, int) or age < 0:
+        raise ArtifactShapeError(
+            f"L6EvalRecord.calibration_age_days must be a non-negative int, got {age!r}"
+        )
+
+
+def assert_otel_replay_key_audit_present(record: Mapping[str, Any]) -> None:
+    """Cross-cutting OTEL: every trace MUST carry replay_key, W3C TraceContext, owner_surface."""
+    if record.get("replay_key_audit_present") is not True:
+        raise ArtifactShapeError(
+            "OtelTraceAuditRecord.replay_key_audit_present must be True; "
+            "constitutional OTEL invariant: replay-key audit on every trace"
+        )
+    for f in ("trace_id", "replay_key", "owner_surface", "w3c_traceparent", "w3c_tracestate"):
+        if not record.get(f):
+            raise ArtifactShapeError(
+                f"OtelTraceAuditRecord missing required field {f!r}"
+            )
+
+
+def assert_l5_certification_chain_present(record: Mapping[str, Any]) -> None:
+    """L5 emits certification evidence (never live ALLOW/DENY).
+
+    Wraps the existing assert_l5_is_certification_only, plus checks that the
+    certification carries authority + policy binding receipts (via evidence_refs).
+    """
+    assert_l5_is_certification_only(record)
+    refs = record.get("evidence_refs") or ()
+    # evidence_refs should be a list/tuple of refs; for the proof-pack pilot
+    # we just require non-empty.
+    if not refs:
+        raise ArtifactShapeError(
+            "L5CertificationResult.evidence_refs must be non-empty; "
+            "L5 certification chain requires authority + policy binding receipts"
+        )
+
+
+def assert_uwg_commit_request_invariants(record: Mapping[str, Any]) -> None:
+    """UWG CommitRequest MUST be single-writer + monotonic seqno + policy-bound.
+
+    Wraps assert_uwg_single_writer plus checks that policy_hash and
+    blueprint_hash are present (durable commit must be policy-bound).
+    """
+    assert_uwg_single_writer(record)
+    for f in ("policy_hash", "blueprint_hash", "diff_payload_hash"):
+        if not record.get(f):
+            raise ArtifactShapeError(
+                f"CommitRequest missing required write-admission field {f!r}"
+            )
+
+
+def assert_l2_execution_sealed(record: Mapping[str, Any]) -> None:
+    """L2 ExecutionResult MUST be sealed (no commit / no HITL / no routing).
+
+    Wraps assert_l2_no_authority_leak and additionally checks that
+    side_effects_proposed is present (sealed envelope shape).
+    """
+    assert_l2_no_authority_leak(record)
+    if "side_effects_proposed" not in record:
+        raise ArtifactShapeError(
+            "ExecutionResult missing side_effects_proposed; "
+            "L2 sealed-envelope invariant: side effects PROPOSED only, never committed"
         )

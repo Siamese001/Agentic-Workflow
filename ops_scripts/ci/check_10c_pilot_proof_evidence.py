@@ -43,13 +43,17 @@ ARTIFACTS = REPO_ROOT / "artifacts" / "requirements"
 JSON_OUT = ARTIFACTS / "10c_pilot_proof_evidence.json"
 MD_OUT = ARTIFACTS / "10c_pilot_proof_evidence.md"
 
-PILOT_REQ_IDS: tuple[str, ...] = (
-    "10C-REQ-049",
-    "10C-REQ-167",
-    "10C-REQ-086",
-    "10C-REQ-089",
-    "10C-REQ-122",
-)
+# Allow direct script invocation (the CI gate is run both as a module by
+# run_contract_gates.py and directly by pre-commit; both must work).
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from tools.requirements._binding_scope import CRITICAL_REQ_IDS as _CRITICAL_REQ_IDS
+
+# SSOT-imported. Includes the original 5 W4d-4/W4d-5 pilots and the 24
+# Wave 1 CRITICAL rows. Variable name kept as PILOT_REQ_IDS for back-compat
+# with downstream report consumers.
+PILOT_REQ_IDS: tuple[str, ...] = _CRITICAL_REQ_IDS
 
 
 def _load_ledger() -> dict[str, dict[str, str]]:

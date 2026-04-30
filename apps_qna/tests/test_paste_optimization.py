@@ -69,7 +69,6 @@ _ALWAYS_ON_FILES = {
     "02_LIVE_MODE.md",
     "03_INTERVIEWER_LENS.md",
     "04_COMPANY_OVERLAY.md",
-    "18_ETHICS_AND_DISCLOSURE.md",
     "19_SOURCE_REGISTER.md",
     "20_GLOSSARY.md",
     "21_LIKELY_QUESTIONS.md",
@@ -147,8 +146,8 @@ def test_empty_likely_questions_keeps_all_skill_cards(tmp_path: Path) -> None:
 def test_single_interview_default_under_cap(tmp_path: Path) -> None:
     raw = _load_interview_raw()
     manifest, _ = _build_with(raw, tmp_path / "out")
-    # Default (empty likely_questions): 22 paste-eligible cards (23 - card22)
-    assert len(manifest.pasted_cards) == 22
+    # Default (empty likely_questions): 21 paste-eligible cards (22 - card22)
+    assert len(manifest.pasted_cards) == 21
     assert manifest.paste_exceeds_chatgpt_limit is False
 
 
@@ -166,8 +165,8 @@ def test_panel_two_interviewers_under_cap(tmp_path: Path) -> None:
         }
     )
     manifest, _ = _build_with(raw, tmp_path / "out", multi_interviewer_mode="panel")
-    # 2 lens cards + 21 single-mode (no card 22) = 23 paste cards
-    assert len(manifest.pasted_cards) == 23
+    # 2 lens cards + 20 single-mode (no card 22) = 22 paste cards
+    assert len(manifest.pasted_cards) == 22
     assert manifest.paste_exceeds_chatgpt_limit is False
 
 
@@ -186,7 +185,7 @@ def test_trim_dramatically_reduces_paste_count(tmp_path: Path) -> None:
     # Always-on rules (9) + arch primary (1) + arch specialists (3: 06,08,09) +
     # exec_fit primary (1) + exec_fit specialists in registry (03 + 04 — already
     # always-on; no new skills) = 14
-    assert len(manifest.pasted_cards) < 22  # less than the conservative default
+    assert len(manifest.pasted_cards) < 21  # less than the conservative default
     assert "13_EXECUTIVE_FIT.md" in manifest.pasted_cards
     assert "05_ARCHITECTURE_CORE.md" in manifest.pasted_cards
     # Out-of-scope skills dropped

@@ -13,12 +13,12 @@ from apps_qna.validators.types import LintError, LintResult
 
 # Cards that are always loaded, not route-specific.
 # 00–04 are the original always-on family.
-# 18–22 are the Wave 0–5 always-on additions:
-#   18 ethics & disclosure, 19 source register, 20 glossary,
+# 19–22 are the always-on additions:
+#   19 source register, 20 glossary,
 #   21 likely questions, 22 learnings (post-rehearsal).
 _ALWAYS_ON_PREFIXES = (
     "00_", "01_", "02_", "04_",
-    "18_", "19_", "20_", "21_", "22_",
+    "19_", "20_", "21_", "22_",
 )
 
 

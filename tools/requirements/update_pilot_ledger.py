@@ -33,28 +33,18 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER = REPO_ROOT / "docs" / "reports" / "design" / "10c_reconciliation" / "10c_semantic_requirement_ledger.csv"
 BUNDLES_DIR = REPO_ROOT / "artifacts" / "requirements" / "proof_bundles"
 
-PILOT_REQ_IDS = frozenset({
-    "10C-REQ-049", "10C-REQ-167", "10C-REQ-086", "10C-REQ-089", "10C-REQ-122",
-})
+# Allow direct script invocation in addition to module invocation.
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-# Same scope as emit_proof_bundles.py:PILOT_BINDING_SCOPE — kept in sync manually.
-# If this list changes, also update tools/requirements/emit_proof_bundles.py.
-PILOT_BINDING_SCOPE: tuple[str, ...] = (
-    "tests/fixtures/proof_evidence/",
-    "tests/fixtures/__init__.py",
-    "tests/unit/agentic_core/L1_cognition/intake/test_10c_req_049.py",
-    "tests/unit/agentic_core/L1_cognition/intake/__init__.py",
-    "tests/unit/agentic_core/L1_cognition/prompt_assembly/test_10c_req_086.py",
-    "tests/unit/agentic_core/L1_cognition/prompt_assembly/__init__.py",
-    "tests/unit/agentic_core/L2_execution/test_10c_req_089.py",
-    "tests/unit/agentic_core/L4_state/test_10c_req_122.py",
-    "tests/unit/agentic_core/L5_safety/test_10c_req_167.py",
-    "tools/requirements/emit_proof_bundles.py",
-    "tools/requirements/validate_10c_proof_ledger.py",
-    "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
-    "docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger.csv",
-    "artifacts/requirements/proof_bundles/",
+from tools.requirements._binding_scope import (
+    CRITICAL_BINDING_SCOPE as _CRITICAL_BINDING_SCOPE,
+    CRITICAL_REQ_IDS as _CRITICAL_REQ_IDS,
 )
+
+# SSOT-imported from tools/requirements/_binding_scope.py.
+PILOT_REQ_IDS = frozenset(_CRITICAL_REQ_IDS)
+PILOT_BINDING_SCOPE: tuple[str, ...] = _CRITICAL_BINDING_SCOPE
 
 
 def _git_head() -> str:

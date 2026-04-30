@@ -48,15 +48,6 @@ def _build_smoke_pack(tmp_path: Path, sub: str = "pack") -> Path:
 # ----- New always-on cards -----
 
 
-def test_wave0_ethics_card_emitted(tmp_path: Path) -> None:
-    pack_dir = _build_smoke_pack(tmp_path)
-    card = pack_dir / "18_ETHICS_AND_DISCLOSURE.md"
-    assert card.is_file()
-    content = card.read_text(encoding="utf-8")
-    assert "prep" in content.lower()
-    assert "real-time copilot" in content.lower()
-
-
 def test_wave2_source_register_card_emitted(tmp_path: Path) -> None:
     pack_dir = _build_smoke_pack(tmp_path)
     assert (pack_dir / "19_SOURCE_REGISTER.md").is_file()
@@ -99,7 +90,7 @@ def test_card_meta_distinguishes_rule_and_skill(tmp_path: Path) -> None:
     pack_dir = _build_smoke_pack(tmp_path)
     pack = load_pack(pack_dir)
 
-    rule_card = pack.card_by_filename("18_ETHICS_AND_DISCLOSURE.md")
+    rule_card = pack.card_by_filename("19_SOURCE_REGISTER.md")
     assert rule_card is not None
     assert "card_type: rule" in rule_card.content
 
@@ -158,7 +149,7 @@ def test_self_eval_no_previous_prints_summary(tmp_path: Path) -> None:
     assert rc == 0
     out = buf.getvalue()
     assert "Self-eval" in out
-    assert "Cards: **23**" in out
+    assert "Cards: **22**" in out
     assert "Routes covered: **9**" in out
 
 

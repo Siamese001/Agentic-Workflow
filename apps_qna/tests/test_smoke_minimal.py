@@ -1,8 +1,7 @@
-"""Smoke test — synthetic-mini fixture builds a 23-card pack end-to-end.
+"""Smoke test — synthetic-mini fixture builds a 22-card pack end-to-end.
 
-Wave 0–5 added cards 18 (Ethics & Disclosure), 19 (Source Register),
-20 (Glossary), 21 (Likely Questions), 22 (Learnings) on top of the
-original 18 (00–17).
+Always-on additions on top of the original 18 (00–17): cards 19 (Source
+Register), 20 (Glossary), 21 (Likely Questions), 22 (Learnings).
 """
 
 from __future__ import annotations
@@ -30,27 +29,28 @@ def _load_interview(tmp_output: Path) -> tuple[Interview, dict]:
     return Interview.model_validate(raw), extra
 
 
-def test_smoke_build_23_cards(tmp_path: Path) -> None:
-    """Builder emits all 23 cards + manifest from synthetic-mini fixture."""
+def test_smoke_build_22_cards(tmp_path: Path) -> None:
+    """Builder emits all 22 cards + manifest from synthetic-mini fixture."""
     output_dir = tmp_path / "smoke_out"
     interview, extra = _load_interview(output_dir)
     builder = CardPackBuilder(config=QnaBuildConfig(force=True))
     manifest = builder.build(interview, output_dir, extra)
 
-    # 23 cards (single-interviewer mode collapses 03 to one card)
-    assert len(manifest.cards) == 23
+    # 22 cards (single-interviewer mode collapses 03 to one card)
+    assert len(manifest.cards) == 22
     assert manifest.cards[0] == "00_RUNTIME_ROOT.md"
     assert manifest.cards[-1] == "22_LEARNINGS.md"
 
-    # Wave 0–5 always-on additions are present
+    # Always-on additions are present
     expected_always_on_additions = {
-        "18_ETHICS_AND_DISCLOSURE.md",
         "19_SOURCE_REGISTER.md",
         "20_GLOSSARY.md",
         "21_LIKELY_QUESTIONS.md",
         "22_LEARNINGS.md",
     }
     assert expected_always_on_additions.issubset(set(manifest.cards))
+    # Card 18 (ethics) removed per user direction.
+    assert "18_ETHICS_AND_DISCLOSURE.md" not in manifest.cards
 
     # All emitted files exist on disk
     for card in manifest.cards:
@@ -61,7 +61,7 @@ def test_smoke_build_23_cards(tmp_path: Path) -> None:
     assert manifest_path.is_file()
     on_disk = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert on_disk["interview_slug"] == "synthetic-mini"
-    assert len(on_disk["cards"]) == 23
+    assert len(on_disk["cards"]) == 22
 
     # All 9 routes covered
     assert len(manifest.routes_covered) == 9
@@ -91,7 +91,7 @@ def test_smoke_panel_mode_emits_lens_per_interviewer(tmp_path: Path) -> None:
     )
     manifest = builder.build(interview, output_dir, extra)
 
-    # 24 cards in panel mode: 22 single + 2 lens cards (03A, 03B)
+    # 23 cards in panel mode: 21 single + 2 lens cards (03A, 03B)
     lens_cards = [c for c in manifest.cards if "_LENS_" in c]
     assert len(lens_cards) == 2
     assert any("JANE_DOE" in c for c in lens_cards)
@@ -113,7 +113,7 @@ def test_strict_undefined_catches_missing_variable(tmp_path: Path) -> None:
     builder = CardPackBuilder(config=QnaBuildConfig(force=True))
     # Should still build because empty list is valid
     manifest = builder.build(interview, output_dir, extra)
-    assert len(manifest.cards) == 23
+    assert len(manifest.cards) == 22
 
 
 def test_always_on_header_is_consistent_across_cards(tmp_path: Path) -> None:
