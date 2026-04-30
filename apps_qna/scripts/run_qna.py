@@ -355,27 +355,116 @@ def _load_research(path: Path) -> ResearchInputs:
 
 
 def _print_dry_run(interview: Interview, output_dir: Path) -> None:
+    """Print the planned build, including the multi-tier paste manifest preview."""
+    from apps_qna.builder.card_pack_builder import (
+        _CARD_SPECS,
+        _CHATGPT_PROJECT_FILE_CAP,
+    )
+    from apps_qna.config.route_registry import load_route_registry
+
     print(f"Interview slug    : {interview.slug}")
     print(f"Company           : {interview.company.name}")
     print(f"Role              : {interview.role.title}")
     print(f"Interviewers      : {[i.name for i in interview.interviewers]}")
     print(f"JD sections       : {len(interview.jd.sections)}")
     print(f"Experience points : {len(interview.experience.points)}")
-    print(
-        f"STAR stories      : {len(interview.experience.star_bank.stories)}"
-    )
+    print(f"STAR stories      : {len(interview.experience.star_bank.stories)}")
     print(f"RCA stories       : {len(interview.experience.rca_bank)}")
     print(f"Output directory  : {output_dir}")
-    print("Cards (planned):")
+    print()
+
     panel = len(interview.interviewers) > 1
-    print(f"  00..02 always-on (3 cards)")
-    if panel:
-        for idx, iv in enumerate(interview.interviewers):
-            suf = chr(ord("A") + idx)
-            print(f"  03{suf} interviewer lens — {iv.name}")
+    likely = (
+        list(interview.research.likely_questions)
+        if interview.research and interview.research.likely_questions
+        else []
+    )
+    relevant_routes = (
+        {lq.route_id for lq in likely} if likely else None  # None = all
+    )
+
+    # Build per-card plan with tier + paste decision.
+    registry = load_route_registry()
+    relevant_skills: set[str] = set()
+    if relevant_routes is None:
+        for r in registry.routes:
+            relevant_skills.add(r.primary_card)
+            relevant_skills.update(r.optional_specialists)
     else:
-        print(f"  03  interviewer lens — {interview.interviewers[0].name}")
-    print(f"  04..17 specialist + closing (14 cards)")
+        for r in registry.routes:
+            if r.id in relevant_routes:
+                relevant_skills.add(r.primary_card)
+                relevant_skills.update(r.optional_specialists)
+
+    print("Card plan (tier | paste? | filename):")
+    pasted_count = 0
+    archived_count = 0
+    for spec in _CARD_SPECS:
+        filename, _, panelize, _, _, _, load_strategy = spec
+        if panelize and panel:
+            for idx, iv in enumerate(interview.interviewers):
+                suf = chr(ord("A") + idx)
+                panel_filename = filename.replace("03_", f"03{suf}_").replace(
+                    "_LENS.md",
+                    f"_LENS_{iv.name.upper().replace(' ', '_')}.md",
+                )
+                paste = "PASTE" if load_strategy != "post_rehearsal" else "archive"
+                print(f"  {load_strategy:<14} | {paste:<7} | {panel_filename}")
+                if paste == "PASTE":
+                    pasted_count += 1
+                else:
+                    archived_count += 1
+            continue
+        if load_strategy == "post_rehearsal":
+            print(f"  {load_strategy:<14} | archive | {filename}")
+            archived_count += 1
+        elif load_strategy == "always_on":
+            print(f"  {load_strategy:<14} | PASTE   | {filename}")
+            pasted_count += 1
+        else:
+            # primary / specialist — gated by relevant_skills
+            if filename in relevant_skills:
+                print(f"  {load_strategy:<14} | PASTE   | {filename}")
+                pasted_count += 1
+            else:
+                print(f"  {load_strategy:<14} | skip    | {filename}  (route not in likely_questions)")
+
+    print()
+    total_rendered = pasted_count + archived_count + (
+        sum(
+            1
+            for s in _CARD_SPECS
+            if s[6] not in {"always_on", "post_rehearsal"} and s[0] not in relevant_skills
+        )
+        if relevant_routes is not None
+        else 0
+    )
+    # Recompute properly for accuracy.
+    rendered = sum(1 for s in _CARD_SPECS) + (
+        len(interview.interviewers) - 1 if panel else 0
+    )
+    print(f"Summary:")
+    print(f"  Rendered to disk : {rendered}")
+    print(f"  Pasted (ChatGPT) : {pasted_count}")
+    print(f"  Archived only    : {archived_count} (post_rehearsal cards stay on disk)")
+    if pasted_count > _CHATGPT_PROJECT_FILE_CAP:
+        print(
+            f"  ⚠ WARNING        : paste count ({pasted_count}) exceeds ChatGPT "
+            f"{_CHATGPT_PROJECT_FILE_CAP}-file cap. "
+            "Declare interview.research.likely_questions to scope down."
+        )
+    else:
+        print(
+            f"  Cap status       : {pasted_count}/{_CHATGPT_PROJECT_FILE_CAP} "
+            f"ChatGPT files (under cap)"
+        )
+    if relevant_routes is None:
+        print(
+            "  Likely-questions : NOT declared → conservative default "
+            "(all skill cards pasted)"
+        )
+    else:
+        print(f"  Likely-questions : declared for routes {sorted(relevant_routes)}")
 
 
 def _run_lint(args: argparse.Namespace) -> int:
