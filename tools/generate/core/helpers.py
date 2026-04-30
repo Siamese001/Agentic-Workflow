@@ -42,7 +42,7 @@ def _discover_repo_root(start: Path) -> Path:
 
 ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
-_OVERRIDES_FILE = Path(__file__).resolve().parents[1] / "adg_layer_overrides.yaml"
+_OVERRIDES_FILE = Path(__file__).resolve().parents[2] / "adg" / "adg_layer_overrides.yaml"
 
 
 def _infer_layer(path: str) -> str:

@@ -46,8 +46,8 @@ P1–P4 table extensions in scope:
 
 | Wave | Focus | Phases | Exit Condition | Status |
 |------|-------|--------|---------------|--------|
-| W0 | Unblock pipeline + MCP | 0.1–0.2 | ADG generates clean; MCP cold-starts | 🔴 TODO |
-| W1 | Layer classification (L_UNKNOWN) | 1.1–1.3 | `L_UNKNOWN` count ≤ 10 in P1 table row | 🔴 TODO |
+| W0 | Unblock pipeline + MCP | 0.1–0.2 | ADG generates clean; MCP cold-starts | ✅ DONE |
+| W1 | Layer classification (L_UNKNOWN) | 1.1–1.3 | `L_UNKNOWN` count ≤ 10 in P1 table row | ✅ DONE — was � IN PROGRESS |
 | W2 | P1 layer inversion fix | 2.1–2.2 | `GovernanceAgent` `violates` edge = 0 | 🔴 TODO |
 | W3 | P1–P4 table augmentation (SQLite-only) | 3.1–3.4 | New rows visible in terminal on every ADG run | 🔴 TODO |
 | W4 | God module decomposition | 4.1–4.3 | `sovereign_severity_types.py` fan-out < 200 | 🔴 TODO |
@@ -67,11 +67,11 @@ P1–P4 table extensions in scope:
 
 | Phase | Title | Files | Pain Points | Est. Tokens | Status |
 |-------|-------|-------|-------------|-------------|--------|
-| 0.1 | Fix `build_artifact` import | 1 | Stale files on every run | ~400 | 🔴 TODO |
-| 0.2 | Fix `sqlite_backend` import | 1 | MCP cold-start broken | ~400 | 🔴 TODO |
-| 1.1 | Map `apps_underwriting_ai` → L_APP | 1 | 30+ L_UNKNOWN modules | ~600 | 🔴 TODO |
-| 1.2 | Map `L_CONTRACTS` → L_RUNTIME | 1 | Contract modules unclassified | ~500 | 🔴 TODO |
-| 1.3 | ADG regen + P1 row validation | 0 | Confirm table row updated | ~200 | 🔴 TODO |
+| 0.1 | Fix `build_artifact` import | 1 | Stale files on every run | ~400 | ✅ DONE |
+| 0.2 | Fix `sqlite_backend` import | 1 | MCP cold-start broken | ~400 | ✅ DONE |
+| 1.1 | Map `apps_underwriting_ai` → L_APP | 1 | 30+ L_UNKNOWN modules | ~600 | ✅ DONE |
+| 1.2 | Map `L_CONTRACTS` → L_RUNTIME | 1 | Contract modules unclassified | ~500 | ✅ DONE |
+| 1.3 | ADG regen + P1 row validation | 0 | Confirm table row updated | ~200 | ✅ DONE |
 | 2.1 | Move `get_python_files` to `agentic_core` | 2 | L5→L_OPS inversion | ~1200 | 🔴 TODO |
 | 2.2 | Update `GovernanceAgent` import | 1 | P1 BLOCKS | ~500 | 🔴 TODO |
 | 3.1 | Add P0 section to `_print_defect_table` | 1 | New terminal section | ~1500 | 🔴 TODO |

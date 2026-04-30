@@ -759,12 +759,20 @@ LAYER_PREFIXES: dict[str, str] = {
     "apps_exec": "L_APP",
     "apps_research": "L_APP",
     "apps_rfp": "L_APP",
+    "apps_underwriting_ai": "L_APP",
     "agentic_core/patterns": "L_SHARED",
+    "agentic_core/case_memory": "L_SHARED",
+    "agentic_core/cloud_native": "L_SHARED",
+    "agentic_core/core": "L_SHARED",
+    "agentic_core/gateway": "L_SHARED",
+    "agentic_core/tracing": "L_SHARED",
+    "agentic_core/visualization": "L_SHARED",
     "system_learning": "L_SL",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",
     "infrastructure": "L_INFRA",
     "tests": "L_TEST",
+    ".windsurf": "L_OPS",
 }
 ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
     {
