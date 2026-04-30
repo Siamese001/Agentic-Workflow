@@ -24,7 +24,7 @@ company:
 role:
   title: "Applied AI / ML Practice Leader, North America"
   level: "vp-or-svp"
-  primary_mandate: "Build and scale Searce's Applied AI/ML practice across North America — own AI pipeline, CxO advisory, production-grade architecture, partner-led growth (esp. Google Cloud), and repeatable delivery assets, as the DRI for revenue, architecture, and delivery."
+  primary_mandate: "Build and scale Searce's Applied AI/ML practice across North America — reporting into Vrinda Khurjekar (VP Americas) as her practice-leader for AI/ML. Own AI pipeline, CxO advisory, production-grade architecture, partner-led growth (esp. Google Cloud), and repeatable delivery assets, as the DRI for revenue, architecture, and delivery, in tight partnership with Vrinda's broader commercial motion and Siddharth Shah (AVP Solutions Consulting AMER)."
   success_criteria:
     - "North America has a clear Applied AI pipeline and repeatable sales motion"
     - "Strategic accounts have funded AI programs tied to measurable outcomes"
@@ -34,27 +34,33 @@ role:
     - "Delivery teams have clear standards, reusable patterns, stronger leverage"
     - "The practice becomes a growth engine, not one-off AI experiments"
 interviewers:
-  - name: "Ram Devaraj"
-    title: "Director, Applied AI & Modern Product Engineering"
-    team: "Searce — Applied AI Division"
-    technical_depth: "high"
+  - name: "Vrinda Khurjekar"
+    title: "VP Americas"
+    team: "Searce — Americas Business (this role reports into her)"
+    technical_depth: "medium"
     public_signals:
-      - "Jan 2026 Searce blog: 'Building AI Systems in 2026: Core Concepts and Essential Components' — definitive technical treatise"
-      - "Coimbatore Institute of Technology, BE Electronics & Communication 2008"
-      - "Early career: Software Engineer at Motorola Mobile Devices (2008-2011), Senior SWE at Texas Instruments (2011-2012)"
-      - "Co-founded Powerupcloud Technologies as Director of Engineering (2015-2017)"
-      - "Returning Searce leader: prior Director of Software Engineering (2018-2020), CTO of Product Initiatives (2020-2021)"
-      - "External CEO stint at Cloudside Technologies before returning to Searce"
+      - "LinkedIn: VP — Americas at Searce Inc since Sept 2024 (San Francisco Bay Area). 17 years at Searce; saw company scale from 20 → 1200+ → 2200+ employees."
+      - "Self-description: 'Passionate and empathetic, strategic thinker who cares deeply about building genuine relationships. Throws myself into anything that needs to be fixed and enjoys getting hands-on.'"
+      - "Career arc at Searce: started 2008 as Business Process Improvement Manager (Houston) → Sr. Director Cloud Consulting AMER → Head AMER Business → VP Americas (Sept 2024)."
+      - "Forbes Business Development Council member."
+      - "Sept 2025 LinkedIn post on next phase priorities: (1) deepen customer partnerships as trusted long-term collaborators, (2) scale AI-native offerings to help clients adopt innovation faster, (3) expand Americas footprint across new regions and industries, (4) strengthen partner ecosystem and co-create value with joint customers, (5) build and empower high-performance teams."
+      - "Speaker at Google Cloud Next '26 — represents Searce alongside Hardik Parekh (CEO) and Siddharth Shah (AVP)."
+      - "Emerj 'AI in Business' podcast: 'A Blueprint for AI-Driven Process Optimization for Regulated Industries' (with Paul Pallath, Searce VP Applied AI)."
+      - "MedCity News Jan 2025 byline: 'Precision Medicine: Becoming More Real With AI?' — healthcare/regulated-industries POV."
+      - "Authority Magazine Medium feature: 'Exciting Developments In US High-Tech Manufacturing' — manufacturing AI POV."
+      - "Street Fight 2023: 'Mastering the Retail Supply Chain to Drive Intelligent Outcomes' — retail AI POV."
     hot_buttons:
-      - "Context Engineering over Prompt Engineering — chunking, metadata filtering, semantic search"
-      - "Agentic RAG + Graph-Based RAG (multi-hop reasoning over knowledge graphs)"
-      - "Model Context Protocol (MCP) — zero-trust governance for LLM tool access"
-      - "Layered Memory Design — short-term + long-term, episodic/semantic/procedural"
-      - "Multi-Agent A2A communication (Agent Development Kits)"
-      - "AI Gateways + FinOps — rate limiting, model routing, prompt-injection guardrails"
-      - "Low-level systems rigor — C/C++, Embedded Linux, memory management; views AI as deterministic software, not algorithmic magic"
-      - "Aggressive rejection of buzzwords, API-wrapper-deep knowledge, and 'best practices' framing"
-    lens: "Architectures over models. Wants production-grade, scalable, governable AI ecosystems — NOT prompt tweaking or model-of-the-month chasing. Will probe systems-engineering depth (C/C++ lineage), distributed-architecture instincts, and ability to translate ambiguous CxO problems into measurable, ROI-anchored AI programs delivered DRI-style."
+      - "Customer empathy and trust-building — listening before pitching; she explicitly signals this as her core differentiator"
+      - "Scaling AI-native offerings — converting bespoke wins into repeatable, partner-distributable IP (her stated #2 priority)"
+      - "Partner ecosystem motion — Google Cloud co-sell as the primary engine, AWS/Databricks/Snowflake secondary (her #4 priority)"
+      - "Building and empowering high-performance teams — hiring, leveling, retention, especially in onshore-offshore mix (her #5 priority)"
+      - "Regulated industries fluency — financial services, healthcare, manufacturing, retail (her published POV territory)"
+      - "Process-first thinking via EVLOS — redesign business process before overlaying AI; her early career was Business Process Improvement"
+      - "Cultural fit (HAPPIER), especially Humble (no-ego) and Responsible (DRI ownership)"
+      - "Long-term thinking and 'next phase' framing — will probe how you'll partner across her quarters/years, not chase a quick win"
+      - "Practice economics — margin discipline, IP commercialization, billable mix, accelerator economics"
+      - "Aggressive rejection of buzzwords, AI evangelism, 'best practices' framing (Searce explicitly considers these overrated)"
+    lens: "Commercial credibility, practice fit, and cultural alignment. Vrinda is a 'techie turned business leader' — she will appreciate technical depth but will NOT grill on architecture (Ram already did that). She is hiring someone who reports to her: she needs to trust this person to (1) own the AI pipeline + bookings without needing her in every deal, (2) partner with her commercial motion rather than compete with it, (3) scale the practice via reusable IP and partner ecosystem, (4) build a high-performance team that fits Searce's HAPPIER culture, and (5) deliver in regulated industries with measurable outcomes. She is empathetic, customer-listening-first, hands-on. Will probe how you build customer trust, how you commercialize IP, how you partner with Google Cloud co-sell, how you avoid the offshore-delivery friction patterns, and how you'll work alongside her rather than over her."
 jd:
   raw_path: "C:/Users/amita/Documents/Searce/Searce - Applied AI&ML Practice Lead - inferred.pdf"
   sections:
@@ -144,8 +150,8 @@ research:
     - "AI Gateways + FinOps: model routing by task complexity, rate limiting, prompt-injection guardrails"
     - "Multi-Agent A2A architectures over single monolithic models — Agent Development Kits formalizing this pattern"
   interviewer_lenses:
-    Ram Devaraj: |
-      Director of Applied AI & Modern Product Engineering at Searce. Two-decade systems engineer. Foundational background in C/C++, Embedded Linux, device drivers, agile methodologies, full-stack architecture (Motorola Mobile Devices, Texas Instruments, Robert Bosch, Aditi Technologies). Co-founded Powerupcloud (Director of Engineering 2015-2017). Prior tenure at Searce as Director of Software Engineering (2018-2020) and CTO of Product Initiatives (2020-2021), then external CEO at Cloudside Technologies before returning. Views AI as complex deterministic software requiring rigorous memory management, hyper-efficient compute, robust system architecture — NOT algorithmic magic. Penalizes buzzwords and API-wrapper depth. Jan 2026 Searce blog "Building AI Systems in 2026" is the definitive blueprint for his interviewing priorities — Architectures Over Models. Will probe context engineering, agentic+graph RAG, MCP zero-trust, layered memory, A2A multi-agent, AI gateways/FinOps. Cultural overlay: HAPPIER values strictly enforced, particularly Responsible (end-to-end DRI ownership) and Humble (no-ego architecture pivots when data demands it).
+    Vrinda Khurjekar: |
+      VP Americas at Searce since Sept 2024 (LinkedIn). 17 years at Searce — joined 2008 as Business Process Improvement Manager (Houston), grew through Sr. Director Cloud Consulting AMER and Head AMER Business to current VP role. Saw the company scale from 20 to 2200+ employees. This role reports into her. She is a 'techie turned business leader' — customer-empathy-first, hands-on problem solver, Forbes Business Development Council member. Her self-stated style: passionate, empathetic, strategic thinker, builds genuine relationships, throws herself into anything that needs to be fixed. Her published Sept 2025 priorities for the next phase (LinkedIn): (1) deepen customer partnerships as trusted long-term collaborators, (2) scale AI-native offerings to help clients adopt innovation faster, (3) expand Americas footprint across new regions and industries, (4) strengthen partner ecosystem and co-create value with joint customers, (5) build and empower high-performance teams. Public POV territory: regulated industries (Emerj podcast on regulated-industries AI with Paul Pallath), healthcare (MedCity precision-medicine), manufacturing (Authority Magazine), retail supply chain (Street Fight). Speaker at Google Cloud Next '26. She will probe commercial credibility (can you own the AI pipeline?), practice fit (can you commercialize IP?), partner motion (can you make Google Cloud co-sell real?), team building (can you hire and retain?), and cultural alignment (do you fit HAPPIER?) — NOT deep architecture (Ram already vetted that). She is hiring her direct report; she needs to trust that you partner with her motion rather than compete with it.
   source_register:
     - claim: "Searce was founded in 2004 by Hardik Parekh, headquartered in Pune India with executive presence in Houston TX; ~2,200 employees, ~$126M revenue (2025), entirely bootstrapped"
       claim_type: direct_evidence
@@ -163,13 +169,17 @@ research:
       claim_type: direct_evidence
       source_id: SRC-004
       section_id: regional_leadership
-    - claim: "Ram Devaraj is Director of Applied AI & Modern Product Engineering at Searce; prior tenures at Searce 2018-2021 (Director SW Eng, CTO Product Initiatives), external CEO stint at Cloudside, returned to current role"
+    - claim: "Vrinda Khurjekar is VP Americas at Searce (Sept 2024-present per LinkedIn), 17-year tenure, started 2008 as Business Process Improvement Manager (Houston). The role being interviewed for reports into her."
       claim_type: direct_evidence
       source_id: SRC-005
       section_id: interviewer_profile
-    - claim: "Ram Devaraj's Jan 2026 blog 'Building AI Systems in 2026: Core Concepts and Essential Components' lays out his architectural priorities: context engineering, agentic+graph RAG, MCP, layered memory, A2A multi-agent, AI gateways"
+    - claim: "Vrinda's Sept 2025 LinkedIn post enumerates her 5 priorities for Searce's next phase: deepen customer partnerships, scale AI-native offerings, expand Americas footprint, strengthen partner ecosystem, build high-performance teams"
       claim_type: direct_evidence
       source_id: SRC-006
+      section_id: interviewer_priorities
+    - claim: "Vrinda has published bylines on regulated-industries AI in Emerj podcast (with Paul Pallath), MedCity News (precision medicine), Authority Magazine (manufacturing), and Street Fight (retail supply chain) — establishing her POV territory"
+      claim_type: direct_evidence
+      source_id: SRC-009
       section_id: interviewer_thought_leadership
     - claim: "Searce's HAPPIER values (Humble, Adaptable, Positive, Passionate, Innovative, Excellence, Responsible) are strictly enforced in technical interview behavioral screening; technical brilliance without HAPPIER alignment results in disqualification"
       claim_type: direct_evidence
@@ -203,56 +213,61 @@ research:
     - term: "PanyaThAI"
       definition: "Searce's Thailand-launched program for enterprise-grade agentic AI on Google Cloud stack."
   likely_questions:
-    - route_id: architecture
-      questions:
-        - "Walk me through how you'd architect an enterprise agentic AI system end-to-end — from intake to production — for a Fortune 500 financial services client"
-        - "How does Graph-Based RAG handle multi-hop reasoning differently than flat vector RAG? When would you reach for one vs. the other?"
-        - "What does Context Engineering look like in practice — chunking, metadata filtering, retrieval grounding — for an enterprise data lake?"
-        - "How does Model Context Protocol enable zero-trust LLM tool access in regulated environments?"
-        - "Walk through a layered-memory architecture: short-term, long-term episodic, long-term semantic, long-term procedural. How do they coordinate?"
-        - "Multi-agent A2A — when do you actually need it vs. a single specialized model with tools?"
-    - route_id: governance
-      questions:
-        - "How do you enforce AI governance — policy, evaluation gates, rollback, audit trail — in a production agentic system?"
-        - "How do you build an AI Gateway that handles model routing by task complexity, rate limiting, prompt-injection guardrails, and FinOps cost control?"
-        - "What does human-in-the-loop look like for high-stakes regulated workflows?"
-        - "How do you instrument trace integrity and replayability across distributed agent flows?"
-    - route_id: ds_to_platform
-      questions:
-        - "How do you take a successful AI pilot from notebook to production with proper MLOps, observability, and cost control?"
-        - "What does AI CI/CD look like — evaluation gates, rollback, drift monitoring, anomaly detection?"
-        - "How do you operationalize AI evaluation pipelines that survive model swaps and prompt drift?"
-    - route_id: productization
-      questions:
-        - "How do you convert successful client engagements into repeatable IP / accelerators / reference architectures?"
-        - "How do you price and package an AI offering so field teams can sell and delivery teams can execute?"
-        - "What does a $22M productization story look like — what made the IP reusable vs. bespoke?"
-    - route_id: global_engineering
-      questions:
-        - "How do you operate as a DRI with a distributed global delivery team — esp. given Searce's offshore model?"
-        - "How do you address the friction points in middle management and compensation in delivery centers without breaking the practice's growth velocity?"
-        - "How do you scale an AI engineering org from 8 to 28 specialists while maintaining quality?"
     - route_id: executive_fit
       questions:
-        - "Walk me through your first 90 days as Applied AI Practice Leader at Searce — what would you build, what would you measure?"
+        - "Walk me through your first 90 days as Applied AI Practice Leader at Searce — what would you build, what would you measure, and how would you partner with me?"
+        - "Why Searce, why now? What about our motion is harder/different from where you've worked before?"
         - "How do you translate ambiguous CxO demand into a fundable AI program with measurable outcomes?"
-        - "How do you navigate the DRI model — owning revenue, architecture, AND delivery with no hand-offs?"
-        - "How do you partner with Vrinda Khurjekar (VP Solutions Consulting NA) on co-sell motions while owning the AI practice's P&L?"
-    - route_id: rca
+        - "How do you navigate the DRI model — owning revenue, architecture, AND delivery with no hand-offs to offshore?"
+        - "What's the line between this role's P&L and my Americas P&L? How do we partner so neither of us is in every deal?"
+        - "How do you build genuine customer trust at the CxO level — not transactional, not deal-flow?"
+    - route_id: productization
       questions:
-        - "Tell me about a production AI failure — root cause, recovery, operating-model change"
-        - "What's an architectural decision you got wrong, and what did the post-mortem teach you?"
-    - route_id: cross_exam
+        - "Scaling AI-native offerings is my #2 priority for the next phase. What does your accelerator catalog look like, and how do you decide what becomes IP vs. stays bespoke?"
+        - "How do you convert successful client engagements into repeatable IP that field teams can actually sell and delivery teams can actually execute?"
+        - "How do you price and package an AI offering for the regulated-industries buyer? What's the deal cycle and what's the comp model?"
+        - "$22M productized AI revenue at Unify — what was the formula? What made the IP reusable rather than another bespoke deliverable?"
+        - "How do you balance margin discipline with the investment needed to build durable IP?"
+    - route_id: global_engineering
       questions:
-        - "Why MCP over a custom REST gateway? What's the actual security model?"
-        - "Why GraphRAG over vector RAG when relational logic isn't dominant in the corpus?"
-        - "How does layered memory avoid context-window blowup at scale — what's the eviction policy?"
-        - "Defend your AI Gateway design against prompt-injection and data-exfiltration attacks"
+        - "My #5 priority is building and empowering high-performance teams. What's your hiring playbook for senior AI architects — your network, your bar, your interview rubric?"
+        - "How do you operate as a practice leader with distributed global delivery? Searce's offshore model has friction — how would you reduce it without breaking velocity?"
+        - "How do you scale an AI engineering org from a small team to 25+ specialists while maintaining quality and culture?"
+        - "What's your view on onshore-offshore handoff standards? Where does the line move as a program scales?"
+        - "What's your approach to leveling, comp, and retention for top-tier AI engineering talent? What authority do you need from me to make this work?"
+    - route_id: ds_to_platform
+      questions:
+        - "How do you take an AI pilot from notebook to production in a regulated enterprise environment — what are the actual gates?"
+        - "What does AI CI/CD look like in your world — evaluation, rollback, drift, observability — and how does it land at a Fortune 500 financial services client?"
+        - "How do you operationalize AI evaluation pipelines that survive model swaps and prompt drift over time?"
+        - "You've said cycle time matters — what's your story on lab-to-production compression?"
     - route_id: star_proof
       questions:
-        - "Tell me about a time you took an AI capability from prototype to production in a regulated enterprise environment"
+        - "Tell me about a time you built deep customer trust at the CxO level. What did you do that someone else might not have?"
         - "STAR: a CxO conversation that turned an ambiguous problem into a funded multi-quarter AI program"
-        - "STAR: you had to build a practice from scratch — pipeline, IP, team, partner motion — what was the playbook?"
+        - "STAR: you had to build a practice from scratch — pipeline, IP, team, partner motion. What was the playbook? What broke and how did you fix it?"
+        - "STAR: a hyperscaler co-sell motion you ran end-to-end. What did the partner side actually need from you?"
+        - "STAR: a regulated-industries deal where governance/compliance was a deal-blocker. How did you unblock it?"
+    - route_id: rca
+      questions:
+        - "Tell me about a production AI failure or a deal that fell apart — root cause, recovery, what changed about how you operated afterward."
+        - "What's a hire that didn't work out, and what did you learn about your screening rubric?"
+        - "What's a partner-motion that misfired? Where did the alignment break?"
+    - route_id: governance
+      questions:
+        - "Healthcare and financial services demand strict governance — how do you stand up the gates without slowing the deal cycle?"
+        - "What's your view on the human-in-the-loop boundary for high-stakes regulated workflows?"
+        - "How do you instrument trace integrity and audit trail in a way that survives a regulatory exam?"
+    - route_id: architecture
+      questions:
+        - "At a high level — not Ram-deep — how would you architect the platform spine that lets us deliver Applied AI consistently across the practice?"
+        - "What's your view on Graph RAG vs. vector RAG for enterprise use cases? When does the complexity pay off?"
+        - "How does MCP fit into the partner-distributable accelerators we'd build?"
+    - route_id: cross_exam
+      questions:
+        - "Defend your $22M productized revenue claim — walk me through the deal mix and the IP economics"
+        - "Defend your 8→28 team-scaling claim — what was the attrition, what was the leveling spread, what made it sustainable?"
+        - "Defend your hyperscaler partner-revenue claim — was that real co-sell or marketing line?"
 build_metadata:
   interview_slug: searce-applied-ai
   built_at: "2026-04-30T15:55:00Z"
@@ -331,43 +346,50 @@ extra_context:
     - "$15M incremental revenue at IBM via hyperscaler co-sell motions"
     - "25% renewal rate improvement at IBM via SaaS-like reusable platform conversion"
   executive_fit_close_patterns:
-    - "I am a DRI by instinct — at Unify I owned the platform roadmap, the architecture, the engineering scale-out (8→28), AND the commercialization ($22M productized revenue, 20% margin expansion). That's the DRI shape Searce describes; it's the shape I've actually executed."
-    - "I do not chase models; I architect systems. My platform implements every pillar of your Jan 2026 thesis — Context Engineering, Agentic+Graph RAG, MCP, Layered Memory, Multi-Agent A2A, AI Gateways with FinOps — at production scale, in regulated enterprise environments."
-    - "Searce's commercial inflection — North America Applied AI as a pipeline-generating, IP-leveraged, partner-powered practice — is the exact motion I just executed at Unify. The repeatability is in the operating model, not the slides."
+    - "I am a DRI by instinct — at Unify I owned the platform roadmap, the architecture, the engineering scale-out (8→28), AND the commercialization ($22M productized revenue, 20% margin expansion). That's the DRI shape Searce describes; it's the shape I've actually executed. I will not need you in every deal."
+    - "My job is to make your motion bigger, not compete with it. The line I'd draw with you: you and Siddharth own the broader Americas commercial relationship; I own the Applied AI pipeline within it — pursuit shaping, technical credibility at CxO level, delivery accountability, IP capture. We meet at quarterly business reviews and account-by-account triage; we don't both need to be in every conversation."
+    - "Your Sept 2025 priorities — deepen customer partnerships, scale AI-native offerings, expand the Americas footprint, strengthen partner ecosystem, build high-performance teams — read like the operating plan I just executed at Unify. The work I want to do next is exactly that, at Searce's scale and with Searce's partner equity in Google Cloud."
+    - "I'll lead with customer empathy because that's the only thing that actually compounds. The other stuff — architectures, IP economics, partner motion — follows from listening hard to the customer first. That's the EVLOS philosophy, and it's how I've operated for fifteen years."
   cross_exam_depth_anchors:
-    - topic: "Systems-engineering DNA precedes AI"
-      specifics: "C/C++ + Embedded Linux + actuarial valuation systems lineage. I treat AI as deterministic software with rigorous memory management and compute discipline — not algorithmic magic. Maps directly onto Ram's Motorola/TI background."
-    - topic: "Graph RAG applied to code (ADG)"
-      specifics: "AST Dependency Graph with materialized views (mv_*), pre-built P-views (v_p0_*, v_p1_*), semantic edges (flows_to, reads_from, writes_to, controls_flow). Multi-hop reasoning over code-graph is identical mental model to Graph RAG."
-    - topic: "MCP zero-trust governance in production"
-      specifics: "13+ MCP servers, each with input validation, error contracts, audit trail to JSONL ledger, fail-closed pre-execution gates. Constitutional §25 (serialization), §28 (SQLite-direct fallback). Real production discipline, not theory."
-    - topic: "Layered Memory implementation"
-      specifics: "Persistent SQLite knowledge graph with protected entity types (ProceduralPattern, EpisodicEvent, ProjectContext, ArchitecturalInvariant). Eviction via mem_cleanup_stale at 30d with protected-type allowlist. Survives session restarts."
-    - topic: "Multi-Agent + A2A in production"
-      specifics: "8+ apps_* engines as specialized agents communicating via shared L0 routing + UWG write gateway + L5 safety plane. Typed contracts at each boundary. UWG enforces atomic writes, anti-bypass."
-    - topic: "AI Gateway with FinOps — multi-tier routing"
-      specifics: "L0 NamespaceBandit (Thompson sampling) + L2 Cascade tier (HIGH/MEDIUM/LOW/HITL) + provider routing (deterministic/qwen/gemini_flash/gemini_pro/hitl). Wilson CI + z + uplift + min-N promotion gates. Brier-score calibration. Reroute caps prevent runaway cost."
-    - topic: "Anti-pattern burndown ratchet"
-      specifics: "Pre-commit gate mathematically prevents regressions. Counts violations per category, fails on increase. Forces zero-loss refactoring discipline. Same mechanism Searce would need for AI quality + governance baseline enforcement."
+    - topic: "$22M productized AI revenue at Unify Consulting"
+      specifics: "Built and operationalized a governed agentic AI platform serving Fortune 500 financial institutions. Revenue mix: $15M IP-led (reusable accelerators, reference architectures, platform services), remainder from platform-enabled bespoke programs. The IP economics worked because the platform primitives (routing, retrieval, governance, observability) were genuinely reusable — not white-labeled bespoke code. Field teams could sell against the catalog; delivery teams executed against the same primitives. Margin expansion of 20% came from the bespoke→platform shift, not headcount cuts."
+    - topic: "8 → 28 ML engineering team scaling"
+      specifics: "Built the engineering org from 8 to 28 specialists at Unify across senior AI architects, ML engineers, and platform leads. Hiring playbook: hire on engineering rigor (C/C++ lineage acceptable, ADR/governance discipline mandatory), level on architectural ownership (not just tickets), retain via mission + autonomy. Onshore-offshore mix kept onshore for architecture and customer-facing roles, offshore for execution — with explicit handoff standards documented in DRI cadences."
+    - topic: "Lab-to-production cycle compression: 6 months → 3 weeks"
+      specifics: "Standardized the AI systems lifecycle across intake, validation, execution, monitoring, remediation. Compression came from: pre-built accelerator templates, shared evaluation harness, automated observability instrumentation, and reusable governance gates. Preserved deterministic auditability and runtime stability throughout."
+    - topic: "Hyperscaler co-sell at IBM ($15M incremental revenue)"
+      specifics: "Structured multi-year hyperscaler alliances aligned to platform modernization and AI growth. The motion that worked: identify joint customer wins where partner economics aligned with our delivery economics, build co-funded reference architectures, and run quarterly partner business reviews with the partner's account team — not just our marketing team. Real co-sell, not marketing-line padding."
+    - topic: "Regulated-industries delivery (financial services, insurance, healthcare-adjacent)"
+      specifics: "At Unify and IBM combined, delivered AI/data platform programs at Fortune 500 financial institutions and insurance carriers. Specific governance discipline: SOC 2-aligned controls, regulatory-response latency reduction (50% at IBM via near-real-time lineage and observability), 99.9% uptime SLO maintained across regulated environments. EY work earlier covered Solvency II/AG43 capital optimization — deep regulated-industries fluency."
+    - topic: "Customer trust and CxO advisory"
+      specifics: "Trust built by listening before pitching. Standard motion: 30-60 days of structured listening tours with the CxO and their direct reports BEFORE proposing any program. Translates to genuine architecture proposals that survive the inevitable 'why your stack' challenge — because the architecture maps directly onto problems they articulated."
+    - topic: "Process-first thinking (EVLOS-compatible)"
+      specifics: "Twelve+ years across actuarial valuation systems, regulatory analytics modernization (EY $15M program), legacy-to-cloud transformations (InsurTech CTO) — every one started with process redesign before technology. Native to Searce's EVLOS philosophy: solve backwards from outcome to code; don't bolt AI onto bad processes."
   questions_for_lead:
-    - "What does the first 90 days look like — what's the most painful North America pipeline gap you'd want me to close first?"
-    - "How is the DRI line drawn between this role and Vrinda's Solutions Consulting NA — where does pre-sales hand off and where does practice ownership begin?"
-    - "Public employee sentiment data suggests friction in middle management, compensation, and offshore delivery — what authority does this role have over those levers?"
-    - "Tell me about a recent AI program where Searce's architecture-over-models thesis hit the field — what worked and what broke?"
-    - "Where do you draw the line between solution accelerators (reusable IP, partner-distributable) and bespoke client work — what's the IP commercialization model?"
+    - "Of your five Sept 2025 priorities — customer partnerships, scaling AI-native offerings, Americas footprint, partner ecosystem, high-performance teams — which one are you most worried about for FY26, and what would 'great' look like by end of Q2?"
+    - "Where do you draw the line between your Americas P&L and this practice's P&L? What's the operating cadence you'd want with me — weekly pipeline review, monthly business review, quarterly leadership review?"
+    - "You've talked publicly about the offshore-onshore friction in delivery. What authority does this role have over the levers — hiring, leveling, comp, work geography — to address that without breaking the practice's velocity?"
+    - "Tell me about a North America AI deal in the last year that worked — what made it land — and one that didn't, and what we learned."
+    - "How does the partner motion with Google Cloud actually work today? What's the gap between 'partner of the year' optics and dollars in the joint pipeline?"
+    - "What's the Searce IP commercialization model? When does a successful client win become a productized accelerator, and who owns that conversion?"
+    - "You're 17 years in. What's the cultural failure mode I most need to avoid in my first 90 days — the thing that's killed previous senior hires?"
+    - "Paul Pallath leads Applied AI on the technical side; Ram Devaraj on engineering. How do you envision the three of us working together, and where would you expect me to lean on each of them?"
   questions_for_panel: []
   plan_days_1_30:
-    - "Walk the existing pipeline with Vrinda + Siddharth: account-by-account triage, pipeline scrub, and identify the 3 highest-leverage Applied AI pursuits"
-    - "Audit current Applied AI delivery patterns and IP — what's reusable, what's bespoke, what's at risk"
-    - "Establish DRI cadences: weekly pipeline review, bi-weekly architecture review, monthly delivery health"
-    - "Reconnect with Google Cloud account team(s) covering NA — refresh co-sell motion alignment"
+    - "Listening tour with Vrinda + Siddharth + Paul Pallath + Ram Devaraj — understand the operating cadences, the seam-points, and the cultural land mines."
+    - "Account-by-account triage of the existing Americas Applied AI pipeline with Vrinda — jointly identify the 3 highest-leverage pursuits to win in the first six months."
+    - "Audit current Applied AI delivery patterns and IP — what's reusable today, what's bespoke, what's at delivery risk. Output: a one-page IP-vs-bespoke heatmap."
+    - "Customer listening: 5–7 CxO conversations at active and target accounts before proposing anything — EVLOS-style listening, not pitching."
+    - "Reconnect with Google Cloud Americas account team(s) — refresh co-sell alignment with Vrinda's joint roadmap."
   plan_days_31_60:
-    - "Ship v1 of the Applied AI accelerator catalog — 3-5 canonical reference architectures (agentic workflow, GraphRAG, AI gateway, layered memory, MCP integration)"
-    - "Convert 1-2 active pursuits into funded multi-quarter programs with explicit ROI gates"
-    - "Stand up Applied AI delivery standards: evaluation gates, observability instrumentation, FinOps cost ceilings, HITL escalation thresholds"
-    - "Hire 2-3 senior architects and a delivery lead — DRI-shaped JDs, not 'AI evangelist' roles"
+    - "Ship v1 of the Applied AI accelerator catalog — 3–5 reference architectures (agentic workflow, GraphRAG retrieval, AI gateway, layered memory, governed write path) with deal-sheet pricing and partner-distribution alignment."
+    - "Convert 1–2 active pursuits into funded multi-quarter programs with explicit ROI gates and joint Google Cloud co-funding where applicable."
+    - "Stand up Applied AI delivery standards: evaluation gates, observability instrumentation, FinOps cost ceilings, HITL escalation thresholds. Same artifact across delivery teams."
+    - "Hire 2–3 senior architects + a delivery lead — DRI-shaped JDs, no 'AI evangelist' roles, comp aligned with Vrinda's authority on the lever."
+    - "Joint partner business review with Google Cloud Americas team — align on Searce's Applied AI co-sell pursuits for the next two quarters."
   plan_days_61_90:
-    - "First Applied AI program in production at a strategic NA account, with measurable outcomes published to leadership"
-    - "Repeatable practice playbook documented — pipeline → solution shaping → delivery → IP capture loop"
-    - "Partner program v1 with Google Cloud (and AWS where relevant) — funded co-sell pursuits in motion"
-    - "Operating-model recommendations for delivery friction — specific authority requests, comp framework adjustments, offshore-onshore handoff standards"
+    - "First Applied AI program live in production at a strategic Americas account, with measurable outcomes published to Vrinda + Hardik."
+    - "Repeatable practice playbook documented end-to-end — listening → pursuit shaping → delivery → IP capture loop."
+    - "Partner program v1 with Google Cloud Americas — 2+ funded joint pursuits in motion, quarterly cadence locked."
+    - "Operating-model recommendations to Vrinda for delivery friction — specific authority requests (hiring/leveling/comp), offshore-onshore handoff standards, and named senior hires to drive each."
+    - "Practice scorecard v1 with Vrinda: pipeline coverage, win rate, productized-revenue mix, accelerator adoption, customer NPS, team retention. Aligned weekly cadence."
