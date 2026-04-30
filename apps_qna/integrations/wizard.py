@@ -43,6 +43,11 @@ from apps_qna.integrations.from_apps_rg import (
 from apps_qna.integrations.from_apps_shared import load_master_resume
 from apps_qna.integrations.from_jd import load_markdown_jd
 from apps_qna.integrations.from_research_brief import load_research_brief
+from apps_qna.integrations.spine_adapter import (
+    ensure_pack_dir,
+    write_card_text,
+)
+from apps_qna.integrations.star_synthesis import synthesize_into_library
 from apps_qna.types.qna_types import (
     BuildMetadata,
     Company,
@@ -286,6 +291,23 @@ def run_wizard(
     jd = _resolve_jd(options, interactive)
     research = _resolve_research(options, interactive)
     experience = _resolve_experience(options, interactive)
+
+    # W3.1 — synthesize STAR bank + RCA skeletons from ExperiencePoints when
+    # the resolved experience library has empty banks. Operator-curated
+    # YAML banks (loaded via `--experience-yaml`) are preserved by
+    # synthesize_into_library's empty-bank-only contract. Synthesis uses
+    # the JD + interviewer lens + role areas + industry trends as the
+    # demand signal; ranking flows through L1 spine (BGE-M3 embeddings).
+    jd_text = "\n".join(
+        sec.body for sec in jd.sections if sec.body
+    ) if jd and jd.sections else None
+    experience = synthesize_into_library(
+        experience,
+        jd_text=jd_text,
+        interviewer_lenses=research.interviewer_lenses or {},
+        role_areas=list(research.role_areas_of_focus or []),
+        industry_trends=list(research.industry_trends or []),
+    )
     exec_close = _resolve_executive_close_patterns(options, interactive)
     slug = _slug_from(options, interactive, company)
     output_yaml = options.output_yaml or Path(f"reports/qna/{slug}/interview.yaml")
@@ -338,11 +360,18 @@ def write_interview_yaml(
     extra_context: dict[str, Any],
     path: Path,
 ) -> None:
-    """Dump an Interview + extra_context to a YAML file the builder can load."""
+    """Dump an Interview + extra_context to a YAML file the builder can load.
+
+    The directory creation and the actual file write both flow through the
+    spine adapter (UWG L2) — closes a residual W1 bypass and brings the
+    wizard's YAML emission under the same atomic-write + audit-trail
+    contract as the card pack writes.
+    """
     payload = interview.model_dump(mode="json")
     payload["extra_context"] = extra_context
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    ensure_pack_dir(path.parent)
+    write_card_text(
+        path,
         yaml.safe_dump(payload, sort_keys=False, allow_unicode=True),
         encoding="utf-8",
     )
