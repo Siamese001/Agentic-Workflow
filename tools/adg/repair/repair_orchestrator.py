@@ -443,6 +443,7 @@ class ADGRepairOrchestrator:
                 "apps_rfp",
                 "apps_rg",
                 "apps_shared",
+                "apps_underwriting_ai",
             ),
             desc="app prefixes",
             unit="app",

@@ -32,6 +32,12 @@ overrides:
   "agentic_core/seams/*": "L_SHARED"
   "agentic_core/utils/*": "L_SHARED"
   "agentic_core/_compat/*": "L_SHARED"
+  "agentic_core/case_memory/*": "L_SHARED"
+  "agentic_core/cloud_native/*": "L_SHARED"
+  "agentic_core/core/*": "L_SHARED"
+  "agentic_core/gateway/*": "L_SHARED"
+  "agentic_core/tracing/*": "L_SHARED"
+  "agentic_core/visualization/*": "L_SHARED"
 
   # Application layers
   "apps_eval/*": "L_APP"
@@ -41,8 +47,11 @@ overrides:
   "apps_rfp/*": "L_APP"
   "apps_rg/*": "L_APP"
   "apps_shared/*": "L_APP"
+  "apps_underwriting_ai/*": "L_APP"
 
   # Special cases
+  ".windsurf/*": "L_OPS"
+  "infrastructure/*": "L_OPS"
   "tools/*": "L_TOOLS"
   "tests/*": "L_TEST"
   "docs/*": "L_DOCS"

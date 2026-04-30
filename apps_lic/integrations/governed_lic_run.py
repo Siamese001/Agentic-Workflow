@@ -19,7 +19,11 @@ from typing import Any
 from uuid import uuid4
 
 from apps_lic.types.lic_types import CampaignRequest
-from apps_shared.integrations.governed_app_runner import GovernedAppRunRecord, GovernedAppRunner
+from apps_shared.integrations.governed_app_runner import (
+    GovernedAppRunRecord,
+    GovernedAppRunner,
+    build_app_record,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -60,6 +64,14 @@ class GovernedLicE2ERunRecord:
     campaign_id: str
     target_audience: str
     compliance_level: str
+    # ── Per-phase errors (W1 hardening — default "" preserves back-compat) ──
+    l1_error: str = ""
+    l0_error: str = ""
+    c0_error: str = ""
+    l2_error: str = ""
+    l5_error: str = ""
+    l6_error: str = ""
+    hitl_error: str = ""
     # ── Runtime HITL (W5) — threaded from GovernedAppRunRecord ───────────
     hitl_action: str = "none"
     hitl_class: str = ""
@@ -149,35 +161,11 @@ class GovernedLicRun(GovernedAppRunner):
             inject_chunks=inject_chunks,
         )
 
-        return GovernedLicE2ERunRecord(
-            # substrate
-            run_id=core.run_id,
-            app_name=core.app_name,
-            query=core.query,
-            l1_sub_queries=core.l1_sub_queries,
-            l1_fallback=core.l1_fallback,
-            l0_intent=core.l0_intent,
-            l0_target=core.l0_target,
-            l0_confidence=core.l0_confidence,
-            l0_fallback=core.l0_fallback,
-            c0_raw_count=core.c0_raw_count,
-            c0_shaped_count=core.c0_shaped_count,
-            c0_collection=core.c0_collection,
-            disposition=core.disposition,
-            gate_disposition=core.gate_disposition,
-            grounded=core.grounded,
-            citation_count=core.citation_count,
-            support_coverage=core.support_coverage,
-            l6_ingested=core.l6_ingested,
-            l2_executed=core.l2_executed,
-            error=core.error,
-            # LIC-specific
+        # W5: build_app_record handles all substrate fields automatically.
+        # Only LIC-specific fields are passed explicitly.
+        return build_app_record(
+            GovernedLicE2ERunRecord, core,
             campaign_id=request.campaign_id,
             target_audience=request.config.target_audience,
             compliance_level=request.config.compliance_level,
-            # Runtime HITL (W5)
-            hitl_action=core.hitl_action,
-            hitl_class=core.hitl_class,
-            hitl_ledger_id=core.hitl_ledger_id,
-            hitl_enabled=core.hitl_enabled,
         )

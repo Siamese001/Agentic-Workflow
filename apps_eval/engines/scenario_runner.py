@@ -625,7 +625,7 @@ def _scenario_exec_dry_run() -> tuple[ScenarioOutcome, float, str]:
 
 def _scenario_single_hop() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from apps_rg.reasoning.RgResumeOrchestrator import RgResumeOrchestrator
+        from apps_shared.adapters.rg_orchestrator_facade import RgResumeOrchestrator
 
         orch = RgResumeOrchestrator(test_mode=True)
         result = orch.run("Software Engineer at ACME Corp")
@@ -644,7 +644,7 @@ def _scenario_single_hop() -> tuple[ScenarioOutcome, float, str]:
 
 def _scenario_multi_hop_pass() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from apps_rg.reasoning.RgResumeOrchestrator import RgResumeOrchestrator
+        from apps_shared.adapters.rg_orchestrator_facade import RgResumeOrchestrator
 
         orch = RgResumeOrchestrator(test_mode=True)
         result = orch.run("Senior ML Engineer at ACME Corp with 10 years experience")

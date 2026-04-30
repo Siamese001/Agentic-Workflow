@@ -369,7 +369,7 @@ class RegressionDetector:
     def _emit_regression_results(self, result: RegressionResult, trace_id: str) -> None:
         """Emit regression results to system learning for drift detection."""
         try:
-            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            from apps_shared.adapters.system_learning_facade import get_sl_memory_bridge
 
             bridge = get_sl_memory_bridge()
 

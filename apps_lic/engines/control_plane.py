@@ -263,7 +263,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         """
         if not isinstance(content, str):
             raise TypeError("content must be a string")
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from apps_shared.adapters.system_learning_facade import (  # noqa: PLC0415
             get_current_adapter,
             seal_step,
         )
@@ -296,7 +296,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         """
         if not isinstance(content, str):
             raise TypeError("content must be a string")
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from apps_shared.adapters.system_learning_facade import (  # noqa: PLC0415
             get_current_adapter,
             seal_step,
         )

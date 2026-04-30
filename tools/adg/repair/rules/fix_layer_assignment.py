@@ -60,6 +60,7 @@ class FixLayerAssignmentRule(BaseRepairRule):
         "apps_rfp",
         "apps_rg",
         "apps_shared",
+        "apps_underwriting_ai",
     ]
 
     def match(self, deficiency: Deficiency) -> bool:

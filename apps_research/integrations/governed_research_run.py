@@ -31,6 +31,7 @@ from apps_research.types.research_types import ResearchRequest
 from apps_shared.integrations.governed_app_runner import (
     GovernedAppRunRecord,
     GovernedAppRunner,
+    build_app_record,
 )
 
 
@@ -82,8 +83,14 @@ class GovernedE2ERunRecord:
     citation_count:   Citation anchors built from the shaped bundle.
     support_coverage: Mean combined_score across ranked chunks (0.0 when no results).
     l6_ingested:      True when L6 ingest_eval_packet() was invoked successfully.
-    error:            "" on success; exception message on failure.
+    error:            "" on success; aggregated phase-error message on failure.
     l2_executed:      True when authorize_and_execute() ran without error.
+
+    Per-phase error fields (W1 hardening — ADG G1)
+    ----------------------------------------------
+    l1_error / l0_error / c0_error / l2_error / l5_error / l6_error / hitl_error:
+        Empty on success; exception message on failure. Surfacing per-phase
+        identity replaces the prior whole-pipeline broad catch in the substrate.
     """
 
     run_id: str
@@ -105,6 +112,14 @@ class GovernedE2ERunRecord:
     l6_ingested: bool
     error: str
     l2_executed: bool = False
+    # ── Per-phase errors (W1 hardening — default "" preserves back-compat) ──
+    l1_error: str = ""
+    l0_error: str = ""
+    c0_error: str = ""
+    l2_error: str = ""
+    l5_error: str = ""
+    l6_error: str = ""
+    hitl_error: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -163,24 +178,9 @@ class GovernedResearchRun(GovernedAppRunner):
             run_id=run_id,
             inject_chunks=inject_chunks,
         )
-        return GovernedE2ERunRecord(
-            run_id=core.run_id,
-            topic=core.query,
-            l1_sub_queries=core.l1_sub_queries,
-            l1_fallback=core.l1_fallback,
-            l0_intent=core.l0_intent,
-            l0_target=core.l0_target,
-            l0_confidence=core.l0_confidence,
-            l0_fallback=core.l0_fallback,
-            c0_raw_count=core.c0_raw_count,
-            c0_shaped_count=core.c0_shaped_count,
-            c0_collection=core.c0_collection,
-            disposition=core.disposition,
-            gate_disposition=core.gate_disposition,
-            grounded=core.grounded,
-            citation_count=core.citation_count,
-            support_coverage=core.support_coverage,
-            l6_ingested=core.l6_ingested,
-            error=core.error,
-            l2_executed=core.l2_executed,
+        # W5: build_app_record handles all substrate fields automatically.
+        # apps_research renames `query` -> `topic`; everything else is name-matched.
+        return build_app_record(
+            GovernedE2ERunRecord, core,
+            aliases={"topic": "query"},
         )

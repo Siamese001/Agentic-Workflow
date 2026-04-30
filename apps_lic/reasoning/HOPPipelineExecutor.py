@@ -243,7 +243,7 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
         # adapter installed by AutoPersistenceTracingAdapter.trace_orchestrator.
         # If no adapter is active (e.g. unit test without tracing), seal_step
         # fails open and the handler runs untouched.
-        from system_learning.runtime_adg.runtime_span_emitter import (  # noqa: PLC0415
+        from apps_shared.adapters.system_learning_facade import (  # noqa: PLC0415
             get_current_adapter,
             seal_step,
         )

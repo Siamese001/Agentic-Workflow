@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.cid_registry import CIDRegistry
-from system_learning.ports.meta_learning_bus import MetaLearningBus
+from apps_shared.adapters.system_learning_facade import MetaLearningBus
 
 from agentic_core.interfaces.spine import (
     AirlockAssembler,
