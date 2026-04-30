@@ -2,6 +2,9 @@
 Base Resume Agent - Foundation for all RG Sovereign V2.5 Engines
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
@@ -244,6 +247,7 @@ class BaseRGEngine(MCPOperationMixin, HealingPolicyMixin, ABC):
         """Log an MCP audit event. Lightweight stub for standalone usage."""
         self.logger.debug(f"MCP_AUDIT: {event} {kwargs}")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def record_fail(self, message: str, *, signal: str = "", data: dict | None = None) -> None:
         """Record a failure event."""
         import uuid as _uuid  # noqa: PLC0415

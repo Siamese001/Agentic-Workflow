@@ -8,6 +8,10 @@ HARDENING: Reads 'hop1_extraction' from Buffer. Writes 'hop2_enrichment'.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -99,6 +103,7 @@ class DataEnrichmentEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="HOP.2.ENRICH")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         """
         Enrich the extracted data from HOP-1.

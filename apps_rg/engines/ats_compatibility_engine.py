@@ -9,6 +9,10 @@ Writes 'ats_report'. Triggers 'ATS_FAILURE'.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 import re
@@ -109,6 +113,7 @@ class ATSCompatibilityEngine(BaseRGEngine):
             ("[│┃]", "Box Characters"),
         ]
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         """
         Validate final content against ATS parsing rules.

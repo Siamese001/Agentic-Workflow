@@ -5,6 +5,10 @@ Refactored from ProactiveAgent.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class ProactiveEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="ORCHESTRATION.PROACTIVE")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, context_state: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze context and proactively execute predicted tasks.

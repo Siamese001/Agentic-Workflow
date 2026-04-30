@@ -14,6 +14,10 @@ Deterministic — no LLM call.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from typing import Any
@@ -90,6 +94,7 @@ class JobPatternMatcher(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="COGNITION.JD_FACETS")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, job_description: str | None = None) -> dict[str, Any]:
         """Extract structured facets from the JD. If `job_description` not
         passed, read from `mission_input`."""

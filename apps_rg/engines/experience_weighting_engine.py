@@ -5,6 +5,10 @@ Refactored from weight_experience_match.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class ExperienceWeightingEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.EXPERIENCE_WEIGHTING")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, experiences: list[dict[str, Any]], target_role: str) -> list[dict[str, Any]]:
         """
         Calculate relevance weights for experience sections.

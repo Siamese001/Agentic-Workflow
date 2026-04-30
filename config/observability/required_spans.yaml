@@ -7,15 +7,8 @@
 # Gate: ops_scripts/ci/check_required_spans_coverage.py
 # Layers: L1_COGNITION, L3_ORCHESTRATION, L4_STATE, L6_OBSERVABILITY
 #
-# Auto-generated from __adg_traces_execute__ markers + decorator layer kwargs.
-# Regenerate via: python tools/_oneoff/generate_required_spans_yaml.py
-#
-# Strategy layers:
-#   L1 (static gate)  : check_apps_otel_coverage.py
-#   L2 (runtime probe): test_apps_otel_runtime_coverage.py
-#   L3 (this manifest): check_required_spans_coverage.py
-#
-# Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md
+# Auto-generated. Regenerate via:
+#   python tools/_oneoff/regenerate_required_spans_yaml.py
 
 
 apps_eval:
@@ -122,6 +115,101 @@ apps_rfp:
       layer: "L1_COGNITION"
     - name: "SectionRenderer.render_json"
       layer: "L1_COGNITION"
+
+apps_rg:
+  required_spans:
+    - name: "ATSCompatibilityEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "AchievementPrioritizerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "BaseRGEngine.record_fail"
+      layer: "L3_ORCHESTRATION"
+    - name: "BulletDiversityGate.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "BulletGenerationTask.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ClerkExtractionEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "CognitionRelevanceEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ContactSafetyEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ContentOptimizerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "DataEnrichmentEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "DispatchToolsEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "EffectivenessScorer.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "EnhancementOrchestratorEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ExperienceWeightingEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "FactCheckEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "FitScoreCalibrator.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "GapClosureEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "GenerationDiagnosticsEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "GenerationHistoryEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "HallucinationDetector.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "JobAlignmentScorer.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "JobPatternMatcher.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "MessageGenerationTask.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "OptimizationStrategyEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ProactiveEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "QualityInspectorEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "RankingRefinerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ReflectionEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ResumeGenerationTask.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ResumeHistoryEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ResumeOrchestratorEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "RoleArchetypeClassifier.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SearchFilterBuilder.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SectionBalanceEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SectionIntegratorEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SectionRankerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "ServiceInvokerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SkillOrderingEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "SkillScoreNormalizer.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "StrategicPlanningEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "TemplateOptimizerEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "UserPreferencesEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "VerbatimProvenanceGate.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "VoidComplianceEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "WeightAdjustmentEngine.execute"
+      layer: "L3_ORCHESTRATION"
+    - name: "WritingQualityEngine.execute"
+      layer: "L3_ORCHESTRATION"
 
 apps_underwriting_ai:
   required_spans:

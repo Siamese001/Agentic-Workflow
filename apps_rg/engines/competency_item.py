@@ -10,6 +10,10 @@ Now delegates skill analysis to logic_nodes for deterministic logic extraction.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass
 from typing import Any
@@ -115,6 +119,7 @@ class GapClosureEngine(BaseRGEngine):
         super().__init__(ctx, node_id="K.9")
         self.skill_extractor = SkillExtractorNode(config=self.config.get("skill_config", {}))
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> list[dict[str, Any]]:
         """
         Generate gap-closing competencies based on enriched profile and JD.

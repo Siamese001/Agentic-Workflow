@@ -21,6 +21,10 @@ P4.1 of plan apps-rg-customization-uplift-7c4f12.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -94,6 +98,7 @@ class BulletDiversityGate(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.DIVERSITY")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         content = self.ctx.buffer.read("optimized_content")
         if not content or not isinstance(content, dict):

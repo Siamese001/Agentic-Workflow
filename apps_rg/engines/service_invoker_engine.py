@@ -8,6 +8,10 @@ HARDENING: Updates to use SovereignContext and TraceRegistry for cost tracking.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import time
 from typing import Any
@@ -100,6 +104,7 @@ class ServiceInvokerEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="SERVICE.INVOKER")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, prompt: str, model: str = "default") -> str:
         """
         Execute LLM call with full observability.

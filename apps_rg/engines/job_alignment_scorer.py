@@ -17,6 +17,10 @@ Design notes:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import math
 import re
@@ -75,6 +79,7 @@ class JobAlignmentScorer(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.JD_ALIGNMENT")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         mission = self.ctx.buffer.read("mission_input") or {}
         jd_text = mission.get("job_description", "")

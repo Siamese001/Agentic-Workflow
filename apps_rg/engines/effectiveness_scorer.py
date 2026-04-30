@@ -5,6 +5,10 @@ Refactored from EvaluateResumeEffectiveness.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -96,6 +100,7 @@ class EffectivenessScorer(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.EFFECTIVENESS")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
         Calculate effectiveness score.

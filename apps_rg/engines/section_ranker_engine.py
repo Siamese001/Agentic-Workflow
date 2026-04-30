@@ -9,6 +9,10 @@ Writes 'ranked_content'.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -118,6 +122,7 @@ class SectionRankerEngine(BaseRGEngine):
             except (AttributeError, KeyError):
                 pass
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         """
         Reorder sections based on Role Archetype.

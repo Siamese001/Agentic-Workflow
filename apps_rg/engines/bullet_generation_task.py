@@ -5,6 +5,10 @@ Refactored from create_experience_bullets.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class BulletGenerationTask(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="GENERATION.BULLETS")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, experience_context: dict[str, Any], target_count: int = 5) -> list[str]:
         """
         Generate achievement bullets for an experience section.

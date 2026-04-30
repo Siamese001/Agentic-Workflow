@@ -6,6 +6,10 @@ Now delegates to logic_nodes for deterministic logic extraction.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -101,6 +105,7 @@ class ResumePlanningEngine(BaseRGEngine):
         super().__init__(ctx, node_id="ORCHESTRATION.PLANNING")
         self.section_node = ResumeSectionNode(config=self.config.get("section_config", {}))
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, job_description: str, candidate_profile: dict[str, Any]) -> dict[str, Any]:
         """
         Create initial resume generation plan using delegated logic nodes.

@@ -5,6 +5,10 @@ Refactored from rg_contact_research_executor.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from typing import Any
@@ -96,6 +100,7 @@ class ContactSafetyEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="SAFETY.CONTACT")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, contact_data: dict[str, Any]) -> dict[str, Any]:
         """
         Validate contact information for PII safety.

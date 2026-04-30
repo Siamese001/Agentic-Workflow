@@ -5,6 +5,10 @@ Refactored from assess_cognition_relevance.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class CognitionRelevanceEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.COGNITION")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, content: str, job_requirements: dict[str, Any]) -> dict[str, Any]:
         """
         Assess cognitive relevance of content.

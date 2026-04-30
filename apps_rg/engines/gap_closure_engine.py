@@ -5,6 +5,10 @@ Stub implementation for ResumeOrchestratorEngine compatibility.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from typing import Any
 
 
@@ -15,6 +19,7 @@ class GapClosureEngine:
         """Initialize Gap Closure Engine."""
         pass
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, *args, **kwargs) -> dict[str, Any]:
         """Execute gap closure logic.
 

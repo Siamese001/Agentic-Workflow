@@ -18,6 +18,10 @@ P3.2 of plan apps-rg-customization-uplift-7c4f12.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class RoleArchetypeClassifier(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="COGNITION.ROLE_ARCHETYPE")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         mission = self.ctx.buffer.read("mission_input") or {}
         jd_text = mission.get("job_description", "") or ""

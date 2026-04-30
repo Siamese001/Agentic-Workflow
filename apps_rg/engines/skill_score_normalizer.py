@@ -5,6 +5,10 @@ Refactored from normalize_skill_scores.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class SkillScoreNormalizer(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="REFINE.SKILL_NORMALIZER")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, raw_scores: dict[str, float]) -> dict[str, float]:
         """
         Normalize skill scores to 0-1 range.

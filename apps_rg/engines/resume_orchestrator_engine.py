@@ -9,6 +9,10 @@ and Safety (ATS). It defines the full Sovereign Pipeline.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -209,6 +213,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             trace_path = Path(f"docs/reports/missions/{mission_id}/trace.jsonl")
             self.ctx.trace = TraceRegistry(persistence_path=trace_path)
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, job_description: str) -> dict[str, Any]:
         import uuid as _uuid  # noqa: PLC0415
 

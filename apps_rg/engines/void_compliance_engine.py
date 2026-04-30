@@ -9,6 +9,10 @@ Writes 'compliance_audit'.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from pathlib import Path
 from typing import Any
@@ -106,6 +110,7 @@ class VoidComplianceEngine(BaseRGEngine):
         super().__init__(ctx, node_id="SAFETY.VOID")
         self.root_path = Path(APPS_RG_DIR)
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         """
         Scan architecture for forbidden legacy imports.

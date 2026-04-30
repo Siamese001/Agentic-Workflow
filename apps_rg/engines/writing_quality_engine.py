@@ -5,6 +5,10 @@ Refactored from evaluate_writing_quality.py
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from typing import Any
 
@@ -95,6 +99,7 @@ class WritingQualityEngine(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="QUALITY.WRITING")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self, text: str) -> dict[str, Any]:
         """
         Evaluate writing quality.

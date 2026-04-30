@@ -20,6 +20,10 @@ This is the truthfulness floor — without it the pipeline could rephrase a
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from typing import Any
@@ -150,6 +154,7 @@ class VerbatimProvenanceGate(BaseRGEngine):
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="SAFETY.PROVENANCE")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     async def execute(self) -> dict[str, Any]:
         ranked = self.ctx.buffer.read("ranked_content")
         if not ranked:
