@@ -24,5 +24,6 @@ __all__ = [
     "from_apps_research",
     "from_apps_rg",
     "from_apps_exec",
+    "from_apps_shared",
     "wizard",
 ]

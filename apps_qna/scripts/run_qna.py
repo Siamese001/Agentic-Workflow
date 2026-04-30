@@ -125,7 +125,23 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     init_parser.add_argument(
         "--experience", type=Path, dest="experience_yaml",
-        help="Experience YAML path (apps_rg-format)",
+        help="Per-interview experience YAML path (apps_rg-format) — "
+        "highest precedence; if omitted, master resume is used by default",
+    )
+    init_parser.add_argument(
+        "--master-resume", type=Path, dest="master_resume_json",
+        help="Path to master_resume*.json (default: "
+        "apps_shared/data/master_resume.json or master_resume_svp.json)",
+    )
+    init_parser.add_argument(
+        "--no-master-resume", action="store_true",
+        help="Disable the default master-resume fallback (start with empty "
+        "library if no --experience flag is given)",
+    )
+    init_parser.add_argument(
+        "--svp-resume", action="store_true",
+        help="Prefer apps_shared/data/master_resume_svp.json over the legacy "
+        "master_resume.json when both exist",
     )
     init_parser.add_argument(
         "--exec-brief", type=Path, dest="exec_brief",
@@ -569,6 +585,9 @@ def _run_init(args: argparse.Namespace) -> int:
         research_pdf=args.research_pdf,
         research_trace_id=args.research_trace_id,
         experience_yaml=args.experience_yaml,
+        master_resume_json=args.master_resume_json,
+        use_master_resume=not args.no_master_resume,
+        prefer_svp_resume=args.svp_resume,
         exec_brief=args.exec_brief,
         output_yaml=args.output_yaml,
         non_interactive=args.non_interactive,

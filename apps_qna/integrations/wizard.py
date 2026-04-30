@@ -40,6 +40,7 @@ from apps_qna.integrations.from_apps_rg import (
     empty_library,
     load_experience_yaml,
 )
+from apps_qna.integrations.from_apps_shared import load_master_resume
 from apps_qna.integrations.from_jd import load_markdown_jd
 from apps_qna.integrations.from_research_brief import load_research_brief
 from apps_qna.types.qna_types import (
@@ -70,6 +71,9 @@ class WizardOptions:
     research_trace_id: str | None = None
     research_dir: Path | None = None
     experience_yaml: Path | None = None
+    master_resume_json: Path | None = None
+    use_master_resume: bool = True  # default to apps_shared/data/master_resume*.json
+    prefer_svp_resume: bool = False  # if True and SVP variant exists, use it
     exec_brief: Path | None = None
     output_yaml: Path | None = None
     non_interactive: bool = False  # if True, fail rather than prompt
@@ -154,13 +158,33 @@ def _resolve_jd(
 
 
 def _resolve_experience(options: WizardOptions, interactive: bool):
+    """Source order:
+        1. --experience-yaml (per-interview YAML, full StoryBank/RCA included)
+        2. --master-resume-json (or default apps_shared/data/master_resume*.json
+           when use_master_resume=True) — provides ExperiencePoints only
+        3. interactive prompt
+        4. empty library
+    """
     if options.experience_yaml is not None:
         return load_experience_yaml(options.experience_yaml)
+    if options.master_resume_json is not None:
+        return load_master_resume(options.master_resume_json)
+    if options.use_master_resume:
+        try:
+            return load_master_resume(prefer_svp=options.prefer_svp_resume)
+        except FileNotFoundError as exc:
+            _log.warning("Master resume not found: %s — falling back", exc)
     if not interactive:
         return empty_library()
-    raw = _prompt("\nExperience YAML path (empty to start with empty library)")
+    raw = _prompt(
+        "\nExperience source — YAML path, "
+        "or 'master' for apps_shared/data/master_resume.json, "
+        "or empty for empty library"
+    )
     if not raw:
         return empty_library()
+    if raw.lower() == "master":
+        return load_master_resume()
     return load_experience_yaml(Path(raw))
 
 

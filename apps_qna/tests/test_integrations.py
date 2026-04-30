@@ -23,6 +23,11 @@ from apps_qna.integrations.from_apps_research import (
     _claims_from_register,
     load_apps_research,
 )
+from apps_qna.integrations.from_apps_shared import (
+    load_competency_areas,
+    load_executive_summary,
+    load_master_resume,
+)
 from apps_qna.integrations.from_apps_rg import (
     empty_library,
     load_experience_yaml,
@@ -294,11 +299,109 @@ def test_load_executive_close_patterns(tmp_path: Path) -> None:
     assert not any(p.startswith("[SRC") for p in patterns)
 
 
+# ----------------- from_apps_shared (master resume) -----------------
+
+
+def _write_resume_fixture(path: Path, *, structured: bool) -> None:
+    """Write a minimal resume JSON in either legacy or SVP shape."""
+    if structured:
+        bullet = {
+            "label": "Platform Architecture",
+            "text": "Designed an agentic AI platform combining routing and governance.",
+            "tags": ["agentic-platform", "governance"],
+        }
+    else:
+        bullet = (
+            "Designed an agentic AI platform combining routing and governance."
+        )
+    payload = {
+        "schema_version": "test",
+        "owner": {"name": "Test Person"},
+        "professional_experience": [
+            {
+                "company": "Test Co",
+                "title": "Lead Architect",
+                "bullet_pool": [bullet],
+            }
+        ],
+        "executive_summary": "Engineering executive with platform experience.",
+        "engineering_and_platform_competencies": [
+            {"area": "Agentic AI Platforms", "skills": "Multi-agent orchestration"},
+        ],
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_load_master_resume_structured_svp_shape(tmp_path: Path) -> None:
+    fixture = tmp_path / "master_resume_svp.json"
+    _write_resume_fixture(fixture, structured=True)
+    library = load_master_resume(fixture)
+    assert len(library.points) == 1
+    point = library.points[0]
+    assert point.title == "Platform Architecture"
+    assert "agentic-platform" in point.technical_depth_tags
+
+
+def test_load_master_resume_legacy_string_bullets(tmp_path: Path) -> None:
+    fixture = tmp_path / "master_resume.json"
+    _write_resume_fixture(fixture, structured=False)
+    library = load_master_resume(fixture)
+    assert len(library.points) == 1
+    # Legacy string-bullet fallback synthesizes a title from the lead clause
+    assert "Designed an agentic AI platform" in library.points[0].title
+    assert library.points[0].technical_depth_tags == []
+
+
+def test_load_master_resume_missing_raises(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        load_master_resume(tmp_path / "nope.json")
+
+
+def test_load_competency_areas_svp(tmp_path: Path) -> None:
+    fixture = tmp_path / "r.json"
+    _write_resume_fixture(fixture, structured=True)
+    areas = load_competency_areas(fixture)
+    assert len(areas) == 1
+    assert areas[0]["area"] == "Agentic AI Platforms"
+
+
+def test_load_executive_summary(tmp_path: Path) -> None:
+    fixture = tmp_path / "r.json"
+    _write_resume_fixture(fixture, structured=True)
+    summary = load_executive_summary(fixture)
+    assert summary and "platform experience" in summary
+
+
+def test_load_master_resume_real_svp_fixture_in_repo() -> None:
+    """The committed apps_shared/data/master_resume_svp.json must load cleanly."""
+    library = load_master_resume(Path("apps_shared/data/master_resume_svp.json"))
+    # 4 active roles + early career = 5 roles, each with 1+ bullets;
+    # SVP variant has 6+5+3+3+1 = 18 bullets.
+    assert len(library.points) >= 15
+    # Spot-check: at least one bullet should carry the metric tag for $22M
+    metric_tags = {tag for p in library.points for tag in p.technical_depth_tags}
+    assert any("metric" in t for t in metric_tags)
+
+
+def test_load_master_resume_real_legacy_fixture_in_repo() -> None:
+    """The pre-existing apps_shared/data/master_resume.json must still load."""
+    path = Path("apps_shared/data/master_resume.json")
+    if not path.is_file():
+        pytest.skip("legacy master_resume.json absent")
+    library = load_master_resume(path)
+    # Legacy file uses string bullets — we expect non-empty points list, no tags
+    assert len(library.points) >= 5
+    assert all(isinstance(p.technical_depth_tags, list) for p in library.points)
+
+
 # ----------------- wizard end-to-end -----------------
 
 
 def test_wizard_non_interactive_minimal(tmp_path: Path) -> None:
-    """Wizard composes a valid Interview from CLI flags only — no prompts."""
+    """Wizard composes a valid Interview from CLI flags only — no prompts.
+
+    Use --no-master-resume so we get an empty library (deterministic).
+    """
     out_yaml = tmp_path / "interview.yaml"
     options = WizardOptions(
         slug="test-co",
@@ -306,6 +409,7 @@ def test_wizard_non_interactive_minimal(tmp_path: Path) -> None:
         role_title="VP Decisioning",
         role_mandate="Build governed agent platform.",
         interviewer_names=["Jane Doe", "John Smith"],
+        use_master_resume=False,
         non_interactive=True,
         output_yaml=out_yaml,
     )
@@ -314,7 +418,7 @@ def test_wizard_non_interactive_minimal(tmp_path: Path) -> None:
     assert interview.company.name == "Test Co"
     assert len(interview.interviewers) == 2
     assert interview.research is not None  # default empty ResearchInputs
-    assert interview.experience.points == []  # empty library
+    assert interview.experience.points == []  # empty library (opt-out)
     write_interview_yaml(interview, extra, out_yaml)
     assert out_yaml.is_file()
     loaded = yaml.safe_load(out_yaml.read_text(encoding="utf-8"))
@@ -365,6 +469,42 @@ Build governed agentic systems for the decisioning practice.
     assert interview.research and "Test Co is a decisioning" in (
         interview.research.company_brief or ""
     )
+
+
+def test_wizard_uses_master_resume_by_default(tmp_path: Path) -> None:
+    """When no --experience flag is given, the wizard auto-loads the master resume."""
+    options = WizardOptions(
+        slug="auto-resume",
+        company_name="Test Co",
+        role_title="VP X",
+        role_mandate="x",
+        interviewer_names=["P"],
+        # use_master_resume defaults to True — should auto-load apps_shared/data/master_resume.json
+        non_interactive=True,
+        output_yaml=tmp_path / "out.yaml",
+    )
+    interview, _ = run_wizard(options, interactive=False)
+    # The committed master resume has multiple roles with bullets — non-empty.
+    assert len(interview.experience.points) >= 5
+
+
+def test_wizard_master_resume_explicit_path(tmp_path: Path) -> None:
+    """An explicit --master-resume path overrides the default search."""
+    fixture = tmp_path / "custom_resume.json"
+    _write_resume_fixture(fixture, structured=True)
+    options = WizardOptions(
+        slug="custom-resume",
+        company_name="Test Co",
+        role_title="VP X",
+        role_mandate="x",
+        interviewer_names=["P"],
+        master_resume_json=fixture,
+        non_interactive=True,
+        output_yaml=tmp_path / "out.yaml",
+    )
+    interview, _ = run_wizard(options, interactive=False)
+    assert len(interview.experience.points) == 1
+    assert interview.experience.points[0].title == "Platform Architecture"
 
 
 def test_wizard_non_interactive_requires_company() -> None:
