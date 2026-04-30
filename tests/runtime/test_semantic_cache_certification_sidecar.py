@@ -89,10 +89,19 @@ def clean_state():
     )
 
 
-def _run_sidecar() -> int:
+def _run_sidecar(*, strict: bool = False, strict_via_env: bool = False) -> int:
+    """Run the sidecar verifier. Strict mode can be selected via --strict or env."""
+    cmd = [sys.executable, "scripts/verify_semantic_cache_certification.py"]
+    if strict:
+        cmd.append("--strict")
+    env = dict(os.environ)
+    if strict_via_env:
+        env["SEMANTIC_CACHE_CERTIFICATION_STRICT"] = "1"
+    else:
+        env.pop("SEMANTIC_CACHE_CERTIFICATION_STRICT", None)
     return subprocess.run(
-        [sys.executable, "scripts/verify_semantic_cache_certification.py"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT), timeout=15, check=False,
+        cmd, capture_output=True, text=True, cwd=str(REPO_ROOT),
+        timeout=15, check=False, env=env,
     ).returncode
 
 
@@ -551,3 +560,131 @@ class TestSchemaModule:
         for o in outcomes.values():
             assert o.final_acceptance_status == "PENDING"
             assert o.expected_fail_reason == "SIDECAR_ABSENT"
+
+
+# ──────────────────────────────────────────────────────────────────────
+# 10. Strict mode (W1 phase 2 hygiene fix, 2026-04-30)
+# ──────────────────────────────────────────────────────────────────────
+
+
+class TestStrictModeViaCliFlag:
+    """W0 keeps advisory; W1+/final certification uses strict.
+
+    Strict via ``--strict`` CLI flag.
+    """
+
+    def test_strict_flag_absent_sidecar_exits_two(self, clean_state):
+        rc = _run_sidecar(strict=True)
+        assert rc == 2
+        report = _read_report()
+        assert report["status"] == "FAIL_CLOSED_STRICT"
+        assert report["expected_fail_reason"] == "SEMANTIC_CACHE_SIDECAR_REQUIRED"
+        assert report["mode"] == "strict"
+        assert report["strict_mode_enabled_via"] == "--strict"
+
+    def test_advisory_still_passes_when_sidecar_absent(self, clean_state):
+        rc = _run_sidecar(strict=False)
+        assert rc == 0
+        report = _read_report()
+        assert report["status"] == "PASS_ADVISORY_BASELINE"
+        assert report["mode"] == "advisory"
+
+    def test_strict_with_all_pass_sidecar_exits_zero(self, clean_state):
+        _write_sidecar(subclaims=_all_core_pass())
+        rc = _run_sidecar(strict=True)
+        assert rc == 0
+        report = _read_report()
+        assert report["status"] == "PASS_STRICT"
+        assert report["mode"] == "strict"
+
+    def test_strict_with_blocked_subclaim_exits_two(self, clean_state):
+        sub = _all_core_pass()
+        sub["R1B_NEGATIVE_CONTROL_PROOF"]["status"] = "BLOCKED"
+        _write_sidecar(subclaims=sub)
+        rc = _run_sidecar(strict=True)
+        assert rc == 2
+        report = _read_report()
+        assert report["status"] == "FAIL_CLOSED"
+        assert report["expected_fail_reason"] == "R1B_HARD_BLOCKERS_PRESENT"
+
+    def test_strict_with_calibration_gap_exits_two(self, clean_state):
+        sub = _all_core_pass()
+        sub["R1B_PRODUCTION_THRESHOLD_PROOF"]["status"] = "CALIBRATION_GAP"
+        _write_sidecar(subclaims=sub)
+        rc = _run_sidecar(strict=True)
+        assert rc == 2
+        report = _read_report()
+        assert report["expected_fail_reason"] == "R1B_SOFT_BLOCKERS_PRESENT"
+
+
+class TestStrictModeViaEnvVar:
+    """Strict mode via SEMANTIC_CACHE_CERTIFICATION_STRICT=1."""
+
+    def test_env_strict_absent_sidecar_exits_two(self, clean_state):
+        rc = _run_sidecar(strict_via_env=True)
+        assert rc == 2
+        report = _read_report()
+        assert report["status"] == "FAIL_CLOSED_STRICT"
+        assert report["expected_fail_reason"] == "SEMANTIC_CACHE_SIDECAR_REQUIRED"
+        assert report["mode"] == "strict"
+        assert report["strict_mode_enabled_via"] == "env_SEMANTIC_CACHE_CERTIFICATION_STRICT"
+
+    def test_env_strict_with_all_pass_sidecar_exits_zero(self, clean_state):
+        _write_sidecar(subclaims=_all_core_pass())
+        rc = _run_sidecar(strict_via_env=True)
+        assert rc == 0
+
+
+class TestStrictModeEmptyAndIncomplete:
+    """Strict-mode-specific fail-closed paths."""
+
+    def test_strict_empty_subclaims_dict_exits_two(self, clean_state):
+        SIDECAR.parent.mkdir(parents=True, exist_ok=True)
+        SIDECAR.write_text(json.dumps({
+            "schema_version": 1,
+            "evaluated_at_utc": "2026-04-30T19:00:00+00:00",
+            "evidence_evaluator": "test",
+            "scope": {
+                "runtime_certification_claimed": False,
+                "observability_certification_claimed": False,
+                "replay_certification_claimed": False,
+            },
+            "subclaims": {},
+        }), encoding="utf-8")
+        rc = _run_sidecar(strict=True)
+        assert rc == 2
+        report = _read_report()
+        # The schema validator catches MISSING_CORE_SUBCLAIM first
+        # (which is fine; strict-mode SEMANTIC_CACHE_SIDECAR_EMPTY is the
+        # backup signal when subclaims is literally empty AND there are
+        # no schema errors). Either is fail-closed.
+        assert report["expected_fail_reason"] in (
+            "SIDECAR_MALFORMED",
+            "SEMANTIC_CACHE_SIDECAR_EMPTY",
+        )
+
+    def test_strict_missing_required_subclaim_exits_two(self, clean_state):
+        sub = _all_core_pass()
+        del sub["R1B_TERMINAL_EXIT_PROOF"]
+        _write_sidecar(subclaims=sub)
+        rc = _run_sidecar(strict=True)
+        assert rc == 2
+        report = _read_report()
+        assert report["expected_fail_reason"] == "SIDECAR_MALFORMED"
+        assert any("MISSING_CORE_SUBCLAIM" in e for e in report["sidecar_schema_errors"])
+
+
+class TestModeProvenance:
+    """The report must clearly record which mode was used."""
+
+    def test_advisory_mode_marked_in_report(self, clean_state):
+        _run_sidecar(strict=False)
+        report = _read_report()
+        assert report["mode"] == "advisory"
+        assert report["strict_mode_enabled_via"] is None
+
+    def test_strict_mode_marked_in_report(self, clean_state):
+        _run_sidecar(strict=True)
+        report = _read_report()
+        assert report["mode"] == "strict"
+        assert report["strict_mode_enabled_via"] == "--strict"

@@ -34,6 +34,21 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      strict_mode:
+        description: |
+          Run strict-mode certification gates (semantic-cache sidecar must
+          exist and all required subclaims must PASS). Required for W1
+          phase 2+ and the final certification gate. Default: false.
+        required: false
+        default: "false"
+        type: string
+
+env:
+  # When set to '1', the workflow runs strict-mode certification gates.
+  # Default empty (advisory mode) so W0 CI baseline stays green. Override
+  # by exporting in repository/environment secrets or via workflow_dispatch.
+  SEMANTIC_CACHE_STRICT_MODE_ENABLED: ""
 
 jobs:
   certification:
@@ -92,12 +107,47 @@ jobs:
 
       # ── W1 phase 1 (sidecar contract only — NO semantic cache rewrites)
       # Per Author-Gate 2026-04-30 (architecture_choice): map sidecar to
-      # RTC-REQ-055 + conditionally 056/057/058. The verifier is advisory
-      # when the sidecar is absent (W0 baseline still passes); fail-closed
-      # when present + malformed/incomplete OR when any in-scope row resolves
-      # to BLOCKED/PARTIAL.
-      - name: W1.1 verify_semantic_cache_certification (R1B sidecar contract)
+      # RTC-REQ-055 + conditionally 056/057/058. Two execution modes per
+      # 2026-04-30 hygiene fix:
+      #
+      # ADVISORY MODE (default, used here in W0/W1.1 wave):
+      #   - sidecar absent: exit 0 (keeps W0 baseline green)
+      #   - sidecar present + clean: exit 0
+      #   - sidecar present + malformed/blocked/partial: exit 2
+      #
+      # STRICT MODE (required for W1 phase 2+ and final certification):
+      #   - sidecar absent: exit 2 (SEMANTIC_CACHE_SIDECAR_REQUIRED)
+      #   - sidecar empty: exit 2 (SEMANTIC_CACHE_SIDECAR_EMPTY)
+      #   - any required subclaim not PASS: exit 2
+      #   Enable via --strict flag OR SEMANTIC_CACHE_CERTIFICATION_STRICT=1
+      #
+      # The W1.1 step below uses ADVISORY mode so W0 CI keeps passing while
+      # the sidecar evidence is still being gathered. The W1.1-strict step
+      # below it documents the strict-mode contract; it is gated on
+      # SEMANTIC_CACHE_STRICT_MODE_ENABLED=1 (set by W1 phase 2 onward).
+      - name: W1.1 verify_semantic_cache_certification -- ADVISORY (R1B sidecar contract)
         run: python scripts/verify_semantic_cache_certification.py
+
+      # ── Strict-mode gate. Activated when:
+      #   - SEMANTIC_CACHE_STRICT_MODE_ENABLED env var is '1', OR
+      #   - the workflow_dispatch input strict_mode is 'true'
+      # Runs as a single shell step that selects strict-vs-advisory
+      # at execution time. Until W1 phase 2 lands the env var is empty
+      # and this step prints an informational banner so W0 CI stays green.
+      - name: W1.1-strict verify_semantic_cache_certification -- STRICT (final-certification gate)
+        env:
+          SEMANTIC_CACHE_STRICT_MODE_ENABLED: ${{ env.SEMANTIC_CACHE_STRICT_MODE_ENABLED }}
+          STRICT_MODE_INPUT: ${{ github.event.inputs.strict_mode }}
+        run: |
+          if [ "$SEMANTIC_CACHE_STRICT_MODE_ENABLED" = "1" ] || [ "$STRICT_MODE_INPUT" = "true" ]; then
+            echo "STRICT MODE ACTIVE: missing sidecar will exit 2"
+            python scripts/verify_semantic_cache_certification.py --strict
+          else
+            echo "INFO: strict-mode semantic-cache verifier is currently DISABLED."
+            echo "      Final certification will REQUIRE strict mode (sidecar absent -> exit 2)."
+            echo "      Enable by setting SEMANTIC_CACHE_STRICT_MODE_ENABLED=1 in workflow env"
+            echo "      or by triggering workflow_dispatch with strict_mode=true."
+          fi
 
       # ── RTC-REQ-112 stub: W1 phase 1 above already covers the sidecar
       # contract. RTC-REQ-112 itself (semantic cache CI gate) is satisfied by

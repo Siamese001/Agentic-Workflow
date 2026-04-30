@@ -19,23 +19,43 @@ W1 phase 1 is **sidecar contract wiring only**. This verifier:
 It does **NOT** run cache fixtures, query the embedding service, or modify
 ``SemanticCacheManager``. Evidence emission is W1 phase 2.
 
+Modes
+-----
+
+Two modes are supported:
+
+  - **Advisory mode** (default) — keeps the W0 baseline green when no
+    sidecar evidence exists yet. Used by W0.1-W0.5 and the W1.1 step.
+    A missing sidecar is treated as "not yet evaluated"; exit 0.
+
+  - **Strict mode** — required for any wave that claims R1B evidence
+    has been gathered (W1 phase 2 onward) AND for the final certification
+    gate. A missing or incomplete sidecar fails closed.
+
+Strict mode is selected by EITHER:
+  - ``--strict`` CLI flag, OR
+  - ``SEMANTIC_CACHE_CERTIFICATION_STRICT=1`` environment variable
+
+In strict mode every advisory exit-0 path becomes exit-2.
+
 Exit codes
 ----------
 
-Per user §10 ("fail-closed when sidecar missing/incomplete; do not block W0
-clean baseline"):
+Advisory mode:
 
-  - **0 PASS** (advisory) — sidecar absent: report records that no R1B
-    evidence exists; the 4 gated rows stay PENDING. This keeps W0 baseline
-    green.
-  - **0 PASS** (in-scope evidence) — sidecar present, valid, all in-scope
-    gating subclaims PASS for at least one row.
-  - **0 PASS** (no in-scope rows + valid sidecar) — sidecar present and
-    valid, but every conditional row is out-of-scope and the parent row's
-    subclaims are all PASS.
+  - **0 PASS** — sidecar absent (advisory baseline) OR all in-scope
+    gating subclaims PASS for the rows in scope.
   - **2 FAIL_CLOSED** — sidecar present but malformed, missing required
     subclaims, or any in-scope row resolves to BLOCKED/PARTIAL.
   - **3 HARNESS_ERROR** — unexpected exception.
+
+Strict mode (additional fail-closed paths):
+
+  - **2 FAIL_CLOSED** — sidecar absent
+    (``expected_fail_reason=SEMANTIC_CACHE_SIDECAR_REQUIRED``)
+  - **2 FAIL_CLOSED** — sidecar empty (no subclaims declared)
+  - **2 FAIL_CLOSED** — any required subclaim not PASS (regardless of
+    soft/hard distinction)
 
 Anti-cheat
 ----------
@@ -53,7 +73,9 @@ The verifier emits no language matching the W0 closure forbidden patterns
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -287,49 +309,130 @@ def _build_md(report: dict) -> str:
     return "\n".join(lines)
 
 
-def main() -> int:
+def _resolve_strict_mode(cli_strict: bool) -> bool:
+    """Strict mode is on if CLI flag set OR env var SEMANTIC_CACHE_CERTIFICATION_STRICT=1."""
+    if cli_strict:
+        return True
+    return os.environ.get("SEMANTIC_CACHE_CERTIFICATION_STRICT", "").strip() in ("1", "true", "TRUE", "True")
+
+
+def _evaluate(
+    sidecar_result,
+    outcomes,
+    *,
+    strict: bool,
+) -> tuple[str, str, str, int]:
+    """Decide overall_status / expected_fail_reason / actual_fail_reason / exit_code.
+
+    Advisory mode (the W0/W1.1 default):
+      - sidecar absent -> exit 0 (advisory baseline)
+      - sidecar malformed -> exit 2 SIDECAR_MALFORMED
+      - any in-scope row BLOCKED -> exit 2 R1B_HARD_BLOCKERS_PRESENT
+      - any in-scope row PARTIAL -> exit 2 R1B_SOFT_BLOCKERS_PRESENT
+      - all clean -> exit 0 PASS
+
+    Strict mode (W1 phase 2+ and final certification):
+      - sidecar absent -> exit 2 SEMANTIC_CACHE_SIDECAR_REQUIRED
+      - sidecar empty (zero subclaims declared) -> exit 2 SEMANTIC_CACHE_SIDECAR_EMPTY
+      - any required subclaim missing -> exit 2 SIDECAR_MALFORMED (covered by schema errors)
+      - any required subclaim not PASS -> exit 2 (covered by hard/soft blocker checks)
+      - all required PASS -> exit 0 PASS_STRICT
+    """
+    in_scope = [o for o in outcomes.values() if o.in_scope]
+    has_blocked = any(o.final_acceptance_status == "BLOCKED" for o in in_scope)
+    has_partial = any(o.final_acceptance_status == "PARTIAL" for o in in_scope)
+
+    # ── Sidecar absent
+    if not sidecar_result.sidecar_present:
+        if strict:
+            return (
+                "FAIL_CLOSED_STRICT",
+                "SEMANTIC_CACHE_SIDECAR_REQUIRED",
+                (
+                    f"strict mode requires sidecar at {SIDECAR_PATH.relative_to(REPO_ROOT)} "
+                    "but the file is absent. Strict mode is enabled via --strict or "
+                    "SEMANTIC_CACHE_CERTIFICATION_STRICT=1 and is required for W1 phase 2+ "
+                    "and the final certification gate."
+                ),
+                2,
+            )
+        return ("PASS_ADVISORY_BASELINE", "", "", 0)
+
+    # ── Sidecar present + malformed
+    if sidecar_result.schema_errors:
+        return (
+            "FAIL_CLOSED",
+            "SIDECAR_MALFORMED",
+            (
+                f"sidecar exists at {SIDECAR_PATH.relative_to(REPO_ROOT)} but has "
+                f"{len(sidecar_result.schema_errors)} schema error(s)"
+            ),
+            2,
+        )
+
+    # ── Strict-mode-only check: empty subclaim block
+    if strict and not sidecar_result.subclaims:
+        return (
+            "FAIL_CLOSED_STRICT",
+            "SEMANTIC_CACHE_SIDECAR_EMPTY",
+            (
+                "strict mode requires sidecar to declare subclaims; "
+                "sidecar.subclaims is empty"
+            ),
+            2,
+        )
+
+    # ── In-scope row outcomes
+    if has_blocked:
+        return (
+            "FAIL_CLOSED",
+            "R1B_HARD_BLOCKERS_PRESENT",
+            (
+                "at least one in-scope R1B row resolves to BLOCKED due to subclaim "
+                "hard blockers (NOT_PROVEN / BLOCKED / INFRASTRUCTURE_GAP / missing)"
+            ),
+            2,
+        )
+    if has_partial:
+        return (
+            "FAIL_CLOSED",
+            "R1B_SOFT_BLOCKERS_PRESENT",
+            (
+                "at least one in-scope R1B row resolves to PARTIAL due to subclaim "
+                "soft blockers (PARTIAL / CALIBRATION_GAP)"
+            ),
+            2,
+        )
+
+    # ── Clean
+    if strict:
+        return ("PASS_STRICT", "", "", 0)
+    return ("PASS", "", "", 0)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Verify R1B semantic-cache subclaim sidecar (W1 phase 1 contract).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Strict mode: missing sidecar exits 2 with "
+            "expected_fail_reason=SEMANTIC_CACHE_SIDECAR_REQUIRED. "
+            "Required for W1 phase 2+ and the final certification gate. "
+            "Can also be enabled via SEMANTIC_CACHE_CERTIFICATION_STRICT=1."
+        ),
+    )
+    args = parser.parse_args(argv)
+    strict = _resolve_strict_mode(args.strict)
+
     sidecar_result = load_sidecar(SIDECAR_PATH)
     outcomes = compute_row_outcomes(sidecar_result)
 
-    in_scope_outcomes = [o for o in outcomes.values() if o.in_scope]
-    has_blocked = any(o.final_acceptance_status == "BLOCKED" for o in in_scope_outcomes)
-    has_partial = any(o.final_acceptance_status == "PARTIAL" for o in in_scope_outcomes)
-
-    if not sidecar_result.sidecar_present:
-        # Advisory baseline: sidecar absent.
-        overall_status = "PASS_ADVISORY_BASELINE"
-        expected_fail_reason = ""
-        actual_fail_reason = ""
-        exit_code = 0
-    elif sidecar_result.schema_errors:
-        overall_status = "FAIL_CLOSED"
-        expected_fail_reason = "SIDECAR_MALFORMED"
-        actual_fail_reason = (
-            f"sidecar exists at {SIDECAR_PATH.relative_to(REPO_ROOT)} but has "
-            f"{len(sidecar_result.schema_errors)} schema error(s)"
-        )
-        exit_code = 2
-    elif has_blocked:
-        overall_status = "FAIL_CLOSED"
-        expected_fail_reason = "R1B_HARD_BLOCKERS_PRESENT"
-        actual_fail_reason = (
-            "at least one in-scope R1B row resolves to BLOCKED due to subclaim "
-            "hard blockers (NOT_PROVEN / BLOCKED / INFRASTRUCTURE_GAP / missing)"
-        )
-        exit_code = 2
-    elif has_partial:
-        overall_status = "FAIL_CLOSED"
-        expected_fail_reason = "R1B_SOFT_BLOCKERS_PRESENT"
-        actual_fail_reason = (
-            "at least one in-scope R1B row resolves to PARTIAL due to subclaim "
-            "soft blockers (PARTIAL / CALIBRATION_GAP)"
-        )
-        exit_code = 2
-    else:
-        overall_status = "PASS"
-        expected_fail_reason = ""
-        actual_fail_reason = ""
-        exit_code = 0
+    overall_status, expected_fail_reason, actual_fail_reason, exit_code = _evaluate(
+        sidecar_result, outcomes, strict=strict,
+    )
 
     # Merge overrides + write report regardless of exit code so reports
     # always reflect the most recent evaluation.
@@ -343,10 +446,16 @@ def main() -> int:
         expected_fail_reason=expected_fail_reason,
         actual_fail_reason=actual_fail_reason,
     )
+    report["mode"] = "strict" if strict else "advisory"
+    report["strict_mode_enabled_via"] = (
+        "--strict" if args.strict else
+        ("env_SEMANTIC_CACHE_CERTIFICATION_STRICT" if strict else None)
+    )
     _write_json(REPORT_JSON, report)
     REPORT_MD.write_text(_build_md(report), encoding="utf-8")
 
-    print(f"[verify_semantic_cache] {overall_status}: sidecar_present={sidecar_result.sidecar_present}")
+    print(f"[verify_semantic_cache] mode={'strict' if strict else 'advisory'} status={overall_status}: "
+          f"sidecar_present={sidecar_result.sidecar_present}")
     print(f"[verify_semantic_cache] gated_rows={list(outcomes.keys())}")
     print(f"[verify_semantic_cache] wrote: {REPORT_JSON.relative_to(REPO_ROOT)}")
     print(f"[verify_semantic_cache] wrote: {REPORT_MD.relative_to(REPO_ROOT)}")
