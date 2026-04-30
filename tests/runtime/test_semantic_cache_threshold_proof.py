@@ -53,6 +53,17 @@ class TestProbeEmitsValidArtifact:
 
 class TestAntiCheatRule1NoSilentLowering:
     def test_no_override_run_yields_calibration_gap(self):
+        """Baseline W1p2 behavior: absent any calibration evidence and any
+        override, threshold probe emits CALIBRATION_GAP honestly.
+
+        W1p3 note: if a prior run wrote calibration_results.json with
+        overall_status=PASS or CALIBRATION_GAP, the probe consumes that
+        authoritatively. This test isolates the W1p2 baseline by removing
+        calibration artifacts first.
+        """
+        cal_art = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_calibration_results.json"
+        if cal_art.exists():
+            cal_art.unlink()
         rc = _run({
             "SEMANTIC_CACHE_THRESHOLD_DYNAMIC": None,
             "SEMANTIC_CACHE_THRESHOLD_STATIC": None,

@@ -85,7 +85,27 @@ def _adr_artifact_present() -> dict:
     }
 
 
-def _classify(ssot: dict, overrides: dict, adr: dict) -> tuple[str, str]:
+def _read_calibration_results() -> dict:
+    """W1p3: consume semantic_cache_calibration_results.json when present."""
+    art = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_calibration_results.json"
+    if not art.exists():
+        return {"present": False, "overall_status": None, "aggregate": {}}
+    try:
+        import json
+        d = json.loads(art.read_text(encoding="utf-8"))
+        return {
+            "present": True,
+            "overall_status": d.get("overall_status"),
+            "aggregate": d.get("aggregate", {}),
+            "dataset_reference": d.get("dataset_reference", {}),
+            "threshold_actual": d.get("threshold_actual"),
+            "per_pair_count": len(d.get("per_pair_results", [])),
+        }
+    except (json.JSONDecodeError, OSError):
+        return {"present": False, "overall_status": "MALFORMED", "aggregate": {}}
+
+
+def _classify(ssot: dict, overrides: dict, adr: dict, calibration: dict) -> tuple[str, str]:
     if "error" in ssot:
         return ("INFRASTRUCTURE_GAP",
                 f"threshold SSOT not importable: {ssot['error']}")
@@ -98,28 +118,52 @@ def _classify(ssot: dict, overrides: dict, adr: dict) -> tuple[str, str]:
                 f"Rule 1 (user 2026-04-30) forbids silent lowering — an ADR/"
                 f"calibration artifact at {adr['adr_artifact_path']} is required.")
 
-    # No override, no ADR, but no live model to run positive pairs against.
-    # The honest answer is CALIBRATION_GAP: production-tier defaults are
-    # correct on paper, but we have not measured similarity on representative
-    # pairs.
+    # W1p3: if calibration results present, bind their status
+    if calibration["present"]:
+        cal_status = calibration["overall_status"]
+        agg = calibration["aggregate"]
+        if cal_status == "PASS":
+            return ("PASS",
+                    f"calibration PASS at production threshold "
+                    f"{calibration['threshold_actual']}: "
+                    f"{agg.get('positive_pass_count')}/{agg.get('total_positives')} "
+                    f"positives pass, {agg.get('negative_miss_count')}/"
+                    f"{agg.get('total_negatives')} negatives miss, FP=0 FN=0.")
+        if cal_status == "CALIBRATION_GAP":
+            return ("CALIBRATION_GAP",
+                    f"calibration results report CALIBRATION_GAP at "
+                    f"threshold {calibration['threshold_actual']}: "
+                    f"FP={agg.get('false_positive_count')} "
+                    f"FN={agg.get('false_negative_count')}. "
+                    f"Per Rule 1: threshold stays at SSOT default; no "
+                    f"silent lowering. ADR-backed recalibration is the "
+                    f"only sanctioned path.")
+        if cal_status == "OVERRIDE_PRESENT":
+            return ("OVERRIDE_PRESENT",
+                    f"calibration probe detected threshold override — "
+                    f"calibration results invalid. Clear override and re-run.")
+        # INFRASTRUCTURE_GAP, DATASET_MISSING, MALFORMED
+        return ("INFRASTRUCTURE_GAP",
+                f"calibration probe returned status={cal_status}. "
+                f"Infrastructure not operational; re-run after remediation.")
+
+    # No calibration results -> legacy CALIBRATION_GAP (no measurement yet)
     return ("CALIBRATION_GAP",
             "no override env var active; production defaults (static=1.0, "
-            "dynamic=0.95, hybrid_fused=0.88) are in force. However no live "
-            "BGE-M3 model is running in this probe, so positive-pair "
-            "similarity was not measured. Per Rule 1, this emits "
-            "CALIBRATION_GAP rather than silently claiming PASS or lowering "
-            "the threshold.")
+            "dynamic=0.95, hybrid_fused=0.88) are in force. Calibration "
+            "evidence not yet collected (run probe_threshold_calibration.py). "
+            "Per Rule 1, this emits CALIBRATION_GAP rather than silently "
+            "claiming PASS or lowering the threshold.")
 
 
 def main() -> int:
     ssot = _read_ssot_defaults()
     overrides = _active_overrides()
     adr = _adr_artifact_present()
-    status, rationale = _classify(ssot, overrides, adr)
+    calibration = _read_calibration_results()
+    status, rationale = _classify(ssot, overrides, adr, calibration)
 
-    # Positive-pair slots — declared-only in this pass. When W1 phase 3
-    # (calibration) runs, these will carry measured dense_score /
-    # fused_score pairs.
+    # W1p3: calibration evidence is now authoritative when present.
     declared_positive_pairs: list[dict] = []
 
     payload = {
@@ -136,6 +180,8 @@ def main() -> int:
         "override_envs_observed": overrides,
         "override_active": any(v not in (None, "") for v in overrides.values()),
         "adr_calibration_artifact": adr,
+        "calibration_evidence": calibration,
+        "calibration_evidence_present": calibration["present"],
         "declared_positive_pairs": declared_positive_pairs,
         "all_positive_pairs_pass": False,  # nothing measured; honest
         "threshold_subclaim_status": status,

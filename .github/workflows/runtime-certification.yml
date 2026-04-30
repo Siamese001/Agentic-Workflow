@@ -148,6 +148,36 @@ jobs:
       - name: W1.2f probe_cache_fixture_vs_uwg (fixture-vs-UWG evidence)
         run: python tools/certification/evidence/probe_cache_fixture_vs_uwg.py
 
+      # ── W1 phase 3 (BGE-M3 operational + threshold calibration)
+      # Both steps marked continue-on-error because GitHub CI runners do NOT
+      # have BGE-M3 cached. Expected outcomes in CI without cache/deps:
+      #   probe_bge_m3_operational  -> status=DEPS_MISSING or CACHE_MISSING
+      #   probe_threshold_calibration -> status=INFRASTRUCTURE_GAP
+      # Per user 2026-04-30 W1p3 §A: "If BGE-M3 cannot run in CI because of
+      # size or dependency constraints, emit BLOCKED with an infrastructure
+      # remediation plan. Do not call it PASS." — the probes honor this.
+      # Local runs with deps+cache yield OPERATIONAL + measured calibration.
+      - name: W1.2g probe_bge_m3_operational (live BGE-M3 load + dimension)
+        continue-on-error: true
+        env:
+          EMBEDDING_ENABLED: "true"
+        run: python tools/certification/evidence/probe_bge_m3_operational.py
+
+      - name: W1.2h probe_threshold_calibration (positives/negatives at production threshold)
+        continue-on-error: true
+        env:
+          EMBEDDING_ENABLED: "true"
+        run: python tools/certification/evidence/probe_threshold_calibration.py
+
+      # Re-run W1.2a (model) and W1.2b (threshold) AFTER W1.2g/h so they
+      # consume the new W1p3 evidence artifacts and upgrade their verdicts
+      # when the operational probe + calibration produced PASS evidence.
+      - name: W1.2a-rerun probe_semantic_cache_model (consume W1p3 evidence)
+        run: python tools/certification/evidence/probe_semantic_cache_model.py
+
+      - name: W1.2b-rerun probe_semantic_cache_threshold (consume W1p3 evidence)
+        run: python tools/certification/evidence/probe_semantic_cache_threshold.py
+
       - name: W1.3 compose semantic_cache_subclaims sidecar
         run: python scripts/compose_semantic_cache_subclaims.py
 
@@ -243,7 +273,11 @@ jobs:
             tests/runtime/test_semantic_cache_negatives_w1_phase2.py \
             tests/runtime/test_r1b_terminal_exit_proof.py \
             tests/runtime/test_cache_fixture_vs_uwg_proof.py \
-            -p no:xdist -q --timeout=60
+            tests/runtime/test_bge_m3_operational.py \
+            tests/runtime/test_calibration_dataset.py \
+            tests/runtime/test_threshold_calibration.py \
+            tests/runtime/test_w1_phase3_adr_path.py \
+            -p no:xdist -q --timeout=180
 
       # ── Upload artifacts so downstream jobs / humans can inspect
       - name: Upload certification artifacts
@@ -254,4 +288,5 @@ jobs:
           path: |
             artifacts/certification/*.json
             artifacts/certification/*.md
+            data/certification/calibration_pairs.json
           retention-days: 30

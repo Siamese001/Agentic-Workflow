@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "dataset_id": "rtc-req-055-calibration-v1",
+  "created_at_utc": "2026-04-30T22:30:00Z",
+  "purpose": "R1B production-threshold calibration — positive/negative pairs for BGE-M3 dense similarity at tier_similarity_threshold('dynamic') = 0.95",
+  "embedding_model_required": "BAAI/bge-m3",
+  "production_threshold_target": 0.95,
+  "scope_note": "Deterministic, fixed-content dataset. Never modify existing pair ids; extend by adding new ids only (preserves reproducibility across W1 phase 3 and future re-calibration).",
+  "classes": {
+    "paraphrase_positive": {
+      "description": "Same meaning, different words. Expected dense cosine similarity >= 0.95.",
+      "expected_label": "POSITIVE",
+      "count_minimum": 8
+    },
+    "near_miss_negative": {
+      "description": "Topically similar but semantically different. Expected dense cosine similarity < 0.95.",
+      "expected_label": "NEGATIVE",
+      "count_minimum": 6
+    },
+    "lexical_overlap_negative": {
+      "description": "High surface-word overlap but different meaning/intent. Expected dense cosine similarity < 0.95.",
+      "expected_label": "NEGATIVE",
+      "count_minimum": 6
+    },
+    "reference_contract_negative": {
+      "description": "Tenant/policy/freshness/reuse negatives already proven by NEG-5/6/7 probes. These are NOT similarity pairs — they are documentation anchors cross-referencing the contract-level negative controls. The calibration probe skips these for similarity measurement.",
+      "expected_label": "CONTRACT_NEGATIVE",
+      "count_minimum": 4
+    }
+  },
+  "pairs": [
+    {
+      "id": "PP-01",
+      "class": "paraphrase_positive",
+      "text_a": "What is the current inflation rate in the United States?",
+      "text_b": "How much is inflation right now in America?",
+      "notes": "simple paraphrase with synonym substitution"
+    },
+    {
+      "id": "PP-02",
+      "class": "paraphrase_positive",
+      "text_a": "How do I reset my password?",
+      "text_b": "What is the procedure to change my account password?",
+      "notes": "procedural paraphrase"
+    },
+    {
+      "id": "PP-03",
+      "class": "paraphrase_positive",
+      "text_a": "Explain photosynthesis in simple terms.",
+      "text_b": "Can you give me a simple explanation of how photosynthesis works?",
+      "notes": "explanatory paraphrase with equivalent hedging"
+    },
+    {
+      "id": "PP-04",
+      "class": "paraphrase_positive",
+      "text_a": "What are the symptoms of type 2 diabetes?",
+      "text_b": "What signs should I look out for to know if I have type 2 diabetes?",
+      "notes": "medical question paraphrase"
+    },
+    {
+      "id": "PP-05",
+      "class": "paraphrase_positive",
+      "text_a": "How can I improve my credit score?",
+      "text_b": "What steps should I take to raise my credit rating?",
+      "notes": "finance paraphrase with synonym (score/rating)"
+    },
+    {
+      "id": "PP-06",
+      "class": "paraphrase_positive",
+      "text_a": "What is the best programming language for data science?",
+      "text_b": "Which programming language is most suitable for doing data science work?",
+      "notes": "technical paraphrase"
+    },
+    {
+      "id": "PP-07",
+      "class": "paraphrase_positive",
+      "text_a": "How do I cook pasta al dente?",
+      "text_b": "What is the correct way to cook pasta so it is al dente?",
+      "notes": "culinary paraphrase"
+    },
+    {
+      "id": "PP-08",
+      "class": "paraphrase_positive",
+      "text_a": "What is the capital of France?",
+      "text_b": "Which city is the capital city of France?",
+      "notes": "factual paraphrase — strong positive baseline"
+    },
+    {
+      "id": "NM-01",
+      "class": "near_miss_negative",
+      "text_a": "What is the inflation rate in the United States?",
+      "text_b": "What is the unemployment rate in the United States?",
+      "notes": "same country/topic-area (macro indicators) but different metric"
+    },
+    {
+      "id": "NM-02",
+      "class": "near_miss_negative",
+      "text_a": "How do I reset my password?",
+      "text_b": "How do I reset my router to factory settings?",
+      "notes": "same verb (reset) but fundamentally different object/context"
+    },
+    {
+      "id": "NM-03",
+      "class": "near_miss_negative",
+      "text_a": "Explain photosynthesis in simple terms.",
+      "text_b": "Explain cellular respiration in simple terms.",
+      "notes": "related biology concepts but mechanistically opposite"
+    },
+    {
+      "id": "NM-04",
+      "class": "near_miss_negative",
+      "text_a": "What are the symptoms of type 2 diabetes?",
+      "text_b": "What are the symptoms of type 1 diabetes?",
+      "notes": "adjacent medical conditions — critical clinical distinction"
+    },
+    {
+      "id": "NM-05",
+      "class": "near_miss_negative",
+      "text_a": "What is the best programming language for data science?",
+      "text_b": "What is the best programming language for mobile app development?",
+      "notes": "same question template but different domain"
+    },
+    {
+      "id": "NM-06",
+      "class": "near_miss_negative",
+      "text_a": "How do I bake a chocolate cake?",
+      "text_b": "How do I bake a vanilla cake?",
+      "notes": "same action + container but different flavor/recipe"
+    },
+    {
+      "id": "LO-01",
+      "class": "lexical_overlap_negative",
+      "text_a": "The bank approved my loan application.",
+      "text_b": "I walked along the bank of the river.",
+      "notes": "shared word 'bank' — homonym, totally different meaning"
+    },
+    {
+      "id": "LO-02",
+      "class": "lexical_overlap_negative",
+      "text_a": "Java is a popular programming language.",
+      "text_b": "Java is an island in Indonesia famous for coffee.",
+      "notes": "shared proper noun 'Java' — tech vs geography"
+    },
+    {
+      "id": "LO-03",
+      "class": "lexical_overlap_negative",
+      "text_a": "Can you book me a table at the restaurant?",
+      "text_b": "Can you recommend a good book about restaurants?",
+      "notes": "shared words book/restaurant — verb vs noun sense + different intent"
+    },
+    {
+      "id": "LO-04",
+      "class": "lexical_overlap_negative",
+      "text_a": "The apple fell from the tree.",
+      "text_b": "Apple released a new iPhone yesterday.",
+      "notes": "shared word 'apple' — fruit vs company"
+    },
+    {
+      "id": "LO-05",
+      "class": "lexical_overlap_negative",
+      "text_a": "Please mail the package to the following address.",
+      "text_b": "Please send me an email at this address.",
+      "notes": "shared words mail/address — physical mail vs electronic mail"
+    },
+    {
+      "id": "LO-06",
+      "class": "lexical_overlap_negative",
+      "text_a": "I need to charge my phone before the meeting.",
+      "text_b": "The lawyer will charge a fee for the meeting.",
+      "notes": "shared words charge/meeting — verb polysemy (battery vs bill)"
+    },
+    {
+      "id": "RC-01",
+      "class": "reference_contract_negative",
+      "text_a": "(tenant_scope=tenant_a) What is our Q1 revenue?",
+      "text_b": "(tenant_scope=tenant_b) What is our Q1 revenue?",
+      "notes": "identical question text but different tenant_scope — the cache MUST NOT reuse across tenants. Enforced by namespace/tenant_id fields in SemanticCachePayload; probe_cache_state_schema.py proves tenant_scope concept is mapped."
+    },
+    {
+      "id": "RC-02",
+      "class": "reference_contract_negative",
+      "text_a": "(written_at=0 age=30d) What is the weather today?",
+      "text_b": "(now) What is the weather today?",
+      "notes": "identical question text but entry is expired. Enforced by freshness_class_for_age; NEG-5 probe proves expired entries classify as cold."
+    },
+    {
+      "id": "RC-03",
+      "class": "reference_contract_negative",
+      "text_a": "(embedding_model_id='') What is ML?",
+      "text_b": "(embedding_model_id='bge-m3-v1') What is ML?",
+      "notes": "identical question but one entry has no model ref. Enforced by SemanticCachePayload required field; NEG-6 probe proves embedding_model_id has no default."
+    },
+    {
+      "id": "RC-04",
+      "class": "reference_contract_negative",
+      "text_a": "(reason_codes=['unsafe_xyz']) What is AI?",
+      "text_b": "(reason_codes=['hybrid_threshold_pass']) What is AI?",
+      "notes": "identical question but one entry uses unsafe reuse class. Enforced by _VALID_REASON_CODES; NEG-7 probe proves unknown codes raise at construction."
+    }
+  ],
+  "statistics": {
+    "total_pairs": 24,
+    "paraphrase_positive_count": 8,
+    "near_miss_negative_count": 6,
+    "lexical_overlap_negative_count": 6,
+    "reference_contract_negative_count": 4,
+    "similarity_measurement_pairs": 20,
+    "reference_documentation_pairs": 4
+  },
+  "integrity": {
+    "all_ids_unique": true,
+    "no_empty_texts": true,
+    "positives_distinct_text_a_text_b": true,
+    "covers_all_required_classes": true
+  }
+}

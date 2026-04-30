@@ -52,13 +52,21 @@ REQUIRED_EVIDENCE = {
     "fixture_vs_uwg": ARTIFACTS_DIR / "cache_fixture_vs_uwg_proof.json",
 }
 
+# W1p3 evidence — OPTIONAL (not required to run composer). When present, they
+# enable upgrading APPROVED_MODEL / PRODUCTION_THRESHOLD from PARTIAL to PASS.
+# Absence is tolerated and yields the legacy W1p2 verdicts.
+OPTIONAL_EVIDENCE = {
+    "bge_m3_operational": ARTIFACTS_DIR / "bge_m3_operational_proof.json",
+    "calibration_results": ARTIFACTS_DIR / "semantic_cache_calibration_results.json",
+}
+
 
 def _now_utc() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
 def _load_all_evidence() -> tuple[dict[str, dict], list[str]]:
-    """Load all 6 evidence artifacts. Return ({name: payload}, errors)."""
+    """Load required + optional evidence. Return ({name: payload}, errors)."""
     loaded: dict[str, dict] = {}
     errors: list[str] = []
     for name, path in REQUIRED_EVIDENCE.items():
@@ -69,6 +77,15 @@ def _load_all_evidence() -> tuple[dict[str, dict], list[str]]:
             loaded[name] = json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError) as exc:
             errors.append(f"MALFORMED_EVIDENCE:{name}:{exc}")
+    # Optional W1p3 evidence — absence is OK; malformed is logged but ignored
+    for name, path in OPTIONAL_EVIDENCE.items():
+        if not path.exists():
+            continue
+        try:
+            loaded[name] = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            # treat malformed optional as absent
+            pass
     return loaded, errors
 
 
@@ -271,7 +288,9 @@ def _compose(evidence: dict[str, dict]) -> dict:
         },
         "subclaims": all_subclaims,
         "evidence_artifacts_consumed": sorted(
-            str(p.relative_to(REPO_ROOT)) for p in REQUIRED_EVIDENCE.values()
+            [str(p.relative_to(REPO_ROOT)) for p in REQUIRED_EVIDENCE.values()]
+            + [str(p.relative_to(REPO_ROOT)) for p in OPTIONAL_EVIDENCE.values()
+               if p.exists()]
         ),
     }
 

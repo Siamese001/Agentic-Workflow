@@ -65,7 +65,17 @@ class TestAntiCheatRule2NeverSilentPass:
         assert "blocking_gap" not in a
 
     def test_embedding_disabled_env_blocks_match(self):
-        """When EMBEDDING_ENABLED is absent/false, match_status must NOT be MATCH."""
+        """When EMBEDDING_ENABLED is absent/false AND no W1p3 operational
+        evidence exists, match_status must NOT be MATCH.
+
+        W1p3 note: if a prior run left a bge_m3_operational_proof.json on
+        disk, the model probe correctly upgrades via live-verified evidence.
+        This test isolates the env-only anti-cheat path by removing that
+        artifact first.
+        """
+        op_art = REPO_ROOT / "artifacts" / "certification" / "bge_m3_operational_proof.json"
+        if op_art.exists():
+            op_art.unlink()
         _run({"EMBEDDING_ENABLED": None})
         a = _read_artifact()
         assert a["model_match_status"] != "MATCH", (
