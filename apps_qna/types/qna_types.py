@@ -148,6 +148,26 @@ class ResearchClaim(BaseModel):
     section_id: str = ""
 
 
+class GlossaryEntry(BaseModel):
+    """One company- or role-specific term with definition and usage note."""
+
+    model_config = _FROZEN
+
+    term: str
+    definition: str
+    synonyms: list[str] = Field(default_factory=list)
+    usage_note: str = ""
+
+
+class LikelyQuestionGroup(BaseModel):
+    """A predicted-questions group bound to one route id from the registry."""
+
+    model_config = _FROZEN
+
+    route_id: str
+    questions: list[str] = Field(default_factory=list)
+
+
 class ResearchInputs(BaseModel):
     """Outputs of deep-research feeders (apps_research, manual notes)."""
 
@@ -158,6 +178,8 @@ class ResearchInputs(BaseModel):
     industry_trends: list[str] = Field(default_factory=list)
     interviewer_lenses: dict[str, str] = Field(default_factory=dict)
     source_register: list[ResearchClaim] = Field(default_factory=list)
+    glossary_entries: list[GlossaryEntry] = Field(default_factory=list)
+    likely_questions: list[LikelyQuestionGroup] = Field(default_factory=list)
 
 
 class BuildMetadata(BaseModel):

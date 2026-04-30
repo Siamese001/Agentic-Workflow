@@ -1,0 +1,51 @@
+# 17 Questions and 90-Day Plan
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Closing card. Drives:
+1. The questions {{ candidate_first_name }} asks **them** at the end of the interview.
+2. The 90-day plan answer when asked.
+
+
+## Questions to ask the interviewer(s)
+
+### Questions for {{ lead_interviewer_name }}
+{% for q in questions_for_lead %}- {{ q }}
+{% endfor %}
+
+{% if questions_for_panel %}
+### Panel questions (any interviewer)
+{% for q in questions_for_panel %}- {{ q }}
+{% endfor %}
+{% endif %}
+
+## Question-asking principles
+- Ask questions that show you have already thought about the operating model.
+- Ask one question that probes their **failure mode** ("what would make the first 90 days obviously fail?").
+- Ask one question that probes the **decision rights** ("who owns the architecture decision when product and platform disagree?").
+- Do not ask anything you can find on their website.
+
+## 90-day plan
+
+### Days 1–30 — Listen and instrument
+{% for item in plan_days_1_30 %}- {{ item }}
+{% endfor %}
+
+### Days 31–60 — Pilot and pattern
+{% for item in plan_days_31_60 %}- {{ item }}
+{% endfor %}
+
+### Days 61–90 — Productize and propagate
+{% for item in plan_days_61_90 %}- {{ item }}
+{% endfor %}
+
+## What this card does NOT do
+- Does not promise transformation.
+- Does not commit to specific deliverables before listening to teams.
+- Does not pretend the first 90 days are about shipping new agents — they are about **understanding the operating model and instrumenting it**.
+
+## Hand-off
+- If the question pivots to architecture, hand to **05_ARCHITECTURE_CORE.md**.
+- If the question pivots to ROI, hand to **12_PRODUCTIZATION.md**.

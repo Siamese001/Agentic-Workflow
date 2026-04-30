@@ -37,7 +37,17 @@ python -m apps_qna lint reports/qna/drew-clements
 python -m apps_qna --interview drew-clements --company dentsu --dry-run
 ```
 
-## Card Pack Anatomy (18 cards)
+## Prep tool, not a real-time copilot
+
+This builder is for **rehearsal-time prep**: cards are pasted into a ChatGPT
+Project workspace **before** the interview. The candidate reads answers
+aloud at their own pace.
+
+It is **not** a real-time copilot — no audio capture, no hidden earpiece, no
+covert text feed during a live interview. See
+`templates/18_ethics_and_disclosure.md.j2` for the full disclosure stance.
+
+## Card Pack Anatomy (23 cards)
 
 The pack mirrors the validated Drew Clements layout. Each card is a small,
 focused markdown file with a routing-manifest-defined role.
@@ -62,6 +72,43 @@ focused markdown file with a routing-manifest-defined role.
 | 15 | Failure RCA and Recovery | Route 3 (RCA) primary card |
 | 16 | Cross-Exam Technical Depth | Route 9 (Cross-Exam) primary card |
 | 17 | Questions and 90-Day Plan | Closing: questions Amit asks them |
+| 18 | Ethics and Disclosure | Always-on: prep-tool boundary, disclosure stance |
+| 19 | Source Register | Always-on: `[S#]` citation backbone for research claims |
+| 20 | Glossary | Always-on: company- and role-specific term definitions |
+| 21 | Likely Questions | Always-on: predicted-questions list grouped by route |
+| 22 | Learnings and Delta Sheet | Post-rehearsal: pathology codes + delta capture |
+
+## Card metadata (Rules vs Skills)
+
+Every card carries a metadata block (Anthropic RAG playbook §Rules vs Skills):
+
+```html
+<!-- card-meta
+card_id: 05_ARCHITECTURE_CORE
+card_type: skill        # rule | skill
+priority: should        # must | should | may
+paste_order: 5
+load_strategy: primary  # always_on | primary | specialist | post_rehearsal
+-->
+```
+
+- **`rule`** cards are always-on and govern *how* answers are produced.
+- **`skill`** cards are loaded by the routing manifest based on the question.
+- **`paste_order`** is the recommended sequence when seeding a new ChatGPT
+  Project — paste rules first, then skills.
+
+## Self-eval workflow
+
+After each rehearsal, diff the current pack against the previous one:
+
+```bash
+python -m apps_qna self-eval --pack reports/qna/run-2 --previous reports/qna/run-1
+```
+
+The CLI prints a delta report (cards added/removed, word-count changes,
+route-coverage diff). Use alongside card 22 (Learnings) and the pathology
+taxonomy in `PATHOLOGY_TAXONOMY.md` to decide which fixes to land in the
+next build.
 
 ## Inputs from other apps_*
 
@@ -100,4 +147,6 @@ apps_qna/
 
 - `RUNBOOK.md` — how to paste a pack into ChatGPT 5.5-Thinking
 - `TECHNICAL_SPEC.md` — types, builder contract, linter invariants
-- `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md` — bootstrap plan (5 waves)
+- `PATHOLOGY_TAXONOMY.md` — drift codes used by card 22 and self-eval
+- `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md` — bootstrap plan (Waves 1–3, complete)
+- `.windsurf/plans/apps-qna-rag-skills-alignment-7d2c4e.md` — RAG/Skills alignment plan (Waves 0–5)

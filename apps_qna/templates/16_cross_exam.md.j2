@@ -1,0 +1,35 @@
+# 16 Cross-Exam Technical Depth
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 9 — Cross-exam recovery**. When the interviewer pushes back ("be more specific", "go deeper", "what tools", "that sounds high-level"), this card drives the answer.
+
+
+## Answer shape
+1. Acknowledge and answer directly.
+2. Go one layer deeper technically.
+3. Name artifact, gate, or metric.
+4. Stop.
+
+## Core principle
+**Specificity over breadth.** When pushed, name one concrete thing — a contract, a registry, a gate, a log entry, a rollback path — and stop. Do not pivot to a different architecture story.
+
+## Depth anchors by topic
+{% for anchor in cross_exam_depth_anchors %}- **{{ anchor.topic }}**: {{ anchor.specifics }}
+{% endfor %}
+
+## "I don't know" patterns
+When pushed beyond solid ground, the right answer is honest:
+- "I have not built that with that exact stack. The pattern I would apply is …"
+- "I would have to look that up before I commit."
+- "My intuition is … but I would validate against the actual constraint."
+
+## Anti-patterns
+- Do not invent metrics under pressure.
+- Do not pivot to a different topic to escape depth.
+- Do not bluff on a specific tool the interviewer obviously knows cold.
+
+## Stop signal
+A cross-exam answer is **done** when one concrete artifact has been named. Do not extend.
