@@ -73,16 +73,35 @@ def _active_overrides() -> dict[str, str | None]:
 
 
 def _adr_artifact_present() -> dict:
-    """Check whether an ADR-backed calibration artifact exists.
+    """Check whether an ADR-backed calibration artifact exists AND is approved.
 
-    Per user 2026-04-30: ADR-backed recalibration is the ONLY path that
-    allows threshold change. This pass does NOT create one.
+    Per user 2026-04-30 W1p4 §6: the ADR being on disk is NOT sufficient to
+    unblock an override. Only an APPROVED + APPLIED ADR authorizes a threshold
+    override path. PROPOSED_NOT_APPLIED ADRs behave as if absent for this check.
     """
     adr_path = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_threshold_adr.json"
-    return {
+    result = {
         "adr_artifact_path": str(adr_path.relative_to(REPO_ROOT)),
         "adr_artifact_exists": adr_path.exists(),
+        "adr_approved_and_applied": False,
+        "adr_approval_status": None,
+        "adr_implementation_status": None,
     }
+    if adr_path.exists():
+        try:
+            import json
+            d = json.loads(adr_path.read_text(encoding="utf-8"))
+            result["adr_approval_status"] = d.get("owner_approval", {}).get("status")
+            result["adr_implementation_status"] = d.get("implementation_status")
+            applied = d.get("config_binding", {}).get("applied", False)
+            result["adr_approved_and_applied"] = (
+                result["adr_approval_status"] == "APPROVED"
+                and result["adr_implementation_status"] == "APPLIED"
+                and applied is True
+            )
+        except (json.JSONDecodeError, OSError):
+            pass
+    return result
 
 
 def _read_calibration_results() -> dict:
@@ -110,13 +129,18 @@ def _classify(ssot: dict, overrides: dict, adr: dict, calibration: dict) -> tupl
         return ("INFRASTRUCTURE_GAP",
                 f"threshold SSOT not importable: {ssot['error']}")
 
-    # Any override env set without ADR -> BLOCKED
+    # Any override env set without APPROVED+APPLIED ADR -> BLOCKED.
+    # A PROPOSED_NOT_APPLIED ADR on disk does NOT authorize an override
+    # (user 2026-04-30 W1p4 §6: only APPROVED+APPLIED ADRs permit threshold change).
     active_overrides = {k: v for k, v in overrides.items() if v is not None and v != ""}
-    if active_overrides and not adr["adr_artifact_exists"]:
+    if active_overrides and not adr["adr_approved_and_applied"]:
         return ("OVERRIDE_PRESENT",
-                f"threshold override(s) active without ADR: {active_overrides}. "
-                f"Rule 1 (user 2026-04-30) forbids silent lowering — an ADR/"
-                f"calibration artifact at {adr['adr_artifact_path']} is required.")
+                f"threshold override(s) active without APPROVED+APPLIED ADR: "
+                f"{active_overrides}. ADR status: "
+                f"approval={adr.get('adr_approval_status')}, "
+                f"implementation={adr.get('adr_implementation_status')}. "
+                f"Rule 1 (user 2026-04-30) forbids silent lowering — only an "
+                f"APPROVED+APPLIED ADR at {adr['adr_artifact_path']} authorizes override.")
 
     # W1p3: if calibration results present, bind their status
     if calibration["present"]:

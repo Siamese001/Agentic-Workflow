@@ -3,7 +3,7 @@
 **Status**: PROPOSED_NOT_APPLIED  
 **Owner approval**: PENDING_APPROVAL  
 **ADR version**: 1.0  
-**Created**: 2026-04-30T22:59:06.338275Z  
+**Created**: 2026-04-30T23:10:48.112933Z  
 **Generator**: `scripts/generate_threshold_adr.py`
 
 ## Context

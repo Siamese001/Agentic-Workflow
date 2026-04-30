@@ -1,7 +1,7 @@
 {
   "gate": "G-OTEL-GENAI-SEMCONV-COVERAGE",
   "tier": "B",
-  "timestamp": "2026-04-30T23:01:40.289915+00:00",
+  "timestamp": "2026-04-30T23:13:17.370490+00:00",
   "threshold_pct": 80.0,
   "strict_mode": true,
   "files_scanned": 21,

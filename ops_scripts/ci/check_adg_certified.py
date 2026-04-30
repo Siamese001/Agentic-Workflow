@@ -265,6 +265,21 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # W6 P6.1 completion-audit (2026-04-30): env-var surface matches the
+    # rest of the 3B-tier gates.
+    # - ADG_CERTIFIED_BYPASS=1 : skip the gate entirely (logs a one-line
+    #   notice, exits 0). Mirrors APPS_SPINE_DELEGATION_GATE_BYPASS,
+    #   THREE_BUCKET_GAP_BYPASS, etc.
+    # - ADG_CERTIFIED_STRICT=1 : treat the run as strict even without the
+    #   --strict CLI flag. The CLI flag wins when both are set in the
+    #   "advisory" direction (CLI can only INCREASE strictness, not
+    #   decrease it — same semantics as THREE_BUCKET_GAP_STRICT).
+    if os.environ.get("ADG_CERTIFIED_BYPASS") == "1":
+        print("[adg_certified] bypass active (ADG_CERTIFIED_BYPASS=1)")
+        return 0
+    env_strict = os.environ.get("ADG_CERTIFIED_STRICT") == "1"
+    args.strict = args.strict or env_strict
+
     snapshot = _latest_snapshot()
     started = datetime.now(timezone.utc)
 

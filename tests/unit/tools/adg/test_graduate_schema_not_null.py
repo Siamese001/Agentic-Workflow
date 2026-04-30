@@ -274,3 +274,32 @@ class TestGate:
         )
         assert rc == 0
         assert "bypass active" in out
+
+
+# W6 P6.3 completion-audit (2026-04-30): the graduator's internal
+# _latest_snapshot() had the same naive sorted(glob())[-1] bug as the
+# P6.1 gates. Fixed to delegate to the canonical resolver. This test
+# pins that fix so a future refactor can't regress it.
+class TestGraduatorSnapshotResolver:
+    def test_latest_snapshot_skips_sentinel(
+        self, tmp_path: Path, monkeypatch
+    ) -> None:
+        """_latest_snapshot must skip adg_indexed_99999999_9999.sqlite."""
+        art = tmp_path / "artifacts" / "adg"
+        art.mkdir(parents=True)
+        real = art / "adg_indexed_04302026_1319.sqlite"
+        sentinel = art / "adg_indexed_99999999_9999.sqlite"
+        # Minimal valid SQLite for real; empty-ish stub for sentinel.
+        sqlite3.connect(real).close()
+        sqlite3.connect(sentinel).close()
+
+        monkeypatch.setenv("ADG_DIR", str(art))
+        import tools.adg.graduate_schema_not_null as grad  # noqa: PLC0415
+        import importlib  # noqa: PLC0415
+        importlib.reload(grad)
+
+        resolved = grad._latest_snapshot()
+        assert resolved is not None
+        assert resolved.name == "adg_indexed_04302026_1319.sqlite", (
+            f"graduator resolver shadowed by sentinel; got {resolved.name!r}"
+        )

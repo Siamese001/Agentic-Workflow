@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-30T23:01:11.975824+00:00",
+  "timestamp": "2026-04-30T23:12:08.231815+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 418,
+    "total_tests": 417,
     "passed_tests": 0,
-    "failed_tests": 221,
+    "failed_tests": 220,
     "skipped_tests": 197,
     "exit_status": 1,
     "failed_by_category": {
@@ -229,7 +229,6 @@
         "tests/unit/ops_scripts/ci/test_adg_gate_manifest.py",
         "tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py",
         "tests/unit/ops_scripts/ci/test_check_runtime_hitl_ledger_integrity.py",
-        "tests/unit/scripts/proof/test_run_runtime_trace_proof.py",
         "tests/unit/system_learning/test_runtime_hitl_consumer.py",
         "tests/unit/tools/adg/prompt_assembly/test_c0_bridge_adapter.py",
         "tests/unit/tools/adg/prompt_assembly/test_c0_dispatcher.py",

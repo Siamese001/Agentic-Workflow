@@ -1,0 +1,84 @@
+feat(adg): P6 completion audit -- close env-var surface gaps + sentinel-resolver fix in graduator + burn down P6.5 to zero (plan adg-three-bucket-unified-c4f8e2)
+
+Walked P6.1..P6.7 end-to-end to verify genuine completion (not just
+scaffolding). Gaps found and closed:
+
+P6.1 ADG_CERTIFIED -- env-var surface gap
+  check_adg_certified.py supported only --strict CLI flag. Plan row and
+  .env.example referenced ADG_CERTIFIED_STRICT / ADG_CERTIFIED_BYPASS
+  env vars that didn't exist in code.
+  Fix: added ADG_CERTIFIED_STRICT=1 and ADG_CERTIFIED_BYPASS=1 handling
+  (BYPASS evaluated first). Only literal "1" activates. Tests: 6 new in
+  TestEnvVarSurface, 11/11 total pass.
+
+P6.2 in-toto signing -- verified
+  9/9 existing tests pass (keypair gen/reuse, round-trip, tamper, gate
+  advisory/strict/bypass). End-to-end signing verified live.
+
+P6.3 Schema graduation -- graduator had same sentinel-shadow bug
+  tools/adg/graduate_schema_not_null.py._latest_snapshot was using
+  sorted(glob())[-1] -- same bug the P6.1 fix closed in the two check_
+  gates. Would have made --commit graduation refuse with status=blocked
+  on phantom "column not present" against a sentinel stub.
+  Fix: delegate to canonical path_resolver.latest_sqlite + ImportError
+  fallback. Regression test: TestGraduatorSnapshotResolver. 13/13 pass.
+
+P6.4 Lifecycle-pair -- verified clean
+  52 NEW leaks, 48 baseline-resolved. Every NEW leak is in pre-existing
+  ambient code (tools/adg/_q_*, tools/adg/queries/adg_align_query*,
+  tools/analysis/_probe_*) -- zero session-introduced. Test coverage via
+  test_gate_precision_audit.py. Operational per-owner burndown remains.
+
+P6.5 Config-reference -- burned down 30 NEW -> 0 NEW (gate PASS)
+  Declared 31 missing env vars in .env.example covering: W3 P3.1 bypass
+  (CONSUMER_MODE_BYPASS), W3 runtime-observability bypasses
+  (RUNTIME_PROOF_VIEW_BYPASS, GENAI_SEMCONV_BYPASS), W6 P6.1-P6.3 full
+  surface (ADG_CERTIFIED_STRICT, ADG_SIGNATURE_GATE_STRICT,
+  ADG_SIGNING_KEY_PATH, SCHEMA_GRADUATION_BYPASS,
+  SCHEMA_GRADUATION_READINESS_BYPASS), constitutional 31
+  (SSOT_FOLDER_BYPASS), and the broader 3B-tier bypass surface
+  (author-gate-v2, call-multiplicity, cross-app-contract,
+  dangling-import, edge-authority, emits-suppress, impossible-states,
+  L3-runtime-gate-mode, registry-integrity, runtime-topology,
+  test-concentration trio, unresolved-ratchet, adg-ssot-hmac,
+  otel-mcp-runtime-adg-dir, otel-proof-output trio, HF_HOME,
+  HUGGINGFACE_HUB_CACHE).
+  Gate now reports: "PASS -- 299 distinct flag(s) read; 222 legacy-debt
+  (baseline), 0 new undeclared". Full win.
+
+P6.6 Test-harness coverage -- verified clean
+  125 NEW uncovered modules, 133 baseline-resolved. Zero session-
+  introduced modules in the NEW list (all session code -- sign_snapshot,
+  graduate_schema_not_null, spine_delegation, three_bucket_gap,
+  adg_certified, execution_orchestrator, precommit_mm_guard -- has
+  test coverage). Operational per-owner remediation remains.
+
+P6.7 Close-out -- verified + Memory writeback
+  All 4 source plans already carry "Superseded by
+  adg-three-bucket-unified-c4f8e2" headers. Memory entity
+  ProceduralPattern:ThreeBucketADGCertification created via memory MCP
+  with 10 recall-actionable observations covering: the 4-plan
+  supersede set, three-bucket model SSOT, canonical snapshot resolver,
+  sentinel-shadow failure precedent + fix, P6.2 signing pipeline, P6.3
+  graduation mechanism, 3B-tier env-var canonical pattern,
+  baseline-ratchet semantics, soak protocol, forbidden patterns.
+
+Tests: 40/40 pass across P6 suites
+  test_check_adg_certified (11)
+  test_adg_gates_sentinel_resilient (7)
+  test_sign_snapshot (9)
+  test_graduate_schema_not_null (13)
+
+Gate state vs session start:
+  check_adg_certified    NOT_CERTIFIED/1blocker -> CERTIFIED/0 blockers
+  check_config_references 42 -> 30 -> 0 NEW undeclared (gate PASS)
+  check_schema_graduation_readiness status=blocked -> status=ready
+  check_runtime_proof_view_well_formed SKIP -> 9333 rows, 0 violations
+  check_adg_snapshot_signed          unsigned  -> verified=True
+
+Operational deferrals (documented in plan rows; not session-scoped):
+  P6.4 52 NEW lifecycle-pair leaks (mostly scratch/probe files)
+  P6.6 125 NEW uncovered prod modules (mostly agentic_core/c0_retrieval,
+       L1_cognition/bridges, planning subtrees)
+  P6.1 strict-mode default flip: still soak-gated (P5.5 counter >= 4)
+  P6.3 --commit execution: still soak-gated + operator approval

@@ -79,8 +79,33 @@ class GraduationStats:
 
 
 def _latest_snapshot() -> Path | None:
-    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Resolve the latest valid ADG snapshot.
+
+    Delegates to the canonical ``tools.adg.shared_modules.path_resolver.latest_sqlite``
+    which validates ``%m%d%Y_%H%M`` timestamps (rejecting legacy sentinels
+    like ``adg_indexed_99999999_9999.sqlite``) and picks by mtime.
+
+    Regression precedent (2026-04-30, same as check_adg_certified &
+    check_schema_graduation_readiness): the naive ``sorted(glob())[-1]``
+    would shadow the real snapshot with any lexicographically-later
+    sentinel. In this script's case the consequence would be "4 columns
+    not present" status=blocked when the real snapshot was actually ready
+    to graduate.
+    """
+    try:
+        from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+    except ImportError:
+        files = list(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
+        from datetime import datetime as _dt  # noqa: PLC0415
+        def _valid(p: Path) -> bool:
+            try:
+                _dt.strptime(p.stem.replace("adg_indexed_", ""), "%m%d%Y_%H%M")
+                return True
+            except ValueError:
+                return False
+        valid = [p for p in files if _valid(p)]
+        return max(valid, key=lambda p: p.stat().st_mtime) if valid else None
+    return latest_sqlite()
 
 
 def _column_info(con: sqlite3.Connection, table: str) -> dict[str, dict]:
