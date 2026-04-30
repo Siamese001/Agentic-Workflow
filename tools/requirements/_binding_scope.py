@@ -57,6 +57,16 @@ CRITICAL_REQ_IDS: tuple[str, ...] = (
     "10C-REQ-192",  # L5: certification result
     "10C-REQ-195",  # L5: certification result
     "10C-REQ-199",  # L5: certification result
+    # --- Wave 2 (30 HIGH severity rows) ---
+    # L5 Governance / Safety (21):
+    "10C-REQ-100", "10C-REQ-101", "10C-REQ-102", "10C-REQ-110", "10C-REQ-111",
+    "10C-REQ-112", "10C-REQ-113", "10C-REQ-114", "10C-REQ-115", "10C-REQ-117",
+    "10C-REQ-120", "10C-REQ-139", "10C-REQ-155", "10C-REQ-156", "10C-REQ-157",
+    "10C-REQ-158", "10C-REQ-159", "10C-REQ-161", "10C-REQ-176", "10C-REQ-179",
+    "10C-REQ-193",
+    # Offline Ingestion / Index Build (9):
+    "10C-REQ-001", "10C-REQ-002", "10C-REQ-006", "10C-REQ-007", "10C-REQ-012",
+    "10C-REQ-014", "10C-REQ-015", "10C-REQ-016", "10C-REQ-017",
 )
 
 
@@ -109,6 +119,37 @@ CRITICAL_BINDING_SCOPE: tuple[str, ...] = (
     "tests/unit/agentic_core/L6_observability/test_10c_req_191.py",
     "tests/unit/agentic_core/L6_observability/__init__.py",
     "tests/unit/agentic_core/__init__.py",
+    # --- Wave 2: 21 L5 + 9 Ingestion HIGH rows ---
+    "tests/unit/agentic_core/L5_safety/test_10c_req_100.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_101.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_102.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_110.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_111.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_112.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_113.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_114.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_115.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_117.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_120.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_139.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_155.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_156.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_157.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_158.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_159.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_161.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_176.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_179.py",
+    "tests/unit/agentic_core/L5_safety/test_10c_req_193.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_001.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_002.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_006.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_007.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_012.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_014.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_015.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_016.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_017.py",
     # --- Tooling (proof-binding pipeline) ---
     "tools/requirements/emit_proof_bundles.py",
     "tools/requirements/validate_10c_proof_ledger.py",

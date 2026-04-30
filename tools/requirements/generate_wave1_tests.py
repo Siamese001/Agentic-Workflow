@@ -1,8 +1,8 @@
-"""Wave 1 test generator — emits 24 CRITICAL pilot-style test files from spec JSON.
+"""Wave-N test generator — emits pilot-style test files from a spec JSON.
 
-Reads ``artifacts/requirements/wave1_critical_specs.json`` (24 entries) and
-writes one ``test_10c_req_<id>.py`` per row at the path declared by the
-ledger's ``test_file_expected`` column.
+Originally authored for Wave 1 (24 CRITICAL rows). Now parameterized via
+``--specs <path>`` so it can drive Wave 2+ runs from sibling JSON files
+(``wave2_high_specs.json`` etc.).
 
 Each generated test is ~85 lines and follows the W4d-4 pilot pattern:
   - 3 positive controls (artifact shape, OTEL span shape, replay digest stability)
@@ -10,16 +10,17 @@ Each generated test is ~85 lines and follows the W4d-4 pilot pattern:
     text, one missing-field, one replay-drift)
 
 The generator is data-driven, idempotent, and SAFE to re-run: existing test
-files are overwritten; nothing else is touched.
+files are overwritten with identical content given identical spec input.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SPECS = REPO_ROOT / "artifacts" / "requirements" / "wave1_critical_specs.json"
+DEFAULT_SPECS = REPO_ROOT / "artifacts" / "requirements" / "wave1_critical_specs.json"
 
 # Maps primary artifact-type → (helper assertion fn name, valid-record builder fn)
 PRIMARY_ARTIFACT_RE = re.compile(r"\b([A-Z][A-Za-z0-9]+(?:[A-Z][A-Za-z0-9]+)+)\b")
@@ -357,7 +358,17 @@ def test_negative_control_replay_drift() -> None:
 
 
 def main() -> int:
-    spec = json.loads(SPECS.read_text(encoding="utf-8"))
+    parser = argparse.ArgumentParser(description="Generate proof-evidence test files from a spec JSON.")
+    parser.add_argument(
+        "--specs", default=str(DEFAULT_SPECS),
+        help="Path to spec JSON (default: %(default)s)",
+    )
+    args = parser.parse_args()
+    specs_path = Path(args.specs)
+    if not specs_path.is_absolute():
+        specs_path = REPO_ROOT / specs_path
+    print(f"[generate_wave1_tests] reading specs from {specs_path}")
+    spec = json.loads(specs_path.read_text(encoding="utf-8"))
     written = 0
     for entry in spec["req_specs"]:
         primary = _detect_primary_artifact(entry["runtime_artifact_expected"])
