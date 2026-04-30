@@ -57,6 +57,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run_lint(args)
     if args.subcommand == "self-eval":
         return _run_self_eval(args)
+    if args.subcommand == "route":
+        return _run_route(args)
     return _run_build(args)
 
 
@@ -80,6 +82,21 @@ def _build_parser() -> argparse.ArgumentParser:
         "pack_dir",
         type=Path,
         help="Directory containing an emitted card pack",
+    )
+
+    route_parser = sub.add_parser(
+        "route",
+        help="Score a question against the route registry (semantic router)",
+    )
+    route_parser.add_argument(
+        "question",
+        help="The question to route (quote it on the shell)",
+    )
+    route_parser.add_argument(
+        "--top-k",
+        type=int,
+        default=3,
+        help="Number of top candidates to print (default: 3)",
     )
 
     self_eval_parser = sub.add_parser(
@@ -396,6 +413,30 @@ def _run_lint(args: argparse.Namespace) -> int:
             prefix += f" {err.where}:"
         _log.error("  %s %s", prefix, err.message)
     return 1
+
+
+def _run_route(args: argparse.Namespace) -> int:
+    """Score `args.question` against the route registry and print top_k."""
+    from apps_qna.config.route_registry import load_route_registry
+    from apps_qna.router.semantic_router import SemanticRouter
+
+    registry = load_route_registry()
+    router = SemanticRouter(registry)
+    ranked = router.route(args.question, top_k=args.top_k)
+
+    print(f'Question: "{args.question}"')
+    print()
+    print(f"Top {len(ranked)} routes:")
+    for idx, hit in enumerate(ranked, start=1):
+        print(
+            f"  {idx}. [{hit.score:.3f}] {hit.route_id:<20} "
+            f"-> {hit.primary_card}"
+        )
+    print()
+    if ranked and ranked[0].score == 0.0:
+        print("(All scores zero — no token overlap with any route corpus.)")
+        return 1
+    return 0
 
 
 def _run_self_eval(args: argparse.Namespace) -> int:
