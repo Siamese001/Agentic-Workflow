@@ -1,0 +1,68 @@
+# apps_exec spine manifest
+#
+# Declares which spine route types apps_exec serves so the
+# runtime-mode scanner (tools/analysis/apps_spine_coverage.py) can
+# verify direct surfacing of the canonical R3 contract chain.
+#
+# This manifest is STATIC EVIDENCE only. It declares the contract
+# surface apps_exec delegates THROUGH (transitively today, via
+# apps_shared.integrations.governed_app_runner.GovernedAppRunner).
+# It is NOT a runtime certification claim. Runtime trace (OTel spans
+# hitting each contract surface) is what proves the contracts are
+# actually exercised end-to-end.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research W9 (the second-pilot reference).
+# Scanner: tools.analysis.apps_spine_coverage.ROUTE_TYPE_CONTRACT_REQUIREMENTS
+
+schema_version: 1
+app: apps_exec
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand executive brief grounded synthesis. ExecBriefRequest
+      (audience + emphasis_areas) → query construction → L1
+      query_planner.decompose_query → L0 AgenticRouter.route
+      (target=exec_brief_assembly) → C0 hybrid retrieval over the
+      ``exec_docs`` collection (degrades gracefully when absent) →
+      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is
+      a sealed executive-brief artifact (GovernedExecE2ERunRecord)
+      carrying grounded citations + support coverage. No real-world
+      side effect; no ``CommitRequest`` is in scope.
+    notes:
+      - "No CommitRequest expected -- the GovernedExecE2ERunRecord shape carries no commit / durable-write field; the brief is a sealed read artifact."
+      - "No build_time_compiler semantics -- requests run on demand, not at build time."
+      - "No formal exception -- apps_exec uses the standard GovernedAppRunner substrate; not exempt."
+      - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+
+# HITL posture (informational, not a route-shape modifier):
+#   apps_exec.integrations.governed_exec_run.GovernedExecRun.HITL_ENABLED = True
+#
+#   This is RUNNER POSTURE -- it gates whether the spine's runtime
+#   HITL escalation path is reachable for an exec request. It is NOT
+#   evidence of a durable-write surface and does NOT push apps_exec
+#   into the R3R4_managed_workflow shape. R3R4_managed_workflow is
+#   reserved for routes that actually emit a CommitRequest. The
+#   GovernedExecE2ERunRecord has no commit field, so this app stays
+#   in R3_grounded_read with HITL_ENABLED noted here for transparency.
+
+# References:
+# - apps_exec/integrations/spine_handoff.py
+#     Direct R3 contract surface; delegates unchanged to GovernedExecRun.
+# - apps_exec/integrations/governed_exec_run.py
+#     The GovernedAppRunner subclass that drives the L1->L0->C0->L2->L5+L6 pipeline.
+# - apps_research/spine_manifest.yaml
+#     Sibling R3_grounded_read manifest -- this manifest mirrors its shape.
+# - apps_shared/integrations/governed_app_runner.py
+#     Shared substrate (transitive contract delegation today).
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py
+#     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does
+# NOT certify that the runtime path actually exercises every contract
+# on every call -- that requires OTel-trace ingest, which is out of
+# scope for this static-surfacing migration.

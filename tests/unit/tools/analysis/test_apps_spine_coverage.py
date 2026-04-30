@@ -996,3 +996,149 @@ def test_apps_research_spine_handoff_module_imports_cleanly() -> None:
     # Validation helper returns all-True.
     valid = spine_handoff.validate_research_r3_contract_surface()
     assert valid == {n: True for n in expected_names}
+
+
+# ===========================================================================
+# W10 -- apps_exec migration to APP_OVERLAY_STATIC_EVIDENCE
+# ===========================================================================
+
+
+def test_apps_exec_live_classifies_as_overlay_static_evidence() -> None:
+    """apps_exec/spine_manifest.yaml + integrations/spine_handoff.py must
+    combine to classify as APP_OVERLAY_STATIC_EVIDENCE for R3_grounded_read.
+
+    Static evidence only -- the test asserts that the 8 R3 contracts
+    are imported and the manifest declares the route, NOT that runtime
+    exercises every contract on every call.
+    """
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_exec)
+    assert sc["manifest_present"] is True, "apps_exec/spine_manifest.yaml missing"
+    assert "R3_grounded_read" in sc["manifest_claimed_routes"], (
+        f"manifest claimed_routes={sc['manifest_claimed_routes']}"
+    )
+    assert sc["manifest_missing_contracts"] == [], (
+        f"missing R3 contracts: {sc['manifest_missing_contracts']}"
+    )
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE", (
+        f"got runtime_mode={runtime_mode}; evidence={evidence}"
+    )
+
+
+def test_apps_exec_surfaces_full_R3_contract_chain() -> None:
+    """All 8 R3 contracts (with PromptEnvelope ↔ CompiledPromptArtifact equivalence)
+    must be detected as direct imports in apps_exec."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_exec)
+    detected = set(sc["distinct_contracts"])
+    for required in (
+        "ValidatedRequest",
+        "L1PlanContract",
+        "RouteContract",
+        "RetrievalPlan",
+        "FinalEvidenceContract",
+        "SealedArtifact",
+        "ExitReviewPacket",
+    ):
+        assert required in detected, (
+            f"R3 required contract {required!r} not detected; "
+            f"detected={sorted(detected)}"
+        )
+    assert (
+        "CompiledPromptArtifact" in detected
+        or "PromptEnvelope" in detected
+    ), (
+        "neither CompiledPromptArtifact nor PromptEnvelope detected; "
+        f"detected={sorted(detected)}"
+    )
+
+
+def test_apps_exec_is_not_build_time_compiler() -> None:
+    """apps_exec must NOT declare or be classified as build_time_compiler."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_exec)
+    assert "build_time_compiler" not in sc["manifest_claimed_routes"]
+
+
+def test_apps_exec_is_not_formal_exception() -> None:
+    """apps_exec is not exempt; it uses the standard GovernedAppRunner
+    substrate. The scanner must NOT classify it as
+    FORMAL_EXCEPTION_STATIC_EVIDENCE."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    runtime_mode, _evidence, sc = _classify(apps_exec)
+    assert runtime_mode != "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+    assert sc["manifest_has_formal_exception"] is False
+    assert sc["manifest_exception_reason_code"] == ""
+
+
+def test_apps_exec_does_not_require_commit_request() -> None:
+    """R3_grounded_read intentionally excludes CommitRequest. apps_exec's
+    HITL_ENABLED=True is a runner posture, not evidence of a durable-write
+    surface; the route shape stays R3_grounded_read, not
+    R3R4_managed_workflow."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_exec)
+    assert "CommitRequest" not in sc["manifest_required_contracts"], (
+        f"apps_exec must not require CommitRequest; "
+        f"required={sc['manifest_required_contracts']}"
+    )
+    assert "CommitRequest" not in sc["manifest_missing_contracts"]
+    # Reinforce that the route is R3_grounded_read, not R3R4_managed_workflow.
+    assert "R3R4_managed_workflow" not in sc["manifest_claimed_routes"]
+
+
+def test_apps_exec_hitl_enabled_does_not_force_R3R4_managed_workflow() -> None:
+    """The runner-side HITL flag is documented in the manifest (informational)
+    but does NOT promote apps_exec to R3R4_managed_workflow. The bucketing
+    rule is: R3R4 requires CommitRequest in the required-contract set; HITL
+    is orthogonal."""
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_exec = repo_root / "apps_exec"
+    if not apps_exec.is_dir():
+        pytest.skip("apps_exec not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_exec)
+    # The manifest only claims R3_grounded_read.
+    assert sc["manifest_claimed_routes"] == ["R3_grounded_read"]
+    # The R3 chain alone does not require CommitRequest, even though the
+    # runner has HITL enabled.
+    r3_required = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3_grounded_read"]
+    assert "CommitRequest" not in r3_required
+
+
+def test_apps_exec_spine_handoff_module_imports_cleanly() -> None:
+    """The apps_exec spine_handoff module must import without error and
+    expose all 8 R3 contract types via R3_CONTRACT_SURFACE."""
+    from apps_exec.integrations import spine_handoff
+
+    assert hasattr(spine_handoff, "R3_CONTRACT_SURFACE")
+    surface = spine_handoff.R3_CONTRACT_SURFACE
+    assert len(surface) == 8
+    expected_names = {
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "RetrievalPlan", "FinalEvidenceContract", "CompiledPromptArtifact",
+        "SealedArtifact", "ExitReviewPacket",
+    }
+    assert set(surface.keys()) == expected_names
+    for name, cls in surface.items():
+        assert cls is not None, f"surface entry {name!r} is None"
+        assert isinstance(cls, type), f"surface entry {name!r} is not a class"
+    valid = spine_handoff.validate_exec_r3_contract_surface()
+    assert valid == {n: True for n in expected_names}
