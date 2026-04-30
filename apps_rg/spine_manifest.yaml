@@ -1,0 +1,99 @@
+# apps_rg spine manifest
+#
+# Declares which spine route types apps_rg serves so the runtime-mode
+# scanner (tools/analysis/apps_spine_coverage.py) can verify direct
+# surfacing of the canonical R3 contract chain.
+#
+# This manifest is STATIC EVIDENCE only. It declares the contract
+# surface apps_rg delegates THROUGH (transitively today, via
+# apps_shared.integrations.governed_app_runner.GovernedAppRunner,
+# plus the existing direct PromptEnvelope consumer in
+# apps_rg/utils/anthropic_rag_entrypoint.py). It is NOT a runtime
+# certification claim.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research W9, apps_exec W10, apps_lic W11, apps_rfp W12.
+# Pre-migration audit: apps_rg confirmed R3_grounded_read, NOT
+#   R3R4_managed_workflow. Audit found ZERO matches in apps_rg/ for
+#   CommitRequest, commit_request, StateDiffCandidate,
+#   proposed_state_diff, MutationIntent, durable_write, write_gateway,
+#   publish, profile_update, resume_store, applicant_tracking. The
+#   apparent ATS / LinkedIn surface decomposes to read-side scoring
+#   and pattern mining, not durable writes.
+
+schema_version: 1
+app: apps_rg
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand résumé generation grounded synthesis. ResumeRequest
+      (candidate_name + target_role + target_industry +
+      experience_level) → query construction → L1
+      query_planner.decompose_query → L0 AgenticRouter.route
+      (target=resume_generation_assembly) → C0 hybrid retrieval over
+      the ``rg_docs`` collection (degrades gracefully when absent) →
+      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is a
+      sealed résumé draft (GovernedRgE2ERunRecord + ResumeResult)
+      carrying grounded citations + ATS-compatibility score +
+      quality score + local artifact paths
+      (apps_rg/scripts/generated_resume_<TIMESTAMP>.json). The user
+      reviews the draft and forwards it externally -- no LinkedIn
+      API call, no ATS submission, no profile-store write, no L4
+      admission.
+    notes:
+      - "No CommitRequest expected -- the GovernedRgE2ERunRecord shape carries no commit / durable-write field."
+      - "ATS score (ats_score on ResumeResult) is an OUTPUT METRIC describing how machine-parseable the generated draft is. It is NOT an applicant-tracking-system write or submission. apps_rg does not call any ATS portal."
+      - "LinkedIn references in apps_rg are READ-SIDE only: (a) authenticity-pattern mining in K.0 ThematicAnalysisNode (utils/authenticity_patterns_util.py) reads LinkedIn-style language patterns to make résumés sound authentic, (b) sample-data biographical metadata in scripts/generated_resume_*.json captures the candidate's own LinkedIn URL as a contact field. NO LinkedIn API call, NO profile update, NO publication."
+      - "ml_cache_ats_compatibility (utils/rg_agent_base_util.py) is CROSS-RUN META-LEARNING CACHE in Redis. It caches reusable knowledge about ATS systems for future generation runs. It is NOT per-request durable state and does NOT belong in the R3R4_managed_workflow shape (which is reserved for per-request CommitRequest emission). Same status as apps_qna's flywheel cache."
+      - "generated_resume_*.json files (apps_rg/scripts/) are LOCAL OUTPUT-ARTIFACT PERSISTENCE. Same shape as apps_research / apps_exec / apps_lic / apps_rfp local artifact directories. Not L4 durable state."
+      - "Existing PromptEnvelope import in apps_rg/utils/anthropic_rag_entrypoint.py is a REAL HANDOFF (not type-only) -- build_anthropic_rag_payload(envelope: PromptEnvelope, ...) consumes envelope.abstain_recommended / envelope_id / contradiction_status at runtime to build an Anthropic Messages API request. This is 1 of 8 R3 contracts apps_rg already surfaces directly; the spine_handoff.py module surfaces the other 7 (and the canonical CompiledPromptArtifact name) for scanner visibility."
+      - "No R3R4_managed_workflow semantics -- audit found no durable-write surface; promoting to R3R4 would be contract theater."
+      - "No build_time_compiler semantics -- requests run on demand, not at build time."
+      - "No formal exception -- apps_rg uses the standard GovernedAppRunner substrate; not exempt."
+      - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+
+# HITL posture (informational, not a route-shape modifier):
+#   apps_rg.integrations.governed_rg_run.GovernedRgRun does NOT
+#   declare HITL_ENABLED (defaults False per GovernedAppRunner). This
+#   is a *weaker* HITL posture than apps_lic and apps_exec, matching
+#   apps_research and apps_rfp. apps_rg does not opt into runtime
+#   HITL escalation -- résumé review happens out-of-band by the
+#   candidate / their reviewer. This is consistent with the
+#   R3_grounded_read shape (HITL is orthogonal; the route shape is
+#   determined by the contract chain, not the HITL flag).
+
+# Apparent "_uwg" / "_writes_through" hits in apps_rg/ are LIFECYCLE-TRACE
+# TELEMETRY MARKERS (e.g., _emit_writes_via_uwg,
+# _emit_execution_terminates_at_uwg, _emit_writes_through). These are
+# OTel-stub sentinels from agentic_core.runtime.contracts.lifecycle_trace_contract
+# that fire at module-import time as part of p0/p1/p2 trace coverage.
+# They do NOT invoke the UWG path. The pre-migration audit verified
+# this.
+
+# References:
+# - apps_rg/integrations/spine_handoff.py
+#     Direct R3 contract surface; delegates unchanged to GovernedRgRun.
+# - apps_rg/integrations/governed_rg_run.py
+#     The GovernedAppRunner subclass (ROUTING_TARGET=resume_generation_assembly).
+# - apps_rg/integrations/rg_ingress_runner.py
+#     U1/U2 ingress wrapper class; routes stamped requests into ResumeRequest -> GovernedRgRun.
+# - apps_rg/utils/anthropic_rag_entrypoint.py
+#     PRE-EXISTING REAL HANDOFF: build_anthropic_rag_payload consumes a typed PromptEnvelope.
+#     Do NOT remove or rewrite this in the migration -- it is the original load-bearing
+#     R3 contract surface that motivated declaring R3_grounded_read in the first place.
+# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml
+#   + apps_lic/spine_manifest.yaml + apps_rfp/spine_manifest.yaml
+#     Sibling R3_grounded_read manifests -- this manifest mirrors their shape.
+# - apps_shared/integrations/governed_app_runner.py
+#     Shared substrate (transitive contract delegation today).
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py
+#     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does
+# NOT certify that the runtime path actually exercises every contract
+# on every call -- that requires OTel-trace ingest, which is out of
+# scope for this static-surfacing migration.

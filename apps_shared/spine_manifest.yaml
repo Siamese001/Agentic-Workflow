@@ -1,0 +1,90 @@
+# apps_shared spine manifest -- FORMAL EXCEPTION (core_adjacent_utility)
+#
+# apps_shared is NOT a runtime app. It is the **shared governance
+# substrate / infrastructure foundation layer** consumed by the
+# domain apps. Per its own SVP_ENGINEERING_REVIEW.md:
+#
+#   "apps_shared is the infrastructure foundation layer providing
+#    cross-cutting utilities, validators, and base types for all
+#    domain applications. Unlike domain apps (eval, exec, lic, rfp,
+#    research, rg), apps_shared requires infrastructure-grade SVP
+#    hardening focused on: Utility Reliability, Base Type Safety,
+#    Validator Composability, Clean Exports."
+#
+# Generic spine wrapping (e.g., a spine_handoff.py that imports the
+# 8 R3 contracts) would understate apps_shared's role: it is the HOST
+# of the spine substrate (defines GovernedAppRunner +
+# GovernedAppRunRecord), NOT a consumer of it. The empty
+# required-contract set is therefore justified by a recorded
+# exception charter, mirroring the apps_underwriting_ai pattern.
+#
+# This manifest is the load-bearing static evidence for the
+# FORMAL_EXCEPTION_STATIC_EVIDENCE classification.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Manifest shape for formal exceptions"
+#         §"FORMAL_EXCEPTION_STATIC_EVIDENCE bucket"
+# Pattern: mirrors apps_underwriting_ai W8 manifest (also a
+#   core_adjacent_utility formal exception, but with reason_code
+#   regulatory_domain rather than shared_library_surface).
+
+schema_version: 1
+app: apps_shared
+
+claimed_routes:
+  - type: core_adjacent_utility
+    description: >-
+      Shared governance substrate / infrastructure foundation layer.
+      apps_shared has NO runtime entrypoint (no __main__.py, no
+      python -m apps_shared invocation path). It is consumed by the
+      domain R3 apps (apps_research, apps_exec, apps_lic, apps_rfp,
+      apps_rg) via subclassing GovernedAppRunner, by all apps_* via
+      APP_REGISTRY governance lookup, and by selective apps via
+      runtime_hitl_integration. apps_shared DEFINES the spine
+      substrate -- it does not consume it as a domain app would, so
+      the empty required-contract set is the architecturally honest
+      classification.
+    notes:
+      - "apps_shared has NO __main__.py runtime entrypoint -- confirmed by directory listing."
+      - "apps_shared/__init__.py is 6 lines: it only installs the _compat/agentic_core_shim at package import time. There is no python -m apps_shared invocation path."
+      - "apps_shared/integrations/governed_app_runner.py DEFINES `GovernedAppRunner` and `GovernedAppRunRecord` -- the substrate base class consumed by the 4+ R3 domain runners (GovernedResearchRun, GovernedExecRun, GovernedLicRun, GovernedRfpRun, GovernedRgRun)."
+      - "apps_shared/integrations/app_registry.py DEFINES `APP_REGISTRY`, the SSOT registry of governed-app status across all apps_*. This file's purpose is to track OTHER apps, not to run any app itself."
+      - "The single canonical contract import in apps_shared (SealedArtifact at apps_shared/proof/scenario_base.py:971) lives in the proof/ test harness ONLY, not in production runtime. It is used to construct synthetic SealedArtifact instances for evaluate_exit scenario fixtures."
+      - "No spine_handoff.py is appropriate for apps_shared: making it import the R3 contracts directly would understate its role as the substrate HOST rather than a substrate consumer."
+      - "apps_shared/_compat/agentic_core_shim.py is INTENTIONALLY NOT TOUCHED in this manifest pass. The shim is materially heavier than the retired apps_rfp/_compat/lifecycle_trace.py (5649 bytes vs 60 lines, modifies the agentic_core import surface at package load) and requires a SEPARATE focused audit before retirement. Its presence does not affect the formal-exception classification."
+      - "static evidence only, not runtime certification"
+
+exception:
+  reason_code: shared_library_surface
+  exception_record_class: ""
+  exception_record_module: ""
+  blocked_layers: []
+  safe_layers:
+    - substrate
+    - proof_harness
+    - registry
+  compensating_controls:
+    - "CC-SHARED-01: apps_shared provides the GovernedAppRunner substrate (apps_shared/integrations/governed_app_runner.py) consumed by R3 apps; the substrate is contract-bearing on the producer side (emits GovernedAppRunRecord) and contract-translating on the consumer side (apps re-marshal into app-specific records)."
+    - "CC-SHARED-02: apps_shared provides the APP_REGISTRY single-source-of-truth for governance status across all apps_* (apps_shared/integrations/app_registry.py); reviewed each time a new app is added or migrated; conformance gates depend on this registry."
+    - "CC-SHARED-03: SealedArtifact import is in apps_shared/proof/scenario_base.py harness only (line 971), not in production runtime; production runtime contract handoff happens in the consuming R3 apps' spine_handoff.py modules."
+    - "CC-SHARED-04: apps_shared is reviewed quarterly by the platform team as an infrastructure-tier asset (per the SVP_ENGINEERING_REVIEW.md cadence); distinct from the annual review used by apps_eval / apps_underwriting_ai domain-app exceptions."
+  review_cadence: quarterly
+  owner: platform team
+  target_phase: "N/A — permanent classification"
+
+# References:
+# - apps_shared/SVP_ENGINEERING_REVIEW.md (architectural truth document)
+# - apps_shared/integrations/governed_app_runner.py
+# - apps_shared/integrations/app_registry.py
+# - apps_shared/proof/scenario_base.py
+# - apps_shared/__init__.py (confirms no runtime entrypoint)
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#   §"FORMAL_EXCEPTION_STATIC_EVIDENCE bucket"
+# - tools/analysis/apps_spine_coverage.py
+#   _FORMAL_EXCEPTION_ROUTE_TYPES set (includes core_adjacent_utility)
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC formal-exception evidence. The empty
+# required-contract set is justified by a recorded charter, not by
+# absence of a runtime path. apps_shared is NOT runtime certified --
+# OTel-trace evidence remains future work for the cohort as a whole.

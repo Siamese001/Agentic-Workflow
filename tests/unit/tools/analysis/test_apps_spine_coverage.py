@@ -1481,3 +1481,344 @@ def test_apps_rfp_spine_handoff_module_imports_cleanly() -> None:
     assert valid == {n: True for n in expected_names}
     # The module's __all__ must not advertise CommitRequest.
     assert "CommitRequest" not in spine_handoff.__all__
+
+
+# ===========================================================================
+# W13 -- apps_rg migration to APP_OVERLAY_STATIC_EVIDENCE
+# ===========================================================================
+
+
+def test_apps_rg_live_classifies_as_overlay_static_evidence() -> None:
+    """apps_rg/spine_manifest.yaml + integrations/spine_handoff.py must
+    combine to classify as APP_OVERLAY_STATIC_EVIDENCE for R3_grounded_read.
+
+    Static evidence only -- the test asserts that the 8 R3 contracts
+    are imported and the manifest declares the route, NOT that runtime
+    exercises every contract on every call.
+    """
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_rg)
+    assert sc["manifest_present"] is True, "apps_rg/spine_manifest.yaml missing"
+    assert "R3_grounded_read" in sc["manifest_claimed_routes"], (
+        f"manifest claimed_routes={sc['manifest_claimed_routes']}"
+    )
+    assert sc["manifest_missing_contracts"] == [], (
+        f"missing R3 contracts: {sc['manifest_missing_contracts']}"
+    )
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE", (
+        f"got runtime_mode={runtime_mode}; evidence={evidence}"
+    )
+
+
+def test_apps_rg_no_longer_on_legacy_any_contract_path() -> None:
+    """After W13, apps_rg's classification must be manifest-honored, not
+    derived from the legacy any-contract heuristic. The evidence string
+    must NOT contain 'no spine_manifest.yaml' (which is the legacy-path
+    marker)."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    _runtime_mode, evidence, sc = _classify(apps_rg)
+    assert sc["manifest_present"] is True
+    assert "no spine_manifest.yaml" not in evidence, (
+        f"apps_rg still on legacy path; evidence={evidence}"
+    )
+    # Manifest-honored evidence cites the route(s).
+    assert "R3_grounded_read" in evidence
+
+
+def test_apps_rg_surfaces_full_R3_contract_chain() -> None:
+    """All 8 R3 contracts must be detected as direct imports in apps_rg.
+    Note: apps_rg also has a pre-existing PromptEnvelope import in
+    utils/anthropic_rag_entrypoint.py, so the total contract_count is 9
+    (8 from spine_handoff.py + 1 PromptEnvelope from the existing
+    consumer)."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_rg)
+    detected = set(sc["distinct_contracts"])
+    for required in (
+        "ValidatedRequest",
+        "L1PlanContract",
+        "RouteContract",
+        "RetrievalPlan",
+        "FinalEvidenceContract",
+        "CompiledPromptArtifact",
+        "SealedArtifact",
+        "ExitReviewPacket",
+    ):
+        assert required in detected, (
+            f"R3 required contract {required!r} not detected; "
+            f"detected={sorted(detected)}"
+        )
+
+
+def test_apps_rg_existing_prompt_envelope_consumer_preserved() -> None:
+    """The pre-existing PromptEnvelope import in
+    apps_rg/utils/anthropic_rag_entrypoint.py must remain present. This
+    is the original load-bearing R3 contract surface that motivated
+    declaring R3_grounded_read; the migration MUST NOT remove it."""
+    repo_root = Path(__file__).resolve().parents[4]
+    consumer_path = (
+        repo_root / "apps_rg" / "utils" / "anthropic_rag_entrypoint.py"
+    )
+    if not consumer_path.is_file():
+        pytest.skip("apps_rg/utils/anthropic_rag_entrypoint.py not present")
+    text = consumer_path.read_text(encoding="utf-8")
+    assert (
+        "from agentic_core.knowledge.retrieval.prompt_envelope "
+        "import PromptEnvelope"
+    ) in text, (
+        "existing PromptEnvelope import was removed or rewritten; the "
+        "migration must preserve apps_rg/utils/anthropic_rag_entrypoint.py"
+    )
+    # Sanity: the scanner must also see PromptEnvelope as a detected contract.
+    _runtime_mode, _evidence, sc = _classify(consumer_path.parent.parent)
+    assert "PromptEnvelope" in sc["distinct_contracts"], (
+        f"PromptEnvelope not detected; distinct_contracts={sc['distinct_contracts']}"
+    )
+
+
+def test_apps_rg_is_not_build_time_compiler() -> None:
+    """apps_rg must NOT declare or be classified as build_time_compiler."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_rg)
+    assert "build_time_compiler" not in sc["manifest_claimed_routes"]
+
+
+def test_apps_rg_is_not_formal_exception() -> None:
+    """apps_rg is not exempt; it uses the standard GovernedAppRunner
+    substrate. The scanner must NOT classify it as
+    FORMAL_EXCEPTION_STATIC_EVIDENCE."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    runtime_mode, _evidence, sc = _classify(apps_rg)
+    assert runtime_mode != "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+    assert sc["manifest_has_formal_exception"] is False
+    assert sc["manifest_exception_reason_code"] == ""
+
+
+def test_apps_rg_does_not_require_commit_request() -> None:
+    """The pre-migration audit proved no durable-write surface exists in
+    apps_rg (ATS scoring is read-side, LinkedIn references are
+    pattern-mining). R3_grounded_read intentionally excludes
+    CommitRequest, and apps_rg must NOT be promoted to
+    R3R4_managed_workflow."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_rg)
+    assert "CommitRequest" not in sc["manifest_required_contracts"], (
+        f"apps_rg must not require CommitRequest; "
+        f"required={sc['manifest_required_contracts']}"
+    )
+    assert "CommitRequest" not in sc["manifest_missing_contracts"]
+    # Reinforce: route stays R3_grounded_read.
+    assert "R3R4_managed_workflow" not in sc["manifest_claimed_routes"]
+
+
+def test_apps_rg_is_not_R3R4_managed_workflow() -> None:
+    """apps_rg must NOT be classified as R3R4_managed_workflow. The
+    pre-migration audit found no durable-write surface, no CommitRequest,
+    no StateDiffCandidate, no LinkedIn / ATS / profile-store write
+    surface. Adding R3R4 would be contract theater."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_rg)
+    assert sc["manifest_claimed_routes"] == ["R3_grounded_read"]
+    # CommitRequest must not be among the imported contracts.
+    assert "CommitRequest" not in sc["distinct_contracts"], (
+        f"apps_rg spine_handoff.py must not import CommitRequest; "
+        f"distinct_contracts={sc['distinct_contracts']}"
+    )
+
+
+def test_apps_rg_hitl_absent_does_not_change_route_shape() -> None:
+    """GovernedRgRun does NOT declare HITL_ENABLED (defaults False).
+    Same posture as apps_research / apps_rfp; weaker than apps_lic /
+    apps_exec. HITL is orthogonal to route classification."""
+    from tools.analysis.apps_spine_coverage import (
+        ROUTE_TYPE_CONTRACT_REQUIREMENTS,
+    )
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_rg = repo_root / "apps_rg"
+    if not apps_rg.is_dir():
+        pytest.skip("apps_rg not present in this checkout")
+    runtime_mode, _evidence, sc = _classify(apps_rg)
+    assert sc["manifest_claimed_routes"] == ["R3_grounded_read"]
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
+    # The R3 chain alone does not require CommitRequest.
+    r3_required = ROUTE_TYPE_CONTRACT_REQUIREMENTS["R3_grounded_read"]
+    assert "CommitRequest" not in r3_required
+
+
+def test_apps_rg_spine_handoff_module_imports_cleanly() -> None:
+    """The apps_rg spine_handoff module must import without error,
+    expose all 8 R3 contract types via R3_CONTRACT_SURFACE, and NOT
+    expose CommitRequest as part of the surface or __all__."""
+    from apps_rg.integrations import spine_handoff
+
+    assert hasattr(spine_handoff, "R3_CONTRACT_SURFACE")
+    surface = spine_handoff.R3_CONTRACT_SURFACE
+    assert len(surface) == 8
+    expected_names = {
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "RetrievalPlan", "FinalEvidenceContract", "CompiledPromptArtifact",
+        "SealedArtifact", "ExitReviewPacket",
+    }
+    assert set(surface.keys()) == expected_names
+    # CommitRequest must NOT be in the surface.
+    assert "CommitRequest" not in surface
+    for name, cls in surface.items():
+        assert cls is not None, f"surface entry {name!r} is None"
+        assert isinstance(cls, type), f"surface entry {name!r} is not a class"
+    valid = spine_handoff.validate_rg_r3_contract_surface()
+    assert valid == {n: True for n in expected_names}
+    # The module's __all__ must not advertise CommitRequest.
+    assert "CommitRequest" not in spine_handoff.__all__
+
+
+# ===========================================================================
+# W14 -- apps_shared formal-exception classification (core_adjacent_utility)
+# ===========================================================================
+
+
+def test_apps_shared_live_classifies_as_formal_exception_static_evidence() -> None:
+    """apps_shared/spine_manifest.yaml must combine with the package's
+    library-surface shape to classify as FORMAL_EXCEPTION_STATIC_EVIDENCE.
+    Mirrors the apps_underwriting_ai W8 manifest pattern (also
+    core_adjacent_utility, but with reason_code regulatory_domain rather
+    than shared_library_surface)."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_shared)
+    assert sc["manifest_present"] is True, "apps_shared/spine_manifest.yaml missing"
+    assert "core_adjacent_utility" in sc["manifest_claimed_routes"], (
+        f"manifest claimed_routes={sc['manifest_claimed_routes']}"
+    )
+    assert sc["manifest_exception_reason_code"] == "shared_library_surface", (
+        f"got reason_code={sc['manifest_exception_reason_code']!r}; "
+        "expected 'shared_library_surface'"
+    )
+    assert sc["manifest_compensating_controls_count"] >= 4, (
+        f"got {sc['manifest_compensating_controls_count']} controls; "
+        "expected the 4 CC-SHARED-* compensating controls"
+    )
+    assert sc["manifest_has_formal_exception"] is True
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE", (
+        f"got {runtime_mode}; evidence={evidence}"
+    )
+
+
+def test_apps_shared_no_longer_on_legacy_any_contract_path() -> None:
+    """Before W14, apps_shared was APP_OVERLAY_STATIC_EVIDENCE via the
+    legacy any-contract heuristic (1 SealedArtifact import in proof
+    harness). After W14, it must be FORMAL_EXCEPTION_STATIC_EVIDENCE
+    via the explicit manifest -- no longer on the legacy path."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    runtime_mode, evidence, sc = _classify(apps_shared)
+    assert sc["manifest_present"] is True
+    # The legacy-path evidence string is "no spine_manifest.yaml; ..."
+    assert "no spine_manifest.yaml" not in evidence
+    # apps_shared must NOT be APP_OVERLAY_STATIC_EVIDENCE anymore.
+    assert runtime_mode != "APP_OVERLAY_STATIC_EVIDENCE", (
+        f"apps_shared still on overlay path; evidence={evidence}"
+    )
+    assert runtime_mode == "FORMAL_EXCEPTION_STATIC_EVIDENCE"
+
+
+def test_apps_shared_has_no_required_contracts() -> None:
+    """core_adjacent_utility has an empty required-contract set by
+    design; apps_shared HOSTS the substrate rather than CONSUMING it,
+    so it should not be required to import the R3 chain."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_shared)
+    assert sc["manifest_required_contracts"] == [], (
+        f"core_adjacent_utility must have empty required-contract set; "
+        f"got {sc['manifest_required_contracts']}"
+    )
+
+
+def test_apps_shared_has_no_missing_contracts() -> None:
+    """No required contracts means none can be missing."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_shared)
+    assert sc["manifest_missing_contracts"] == []
+
+
+def test_apps_shared_does_not_have_spine_handoff_module() -> None:
+    """apps_shared must NOT have a spine_handoff.py module. It is the
+    HOST of the substrate; making it import the R3 contracts directly
+    would understate its role and conflict with its formal-exception
+    charter."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    spine_handoff = apps_shared / "integrations" / "spine_handoff.py"
+    assert not spine_handoff.is_file(), (
+        "apps_shared/integrations/spine_handoff.py exists; "
+        "apps_shared is a substrate host, not a substrate consumer, and "
+        "must NOT have a spine_handoff module"
+    )
+
+
+def test_apps_shared_compensating_controls_have_expected_prefix() -> None:
+    """The 4 CC-SHARED-* compensating controls must all be present and
+    cite the expected substrate / registry / proof-harness / quarterly-
+    review themes."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_shared)
+    controls = sc["manifest_compensating_controls"]
+    assert len(controls) >= 4
+    # Every control must start with CC-SHARED-NN: prefix.
+    for cc in controls:
+        assert cc.startswith("CC-SHARED-"), (
+            f"compensating control does not use the CC-SHARED-NN prefix: {cc!r}"
+        )
+    # Substantive themes -- substrate, registry, proof-harness, quarterly review.
+    joined = " ".join(controls).lower()
+    assert "governedapprunner" in joined or "substrate" in joined
+    assert "app_registry" in joined or "registry" in joined
+    assert "proof" in joined or "scenario_base" in joined
+    assert "quarterly" in joined
+
+
+def test_apps_shared_review_cadence_is_quarterly() -> None:
+    """Per the SVP_ENGINEERING_REVIEW.md infrastructure cadence, apps_shared
+    is reviewed quarterly -- distinct from the annual cadence used by
+    the apps_eval / apps_underwriting_ai domain-app exceptions."""
+    repo_root = Path(__file__).resolve().parents[4]
+    apps_shared = repo_root / "apps_shared"
+    if not apps_shared.is_dir():
+        pytest.skip("apps_shared not present in this checkout")
+    _runtime_mode, _evidence, sc = _classify(apps_shared)
+    assert sc["manifest_review_cadence"] == "quarterly"
