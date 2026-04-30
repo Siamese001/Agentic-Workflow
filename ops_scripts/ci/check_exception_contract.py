@@ -149,15 +149,81 @@ def _handler_catches(handler: ast.ExceptHandler, names: set[str]) -> bool:
     return False
 
 
-def _caller_satisfies(caller_path: Path, last_seg: str, handler_names: set[str]) -> bool:
+def _compute_indirect_raisers(raiser_module_path: Path, raiser_symbol: str) -> set[str]:
+    """Return the set of same-module function names whose bodies call ``raiser_symbol``.
+
+    Rationale (W4 P4.6 — closes P4.5 audit hollow gap): when a contract's
+    ``raiser_symbol`` names a private helper (e.g. ``register_embedding_client``,
+    ``_initialize``), external callers typically invoke a public wrapper in the
+    same module that delegates to the private raiser (e.g.
+    ``create_embedding_client``, ``get_instance``). Without call-chain
+    awareness, ``_caller_satisfies`` misses every handler on these public-
+    wrapper invocations — the exact failure W4 P4.4 diagnosed for 2 contracts.
+
+    This helper parses ``raiser_module_path`` once per contract check and
+    returns the names of top-level (module-level) functions whose bodies
+    contain at least one Call node whose trailing identifier matches
+    ``raiser_symbol.rsplit('.', 1)[-1]``. The returned set is unioned with
+    ``{last_seg}`` when calling ``_caller_satisfies`` so external callers of
+    either name count as satisfying the contract.
+
+    Intentionally module-level only (not nested functions / methods) — nested
+    wrappers are rare and nested-call resolution would require broader AST
+    scope tracking. Single level of indirection covers the P4.4 / P4.5
+    failure modes.
+    """
+    try:
+        tree = ast.parse(raiser_module_path.read_text(encoding="utf-8"), filename=str(raiser_module_path))
+    except (SyntaxError, UnicodeDecodeError, FileNotFoundError, OSError):
+        return set()
+
+    target_seg = raiser_symbol.rsplit(".", 1)[-1]
+    wrappers: set[str] = set()
+    for node in tree.body:
+        if not isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            continue
+        if node.name == target_seg:
+            # The raiser itself — not a wrapper.
+            continue
+        for sub in ast.walk(node):
+            if not isinstance(sub, ast.Call):
+                continue
+            func = sub.func
+            call_name: str | None = None
+            if isinstance(func, ast.Attribute):
+                call_name = func.attr
+            elif isinstance(func, ast.Name):
+                call_name = func.id
+            if call_name == target_seg:
+                wrappers.add(node.name)
+                break
+    return wrappers
+
+
+def _caller_satisfies(
+    caller_path: Path,
+    last_seg: str,
+    handler_names: set[str],
+    indirect_names: set[str] | None = None,
+) -> bool:
     """True if ``caller_path`` contains a function where a Call to ``last_seg``
-    is wrapped (directly or via ancestor) in a Try whose except handlers cover
-    any of ``handler_names``.
+    (or any name in ``indirect_names``) is wrapped (directly or via ancestor)
+    in a Try whose except handlers cover any of ``handler_names``.
+
+    ``indirect_names`` (W4 P4.6) lets the gate treat calls to public wrappers
+    as equivalent to calls to the declared raiser — closing the P4.5 audit
+    hollow gap. Default ``None`` preserves the P4.5-pinned behavior for
+    callers that pass the old 3-arg shape.
     """
     try:
         tree = ast.parse(caller_path.read_text(encoding="utf-8"), filename=str(caller_path))
     except (SyntaxError, UnicodeDecodeError, FileNotFoundError):
         return False
+
+    # Build the acceptance set: the direct raiser name plus any wrappers.
+    accepted: set[str] = {last_seg}
+    if indirect_names:
+        accepted |= indirect_names
 
     # Map each node -> parent (so we can walk up from a Call to nearest Try)
     parents: dict[int, ast.AST] = {}
@@ -174,7 +240,7 @@ def _caller_satisfies(caller_path: Path, last_seg: str, handler_names: set[str])
             name = func.attr
         elif isinstance(func, ast.Name):
             name = func.id
-        if name != last_seg:
+        if name not in accepted:
             continue
         # Walk up to find enclosing Try (stop at FunctionDef boundary — a Try
         # in a sibling function does not cover this call).
@@ -206,19 +272,27 @@ def _check_contract(conn: sqlite3.Connection, row: dict) -> tuple[bool, str]:
         return True, (f"[{row_id}] SKIP — zero callers found in ADG for {raiser_module}::{raiser_symbol}")
 
     last_seg = raiser_symbol.rsplit(".", 1)[-1]
+
+    # W4 P4.6: compute same-module public wrappers so callers of wrappers
+    # count as satisfying the contract. Closes the P4.5 audit hollow gap.
+    indirect_names = _compute_indirect_raisers(REPO / raiser_module, raiser_symbol)
+
     satisfying: list[str] = []
     missing: list[str] = []
     for rel in callers:
         caller_path = REPO / rel
-        if _caller_satisfies(caller_path, last_seg, handler_names):
+        if _caller_satisfies(caller_path, last_seg, handler_names, indirect_names=indirect_names):
             satisfying.append(rel)
         else:
             missing.append(rel)
 
     if len(satisfying) >= require_n:
+        suffix = ""
+        if indirect_names:
+            suffix = f" [indirection: {sorted(indirect_names)}]"
         return True, (
             f"[{row_id}] PASS — {len(satisfying)}/{len(callers)} caller(s) handle "
-            f"{exception_class} (require={require_n})"
+            f"{exception_class} (require={require_n}){suffix}"
         )
 
     failure_marker = "WARN" if severity == "warn" else "FAIL"
@@ -228,10 +302,24 @@ def _check_contract(conn: sqlite3.Connection, row: dict) -> tuple[bool, str]:
         f"  raiser: {raiser_module}::{raiser_symbol}",
         f"  handler class set: {sorted(handler_names)}",
     ]
+    if indirect_names:
+        lines.append(f"  indirection probed: {sorted(indirect_names)}")
     for rel in missing[:5]:
         lines.append(f"  - missing handler in: {rel}")
     if len(missing) > 5:
         lines.append(f"  ... and {len(missing) - 5} more")
+    # W4 P4.6 advisory: when ≥3 callers exist AND zero satisfy, the
+    # raiser_symbol likely names a private helper whose external callers
+    # invoke a public wrapper. Surface this signal for contract authors —
+    # the exact diagnostic that W4 P4.4 needed (and did by hand).
+    if len(callers) >= 3 and len(satisfying) == 0:
+        lines.append(
+            f"  HINT: 0/{len(callers)} callers match — raiser_symbol may name "
+            "a private helper. Check whether external callers invoke a public "
+            f"wrapper in {raiser_module} and retarget raiser_symbol to the "
+            "public entry point (see W4 P4.4 precedent: register_embedding_client "
+            "→ create_embedding_client; _initialize → get_instance)."
+        )
     return severity == "warn", "\n".join(lines)
 
 

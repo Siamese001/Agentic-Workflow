@@ -408,15 +408,18 @@ class PascalSovereigntyFixer:
             return False
 
     def get_compliant_name(self, path: Path, file_type: FileType) -> str | None:
-        """Calculate compliant filename by delegating to FCA when available.
+        """Calculate compliant filename via AST class-name extraction.
 
-        [DEDUP 2026-02-07] FCA's get_compliant_name is the SSOT for naming.
-        Falls back to local logic for mixins and basic class detection.
+        2026-04-30: Removed FCA delegation. The previous delegate-to-FCA branch
+        had a broken exception handler (re-raised inside a guardian-marked
+        silent-swallow block, with unreachable `pass` after `raise`) and was an
+        L_OPS->L5 layer-gravity inversion. The AST extraction below is sufficient
+        for pascal-sovereignty naming on dev-tool scripts.
         """
         if file_type == "IGNORE":
             return None
 
-        # Mixin standardization (local — FCA doesn't handle mixin snake_case)
+        # Mixin standardization (snake_case + _mixin suffix).
         if file_type == "MIXIN":
             stem = path.stem
             s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", stem)
@@ -429,27 +432,7 @@ class PascalSovereigntyFixer:
         if file_type == "UTILITY":
             return None
 
-        # Delegate to FCA
-        try:
-            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-                FileClassificationAgent,
-            )
-
-            fca = FileClassificationAgent(
-                project_root=path.parent,
-                dry_run=True,
-                validate_only=True,
-            )
-            result = fca.get_compliant_name(path)
-            if result and result != path.name:
-                return result
-        # guardian: allow-silent-swallow
-        except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
-            pass
-
-        # Fallback: basic class-name extraction
+        # AST-based class-name extraction.
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]

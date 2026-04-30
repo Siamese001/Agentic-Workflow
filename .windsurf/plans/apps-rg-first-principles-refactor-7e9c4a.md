@@ -170,3 +170,38 @@ NEXT_STEP: plan=NEW:apps-rg-unused-imports-cleanup title=Remove now-unused _emit
 - Generated resume: `apps_rg/scripts/generated_resume_20260429_191634.json`
 - Tools: `tools/analyze_runtime_adg_payload.py`, `tools/collect_apps_rg_three_bucket_evidence.py`
 - Three-bucket parent: `.windsurf/plans/three-bucket-gap-remediation-069806.md`
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: apps_rg first-principles refactor (W0–W10 done)
+
+**Materialized views consulted** (≥3 required):
+1. `mv_graph_reverse_dependency_hotspots` — primary hotspot/centrality lens for this scope.
+2. `mv_dependency_cone_risk` — blast-radius / cone risk for refactor candidates.
+3. `mv_debt_concentration_hotspots` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `flows_to` — used to trace cross-module behavior in this scope.
+- `resolves_callsite` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_apps_direct_infra` — applicable cross-reference.
+- `v_p2_duplicated_adapters` — applicable cross-reference.
+
+**Rationale**: apps_rg landed end-to-end across 50+ engines; retrospective evidence — W11+ would need re-snapshot.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| apps_rg first-principles refactor (W0–W10 done) (primary scope) | L_APPS | high | ORCHESTRATOR | Execution Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Execution Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `apps_rg first-principles refactor (W0–W10 done)` — classified as **ORCHESTRATOR** intersecting **Execution Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

@@ -7,7 +7,7 @@ plan_type: governance
 **Plan ID**: `adg-ci-gate-hardening-deferred-b4e3c9`
 **Created**: 2026-04-22 (orphan-row recovery — Notion rows existed since 19:09 UTC, plan file materialized 19:42 UTC)
 **SSOT**: Notion Wave/Phase Convergence DB rows (12 phases). This file is a disk anchor; detail lives in Notion.
-**Status**: Deferred — no execution yet.
+**Status**: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30) — 12 phases redistributed across unified W3/W4/W5/W6.
 
 ## Parent Plan Summary
 

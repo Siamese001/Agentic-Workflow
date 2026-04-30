@@ -48,6 +48,17 @@ from .final_contract import (
     seal_final_contract,
 )
 from .gates import GateReport, run_all_gates
+# Pre-retrieval gate (C0.0b -- ACL/tenant/freshness scope check) lives in
+# the L_PG knowledge plane because it is shared with non-L0 retrieval
+# callers (e.g., L3 evidence-binding paths). The dispatcher invokes it
+# once per request immediately after preflight. See canonical pipeline
+# manifest stage `C01_acl_gate` and Author-Gate decision 2026-04-30
+# (refactor_scope, selected=finish_two_items_introduced_this_chat).
+from agentic_core.knowledge.gates.preretrieval_gate import (
+    AccessDecision,
+    GateDecision,
+    check_access,
+)
 from .contradiction_gap import ConflictGapReport
 from .graph_traverse import AdjacencyFn, GraphExpandedEvidencePool, expand_graph
 from .hydration import HydratedEvidencePool, normalize_pool
@@ -158,6 +169,54 @@ def _build_freshness_report(
         stale_sources=tuple(dict.fromkeys(stale)),
         version_mismatches=(),
     )
+
+
+def _build_preretrieval_context(route: RouteContract) -> dict[str, object]:
+    """Project a RouteContract into the dict shape PreRetrievalGate expects.
+
+    PreRetrievalGate filters short-circuit when their context keys are
+    absent, so we deliberately populate ONLY the fields RouteContract
+    natively carries (tenant/region/data_class/acl_roles). Permission and
+    temporal filters become no-ops -- they are owned by upstream code
+    paths that do have user identity in scope.
+    """
+    classification = (route.data_class or "internal").lower()
+    ctx: dict[str, object] = {
+        "tenant_id": route.tenant_scope,
+        "query_tenant": route.tenant_scope,
+        "document_classification": classification,
+        # The route's acl_roles are clearance assertions, not capabilities.
+        # The L_PG gate's `confidentiality` filter consumes user_clearance
+        # as a level-string; pick the highest-level role matching the
+        # gate's known levels, else default to the document's own class
+        # (so a request with no clearance never under-rates itself).
+        "user_clearance": _highest_clearance_level(route.acl_roles, default=classification),
+    }
+    if route.region:
+        ctx["user_region"] = route.region
+    return ctx
+
+
+def _highest_clearance_level(roles: tuple[str, ...], *, default: str) -> str:
+    """Return the highest-rank clearance level present in `roles`.
+
+    The L_PG gate's confidentiality filter recognizes the levels
+    ["public", "internal", "confidential", "restricted", "secret"]. We
+    pick the maximum-index match across `roles`; absent any match we
+    return `default` so we don't silently downgrade.
+    """
+    levels = ("public", "internal", "confidential", "restricted", "secret")
+    best_idx = -1
+    for role in roles:
+        try:
+            idx = levels.index(role.lower())
+        except ValueError:
+            continue
+        if idx > best_idx:
+            best_idx = idx
+    if best_idx < 0:
+        return default
+    return levels[best_idx]
 
 
 def _build_acl_report(
@@ -470,6 +529,37 @@ class C0Dispatcher:
                 plan=None,
                 notes=tuple(pre.notes),
             )
+
+        # Stage C0.0b — pre-retrieval gate (ACL/tenant/freshness scope check)
+        # Manifest stage `C01_acl_gate`. Runs the L_PG PreRetrievalGate to
+        # short-circuit before any retrieval I/O when the request fails
+        # tenant isolation, ACL, region, confidentiality, or temporal
+        # filters. ALLOW and RESTRICTED proceed into planning; DENY and
+        # REQUIRE_AUTH emit a sealed BLOCKED contract identical in shape
+        # to a preflight failure (preserving the dispatcher's
+        # never-throw contract).
+        gate_decision = check_access(query_id=contract_id, context=_build_preretrieval_context(route))
+        if gate_decision.decision in (AccessDecision.DENY, AccessDecision.REQUIRE_AUTH):
+            gate_notes = tuple(notes) + (
+                f"preretrieval_gate.decision={gate_decision.decision.value}",
+                f"preretrieval_gate.reason={gate_decision.reason or 'unspecified'}",
+            )
+            blocked = _build_blocked_contract(
+                contract_id=contract_id,
+                route=route,
+                blocked_reason=f"preretrieval_gate: {gate_decision.decision.value}",
+                notes=gate_notes,
+            )
+            return C0Result(
+                contract=seal_final_contract(blocked),
+                intermediate_contract=None,
+                refined=None,
+                gates=None,
+                failure_modes=None,
+                plan=None,
+                notes=gate_notes,
+            )
+        notes.append(f"preretrieval_gate.decision={gate_decision.decision.value}")
 
         # Stage C0.1 — retrieval plan
         plan = build_retrieval_plan(

@@ -1,216 +1,183 @@
 {
-  "schema_version": 1,
-  "dataset_id": "rtc-req-055-calibration-v1",
-  "created_at_utc": "2026-04-30T22:30:00Z",
-  "purpose": "R1B production-threshold calibration — positive/negative pairs for BGE-M3 dense similarity at tier_similarity_threshold('dynamic') = 0.95",
+  "schema_version": 2,
+  "dataset_id": "rtc-req-055-calibration-v2",
+  "supersedes": "rtc-req-055-calibration-v1",
+  "created_at_utc": "2026-04-30T23:00:00Z",
+  "purpose": "R1B production-threshold calibration v2 — ~100 pairs across 6 classes for W1 phase 4 threshold sweep and ADR generation. Does NOT apply threshold changes.",
   "embedding_model_required": "BAAI/bge-m3",
   "production_threshold_target": 0.95,
-  "scope_note": "Deterministic, fixed-content dataset. Never modify existing pair ids; extend by adding new ids only (preserves reproducibility across W1 phase 3 and future re-calibration).",
+  "threshold_sweep_candidates": [0.95, 0.92, 0.90, 0.88, 0.85, 0.80],
+  "scope_note": "Deterministic, fixed-content dataset. Pair ids stable across v1 and v2 (PP-01..PP-08, NM-01..NM-06, LO-01..LO-06, RC-01..RC-04). New ids: PP-09..PP-25 (paraphrase extension), AD-01..AD-15 (abbreviation/definition), SR-01..SR-10 (short-form reminder), NM-07..NM-20 (near-miss extension), LO-07..LO-20 (lexical-overlap extension), RC-05..RC-10 (policy/tenant/freshness/reuse extension).",
   "classes": {
     "paraphrase_positive": {
-      "description": "Same meaning, different words. Expected dense cosine similarity >= 0.95.",
+      "description": "Same meaning, different words. Expected dense cosine similarity high. Measurable.",
       "expected_label": "POSITIVE",
+      "safety_tier": "efficiency_only",
+      "count_minimum": 20
+    },
+    "abbreviation_definition_positive": {
+      "description": "Abbreviation or short label paired with its expanded definition. Same meaning. Expected similarity high. Measurable.",
+      "expected_label": "POSITIVE",
+      "safety_tier": "efficiency_only",
+      "count_minimum": 12
+    },
+    "short_form_reminder_positive": {
+      "description": "Short-form reminder paired with the longer request it alludes to. Expected to cache-hit in session-continuation context. Measurable.",
+      "expected_label": "POSITIVE",
+      "safety_tier": "efficiency_only",
       "count_minimum": 8
     },
     "near_miss_negative": {
-      "description": "Topically similar but semantically different. Expected dense cosine similarity < 0.95.",
+      "description": "Same topic area but semantically different intent or target. MUST NOT cache-hit. Safety-critical. Measurable.",
       "expected_label": "NEGATIVE",
-      "count_minimum": 6
+      "safety_tier": "safety_critical",
+      "count_minimum": 15
     },
-    "lexical_overlap_negative": {
-      "description": "High surface-word overlap but different meaning/intent. Expected dense cosine similarity < 0.95.",
+    "lexical_overlap_different_meaning_negative": {
+      "description": "High surface-word overlap but different meaning. MUST NOT cache-hit. Some safety-critical, some efficiency-only. Measurable.",
       "expected_label": "NEGATIVE",
-      "count_minimum": 6
+      "safety_tier": "mixed",
+      "count_minimum": 15
     },
-    "reference_contract_negative": {
-      "description": "Tenant/policy/freshness/reuse negatives already proven by NEG-5/6/7 probes. These are NOT similarity pairs — they are documentation anchors cross-referencing the contract-level negative controls. The calibration probe skips these for similarity measurement.",
+    "policy_tenant_freshness_reuse_negative": {
+      "description": "Tenant/policy/freshness/reuse reference contract negatives. Identical question texts — the negative is carried by SemanticCachePayload metadata (tenant_id, written_at, embedding_model_id, reason_codes). NOT measurable for similarity; documentation anchor cross-referencing NEG-5/6/7 contract-level negatives.",
       "expected_label": "CONTRACT_NEGATIVE",
-      "count_minimum": 4
+      "safety_tier": "safety_critical",
+      "count_minimum": 6
     }
   },
   "pairs": [
-    {
-      "id": "PP-01",
-      "class": "paraphrase_positive",
-      "text_a": "What is the current inflation rate in the United States?",
-      "text_b": "How much is inflation right now in America?",
-      "notes": "simple paraphrase with synonym substitution"
-    },
-    {
-      "id": "PP-02",
-      "class": "paraphrase_positive",
-      "text_a": "How do I reset my password?",
-      "text_b": "What is the procedure to change my account password?",
-      "notes": "procedural paraphrase"
-    },
-    {
-      "id": "PP-03",
-      "class": "paraphrase_positive",
-      "text_a": "Explain photosynthesis in simple terms.",
-      "text_b": "Can you give me a simple explanation of how photosynthesis works?",
-      "notes": "explanatory paraphrase with equivalent hedging"
-    },
-    {
-      "id": "PP-04",
-      "class": "paraphrase_positive",
-      "text_a": "What are the symptoms of type 2 diabetes?",
-      "text_b": "What signs should I look out for to know if I have type 2 diabetes?",
-      "notes": "medical question paraphrase"
-    },
-    {
-      "id": "PP-05",
-      "class": "paraphrase_positive",
-      "text_a": "How can I improve my credit score?",
-      "text_b": "What steps should I take to raise my credit rating?",
-      "notes": "finance paraphrase with synonym (score/rating)"
-    },
-    {
-      "id": "PP-06",
-      "class": "paraphrase_positive",
-      "text_a": "What is the best programming language for data science?",
-      "text_b": "Which programming language is most suitable for doing data science work?",
-      "notes": "technical paraphrase"
-    },
-    {
-      "id": "PP-07",
-      "class": "paraphrase_positive",
-      "text_a": "How do I cook pasta al dente?",
-      "text_b": "What is the correct way to cook pasta so it is al dente?",
-      "notes": "culinary paraphrase"
-    },
-    {
-      "id": "PP-08",
-      "class": "paraphrase_positive",
-      "text_a": "What is the capital of France?",
-      "text_b": "Which city is the capital city of France?",
-      "notes": "factual paraphrase — strong positive baseline"
-    },
-    {
-      "id": "NM-01",
-      "class": "near_miss_negative",
-      "text_a": "What is the inflation rate in the United States?",
-      "text_b": "What is the unemployment rate in the United States?",
-      "notes": "same country/topic-area (macro indicators) but different metric"
-    },
-    {
-      "id": "NM-02",
-      "class": "near_miss_negative",
-      "text_a": "How do I reset my password?",
-      "text_b": "How do I reset my router to factory settings?",
-      "notes": "same verb (reset) but fundamentally different object/context"
-    },
-    {
-      "id": "NM-03",
-      "class": "near_miss_negative",
-      "text_a": "Explain photosynthesis in simple terms.",
-      "text_b": "Explain cellular respiration in simple terms.",
-      "notes": "related biology concepts but mechanistically opposite"
-    },
-    {
-      "id": "NM-04",
-      "class": "near_miss_negative",
-      "text_a": "What are the symptoms of type 2 diabetes?",
-      "text_b": "What are the symptoms of type 1 diabetes?",
-      "notes": "adjacent medical conditions — critical clinical distinction"
-    },
-    {
-      "id": "NM-05",
-      "class": "near_miss_negative",
-      "text_a": "What is the best programming language for data science?",
-      "text_b": "What is the best programming language for mobile app development?",
-      "notes": "same question template but different domain"
-    },
-    {
-      "id": "NM-06",
-      "class": "near_miss_negative",
-      "text_a": "How do I bake a chocolate cake?",
-      "text_b": "How do I bake a vanilla cake?",
-      "notes": "same action + container but different flavor/recipe"
-    },
-    {
-      "id": "LO-01",
-      "class": "lexical_overlap_negative",
-      "text_a": "The bank approved my loan application.",
-      "text_b": "I walked along the bank of the river.",
-      "notes": "shared word 'bank' — homonym, totally different meaning"
-    },
-    {
-      "id": "LO-02",
-      "class": "lexical_overlap_negative",
-      "text_a": "Java is a popular programming language.",
-      "text_b": "Java is an island in Indonesia famous for coffee.",
-      "notes": "shared proper noun 'Java' — tech vs geography"
-    },
-    {
-      "id": "LO-03",
-      "class": "lexical_overlap_negative",
-      "text_a": "Can you book me a table at the restaurant?",
-      "text_b": "Can you recommend a good book about restaurants?",
-      "notes": "shared words book/restaurant — verb vs noun sense + different intent"
-    },
-    {
-      "id": "LO-04",
-      "class": "lexical_overlap_negative",
-      "text_a": "The apple fell from the tree.",
-      "text_b": "Apple released a new iPhone yesterday.",
-      "notes": "shared word 'apple' — fruit vs company"
-    },
-    {
-      "id": "LO-05",
-      "class": "lexical_overlap_negative",
-      "text_a": "Please mail the package to the following address.",
-      "text_b": "Please send me an email at this address.",
-      "notes": "shared words mail/address — physical mail vs electronic mail"
-    },
-    {
-      "id": "LO-06",
-      "class": "lexical_overlap_negative",
-      "text_a": "I need to charge my phone before the meeting.",
-      "text_b": "The lawyer will charge a fee for the meeting.",
-      "notes": "shared words charge/meeting — verb polysemy (battery vs bill)"
-    },
-    {
-      "id": "RC-01",
-      "class": "reference_contract_negative",
-      "text_a": "(tenant_scope=tenant_a) What is our Q1 revenue?",
-      "text_b": "(tenant_scope=tenant_b) What is our Q1 revenue?",
-      "notes": "identical question text but different tenant_scope — the cache MUST NOT reuse across tenants. Enforced by namespace/tenant_id fields in SemanticCachePayload; probe_cache_state_schema.py proves tenant_scope concept is mapped."
-    },
-    {
-      "id": "RC-02",
-      "class": "reference_contract_negative",
-      "text_a": "(written_at=0 age=30d) What is the weather today?",
-      "text_b": "(now) What is the weather today?",
-      "notes": "identical question text but entry is expired. Enforced by freshness_class_for_age; NEG-5 probe proves expired entries classify as cold."
-    },
-    {
-      "id": "RC-03",
-      "class": "reference_contract_negative",
-      "text_a": "(embedding_model_id='') What is ML?",
-      "text_b": "(embedding_model_id='bge-m3-v1') What is ML?",
-      "notes": "identical question but one entry has no model ref. Enforced by SemanticCachePayload required field; NEG-6 probe proves embedding_model_id has no default."
-    },
-    {
-      "id": "RC-04",
-      "class": "reference_contract_negative",
-      "text_a": "(reason_codes=['unsafe_xyz']) What is AI?",
-      "text_b": "(reason_codes=['hybrid_threshold_pass']) What is AI?",
-      "notes": "identical question but one entry uses unsafe reuse class. Enforced by _VALID_REASON_CODES; NEG-7 probe proves unknown codes raise at construction."
-    }
+    {"id": "PP-01", "class": "paraphrase_positive", "text_a": "What is the current inflation rate in the United States?", "text_b": "How much is inflation right now in America?", "notes": "simple paraphrase with synonym substitution"},
+    {"id": "PP-02", "class": "paraphrase_positive", "text_a": "How do I reset my password?", "text_b": "What is the procedure to change my account password?", "notes": "procedural paraphrase"},
+    {"id": "PP-03", "class": "paraphrase_positive", "text_a": "Explain photosynthesis in simple terms.", "text_b": "Can you give me a simple explanation of how photosynthesis works?", "notes": "explanatory paraphrase with equivalent hedging"},
+    {"id": "PP-04", "class": "paraphrase_positive", "text_a": "What are the symptoms of type 2 diabetes?", "text_b": "What signs should I look out for to know if I have type 2 diabetes?", "notes": "medical question paraphrase"},
+    {"id": "PP-05", "class": "paraphrase_positive", "text_a": "How can I improve my credit score?", "text_b": "What steps should I take to raise my credit rating?", "notes": "finance paraphrase with synonym (score/rating)"},
+    {"id": "PP-06", "class": "paraphrase_positive", "text_a": "What is the best programming language for data science?", "text_b": "Which programming language is most suitable for doing data science work?", "notes": "technical paraphrase"},
+    {"id": "PP-07", "class": "paraphrase_positive", "text_a": "How do I cook pasta al dente?", "text_b": "What is the correct way to cook pasta so it is al dente?", "notes": "culinary paraphrase"},
+    {"id": "PP-08", "class": "paraphrase_positive", "text_a": "What is the capital of France?", "text_b": "Which city is the capital city of France?", "notes": "factual paraphrase — strong positive baseline"},
+    {"id": "PP-09", "class": "paraphrase_positive", "text_a": "How do I file my taxes online?", "text_b": "What is the process for submitting my tax return via the internet?", "notes": "procedural finance paraphrase"},
+    {"id": "PP-10", "class": "paraphrase_positive", "text_a": "What causes lightning during a thunderstorm?", "text_b": "Why does lightning occur when there is a thunderstorm?", "notes": "science paraphrase"},
+    {"id": "PP-11", "class": "paraphrase_positive", "text_a": "How do I set up two-factor authentication?", "text_b": "What is the procedure to enable two-factor authentication on my account?", "notes": "security paraphrase"},
+    {"id": "PP-12", "class": "paraphrase_positive", "text_a": "Why is the sky blue?", "text_b": "What is the reason that the sky appears blue during the day?", "notes": "physics paraphrase"},
+    {"id": "PP-13", "class": "paraphrase_positive", "text_a": "How do I install Python on Windows?", "text_b": "What is the way to get Python installed on a Windows computer?", "notes": "technical install paraphrase"},
+    {"id": "PP-14", "class": "paraphrase_positive", "text_a": "What is the difference between a stock and a bond?", "text_b": "How do stocks and bonds differ from each other?", "notes": "finance explanatory paraphrase"},
+    {"id": "PP-15", "class": "paraphrase_positive", "text_a": "Can you summarize the plot of Hamlet?", "text_b": "Please give me a summary of what happens in the play Hamlet.", "notes": "literature summary paraphrase"},
+    {"id": "PP-16", "class": "paraphrase_positive", "text_a": "How do I bake sourdough bread at home?", "text_b": "What steps should I follow to make sourdough bread in my kitchen?", "notes": "culinary procedural paraphrase"},
+    {"id": "PP-17", "class": "paraphrase_positive", "text_a": "What is machine learning?", "text_b": "Can you explain what machine learning means?", "notes": "technical definitional paraphrase"},
+    {"id": "PP-18", "class": "paraphrase_positive", "text_a": "How long does it take to get a passport?", "text_b": "What is the typical processing time for a passport application?", "notes": "administrative paraphrase"},
+    {"id": "PP-19", "class": "paraphrase_positive", "text_a": "How do I treat a minor burn at home?", "text_b": "What is the first aid for small burns you can do yourself?", "notes": "medical first aid paraphrase"},
+    {"id": "PP-20", "class": "paraphrase_positive", "text_a": "What are the main causes of climate change?", "text_b": "Which factors are primarily responsible for climate change?", "notes": "environmental science paraphrase"},
+    {"id": "PP-21", "class": "paraphrase_positive", "text_a": "How can I reduce my carbon footprint?", "text_b": "What can I do to lower my personal carbon emissions?", "notes": "sustainability action paraphrase"},
+    {"id": "PP-22", "class": "paraphrase_positive", "text_a": "What is the best way to learn a new language?", "text_b": "How should I approach learning a foreign language most effectively?", "notes": "education paraphrase"},
+    {"id": "PP-23", "class": "paraphrase_positive", "text_a": "How do I back up my iPhone to iCloud?", "text_b": "What are the steps to save my iPhone data to iCloud storage?", "notes": "consumer tech paraphrase"},
+    {"id": "PP-24", "class": "paraphrase_positive", "text_a": "What is the recommended daily water intake for adults?", "text_b": "How much water should adults drink each day?", "notes": "health paraphrase"},
+    {"id": "PP-25", "class": "paraphrase_positive", "text_a": "How do I negotiate a salary increase at work?", "text_b": "What is the best approach to ask for a raise from my employer?", "notes": "career paraphrase"},
+
+    {"id": "AD-01", "class": "abbreviation_definition_positive", "text_a": "What is an API?", "text_b": "What is an Application Programming Interface?", "notes": "common tech abbreviation"},
+    {"id": "AD-02", "class": "abbreviation_definition_positive", "text_a": "Can you explain KPIs for a startup?", "text_b": "Can you explain Key Performance Indicators for a startup?", "notes": "business abbreviation in context"},
+    {"id": "AD-03", "class": "abbreviation_definition_positive", "text_a": "How does HTTPS work?", "text_b": "How does HyperText Transfer Protocol Secure work?", "notes": "protocol abbreviation"},
+    {"id": "AD-04", "class": "abbreviation_definition_positive", "text_a": "What is DNS?", "text_b": "What is the Domain Name System?", "notes": "infrastructure abbreviation"},
+    {"id": "AD-05", "class": "abbreviation_definition_positive", "text_a": "What does SaaS mean?", "text_b": "What does Software as a Service mean?", "notes": "business model abbreviation"},
+    {"id": "AD-06", "class": "abbreviation_definition_positive", "text_a": "Explain CRUD operations in databases.", "text_b": "Explain Create, Read, Update, Delete operations in databases.", "notes": "database abbreviation with expansion"},
+    {"id": "AD-07", "class": "abbreviation_definition_positive", "text_a": "What is CI/CD?", "text_b": "What is Continuous Integration and Continuous Deployment?", "notes": "devops abbreviation"},
+    {"id": "AD-08", "class": "abbreviation_definition_positive", "text_a": "What is an SLA in cloud contracts?", "text_b": "What is a Service Level Agreement in cloud contracts?", "notes": "contract abbreviation in context"},
+    {"id": "AD-09", "class": "abbreviation_definition_positive", "text_a": "What does ROI stand for in finance?", "text_b": "What does Return on Investment stand for in finance?", "notes": "finance abbreviation with context"},
+    {"id": "AD-10", "class": "abbreviation_definition_positive", "text_a": "What is ML?", "text_b": "What is machine learning?", "notes": "short-form tech abbreviation"},
+    {"id": "AD-11", "class": "abbreviation_definition_positive", "text_a": "What is GDP?", "text_b": "What is Gross Domestic Product?", "notes": "economics abbreviation"},
+    {"id": "AD-12", "class": "abbreviation_definition_positive", "text_a": "What is UX design?", "text_b": "What is User Experience design?", "notes": "design abbreviation"},
+    {"id": "AD-13", "class": "abbreviation_definition_positive", "text_a": "What does B2B mean?", "text_b": "What does business-to-business mean?", "notes": "business abbreviation"},
+    {"id": "AD-14", "class": "abbreviation_definition_positive", "text_a": "What is an EHR system?", "text_b": "What is an Electronic Health Record system?", "notes": "healthcare abbreviation"},
+    {"id": "AD-15", "class": "abbreviation_definition_positive", "text_a": "What is LLM in AI?", "text_b": "What is a Large Language Model in AI?", "notes": "AI abbreviation in context"},
+
+    {"id": "SR-01", "class": "short_form_reminder_positive", "text_a": "the inflation question again", "text_b": "What is the current inflation rate in the United States?", "notes": "short-form reminder referring back to earlier inflation question"},
+    {"id": "SR-02", "class": "short_form_reminder_positive", "text_a": "password reset steps", "text_b": "How do I reset my password?", "notes": "short-form reminder for password reset"},
+    {"id": "SR-03", "class": "short_form_reminder_positive", "text_a": "photosynthesis again, simple version", "text_b": "Explain photosynthesis in simple terms.", "notes": "short-form reminder for photosynthesis"},
+    {"id": "SR-04", "class": "short_form_reminder_positive", "text_a": "type 2 symptoms list", "text_b": "What are the symptoms of type 2 diabetes?", "notes": "short-form reminder for type 2 diabetes symptoms"},
+    {"id": "SR-05", "class": "short_form_reminder_positive", "text_a": "credit score improvement tips", "text_b": "How can I improve my credit score?", "notes": "short-form reminder for credit score question"},
+    {"id": "SR-06", "class": "short_form_reminder_positive", "text_a": "data science language question", "text_b": "What is the best programming language for data science?", "notes": "short-form reminder for programming language question"},
+    {"id": "SR-07", "class": "short_form_reminder_positive", "text_a": "al dente pasta method", "text_b": "How do I cook pasta al dente?", "notes": "short-form reminder for pasta cooking"},
+    {"id": "SR-08", "class": "short_form_reminder_positive", "text_a": "capital of France", "text_b": "What is the capital of France?", "notes": "short-form reminder for France capital"},
+    {"id": "SR-09", "class": "short_form_reminder_positive", "text_a": "iPhone iCloud backup steps", "text_b": "How do I back up my iPhone to iCloud?", "notes": "short-form reminder for iPhone backup"},
+    {"id": "SR-10", "class": "short_form_reminder_positive", "text_a": "salary negotiation approach", "text_b": "How do I negotiate a salary increase at work?", "notes": "short-form reminder for salary negotiation"},
+
+    {"id": "NM-01", "class": "near_miss_negative", "text_a": "What is the inflation rate in the United States?", "text_b": "What is the unemployment rate in the United States?", "notes": "same country/topic-area (macro indicators) but different metric"},
+    {"id": "NM-02", "class": "near_miss_negative", "text_a": "How do I reset my password?", "text_b": "How do I reset my router to factory settings?", "notes": "same verb (reset) but fundamentally different object/context"},
+    {"id": "NM-03", "class": "near_miss_negative", "text_a": "Explain photosynthesis in simple terms.", "text_b": "Explain cellular respiration in simple terms.", "notes": "related biology concepts but mechanistically opposite"},
+    {"id": "NM-04", "class": "near_miss_negative", "text_a": "What are the symptoms of type 2 diabetes?", "text_b": "What are the symptoms of type 1 diabetes?", "notes": "adjacent medical conditions — critical clinical distinction"},
+    {"id": "NM-05", "class": "near_miss_negative", "text_a": "What is the best programming language for data science?", "text_b": "What is the best programming language for mobile app development?", "notes": "same question template but different domain"},
+    {"id": "NM-06", "class": "near_miss_negative", "text_a": "How do I bake a chocolate cake?", "text_b": "How do I bake a vanilla cake?", "notes": "same action + container but different flavor/recipe"},
+    {"id": "NM-07", "class": "near_miss_negative", "text_a": "What is the dosage of ibuprofen for adults?", "text_b": "What is the dosage of acetaminophen for adults?", "notes": "two different medications — safety-critical clinical distinction"},
+    {"id": "NM-08", "class": "near_miss_negative", "text_a": "How do I install Python on Windows?", "text_b": "How do I install Python on macOS?", "notes": "same software different OS — setup steps differ materially"},
+    {"id": "NM-09", "class": "near_miss_negative", "text_a": "What is the capital of France?", "text_b": "What is the capital of Germany?", "notes": "same question template different country"},
+    {"id": "NM-10", "class": "near_miss_negative", "text_a": "What is a stock?", "text_b": "What is a bond?", "notes": "related financial instruments but materially different"},
+    {"id": "NM-11", "class": "near_miss_negative", "text_a": "How do I get to JFK airport from Manhattan?", "text_b": "How do I get to LaGuardia airport from Manhattan?", "notes": "different airports — wrong-answer caching would cause missed flights"},
+    {"id": "NM-12", "class": "near_miss_negative", "text_a": "What are side effects of aspirin?", "text_b": "What are side effects of warfarin?", "notes": "distinct drugs with different safety profiles"},
+    {"id": "NM-13", "class": "near_miss_negative", "text_a": "What is the boiling point of water?", "text_b": "What is the boiling point of ethanol?", "notes": "different substances — same property, different value"},
+    {"id": "NM-14", "class": "near_miss_negative", "text_a": "How do I backup my iPhone?", "text_b": "How do I backup my Android phone?", "notes": "different platforms — different procedures"},
+    {"id": "NM-15", "class": "near_miss_negative", "text_a": "What is the population of New York City?", "text_b": "What is the population of Los Angeles?", "notes": "different cities — same template"},
+    {"id": "NM-16", "class": "near_miss_negative", "text_a": "What is a DDoS attack?", "text_b": "What is a phishing attack?", "notes": "different attack vectors in security"},
+    {"id": "NM-17", "class": "near_miss_negative", "text_a": "How do I file a US federal tax return?", "text_b": "How do I file a California state tax return?", "notes": "different jurisdictions"},
+    {"id": "NM-18", "class": "near_miss_negative", "text_a": "What is the freezing point of water in Celsius?", "text_b": "What is the freezing point of water in Fahrenheit?", "notes": "different units — same concept, different answer"},
+    {"id": "NM-19", "class": "near_miss_negative", "text_a": "How do I make espresso at home?", "text_b": "How do I make drip coffee at home?", "notes": "different brewing methods"},
+    {"id": "NM-20", "class": "near_miss_negative", "text_a": "What is the mortgage interest rate today?", "text_b": "What is the savings account interest rate today?", "notes": "different financial products — same date"},
+
+    {"id": "LO-01", "class": "lexical_overlap_different_meaning_negative", "text_a": "The bank approved my loan application.", "text_b": "I walked along the bank of the river.", "notes": "shared word 'bank' — homonym, totally different meaning"},
+    {"id": "LO-02", "class": "lexical_overlap_different_meaning_negative", "text_a": "Java is a popular programming language.", "text_b": "Java is an island in Indonesia famous for coffee.", "notes": "shared proper noun 'Java' — tech vs geography"},
+    {"id": "LO-03", "class": "lexical_overlap_different_meaning_negative", "text_a": "Can you book me a table at the restaurant?", "text_b": "Can you recommend a good book about restaurants?", "notes": "shared words book/restaurant — verb vs noun sense + different intent"},
+    {"id": "LO-04", "class": "lexical_overlap_different_meaning_negative", "text_a": "The apple fell from the tree.", "text_b": "Apple released a new iPhone yesterday.", "notes": "shared word 'apple' — fruit vs company"},
+    {"id": "LO-05", "class": "lexical_overlap_different_meaning_negative", "text_a": "Please mail the package to the following address.", "text_b": "Please send me an email at this address.", "notes": "shared words mail/address — physical mail vs electronic mail"},
+    {"id": "LO-06", "class": "lexical_overlap_different_meaning_negative", "text_a": "I need to charge my phone before the meeting.", "text_b": "The lawyer will charge a fee for the meeting.", "notes": "shared words charge/meeting — verb polysemy (battery vs bill)"},
+    {"id": "LO-07", "class": "lexical_overlap_different_meaning_negative", "text_a": "Cancel my order from yesterday.", "text_b": "Place an order for the same items as yesterday.", "notes": "shared 'order' + 'yesterday' — opposite commerce intent (safety-critical for order-management agents)"},
+    {"id": "LO-08", "class": "lexical_overlap_different_meaning_negative", "text_a": "Delete the user account named jsmith.", "text_b": "Create a user account named jsmith.", "notes": "shared 'user account named jsmith' — opposite destructive/constructive action (safety-critical)"},
+    {"id": "LO-09", "class": "lexical_overlap_different_meaning_negative", "text_a": "Enable two-factor authentication for this user.", "text_b": "Disable two-factor authentication for this user.", "notes": "shared 'two-factor authentication for this user' — opposite security posture (safety-critical)"},
+    {"id": "LO-10", "class": "lexical_overlap_different_meaning_negative", "text_a": "Approve the purchase order for item 4782.", "text_b": "Reject the purchase order for item 4782.", "notes": "shared 'purchase order for item 4782' — opposite finance action (safety-critical)"},
+    {"id": "LO-11", "class": "lexical_overlap_different_meaning_negative", "text_a": "Increase the dose of medication X by 50%.", "text_b": "Decrease the dose of medication X by 50%.", "notes": "shared 'dose of medication X by 50%' — opposite medical action (safety-critical)"},
+    {"id": "LO-12", "class": "lexical_overlap_different_meaning_negative", "text_a": "The server is running on port 8080.", "text_b": "The athlete is running toward the 8080-meter mark.", "notes": "shared 'running' + '8080' — polysemy tech vs sport"},
+    {"id": "LO-13", "class": "lexical_overlap_different_meaning_negative", "text_a": "The company's stock fell sharply today.", "text_b": "The chef made stock from vegetables today.", "notes": "shared 'stock' + 'today' — financial vs culinary polysemy"},
+    {"id": "LO-14", "class": "lexical_overlap_different_meaning_negative", "text_a": "Please mute the microphone during the call.", "text_b": "Please unmute the microphone during the call.", "notes": "shared 'the microphone during the call' — opposite media action"},
+    {"id": "LO-15", "class": "lexical_overlap_different_meaning_negative", "text_a": "Show me the latest news articles from Reuters.", "text_b": "Hide all news articles from Reuters.", "notes": "shared 'news articles from Reuters' — opposite UI action"},
+    {"id": "LO-16", "class": "lexical_overlap_different_meaning_negative", "text_a": "Turn on the heating in the living room.", "text_b": "Turn off the heating in the living room.", "notes": "shared 'the heating in the living room' — opposite home-automation action"},
+    {"id": "LO-17", "class": "lexical_overlap_different_meaning_negative", "text_a": "Lock my computer before I leave.", "text_b": "Unlock my computer before I leave.", "notes": "shared 'my computer before I leave' — opposite security action"},
+    {"id": "LO-18", "class": "lexical_overlap_different_meaning_negative", "text_a": "The light switch is on the wall.", "text_b": "The lightweight backpack is on the wall.", "notes": "shared 'on the wall' — light/lightweight polysemy"},
+    {"id": "LO-19", "class": "lexical_overlap_different_meaning_negative", "text_a": "Send the money to account 12345.", "text_b": "Withdraw the money from account 12345.", "notes": "shared 'the money' + 'account 12345' — opposite financial direction (safety-critical)"},
+    {"id": "LO-20", "class": "lexical_overlap_different_meaning_negative", "text_a": "Publish the draft article to the website.", "text_b": "Delete the draft article from the website.", "notes": "shared 'the draft article' + 'the website' — opposite content action"},
+
+    {"id": "RC-01", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(tenant_scope=tenant_a) What is our Q1 revenue?", "text_b": "(tenant_scope=tenant_b) What is our Q1 revenue?", "notes": "identical question text but different tenant_scope — cache MUST NOT reuse across tenants. Enforced by namespace/tenant_id in SemanticCachePayload; proven by W1p2 schema probe."},
+    {"id": "RC-02", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(written_at=0 age=30d) What is the weather today?", "text_b": "(now) What is the weather today?", "notes": "identical question text but entry is expired. Enforced by freshness_class_for_age; NEG-5 probe proves expired entries classify as cold."},
+    {"id": "RC-03", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(embedding_model_id='') What is ML?", "text_b": "(embedding_model_id='bge-m3-v1') What is ML?", "notes": "identical question but one entry has no model ref. Enforced by SemanticCachePayload required field; NEG-6 probe proves embedding_model_id has no default."},
+    {"id": "RC-04", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(reason_codes=['unsafe_xyz']) What is AI?", "text_b": "(reason_codes=['hybrid_threshold_pass']) What is AI?", "notes": "identical question but one entry uses unsafe reuse class. Enforced by _VALID_REASON_CODES; NEG-7 probe proves unknown codes raise at construction."},
+    {"id": "RC-05", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(policy_tier=public) What is our internal profit margin?", "text_b": "(policy_tier=confidential) What is our internal profit margin?", "notes": "identical question but different policy tier. Cache MUST NOT cross policy boundaries. Enforced by policy tier field in SemanticCachePayload."},
+    {"id": "RC-06", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(user_id=alice) Show me my last order.", "text_b": "(user_id=bob) Show me my last order.", "notes": "identical question text but different user_id. Cache MUST NOT reuse across users within the same tenant. Enforced by user_id namespace field."},
+    {"id": "RC-07", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(region=us-east-1) What is our Q1 revenue?", "text_b": "(region=eu-west-1) What is our Q1 revenue?", "notes": "identical question but different region — data residency implies reuse MUST NOT cross regions."},
+    {"id": "RC-08", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(reason_codes=['unknown_code_abc']) What is AI?", "text_b": "(reason_codes=['hybrid_threshold_pass']) What is AI?", "notes": "second RC variant of NEG-7 — additional unknown code rejection coverage."},
+    {"id": "RC-09", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(written_at=0 age=90d) Current exchange rate USD to EUR?", "text_b": "(now) Current exchange rate USD to EUR?", "notes": "identical question but 90-day-old freshness. Freshness class = expired -> cache miss."},
+    {"id": "RC-10", "class": "policy_tenant_freshness_reuse_negative", "text_a": "(embedding_model_id='minilm-v1') What is our Q1 revenue?", "text_b": "(embedding_model_id='bge-m3-v1') What is our Q1 revenue?", "notes": "different embedding models — cross-model reuse forbidden; dimensional incompatibility alone is a miss."}
   ],
   "statistics": {
-    "total_pairs": 24,
-    "paraphrase_positive_count": 8,
-    "near_miss_negative_count": 6,
-    "lexical_overlap_negative_count": 6,
-    "reference_contract_negative_count": 4,
-    "similarity_measurement_pairs": 20,
-    "reference_documentation_pairs": 4
+    "total_pairs": 100,
+    "paraphrase_positive_count": 25,
+    "abbreviation_definition_positive_count": 15,
+    "short_form_reminder_positive_count": 10,
+    "near_miss_negative_count": 20,
+    "lexical_overlap_different_meaning_negative_count": 20,
+    "policy_tenant_freshness_reuse_negative_count": 10,
+    "similarity_measurement_pairs": 90,
+    "reference_documentation_pairs": 10,
+    "total_positives": 50,
+    "total_negatives": 50
   },
   "integrity": {
     "all_ids_unique": true,
     "no_empty_texts": true,
     "positives_distinct_text_a_text_b": true,
     "covers_all_required_classes": true
+  },
+  "backward_compatibility": {
+    "v1_class_renames": {
+      "lexical_overlap_negative": "lexical_overlap_different_meaning_negative",
+      "reference_contract_negative": "policy_tenant_freshness_reuse_negative"
+    },
+    "v1_ids_preserved": ["PP-01", "PP-02", "PP-03", "PP-04", "PP-05", "PP-06", "PP-07", "PP-08", "NM-01", "NM-02", "NM-03", "NM-04", "NM-05", "NM-06", "LO-01", "LO-02", "LO-03", "LO-04", "LO-05", "LO-06", "RC-01", "RC-02", "RC-03", "RC-04"],
+    "probe_non_measurable_class": "policy_tenant_freshness_reuse_negative"
   }
 }

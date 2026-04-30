@@ -44,6 +44,10 @@ In-house MCP — no upstream vendor. The canonical static dependency graph for t
 | Reload latest snapshot | `adg_reload` |
 | Close connections (lock release) | `adg_close_connections` |
 | Reopen connections | `adg_reopen_connections` |
+| **Top-N structurally central nodes (centrality MV)** | **`adg_mv_hotspot_centrality`** |
+| **Blast radius (downstream impact, hops out)** | **`adg_blast_radius`** |
+| **Semantic-edge fanout (`flows_to`/`writes_to`/...)** | **`adg_semantic_fanout`** |
+| **Pre-classified architectural concerns (P0..P3 views)** | **`adg_p_view_query`** |
 
 ## Hard Rules
 
@@ -63,10 +67,30 @@ In-house MCP — no upstream vendor. The canonical static dependency graph for t
 4. `adg_edge_fanin(relation_type='imports')` for top files → impact = violations × (1 + log10(1 + fan_in))
 5. Drive scope from rank, not arbitrary file choice
 
-**Blast radius:**
+**Blast radius (precomputed, fast):**
 1. `adg_find_node(name='X')` → ID
-2. `adg_edge_fanin(src_id=ID, relation_type='imports')` → who depends on X
-3. Recursive trace via repeated fan-in queries
+2. `adg_blast_radius(node_id=ID, hops=2)` — returns `blast_radius_direct`, `blast_radius_2hop`, `reachability_rows`. Backed by the graph projection MV; warm-cache p99 <50ms.
+3. Use `adg_edge_fanin` only when you need the literal edge rows.
+
+**Refactor target ranking (graph-layer primary):**
+1. `adg_mv_hotspot_centrality(limit=20)` → top-N by `degree_centrality` then `fan_in`
+2. For each candidate, `adg_blast_radius(node_id=…, hops=2)` to size the impact window
+3. `adg_p_view_query(view_name='v_p0_…')` to cross-reference pre-classified architectural concerns
+
+**Semantic-edge analysis (beyond `imports`):**
+- `adg_semantic_fanout(src_id=…, relation_type=…)` accepts only canonical semantic relations: `flows_to`, `writes_to`, `reads_from`, `emits_side_effect`, `controls_flow`, `resolves_callsite`. For pure `imports` use `adg_edge_fanout` instead.
+
+## L2 Runtime-Agent Consumption Contract
+
+Per **ADR-079**, L2 runtime agents (orchestrators, executors, healers) that consume the graph layer in production paths MUST:
+
+1. Use either the MCP tools above OR the in-process `tools.adg.core.service.ADGService` — never raw `sqlite3.connect()`.
+2. Declare `__adg_consumer_mode__ ∈ {proof, risk, inventory}` per the three-bucket authority model.
+3. Honor the latency contract (warm-cache p99 <50ms; cold p99 <500ms).
+4. Wrap reads in a feature-flag fallback to legacy behavior on MCP red, snapshot stale, or budget breach.
+5. Cache once-per-decision (request/trace/D2-cache window), not once-per-token.
+
+Reverse direction (L6 graph → L2 mutation) is forbidden. See ADR-079 for the canonical reference impl pattern.
 
 ## Static vs Runtime ADG
 

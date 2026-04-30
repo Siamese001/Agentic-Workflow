@@ -577,8 +577,11 @@ class SemanticCacheManager:
             CriticalInfrastructureError: If STRICT_MODE and infrastructure unavailable
         """
         self.api_key = api_key
-        # guardian: allow-magic-config
-        self.similarity_threshold = 0.98
+        # Use the canonical per-tier SSOT (line ~162) instead of a magic
+        # constant. Reads SEMANTIC_CACHE_THRESHOLD_DYNAMIC env var when set;
+        # otherwise the historical default of 0.95 (matches GPTCacheClient
+        # default and the doc comment at _TIER_THRESHOLD_DEFAULTS).
+        self.similarity_threshold = tier_similarity_threshold("dynamic")
         self.strict_mode = os.environ.get("HIVE_MIND_STRICT_MODE", "true").lower() == "true"
         self.trace_sampling_rate = float(
             os.environ.get("HIVE_MIND_TRACE_SAMPLING_RATE", str(self.DEFAULT_TRACE_SAMPLING_RATE)),

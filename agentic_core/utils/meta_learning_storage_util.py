@@ -195,11 +195,21 @@ class MetaLearningStorage:
                 if cls._memory is None:
                     try:
                         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+                            CriticalInfrastructureError,
                             SemanticCacheManager,
                         )
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
+                    except CriticalInfrastructureError as e:  # ADR-079 / W4 P4.3: STRICT-mode infra failure triggers lobotomy protocol
+                        cls._memory = None
+                        cls._lobotomized = True
+                        Logger.critical(
+                            "%s LOBOTOMY PROTOCOL ACTIVE (STRICT-mode infra unavailable): %s",
+                            agent_name,
+                            e,
+                        )
+                        cls.reset_lobotomy()
                     except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:
                         cls._memory = None
                         cls._lobotomized = True

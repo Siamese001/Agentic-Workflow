@@ -118,7 +118,16 @@ class PreRetrievalGate:
         # Determine final decision
         if denied_filters:
             decision = AccessDecision.DENY
-            reason = f"Failed filters: {', '.join(d.result for d in denied_filters)}"
+            # FilterResult dataclass (defined above) carries `filter_name` and
+            # `reason` (plus `passed` and `metadata`) -- it does NOT carry a
+            # `result` attribute. Prior code used `d.result` and would crash
+            # immediately on the first denial, which is part of why this
+            # module had zero static callers (fan-in=0 in ADG until 2026-04-30).
+            # Format reason as "<filter_name>: <reason>" pairs so deniers are
+            # legible in OTel traces and BLOCKED-contract notes.
+            reason = "Failed filters: " + ", ".join(
+                f"{d.filter_name}: {d.reason or 'denied'}" for d in denied_filters
+            )
         else:
             decision = AccessDecision.ALLOW
             reason = None
@@ -132,9 +141,14 @@ class PreRetrievalGate:
             reason=reason,
         )
 
+        # Signature is (root_trace_id, source, event, **kwargs) -- prior code
+        # passed only 2 positional args and crashed with TypeError on every
+        # invocation. Pre-2026-04-30 fix: this is the second of two latent
+        # bugs that explain why the gate had fan-in=0 in the ADG.
         _emit_records_telemetry_event(
+            f"gate_{query_id}",
             "pre_retrieval_gate",
-            f"{decision.value}_{query_id}",
+            f"decision.{decision.value}",
         )
 
         log.info(f"Gate decision for {query_id}: {decision.value}")

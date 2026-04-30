@@ -1,6 +1,7 @@
 # ADG Three-Bucket Authority Model
 
-Status: **Active — Phase 1 (Foundation)**
+Status: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30)
+Predecessor status preserved below. Open Notion Wave/Phase rows migrated to the unified plan slug.
 Created: 2026-04-29
 Owner: Cascade
 

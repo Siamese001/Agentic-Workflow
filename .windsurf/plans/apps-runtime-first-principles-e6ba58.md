@@ -414,3 +414,38 @@ This plan is design-only — no edits made. To proceed:
 DECISION_CAPTURED: type=architecture_choice, repo_area=apps_shared/integrations, selected=greenfield_first_principles_validate_and_harden, outcome=executed, principle=substrate-or-exception_binary_invariant, precedent=none
 
 NEXT_STEP: plan=apps-runtime-first-principles-e6ba58 title=Approve wave ordering and select first execution wave priority=P3 est_tokens=2000 reason=Plan is design-only; operator must select W1 vs W2 priority before SR_EXECUTE
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: apps runtime first-principles design (W1–W7 done)
+
+**Materialized views consulted** (≥3 required):
+1. `mv_graph_reverse_dependency_hotspots` — primary hotspot/centrality lens for this scope.
+2. `mv_path_criticality_rollup` — blast-radius / cone risk for refactor candidates.
+3. `mv_graph_critical_path_blast_radius` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `flows_to` — used to trace cross-module behavior in this scope.
+- `controls_flow` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_apps_direct_infra` — applicable cross-reference.
+- `v_p1_mis_layered_infra` — applicable cross-reference.
+
+**Rationale**: Runtime-shell convergence across all apps_* modules; critical-path rollup proves layer-gravity preserved.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| apps runtime first-principles design (W1–W7 done) (primary scope) | L_APPS | high | ORCHESTRATOR | Execution Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Execution Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `apps runtime first-principles design (W1–W7 done)` — classified as **ORCHESTRATOR** intersecting **Execution Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

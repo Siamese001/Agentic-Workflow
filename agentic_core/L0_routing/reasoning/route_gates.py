@@ -270,6 +270,7 @@ def check_d2_semantic_cache(
 
     try:
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
+            CriticalInfrastructureError,
             SemanticCacheManager,
         )
     except ImportError as exc:  # guardian: allow-return-none-swallow -- optional L4 dependency: missing import means D2 unavailable, None signals miss to caller
@@ -290,6 +291,11 @@ def check_d2_semantic_cache(
             corpus_version=corpus_version,
             policy_version=policy_version,
         )
+    except CriticalInfrastructureError as exc:  # ADR-079 / W4 P4.3: STRICT-mode infra failure → D2 unavailable, return None to signal miss
+        Logger.critical(
+            "route_gates: D2 unavailable (STRICT-mode infra failed): %s", exc
+        )
+        return None
     except (
         AttributeError,
         RuntimeError,

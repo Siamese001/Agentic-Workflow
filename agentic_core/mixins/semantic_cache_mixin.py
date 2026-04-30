@@ -2,9 +2,19 @@
 semantic_cache_mixin - Unified Semantic cache Access
 
 [PHASE 3 MIGRATION] Provides single interface to canonical SemanticCacheManager.
+
+W4 P4.3 (ADR-079): the ``semantic_cache`` property and the five downstream
+``semantic_*`` helpers handle ``CriticalInfrastructureError`` from
+``SemanticCacheManager.get_instance()`` gracefully — STRICT-mode init failure
+returns ``None`` from the property, and downstream helpers short-circuit to
+their documented degraded-state fallbacks instead of propagating the
+exception to caller agents.
 """
 
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -176,7 +186,16 @@ class SemanticCacheMixin:
 
     @property
     def semantic_cache(self):
-        """Return canonical SemanticCacheManager singleton (no instance caching)."""
+        """Return canonical SemanticCacheManager singleton, or ``None`` on STRICT-mode init failure.
+
+        Returns the live singleton via ``SemanticCacheManager.get_instance()``.
+        On ``CriticalInfrastructureError`` (STRICT-mode infra unavailable),
+        emits a critical log and returns ``None`` — callers MUST tolerate
+        ``None`` per ADR-079 / W4 P4.3. The five ``semantic_*`` helpers below
+        already short-circuit to documented fallbacks when the property is
+        ``None``, so subclasses that only use the helper methods need no
+        additional guards.
+        """
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
@@ -184,9 +203,19 @@ class SemanticCacheMixin:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticCacheMixin.semantic_cache"
         )
 
-        from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+            CriticalInfrastructureError,
+            SemanticCacheManager,
+        )
 
-        return SemanticCacheManager.get_instance()
+        try:
+            return SemanticCacheManager.get_instance()
+        except CriticalInfrastructureError as exc:  # ADR-079 / W4 P4.3: STRICT-mode infra failure must not bubble up to mixin consumers
+            logger.critical(
+                "SemanticCacheMixin: STRICT-mode infra unavailable; semantic cache disabled: %s",
+                exc,
+            )
+            return None
 
     def semantic_recall(
         self,
@@ -203,8 +232,13 @@ class SemanticCacheMixin:
                 flows are gated inside SemanticCacheManager.recall(). Pass None for
                 non-D2 paths where bypass enforcement is not required.
             replay_mode: Set True to suppress all cache reads (replay scenarios).
+
+        Returns ``None`` when the singleton is unavailable (STRICT-mode init failure).
         """
-        return self.semantic_cache.recall(
+        cache = self.semantic_cache
+        if cache is None:
+            return None
+        return cache.recall(
             context,
             namespace,
             flow_class=flow_class,
@@ -218,8 +252,11 @@ class SemanticCacheMixin:
         result: dict[str, Any],
         feedback_score: float | None = None,
     ) -> None:
-        """Store in semantic cache working memory (Redis, 24h TTL)."""
-        self.semantic_cache.learn(context, namespace, result, feedback_score)
+        """Store in semantic cache working memory (Redis, 24h TTL). No-op on STRICT-mode failure."""
+        cache = self.semantic_cache
+        if cache is None:
+            return
+        cache.learn(context, namespace, result, feedback_score)
 
     def semantic_promote(
         self,
@@ -228,16 +265,25 @@ class SemanticCacheMixin:
         result: dict[str, Any],
         feedback_score: float,
     ) -> bool:
-        """Promote high-value memory to long-term vector store."""
-        return self.semantic_cache.promote_to_long_term(context, namespace, result, feedback_score)
+        """Promote high-value memory to long-term vector store. Returns ``False`` on STRICT-mode failure."""
+        cache = self.semantic_cache
+        if cache is None:
+            return False
+        return cache.promote_to_long_term(context, namespace, result, feedback_score)
 
     def semantic_update_feedback(self, context: str, namespace: str, feedback_score: float) -> bool:
-        """Update feedback score for existing memory; auto-promotes if above threshold."""
-        return self.semantic_cache.update_feedback_score(context, namespace, feedback_score)
+        """Update feedback score for existing memory; auto-promotes if above threshold. ``False`` on STRICT-mode failure."""
+        cache = self.semantic_cache
+        if cache is None:
+            return False
+        return cache.update_feedback_score(context, namespace, feedback_score)
 
     def semantic_stats(self) -> dict[str, Any]:
-        """Return cache hit/miss statistics."""
-        return self.semantic_cache.get_statistics()
+        """Return cache hit/miss statistics. Returns empty dict on STRICT-mode failure."""
+        cache = self.semantic_cache
+        if cache is None:
+            return {}
+        return cache.get_statistics()
 
 
 semantic_cache_mixin = SemanticCacheMixin

@@ -97,9 +97,16 @@ def _measure_similarities(dataset: dict) -> list[dict]:
     """Embed every measurable pair via bge_runtime and compute cosine sim."""
     from agentic_core.embeddings import bge_runtime  # noqa: PLC0415
 
+    # v1 class was "reference_contract_negative"; v2 renamed to
+    # "policy_tenant_freshness_reuse_negative". Both remain non-measurable
+    # (contract-level documentation anchors, not similarity pairs).
+    NON_MEASURABLE_CLASSES = {
+        "reference_contract_negative",
+        "policy_tenant_freshness_reuse_negative",
+    }
     measurable = [
         p for p in dataset["pairs"]
-        if p["class"] != "reference_contract_negative"
+        if p["class"] not in NON_MEASURABLE_CLASSES
     ]
     # Batch-embed all texts for speed
     all_texts: list[str] = []
@@ -108,6 +115,11 @@ def _measure_similarities(dataset: dict) -> list[dict]:
         all_texts.append(p["text_b"])
     vectors = bge_runtime.bge_embed_batch(all_texts)
 
+    POSITIVE_CLASSES = {
+        "paraphrase_positive",
+        "abbreviation_definition_positive",
+        "short_form_reminder_positive",
+    }
     results = []
     for i, p in enumerate(measurable):
         vec_a = vectors[i * 2]
@@ -117,7 +129,7 @@ def _measure_similarities(dataset: dict) -> list[dict]:
             "id": p["id"],
             "class": p["class"],
             "expected_label": (
-                "POSITIVE" if p["class"] == "paraphrase_positive" else "NEGATIVE"
+                "POSITIVE" if p["class"] in POSITIVE_CLASSES else "NEGATIVE"
             ),
             "text_a": p["text_a"],
             "text_b": p["text_b"],

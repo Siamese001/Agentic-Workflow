@@ -44,16 +44,16 @@ pipelines:
       - id: C01_acl_gate
         description: "Plan: pre-retrieval gate (ACL, tenant, freshness)."
         module: agentic_core/knowledge/gates/preretrieval_gate.py
-        # Marked deferred 2026-04-30: ADG fan-in=0 across all production
-        # layers; only `resolves_callsite` + `emits_side_effect` edges
-        # exist, indicating the gate is registered dynamically but not
-        # statically imported by any production caller. Concrete
-        # static-wiring is part of the C0 wiring plan.
-        status: deferred
-        defer_ref: >
-          DEFERRED_SCOPE 2026-04-30 — preretrieval_gate has no static import
-          callers; concrete tenant/ACL/freshness policy + static wiring is
-          part of plan c0-context-engine-wiring-fix-9e42a1.md (C0-W2.3).
+        # Activated 2026-04-30 (Author-Gate refactor_scope: finish_two_items
+        # _introduced_this_chat). Wired into agentic_core/L0_routing/
+        # c0_retrieval/dispatcher.py as new pipeline stage C0.0b
+        # (post-preflight, pre-plan). Two latent bugs that prevented prior
+        # adoption (FilterResult.result attribute error; missing `event`
+        # arg in telemetry emit) were fixed in the same change. The gate
+        # short-circuits with a sealed BLOCKED contract on DENY/REQUIRE_AUTH
+        # and threads ALLOW/RESTRICTED through to retrieval planning.
+        min_fanin_from_layers: [L0, L1, L3, L_PG]
+        status: active
 
       - id: C02_recall
         description: "Fetch: hybrid recall (dense + sparse + raw chunks)."

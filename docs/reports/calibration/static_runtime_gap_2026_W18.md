@@ -1,7 +1,7 @@
 # Static↔Runtime ADG Gap Report
 
-- **Generated:** 2026-04-29 01:10:10 UTC
-- **Static snapshot:** `C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04282026_2058.sqlite`
+- **Generated:** 2026-04-30 16:40:59 UTC
+- **Static snapshot:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_04302026_0604.sqlite`
 - **Lookback:** 30 days
 - **Static L5/L6 nodes scanned:** 200
 - **Runtime observed layers:** L0_ROUTING, L4_STATE, L6_OBSERVABILITY
@@ -23,9 +23,9 @@
 | L5 | 17 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.evaluate` | `agentic_core/L5_safety/runtime_gates/__init__.py` |
 | L5 | 14 | `ADG::Symbol::agentic_core.L5_safety.identity.guardrail_bank.GuardrailOutcome` | `agentic_core/L5_safety/identity/guardrail_bank.py` |
 | L5 | 14 | `ADG::Symbol::agentic_core.L5_safety.reasoning.hierarchy_healer.HierarchyAgent` | `agentic_core/L5_safety/reasoning/hierarchy_healer.py` |
+| L6 | 14 | `ADG::Symbol::agentic_core.L6_observability.utils.evaluation.async_eval_packet.get_async_eval_ingester` | `agentic_core/L6_observability/utils/evaluation/async_eval_packet.py` |
+| L6 | 14 | `ADG::Symbol::agentic_core.L6_observability.utils.evaluation.async_eval_packet.get_shadow_eval_ingester` | `agentic_core/L6_observability/utils/evaluation/async_eval_packet.py` |
 | L5 | 13 | `ADG::Symbol::agentic_core.L5_safety.identity.principal_verifier.VerificationResult` | `agentic_core/L5_safety/identity/principal_verifier.py` |
-| L6 | 13 | `ADG::Symbol::agentic_core.L6_observability.utils.evaluation.async_eval_packet.get_async_eval_ingester` | `agentic_core/L6_observability/utils/evaluation/async_eval_packet.py` |
-| L6 | 13 | `ADG::Symbol::agentic_core.L6_observability.utils.evaluation.async_eval_packet.get_shadow_eval_ingester` | `agentic_core/L6_observability/utils/evaluation/async_eval_packet.py` |
 | L5 | 12 | `ADG::Symbol::agentic_core.L5_safety.adapters.human_approval_adapter.AdapterError` | `agentic_core/L5_safety/adapters/human_approval_adapter.py` |
 | L5 | 12 | `ADG::Symbol::agentic_core.L5_safety.adapters.human_approval_adapter.ApprovalOutcomeKind` | `agentic_core/L5_safety/adapters/human_approval_adapter.py` |
 | L5 | 11 | `ADG::Symbol::agentic_core.L5_safety.adapters.human_approval_adapter.ApprovalHandle` | `agentic_core/L5_safety/adapters/human_approval_adapter.py` |
@@ -33,10 +33,10 @@
 | L5 | 11 | `ADG::Symbol::agentic_core.L5_safety.identity.runtime_entry_sweep.RuntimeLaneDecisionWithSweep` | `agentic_core/L5_safety/identity/runtime_entry_sweep.py` |
 | L5 | 11 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.GateContext` | `agentic_core/L5_safety/runtime_gates/__init__.py` |
 | L5 | 11 | `ADG::Symbol::agentic_core.L5_safety.types.heal_request_types.HealResult` | `agentic_core/L5_safety/types/heal_request_types.py` |
+| L6 | 11 | `ADG::Symbol::agentic_core.L6_observability.semconv.gen_ai.ATTR_OPERATION_NAME` | `agentic_core/L6_observability/semconv/gen_ai.py` |
 | L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.enforcement.ingress_envelope_check.ClarificationRequired` | `agentic_core/L5_safety/enforcement/ingress_envelope_check.py` |
 | L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.reasoning.FileClassificationAgent.FileClassificationAgent` | `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` |
 | L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.reasoning.location_validator.LocationValidatorAgent` | `agentic_core/L5_safety/reasoning/location_validator.py` |
-| L5 | 9 | `ADG::Symbol::agentic_core.L5_safety.enforcement.ingress_envelope_check.StampedRequest` | `agentic_core/L5_safety/enforcement/ingress_envelope_check.py` |
 
 ## Interpretation
 

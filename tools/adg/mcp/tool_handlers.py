@@ -195,3 +195,75 @@ def adg_runtime_info() -> JsonDict:
 def adg_reload() -> JsonDict:
     """Reload the latest ADG SQLite snapshot if current connection is stale."""
     return _run_tool("Auto-reload", runtime.reload_latest_snapshot)
+
+
+# ---------------------------------------------------------------------------
+# W3 P3.3 — graph-layer primitives (MV / semantic edges / P-views)
+# ---------------------------------------------------------------------------
+
+
+def adg_mv_hotspot_centrality(limit: int = 50) -> JsonDict:
+    """Top-N structurally central nodes from `mv_hotspot_centrality`."""
+
+    def operation() -> JsonDict:
+        cleaned_limit = require_positive_limit(limit)
+        response = runtime.service.get_mv_hotspot_centrality(cleaned_limit)
+        return {
+            "status": response.status,
+            "data": response.data,
+            "backend_used": response.backend_used,
+        }
+
+    return _run_tool("MV hotspot centrality query", operation)
+
+
+def adg_blast_radius(node_id: str, hops: int = 2) -> JsonDict:
+    """Blast-radius (downstream impact) for a node from the graph projection."""
+
+    def operation() -> JsonDict:
+        cleaned_node_id = require_non_empty_str("node_id", node_id)
+        # hops is an integer; clamp via require_positive_limit
+        cleaned_hops = require_positive_limit(hops)
+        response = runtime.service.get_blast_radius(cleaned_node_id, cleaned_hops)
+        return {
+            "status": response.status,
+            "data": response.data,
+            "backend_used": response.backend_used,
+        }
+
+    return _run_tool("Blast radius query", operation)
+
+
+def adg_semantic_fanout(src_id: str, relation_type: str, limit: int = 30) -> JsonDict:
+    """Outgoing edges from `src_id` via a canonical semantic relation type."""
+
+    def operation() -> JsonDict:
+        cleaned_src_id = require_non_empty_str("src_id", src_id)
+        cleaned_relation_type = require_non_empty_str("relation_type", relation_type)
+        cleaned_limit = require_positive_limit(limit)
+        response = runtime.service.get_semantic_fanout(
+            cleaned_src_id, cleaned_relation_type, cleaned_limit
+        )
+        return {
+            "status": response.status,
+            "data": response.data,
+            "backend_used": response.backend_used,
+        }
+
+    return _run_tool("Semantic fanout query", operation)
+
+
+def adg_p_view_query(view_name: str, limit: int = 100) -> JsonDict:
+    """Return up to `limit` rows from a canonical P-view (`v_p[0-3]_<name>`)."""
+
+    def operation() -> JsonDict:
+        cleaned_view_name = require_non_empty_str("view_name", view_name)
+        cleaned_limit = require_positive_limit(limit)
+        response = runtime.service.query_p_view(cleaned_view_name, cleaned_limit)
+        return {
+            "status": response.status,
+            "data": response.data,
+            "backend_used": response.backend_used,
+        }
+
+    return _run_tool("P-view query", operation)

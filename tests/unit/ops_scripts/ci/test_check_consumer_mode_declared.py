@@ -327,6 +327,15 @@ class TestLiveRepoState:
         assert report.declared >= 3, (
             f"expected ≥3 declared consumers from W4 exemplars; got {report.declared}"
         )
-        # And there should also be many 'missing' rows (~70 unannotated consumers
-        # is the expected residue per the W4 deferral).
-        assert report.missing > 0
+        # W3 P3.1 (2026-04-30) converged the sweep — all detected consumers
+        # MUST now declare. Prior W4-era residue of ~70 unannotated files has
+        # been fully annotated across sessions (125 in earlier sessions + the
+        # final 2 in P3.1: `tools/adg/integration/common.py` and
+        # `tools/adg/integration/calls_ingester.py`). Gate is fail-closed on
+        # any regression — if this assertion flips back, a new consumer landed
+        # without the declaration and must be annotated before commit.
+        assert report.missing == 0, (
+            f"expected 0 unannotated consumers post-P3.1; got {report.missing}. "
+            f"Run `python ops_scripts/ci/annotate_consumer_mode.py --apply` "
+            f"to close the gap."
+        )

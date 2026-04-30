@@ -1,0 +1,105 @@
+{
+  "gate": "G-APPS-SPINE-DELEGATION",
+  "tier": "B",
+  "timestamp": "2026-04-30T22:33:39.348790+00:00",
+  "mode": "strict",
+  "snapshot": "artifacts\\adg\\adg_indexed_04302026_1319.sqlite",
+  "snapshot_mtime_utc": "2026-04-30T17:31:55.243066+00:00",
+  "packages_scanned": 9,
+  "violations": 0,
+  "allowlist_active": 1,
+  "allowlist_expired": 0,
+  "status": "ok",
+  "per_package": [
+    {
+      "package": "apps_eval",
+      "spine_imports": 9,
+      "total_imports": 1032,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_exec",
+      "spine_imports": 4,
+      "total_imports": 911,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_lic",
+      "spine_imports": 12,
+      "total_imports": 2866,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_qna",
+      "spine_imports": 2,
+      "total_imports": 431,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_research",
+      "spine_imports": 7,
+      "total_imports": 734,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_rfp",
+      "spine_imports": 3,
+      "total_imports": 711,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_rg",
+      "spine_imports": 25,
+      "total_imports": 8033,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_shared",
+      "spine_imports": 82,
+      "total_imports": 7384,
+      "is_violation": false,
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
+      "allowlist_expired": false
+    },
+    {
+      "package": "apps_underwriting_ai",
+      "spine_imports": 0,
+      "total_imports": 693,
+      "is_violation": false,
+      "allowlisted": true,
+      "allowlist_reason": "Known baseline from W3 P3.2 \u2014 0/693 imports into agentic_core spine (apps_underwriting_ai evolved as a standalone mini-runtime before ADR-078 was ratified). Burndown tracked in W5 P5.4 plan row of adg-three-bucket-unified-c4f8e2.",
+      "allowlist_expires": "2026-05-31",
+      "allowlist_expired": false
+    }
+  ]
+}

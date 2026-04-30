@@ -444,10 +444,22 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     async def _get_openai_embedding(self, content: str) -> list[float]:
         """Get embedding from OpenAI via factory seam."""
-        from agentic_core.embeddings.embedding_factory import create_embedding_client
+        from agentic_core.embeddings.embedding_factory import (
+            EmbeddingDisabledError,
+            create_embedding_client,
+        )
         from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
 
-        client = create_embedding_client("openai", "text-embedding-3-small")
+        try:
+            client = create_embedding_client("openai", "text-embedding-3-small")
+        except ValueError as exc:  # W4 P4.2: create_embedding_client raises ValueError on unsupported provider OR transitively from register_embedding_client (empty name)
+            Logger.error(
+                "openai_embedding_factory_value_error: factory rejected OpenAI provider/model: %s",
+                exc,
+            )
+            raise
+        except EmbeddingDisabledError:  # documented disabled-mode signal — caller path handles
+            raise
         guarded = EmbeddingInputGuard.guard(content, "u0_user_prompt")
         return await client.get_embedding(guarded)
 

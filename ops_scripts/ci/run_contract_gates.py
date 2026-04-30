@@ -357,6 +357,13 @@ def main():
         # W5 of three-bucket-gap-remediation-069806: per-class threshold gate
         # over the gap report. Bypass: THREE_BUCKET_GAP_BYPASS=1.
         ("3B3 three-bucket gap thresholds", "ops_scripts/ci/check_three_bucket_gap_thresholds.py"),
+        # ADR-078 / W3 P3.2 + W5 P5.1 of adg-three-bucket-unified-c4f8e2:
+        # every apps_*/ top-level package MUST import the agentic_core spine
+        # (L0/L1/L2). Default: STRICT (W5 P5.1 flip, 2026-04-30). Rollback:
+        # APPS_SPINE_DELEGATION_GATE_MODE=advisory. Bypass:
+        # APPS_SPINE_DELEGATION_GATE_BYPASS=1. Baseline allowlisted via
+        # config/apps_spine_delegation_allowlist.yaml (expires 2026-05-31).
+        ("3B7 apps_* spine delegation (ADR-078)", "ops_scripts/ci/check_apps_spine_delegation.py"),
         # W6 of three-bucket-gap-remediation-069806: in-toto/SLSA signing of
         # the snapshot. Verifies Ed25519 signature + file SHA-256 +
         # three-bucket content digest. Bypass: ADG_SIGNATURE_BYPASS=1.

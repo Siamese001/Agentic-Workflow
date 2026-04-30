@@ -1,0 +1,23 @@
+# Allowlist for `check_apps_spine_delegation.py` — apps_* packages exempt
+# from the spine delegation invariant per ADR-078.
+#
+# Each entry MUST carry:
+#   - package: top-level apps_*/ directory name
+#   - reason:  non-empty justification (bare "" rejected)
+#   - expires: ISO date; gate fails closed when entry is past expiry
+#
+# Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2)
+# Audit log: docs/reports/adg/apps_spine_delegation_gate_report.json
+
+allowed_packages:
+  # Added W5 P5.1 (2026-04-30): strict-by-default flip exposed the pre-existing
+  # P3.2 baseline violation. Burndown is scheduled for W5 P5.4 alongside the
+  # pre-commit / run_contract_gates wiring flip. Expires 2026-05-31 — if P5.4
+  # hasn't landed by then the gate fails closed and forces resolution.
+  - package: apps_underwriting_ai
+    reason: >-
+      Known baseline from W3 P3.2 — 0/693 imports into agentic_core spine
+      (apps_underwriting_ai evolved as a standalone mini-runtime before
+      ADR-078 was ratified). Burndown tracked in W5 P5.4 plan row of
+      adg-three-bucket-unified-c4f8e2.
+    expires: '2026-05-31'

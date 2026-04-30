@@ -1,12 +1,9 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-04-30T10:31:21.442413+00:00",
-  "snapshot_used": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5489\\popen-gw21\\test_report_written_to_disk0\\snap.sqlite",
+  "timestamp": "2026-04-30T22:52:09.487493+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_99999999_9999.sqlite",
   "strict_mode": true,
-  "total_rows": 0,
-  "by_authority_status": {},
-  "violations": [],
-  "violation_count": 0,
-  "status": "ok"
+  "status": "skip",
+  "reason": "v_runtime_proof table missing \u2014 W1 schema not applied"
 }

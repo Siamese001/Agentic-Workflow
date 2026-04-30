@@ -1,0 +1,40 @@
+{
+  "interview_slug": "synthetic-mini",
+  "built_at": "2026-04-30T00:00:00Z",
+  "builder_version": "0.1.0",
+  "template_set_version": "v1",
+  "cards": [
+    "00_RUNTIME_ROOT.md",
+    "01_ROUTING_MANIFEST.md",
+    "02_LIVE_MODE.md",
+    "03_INTERVIEWER_LENS.md",
+    "04_COMPANY_OVERLAY.md",
+    "05_ARCHITECTURE_CORE.md",
+    "06_DATA_PLATFORM.md",
+    "07_MEASUREMENT.md",
+    "08_GOVERNANCE.md",
+    "09_SEMANTIC_GROUNDING.md",
+    "10_DS_TO_PLATFORM.md",
+    "11_GLOBAL_ENGINEERING.md",
+    "12_PRODUCTIZATION.md",
+    "13_EXECUTIVE_FIT.md",
+    "14_STAR_BANK.md",
+    "15_RCA.md",
+    "16_CROSS_EXAM.md",
+    "17_QUESTIONS_AND_90_DAY_PLAN.md"
+  ],
+  "routes_covered": [
+    "executive_fit",
+    "star_proof",
+    "rca",
+    "architecture",
+    "governance",
+    "ds_to_platform",
+    "productization",
+    "global_engineering",
+    "cross_exam"
+  ],
+  "interviewers": [
+    "Jane Doe"
+  ]
+}

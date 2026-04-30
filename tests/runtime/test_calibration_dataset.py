@@ -23,8 +23,12 @@ class TestDatasetExists:
 
     def test_schema_version(self):
         d = _read()
-        assert d["schema_version"] == 1
-        assert d["dataset_id"] == "rtc-req-055-calibration-v1"
+        # v2 supersedes v1; both contract-equivalent at the floor level.
+        assert d["schema_version"] in (1, 2)
+        assert d["dataset_id"] in (
+            "rtc-req-055-calibration-v1",
+            "rtc-req-055-calibration-v2",
+        )
 
 
 class TestClassCoverage:
@@ -33,12 +37,21 @@ class TestClassCoverage:
     def test_all_required_classes_declared(self):
         d = _read()
         classes = set(d["classes"].keys())
-        assert classes == {
+        # v1 names OR v2 renamed names (both are contract-equivalent)
+        v1_classes = {
             "paraphrase_positive",
             "near_miss_negative",
             "lexical_overlap_negative",
             "reference_contract_negative",
         }
+        v2_classes_floor = {
+            "paraphrase_positive",
+            "near_miss_negative",
+            "lexical_overlap_different_meaning_negative",
+            "policy_tenant_freshness_reuse_negative",
+        }
+        # v1 exact OR v2 superset
+        assert classes == v1_classes or v2_classes_floor.issubset(classes)
 
     def test_paraphrase_positives_floor(self):
         d = _read()
@@ -52,12 +65,26 @@ class TestClassCoverage:
 
     def test_lexical_overlap_negatives_floor(self):
         d = _read()
-        count = sum(1 for p in d["pairs"] if p["class"] == "lexical_overlap_negative")
+        # v1 name OR v2 renamed name
+        count = sum(
+            1 for p in d["pairs"]
+            if p["class"] in (
+                "lexical_overlap_negative",
+                "lexical_overlap_different_meaning_negative",
+            )
+        )
         assert count >= 6
 
     def test_reference_contract_negatives_floor(self):
         d = _read()
-        count = sum(1 for p in d["pairs"] if p["class"] == "reference_contract_negative")
+        # v1 name OR v2 renamed name
+        count = sum(
+            1 for p in d["pairs"]
+            if p["class"] in (
+                "reference_contract_negative",
+                "policy_tenant_freshness_reuse_negative",
+            )
+        )
         assert count >= 4
 
 
@@ -73,8 +100,12 @@ class TestSizeFloor:
     def test_measurable_pair_count(self):
         """Non-reference pairs (those the probe actually measures)."""
         d = _read()
+        NON_MEASURABLE = {
+            "reference_contract_negative",
+            "policy_tenant_freshness_reuse_negative",
+        }
         measurable = [p for p in d["pairs"]
-                      if p["class"] != "reference_contract_negative"]
+                      if p["class"] not in NON_MEASURABLE]
         assert len(measurable) >= 16
 
 

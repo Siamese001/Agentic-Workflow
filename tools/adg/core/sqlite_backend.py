@@ -12,6 +12,7 @@ __adg_consumer_mode__ = "inventory"
 
 
 import logging
+import re
 import sqlite3
 import threading
 from pathlib import Path
@@ -323,6 +324,87 @@ class SQLiteBackend:
             "edge_count": edges,
             "sqlite_path": str(self._sqlite_path),
         }
+
+    # -----------------------------------------------------------------
+    # W3 P3.3 — graph-layer primitives (mv_*, P-views) for §22 consumers
+    # -----------------------------------------------------------------
+
+    # Whitelist of canonical semantic relation types (per
+    # `.windsurf/rules/adg-canonical-invariants.md` §3 + ADR-074). Values
+    # outside this set are rejected with ValueError so callers cannot
+    # smuggle arbitrary relation_type strings into the graph-layer surface.
+    SEMANTIC_RELATION_TYPES: tuple[str, ...] = (
+        "flows_to",
+        "writes_to",
+        "reads_from",
+        "emits_side_effect",
+        "controls_flow",
+        "resolves_callsite",
+    )
+
+    # Whitelist pattern for P-view names. P-views follow the
+    # `v_p<N>_<word>` shape (N ∈ {0,1,2,3}). Any name outside this pattern
+    # is rejected to prevent SQL injection via view_name parameter.
+    _P_VIEW_NAME_RE = re.compile(r"^v_p[0-3]_[a-z0-9_]+$")
+
+    def get_mv_hotspot_centrality(self, limit: int = 50) -> list[dict[str, Any]]:
+        """Top-N rows from ``mv_hotspot_centrality`` ordered by degree centrality.
+
+        Returns rows with columns: snapshot_id, node_id, adg_name, layer,
+        resolved_path, fan_in, fan_out, degree, betweenness_approx,
+        degree_centrality. Ordered DESC by degree_centrality so the most
+        structurally central nodes come first.
+        """
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=50)
+        try:
+            cur = conn.execute(
+                "SELECT * FROM mv_hotspot_centrality "
+                "ORDER BY degree_centrality DESC, fan_in DESC LIMIT ?",
+                (safe_limit,),
+            )
+            return [dict(r) for r in cur.fetchall()]
+        except sqlite3.OperationalError as exc:
+            logger.warning("mv_hotspot_centrality unavailable: %s", exc)
+            return []
+
+    def list_p_views(self) -> list[str]:
+        """Return all P-view names present in the snapshot, sorted."""
+        conn = self._require_conn()
+        cur = conn.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type='view' AND name LIKE 'v_p%' ORDER BY name"
+        )
+        return [r[0] for r in cur.fetchall()]
+
+    def query_p_view(self, view_name: str, limit: int = 100) -> list[dict[str, Any]]:
+        """Return up to ``limit`` rows from a P-view.
+
+        ``view_name`` MUST match the canonical P-view pattern
+        (``v_p[0-3]_<word>``) and MUST exist in ``sqlite_master``.
+        Both checks raise ``ValueError`` to prevent SQL injection through
+        the view_name parameter — the SELECT below uses string substitution,
+        which is unavoidable for table/view names but safe given the
+        whitelist + existence check.
+        """
+        if not isinstance(view_name, str) or not self._P_VIEW_NAME_RE.match(view_name):
+            raise ValueError(
+                f"view_name must match v_p[0-3]_<word> pattern; got {view_name!r}"
+            )
+        safe_limit = self._normalize_limit(limit, default=100)
+        conn = self._require_conn()
+        # Existence check via parameterized sqlite_master query (no injection).
+        exists = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='view' AND name = ?",
+            (view_name,),
+        ).fetchone()
+        if exists is None:
+            raise ValueError(f"P-view {view_name!r} does not exist in snapshot")
+        # Safe to interpolate now: name passed both regex + existence check.
+        cur = conn.execute(f"SELECT * FROM {view_name} LIMIT ?", (safe_limit,))
+        return [dict(r) for r in cur.fetchall()]
+
+    # -----------------------------------------------------------------
 
     def get_violations(self, limit: int = 100) -> list[dict[str, Any]]:
         """Fetch anti-pattern violations."""

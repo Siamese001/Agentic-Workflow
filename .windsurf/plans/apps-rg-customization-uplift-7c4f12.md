@@ -88,3 +88,37 @@ This is an apps-layer customization plan (L_APP not L0..L6 core). Graph-layer dr
 ## Execution Mode
 
 User directive: continuous execution through all four waves without check-ins. Cascade emits silent `DECISION_CAPTURED:` markers for refactor-class decisions and `DEFERRED_SCOPE:` markers at the end for deferred items.
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: apps_rg customization uplift
+
+**Materialized views consulted** (≥3 required):
+1. `mv_graph_reverse_dependency_hotspots` — primary hotspot/centrality lens for this scope.
+2. `mv_hotspot_centrality` — blast-radius / cone risk for refactor candidates.
+3. `mv_debt_concentration_hotspots` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `flows_to` — used to trace cross-module behavior in this scope.
+- `controls_flow` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p2_duplicated_adapters` — applicable cross-reference.
+
+**Rationale**: apps_rg engine cluster is the largest reverse-dependency hotspot; uplift must not increase debt density.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| apps_rg customization uplift (primary scope) | L_APPS | high | ORCHESTRATOR | Execution Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Execution Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `apps_rg customization uplift` — classified as **ORCHESTRATOR** intersecting **Execution Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

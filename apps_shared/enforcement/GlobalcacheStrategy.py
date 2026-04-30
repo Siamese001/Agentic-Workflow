@@ -525,10 +525,18 @@ class GlobalCache:
         """Lazy-load SemanticCacheManager singleton for L2 delegation."""
         if self._hive is None:
             try:
-                from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
+                from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+                    CriticalInfrastructureError,
+                    SemanticCacheManager,
+                )
 
                 self._hive = SemanticCacheManager.get_instance()
-            except Exception as e:  # guardian: allow-silent-swallow
+            except CriticalInfrastructureError as e:  # ADR-079 / W4 P4.3: STRICT-mode infra failure → L2 disabled with critical log
+                logger.critical(
+                    f"[GlobalCache] STRICT-mode infra unavailable, L2 disabled: {e}"
+                )
+                self._hive = False
+            except (ImportError, OSError, RuntimeError, ValueError) as e:  # guardian: allow-return-none-swallow -- optional L2 backend; L1 LRU continues to function
                 logger.warning(f"[GlobalCache] SemanticCacheManager unavailable, L2 disabled: {e}")
                 self._hive = False
         return self._hive if self._hive is not False else None

@@ -59,6 +59,27 @@ exclude: |
 
 repos:
   # ============================================================================
+  # TIER -1: MM Dual-State Guard (fail-fast before any stash/restore)
+  # ============================================================================
+  # Blocks the silent commit-rollback bug where pre-commit stashes unstaged
+  # changes via `git stash -k`, a hook (e.g. ruff-format) modifies the file,
+  # the stash pop hits a conflict, pre-commit silently resolves with the
+  # worktree version, eats the staged half, and `git commit` reports
+  # 'Everything up-to-date'. Detects any file in dual state (staged AND
+  # worktree-dirty) and aborts with a clear recovery message.
+  # Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
+  # Bypass: PRECOMMIT_MM_GUARD_BYPASS=1.
+  - repo: local
+    hooks:
+      - id: precommit-mm-dual-state-guard
+        name: "T-1: MM Dual-State Guard (W4 P4.1)"
+        entry: py ops_scripts/ci/precommit_mm_guard.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+  # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
   # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -581,6 +602,26 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+        require_serial: true
+
+      # -- T7r: apps_* spine delegation (ADR-078) ----------------------------------
+      # Asserts every apps_*/ top-level package imports the agentic_core spine
+      # (L0_routing | L1_cognition | L2_execution). Catches the forbidden
+      # `apps_* standalone mini-runtime` mode via direct ADG SQLite query.
+      # Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
+      # Default: STRICT (W5 P5.1 flip, 2026-04-30) — exit 1 on violation.
+      # Rollback: APPS_SPINE_DELEGATION_GATE_MODE=advisory (exit 0, JSON only).
+      # Bypass:   APPS_SPINE_DELEGATION_GATE_BYPASS=1 (skip entirely).
+      # Baseline: `apps_underwriting_ai` is allowlisted via
+      #   config/apps_spine_delegation_allowlist.yaml (expires 2026-05-31).
+      # Trigger: edits under apps_*/ Python files OR the gate / allowlist itself.
+      - id: apps-spine-delegation
+        name: "T7r: apps_* spine delegation (ADR-078)"
+        entry: py ops_scripts/ci/check_apps_spine_delegation.py
+        language: system
+        pass_filenames: false
+        files: ^(apps_[a-z_]+/.*\.py|config/apps_spine_delegation_allowlist\.yaml|ops_scripts/ci/check_apps_spine_delegation\.py)$
+        always_run: false
         require_serial: true
 
       # -- T7m: Canonical Pipeline Schema (J1 gate on manifest edits) ----------------

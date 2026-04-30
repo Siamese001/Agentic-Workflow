@@ -158,6 +158,62 @@ def adg_reload() -> dict[str, Any]:
     return handlers.adg_reload()
 
 
+# ---------------------------------------------------------------------------
+# W3 P3.3 — graph-layer primitives (MV / semantic edges / P-views)
+# Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def adg_mv_hotspot_centrality(limit: int = 50) -> dict[str, Any]:
+    """Top-N structurally central nodes from `mv_hotspot_centrality`.
+
+    Returns rows ordered DESC by degree_centrality, then fan_in. Each row
+    carries node_id, adg_name, layer, resolved_path, fan_in, fan_out,
+    degree, betweenness_approx, degree_centrality. Use this to drive
+    refactor target ranking per constitutional §22.
+    """
+    return handlers.adg_mv_hotspot_centrality(limit)
+
+
+@mcp.tool()
+def adg_blast_radius(node_id: str, hops: int = 2) -> dict[str, Any]:
+    """Blast-radius (downstream impact) for a node, up to `hops` hops out.
+
+    Sources from the graph projection (Cypher-style overlay) when available;
+    falls back to direct SQL when projection is missing. Use this for
+    refactor-impact estimation and wave ordering.
+    """
+    return handlers.adg_blast_radius(node_id, hops)
+
+
+@mcp.tool()
+def adg_semantic_fanout(
+    src_id: str, relation_type: str, limit: int = 30
+) -> dict[str, Any]:
+    """Outgoing edges via a canonical semantic relation type.
+
+    Valid relation_type values: flows_to, writes_to, reads_from,
+    emits_side_effect, controls_flow, resolves_callsite. Use
+    `adg_edge_fanout` for `imports` and other non-semantic edges.
+    """
+    return handlers.adg_semantic_fanout(src_id, relation_type, limit)
+
+
+@mcp.tool()
+def adg_p_view_query(view_name: str, limit: int = 100) -> dict[str, Any]:
+    """Return up to `limit` rows from a canonical P-view (`v_p[0-3]_<name>`).
+
+    P-views are pre-classified architectural concerns: P0=critical layer
+    breaks, P1=mis-layered/zero-caller infra, P2=duplicated/dormant,
+    P3=isolated experimental. Names are validated against the
+    `v_p[0-3]_<word>` whitelist + sqlite_master existence check before
+    SELECT — invalid view_name returns an error response with the list
+    of available P-views.
+    """
+    return handlers.adg_p_view_query(view_name, limit)
+
+
 if __name__ == "__main__":
     # Guard against Windsurf double-spawn: two adg_sqlite processes would
     # both hold SQLite read locks on the ADG snapshot and can deadlock when

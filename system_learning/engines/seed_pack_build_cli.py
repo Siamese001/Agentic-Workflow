@@ -308,11 +308,19 @@ def main() -> None:
 
             embedder = DeterministicHashEmbedder(dimensions=args.dimensions)
         else:
-            embedder = create_embedding_client(
-                provider=args.provider,
-                model=args.model,
-                dimensions=args.dimensions,
-            )
+            try:
+                embedder = create_embedding_client(
+                    provider=args.provider,
+                    model=args.model,
+                    dimensions=args.dimensions,
+                )
+            except ValueError as exc:  # W4 P4.2: create_embedding_client raises ValueError on unsupported provider OR transitively from register_embedding_client (empty name). CLI fails loud — operator must correct args before retrying.
+                print(
+                    f"ERROR: cannot build seed pack — embedding factory rejected "
+                    f"provider={args.provider!r} model={args.model!r}: {exc}",
+                    file=sys.stderr,
+                )
+                raise SystemExit(2) from exc
         print(f"Model dimensions: {args.dimensions}")
         model_checksum = hashlib.sha256(
             f"{args.provider}_{args.model}_{args.dimensions}".encode(),

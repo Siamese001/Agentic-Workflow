@@ -167,6 +167,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Force strict mode (override THREE_BUCKET_GAP_STRICT env var)",
     )
+    parser.add_argument(
+        "--min-health-score",
+        type=float,
+        default=None,
+        help=(
+            "W5 P5.2: minimum health_score_pct_triplet_attested (0.0-100.0). "
+            "Overrides THREE_BUCKET_GAP_MIN_HEALTH_SCORE env var. Default "
+            "threshold is 0.0 (reporting only) until the three-bucket soak "
+            "window (P5.5) establishes a calibrated floor."
+        ),
+    )
     args = parser.parse_args(argv)
 
     if os.environ.get("THREE_BUCKET_GAP_BYPASS") == "1":
@@ -199,6 +210,35 @@ def main(argv: list[str] | None = None) -> int:
     ]
     violations = [r for r in cls_results if r.violation]
 
+    # W5 P5.2: optional health-score floor. Resolved from CLI flag → env var →
+    # default 0.0 (reporting only). Emits a synthetic violation when the
+    # observed triplet-attested percentage falls below the floor.
+    health_score_value = float(report.get("health_score_pct_triplet_attested", 0.0))
+    health_floor_raw = args.min_health_score
+    if health_floor_raw is None:
+        _env_floor = os.environ.get("THREE_BUCKET_GAP_MIN_HEALTH_SCORE", "0.0")
+        try:
+            health_floor_raw = float(_env_floor)
+        except ValueError:
+            print(
+                f"[three_bucket_gap] WARN: invalid THREE_BUCKET_GAP_MIN_HEALTH_SCORE="
+                f"{_env_floor!r}; treating as 0.0"
+            )
+            health_floor_raw = 0.0
+    health_floor: float = max(0.0, min(100.0, health_floor_raw))
+    health_violation_msg = ""
+    if health_floor > 0.0 and health_score_value < health_floor:
+        health_violation_msg = (
+            f"health_score {health_score_value:.2f}% < floor {health_floor:.2f}%"
+        )
+
+    violation_strings = [
+        f"{r.defect_class} ({r.severity}): {r.violation_reason}" for r in violations
+    ]
+    if health_violation_msg:
+        violation_strings.append(f"HEALTH_SCORE (P1): {health_violation_msg}")
+    total_violations = len(violations) + (1 if health_violation_msg else 0)
+
     result = GateResult(
         timestamp=datetime.now(timezone.utc).isoformat(),
         report_path=str(args.report.relative_to(REPO_ROOT))
@@ -207,32 +247,27 @@ def main(argv: list[str] | None = None) -> int:
         snapshot=str(report.get("snapshot", "")),
         strict_mode=strict,
         runtime_view_present=bool(report.get("runtime_view_present", False)),
-        health_score_pct_triplet_attested=float(
-            report.get("health_score_pct_triplet_attested", 0.0)
-        ),
+        health_score_pct_triplet_attested=health_score_value,
         classes=[asdict(r) for r in cls_results],
-        violations=[
-            f"{r.defect_class} ({r.severity}): {r.violation_reason}"
-            for r in violations
-        ],
-        status="ok" if not violations else "violations",
+        violations=violation_strings,
+        status="ok" if total_violations == 0 else "violations",
     )
 
     GATE_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     GATE_REPORT_PATH.write_text(json.dumps(asdict(result), indent=2), encoding="utf-8")
 
     print(
-        f"[three_bucket_gap] classes={len(cls_results)} violations={len(violations)} "
+        f"[three_bucket_gap] classes={len(cls_results)} violations={total_violations} "
         f"runtime_view_present={result.runtime_view_present} "
         f"health_score={result.health_score_pct_triplet_attested:.1f}% "
-        f"strict={strict}"
+        f"health_floor={health_floor:.1f}% strict={strict}"
     )
-    if violations:
+    if total_violations:
         print(f"[three_bucket_gap] details written to {GATE_REPORT_PATH}")
-        for v in violations:
+        for v in violation_strings:
             print(f"  - {v}")
 
-    if violations and strict:
+    if total_violations and strict:
         return 1
     return 0
 

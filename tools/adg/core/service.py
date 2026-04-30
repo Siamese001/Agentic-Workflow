@@ -409,3 +409,65 @@ class ADGService:
             },
             backend_used="sqlite",
         )
+
+    # ---------------------------------------------------------------------
+    # W3 P3.3 — graph-layer primitives exposed to MCP consumers
+    # ---------------------------------------------------------------------
+
+    def get_mv_hotspot_centrality(self, limit: int = 50) -> ADGResponse:
+        """Top-N nodes from `mv_hotspot_centrality` (most structurally central first)."""
+        rows = self._sqlite.get_mv_hotspot_centrality(limit)
+        return ADGResponse(
+            status="ok",
+            data={"hotspots": rows, "count": len(rows)},
+            backend_used="sqlite",
+        )
+
+    def get_semantic_fanout(
+        self,
+        src_id: str,
+        relation_type: str,
+        limit: int = 30,
+    ) -> ADGResponse:
+        """Outgoing semantic-edge fanout (flows_to / writes_to / etc.).
+
+        Validates ``relation_type`` against the canonical semantic-edge
+        whitelist (per ADR-074 + adg-canonical-invariants §3) before
+        delegating to the existing edge-fanout read path. Pure imports
+        edges should still go through ``adg_edge_fanout``.
+        """
+        from tools.adg.core.sqlite_backend import SQLiteBackend  # noqa: PLC0415
+
+        if relation_type not in SQLiteBackend.SEMANTIC_RELATION_TYPES:
+            return ADGResponse(
+                status="error",
+                data={
+                    "message": (
+                        f"relation_type {relation_type!r} is not a semantic edge; "
+                        f"valid: {list(SQLiteBackend.SEMANTIC_RELATION_TYPES)}. "
+                        "Use adg_edge_fanout for `imports` and other non-semantic edges."
+                    ),
+                    "valid_relation_types": list(SQLiteBackend.SEMANTIC_RELATION_TYPES),
+                },
+                backend_used="sqlite",
+            )
+        return self.get_edge_fanout(src_id, relation_type, limit)
+
+    def query_p_view(self, view_name: str, limit: int = 100) -> ADGResponse:
+        """Return rows from a canonical P-view (`v_p[0-3]_<name>`)."""
+        try:
+            rows = self._sqlite.query_p_view(view_name, limit)
+        except ValueError as exc:
+            return ADGResponse(
+                status="error",
+                data={
+                    "message": str(exc),
+                    "available_p_views": self._sqlite.list_p_views(),
+                },
+                backend_used="sqlite",
+            )
+        return ADGResponse(
+            status="ok",
+            data={"view_name": view_name, "rows": rows, "count": len(rows)},
+            backend_used="sqlite",
+        )

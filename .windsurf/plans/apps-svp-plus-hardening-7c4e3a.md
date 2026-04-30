@@ -104,3 +104,37 @@ ADG Provenance: backend=sqlite, snapshot=adg_indexed_04292026_1606.sqlite
 | GAP-2 | Contract-test seed doesn't replace a real golden corpus | W2.1 explicitly labeled "seed" — golden corpus is W4.4 |
 | GAP-3 | apps_lic THREAT_MODEL covers control-plane but not full hop registry | Scoped to W1.3; full hop-stage threat decomposition is post-W4 |
 | GAP-4 | Property-based tests only on top-3 apps in W2.2 | Other 4 apps get contract-test only; property-based deferred to a NEXT_STEP |
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: SVP+ apps hardening multi-wave
+
+**Materialized views consulted** (≥3 required):
+1. `mv_exemptions_near_critical_paths` — primary hotspot/centrality lens for this scope.
+2. `mv_debt_concentration_hotspots` — blast-radius / cone risk for refactor candidates.
+3. `mv_dependency_cone_risk` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `controls_flow` — used to trace cross-module behavior in this scope.
+- `emits_side_effect` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_write_bypass_uwg` — applicable cross-reference.
+
+**Rationale**: SVP hardening enforces gates at app boundaries; exemption-creep = silent safety loss.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| SVP+ apps hardening multi-wave (primary scope) | L_APPS | high | SAFETY_GATEKEEPER | Security Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Security Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `SVP+ apps hardening multi-wave` — classified as **SAFETY_GATEKEEPER** intersecting **Security Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

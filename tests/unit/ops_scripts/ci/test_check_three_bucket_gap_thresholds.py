@@ -234,6 +234,101 @@ class TestConfigOverride:
 
 
 # ---------------------------------------------------------------------------
+# W5 P5.2 — health_score floor enforcement
+# ---------------------------------------------------------------------------
+
+
+def _write_report_with_health(tmp_path: Path, classes: list[dict], health_pct: float) -> Path:
+    """Variant of _write_report that lets us set health_score directly."""
+    report = {
+        "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
+        "snapshot": "synthetic.sqlite",
+        "runtime_view_present": True,
+        "total_edges_classified": sum(c.get("edge_count", 0) for c in classes),
+        "health_score_pct_triplet_attested": health_pct,
+        "summary_by_class": classes,
+    }
+    p = tmp_path / "synthetic_gap_report.json"
+    p.write_text(json.dumps(report), encoding="utf-8")
+    return p
+
+
+class TestHealthScoreFloor:
+    def test_default_floor_is_zero_reporting_only(self, tmp_path: Path):
+        """Default floor is 0.0 — health at any level above 0 passes."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=1.5)
+        rc, out = _run_gate("--report", str(rpt))
+        assert rc == 0
+        assert "health_floor=0.0%" in out
+
+    def test_floor_cli_triggers_violation_when_below(self, tmp_path: Path):
+        """--min-health-score forces a violation when health < floor."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=45.0)
+        rc, out = _run_gate("--report", str(rpt), "--min-health-score", "60")
+        assert rc == 1
+        assert "HEALTH_SCORE" in out
+        assert "45.00%" in out and "60.00%" in out
+
+    def test_floor_cli_passes_when_at_or_above(self, tmp_path: Path):
+        """Health exactly at the floor passes (strict >, not >=)."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=60.0)
+        rc, _ = _run_gate("--report", str(rpt), "--min-health-score", "60")
+        assert rc == 0
+
+    def test_floor_env_var_triggers_violation(self, tmp_path: Path):
+        """THREE_BUCKET_GAP_MIN_HEALTH_SCORE env var also activates the floor."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=10.0)
+        rc, out = _run_gate(
+            "--report", str(rpt),
+            env={"THREE_BUCKET_GAP_MIN_HEALTH_SCORE": "50.0"},
+        )
+        assert rc == 1
+        assert "HEALTH_SCORE" in out
+
+    def test_floor_cli_overrides_env(self, tmp_path: Path):
+        """CLI flag takes precedence over env var."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=70.0)
+        # Env says floor=90 (would violate), CLI says floor=50 (would pass).
+        rc, _ = _run_gate(
+            "--report", str(rpt), "--min-health-score", "50",
+            env={"THREE_BUCKET_GAP_MIN_HEALTH_SCORE": "90"},
+        )
+        assert rc == 0
+
+    def test_floor_invalid_env_falls_back_to_zero(self, tmp_path: Path):
+        """Malformed env var emits WARN + defaults to 0.0 (reporting only)."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=1.0)
+        rc, out = _run_gate(
+            "--report", str(rpt),
+            env={"THREE_BUCKET_GAP_MIN_HEALTH_SCORE": "notanumber"},
+        )
+        assert rc == 0
+        assert "invalid THREE_BUCKET_GAP_MIN_HEALTH_SCORE" in out
+
+    def test_floor_advisory_mode_exits_zero_on_health_violation(self, tmp_path: Path):
+        """Advisory mode reports the health violation but exits 0."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=10.0)
+        rc, out = _run_gate(
+            "--report", str(rpt), "--min-health-score", "50",
+            env={"THREE_BUCKET_GAP_STRICT": "0"},
+        )
+        assert rc == 0
+        assert "HEALTH_SCORE" in out
+
+    def test_health_violation_written_to_report_file(self, tmp_path: Path):
+        """Health-score violation appears in the JSON gate report."""
+        rpt = _write_report_with_health(tmp_path, _all_zero_classes(), health_pct=10.0)
+        _run_gate("--report", str(rpt), "--min-health-score", "50")
+        gate_report = (
+            REPO_ROOT / "docs" / "reports" / "adg" / "three_bucket_gap_gate_report.json"
+        )
+        d = json.loads(gate_report.read_text(encoding="utf-8"))
+        assert any("HEALTH_SCORE" in v for v in d["violations"]), (
+            f"health-score violation not in report: {d['violations']}"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Gate-report file schema
 # ---------------------------------------------------------------------------
 

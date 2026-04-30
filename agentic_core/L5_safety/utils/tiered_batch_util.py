@@ -253,13 +253,27 @@ class TieredBatchProcessor:
         """
         if self._semantic_cache is None and self.use_semantic_cache:
             try:
-                from agentic_core.L5_safety.reasoning.semantic_cache_manager_config import (
+                # W4 P4.3 fix: prior import path
+                # `agentic_core.L5_safety.reasoning.semantic_cache_manager_config`
+                # was a dead module — every call raised ImportError that the
+                # narrow handler below did not catch, propagating to callers.
+                # Switched to the canonical L4 location + singleton accessor
+                # per the singleton-violation rule in semantic_cache_manager.__init__.
+                from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+                    CriticalInfrastructureError,
                     SemanticCacheManager,
                 )
 
-                self._semantic_cache = SemanticCacheManager(api_key=self.agent.api_key)
+                self._semantic_cache = SemanticCacheManager.get_instance(
+                    api_key=self.agent.api_key
+                )
                 Logger.info("[TIERED] SemanticCacheManager initialized")
-            except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
+            except CriticalInfrastructureError as e:  # ADR-079 / W4 P4.3: STRICT-mode infra failure → tiered batching falls back to no-cache mode
+                Logger.critical(
+                    f"[TIERED] STRICT-mode infra unavailable; tiered batch will run without cache: {e}"
+                )
+                self._semantic_cache = None
+            except (ImportError, RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- optional cache; tiered batching continues without it
                 Logger.warning(f"[TIERED] SemanticCacheManager unavailable: {e}")
                 self._semantic_cache = None
         return self._semantic_cache

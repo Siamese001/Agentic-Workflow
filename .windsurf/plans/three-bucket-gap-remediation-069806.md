@@ -1,6 +1,7 @@
 # Three-Bucket ADG Gap Remediation
 
-Status: **Done — W1..W7 landed end-to-end, W8 close-out captured here (2026-04-29)**
+Status: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30)
+Predecessor status preserved below. W1 producer-bucket wiring landed; W2–W8 (runtime traces, GenAI semconv, strict-mode flip, gap-report enforcement, in-toto signing, NOT NULL graduation, close-out) rolled into unified W2/W5/W6.
 Created: 2026-04-29
 Owner: Cascade
 Plan slug: `three-bucket-gap-remediation-069806`
@@ -427,3 +428,40 @@ This plan is complete when:
 6. ADR-NNN (W6 in-toto signing) merged.
 7. All waves marked **Done** in this plan; Notion Wave/Phase Convergence
    rows updated.
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: three-bucket ADG gap remediation (W1–W7 done, W8 close-out)
+
+**Materialized views consulted** (≥3 required):
+1. `mv_graph_chokepoint_bridges` — primary hotspot/centrality lens for this scope.
+2. `mv_path_criticality_rollup` — blast-radius / cone risk for refactor candidates.
+3. `mv_dependency_cone_risk` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `flows_to` — used to trace cross-module behavior in this scope.
+- `controls_flow` — used to trace cross-module behavior in this scope.
+- `resolves_callsite` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_apps_direct_infra` — applicable cross-reference.
+- `v_p1_mis_layered_infra` — applicable cross-reference.
+- `v_p1_zero_caller_infra` — applicable cross-reference.
+
+**Rationale**: Three-bucket model unifies precise/imprecise/runtime ADG; chokepoint bridges = inter-bucket boundaries.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| three-bucket ADG gap remediation (W1–W7 done, W8 close-out) (primary scope) | L_OPS | high | ORCHESTRATOR | Observability Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Observability Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `three-bucket ADG gap remediation (W1–W7 done, W8 close-out)` — classified as **ORCHESTRATOR** intersecting **Observability Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

@@ -2,12 +2,11 @@
   "gate": "G-ADG-CERTIFIED",
   "tier": "B",
   "verdict": "ADG_NOT_CERTIFIED",
-  "strict_mode": true,
-  "timestamp": "2026-04-30T10:31:20.364873+00:00",
+  "strict_mode": false,
+  "timestamp": "2026-04-30T22:52:09.412675+00:00",
   "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_99999999_9999.sqlite",
   "blockers": [
-    "triplet completeness (read-time)",
-    "ADG snapshot signed (in-toto/SLSA)"
+    "triplet completeness (read-time)"
   ],
   "sub_gates": [
     {
@@ -19,7 +18,7 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "=========================================================\nsnapshot   : adg_indexed_04302026_0604.sqlite\nmv_*       :   47 (min 30)\nv_p*       :   15 (min 3)\ninfra      :    6 (min 1)\nbase       :   26\nprojection : pass (mode=strict)\n             adg_graph_04302026_0604.sqlite\n========================================================================\n[PASS] snapshot contains full graph-layer overlay\n",
+      "stdout_tail": "=========================================================\nsnapshot   : adg_indexed_04302026_1319.sqlite\nmv_*       :   69 (min 30)\nv_p*       :   15 (min 3)\ninfra      :    6 (min 1)\nbase       :   26\nprojection : pass (mode=strict)\n             adg_graph_04302026_1319.sqlite\n========================================================================\n[PASS] snapshot contains full graph-layer overlay\n",
       "label": "graph-layer evidence (snapshot)",
       "script": "ops_scripts/ci/check_snapshot_has_mvs.py",
       "contributes_to_certification": true
@@ -46,7 +45,7 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[INFO] consumers_scanned=141  declared=141  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
+      "stdout_tail": "[INFO] consumers_scanned=144  declared=144  missing=0  invalid=0  mode_mismatch=0\n[OK] every detected ADG consumer declares __adg_consumer_mode__\n",
       "label": "consumer mode declared",
       "script": "ops_scripts/ci/check_consumer_mode_declared.py",
       "contributes_to_certification": true
@@ -55,25 +54,25 @@
       "ok": true,
       "exit_code": 0,
       "details": "",
-      "stdout_tail": "[three_bucket_gap] classes=7 violations=0 runtime_view_present=True health_score=0.1% strict=True\n",
+      "stdout_tail": "[three_bucket_gap] classes=7 violations=0 runtime_view_present=True health_score=0.0% health_floor=0.0% strict=True\n",
       "label": "three-bucket gap thresholds",
       "script": "ops_scripts/ci/check_three_bucket_gap_thresholds.py",
       "contributes_to_certification": true
     },
     {
-      "ok": false,
-      "exit_code": 1,
+      "ok": true,
+      "exit_code": 0,
       "details": "",
-      "stdout_tail": "[adg_snapshot_signed] verified=False file_sha_match=False content_digest_match=False violations=1 strict=True\n  - envelope missing at artifacts\\adg\\adg_indexed_99999999_9999.sqlite.intoto.jsonl; run: python tools/adg/sign_snapshot.py\n[adg_snapshot_signed] report: docs\\reports\\adg\\adg_snapshot_signed_gate_report.json\n",
+      "stdout_tail": "[adg_snapshot_signed] verified=True file_sha_match=True content_digest_match=True violations=0 strict=True\n[adg_snapshot_signed] report: docs\\reports\\adg\\adg_snapshot_signed_gate_report.json\n",
       "label": "ADG snapshot signed (in-toto/SLSA)",
       "script": "ops_scripts/ci/check_adg_snapshot_signed.py",
       "contributes_to_certification": true
     },
     {
-      "ok": false,
-      "exit_code": 1,
+      "ok": true,
+      "exit_code": 0,
       "details": "",
-      "stdout_tail": "[schema_graduation] status=blocked already=0 needs=0 blockers=4 strict=True\n[schema_graduation] details: docs\\reports\\adg\\schema_graduation_readiness_gate.json\n  - column 'bucket' not present in edges table\n  - column 'resolution_status' not present in edges table\n  - column 'authority_status' not present in edges table\n  - column 'authority' not present in edges table\n",
+      "stdout_tail": "[schema_graduation] status=blocked already=0 needs=0 blockers=4 strict=False\n[schema_graduation] details: docs\\reports\\adg\\schema_graduation_readiness_gate.json\n  - column 'bucket' not present in edges table\n  - column 'resolution_status' not present in edges table\n  - column 'authority_status' not present in edges table\n  - column 'authority' not present in edges table\n",
       "label": "schema graduation readiness",
       "script": "ops_scripts/ci/check_schema_graduation_readiness.py",
       "contributes_to_certification": false

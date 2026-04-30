@@ -321,6 +321,7 @@ class ExecutionOrchestrator:
         """
         try:
             from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
+                CriticalInfrastructureError,
                 SemanticCacheManager,
             )
 
@@ -343,6 +344,12 @@ class ExecutionOrchestrator:
                 corpus_version=corpus_version,
                 policy_version=policy_version,
             )
+        except CriticalInfrastructureError as _e:  # ADR-079 / W4 P4.3: strict-mode infra failure must not fail the request — orchestration already succeeded
+            Logger.critical(
+                "[L0-ORCH] D2 semantic cache learn skipped (STRICT-mode infra unavailable): %s",
+                _e,
+            )
+            return
         except (
             ImportError,
             RuntimeError,

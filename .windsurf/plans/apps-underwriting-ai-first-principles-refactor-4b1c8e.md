@@ -74,3 +74,38 @@ Successor plan after three-bucket:
 ## Next Action
 
 W0.1 ADG hotspot scan, then W1.2 reference-implementation note. Spec instance is already authored.
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: apps_underwriting_ai first-principles refactor
+
+**Materialized views consulted** (≥3 required):
+1. `mv_dependency_cone_risk` — primary hotspot/centrality lens for this scope.
+2. `mv_graph_reverse_dependency_hotspots` — blast-radius / cone risk for refactor candidates.
+3. `mv_hotspot_centrality` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `writes_to` — used to trace cross-module behavior in this scope.
+- `flows_to` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_apps_direct_infra` — applicable cross-reference.
+- `v_p0_write_bypass_uwg` — applicable cross-reference.
+
+**Rationale**: Underwriting decision_packet_assembler writes durable decisions; bypass-UWG check is mandatory.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| apps_underwriting_ai first-principles refactor (primary scope) | L_APPS | high | STATE_NODE | Write Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | Write Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `apps_underwriting_ai first-principles refactor` — classified as **STATE_NODE** intersecting **Write Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

@@ -63,28 +63,46 @@ contracts:
 
   - id: register-embedding-client-value-error
     description: >-
-      register_embedding_client raises ValueError on empty-name registration
-      and EmbeddingSovereigntyViolationError on duplicate registration. At
-      least one caller must handle ValueError (or Exception) — a silent
-      duplicate-registration path would corrupt the embedding registry.
+      ValueError propagates to callers of create_embedding_client from two
+      paths: (1) directly from `create_embedding_client` itself when an
+      unsupported provider is requested, and (2) transitively from
+      `register_embedding_client` (the internal registry write — only ever
+      invoked from inside `create_embedding_client`) on empty-name
+      registration. Callers MUST handle ValueError so neither failure mode
+      yields an unhandled exception at the embedding seam.
+      W4 P4.2 (2026-04-30): all 3 callers (EmbeddingSovereignAgent,
+      enhanced_rag_retrieval_cache, seed_pack_build_cli) now have precise
+      ValueError handlers. Contract id retained for back-compat with the
+      `lazy-import-arch-defect-review` plan; `raiser_symbol` corrected from
+      private `register_embedding_client` (zero direct external callers) to
+      public `create_embedding_client` (the actual caller-facing entry).
+      Promoted warn→error per W4 P4.4 of plan adg-three-bucket-unified-c4f8e2.
     raiser_module: agentic_core/embeddings/embedding_factory.py
-    raiser_symbol: register_embedding_client
+    raiser_symbol: create_embedding_client
     exception_class: ValueError
     parent_classes: [Exception]
     require_n_handlers: 1
-    severity: warn
-    plan_id: lazy-import-arch-defect-review
+    severity: error  # W4 P4.2 + P4.4: promoted — 3/3 callers covered, regression-safe
+    plan_id: adg-three-bucket-unified-c4f8e2
 
   - id: semcache-initialize-critical-infra
     description: >-
       SemanticCacheManager._initialize raises CriticalInfrastructureError in
-      STRICT mode when Redis/L2 is unreachable. The get_instance path MUST
-      propagate or handle this error — callers relying on the cache need to
-      know it is unavailable, not receive a partially-initialized singleton.
+      STRICT mode when Redis/L2 is unreachable. _initialize is private and
+      only invoked from _create_instance (the singleton factory); CIE
+      propagates through get_instance() — the public entry point — so
+      callers MUST wrap their get_instance() call in
+      `except CriticalInfrastructureError`. A swallow-free path here surfaces
+      infra unavailability instead of silently returning a partially-
+      initialized singleton.
+      W4 P4.3 (2026-04-30): all 6 callers (execution_orchestrator, route_gates,
+      semantic_cache_mixin, meta_learning_storage_util, GlobalcacheStrategy,
+      tiered_batch_util) now have the precise handler. Contract promoted
+      warn→error per W4 P4.4 of plan adg-three-bucket-unified-c4f8e2.
     raiser_module: agentic_core/L4_state/utils/memory/semantic_cache_manager.py
-    raiser_symbol: SemanticCacheManager._initialize
+    raiser_symbol: SemanticCacheManager.get_instance
     exception_class: CriticalInfrastructureError
     parent_classes: [Exception]
     require_n_handlers: 1
-    severity: warn
-    plan_id: semcache-make-live-7a2d4b
+    severity: error  # W4 P4.4: promoted — 6/6 callers covered, regression-safe
+    plan_id: adg-three-bucket-unified-c4f8e2

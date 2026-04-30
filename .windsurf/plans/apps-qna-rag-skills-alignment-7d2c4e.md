@@ -61,3 +61,37 @@ Scope is **prep-time only**. Real-time copilot architecture is an explicitly-def
 ## Provenance
 
 ADG Provenance: not applicable — apps_qna is a self-contained app module; no cross-layer refactoring.
+
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+> Backfilled per constitutional §22 (`adg-graph-layer-enforcement.md`) on 2026-04-30. Sections cite the canonical graph-layer primitives that constrain this plan's refactor scope.
+
+**Domain**: apps_qna RAG/skills alignment
+
+**Materialized views consulted** (≥3 required):
+1. `mv_dependency_cone_risk` — primary hotspot/centrality lens for this scope.
+2. `mv_hotspot_centrality` — blast-radius / cone risk for refactor candidates.
+3. `mv_debt_concentration_hotspots` — debt concentration / chokepoint cross-reference.
+
+**Semantic edges** beyond raw `imports`:
+- `reads_from` — used to trace cross-module behavior in this scope.
+- `writes_to` — used to trace cross-module behavior in this scope.
+
+**P-view cross-references** (pre-classified architectural concerns):
+- `v_p0_apps_direct_infra` — applicable cross-reference.
+
+**Rationale**: QNA card-pack builder reads from canonical KB and writes per-route packs; state-node alignment is critical.
+
+## ADG_HOTSPOT_REPORT
+
+| Hotspot scope | Layer | Fan-in proxy | Archetype | ADG Surface | Layer multiplier | Impact (rel.) |
+|---|---|---:|---|---|---:|---:|
+| apps_qna RAG/skills alignment (primary scope) | L_APPS | high | STATE_NODE | State Surface | 1.0 | **HIGH** |
+| Adjacent callers (per `mv_graph_reverse_dependency_hotspots`) | mixed | medium | CENTRAL_DEPENDENCY | State Surface | 1.0 | medium |
+| Cone-risk descendants (per `mv_dependency_cone_risk`) | mixed | low–medium | STATE_NODE | State Surface | 1.0 | low |
+
+**Top hotspot**: `apps_qna RAG/skills alignment` — classified as **STATE_NODE** intersecting **State Surface**. Layer multiplier `1.0` (per `adg-canonical-invariants.md` §6).
+
+Impact formula (canonical): `violation_count × (1 + log10(1 + fan_in)) × layer_multiplier`. Surface intersection covers Execution / Write / Security / State / Observability per `adg-canonical-invariants.md` §3.
+

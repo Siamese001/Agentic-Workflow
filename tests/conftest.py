@@ -33,6 +33,11 @@ import pytest
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
+# W2 P2.1 of plan adg-three-bucket-unified-c4f8e2: register the OTel
+# runtime-observability fixture as a pytest plugin so any test marked
+# @pytest.mark.runtime_observability gets span capture + runtime-ADG ingest.
+pytest_plugins = ("tests._runtime_observability_plugin",)
+
 
 # Standard fixtures for path semantics
 @pytest.fixture
