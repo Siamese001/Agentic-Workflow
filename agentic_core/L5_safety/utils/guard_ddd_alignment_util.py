@@ -168,10 +168,7 @@ _emit_validated_by_safety_plane("p1", "guard_ddd_alignment_util", "safety_valida
 _emit_invokes_eval("p1", "guard_ddd_alignment_util", "eval_call")
 _emit_proposal_commits_routing("p1", "guard_ddd_alignment_util", "routing_commit")
 
-try:
-    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
-except ImportError as e:
-    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
+from agentic_core.L0_routing.config.path_constants import SCRIPTS_DIR, TESTS_DIR
 
 
 def get_ddd_violations_detailed(root_path: str) -> list[dict]:

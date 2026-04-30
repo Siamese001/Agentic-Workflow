@@ -13,6 +13,7 @@ import pytest
 from agentic_core.utils.runners.ssot_discovery_validator import (
     SSOTDiscoveryValidator,
     discover_ssot,
+    get_data_files,
     get_python_files,
 )
 
@@ -139,5 +140,6 @@ class TestExports:
         assert set(mod.__all__) == {
             "SSOTDiscoveryValidator",
             "discover_ssot",
+            "get_data_files",
             "get_python_files",
         }

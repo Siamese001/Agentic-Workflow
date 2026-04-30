@@ -68,7 +68,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
+from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
 emit_replay_key("p0", "GovernanceAgent")
 emit_determinism_digest("p0", "GovernanceAgent")

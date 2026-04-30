@@ -48,7 +48,7 @@ P1–P4 table extensions in scope:
 |------|-------|--------|---------------|--------|
 | W0 | Unblock pipeline + MCP | 0.1–0.2 | ADG generates clean; MCP cold-starts | ✅ DONE |
 | W1 | Layer classification (L_UNKNOWN) | 1.1–1.3 | `L_UNKNOWN` count ≤ 10 in P1 table row | ✅ DONE — was � IN PROGRESS |
-| W2 | P1 layer inversion fix | 2.1–2.2 | `GovernanceAgent` `violates` edge = 0 | 🔴 TODO |
+| W2 | P1 layer inversion fix | 2.1–2.2 | `GovernanceAgent` `violates` edge = 0 | ✅ DONE |
 | W3 | P1–P4 table augmentation (SQLite-only) | 3.1–3.4 | New rows visible in terminal on every ADG run | 🔴 TODO |
 | W4 | God module decomposition | 4.1–4.3 | `sovereign_severity_types.py` fan-out < 200 | 🔴 TODO |
 | W5 | P2 hotspot reduction | 5.1–5.2 | P2 ratchet ceiling reduced ≥ 20% | 🔴 TODO |
@@ -72,8 +72,8 @@ P1–P4 table extensions in scope:
 | 1.1 | Map `apps_underwriting_ai` → L_APP | 1 | 30+ L_UNKNOWN modules | ~600 | ✅ DONE |
 | 1.2 | Map `L_CONTRACTS` → L_RUNTIME | 1 | Contract modules unclassified | ~500 | ✅ DONE |
 | 1.3 | ADG regen + P1 row validation | 0 | Confirm table row updated | ~200 | ✅ DONE |
-| 2.1 | Move `get_python_files` to `agentic_core` | 2 | L5→L_OPS inversion | ~1200 | 🔴 TODO |
-| 2.2 | Update `GovernanceAgent` import | 1 | P1 BLOCKS | ~500 | 🔴 TODO |
+| 2.1 | Move `get_python_files` to `agentic_core` | 2 | L5→L_OPS inversion | ~1200 | ✅ DONE |
+| 2.2 | Update `GovernanceAgent` import | 1 | P1 BLOCKS | ~500 | ✅ DONE |
 | 3.1 | Add P0 section to `_print_defect_table` | 1 | New terminal section | ~1500 | 🔴 TODO |
 | 3.2 | Add L_UNKNOWN + critical_edge rows to P1 | 1 | SQLite queries only | ~800 | 🔴 TODO |
 | 3.3 | Add writes ratio + star_import to P2 | 1 | SQLite queries only | ~600 | 🔴 TODO |

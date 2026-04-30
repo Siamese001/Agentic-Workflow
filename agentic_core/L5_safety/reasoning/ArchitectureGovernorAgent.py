@@ -104,9 +104,7 @@ from agentic_core.L0_routing.config.path_constants import TESTS_DIR, THRESHOLD
 # ops_scripts/dev_tools/L0_routing/ssot_folder_cleanup_util. Swapped this
 # module to import the util's cleanup_repository() function directly.
 # SSOTFolderCleanupAgent archive-eligible 2026-07-23.
-from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
-    cleanup_repository as _ssot_cleanup_repository,
-)
+# W2 (2026-04-30): lazy import inside call site to avoid L5->L_OPS module-level edge.
 from agentic_core.L0_routing.config.path_constants import CORE_SUBFOLDER_MAP, PROJECT_ROOT_WHITELIST
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
@@ -555,6 +553,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     Logger.info(f"[{agent_name}] Initiating SSOT Folder Cleanup (dry_run={dry_run})...")
                     # MW-12 (2026-04-24): Direct util call replaces
                     # SSOTFolderCleanupAgent instantiation. Same return shape.
+                    from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (  # noqa: PLC0415
+                        cleanup_repository as _ssot_cleanup_repository,
+                    )
                     cleanup_stats = _ssot_cleanup_repository(
                         project_root=self.project_root,
                         dry_run=dry_run,

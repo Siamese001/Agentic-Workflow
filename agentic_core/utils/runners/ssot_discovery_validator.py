@@ -37,12 +37,42 @@ def discover_ssot(name: str) -> dict[str, Any] | None:
     return validator._sources.get(name)
 
 
-def get_python_files(directory: str | Path, pattern: str = "*.py") -> list[str]:
+def get_python_files(
+    directory: str | Path,
+    pattern: str = "*.py",
+    exclude_patterns: list[str] | None = None,
+) -> list[Path]:
     """Get Python files from directory matching pattern."""
     directory = Path(directory)
     if not directory.exists():
         return []
-    return [str(f) for f in directory.rglob(pattern) if f.is_file()]
+    excludes = exclude_patterns or []
+    return [
+        f
+        for f in directory.rglob(pattern)
+        if f.is_file() and not any(ex in str(f) for ex in excludes)
+    ]
 
 
-__all__ = ["SSOTDiscoveryValidator", "discover_ssot", "get_python_files"]
+def get_data_files(
+    directory: str | Path,
+    extensions: list[str] | None = None,
+    exclude_patterns: list[str] | None = None,
+) -> list[Path]:
+    """Get data files from directory with specified extensions."""
+    directory = Path(directory)
+    if not directory.exists():
+        return []
+    exts = extensions or [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
+    excludes = exclude_patterns or []
+    result: list[Path] = []
+    for ext in exts:
+        result.extend(
+            f
+            for f in directory.rglob(f"*{ext}")
+            if f.is_file() and not any(ex in str(f) for ex in excludes)
+        )
+    return result
+
+
+__all__ = ["SSOTDiscoveryValidator", "discover_ssot", "get_python_files", "get_data_files"]

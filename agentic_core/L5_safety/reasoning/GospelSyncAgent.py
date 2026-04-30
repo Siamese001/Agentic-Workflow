@@ -98,7 +98,7 @@ from typing import Any
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
+from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
 
 @dataclass
