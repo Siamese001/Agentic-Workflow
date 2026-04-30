@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_coordinates_agents,

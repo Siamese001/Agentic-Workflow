@@ -11,7 +11,7 @@ import logging
 import re
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,

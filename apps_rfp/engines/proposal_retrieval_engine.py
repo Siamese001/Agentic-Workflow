@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_records_execution_trace,
