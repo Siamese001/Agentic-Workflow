@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import re
 import subprocess
@@ -201,6 +202,73 @@ def _is_proof_evidence_present(row: dict[str, str]) -> tuple[bool, list[str]]:
     return (not missing), missing
 
 
+def _bundle_path_for(row: dict[str, str]) -> Path:
+    """Return the canonical proof-bundle path for a ledger row."""
+    return REPO_ROOT / "artifacts" / "requirements" / "proof_bundles" / f"{row['req_id'].lower()}.json"
+
+
+def _validate_bundle_binding(row: dict[str, str]) -> list[str]:
+    """W4d-5 strict binding check for rows claiming evidence_status=PROOF_PRESENT.
+
+    Reads the proof bundle and verifies:
+      - bundle JSON parses
+      - bundle.req_id matches ledger req_id
+      - bundle.proof_status == EVIDENCE_PRESENT
+      - bundle.git_dirty_at_test_time == false
+      - bundle.git_head_at_test_time == ledger.last_passed_commit
+      - bundle.content_hash recomputes correctly (tamper detection)
+
+    Returns list of error messages; empty list means pass.
+    Skipped if evidence_status != PROOF_PRESENT.
+    """
+    if (row.get("evidence_status") or "").strip() != "PROOF_PRESENT":
+        return []
+    errs: list[str] = []
+    p = _bundle_path_for(row)
+    if not p.exists():
+        return [f"{row['req_id']}: PROOF_PRESENT but bundle missing at {p.relative_to(REPO_ROOT)}"]
+    try:
+        bundle = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return [f"{row['req_id']}: bundle unreadable: {exc}"]
+
+    if bundle.get("req_id") != row["req_id"]:
+        errs.append(
+            f"{row['req_id']}: bundle.req_id '{bundle.get('req_id')}' != ledger.req_id"
+        )
+    if bundle.get("proof_status") != "EVIDENCE_PRESENT":
+        errs.append(
+            f"{row['req_id']}: bundle.proof_status '{bundle.get('proof_status')}' != EVIDENCE_PRESENT "
+            f"(ledger says PROOF_PRESENT)"
+        )
+    if bundle.get("git_dirty_at_test_time") is not False:
+        errs.append(
+            f"{row['req_id']}: bundle.git_dirty_at_test_time={bundle.get('git_dirty_at_test_time')!r} "
+            f"-- EVIDENCE_PRESENT requires false"
+        )
+    bundle_head = (bundle.get("git_head_at_test_time") or "").strip()
+    ledger_head = (row.get("last_passed_commit") or "").strip()
+    if bundle_head != ledger_head:
+        errs.append(
+            f"{row['req_id']}: bundle.git_head_at_test_time '{bundle_head[:12]}' "
+            f"!= ledger.last_passed_commit '{ledger_head[:12]}'"
+        )
+
+    declared = bundle.get("content_hash", "")
+    bundle_no_hash = {k: v for k, v in bundle.items() if k != "content_hash"}
+    canonical = json.dumps(
+        bundle_no_hash, sort_keys=True, separators=(",", ":"),
+        default=str, ensure_ascii=True,
+    )
+    recomputed = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    if declared != recomputed:
+        errs.append(
+            f"{row['req_id']}: bundle content_hash mismatch (tamper detection): "
+            f"declared={declared[:16]}..., recomputed={recomputed[:16]}..."
+        )
+    return errs
+
+
 def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -266,6 +334,7 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
 
     # PROOF_PRESENT requires field complete AND evidence present
     bad_evid: list[str] = []
+    bad_bundle_binding: list[str] = []
     for r in rows:
         evid = (r.get("evidence_status") or "").strip()
         if evid not in ALLOWED_EVIDENCE_STATUS:
@@ -275,8 +344,18 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
             evidence_ok, _ = _is_proof_evidence_present(r)
             if not (field_ok and evidence_ok):
                 bad_evid.append(r["req_id"])
+            # W4d-5: PROOF_PRESENT MUST be backed by a clean bundle binding
+            binding_errs = _validate_bundle_binding(r)
+            if binding_errs:
+                bad_bundle_binding.append(r["req_id"])
+                for be in binding_errs:
+                    errors.append(be)
     if bad_evid:
         errors.append(f"{len(bad_evid)} rows PROOF_PRESENT without field+evidence complete: {bad_evid[:5]}")
+    if bad_bundle_binding:
+        errors.append(
+            f"{len(bad_bundle_binding)} rows PROOF_PRESENT with bundle-binding mismatch: {bad_bundle_binding[:5]}"
+        )
 
     bad_impl = [r["req_id"] for r in rows
                 if (r.get("implementation_status") or "").strip() not in ALLOWED_IMPL_STATUS]
