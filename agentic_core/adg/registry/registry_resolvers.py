@@ -393,6 +393,108 @@ def compute_registry_digest_set(edges: list[RegistryEdge]) -> list[str]:
     return sorted(digests)
 
 
+PROMPT_SLOT_REGISTRY_ROOT: Final[str] = "Registry::PromptSlot::root"
+DEFAULT_PROMPT_REGISTRY: Final[Path] = (
+    REPO_ROOT / "agentic_core" / "prompt_governance" / "registry"
+    / "prompt_registry_config.json"
+)
+
+
+def resolve_prompt_slots(
+    registry_path: Path | None = None,
+) -> list[RegistryEdge]:
+    """Resolve the canonical prompt-slot registry into registry-bucket edges.
+
+    Reads ``agentic_core/prompt_governance/registry/prompt_registry_config.json``
+    (the SSOT for all registered Jinja prompt templates) and emits one edge
+    per (slot, version) pair::
+
+        Registry::PromptSlot::root --PROMPT_SLOT_DECLARED--> Registry::PromptSlot::<slot>::<version>
+
+    The registry is keyed by template filename (e.g. ``file_placement.jinja``)
+    with a list of versioned entries. Each entry has ``version``, ``purpose``,
+    ``territory``, ``active``, ``author``, ``registered_date``. Inactive slots
+    (``active: false``) are emitted with ``resolution_status='DISABLED_REGISTRY'``
+    and ``authority_status='RISK_SIGNAL_ONLY'`` — registered but not in use,
+    same convention as disabled route-contract rules in ``resolve_route_contracts``.
+
+    Closes the W11.1 / P5.2 deferred scope from
+    ``.windsurf/plans/three-bucket-otel-view-5db409.md`` once
+    ``prompt_registry_config.json`` was confirmed as the canonical manifest.
+
+    Returns
+    -------
+    list[RegistryEdge]
+        One edge per (slot_name, version) pair. Empty list when the registry
+        file is missing / unparseable / has no ``prompts`` mapping.
+    """
+    if registry_path is None:
+        registry_path = DEFAULT_PROMPT_REGISTRY
+
+    if not registry_path.exists():
+        return []
+
+    try:
+        with registry_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+    prompts = data.get("prompts", {})
+    if not isinstance(prompts, dict):
+        return []
+
+    rel_source = _rel_path(registry_path)
+    sovereign_version = str(data.get("sovereign_version", ""))
+
+    edges: list[RegistryEdge] = []
+    for slot_name, versions in sorted(prompts.items()):
+        if not isinstance(slot_name, str) or not slot_name:
+            continue
+        if not isinstance(versions, list):
+            continue
+        for entry in versions:
+            if not isinstance(entry, dict):
+                continue
+            version = entry.get("version")
+            if not isinstance(version, str) or not version:
+                continue
+
+            active = bool(entry.get("active", True))
+            digest = _digest_json({"slot": slot_name, **entry})
+            res_status, auth_status = _classify_entry_status(
+                present=True, disabled=not active,
+            )
+
+            evidence = {
+                "registry_path": rel_source,
+                "registry_digest": digest,
+                "declaration_key": f"prompts.{slot_name}.{version}",
+                "purpose": entry.get("purpose", ""),
+                "territory": entry.get("territory", ""),
+                "author": entry.get("author", ""),
+                "registered_date": entry.get("registered_date", ""),
+                "sovereign_version": sovereign_version,
+                "active": active,
+            }
+
+            edges.append(
+                RegistryEdge(
+                    src_name=PROMPT_SLOT_REGISTRY_ROOT,
+                    dst_name=f"Registry::PromptSlot::{slot_name}::{version}",
+                    relation_type="PROMPT_SLOT_DECLARED",
+                    edge_kind="REGISTRY_DECLARATION",
+                    source_file=rel_source,
+                    symbol=f"{slot_name}@{version}",
+                    resolution_status=res_status,
+                    authority_status=auth_status,
+                    evidence_refs=evidence,
+                )
+            )
+
+    return edges
+
+
 def resolve_all_registries() -> list[RegistryEdge]:
     """Convenience: run every registered resolver and concatenate.
 
@@ -402,4 +504,5 @@ def resolve_all_registries() -> list[RegistryEdge]:
         *resolve_mcp_config(),
         *resolve_agent_specs(),
         *resolve_route_contracts(),
+        *resolve_prompt_slots(),
     ]

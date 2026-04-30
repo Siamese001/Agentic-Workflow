@@ -394,3 +394,134 @@ class TestResolveRouteContracts:
         digests = {e.evidence_refs["registry_digest"] for e in edges}
         # Two different rule_ids → two distinct digests.
         assert len(digests) == 2
+
+
+# ---------------------------------------------------------------------------
+# resolve_prompt_slots — W11.1 / P5.2 follow-up resolver
+# ---------------------------------------------------------------------------
+
+
+class TestResolvePromptSlots:
+    """Tests for the prompt-slot registry resolver added in W11.1.
+
+    The resolver reads
+    ``agentic_core/prompt_governance/registry/prompt_registry_config.json``
+    and emits one RegistryEdge per (slot_name, version) tuple."""
+
+    def _write_registry(self, path: Path, prompts: dict) -> None:
+        path.write_text(
+            json.dumps({
+                "sovereign_version": "1.0",
+                "generated_date": "2026-04-30",
+                "prompts": prompts,
+            }),
+            encoding="utf-8",
+        )
+
+    def test_emits_one_edge_per_slot_version_pair(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        reg = tmp_path / "prompts.json"
+        self._write_registry(reg, {
+            "alpha.jinja": [
+                {"version": "v1", "active": True, "purpose": "p1",
+                 "territory": "t", "author": "A", "registered_date": "2026-01-01"},
+                {"version": "v2", "active": True, "purpose": "p2",
+                 "territory": "t", "author": "A", "registered_date": "2026-02-01"},
+            ],
+            "beta.jinja": [
+                {"version": "v1", "active": True, "purpose": "p", "territory": "t",
+                 "author": "B", "registered_date": "2026-01-15"},
+            ],
+        })
+        edges = resolve_prompt_slots(registry_path=reg)
+        assert len(edges) == 3
+        for e in edges:
+            assert e.bucket == "registry"
+            assert e.relation_type == "PROMPT_SLOT_DECLARED"
+            assert e.edge_kind == "REGISTRY_DECLARATION"
+            assert e.src_name == "Registry::PromptSlot::root"
+
+    def test_inactive_slot_classified_as_risk_only(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            AUTHORITY_RISK_SIGNAL_ONLY,
+            RESOLUTION_DISABLED,
+            resolve_prompt_slots,
+        )
+        reg = tmp_path / "prompts.json"
+        self._write_registry(reg, {
+            "x.jinja": [
+                {"version": "v1", "active": False, "purpose": "deprecated",
+                 "territory": "t", "author": "A", "registered_date": "2026-01-01"},
+            ],
+        })
+        edges = resolve_prompt_slots(registry_path=reg)
+        assert len(edges) == 1
+        assert edges[0].resolution_status == RESOLUTION_DISABLED
+        assert edges[0].authority_status == AUTHORITY_RISK_SIGNAL_ONLY
+
+    def test_missing_file_returns_empty_list(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        assert resolve_prompt_slots(registry_path=tmp_path / "nope.json") == []
+
+    def test_invalid_json_returns_empty_list(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        bad = tmp_path / "bad.json"
+        bad.write_text("not json {{", encoding="utf-8")
+        assert resolve_prompt_slots(registry_path=bad) == []
+
+    def test_no_prompts_key_returns_empty_list(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        f = tmp_path / "p.json"
+        f.write_text(json.dumps({"sovereign_version": "1.0"}), encoding="utf-8")
+        assert resolve_prompt_slots(registry_path=f) == []
+
+    def test_dst_name_includes_slot_and_version(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        reg = tmp_path / "prompts.json"
+        self._write_registry(reg, {
+            "my_slot.jinja": [{"version": "v3", "active": True}],
+        })
+        edges = resolve_prompt_slots(registry_path=reg)
+        assert len(edges) == 1
+        assert edges[0].dst_name == "Registry::PromptSlot::my_slot.jinja::v3"
+        assert edges[0].symbol == "my_slot.jinja@v3"
+
+    def test_distinct_versions_have_distinct_digests(self, tmp_path: Path) -> None:
+        from agentic_core.adg.registry.registry_resolvers import (
+            resolve_prompt_slots,
+        )
+        reg = tmp_path / "prompts.json"
+        self._write_registry(reg, {
+            "a.jinja": [
+                {"version": "v1", "active": True, "purpose": "old"},
+                {"version": "v2", "active": True, "purpose": "new"},
+            ],
+        })
+        edges = resolve_prompt_slots(registry_path=reg)
+        digests = {e.evidence_refs["registry_digest"] for e in edges}
+        assert len(digests) == 2
+
+    def test_live_registry_loads(self) -> None:
+        """Smoke test against the actual canonical registry file."""
+        from agentic_core.adg.registry.registry_resolvers import (
+            DEFAULT_PROMPT_REGISTRY,
+            resolve_prompt_slots,
+        )
+        if not DEFAULT_PROMPT_REGISTRY.exists():
+            pytest.skip("canonical prompt registry not present in this checkout")
+        edges = resolve_prompt_slots()
+        # The current registry has at least 2 slots (file_placement, gravity_repair).
+        assert len(edges) >= 2
+        for e in edges:
+            assert e.bucket == "registry"
+            assert e.relation_type == "PROMPT_SLOT_DECLARED"
