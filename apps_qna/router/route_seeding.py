@@ -156,23 +156,57 @@ def seed_likely_questions_from_research(
     role_areas: list[str],
     industry_trends: list[str],
     top_n: int = _SEED_TOP_N,
+    bandit: "object | None" = None,
 ) -> list[LikelyQuestionGroup]:
     """Emit empty ``LikelyQuestionGroup`` entries in priority order.
 
-    When signal is sufficient, ranking drives the order; otherwise the
-    fallback ordering does. Each entry has an empty ``questions`` list:
-    the operator (or a later L2 synthesis wave) fills questions per route.
-    Existing operator-authored questions in a YAML are NOT overwritten —
-    callers should merge this output with any pre-existing
-    ``ResearchInputs.likely_questions`` if they want to preserve manual
-    work; the parser invokes this only when the brief has no prior
-    ``likely_questions`` (the empty-default branch).
+    Three-stage decision (W4.1):
+      1. **Bandit path** (when ``bandit`` is provided AND the cell has
+         cleared cold-start): ``AppsQnaRouteBandit.choose_routes_for_signal``
+         returns Thompson-sampled top-N ordering grounded in accumulated
+         post-rehearsal outcomes. Emits constitutional §29 paired
+         ``ROUTER_DECISION:`` markers + ledger writes.
+      2. **Embedding/keyword ranking** (W2.3): when bandit is None or
+         cold-start, BGE-M3 / keyword cosine ranking against the
+         interviewer signal drives ordering.
+      3. **Fallback ordering**: hand-curated default order fills any
+         remaining slots after threshold filtering.
+
+    Each emitted group has an empty ``questions`` list; the operator
+    (or a later L2 synthesis wave) fills questions per route. Existing
+    operator-authored questions in a YAML are preserved by the caller's
+    merge contract — this function is only invoked when the brief has
+    no prior ``likely_questions``.
+
+    The ``bandit`` parameter is typed as ``object | None`` rather than
+    ``AppsQnaRouteBandit | None`` to keep this module's import surface
+    free of the L0_routing dependency at module load time. The actual
+    ``choose_routes_for_signal`` method is duck-typed.
     """
     signal = _build_signal_document(
         interviewer_lenses=interviewer_lenses,
         role_areas=role_areas,
         industry_trends=industry_trends,
     )
+
+    # Stage 1: bandit path (W4.1).
+    if bandit is not None and signal.strip():
+        try:
+            bandit_result = bandit.choose_routes_for_signal(signal, top_n=top_n)
+        except (AttributeError, TypeError, ValueError, RuntimeError) as exc:
+            _log.debug("bandit choose_routes_for_signal failed: %r", exc)
+            bandit_result = None
+        if bandit_result is not None and bandit_result:
+            _log.info(
+                "route seeding: bandit path active, %d routes ranked",
+                len(bandit_result),
+            )
+            return [
+                LikelyQuestionGroup(route_id=sel.route_id, questions=[])
+                for sel in bandit_result
+            ]
+
+    # Stage 2: embedding/keyword ranking (W2.3) — bandit cold-start or absent.
     ranked = rank_routes_by_signal(
         registry=registry,
         signal=signal,

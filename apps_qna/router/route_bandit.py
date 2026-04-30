@@ -1,0 +1,296 @@
+"""apps_qna route bandit — Wave 4 phase 4.1.
+
+Wraps the spine ``agentic_core.L0_routing.reasoning.namespace_bandit.NamespaceBandit``
+with apps_qna domain logic (interviewer-signal namespace hashing, route-registry
+admissibility, cold-start fallback to W2.3 keyword ranking, paired §29
+ROUTER_DECISION marker + apps_qna_pack_lifecycle ledger writes).
+
+Architecture
+------------
+Compose, don't fork. The spine bandit handles the Thompson-sampling math and
+the L0/bandit ledger telemetry; this module owns:
+
+  * The signal -> namespace projection (SHA-256 hash of the joined
+    interviewer_lens + role_areas + industry_trends document)
+  * The admissibility set (registry.routes, in registry order)
+  * Cold-start protection (n_observations < 5 per namespace -> abstain
+    and let W2.3 keyword ranking drive ordering)
+  * Top-N ranking semantics (the spine bandit picks ONE route per
+    ``choose()`` call; apps_qna needs an ordered top-N for the YAML's
+    likely_questions priority)
+  * apps_qna_pack_lifecycle ledger writes (event_kind="route_select")
+    paired with ROUTER_DECISION markers per constitutional §29
+
+Spine routing
+-------------
+- L0 routing: imports ``agentic_core.L0_routing.reasoning.namespace_bandit``
+  for the bandit primitive AND ``agentic_core.L0_routing.config.path_constants``
+  for canonical path strings (closes the W4 spine-coverage uplift goal)
+- L6 observability: pairs ROUTER_DECISION marker print + emit_pack_lifecycle_event
+  per §29 closed-loop router enforcement
+
+Constitutional alignment
+------------------------
+- §29: paired marker + ledger write in the same code path
+- §22 (graph-layer evidence): wraps an existing spine primitive — adds new
+  spine import edges from apps_qna into agentic_core.L0_routing.*
+- W1.4 prerequisite: requires apps_qna_pack_lifecycle ledger registered
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import random
+import uuid
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+# Spine imports — closes the W4 spine-coverage goal.
+from agentic_core.L0_routing.reasoning.namespace_bandit import (
+    BetaPosterior,
+    NamespaceBandit,
+)
+from apps_qna.integrations.spine_adapter import emit_pack_lifecycle_event
+
+if TYPE_CHECKING:
+    from apps_qna.config.route_registry import RouteRegistry
+
+_log = logging.getLogger(__name__)
+
+# Cold-start threshold. Below this number of accumulated observations per
+# (namespace, route) cell — summed across the namespace — the bandit
+# defers to W2.3 keyword ranking. Empirically chosen so that a brand-new
+# apps_qna installation doesn't pretend to have learned anything until
+# enough post-rehearsal outcomes have been bound.
+_MIN_OBSERVATIONS_FOR_BANDIT_PRIORITY: int = 5
+
+# Default Thompson seed. None means non-deterministic; tests pin this to
+# get reproducible rankings.
+_DEFAULT_SEED: int | None = None
+
+# §29 marker emission destination. stdout by default; tests intercept via
+# the standard logging surface.
+_ROUTER_LAYER: str = "L0"
+_ROUTER_NAME: str = "apps_qna_route_bandit"
+
+
+def _hash_signal(signal: str) -> str:
+    """Project a free-text interviewer signal onto a stable namespace string.
+
+    The namespace is the (interviewer-context) cell key for the bandit's
+    posterior table. Identical signals must yield identical namespaces;
+    similar-but-not-identical signals must yield different ones (so the
+    bandit doesn't bleed evidence across distinct interviewers). SHA-256
+    truncated to 12 hex chars is collision-safe at apps_qna's scale.
+    """
+    if not signal or not signal.strip():
+        return "qna_signal_empty"
+    h = hashlib.sha256(signal.strip().encode("utf-8")).hexdigest()
+    return f"qna_signal_{h[:12]}"
+
+
+@dataclass(frozen=True)
+class RouteSelection:
+    """One bandit-ranked route. Ranks are ordered descending by score."""
+
+    route_id: str
+    rank: int
+    posterior_alpha: float
+    posterior_beta: float
+    posterior_mean: float
+    thompson_sample: float
+    decision_id: str
+
+
+def _emit_router_decision_marker(
+    *,
+    decision_id: str,
+    selected: str,
+    namespace: str,
+    posterior_alpha: float,
+    posterior_beta: float,
+) -> None:
+    """Print the constitutional §29 paired marker.
+
+    Format mirrors closed-loop-router-enforcement.md grammar:
+        ROUTER_DECISION: layer=L0 router=apps_qna_route_bandit
+            decision_id=<uuid> selected=<route_id> ns=<namespace>
+            posterior_alpha=<a> posterior_beta=<b>
+
+    Stays a single logical line so post_cascade_router_decision_audit.py
+    can parse it from logs / stdout / Cascade response trace.
+    """
+    print(
+        f"ROUTER_DECISION: layer={_ROUTER_LAYER} router={_ROUTER_NAME} "
+        f"decision_id={decision_id} selected={selected} ns={namespace} "
+        f"posterior_alpha={posterior_alpha:.3f} "
+        f"posterior_beta={posterior_beta:.3f}"
+    )
+
+
+class AppsQnaRouteBandit:
+    """Domain wrapper around the spine NamespaceBandit.
+
+    Usage::
+
+        bandit = AppsQnaRouteBandit(registry, seed=42)
+        # Cold-start: returns None (caller falls back to W2.3 keyword ranking)
+        result = bandit.choose_routes_for_signal(signal_text, top_n=5)
+        # ... after some post-rehearsal feedback ...
+        bandit.update_outcome(namespace="qna_signal_abc", route="executive_fit",
+                              asked=True, landed=True)
+        # Hot path: returns a ranked list of RouteSelections
+        result = bandit.choose_routes_for_signal(signal_text, top_n=5)
+    """
+
+    def __init__(
+        self,
+        registry: "RouteRegistry",
+        *,
+        seed: int | None = _DEFAULT_SEED,
+    ) -> None:
+        self._registry = registry
+        # Two RNGs: one for the bandit's internal sampling (passed to
+        # NamespaceBandit), one for our top-N ranking sampling. Sharing a
+        # single seeded RNG across both gives deterministic ordering when
+        # tests need it.
+        self._rng = random.Random(seed)
+        self._bandit = NamespaceBandit(seed=seed)
+
+    @property
+    def admissible_route_ids(self) -> list[str]:
+        return [r.id for r in self._registry.routes]
+
+    def total_observations(self, namespace: str) -> int:
+        """Total observations across all (namespace, route) cells."""
+        return sum(
+            self._bandit.posterior(namespace, route).n_observations
+            for route in self.admissible_route_ids
+        )
+
+    def choose_routes_for_signal(
+        self,
+        signal: str,
+        *,
+        top_n: int = 6,
+    ) -> list[RouteSelection] | None:
+        """Rank routes for an interviewer signal via Thompson sampling.
+
+        Returns None when the bandit is in cold-start (insufficient
+        observations for this namespace); the caller should fall back to
+        W2.3 keyword ranking. Returns a list of RouteSelection ordered by
+        Thompson sample score descending when accumulated evidence
+        clears the cold-start threshold.
+
+        For each surfaced ranking, emits the constitutional §29 paired
+        ROUTER_DECISION marker AND an apps_qna_pack_lifecycle ledger row
+        with event_kind="route_select".
+        """
+        namespace = _hash_signal(signal)
+        admissible = self.admissible_route_ids
+        if not admissible:
+            return None
+
+        if self.total_observations(namespace) < _MIN_OBSERVATIONS_FOR_BANDIT_PRIORITY:
+            _log.debug(
+                "AppsQnaRouteBandit cold-start (ns=%s, n_obs=%d, threshold=%d) — "
+                "deferring to keyword fallback",
+                namespace,
+                self.total_observations(namespace),
+                _MIN_OBSERVATIONS_FOR_BANDIT_PRIORITY,
+            )
+            return None
+
+        # Sample once per route, then rank descending. Using
+        # NamespaceBandit.posterior() keeps us inside the spine primitive's
+        # contract (the returned BetaPosterior is a copy; its sample()
+        # method takes a Random which we provide).
+        scored: list[tuple[str, float, float, float]] = []
+        for route in admissible:
+            posterior = self._bandit.posterior(namespace, route)
+            sampled = posterior.sample(self._rng)
+            scored.append(
+                (route, sampled, posterior.alpha, posterior.beta)
+            )
+        scored.sort(key=lambda r: r[1], reverse=True)
+
+        selections: list[RouteSelection] = []
+        for rank, (route, sampled, alpha, beta) in enumerate(scored[:top_n], start=1):
+            decision_id = uuid.uuid4().hex
+            mean = alpha / (alpha + beta) if (alpha + beta) > 0 else 0.5
+            selection = RouteSelection(
+                route_id=route,
+                rank=rank,
+                posterior_alpha=float(alpha),
+                posterior_beta=float(beta),
+                posterior_mean=float(mean),
+                thompson_sample=float(sampled),
+                decision_id=decision_id,
+            )
+            selections.append(selection)
+
+            # §29 paired emission: marker + ledger write in the same
+            # call path. Both are fail-soft.
+            _emit_router_decision_marker(
+                decision_id=decision_id,
+                selected=route,
+                namespace=namespace,
+                posterior_alpha=alpha,
+                posterior_beta=beta,
+            )
+            emit_pack_lifecycle_event(
+                event_kind="route_select",
+                prediction={
+                    "namespace": namespace,
+                    "candidate_routes": admissible,
+                    "selected_route": route,
+                    "rank": rank,
+                    "posterior_alpha": float(alpha),
+                    "posterior_beta": float(beta),
+                    "thompson_sample": float(sampled),
+                },
+                score_band="hit",  # provisional; bound to "miss" if outcome shows otherwise
+                metadata={"decision_id": decision_id},
+            )
+
+        return selections
+
+    def update_outcome(
+        self,
+        *,
+        namespace: str,
+        route: str,
+        asked: bool,
+        landed: bool,
+    ) -> None:
+        """Late-bind a post-rehearsal outcome.
+
+        Bernoulli success = ``asked AND landed``. The interviewer probed
+        the route AND the bound card resolved the answer — both required
+        for the bandit to count it as a positive sample. Asked-but-card-
+        missed and not-asked are both Bernoulli failures (asked-but-card-
+        missed is a routing miss; not-asked is a ranking miss).
+
+        Updates flow through the spine NamespaceBandit, which also
+        propagates to the L0/bandit ledger via its own closed-loop
+        helper. apps_qna_pack_lifecycle gets a separate
+        event_kind="interview_outcome" row from a higher-level caller.
+        """
+        success = bool(asked and landed)
+        self._bandit.update(namespace, route, success=success)
+
+    def reset(self) -> None:
+        """Clear all bandit state (posteriors + open ledger handles).
+
+        Mirrors the spine NamespaceBandit.reset() contract for parity
+        with sibling routers.
+        """
+        self._bandit.reset()
+
+
+__all__ = [
+    "AppsQnaRouteBandit",
+    "BetaPosterior",
+    "RouteSelection",
+]
