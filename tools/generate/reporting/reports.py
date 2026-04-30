@@ -411,6 +411,24 @@ def _print_defect_table(
         )
     for _src_l, _dst_l, _cnt in _p0_layer_pairs:
         print(f"|     |    {_src_l or '?'} -> {_dst_l or '?':<22}| {_cnt:5} |        | {_cnt:5} |      |")
+    # µW-3.1: P0 runtime signal gap rows (0 expected until W9/W12)
+    _p0_signal_counts: dict[str, int] = {}
+    if sqlite_source is not None and sqlite_source.exists():
+        try:
+            with sqlite3.connect(str(sqlite_source)) as _sig_conn:
+                for _rt in ("runtime_trace", "hitl_decision", "reads_secret"):
+                    _row = _sig_conn.execute(
+                        "SELECT COUNT(*) FROM edges WHERE relation_type=?", (_rt,)
+                    ).fetchone()
+                    _p0_signal_counts[_rt] = _row[0] if _row else 0
+        except sqlite3.Error:
+            pass
+    _rt_sym = "✓" if _p0_signal_counts.get("runtime_trace", 0) > 0 else "—"
+    _hd_sym = "✓" if _p0_signal_counts.get("hitl_decision", 0) > 0 else "—"
+    _rs_sym = "✓" if _p0_signal_counts.get("reads_secret", 0) > 0 else "—"
+    print(f"|     |  otel_coverage               |     {_rt_sym} |        | {_p0_signal_counts.get('runtime_trace', 0):5} |      |")
+    print(f"|     |  hitl_decision_log           |     {_hd_sym} |        | {_p0_signal_counts.get('hitl_decision', 0):5} |      |")
+    print(f"|     |  reads_secret_instrumented   |     {_rs_sym} |        | {_p0_signal_counts.get('reads_secret', 0):5} |      |")
     print(_TH)
 
     # P1 / P2 / P3 bands
@@ -426,6 +444,48 @@ def _print_defect_table(
         ),
         ("P3", "style / warnings", p3_count, "LOW", None, 0),
     ]
+    # µW-3.2: Gather P1 augment data (L_UNKNOWN module count)
+    _p1_l_unknown_count = 0
+    _p1_l_contracts_count = 0
+    if sqlite_source is not None and sqlite_source.exists():
+        try:
+            with sqlite3.connect(str(sqlite_source)) as _aug_conn:
+                _r = _aug_conn.execute(
+                    "SELECT COUNT(*) FROM nodes WHERE layer='L_UNKNOWN' AND entity_type='module'"
+                ).fetchone()
+                _p1_l_unknown_count = _r[0] if _r else 0
+                _r2 = _aug_conn.execute(
+                    "SELECT COUNT(*) FROM nodes WHERE layer='L_UNKNOWN' AND resolved_path LIKE 'agentic_core/L_CONTRACTS%'"
+                ).fetchone()
+                _p1_l_contracts_count = _r2[0] if _r2 else 0
+        except sqlite3.Error:
+            pass
+
+    # µW-3.3: Gather P2 augment data (writes ratio, star_import_count)
+    _p2_writes_to = 0
+    _p2_writes_through = 0
+    _p2_star_imports = 0
+    if sqlite_source is not None and sqlite_source.exists():
+        try:
+            with sqlite3.connect(str(sqlite_source)) as _aug2_conn:
+                for _rel, _cnt in _aug2_conn.execute(
+                    "SELECT relation_type, COUNT(*) FROM edges WHERE relation_type IN ('writes_to','writes_through') GROUP BY relation_type"
+                ).fetchall():
+                    if _rel == "writes_to":
+                        _p2_writes_to = _cnt
+                    elif _rel == "writes_through":
+                        _p2_writes_through = _cnt
+                _star_row = _aug2_conn.execute(
+                    "SELECT value FROM meta WHERE key='star_import_count'"
+                ).fetchone()
+                _p2_star_imports = int(_star_row[0]) if _star_row else 0
+        except sqlite3.Error:
+            pass
+    _writes_ratio_str = (
+        f"{_p2_writes_through * 100 // _p2_writes_to}%"
+        if _p2_writes_to else "—"
+    )
+
     for _band, _label, _count, _sev, _ceil, _delta in tqdm(_bands, desc="Processing", unit="item"):
         _exempt = _guardian_by_sev.get(_sev, 0)
         _gross = _count + _exempt
@@ -437,6 +497,17 @@ def _print_defect_table(
             _ek = _guardian_by_kind.get(_sev, {}).get(_kind, 0)
             _gk = _cnt + _ek
             print(f"|     |  {_kind:<28}| {_gk:5} | {_ek:6} | {_cnt:5} | {_pct(_ek, _gk):>4} |")
+        # µW-3.2: P1 augment rows
+        if _band == "P1":
+            _lu_sym = "✓" if _p1_l_unknown_count == 0 else "~"
+            print(f"| {_lu_sym}   |  L_UNKNOWN modules           |       |        | {_p1_l_unknown_count:5} |      |")
+            if _p1_l_contracts_count:
+                print(f"|     |    L_CONTRACTS unclassified  |       |        | {_p1_l_contracts_count:5} |      |")
+        # µW-3.3: P2 augment rows
+        if _band == "P2":
+            print(f"| ~   |  writes_bypass_ratio         |       |        | {_writes_ratio_str:>5} |      |")
+            if _p2_star_imports:
+                print(f"| ~   |  star_imports                |       |        | {_p2_star_imports:5} |      |")
         print(_TH)
 
     # SC/AP audit rows
@@ -499,6 +570,41 @@ def _print_defect_table(
             _gate_net = " PASS" if _gate_passed else " FAIL"
             print(f"| CI{_gate_sym} | {_gate_label}|       |        | {_gate_net} |      |")
         print(_TH)
+
+    # µW-3.4: M-gate status section (only when wave0_baseline.json exists)
+    _baseline_path = ROOT / "artifacts" / "adg" / "wave0_baseline.json"
+    if _baseline_path.exists():
+        try:
+            _baseline = json.loads(_baseline_path.read_text(encoding="utf-8"))
+            _gate_modes = _baseline.get("gate_modes", {})
+            if _gate_modes:
+                print("\n[ADG] Gate Status (M-gates):")
+                _MGTH = "+----+----------------------+--------+----------+"
+                print(_MGTH)
+                print("| M# | Gate                 | Mode   | Status   |")
+                print(_MGTH)
+                _gpc_counts: dict[str, int] = {}
+                if sqlite_source is not None and sqlite_source.exists():
+                    try:
+                        with sqlite3.connect(str(sqlite_source)) as _mg_conn:
+                            for _gk2, _gc2 in _mg_conn.execute(
+                                "SELECT key, value FROM meta WHERE key LIKE 'm%_count'"
+                            ).fetchall():
+                                _gpc_counts[_gk2] = int(_gc2)
+                    except sqlite3.Error:
+                        pass
+                for _mk, _mmode in sorted(_gate_modes.items()):
+                    _baseline_count = _baseline.get(f"{_mk}_count", 0)
+                    _current_count = _gpc_counts.get(f"{_mk}_count", _baseline_count)
+                    _delta_m = _current_count - _baseline_count
+                    _pass = _delta_m == 0 or _mmode == "warn"
+                    _status_m = "OK" if _pass else "FAIL"
+                    _delta_str = f"delta={_delta_m:+d}"
+                    _sym = "✓" if _pass else "✗"
+                    print(f"| {_mk:<2} | {_mk:<20} | {_mmode:<6} | {_sym} {_status_m:<5} {_delta_str} |")
+                print(_MGTH)
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
 
     print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=actionable  %=exempt/gross")
     print("  Gate: *=BLOCKS  ^=ratchet  ~=watch  ✓=clean  ✗=failing  CI✓/CI✗=ci-gate")
