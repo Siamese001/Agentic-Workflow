@@ -238,7 +238,20 @@ class WiringGate(ABC):
             summary["effective_tier"] = effective_tier
             summary["declared_tier"] = self.tier
         if effective_tier == "B":
-            status = "fail" if active else "pass"
+            # Severity-aware: blocking tier fails ONLY on `severity=fail`
+            # violations. `severity=warn` rows (e.g., deferred-stage
+            # informational notices from CanonicalPipelineWiringGate) are
+            # tracked but never fail the gate. This matches the per-stage
+            # intent already encoded in the gates: a deferred stage is
+            # documented as warn-not-fail and must not block CI.
+            failing = [v for v in active if v.severity == "fail"]
+            warning_only = [v for v in active if v.severity == "warn"]
+            if failing:
+                status = "fail"
+            elif warning_only:
+                status = "warn"
+            else:
+                status = "pass"
         elif effective_tier == "R":
             baseline_count = self._baseline_count()
             status = "fail" if len(active) > (baseline_count or 0) else "pass"

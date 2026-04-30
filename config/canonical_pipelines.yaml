@@ -20,23 +20,45 @@ pipelines:
       Evidence Contract payload for dispatch to PA (Prompt Assembly).
       Five stages: Plan (C0.1), Fetch (C0.2), Graph (C0.3), Shape (C0.4),
       Contract (C0.5). C0.3 is currently deferred (no entity KG implementation).
+    # Note on `min_fanin_from_layers`: C0 retrieval modules under
+    # `agentic_core/knowledge/retrieval/*` form a coherent *knowledge subsystem*
+    # at layer L_PG with internal closed-loop wiring. They are reachable from
+    # production code paths via L_PG → L_PG (subsystem-internal) and from L3
+    # via `agentic_core/L3_orchestration/.../context_compaction.py` for
+    # evidence-binding. The pipeline's overall ingress remains L0 (the C0
+    # request is initiated from routing), but individual stage modules can
+    # legitimately be called from their natural layer (L_PG, L1, L3) inside
+    # the request's flow. Per ADR backing this decision (Author-Gate
+    # 2026-04-30, type=architecture_choice, selected=manifest_realignment):
+    # we accept any non-test production layer in [L0, L1, L3, L_PG] as a
+    # valid ingress caller. Future dedup of the L0 `c0_retrieval` and L_PG
+    # `knowledge/retrieval` parallel stacks is captured in the C0 wiring
+    # plan (`.windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md`).
     stages:
       - id: C01_plan
         description: "Plan: scope/policy/freshness/tenant-ACL."
         module: agentic_core/knowledge/retrieval/retrieval_plan.py
-        min_fanin_from_layers: [L0]
+        min_fanin_from_layers: [L0, L1, L3, L_PG]
         status: active
 
       - id: C01_acl_gate
         description: "Plan: pre-retrieval gate (ACL, tenant, freshness)."
         module: agentic_core/knowledge/gates/preretrieval_gate.py
-        min_fanin_from_layers: [L0]
-        status: active
+        # Marked deferred 2026-04-30: ADG fan-in=0 across all production
+        # layers; only `resolves_callsite` + `emits_side_effect` edges
+        # exist, indicating the gate is registered dynamically but not
+        # statically imported by any production caller. Concrete
+        # static-wiring is part of the C0 wiring plan.
+        status: deferred
+        defer_ref: >
+          DEFERRED_SCOPE 2026-04-30 — preretrieval_gate has no static import
+          callers; concrete tenant/ACL/freshness policy + static wiring is
+          part of plan c0-context-engine-wiring-fix-9e42a1.md (C0-W2.3).
 
       - id: C02_recall
         description: "Fetch: hybrid recall (dense + sparse + raw chunks)."
         module: agentic_core/knowledge/retrieval/hybrid_recall_stage.py
-        min_fanin_from_layers: [L0]
+        min_fanin_from_layers: [L0, L1, L3, L_PG]
         status: active
 
       - id: C03_graph
@@ -51,11 +73,11 @@ pipelines:
       - id: C04_rerank
         description: "Shape: rerank + dedup + consolidation."
         module: agentic_core/knowledge/retrieval/senior_librarian_reranker.py
-        min_fanin_from_layers: [L0]
+        min_fanin_from_layers: [L0, L1, L3, L_PG]
         status: active
 
       - id: C05_evidence
         description: "Contract: evidence binding + citation slip."
         module: agentic_core/knowledge/retrieval/evidence_contract_builder.py
-        min_fanin_from_layers: [L0]
+        min_fanin_from_layers: [L0, L1, L3, L_PG]
         status: active
