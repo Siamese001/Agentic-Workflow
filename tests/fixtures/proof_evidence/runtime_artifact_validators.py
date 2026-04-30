@@ -157,6 +157,24 @@ REQUIRED_FIELDS: Mapping[str, tuple[str, ...]] = {
         "policy_hash",
         "blueprint_hash",
     ),
+    # --- Wave 5 additions (L3 Orchestration) ---
+    "WorkflowContract": (
+        # L3 Orchestration: 8 NEEDS_PROOF rows. The contract that binds a
+        # multi-step workflow with a dependency graph and per-step specs.
+        # Constitutional invariant: dependency_graph is acyclic, every
+        # step in step_specs is referenced by orchestration_plan, no orphan
+        # steps, no implicit branches outside the declared graph.
+        "workflow_id",
+        "orchestration_plan",     # ordered list of step_ids
+        "dependency_graph",       # adjacency list / DAG
+        "step_specs",             # dict of step_id -> step spec
+        "owner_surface",
+        "policy_hash",
+        "blueprint_hash",
+        "dag_acyclic_assertion",       # MUST be True
+        "no_orphan_steps_assertion",   # MUST be True
+        "no_implicit_branches_assertion",  # MUST be True
+    ),
     # --- Wave 3 additions (C0 Context Engine) ---
     "FinalEvidenceContract": (
         # C0 Context Engine: 19 NEEDS_PROOF rows. The contract that binds
@@ -408,6 +426,38 @@ def assert_l2_execution_sealed(record: Mapping[str, Any]) -> None:
         raise ArtifactShapeError(
             "ExecutionResult missing side_effects_proposed; "
             "L2 sealed-envelope invariant: side effects PROPOSED only, never committed"
+        )
+
+
+def assert_workflow_contract_dag_invariants(record: Mapping[str, Any]) -> None:
+    """L3 Orchestration: WorkflowContract MUST have acyclic DAG, no orphan
+    steps, and no implicit branches outside the declared graph.
+    """
+    for flag in (
+        "dag_acyclic_assertion",
+        "no_orphan_steps_assertion",
+        "no_implicit_branches_assertion",
+    ):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"WorkflowContract.{flag} must be True; "
+                f"L3 invariant: dependency_graph must be acyclic, all steps reachable "
+                f"via orchestration_plan, no implicit branches"
+            )
+    plan = record.get("orchestration_plan")
+    if not isinstance(plan, list) or len(plan) == 0:
+        raise ArtifactShapeError(
+            f"WorkflowContract.orchestration_plan must be a non-empty list, got {type(plan).__name__}"
+        )
+    graph = record.get("dependency_graph")
+    if not isinstance(graph, (dict, list)):
+        raise ArtifactShapeError(
+            f"WorkflowContract.dependency_graph must be a dict or list, got {type(graph).__name__}"
+        )
+    specs = record.get("step_specs")
+    if not isinstance(specs, dict):
+        raise ArtifactShapeError(
+            f"WorkflowContract.step_specs must be a dict, got {type(specs).__name__}"
         )
 
 

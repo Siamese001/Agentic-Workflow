@@ -37,6 +37,9 @@ ARTIFACT_DISPATCH = {
     "CommitRequest": ("assert_uwg_commit_request_invariants", "_uwg"),
     "ExecutionResult": ("assert_l2_execution_sealed", "_l2exec"),
     "FinalEvidenceContract": ("assert_final_evidence_contract_anchored", "_c0evid"),
+    "WorkflowContract": ("assert_workflow_contract_dag_invariants", "_l3wf"),
+    "ValidatedRequest": ("assert_u0_no_authority_leak", "_u0req"),
+    "CompiledPromptArtifact": ("assert_pa_c0_before_u0", "_pa"),
 }
 
 
@@ -209,6 +212,52 @@ def _valid_artifact() -> dict:
         "no_unanchored_claims_assertion": True,
     }
 ''',
+    "WorkflowContract": '''
+def _valid_artifact() -> dict:
+    return {
+        "workflow_id": "wf-{nid}-001",
+        "orchestration_plan": ["s1", "s2", "s3"],
+        "dependency_graph": {"s1": [], "s2": ["s1"], "s3": ["s2"]},
+        "step_specs": {
+            "s1": {"action": "fetch", "inputs": []},
+            "s2": {"action": "transform", "inputs": ["s1"]},
+            "s3": {"action": "emit", "inputs": ["s2"]},
+        },
+        "owner_surface": OWNER_SURFACE,
+        "policy_hash": "policy-{nid}-h",
+        "blueprint_hash": "blueprint-{nid}-h",
+        "dag_acyclic_assertion": True,
+        "no_orphan_steps_assertion": True,
+        "no_implicit_branches_assertion": True,
+    }
+''',
+    "ValidatedRequest": '''
+def _valid_artifact() -> dict:
+    return {
+        "request_id": "req-{nid}-001",
+        "session_id": "sess-{nid}-001",
+        "trace_root": "trace-{nid}-001",
+        "tenant": "tenant-A",
+        "transport": "https",
+        "ingress_envelope": {"schema_version": "v1", "method": "POST"},
+        "caller_scope_baseline": {"role": "user", "scopes": ["read"]},
+        "ingress_time_utc": "2026-04-30T12:00:00+00:00",
+        "owner_surface": OWNER_SURFACE,
+    }
+''',
+    "CompiledPromptArtifact": '''
+def _valid_artifact() -> dict:
+    return {
+        "assembly_hash": "asm-{nid}-h",
+        "instruction_blocks": ["sys", "user"],
+        "evidence_refs": ["ev-{nid}-1"],
+        "citation_anchors": [{"claim_id": "c1", "ref": "ev-{nid}-1"}],
+        "contradiction_flags": [],
+        "slot_order_hash": "slot-{nid}-h",
+        "owner_surface": OWNER_SURFACE,
+        "c0_resolved_before_u0": True,
+    }
+''',
 }
 
 # Per-artifact "drift inducer" — a single field flip that MUST violate the assertion.
@@ -223,6 +272,9 @@ DRIFT_INDUCERS = {
     "CommitRequest": ('record["single_writer_attestation"] = False', "single_writer_attestation"),
     "ExecutionResult": ('record["no_durable_commit_assertion"] = False', "no_durable_commit_assertion"),
     "FinalEvidenceContract": ('record["no_unanchored_claims_assertion"] = False', "no_unanchored_claims_assertion"),
+    "WorkflowContract": ('record["dag_acyclic_assertion"] = False', "dag_acyclic_assertion"),
+    "ValidatedRequest": ('record["route_id"] = "R-LEAK"  # U0 must not carry route_id', "route_id_leak"),
+    "CompiledPromptArtifact": ('record["c0_resolved_before_u0"] = False', "c0_resolved_before_u0"),
 }
 
 # Per-artifact "missing required field" inducer (drop a required field).
@@ -237,6 +289,9 @@ MISSING_INDUCERS = {
     "CommitRequest": "commit_request_id",
     "ExecutionResult": "execution_id",
     "FinalEvidenceContract": "contract_id",
+    "WorkflowContract": "workflow_id",
+    "ValidatedRequest": "tenant",
+    "CompiledPromptArtifact": "assembly_hash",
 }
 
 
