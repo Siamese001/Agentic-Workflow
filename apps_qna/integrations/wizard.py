@@ -43,6 +43,9 @@ from apps_qna.integrations.from_apps_rg import (
 from apps_qna.integrations.from_apps_shared import load_master_resume
 from apps_qna.integrations.from_jd import load_markdown_jd
 from apps_qna.integrations.from_research_brief import load_research_brief
+from apps_qna.integrations.architecture_synth import (
+    merge_architecture_into_extra_context,
+)
 from apps_qna.integrations.spine_adapter import (
     ensure_pack_dir,
     write_card_text,
@@ -351,6 +354,11 @@ def run_wizard(
         "plan_days_31_60": [],
         "plan_days_61_90": [],
     }
+
+    # W3.3 — synthesize architecture content blocks from this repo's own
+    # ADG snapshot (constitutional §28 SQLite-direct path). Operator-
+    # curated YAML values win via the empty-slot-only merge contract.
+    extra_context = merge_architecture_into_extra_context(extra_context)
 
     return interview, extra_context
 
