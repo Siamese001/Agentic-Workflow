@@ -1,20 +1,54 @@
 # Agentic Workflow — Deterministic AI Control Plane
 
-> **Deterministic AI control plane for governed enterprise agents:** route contracts, verified context, bounded execution, runtime gates, controlled writes, replay, and shadow learning.
+> **A governed runtime around the agent — not another agent framework.**
+> Route contracts, verified context, bounded execution, runtime gates, controlled writes, replay, and shadow learning. Built as the reference design for enterprise-grade agentic systems.
 
-## Why this repo exists
+**Author:** [Amit Ayer](https://github.com/Siamese001) — SVP-level Agentic Engineer. Platform architecture for governed enterprise AI.
 
-Most enterprise AI initiatives stall when a working model demo meets the runtime boundary: no route authority, no context guarantees, no exit evaluation, no write controls, no replay. The result is non-reproducible behavior, unauditable decisions, and uncontrolled state mutation — three failure modes incompatible with regulated production environments.
+---
 
-This repository is a public proof asset for what comes *after* the demo. It shows how enterprise AI systems can move beyond demos into **production-grade runtime architecture**: route contracts, verified context, bounded execution, runtime gates, controlled write paths, replayability, and future-run learning.
+## Point of View
 
-## What it proves
+Most of the public discourse around "agents" in 2025–2026 has been about **frameworks, prompts, and demos**. That framing is the reason enterprise AI projects stall the moment they meet a regulated runtime boundary.
 
-- AI behavior can be deterministic at the system level, even when the model is probabilistic.
-- Governance can live on the runtime path, not in a policy document.
-- State mutation can be admitted through a single audited door.
-- Any past run can be reconstructed exactly.
-- A system can learn from completed runs without drifting in flight.
+The thesis this repository argues — and demonstrates in code — is the opposite:
+
+> **The agent is not the product. The governed runtime around the agent is the product.**
+
+An agent that works in a notebook does not clear a real control boundary. Production AI in regulated environments fails on five predictable edges, every time:
+
+1. **No route authority** — the model decides what to do next, instead of a typed, contract-bound dispatcher.
+2. **No context guarantees** — retrieval quietly routes and executes, instead of grounding against canonical state.
+3. **No exit evaluation** — outputs commit without a current-run disposition (allow / deny / reroute / escalate).
+4. **No write controls** — state mutates through any code path that can reach a database.
+5. **No replay** — incidents cannot be reconstructed, so nothing can be audited, regressed, or learned from safely.
+
+This repository is a working proof that every one of those five failure modes is solvable as a **system engineering problem**, not a prompt-engineering problem. It is the engineering substrate behind the positioning: **AI that behaves like software, not experiments.**
+
+---
+
+## What this repo demonstrates (and why it matters at the SVP-Engineering level)
+
+- **Determinism as a system invariant.** The LLM is probabilistic; the system around it is deterministic. Same input, same output, same digest.
+- **Governance on the runtime path.** L5 is a cross-cutting policy plane with veto authority at every stage — not a PDF and not a post-hoc review.
+- **A single door for state mutation.** Every durable write passes through the Universal Write Gateway (UWG). No side doors, no silent mutations, no bypasses.
+- **Full replay.** Every run emits a determinism digest and a replay key. Any past run can be reconstructed exactly — the thing most "agentic" systems cannot do on day one of an incident review.
+- **Shadow learning, never live drift.** The system learns from completed runs and promotes changes through approved paths. It does not mutate behavior mid-flight.
+- **AST Dependency Graph (ADG) as the source of truth for the codebase itself.** ~264K nodes, ~929K edges, SQLite-backed, queryable. Refactoring, blast radius, and hotspot analysis are structural — not guesswork.
+
+These are the controls an enterprise AI platform owner is accountable for. This repo is a reference implementation of that accountability.
+
+---
+
+## Public positioning index
+
+- [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md) — themes this repository argues for publicly
+- [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) — bottom-line positioning for CTO / SVP Engineering readers
+- [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) — plain-English explanation for hiring and leadership audiences
+
+> **Note.** This repository is a **public proof asset and reference design**, not a confidential client implementation. Client-specific work is kept private; what is published here is the architecture and the reasoning behind it.
+
+---
 
 ## Start here
 
@@ -25,26 +59,6 @@ This repository is a public proof asset for what comes *after* the demo. It show
 | AI platform engineer | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) | Technical narrative of the control plane: layers, separation of duties, write model, replay. |
 | Governance / risk / compliance leader | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) + [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Read-broad/write-strict model, UWG single-door commit, replay and audit evidence. |
 | Deep technical reviewer | [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) and the rest of this README | Executive walkthrough plus the full architecture, proof pack, and ADRs. |
-
-Public positioning index: [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md).
-
-> **Note.** This repository is a **public proof asset and reference design**, not a confidential client implementation. Client-specific work is kept private; what is published here is the architecture and the reasoning behind it.
-
----
-
-## Overview
-
-This repository provides a **production-grade agentic AI control plane** that transforms AI systems from probabilistic black boxes into **deterministic, auditable, and governable software systems**.
-
-> **Core Principle:** AI systems should behave like reliable software systems, not probabilistic experiments.
-
-Most enterprise AI systems fail for three reasons:
-
-* Non-reproducible behavior
-* Lack of auditability
-* Uncontrolled execution and state mutation
-
-This platform solves these at the system level, enabling **safe, scalable, enterprise AI deployment**.
 
 ---
 
@@ -425,15 +439,15 @@ python replay.py --run_id <execution_id>
 
 ## Final Positioning
 
-This is not just an AI framework.
+This is not another agent framework. It is a **deterministic AI control plane** — the engineering substrate for reproducibility, auditability, and safe autonomous execution in regulated environments.
 
-This is a **deterministic AI control plane** that enables:
-
-* reproducibility
-* auditability
-* safe autonomous execution
+- **For platform leaders:** the reference architecture for what "governed agentic AI" actually looks like when it has to clear an enterprise control boundary.
+- **For engineers:** a working implementation of route authority, verified context, bounded execution, exit evaluation, write control, replay, and shadow learning.
+- **For the field:** a counter-argument to the prevailing "bigger model + more tools = agent" framing.
 
 **AI that behaves like software, not experiments.**
+
+— [Amit Ayer](https://github.com/Siamese001), SVP-level Agentic Engineer
 
 ---
 
@@ -473,4 +487,4 @@ python ops_scripts/ci/run_architecture_proof.py   # S1 + S2 + S3  (~17s, exit 0 
 
 ---
 
-*Last updated: April 2026*
+*Last updated: April 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*
