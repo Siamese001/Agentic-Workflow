@@ -8,8 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from apps_rg.types.skill_extractor_node_types import SkillExtractorNode
 from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent  # for _resume_to_profile_text
 
-# Load resume
-resume = json.loads((Path(__file__).parent / "your_resume_updated.json").read_text(encoding="utf-8"))
+# Load canonical master_resume (legacy `your_resume_updated.json` retired 2026-04-30).
+_CANONICAL_MASTER = Path(__file__).resolve().parents[2] / "apps_shared" / "data" / "master_resume.json"
+resume = json.loads(_CANONICAL_MASTER.read_text(encoding="utf-8"))
 
 # Build the same profile_text that ContentQualityAgent builds
 class FakeAgent:

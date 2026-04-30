@@ -8,8 +8,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent
 
-# Replicate execute() loop locally to see which check fires
-resume = json.loads((Path(__file__).parent / "your_resume_updated.json").read_text(encoding="utf-8"))
+# Replicate execute() loop locally to see which check fires.
+# Load canonical master_resume (legacy `your_resume_updated.json` retired 2026-04-30).
+_CANONICAL_MASTER = Path(__file__).resolve().parents[2] / "apps_shared" / "data" / "master_resume.json"
+resume = json.loads(_CANONICAL_MASTER.read_text(encoding="utf-8"))
 
 # Get the agent's class-level constants
 PLACEHOLDER_PATTERNS = ContentQualityAgent.PLACEHOLDER_PATTERNS

@@ -1,8 +1,9 @@
-"""Export a generated_resume_*.json + your_resume_updated.json into a polished .docx.
+"""Export a generated_resume_*.json + canonical master_resume into a polished .docx.
 
 Reads:
   - apps_rg/scripts/generated_resume_<ts>.json  (ranked content from the run)
-  - apps_rg/scripts/your_resume_updated.json    (master record for contact, education, certs)
+  - apps_shared/data/master_resume.json         (canonical master record for contact, education, certs)
+    Legacy `apps_rg/scripts/your_resume_updated.json` was retired 2026-04-30.
 
 Writes:
   - apps_rg/scripts/AmitAyer_SVPAISolutions_<ts>.docx
@@ -211,7 +212,12 @@ def main(argv: list[str]) -> int:
         gen = SCRIPT_DIR / argv[1] if not Path(argv[1]).is_absolute() else Path(argv[1])
     else:
         gen = latest_generated()
-    master = SCRIPT_DIR / "your_resume_updated.json"
+    master = Path(__file__).resolve().parents[2] / "apps_shared" / "data" / "master_resume.json"
+    if not master.exists():
+        raise FileNotFoundError(
+            f"Canonical master_resume.json not found at {master}. "
+            "Legacy your_resume_updated.json fallback was removed on 2026-04-30."
+        )
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     out = SCRIPT_DIR / f"AmitAyer_SVPAISolutions_{ts}.docx"
     build_doc(gen, master, out)
