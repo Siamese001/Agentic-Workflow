@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_rfp._compat.lifecycle_trace import _emit_records_telemetry_event
+from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_telemetry_event
 
 _log = logging.getLogger(__name__)
 

@@ -90,12 +90,26 @@ jobs:
       # AND its expected evidence file is missing. This is the "fail-closed
       # when required artifacts are absent" wiring the user mandated.
 
-      - name: W0.6 RTC-REQ-112 semantic cache verifier presence (stub fail-closed)
+      # ── W1 phase 1 (sidecar contract only — NO semantic cache rewrites)
+      # Per Author-Gate 2026-04-30 (architecture_choice): map sidecar to
+      # RTC-REQ-055 + conditionally 056/057/058. The verifier is advisory
+      # when the sidecar is absent (W0 baseline still passes); fail-closed
+      # when present + malformed/incomplete OR when any in-scope row resolves
+      # to BLOCKED/PARTIAL.
+      - name: W1.1 verify_semantic_cache_certification (R1B sidecar contract)
+        run: python scripts/verify_semantic_cache_certification.py
+
+      # ── RTC-REQ-112 stub: W1 phase 1 above already covers the sidecar
+      # contract. RTC-REQ-112 itself (semantic cache CI gate) is satisfied by
+      # the W1.1 step's exit code. Future W1 phase 2 will add the cache-
+      # behavior verifier as a separate W1.2 step.
+      - name: W0.6 RTC-REQ-112 semantic cache verifier presence
         run: |
           if [ -f scripts/verify_semantic_cache_certification.py ]; then
-            python scripts/verify_semantic_cache_certification.py
+            echo "OK: verify_semantic_cache_certification.py present (W1.1 above)"
           else
-            echo "SKIP: verify_semantic_cache_certification.py not present yet (W1 deliverable)"
+            echo "FAIL_CLOSED: verify_semantic_cache_certification.py missing"
+            exit 2
           fi
 
       - name: W0.7 RTC-REQ-113 OTEL collector verifier presence (stub fail-closed)
@@ -133,6 +147,7 @@ jobs:
             tests/runtime/test_source_divergence.py \
             tests/runtime/test_artifact_payload_hashes.py \
             tests/runtime/test_w0_closure_invariants.py \
+            tests/runtime/test_semantic_cache_certification_sidecar.py \
             -p no:xdist -q --timeout=60
 
       # ── Upload artifacts so downstream jobs / humans can inspect

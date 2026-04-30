@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from apps_rfp._compat.lifecycle_trace import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_reads_policy_state,
     _emit_snapshots_state,
