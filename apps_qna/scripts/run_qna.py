@@ -275,9 +275,21 @@ def _run_build(args: argparse.Namespace) -> int:
             "panel" if len(interview.interviewers) > 1 else "single"
         ),
     )
-    builder = CardPackBuilder(config=config)
+    # Route through the spine_handoff wrapper. The wrapper constructs
+    # the canonical ``ValidatedRequest`` envelope, emits the
+    # ``validated_request_emit`` ledger event, and delegates to the
+    # existing CardPackBuilder.build() unchanged. This makes apps_qna
+    # an APP_OVERLAY_STATIC_EVIDENCE per the spine_manifest.yaml's
+    # build_time_compiler route declaration.
+    from apps_qna.integrations.spine_handoff import build_pack_via_spine
+
     try:
-        manifest = builder.build(interview, output_dir, extra_context)
+        manifest = build_pack_via_spine(
+            interview,
+            output_dir,
+            extra_context=extra_context,
+            config=config,
+        )
     except BuilderError as exc:
         _log.error("Build failed: %s", exc)
         return 1

@@ -454,34 +454,34 @@ def test_import_only_coverage_is_not_runtime_compliance(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_apps_qna_currently_partial_or_forbidden() -> None:
-    """apps_qna in the LIVE workspace must NOT be APP_OVERLAY_STATIC_EVIDENCE.
+def test_apps_qna_post_w7_classified_correctly() -> None:
+    """apps_qna in the LIVE workspace post-W7 spine handoff.
 
-    Per the evidence audit: apps_qna imports zero canonical contracts.
-    It claims a domain runtime. The classification must be one of the
-    two demotion buckets unless apps_qna later declares a
-    build_time_compiler manifest -- in which case the test must be
-    updated and the manifest committed alongside it.
+    After W7 (apps_qna/spine_manifest.yaml + apps_qna/integrations/spine_handoff.py):
+      - manifest_present is True
+      - claimed_routes includes 'build_time_compiler'
+      - contract_count >= 1 (ValidatedRequest from spine_handoff.py)
+      - runtime_mode is APP_OVERLAY_STATIC_EVIDENCE
+
+    If this test starts failing, either:
+      (a) someone removed the manifest or the spine_handoff module, in
+          which case the W7 migration regressed, OR
+      (b) the scanner classification logic changed in a way that
+          contradicts the doctrine -- review APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
     """
     repo_root = Path(__file__).resolve().parents[4]
     apps_qna = repo_root / "apps_qna"
     if not apps_qna.is_dir():
         pytest.skip("apps_qna not present in this checkout")
-    runtime_mode, _evidence, sc = _classify(apps_qna)
-    # apps_qna may legitimately be APP_OVERLAY_STATIC_EVIDENCE if/when
-    # it declares a build_time_compiler manifest. In that case the
-    # acceptable bucket set widens to include the overlay-static bucket.
-    acceptable = {
-        "PARTIAL_SPINE_STATIC_ONLY",
-        "APP_STANDALONE_FORBIDDEN",
-    }
-    if sc["manifest_present"]:
-        acceptable.add("APP_OVERLAY_STATIC_EVIDENCE")
-    assert runtime_mode in acceptable, (
-        f"got {runtime_mode}; manifest_present={sc['manifest_present']}"
+    runtime_mode, evidence, sc = _classify(apps_qna)
+    assert sc["manifest_present"] is True, "apps_qna spine_manifest.yaml missing"
+    assert "build_time_compiler" in sc["manifest_claimed_routes"], (
+        f"manifest claimed_routes={sc['manifest_claimed_routes']}"
     )
-    assert sc["contract_count"] == 0
     assert sc["claims_domain_runtime"] is True
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE", (
+        f"got runtime_mode={runtime_mode}; evidence={evidence}"
+    )
 
 
 def test_canonical_contracts_constant_is_frozen() -> None:

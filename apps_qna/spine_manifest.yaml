@@ -1,0 +1,38 @@
+# apps_qna spine manifest
+#
+# Declares which spine route types apps_qna serves so the runtime-mode
+# scanner (tools/analysis/apps_spine_coverage.py) can verify the
+# canonical contract delegation evidence.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md §"Route-typed contract requirement matrix"
+# Scanner: tools.analysis.apps_spine_coverage.ROUTE_TYPE_CONTRACT_REQUIREMENTS
+
+schema_version: 1
+app: apps_qna
+
+claimed_routes:
+  - type: build_time_compiler
+    description: >-
+      Compiles a 22-card interview-prep context pack at build time. The
+      operator pastes the resulting pack into ChatGPT (the external
+      agent), which then becomes the runtime answer surface. The
+      agentic_core spine is NOT in the runtime path of the pasted
+      answer — ChatGPT is. Therefore this route legitimately requires
+      zero canonical authority contracts (no L1PlanContract,
+      RouteContract, CompiledPromptArtifact, SealedArtifact,
+      ExitReviewPacket, CommitRequest). What the spine DOES provide is
+      intake validation (ValidatedRequest), atomic writes (UWG), audit
+      trail (apps_qna_pack_lifecycle ledger), and ranking primitives
+      (BGE-M3 embeddings via spine_adapter). The spine_handoff.py
+      module wraps the existing CardPackBuilder.build() in a
+      ValidatedRequest envelope so build-time invocations get the same
+      schema-validation discipline as runtime requests.
+    notes:
+      - "Empty required-contract set per ROUTE_TYPE_CONTRACT_REQUIREMENTS"
+      - "Apps that match this shape: apps_qna (paste-pack), apps_eval (scorecard)"
+      - "Distinct from R3_action: no LLM call at build time; no spine routing"
+
+# References:
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - .windsurf/plans/apps-qna-spine-integration-e8f3a1.md (W1-W5 history)
+# - apps_qna/integrations/spine_handoff.py (the wrapper)

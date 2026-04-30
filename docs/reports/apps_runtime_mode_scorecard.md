@@ -9,7 +9,7 @@
 | `apps_eval` | 59 | 29.9% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_exec` | 54 | 48.1% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_lic` | 90 | 60.6% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
-| `apps_qna` | 42 | 5.1% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
+| `apps_qna` | 43 | 7.1% | 1 | `ValidatedRequest` | Γ£ô | Γ£à APP_OVERLAY_STATIC_EVIDENCE |
 | `apps_research` | 54 | 44.2% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_rfp` | 53 | 26.5% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_rg` | 171 | 57.7% | 1 | `PromptEnvelope` | Γ£ô | Γ£à APP_OVERLAY_STATIC_EVIDENCE |
@@ -35,8 +35,9 @@
 - ≡ƒƒá **`apps_lic`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
   - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present, control-plane module present
-- ≡ƒƒá **`apps_qna`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
+- Γ£à **`apps_qna`** ΓåÆ APP_OVERLAY_STATIC_EVIDENCE
+  - manifest declares routes ['build_time_compiler'] which require no canonical contract handoff; manifest-honored
+  - contracts: ValidatedRequest
   - claims runtime via: integrations directory present, router subpackage present, package entrypoint present, interactive wizard present
 - ≡ƒƒá **`apps_research`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
   - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
