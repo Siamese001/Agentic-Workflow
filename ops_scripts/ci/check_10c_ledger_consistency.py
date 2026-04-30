@@ -105,12 +105,26 @@ def _read_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
 
 
 def _check_schema(name: str, header: list[str], expected: Iterable[str]) -> list[str]:
+    """Verify that ``expected`` columns appear as a prefix of ``header``.
+
+    The ledger schema was hardened on 2026-04-30 by appending 20 proof-tracking
+    columns (see ``tools/requirements/harden_10c_ledger.py``). Those extra
+    columns are permitted as long as the original 15-column prefix is
+    preserved exactly and in order.
+    """
     expected = list(expected)
-    if header != expected:
+    if len(header) < len(expected):
         return [
-            f"{name}: header mismatch\n"
-            f"  expected: {expected}\n"
-            f"  actual  : {header}"
+            f"{name}: header too short\n"
+            f"  expected (prefix): {expected}\n"
+            f"  actual           : {header}"
+        ]
+    prefix = header[: len(expected)]
+    if prefix != expected:
+        return [
+            f"{name}: header prefix mismatch\n"
+            f"  expected (prefix): {expected}\n"
+            f"  actual prefix    : {prefix}"
         ]
     return []
 

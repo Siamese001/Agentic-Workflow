@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-30T10:31:34.126404+00:00",
+  "timestamp": "2026-04-30T10:46:22.018469+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 201,
-    "passed_tests": 157,
-    "failed_tests": 2,
+    "total_tests": 64,
+    "passed_tests": 18,
+    "failed_tests": 4,
     "skipped_tests": 42,
     "exit_status": 1,
     "failed_by_category": {
@@ -17,6 +17,8 @@
       "subatomic": [],
       "forensic": [],
       "other": [
+        "tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py::TestFewshotregistrystrategy::test_FewshotregistryStrategy_class",
+        "tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py::TestFewshotregistrystrategy::test_FewshotregistryStrategy_callable",
         "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
         "tests/unit/scripts/proof/test_run_runtime_trace_proof.py"
       ]

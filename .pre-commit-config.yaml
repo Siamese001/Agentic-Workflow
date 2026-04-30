@@ -192,6 +192,19 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6c1c: 10C Proof-Ledger Validation ----------------------------------------
+      # Enforces the proof-grade ledger schema: 200 rows, 35 columns, owner vocabulary,
+      # CRITICAL/HIGH rows have all mandatory proof fields populated, ACCEPTED status
+      # only when proof complete. Triggered when the ledger or its tooling changes.
+      - id: ten-c-proof-ledger
+        name: "T6c1c: 10C proof-ledger validation"
+        entry: py tools/requirements/validate_10c_proof_ledger.py
+        language: system
+        pass_filenames: false
+        files: ^(docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger\.csv|tools/requirements/(harden_10c_ledger|validate_10c_proof_ledger)\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T6c2: Requirements Universe Inventory (advisory in pre-commit) ------------
       # Discovers all 14 requirement-bearing artifact families and verifies each
       # has at least one CI link. Runs whenever any requirement-bearing file is
@@ -596,6 +609,20 @@ repos:
         always_run: true
         require_serial: true
         stages: [manual]
+
+      # apps_* OTEL coverage — every engines/integrations/outputs module
+      # MUST emit at least one OTEL signal (lifecycle _emit_* call OR
+      # ADR-075 decorator). Locked at 133/133 (100%) on 2026-04-30 after
+      # W-OTEL-1/2/3 mass remediation (Phase A: module-load emits).
+      # Phase B (per-method spans on execute() paths) is its own plan.
+      # Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
+      - id: check-apps-otel-coverage
+        name: "CI: apps_* OTEL coverage (locked at 100%)"
+        entry: py ops_scripts/ci/check_apps_otel_coverage.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
 
       # Raw infra import hygiene — run on demand until 5 direct-import sites
       # (google, chromadb, sqlite3) are remediated through sanctioned adapters.
