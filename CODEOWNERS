@@ -1,0 +1,87 @@
+# CODEOWNERS — Agentic-Workflow
+#
+# This file declares ownership for code review and on-call routing.
+# GitHub uses this to auto-request reviews on PRs.
+#
+# Format: <pattern> <owner> [<owner>...]
+# Owners can be GitHub @usernames or @org/teams.
+#
+# This file is the SSOT for "who owns what." It is referenced by:
+# - apps_*/RUNBOOK.md   (Escalation Contacts)
+# - apps_*/SLO.md        (Owner)
+# - apps_*/THREAT_MODEL.md (Owner)
+#
+# Owner conventions:
+# - @amitayer — repo author and primary owner of every file by default
+# - Team-style owners (@your-org/<team>) are aspirational placeholders;
+#   replace once the team / org is established.
+
+# -----------------------------------------------------------------------------
+# Default owner — applies to anything not matched below
+# -----------------------------------------------------------------------------
+*                                                @amitayer
+
+# -----------------------------------------------------------------------------
+# Domain apps — each app has its own owner section to avoid cross-app blast
+# -----------------------------------------------------------------------------
+/apps_eval/                                      @amitayer
+/apps_exec/                                      @amitayer
+/apps_lic/                                       @amitayer
+/apps_research/                                  @amitayer
+/apps_rfp/                                       @amitayer
+/apps_underwriting_ai/                           @amitayer
+/apps_rg/                                        @amitayer
+
+# Shared layer — changes here affect every domain app
+/apps_shared/                                    @amitayer
+
+# -----------------------------------------------------------------------------
+# Architectural layers
+# -----------------------------------------------------------------------------
+/agentic_core/L0_routing/                        @amitayer
+/agentic_core/L1_cognition/                      @amitayer
+/agentic_core/L2_execution/                      @amitayer
+/agentic_core/L3_orchestration/                  @amitayer
+/agentic_core/L4_state/                          @amitayer
+/agentic_core/L5_safety/                         @amitayer
+/agentic_core/L6_observability/                  @amitayer
+
+# Inference layer — high-blast-radius; explicit owner
+/agentic_core/L3_orchestration/inference/        @amitayer
+
+# -----------------------------------------------------------------------------
+# Operational / governance
+# -----------------------------------------------------------------------------
+/.windsurf/rules/                                @amitayer
+/.windsurf/skills/                               @amitayer
+/.windsurf/workflows/                            @amitayer
+/.windsurf/scripts/                              @amitayer
+/.windsurf/hooks.json                            @amitayer
+/.windsurf/mcp_config.json                       @amitayer
+
+/ops_scripts/ci/                                 @amitayer
+/.pre-commit-config.yaml                         @amitayer
+/.github/workflows/                              @amitayer
+
+# -----------------------------------------------------------------------------
+# Architecture decision records — every change should be reviewed
+# -----------------------------------------------------------------------------
+/docs/architecture/adr/                          @amitayer
+
+# -----------------------------------------------------------------------------
+# Tools — heavyweight ADG generation; owner sees every tweak
+# -----------------------------------------------------------------------------
+/tools/generate_full_adg.py                      @amitayer
+/tools/adg/                                      @amitayer
+
+# -----------------------------------------------------------------------------
+# Plans, reports, evidence — author-only, but every PR touching these
+# should surface in CODEOWNERS routing for visibility.
+# -----------------------------------------------------------------------------
+/.windsurf/plans/                                @amitayer
+/docs/reports/                                   @amitayer
+
+# -----------------------------------------------------------------------------
+# This file itself — protected
+# -----------------------------------------------------------------------------
+/CODEOWNERS                                      @amitayer

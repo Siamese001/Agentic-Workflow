@@ -1,13 +1,54 @@
 # SVP Engineering Review — apps_rfp
 
-**Application:** apps_rfp (AI Proposal / RFP Generator)  
-**Review Date:** March 29, 2026  
-**Status:** ✅ SVP Engineering Standards Compliant  
-**Test Pass Rate:** 100%
+**Application:** apps_rfp (AI Proposal / RFP Generator)
+**Review Date:** 2026-04-29 (revised; original was templated)
+**Status:** SVP+ candidate; gaps tracked
+**Test Pass Rate:** 100% on units (31 tests); contract tests pending W2
 
 ---
 
-## Executive Summary
+## What's Specifically Hard About This Domain
+
+apps_rfp generates competitive proposals — bid documents that go to a buyer's procurement team and represent the user contractually. That sets a unique engineering bar:
+
+1. **Pricing-bound enforcement is a hard gate, not a warning.** A proposal with an out-of-bound price creates contractual exposure. The pricing validator REFUSES render, not just flags.
+2. **Section completeness is auditable.** Every required RFP section must be addressed; missing sections render as `[MISSING SECTION]` placeholders, never silently omitted. Auditable.
+3. **Win-rate regression matters more than internal quality scores.** If the proposal engine starts producing proposals that lose more, that's the regression signal — not a drop in some internal "quality" metric.
+4. **Bid-window deadline is the SLO, not raw latency.** A proposal must be ready an hour before deadline, every time, even if a single run takes 20 minutes.
+
+This drives the architecture: 25KB proposal assembly engine, 14KB ingestion engine that captures scope from the RFP itself, scope-creep detector comparing rendered scope vs. ingested scope, pricing-bound validator as a hard gate, win-rate regression detector against historical bids.
+
+## Non-Goals (deliberately out of scope)
+
+- **Bid submission to portals.** Out of scope — apps_rfp produces the document.
+- **Contract negotiation post-award.** Different workflow.
+- **Legal terms compliance review.** Lives in a separate compliance workflow.
+- **Self-improving win-rate optimization.** Win-rate is the regression signal, not the optimization target — autonomous optimization invites Goodhart's law.
+
+## Alternatives Considered (and rejected)
+
+### Alternative 1: Pricing as advisory warning
+**Rejected:** advisory pricing creates contractual exposure if the user doesn't notice. Hard gate refuses render; user must explicitly update bound.
+
+### Alternative 2: Auto-fill missing sections with templates
+**Rejected:** silent template filling hides scope gaps. Surface as `[MISSING SECTION]`, audit trail preserved.
+
+### Alternative 3: Internal "quality score" as primary regression signal
+**Rejected:** internal quality scores diverge from bid outcomes. Win-rate is the only signal that ground-truth-validates the engine.
+
+## Architectural Differentiation From Peer Apps
+
+apps_rfp is the only app with:
+- **Pricing-bound enforcement as a hard gate** (financial exposure makes this non-negotiable)
+- **Win-rate-anchored regression evaluation** (against historical bid outcomes, not internal scores)
+- **Scope-creep detection** comparing rendered scope to ingested RFP scope (a form of internal-consistency gate)
+
+apps_rfp is the only app where **rendering with explicit gaps is preferable to rendering complete-but-wrong**.
+
+## SVP Standards Compliance
+
+(Original review content preserved below for rubric mapping.)
+
 
 apps_rfp has been hardened to SVP engineering quality standards, matching the rigor of apps_eval and apps_lic. This includes:
 

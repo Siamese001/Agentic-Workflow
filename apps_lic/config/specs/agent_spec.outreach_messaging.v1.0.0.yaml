@@ -1,0 +1,185 @@
+# AgentSpec instance — apps_lic outreach messaging agent
+# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+#
+# Phase B finding: apps_lic is the canary surface for forced warmth, fake
+# intimacy, and mimicry. Outreach messaging is voice-shaped by design.
+# This spec declares strict tone bounds, references the existing voice
+# profile by ref (NOT inlined), and caps anti-overfit thresholds tighter
+# than the fleet default.
+#
+# Status: experimental — signed_by intentionally empty until L5 attestation.
+# Per ADG hotspot scan (W0.1), top fan-out files include the 5 orchestrators
+# listed in Phase B. Engine consolidation deferred to W5.1 post-three-bucket.
+
+spec_id: agt_licout000000000000000001
+spec_version: "0.1.0"
+parent_spec_id: null
+
+created_by:
+  tenant: agentic-workflow
+  principal: cascade-phase-a
+  origin: developer-loop
+
+signed_by: ""
+
+status: experimental
+
+purpose:
+  one_line: >-
+    Compose outreach messages within strict tone bounds for licensing
+    targets, with explicit human-escalation triggers.
+  success_criteria:
+    - Outreach validates against tone_bounds.forbidden patterns
+    - Anti-overfit aggregate score below mimicry_max
+    - No fabricated history or fake intimacy claims
+    - Compliance constraints honored from MessageComplianceAgent overlay
+    - Recipient personalization stays within evidence packet boundaries
+
+scope:
+  allowed_tasks:
+    - draft_outreach_message
+    - revise_outreach_within_tone_bounds
+    - select_recipient_segment
+    - apply_compliance_overlay
+    - escalate_for_human_review
+  disallowed_tasks:
+    - fabricate_recipient_history
+    - mimic_recipient_phrasing_as_persona
+    - assert_unverified_personal_attributes
+    - cross_promote_unrelated_offerings
+    - extract_recipient_data_for_durable_memory
+  audience:
+    tenant: agentic-workflow
+    team: licensing
+    role: outreach_specialist
+    individual: null
+  domain_tags:
+    - outreach
+    - licensing
+    - regulated_communication
+  out_of_scope_behavior: ESCALATE
+
+agency:
+  tier: SINGLE_AGENT
+  justification: >-
+    Outreach drafting genuinely benefits from a bounded agent loop with
+    retrieval (recipient evidence) and compliance overlay. ADG hotspot
+    scan W0.1 shows orchestrator fan-out concentrated in 5 modules; the
+    Phase B finding documented this as the second-heaviest in the fleet.
+    Single-agent tier with capped tool calls is the minimum viable agency
+    for this surface; multi-agent is NOT justified yet.
+  max_tool_calls_per_turn: 4
+  max_turns: 3
+  parallel_tool_calls: false
+
+permissions:
+  tools:
+    - tool_id: recipient_evidence_retrieval
+      version: "1"
+      scopes: [read]
+    - tool_id: compliance_overlay
+      version: "1"
+      scopes: [read, validate]
+    - tool_id: voice_profile_lookup
+      version: "1"
+      scopes: [read]
+  data_sources:
+    - source_id: voice_profile
+      access: read
+    - source_id: lic_policies
+      access: read
+    - source_id: recipient_evidence
+      access: read
+  egress:
+    allowed_domains: []
+    blocked_by_default: true
+
+instruction_hierarchy:
+  - policy
+  - registry_constraints
+  - developer_constraints
+  - evidence_rules
+  - tone_bounds
+  - one_off_user_instruction
+
+response_contract:
+  output_schemas: []
+  tone_bounds:
+    register: conversational_bounded
+    max_persona_tokens: 256
+    forbidden:
+      - flattery
+      - fake_intimacy
+      - mimicry_of_user_phrasing
+      - inflated_certainty
+      - decorative_apology
+      - hedging_filler
+    voice_profile_ref: apps_lic/config/voice_profile.json
+  citation_policy: REQUIRED_WHEN_EVIDENCE
+
+domain_rules:
+  prohibited_features: []
+  required_constraints:
+    - lic_policies.yaml::compliance_constraints
+    - validator_rules.json::message_validators
+  rule_set_refs:
+    - apps_lic/config/lic_policies.yaml
+    - apps_lic/config/validator_rules.json
+
+memory_policy:
+  durable_preferences: []
+  session_memory:
+    enabled: false
+    ttl: PT0S
+    redaction_rules: []
+  forbidden_to_remember:
+    - pii
+    - transient_intent
+    - affect
+    - private_phrasing
+  promotion_path: UWG_only
+
+failure_behavior:
+  on_ambiguity: ASK_FOCUSED_CLARIFY
+  on_missing_evidence: STATE_ASSUMPTION_OR_DECLINE
+  on_tool_error: BOUNDED_RETRY_THEN_ESCALATE
+  on_policy_conflict: HALT_AND_ESCALATE
+
+escalation:
+  triggers:
+    - high_stakes_topics
+    - low_confidence
+    - policy_edge
+    - adversarial_personalization
+    - hard_floor_breach
+  target: licensing_human_review_queue
+
+evals:
+  rubric_id: rub_apps_lic_outreach_v1
+  rubric_version: "0.1.0"
+  test_matrix_id: tmx_apps_lic_v1
+  min_release_thresholds:
+    task_fit: 3.0
+    evidence_grounding: 3.5
+    non_contrivance: 3.5            # tighter than fleet default
+    overfit_risk_max: 1.0           # tighter than fleet default
+    safety: 4.0
+
+governance:
+  hitl_required_for:
+    - scope_change
+    - tool_grant
+    - memory_promotion
+    - tone_change
+    - agency_tier_promotion
+  replay_policy: FULL
+  audit_retention: P3Y
+
+anti_overfit_profile:
+  mimicry_max: 0.40                 # tighter than fleet default 0.55
+  repeated_user_phrase_max: 0
+  forced_warmth_threshold: 0.05
+  fake_history_tolerance: 0.0
+  certainty_calibration_required: true
+
+compiled_artifacts: null

@@ -1,13 +1,51 @@
 # SVP Engineering Review — apps_exec
 
-**Application:** apps_exec (Executive Brief Generator)  
-**Review Date:** March 29, 2026  
-**Status:** ✅ SVP Engineering Standards Compliant  
-**Test Pass Rate:** 100%
+**Application:** apps_exec (Executive Brief Generator)
+**Review Date:** 2026-04-29 (revised; original was templated)
+**Status:** SVP+ candidate; gaps tracked
+**Test Pass Rate:** 100% on units (31 tests); contract tests pending W2
 
 ---
 
-## Executive Summary
+## What's Specifically Hard About This Domain
+
+apps_exec generates briefs consumed by executives in-meeting or in-session. That sets a unique engineering bar:
+
+1. **<90s hard ceiling matters more than median latency.** A brief that arrives in 6s most of the time but occasionally in 5min is operationally worse than one that always takes 20s — because the user has already moved on.
+2. **Style drift is a silent quality regression.** A brief that's "technically correct" but reads off-tone is unusable. The 17KB style validator earns its weight defending against this.
+3. **Empty section beats placeholder section.** When capability extraction returns nothing, the right answer is `gate_violations=["NO_CAPABILITIES_EXTRACTED"]`, not a stub paragraph.
+4. **Reader engagement is unmeasured.** The system has no signal for "did the executive actually read this?" — that closed loop is the largest UX gap (NEXT_STEP).
+
+This drives the architecture: capability extraction as first-class engine, style validator as a hard gate (not advisory), evidence-anchor coverage check, multi-format render (HTML for in-app, Markdown for export, JSON for downstream).
+
+## Non-Goals (deliberately out of scope)
+
+- **Long-form report generation** — apps_research is the right tool for that.
+- **Real-time data ingestion** — briefs synthesize already-captured evidence.
+- **Multi-author collaborative editing** — single-author single-shot.
+- **Human-in-the-loop refinement step** — if the brief is wrong, regenerate; do not in-place edit.
+
+## Alternatives Considered (and rejected)
+
+### Alternative 1: One-shot LLM call (no capability extraction step)
+**Rejected:** without extracted capabilities, the brief is forced to either invent claims or generalize uselessly. Capability extraction grounds the brief in evidence anchors.
+
+### Alternative 2: Soft style warnings (advisory, not gating)
+**Rejected:** advisory warnings train the system to ignore them. The 17KB style validator is a hard gate because off-tone briefs damage the user externally.
+
+### Alternative 3: Auto-rewrite on style violation
+**Rejected:** silent rewrite is a quality-relaxation in disguise. Surface the violation; let the user decide.
+
+## Architectural Differentiation From Peer Apps
+
+apps_exec is the only app where **<90s hard latency ceiling is a first-class architectural constraint**. apps_research tolerates 600s; apps_lic tolerates 60s; apps_rfp tolerates 20min. apps_exec users are mid-meeting — they will not wait.
+
+This shapes everything: evidence anchors must be pre-extracted (not retrieved at request time); style validator runs synchronously (not as a post-render audit); render is bounded under 1s.
+
+## SVP Standards Compliance
+
+(Original review content preserved below for rubric mapping.)
+
 
 apps_exec has been hardened to SVP engineering quality standards, matching the rigor of apps_eval and apps_lic. This includes:
 

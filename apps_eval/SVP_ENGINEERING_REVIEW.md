@@ -1,15 +1,62 @@
 # SVP Engineering Review — apps_eval
 
-**Application:** apps_eval (Evaluation Lab)  
-**Review Date:** March 29, 2026  
-**Status:** ✅ SVP Engineering Standards Compliant  
-**Test Pass Rate:** 100%
+**Application:** apps_eval (Evaluation Lab)
+**Review Date:** 2026-04-29 (revised; original was templated)
+**Status:** SVP+ candidate; gaps tracked
+**Test Pass Rate:** 100% on units (26 tests); contract + property tests pending W2
 
 ---
 
-## Executive Summary
+## What's Specifically Hard About This Domain
 
-apps_eval has been hardened to SVP engineering quality standards, matching the rigor of apps_underwriting_ai. This includes:
+apps_eval is the **evaluation harness for the rest of the platform**. That sets a unique engineering bar:
+
+1. **It must produce signal a model can be promoted on.** A flaky evaluator is worse than no evaluator — it pollutes promotion gates and trains operators to ignore them.
+2. **Determinism is foundational.** Same model + same suite must produce the same scorecard.
+3. **Regression detection must distinguish baseline drift from real regressions.**
+4. **It feeds the L6 promotion / regret loop** — but that loop is not yet wired (largest open gap, DEFERRED W4.1).
+
+This drives the architecture: deterministic scenarios, judge-model isolation, regression detector with explicit baselines, scorecard renderer, HITL decision-quality engine.
+
+## Non-Goals (deliberately out of scope)
+
+- **Online evaluation against live traffic** — non-stationary signal pollutes baselines.
+- **Self-improving judge** — version-pinned for comparability across runs.
+- **Human-judgment replacement** — measures HITL output, doesn't replace it.
+- **Production model serving** — eval consumes inference, doesn't own it.
+
+## Alternatives Considered (and rejected)
+
+### Alternative 1: Online evaluation
+**Rejected:** non-stationary traffic; cannot ethically eval failure modes on real users; shadow-eval gives stable baselines.
+
+### Alternative 2: Single judge model for all dimensions
+**Rejected:** different dimensions have different judge requirements; single judge = single bias source; per-dimension judge config preferred.
+
+### Alternative 3: Skip regression detection (absolute scorecards only)
+**Rejected:** absolute scores drift with judge updates; without baselines, drift looks like regression. Forces the explicit "compared to WHAT?" question.
+
+## Architectural Differentiation From Peer Apps
+
+| Aspect | apps_eval | Peer apps |
+|--------|-----------|-----------|
+| Output | Decision-quality verdicts | User-facing artifacts |
+| Latency posture | Tolerant (offline batch) | Latency-sensitive (online) |
+| Failure mode | Polluted promotion gate | Bad user output |
+| Stateful artifact | Baselines + scorecards | Rendered briefs/proposals |
+
+apps_eval is the **only app whose output is consumed by the system itself** (via the promotion gate). That makes its trustworthiness load-bearing for the entire platform.
+
+## The Largest Open Architectural Gap
+
+**apps_eval does not yet close the loop into L6 promotion / regret.** The infrastructure exists (`agentic_core/L6_observability/promotion_gates.py`, `flywheel_promoter.py`), but `EvalRunSummary` is not yet plumbed into it.
+
+DEFERRED to W4.1. The SVP+ narrative is: **"every shadow eval feeds Wilson-CI promotion gates with rollback on regret > threshold."** That's the differentiating story; the infra lives here.
+
+## SVP Standards Compliance
+
+(Original review content preserved below for the rubric mapping.)
+
 
 - **Strict Typing:** Pydantic models with Field validators
 - **Explicit Validation:** Compliance and quality gate validators

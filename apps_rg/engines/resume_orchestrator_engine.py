@@ -80,12 +80,17 @@ _emit_updates_meta_learning_state("p4", "resume_orchestrator_engine", "meta_lear
 _emit_links_execution_to_snapshot("p4", "resume_orchestrator_engine", "exec_snapshot_link")
 from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from apps_rg.engines.bullet_diversity_gate import BulletDiversityGate
 from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
 from apps_rg.engines.content_optimizer_engine import ContentOptimizerEngine
 from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent as ContentQualityEngine
 from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
 from apps_rg.engines.gap_closure_engine import GapClosureEngine
+from apps_rg.engines.job_alignment_scorer import JobAlignmentScorer
+from apps_rg.engines.job_pattern_matcher import JobPatternMatcher
+from apps_rg.engines.role_archetype_classifier import RoleArchetypeClassifier
 from apps_rg.engines.section_ranker_engine import SectionRankerEngine
+from apps_rg.engines.verbatim_provenance_gate import VerbatimProvenanceGate
 from apps_rg.types.trace_registry_types import TraceRegistry
 
 _emit_applies_guardrail("p0", "resume_orchestrator_engine", "p0_governance")
@@ -224,7 +229,15 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             pass
         try:
             step_count = 0
-            for hop_engine, hop_id in [(ClerkExtractionEngine, "HOP-1"), (DataEnrichmentEngine, "HOP-2")]:
+            for hop_engine, hop_id in [
+                # P3.2 — Archetype classification first; mutates mission_input.role_*.
+                (RoleArchetypeClassifier, "HOP-0.5-ARCHETYPE"),
+                (ClerkExtractionEngine, "HOP-1"),
+                (DataEnrichmentEngine, "HOP-2"),
+                # P1: JD facet extraction + alignment scoring before optimization.
+                (JobPatternMatcher, "HOP-2.5-JD-FACETS"),
+                (JobAlignmentScorer, "HOP-2.7-JD-ALIGN"),
+            ]:
                 step_count += 1
                 if step_count > self.GLOBAL_STEP_LIMIT:
                     self.ctx.trace.add_trace("CRITICAL_FAILURE", {"reason": "Global step limit exceeded"})
@@ -235,6 +248,9 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             for hop_engine, hop_id in [
                 (GapClosureEngine, "HOP-3-K9"),
                 (ContentOptimizerEngine, "HOP-4-OPT"),
+                # P4.1 — Diversity rebalance after JD-driven optimization,
+                # before final section ranking.
+                (BulletDiversityGate, "HOP-4.5-DIVERSITY"),
                 (SectionRankerEngine, "HOP-4-RANK"),
             ]:
                 step_count += 1
@@ -341,6 +357,36 @@ class ResumeOrchestratorEngine(BaseRGEngine):
             if final_quality.get("score", 0) < quality_threshold:
                 status = "WARNING"
             final_artifact = self.ctx.buffer.read("ranked_content", {})
+
+            # P2 — Verbatim provenance gate (truthful representation guardrail).
+            # Runs against ranked_content (post-rank, pre-emit). Stamps each
+            # emitted bullet with a provenance block tied back to the master
+            # resume; downgrades status to WARNING for metric warnings,
+            # HUMAN_REVIEW for fail (no master match or scope inflation).
+            try:
+                provenance_engine = VerbatimProvenanceGate(self.ctx)
+                provenance_report = await provenance_engine.execute()
+                if not provenance_report.get("valid", True):
+                    status = "HUMAN_REVIEW"
+                elif provenance_report.get("warnings") and status == "SUCCESS":
+                    status = "WARNING"
+                # Refresh final_artifact since gate re-published ranked_content.
+                final_artifact = self.ctx.buffer.read("ranked_content", final_artifact)
+            except (ValueError, KeyError) as exc:
+                self.logger.warning("VerbatimProvenanceGate degraded: %s", exc)
+                provenance_report = {"valid": True, "degraded": True, "error": str(exc)}
+
+            # W9 — Anti-overfit detector (orchestrator-direct gate, ADR-pending).
+            # Runs the L5 anti-overfit detector on the sealed resume text vs
+            # the JD as user-sample. Independent of judge/rubric (rubric runs
+            # offline at eval time). Hard-floor: aggregate_overfit_score >= 3
+            # downgrades status; fake_history flag escalates.
+            overfit_block = self._run_anti_overfit_check(final_artifact, job_description)
+            if overfit_block.get("escalate"):
+                status = "HUMAN_REVIEW"
+            elif overfit_block.get("warning") and status == "SUCCESS":
+                status = "WARNING"
+
             return {
                 "status": status,
                 "checkpoints": [c.hop_id for c in self.hop_checkpoints],
@@ -348,6 +394,8 @@ class ResumeOrchestratorEngine(BaseRGEngine):
                 "retry_iterations": iteration,
                 "final_quality_score": final_quality.get("score", 0),
                 "ats_valid": final_ats.get("valid", False),
+                "overfit_report": overfit_block,
+                "provenance_report": provenance_report,
             }
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             self.ctx.trace.add_trace("ORCHESTRATOR_ERROR", {"error": str(e)})
@@ -359,6 +407,108 @@ class ResumeOrchestratorEngine(BaseRGEngine):
         engine = engine_cls(self.ctx)
         await engine.execute()
         self.hop_checkpoints.append(HopCheckpoint(checkpoint_id, "COMPLETED"))
+
+    def _run_anti_overfit_check(
+        self, final_artifact: dict[str, Any], job_description: str
+    ) -> dict[str, Any]:
+        """W9 hybrid anti-overfit gate (orchestrator-direct + rubric pair).
+
+        Renders the sealed resume to plain text, runs the L5 anti-overfit
+        detector against the JD as user-sample, returns a structured block
+        with the aggregate score, top flags, and escalate/warning verdicts.
+
+        Reversibility: pure function; can be removed by deleting this method
+        and the call site at the end of `execute()`. The L5 detector itself
+        and the `overfit_risk` rubric dimension are unaffected.
+
+        Failure mode: if the detector or its imports fail, returns a neutral
+        block with `error` populated and `escalate=False`. The orchestrator
+        does not consider detector failure a generation failure (the
+        rubric still runs offline).
+        """
+        try:  # noqa: BLE001 - bounded import + run; fall back to neutral on any failure
+            from agentic_core.L5_safety.validators.anti_overfit_detector_validator import (
+                OverfitProfile,
+                SealedOutput,
+                UserSample,
+                detect,
+            )
+        except ImportError as exc:
+            self.logger.warning(
+                "anti_overfit_detector unavailable; W9 hybrid gate degraded: %s", exc
+            )
+            return {"score": 0.0, "flags": [], "warning": False, "escalate": False, "error": f"import: {exc}"}
+
+        # Render sealed text from the projection. Preserve order: headline,
+        # summary, experience bullets, skills. Skip metadata.
+        chunks: list[str] = []
+        if isinstance(final_artifact, dict):
+            if h := final_artifact.get("headline"):
+                chunks.append(str(h))
+            if s := final_artifact.get("summary"):
+                chunks.append(str(s))
+            for exp in final_artifact.get("experience", []) or []:
+                if isinstance(exp, dict):
+                    chunks.append(f"{exp.get('company','')} - {exp.get('title','')}")
+                    for b in exp.get("bullets", []) or []:
+                        chunks.append(str(b))
+            for sk in final_artifact.get("skills", []) or []:
+                chunks.append(str(sk))
+        sealed_text = "\n".join(c for c in chunks if c)
+
+        sealed = SealedOutput(text=sealed_text, turn_index=0)
+        samples = [UserSample(text=str(job_description or ""), sample_ref="job_description")]
+        # Resume-aware profile: differs from agent-prompt profile because the
+        # SEALED OUTPUT here is the candidate-voice resume body, not the
+        # agent persona prose.
+        #   * mimicry_max raised to 0.85: resume-to-JD tailoring is the goal
+        #     (ATS keyword alignment); only flag near-verbatim copy
+        #   * persona_token_cap raised to 5000: resume body is candidate
+        #     content, not agent persona; no meaningful cap below 5000
+        #   * fake_history_tolerance kept at 0.0 (hard floor — zero tolerance
+        #     for fabricated employment / dates / credentials)
+        #   * repeated_user_phrase_max kept at 2 (catch lazy JD echoing)
+        #   * forced_warmth_threshold kept at 0.10 (no flattery in resumes)
+        profile = OverfitProfile(
+            mimicry_max=0.85,
+            repeated_user_phrase_max=2,
+            forced_warmth_threshold=0.10,
+            fake_history_tolerance=0.0,
+            persona_token_cap=5000,
+            certainty_calibration_required=True,
+        )
+        try:
+            report = detect(
+                sealed_output=sealed,
+                user_samples=samples,
+                profile=profile,
+                spec_id="agt_rgresume000000000000001",
+                spec_version="0.1.0",
+            )
+        except (ValueError, TypeError) as exc:
+            self.logger.warning("anti_overfit_detector run failed: %s", exc)
+            return {"score": 0.0, "flags": [], "warning": False, "escalate": False, "error": f"detect: {exc}"}
+
+        # Hard-floor flags (escalate to HUMAN_REVIEW): fabrication or warmth.
+        # Soft flags (downgrade to WARNING only): mimicry beyond cap, repeated
+        # phrases beyond cap, persona-token cap. The aggregate-score warning
+        # band keeps the overall guard active.
+        flags = list(report.flags or [])
+        score = float(report.aggregate_overfit_score or 0.0)
+        # Flag names match the L5 detector's emission strings (see
+        # agentic_core/L5_safety/validators/anti_overfit_detector_validator.py
+        # _aggregate(): 'fake_history_detected', 'forced_warmth_detected').
+        hard_flags = {"fake_history_detected", "forced_warmth_detected"}
+        escalate = bool(hard_flags.intersection(flags)) or score >= 3.5
+        warning = (not escalate) and score >= 2.0
+        return {
+            "score": round(score, 3),
+            "flags": flags,
+            "warning": warning,
+            "escalate": escalate,
+            "report_id": report.report_id,
+            "detector_version": report.detector_version,
+        }
 
     def run_subatomic_test(self) -> dict[str, Any]:
         """Run subatomic self-tests (inherited from SubatomicTestingMixin).

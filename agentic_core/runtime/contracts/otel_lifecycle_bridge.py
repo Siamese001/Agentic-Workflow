@@ -117,6 +117,13 @@ class AdgEmissionToOtelBridge(logging.Handler):
             "kind": "INTERNAL",
             "start_time_ns": int(record.created * 1e9),
             "end_time_ns": int(record.created * 1e9),  # zero-duration marker span
+            # `ts_utc` is the field RuntimeADGMaterializer actually reads
+            # (`start_time_ns` is preserved for OTel/Anthropic-aligned export).
+            # Without this, every node lands with started_at_utc=0 and time
+            # filtering against the runtime ADG store is meaningless.
+            # Convention is ms-since-epoch (matches synthetic_seed emitter).
+            "ts_utc": int(record.created * 1000),
+            "duration_ms": 0.0,
             "status_code": "OK",
             "attributes": attrs,
             "events": [],

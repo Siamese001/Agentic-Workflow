@@ -1,0 +1,217 @@
+req_id: REQ-CROSS-APP-OVERFIT-REPORT-001
+kind: data_schema
+description: |
+  Cross-app OverfitReport — output of the Anti-Overfit Detector, which
+  is INDEPENDENT of the LLM-as-Judge. Two overlays, two outputs, neither
+  can flatter the other.
+
+  The detector runs deterministic checks (mimicry, persona-token cap,
+  fake-history regex, repeated-phrase counter, robotic-consistency,
+  certainty-vs-evidence) plus LLM-rubric checks (forced warmth,
+  flattery). It emits flags that the Release Reviewer consumes
+  alongside the JudgeScorecard.
+
+  Phase B finding: apps_lic with voice_profile.json and outreach
+  messaging is the canary surface; this detector should be calibrated
+  against apps_lic traffic first, then ported to other apps.
+
+status: experimental
+owner: agentic-workflow
+created: 2026-04-29
+last_promoted: null
+freshness_sla_days: 30
+
+applies_to_apps:
+  - apps_rg
+  - apps_lic
+  - apps_eval
+  - apps_exec
+  - apps_rfp
+  - apps_research
+  - apps_underwriting_ai
+
+schema_version: "0.1.0"
+
+schema:
+  type: object
+  required:
+    - report_id
+    - spec_id
+    - spec_version
+    - detector_version
+    - generated_at
+    - profile_thresholds
+    - signals
+    - flags
+    - aggregate_overfit_score
+  properties:
+
+    report_id:
+      type: string
+      pattern: "^ovr_[a-z0-9]{16,32}$"
+    spec_id: {type: string}
+    spec_version: {type: string}
+    detector_version:
+      type: string
+      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    generated_at: {type: string, format: date-time}
+
+    profile_thresholds:
+      type: object
+      description: Echoed from AgentSpec.anti_overfit_profile for audit lineage.
+      required:
+        - mimicry_max
+        - repeated_user_phrase_max
+        - forced_warmth_threshold
+        - fake_history_tolerance
+      properties:
+        mimicry_max: {type: number}
+        repeated_user_phrase_max: {type: integer}
+        forced_warmth_threshold: {type: number}
+        fake_history_tolerance: {type: number}
+
+    signals:
+      type: object
+      description: Per-detector raw measurements.
+      properties:
+        mimicry:
+          type: object
+          properties:
+            ngram_similarity: {type: number, minimum: 0, maximum: 1}
+            embedding_similarity: {type: number, minimum: 0, maximum: 1}
+            blended_score: {type: number, minimum: 0, maximum: 1}
+            top_matches:
+              type: array
+              items:
+                type: object
+                properties:
+                  user_sample_ref: {type: string}
+                  output_span: {type: string}
+                  similarity: {type: number}
+        persona_tokens:
+          type: object
+          properties:
+            count: {type: integer}
+            cap: {type: integer}
+            exceeded: {type: boolean}
+        repeated_user_phrases:
+          type: object
+          properties:
+            count: {type: integer}
+            phrases:
+              type: array
+              items:
+                type: object
+                properties:
+                  phrase: {type: string}
+                  occurrences: {type: integer}
+        fake_history:
+          type: object
+          properties:
+            occurrences: {type: integer}
+            spans:
+              type: array
+              items:
+                type: object
+                properties:
+                  text: {type: string}
+                  has_memory_pointer: {type: boolean}
+        forced_warmth:
+          type: object
+          properties:
+            lexicon_hits: {type: integer}
+            llm_rubric_score: {type: number, minimum: 0, maximum: 4}
+            instances:
+              type: array
+              items: {type: string}
+        robotic_consistency:
+          type: object
+          properties:
+            cross_turn_similarity: {type: number, minimum: 0, maximum: 1}
+            template_collapse_detected: {type: boolean}
+        certainty_calibration:
+          type: object
+          properties:
+            confidence_without_evidence_count: {type: integer}
+            instances:
+              type: array
+              items:
+                type: object
+                properties:
+                  claim: {type: string}
+                  evidence_pointer: {type: [string, "null"]}
+        over_specific_assumptions:
+          type: object
+          properties:
+            count: {type: integer}
+            instances:
+              type: array
+              items: {type: string}
+
+    flags:
+      type: array
+      items:
+        enum:
+          - mimicry_breach
+          - persona_token_cap_exceeded
+          - repeated_phrase_breach
+          - fake_history_detected
+          - forced_warmth_detected
+          - robotic_consistency_detected
+          - certainty_inflation_detected
+          - over_specific_assumption_detected
+          - tone_register_violation
+
+    aggregate_overfit_score:
+      type: number
+      minimum: 0
+      maximum: 4
+      description: |
+        Inverted dimension: lower is better. Maps onto
+        EvaluationRubric.dimensions[id=overfit_risk] for cross-overlay
+        consistency check.
+
+    independence_attestation:
+      type: object
+      required: [judge_scorecard_consulted, attestation]
+      description: |
+        The detector MUST NOT consult the judge's scorecard before producing
+        signals. This block is the audit trail of independence.
+      properties:
+        judge_scorecard_consulted:
+          type: boolean
+          enum: [false]
+          description: MUST be false. Detector is independent of judge.
+        attestation:
+          type: string
+          enum: ["independent_overlay_sibling_to_judge"]
+
+invariants:
+  - id: OVR-INV-001
+    description: |
+      independence_attestation.judge_scorecard_consulted MUST be false.
+      Consulting the judge's output would let one overlay mask the other.
+  - id: OVR-INV-002
+    description: |
+      profile_thresholds MUST be byte-equal to the AgentSpec
+      anti_overfit_profile at time of generation. Drift between spec
+      thresholds and detector thresholds is a contract violation.
+  - id: OVR-INV-003
+    description: |
+      signals.fake_history.has_memory_pointer == false on any first-person
+      past-interaction claim => MUST emit fake_history_detected flag.
+      Zero tolerance per AgentSpec.anti_overfit_profile.fake_history_tolerance.
+  - id: OVR-INV-004
+    description: |
+      The detector emits ONLY this report. It MUST NOT rewrite the spec,
+      mutate outputs, retrieve evidence, or execute tools. Like the judge,
+      the detector is Exit evidence, not Exit authority.
+
+related_contracts:
+  - REQ-CROSS-APP-AGENTSPEC-001
+  - REQ-CROSS-APP-EVAL-RUBRIC-001
+  - REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
+
+references:
+  - First-principles design conversation 2026-04-29 §Anti-Contrivance Controls
+  - apps_lic outreach as canary surface

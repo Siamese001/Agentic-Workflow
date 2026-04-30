@@ -2,26 +2,16 @@
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
   "advisory_mode": false,
-  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5413\\popen-gw18\\test_gate_strict_blocks_on_blo0\\with_nulls.sqlite",
+  "snapshot": "artifacts\\adg\\adg_indexed_99999999_9999.sqlite",
   "status": "blocked",
-  "needs_graduation": [
-    "bucket",
-    "resolution_status",
-    "authority_status",
-    "authority"
-  ],
+  "needs_graduation": [],
   "already_graduated": [],
-  "null_counts": {
-    "bucket": 1,
-    "resolution_status": 1,
-    "authority_status": 1,
-    "authority": 1
-  },
+  "null_counts": {},
   "blockers": [
-    "column 'bucket' has 1 NULL rows; backfill before graduation",
-    "column 'resolution_status' has 1 NULL rows; backfill before graduation",
-    "column 'authority_status' has 1 NULL rows; backfill before graduation",
-    "column 'authority' has 1 NULL rows; backfill before graduation"
+    "column 'bucket' not present in edges table",
+    "column 'resolution_status' not present in edges table",
+    "column 'authority_status' not present in edges table",
+    "column 'authority' not present in edges table"
   ],
-  "timestamp": "2026-04-29T23:02:25.964697+00:00"
+  "timestamp": "2026-04-30T10:31:27.486685+00:00"
 }

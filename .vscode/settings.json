@@ -1,13 +1,14 @@
 {
   "python.defaultInterpreterPath": "C:\\Git\\Agentic-Workflow-FRESH\\.venv\\Scripts\\python.exe",
   "python.terminal.activateEnvironment": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
   "python.analysis.exclude": [
     "**/.venv/**",
     "**/.git/**",
     "**/__pycache__/**",
-    "**/artifacts/**",
-    "**/data/**"
-  ],
-  "python.testing.pytestEnabled": true,
-  "python.testing.pytestPath": "C:\\Git\\Agentic-Workflow-FRESH\\.venv\\Scripts\\pytest.exe"
+    "**/artifacts/**"
+  ]
 }

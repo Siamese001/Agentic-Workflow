@@ -214,7 +214,7 @@ def provision_router(router: Any, config: GeminiGatewayConfig | None = None) -> 
     """
     cfg = config if config is not None else GeminiGatewayConfig.from_env()
     if cfg is None:
-        _LOGGER.info(
+        _LOGGER.info(  # pii: allow-env-var-name -- ENV_GEMINI_API_KEY is the env var NAME constant, not the API key value
             "Gemini API key not set; HealingRouter cascade fallback stays in "
             "dry-plan mode (set %s to enable real Gemini round-trip).",
             ENV_GEMINI_API_KEY,

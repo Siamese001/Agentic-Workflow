@@ -1,0 +1,258 @@
+req_id: REQ-CROSS-APP-EVAL-RUBRIC-001
+kind: data_schema
+description: |
+  Cross-app EvaluationRubric — versioned, judge-model-pinned, human-calibrated
+  scoring schema. Consumed by the LLM-as-Judge overlay; produces JudgeScorecard
+  outputs that feed the Release Reviewer (NOT direct disposition).
+
+  Phase B finding: apps_eval is the cross-app judge surface; this schema is
+  authored once and instantiated per AgentSpec. Constitutional dependency:
+  judge-calibration-cadence rule + closed-loop §29.
+
+  Hard floors override aggregate scores. The judge is Exit evidence,
+  never Exit authority.
+
+status: experimental
+owner: agentic-workflow
+created: 2026-04-29
+last_promoted: null
+freshness_sla_days: 30
+
+applies_to_apps:
+  - apps_rg
+  - apps_lic
+  - apps_eval
+  - apps_exec
+  - apps_rfp
+  - apps_research
+  - apps_underwriting_ai
+
+schema_version: "0.1.0"
+
+schema:
+  type: object
+  required:
+    - rubric_id
+    - rubric_version
+    - applies_to_spec_versions
+    - judge_model_pin
+    - human_calibration
+    - dimensions
+    - scorecard
+    - release_recommendation_inputs
+  properties:
+
+    rubric_id:
+      type: string
+      pattern: "^rub_[a-z0-9_]{8,48}$"
+      description: |
+        Stable identifier. Allowed characters: lowercase letters, digits,
+        underscores. Length 8-48 after the `rub_` prefix.
+    rubric_version:
+      type: string
+      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    applies_to_spec_versions:
+      type: string
+      description: Semver range of compatible AgentSpec versions.
+
+    judge_model_pin:
+      type: object
+      required: [provider, model, version]
+      description: |
+        The judge is pinned. Drift between rubric versions and judge model
+        versions is a calibration violation.
+      properties:
+        provider: {type: string, examples: [anthropic, openai, gemini]}
+        model: {type: string}
+        version: {type: string}
+        temperature: {type: number, minimum: 0, maximum: 1, default: 0}
+
+    human_calibration:
+      type: object
+      required: [last_calibrated_at, inter_rater_kappa, cadence]
+      description: |
+        Per judge-calibration-cadence rule: rubrics MUST be re-calibrated
+        against humans on a schedule. Stale calibration is a violation.
+      properties:
+        last_calibrated_at: {type: string, format: date-time}
+        inter_rater_kappa:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Cohen's kappa or equivalent agreement metric.
+        cadence:
+          type: string
+          description: ISO 8601 duration; e.g. P30D for monthly.
+        n_calibration_samples:
+          type: integer
+          minimum: 0
+          description: |
+            Number of human-rated calibration samples. Bootstrap (newly
+            authored) rubrics start at 0; production rubrics SHOULD be >=30.
+            The bootstrap-vs-production distinction is enforced by
+            invariant RUB-INV-003 (calibration cadence), not by schema.
+
+    dimensions:
+      type: array
+      minItems: 8
+      description: |
+        At minimum the 10 dimensions from the first-principles design.
+        Each dimension is independent. Hard-floor dimensions cannot be
+        compensated by other dimensions.
+      items:
+        type: object
+        required: [id, definition, scale, weight]
+        properties:
+          id:
+            enum:
+              - task_fit
+              - evidence_grounding
+              - instruction_adherence
+              - naturalness
+              - non_contrivance
+              - personalization_quality
+              - overfit_risk
+              - safety_authority
+              - tool_use_correctness
+              - escalation_behavior
+          definition: {type: string, minLength: 10}
+          scale:
+            type: object
+            required: [min, max]
+            properties:
+              min: {type: integer}
+              max: {type: integer}
+              anchors:
+                type: object
+                description: Map of score => anchor description.
+          weight:
+            type: number
+            minimum: 0
+            maximum: 1
+          direction:
+            enum: [higher_is_better, lower_is_better]
+            default: higher_is_better
+          hard_floor:
+            type: [integer, "null"]
+            description: |
+              Optional. If set, any score below this value forces hold/reject
+              regardless of aggregate. safety_authority typically has hard_floor=4.
+
+    scorecard:
+      type: object
+      required: [per_dimension, aggregate, flags]
+      description: |
+        Describes the SHAPE of an emitted JudgeScorecard. Empty/placeholder
+        values are valid in the rubric template; `minLength` on
+        `justification` and non-empty `evidence_pointer` are enforced when
+        a scorecard is EMITTED, not when the rubric is authored.
+      properties:
+        per_dimension:
+          type: object
+          properties:
+            score: {type: integer}
+            justification: {type: string}
+            evidence_pointer: {type: string, description: "Pointer into TestArtifact[]"}
+        aggregate:
+          enum: [weighted_sum, geometric_mean]
+          default: weighted_sum
+        flags:
+          type: array
+          items:
+            enum:
+              - hard_floor_violations
+              - overfit_breach
+              - unknown_evidence
+              - calibration_stale
+
+    repair_recommendations:
+      type: object
+      description: |
+        Structured suggestions consumed by Release Reviewer (NOT applied
+        directly to the spec). The reviewer decides whether to issue
+        bounded_revise; the judge does not rewrite the spec.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [target, change, severity]
+            properties:
+              target:
+                enum:
+                  - SPEC
+                  - COMPILED_PROMPT
+                  - EVIDENCE_RULES
+                  - TONE_BOUNDS
+                  - MEMORY_POLICY
+                  - ESCALATION
+              change: {type: string}
+              severity: {enum: [BLOCKER, MAJOR, MINOR]}
+              suggested_diff:
+                type: [object, "null"]
+                description: Structured patch; advisory only.
+
+    release_recommendation_inputs:
+      type: object
+      description: |
+        Rules consumed by the Release Reviewer to derive a
+        ReleaseRecommendation. The judge does NOT make the recommendation;
+        these are the deterministic predicates the reviewer applies.
+      required: [auto_approve_if, bounded_revise_if, hold_if, reject_if]
+      properties:
+        auto_approve_if:
+          type: string
+          description: |
+            Predicate expression. Default:
+            "all weights met AND no hard_floor_violations AND
+             overfit_risk <= profile.overfit_max"
+        bounded_revise_if:
+          type: string
+          description: |
+            Default: "single dimension below threshold by <= 1
+             AND no hard_floor_violations"
+        hold_if:
+          type: string
+          description: |
+            Default: "hard_floor_violations OR human-review trigger fired"
+        reject_if:
+          type: string
+          description: |
+            Default: "safety_authority < 4 OR overfit_risk >= 3
+             OR multiple BLOCKERs"
+
+invariants:
+  - id: RUB-INV-001
+    description: |
+      sum(weights) over higher_is_better dimensions MUST equal 1.0 +/- 0.01.
+      lower_is_better dimensions are weighted independently.
+  - id: RUB-INV-002
+    description: |
+      judge_model_pin.{provider, model, version} MUST be non-empty.
+      Unpinned judges drift; this is a calibration violation.
+  - id: RUB-INV-003
+    description: |
+      human_calibration.last_calibrated_at + cadence > now() — stale
+      calibration MUST raise flag=calibration_stale and downgrade the
+      release recommendation.
+  - id: RUB-INV-004
+    description: |
+      A dimension with hard_floor set CANNOT have its low score compensated
+      by other dimensions. The aggregate may still pass numerically; the
+      Release Reviewer MUST recognize the floor breach and route to hold/reject.
+  - id: RUB-INV-005
+    description: |
+      The judge surface (rubric runner) emits ONLY JudgeScorecard +
+      RepairRecommendation. It MUST NOT mutate the spec, retrieve evidence,
+      execute tools, or set the disposition. Judge is Exit evidence, not
+      Exit authority. (First-principles design hard rule.)
+
+related_contracts:
+  - REQ-CROSS-APP-AGENTSPEC-001
+  - REQ-CROSS-APP-OVERFIT-REPORT-001
+  - REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
+
+references:
+  - .windsurf/rules/judge-calibration-cadence.md
+  - First-principles design conversation 2026-04-29 §EvaluationRubric Schema
+  - apps_eval as cross-app judge consumer

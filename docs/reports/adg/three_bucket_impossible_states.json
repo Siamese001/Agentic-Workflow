@@ -1,0 +1,112 @@
+{
+  "gate_id": "cross_bucket.impossible_states",
+  "bucket": "cross_bucket",
+  "status": "FAIL",
+  "evidence_mode": "proof",
+  "enforcement_mode": "strict",
+  "snapshot_id": "adg_indexed_04292026_1606",
+  "input_refs": [
+    "edges (bucket, evidence_refs, source_file)",
+    "v_runtime_proof (latest_trace_id, latest_span_id, static_edge_id)",
+    "docs/reports/adg/THREE_BUCKET_GAP_REPORT.json"
+  ],
+  "counts": {
+    "i1_runtime_no_trace_id": 0,
+    "i2_registry_no_digest": 0,
+    "i3_static_no_source_ref": 29,
+    "i4_triplet_missing_ref": 0,
+    "i5_auth_runtime_no_span": 0,
+    "i6_registry_only_prod_route": 10,
+    "i7_static_critical_unclassified": 127198,
+    "fail_codes_count": 2
+  },
+  "thresholds": {},
+  "sample_failures": [
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 30882,
+      "src_id": 371,
+      "dst_id": 5670,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 30883,
+      "src_id": 371,
+      "dst_id": 5671,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34835,
+      "src_id": 413,
+      "dst_id": 3001,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34836,
+      "src_id": 413,
+      "dst_id": 3004,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34837,
+      "src_id": 413,
+      "dst_id": 3005,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34838,
+      "src_id": 413,
+      "dst_id": 3013,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34839,
+      "src_id": 413,
+      "dst_id": 3016,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34840,
+      "src_id": 413,
+      "dst_id": 3017,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34841,
+      "src_id": 413,
+      "dst_id": 3018,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    },
+    {
+      "code": "I3_FAIL_STATIC_NO_SOURCE_REF",
+      "edge_id": 34842,
+      "src_id": 413,
+      "dst_id": 5274,
+      "relation_type": "violation_propagates_through",
+      "dynamic_resolution": ""
+    }
+  ],
+  "bypass_env_detected": [],
+  "expected_fail_reason": "",
+  "actual_fail_reason": "I3_FAIL_STATIC_NO_SOURCE_REF",
+  "artifact_hash": "2ee23f89183e9d6c",
+  "duration_ms": 275,
+  "started_at": "2026-04-29T23:42:47.089355+00:00"
+}

@@ -1,0 +1,200 @@
+req_id: REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
+kind: data_schema
+description: |
+  Cross-app ReleaseRecommendation — output of the Release Review packet,
+  consumed by Exit as one input among several into the X3 disposition.
+
+  CRITICAL: this is a recommendation, not a decision. Only Exit issues
+  the X3 disposition; only UWG writes durable state. The Release Reviewer
+  emits this contract; Exit consumes it alongside L5 attestations and
+  00C gate verdicts.
+
+  Phase B finding: across all apps, the existing pattern conflates
+  recommender and decider (RgReflectionAgent triggers reruns,
+  LICValidationExecutor decides retry, etc.). This contract enforces
+  the separation.
+
+status: experimental
+owner: agentic-workflow
+created: 2026-04-29
+last_promoted: null
+freshness_sla_days: 30
+
+applies_to_apps:
+  - apps_rg
+  - apps_lic
+  - apps_eval
+  - apps_exec
+  - apps_rfp
+  - apps_research
+  - apps_underwriting_ai
+
+schema_version: "0.1.0"
+
+schema:
+  type: object
+  required:
+    - recommendation_id
+    - spec_id
+    - spec_version
+    - run_id
+    - generated_at
+    - verdict
+    - rationale
+    - inputs
+    - hitl_triggers_fired
+  properties:
+
+    recommendation_id:
+      type: string
+      pattern: "^rec_[a-z0-9]{16,32}$"
+    spec_id: {type: string}
+    spec_version: {type: string}
+    run_id:
+      type: string
+      description: |
+        The governed run this recommendation is for. Trace-id binding for
+        cross-overlay correlation.
+    generated_at: {type: string, format: date-time}
+
+    verdict:
+      enum:
+        - approve
+        - bounded_revise
+        - hold_for_human
+        - reject
+      description: |
+        Closed enum. The four possible recommendations:
+
+        - approve         : all matrix rows green, no hard floor breach,
+                            overfit within profile. Exit may issue X3=approve.
+        - bounded_revise  : single dimension below threshold by <= 1, no
+                            hard floor breach. Exit may schedule a single
+                            bounded re-execution; this is NOT in-run rerun
+                            (which would violate L6-cannot-rescue rule).
+        - hold_for_human  : hard floor breach OR HITL trigger fired.
+                            Exit MUST route to human review; no UWG write.
+        - reject          : safety_authority < 4 OR overfit_risk >= 3 OR
+                            multiple BLOCKERs. Exit MUST issue X3=reject;
+                            no UWG write.
+
+    rationale:
+      type: string
+      minLength: 40
+      description: |
+        Plain-English justification grounded in the inputs below. Must
+        reference specific dimensions, flags, or HITL triggers — not
+        generic prose.
+
+    inputs:
+      type: object
+      required: [judge_scorecard_ref, overfit_report_ref, l5_attestations_ref, gate_verdicts_ref]
+      description: |
+        Pointers (not embedded objects) to the typed inputs the reviewer
+        consulted. Replay-from-pointers must reproduce the recommendation.
+      properties:
+        judge_scorecard_ref: {type: string}
+        overfit_report_ref: {type: string}
+        l5_attestations_ref: {type: string}
+        gate_verdicts_ref:
+          type: string
+          description: 00C runtime gate verdicts; UNKNOWN entries MUST halt advancement.
+        test_artifact_refs:
+          type: array
+          items: {type: string}
+
+    hitl_triggers_fired:
+      type: array
+      items:
+        enum:
+          - high_stakes_topics
+          - low_confidence
+          - policy_edge
+          - adversarial_personalization
+          - conflicting_user_pref
+          - hard_floor_breach
+          - tool_grant_request
+          - scope_change_request
+          - memory_promotion_request
+          - tone_change_request
+          - agency_tier_promotion_request
+      description: |
+        If non-empty, verdict MUST be hold_for_human. The reviewer cannot
+        bypass HITL by issuing approve when triggers fired.
+
+    bounded_revise_scope:
+      type: [object, "null"]
+      description: |
+        REQUIRED when verdict=bounded_revise; null otherwise. Defines what
+        a single bounded re-execution may change.
+      properties:
+        target_dimensions:
+          type: array
+          items: {type: string}
+        max_revise_attempts:
+          type: integer
+          minimum: 1
+          maximum: 1
+          description: |
+            Hard cap of 1 attempt. Multiple revisions => switch to
+            hold_for_human. This prevents the rerun-loop antipattern
+            (judge-as-decider) seen in apps_rg/apps_lic.
+        scope_constraints:
+          type: array
+          items: {type: string}
+
+    authority_attestation:
+      type: object
+      required: [is_recommendation_only, decision_authority]
+      description: |
+        Self-attested boundary. The reviewer is a recommender. Exit decides.
+      properties:
+        is_recommendation_only:
+          type: boolean
+          enum: [true]
+        decision_authority:
+          type: string
+          enum: ["agentic_core.L5_safety.exit_control"]
+          description: |
+            Literal pointer to the only module that may issue X3.
+
+invariants:
+  - id: REC-INV-001
+    description: |
+      authority_attestation.is_recommendation_only MUST be true. The
+      Release Reviewer never decides; it recommends.
+  - id: REC-INV-002
+    description: |
+      hitl_triggers_fired non-empty AND verdict in [approve, bounded_revise]
+      is a contract violation. HITL triggers force hold_for_human or escalate.
+  - id: REC-INV-003
+    description: |
+      verdict=bounded_revise REQUIRES bounded_revise_scope non-null with
+      max_revise_attempts=1. Multiple revisions are forbidden — they
+      reintroduce the rerun-loop antipattern.
+  - id: REC-INV-004
+    description: |
+      verdict=approve REQUIRES inputs.gate_verdicts_ref to resolve to a
+      verdict set with NO UNKNOWN entries. UNKNOWN never advances per
+      Constitutional gate semantics.
+  - id: REC-INV-005
+    description: |
+      The Release Reviewer's only output is this contract. It MUST NOT
+      write to L4, mutate the spec, or trigger reruns directly. Reruns
+      are scheduled by Exit, executed by L2, and bounded by max_revise_attempts.
+  - id: REC-INV-006
+    description: |
+      verdict=approve does NOT trigger UWG write. UWG fires only on
+      Exit-cleared X3=approve. The recommendation -> Exit -> UWG chain
+      is non-collapsible.
+
+related_contracts:
+  - REQ-CROSS-APP-AGENTSPEC-001
+  - REQ-CROSS-APP-EVIDENCE-PACKET-001
+  - REQ-CROSS-APP-EVAL-RUBRIC-001
+  - REQ-CROSS-APP-OVERFIT-REPORT-001
+
+references:
+  - First-principles design conversation 2026-04-29 §Release Review Packet
+  - agentic_core/L5_safety/exit_control/ (X3 authority)
+  - agentic_core/L4_state/uwg/ (sole durable write path)

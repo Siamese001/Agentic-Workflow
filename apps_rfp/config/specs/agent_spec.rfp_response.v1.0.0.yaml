@@ -1,0 +1,191 @@
+# AgentSpec instance — apps_rfp RFP response assembly agent
+# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+#
+# Phase B finding: 5 orchestrators (RfpOrchestrator, section_orchestrator,
+# enterprise_orchestrator, ComplianceMappingAgent, RequirementAnalysisAgent).
+# Multi-agent decomposition is DEFENSIBLE here — compliance/requirement/
+# section are genuine RFP-domain stages with strong type seams.
+#
+# This is the fleet's test of justified MULTI_AGENT. Required ADR:
+# docs/architecture/adr/ADR-NNN-rfp-multi-agent-justification.md
+#
+# Status: experimental — signed_by intentionally empty.
+
+spec_id: agt_rfpresp0000000000000000001
+spec_version: "0.1.0"
+parent_spec_id: null
+
+created_by:
+  tenant: agentic-workflow
+  principal: cascade-phase-a
+  origin: developer-loop
+
+signed_by: ""
+
+status: experimental
+
+purpose:
+  one_line: >-
+    Assemble an RFP response across compliance/requirement/section workflows
+    via typed contracts; never via shared mutable state.
+  success_criteria:
+    - Compliance + requirement + section subsystems communicate via typed contracts only
+    - No shared mutable state across orchestrator boundaries (ADG verified)
+    - Adversarial RFP content (poisoned requirements) detected and escalated
+    - Boilerplate detection within anti_overfit profile
+    - Replay produces structurally stable response for same RFP
+
+scope:
+  allowed_tasks:
+    - ingest_rfp_document
+    - decompose_rfp_into_sections
+    - map_requirements_to_capabilities
+    - validate_compliance_constraints
+    - assemble_section_responses
+    - escalate_for_human_review
+  disallowed_tasks:
+    - fabricate_capability_claims
+    - misclassify_compliance_severity_to_pass
+    - apply_section_boilerplate_to_unrelated_rfp
+  audience:
+    tenant: agentic-workflow
+    team: rfp_response
+    role: proposal_lead
+    individual: null
+  domain_tags:
+    - rfp
+    - proposal
+    - compliance
+    - regulated
+  out_of_scope_behavior: ESCALATE
+
+agency:
+  tier: MULTI_AGENT
+  justification: >-
+    RFP response genuinely requires three independent workflows: compliance
+    classification, requirement decomposition, and section assembly. Each
+    has independent rubrics, independent failure modes, and independent
+    escalation triggers. Integration is via typed RFP-section contracts,
+    NOT shared mutable state. ADG verification (W0.1 mv_dependency_cone_risk
+    pending) must confirm orchestrator independence; if shared state is
+    found, tier downgrades to SINGLE_AGENT or WORKFLOW. See
+    docs/architecture/adr/ADR-NNN-rfp-multi-agent-justification.md (draft).
+  max_tool_calls_per_turn: 6
+  max_turns: 4
+  parallel_tool_calls: true        # the three workflows can run in parallel
+
+permissions:
+  tools:
+    - tool_id: compliance_classifier
+      version: "1"
+      scopes: [classify]
+    - tool_id: requirement_decomposer
+      version: "1"
+      scopes: [decompose]
+    - tool_id: section_retrieval
+      version: "1"
+      scopes: [read]
+    - tool_id: rfp_response_template_lookup
+      version: "1"
+      scopes: [read]
+  data_sources:
+    - source_id: rfp_policies
+      access: read
+    - source_id: rfp_thresholds
+      access: read
+    - source_id: knowledge_base
+      access: read
+  egress:
+    allowed_domains: []
+    blocked_by_default: true
+
+instruction_hierarchy:
+  - policy
+  - registry_constraints
+  - developer_constraints
+  - evidence_rules
+  - tone_bounds
+  - one_off_user_instruction
+
+response_contract:
+  output_schemas: []
+  tone_bounds:
+    register: technical
+    max_persona_tokens: 64
+    forbidden:
+      - flattery
+      - fake_intimacy
+      - mimicry_of_user_phrasing
+      - inflated_certainty
+      - decorative_apology
+      - hedging_filler
+    voice_profile_ref: null
+  citation_policy: REQUIRED_WHEN_EVIDENCE
+
+domain_rules:
+  prohibited_features:
+    - unsupported_capability_claims
+    - misclassified_must_haves_as_optional
+  required_constraints:
+    - all_must_have_requirements_addressed
+    - compliance_severity_classification_locked
+  rule_set_refs:
+    - apps_rfp/config/rfp_policies.yaml
+    - apps_rfp/config/rfp_thresholds.yaml
+
+memory_policy:
+  durable_preferences: []
+  session_memory:
+    enabled: false
+    ttl: PT0S
+    redaction_rules: []
+  forbidden_to_remember:
+    - pii
+    - transient_intent
+    - affect
+    - private_phrasing
+  promotion_path: UWG_only
+
+failure_behavior:
+  on_ambiguity: ASK_FOCUSED_CLARIFY
+  on_missing_evidence: STATE_ASSUMPTION_OR_DECLINE
+  on_tool_error: BOUNDED_RETRY_THEN_ESCALATE
+  on_policy_conflict: HALT_AND_ESCALATE
+
+escalation:
+  triggers:
+    - high_stakes_topics
+    - low_confidence
+    - policy_edge
+    - adversarial_personalization
+    - hard_floor_breach
+  target: rfp_response_human_review_queue
+
+evals:
+  rubric_id: rub_apps_rfp_response_v1
+  rubric_version: "0.1.0"
+  test_matrix_id: tmx_apps_rfp_v1
+  min_release_thresholds:
+    task_fit: 3.5
+    evidence_grounding: 4.0
+    non_contrivance: 3.0
+    overfit_risk_max: 1.5         # boilerplate risk acknowledged
+    safety: 4.0
+
+governance:
+  hitl_required_for:
+    - scope_change
+    - tool_grant
+    - memory_promotion
+    - agency_tier_promotion
+  replay_policy: FULL
+  audit_retention: P5Y
+
+anti_overfit_profile:
+  mimicry_max: 0.50
+  repeated_user_phrase_max: 2     # boilerplate is real here
+  forced_warmth_threshold: 0.05
+  fake_history_tolerance: 0.0
+  certainty_calibration_required: true
+
+compiled_artifacts: null

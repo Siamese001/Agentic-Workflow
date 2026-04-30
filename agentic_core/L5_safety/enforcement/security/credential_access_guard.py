@@ -310,7 +310,9 @@ class CredentialAccessGuard:
                     access_method="guarded_get_secret",
                     outcome=SecretAccessOutcome.NOT_FOUND,
                 )
-                Logger.debug("[CredentialAccessGuard] %s not found, using default", secret_name)
+                Logger.debug(  # pii: allow-secret-name-only -- logs env var NAME (e.g. "GEMINI_API_KEY"), never the secret value
+                    "[CredentialAccessGuard] %s not found, using default", secret_name,
+                )
                 return default
             self._recorder.record_denied(secret_name=secret_name, secret_kind=kind)
             raise KeyError(
@@ -323,7 +325,9 @@ class CredentialAccessGuard:
             outcome=SecretAccessOutcome.SUCCESS,
             raw_value=raw,
         )
-        Logger.debug("[CredentialAccessGuard] validated_by_safety_plane: %s (%s)", secret_name, kind)
+        Logger.debug(  # pii: allow-secret-name-only -- logs env var NAME and kind, never the secret value
+            "[CredentialAccessGuard] validated_by_safety_plane: %s (%s)", secret_name, kind,
+        )
         return raw
 
     def guarded_get_env(

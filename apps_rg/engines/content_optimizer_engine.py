@@ -56,31 +56,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_authorize_and_execute("p2", "content_optimizer_engine", "execution_auth")
-_emit_validates_capability("p2", "content_optimizer_engine", "capability_check")
-_emit_routes_to_capability("p2", "content_optimizer_engine", "capability_route")
-_emit_writes_via_uwg("p2", "content_optimizer_engine", "uwg_write")
-_emit_blocks_direct_write("p2", "content_optimizer_engine", "direct_write_block")
-_emit_records_tool_invocation("p2", "content_optimizer_engine", "tool_invocation")
-_emit_captures_execution_output("p2", "content_optimizer_engine", "exec_output")
-_emit_dispatches_agent("p3", "content_optimizer_engine", "agent_dispatch")
-_emit_coordinates_agents("p3", "content_optimizer_engine", "agent_coordination")
-_emit_records_workflow_lineage("p3", "content_optimizer_engine", "workflow_lineage")
-_emit_records_healing_outcome("p3", "content_optimizer_engine", "healing_outcome")
-_emit_escalates_failure("p3", "content_optimizer_engine", "failure_escalation")
-_emit_orchestrates_workflow("p3", "content_optimizer_engine", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "content_optimizer_engine", "healing_dispatch")
-_emit_invokes_evaluation("p3", "content_optimizer_engine", "evaluation_signal")
-_emit_records_telemetry_event("p4", "content_optimizer_engine", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "content_optimizer_engine", "eval_metric")
-_emit_stores_embedding("p4", "content_optimizer_engine", "embedding_store")
-_emit_updates_meta_learning_state("p4", "content_optimizer_engine", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "content_optimizer_engine", "exec_snapshot_link")
 from apps_rg.engines.base_rg_engine import BaseRGEngine
 
-_emit_applies_guardrail("p0", "content_optimizer_engine", "p0_governance")
-_emit_reads_policy_state("p0", "content_optimizer_engine", "policy_binding")
-_emit_snapshots_state("p0", "content_optimizer_engine", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -106,59 +83,10 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_1")
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_2")
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_3")
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_4")
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_5")
-_emit_emits_metric_event("content_optimizer_engine", "p4obs", "metric_6")
-_emit_records_incident_event("content_optimizer_engine", "p4obs", "incident")
-_emit_captures_runtime_anomaly("content_optimizer_engine", "p4obs", "anomaly")
-_emit_writes_observability_log("content_optimizer_engine", "p4obs", "obs_log")
-_emit_updates_monitoring_state("content_optimizer_engine", "p4obs", "mon_state")
-_emit_triggers_alert("content_optimizer_engine", "p4obs", "alert")
-_emit_links_incident_trace("content_optimizer_engine", "p4obs", "trace_link")
-_emit_captures_pattern("content_optimizer_engine", "p3lm", "pattern")
-_emit_records_learning_event("content_optimizer_engine", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("content_optimizer_engine", "p3lm", "snapshot")
-_emit_feeds_meta_learning("content_optimizer_engine", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("content_optimizer_engine", "p3lm", "routing")
-_emit_improves_agent_policy("content_optimizer_engine", "p3lm", "policy")
-_emit_stores_learning_state("content_optimizer_engine", "p3lm", "state")
-_emit_records_execution_trace("content_optimizer_engine", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("content_optimizer_engine", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("content_optimizer_engine", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("content_optimizer_engine", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("content_optimizer_engine", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("content_optimizer_engine", "env_read", "p2_env_1")
-_emit_reads_environ("content_optimizer_engine", "env_read", "p2_env_2")
-_emit_reads_runtime_state("content_optimizer_engine", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("content_optimizer_engine", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "content_optimizer_engine", "context_pull")
-_emit_pulls_context("p1", "content_optimizer_engine", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "content_optimizer_engine", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "content_optimizer_engine", "uwg_term_2")
-_emit_writes_through("p1", "content_optimizer_engine", "write_through")
-_emit_writes_through("p1", "content_optimizer_engine", "write_through_2")
-_emit_validated_by_safety_plane("p1", "content_optimizer_engine", "safety_validation")
-_emit_invokes_eval("p1", "content_optimizer_engine", "eval_call")
-_emit_proposal_commits_routing("p1", "content_optimizer_engine", "routing_commit")
-_emit_escalates_to_human("p1", "content_optimizer_engine", "human_escalation")
-_emit_routes_through("p1", "content_optimizer_engine", "route_through")
-_emit_checks_agent_registry("p1", "content_optimizer_engine", "agent_registry")
-_emit_validates_agent_capability("p1", "content_optimizer_engine", "capability")
-_emit_dispatches_execution_plan("p1", "content_optimizer_engine", "exec_plan")
-_emit_agent_executes_agent("p1", "content_optimizer_engine", "sub_agent")
-_emit_routes_to_agent("p1", "content_optimizer_engine", "target_agent")
-_emit_verifies_policy("p1", "content_optimizer_engine", "policy_check")
-_emit_observes_runtime_state("p1", "content_optimizer_engine", "runtime_state")
-_emit_verifies_boundary("p1", "content_optimizer_engine", "boundary_check")
-_emit_transcripts_response("p1", "content_optimizer_engine", "transcript")
-_emit_hard_fails_untranscripted("p1", "content_optimizer_engine")
-_emit_gated_by_confidence("p1", "content_optimizer_engine", "confidence_gate")
-emit_replay_key("p0", "content_optimizer_engine")
-emit_determinism_digest("p0", "content_optimizer_engine")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+from apps_rg.engines._lifecycle_emits import _emit_engine_lifecycle
+
+_emit_engine_lifecycle("content_optimizer_engine")
+
 
 Logger = logging.getLogger(__name__)
 
@@ -191,14 +119,30 @@ class ContentOptimizerEngine(BaseRGEngine):
             return []
         sections = data.get("experience_sections", [])
         optimized_sections = []
+        # Per-section retention threshold. If a bullet's alignment_score falls
+        # below this AND the section has more bullets than `min_bullets_per_section`,
+        # drop it. This is the JD-customization gate — bullets that don't talk
+        # about what the JD is asking for don't ship.
+        min_bullets_per_section = 3
+        max_bullets_per_section = 6
+        retention_threshold = 0.18  # bullets below this are dropped if section has slack
         for section in sections:
             bullets = section.get("bullets", [])
-            optimized_bullets = sorted(
+            scored = sorted(
                 bullets,
                 key=lambda b: self._calculate_impact_score(b, weights),
                 reverse=True,
             )
-            section["bullets"] = optimized_bullets
+            # Apply retention threshold: keep top N, drop the tail below threshold
+            # but always keep at least `min_bullets_per_section`.
+            keep = []
+            for idx, bullet in enumerate(scored):
+                align = float(bullet.get("alignment_score", 0.0))
+                if idx < min_bullets_per_section:
+                    keep.append(bullet)
+                elif idx < max_bullets_per_section and align >= retention_threshold:
+                    keep.append(bullet)
+            section["bullets"] = keep
             optimized_sections.append(section)
         optimized_dict = {
             "experience_sections": optimized_sections,
@@ -206,12 +150,20 @@ class ContentOptimizerEngine(BaseRGEngine):
             "skills": data.get("skills", []),
         }
         self.ctx.buffer.write("optimized_content", optimized_dict, source_agent=self.name)
-        self.record_pass("Content optimization complete")
+        n_kept = sum(len(s.get("bullets", [])) for s in optimized_sections)
+        self.record_pass(f"Content optimization complete — kept {n_kept} bullets across {len(optimized_sections)} sections")
         return optimized_sections
 
     def _calculate_impact_score(self, bullet: dict, weights: dict) -> float:
-        score = 0.0
+        """Composite score = JD-alignment + quantification + section weight.
+
+        JD alignment dominates: a high-quantification bullet that doesn't speak
+        to the JD ranks below a JD-aligned bullet without metrics. This is the
+        actual customization signal the pipeline was missing.
+        """
+        align = float(bullet.get("alignment_score", 0.0))
+        score = 0.7 * align
         if bullet.get("quantified_metrics"):
-            score += 0.5
+            score += 0.2
         score *= weights.get("experience", 1.0)
         return score

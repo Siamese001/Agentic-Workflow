@@ -140,6 +140,20 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6b2: Cross-App Contract Schema (Phase A) -----------------------------------
+      # Validates AgentSpec, EvidencePacket, EvaluationRubric, OverfitReport,
+      # and ReleaseRecommendation instances against their cross-app contracts.
+      # Triggered when any instance file or any contract file changes.
+      # Bypass: CROSS_APP_CONTRACT_BYPASS=1.
+      - id: cross-app-contract-schema
+        name: "T6b2: Cross-App Contract Schema"
+        entry: py ops_scripts/ci/check_cross_app_contract_schema.py
+        language: system
+        pass_filenames: false
+        files: ^(requirements/contracts/REQ-CROSS-APP-.*\.contract\.yaml|apps_[^/]+/config/(specs|rubrics)/.*\.yaml|tests/.*/fixtures/(agentspec|evidence_packet|evaluation_rubric|overfit_report|release_recommendation)/.*\.yaml|ops_scripts/ci/check_cross_app_contract_schema\.py)$
+        always_run: false
+        require_serial: true
+
       # -- T6c: AGENTS.md MCP Coverage --------------------------------------------------
       # Ensures every `mcpServers` key in mcp_config.json has a row in the
       # AGENTS.md MCP Quick Reference table. Complements T6b (strict integrity):
@@ -150,6 +164,44 @@ repos:
         language: system
         pass_filenames: false
         files: ^(\.windsurf/mcp_config\.json|AGENTS\.md)$
+        always_run: false
+        require_serial: true
+
+      # -- T6c1: 10C Requirement Bundle Consistency ----------------------------------
+      # Validates ledger ↔ matrix ↔ IMPLEMENTATION_STATUS internal consistency
+      # whenever any 10C reconciliation artifact is touched. Schema parity, REQ-ID
+      # parity, severity vocabulary, confidence range, duplicate detection.
+      - id: ten-c-ledger-consistency
+        name: "T6c1: 10C ledger ↔ matrix ↔ status consistency"
+        entry: py ops_scripts/ci/check_10c_ledger_consistency.py
+        language: system
+        pass_filenames: false
+        files: ^docs/reports/design/10c_reconciliation/.*\.(csv|md)$
+        always_run: false
+        require_serial: true
+
+      # -- T6c1b: AGEN Registry Schema -----------------------------------------------
+      # Validates docs/requirements/registry/{policy,best_practice}/AGEN-*.yaml
+      # — required fields, ID format/uniqueness, status vocabulary, enforcement refs.
+      - id: agen-registry-schema
+        name: "T6c1b: AGEN registry schema"
+        entry: py ops_scripts/ci/check_agen_registry_schema.py
+        language: system
+        pass_filenames: false
+        files: ^docs/requirements/registry/.*\.yaml$
+        always_run: false
+        require_serial: true
+
+      # -- T6c2: Requirements Universe Inventory (advisory in pre-commit) ------------
+      # Discovers all 14 requirement-bearing artifact families and verifies each
+      # has at least one CI link. Runs whenever any requirement-bearing file is
+      # touched. Strict mode is reserved for run_contract_gates / CI.
+      - id: requirements-universe-inventory
+        name: "T6c2: requirements universe inventory"
+        entry: py ops_scripts/ci/check_requirements_universe_inventory.py
+        language: system
+        pass_filenames: false
+        files: ^(docs/reports/design/10c_reconciliation/.*|docs/requirements/.*|requirements/contracts/.*|config/crosswalk/obligations\.yaml|tools/l5_contracts/_requirement_matrix\.json|docs/reference/contracts/enforcement/ALL_REQUIREMENTS_.*)$
         always_run: false
         require_serial: true
 
@@ -512,6 +564,33 @@ repos:
       - id: check-c0-sovereignty
         name: "CI: C0 Sovereignty"
         entry: py agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # apps_shared purity — block any import from apps_shared/ into a domain app.
+      # SQLite-direct query against the canonical ADG snapshot (constitutional §28).
+      # Currently 0 violations; gate locks the boundary at zero.
+      # Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
+      - id: check-apps-shared-purity
+        name: "CI: apps_shared purity (no domain-app imports)"
+        entry: py ops_scripts/ci/check_apps_shared_purity.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # PII-in-telemetry — block PII-shaped variable names from leaking
+      # through telemetry/logging/OTEL emit call sites. Closes Boundary 2
+      # in apps_underwriting_ai + apps_lic threat models.
+      # Currently 0 violations (3 explicit waivers for env-var-name-only logs).
+      # Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+      - id: check-pii-in-telemetry
+        name: "CI: PII in telemetry sinks"
+        entry: py ops_scripts/ci/check_pii_in_telemetry.py
         language: system
         pass_filenames: false
         always_run: true

@@ -1,0 +1,151 @@
+req_id: REQ-CROSS-APP-EVIDENCE-PACKET-001
+kind: data_schema
+description: |
+  Cross-app EvidencePacket — typed evidence emitted by C0 retrieval and
+  consumed by L2 packets. Replaces untyped evidence dictionaries with a
+  kind-tagged structure so tone samples cannot be elevated to authority,
+  and rule sets are recognized as structurally distinct from prose evidence.
+
+  Phase B finding: apps_underwriting_ai's rule-YAML approach demanded a
+  `rule_set` kind. Without it, structured constraints would be flattened
+  into prose evidence and lose their veto authority.
+
+status: experimental
+owner: agentic-workflow
+created: 2026-04-29
+last_promoted: null
+freshness_sla_days: 30
+
+applies_to_apps:
+  - apps_rg
+  - apps_lic
+  - apps_eval
+  - apps_exec
+  - apps_rfp
+  - apps_research
+  - apps_underwriting_ai
+
+schema_version: "0.1.0"
+
+schema:
+  type: object
+  required:
+    - packet_id
+    - kind
+    - source_lineage
+    - content
+    - authority_label
+    - retrieved_at
+  properties:
+
+    packet_id:
+      type: string
+      pattern: "^evp_[a-z0-9]{16,32}$"
+    kind:
+      enum:
+        - domain
+        - example
+        - tone_sample
+        - policy
+        - tool_constraint
+        - rule_set
+      description: |
+        Closed enum. The kind determines what the packet may influence:
+
+        - domain          : factual/contextual material; influences truth_claims
+        - example         : prior outputs / few-shot anchors; influences shape
+        - tone_sample     : voice/style reference; influences tone_bounds ONLY
+        - policy          : authority constraint; immutable at runtime
+        - tool_constraint : capability/permission boundary
+        - rule_set        : structured declarative rules (apps_underwriting_ai
+                            covenant_templates, prohibited_features pattern);
+                            CARRIES VETO AUTHORITY equivalent to policy
+
+    source_lineage:
+      type: object
+      required: [origin, retrieval_method, retrieved_at]
+      properties:
+        origin:
+          type: string
+          description: |
+            Source identifier with full provenance. For user-supplied content,
+            this MUST label it as user_intent or user_data, NEVER user_authority.
+        retrieval_method: {enum: [direct, c0_retrieval, l4_lookup, registry_resolver]}
+        retrieved_at: {type: string, format: date-time}
+        confidence: {type: number, minimum: 0, maximum: 1}
+        upstream_packet_ids:
+          type: array
+          items: {type: string}
+          description: For derived packets, references to source packets.
+
+    content:
+      type: object
+      description: Kind-specific content shape; validated by sub-schema.
+      properties:
+        text: {type: [string, "null"]}
+        structured: {type: [object, "null"]}
+      oneOf:
+        - required: [text]
+        - required: [structured]
+
+    authority_label:
+      enum:
+        - intent              # user-supplied content; never elevates to authority
+        - data                # user-supplied content treated as data only
+        - reference           # corpus material; informational
+        - authoritative       # policy/rule_set/tool_constraint; veto-capable
+      description: |
+        Cascade rule:
+          kind=tone_sample        => authority_label MUST be reference
+          kind=policy             => authority_label MUST be authoritative
+          kind=tool_constraint    => authority_label MUST be authoritative
+          kind=rule_set           => authority_label MUST be authoritative
+          user-supplied content   => authority_label MUST be intent or data
+                                     (NEVER reference, NEVER authoritative)
+
+    influence_scope:
+      type: array
+      description: |
+        Which AgentSpec fields this packet may influence. Enforced by Spec
+        Compiler — packets cannot influence fields outside this scope.
+      items:
+        enum:
+          - truth_claims
+          - tone_bounds
+          - allowed_tasks
+          - disallowed_tasks
+          - response_format
+          - domain_rules
+          - permissions
+
+    retrieved_at:
+      type: string
+      format: date-time
+
+invariants:
+  - id: EVP-INV-001
+    description: |
+      tone_sample packets MUST have authority_label=reference and
+      influence_scope subset of [tone_bounds, response_format].
+      Tone samples cannot influence truth_claims.
+  - id: EVP-INV-002
+    description: |
+      User-supplied content MUST have authority_label in [intent, data].
+      Elevating user content to authoritative is a prompt-injection vulnerability.
+  - id: EVP-INV-003
+    description: |
+      rule_set and policy packets MUST have authority_label=authoritative
+      and may include domain_rules, permissions in influence_scope.
+  - id: EVP-INV-004
+    description: |
+      source_lineage MUST be preserved across all derivations. A packet whose
+      upstream_packet_ids cannot be resolved is a lineage break and MUST
+      be rejected by the consumer.
+
+related_contracts:
+  - REQ-CROSS-APP-AGENTSPEC-001
+  - REQ-CROSS-APP-EVAL-RUBRIC-001
+
+references:
+  - First-principles design conversation 2026-04-29 §EvidencePacket typing
+  - apps_underwriting_ai/config/{covenant_templates,prohibited_features}.yaml

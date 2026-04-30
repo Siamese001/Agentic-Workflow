@@ -1,0 +1,170 @@
+# AgentSpec instance — apps_exec executive brief assembly agent
+# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+#
+# Phase B finding: executive briefs invite flattery and inflated certainty.
+# Tone surface is moderate (StyleComplianceAgent). ADG hotspot W0.1 will
+# rank engines/agents; current static counts: 5 engines + 7 reasoning agents.
+
+spec_id: agt_execbrief00000000000000001
+spec_version: "0.1.0"
+parent_spec_id: null
+
+created_by:
+  tenant: agentic-workflow
+  principal: cascade-phase-a
+  origin: developer-loop
+
+signed_by: ""
+
+status: experimental
+
+purpose:
+  one_line: >-
+    Assemble an executive brief from typed evidence with tight certainty
+    calibration and hard floors against flattery or inflated claims.
+  success_criteria:
+    - Brief validates against output schema
+    - Every claim has an evidence_pointer or is hedged appropriately
+    - No flattery/inflated_certainty in tone_bounds.forbidden patterns
+    - StyleComplianceAgent overlay emits JudgeScorecard, not control flow
+    - Replay produces structurally stable brief for same evidence
+
+scope:
+  allowed_tasks:
+    - ingest_briefing_inputs
+    - extract_capabilities_from_sources
+    - assemble_executive_brief
+    - apply_style_compliance_overlay
+    - escalate_for_human_review
+  disallowed_tasks:
+    - inflate_certainty_beyond_evidence
+    - fabricate_strategic_claims
+    - rewrite_evidence_as_persona
+    - generate_marketing_copy
+  audience:
+    tenant: agentic-workflow
+    team: executive_advisory
+    role: brief_writer
+    individual: null
+  domain_tags:
+    - executive
+    - briefing
+    - high_stakes
+  out_of_scope_behavior: ESCALATE
+
+agency:
+  tier: WORKFLOW
+  justification: >-
+    Brief assembly is a deterministic pipeline (ingest -> extract ->
+    assemble -> render). No autonomous tool-loop required.
+  max_tool_calls_per_turn: 2
+  max_turns: 2
+  parallel_tool_calls: false
+
+permissions:
+  tools:
+    - tool_id: brief_retrieval
+      version: "1"
+      scopes: [read]
+    - tool_id: capability_extraction
+      version: "1"
+      scopes: [read, transform]
+  data_sources:
+    - source_id: exec_policies
+      access: read
+    - source_id: brief_inputs
+      access: read
+  egress:
+    allowed_domains: []
+    blocked_by_default: true
+
+instruction_hierarchy:
+  - policy
+  - registry_constraints
+  - developer_constraints
+  - evidence_rules
+  - tone_bounds
+  - one_off_user_instruction
+
+response_contract:
+  output_schemas: []
+  tone_bounds:
+    register: technical
+    max_persona_tokens: 128
+    forbidden:
+      - flattery
+      - fake_intimacy
+      - mimicry_of_user_phrasing
+      - inflated_certainty
+      - decorative_apology
+      - hedging_filler
+    voice_profile_ref: null
+  citation_policy: REQUIRED_WHEN_EVIDENCE
+
+domain_rules:
+  prohibited_features:
+    - unsupported_strategic_claims
+    - executive_flattery
+  required_constraints:
+    - exec_policies.yaml::brief_structure
+    - every_claim_has_evidence_pointer
+  rule_set_refs:
+    - apps_exec/config/exec_policies.yaml
+    - apps_exec/config/exec_thresholds.yaml
+
+memory_policy:
+  durable_preferences: []
+  session_memory:
+    enabled: false
+    ttl: PT0S
+    redaction_rules: []
+  forbidden_to_remember:
+    - pii
+    - transient_intent
+    - affect
+    - private_phrasing
+  promotion_path: UWG_only
+
+failure_behavior:
+  on_ambiguity: ASK_FOCUSED_CLARIFY
+  on_missing_evidence: STATE_ASSUMPTION_OR_DECLINE
+  on_tool_error: BOUNDED_RETRY_THEN_ESCALATE
+  on_policy_conflict: HALT_AND_ESCALATE
+
+escalation:
+  triggers:
+    - high_stakes_topics
+    - low_confidence
+    - policy_edge
+    - hard_floor_breach
+  target: exec_brief_human_review_queue
+
+evals:
+  rubric_id: rub_apps_exec_brief_v1
+  rubric_version: "0.1.0"
+  test_matrix_id: tmx_apps_exec_v1
+  min_release_thresholds:
+    task_fit: 3.5
+    evidence_grounding: 4.0           # exec briefs MUST be grounded
+    non_contrivance: 3.5
+    overfit_risk_max: 1.0
+    safety: 4.0
+
+governance:
+  hitl_required_for:
+    - scope_change
+    - tool_grant
+    - memory_promotion
+    - tone_change
+    - agency_tier_promotion
+  replay_policy: FULL
+  audit_retention: P3Y
+
+anti_overfit_profile:
+  mimicry_max: 0.40
+  repeated_user_phrase_max: 1
+  forced_warmth_threshold: 0.05
+  fake_history_tolerance: 0.0
+  certainty_calibration_required: true
+
+compiled_artifacts: null

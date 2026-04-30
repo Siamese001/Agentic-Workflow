@@ -1,22 +1,25 @@
 {
-  "status": "PASS",
-  "timestamp": "2026-04-28T08:10:30.290664+00:00",
+  "status": "BLOCKING",
+  "timestamp": "2026-04-30T10:31:34.126404+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 46,
-    "passed_tests": 0,
-    "failed_tests": 0,
-    "skipped_tests": 46,
-    "exit_status": 0,
+    "total_tests": 201,
+    "passed_tests": 157,
+    "failed_tests": 2,
+    "skipped_tests": 42,
+    "exit_status": 1,
     "failed_by_category": {
       "mro_integrity": [],
       "import_safety": [],
       "ssot_alignment": [],
       "subatomic": [],
       "forensic": [],
-      "other": []
+      "other": [
+        "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
+        "tests/unit/scripts/proof/test_run_runtime_trace_proof.py"
+      ]
     }
   }
 }

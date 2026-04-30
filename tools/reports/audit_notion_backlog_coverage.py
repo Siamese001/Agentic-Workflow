@@ -114,7 +114,14 @@ def _extract(row: dict[str, Any]) -> dict[str, str]:
         "phase_id": rich("Phase ID"),
         "wave_id": rich("Wave ID"),
         "status": select("Status"),
-        "plan_file": rich("Plan File").replace(".md", "").strip(),
+        "plan_file": (
+            rich("Plan File")
+            .strip()
+            .removeprefix(".windsurf/plans/")
+            .removeprefix("windsurf/plans/")
+            .removesuffix(".md")
+            .strip()
+        ),
         "sub_wave": rich("Sub-Wave"),
         "dependencies": rich("Dependencies"),
         "success_criteria": rich("Success Criteria"),

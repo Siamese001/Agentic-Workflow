@@ -52,31 +52,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_authorize_and_execute("p2", "hallucination_detector", "execution_auth")
-_emit_validates_capability("p2", "hallucination_detector", "capability_check")
-_emit_routes_to_capability("p2", "hallucination_detector", "capability_route")
-_emit_writes_via_uwg("p2", "hallucination_detector", "uwg_write")
-_emit_blocks_direct_write("p2", "hallucination_detector", "direct_write_block")
-_emit_records_tool_invocation("p2", "hallucination_detector", "tool_invocation")
-_emit_captures_execution_output("p2", "hallucination_detector", "exec_output")
-_emit_dispatches_agent("p3", "hallucination_detector", "agent_dispatch")
-_emit_coordinates_agents("p3", "hallucination_detector", "agent_coordination")
-_emit_records_workflow_lineage("p3", "hallucination_detector", "workflow_lineage")
-_emit_records_healing_outcome("p3", "hallucination_detector", "healing_outcome")
-_emit_escalates_failure("p3", "hallucination_detector", "failure_escalation")
-_emit_orchestrates_workflow("p3", "hallucination_detector", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "hallucination_detector", "healing_dispatch")
-_emit_invokes_evaluation("p3", "hallucination_detector", "evaluation_signal")
-_emit_records_telemetry_event("p4", "hallucination_detector", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "hallucination_detector", "eval_metric")
-_emit_stores_embedding("p4", "hallucination_detector", "embedding_store")
-_emit_updates_meta_learning_state("p4", "hallucination_detector", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "hallucination_detector", "exec_snapshot_link")
 from apps_rg.engines.base_rg_engine import BaseRGEngine
 
-_emit_applies_guardrail("p0", "hallucination_detector", "p0_governance")
-_emit_reads_policy_state("p0", "hallucination_detector", "policy_binding")
-_emit_snapshots_state("p0", "hallucination_detector", "state_snapshot")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -102,59 +79,10 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_1")
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_2")
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_3")
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_4")
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_5")
-_emit_emits_metric_event("hallucination_detector", "p4obs", "metric_6")
-_emit_records_incident_event("hallucination_detector", "p4obs", "incident")
-_emit_captures_runtime_anomaly("hallucination_detector", "p4obs", "anomaly")
-_emit_writes_observability_log("hallucination_detector", "p4obs", "obs_log")
-_emit_updates_monitoring_state("hallucination_detector", "p4obs", "mon_state")
-_emit_triggers_alert("hallucination_detector", "p4obs", "alert")
-_emit_links_incident_trace("hallucination_detector", "p4obs", "trace_link")
-_emit_captures_pattern("hallucination_detector", "p3lm", "pattern")
-_emit_records_learning_event("hallucination_detector", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("hallucination_detector", "p3lm", "snapshot")
-_emit_feeds_meta_learning("hallucination_detector", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("hallucination_detector", "p3lm", "routing")
-_emit_improves_agent_policy("hallucination_detector", "p3lm", "policy")
-_emit_stores_learning_state("hallucination_detector", "p3lm", "state")
-_emit_records_execution_trace("hallucination_detector", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("hallucination_detector", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("hallucination_detector", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("hallucination_detector", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("hallucination_detector", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("hallucination_detector", "env_read", "p2_env_1")
-_emit_reads_environ("hallucination_detector", "env_read", "p2_env_2")
-_emit_reads_runtime_state("hallucination_detector", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("hallucination_detector", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "hallucination_detector", "context_pull")
-_emit_pulls_context("p1", "hallucination_detector", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "hallucination_detector", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "hallucination_detector", "uwg_term_2")
-_emit_writes_through("p1", "hallucination_detector", "write_through")
-_emit_writes_through("p1", "hallucination_detector", "write_through_2")
-_emit_validated_by_safety_plane("p1", "hallucination_detector", "safety_validation")
-_emit_invokes_eval("p1", "hallucination_detector", "eval_call")
-_emit_proposal_commits_routing("p1", "hallucination_detector", "routing_commit")
-_emit_escalates_to_human("p1", "hallucination_detector", "human_escalation")
-_emit_routes_through("p1", "hallucination_detector", "route_through")
-_emit_checks_agent_registry("p1", "hallucination_detector", "agent_registry")
-_emit_validates_agent_capability("p1", "hallucination_detector", "capability")
-_emit_dispatches_execution_plan("p1", "hallucination_detector", "exec_plan")
-_emit_agent_executes_agent("p1", "hallucination_detector", "sub_agent")
-_emit_routes_to_agent("p1", "hallucination_detector", "target_agent")
-_emit_verifies_policy("p1", "hallucination_detector", "policy_check")
-_emit_observes_runtime_state("p1", "hallucination_detector", "runtime_state")
-_emit_verifies_boundary("p1", "hallucination_detector", "boundary_check")
-_emit_transcripts_response("p1", "hallucination_detector", "transcript")
-_emit_hard_fails_untranscripted("p1", "hallucination_detector")
-_emit_gated_by_confidence("p1", "hallucination_detector", "confidence_gate")
-emit_replay_key("p0", "hallucination_detector")
-emit_determinism_digest("p0", "hallucination_detector")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+from apps_rg.engines._lifecycle_emits import _emit_engine_lifecycle
+
+_emit_engine_lifecycle("hallucination_detector")
+
 
 Logger = logging.getLogger(__name__)
 
@@ -171,11 +99,35 @@ class HallucinationDetector(BaseRGEngine):
         """Check single content for hallucinations."""
         return self.check_batch([content])
 
+    # Suspicious-magnitude patterns. Real resume metrics rarely exceed these
+    # without being a rounding/typing error or fabrication.
+    _SUSPICIOUS_PATTERNS: tuple[tuple[str, str], ...] = (
+        ("100%", "absolute_percent_claim"),
+        ("1000%", "implausible_growth"),
+        ("10000%", "implausible_growth"),
+        ("$1B", "billion_dollar_claim_unverified"),
+        ("$10B", "billion_dollar_claim_unverified"),
+        ("trillion", "trillion_claim"),
+    )
+
+    # Hedge-stripped certainty phrases that often precede inflated claims.
+    _OVERCLAIM_PATTERNS: tuple[str, ...] = (
+        "single-handedly", "personally responsible for", "100% accuracy",
+        "world-class team that I built from scratch", "saved the company",
+    )
+
     def check_batch(self, texts: list[str]) -> dict[str, Any]:
+        """Batch hallucination heuristic.
+
+        Per-text checks (each subtracts from a max score of 1.0):
+          - too short (< 10 chars): hard penalty 0.7
+          - suspicious magnitude pattern: 0.4
+          - over-claim phrase: 0.3
+          - implausible team-growth (e.g. "from 1 to 100 in 6 months"): 0.4
+          - mismatched currency suffix (e.g. "$50MM" or "$50MMM"): 0.3
+        Result valid when avg score >= 0.7.
         """
-        Batch check for hallucinations.
-        Returns validation result with score.
-        """
+        import re as _re
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
@@ -183,16 +135,39 @@ class HallucinationDetector(BaseRGEngine):
             _trace_id, LayerSegment.L3_ORCHESTRATION, "HallucinationDetector.check_batch"
         )
 
+        # Precompiled where useful.
+        team_growth_re = _re.compile(r"\bfrom\s+(\d+)\s+to\s+(\d+)\b", _re.IGNORECASE)
+        bad_currency_re = _re.compile(r"\$\s*\d+(?:\.\d+)?\s*M{2,}\b")
+
         total_score = 0.0
-        issues = []
+        issues: list[str] = []
         for text in texts:
+            score = 1.0
             if len(text) < 10:
-                issues.append("Text too short for verification")
+                issues.append("text_too_short")
+                score = 0.3
+                total_score += score
                 continue
-            if "100%" in text or "1000%" in text:
-                issues.append(f"Suspicious metric in: {text[:50]}")
-                total_score += 0.3
-            else:
-                total_score += 1.0
+            t_lower = text.lower()
+            for pattern, label in self._SUSPICIOUS_PATTERNS:
+                if pattern.lower() in t_lower:
+                    issues.append(f"{label}: '{pattern}' in: {text[:60]}")
+                    score -= 0.4
+            for over in self._OVERCLAIM_PATTERNS:
+                if over in t_lower:
+                    issues.append(f"overclaim_phrase: '{over}'")
+                    score -= 0.3
+            for m in team_growth_re.finditer(text):
+                try:
+                    a, b = int(m.group(1)), int(m.group(2))
+                    if a > 0 and b / a > 50:
+                        issues.append(f"implausible_team_growth: from {a} to {b}")
+                        score -= 0.4
+                except (ValueError, IndexError):
+                    continue
+            if bad_currency_re.search(text):
+                issues.append("malformed_currency_suffix")
+                score -= 0.3
+            total_score += max(0.0, score)
         avg_score = total_score / len(texts) if texts else 0.0
         return {"valid": avg_score >= 0.7, "score": avg_score, "issues": issues}

@@ -1,13 +1,11 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-04-29T20:16:44.344958+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04292026_1606.sqlite",
+  "timestamp": "2026-04-30T10:31:21.442413+00:00",
+  "snapshot_used": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5489\\popen-gw21\\test_report_written_to_disk0\\snap.sqlite",
   "strict_mode": true,
-  "total_rows": 127,
-  "by_authority_status": {
-    "AUTHORITATIVE_RUNTIME": 127
-  },
+  "total_rows": 0,
+  "by_authority_status": {},
   "violations": [],
   "violation_count": 0,
   "status": "ok"

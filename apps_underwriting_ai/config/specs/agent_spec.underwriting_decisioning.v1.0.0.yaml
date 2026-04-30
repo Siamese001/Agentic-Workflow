@@ -1,0 +1,192 @@
+# AgentSpec instance — apps_underwriting_ai underwriting decisioning agent
+# Conforms to: requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml
+#
+# Phase B finding: apps_underwriting_ai is the cleanest reference implementation
+# in the fleet. Its rule-YAML approach (covenant_templates, prohibited_features,
+# policy_exception_rules) is captured below in the `domain_rules` block.
+#
+# Status: experimental — signed_by intentionally empty until L5 attestation lands.
+# Do NOT register this spec to L4 until signed_by is populated.
+
+spec_id: agt_uwdec000000000000000001
+spec_version: "0.1.0"
+parent_spec_id: null
+
+created_by:
+  tenant: agentic-workflow
+  principal: cascade-phase-a
+  origin: developer-loop
+
+signed_by: ""  # MUST be set by L5 attestation before registry write
+
+status: experimental
+
+purpose:
+  one_line: >-
+    Assemble a typed underwriting decision packet from loan documents under
+    domain rules with explicit human-escalation triggers.
+  success_criteria:
+    - Decision packet validates against the underwriting decision schema
+    - All policy_exception_rules with severity=blocker either resolved or escalated
+    - Prohibited features always trigger reject
+    - Required documents always present in the output trail
+    - Replay produces the same decision class for the same inputs
+
+scope:
+  allowed_tasks:
+    - ingest_underwriting_documents
+    - reconcile_facts
+    - derive_features
+    - build_risk_hypothesis
+    - recommend_conditions
+    - recommend_covenants
+    - recommend_counter_offer
+    - select_human_escalation
+    - assemble_decision_packet
+  disallowed_tasks:
+    - draft_marketing_copy
+    - rewrite_loan_terms_unilaterally
+    - bypass_human_review_for_blocker_exceptions
+    - override_prohibited_features
+  audience:
+    tenant: agentic-workflow
+    team: underwriting
+    role: underwriting_analyst
+    individual: null
+  domain_tags:
+    - underwriting
+    - lending
+    - regulated
+  out_of_scope_behavior: ESCALATE
+
+agency:
+  tier: WORKFLOW
+  justification: >
+    Decision packet assembly is a deterministic multi-stage pipeline (ingest ->
+    reconcile -> derive -> hypothesize -> recommend -> assemble). Single
+    orchestrator (decision_packet_assembler) is sufficient. No tool-loop
+    needed; no autonomous bounded-replan needed; humans hold final approval.
+  max_tool_calls_per_turn: 0
+  max_turns: 1
+  parallel_tool_calls: false
+
+permissions:
+  tools: []
+  data_sources:
+    - source_id: underwriting_required_docs
+      access: read
+      row_filters: null
+      column_filters: null
+    - source_id: covenant_templates
+      access: read
+      row_filters: null
+      column_filters: null
+    - source_id: industry_risk_weights
+      access: read
+      row_filters: null
+      column_filters: null
+    - source_id: product_rules
+      access: read
+      row_filters: null
+      column_filters: null
+  egress:
+    allowed_domains: []
+    blocked_by_default: true
+
+instruction_hierarchy:
+  - policy
+  - registry_constraints
+  - developer_constraints
+  - evidence_rules
+  - tone_bounds
+  - one_off_user_instruction
+
+response_contract:
+  output_schemas:
+    - REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001  # decision packet schema (existing)
+  tone_bounds:
+    register: technical
+    max_persona_tokens: 0  # zero persona — decision packets are structural
+    forbidden:
+      - flattery
+      - fake_intimacy
+      - mimicry_of_user_phrasing
+      - inflated_certainty
+      - decorative_apology
+      - hedging_filler
+    voice_profile_ref: null
+  citation_policy: REQUIRED_WHEN_EVIDENCE
+
+domain_rules:
+  prohibited_features:
+    - prohibited_features.yaml::*  # rule_set ref; entire file is authoritative
+  required_constraints:
+    - underwriting_required_docs.yaml::all_required_docs_present
+    - policy_exception_rules.yaml::no_unresolved_blocker
+    - product_rules.yaml::structural_constraints
+  rule_set_refs:
+    - apps_underwriting_ai/config/covenant_templates.yaml
+    - apps_underwriting_ai/config/industry_risk_weights.yaml
+    - apps_underwriting_ai/config/policy_exception_rules.yaml
+    - apps_underwriting_ai/config/product_rules.yaml
+    - apps_underwriting_ai/config/prohibited_features.yaml
+    - apps_underwriting_ai/config/underwriting_required_docs.yaml
+    - apps_underwriting_ai/config/underwriting_thresholds.yaml
+
+memory_policy:
+  durable_preferences: []
+  session_memory:
+    enabled: false
+    ttl: PT0S
+    redaction_rules: []
+  forbidden_to_remember:
+    - pii
+    - transient_intent
+    - affect
+    - private_phrasing
+  promotion_path: UWG_only
+
+failure_behavior:
+  on_ambiguity: ASK_FOCUSED_CLARIFY
+  on_missing_evidence: STATE_ASSUMPTION_OR_DECLINE
+  on_tool_error: BOUNDED_RETRY_THEN_ESCALATE
+  on_policy_conflict: HALT_AND_ESCALATE
+
+escalation:
+  triggers:
+    - high_stakes_topics
+    - low_confidence
+    - policy_edge
+    - hard_floor_breach
+  target: underwriting_human_review_queue
+
+evals:
+  rubric_id: rub_underwriting_decisioning_v1
+  rubric_version: "0.1.0"
+  test_matrix_id: tmx_underwriting_v1
+  min_release_thresholds:
+    task_fit: 3.0
+    evidence_grounding: 4.0       # underwriting demands grounded claims
+    non_contrivance: 3.0
+    overfit_risk_max: 1.0          # very low tolerance; no tone surface
+    safety: 4.0                    # hard floor
+
+governance:
+  hitl_required_for:
+    - scope_change
+    - tool_grant
+    - memory_promotion
+    - agency_tier_promotion
+  replay_policy: FULL
+  audit_retention: P7Y  # underwriting retention
+
+anti_overfit_profile:
+  mimicry_max: 0.30                # tighter than fleet default
+  repeated_user_phrase_max: 0      # zero — packets are structural
+  forced_warmth_threshold: 0.05    # near zero
+  fake_history_tolerance: 0.0
+  certainty_calibration_required: true
+
+# Derived; populated by Spec Compiler. Block omitted pre-compilation.
+# Will be added by `agentic_core.prompt_governance.spec_compiler.compile_spec`.
+compiled_artifacts: null

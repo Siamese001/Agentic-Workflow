@@ -220,7 +220,24 @@ async def main():
         pass
     start_time = datetime.now()
     jd_data = load_data_file("job_description.json")
-    resume_data = load_data_file("your_resume_updated.json")
+    # Canonical master_resume is the single source of truth. The legacy
+    # `your_resume_updated.json` fallback was retired 2026-04-30 — silent
+    # divergence between the two snapshots was a recurring source of
+    # provenance-gate failures. Hard-fail if the canonical file is missing
+    # rather than continue against stale data.
+    canonical_master = (
+        Path(__file__).resolve().parents[2]
+        / "apps_shared" / "data" / "master_resume.json"
+    )
+    if not canonical_master.exists():
+        raise FileNotFoundError(
+            f"Canonical master_resume.json not found at {canonical_master}. "
+            "This is a required input for apps_rg — populate it before running. "
+            "The legacy your_resume_updated.json fallback was removed on 2026-04-30."
+        )
+    Logger.info("Loading canonical master_resume: %s", canonical_master)
+    with open(canonical_master, encoding="utf-8") as f:
+        resume_data = json.load(f)
     ctx = SovereignContext()
     ctx.master_resume = resume_data
     Logger.info("⚡ Processing your resume against the job description...")
@@ -235,11 +252,30 @@ async def main():
         Logger.info("-" * 50)
         Logger.info("💾 Saving generated resume...")
         final_resume = ctx.buffer.read("ranked_content", {})
-        output_file = f"generated_resume_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        output_path = Path(__file__).parent / output_file
+        # P4.2 — outputs go under artifacts/apps_rg/runs/<timestamp>/ instead
+        # of cluttering apps_rg/scripts/. A `latest.json` mirror points to
+        # the most recent run for downstream tools (e.g. DOCX exporter).
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        runs_dir = (
+            Path(__file__).resolve().parents[2] / "artifacts" / "apps_rg" / "runs" / ts
+        )
+        runs_dir.mkdir(parents=True, exist_ok=True)
+        output_path = runs_dir / "generated_resume.json"
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(final_resume, f, indent=2, ensure_ascii=False)
-        Logger.info(f"✅ Resume saved to: {output_file}")
+        # Also write a copy of the run report (status, scores, provenance,
+        # diversity, overfit) next to the resume.
+        report_path = runs_dir / "run_report.json"
+        with open(report_path, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False, default=str)
+        latest = runs_dir.parent / "latest.json"
+        try:
+            with open(latest, "w", encoding="utf-8") as f:
+                json.dump(final_resume, f, indent=2, ensure_ascii=False)
+        except OSError as exc:
+            Logger.warning("Could not update latest.json mirror: %s", exc)
+        Logger.info(f"✅ Resume saved to: {output_path}")
+        Logger.info(f"📊 Run report:    {report_path}")
         if final_resume:
             Logger.info("-" * 50)
             Logger.info("📋 RESUME PREVIEW:")

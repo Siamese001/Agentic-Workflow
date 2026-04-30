@@ -80,7 +80,8 @@
       "disabled": false,
       "env": {
         "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONUNBUFFERED": "1",
+        "OTEL_MCP_RUNTIME_ADG_DIR": "${env:AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg"
       }
     },
     "task_manager": {

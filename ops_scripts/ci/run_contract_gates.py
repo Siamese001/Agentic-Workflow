@@ -333,6 +333,9 @@ def main():
         ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
         ("W3 replay determinism proof", "ops_scripts/ci/check_replay_proof.py"),
         ("W4 requirements ↔ ADG crosswalk", "ops_scripts/ci/check_requirements_adg_crosswalk.py"),
+        ("W4a 10C ledger ↔ matrix consistency", "ops_scripts/ci/check_10c_ledger_consistency.py"),
+        ("W4b requirements universe inventory", "ops_scripts/ci/check_requirements_universe_inventory.py"),
+        ("W4c AGEN registry schema", "ops_scripts/ci/check_agen_registry_schema.py"),
         # Runtime-evidence stack (plan: runtime-evidence-foundation-54ad39).
         # All three close the static-only-proof gap that the OTEL emission RCA
         # surfaced. Pact-style contract verifier is the master gate; the orphan

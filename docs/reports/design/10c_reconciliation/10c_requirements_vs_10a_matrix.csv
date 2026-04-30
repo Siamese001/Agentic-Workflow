@@ -172,3 +172,30 @@
 10C-REQ-171,REQ-009,partial,REQ-009 covers L2 but not v29 explicit,10a missing process mapping v29 specific
 10C-REQ-172,REQ-012,partial,REQ-012 covers exit but not v29 explicit,10a missing process mapping v29 specific
 10C-REQ-173,REQ-021,partial,REQ-021 covers shadow eval but not v29 explicit,10a missing process mapping v29 specific
+10C-REQ-174,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-A risk-tier classifier
+10C-REQ-175,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-B pre-execution approval gate at L2 E2
+10C-REQ-176,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-C durable HITL suspend/resume primitive
+10C-REQ-177,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-D UWG dual-control for regulated/irreversible commits
+10C-REQ-178,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-E human-on-the-loop parallel surface (advisory only)
+10C-REQ-179,,false,none,NEW best-practice gap (Anthropic/OpenAI/Galileo); see HITL-NEW-F HITLDecisionReceipt for closed-loop calibration
+10C-REQ-180,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-A tool-result clearing gate
+10C-REQ-181,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-B structured agent scratchpad
+10C-REQ-182,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-C trust-level propagation through PA
+10C-REQ-183,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-D context utilization telemetry
+10C-REQ-184,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-E citation chain across compaction
+10C-REQ-185,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 2 C2 context engineering); see C2-NEW-F session-to-persistent memory promotion
+10C-REQ-186,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C1-NEW-A tool-response token cap + pagination
+10C-REQ-187,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C1-NEW-B tool-error self-correction schema
+10C-REQ-188,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C3-NEW-A sub-agent context-isolation receipt
+10C-REQ-189,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C3-NEW-B sub-agent return summarization contract
+10C-REQ-190,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C5-NEW-A eval-set version pinning + drift gate
+10C-REQ-191,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C5-NEW-B judge-vs-human calibration cadence enforcement
+10C-REQ-192,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C6-NEW-A defense-in-depth guardrail ordering contract
+10C-REQ-193,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C6-NEW-B prompt-attack regression suite (always-on golden adversarial)
+10C-REQ-194,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C7-NEW-A W3C traceparent cross-system propagation
+10C-REQ-195,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C7-NEW-B PII and secret scrubbing at telemetry egress
+10C-REQ-196,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C8-NEW-A MCP discovery cache TTL + invalidation contract
+10C-REQ-197,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C8-NEW-B MCP tool deprecation lifecycle
+10C-REQ-198,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C9-NEW-A workflow pattern selection rationale logging
+10C-REQ-199,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C10-NEW-A per-request cost ceiling with circuit breaker
+10C-REQ-200,,false,none,NEW best-practice gap (Anthropic/OpenAI Wave 3-10 hybrid audit); see C10-NEW-B per-workflow cost attribution

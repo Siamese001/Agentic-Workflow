@@ -394,7 +394,7 @@ class UnifiedMemoryFacade:
             first = self._backends[first_name]
             first.write(key, value)
             self._stats.writes += 1
-            _WRITES_THROUGH_LOG.debug(
+            _WRITES_THROUGH_LOG.debug(  # pii: allow-backend-id -- `first_name` here is the first BACKEND identifier (redis/sqlite), not a person's first name
                 "writes_through UNIFIED_MEMORY_FACADE protocol_write backend=%s key=%s",
                 first_name,
                 key,

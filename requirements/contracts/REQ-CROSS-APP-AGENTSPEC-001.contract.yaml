@@ -1,0 +1,438 @@
+req_id: REQ-CROSS-APP-AGENTSPEC-001
+kind: data_schema
+description: |
+  Cross-app AgentSpec — the signed, versioned, lineage-bearing specification
+  that defines a bounded runtime unit for any apps_* application. Replaces
+  per-app config blobs (apps_*/config/agent_spec_config.py, agent_specs.json,
+  voice_profile.json, *_thresholds.yaml) with a single typed contract.
+
+  Compiled artifacts (PromptManifest, CompiledPromptArtifact, ToolManifest,
+  EvalManifest) are derived from this spec by the deterministic Spec Compiler
+  and referenced by hash, not embedded.
+
+  Authority hierarchy: this contract is the SSOT. Any field a runtime needs
+  comes from here, never from a parallel config file.
+
+  See first-principles design conversation 2026-04-29 and
+  .windsurf/plans/apps-rg-first-principles-refactor-*.md for usage.
+
+status: experimental
+owner: agentic-workflow
+created: 2026-04-29
+last_promoted: null
+freshness_sla_days: 30
+
+applies_to_apps:
+  - apps_rg
+  - apps_lic
+  - apps_eval
+  - apps_exec
+  - apps_rfp
+  - apps_research
+  - apps_underwriting_ai
+
+schema_version: "0.1.0"
+
+schema:
+  type: object
+  required:
+    - spec_id
+    - spec_version
+    - created_by
+    - signed_by
+    - purpose
+    - scope
+    - agency
+    - permissions
+    - instruction_hierarchy
+    - response_contract
+    - memory_policy
+    - failure_behavior
+    - escalation
+    - evals
+    - governance
+    - anti_overfit_profile
+  properties:
+
+    # ---- identity & lineage --------------------------------------------
+    spec_id:
+      type: string
+      pattern: "^agt_[a-z0-9_]{8,48}$"
+      description: |
+        Stable identifier; immutable after first publish. Allowed characters:
+        lowercase letters, digits, underscores. Length 8-48 after the
+        `agt_` prefix.
+    spec_version:
+      type: string
+      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      description: Semver; immutable after publish.
+    parent_spec_id:
+      type: [string, "null"]
+      description: Lineage pointer to predecessor spec for revisions.
+    created_by:
+      type: object
+      required: [tenant, principal, origin]
+      properties:
+        tenant: {type: string}
+        principal: {type: string}
+        origin: {type: string, description: "L5 origin trust label"}
+    signed_by:
+      type: string
+      description: |
+        L5 attestation reference — required before this spec may be written
+        to the registry through UWG. Empty string is invalid for published
+        specs; valid only for in-flight drafts.
+
+    # ---- purpose & scope -----------------------------------------------
+    purpose:
+      type: object
+      required: [one_line, success_criteria]
+      properties:
+        one_line:
+          type: string
+          maxLength: 140
+          description: One sentence; no marketing language.
+        success_criteria:
+          type: array
+          minItems: 1
+          items: {type: string}
+          description: Observable, testable outcomes.
+
+    scope:
+      type: object
+      required: [allowed_tasks, disallowed_tasks, audience, out_of_scope_behavior]
+      properties:
+        allowed_tasks:
+          type: array
+          minItems: 1
+          items: {type: string}
+          description: MECE task patterns; explicit, not "everything else".
+        disallowed_tasks:
+          type: array
+          items: {type: string}
+        audience:
+          type: object
+          properties:
+            tenant: {type: string}
+            team: {type: [string, "null"]}
+            role: {type: [string, "null"]}
+            individual: {type: [string, "null"]}
+        domain_tags:
+          type: array
+          items: {type: string}
+        out_of_scope_behavior:
+          enum: [ASK_CLARIFY, DECLINE, ESCALATE]
+
+    # ---- agency tier (constitutional §lowest-viable-agency) ------------
+    agency:
+      type: object
+      required: [tier, max_tool_calls_per_turn, max_turns]
+      properties:
+        tier:
+          enum: [WORKFLOW, SINGLE_AGENT, MULTI_AGENT]
+        justification:
+          type: string
+          description: |
+            REQUIRED when tier is SINGLE_AGENT or MULTI_AGENT.
+            Must reference an ADR or simulation evidence showing the
+            workflow tier underfits.
+        max_tool_calls_per_turn: {type: integer, minimum: 0}
+        max_turns: {type: integer, minimum: 1}
+        parallel_tool_calls: {type: boolean, default: false}
+
+    # ---- permissions (least-privilege) ---------------------------------
+    permissions:
+      type: object
+      required: [tools, data_sources, egress]
+      properties:
+        tools:
+          type: array
+          items:
+            type: object
+            required: [tool_id, version, scopes]
+            properties:
+              tool_id: {type: string}
+              version: {type: string}
+              scopes: {type: array, items: {type: string}}
+              rate_limits: {type: object}
+        data_sources:
+          type: array
+          items:
+            type: object
+            required: [source_id, access]
+            properties:
+              source_id: {type: string}
+              access: {enum: [read, write, read_write]}
+              row_filters: {type: [string, "null"]}
+              column_filters: {type: [array, "null"]}
+        egress:
+          type: object
+          required: [allowed_domains, blocked_by_default]
+          properties:
+            allowed_domains: {type: array, items: {type: string}}
+            blocked_by_default: {type: boolean, default: true}
+
+    # ---- instruction hierarchy (precedence; highest first) -------------
+    instruction_hierarchy:
+      type: array
+      minItems: 6
+      maxItems: 6
+      description: |
+        Fixed-order precedence stack. Order is part of the contract.
+        Index 0 is highest authority; index 5 is lowest.
+      items:
+        enum:
+          - policy
+          - registry_constraints
+          - developer_constraints
+          - evidence_rules
+          - tone_bounds
+          - one_off_user_instruction
+      default:
+        - policy
+        - registry_constraints
+        - developer_constraints
+        - evidence_rules
+        - tone_bounds
+        - one_off_user_instruction
+
+    # ---- response contract ---------------------------------------------
+    response_contract:
+      type: object
+      required: [tone_bounds, citation_policy]
+      properties:
+        output_schemas:
+          type: array
+          items: {type: string, description: "json-schema $ref"}
+        tone_bounds:
+          type: object
+          required: [register, max_persona_tokens, forbidden]
+          properties:
+            register:
+              enum: [neutral_professional, technical, brief, conversational_bounded]
+            max_persona_tokens:
+              type: integer
+              minimum: 0
+              maximum: 1024
+              description: Hard cap on persona prose in system message.
+            forbidden:
+              type: array
+              items:
+                enum:
+                  - flattery
+                  - fake_intimacy
+                  - mimicry_of_user_phrasing
+                  - inflated_certainty
+                  - decorative_apology
+                  - hedging_filler
+            voice_profile_ref:
+              type: [string, "null"]
+              description: |
+                Optional reference to a durable voice profile (e.g. apps_lic
+                voice_profile.json migrated to L4). The profile DEFINES the
+                style; tone_bounds CONSTRAINS its expression. The profile
+                cannot exceed what tone_bounds permits.
+        citation_policy:
+          enum: [REQUIRED_WHEN_EVIDENCE, OPTIONAL, FORBIDDEN]
+
+    # ---- domain rules (apps_underwriting_ai pattern, generalized) ------
+    domain_rules:
+      type: [object, "null"]
+      description: |
+        Optional structured rule set. Inspired by apps_underwriting_ai's
+        rule-YAML approach (covenant_templates, prohibited_features,
+        policy_exception_rules). When present, these are AUTHORITATIVE
+        within the spec and consulted before LLM reasoning.
+      properties:
+        prohibited_features: {type: array, items: {type: string}}
+        required_constraints: {type: array, items: {type: string}}
+        rule_set_refs:
+          type: array
+          items: {type: string, description: "L4 ref to a rule set artifact"}
+
+    # ---- memory policy --------------------------------------------------
+    memory_policy:
+      type: object
+      required: [forbidden_to_remember, promotion_path]
+      properties:
+        durable_preferences:
+          type: array
+          items: {type: string, description: "pref_ref into L4"}
+        session_memory:
+          type: object
+          properties:
+            enabled: {type: boolean, default: false}
+            ttl: {type: string, description: "ISO 8601 duration"}
+            redaction_rules: {type: array, items: {type: string}}
+        forbidden_to_remember:
+          type: array
+          items:
+            enum: [pii, transient_intent, affect, private_phrasing]
+          default: [pii, transient_intent, affect, private_phrasing]
+        promotion_path:
+          enum: [UWG_only]
+          default: UWG_only
+          description: |
+            Literal; only valid value. Memory promotion goes through UWG.
+            Any other value is a contract violation.
+
+    # ---- failure & escalation ------------------------------------------
+    failure_behavior:
+      type: object
+      required: [on_ambiguity, on_missing_evidence, on_tool_error, on_policy_conflict]
+      properties:
+        on_ambiguity: {enum: [ASK_FOCUSED_CLARIFY, DECLINE, ESCALATE]}
+        on_missing_evidence: {enum: [STATE_ASSUMPTION_OR_DECLINE, DECLINE, ESCALATE]}
+        on_tool_error: {enum: [BOUNDED_RETRY_THEN_ESCALATE, FAIL_FAST, ESCALATE]}
+        on_policy_conflict: {enum: [HALT_AND_ESCALATE]}
+
+    escalation:
+      type: object
+      required: [triggers, target]
+      properties:
+        triggers:
+          type: array
+          items:
+            enum:
+              - high_stakes_topics
+              - low_confidence
+              - policy_edge
+              - adversarial_personalization
+              - conflicting_user_pref
+              - hard_floor_breach
+        target:
+          type: string
+          description: human_review_queue_ref
+
+    # ---- evals & thresholds --------------------------------------------
+    evals:
+      type: object
+      required: [rubric_id, rubric_version, test_matrix_id, min_release_thresholds]
+      properties:
+        rubric_id: {type: string, description: "REQ-CROSS-APP-EVAL-RUBRIC-001 instance ref"}
+        rubric_version: {type: string}
+        test_matrix_id: {type: string}
+        min_release_thresholds:
+          type: object
+          required: [task_fit, evidence_grounding, non_contrivance, overfit_risk_max, safety]
+          properties:
+            task_fit: {type: number, minimum: 0, maximum: 4}
+            evidence_grounding: {type: number, minimum: 0, maximum: 4}
+            non_contrivance: {type: number, minimum: 0, maximum: 4}
+            overfit_risk_max:
+              type: number
+              minimum: 0
+              maximum: 4
+              description: Inverted dimension; lower is better.
+            safety:
+              type: number
+              minimum: 0
+              maximum: 4
+              description: Hard-floor; below 4 forces hold/reject regardless of aggregate.
+
+    # ---- governance -----------------------------------------------------
+    governance:
+      type: object
+      required: [hitl_required_for, replay_policy, audit_retention]
+      properties:
+        hitl_required_for:
+          type: array
+          items:
+            enum:
+              - scope_change
+              - tool_grant
+              - memory_promotion
+              - tone_change
+              - agency_tier_promotion
+        replay_policy: {enum: [FULL, BOUNDED, NONE], default: FULL}
+        audit_retention: {type: string, description: "ISO 8601 duration"}
+
+    # ---- anti-overfit profile ------------------------------------------
+    anti_overfit_profile:
+      type: object
+      required:
+        - mimicry_max
+        - repeated_user_phrase_max
+        - forced_warmth_threshold
+        - fake_history_tolerance
+        - certainty_calibration_required
+      properties:
+        mimicry_max:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: |
+            Max similarity (n-gram + embedding blend) between draft outputs
+            and user-supplied samples.
+        repeated_user_phrase_max:
+          type: integer
+          minimum: 0
+        forced_warmth_threshold:
+          type: number
+          minimum: 0
+          maximum: 1
+        fake_history_tolerance:
+          type: number
+          enum: [0.0]
+          description: Zero tolerance; no first-person past-interaction claims without memory pointer.
+        certainty_calibration_required:
+          type: boolean
+          default: true
+
+    # ---- derived; not authored ------------------------------------------
+    # Optional block. Absent or empty for pre-compilation specs.
+    # Populated by the deterministic Spec Compiler. Same spec +
+    # same compiler_version => same compilation_hash.
+    compiled_artifacts:
+      type: [object, "null"]
+      properties:
+        prompt_manifest_ref: {type: string}
+        compiled_prompt_artifact_ref: {type: string}
+        tool_manifest_ref: {type: string}
+        eval_manifest_ref: {type: string}
+        compiler_version: {type: string}
+        compiled_at: {type: string}
+        compilation_hash:
+          type: string
+          description: |
+            SHA-256 of the canonical compiled artifact. Empty for
+            pre-compilation specs; non-empty after compilation.
+            When non-empty, MUST match ^[a-f0-9]{64}$ (enforced as
+            invariant SPEC-INV-005, not as schema pattern, so empty
+            values do not block draft specs).
+
+invariants:
+  - id: SPEC-INV-001
+    description: |
+      A spec with `agency.tier != WORKFLOW` MUST have non-empty
+      `agency.justification`. Enforced at registry write time.
+  - id: SPEC-INV-002
+    description: |
+      `memory_policy.promotion_path` MUST equal "UWG_only". Any other value
+      is a contract violation and a constitutional §17/§24 breach.
+  - id: SPEC-INV-003
+    description: |
+      `instruction_hierarchy` is fixed-order; the array MUST contain exactly
+      the six values in the prescribed precedence.
+  - id: SPEC-INV-004
+    description: |
+      `signed_by` MUST be non-empty for any spec written to the registry.
+      In-flight drafts may have empty `signed_by` while flowing through L2
+      packets, but UWG MUST refuse the write otherwise.
+  - id: SPEC-INV-005
+    description: |
+      `compiled_artifacts.compilation_hash` MUST be reproducible: rerunning
+      the Spec Compiler against the same spec and same compiler_version MUST
+      yield the same hash. Hash drift is a compiler regression.
+
+related_contracts:
+  - REQ-CROSS-APP-EVIDENCE-PACKET-001
+  - REQ-CROSS-APP-EVAL-RUBRIC-001
+  - REQ-CROSS-APP-OVERFIT-REPORT-001
+  - REQ-CROSS-APP-RELEASE-RECOMMENDATION-001
+
+references:
+  - .windsurf/plans/apps-rg-first-principles-refactor (planned)
+  - First-principles design conversation 2026-04-29
+  - apps_underwriting_ai/config/*.yaml (reference rule-YAML pattern)
+  - apps_lic/config/voice_profile.json (reference voice-profile pattern)
