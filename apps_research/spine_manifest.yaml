@@ -1,0 +1,58 @@
+# apps_research spine manifest
+#
+# Declares which spine route types apps_research serves so the
+# runtime-mode scanner (tools/analysis/apps_spine_coverage.py) can
+# verify direct surfacing of the canonical R3 contract chain.
+#
+# This manifest is STATIC EVIDENCE only. It declares the contract
+# surface apps_research delegates THROUGH (transitively today, via
+# apps_shared.integrations.governed_app_runner.GovernedAppRunner).
+# It is NOT a runtime certification claim. Runtime trace (OTel spans
+# hitting each contract surface) is what proves the contracts are
+# actually exercised end-to-end.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Scanner: tools.analysis.apps_spine_coverage.ROUTE_TYPE_CONTRACT_REQUIREMENTS
+
+schema_version: 1
+app: apps_research
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand grounded research synthesis. ResearchRequest.topic →
+      L1 query decomposition → L0 intent routing
+      (target=research_assembly) → C0 hybrid retrieval over the
+      ``process_docs`` collection (degrades gracefully when absent) →
+      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is a
+      sealed research artifact (GovernedE2ERunRecord) carrying
+      grounded citations + support coverage. No durable side effect
+      on real-world systems; no ``CommitRequest`` is in scope. The
+      spine IS in the runtime path of every research request, so the
+      full R3 contract chain is surfaced via
+      ``apps_research/integrations/spine_handoff.py``.
+    notes:
+      - "No CommitRequest expected -- this route does not cross L4 admission."
+      - "No build_time_compiler semantics -- requests run on demand, not at build time."
+      - "No formal exception -- apps_research uses the standard GovernedAppRunner substrate."
+      - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+
+# References:
+# - apps_research/integrations/spine_handoff.py
+#     Direct R3 contract surface; delegates unchanged to GovernedResearchRun.
+# - apps_research/integrations/governed_research_run.py
+#     The GovernedAppRunner subclass that actually drives the L1->L0->C0->L2->L5+L6 pipeline.
+# - apps_shared/integrations/governed_app_runner.py
+#     Shared substrate (transitive contract delegation today; this manifest
+#     records the direct-surface path apps_research now also exposes).
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#     §"Route-Shape Taxonomy for apps_*", §"Why apps_qna's pattern does NOT generalize".
+# - tools/analysis/apps_spine_coverage.py
+#     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does
+# NOT certify that the runtime path actually exercises every contract
+# on every call -- that requires OTel-trace ingest, which is out of
+# scope for this static-surfacing migration.
