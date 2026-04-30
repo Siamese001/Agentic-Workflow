@@ -1,0 +1,91 @@
+# apps_lic spine manifest
+#
+# Declares which spine route types apps_lic serves so the
+# runtime-mode scanner (tools/analysis/apps_spine_coverage.py) can
+# verify direct surfacing of the canonical R3 contract chain.
+#
+# This manifest is STATIC EVIDENCE only. It declares the contract
+# surface apps_lic delegates THROUGH (transitively today, via
+# apps_shared.integrations.governed_app_runner.GovernedAppRunner).
+# It is NOT a runtime certification claim. Runtime trace (OTel spans
+# hitting each contract surface) is what proves the contracts are
+# actually exercised end-to-end.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research W9 and apps_exec W10.
+# Pre-migration audit: apps_lic was confirmed R3_grounded_read,
+#   NOT R3R4_managed_workflow. The audit found ZERO matches in
+#   apps_lic/ for: CommitRequest, commit_request, StateDiffCandidate,
+#   proposed_state_diff, MutationIntent, durable_write, write_gateway,
+#   compliance_log, send_queue. The apparent ``_uwg`` references are
+#   lifecycle-trace telemetry markers, not real UWG admission.
+
+schema_version: 1
+app: apps_lic
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand LIC outreach campaign / message-draft grounded
+      synthesis. CampaignRequest (campaign_id + target_audience +
+      compliance_level + name) → query construction → L1
+      query_planner.decompose_query → L0 AgenticRouter.route
+      (target=lic_campaign_assembly) → C0 hybrid retrieval over the
+      ``lic_docs`` collection (degrades gracefully when absent) →
+      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is
+      a sealed message-draft artifact (GovernedLicE2ERunRecord)
+      carrying grounded citations + support coverage + the LIC
+      domain context (campaign_id, target_audience, compliance_level).
+      The user reviews and sends the draft manually -- no LinkedIn
+      send-API call, no compliance-log write, no L4 admission.
+    notes:
+      - "No CommitRequest expected -- the GovernedLicE2ERunRecord shape carries no commit / durable-write field."
+      - "compliance_level is synthesis METADATA describing the message draft, not evidence of a write to a durable compliance log. The audit found no compliance-log write surface."
+      - "output_<mission_id>.json (saved by run_workflow_lic) is LOCAL output-artifact persistence (json.dump to CWD), not L4-admitted durable state. Same shape as apps_research and apps_exec output saving."
+      - "No R3R4_managed_workflow semantics -- audit found no durable-write surface; promoting to R3R4 would be contract theater."
+      - "No build_time_compiler semantics -- requests run on demand, not at build time."
+      - "No formal exception -- apps_lic uses the standard GovernedAppRunner substrate; not exempt."
+      - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+
+# HITL posture (informational, not a route-shape modifier):
+#   apps_lic.integrations.governed_lic_run.GovernedLicRun.HITL_ENABLED = True
+#
+#   This is RUNNER POSTURE -- it gates whether the spine's runtime
+#   HITL escalation path is reachable for an LIC request. The HITL
+#   escalation here serves COMPLIANCE-SENSITIVE REVIEW of message
+#   drafts (e.g., regulated-industry outreach), not durable-state
+#   admission. It is NOT evidence of a durable-write surface and
+#   does NOT push apps_lic into the R3R4_managed_workflow shape.
+#   R3R4_managed_workflow is reserved for routes that actually emit
+#   a CommitRequest. apps_lic emits none, so it stays in
+#   R3_grounded_read with HITL_ENABLED noted here for transparency.
+
+# Apparent "_uwg" hits in apps_lic/ are LIFECYCLE-TRACE TELEMETRY
+# MARKERS (e.g., _emit_writes_via_uwg, _emit_execution_terminates_at_uwg,
+# _emit_writes_through). These are OTel-stub sentinels from
+# agentic_core.runtime.contracts.lifecycle_trace_contract that fire
+# at module-import time as part of p0/p1/p2 trace coverage. They do
+# NOT invoke the UWG path. The pre-migration audit verified this.
+
+# References:
+# - apps_lic/integrations/spine_handoff.py
+#     Direct R3 contract surface; delegates unchanged to GovernedLicRun.
+# - apps_lic/integrations/governed_lic_run.py
+#     The GovernedAppRunner subclass that drives the L1->L0->C0->L2->L5+L6 pipeline.
+# - apps_lic/tools/run_workflow_lic.py
+#     Async entrypoint that loads OutreachMission, runs the orchestrator,
+#     and saves a local JSON output artifact. NO durable-state writes.
+# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml
+#     Sibling R3_grounded_read manifests -- this manifest mirrors their shape.
+# - apps_shared/integrations/governed_app_runner.py
+#     Shared substrate (transitive contract delegation today).
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py
+#     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does
+# NOT certify that the runtime path actually exercises every contract
+# on every call -- that requires OTel-trace ingest, which is out of
+# scope for this static-surfacing migration.
