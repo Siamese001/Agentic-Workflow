@@ -59,6 +59,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run_self_eval(args)
     if args.subcommand == "route":
         return _run_route(args)
+    if args.subcommand == "init":
+        return _run_init(args)
     return _run_build(args)
 
 
@@ -97,6 +99,50 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         default=3,
         help="Number of top candidates to print (default: 3)",
+    )
+
+    init_parser = sub.add_parser(
+        "init",
+        help="Interactive intake wizard — compose Interview YAML from real inputs",
+    )
+    init_parser.add_argument("--slug", help="Interview slug (default: derived from company)")
+    init_parser.add_argument("--company", dest="company_name", help="Company name")
+    init_parser.add_argument("--role", dest="role_title", help="Role title")
+    init_parser.add_argument("--role-level", default="director", help="Role level (default: director)")
+    init_parser.add_argument("--role-mandate", help="Role primary mandate (one sentence)")
+    init_parser.add_argument(
+        "--interviewer", action="append", default=[],
+        help="Interviewer name(s); repeat for panel mode",
+    )
+    init_parser.add_argument("--jd", type=Path, dest="jd_path", help="Markdown JD path")
+    init_parser.add_argument(
+        "--research-pdf", type=Path, dest="research_pdf",
+        help="PDF or markdown research-briefing path",
+    )
+    init_parser.add_argument(
+        "--research-trace", dest="research_trace_id",
+        help="apps_research trace id (8-hex); reads reports/research/",
+    )
+    init_parser.add_argument(
+        "--experience", type=Path, dest="experience_yaml",
+        help="Experience YAML path (apps_rg-format)",
+    )
+    init_parser.add_argument(
+        "--exec-brief", type=Path, dest="exec_brief",
+        help="Executive brief markdown path",
+    )
+    init_parser.add_argument(
+        "--output-yaml", type=Path,
+        help="Where to write the composed Interview YAML (default: "
+        "reports/qna/<slug>/interview.yaml)",
+    )
+    init_parser.add_argument(
+        "--non-interactive", action="store_true",
+        help="Fail rather than prompt — useful for scripted runs",
+    )
+    init_parser.add_argument(
+        "--build", action="store_true",
+        help="Run the full build immediately after writing the YAML",
     )
 
     self_eval_parser = sub.add_parser(
@@ -502,6 +548,77 @@ def _run_lint(args: argparse.Namespace) -> int:
             prefix += f" {err.where}:"
         _log.error("  %s %s", prefix, err.message)
     return 1
+
+
+def _run_init(args: argparse.Namespace) -> int:
+    """Interactive intake wizard. Composes Interview YAML; optionally builds."""
+    from apps_qna.integrations.wizard import (
+        WizardOptions,
+        run_wizard,
+        write_interview_yaml,
+    )
+
+    options = WizardOptions(
+        slug=args.slug,
+        company_name=args.company_name,
+        role_title=args.role_title,
+        role_level=args.role_level,
+        role_mandate=args.role_mandate,
+        interviewer_names=args.interviewer,
+        jd_path=args.jd_path,
+        research_pdf=args.research_pdf,
+        research_trace_id=args.research_trace_id,
+        experience_yaml=args.experience_yaml,
+        exec_brief=args.exec_brief,
+        output_yaml=args.output_yaml,
+        non_interactive=args.non_interactive,
+    )
+    try:
+        interview, extra_context = run_wizard(options)
+    except (FileNotFoundError, ValueError) as exc:
+        _log.error("Intake failed: %s", exc)
+        return 2
+
+    output_yaml = options.output_yaml or Path(
+        f"reports/qna/{interview.slug}/interview.yaml"
+    )
+    write_interview_yaml(interview, extra_context, output_yaml)
+    _log.info("Wrote Interview YAML to %s", output_yaml)
+    print(f"\n✓ Interview YAML written: {output_yaml}")
+    print(f"  Slug:         {interview.slug}")
+    print(f"  Company:      {interview.company.name}")
+    print(f"  Role:         {interview.role.title}")
+    print(f"  Interviewers: {[i.name for i in interview.interviewers]}")
+    print(f"  JD sections:  {len(interview.jd.sections)}")
+    if interview.research:
+        print(
+            f"  Research:     "
+            f"company_brief={'set' if interview.research.company_brief else 'empty'}, "
+            f"trends={len(interview.research.industry_trends)}, "
+            f"sources={len(interview.research.source_register)}"
+        )
+    print(f"  Experience:   "
+          f"points={len(interview.experience.points)}, "
+          f"stars={len(interview.experience.star_bank.stories)}, "
+          f"rcas={len(interview.experience.rca_bank)}")
+    print()
+    print("Review the YAML, fill in any TBD fields, then build with:")
+    print(f"  python -m apps_qna --config {output_yaml} --output reports/qna/{interview.slug}")
+
+    if args.build:
+        # Re-load through the normal build path so the intake artifact is the
+        # single source of truth.
+        build_args = argparse.Namespace(
+            interview=interview.slug,
+            config=output_yaml,
+            company=None, role=None, jd=None, interviewers=None,
+            experience=None, research_from=None, output=None,
+            multi_interviewer_mode="auto", line_ending="lf",
+            force=True, dry_run=False,
+        )
+        _log.info("Running build immediately…")
+        return _run_build(build_args)
+    return 0
 
 
 def _run_route(args: argparse.Namespace) -> int:
