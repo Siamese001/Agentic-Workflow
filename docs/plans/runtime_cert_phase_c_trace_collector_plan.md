@@ -2,6 +2,7 @@
 
 **Status**: DESIGN PLAN — planning only. No code. No emitter change.
 No scanner change. No CI gate. No app certified.
+**Plan version**: v1 (2026-04-30, initial plan); **v2** (2026-04-30, Author-Gate decisions captured — this revision adds §0 and updates §12 / Provenance)
 **Generated**: 2026-04-30
 **Predecessors**:
 - Phase A report: `docs/reports/runtime_certification/phase_a_trace_inventory.md`
@@ -10,6 +11,62 @@ No scanner change. No CI gate. No app certified.
 - Phase B.3 hash: `system_learning/runtime_adg/manifest_hash.py`
 - Phase B.4 evidence: `system_learning/runtime_adg/formal_exception_evidence.py`
 - Phase B.5 helpers: `tools/runtime_cert/negative_controls.py`
+
+---
+
+## 0. Author-Gate Decisions Captured (plan v2)
+
+All 9 Author-Gate decisions (AG-C-1 through AG-C-9) are **APPROVED**
+as of 2026-04-30. The implementation details in §§1-14 are
+unchanged — this section records outcomes only.
+
+### 0.1 Approved decisions
+
+| # | Decision | Outcome | Captured rationale |
+|:---:|---|:---:|---|
+| **AG-C-1** | Use runtime ADG (`system_learning/runtime_adg/`) as the evidence store | ✅ **APPROVED** | ADR-074 codifies the runtime bucket as a deterministic view over OTel spans. Phase A confirmed the store is already load-bearing. Reusing it avoids a parallel-store maintenance burden. |
+| **AG-C-2** | **No** parallel evidence store | ✅ **APPROVED** | Corollary of AG-C-1. Any Phase C code that writes to a new store is out of scope and will be rejected at sub-phase Author-Gate. |
+| **AG-C-3** | The 18-field Phase C row schema in §3.1 is frozen for C.1–C.7 | ✅ **APPROVED** | Schema is minimal, compatible with Phase B.2 `ContractSpanBinding`, Phase B.4 `SharedShimEvidence`, and Phase B.5 defensive `_row_*` accessors. |
+| **AG-C-4** | **No** scanner classification changes during C.1–C.7 | ✅ **APPROVED** | B.6 standing invariant preserved. Scanner changes belong exclusively to Phase F (promotion workflow). |
+| **AG-C-5** | **No** emitter renaming during C.1–C.7 | ✅ **APPROVED** | Design matrix v2 §7 signal-based binding absorbs span-name drift without renames. Attribute hardening (via §3.1 row normalization) is a separate, additive concern. |
+| **AG-C-6** | Choose the first live-trace smoke app for C.6 | ✅ **APPROVED — apps_research** | See §0.2 below for the multi-point rationale. |
+| **AG-C-7** | Require `AGENTIC_CORE_STACK=full` during C.6 smoke runs | ✅ **APPROVED** | Matches Phase B.4's "redundant evidence" posture (option b). Trivially enforced at the smoke harness entry point; adds zero runtime-emitter cost. |
+| **AG-C-8** | Approve the fail-closed status vocabulary: `TRACE_GAP`, `ATTRIBUTE_HARDENING_REQUIRED`, `UNKNOWN_NEEDS_RUNTIME_RUN`, `FORBIDDEN_SPAN_VIOLATION`, `FORMAL_EXCEPTION_VIOLATION`, `CC_SHARED_05_NOT_PASSED` | ✅ **APPROVED** | Phase D will consume these identifiers verbatim. Changing them later churns both phases. Also pins the invariant that Phase C never writes `runtime_certification_status` other than `NOT_CERTIFIED`. |
+| **AG-C-9** | Sub-phase ordering: C.1 → C.2 → (C.3 ∥ C.4 ∥ C.5) → C.6 → C.7 | ✅ **APPROVED** | Maximizes parallelism after C.2 lands (the row normalizer is the gating artifact) while keeping the foundational adapter (C.1) and normalizer (C.2) strictly sequential. C.6 and C.7 depend on all three extractors. |
+
+### 0.2 AG-C-6 — first smoke app = `apps_research` (rationale)
+
+`apps_research` was chosen for C.6 over the alternative (`apps_exec`)
+for these six reasons:
+
+1. **Route shape** — `apps_research` is `R3_grounded_read`, the cleanest R3 surface.
+2. **No HITL complication** — `apps_research`'s `GovernedAppRunner` subclass does not declare `HITL_ENABLED`, so the smoke harness does not need to simulate human-in-the-loop branches.
+3. **No durable-write ambiguity** — output artifacts are local JSON, not routed through any `CommitRequest` path. Lowers the risk of mis-classifying an artifact write as a durable write.
+4. **No formal-exception harness** — `apps_research` is not a formal-exception app; C.6 exercises the pure R3 path without CC-* evidence plumbing interleaved.
+5. **Clean static pilot precedent** — `apps_research` was the first app migrated to `APP_OVERLAY_STATIC_EVIDENCE` in W9. Its manifest and `spine_handoff` module are the smallest and best-documented across the cohort.
+6. **Lower risk of output-vs-durable-write confusion** — unlike apps_rfp (portal submission concerns) or apps_lic (license generation), apps_research produces research outputs with unambiguous artifact semantics.
+
+**Alternative (not chosen)**: `apps_exec` is a fine backup if unforeseen blockers appear during C.6 wiring — its shape is similar. Switching requires a **follow-up Author-Gate** (AG-C-6-bis) amending this section; do NOT silently re-pick the smoke app.
+
+### 0.3 Scope and limits of these approvals
+
+These approvals authorize Phase C **planning continuity** toward C.1.
+They explicitly do NOT authorize the following:
+
+- ❌ They do NOT authorize starting C.1 implementation directly. **C.1 requires its own scoped Author-Gate prompt** with its own plan file (target: `.windsurf/plans/runtime-cert-c1-query-adapter-<6hex>.md`) before any Python is written.
+- ❌ They do NOT certify any `apps_*` app. All 9 apps remain `NOT_CERTIFIED`. The cohort classification is unchanged: 6 `APP_OVERLAY_STATIC_EVIDENCE` + 3 `FORMAL_EXCEPTION_STATIC_EVIDENCE` + 0 `RUNTIME_CERTIFIED` + 0 `FORMAL_EXCEPTION_VERIFIED`.
+- ❌ They do NOT authorize scanner classification changes during C.1–C.7 (AG-C-4 is explicit).
+- ❌ They do NOT authorize new CI gates during C.1–C.7 (§1 non-goals preserved; the Phase E CI gate is a separate phase).
+- ❌ They do NOT authorize emitter renames during C.1–C.7 (AG-C-5 is explicit).
+- ❌ They do NOT authorize any app behavior change.
+- ❌ They do NOT authorize writing `runtime_certification_status` values other than `NOT_CERTIFIED` anywhere in Phase C outputs (AG-C-8 invariant).
+
+### 0.4 Open follow-up items
+
+| # | Item | Notes |
+|:---:|---|---|
+| **AG-C-6-bis** | Authorize a switch of C.6 smoke app away from `apps_research` if C.6 wiring hits an unforeseen blocker | Not triggered today; future decision, not approved in advance. |
+| **AG-C-7-bis** | Decide whether `AGENTIC_CORE_STACK=full` remains required in Phase D/E (beyond C.6) | Out of scope today. Will surface at Phase D Author-Gate. |
 
 ---
 
@@ -332,6 +389,11 @@ Phase C uses the following statuses — NOT certification verdicts:
 
 ## 12. Author-Gate decisions needed before implementation
 
+> **v2 update (2026-04-30)**: All 9 decisions below are ✅ **APPROVED** and
+> recorded in §0. The table is preserved verbatim as the as-drafted
+> recommendation record; outcomes and rationale live in §0.1–§0.2.
+> Any sub-phase plan (C.1 onward) citing AG-C-N decisions should link to §0.
+
 The following decisions MUST be resolved (in an explicit Author-Gate
 session, per `author-gate-enforcement.md`) before any Phase C code is
 written:
@@ -411,9 +473,10 @@ No runtime-certification promotion occurs before Phase D/E.
 
 | Item | Value |
 |---|---|
-| Plan version | v1 |
-| Generated | 2026-04-30 |
-| Author-Gate status | **pending** — 9 decisions (AG-C-1…9) must resolve before C.1 begins |
+| Plan version | **v2** (Author-Gate decisions captured) |
+| v1 generated | 2026-04-30 (initial planning draft) |
+| v2 reconciled | 2026-04-30 (§0 added; §12 intro + Provenance updated) |
+| Author-Gate status | ✅ **resolved** — all 9 decisions (AG-C-1…9) APPROVED on 2026-04-30; outcomes recorded in §0.1, AG-C-6 rationale in §0.2, scope limits in §0.3, follow-ups in §0.4 |
 | Predecessor phases | A, B.1, B.2, B.3, B.4, B.5 (all complete) |
 | Successor phases | D (report generator), E (CI gate), F (promotion) — blocked on Phase C |
 | Files inspected for this plan | 11 |
