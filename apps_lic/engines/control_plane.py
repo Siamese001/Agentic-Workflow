@@ -1,7 +1,7 @@
 """3.6: Control Plane — centralized safety policy enforcement for apps_lic.
 
 Delegates evaluate_input/evaluate_output to GovernanceShieldAgent.
-Wired into LicSpineAdapter before/after ExecutionOrchestrator.execute().
+Wired before/after ExecutionOrchestrator.execute() in the LIC entry path.
 
 OpenTelemetry Integration:
 - Uses AppsTracingMixin for explicit span instrumentation

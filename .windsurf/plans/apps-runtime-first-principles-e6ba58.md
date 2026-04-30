@@ -93,7 +93,8 @@ DECISION_CAPTURED: type=architecture_choice, repo_area=apps_shared/integrations/
 
 DECISION_CAPTURED: type=architecture_choice, repo_area=apps_shared/adapters/, selected=pep562_lazy_facade_centralized_at_apps_shared, outcome=executed, principle=single_boundary_per_cross_tree_dependency, precedent=strong
 
-NEXT_STEP: plan=apps-runtime-first-principles-e6ba58 title=Fix lic_spine_adapter import of missing apps_shared.spine.base_spine_adapter priority=P3 est_tokens=2000 reason=Pre-existing broken import surfaced by W3 contract test; module apps_shared.spine does not exist anywhere in tree
+NEXT_STEP (CLOSED 2026-04-30): plan=apps-runtime-first-principles-e6ba58 title=Fix lic_spine_adapter import of missing apps_shared.spine.base_spine_adapter priority=P3 est_tokens=2000 reason=Pre-existing broken import surfaced by W3 contract test; module apps_shared.spine does not exist anywhere in tree
+**Resolution**: Closed via Author-Gate 2026-04-30 deletion_strategy decision (confidence=0.88, gap=0.10). `apps_lic/engines/lic_spine_adapter.py` (270 LOC) and the matching placeholder test deleted (zero production callers verified by grep across `*.py` + `*.md`). xfail probe removed from `test_w3_boundary_facades.py`; stale comment cleaned in `apps_lic/engines/control_plane.py`. W3 boundary facade test suite goes from 14 passed + 1 xfailed → 16 passed (clean). Git history preserves the deleted blob for reference.
 
 ### W4 — ADG layer classification fix (DONE, 2026-04-30)
 

@@ -197,29 +197,16 @@ def test_apps_lic_has_no_direct_system_learning_imports() -> None:
         "apps_eval.engines.regression_detector",
         "apps_eval.integrations.meta_bus_publisher",
         "apps_lic.engines.control_plane",
-        pytest.param(
-            "apps_lic.engines.lic_spine_adapter",
-            marks=pytest.mark.xfail(
-                reason=(
-                    "Pre-existing broken import at line 115: "
-                    "'from apps_shared.spine.base_spine_adapter import BaseSpineAdapter' "
-                    "references a module that does not exist anywhere in the tree. "
-                    "Unrelated to W3 (W3 edit is at line 20). Tracked separately."
-                ),
-                strict=True,
-                raises=ModuleNotFoundError,
-            ),
-        ),
         "apps_lic.reasoning.HOPPipelineExecutor",
     ],
 )
 def test_touched_modules_still_importable(module_path: str) -> None:
     """W3 sanity: every file we modified must still be importable.
 
-    The lic_spine_adapter case is marked xfail(strict=True) because the file
-    has a separate pre-existing broken import at line 115 unrelated to W3.
-    Once that pre-existing issue is fixed, the xfail will turn into XPASSED
-    and pytest will fail \u2014 forcing the marker to be removed (intentional).
+    The former xfail probe for ``apps_lic.engines.lic_spine_adapter`` was
+    removed when the file itself was deleted (Author-Gate 2026-04-30,
+    deletion_strategy decision: zero production callers + 4 unresolvable
+    imports + placeholder-only test). See git history for the deleted blob.
     """
     import importlib
 
