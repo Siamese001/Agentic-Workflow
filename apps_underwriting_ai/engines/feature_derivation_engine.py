@@ -2,6 +2,10 @@
 Feature Derivation Engine - Computes all RiskFeatures deterministically.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -20,7 +24,6 @@ from ..types import (
     RiskFeatures,
     UnderwritingRequest,
 )
-
 
 class FeatureDerivationEngine:
     """
@@ -64,6 +67,7 @@ class FeatureDerivationEngine:
         "appraisal": 365,
     }
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def derive_features(
         self,
         request: UnderwritingRequest,
@@ -560,7 +564,6 @@ class FeatureDerivationEngine:
         if parsed.tzinfo is None:
             parsed = parsed.replace(tzinfo=timezone.utc)
         return parsed
-
 
 # ----------------------------------------------------------------------
 # OTEL coverage — module-load emit per check_apps_otel_coverage.py.

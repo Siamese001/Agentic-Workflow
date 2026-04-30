@@ -2,6 +2,10 @@
 Document Reconciliation Engine - Compares structured values vs parsed document values.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, List, Optional
@@ -16,7 +20,6 @@ from ..types import UnderwritingRequest
 
 # L4 retrieval wiring (Turn 3, Wave 36): Import creates ADG edge to L4_state
 
-
 class ContradictionSeverity(Enum):
     """Severity levels for contradictions."""
 
@@ -24,7 +27,6 @@ class ContradictionSeverity(Enum):
     MODERATE = "moderate"  # Noticeable difference, may need clarification
     MAJOR = "major"  # Significant variance, requires reconciliation
     CRITICAL = "critical"  # Material difference, blocks decision
-
 
 @dataclass
 class Contradiction:
@@ -38,7 +40,6 @@ class Contradiction:
     source_doc_id: Optional[str] = None
     explanation: str = ""
 
-
 @dataclass
 class ReconciliationResult:
     """Result of document reconciliation."""
@@ -49,7 +50,6 @@ class ReconciliationResult:
     mismatch_count: int = 0
     pass_rate: float = 0.0
     has_critical_issues: bool = False
-
 
 class DocumentReconciliationEngine:
     """
@@ -78,6 +78,7 @@ class DocumentReconciliationEngine:
         self.collateral_parser = CollateralSummaryParser()
         self.ar_parser = ARAgingParser()
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def reconcile(self, request: UnderwritingRequest) -> ReconciliationResult:
         """
         Perform full document reconciliation.
@@ -222,7 +223,6 @@ class DocumentReconciliationEngine:
             result.mismatch_count += 1
         else:
             result.match_count += 1
-
 
 # ----------------------------------------------------------------------
 # OTEL coverage — module-load emit per check_apps_otel_coverage.py.

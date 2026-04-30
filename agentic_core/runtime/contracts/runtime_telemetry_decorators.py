@@ -206,9 +206,103 @@ def _emit_runtime(category: str, kind: str, qualname: str) -> None:
         )
 
 
+def traces_execute(
+    *,
+    layer: str = "L3_ORCHESTRATION",
+    operation: str | None = None,
+) -> Callable[[F], F]:
+    """Decorator: emit OTEL entry+exit+failure spans around an engine method.
+
+    Phase B of the apps_* OTEL coverage strategy (Layer 1 = static gate
+    via ``check_apps_otel_coverage.py``; Layer 2 = runtime probe in
+    ``test_apps_otel_runtime_coverage.py``; Layer 3 = required-span
+    manifest, future). This decorator wraps an engine's ``execute()``
+    method (or any equivalent entry-point) with three lifecycle emits:
+
+      * **Entry**: ``_emit_records_execution_trace(trace_id, layer, op)``
+        — fires immediately when the method is called.
+      * **Exit (success)**: ``_emit_records_telemetry_event(trace_id,
+        op, "execute_complete")`` — fires after the method returns.
+      * **Exit (failure)**: ``_emit_hard_fails_untranscripted(trace_id,
+        reason)`` — fires when the method raises, then re-raises.
+
+    The trace_id is generated per call (uuid4 hex) so each invocation
+    is independently traceable. The decorator is idempotent against
+    ``EMITS_SUPPRESS=1`` (test mode).
+
+    Args:
+        layer: OTEL layer tag — typically "L3_ORCHESTRATION" for engine
+            execute methods. Use "L4_STATE" for write-side ops, "L5_SAFETY"
+            for guardrail-class methods.
+        operation: Optional explicit op name. Defaults to the method's
+            qualname (e.g. ``UnderwritingEngine.execute``).
+
+    Static introspection: decorated functions carry
+    ``__adg_traces_execute__ = (op_name,)`` so the AST walker can produce
+    explicit per-call spans in the static ADG.
+    """
+    def decorator(func: F) -> F:
+        op_name = operation or func.__qualname__
+
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if _suppress_runtime_emission():
+                return func(*args, **kwargs)
+            trace_id = _new_trace_id()
+            try:
+                from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: PLC0415
+                    _emit_records_execution_trace,
+                    _emit_records_telemetry_event,
+                    _emit_hard_fails_untranscripted,
+                )
+            except ImportError:  # guardian: allow-broad-fallback -- contracts unavailable, skip emit
+                return func(*args, **kwargs)
+
+            # Entry emit — best-effort, never crash the wrapped call.
+            try:
+                _emit_records_execution_trace(trace_id, layer, op_name)
+            except Exception:  # guardian: allow-broad-catch -- telemetry failure must not break callers
+                _LOGGER.debug("traces_execute entry emit failed for %s", op_name, exc_info=True)
+
+            try:
+                result = func(*args, **kwargs)
+            except Exception as exc:
+                # Failure emit — record then re-raise.
+                try:
+                    _emit_hard_fails_untranscripted(trace_id, f"{op_name}: {type(exc).__name__}")
+                except Exception:  # guardian: allow-broad-catch -- emit fail must not mask original
+                    _LOGGER.debug("traces_execute failure emit failed for %s", op_name, exc_info=True)
+                raise
+
+            # Success emit.
+            try:
+                _emit_records_telemetry_event(trace_id, op_name, "execute_complete")
+            except Exception:  # guardian: allow-broad-catch -- telemetry failure must not break callers
+                _LOGGER.debug("traces_execute success emit failed for %s", op_name, exc_info=True)
+            return result
+
+        # Static-introspection marker (parallel to __adg_side_effects__).
+        existing = getattr(func, "__adg_traces_execute__", ())
+        wrapper.__adg_traces_execute__ = existing + (op_name,)  # type: ignore[attr-defined]
+        for attr in _INTENT_ATTRS:
+            if hasattr(func, attr):
+                setattr(wrapper, attr, getattr(func, attr))
+        return wrapper  # type: ignore[return-value]
+
+    return decorator
+
+
+def _new_trace_id() -> str:
+    """Generate a fresh trace_id for one call. Local import to avoid module-load cost."""
+    import uuid as _uuid  # noqa: PLC0415
+
+    return _uuid.uuid4().hex
+
+
 __all__ = [
     "appends_hash_chain",
     "emits_for",
     "emits_side_effect",
     "emits_telemetry_event",
+    "traces_execute",
 ]

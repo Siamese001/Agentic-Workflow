@@ -2,6 +2,10 @@
 Decision Packet Assembler - Merges hypothesis, features, validators into decision outputs.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -18,7 +22,6 @@ from ..types import (
 from tqdm import tqdm
 
 # L4 retrieval wiring (Turn 3, Wave 37): Import creates ADG edge to L4_state
-
 
 @dataclass
 class AssemblerInput:
@@ -37,7 +40,6 @@ class AssemblerInput:
     human_review_reason: Optional[str] = None
     confidence_score: float = 0.0
 
-
 class DecisionPacketAssembler:
     """
     Assembles final decision outputs from all underwriting components.
@@ -48,6 +50,7 @@ class DecisionPacketAssembler:
     - AuditTrace (compliance record)
     """
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def assemble(
         self,
         input_data: AssemblerInput,
@@ -183,7 +186,6 @@ class DecisionPacketAssembler:
         )
 
         return trace
-
 
 # ----------------------------------------------------------------------
 # OTEL coverage — module-load emit per check_apps_otel_coverage.py.

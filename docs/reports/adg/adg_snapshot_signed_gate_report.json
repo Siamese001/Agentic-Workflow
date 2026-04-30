@@ -1,16 +1,16 @@
 {
   "gate": "G-ADG-SNAPSHOT-SIGNED",
   "tier": "B",
-  "timestamp": "2026-04-30T10:31:27.408227+00:00",
-  "snapshot": "artifacts\\adg\\adg_indexed_99999999_9999.sqlite",
-  "envelope_path": "artifacts\\adg\\adg_indexed_99999999_9999.sqlite.intoto.jsonl",
+  "timestamp": "2026-04-30T11:02:02.931347+00:00",
+  "snapshot": "",
+  "envelope_path": "",
   "public_key_path": "",
   "verified": false,
   "file_sha256_match": false,
   "content_digest_match": false,
   "strict_mode": true,
   "violations": [
-    "envelope missing at artifacts\\adg\\adg_indexed_99999999_9999.sqlite.intoto.jsonl; run: python tools/adg/sign_snapshot.py"
+    "no ADG snapshot found under artifacts/adg/"
   ],
-  "status": "envelope_missing"
+  "status": "no_snapshot"
 }

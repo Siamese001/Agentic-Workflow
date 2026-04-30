@@ -191,5 +191,105 @@ class TestRuntimeFailureIsolated(unittest.TestCase):
                 self.assertEqual(f(), 9)
 
 
+class TestTracesExecute(unittest.TestCase):
+    """Phase B `traces_execute` decorator — entry/exit/failure spans."""
+
+    def test_passes_through_return_value(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        @traces_execute()
+        def f(x: int, y: int) -> int:
+            return x + y
+
+        self.assertEqual(f(2, 3), 5)
+
+    def test_re_raises_exception(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        @traces_execute()
+        def f() -> None:
+            raise ValueError("boom")
+
+        with self.assertRaises(ValueError) as ctx:
+            f()
+        self.assertEqual(str(ctx.exception), "boom")
+
+    def test_emits_records_execution_trace_on_entry(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        with mock.patch.dict(os.environ, {"EMITS_SUPPRESS": "0"}, clear=False):
+            os.environ.pop("EMITS_SUPPRESS", None)
+            with mock.patch(
+                "agentic_core.runtime.contracts.lifecycle_trace_contract._emit_records_execution_trace"
+            ) as patched:
+                @traces_execute(layer="L3_ORCHESTRATION")
+                def my_engine_run() -> int:
+                    return 42
+
+                self.assertEqual(my_engine_run(), 42)
+                patched.assert_called_once()
+                # First positional arg = trace_id (uuid hex), second = layer.
+                args, _ = patched.call_args
+                self.assertEqual(len(args[0]), 32)  # uuid4 hex length
+                self.assertEqual(args[1], "L3_ORCHESTRATION")
+
+    def test_emits_failure_then_reraises(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        with mock.patch.dict(os.environ, {"EMITS_SUPPRESS": "0"}, clear=False):
+            os.environ.pop("EMITS_SUPPRESS", None)
+            with mock.patch(
+                "agentic_core.runtime.contracts.lifecycle_trace_contract._emit_hard_fails_untranscripted"
+            ) as patched:
+                @traces_execute()
+                def failing() -> None:
+                    raise RuntimeError("downstream")
+
+                with self.assertRaises(RuntimeError):
+                    failing()
+                patched.assert_called_once()
+
+    def test_suppress_skips_emits(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        with mock.patch.dict(os.environ, {"EMITS_SUPPRESS": "1"}):
+            with mock.patch(
+                "agentic_core.runtime.contracts.lifecycle_trace_contract._emit_records_execution_trace"
+            ) as entry, mock.patch(
+                "agentic_core.runtime.contracts.lifecycle_trace_contract._emit_records_telemetry_event"
+            ) as exit_:
+                @traces_execute()
+                def f() -> int:
+                    return 1
+
+                self.assertEqual(f(), 1)
+                entry.assert_not_called()
+                exit_.assert_not_called()
+
+    def test_static_introspection_marker(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+
+        @traces_execute(operation="MyEngine.run")
+        def run() -> None:
+            pass
+
+        self.assertEqual(
+            getattr(run, "__adg_traces_execute__", ()),
+            ("MyEngine.run",),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

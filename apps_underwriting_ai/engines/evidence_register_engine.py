@@ -2,12 +2,15 @@
 Evidence Register Engine - Collects and manages evidence for underwriting claims.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List, Optional
 
 from ..types import EvidenceEntry, UnderwritingRequest
-
 
 @dataclass
 class EvidenceRegister:
@@ -16,6 +19,7 @@ class EvidenceRegister:
     request_id: str
     entries: List[EvidenceEntry] = field(default_factory=list)
 
+    @traces_execute(layer="L4_STATE")
     def add_entry(self, entry: EvidenceEntry) -> None:
         """Add an evidence entry."""
         self.entries.append(entry)
@@ -55,7 +59,6 @@ class EvidenceRegister:
     def get_contradiction_count(self) -> int:
         """Count entries with contradicting evidence."""
         return sum(1 for e in self.entries if e.contradicting_evidence)
-
 
 class EvidenceRegisterEngine:
     """
@@ -268,7 +271,6 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.95,
             )
-
 
 # ----------------------------------------------------------------------
 # OTEL coverage — module-load emit per check_apps_otel_coverage.py.

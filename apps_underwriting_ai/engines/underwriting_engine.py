@@ -2,6 +2,10 @@
 Underwriting Engine - Main orchestrator for the underwriting workflow.
 """
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -32,7 +36,6 @@ from ..validators.document_completeness_validator import DocumentCompletenessVal
 from ..validators.forbidden_feature_checker import ForbiddenFeatureChecker
 from ..validators.stale_data_validator import StaleDataValidator
 
-
 @dataclass
 class UnderwritingResult:
     """Complete result of underwriting workflow."""
@@ -50,7 +53,6 @@ class UnderwritingResult:
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     processing_metadata: Dict[str, Any] = field(default_factory=dict)
-
 
 class UnderwritingEngine:
     """
@@ -92,6 +94,7 @@ class UnderwritingEngine:
         self.contradiction_validator = ContradictionValidator()
         self.stale_validator = StaleDataValidator()
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def run(self, request: UnderwritingRequest) -> UnderwritingResult:
         """
         Execute complete underwriting workflow.
@@ -371,7 +374,6 @@ class UnderwritingEngine:
                 confidence *= 0.8
 
         return decision, confidence, conditions, covenants, missing_info
-
 
 # ----------------------------------------------------------------------
 # OTEL coverage — module-load emit per check_apps_otel_coverage.py.

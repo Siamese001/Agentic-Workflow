@@ -2,16 +2,21 @@
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
   "advisory_mode": false,
-  "snapshot": "artifacts\\adg\\adg_indexed_99999999_9999.sqlite",
-  "status": "blocked",
-  "needs_graduation": [],
-  "already_graduated": [],
-  "null_counts": {},
-  "blockers": [
-    "column 'bucket' not present in edges table",
-    "column 'resolution_status' not present in edges table",
-    "column 'authority_status' not present in edges table",
-    "column 'authority' not present in edges table"
+  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5517\\popen-gw5\\test_gate_passes_when_clean0\\clean.sqlite",
+  "status": "ready",
+  "needs_graduation": [
+    "bucket",
+    "resolution_status",
+    "authority_status",
+    "authority"
   ],
-  "timestamp": "2026-04-30T10:31:27.486685+00:00"
+  "already_graduated": [],
+  "null_counts": {
+    "bucket": 0,
+    "resolution_status": 0,
+    "authority_status": 0,
+    "authority": 0
+  },
+  "blockers": [],
+  "timestamp": "2026-04-30T11:02:00.692003+00:00"
 }
