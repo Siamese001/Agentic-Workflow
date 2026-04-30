@@ -1,0 +1,44 @@
+# 05 Agentic Architecture Core
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 4 — Architecture concept**. When the question is "how would you build", this card drives the answer.
+
+
+## Answer shape
+1. Business workflow first.
+2. Data and semantic layer.
+3. Agent / orchestration layer.
+4. Governance and eval layer.
+5. Product and scale layer.
+
+## Spine for an architecture answer
+
+- Start with the **business decision** the system serves at {{ company.name }}.
+- Name the **trusted data contract** (semantic layer, governed catalog, lineage trace).
+- Explain the **agent or orchestration layer** — what it plans, what it executes, what it does not touch.
+- Name the **control point** (gate, eval, registry, approval checkpoint, audit log).
+- Translate uncertainty honestly. Stop on the practical implication.
+
+## Reliability chain (use as clusters, not full inventory)
+- **trusted data and semantic grounding**
+- **validated execution and model lifecycle**
+- **governed action and policy gates**
+- **observability, audit, and regression evals**
+
+## Architecture content
+{% for block in architecture_content_blocks %}
+### {{ block.heading }}
+{% for bullet in block.bullets %}- {{ bullet }}
+{% endfor %}
+{% endfor %}
+
+## What this card does NOT do
+- Does not turn into a STAR story unless asked.
+- Does not collapse into governance — that is Route 5.
+- Does not name vendor stack unless the question requires it.
+
+## Cross-exam fallback
+If the interviewer pushes deeper, hand off to **16_CROSS_EXAM.md** — name the artifact, gate, or metric and stop.

@@ -1,0 +1,37 @@
+# 10 DS to Platform / MLOps
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 6 — Data Science to platform**. When the question is about productizing models, model lifecycle, MLOps, drift, or uncertainty translation, this card drives the answer.
+
+
+## Answer shape
+1. Respect the math.
+2. Productize the output contract.
+3. Track model lifecycle.
+4. Translate uncertainty for users.
+5. Gate unsafe conclusions.
+
+## Core principle
+A trained model is not a product. The product is the **output contract** (what the consumer can rely on), the **lifecycle** (how it stays trustworthy), and the **gate** (what stops a bad inference from becoming a bad recommendation).
+
+## Lifecycle anchors
+{% for anchor in mlops_lifecycle_anchors %}- {{ anchor }}
+{% endfor %}
+
+## Talking points
+{% for point in ds_to_platform_talking_points %}- {{ point }}
+{% endfor %}
+
+## Honest patterns for uncertainty
+- "Calibrated range, not point estimate."
+- "Decision boundary, not threshold."
+- "Drift signal, not just accuracy."
+- "Eval gate, not retrospective explanation."
+
+## Hand-off
+- If the question turns to measurement specifics, hand to **07_MEASUREMENT.md**.
+- If the question turns to governance / approval, hand to **08_GOVERNANCE.md**.
+- If the question turns to ROI, hand to **12_PRODUCTIZATION.md**.

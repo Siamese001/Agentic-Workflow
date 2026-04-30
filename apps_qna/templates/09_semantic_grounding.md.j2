@@ -1,0 +1,32 @@
+# 09 Semantic Grounding and Text-to-SQL
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Specialist card for semantic grounding, Text-to-SQL, and natural-language-to-data interfaces. Loads as a specialist under **Route 4 (Architecture)** or **Route 5 (Governance)**.
+
+
+## Core stance
+- Text-to-SQL is a **governed runtime**, not a chatbot feature.
+- Semantic grounding lives in a **typed catalog** with explicit relationships, units, and time semantics.
+- The model proposes; the validator disposes.
+
+## Required surfaces
+- Schema-aware SQL generation with named entities only.
+- Typed validator that runs every generated query before execution (syntax, allowed tables, allowed joins, row limits, latency cap).
+- Eval suite of question-to-SQL pairs as a regression gate.
+- Lineage trace from natural language → SQL → result → answer.
+
+## Talking points
+{% for point in semantic_grounding_talking_points %}- {{ point }}
+{% endfor %}
+
+## Anti-patterns
+- Do not let the model write to production tables. Read-only by default; writes go through a separate governed action plane.
+- Do not skip the validator because the eval pass rate is high — drift is silent.
+- Do not pretend "guardrails" make Text-to-SQL safe. Name the validator, the eval suite, and the access boundary.
+
+## Hand-off
+- If the question turns to client trust, hand to **08_GOVERNANCE.md**.
+- If the question turns to platform reuse, hand to **10_DS_TO_PLATFORM.md**.

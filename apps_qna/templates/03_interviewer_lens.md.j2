@@ -1,0 +1,46 @@
+# 03 Interviewer Lens — {{ interviewer.name }}
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+This card encodes who {{ interviewer.name }} is and how to answer in a way that lands with their bias. It does not answer questions on its own; it tunes other route answers.
+
+
+## Profile
+- **Name**: {{ interviewer.name }}
+- **Title**: {{ interviewer.title }}
+{% if interviewer.team %}- **Team**: {{ interviewer.team }}{% endif %}
+- **Technical depth**: {{ interviewer.technical_depth }}
+
+## Lens
+{{ interviewer.lens }}
+
+## Public signals
+{% for signal in interviewer.public_signals %}- {{ signal }}
+{% endfor %}
+
+## Hot buttons (topics they will probe hard)
+{% for topic in interviewer.hot_buttons %}- {{ topic }}
+{% endfor %}
+
+## Tuning rules for answers
+- When answering {{ interviewer.name }}, lead with the {{ interviewer.lens|lower }}.
+{% if interviewer.technical_depth == "high" %}- Skip introductory framing — they want the technical core in the first sentence.
+- Always name a specific control point or artifact (registry, contract, gate, eval).
+- It is acceptable to say "I would have to look that up" rather than improvise on a stack they know cold.
+{% elif interviewer.technical_depth == "low" %}- Start with the business decision, then lightly name the technical mechanism.
+- Translate uncertainty into business language rather than statistical jargon.
+- Anchor on outcomes (adoption, ROI, client trust) before the platform.
+{% else %}- Open with the business decision, then go one technical level deep.
+- Name one control point and one outcome.
+- Match their tempo — if they pivot, pivot.
+{% endif %}
+
+## What to avoid with this interviewer
+{% for hot_button in interviewer.hot_buttons %}- Do not bluff on `{{ hot_button }}` — they will catch it.
+{% endfor %}
+
+## When this card applies
+- All routes when {{ interviewer.name }} is the speaker (or the panel lead).
+- For panel mode with multiple interviewers, the runtime hint `lens: {{ interviewer.name|lower|replace(" ", "_") }}` activates this card for the next answer.

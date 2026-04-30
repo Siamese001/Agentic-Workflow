@@ -1,0 +1,40 @@
+# 12 Productization and ROI
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 7 — Product, client value, and ROI**. When the question is about client impact, adoption, ROI, or 90-day plan, this card drives the answer.
+
+
+## Answer shape
+1. Identify the user and decision.
+2. Identify friction removed.
+3. Name measurable KPI.
+4. Show adoption path.
+5. Tie to platform repeatability.
+
+## Core principle
+**Adoption is the only ROI metric that survives a board review.** A model with no users has no impact.
+
+## Talking points
+{% for point in productization_talking_points %}- {{ point }}
+{% endfor %}
+
+## KPI anchors that hold up under cross-exam
+{% for kpi in productization_kpi_anchors %}- {{ kpi }}
+{% endfor %}
+
+## Honest patterns
+- "I would not promise lift. I would promise a measurement protocol."
+- "The first KPI is whether the user opens the tool twice."
+- "Repeatability across clients is the platform test, not feature richness."
+
+## Anti-patterns
+- Do not list features. Name the decision the feature unblocks.
+- Do not invent ROI numbers without an experiment.
+- Do not confuse pilot success with platform readiness.
+
+## Hand-off
+- If the question turns to 90-day plan specifics, hand to **17_QUESTIONS_AND_90_DAY_PLAN.md**.
+- If the question turns to architecture, hand to **05_ARCHITECTURE_CORE.md**.

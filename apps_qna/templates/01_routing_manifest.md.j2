@@ -1,0 +1,57 @@
+# 01 Routing Manifest
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+This card chooses one primary answer route and limits specialist context. It prevents answer bloat and topic drift.
+
+
+## Overwritten routing guard
+Choose exactly one primary route. Specialist cards can support the answer, but they cannot take over. If the answer contains architecture, STAR, ROI, DGS, MMM, and governance all at once, it failed.
+
+
+## Pre-route non-q gate
+Before choosing any route, check the prefix.
+
+- If the prompt starts with `q` or `Q`, route and answer live.
+- If the prompt does not start with `q`, do **not** route as a live answer.
+- If non-q is ordinary context, reply only `ingested`.
+- If non-q explicitly asks for work, execute that work instead of live-answer routing.
+
+
+## Hard rule
+Choose exactly one primary route. Specialist cards may support the route, but they must not take over the answer.
+
+
+## Primary routes
+
+{% for route in routes %}
+### Route {{ route.number }}: {{ route.name }}
+Trigger:
+{% for trigger in route.triggers %}- {{ trigger }}
+{% endfor %}
+
+Answer shape:
+{% for step in route.answer_shape %}{{ loop.index }}. {{ step }}
+{% endfor %}
+
+Load:
+- `{{ route.primary_card }}`
+{% if route.optional_specialists %}- Optional: {% for spec in route.optional_specialists %}`{{ spec }}`{% if not loop.last %}, {% endif %}{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+## Tie-breaker rules
+{% for rule in tie_breaker_rules %}{{ rule }}
+{% endfor %}
+
+## Max context rule
+Never load more than:
+- 1 primary route card
+- 2 specialist cards
+- core gates already loaded
+
+## Route purity check
+If the answer contains architecture, STAR, ROI, DGS, MMM, and governance all at once, it failed route purity.

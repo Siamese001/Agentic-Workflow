@@ -1,0 +1,201 @@
+version: v1
+
+# 9 primary routes from the validated Drew Clements routing manifest.
+# Filenames here MUST match templates rendered by CardPackBuilder.
+
+routes:
+  - id: executive_fit
+    number: 1
+    name: "Executive fit"
+    triggers:
+      - "Why this company"
+      - "Why this role"
+      - "Why you"
+      - "How do you fit"
+      - "What makes you different"
+    answer_shape:
+      - "One-sentence fit thesis."
+      - "Two to three proof points."
+      - "Company-specific close."
+    primary_card: "13_EXECUTIVE_FIT.md"
+    optional_specialists:
+      - "03_INTERVIEWER_LENS.md"
+      - "04_COMPANY_OVERLAY.md"
+
+  - id: star_proof
+    number: 2
+    name: "STAR proof"
+    triggers:
+      - "Tell me about a time"
+      - "Give me an example"
+      - "Have you done this before"
+      - "Prove you are technical"
+      - "Walk me through prior work"
+    answer_shape:
+      - "Situation"
+      - "Task"
+      - "Action"
+      - "Result"
+      - "Lesson tied to the role"
+    primary_card: "14_STAR_BANK.md"
+    optional_specialists:
+      - "16_CROSS_EXAM.md"
+
+  - id: rca
+    number: 3
+    name: "Failure, RCA, or lesson learned"
+    triggers:
+      - "Mistake"
+      - "Failure"
+      - "What went wrong"
+      - "Root cause"
+      - "Postmortem"
+      - "What did you learn"
+    answer_shape:
+      - "Situation"
+      - "Task"
+      - "Root cause"
+      - "Action"
+      - "Result"
+      - "Operating-model change"
+    primary_card: "15_RCA.md"
+    optional_specialists:
+      - "08_GOVERNANCE.md"
+
+  - id: architecture
+    number: 4
+    name: "Architecture concept"
+    triggers:
+      - "How would you build"
+      - "Architecture"
+      - "Agent framework"
+      - "Tooling"
+      - "Orchestration"
+      - "System design"
+    answer_shape:
+      - "Business workflow first."
+      - "Data and semantic layer."
+      - "Agent / orchestration layer."
+      - "Governance and eval layer."
+      - "Product and scale layer."
+    primary_card: "05_ARCHITECTURE_CORE.md"
+    optional_specialists:
+      - "06_DATA_PLATFORM.md"
+      - "08_GOVERNANCE.md"
+      - "09_SEMANTIC_GROUNDING.md"
+
+  - id: governance
+    number: 5
+    name: "Governance and risk"
+    triggers:
+      - "Hallucination"
+      - "Guardrails"
+      - "Safety"
+      - "Policy"
+      - "Audit"
+      - "Approval"
+      - "Client trust"
+      - "LLM as Judge"
+      - "judge model"
+      - "evaluator model"
+    answer_shape:
+      - "Name the risk."
+      - "Separate answer generation from action execution."
+      - "Define gates."
+      - "Define audit and rollback."
+      - "Tie to client trust."
+    primary_card: "08_GOVERNANCE.md"
+    optional_specialists:
+      - "09_SEMANTIC_GROUNDING.md"
+
+  - id: ds_to_platform
+    number: 6
+    name: "Data Science to platform"
+    triggers:
+      - "MMM"
+      - "Meridian"
+      - "incrementality"
+      - "forecasting"
+      - "attribution"
+      - "model lifecycle"
+      - "MLflow"
+      - "MLOps"
+      - "uncertainty"
+      - "model drift"
+    answer_shape:
+      - "Respect the math."
+      - "Productize the output contract."
+      - "Track model lifecycle."
+      - "Translate uncertainty for users."
+      - "Gate unsafe conclusions."
+    primary_card: "10_DS_TO_PLATFORM.md"
+    optional_specialists:
+      - "07_MEASUREMENT.md"
+
+  - id: productization
+    number: 7
+    name: "Product, client value, and ROI"
+    triggers:
+      - "Client impact"
+      - "adoption"
+      - "ROI"
+      - "90-day plan"
+      - "product strategy"
+      - "planner adoption"
+    answer_shape:
+      - "Identify the user and decision."
+      - "Identify friction removed."
+      - "Name measurable KPI."
+      - "Show adoption path."
+      - "Tie to platform repeatability."
+    primary_card: "12_PRODUCTIZATION.md"
+    optional_specialists:
+      - "17_QUESTIONS_AND_90_DAY_PLAN.md"
+
+  - id: global_engineering
+    number: 8
+    name: "Global engineering and DGS"
+    triggers:
+      - "offshore"
+      - "team structure"
+      - "DGS"
+      - "global delivery"
+      - "engineering standards"
+      - "distributed pods"
+    answer_shape:
+      - "Set operating model."
+      - "Define architecture ownership."
+      - "Define delivery cadence."
+      - "Define quality gates."
+      - "Explain how onshore / offshore stays aligned."
+    primary_card: "11_GLOBAL_ENGINEERING.md"
+    optional_specialists: []
+
+  - id: cross_exam
+    number: 9
+    name: "Cross-exam recovery"
+    triggers:
+      - "Be more specific"
+      - "Go deeper"
+      - "What exactly did you do"
+      - "What tools"
+      - "How would you prove it"
+      - "That sounds high-level"
+    answer_shape:
+      - "Acknowledge and answer directly."
+      - "Go one layer deeper technically."
+      - "Name artifact, gate, or metric."
+      - "Stop."
+    primary_card: "16_CROSS_EXAM.md"
+    optional_specialists: []
+
+# Tie-breaker rules from §"Tie-breaker rules" of the routing manifest.
+# Linter does not enforce these; they are documentation for the runtime.
+tie_breaker_rules:
+  - "If a question asks for experience, choose STAR even if technical."
+  - "If a question asks how would you build, choose Architecture even if it mentions governance."
+  - "If a question asks what went wrong, choose RCA even if it mentions architecture."
+  - "If a question asks why you, choose Executive fit even if it mentions tools."
+  - "If a question asks how would you prevent hallucinations, choose Governance."
+  - "If a question asks about LLM as a Judge, evaluator models, or output comparison, choose Governance unless it is pure offline eval design."
+  - "If a question asks about MMM, Meridian, or incrementality, choose Data Science to platform."

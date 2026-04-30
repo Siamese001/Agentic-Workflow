@@ -1,0 +1,30 @@
+# 06 Data Platform Stack
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Specialist card for architecture and DS-to-platform answers. Loads only when the question pulls in the data platform layer (warehouse, semantic catalog, governance, AI workspace).
+
+
+## Stack anchors
+{% for anchor in data_platform_anchors %}- {{ anchor }}
+{% endfor %}
+
+## When to invoke
+- Architecture answer that needs to ground on the data layer.
+- Governance answer that pivots into semantic grounding.
+- DS-to-platform answer that needs to name the registry / lineage path.
+
+## Talking points
+{% for point in data_platform_talking_points %}- {{ point }}
+{% endfor %}
+
+## Anti-patterns to avoid
+- Do not list every tool in the stack. Name only what the answer needs.
+- Do not promise vendor lock-in. Name the contract surface.
+- Do not turn this into a tooling debate. Stay on the control points.
+
+## Hand-off
+- If the question shifts to model lifecycle, route to **10_DS_TO_PLATFORM.md**.
+- If the question shifts to client trust, route to **08_GOVERNANCE.md**.
