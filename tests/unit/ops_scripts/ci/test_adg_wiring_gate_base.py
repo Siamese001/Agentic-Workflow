@@ -236,6 +236,124 @@ class TestWiringGateHarness:
         result = GateCls().execute()
         assert result.status == "pass"
 
+    def test_blocking_tier_warn_only_violations_do_not_fail(
+        self, fake_snapshot, tmp_path, monkeypatch, gate_mod
+    ) -> None:
+        """Severity-aware tier-B (2026-04-30 fix): a blocking-tier gate must
+        NOT fail when its violations are all severity=warn (e.g., the
+        deferred-stage notices CanonicalPipelineWiringGate produces). Status
+        should be 'warn' and exit code 0.
+        """
+        monkeypatch.setattr(gate_mod, "LOG_FILE", tmp_path / "viol.jsonl")
+        monkeypatch.setattr(gate_mod, "LOG_DIR", tmp_path)
+        warn_v = gate_mod.Violation(
+            gate_id="TEST_GATE", tier="B", subject="C0::deferred_stage",
+            rule="stage_status_not_active", detail="deferred", severity="warn",
+        )
+        GateCls = self._make_gate_class(gate_mod, tier="B", violations=[warn_v])
+        result = GateCls().execute()
+        assert result.status == "warn"
+        assert len(result.violations) == 1
+        assert gate_mod.cli_exit(result) == 0
+
+    def test_blocking_tier_mixed_severity_fails_when_any_fail(
+        self, fake_snapshot, tmp_path, monkeypatch, gate_mod
+    ) -> None:
+        """A single severity=fail in a mixed batch must still fail tier B."""
+        monkeypatch.setattr(gate_mod, "LOG_FILE", tmp_path / "viol.jsonl")
+        monkeypatch.setattr(gate_mod, "LOG_DIR", tmp_path)
+        warn_v = gate_mod.Violation(
+            gate_id="TEST_GATE", tier="B", subject="ok", rule="r", detail="d", severity="warn",
+        )
+        fail_v = gate_mod.Violation(
+            gate_id="TEST_GATE", tier="B", subject="bad", rule="r", detail="d", severity="fail",
+        )
+        GateCls = self._make_gate_class(gate_mod, tier="B", violations=[warn_v, fail_v])
+        result = GateCls().execute()
+        assert result.status == "fail"
+        assert gate_mod.cli_exit(result) == 1
+
+
+class TestSkipStubSnapshot:
+    """Verify latest_snapshot() skips stub/sentinel SQLite files lacking
+    a `nodes` base table (2026-04-30 fix). Without this, the gate picks up
+    `adg_indexed_99999999_9999.sqlite` (or any partial/sentinel snapshot)
+    by mtime/name and crashes downstream with `no such table: nodes`.
+    """
+
+    def _make_real_snapshot(self, path: Path) -> None:
+        conn = sqlite3.connect(path)
+        conn.execute("CREATE TABLE nodes (id INTEGER, name TEXT)")
+        conn.execute("INSERT INTO nodes VALUES (1, 'real')")
+        conn.commit()
+        conn.close()
+
+    def _make_stub_snapshot(self, path: Path) -> None:
+        # Empty SQLite file (no `nodes` table) — same shape as the
+        # sentinel adg_indexed_99999999_9999.sqlite that lives in
+        # artifacts/adg/ and trips every wiring gate that picks by mtime.
+        conn = sqlite3.connect(path)
+        conn.execute("CREATE TABLE other_table (id INTEGER)")
+        conn.commit()
+        conn.close()
+
+    def test_skips_stub_when_real_snapshot_exists(
+        self, tmp_path, monkeypatch, gate_mod
+    ) -> None:
+        monkeypatch.delenv("ADG_SNAPSHOT", raising=False)
+        monkeypatch.setattr(gate_mod, "ADG_DIR", tmp_path)
+        # Real, modified earlier:
+        real = tmp_path / "adg_indexed_04302026_0604.sqlite"
+        self._make_real_snapshot(real)
+        # Stub, modified LATER (would be picked by mtime sort):
+        import os, time
+        time.sleep(0.05)
+        stub = tmp_path / "adg_indexed_99999999_9999.sqlite"
+        self._make_stub_snapshot(stub)
+        # Stub mtime > real mtime — confirm:
+        assert os.path.getmtime(stub) > os.path.getmtime(real)
+        # latest_snapshot() must still return the real one because the
+        # stub lacks a `nodes` table.
+        chosen = gate_mod.latest_snapshot()
+        assert chosen.resolve() == real.resolve()
+
+    def test_picks_stub_when_no_real_snapshot_exists(
+        self, tmp_path, monkeypatch, gate_mod
+    ) -> None:
+        """Fallback: if EVERY snapshot is a stub, return the newest one so
+        callers get a deterministic file with a useful schema error rather
+        than a silent FileNotFoundError."""
+        monkeypatch.delenv("ADG_SNAPSHOT", raising=False)
+        monkeypatch.setattr(gate_mod, "ADG_DIR", tmp_path)
+        stub_old = tmp_path / "adg_indexed_01012026_0000.sqlite"
+        self._make_stub_snapshot(stub_old)
+        import time
+        time.sleep(0.05)
+        stub_new = tmp_path / "adg_indexed_02022026_0000.sqlite"
+        self._make_stub_snapshot(stub_new)
+        chosen = gate_mod.latest_snapshot()
+        # Either stub is acceptable here; the contract is "a file is
+        # returned" not "the newest is returned" — we deliberately don't
+        # crash. But by impl detail, latest_snapshot returns the
+        # newest-by-mtime when all are stubs.
+        assert chosen.resolve() == stub_new.resolve()
+
+    def test_has_nodes_table_returns_false_for_corrupt_file(
+        self, tmp_path, gate_mod
+    ) -> None:
+        """A non-SQLite file (e.g., empty or random bytes) must not
+        crash _has_nodes_table; it must return False."""
+        bad = tmp_path / "not_a_sqlite_file.sqlite"
+        bad.write_bytes(b"\x00\x01\x02 not a sqlite header")
+        assert gate_mod._has_nodes_table(bad) is False
+
+    def test_has_nodes_table_returns_true_for_real_snapshot(
+        self, tmp_path, gate_mod
+    ) -> None:
+        snap = tmp_path / "real.sqlite"
+        self._make_real_snapshot(snap)
+        assert gate_mod._has_nodes_table(snap) is True
+
 
 class TestRatchetBaseline:
     def test_baseline_count_returns_zero_when_file_missing(self, tmp_path, monkeypatch, gate_mod) -> None:
