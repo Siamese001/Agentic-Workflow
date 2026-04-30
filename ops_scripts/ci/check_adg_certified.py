@@ -125,10 +125,36 @@ SUB_GATES: Final[tuple[tuple[str, str, bool, bool], ...]] = (
 
 
 def _latest_snapshot() -> Path | None:
+    """Resolve the latest valid ADG snapshot.
+
+    Delegates to the canonical ``tools.adg.shared_modules.path_resolver.latest_sqlite``
+    which validates ``%m%d%Y_%H%M`` timestamps and picks by mtime. This rejects
+    the legacy sentinel ``adg_indexed_99999999_9999.sqlite`` (month 99 is
+    invalid) — without this delegation, the previous naive
+    ``sorted(glob())[-1]`` would shadow the real snapshot with any sentinel
+    that test code or archiver cleanup left behind.
+
+    Regression precedent (2026-04-30): a sentinel was shadowing the real
+    snapshot and this gate falsely reported ``ADG_NOT_CERTIFIED`` via a
+    "triplet completeness" blocker, despite the real snapshot having all
+    762,238 edges properly triplet-attested.
+    """
     if not ARTIFACT_DIR.exists():
         return None
-    snaps = sorted(ARTIFACT_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    try:
+        from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+    except ImportError:
+        files = list(ARTIFACT_DIR.glob("adg_indexed_*.sqlite"))
+        from datetime import datetime as _dt  # noqa: PLC0415
+        def _valid(p: Path) -> bool:
+            try:
+                _dt.strptime(p.stem.replace("adg_indexed_", ""), "%m%d%Y_%H%M")
+                return True
+            except ValueError:
+                return False
+        valid = [p for p in files if _valid(p)]
+        return max(valid, key=lambda p: p.stat().st_mtime) if valid else None
+    return latest_sqlite()
 
 
 def _check_triplet_completeness(snapshot: Path) -> dict[str, object]:

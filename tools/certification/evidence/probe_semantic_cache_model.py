@@ -191,6 +191,63 @@ def _read_bge_m3_operational_evidence() -> dict:
                 "dimension_actual": None, "fallback_used": None}
 
 
+def _compute_certification_scope(
+    live_verified: bool, embedding_enabled: bool, op: dict
+) -> dict:
+    """W1p4: compute local / CI / production scope for the model.
+
+    Determination rules (user 2026-04-30 W1p4 §7):
+      - local_model_operational: bool — True only when operational probe
+        confirmed live load + correct dim with fallback_used=false.
+      - ci_model_operational: True | False | "UNKNOWN" —
+          True: operational probe ran in CI with same evidence
+                (CI=true or GITHUB_ACTIONS=true in env)
+          False: explicit CI signal present AND operational probe failed
+          "UNKNOWN": probe did not run in a detectable CI environment
+      - final_model_certification_scope:
+          PRODUCTION_READY — local AND CI both True
+          CI_READY         — CI True (production may still need review)
+          LOCAL_ONLY       — local True only; CI not proven
+          INSUFFICIENT     — local False
+    """
+    is_ci = (
+        os.environ.get("CI", "").lower() == "true"
+        or os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+    )
+    local_ok = bool(live_verified)
+
+    if is_ci:
+        ci_ok: bool | str = bool(
+            op.get("present")
+            and op.get("status") == "OPERATIONAL"
+            and op.get("fallback_used") is False
+        )
+    else:
+        ci_ok = "UNKNOWN"
+
+    if not local_ok:
+        scope = "INSUFFICIENT"
+    elif ci_ok is True:
+        scope = "PRODUCTION_READY"
+    elif ci_ok == "UNKNOWN":
+        scope = "LOCAL_ONLY"
+    else:  # ci_ok is False
+        scope = "LOCAL_ONLY"
+
+    return {
+        "local_model_operational": local_ok,
+        "ci_model_operational": ci_ok,
+        "final_model_certification_scope": scope,
+        "ci_signal_detected": is_ci,
+        "embedding_enabled_at_probe_time": embedding_enabled,
+        "note": (
+            "Final acceptance cannot flip to ACCEPTED while "
+            "final_model_certification_scope == LOCAL_ONLY. See user W1p4 "
+            "§7. Composer surfaces this scope in the subclaim notes."
+        ),
+    }
+
+
 def main() -> int:
     resolved = _resolve_active_model()
     client_probe = _probe_bgem3_client_importable()
@@ -232,10 +289,17 @@ def main() -> int:
         (EXPECTED_DIMENSION if match_status == "MATCH" else None)
     )
 
+    # W1p4 certification scope (local / CI / production)
+    embedding_enabled = bool(resolved.get("env_EMBEDDING_ENABLED"))
+    certification_scope = _compute_certification_scope(
+        live_verified, embedding_enabled, op
+    )
+
     payload = {
         "probe": "semantic_cache_model_proof",
         "blocker": "a",
         "subclaim_target": "R1B_APPROVED_MODEL_PROOF",
+        "certification_scope": certification_scope,
         "expected": {
             "model_id": EXPECTED_MODEL_ID,
             "provider": EXPECTED_MODEL_PROVIDER,

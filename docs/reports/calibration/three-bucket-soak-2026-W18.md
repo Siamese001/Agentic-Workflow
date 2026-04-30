@@ -24,11 +24,31 @@ All 6 strict-by-default gates were run against the current snapshot on 2026-04-3
 | `check_three_bucket_gap_thresholds` | `THREE_BUCKET_GAP_STRICT=1` | per-class thresholds | 0 violations across 7 classes | ✅ |
 | Health-score floor (P5.2) | floor = 0.0 (reporting-only for W18) | any ≥ 0 passes | observed 0.0% | ✅ (floor inactive) |
 | `check_consumer_mode_declared` | `CONSUMER_MODE_GATE_STRICT=1` | 0 missing | 144/144 declared, 0 missing | ✅ |
-| `check_runtime_proof_view_well_formed` | `RUNTIME_PROOF_VIEW_STRICT=1` | 0 violations | SKIP (v_runtime_proof table absent — pre-W1-schema) | ⚠️ schema pending |
+| `check_runtime_proof_view_well_formed` | `RUNTIME_PROOF_VIEW_STRICT=1` | 0 violations | 9,333 rows, 0 violations (after sentinel-shadow fix — see §"Mid-week amendment" below) | ✅ |
 | `check_otel_genai_semconv_coverage` | `GENAI_SEMCONV_STRICT=1` | coverage ≥ 80% | 10/10 aligned = 100.0% | ✅ |
 | `check_apps_spine_delegation` | `APPS_SPINE_DELEGATION_GATE_MODE=strict` | 0 violations (allowlist active) | 9 packages, 0 violations, 1 allowlist entry active | ✅ |
 
-**Interpretation**: 5 of 6 gates IN-BAND. The runtime proof view gate is ⚠️ because the underlying `v_runtime_proof` SQLite table is not yet materialized (tracked in W1 / W2 of three-bucket-otel-view plan). The gate correctly emits a no-op SKIP rather than a false pass, so it is NOT counted as OUT-OF-BAND — the soak contract treats pre-schema SKIP as "not yet active" rather than "failing".
+**Interpretation**: **6 of 6 gates IN-BAND** after mid-week amendment below.
+
+### Mid-week amendment (2026-04-30, evening)
+
+Originally this row was ⚠️ schema-pending. Investigation revealed the real
+snapshot `adg_indexed_04302026_1319.sqlite` (556 MB, 762,238 edges, 0 triplet
+NULLs) already had `v_runtime_proof` populated with 9,333 rows — the gate
+was being shadowed by a legacy sentinel `adg_indexed_99999999_9999.sqlite`
+(24 KB stub) that `sorted(glob())[-1]` picked lexicographically. Root cause
+fix: both `check_adg_certified.py` and `check_schema_graduation_readiness.py`
+were updated to delegate snapshot resolution to the canonical
+`tools.adg.shared_modules.path_resolver.latest_sqlite` which validates
+`%m%d%Y_%H%M` timestamps and rejects the sentinel. Regression tests added at
+`tests/unit/ops_scripts/ci/test_adg_gates_sentinel_resilient.py` (7/7 pass).
+
+Downstream effects of the fix:
+- `check_adg_certified` verdict: **ADG_NOT_CERTIFIED → ADG_CERTIFIED**
+  (0 blockers, all 8 sub-gates green)
+- `check_schema_graduation_readiness`: 4 columns reported "not present" →
+  `status=ready, blockers=0`
+- Soak counter: W18 is genuinely 6/6 IN-BAND, no caveats.
 
 ## 3. Per-Class Gap Snapshot
 

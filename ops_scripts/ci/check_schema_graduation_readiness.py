@@ -36,8 +36,37 @@ GATE_REPORT_PATH: Final[Path] = (
 
 
 def _latest_snapshot() -> Path | None:
-    snaps = sorted(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Resolve the latest valid ADG snapshot.
+
+    Delegates to the canonical ``tools.adg.shared_modules.path_resolver.latest_sqlite``
+    which validates ``%m%d%Y_%H%M`` timestamps and picks by mtime. This rejects
+    the legacy sentinel ``adg_indexed_99999999_9999.sqlite`` (month 99 is
+    invalid) — without this delegation, the previous naive
+    ``sorted(glob())[-1]`` would shadow the real snapshot with any sentinel
+    that test code or archiver cleanup left behind.
+
+    Regression precedent (2026-04-30): a sentinel at
+    ``artifacts/adg/adg_indexed_99999999_9999.sqlite`` was shadowing the
+    real snapshot and this gate reported 4 columns "not present" against the
+    empty 24KB stub. Fix is to use the canonical resolver everywhere.
+    """
+    try:
+        from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+    except ImportError:
+        # Fallback only when the shared module is genuinely unimportable
+        # (e.g. tests that don't have tools/ on sys.path). Filter sentinels
+        # manually in that case.
+        files = list(ARTIFACTS_DIR.glob("adg_indexed_*.sqlite"))
+        from datetime import datetime as _dt  # noqa: PLC0415
+        def _valid(p: Path) -> bool:
+            try:
+                _dt.strptime(p.stem.replace("adg_indexed_", ""), "%m%d%Y_%H%M")
+                return True
+            except ValueError:
+                return False
+        valid = [p for p in files if _valid(p)]
+        return max(valid, key=lambda p: p.stat().st_mtime) if valid else None
+    return latest_sqlite()
 
 
 def main(argv: list[str] | None = None) -> int:

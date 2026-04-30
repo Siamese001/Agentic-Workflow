@@ -58,7 +58,23 @@ REQUIRED_EVIDENCE = {
 OPTIONAL_EVIDENCE = {
     "bge_m3_operational": ARTIFACTS_DIR / "bge_m3_operational_proof.json",
     "calibration_results": ARTIFACTS_DIR / "semantic_cache_calibration_results.json",
+    # W1p4 — optional; when present AND approved AND applied AND threshold
+    # matches AND sweep shows FP=0 at configured threshold, composer upgrades
+    # R1B_PRODUCTION_THRESHOLD_PROOF to PASS.
+    "threshold_adr": ARTIFACTS_DIR / "semantic_cache_threshold_adr.json",
+    "threshold_sweep": ARTIFACTS_DIR / "threshold_sweep_results.json",
 }
+
+# W1p4 — the live-configured threshold at composition time. Reading here
+# (not at map-time) keeps composer deterministic and side-effect-free.
+def _read_configured_threshold() -> float | None:
+    try:
+        from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+            tier_similarity_threshold,
+        )
+        return tier_similarity_threshold("dynamic")
+    except ImportError:
+        return None
 
 
 def _now_utc() -> str:
@@ -90,32 +106,152 @@ def _load_all_evidence() -> tuple[dict[str, dict], list[str]]:
 
 
 def _map_model_proof(model_ev: dict) -> tuple[str, str]:
-    """model_match_status -> R1B_APPROVED_MODEL_PROOF verdict."""
+    """model_match_status -> R1B_APPROVED_MODEL_PROOF verdict.
+
+    W1p4: when certification_scope is present, surface
+    final_model_certification_scope in the notes so verifier's caveat
+    includes it. Per user §7, final acceptance cannot flip to ACCEPTED
+    while scope=LOCAL_ONLY; the scope field is advisory here (subclaim
+    verdict itself remains PASS locally, reflecting that the model
+    actually works).
+    """
     status = model_ev.get("model_match_status", "UNRESOLVED")
     rationale = model_ev.get("rationale", "")
+    scope = model_ev.get("certification_scope") or {}
+    scope_suffix = ""
+    if scope:
+        scope_val = scope.get("final_model_certification_scope", "")
+        scope_suffix = (
+            f" | certification_scope={scope_val} "
+            f"(local={scope.get('local_model_operational')}, "
+            f"ci={scope.get('ci_model_operational')})"
+        )
     if status == "MATCH":
-        return "PASS", f"model MATCH: {rationale}"
+        return "PASS", f"model MATCH: {rationale}{scope_suffix}"
     if status == "MISMATCH_EXPLAINED":
-        return "PARTIAL", f"model MISMATCH_EXPLAINED: {rationale}"
+        return "PARTIAL", f"model MISMATCH_EXPLAINED: {rationale}{scope_suffix}"
     if status == "INFRASTRUCTURE_GAP":
-        return "INFRASTRUCTURE_GAP", f"model INFRASTRUCTURE_GAP: {rationale}"
+        return "INFRASTRUCTURE_GAP", f"model INFRASTRUCTURE_GAP: {rationale}{scope_suffix}"
     # UNRESOLVED or unknown
-    return "BLOCKED", f"model status={status}: {rationale}"
+    return "BLOCKED", f"model status={status}: {rationale}{scope_suffix}"
 
 
-def _map_threshold_proof(threshold_ev: dict) -> tuple[str, str]:
-    """threshold_subclaim_status -> R1B_PRODUCTION_THRESHOLD_PROOF verdict."""
+def _map_threshold_proof_with_adr_gate(
+    threshold_ev: dict,
+    adr_ev: dict | None,
+    sweep_ev: dict | None,
+    configured_threshold: float | None,
+) -> tuple[str, str]:
+    """W1p4: ADR gate for R1B_PRODUCTION_THRESHOLD_PROOF.
+
+    Mapping (in priority order):
+      1. override active w/o ADR           -> BLOCKED
+      2. infrastructure_gap                -> INFRASTRUCTURE_GAP
+      3. ADR absent OR status=PENDING      -> CALIBRATION_GAP (legacy W1p3)
+      4. ADR APPROVED, not APPLIED         -> PARTIAL (approved, pending deploy)
+      5. ADR APPROVED+APPLIED, threshold
+         mismatch (configured != approved) -> PARTIAL (DRIFT_DETECTED in notes)
+      6. ADR APPROVED+APPLIED, threshold
+         matches, sweep FP>0 at configured -> PARTIAL (DRIFT_DETECTED in notes)
+      7. ADR APPROVED+APPLIED, threshold
+         matches, sweep FP=0                -> PASS
+      8. threshold_ev status=PASS from W1p3 calibration AND no ADR required
+         (legacy path, user Rule 1 still gates) -> CALIBRATION_GAP
+    """
     status = threshold_ev.get("threshold_subclaim_status", "UNRESOLVED")
     rationale = threshold_ev.get("rationale", "")
-    if status == "PASS":
-        return "PASS", f"threshold PASS: {rationale}"
-    if status == "CALIBRATION_GAP":
-        return "CALIBRATION_GAP", f"threshold CALIBRATION_GAP: {rationale}"
+
+    # Early exits — hard blockers from base threshold probe
     if status == "OVERRIDE_PRESENT":
         return "BLOCKED", f"threshold OVERRIDE_PRESENT (no ADR): {rationale}"
     if status == "INFRASTRUCTURE_GAP":
         return "INFRASTRUCTURE_GAP", f"threshold INFRASTRUCTURE_GAP: {rationale}"
-    return "BLOCKED", f"threshold status={status}: {rationale}"
+
+    # W1p4 ADR gate
+    if adr_ev is None:
+        # No ADR on disk — legacy W1p3 path
+        if status == "CALIBRATION_GAP":
+            return "CALIBRATION_GAP", f"no ADR on disk; {rationale}"
+        if status == "PASS":
+            # Calibration says PASS but no ADR. Per Rule 1, calibration-at-SSOT
+            # PASS is the only sanctioned PASS path and requires FP=0 at the
+            # SSOT threshold (which the calibration probe already validates).
+            return "PASS", f"threshold PASS (calibration-at-SSOT, no ADR required): {rationale}"
+        return "CALIBRATION_GAP", f"no ADR on disk; base status={status}: {rationale}"
+
+    # ADR exists — enforce gate
+    approval = adr_ev.get("owner_approval", {}).get("status")
+    impl_status = adr_ev.get("implementation_status")
+    applied = adr_ev.get("config_binding", {}).get("applied", False)
+    approved_t = adr_ev.get("recommended_threshold")
+    adr_id = adr_ev.get("adr_id", "SEMCACHE-THRESH-???")
+
+    if approval != "APPROVED":
+        return "CALIBRATION_GAP", (
+            f"{adr_id} present but owner_approval.status={approval!r} "
+            f"(not APPROVED). Per Rule 7 (ADR gate): threshold stays at "
+            f"CALIBRATION_GAP until an owner approves. recommended={approved_t}, "
+            f"configured={configured_threshold}."
+        )
+
+    if impl_status != "APPLIED" or applied is not True:
+        return "PARTIAL", (
+            f"{adr_id} APPROVED but implementation_status={impl_status!r}, "
+            f"applied={applied}. Approved threshold {approved_t} has not "
+            f"been deployed to SSOT yet; see config_binding.apply_procedure."
+        )
+
+    # Threshold-match check
+    if approved_t is None or configured_threshold is None or approved_t != configured_threshold:
+        return "PARTIAL", (
+            f"DRIFT_DETECTED: {adr_id} APPROVED+APPLIED but configured "
+            f"threshold {configured_threshold} does not match approved "
+            f"{approved_t}. Re-sync config or re-run sweep + regenerate ADR."
+        )
+
+    # Sweep FP=0 at configured threshold check
+    if sweep_ev is None:
+        return "PARTIAL", (
+            f"DRIFT_DETECTED: {adr_id} APPROVED+APPLIED but sweep evidence "
+            f"missing. Regenerate via probe_threshold_sweep.py to confirm "
+            f"FP=0 at threshold {configured_threshold}."
+        )
+
+    sweep_rows = sweep_ev.get("metrics_table", [])
+    configured_row = next(
+        (m for m in sweep_rows if m.get("threshold") == configured_threshold),
+        None,
+    )
+    if configured_row is None:
+        return "PARTIAL", (
+            f"DRIFT_DETECTED: {adr_id} APPROVED+APPLIED but sweep has no "
+            f"row for configured threshold {configured_threshold}. "
+            f"Regenerate sweep with {configured_threshold} in candidate list."
+        )
+    if configured_row.get("fp", 1) != 0 or configured_row.get("unsafe_fp_count", 1) != 0:
+        return "PARTIAL", (
+            f"DRIFT_DETECTED: {adr_id} APPROVED+APPLIED at threshold "
+            f"{configured_threshold}, but sweep reports "
+            f"fp={configured_row.get('fp')}, "
+            f"unsafe_fp={configured_row.get('unsafe_fp_count')}. "
+            f"Safety invariant violated — threshold cannot PASS."
+        )
+
+    return "PASS", (
+        f"{adr_id} APPROVED + APPLIED + configured={configured_threshold} "
+        f"matches approved={approved_t}; sweep confirms FP=0 and "
+        f"unsafe_fp=0 at this threshold. All Rule 7 (ADR gate) conditions met."
+    )
+
+
+def _map_threshold_proof(threshold_ev: dict) -> tuple[str, str]:
+    """Legacy mapper preserved for backward compat when ADR evidence absent.
+
+    (Kept as a named function so existing tests can import it directly.)
+    """
+    return _map_threshold_proof_with_adr_gate(
+        threshold_ev, adr_ev=None, sweep_ev=None, configured_threshold=None
+    )
 
 
 def _map_negatives_proof(neg_ev: dict) -> tuple[str, str]:
@@ -198,7 +334,16 @@ def _compose_terminal_exit_subclaim(
 def _compose(evidence: dict[str, dict]) -> dict:
     """Compose the sidecar payload from loaded evidence."""
     m = _map_model_proof(evidence["model"])
-    t = _map_threshold_proof(evidence["threshold"])
+    # W1p4: wire ADR gate for threshold subclaim when ADR + sweep present
+    adr_ev = evidence.get("threshold_adr")
+    sweep_ev = evidence.get("threshold_sweep")
+    configured_threshold = _read_configured_threshold()
+    t = _map_threshold_proof_with_adr_gate(
+        evidence["threshold"],
+        adr_ev=adr_ev,
+        sweep_ev=sweep_ev,
+        configured_threshold=configured_threshold,
+    )
     n = _map_negatives_proof(evidence["negatives"])
     te = _map_terminal_exit_proof(evidence["terminal_exit"])
     pftr = _map_schema_and_fixture(evidence["schema"], evidence["fixture_vs_uwg"])

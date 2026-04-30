@@ -1,0 +1,43 @@
+fix(adg): resolve P6.1 triplet-completeness blocker -- sentinel-shadow root cause (plan adg-three-bucket-unified-c4f8e2 P6.1 hardening)
+
+Root cause: a 24KB sentinel at artifacts/adg/adg_indexed_99999999_9999.sqlite
+was shadowing the real 556MB snapshot via sorted(glob())[-1] in the naive
+_latest_snapshot() of two gates. The real snapshot
+adg_indexed_04302026_1319.sqlite has ALL 762,238 edges triplet-attested
+with 0 NULLs and v_runtime_proof populated with 9,333 rows.
+
+Fix:
+- ops_scripts/ci/check_adg_certified.py: delegate _latest_snapshot() to
+  canonical tools.adg.shared_modules.path_resolver.latest_sqlite() which
+  validates %m%d%Y_%H%M timestamps (rejects 99999999_9999) and picks by
+  mtime. Plus ImportError-fallback branch for isolated test contexts.
+- ops_scripts/ci/check_schema_graduation_readiness.py: same fix.
+- Deleted the sentinel from the working tree (tests that need it
+  instantiate in tmp_path fixtures; they skip cleanly when absent).
+
+Regression tests (new):
+- tests/unit/ops_scripts/ci/test_adg_gates_sentinel_resilient.py (7/7)
+  covering: primary resolver path skips sentinel, ImportError fallback
+  path skips sentinel, only-sentinel-present returns None, mtime tiebreak
+  overrides lexicographic filename order. Applied to both gates.
+
+Downstream verdict changes (measured live this session):
+- check_adg_certified:
+    ADG_NOT_CERTIFIED, blockers=1 (triplet completeness)
+  -> ADG_CERTIFIED, blockers=0, all 8 sub-gates green
+- check_schema_graduation_readiness:
+    4 columns reported "not present"
+  -> status=ready, already=0, needs=4, blockers=0
+- check_runtime_proof_view_well_formed:
+    SKIP (pre-W1-schema)
+  -> rows=9333, violations=0, strict=True, exit=0
+
+Soak report updated: docs/reports/calibration/three-bucket-soak-2026-W18.md
+W18 revised from 5/6 IN-BAND (1 schema-pending) to genuine 6/6 IN-BAND
+with mid-week-amendment note documenting the investigation.
+
+Plan row P6.1 updated with root-cause narrative + fix evidence.
+
+This closes the HIGHEST-priority deferred scope from this chat: the P6.1
+blocker that was tagged as "schema-materialization dependent, not
+session-resolvable" was actually a snapshot-resolution bug, fully resolved.
