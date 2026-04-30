@@ -199,15 +199,30 @@ def main() -> int:
             for line in test_time_dirty:
                 print(f"  {line}", file=sys.stderr)
             return 3
+        # Read the ledger up-front so we know which rows are already-bound
+        # (final_acceptance_status=ACCEPTED) and only require binding-precondition
+        # validation on the rows that are NOT yet bound.
+        with LEDGER.open("r", encoding="utf-8", newline="") as _fh:
+            _ledger_index = {row["req_id"]: row for row in csv.DictReader(_fh)}
+        already_bound = {
+            req for req in PILOT_REQ_IDS
+            if (_ledger_index.get(req, {}).get("final_acceptance_status") or "").strip() == "ACCEPTED"
+            and (_ledger_index.get(req, {}).get("evidence_status") or "").strip() == "PROOF_PRESENT"
+        }
+        to_bind = [req for req in PILOT_REQ_IDS if req not in already_bound]
         all_errors: list[str] = []
-        for req_id in PILOT_REQ_IDS:
+        for req_id in to_bind:
             all_errors.extend(_validate_bundle_for_binding(req_id, git_head))
         if all_errors:
             print("FATAL: cannot bind — bundle precondition failures:", file=sys.stderr)
             for e in all_errors:
                 print(f"  {e}", file=sys.stderr)
             return 4
-        print(f"[update_pilot_ledger] precheck OK: test-time scope clean + 5 bundles binding-ready at HEAD {git_head[:12]}")
+        print(
+            f"[update_pilot_ledger] precheck OK: test-time scope clean + "
+            f"{len(to_bind)} bundles binding-ready + {len(already_bound)} already-bound preserved "
+            f"at HEAD {git_head[:12]}"
+        )
 
     with LEDGER.open("r", encoding="utf-8", newline="") as fh:
         reader = csv.DictReader(fh)
@@ -215,8 +230,24 @@ def main() -> int:
         rows = list(reader)
 
     n_updated = 0
+    n_preserved_bound = 0
     for r in rows:
         if r["req_id"] not in PILOT_REQ_IDS:
+            continue
+
+        # Skip rows that are already bound (avoids overwriting their
+        # last_passed_commit with the current HEAD when they were originally
+        # bound at an earlier HEAD).
+        if (
+            args.mode == "bound"
+            and (r.get("final_acceptance_status") or "").strip() == "ACCEPTED"
+            and (r.get("evidence_status") or "").strip() == "PROOF_PRESENT"
+        ):
+            n_preserved_bound += 1
+            print(
+                f"  {r['req_id']:<15} preserved (already bound to "
+                f"{(r.get('last_passed_commit') or '')[:12]})"
+            )
             continue
 
         test_file = r.get("test_file_expected", "")

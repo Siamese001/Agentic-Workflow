@@ -237,7 +237,21 @@ def emit_bundle(
 
 
 def main() -> int:
+    import argparse as _ap
+    parser = _ap.ArgumentParser(description="Emit proof bundles for the 10C pipeline.")
+    parser.add_argument(
+        "--regenerate-all",
+        action="store_true",
+        help=("Force re-emission of every bundle even if it is already "
+              "EVIDENCE_PRESENT. Use when bundle schema changes and existing "
+              "bindings need to be re-anchored to the current HEAD."),
+    )
+    args = parser.parse_args()
+    regenerate_all = args.regenerate_all
+
     print(f"[emit_proof_bundles] reading ledger from {LEDGER}")
+    if regenerate_all:
+        print("[emit_proof_bundles] --regenerate-all: every bundle will be re-emitted")
     ledger = _load_ledger()
     git_head = _git_head()
     scoped_dirty_lines = _scoped_dirty_paths()
@@ -261,17 +275,42 @@ def main() -> int:
             except (OSError, json.JSONDecodeError):
                 preserved[req_id] = {}
 
+    n_emitted = 0
+    n_preserved = 0
     for req_id in PILOT_REQ_IDS:
         if req_id not in ledger:
             print(f"  FATAL: {req_id} not in ledger", flush=True)
             return 2
+        existing = preserved.get(req_id) or {}
+        # Preserve already-bound bundles. A bundle is "already-bound" when:
+        #   - it exists with proof_status=EVIDENCE_PRESENT,
+        #   - its git_head_at_test_time is non-empty,
+        #   - and `--regenerate-all` was not passed.
+        # This prevents the chicken-and-egg where re-emitting a bound bundle
+        # at a new HEAD changes its content and invalidates the binding.
+        if (
+            not regenerate_all
+            and existing.get("proof_status") == "EVIDENCE_PRESENT"
+            and (existing.get("git_head_at_test_time") or "").strip()
+        ):
+            n_preserved += 1
+            print(
+                f"  preserve {(BUNDLES_DIR / f'{req_id.lower()}.json').relative_to(REPO_ROOT)}  "
+                f"status=EVIDENCE_PRESENT (already bound to "
+                f"{existing.get('git_head_at_test_time', '')[:8]})"
+            )
+            continue
         path = emit_bundle(
             req_id, ledger[req_id], git_head, scoped_dirty,
-            preserve_selected_at=preserved.get(req_id),
+            preserve_selected_at=existing,
         )
         bundle = json.loads(path.read_text(encoding="utf-8"))
+        n_emitted += 1
         print(f"  wrote {path.relative_to(REPO_ROOT)}  status={bundle['proof_status']}")
-    print(f"[emit_proof_bundles] {len(PILOT_REQ_IDS)} bundles emitted -> {BUNDLES_DIR.relative_to(REPO_ROOT)}")
+    print(
+        f"[emit_proof_bundles] {n_emitted} bundles emitted, "
+        f"{n_preserved} preserved -> {BUNDLES_DIR.relative_to(REPO_ROOT)}"
+    )
 
     # W4d-5 tamper check: re-read each bundle, recompute hash, assert match
     print("[emit_proof_bundles] tamper check:")
@@ -292,7 +331,7 @@ def main() -> int:
     if tamper_errors:
         print(f"FATAL  {len(tamper_errors)} tamper-check failure(s)")
         return 3
-    print("[emit_proof_bundles] tamper check OK for all 5 bundles")
+    print(f"[emit_proof_bundles] tamper check OK for all {len(PILOT_REQ_IDS)} bundles")
     return 0
 
 
