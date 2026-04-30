@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-105",
+  "selected_at_utc": "2026-04-30T15:31:10.218605+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:31:10.218605+00:00",
+  "canonical_owner_surface": "06_L6_Shadow_Evaluation_System_Learning",
+  "runtime_artifact_ref": "L6EvalRecord",
+  "otel_span_ref": "l6.learning.proposal_emitted",
+  "replay_digest": "4e29b89a323150ba1d246835344f31726f2993934ffb0d2ad3300fb1d4546b62",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L6_observability/test_10c_req_105.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L6_observability/test_10c_req_105.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l6_shadow_eval_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_dirty_at_test_time": false,
+  "content_hash": "8c68ca7f35838b4d52f52ca164ed12ce54aecb2f1d0395651c3f6e9fa155933c"
+}

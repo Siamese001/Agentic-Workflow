@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-063",
+  "selected_at_utc": "2026-04-30T15:31:10.197711+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:31:10.197711+00:00",
+  "canonical_owner_surface": "02_L1_Reasoning_Plan",
+  "runtime_artifact_ref": "L1PlanContract",
+  "otel_span_ref": "l1.plan.contract_emitted",
+  "replay_digest": "2b1293aabf8750f9e0918d73bdcff310ed71851b2036e373478c05604c6c2fcd",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L1_cognition/test_10c_req_063.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L1_cognition/test_10c_req_063.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l1_plan_contract_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_dirty_at_test_time": false,
+  "content_hash": "2b2dfff463cd3aa1faa25a85da798a26637491452fc838b020044c63beec7838"
+}

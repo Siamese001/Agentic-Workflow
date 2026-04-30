@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-197",
+  "selected_at_utc": "2026-04-30T15:31:10.211021+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:31:10.211021+00:00",
+  "canonical_owner_surface": "04_L2_Execute",
+  "runtime_artifact_ref": "ExecutionResult",
+  "otel_span_ref": "l2.execution.sealed",
+  "replay_digest": "79bee9006521075eb5dfa3e43f03c561dba09fc483970a29678bc43c94720afb",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L2_execution/test_10c_req_197.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L2_execution/test_10c_req_197.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l2_execution_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_dirty_at_test_time": false,
+  "content_hash": "1c2463066159999e4796e91fa78ec82d7add3c2f25c9ecda970d92fe1ccd9e28"
+}

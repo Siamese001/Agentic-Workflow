@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-080",
+  "selected_at_utc": "2026-04-30T15:31:10.203897+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:31:10.203897+00:00",
+  "canonical_owner_surface": "03_L0_Route_Decision",
+  "runtime_artifact_ref": "RouteContract",
+  "otel_span_ref": "l0.route.contract_emitted",
+  "replay_digest": "018cd31c5657977d0a4aa8bc744aea2c4e41df14dc05d9c2b3b9932b7eeedced",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L0_routing/test_10c_req_080.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L0_routing/test_10c_req_080.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l0_route_contract_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_dirty_at_test_time": false,
+  "content_hash": "d92775b92219703678625049ba5ea21323d5c871ea78601a8cc7424b9be1502b"
+}
