@@ -75,6 +75,11 @@ _CARDS: list[tuple[str, str, bool]] = [
 
 TEMPLATE_SET_VERSION = "v2"
 
+# ChatGPT 5.5-Thinking Project file upload cap. When the optimized paste
+# manifest exceeds this, the manifest sets `paste_exceeds_chatgpt_limit=True`
+# and the builder logs a warning recommending tighter likely_questions scope.
+_CHATGPT_PROJECT_FILE_CAP = 25
+
 
 class BuilderError(Exception):
     """Raised when the builder cannot satisfy its contract."""
@@ -396,11 +401,21 @@ class CardPackBuilder:
         renders: list[CardRender],
         output_dir: Path,
     ) -> CardPackManifest:
-        primary_filenames = {r.primary_card for r in self._registry.routes}
         emitted = {r.filename for r in renders}
         routes_covered = [
             r.id for r in self._registry.routes if r.primary_card in emitted
         ]
+        rendered_filenames = [r.filename for r in renders]
+        pasted = self._compute_pasted_cards(rendered_filenames, interview)
+        exceeds = len(pasted) > _CHATGPT_PROJECT_FILE_CAP
+        if exceeds:
+            _log.warning(
+                "Paste manifest has %d cards, exceeding ChatGPT %d-file cap. "
+                "Consider declaring interview.research.likely_questions to trim "
+                "unused skill cards.",
+                len(pasted),
+                _CHATGPT_PROJECT_FILE_CAP,
+            )
         return CardPackManifest(
             interview_slug=interview.slug,
             built_at=interview.build_metadata.built_at
@@ -408,7 +423,72 @@ class CardPackBuilder:
             else datetime.now(timezone.utc),
             builder_version=_BUILDER_VERSION,
             template_set_version=TEMPLATE_SET_VERSION,
-            cards=[r.filename for r in renders],
+            cards=rendered_filenames,
             routes_covered=routes_covered,
             interviewers=[i.name for i in interview.interviewers],
+            pasted_cards=pasted,
+            paste_exceeds_chatgpt_limit=exceeds,
         )
+
+    def _compute_pasted_cards(
+        self,
+        rendered_filenames: list[str],
+        interview: Interview,
+    ) -> list[str]:
+        """Multi-tier paste optimization (Anthropic Skills/Rules guideline).
+
+        Tiers:
+            - always_on    -> always paste
+            - primary      -> paste only if its route is in likely_questions
+            - specialist   -> paste only if its route is in likely_questions
+            - post_rehearsal -> never paste (archive on disk only)
+
+        Falls back to the full skill set when likely_questions is empty —
+        the conservative default that preserves prior behavior.
+        """
+        # Build filename -> load_strategy from _CARD_SPECS, treating panel-mode
+        # lens cards (03A_..., 03B_...) as inheriting card 03's strategy.
+        load_strategy_by_file: dict[str, str] = {}
+        for spec in _CARD_SPECS:
+            filename, _, _, _, _, _, load_strategy = spec
+            load_strategy_by_file[filename] = load_strategy
+
+        def strategy_for(filename: str) -> str:
+            if filename in load_strategy_by_file:
+                return load_strategy_by_file[filename]
+            # Panel-mode lens: 03A_INTERVIEWER_LENS_NAME.md -> "03_INTERVIEWER_LENS.md"
+            if filename.startswith("03") and "_LENS" in filename:
+                return load_strategy_by_file.get("03_INTERVIEWER_LENS.md", "always_on")
+            return "always_on"  # safe default — never accidentally drop unknowns
+
+        # Determine relevant routes for this interview.
+        likely = (
+            list(interview.research.likely_questions)
+            if interview.research and interview.research.likely_questions
+            else []
+        )
+        if likely:
+            relevant_route_ids = {lq.route_id for lq in likely}
+        else:
+            # Conservative default — keep all skills.
+            relevant_route_ids = {r.id for r in self._registry.routes}
+
+        # Compute the set of skill cards reachable from the relevant routes.
+        relevant_skill_cards: set[str] = set()
+        for route in self._registry.routes:
+            if route.id in relevant_route_ids:
+                relevant_skill_cards.add(route.primary_card)
+                relevant_skill_cards.update(route.optional_specialists)
+
+        pasted: list[str] = []
+        for filename in rendered_filenames:
+            strategy = strategy_for(filename)
+            if strategy == "post_rehearsal":
+                continue  # archive on disk only — never in paste set
+            if strategy == "always_on":
+                pasted.append(filename)
+                continue
+            # primary / specialist: gated by route relevance
+            if filename in relevant_skill_cards:
+                pasted.append(filename)
+        return pasted

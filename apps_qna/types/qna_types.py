@@ -225,3 +225,11 @@ class CardPackManifest(BaseModel):
     cards: list[str]  # ordered list of emitted card filenames
     routes_covered: list[str]  # route IDs whose primary card is in the pack
     interviewers: list[str]  # names; for multi-interviewer audit
+    # Wave 7 — multi-tier paste optimization (Anthropic Skills/Rules guideline).
+    # Subset of `cards` to actually paste into the ChatGPT Project. Excludes:
+    #   - load_strategy=post_rehearsal cards (e.g., card 22 Learnings)
+    #   - skill cards whose route is not in interview.research.likely_questions
+    # Falls back to the full skill set when likely_questions is empty.
+    pasted_cards: list[str] = Field(default_factory=list)
+    # True when len(pasted_cards) > 25 (ChatGPT 5.5-Thinking project file cap).
+    paste_exceeds_chatgpt_limit: bool = False
