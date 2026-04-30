@@ -61,6 +61,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run_route(args)
     if args.subcommand == "init":
         return _run_init(args)
+    if args.subcommand == "feedback":
+        return _run_feedback(args)
     return _run_build(args)
 
 
@@ -159,6 +161,22 @@ def _build_parser() -> argparse.ArgumentParser:
     init_parser.add_argument(
         "--build", action="store_true",
         help="Run the full build immediately after writing the YAML",
+    )
+
+    feedback_parser = sub.add_parser(
+        "feedback",
+        help="Record post-rehearsal outcomes into the W4.1 bandit (Wave 5.1)",
+    )
+    feedback_parser.add_argument(
+        "--slug",
+        required=True,
+        help="Interview slug (e.g. searce-applied-ai)",
+    )
+    feedback_parser.add_argument(
+        "--outcomes",
+        type=Path,
+        required=True,
+        help="Path to a JSON file containing the operator's rehearsal outcomes",
     )
 
     self_eval_parser = sub.add_parser(
@@ -638,6 +656,49 @@ def _run_init(args: argparse.Namespace) -> int:
         _log.info("Running build immediately…")
         return _run_build(build_args)
     return 0
+
+
+def _run_feedback(args: argparse.Namespace) -> int:
+    """Record post-rehearsal outcomes into the W4.1 bandit + ledger.
+
+    Loads ``args.outcomes`` JSON, instantiates an
+    :class:`AppsQnaRouteBandit`, replays accumulated outcomes from the
+    apps_qna_pack_lifecycle ledger to restore posterior state, persists
+    the new outcomes (ledger row + bandit update), and prints a
+    one-line summary.
+    """
+    from apps_qna.config.route_registry import load_route_registry
+    from apps_qna.integrations.learning_adapter import (
+        load_session_from_json,
+        record_rehearsal_outcomes,
+        replay_outcomes_into_bandit,
+    )
+    from apps_qna.router.route_bandit import AppsQnaRouteBandit
+
+    try:
+        session = load_session_from_json(args.slug, args.outcomes)
+    except (FileNotFoundError, ValueError) as exc:
+        _log.error("Failed to load outcomes file: %s", exc)
+        return 2
+
+    registry = load_route_registry()
+    bandit = AppsQnaRouteBandit(registry)
+
+    replayed = replay_outcomes_into_bandit(bandit, namespace=session.namespace)
+    persisted = record_rehearsal_outcomes(session, bandit=bandit)
+
+    total_obs = bandit.total_observations(session.namespace)
+    _log.info(
+        "feedback recorded — slug=%s namespace=%s replayed=%d persisted=%d "
+        "total_observations=%d (cold-start %s)",
+        session.slug,
+        session.namespace,
+        replayed,
+        persisted,
+        total_obs,
+        "cleared" if total_obs >= 5 else "active",
+    )
+    return 0 if persisted > 0 else 1
 
 
 def _run_route(args: argparse.Namespace) -> int:
