@@ -1,12 +1,57 @@
-# Contract-to-Span Binding Matrix — Runtime Certification Design (Draft v1)
+# Contract-to-Span Binding Matrix — Runtime Certification Design (v2, Phase-B.1 reconciled)
 
-**Status**: DESIGN DRAFT — requirements only. No implementation. No
+**Status**: DESIGN v2 — requirements only. No implementation. No
 runtime behavior change. No app is certified by this document.
-**Generated**: 2026-04-30
+Reconciled against the Phase A trace inventory.
+**Generated**: 2026-04-30 (v1); **reconciled**: 2026-04-30 (v2, Phase B.1)
 **Parent doctrine**: `docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md`
 **Predecessor**: `docs/reports/apps_static_scorecard_post_w14.md`
 (closed-cohort static evidence)
 **SSOT for route-shape taxonomy**: `tools/analysis/apps_spine_coverage.py`
+**Trace inventory input**: `docs/reports/runtime_certification/phase_a_trace_inventory.md`
+
+---
+
+## 0. Delta from v1 (Phase B.1 reconciliation summary)
+
+This v2 revision is **documentation-only**. No span was renamed,
+no emitter was modified, no Python was written, no CI gate was added,
+no app's certification status changed.
+
+What v2 changes vs v1:
+
+- **§4 R3 matrix** — adds 5 columns capturing the Phase A finding for
+  each of the 8 R3 contracts: **Phase A status**, **existing emitter
+  / Tier-1 category**, **normalized cert alias**, **attribute
+  hardening needed**, **live trace required?**. The v1 "Proposed span
+  name" column is renamed to **Normalized cert alias** and demoted
+  from "what the emitter must emit" to "what the cert harness
+  internally binds to".
+- **§5 build_time_compiler** — reflects Phase A's
+  `UNKNOWN_NEEDS_RUNTIME_RUN` status for apps_qna's `build.pack_artifact`
+  emission, keeps the forbidden-R3-assertion guardrail.
+- **§6.3 CC-SHARED-05** — updates status to `NOT_FOUND` (per Phase A)
+  and enumerates the three acceptable evidence mechanisms.
+- **§7 Span naming** — inverts the v1 framing. v1 said: "emitters
+  must emit `app.<app_name>.<layer>.<contract_surface>`". v2 says:
+  "the cert harness binds to existing emitter categories and OTel
+  GenAI semconv spans; canonical names are **normalized cert aliases**
+  internal to the harness, not required span names at the emitter."
+- **§11 Phase B** split into **B.1 … B.6** matching the Phase A
+  recommendation.
+- **§12 Q1** marked **resolved by Phase A**.
+- **Provenance** — bumped to v2, references Phase A report.
+
+What v2 deliberately does NOT change:
+
+- **§8 required trace attributes** — unchanged. The attribute contract
+  is orthogonal to span naming and remains the hard cert requirement.
+- **§9 fail-closed gate logic** — unchanged (still fail-closed on
+  missing spans, missing attributes, and the R3-vs-R3R4 discriminator).
+- **§10 negative controls** — unchanged conceptually; the specific
+  "missing L1 span" text is retained because the gate works on
+  normalized cert aliases, not emitter names.
+- **§13 final statement** — unchanged; no app is certified.
 
 ---
 
@@ -32,8 +77,11 @@ claimed to be runtime certified.
   prerequisites in the post-W14 scorecard are met AND (b) the
   fail-closed gate defined in §9 passes for the app.
 - **No runtime behavior is changed.** This document does not add,
-  remove, or rename any OTel span. §7 proposes names; §12 acknowledges
-  that current emitters may differ.
+  remove, or rename any OTel span. §7 v2 explicitly binds the cert
+  harness to **existing** emitter categories (Tier-1 signal matching,
+  GenAI semconv, L2 canonical registry, etc.). Proposed canonical
+  names are **normalized cert aliases**, internal to the harness; they
+  are NOT required span names at the emitter.
 
 ---
 
@@ -80,18 +128,37 @@ Each R3 app must emit the following **eight required spans** per
 governed request. Absence of any required span is a certification
 failure (§9).
 
-### 4.1 Span contract table
+### 4.1 Span contract table (v2 — Phase A reconciled)
 
-| # | Contract | Proposed span name | Required attributes | Required contract ID | Parent expectation | Failure condition |
-|:---:|---|---|---|---|---|---|
-| 1 | `ValidatedRequest` | `app.<app_name>.intake.validated_request` | `app_name`, `route_shape=R3_grounded_read`, `run_id`, `contract_name=ValidatedRequest`, `contract_id`, `manifest_hash` | `request_id` (uuid4) | Root of the run; no parent | Span missing, `contract_name` mismatched, or `contract_id` empty |
-| 2 | `L1PlanContract` | `app.<app_name>.l1.plan_contract` | standard + `contract_name=L1PlanContract`, `contract_id=plan_id`, `parent_contract_id=<request_id>`, `sub_query_count` | `plan_id` | Parent: span #1 | Missing, or `parent_contract_id` ≠ request_id |
-| 3 | `RouteContract` | `app.<app_name>.l0.route_contract` | standard + `contract_name=RouteContract`, `contract_id=route_id`, `parent_contract_id=<plan_id>`, `route_target`, `l0_confidence` | `route_id` | Parent: span #2 | Missing, or route_target not in manifest's declared routing targets |
-| 4 | `RetrievalPlan` | `app.<app_name>.c0.retrieval_plan` | standard + `contract_name=RetrievalPlan`, `contract_id=retrieval_plan_id`, `parent_contract_id=<route_id>`, `collection`, `k` | `retrieval_plan_id` | Parent: span #3 | Missing, or `k ≤ 0` |
-| 5 | `FinalEvidenceContract` | `app.<app_name>.c0.final_evidence_contract` | standard + `contract_name=FinalEvidenceContract`, `contract_id=evidence_id`, `parent_contract_id=<retrieval_plan_id>`, `evidence_hash`, `citation_count`, `support_coverage` | `evidence_id` | Parent: span #4 | Missing, or `evidence_hash` empty |
-| 6 | `CompiledPromptArtifact` **or** `PromptEnvelope` | `app.<app_name>.pa.compiled_prompt_artifact` | standard + `contract_name ∈ {CompiledPromptArtifact, PromptEnvelope}`, `contract_id=prompt_artifact_id`, `parent_contract_id=<evidence_id>`, `abstain_recommended` | `prompt_artifact_id` | Parent: span #5 | Missing; both names forbidden — must match manifest's declared equivalent |
-| 7 | `SealedArtifact` | `app.<app_name>.l2.sealed_artifact` | standard + `contract_name=SealedArtifact`, `contract_id=sealed_artifact_id`, `parent_contract_id=<prompt_artifact_id>`, `artifact_hash`, `grounded` (bool), `gate_disposition` | `sealed_artifact_id` | Parent: span #6 | Missing, or `artifact_hash` empty, or `grounded=False` with `gate_disposition=allow` |
-| 8 | `ExitReviewPacket` | `app.<app_name>.exit.review_packet` | standard + `contract_name=ExitReviewPacket`, `contract_id=exit_packet_id`, `parent_contract_id=<sealed_artifact_id>`, `exit_disposition`, `l6_ingested` (bool) | `exit_packet_id` | Parent: span #7 | Missing; or emitted **without** span #7 (see §10 negative control) |
+Legend for Phase A status column:
+`EXISTS_MATCHES_MATRIX` (EM),
+`EXISTS_NEEDS_ATTRIBUTE_HARDENING` (EAH),
+`EXISTS_NAME_MISMATCH` (ENM — but cert harness binds via signal, so
+no emitter change required),
+`UNKNOWN_NEEDS_RUNTIME_RUN` (UNR),
+`NOT_FOUND` (NF).
+
+| # | Contract | **Phase A status** | **Existing emitter / Tier-1 category** | **Normalized cert alias** *(harness-internal; not an emitter rename)* | **Attribute hardening needed** | **Live trace required?** | Required attributes | Parent expectation | Failure condition |
+|:---:|---|:---:|---|---|---|:---:|---|---|---|
+| 1 | `ValidatedRequest` | **ENM** | `agentic_core/L5_safety/enforcement/ingress_telemetry_otel.py` (ingress span) | `app.<app_name>.intake.validated_request` | Add `contract_name`, `contract_id`, `manifest_hash`, `app_name`, `route_shape`, `run_id` attributes. | No (emitter confirmed by Phase A) | standard set + `contract_id` (request_id) | Root; no parent | Span missing from matching category, `contract_name` mismatched, or `contract_id` empty |
+| 2 | `L1PlanContract` | **EAH** | `agentic_core/L1_cognition/planning/otel.py` + `L1_cognition/c0_context/observability.py` | `app.<app_name>.l1.plan_contract` | Add `contract_name=L1PlanContract`, `contract_id=plan_id`, `parent_contract_id`, `sub_query_count`. | No | standard + `plan_id` | Parent: span #1 | Missing, or `parent_contract_id` ≠ request_id |
+| 3 | `RouteContract` | **EM** (via Tier-1 signal) | Tier-1 `L0.route.select` category in `system_learning/runtime_adg/span_contracts.py` — matches `heal_router.v1.route`, `router.`, `route.select`, `l0.route`, `route.contract`, `.v1.route` via multi-signal scoring (name + kind + layer + attrs). Emitter: `agentic_core/L6_observability/heal_router_otel.py` et al. | `app.<app_name>.l0.route_contract` | Add `contract_name=RouteContract`, `contract_id=route_id`, `parent_contract_id`. (Attributes `selected_route`, `routing.target_model`, `routing.confidence_score`, `routing.tier`, `cache_decision` already present.) | No | standard + `route_id` + `route_target` + `l0_confidence` (present as `routing.*`) | Parent: span #2 | Missing, or route_target not in manifest's declared routing targets |
+| 4 | `RetrievalPlan` | **EAH** | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/otel.py` (partial coverage) | `app.<app_name>.c0.retrieval_plan` | Add `contract_name=RetrievalPlan`, `contract_id=retrieval_plan_id`, `collection`, `k`. Attribute audit across all 5 R3 apps needed — attributes may not be emitted uniformly. | Partial (attribute audit benefits from live trace) | standard + `retrieval_plan_id` + `collection` + `k` | Parent: span #3 | Missing, or `k ≤ 0` |
+| 5 | `FinalEvidenceContract` | **UNR** | Likely in C0 retrieval layer; no cleanly-labeled span in Phase A inventory | `app.<app_name>.c0.final_evidence_contract` | Unknown until live trace. If emitter exists: add `contract_name`, `contract_id`, `evidence_hash`, `citation_count`, `support_coverage`. If not: extend an existing C0 span with these attrs (NO new emitter). | **Yes** (blocking — Phase C needs a live trace to resolve) | standard + `evidence_id` + `evidence_hash` | Parent: span #4 | Missing, or `evidence_hash` empty |
+| 6 | `CompiledPromptArtifact` **or** `PromptEnvelope` | **EAH** | `agentic_core/L2_execution/observability/l2_otel_emitter.py` canonical L2 registry + `agentic_core/L6_observability/semconv/gen_ai.py` (OTel GenAI semconv `invoke_agent` / `execute_tool`) | `app.<app_name>.pa.compiled_prompt_artifact` | Standardize `contract_name ∈ {CompiledPromptArtifact, PromptEnvelope}`, `contract_id=prompt_artifact_id`, `abstain_recommended`. The equivalence group resolution uses `CONTRACT_EQUIVALENT_GROUPS` already defined in the scanner — no new concept. | No | standard + `prompt_artifact_id` | Parent: span #5 | Missing; contract_name not in equivalence group |
+| 7 | `SealedArtifact` | **EM** (via Tier-1 signal) | Tier-1 `L2.step.seal` category in `system_learning/runtime_adg/span_contracts.py` — matches `l2.step.seal`, `step.seal`, `execution.seal`, `.seal` via multi-signal scoring. Emitter: the canonical L2 registry + L2 resolution spans. | `app.<app_name>.l2.sealed_artifact` | Add `contract_name=SealedArtifact`, `contract_id=sealed_artifact_id`, `artifact_hash`, `grounded`, `gate_disposition`. | No | standard + `sealed_artifact_id` + `artifact_hash` + `grounded` + `gate_disposition` | Parent: span #6 | Missing, or `artifact_hash` empty, or `grounded=False` with `gate_disposition=allow` |
+| 8 | `ExitReviewPacket` | **EM** | `agentic_core/L3_orchestration/exit_eval/otel_sdk_sink.py` + `v6/otel.py` + `v6/return_payload.py` + Tier-1 `Exit.disposition` category | `app.<app_name>.exit.review_packet` | Add `contract_name=ExitReviewPacket`, `contract_id=exit_packet_id`, `exit_disposition`, `l6_ingested`. | No | standard + `exit_packet_id` + `exit_disposition` | Parent: span #7 | Missing; or emitted **without** span #7 (§10 negative control) |
+
+**How to read this table**: the cert harness does NOT require the
+"Normalized cert alias" as an emitted span name. It binds the
+harness-internal alias to the "Existing emitter / Tier-1 category"
+via signal matching (the same multi-signal approach already used by
+`system_learning/runtime_adg/span_contracts.py`). The attribute
+contract in §8 is enforced on whichever emitter matched.
+
+**Phase A summary**: 5 of 8 contracts are `EM` or `EM (via signal)`.
+2 of 8 are `EAH`. 1 of 8 (`FinalEvidenceContract`) is `UNR` and blocks
+on Phase C evidence. **Zero contracts require new emitter creation.**
 
 ### 4.2 Example evidence record shape
 
@@ -143,6 +210,16 @@ because `rg_docs` degraded gracefully) is **not qualifying** — the
 contract surface requires the full chain even when the retrieval
 collection is empty.
 
+> **v2 clarification**: The `name` fields in this JSON are the
+> **normalized cert aliases** (harness-internal), not the literal
+> emitted span names. The cert collector translates from emitted name
+> to normalized alias via the binding rules in §4.1 column 4.
+> Actually-emitted names today for apps_rfp are captured in Phase A
+> report §3 and include `heal_router.v1.route` (for
+> `l0.route_contract`), signal-matched `l2.step.seal` variants, and
+> `agentic_core/L3_orchestration/exit_eval/v6/otel.py`-produced exit
+> spans.
+
 ---
 
 ## 5. `build_time_compiler` matrix (apps_qna)
@@ -153,13 +230,17 @@ and emits a ledger event. It does **NOT** run the L1 → L0 → C0 → PA →
 L2 → Exit chain — making it share the R3 matrix would be contract
 theater.
 
-### 5.1 Required spans
+### 5.1 Required spans (v2 — Phase A reconciled)
 
-| # | Role | Proposed span name | Required attributes | Required contract ID |
-|:---:|---|---|---|---|
-| 1 | Intake envelope | `app.apps_qna.intake.validated_request` | `app_name=apps_qna`, `route_shape=build_time_compiler`, `run_id`, `contract_name=ValidatedRequest`, `contract_id=request_id`, `manifest_hash` | `request_id` |
-| 2 | Build-artifact identity | `app.apps_qna.build.pack_artifact` | standard + `build_artifact_id`, `source_pack_id`, `output_pack_hash`, `parent_contract_id=<request_id>` | `build_artifact_id` |
-| 3 | Ledger emission (governance signal) | `app.apps_qna.ledger.emit` | standard + `ledger_name=apps_qna_build`, `ledger_event_id`, `parent_contract_id=<build_artifact_id>` | `ledger_event_id` |
+| # | Role | **Phase A status** | **Existing emitter** | **Normalized cert alias** | **Attribute hardening needed** | Required attributes | Required contract ID |
+|:---:|---|:---:|---|---|---|---|---|
+| 1 | Intake envelope | **ENM** (same emitter as R3 intake) | `agentic_core/L5_safety/enforcement/ingress_telemetry_otel.py` (shared ingress telemetry) | `app.apps_qna.intake.validated_request` | Add `app_name=apps_qna`, `route_shape=build_time_compiler`, `contract_name=ValidatedRequest`, `contract_id`, `manifest_hash`. | standard set + `contract_id=request_id` | `request_id` |
+| 2 | Build-artifact identity | **UNR** (apps_qna-specific; not confirmed in Phase A) | TBD — requires apps_qna-specific inspection OR live trace | `app.apps_qna.build.pack_artifact` | Unknown until Phase A.1 apps_qna walk. Required payload: `build_artifact_id`, `source_pack_id`, `output_pack_hash`, `parent_contract_id`. | standard + `build_artifact_id`, `source_pack_id`, `output_pack_hash` | `build_artifact_id` |
+| 3 | Ledger emission (governance signal) | **TELEMETRY_MARKER_ONLY → likely promotable** | Constitutional §29 requires all routers emit `ROUTER_DECISION:` ledger events; apps_qna router-side ledger events exist. Promotion to a real OTel span is additive. | `app.apps_qna.ledger.emit` | Add `ledger_name=apps_qna_build`, `ledger_event_id`, `parent_contract_id`, terminal-event enum. | standard + `ledger_name` + `ledger_event_id` + terminal-event enum | `ledger_event_id` |
+
+**v2 note**: apps_qna was **not exhaustively audited** in Phase A.
+The `build.pack_artifact` emitter existence is an open Phase B
+item — see §12 Q11.
 
 ### 5.2 Forbidden claims
 
@@ -225,7 +306,7 @@ specific behavior of CC-SHARED-05.
 | **CC-SHARED-02** | apps_shared provides `APP_REGISTRY`. Not runtime-observable per-span; verified at cert-harness startup by reading the registry. |
 | **CC-SHARED-03** | `SealedArtifact` import in apps_shared is proof-harness only. Negative check: **no production trace contains a `contract_name=SealedArtifact` span originated by `apps_shared/proof/`**. This is a code-path assertion, not a span presence/absence check — requires file-origin attribution in trace metadata. |
 | **CC-SHARED-04** | Quarterly platform review. Governance; out of scope for FORMAL_EXCEPTION_VERIFIED. |
-| **CC-SHARED-05** | **Handled as a negative-evidence check**. The certification run MUST prove one of: (a) the run was executed in full-stack mode AND `agentic_core_shim.install()` was observed to early-return (captured either via a boot-time telemetry event or by asserting the absence of any of the 12 shimmed `sys.modules` entries at the end of the run), OR (b) the run explicitly excludes standalone mode by environment-variable assertion (`AGENTIC_CORE_STACK=full`), OR (c) standalone mode is empirically ruled out by the three-evidence audit (packaging / CI / deployment) already specified in the post-W14 scorecard. Certification MUST be denied if the cert harness cannot distinguish full-stack from standalone. |
+| **CC-SHARED-05** | **Phase A status: `NOT_FOUND` — no trace-level evidence exists today that the shim early-returned vs installed 12 fallbacks.** Handled as a negative-evidence check with three acceptable mechanisms, any one of which satisfies the gate: **(a)** an additive boot-time telemetry event in `apps_shared/_compat/agentic_core_shim.py::install()` — a single `logging.info()` line recording which branch executed (`shim.early_return_full_stack` vs `shim.installed_12_fallbacks`); **(b)** an environment-variable assertion at cert-harness startup (`AGENTIC_CORE_STACK=full`) *plus* a post-run `sys.modules` inspection confirming absence of the 12 shimmed entries — redundant evidence for a safety-critical control; **(c)** the three-evidence packaging / CI / deployment audit already specified in the post-W14 scorecard addendum proving standalone mode is unsupported and unused in this deployment. Certification MUST be denied if the cert harness cannot distinguish full-stack from standalone. **Phase B.4** (see §11) is the design task that decides which mechanism ships. |
 
 **Core principle**: FORMAL_EXCEPTION_VERIFIED for apps_shared certifies
 the *absence* of risk-bearing execution in the shimmed branch, not
@@ -234,43 +315,58 @@ harness from the R3 apps' positive contract-chain verification.
 
 ---
 
-## 7. Span naming convention
+## 7. Span binding convention (v2 — existing emitters are primary)
 
-All proposed span names follow the deterministic pattern:
+Phase A resolved the v1 open question "do current emitters match the
+proposed naming pattern?" with a clear **no** — and also with a clear
+**this is fine**, because the repo already uses multi-signal
+category-based binding in
+`system_learning/runtime_adg/span_contracts.py`. v2 therefore
+reframes §7 around that reality.
 
-```
-app.<app_name>.<layer>.<contract_surface>
-```
+### 7.1 Primary concept: cert harness binds to existing categories
 
-Where:
-- `<app_name>` is the `apps_*` directory name verbatim
-- `<layer>` is one of: `intake`, `l1`, `l0`, `c0`, `pa`, `l2`, `exit`, `build`, `ledger`, `governance`
-- `<contract_surface>` is the snake_case canonical name of the contract, or a role name for non-contract spans
+The cert harness does NOT require emitters to emit a particular
+span name. It binds via the following precedence:
 
-Examples (all proposed, none asserted to exist today):
+| Priority | Source of truth | Example |
+|:---:|---|---|
+| **1** | Tier-1 signal category (`system_learning/runtime_adg/span_contracts.py`) — multi-signal match on name + kind + layer + attributes. | `L0.route.select` matches `heal_router.v1.route` and `route.select` |
+| **2** | OTel GenAI semconv (`agentic_core/L6_observability/semconv/gen_ai.py`) — `invoke_agent <name>`, `execute_tool <name>` with registered attributes. | L2 model / tool invocation spans |
+| **3** | Canonical L2 registry (`agentic_core/L2_execution/observability/l2_otel_emitter.py`) — strict span-name + required-attribute validation. | L2 emitters already raise `L2SpanAttributeViolation` on drift |
+| **4** | Existing named emitters (ingress, L1 plan, C0 retrieval, exit_eval v6, UWG). | `ingress_telemetry_otel`, `planning/otel.py`, `v6/otel.py` |
 
-| Proposed name | Example app |
-|---|---|
-| `app.apps_rfp.intake.validated_request` | apps_rfp |
-| `app.apps_rg.l1.plan_contract` | apps_rg |
-| `app.apps_lic.l0.route_contract` | apps_lic |
-| `app.apps_exec.c0.retrieval_plan` | apps_exec |
-| `app.apps_research.c0.final_evidence_contract` | apps_research |
-| `app.apps_rfp.pa.compiled_prompt_artifact` | apps_rfp |
-| `app.apps_lic.l2.sealed_artifact` | apps_lic |
-| `app.apps_exec.exit.review_packet` | apps_exec |
-| `app.apps_qna.build.pack_artifact` | apps_qna |
-| `app.apps_qna.ledger.emit` | apps_qna |
-| `app.apps_underwriting_ai.governance.regulated_decision` | apps_underwriting_ai |
+### 7.2 Binding table — per contract (v2)
 
-> ⚠️ **PROPOSED — existing OTel span names may differ.** This document
-> does **NOT** rename any existing emitter. The §11 implementation plan
-> requires a **trace inventory** phase (Phase A) that audits the actual
-> emitted span names across the cohort and reconciles them with this
-> proposal. If the current names differ, two routes exist:
-> (a) amend this matrix to match the emitted names (doc change only);
-> (b) schedule a controlled rename program. Neither happens in this
-> document.
+| Contract | Existing Tier-1 signal / emitter | Accepted span-name patterns (observed or signal-matched) | Required attributes (added by cert harness) | Normalized cert alias *(harness-internal)* |
+|---|---|---|---|---|
+| `ValidatedRequest` | `ingress_telemetry_otel.py` ingress span | `ingress.*`, `intake.*`, `*.stamp_trace` | `contract_name`, `contract_id=request_id`, `app_name`, `route_shape`, `run_id`, `manifest_hash` | `app.<app_name>.intake.validated_request` |
+| `L1PlanContract` | `L1_cognition/planning/otel.py` + `c0_context/observability.py` | `l1.plan.*`, `planning.*`, `c0_context.*` | + `contract_name=L1PlanContract`, `contract_id=plan_id`, `parent_contract_id`, `sub_query_count` | `app.<app_name>.l1.plan_contract` |
+| `RouteContract` | Tier-1 `L0.route.select` (multi-signal) | `heal_router.v1.route`, `router.*`, `route.select`, `l0.route`, `route.contract`, `*.v1.route` — any match on 2+ of 4 signals | + `contract_name=RouteContract`, `contract_id=route_id`, `parent_contract_id`, `route_target`, `l0_confidence` (OR existing `routing.confidence_score`) | `app.<app_name>.l0.route_contract` |
+| `RetrievalPlan` | `L0_routing/c0_retrieval/c0_3_enhanced/otel.py` | `c0.retrieval.*`, `c0_3.*`, `retrieval.plan` | + `contract_name=RetrievalPlan`, `contract_id=retrieval_plan_id`, `collection`, `k` | `app.<app_name>.c0.retrieval_plan` |
+| `FinalEvidenceContract` | **Unresolved — requires live trace (Phase C)** | TBD | + `contract_name=FinalEvidenceContract`, `contract_id=evidence_id`, `evidence_hash`, `citation_count`, `support_coverage` | `app.<app_name>.c0.final_evidence_contract` |
+| `CompiledPromptArtifact` / `PromptEnvelope` | GenAI semconv `invoke_agent <name>` + L2 canonical registry | `invoke_agent *`, `prompt.compile.*`, `l2.prompt.*` | + `contract_name ∈ {CompiledPromptArtifact, PromptEnvelope}`, `contract_id=prompt_artifact_id`, `abstain_recommended` | `app.<app_name>.pa.compiled_prompt_artifact` |
+| `SealedArtifact` | Tier-1 `L2.step.seal` (multi-signal) | `l2.step.seal`, `step.seal`, `execution.seal`, `*.seal` | + `contract_name=SealedArtifact`, `contract_id=sealed_artifact_id`, `artifact_hash`, `grounded`, `gate_disposition` | `app.<app_name>.l2.sealed_artifact` |
+| `ExitReviewPacket` | `L3_orchestration/exit_eval/otel_sdk_sink.py` + `v6/otel.py` + `v6/return_payload.py` + Tier-1 `Exit.disposition` | `exit.*`, `exit_eval.*`, `disposition.*` | + `contract_name=ExitReviewPacket`, `contract_id=exit_packet_id`, `exit_disposition`, `l6_ingested` | `app.<app_name>.exit.review_packet` |
+| `build.pack_artifact` (apps_qna) | **Unresolved — requires apps_qna walk or live trace** | TBD | + `build_artifact_id`, `source_pack_id`, `output_pack_hash`, `parent_contract_id` | `app.apps_qna.build.pack_artifact` |
+
+### 7.3 Implementation implications
+
+- **The cert harness MUST bind via existing emitter categories first.**
+  Renaming existing spans is not required and will not be scheduled
+  from this document.
+- **Normalized cert aliases are harness-internal.** They appear in
+  cert reports (`docs/reports/runtime_cert/<app>/<YYYY-Www>.md`) and
+  in the evidence record shape (§4.2 `name` field), but they are NOT
+  required as the literal span name at the emitter.
+- **Attributes are real.** Attribute hardening on existing emitters
+  IS required for certification. Phase B.2 defines the per-app-route
+  attribute contract; Phase B.2 is the first phase where any code
+  (a pydantic schema) is written.
+- **If a future controlled-rename program ever renames emitters** to
+  match the normalized cert aliases, that is a separate operation
+  covered by its own plan + Author-Gate decision. Nothing about v2
+  blocks or requires such a program.
 
 ---
 
@@ -393,26 +489,34 @@ cert harness without requiring a live app invocation.
 
 ---
 
-## 11. Implementation plan (design only — no code in this document)
+## 11. Implementation plan (v2 — Phase B split per Phase A recommendation)
 
-Six future phases. Each phase is a distinct change-set requiring its
-own Author-Gate approval, plan file (`.windsurf/plans/<slug>-<6hex>.md`),
-and wave structure. **No code is written in the present document.**
+**Phase A is COMPLETE**: see
+`docs/reports/runtime_certification/phase_a_trace_inventory.md`.
 
-| Phase | Name | Output | Blocked by |
-|:---:|---|---|---|
-| **A** | Trace inventory | Audit of actual OTel span names / attributes emitted today by each app. Reconcile with §7 proposed naming. Decide: doc change vs controlled rename. | — |
-| **B** | Binding schema | Formal schema for the evidence record shape (§4.2) as a pydantic or dataclass. Place under `tools/runtime_cert/schema.py` or `agentic_core/runtime/cert/`. | Phase A |
-| **C** | Trace collector / runtime ADG ingest | Pipeline that consumes OTel spans (via `otel_mcp` or direct OTel collector) into the runtime-ADG store. Produces per-app trace records in the schema from Phase B. | Phase B |
-| **D** | Certification report generator | Offline tool that runs the fail-closed gate (§9) against a sample of traces and produces a per-app certification report (`docs/reports/runtime_cert/<app>/<YYYY-Www>.md`). | Phase C |
-| **E** | Fail-closed CI gate | `ops_scripts/ci/check_runtime_certification.py` that runs Phase D on the last-N-days of traces for any app claiming `TRACE_OBSERVED` or higher, and blocks regression. | Phase D |
-| **F** | Promotion process to RUNTIME_CERTIFIED | Scanner extension recognizing a new `runtime_mode` bucket (`RUNTIME_CERTIFIED`, `FORMAL_EXCEPTION_VERIFIED`) and a promotion workflow that updates the scorecard + Notion ADR + memory. | Phase E |
+**Phase B is NOW SPLIT** into 6 sub-phases (B.1…B.6). Each sub-phase
+is a distinct change-set requiring its own Author-Gate approval, plan
+file (`.windsurf/plans/<slug>-<6hex>.md`), and wave structure.
+**No code is written in the present document.**
 
-Constitutional note: phases D, E, and F introduce new intelligence
-ledgers per §29 — every cert-report emission and every gate decision
-must emit a `CERT_DECISION:` event bound to a per-app ledger. That
-ledger family is out of scope here (design doc for the binding matrix
-only).
+| Phase | Name | Status | Output | Blocked by |
+|:---:|---|:---:|---|---|
+| **A** | Trace inventory | ✅ **DONE** (2026-04-30) | `docs/reports/runtime_certification/phase_a_trace_inventory.md` | — |
+| **B.1** | **Doc reconciliation** | ✅ **DONE** (this v2) | This v2 revision of the binding matrix — §0 delta + §4/§5/§6.3/§7/§11/§12 updates | Phase A |
+| **B.2** | Tier-2 per-app-route contract schema | Pending | Pydantic schema file at `system_learning/runtime_adg/app_route_span_contracts.py` mirroring the existing `_CategoryContract` shape at `system_learning/runtime_adg/span_contracts.py:44-58`. One entry per R3 contract per app, with `required_attributes` from §8. ~150 lines + ~60 lines tests. | Phase B.1 |
+| **B.3** | `manifest_hash` convention | Pending | Small helper module deciding SHA-256 of raw bytes vs YAML-canonicalized. Default: raw bytes (see §12 Q6). Lives next to B.2 schema. ~40 lines + ~20 lines tests. | Phase B.2 |
+| **B.4** | CC-SHARED-05 evidence mechanism | Pending | One additive `logging.info()` line in `apps_shared/_compat/agentic_core_shim.py::install()` recording branch taken (option **a** from §6.3). Cert-harness env-var + `sys.modules` inspection helpers (option **b**). Packaging/CI/deployment audit checklist at `docs/reference/runtime_certification/cc_shared_05_standalone_audit.md` (option **c**). Any one mechanism satisfies the gate; shipping all three maximizes robustness. ~10 lines emitter change + ~80 lines helpers + ~50 lines tests + checklist doc. | Phase B.2 |
+| **B.5** | Formal-exception negative-control query helpers | Pending | Thin wrappers over `tools/adg/runtime_query.py` implementing CC-EVAL-01, CC-EVAL-02, CC-UW-02, CC-SHARED-03 negative checks. Lives at `tools/runtime_cert/negative_controls.py` or under an existing runtime-cert namespace. ~120 lines + ~60 lines tests. | Phase B.2 |
+| **B.6** | Phase B invariants | Standing | **No scanner changes, no CI changes, no app migration during Phase B.** Cert harness design must stabilize before Phase C. | — |
+| **C** | Trace collector / runtime ADG ingest | Pending | Pipeline consuming OTel spans into runtime ADG store, producing per-app trace records in the Phase B.2 schema. Leverages the existing `agentic_core/L6_observability/otel_runtime_ingest.py` pipeline and the `agentic_core/runtime/contracts/otel_lifecycle_bridge.py` bridge — **not** a parallel store. Resolves the `FinalEvidenceContract` UNR status. | Phase B.2–B.5 |
+| **D** | Certification report generator | Pending | Offline tool running the fail-closed gate (§9) against a sample of traces; produces `docs/reports/runtime_cert/<app>/<YYYY-Www>.md`. | Phase C |
+| **E** | Fail-closed CI gate | Pending | `ops_scripts/ci/check_runtime_certification.py` (SSOT-folder-compliant name) running Phase D on the last-N-days of traces for any app claiming `TRACE_OBSERVED` or higher. Complements the existing `ops_scripts/ci/check_runtime_adg_coverage.py`. | Phase D |
+| **F** | Promotion process to `RUNTIME_CERTIFIED` | Pending | Scanner extension recognizing new `runtime_mode` buckets (`RUNTIME_CERTIFIED`, `FORMAL_EXCEPTION_VERIFIED`) and a promotion workflow updating scorecard + Notion ADR + memory. | Phase E |
+
+Constitutional note (unchanged from v1): phases D, E, and F introduce
+new intelligence ledgers per §29 — every cert-report emission and
+every gate decision must emit a `CERT_DECISION:` event bound to a
+per-app ledger. Ledger family out of scope for this design doc.
 
 ---
 
@@ -423,7 +527,7 @@ These questions MUST be resolved before Phase A produces a deliverable
 
 | # | Question | Default stance (pending evidence) |
 |:---:|---|---|
-| **Q1** | Do current emitters produce spans whose names match §7? If not, under what names? | Unknown. Default: assume not; Phase A must inventory. |
+| **Q1** | Do current emitters produce spans whose names match §7? If not, under what names? | ✅ **RESOLVED BY PHASE A**. Answer: no, the proposed `app.<app_name>.<layer>.<contract>` pattern does not match existing emitters. Instead, emitters use domain-specific names (e.g., `heal_router.v1.route`) with multi-signal Tier-1 matching. v2 §7 reframes the cert harness to bind via existing categories; emitter renaming is NOT scheduled. |
 | **Q2** | Can the runtime ADG serve as the evidence store for Phases C–E, or does it need a dedicated store? | Default: reuse runtime ADG for Phase C ingest; reconsider for Phase D report cache only if query latency is unacceptable. |
 | **Q3** | What is `N_R3` (sample-size threshold for sustained coverage for R3 apps)? | No accepted value. Suggestions: statistical minimum at 95% CI width ≤ 5% → probably ≥ 100 traces. Needs simulation; defer to Phase D design. |
 | **Q4** | What is `N_BTC` for apps_qna (`build_time_compiler`)? | Probably smaller than N_R3 because the compile surface is narrower; suggest ≥ 30. Needs Phase D design. |
@@ -432,7 +536,8 @@ These questions MUST be resolved before Phase A produces a deliverable
 | **Q7** | Do R3 apps' `CompiledPromptArtifact` vs `PromptEnvelope` equivalence (apps_rg today) need tracking in the trace, or is either name acceptable? | Default: either name acceptable; cert harness consults the app's declared equivalence group (from `CONTRACT_EQUIVALENT_GROUPS` in the scanner). |
 | **Q8** | What is the sunset condition for `STATIC_EVIDENCE` — can an app stay there forever, or must it promote within a time bound? | Default: no time bound. `STATIC_EVIDENCE` is a permanent classification until the app opts into cert work. |
 | **Q9** | If an app is `RUNTIME_CERTIFIED` and a regression causes one required span to drop out, what is the demotion path? Immediate demotion to `STATIC_EVIDENCE`, or an intermediate `CERT_DEGRADED` bucket? | Default: immediate demotion to `STATIC_EVIDENCE` with a `cert_loss_reason` attribute. Intermediate bucket adds complexity for marginal benefit. |
-| **Q10** | How is apps_shared's CC-SHARED-05 full-stack vs standalone distinction asserted at the trace level — boot-time telemetry event, env-var assertion, or both? | Default: require **both** — env-var assertion at harness startup AND the absence of the 12 shimmed `sys.modules` entries at run end. Redundant evidence for a safety-critical control. |
+| **Q10** | How is apps_shared's CC-SHARED-05 full-stack vs standalone distinction asserted at the trace level — boot-time telemetry event, env-var assertion, or both? | Default: require **both** — env-var assertion at harness startup AND the absence of the 12 shimmed `sys.modules` entries at run end. Redundant evidence for a safety-critical control. Reified as Phase B.4. |
+| **Q11** | Does apps_qna actually emit `build.pack_artifact` and `ledger.emit` spans today, or only ledger events? | **Open (net new in v2).** Phase A did not inspect apps_qna-specific files. Phase B can resolve via a 1-hour apps_qna walk OR by live-trace inspection during Phase C. Default stance: assume not until confirmed; keep the §5.2 forbidden-R3-assertion guardrail. |
 
 ---
 
@@ -458,10 +563,13 @@ These questions MUST be resolved before Phase A produces a deliverable
 
 | Item | Value |
 |---|---|
-| Doc version | v1 (DESIGN DRAFT) |
-| Generated | 2026-04-30 |
+| Doc version | **v2 (Phase-B.1 reconciliation)** |
+| v1 generated | 2026-04-30 |
+| v2 reconciled | 2026-04-30 (same day; Phase A completed between v1 and v2) |
 | Parent SSOT | `tools/analysis/apps_spine_coverage.py`, `docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md` |
+| Phase A input | `docs/reports/runtime_certification/phase_a_trace_inventory.md` |
 | Related | `docs/reports/apps_static_scorecard_post_w14.md` |
 | Drafted in response to | Post-W14 scorecard §"Runtime certification remains future work" (7 prerequisites) |
-| Implementation status | none — this document is design-only |
-| Apps affected by this document | zero (no runtime behavior change) |
+| Implementation status | **none** — v2 is doc-only. No Python changed, no emitter renamed, no scanner modified, no CI gate added, no test added. |
+| Apps affected by this document | **zero** (no runtime behavior change; all 9 apps remain `NOT_CERTIFIED`) |
+| Phase A → B.1 delta | 5 sections updated (§0 added, §4/§5/§6.3/§7/§11/§12/Provenance), zero sections removed |
