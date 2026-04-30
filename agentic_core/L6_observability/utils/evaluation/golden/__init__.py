@@ -4,16 +4,11 @@ Golden Evaluation Modules Package.
 Deterministic evaluation contracts for golden datasets.
 """
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
+# Note (W2.1 authority_boundary fix, 2026-04-30): the previous re-import of
+# 8 path_constants from agentic_core.L0_routing.config was dead code (no body
+# references, not in __all__) and caused 8 L6->L0 cross-layer authority
+# breaches. Removed.
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

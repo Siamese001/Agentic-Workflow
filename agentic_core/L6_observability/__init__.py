@@ -7,16 +7,14 @@ Monitoring, benchmarking, and observability components.
 from enum import Enum
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
+
+# Note (W2.1 authority_boundary fix, 2026-04-30): the previous re-export of
+# BATCH_SIZE / BUFFER_SIZE / DEFAULT_SLEEP / DEFAULT_TIMEOUT / MAX_DEPTH /
+# MAX_FILES / MAX_RETRIES / THRESHOLD from
+# agentic_core.L0_routing.config.path_constants was removed. The re-export had
+# zero downstream callers (verified via repo-wide grep) yet caused 8 L6->L0
+# cross-layer authority breaches. Callers needing these values must import
+# them directly from agentic_core.L0_routing.config.path_constants.
 
 # P3/L6 Observability Dashboard exports
 from agentic_core.L6_observability.enforcement.mcp_drift_store import (
@@ -194,14 +192,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_records_execution_trace("p0", "evidence", "__init__")
 __all__ = [
     "SovereignBaseAgent",
-    "BATCH_SIZE",
-    "BUFFER_SIZE",
-    "DEFAULT_SLEEP",
-    "DEFAULT_TIMEOUT",
-    "MAX_DEPTH",
-    "MAX_FILES",
-    "MAX_RETRIES",
-    "THRESHOLD",
     # Performance Records
     "PerformanceRecord",
     "PerformanceRegistry",
