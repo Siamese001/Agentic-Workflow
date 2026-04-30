@@ -291,5 +291,67 @@ class TestTracesExecute(unittest.TestCase):
         )
 
 
+class TestLayerVocabularyValidation(unittest.TestCase):
+    """traces_execute MUST reject non-canonical layer values at decoration
+    time. This catches typos like 'L4_STATE_' or 'l3_orchestration' that
+    would otherwise produce wrong-attribute runtime spans (passing L1+L2
+    but failing L3 manifest validation)."""
+
+    def test_canonical_layers_accepted(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            CANONICAL_LAYERS, traces_execute,
+        )
+        # Every member of the canonical set must be accepted.
+        for layer in CANONICAL_LAYERS:
+            with self.subTest(layer=layer):
+                @traces_execute(layer=layer)
+                def _f() -> int:
+                    return 1
+                self.assertEqual(_f(), 1)
+                self.assertEqual(_f.__adg_traces_layer__, layer)
+
+    def test_typo_trailing_underscore_rejected(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+        with self.assertRaises(ValueError) as ctx:
+            traces_execute(layer="L4_STATE_")
+        self.assertIn("L4_STATE_", str(ctx.exception))
+        self.assertIn("canonical", str(ctx.exception).lower())
+
+    def test_typo_lowercase_rejected(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+        with self.assertRaises(ValueError):
+            traces_execute(layer="l3_orchestration")
+
+    def test_typo_missing_prefix_rejected(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+        with self.assertRaises(ValueError):
+            traces_execute(layer="STATE")
+
+    def test_empty_string_rejected(self) -> None:
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            traces_execute,
+        )
+        with self.assertRaises(ValueError):
+            traces_execute(layer="")
+
+    def test_canonical_set_has_seven_layers(self) -> None:
+        """Sanity check — L0..L6 = 7 layers."""
+        from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+            CANONICAL_LAYERS,
+        )
+        self.assertEqual(len(CANONICAL_LAYERS), 7)
+        for prefix in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
+            self.assertTrue(
+                any(layer.startswith(prefix + "_") for layer in CANONICAL_LAYERS),
+                f"canonical set missing layer with prefix {prefix}_",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

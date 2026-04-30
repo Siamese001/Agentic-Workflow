@@ -206,6 +206,26 @@ def _emit_runtime(category: str, kind: str, qualname: str) -> None:
         )
 
 
+# Canonical OTEL layer vocabulary — the only valid values for the
+# `layer` kwarg of `traces_execute`. Validated at decoration time so
+# typos like "L4_STATE_" or "l3_orchestration" are caught immediately
+# rather than silently producing wrong-attribute spans at runtime
+# (which would pass L1 + L2 gates but fail L3 manifest validation).
+#
+# Mirrors the architectural layer set used by `agentic_core/L0..L6/`.
+# Update both this set AND the canonical layer constants if a new layer
+# is ever added.
+CANONICAL_LAYERS: frozenset[str] = frozenset({
+    "L0_ROUTING",
+    "L1_COGNITION",
+    "L2_EXECUTION",
+    "L3_ORCHESTRATION",
+    "L4_STATE",
+    "L5_SAFETY",
+    "L6_OBSERVABILITY",
+})
+
+
 def traces_execute(
     *,
     layer: str = "L3_ORCHESTRATION",
@@ -240,7 +260,22 @@ def traces_execute(
     Static introspection: decorated functions carry
     ``__adg_traces_execute__ = (op_name,)`` so the AST walker can produce
     explicit per-call spans in the static ADG.
+
+    Raises:
+        ValueError: if ``layer`` is not a member of ``CANONICAL_LAYERS``.
+            Catches typos at decoration time (import time) rather than
+            allowing wrong-attribute runtime spans that pass L1+L2 but
+            fail L3 manifest validation.
     """
+    if layer not in CANONICAL_LAYERS:
+        raise ValueError(
+            f"traces_execute: layer={layer!r} is not in the canonical "
+            f"vocabulary. Valid values: {sorted(CANONICAL_LAYERS)}. "
+            f"Common mistakes: trailing underscore (e.g. 'L4_STATE_'), "
+            f"lowercase (e.g. 'l3_orchestration'), or missing prefix "
+            f"(e.g. 'STATE')."
+        )
+
     def decorator(func: F) -> F:
         op_name = operation or func.__qualname__
 
