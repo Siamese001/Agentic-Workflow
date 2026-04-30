@@ -1,5 +1,37 @@
 # Agentic Workflow — Deterministic AI Control Plane
 
+> **Deterministic AI control plane for governed enterprise agents:** route contracts, verified context, bounded execution, runtime gates, controlled writes, replay, and shadow learning.
+
+## Why this repo exists
+
+Most enterprise AI initiatives stall when a working model demo meets the runtime boundary: no route authority, no context guarantees, no exit evaluation, no write controls, no replay. The result is non-reproducible behavior, unauditable decisions, and uncontrolled state mutation — three failure modes incompatible with regulated production environments.
+
+This repository is a public proof asset for what comes *after* the demo. It shows how enterprise AI systems can move beyond demos into **production-grade runtime architecture**: route contracts, verified context, bounded execution, runtime gates, controlled write paths, replayability, and future-run learning.
+
+## What it proves
+
+- AI behavior can be deterministic at the system level, even when the model is probabilistic.
+- Governance can live on the runtime path, not in a policy document.
+- State mutation can be admitted through a single audited door.
+- Any past run can be reconstructed exactly.
+- A system can learn from completed runs without drifting in flight.
+
+## Start here
+
+| Audience | Start with | Why |
+|----------|------------|-----|
+| Recruiter or hiring manager | [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) | Plain-English explanation of what this repo demonstrates and the roles it supports. |
+| CTO / SVP Engineering | [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Bottom-line positioning, runtime control model, and platform-leadership signal. |
+| AI platform engineer | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) | Technical narrative of the control plane: layers, separation of duties, write model, replay. |
+| Governance / risk / compliance leader | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) + [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Read-broad/write-strict model, UWG single-door commit, replay and audit evidence. |
+| Deep technical reviewer | [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) and the rest of this README | Executive walkthrough plus the full architecture, proof pack, and ADRs. |
+
+Public positioning index: [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md).
+
+> **Note.** This repository is a **public proof asset and reference design**, not a confidential client implementation. Client-specific work is kept private; what is published here is the architecture and the reasoning behind it.
+
+---
+
 ## Overview
 
 This repository provides a **production-grade agentic AI control plane** that transforms AI systems from probabilistic black boxes into **deterministic, auditable, and governable software systems**.
