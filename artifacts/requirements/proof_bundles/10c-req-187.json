@@ -15,5 +15,20 @@
   "proof_status": "EVIDENCE_PRESENT",
   "git_head_at_test_time": "25328cee11659a58489036058ef1acb9389ed12f",
   "git_dirty_at_test_time": false,
-  "content_hash": "a479db47ab044c9068a633cd371aac21382b28acd76f68bac3221d1497c30808"
+  "content_hash": "1874439ca85496f2309aa222e533e9cd9394e7c84b25c930a376346d6eef82c6",
+  "otel_proof": {
+    "harness": "tools.proof.otel_collector_proof",
+    "harness_mode": "in_memory_exporter_batch",
+    "target": "tests/unit/agentic_core/L5_safety/test_10c_req_187.py",
+    "expected_span": "l5.certification.evidence_emitted",
+    "span_count": 0,
+    "expected_seen": false,
+    "status": "NO_SPANS_EMITTED",
+    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
+    "captured_spans": [],
+    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "captured_at_utc": "2026-04-30T18:20:59.582084+00:00"
+  },
+  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.660602+00:00",
+  "actual_proof_depth": "E4_NEGATIVE_CONTROL"
 }

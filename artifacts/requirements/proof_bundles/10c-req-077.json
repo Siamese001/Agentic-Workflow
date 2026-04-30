@@ -15,5 +15,65 @@
   "proof_status": "EVIDENCE_PRESENT",
   "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
   "git_dirty_at_test_time": false,
-  "content_hash": "ae6f336d7903e7a864c3cbb0c19929accf65e5d93234b37e8d275ed04fc77832"
+  "content_hash": "7ae4a1e13800fb86db661e584738aa8d4fcbbb2763b59d5a59d6bebb12028c04",
+  "otel_proof": {
+    "harness": "tools.proof.otel_collector_proof",
+    "harness_mode": "in_memory_exporter_batch",
+    "target": "tests/unit/agentic_core/L0_routing/test_10c_req_077.py",
+    "expected_span": "l0.route.contract_emitted",
+    "span_count": 0,
+    "expected_seen": false,
+    "status": "NO_SPANS_EMITTED",
+    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
+    "captured_spans": [],
+    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "captured_at_utc": "2026-04-30T18:20:59.565957+00:00"
+  },
+  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.612656+00:00",
+  "actual_proof_depth": "E5_COMPOSITION_PROOF",
+  "composition_proof": {
+    "harness": "tools.proof.composition_proof_*",
+    "req_id": "10C-REQ-077",
+    "status": "SATISFIED",
+    "actual_proof_depth": "E5_COMPOSITION_PROOF",
+    "reason": "composition reached 3 components and emitted l0.route.contract_emitted",
+    "components_attempted": [
+      "agentic_core.L4_state.utils.memory.semantic_cache_manager.SemanticCacheManager",
+      "agentic_core.L0_routing.* RouteContract emit path",
+      "opentelemetry tracer for l0.route span"
+    ],
+    "components_reached": [
+      "agentic_core.L4_state.utils.memory.semantic_cache_manager.SemanticCacheManager",
+      "agentic_core.L0_routing.* RouteContract emit path",
+      "opentelemetry tracer for l0.route span"
+    ],
+    "otel_proof": {
+      "harness": "tools.proof.otel_collector_proof",
+      "harness_mode": "in_memory_exporter",
+      "target": "composition.10C-REQ-077",
+      "expected_span": "l0.route.contract_emitted",
+      "span_count": 1,
+      "expected_seen": true,
+      "status": "SATISFIED",
+      "actual_proof_depth": "E6.5_INTEGRATED_RUNTIME",
+      "captured_spans": [
+        {
+          "name": "l0.route.contract_emitted",
+          "kind": "INTERNAL",
+          "status": "UNSET",
+          "attrs": {
+            "composition_components_reached": 3,
+            "harness": "tools.proof.composition_proof_semantic_cache",
+            "req_id": "10C-REQ-077",
+            "scope": "R1B_threshold_freshness_policy"
+          }
+        }
+      ],
+      "replay_digest": "110978c98272f4223296a653050b9c664409d108d528e45721015a6ab6fa4988",
+      "captured_at_utc": "2026-04-30T18:21:34.510771+00:00",
+      "git_head": "1f157bd273090232a681951e43f76b0aad5682ae",
+      "git_dirty": true,
+      "target_exit_code": 0
+    }
+  }
 }

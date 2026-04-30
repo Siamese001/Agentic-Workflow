@@ -18,5 +18,8 @@
   "attestation_artifact": "tools/requirements/harden_10c_ledger.py",
   "git_head_at_test_time": "0d7bcdd089b23159980d1f31854ce63c52b14dbd",
   "git_dirty_at_test_time": true,
-  "content_hash": "cad9e97dd02cd2a85d26636ea3be9a41cbd624e31ada34a6d7ac448c6973d34e"
+  "content_hash": "6f93e44a0b1fdf15fdc7beae84b1bd337cf24aad0be8d5717ec879a813c77069",
+  "otel_proof": null,
+  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.648450+00:00",
+  "actual_proof_depth": "E4_NEGATIVE_CONTROL"
 }

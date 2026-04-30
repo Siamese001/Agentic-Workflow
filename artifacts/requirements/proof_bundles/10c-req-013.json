@@ -15,5 +15,20 @@
   "proof_status": "EVIDENCE_PRESENT",
   "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
   "git_dirty_at_test_time": false,
-  "content_hash": "e29c6983df4fabc2c4721f902a8ceb5a26b8267c05554b7edb11f170c0717507"
+  "content_hash": "e1019ff20201fbed3dcf5c2a0f1896aea8564c3d956f432097cf9d900088b1a3",
+  "otel_proof": {
+    "harness": "tools.proof.otel_collector_proof",
+    "harness_mode": "in_memory_exporter_batch",
+    "target": "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_013.py",
+    "expected_span": "ingest.chunk.sealed",
+    "span_count": 0,
+    "expected_seen": false,
+    "status": "NO_SPANS_EMITTED",
+    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
+    "captured_spans": [],
+    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "captured_at_utc": "2026-04-30T18:20:59.554313+00:00"
+  },
+  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.582084+00:00",
+  "actual_proof_depth": "E4_NEGATIVE_CONTROL"
 }
