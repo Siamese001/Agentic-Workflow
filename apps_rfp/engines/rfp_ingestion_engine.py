@@ -7,6 +7,10 @@ and extracts structured requirements, constraints, and evaluation criteria.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from dataclasses import dataclass, field
@@ -26,6 +30,7 @@ _log = logging.getLogger(__name__)
 class DocumentParser(Protocol):
     """Protocol for RFP document parsers."""
 
+    @traces_execute(layer="L1_COGNITION")
     def can_parse(self, file_path: Path) -> bool:
         """Check if this parser can handle the file."""
         ...

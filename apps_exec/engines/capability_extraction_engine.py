@@ -9,6 +9,10 @@ Deterministic: all extraction is pattern-based, no model calls.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from dataclasses import dataclass, field
@@ -215,6 +219,7 @@ class CapabilityExtractionEngine(BaseExecEngine):
 
     AGENT_ID = "EXEC_CAPABILITY_EXTRACTION"
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, input_data: IngestionResult) -> ExtractionResult:
         """Extract capabilities from ingested documents.
 

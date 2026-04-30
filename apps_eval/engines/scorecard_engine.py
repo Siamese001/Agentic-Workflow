@@ -10,6 +10,10 @@ Deterministic: all scoring logic is arithmetic — no model calls.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -201,6 +205,7 @@ class ScorecardEngine:
     def __init__(self, dimension_configs: list | None = None) -> None:
         self._dimensions = dimension_configs or []
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def compute(self, suite_results: list[SuiteResult]) -> ScorecardResult:
         """Compute scorecard from suite results.
 

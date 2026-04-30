@@ -1,0 +1,70 @@
+# Required OTEL spans per app — Layer 3 of the apps_* OTEL coverage strategy.
+#
+# Each entry in `required_spans` MUST appear as an `__adg_traces_execute__`
+# marker on a method reachable via that app's import surface. The CI gate
+# `ops_scripts/ci/check_required_spans_coverage.py` enforces this — removing
+# a `@traces_execute` decorator from a manifest-listed method becomes a
+# fail-closed CI failure.
+#
+# Maintenance:
+#   * Add a row when a new engine entry-point becomes part of the
+#     contract surface (a method whose absence would mean a critical
+#     audit/observability gap).
+#   * Remove a row only via Author-Gate decision (deletion is a
+#     breaking observability contract change).
+#
+# Strategy layers:
+#   L1 (static gate)  : `check_apps_otel_coverage.py` — every module emits
+#   L2 (runtime probe): `test_apps_otel_runtime_coverage.py` — emits flow
+#                       through the OTEL bridge at runtime
+#   L3 (this manifest): `check_required_spans_coverage.py` — named methods
+#                       carry @traces_execute, locked declaratively
+#
+# Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+
+apps_eval:
+  required_spans:
+    - "BaseEvalEngine.execute"
+    - "InMemoryEvaluationStore.add_evaluation"
+    - "HitlDecisionQualityEngine.score_ledger"
+    - "RegressionDetector.detect"
+    - "ScenarioRunner.run_suite"
+    - "ScorecardEngine.compute"
+
+apps_exec:
+  required_spans:
+    - "BaseExecEngine.execute"
+    - "BriefAssemblyEngine.execute"
+    - "InMemoryBriefStore.add_brief"
+    - "CapabilityExtractionEngine.execute"
+    - "IngestionEngine.execute"
+
+apps_lic:
+  required_spans:
+    - "ControlPlane.evaluate_input"
+
+apps_research:
+  required_spans:
+    - "BaseResearchEngine.execute"
+    - "ResearchAssemblyEngine.execute"
+    - "InMemoryResearchStore.add_research"
+
+apps_rfp:
+  required_spans:
+    - "BaseRfpEngine.execute"
+    - "ProposalAssemblyEngine.execute"
+    - "EmbeddingStore.add_proposal"
+    - "DocumentParser.can_parse"
+
+apps_underwriting_ai:
+  required_spans:
+    - "UnderwritingEngine.run"
+    - "DecisionPacketAssembler.assemble"
+    - "DocumentReconciliationEngine.reconcile"
+    - "EvidenceRegister.add_entry"
+    - "FeatureDerivationEngine.derive_features"
+
+# apps_rg is omitted intentionally — its 49 engines are managed by the
+# legacy lifecycle_trace_contract pattern and tracked separately in
+# `apps_rg/SVP_ENGINEERING_REVIEW.md`. When apps_rg engines migrate
+# to @traces_execute, add them here.

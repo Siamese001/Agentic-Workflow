@@ -37,6 +37,10 @@ drafts for UWG review (G8 constraint).
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import math
 import statistics
@@ -140,6 +144,7 @@ class HitlDecisionQualityEngine:
     # Public API
     # ------------------------------------------------------------------
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def score_ledger(
         self,
         ledger: RuntimeHitlLedger,

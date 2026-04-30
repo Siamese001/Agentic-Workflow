@@ -12,6 +12,10 @@ Model-ready:   narrative phrasing marked with LLM_FILL placeholders.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -262,6 +266,7 @@ class BriefAssemblyEngine(BaseExecEngine):
 
     AGENT_ID = "EXEC_BRIEF_ASSEMBLY"
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, input_data: tuple[ExecBriefRequest, ExtractionResult]) -> AssemblyResult:
         """Assemble brief sections.
 

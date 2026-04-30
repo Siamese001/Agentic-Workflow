@@ -624,6 +624,21 @@ repos:
         always_run: true
         require_serial: true
 
+      # Layer 3 — required-spans manifest. Every method listed in
+      # config/observability/required_spans.yaml MUST carry the
+      # @traces_execute decorator (verified via __adg_traces_execute__
+      # marker). Removing a decorator from a manifest-listed method is
+      # a breaking observability contract change requiring Author-Gate.
+      # Locked at 24/24 (100%) on 2026-04-30.
+      # Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
+      - id: check-required-spans-coverage
+        name: "CI: required spans manifest (Layer 3)"
+        entry: py ops_scripts/ci/check_required_spans_coverage.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # Raw infra import hygiene — run on demand until 5 direct-import sites
       # (google, chromadb, sqlite3) are remediated through sanctioned adapters.
       # Invoke: pre-commit run infra-wiring --hook-stage manual --all-files

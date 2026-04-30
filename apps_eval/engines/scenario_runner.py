@@ -11,6 +11,10 @@ Model-driven:  none — this is a pure evaluation harness.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 from apps_eval.integrations.meta_bus_publisher import (
     KIND_SUITE,
     publish_eval_outcome,
@@ -896,6 +900,7 @@ class ScenarioRunner:
     PASS, FAIL, TIMEOUT, ERROR, SKIP — never silent.
     """
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def run_suite(
         self,
         suite_id: str,

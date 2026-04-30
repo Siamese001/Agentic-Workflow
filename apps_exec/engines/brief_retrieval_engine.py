@@ -7,6 +7,10 @@ style consistency, content reuse, and quality benchmarking.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import hashlib
 import json
 import logging
@@ -59,6 +63,7 @@ class InMemoryBriefStore:
         self._briefs: dict[str, dict[str, Any]] = {}
         self._embeddings: dict[str, list[float]] = {}
 
+    @traces_execute(layer="L4_STATE")
     def add_brief(
         self,
         brief_id: str,

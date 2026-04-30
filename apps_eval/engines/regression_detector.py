@@ -10,6 +10,10 @@ Deterministic: delta computation, threshold comparison.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import json
 import logging
 import time
@@ -244,6 +248,7 @@ class RegressionDetector:
         )
         return tolerance_for_class(klass, policy=self._taxonomy_policy), klass
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def detect(
         self,
         scorecard_rows: list[ScorecardRow],

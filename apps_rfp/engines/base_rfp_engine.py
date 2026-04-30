@@ -6,6 +6,10 @@ Mirrors apps_exec BaseExecEngine pattern with rfp-specific contracts.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
@@ -82,6 +86,7 @@ class BaseRfpEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
         install_seal_step_autowrap(cls)
 
     @abstractmethod
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, input_data: Any) -> Any:
         """Main execution method — must be implemented by subclasses."""
 

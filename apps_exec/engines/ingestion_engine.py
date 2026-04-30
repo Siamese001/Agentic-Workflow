@@ -10,6 +10,10 @@ Model-driven:  none at this stage.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -201,6 +205,7 @@ class IngestionEngine(BaseExecEngine):
 
     AGENT_ID = "EXEC_INGESTION"
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, input_data: Any) -> IngestionResult:
         """Execute ingestion over configured source directories.
 

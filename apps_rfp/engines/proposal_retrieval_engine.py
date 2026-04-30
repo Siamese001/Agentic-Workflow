@@ -7,6 +7,10 @@ with ChromaDB as the embedding store.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import hashlib
 import logging
 from dataclasses import dataclass, field
@@ -28,6 +32,7 @@ _log = logging.getLogger(__name__)
 class EmbeddingStore(Protocol):
     """Protocol for vector embedding storage backends."""
 
+    @traces_execute(layer="L4_STATE")
     def add_proposal(
         self,
         proposal_id: str,

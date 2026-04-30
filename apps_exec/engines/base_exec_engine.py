@@ -6,6 +6,10 @@ Mirrors apps_rg BaseRGEngine pattern with exec-specific contracts.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
@@ -92,6 +96,7 @@ class BaseExecEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             self.logger.warning("[%s] knowledge base not available", self.name)
 
     @abstractmethod
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, input_data: Any) -> Any:
         """Main execution method — must be implemented by subclasses."""
 

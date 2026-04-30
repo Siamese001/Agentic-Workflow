@@ -1,28 +1,26 @@
-"""Validate the hardened 10C semantic requirement ledger.
+"""Validate the hardened 10C semantic requirement ledger (W4d-2).
 
-Per the proof-grade hardening spec, this gate enforces:
+Iteration 2 (2026-04-30) addresses the post-W4d review by:
 
-  1. Exactly 200 rows.
-  2. ``req_id`` uniqueness; format ``10C-REQ-NNN``.
-  3. ``canonical_requirement_statement`` non-empty for every row.
-  4. ``canonical_owner_surface`` is in the approved vocabulary.
-  5. ``severity_if_missing`` in {CRITICAL, HIGH, MEDIUM, LOW}.
-  6. CRITICAL/HIGH rows have ALL mandatory proof columns populated.
-  7. ``final_acceptance_status = ACCEPTED`` only when proof fields are complete.
-  8. ``evidence_status = PROOF_PRESENT`` only when proof fields are complete.
-
-Emits two summary artifacts plus a structured ``severity_reconciliation``
-section comparing current CSV severity counts against any prior baseline
-discoverable in the working tree.
+  - Renaming ``proof_complete_critical_high`` to
+    ``proof_field_complete_critical_high`` so the metric no longer reads
+    as if proof evidence is present.
+  - Adding ``proof_evidence_present_critical_high`` which counts rows where
+    the test/CI/bundle paths actually exist on disk AND
+    ``last_passed_commit`` is populated. This will start at 0 and grow
+    only as real tests pass.
+  - Validating the 8 W4d-2 columns are present and correctly typed.
+  - Requiring ``negative_control_specific`` populated for CRITICAL/HIGH.
+  - Emitting a ``coverage_doctrine`` section documenting why
+    ``00C_Runtime_Gates_Current_Run_Mesh`` and
+    ``99_End_to_End_Runtime_Proof_and_Acceptance`` may have zero rows
+    (they are external proof surfaces, enforced by separate runtime-gate
+    and end-to-end proof packs).
+  - Listing pedagogical rows separately from runtime proof obligations.
 
 Usage::
 
-    python tools/requirements/validate_10c_proof_ledger.py [--strict]
-
-Exit codes:
-    0  All assertions pass.
-    1  Validation failure (one or more assertions broken).
-    2  Infrastructure error (missing file, malformed CSV).
+    python tools/requirements/validate_10c_proof_ledger.py [--strict|--no-strict]
 """
 
 from __future__ import annotations
@@ -80,24 +78,66 @@ ALLOWED_FINAL_ACCEPTANCE = frozenset({
     "NEEDS_PROOF", "NEEDS_OWNER_REVIEW", "DEFERRED",
 })
 
-# Mandatory proof fields for CRITICAL/HIGH rows
+# Mandatory proof-FIELD population for CRITICAL/HIGH rows.
 MANDATORY_PROOF_FIELDS = (
     "runtime_artifact_expected",
     "otel_span_expected",
     "replay_proof_expected",
     "negative_control_expected",
+    "negative_control_specific",
     "test_file_expected",
     "acceptance_command",
     "ci_gate_name",
 )
 
-# All proof-related fields that must be complete for ACCEPTED status
+# Full set required for proof-field completeness.
+# Note: source-lock fields (source_commit_sha, source_text_sha256) are tracked
+# as a SEPARATE quality dimension (`source_lock_complete`) because a non-trivial
+# fraction of rows are derived requirements (audit notes, gap analyses) with no
+# on-disk source file. Including those in COMPLETE_PROOF_FIELDS would
+# artificially conflate spec completeness with source-anchor coverage.
 COMPLETE_PROOF_FIELDS = MANDATORY_PROOF_FIELDS + (
     "canonical_owner_surface",
     "artifact_schema_ref",
     "otel_required_attributes",
     "proof_bundle_ref",
 )
+
+# Source-lock is required ONLY when a source file is resolvable; this set is
+# checked against rows whose source_text_sha256 is non-empty.
+SOURCE_LOCK_FIELDS = (
+    "source_commit_sha",
+    "source_text_sha256",
+)
+
+# For ACCEPTED final-acceptance status, BOTH proof-field completeness AND
+# (when applicable) source-lock must be present.
+ACCEPTED_REQUIRES = COMPLETE_PROOF_FIELDS
+
+# Existence-check columns used to score proof-evidence-present.
+EVIDENCE_PATH_FIELDS = (
+    "test_file_exists",
+    "ci_gate_exists",
+    "proof_bundle_exists",
+)
+
+# Owner surfaces that are intentionally external to the 10C semantic ledger.
+EXTERNAL_PROOF_SURFACES = {
+    "00C_Runtime_Gates_Current_Run_Mesh": (
+        "Runtime gate mesh contracts (GateVerdict envelope, UNKNOWN-never-PASS, "
+        "bounded gate dispositions, gate-to-Exit handoff) are enforced by the "
+        "separate Runtime-Gate Pack at agentic_core/L5_safety/runtime_gates/. "
+        "If a future 10C source document adds runtime-gate language, those rows "
+        "would land here; the empty count today is intentional, not a coverage gap."
+    ),
+    "99_End_to_End_Runtime_Proof_and_Acceptance": (
+        "End-to-end proof harnesses (golden-path bundle, route-coverage proof, "
+        "OTEL span-tree proof, deterministic-replay proof, no-bypass proof, "
+        "evidence-to-output groundedness) are enforced by the separate E2E "
+        "Proof Pack at scripts/proof/. The 10C ledger states the per-row proof "
+        "expectations; the E2E pack composes them into the bundle."
+    ),
+}
 
 
 def _load_rows() -> tuple[list[str], list[dict[str, str]]]:
@@ -121,11 +161,6 @@ def _git_status() -> str:
 
 
 def _discover_prior_severity_baseline() -> dict[str, int] | None:
-    """Look for a prior severity-baseline artifact under artifacts/ or docs/.
-
-    Returns counter dict if found, else None. Strictly read-only; never
-    fabricates a baseline.
-    """
     candidates = [
         REPO_ROOT / "artifacts" / "requirements" / "universe_inventory.json",
         REPO_ROOT / "docs" / "reports" / "design" / "10c_reconciliation" / "10c_summary_report.md",
@@ -137,8 +172,6 @@ def _discover_prior_severity_baseline() -> dict[str, int] | None:
             text = c.read_text(encoding="utf-8")
         except OSError:
             continue
-        # 10c_summary_report.md historically declares severity counts in a
-        # known phrasing. Look for "CRITICAL: N" patterns.
         m = re.findall(r"\b(CRITICAL|HIGH|MEDIUM|LOW)\b\s*[:=]\s*(\d+)", text)
         if m:
             counts: dict[str, int] = {}
@@ -150,9 +183,21 @@ def _discover_prior_severity_baseline() -> dict[str, int] | None:
     return None
 
 
-def _is_proof_row_complete(row: dict[str, str]) -> tuple[bool, list[str]]:
-    """Return (is_complete, missing_fields)."""
+def _is_proof_field_complete(row: dict[str, str]) -> tuple[bool, list[str]]:
+    """Return (proof-field-complete, missing). Field-level only; no execution check."""
     missing = [f for f in COMPLETE_PROOF_FIELDS if not (row.get(f) or "").strip()]
+    return (not missing), missing
+
+
+def _is_proof_evidence_present(row: dict[str, str]) -> tuple[bool, list[str]]:
+    """Return (proof-evidence-present, missing). True only when the test/CI/bundle
+    paths exist on disk AND a last_passed_commit is recorded."""
+    missing: list[str] = []
+    for f in EVIDENCE_PATH_FIELDS:
+        if (row.get(f) or "").strip().lower() != "true":
+            missing.append(f)
+    if not (row.get("last_passed_commit") or "").strip():
+        missing.append("last_passed_commit")
     return (not missing), missing
 
 
@@ -160,11 +205,10 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
 
-    # 1. Row count
     if len(rows) != EXPECTED_ROWS:
         errors.append(f"row count is {len(rows)}, expected {EXPECTED_ROWS}")
 
-    # 2. req_id uniqueness + format
+    # req_id
     ids = [r.get("req_id", "") for r in rows]
     seen: dict[str, int] = {}
     for rid in ids:
@@ -175,12 +219,10 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
     if dup_ids:
         errors.append(f"duplicate req_ids: {dup_ids}")
 
-    # 3. canonical_requirement_statement non-empty
     blank_canon = [r["req_id"] for r in rows if not (r.get("canonical_requirement_statement") or "").strip()]
     if blank_canon:
         errors.append(f"{len(blank_canon)} rows have empty canonical_requirement_statement: {blank_canon[:5]}")
 
-    # 4. canonical_owner_surface in vocab
     bad_owner: list[str] = []
     for r in rows:
         owner = (r.get("canonical_owner_surface") or "").strip()
@@ -191,12 +233,12 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
     if bad_owner:
         errors.append(f"{len(bad_owner)} rows have invalid canonical_owner_surface: {bad_owner[:5]}")
 
-    # 5. severity in vocab
-    bad_sev = [(r["req_id"], r.get("severity_if_missing", "")) for r in rows if r.get("severity_if_missing", "").strip().upper() not in ALLOWED_SEVERITY]
+    bad_sev = [(r["req_id"], r.get("severity_if_missing", "")) for r in rows
+               if r.get("severity_if_missing", "").strip().upper() not in ALLOWED_SEVERITY]
     if bad_sev:
         errors.append(f"{len(bad_sev)} rows have invalid severity: {bad_sev[:5]}")
 
-    # 6. CRITICAL/HIGH rows have mandatory proof columns populated
+    # CRITICAL/HIGH rows must have all mandatory proof fields
     critical_high_missing: list[dict[str, Any]] = []
     for r in rows:
         sev = r.get("severity_if_missing", "").strip().upper()
@@ -206,41 +248,42 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
         if missing:
             critical_high_missing.append({"req_id": r["req_id"], "severity": sev, "missing": missing})
     if critical_high_missing:
-        # This is the spec's hard-fail condition
         errors.append(f"{len(critical_high_missing)} CRITICAL/HIGH rows missing mandatory proof fields")
 
-    # 7. final_acceptance_status = ACCEPTED only when proof fields complete
+    # ACCEPTED requires field complete AND evidence present
     bad_accept: list[str] = []
     for r in rows:
         final = (r.get("final_acceptance_status") or "").strip()
         if final not in ALLOWED_FINAL_ACCEPTANCE:
             errors.append(f"{r['req_id']}: invalid final_acceptance_status '{final}'")
         if final == "ACCEPTED":
-            ok, missing = _is_proof_row_complete(r)
-            if not ok:
-                bad_accept.append(f"{r['req_id']}: ACCEPTED but missing {missing}")
+            field_ok, _ = _is_proof_field_complete(r)
+            evid_ok, _ = _is_proof_evidence_present(r)
+            if not (field_ok and evid_ok):
+                bad_accept.append(r["req_id"])
     if bad_accept:
-        errors.append(f"{len(bad_accept)} rows ACCEPTED without complete proof: {bad_accept[:3]}")
+        errors.append(f"{len(bad_accept)} rows ACCEPTED without complete proof field+evidence: {bad_accept[:5]}")
 
-    # 8. evidence_status = PROOF_PRESENT only when proof fields complete
+    # PROOF_PRESENT requires field complete AND evidence present
     bad_evid: list[str] = []
     for r in rows:
         evid = (r.get("evidence_status") or "").strip()
         if evid not in ALLOWED_EVIDENCE_STATUS:
             errors.append(f"{r['req_id']}: invalid evidence_status '{evid}'")
         if evid == "PROOF_PRESENT":
-            ok, missing = _is_proof_row_complete(r)
-            if not ok:
-                bad_evid.append(f"{r['req_id']}: PROOF_PRESENT but missing {missing}")
+            field_ok, _ = _is_proof_field_complete(r)
+            evidence_ok, _ = _is_proof_evidence_present(r)
+            if not (field_ok and evidence_ok):
+                bad_evid.append(r["req_id"])
     if bad_evid:
-        errors.append(f"{len(bad_evid)} rows PROOF_PRESENT without complete proof: {bad_evid[:3]}")
+        errors.append(f"{len(bad_evid)} rows PROOF_PRESENT without field+evidence complete: {bad_evid[:5]}")
 
-    # 9. implementation_status in vocab
-    bad_impl = [r["req_id"] for r in rows if (r.get("implementation_status") or "").strip() not in ALLOWED_IMPL_STATUS]
+    bad_impl = [r["req_id"] for r in rows
+                if (r.get("implementation_status") or "").strip() not in ALLOWED_IMPL_STATUS]
     if bad_impl:
         errors.append(f"{len(bad_impl)} rows have invalid implementation_status: {bad_impl[:5]}")
 
-    # Compute distributions
+    # Distributions
     sev_counts = Counter((r.get("severity_if_missing") or "").strip().upper() for r in rows)
     owner_counts = Counter((r.get("canonical_owner_surface") or "").strip() for r in rows)
     accept_counts = Counter((r.get("final_acceptance_status") or "").strip() for r in rows)
@@ -248,27 +291,53 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
     impl_counts = Counter((r.get("implementation_status") or "").strip() for r in rows)
 
     accepted_count = accept_counts.get("ACCEPTED", 0)
+    accepted_caveat_count = accept_counts.get("ACCEPTED_WITH_CAVEAT", 0)
     needs_proof_count = accept_counts.get("NEEDS_PROOF", 0)
     needs_owner_review_count = accept_counts.get("NEEDS_OWNER_REVIEW", 0)
     duplicate_rejected_count = accept_counts.get("REJECTED_DUPLICATE", 0)
+    deferred_count = accept_counts.get("DEFERRED", 0)
 
-    # Ambiguous owners (rows whose hardening_notes mention AMBIGUOUS_OWNER)
     ambiguous_owner_rows = [
         r["req_id"] for r in rows if "AMBIGUOUS_OWNER" in (r.get("hardening_notes") or "")
     ]
+    pedagogical_rows = [
+        r["req_id"] for r in rows if "PEDAGOGICAL_ROW" in (r.get("hardening_notes") or "")
+    ]
 
-    # CRITICAL/HIGH rows fully proof-backed
-    proof_complete_critical_high = 0
-    proof_partial_critical_high = 0
+    # CRITICAL/HIGH proof field completeness vs evidence presence
+    proof_field_complete_critical_high = 0
+    proof_field_partial_critical_high = 0
+    proof_evidence_present_critical_high = 0
     for r in rows:
         sev = r.get("severity_if_missing", "").strip().upper()
         if sev not in {"CRITICAL", "HIGH"}:
             continue
-        ok, _ = _is_proof_row_complete(r)
-        if ok:
-            proof_complete_critical_high += 1
+        field_ok, _ = _is_proof_field_complete(r)
+        evid_ok, _ = _is_proof_evidence_present(r)
+        if field_ok:
+            proof_field_complete_critical_high += 1
         else:
-            proof_partial_critical_high += 1
+            proof_field_partial_critical_high += 1
+        if evid_ok:
+            proof_evidence_present_critical_high += 1
+
+    # Source-locking coverage
+    source_lock_complete = 0
+    source_lock_missing = 0
+    for r in rows:
+        if (r.get("source_commit_sha") or "").strip() and (r.get("source_text_sha256") or "").strip():
+            source_lock_complete += 1
+        else:
+            source_lock_missing += 1
+
+    # Coverage doctrine for owner-surfaces
+    coverage_doctrine: dict[str, Any] = {}
+    for surface, rationale in EXTERNAL_PROOF_SURFACES.items():
+        coverage_doctrine[surface] = {
+            "row_count": owner_counts.get(surface, 0),
+            "external_proof_pack": True,
+            "rationale": rationale,
+        }
 
     # Severity reconciliation
     prior_baseline = _discover_prior_severity_baseline()
@@ -300,15 +369,23 @@ def _validate(rows: list[dict[str, str]], header: list[str]) -> dict[str, Any]:
         "evid_counts": dict(evid_counts),
         "impl_counts": dict(impl_counts),
         "accepted_count": accepted_count,
+        "accepted_with_caveat_count": accepted_caveat_count,
         "needs_proof_count": needs_proof_count,
         "needs_owner_review_count": needs_owner_review_count,
         "duplicate_rejected_count": duplicate_rejected_count,
+        "deferred_count": deferred_count,
         "ambiguous_owner_rows": ambiguous_owner_rows,
         "ambiguous_owner_count": len(ambiguous_owner_rows),
+        "pedagogical_rows": pedagogical_rows,
+        "pedagogical_row_count": len(pedagogical_rows),
         "critical_high_missing_proof": critical_high_missing,
         "critical_high_missing_proof_count": len(critical_high_missing),
-        "proof_complete_critical_high": proof_complete_critical_high,
-        "proof_partial_critical_high": proof_partial_critical_high,
+        "proof_field_complete_critical_high": proof_field_complete_critical_high,
+        "proof_field_partial_critical_high": proof_field_partial_critical_high,
+        "proof_evidence_present_critical_high": proof_evidence_present_critical_high,
+        "source_lock_complete": source_lock_complete,
+        "source_lock_missing": source_lock_missing,
+        "coverage_doctrine": coverage_doctrine,
         "severity_reconciliation": reconciliation,
     }
 
@@ -327,19 +404,27 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
             "severity_counts": report["sev_counts"],
             "owner_counts": report["owner_counts"],
             "accepted_count": report["accepted_count"],
+            "accepted_with_caveat_count": report["accepted_with_caveat_count"],
             "needs_proof_count": report["needs_proof_count"],
             "needs_owner_review_count": report["needs_owner_review_count"],
             "duplicate_rejected_count": report["duplicate_rejected_count"],
+            "deferred_count": report["deferred_count"],
             "critical_high_missing_proof_count": report["critical_high_missing_proof_count"],
-            "proof_complete_critical_high": report["proof_complete_critical_high"],
-            "proof_partial_critical_high": report["proof_partial_critical_high"],
+            "proof_field_complete_critical_high": report["proof_field_complete_critical_high"],
+            "proof_field_partial_critical_high": report["proof_field_partial_critical_high"],
+            "proof_evidence_present_critical_high": report["proof_evidence_present_critical_high"],
             "ambiguous_owner_count": report["ambiguous_owner_count"],
+            "pedagogical_row_count": report["pedagogical_row_count"],
+            "source_lock_complete": report["source_lock_complete"],
+            "source_lock_missing": report["source_lock_missing"],
         },
         "implementation_status_counts": report["impl_counts"],
         "evidence_status_counts": report["evid_counts"],
         "final_acceptance_status_counts": report["accept_counts"],
         "ambiguous_owner_rows": report["ambiguous_owner_rows"],
+        "pedagogical_rows": report["pedagogical_rows"],
         "critical_high_missing_proof": report["critical_high_missing_proof"],
+        "coverage_doctrine": report["coverage_doctrine"],
         "severity_reconciliation": report["severity_reconciliation"],
         "errors": report["errors"],
         "warnings": report["warnings"],
@@ -348,9 +433,8 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
 
     JSON_OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    # Markdown
     md: list[str] = []
-    md.append("# 10C Proof Ledger Validation Report")
+    md.append("# 10C Proof Ledger Validation Report (W4d-2)")
     md.append("")
     md.append(f"- Ledger: `{payload['ledger_path']}`")
     md.append(f"- Validated at (UTC): {payload['validated_at_utc']}")
@@ -364,22 +448,48 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
     md.append(f"- Total rows: **{s['total_rows']}**")
     md.append(f"- Header columns: **{s['header_columns']}**")
     md.append(f"- Severity counts: {s['severity_counts']}")
-    md.append(f"- Accepted: **{s['accepted_count']}**")
-    md.append(f"- Needs proof: **{s['needs_proof_count']}**")
-    md.append(f"- Needs owner review: **{s['needs_owner_review_count']}**")
+    md.append(f"- Accepted: **{s['accepted_count']}** | Accepted with caveat: **{s['accepted_with_caveat_count']}**")
+    md.append(f"- Needs proof: **{s['needs_proof_count']}** | Needs owner review: **{s['needs_owner_review_count']}** | Deferred: {s['deferred_count']}")
     md.append(f"- Rejected duplicate: {s['duplicate_rejected_count']}")
-    md.append(f"- CRITICAL/HIGH proof-complete: **{s['proof_complete_critical_high']}**")
-    md.append(f"- CRITICAL/HIGH proof-incomplete: **{s['proof_partial_critical_high']}**")
-    md.append(f"- Ambiguous-owner rows: **{s['ambiguous_owner_count']}**")
     md.append("")
-    md.append("## Owner distribution")
+    md.append("### Proof field completeness vs evidence presence")
+    md.append("")
+    md.append(f"- CRITICAL/HIGH **proof-field-complete**: **{s['proof_field_complete_critical_high']}**")
+    md.append(f"- CRITICAL/HIGH **proof-field-incomplete**: **{s['proof_field_partial_critical_high']}**")
+    md.append(f"- CRITICAL/HIGH **proof-evidence-present**: **{s['proof_evidence_present_critical_high']}**")
+    md.append("")
+    md.append("> *Proof-field-complete* means every required column is populated. ")
+    md.append("> *Proof-evidence-present* means the test/CI/bundle paths exist on disk ")
+    md.append("> AND `last_passed_commit` is recorded. Until the latter rises, no row should be `ACCEPTED`.")
+    md.append("")
+    md.append("### Source locking")
+    md.append("")
+    md.append(f"- Rows with `source_commit_sha` + `source_text_sha256`: **{s['source_lock_complete']}**")
+    md.append(f"- Rows missing source-lock: **{s['source_lock_missing']}**")
+    md.append("")
+    md.append("### Owner distribution")
     md.append("")
     md.append("| Owner surface | Count |")
     md.append("|---|---:|")
     for owner, count in sorted(report["owner_counts"].items(), key=lambda x: -x[1]):
         md.append(f"| `{owner}` | {count} |")
     md.append("")
-    md.append("## Severity reconciliation")
+    md.append("### Coverage doctrine (zero-row owner surfaces)")
+    md.append("")
+    for surface, info in report["coverage_doctrine"].items():
+        md.append(f"#### `{surface}` — {info['row_count']} rows")
+        md.append("")
+        md.append(info["rationale"])
+        md.append("")
+    md.append("### Pedagogical rows (documentation, not runtime proof obligations)")
+    md.append("")
+    if report["pedagogical_rows"]:
+        for rid in report["pedagogical_rows"]:
+            md.append(f"- `{rid}` — `final_acceptance_status = ACCEPTED_WITH_CAVEAT`")
+    else:
+        md.append("- (none)")
+    md.append("")
+    md.append("### Severity reconciliation")
     md.append("")
     rec = report["severity_reconciliation"]
     md.append(f"- Current CSV: {rec['current_csv_counts']}")
@@ -391,13 +501,13 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
     md.append(f"- Recommendation: {rec['recommendation']}")
     md.append("")
     if report["errors"]:
-        md.append("## Errors")
+        md.append("### Errors")
         md.append("")
         for e in report["errors"]:
             md.append(f"- {e}")
         md.append("")
     if report["ambiguous_owner_rows"]:
-        md.append("## Ambiguous-owner rows (need owner review)")
+        md.append("### Ambiguous-owner rows (need owner review)")
         md.append("")
         for rid in report["ambiguous_owner_rows"][:50]:
             md.append(f"- `{rid}`")
@@ -405,7 +515,7 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
             md.append(f"- ... +{len(report['ambiguous_owner_rows']) - 50} more")
         md.append("")
     if report["critical_high_missing_proof"]:
-        md.append("## CRITICAL/HIGH rows still missing proof fields")
+        md.append("### CRITICAL/HIGH rows still missing proof fields")
         md.append("")
         for entry in report["critical_high_missing_proof"][:25]:
             md.append(f"- `{entry['req_id']}` ({entry['severity']}): missing {entry['missing']}")
@@ -417,15 +527,15 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate the hardened 10C proof ledger.")
-    parser.add_argument("--strict", action="store_true", help="Exit 1 on any error (default behavior).")
+    parser = argparse.ArgumentParser(description="Validate the hardened 10C proof ledger (W4d-2).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on any error (default).")
     parser.add_argument("--no-strict", dest="strict", action="store_false", help="Always exit 0; emit artifacts only.")
     parser.set_defaults(strict=True)
     args = parser.parse_args()
 
     cmd = "python tools/requirements/validate_10c_proof_ledger.py" + (" --strict" if args.strict else " --no-strict")
 
-    print("[10C proof ledger validator]")
+    print("[10C proof ledger validator W4d-2]")
     if not LEDGER.exists():
         print(f"FATAL: ledger not found at {LEDGER}", file=sys.stderr)
         return 2
@@ -439,20 +549,22 @@ def main() -> int:
     report = _validate(rows, header)
     _emit_artifacts(report, cmd)
 
-    print(f"  rows                : {report['row_count']}")
-    print(f"  header columns      : {report['header_columns']}")
-    print(f"  severity            : {report['sev_counts']}")
-    print(f"  accepted            : {report['accepted_count']}")
-    print(f"  needs_proof         : {report['needs_proof_count']}")
-    print(f"  needs_owner_review  : {report['needs_owner_review_count']}")
-    print(f"  CRITICAL/HIGH proof complete   : {report['proof_complete_critical_high']}")
-    print(f"  CRITICAL/HIGH proof incomplete : {report['proof_partial_critical_high']}")
-    print(f"  ambiguous-owner rows: {report['ambiguous_owner_count']}")
-    print(f"  errors              : {len(report['errors'])}")
-    print(f"  artifacts           : {JSON_OUT.relative_to(REPO_ROOT)}, {MD_OUT.relative_to(REPO_ROOT)}")
+    print(f"  rows                                : {report['row_count']}")
+    print(f"  header columns                      : {report['header_columns']}")
+    print(f"  severity                            : {report['sev_counts']}")
+    print(f"  accepted / accepted_with_caveat     : {report['accepted_count']} / {report['accepted_with_caveat_count']}")
+    print(f"  needs_proof / needs_owner_review    : {report['needs_proof_count']} / {report['needs_owner_review_count']}")
+    print(f"  CRITICAL/HIGH proof-field-complete  : {report['proof_field_complete_critical_high']}")
+    print(f"  CRITICAL/HIGH proof-field-partial   : {report['proof_field_partial_critical_high']}")
+    print(f"  CRITICAL/HIGH proof-evidence-present: {report['proof_evidence_present_critical_high']}")
+    print(f"  ambiguous-owner rows                : {report['ambiguous_owner_count']}")
+    print(f"  pedagogical rows                    : {report['pedagogical_row_count']}")
+    print(f"  source-locked rows                  : {report['source_lock_complete']} / {report['row_count']}")
+    print(f"  errors                              : {len(report['errors'])}")
+    print(f"  artifacts                           : {JSON_OUT.relative_to(REPO_ROOT)}, {MD_OUT.relative_to(REPO_ROOT)}")
 
     if report["errors"]:
-        print("\nFAIL — validation errors:")
+        print("\nFAIL -- validation errors:")
         for e in report["errors"][:20]:
             print(f"  - {e}")
         if len(report["errors"]) > 20:

@@ -11,6 +11,10 @@ OpenTelemetry Integration:
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 import re
 from collections.abc import Mapping
@@ -250,6 +254,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             self.knowledge = None
             logger.warning("ControlPlane: knowledge base not available")
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def evaluate_input(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
         """Evaluate input content before processing.
 

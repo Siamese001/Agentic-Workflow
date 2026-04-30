@@ -10,6 +10,10 @@ Model-ready:   synthesis narrative, strategic implications, interpretation.
 
 from __future__ import annotations
 
+from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
+    traces_execute,
+)
+
 import logging
 from dataclasses import dataclass, field
 
@@ -244,6 +248,7 @@ class ResearchAssemblyEngine:
     def __init__(self, config: object | None = None) -> None:
         self._config = config
 
+    @traces_execute(layer="L3_ORCHESTRATION")
     def execute(self, request: ResearchRequest) -> ResearchAssemblyResult:
         """Assemble research artifact.
 
