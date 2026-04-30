@@ -17,6 +17,7 @@ from apps_research.provenance.ledger import (
     ProvenanceLedger,
     ProvenanceMode,
     ProvenanceValidationResult,
+    build_ledger_from_sections,
 )
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "ProvenanceLedger",
     "ProvenanceMode",
     "ProvenanceValidationResult",
+    "build_ledger_from_sections",
 ]

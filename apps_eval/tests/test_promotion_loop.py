@@ -17,8 +17,10 @@ import unittest
 from apps_eval.types import EvalRunSummary
 
 from apps_eval.integrations.promotion_loop import (
+    CombinedPromotionResult,
     CounterfactualUpliftResult,
     PromotionAdapterResult,
+    evaluate_combined_promotion,
     evaluate_counterfactual_uplift,
     evaluate_for_promotion,
 )
@@ -157,6 +159,74 @@ class TestCounterfactualUplift(unittest.TestCase):
         prod = _summary(trace_id="p1", n=50, passed=30)
         with self.assertRaises(ValueError):
             evaluate_counterfactual_uplift(shadow_summary=shadow, prod_summary=prod)
+
+
+class TestCombinedPromotion(unittest.TestCase):
+    def test_wilson_promotes_uses_wilson_signal(self) -> None:
+        # 90% candidate vs 70% baseline at n=100 → Wilson promotes.
+        cand = _summary(trace_id="cand", n=100, passed=90)
+        base = _summary(trace_id="base", n=100, passed=70)
+        result = evaluate_combined_promotion(
+            candidate_summary=cand, baseline_summary=base,
+        )
+        self.assertTrue(result.promote)
+        self.assertEqual(result.primary_signal, "wilson")
+        self.assertIsNone(result.counterfactual_result)
+
+    def test_wilson_inconclusive_counterfactual_rescues(self) -> None:
+        # Small n where Wilson cannot separate, but counterfactual is positive.
+        cand = _summary(trace_id="cand", n=20, passed=14)  # 70%
+        base = _summary(trace_id="base", n=20, passed=12)  # 60%
+        # Wilson with n=20 won't have non-overlapping CIs.
+        shadow = _summary(trace_id="sh", n=100, passed=80)
+        prod = _summary(trace_id="pd", n=100, passed=70)
+        result = evaluate_combined_promotion(
+            candidate_summary=cand, baseline_summary=base,
+            shadow_summary=shadow, prod_summary=prod,
+        )
+        # Wilson alone wouldn't promote; counterfactual should rescue.
+        self.assertFalse(result.wilson_result.verdict.promote)
+        self.assertTrue(result.promote)
+        self.assertEqual(result.primary_signal, "counterfactual")
+        self.assertIsNotNone(result.counterfactual_result)
+        self.assertGreater(result.counterfactual_result.uplift, 0.0)
+
+    def test_neither_signal_rejects(self) -> None:
+        cand = _summary(trace_id="cand", n=50, passed=30)  # worse than baseline
+        base = _summary(trace_id="base", n=50, passed=40)
+        shadow = _summary(trace_id="sh", n=50, passed=20)
+        prod = _summary(trace_id="pd", n=50, passed=40)
+        result = evaluate_combined_promotion(
+            candidate_summary=cand, baseline_summary=base,
+            shadow_summary=shadow, prod_summary=prod,
+        )
+        self.assertFalse(result.promote)
+        self.assertEqual(result.primary_signal, "neither")
+
+    def test_no_counterfactual_pair_skips_rescue(self) -> None:
+        # Wilson rejects; no shadow/prod supplied → primary='neither'.
+        cand = _summary(trace_id="cand", n=20, passed=14)
+        base = _summary(trace_id="base", n=20, passed=12)
+        result = evaluate_combined_promotion(
+            candidate_summary=cand, baseline_summary=base,
+        )
+        self.assertFalse(result.promote)
+        self.assertEqual(result.primary_signal, "neither")
+        self.assertIsNone(result.counterfactual_result)
+        self.assertIn("no counterfactual signal supplied", result.reason)
+
+    def test_partial_counterfactual_pair_skipped(self) -> None:
+        # Only shadow_summary provided → counterfactual not consulted.
+        cand = _summary(trace_id="cand", n=20, passed=14)
+        base = _summary(trace_id="base", n=20, passed=12)
+        shadow = _summary(trace_id="sh", n=50, passed=40)
+        result = evaluate_combined_promotion(
+            candidate_summary=cand, baseline_summary=base,
+            shadow_summary=shadow,
+        )
+        self.assertFalse(result.promote)
+        self.assertEqual(result.primary_signal, "neither")
+        self.assertIsNone(result.counterfactual_result)
 
 
 if __name__ == "__main__":

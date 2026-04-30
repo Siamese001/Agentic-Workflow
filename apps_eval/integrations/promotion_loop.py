@@ -208,9 +208,109 @@ def evaluate_counterfactual_uplift(
     )
 
 
+@dataclass(frozen=True)
+class CombinedPromotionResult:
+    """Combined promotion verdict — Wilson-CI as primary, counterfactual as rescue.
+
+    Cascade rule:
+      * If Wilson promotes → ``promote=True``, ``primary_signal='wilson'``.
+      * Else if shadow/prod summaries given AND counterfactual uplift > 0
+        → ``promote=True``, ``primary_signal='counterfactual'`` (Wilson was
+        inconclusive but paired uplift rescues the verdict).
+      * Else → ``promote=False``, ``primary_signal='neither'``.
+
+    Both component results are preserved for audit / logging; downstream
+    callers can render either as the source-of-decision in artifacts.
+    """
+
+    promote: bool
+    primary_signal: str  # 'wilson' | 'counterfactual' | 'neither'
+    wilson_result: PromotionAdapterResult
+    counterfactual_result: CounterfactualUpliftResult | None
+    reason: str
+
+
+def evaluate_combined_promotion(
+    *,
+    candidate_summary: EvalRunSummary,
+    baseline_summary: EvalRunSummary,
+    shadow_summary: EvalRunSummary | None = None,
+    prod_summary: EvalRunSummary | None = None,
+) -> CombinedPromotionResult:
+    """Combined Wilson-CI + counterfactual uplift promotion gate.
+
+    The Wilson-CI gate is primary — when it says PROMOTE, that's the answer
+    and counterfactual is not consulted. When Wilson is inconclusive (e.g.
+    candidate's lower-CI does NOT exceed baseline's upper-CI even though
+    the point estimate improved), the paired counterfactual uplift CAN
+    rescue the verdict if shadow/prod summaries are supplied AND the paired
+    uplift is strictly positive.
+
+    Args:
+        candidate_summary, baseline_summary: Required Wilson-CI inputs.
+        shadow_summary, prod_summary: Optional paired counterfactual inputs.
+            BOTH must be supplied to consult the counterfactual signal; if
+            only one is given the counterfactual layer is skipped.
+
+    Returns:
+        CombinedPromotionResult with ``promote`` boolean, the primary signal
+        identifier, and both component results for audit.
+    """
+    wilson_result = evaluate_for_promotion(
+        candidate_summary=candidate_summary,
+        baseline_summary=baseline_summary,
+    )
+
+    if wilson_result.verdict.promote:
+        return CombinedPromotionResult(
+            promote=True,
+            primary_signal="wilson",
+            wilson_result=wilson_result,
+            counterfactual_result=None,
+            reason=f"Wilson-CI promotes: {wilson_result.verdict.reason}",
+        )
+
+    # Wilson did NOT promote — try counterfactual rescue if pair supplied.
+    cf_result: CounterfactualUpliftResult | None = None
+    if shadow_summary is not None and prod_summary is not None:
+        cf_result = evaluate_counterfactual_uplift(
+            shadow_summary=shadow_summary,
+            prod_summary=prod_summary,
+        )
+        if cf_result.shadow_outperforms:
+            return CombinedPromotionResult(
+                promote=True,
+                primary_signal="counterfactual",
+                wilson_result=wilson_result,
+                counterfactual_result=cf_result,
+                reason=(
+                    f"Wilson inconclusive ({wilson_result.verdict.reason}); "
+                    f"counterfactual rescues with paired uplift={cf_result.uplift:+.4f} "
+                    f"over n={cf_result.n_paired}"
+                ),
+            )
+
+    return CombinedPromotionResult(
+        promote=False,
+        primary_signal="neither",
+        wilson_result=wilson_result,
+        counterfactual_result=cf_result,
+        reason=(
+            f"Wilson rejects ({wilson_result.verdict.reason}); "
+            + (
+                f"counterfactual uplift={cf_result.uplift:+.4f} did not rescue"
+                if cf_result is not None
+                else "no counterfactual signal supplied"
+            )
+        ),
+    )
+
+
 __all__ = [
+    "CombinedPromotionResult",
     "CounterfactualUpliftResult",
     "PromotionAdapterResult",
+    "evaluate_combined_promotion",
     "evaluate_counterfactual_uplift",
     "evaluate_for_promotion",
 ]

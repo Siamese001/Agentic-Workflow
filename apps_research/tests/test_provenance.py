@@ -136,5 +136,65 @@ class TestProvenanceMode(unittest.TestCase):
         self.assertNotEqual(ProvenanceMode.SECTION, ProvenanceMode.PER_CLAIM)
 
 
+class TestBuildLedgerFromSections(unittest.TestCase):
+    def test_build_from_engine_output(self) -> None:
+        """End-to-end — ResearchAssemblyEngine populates the ledger."""
+        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+        from apps_research.types import ResearchRequest
+
+        engine = ResearchAssemblyEngine()
+        result = engine.execute(ResearchRequest(topic="Agentic AI"))
+
+        # New field is present and is a ProvenanceLedger.
+        from apps_research.provenance import ProvenanceLedger
+        self.assertIsInstance(result.claim_provenance, ProvenanceLedger)
+
+        # The ledger contains at least one claim and validates against the
+        # engine's own source register (no orphan claims).
+        ledger = result.claim_provenance
+        self.assertGreater(len(ledger.claims), 0)
+        verdict = ledger.validate(
+            known_source_ids={s.source_id for s in result.source_register}
+        )
+        self.assertTrue(
+            verdict.passed,
+            f"Ledger validation failed: {verdict.violation_strings}"
+        )
+
+    def test_section_with_no_sources_yields_no_claims(self) -> None:
+        from apps_research.provenance import build_ledger_from_sections
+        from apps_research.types import ResearchSection
+
+        section = ResearchSection(
+            section_id="orphan",
+            heading="No Source Section",
+            body="This claim has no sources to back it. It should not appear.",
+            is_deterministic=True,
+            claim_type="assumption",
+            sources=[],
+            word_count=12,
+        )
+        ledger = build_ledger_from_sections([section])
+        self.assertEqual(len(ledger.claims), 0)
+
+    def test_claim_type_drives_confidence_band(self) -> None:
+        from apps_research.provenance import build_ledger_from_sections, ConfidenceBand
+        from apps_research.types import ResearchSection
+
+        section = ResearchSection(
+            section_id="s1",
+            heading="Direct Evidence",
+            body="Sentence one is direct. Sentence two is also direct.",
+            is_deterministic=True,
+            claim_type="direct_evidence",
+            sources=["SRC-001"],
+            word_count=10,
+        )
+        ledger = build_ledger_from_sections([section])
+        self.assertGreater(len(ledger.claims), 0)
+        for claim in ledger.claims:
+            self.assertEqual(claim.confidence_band, ConfidenceBand.HIGH)
+
+
 if __name__ == "__main__":
     unittest.main()

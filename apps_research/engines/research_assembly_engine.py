@@ -218,11 +218,18 @@ _AGENTIC_FRAMEWORKS = {
 
 @dataclass
 class ResearchAssemblyResult:
-    """Output of research assembly pass."""
+    """Output of research assembly pass.
+
+    The ``claim_provenance`` field carries a per-claim ``ProvenanceLedger``
+    when the engine ran with provenance attached. It is opt-in (built only
+    when sections carry source citations) so existing callers see no shape
+    change. See :mod:`apps_research.provenance`.
+    """
 
     sections: list[ResearchSection] = field(default_factory=list)
     comparison_matrix: list[ComparisonRow] = field(default_factory=list)
     source_register: list[SourceEntry] = field(default_factory=list)
+    claim_provenance: object | None = None  # ProvenanceLedger; typed loosely to avoid import cycle
 
 
 class ResearchAssemblyEngine:
@@ -258,16 +265,25 @@ class ResearchAssemblyEngine:
         sections = self._build_sections(request, mode, sources)
         matrix = self._build_comparison_matrix(request) if mode == "comparison" else []
 
+        # Build per-claim provenance ledger from the just-assembled sections.
+        # Lazy import to avoid pulling pydantic into module-import cost when
+        # the caller doesn't need provenance.
+        from apps_research.provenance import build_ledger_from_sections  # noqa: PLC0415
+
+        claim_ledger = build_ledger_from_sections(sections)
+
         _log.info(
-            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d",
+            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d claims=%d",
             mode,
             len(sections),
             len(sources),
+            len(claim_ledger.claims),
         )
         return ResearchAssemblyResult(
             sections=sections,
             comparison_matrix=matrix,
             source_register=sources,
+            claim_provenance=claim_ledger,
         )
 
     def _build_source_register(self, request: ResearchRequest) -> list[SourceEntry]:
