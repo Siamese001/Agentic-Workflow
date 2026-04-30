@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-187",
+  "selected_at_utc": "2026-04-30T15:05:41.360806+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:05:41.360806+00:00",
+  "canonical_owner_surface": "00A_L5_Governance_Safety",
+  "runtime_artifact_ref": "L5CertificationResult",
+  "otel_span_ref": "l5.certification.evidence_emitted",
+  "replay_digest": "b6396836496090da96e7e69beb6d6440ac853ab85e348411414b4d88413408ad",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L5_safety/test_10c_req_187.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L5_safety/test_10c_req_187.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_l5_certification_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "25328cee11659a58489036058ef1acb9389ed12f",
+  "git_dirty_at_test_time": false,
+  "content_hash": "a479db47ab044c9068a633cd371aac21382b28acd76f68bac3221d1497c30808"
+}

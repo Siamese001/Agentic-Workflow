@@ -1,0 +1,19 @@
+{
+  "req_id": "10C-REQ-005",
+  "selected_at_utc": "2026-04-30T15:05:41.351979+00:00",
+  "evidence_bound_at_utc": "2026-04-30T15:05:41.351979+00:00",
+  "canonical_owner_surface": "Offline_Ingestion_Index_Build",
+  "runtime_artifact_ref": "ChunkSealedEnvelope",
+  "otel_span_ref": "ingest.chunk.sealed",
+  "replay_digest": "65dd5cf044f39598884fcf2f69c287164be3e6ea193e13606e8b2c6fad16476d",
+  "negative_control_result": "PASS",
+  "test_file": "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_005.py",
+  "acceptance_command": "python -m pytest tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_005.py -v --no-header",
+  "ci_gate_name": "ops_scripts/ci/check_ingestion_index_proof.py",
+  "test_result": "PASS",
+  "gate_result": "PASS",
+  "proof_status": "EVIDENCE_PRESENT",
+  "git_head_at_test_time": "25328cee11659a58489036058ef1acb9389ed12f",
+  "git_dirty_at_test_time": false,
+  "content_hash": "d71709f147fb4aeaf0366cc2afc2467a3ac46f5dac0faf812b0b7c35ceeb6a4a"
+}
