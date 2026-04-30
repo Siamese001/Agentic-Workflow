@@ -75,6 +75,12 @@ jobs:
       - name: W0.5 verify_artifact_payload_hashes
         run: python scripts/verify_artifact_payload_hashes.py
 
+      # ── W0 closure #3: language-discipline audit
+      # Forbids "runtime certified", "100% complete", "semantic cache certified",
+      # "OTEL certified", "replay certified", etc. in any W0 artifact.
+      - name: W0.5b verify_w0_language_discipline
+        run: python scripts/verify_w0_language_discipline.py
+
       # ── W1/W3 verifier-presence stubs (fail-closed when artifacts missing)
       # These rows govern THE CI WORKFLOW WIRING ONLY in W0. The actual
       # semantic-cache / OTel / replay logic is owned by W1/W3.
@@ -118,7 +124,7 @@ jobs:
             echo "SKIP: no anti-bypass mutation verifier yet (W2 deliverable)"
           fi
 
-      # ── W0 unit tests
+      # ── W0 unit tests (incl. closure invariants)
       - name: W0.10 run W0 unit tests
         run: |
           python -m pytest \
@@ -126,6 +132,7 @@ jobs:
             tests/runtime/test_runtime_certification_acceptance.py \
             tests/runtime/test_source_divergence.py \
             tests/runtime/test_artifact_payload_hashes.py \
+            tests/runtime/test_w0_closure_invariants.py \
             -p no:xdist -q --timeout=60
 
       # ── Upload artifacts so downstream jobs / humans can inspect
