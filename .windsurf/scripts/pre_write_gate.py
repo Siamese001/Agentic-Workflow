@@ -31,6 +31,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _secret_patterns import scan_content as _scan_secrets  # noqa: E402
+from _ssot_folder_check import decide as _ssot_decide  # noqa: E402
 
 fail_policy = "closed"
 
@@ -320,6 +321,27 @@ def main() -> int:
     # Payload-level file type check (covers cases where argv is not provided).
     if not file_path.endswith(".py") and not file_path.endswith(mcp_config_suffix):
         return 0
+
+    # --- SSOT folder routing check (constitutional §31) ---------------------
+    # Only catches NEW files — pre-existing files in any folder pass through.
+    # Bypass: SSOT_FOLDER_BYPASS=1 (logged below).
+    import os
+    ssot_bypass = os.environ.get("SSOT_FOLDER_BYPASS") == "1"
+    try:
+        target_exists = Path(file_path).exists() if file_path else True
+    except OSError:  # guardian: allow-return-none-swallow -- best-effort path probe; SSOT check fails open here
+        target_exists = True
+    ssot_violation = _ssot_decide(file_path, target_exists)
+    if ssot_violation is not None and not ssot_bypass:
+        return _exit_block(
+            f"SSOT folder routing violation [{ssot_violation.forbidden}]: "
+            f"{ssot_violation.message} Bypass: SSOT_FOLDER_BYPASS=1.",
+        )
+    if ssot_violation is not None and ssot_bypass:
+        _warn(
+            f"SSOT folder violation BYPASSED for {ssot_violation.path} "
+            f"(suggested: {ssot_violation.suggested}).",
+        )
 
     # --- Task existence check for T2/T3 (enforce plan-first discipline) ---
     task_block = check_task_exists(file_path)

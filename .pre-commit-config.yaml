@@ -566,6 +566,23 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T7q: SSOT Folder Routing (Constitutional §31) -----------------------------
+      # Blocks NEW Python files written into forbidden roots: scripts/,
+      # repo-root, tools/_oneoff/, tools/_oneshot/, or hook-prefix files
+      # outside .windsurf/scripts/. Pre-existing files are never flagged.
+      # Bypass: SSOT_FOLDER_BYPASS=1.
+      # Sibling Windsurf hook: .windsurf/scripts/pre_write_gate.py
+      # (imports the same helper at .windsurf/scripts/_ssot_folder_check.py
+      # to keep the author-time and commit-time decisions identical).
+      # Rule SSOT: .windsurf/rules/ssot-folder-enforcement.md
+      - id: ssot-folder-routing
+        name: "T7q: SSOT Folder Routing (§31)"
+        entry: py ops_scripts/ci/check_ssot_folder_routing.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T7m: Canonical Pipeline Schema (J1 gate on manifest edits) ----------------
       # Runs J1 only when the canonical pipelines manifest, its schema, or the
       # gate script changes. ADG read required, but scoped trigger keeps the

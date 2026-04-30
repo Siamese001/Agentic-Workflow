@@ -46,6 +46,7 @@ This repo uses a **two-tier model**:
 | `.windsurf/rules/plan-location.md` | SSOT plan location and overwrite rules |
 | `.windsurf/rules/query-progress-bar.md` | Long-running operation progress contract |
 | `.windsurf/rules/adg-canonical-invariants.md` | ADG doctrinal floor — SSOT hierarchy, 5 Surfaces, 4 Antipatterns, 4 Archetypes, Zero-Loss Propagation Pipeline |
+| `.windsurf/rules/ssot-folder-enforcement.md` | SSOT folder routing for NEW Python files (constitutional §31); blocks `scripts/`, repo-root `*.py`, `tools/_oneoff/`, `tools/_oneshot/`, hook-prefix misroutes |
 
 ## On-Demand Rule Files
 

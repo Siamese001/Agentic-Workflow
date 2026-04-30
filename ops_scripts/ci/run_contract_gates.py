@@ -414,6 +414,12 @@ def main():
             "§26 Windsurf config schema purity",
             "ops_scripts/ci/check_windsurf_config_schema.py",
         ),
+        # §31 — SSOT folder routing for NEW Python files. Pre-commit covers
+        # commit-time staged-file checks; this aggregator entry ensures CI
+        # workflows that stage files (e.g., during release branches or merge
+        # queues) also see the gate. Pass-through when no staged additions.
+        # Sibling Windsurf hook: .windsurf/scripts/pre_write_gate.py.
+        ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
