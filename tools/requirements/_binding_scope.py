@@ -67,6 +67,16 @@ CRITICAL_REQ_IDS: tuple[str, ...] = (
     # Offline Ingestion / Index Build (9):
     "10C-REQ-001", "10C-REQ-002", "10C-REQ-006", "10C-REQ-007", "10C-REQ-012",
     "10C-REQ-014", "10C-REQ-015", "10C-REQ-016", "10C-REQ-017",
+    # --- Wave 3 (30 HIGH severity rows) ---
+    # C0 Context Engine (19):
+    "10C-REQ-031", "10C-REQ-032", "10C-REQ-033", "10C-REQ-034", "10C-REQ-043",
+    "10C-REQ-044", "10C-REQ-045", "10C-REQ-046", "10C-REQ-047", "10C-REQ-048",
+    "10C-REQ-081", "10C-REQ-082", "10C-REQ-083", "10C-REQ-084", "10C-REQ-141",
+    "10C-REQ-142", "10C-REQ-143", "10C-REQ-144", "10C-REQ-145",
+    # L1 Reasoning Plan (11):
+    "10C-REQ-056", "10C-REQ-060", "10C-REQ-061", "10C-REQ-065", "10C-REQ-066",
+    "10C-REQ-068", "10C-REQ-069", "10C-REQ-070", "10C-REQ-169", "10C-REQ-174",
+    "10C-REQ-180",
 )
 
 
@@ -150,6 +160,37 @@ CRITICAL_BINDING_SCOPE: tuple[str, ...] = (
     "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_015.py",
     "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_016.py",
     "tests/unit/agentic_core/L1_cognition/c0_context/ingestion/test_10c_req_017.py",
+    # --- Wave 3: 19 C0 Context + 11 L1 Plan HIGH rows ---
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_031.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_032.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_033.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_034.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_043.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_044.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_045.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_046.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_047.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_048.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_081.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_082.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_083.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_084.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_141.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_142.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_143.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_144.py",
+    "tests/unit/agentic_core/L1_cognition/c0_context/test_10c_req_145.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_056.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_060.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_061.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_065.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_066.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_068.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_069.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_070.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_169.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_174.py",
+    "tests/unit/agentic_core/L1_cognition/test_10c_req_180.py",
     # --- Tooling (proof-binding pipeline) ---
     "tools/requirements/emit_proof_bundles.py",
     "tools/requirements/validate_10c_proof_ledger.py",

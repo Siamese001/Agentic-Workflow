@@ -36,6 +36,7 @@ ARTIFACT_DISPATCH = {
     "L5CertificationResult": ("assert_l5_certification_chain_present", "_l5cert"),
     "CommitRequest": ("assert_uwg_commit_request_invariants", "_uwg"),
     "ExecutionResult": ("assert_l2_execution_sealed", "_l2exec"),
+    "FinalEvidenceContract": ("assert_final_evidence_contract_anchored", "_c0evid"),
 }
 
 
@@ -189,6 +190,25 @@ def _valid_artifact() -> dict:
         "no_routing_assertion": True,
     }
 ''',
+    "FinalEvidenceContract": '''
+def _valid_artifact() -> dict:
+    return {
+        "contract_id": "fec-{nid}-001",
+        "evidence_chain": [
+            {"ref": "evidence-{nid}-1", "doc_id": "doc-A", "span": "p1"},
+            {"ref": "evidence-{nid}-2", "doc_id": "doc-B", "span": "p2"},
+        ],
+        "citation_anchors": [
+            {"claim_id": "claim-{nid}-1", "evidence_ref": "evidence-{nid}-1"},
+        ],
+        "support_targets": ["PA", "L2"],
+        "owner_surface": OWNER_SURFACE,
+        "assembly_hash": "asm-{nid}-h",
+        "evidence_chain_complete": True,
+        "citation_anchors_resolved": True,
+        "no_unanchored_claims_assertion": True,
+    }
+''',
 }
 
 # Per-artifact "drift inducer" — a single field flip that MUST violate the assertion.
@@ -202,6 +222,7 @@ DRIFT_INDUCERS = {
     "L5CertificationResult": ('record["evidence_refs"] = []', "evidence_refs"),
     "CommitRequest": ('record["single_writer_attestation"] = False', "single_writer_attestation"),
     "ExecutionResult": ('record["no_durable_commit_assertion"] = False', "no_durable_commit_assertion"),
+    "FinalEvidenceContract": ('record["no_unanchored_claims_assertion"] = False', "no_unanchored_claims_assertion"),
 }
 
 # Per-artifact "missing required field" inducer (drop a required field).
@@ -215,6 +236,7 @@ MISSING_INDUCERS = {
     "L5CertificationResult": "certification_id",
     "CommitRequest": "commit_request_id",
     "ExecutionResult": "execution_id",
+    "FinalEvidenceContract": "contract_id",
 }
 
 

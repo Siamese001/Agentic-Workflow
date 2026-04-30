@@ -157,6 +157,22 @@ REQUIRED_FIELDS: Mapping[str, tuple[str, ...]] = {
         "policy_hash",
         "blueprint_hash",
     ),
+    # --- Wave 3 additions (C0 Context Engine) ---
+    "FinalEvidenceContract": (
+        # C0 Context Engine: 19 NEEDS_PROOF rows. The contract that binds
+        # retrieved evidence to citation anchors and downstream support
+        # targets. Constitutional invariant: every claim downstream must
+        # trace back to an entry in evidence_chain via citation_anchors.
+        "contract_id",
+        "evidence_chain",       # list of resolved evidence refs (non-empty)
+        "citation_anchors",     # list of (claim_id, evidence_ref) bindings
+        "support_targets",      # list of downstream consumers (PA, L2, etc.)
+        "owner_surface",
+        "assembly_hash",
+        "evidence_chain_complete",        # MUST be True
+        "citation_anchors_resolved",      # MUST be True
+        "no_unanchored_claims_assertion", # MUST be True
+    ),
 }
 
 
@@ -392,4 +408,37 @@ def assert_l2_execution_sealed(record: Mapping[str, Any]) -> None:
         raise ArtifactShapeError(
             "ExecutionResult missing side_effects_proposed; "
             "L2 sealed-envelope invariant: side effects PROPOSED only, never committed"
+        )
+
+
+def assert_final_evidence_contract_anchored(record: Mapping[str, Any]) -> None:
+    """C0 Context: FinalEvidenceContract MUST have non-empty evidence_chain,
+    every citation anchor must resolve to an entry in evidence_chain, and
+    no_unanchored_claims_assertion must be True (no claim leaks past C0
+    without an evidence binding).
+    """
+    for flag in (
+        "evidence_chain_complete",
+        "citation_anchors_resolved",
+        "no_unanchored_claims_assertion",
+    ):
+        if record.get(flag) is not True:
+            raise ArtifactShapeError(
+                f"FinalEvidenceContract.{flag} must be True; "
+                f"C0 invariant: every downstream claim must be anchored to evidence_chain"
+            )
+    chain = record.get("evidence_chain")
+    if not isinstance(chain, list) or len(chain) == 0:
+        raise ArtifactShapeError(
+            f"FinalEvidenceContract.evidence_chain must be a non-empty list, got {type(chain).__name__}"
+        )
+    anchors = record.get("citation_anchors")
+    if not isinstance(anchors, list):
+        raise ArtifactShapeError(
+            f"FinalEvidenceContract.citation_anchors must be a list, got {type(anchors).__name__}"
+        )
+    targets = record.get("support_targets")
+    if not isinstance(targets, list):
+        raise ArtifactShapeError(
+            f"FinalEvidenceContract.support_targets must be a list, got {type(targets).__name__}"
         )
