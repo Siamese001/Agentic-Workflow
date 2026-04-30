@@ -208,8 +208,155 @@ def pack_build_span(
             raise
 
 
+# ---- L1 Cognition surface: topic classification (Wave 2) -------------------
+#
+# The PDF section-classification problem: a research-brief PDF is converted
+# to plain text by pdfplumber/pypdf; the regex heading detector in
+# ``from_research_brief._split_sections`` finds heading boundaries, but
+# **classifying** a heading like "AMERICAS STRATEGY" against the canonical
+# ResearchInputs targets used to be a substring-match heuristic that
+# silently failed on PDFs whose headings did not contain any of the
+# pre-baked hint strings. The Searce research brief landed entirely in one
+# section because none of its headings matched the regex-substring map.
+#
+# Spine fix: embed each candidate target's textual descriptor once via
+# BGE-M3 (cached for the process), and at classification time embed the
+# section text + cosine-rank against descriptors. This is genuine semantic
+# routing, not surface keyword matching.
+#
+# Graceful degradation contract: when sentence-transformers is not
+# installed OR the BGE-M3 weights are not locally cached AND
+# ``BGE_ALLOW_MODEL_DOWNLOAD`` is unset, the function falls back to a
+# transparent keyword-overlap scorer. Tests run on the fallback path —
+# embedding-based classification is opt-in via either pre-cached weights
+# or ``BGE_ALLOW_MODEL_DOWNLOAD=true``.
+
+import re as _re
+
+_CANDIDATE_VEC_CACHE: dict[tuple[tuple[str, str], ...], dict[str, list[float]]] = {}
+
+
+def _get_candidate_embeddings(
+    candidates: dict[str, str],
+) -> dict[str, list[float]] | None:
+    """Embed the candidate descriptors once per process. Returns None on failure."""
+    cache_key = tuple(sorted(candidates.items()))
+    if cache_key in _CANDIDATE_VEC_CACHE:
+        return _CANDIDATE_VEC_CACHE[cache_key]
+    try:
+        from agentic_core.embeddings.bge_runtime import bge_embed_batch
+
+        keys = list(candidates.keys())
+        descs = list(candidates.values())
+        vecs = bge_embed_batch(descs)
+        result = dict(zip(keys, vecs, strict=True))
+    except (ImportError, RuntimeError, OSError, ValueError):
+        # ImportError: sentence-transformers absent
+        # RuntimeError: BGE_DIM_MISMATCH or BGEInstallError
+        # OSError: model files not locally cached and BGE_ALLOW_MODEL_DOWNLOAD=false
+        # ValueError: empty input from a misconfigured caller
+        # All paths fall through to keyword scoring; this is the documented degradation.
+        return None
+    _CANDIDATE_VEC_CACHE[cache_key] = result
+    return result
+
+
+def _cosine_normalized(v1: list[float], v2: list[float]) -> float:
+    """Cosine similarity for L2-normalized vectors == dot product."""
+    return float(sum(a * b for a, b in zip(v1, v2, strict=True)))
+
+
+def _keyword_classify(
+    text: str, candidates: dict[str, str]
+) -> tuple[str, float]:
+    """Word-overlap fallback when BGE is unavailable.
+
+    Score = |text_words ∩ descriptor_words| / |descriptor_words|.
+    Imperfect, but transparent and deterministic.
+    """
+    text_words = set(_re.findall(r"\b[a-z]{3,}\b", text.lower()))
+    if not text_words:
+        return ("", 0.0)
+    scores: dict[str, float] = {}
+    for key, desc in candidates.items():
+        desc_words = set(_re.findall(r"\b[a-z]{3,}\b", desc.lower()))
+        if not desc_words:
+            scores[key] = 0.0
+            continue
+        scores[key] = len(text_words & desc_words) / len(desc_words)
+    if not scores:
+        return ("", 0.0)
+    best_key, best_score = max(scores.items(), key=lambda kv: kv[1])
+    return (best_key, best_score)
+
+
+def classify_section_topic(
+    text: str,
+    candidates: dict[str, str],
+    *,
+    max_chars: int = 2000,
+) -> tuple[str, float, str]:
+    """Classify a free-text section against named topic descriptors.
+
+    Args:
+        text: Raw section body.
+        candidates: ``{topic_key: descriptor_text}`` map. The descriptor is
+            the prose against which ``text`` is ranked. ``topic_key`` is the
+            caller's symbol for the topic (e.g. ``"role_areas"``).
+        max_chars: Cap on how much of ``text`` is fed to the embedder.
+            BGE-M3 has a ~512-token effective limit; 2000 chars covers
+            ≈400 tokens with English text and avoids silent truncation
+            artifacts.
+
+    Returns:
+        ``(best_topic_key, score, mode)`` where:
+            - ``best_topic_key`` is the highest-ranked key in ``candidates``
+              (or empty string if neither path could classify).
+            - ``score`` ∈ [0.0, 1.0] for the keyword path; ∈ [-1.0, 1.0]
+              for the cosine path (in practice 0–1 since descriptors and
+              section text are both English prose).
+            - ``mode`` ∈ ``{"embedding", "keyword", "empty"}`` so callers
+              can apply different thresholds per mode.
+
+    Notes:
+        Embedding path uses ``agentic_core.embeddings.bge_runtime`` (BGE-M3,
+        1024-dim, L2-normalized). When unavailable, falls through to
+        word-overlap. The embedding path is cached: candidate descriptors
+        are embedded once per process; only the section text is embedded
+        per call.
+    """
+    if not text or not text.strip():
+        return ("", 0.0, "empty")
+    if not candidates:
+        return ("", 0.0, "empty")
+
+    truncated = text.strip()[:max_chars]
+
+    # Try the embedding path first.
+    candidate_vecs = _get_candidate_embeddings(candidates)
+    if candidate_vecs is not None:
+        try:
+            from agentic_core.embeddings.bge_runtime import bge_embed_query
+
+            text_vec = bge_embed_query(truncated)
+            scores = {
+                k: _cosine_normalized(text_vec, v)
+                for k, v in candidate_vecs.items()
+            }
+            best_key, best_score = max(scores.items(), key=lambda kv: kv[1])
+            return (best_key, best_score, "embedding")
+        except (ImportError, RuntimeError, OSError, ValueError):
+            # Fall through to keyword scoring; same exception envelope as
+            # _get_candidate_embeddings — keep the contract symmetric.
+            pass
+
+    best_key, best_score = _keyword_classify(truncated, candidates)
+    return (best_key, best_score, "keyword")
+
+
 __all__ = [
     "SPAN_NAMESPACE",
+    "classify_section_topic",
     "ensure_pack_dir",
     "get_tracer",
     "pack_build_span",
