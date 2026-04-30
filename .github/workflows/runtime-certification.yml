@@ -169,13 +169,32 @@ jobs:
           EMBEDDING_ENABLED: "true"
         run: python tools/certification/evidence/probe_threshold_calibration.py
 
-      # Re-run W1.2a (model) and W1.2b (threshold) AFTER W1.2g/h so they
-      # consume the new W1p3 evidence artifacts and upgrade their verdicts
-      # when the operational probe + calibration produced PASS evidence.
-      - name: W1.2a-rerun probe_semantic_cache_model (consume W1p3 evidence)
+      # ── W1 phase 4 (threshold sweep + ADR generation — PROPOSED_NOT_APPLIED)
+      # Both steps continue-on-error because CI runners lack BGE-M3 cache.
+      # Expected CI outcomes without BGE-M3:
+      #   probe_threshold_sweep  -> status=INFRASTRUCTURE_GAP
+      #   generate_threshold_adr -> exit 2 (sweep status insufficient)
+      # Per user 2026-04-30 W1p4: ADR is PROPOSED_NOT_APPLIED. No CI magic
+      # auto-applies a threshold change. The CI workflow's job is to emit
+      # evidence, never to approve or apply.
+      - name: W1.2i probe_threshold_sweep (6-threshold calibration sweep)
+        continue-on-error: true
+        env:
+          EMBEDDING_ENABLED: "true"
+        run: python tools/certification/evidence/probe_threshold_sweep.py
+
+      - name: W1.2j generate_threshold_adr (PROPOSED_NOT_APPLIED)
+        continue-on-error: true
+        run: python scripts/generate_threshold_adr.py
+
+      # Re-run W1.2a (model) and W1.2b (threshold) AFTER W1.2g/h/i/j so they
+      # consume the latest W1p3/p4 evidence artifacts and apply the ADR gate.
+      - name: W1.2a-rerun probe_semantic_cache_model (consume W1p3/p4 evidence)
+        env:
+          EMBEDDING_ENABLED: "true"
         run: python tools/certification/evidence/probe_semantic_cache_model.py
 
-      - name: W1.2b-rerun probe_semantic_cache_threshold (consume W1p3 evidence)
+      - name: W1.2b-rerun probe_semantic_cache_threshold (consume W1p3/p4 evidence)
         run: python tools/certification/evidence/probe_semantic_cache_threshold.py
 
       - name: W1.3 compose semantic_cache_subclaims sidecar
@@ -277,7 +296,13 @@ jobs:
             tests/runtime/test_calibration_dataset.py \
             tests/runtime/test_threshold_calibration.py \
             tests/runtime/test_w1_phase3_adr_path.py \
-            -p no:xdist -q --timeout=180
+            tests/runtime/test_calibration_dataset_expanded.py \
+            tests/runtime/test_threshold_sweep_probe.py \
+            tests/runtime/test_threshold_adr_artifact.py \
+            tests/runtime/test_composer_adr_gate.py \
+            tests/runtime/test_model_scope_field.py \
+            tests/runtime/test_w1_phase4_invariants.py \
+            -p no:xdist -p no:testmon -q --timeout=300
 
       # ── Upload artifacts so downstream jobs / humans can inspect
       - name: Upload certification artifacts
@@ -289,4 +314,5 @@ jobs:
             artifacts/certification/*.json
             artifacts/certification/*.md
             data/certification/calibration_pairs.json
+            docs/adr/semantic_cache_threshold_recalibration.md
           retention-days: 30

@@ -3,7 +3,7 @@
 **Status**: PROPOSED_NOT_APPLIED  
 **Owner approval**: PENDING_APPROVAL  
 **ADR version**: 1.0  
-**Created**: 2026-04-30T23:10:48.112933Z  
+**Created**: 2026-04-30T23:34:17.956859Z  
 **Generator**: `scripts/generate_threshold_adr.py`
 
 ## Context
@@ -109,7 +109,7 @@ An approver must:
 
 ## References
 
-- Sweep evidence: `artifacts\certification\threshold_sweep_results.json` (SHA-256: `01c526de90f46bf976de42c7521b7cfbdc6de09834f328e75fe7e9f034f9f732`)
+- Sweep evidence: `artifacts\certification\threshold_sweep_results.json` (SHA-256: `cdac96f24ae01100e0c5d3eb0a581d42be5399a55f2febd834e875215256223b`)
 - W1p3 plan: `.windsurf/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
 - W1p4 plan: `.windsurf/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md`
 - Composer: `scripts/compose_semantic_cache_subclaims.py`

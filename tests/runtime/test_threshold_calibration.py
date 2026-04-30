@@ -163,11 +163,16 @@ class TestCalibrationGapPath:
     def test_adr_path_documented_not_auto_created(self):
         if not _bge_m3_deps_available():
             pytest.skip("BGE-M3 deps not available")
+        adr = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_threshold_adr.json"
+        mtime_before = adr.stat().st_mtime if adr.exists() else None
         _run(PROBE_CAL, {"EMBEDDING_ENABLED": "true"})
         a = _read()
         assert "ADR" in a["adr_path_note"]
-        # Probe MUST NOT create the ADR
-        adr = REPO_ROOT / "artifacts" / "certification" / "semantic_cache_threshold_adr.json"
-        assert not adr.exists(), (
-            "Probe must not auto-create the ADR artifact"
-        )
+        # Probe MUST NOT create or modify the ADR
+        if mtime_before is None:
+            assert not adr.exists(), "Probe must not auto-create the ADR artifact"
+        else:
+            assert adr.exists()
+            assert adr.stat().st_mtime == mtime_before, (
+                "Probe must not modify a pre-existing ADR"
+            )

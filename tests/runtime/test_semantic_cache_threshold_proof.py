@@ -78,10 +78,12 @@ class TestAntiCheatRule1NoSilentLowering:
         rc = _run({"SEMANTIC_CACHE_THRESHOLD_DYNAMIC": "0.80"})
         assert rc == 0
         a = _read_artifact()
-        # With override and no ADR -> OVERRIDE_PRESENT (BLOCKED path)
+        # With override and no APPROVED+APPLIED ADR -> OVERRIDE_PRESENT (BLOCKED path).
+        # W1p4: a PROPOSED_NOT_APPLIED ADR on disk does NOT authorize override —
+        # only APPROVED+APPLIED ADRs do. The probe must still report OVERRIDE_PRESENT.
         assert a["threshold_subclaim_status"] == "OVERRIDE_PRESENT"
         assert a["override_active"] is True
-        assert a["adr_calibration_artifact"]["adr_artifact_exists"] is False
+        assert a["adr_calibration_artifact"]["adr_approved_and_applied"] is False
 
     def test_anti_cheat_flags_recorded(self):
         _run({"SEMANTIC_CACHE_THRESHOLD_DYNAMIC": None})
@@ -107,10 +109,29 @@ class TestADRPathDocumentedButNotActivated:
         )
 
     def test_adr_artifact_not_created_by_probe(self):
-        """Per user 2026-04-30: probe must not create an ADR in this pass."""
+        """Per user 2026-04-30: probe must not create an ADR.
+
+        W1p3 assertion: no ADR on disk at all.
+        W1p4 assertion: the probe ITSELF does not create the ADR — if one
+        exists, a separate generator script (scripts/generate_threshold_adr.py)
+        created it. We verify the probe is not the generator by running the
+        probe and checking it does NOT change the ADR file when run.
+        """
+        adr_path = REPO_ROOT / "artifacts/certification/semantic_cache_threshold_adr.json"
+        adr_mtime_before = adr_path.stat().st_mtime if adr_path.exists() else None
+
         _run({"SEMANTIC_CACHE_THRESHOLD_DYNAMIC": None})
-        a = _read_artifact()
-        adr_path = REPO_ROOT / a["adr_calibration_artifact"]["adr_artifact_path"]
-        assert not adr_path.exists(), (
-            f"Probe must not auto-create the ADR artifact at {adr_path}"
-        )
+
+        if adr_mtime_before is None:
+            # W1p3 state: probe did not create one
+            assert not adr_path.exists(), (
+                f"Probe must not auto-create the ADR artifact at {adr_path}"
+            )
+        else:
+            # W1p4 state: ADR exists; probe must not have touched it
+            assert adr_path.exists()
+            adr_mtime_after = adr_path.stat().st_mtime
+            assert adr_mtime_after == adr_mtime_before, (
+                f"Probe must not modify pre-existing ADR; mtime changed "
+                f"{adr_mtime_before} -> {adr_mtime_after}"
+            )
