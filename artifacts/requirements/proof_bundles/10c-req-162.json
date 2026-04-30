@@ -1,0 +1,22 @@
+{
+  "req_id": "10C-REQ-162",
+  "selected_at_utc": "2026-04-30T17:44:28.873377+00:00",
+  "evidence_bound_at_utc": "2026-04-30T17:44:28.873377+00:00",
+  "canonical_owner_surface": "Cross_Cutting_Observability_Replay_Audit",
+  "runtime_artifact_ref": null,
+  "otel_span_ref": null,
+  "replay_digest": null,
+  "negative_control_result": "N/A",
+  "test_file": null,
+  "acceptance_command": null,
+  "ci_gate_name": null,
+  "test_result": "N/A",
+  "gate_result": "N/A",
+  "proof_status": "ACCEPTED_WITH_CAVEAT",
+  "caveat_class": "PEDAGOGICAL_ROW",
+  "caveat_reason": "PEDAGOGICAL_ROW: Contextual Refinement primer staging-area note, not a runtime proof obligation.",
+  "attestation_artifact": "tools/requirements/harden_10c_ledger.py",
+  "git_head_at_test_time": "0d7bcdd089b23159980d1f31854ce63c52b14dbd",
+  "git_dirty_at_test_time": true,
+  "content_hash": "cad9e97dd02cd2a85d26636ea3be9a41cbd624e31ada34a6d7ac448c6973d34e"
+}
