@@ -119,9 +119,22 @@ def _resolve_research(
     options: WizardOptions,
     interactive: bool,
 ) -> ResearchInputs:
-    """Pick research source: PDF/MD, apps_research trace, or empty."""
+    """Pick research source: PDF/MD, apps_research trace, or empty.
+
+    When PDF/markdown is the source, the route registry is passed through
+    so the parser can rank routes by interviewer signal and seed
+    ``likely_questions`` in priority order (W2.3). The seeded groups have
+    empty questions lists — operator fills questions per route. The
+    apps_research trace path emits its own likely_questions, so seeding
+    is skipped to avoid double-population.
+    """
+    # Lazy import: registry loading touches the route_registry.yaml file
+    # and we only want to pay that cost on the PDF/markdown path.
     if options.research_pdf is not None:
-        return load_research_brief(options.research_pdf)
+        from apps_qna.config.route_registry import load_route_registry
+
+        registry = load_route_registry()
+        return load_research_brief(options.research_pdf, route_registry=registry)
     if options.research_trace_id is not None:
         return load_apps_research(
             trace_id=options.research_trace_id,
@@ -135,8 +148,11 @@ def _resolve_research(
     print("  3) Skip — start with an empty research scaffold")
     choice = _prompt("Choose 1/2/3", default="3")
     if choice == "1":
+        from apps_qna.config.route_registry import load_route_registry
+
+        registry = load_route_registry()
         path = Path(_prompt("  Briefing path"))
-        return load_research_brief(path)
+        return load_research_brief(path, route_registry=registry)
     if choice == "2":
         trace = _prompt("  Trace id (8-hex)")
         return load_apps_research(trace_id=trace or None)

@@ -44,13 +44,18 @@ import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from apps_qna.integrations.spine_adapter import classify_section_topic
 from apps_qna.types.qna_types import (
     GlossaryEntry,
+    LikelyQuestionGroup,
     ResearchClaim,
     ResearchInputs,
 )
+
+if TYPE_CHECKING:
+    from apps_qna.config.route_registry import RouteRegistry
 
 _log = logging.getLogger(__name__)
 
@@ -216,6 +221,114 @@ def _glossary_from_text(text: str) -> list[GlossaryEntry]:
     return entries
 
 
+# W2.2 — Global glossary extraction patterns. These scan the entire research
+# brief, not just sections classified as "glossary", to catch terms defined
+# inline anywhere in the text. Quality-gated by definition length + dedup.
+
+# Acronym in parentheses: "Model Context Protocol (MCP)" or "MCP (Model
+# Context Protocol)". The first variant is "expansion -> acronym"; the
+# second is "acronym -> expansion". Both are common in research briefs.
+_ACRONYM_EXPANSION_RE = re.compile(
+    r"\b([A-Z][a-zA-Z][\w\s\-&/]{4,80}?)\s*\(([A-Z]{2,8})\)"
+)
+_ACRONYM_INVERSE_RE = re.compile(
+    r"\b([A-Z]{2,8})\s*\(([A-Z][a-zA-Z][\w\s\-&/]{4,80}?)\)"
+)
+
+# Inline definition: "X is/means/refers to/stands for Y", with Y running to
+# the next sentence-ending punctuation.
+_INLINE_DEFINITION_RE = re.compile(
+    r"\b([A-Z][\w]{1,30}(?:\s+[A-Z][\w]{1,30}){0,3})\s+"
+    r"(?:is|means|refers to|stands for|denotes|describes|represents)\s+"
+    r"((?:a|an|the|its|their)?\s*[a-z][^.\n]{15,200})"
+    r"[.\n]"
+)
+
+_GLOSSARY_DEF_MIN_CHARS: int = 12
+_GLOSSARY_DEF_MAX_CHARS: int = 240
+_GLOSSARY_TERM_MAX_CHARS: int = 60
+# Stop-words that should never be glossary terms (false positives from the
+# inline-definition pattern).
+_GLOSSARY_TERM_BLOCKLIST: frozenset[str] = frozenset(
+    {
+        "this", "that", "these", "those", "the", "it", "they", "we", "i",
+        "he", "she", "you", "there", "here", "what", "which", "who",
+        "company", "role", "position", "interview", "interviewer",
+    }
+)
+
+
+def _accept_glossary_entry(term: str, defn: str) -> bool:
+    """Quality gate for an extracted candidate."""
+    term = term.strip()
+    defn = defn.strip()
+    if not term or not defn:
+        return False
+    if len(term) > _GLOSSARY_TERM_MAX_CHARS:
+        return False
+    if not (_GLOSSARY_DEF_MIN_CHARS <= len(defn) <= _GLOSSARY_DEF_MAX_CHARS):
+        return False
+    if term.lower() in _GLOSSARY_TERM_BLOCKLIST:
+        return False
+    # Definitions that are themselves all-caps or mostly punctuation are
+    # almost always extractor noise.
+    alpha_ratio = sum(c.isalpha() for c in defn) / max(1, len(defn))
+    if alpha_ratio < 0.55:
+        return False
+    return True
+
+
+def _extract_glossary_globally(text: str) -> list[GlossaryEntry]:
+    """Scan the full text for glossary candidates via multiple patterns.
+
+    Patterns:
+      - ``Long Form (ACRONYM)`` -> ACRONYM = Long Form
+      - ``ACRONYM (Long Form)`` -> ACRONYM = Long Form
+      - ``Term [is|means|refers to|stands for] definition`` -> Term = definition
+
+    Quality-gated by ``_accept_glossary_entry`` and deduplicated by
+    case-insensitive term. Each entry's definition is truncated to
+    ``_GLOSSARY_DEF_MAX_CHARS`` to keep the rendered glossary card readable.
+    """
+    seen: set[str] = set()
+    entries: list[GlossaryEntry] = []
+
+    # Pass 1: "Expansion (ACRONYM)" -> ACRONYM = Expansion
+    for m in _ACRONYM_EXPANSION_RE.finditer(text):
+        expansion, acronym = m.group(1).strip(), m.group(2).strip()
+        if not _accept_glossary_entry(acronym, expansion):
+            continue
+        key = acronym.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        entries.append(GlossaryEntry(term=acronym, definition=expansion))
+
+    # Pass 2: "ACRONYM (Expansion)" -> ACRONYM = Expansion
+    for m in _ACRONYM_INVERSE_RE.finditer(text):
+        acronym, expansion = m.group(1).strip(), m.group(2).strip()
+        if not _accept_glossary_entry(acronym, expansion):
+            continue
+        key = acronym.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        entries.append(GlossaryEntry(term=acronym, definition=expansion))
+
+    # Pass 3: "Term is/means/refers to/stands for definition"
+    for m in _INLINE_DEFINITION_RE.finditer(text):
+        term, defn = m.group(1).strip(), m.group(2).strip()
+        if not _accept_glossary_entry(term, defn):
+            continue
+        key = term.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        entries.append(GlossaryEntry(term=term, definition=defn))
+
+    return entries
+
+
 def _sources_from_text(text: str) -> list[ResearchClaim]:
     """Parse `[SRC-NNN] claim text` lines into ResearchClaim."""
     claims: list[ResearchClaim] = []
@@ -356,8 +469,21 @@ def _paragraph_topic_segmentation(text: str) -> list[tuple[str, str]]:
     return sections
 
 
-def parse_research_brief_text(text: str) -> ResearchInputs:
+def parse_research_brief_text(
+    text: str,
+    *,
+    route_registry: "RouteRegistry | None" = None,
+) -> ResearchInputs:
     """Parse plain text (already PDF-extracted or markdown) into ResearchInputs.
+
+    Args:
+        text: Raw brief text (already PDF-extracted or markdown).
+        route_registry: Optional route registry. When provided AND the brief
+            yields interviewer signal, route relevance ranking is computed
+            and emitted as ``ResearchInputs.likely_questions`` groups in
+            priority order, each with an empty ``questions`` list (the
+            operator fills questions). When omitted, ``likely_questions``
+            is empty and the caller seeds it manually.
 
     Two-stage segmentation:
 
@@ -418,6 +544,33 @@ def parse_research_brief_text(text: str) -> ResearchInputs:
             + "\n\n".join(buf.unmatched)
         )
 
+    # W2.2 — Global glossary extraction. Scans the entire text for inline
+    # acronyms and "X is/means Y" definitions. Deduplicated against
+    # entries already harvested from glossary-tagged sections.
+    existing_terms = {e.term.lower() for e in buf.glossary}
+    for entry in _extract_glossary_globally(text):
+        if entry.term.lower() in existing_terms:
+            continue
+        buf.glossary.append(entry)
+        existing_terms.add(entry.term.lower())
+
+    # W2.3 — Route relevance seeding. When the caller passed a registry AND
+    # the brief surfaces interviewer lens / hot-button signal, rank the
+    # routes by relevance and emit empty-question groups in priority order.
+    # The operator fills questions per route; the ranking gives a head-start
+    # so the most-likely-probed routes lead the YAML.
+    likely_questions: list[LikelyQuestionGroup] = []
+    if route_registry is not None:
+        # Lazy import to avoid creating a cycle at module load time.
+        from apps_qna.router.route_seeding import seed_likely_questions_from_research
+
+        likely_questions = seed_likely_questions_from_research(
+            registry=route_registry,
+            interviewer_lenses=buf.interviewer_lenses,
+            role_areas=buf.role_areas,
+            industry_trends=buf.trends,
+        )
+
     return ResearchInputs(
         company_brief="\n\n".join(p for p in company_brief_parts if p) or None,
         role_areas_of_focus=buf.role_areas,
@@ -425,7 +578,7 @@ def parse_research_brief_text(text: str) -> ResearchInputs:
         interviewer_lenses=buf.interviewer_lenses,
         source_register=buf.sources,
         glossary_entries=buf.glossary,
-        likely_questions=[],
+        likely_questions=likely_questions,
     )
 
 
@@ -451,11 +604,17 @@ def _extract_pdf_text(path: Path) -> str:
         ) from exc
 
 
-def load_research_brief(path: Path) -> ResearchInputs:
+def load_research_brief(
+    path: Path,
+    *,
+    route_registry: "RouteRegistry | None" = None,
+) -> ResearchInputs:
     """Load a research-briefing file and parse into ResearchInputs.
 
     Supports `.pdf`, `.md`, `.txt`. PDF goes through pdfplumber/pypdf; markdown
-    and text are read directly.
+    and text are read directly. When ``route_registry`` is provided, route
+    relevance ranking populates ``ResearchInputs.likely_questions`` in
+    priority order (questions list left empty for operator to fill).
 
     Args:
         path: filesystem path to the brief.
@@ -470,4 +629,4 @@ def load_research_brief(path: Path) -> ResearchInputs:
         text = _extract_pdf_text(path)
     else:
         text = path.read_text(encoding="utf-8")
-    return parse_research_brief_text(text)
+    return parse_research_brief_text(text, route_registry=route_registry)
