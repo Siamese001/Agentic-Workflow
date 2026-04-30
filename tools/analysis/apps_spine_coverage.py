@@ -3,12 +3,18 @@
 Classifies each ``apps_*`` package into one of the five canonical
 buckets defined in ``docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md``:
 
-    CORE_ONLY_VALID            non-app spine paths (reserved)
-    APP_OVERLAY_VALID          app delegates to the spine via canonical contracts
-    APP_STANDALONE_FORBIDDEN   app claims a domain runtime but holds zero contracts
-    PARTIAL_SPINE_STATIC_ONLY  app imports infrastructure (UWG/ledger/BGE) but no
-                               authority-class contracts
-    UNKNOWN_NEEDS_RUNTIME_TRACE static evidence is ambiguous; needs runtime trace
+    CORE_ONLY_VALID              non-app spine paths (reserved)
+    APP_OVERLAY_STATIC_EVIDENCE  app imports the canonical contracts its
+                                 declared routes require. STATIC evidence
+                                 only -- runtime trace is what proves the
+                                 contracts are actually used.
+    APP_STANDALONE_FORBIDDEN     app claims a domain runtime but holds
+                                 zero contracts and zero spine edges
+    PARTIAL_SPINE_STATIC_ONLY    app imports infrastructure (UWG/ledger/
+                                 BGE) but not the contracts its routes
+                                 require
+    UNKNOWN_NEEDS_RUNTIME_TRACE  static evidence is ambiguous; needs
+                                 runtime trace
 
 The authority-class contract set is fixed:
 
@@ -18,12 +24,21 @@ The authority-class contract set is fixed:
     RuntimeExhaustBundle, RetrievalPlan, StateDiffCandidate,
     GateVerdict
 
-An app that imports any of these from ``agentic_core`` qualifies for
-``APP_OVERLAY_VALID``. An app that only imports ``apps_shared`` or
-transitive infrastructure (write_gateway, bge_runtime, ledgers, OTel
-tracing) without any authority-class contract handoff is
-``PARTIAL_SPINE_STATIC_ONLY``: importing apps_shared alone CANNOT make
-an app valid.
+**Per-route-type contract requirements** (from the executive map, see
+``ROUTE_TYPE_CONTRACT_REQUIREMENTS`` below): the scanner only requires
+the contracts that the app's *declared routes* need. An app that
+declares it supports ``R2_grounded_read`` only needs
+``RetrievalPlan`` + ``FinalEvidenceContract`` to qualify -- it does
+not need ``CommitRequest`` because it does not claim durable writes.
+
+**Manifest mechanism**: each app may place a ``spine_manifest.yaml``
+at its root declaring ``claimed_routes: [...]``. When present, the
+scanner uses the manifest to compute the required-contract set. When
+absent, the scanner falls back to the legacy any-contract-counts
+heuristic so the rollout does not break the workspace.
+
+Importing ``apps_shared`` alone CANNOT make an app valid. Contracts
+MUST be imported directly from ``agentic_core``.
 
 The scanner does NOT penalize core-only paths and does NOT require
 ``apps_*`` for generic core capabilities. It ONLY flags ``apps_*``
@@ -44,8 +59,16 @@ Reused by:
     - Tests at tests/unit/tools/analysis/test_apps_spine_coverage.py
 
 Legacy keys preserved on the JSON output for backward-compat with the
-spine-coverage-pct metric. New keys: ``runtime_mode``, ``contract_imports``,
-``claims_domain_runtime``, ``classification_evidence``.
+spine-coverage-pct metric. New keys: ``runtime_mode``,
+``contract_imports``, ``claims_domain_runtime``,
+``classification_evidence``, ``manifest_present``,
+``manifest_claimed_routes``, ``manifest_required_contracts``,
+``manifest_missing_contracts``.
+
+Legacy bucket name ``APP_OVERLAY_VALID`` is still emitted alongside the
+canonical ``APP_OVERLAY_STATIC_EVIDENCE`` for one release cycle so
+existing CI gates that grep on the old name keep working. New gates
+MUST read ``runtime_mode``.
 """
 
 from __future__ import annotations
@@ -85,6 +108,67 @@ CANONICAL_CONTRACTS: frozenset[str] = frozenset({
     "MutationIntent",
     "GateVerdict",
 })
+
+# ---------------------------------------------------------------------------
+# Per-route-type contract requirements derived from the executive map
+# (``docs/reference/_notes/agentic_system_process_map_exec.md``). Each
+# route type a manifest can declare maps to the canonical contracts the
+# spine REQUIRES the app to delegate through. An app whose manifest
+# declares ``[R3_action]`` must import every contract listed under
+# ``R3_action`` to qualify for ``APP_OVERLAY_STATIC_EVIDENCE``.
+#
+# A route type with an empty requirement set means "no canonical
+# contract handoff is required for this route" (e.g., R5_fallback is
+# the escape hatch; build_time_compiler is the apps_qna-style
+# build-time tool that produces a context pack rather than running a
+# live request).
+#
+# When extending the spine flow, update this table -- not the bucket
+# logic. Buckets stay stable; the requirement matrix is the calibration
+# surface.
+# ---------------------------------------------------------------------------
+ROUTE_TYPE_CONTRACT_REQUIREMENTS: dict[str, frozenset[str]] = {
+    # R1: cache lookup. Validated request only; no model exec.
+    "R1_cache": frozenset({"ValidatedRequest"}),
+    # R2: grounded read. Retrieve evidence; produce answer artifact.
+    "R2_grounded_read": frozenset({
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "RetrievalPlan", "FinalEvidenceContract",
+        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
+    }),
+    # R3: action. Bounded execution with side effects; needs L4 admission.
+    "R3_action": frozenset({
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
+        "CommitRequest",
+    }),
+    # R4: workflow / multi-step.
+    "R4_workflow": frozenset({
+        "ValidatedRequest", "L1PlanContract", "RouteContract",
+        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
+        "CommitRequest",
+    }),
+    # R5: fallback / HITL. Escape hatch; the spine takes over.
+    "R5_fallback": frozenset({"ValidatedRequest"}),
+    # Domain-only synthesis (no routing decision; e.g., apps_eval
+    # generating a scorecard from already-resolved inputs).
+    "domain_synthesis": frozenset({
+        "CompiledPromptArtifact", "SealedArtifact", "ExitReviewPacket",
+    }),
+    # Durable-write-only adapters (e.g., a writer that takes already-
+    # resolved data and admits it to L4).
+    "durable_write": frozenset({"CommitRequest"}),
+    # Post-run learning writeback (e.g., apps_qna's flywheel snapshot).
+    "learning_writeback": frozenset({"RuntimeExhaustBundle"}),
+    # Build-time context pack compilers (apps_qna shape). The pack is
+    # an output the operator pastes into an external agent; the spine
+    # is not in the runtime path of the pasted answer. NO contract
+    # handoff required, but the existence of this route type means the
+    # app must explicitly declare it -- the scanner does not assume.
+    "build_time_compiler": frozenset(),
+}
+
+MANIFEST_FILENAMES: tuple[str, ...] = ("spine_manifest.yaml", "spine_manifest.yml")
 
 # Heuristic markers that an app CLAIMS a domain runtime (i.e., does more
 # than passive type definitions). The presence of any of these patterns
@@ -155,6 +239,72 @@ def _is_uwg_token(mod: str) -> bool:
         or "durable_write" in lower
         or "writegateway" in lower.replace("_", "")
     )
+
+
+def _load_manifest(app_dir: Path) -> dict | None:
+    """Load ``spine_manifest.yaml`` if present. Returns None when absent.
+
+    The manifest format is documented in
+    ``docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md``. Minimal shape::
+
+        schema_version: 1
+        app: apps_<name>
+        claimed_routes:
+          - type: R2_grounded_read
+            description: "..."
+          - type: build_time_compiler
+            description: "..."
+
+    Tolerant of yaml-import failures (returns None) so the scanner stays
+    importable in environments without ``pyyaml``.
+    """
+    for filename in MANIFEST_FILENAMES:
+        manifest_path = app_dir / filename
+        if not manifest_path.is_file():
+            continue
+        try:
+            import yaml  # type: ignore[import-not-found]
+        except ImportError:
+            return None
+        try:
+            data = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError):  # type: ignore[attr-defined]
+            return None
+        if isinstance(data, dict):
+            return data
+        return None
+    return None
+
+
+def _claimed_route_types_from_manifest(manifest: dict | None) -> list[str]:
+    """Extract claimed route-type strings from a parsed manifest dict."""
+    if not manifest:
+        return []
+    raw = manifest.get("claimed_routes") or []
+    if not isinstance(raw, list):
+        return []
+    types: list[str] = []
+    for entry in raw:
+        if isinstance(entry, dict):
+            t = entry.get("type")
+            if isinstance(t, str) and t.strip():
+                types.append(t.strip())
+        elif isinstance(entry, str) and entry.strip():
+            types.append(entry.strip())
+    return types
+
+
+def _required_contracts_for_routes(claimed_routes: list[str]) -> set[str]:
+    """Union the per-route requirements for the app's declared routes.
+
+    Unknown route-type strings contribute zero contracts. The scanner
+    surfaces them via ``manifest_unknown_routes`` so operators can fix
+    typos / register new types in ``ROUTE_TYPE_CONTRACT_REQUIREMENTS``.
+    """
+    required: set[str] = set()
+    for route_type in claimed_routes:
+        required |= set(ROUTE_TYPE_CONTRACT_REQUIREMENTS.get(route_type, frozenset()))
+    return required
 
 
 def _safe_relative_path(py: Path, app_dir: Path) -> str:
@@ -274,6 +424,16 @@ def scan_app(app_dir: Path) -> dict:
     domain_runtime_reasons = _detect_domain_runtime_claims(app_dir)
     claims_domain_runtime = bool(domain_runtime_reasons)
 
+    manifest = _load_manifest(app_dir)
+    claimed_routes = _claimed_route_types_from_manifest(manifest)
+    required_contracts = sorted(_required_contracts_for_routes(claimed_routes))
+    missing_contracts = sorted(
+        set(required_contracts) - set(contract_imports.keys())
+    )
+    unknown_routes = sorted(
+        rt for rt in claimed_routes if rt not in ROUTE_TYPE_CONTRACT_REQUIREMENTS
+    )
+
     return {
         "app": app_dir.name,
         "files_scanned": files_scanned,
@@ -302,47 +462,114 @@ def scan_app(app_dir: Path) -> dict:
         "distinct_contracts": sorted(contract_imports.keys()),
         "claims_domain_runtime": claims_domain_runtime,
         "domain_runtime_reasons": domain_runtime_reasons,
+        # NEW (W7): manifest-aware route-typed classification.
+        "manifest_present": manifest is not None,
+        "manifest_claimed_routes": claimed_routes,
+        "manifest_required_contracts": required_contracts,
+        "manifest_missing_contracts": missing_contracts,
+        "manifest_unknown_routes": unknown_routes,
     }
 
 
 def classify_app(scorecard: dict) -> tuple[str, str]:
     """Return (runtime_mode, evidence) per APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md.
 
-    Five-bucket classification:
+    Five-bucket classification with manifest-aware route-typed evaluation:
 
-    - APP_OVERLAY_VALID: app imports >= 1 canonical authority contract
+    - APP_OVERLAY_STATIC_EVIDENCE: when a manifest is present, app
+      imports the FULL set of contracts its declared routes require.
+      Without a manifest, app imports >= 1 canonical contract (legacy
+      lenient fallback during rollout). Note the bucket name -- this is
+      STATIC evidence; runtime trace is required to prove the contracts
+      are actually exercised at runtime.
     - APP_STANDALONE_FORBIDDEN: app claims a domain runtime AND has zero
-      contract imports AND has zero meaningful spine import edges. The
-      most actively-violating bucket.
-    - PARTIAL_SPINE_STATIC_ONLY: app imports infrastructure (UWG / ledger
-      / BGE / spans) but no authority-class contracts. Spine touches the
-      static surface, not the runtime delegation surface.
+      contract imports AND has zero meaningful spine import edges.
+    - PARTIAL_SPINE_STATIC_ONLY: app imports infrastructure (UWG/ledger/
+      BGE) but does not satisfy the contract requirements its routes
+      claim. When a manifest is present and lists declared routes, this
+      is the most common bucket for in-flight migrations.
     - UNKNOWN_NEEDS_RUNTIME_TRACE: app does NOT claim a domain runtime
       (no engines/integrations/router/CLI), so static analysis cannot
-      prove forbidden status. Needs runtime evidence (OTel spans, ledger
-      rows) to classify.
-    - CORE_ONLY_VALID: reserved (not assigned to apps; the scanner uses
-      this only when audited path is not under apps_*).
-
-    The legacy `"status"` key is preserved as a derived field for
-    backward-compat with downstream consumers; the new `"runtime_mode"`
-    key is the canonical one.
+      decide.
+    - CORE_ONLY_VALID: reserved (not assigned to apps).
     """
-    if scorecard["non_stdlib_edges"] == 0:
-        return (
-            "UNKNOWN_NEEDS_RUNTIME_TRACE",
-            "empty package: no non-stdlib imports; cannot statically classify",
-        )
-
     has_contracts = scorecard["contract_count"] > 0
     claims_runtime = scorecard["claims_domain_runtime"]
     has_static_spine = scorecard["agentic_core_edges"] > 0 or scorecard["has_uwg_usage"]
+    manifest_present = scorecard.get("manifest_present", False)
+    claimed_routes: list[str] = scorecard.get("manifest_claimed_routes", []) or []
+    required: list[str] = scorecard.get("manifest_required_contracts", []) or []
+    missing: list[str] = scorecard.get("manifest_missing_contracts", []) or []
+
+    # Manifest-aware path runs FIRST. A manifest is the operator's
+    # explicit declaration of intent; even an "empty" package is a
+    # legitimate APP_OVERLAY_STATIC_EVIDENCE if the manifest declares
+    # build_time_compiler / R5_fallback / similar zero-requirement
+    # routes.
+    if manifest_present:
+        # Empty required-set is legitimate (e.g., R5_fallback,
+        # build_time_compiler, durable_write_only without those routes
+        # being claimed). The app explicitly opted in to this minimal
+        # surface; we honor it.
+        if not required:
+            # No contracts required for the declared route set, but the
+            # app still benefits from at-least-some delegation evidence
+            # if it claims a runtime. Apps with empty-requirement routes
+            # AND zero contracts are valid overlays of the
+            # build_time_compiler / R5_fallback shape.
+            return (
+                "APP_OVERLAY_STATIC_EVIDENCE",
+                f"manifest declares routes {claimed_routes} which require no "
+                "canonical contract handoff; manifest-honored",
+            )
+        if not missing:
+            return (
+                "APP_OVERLAY_STATIC_EVIDENCE",
+                f"manifest declares routes {claimed_routes}; "
+                f"all required contracts present "
+                f"({', '.join(required)})",
+            )
+        # Manifest present but contracts incomplete. This is
+        # PARTIAL_SPINE_STATIC_ONLY when the app has *some* contracts
+        # or any spine touch; it's APP_STANDALONE_FORBIDDEN only when
+        # contracts AND spine edges are both zero AND it claims runtime.
+        if has_contracts or has_static_spine:
+            return (
+                "PARTIAL_SPINE_STATIC_ONLY",
+                f"manifest declares routes {claimed_routes} requiring "
+                f"{len(required)} contract(s); imported "
+                f"{scorecard['contract_count']} of them; missing: "
+                f"{', '.join(missing)}",
+            )
+        if claims_runtime:
+            return (
+                "APP_STANDALONE_FORBIDDEN",
+                f"manifest declares routes {claimed_routes} requiring "
+                f"{len(required)} contract(s); imported zero contracts "
+                "AND zero spine edges; shadow runtime",
+            )
+        return (
+            "UNKNOWN_NEEDS_RUNTIME_TRACE",
+            f"manifest declares routes {claimed_routes} but no domain-runtime "
+            "markers and no spine imports; runtime trace required",
+        )
+
+    # Legacy (no-manifest) path. Lenient any-contract-counts fallback
+    # so existing apps don't regress at rollout. Apps SHOULD declare a
+    # manifest; until they do, the classification is approximate.
+    if scorecard["non_stdlib_edges"] == 0:
+        return (
+            "UNKNOWN_NEEDS_RUNTIME_TRACE",
+            "empty package: no non-stdlib imports and no manifest; "
+            "static analysis cannot classify; runtime trace required",
+        )
 
     if has_contracts:
         return (
-            "APP_OVERLAY_VALID",
-            f"imports {scorecard['contract_count']} canonical contract(s) "
-            f"({', '.join(scorecard['distinct_contracts'])}) directly from agentic_core",
+            "APP_OVERLAY_STATIC_EVIDENCE",
+            f"no spine_manifest.yaml; imports {scorecard['contract_count']} "
+            f"canonical contract(s) ({', '.join(scorecard['distinct_contracts'])}); "
+            "declare a manifest to enable route-typed validation",
         )
 
     if not claims_runtime:
@@ -357,7 +584,7 @@ def classify_app(scorecard: dict) -> tuple[str, str]:
             "PARTIAL_SPINE_STATIC_ONLY",
             "claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), "
             "BUT zero canonical contract imports; static-only spine touch, "
-            "runtime authority is local to the app -- not valid as APP_OVERLAY",
+            "runtime authority is local to the app -- not valid as overlay",
         )
 
     return (
@@ -403,6 +630,8 @@ def scan_all() -> list[dict]:
 
 
 _RUNTIME_MODE_EMOJI: dict[str, str] = {
+    "APP_OVERLAY_STATIC_EVIDENCE": "✅",
+    # Legacy alias for one release cycle; same emoji.
     "APP_OVERLAY_VALID": "✅",
     "APP_STANDALONE_FORBIDDEN": "🔴",
     "PARTIAL_SPINE_STATIC_ONLY": "🟠",

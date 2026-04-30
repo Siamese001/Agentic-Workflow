@@ -208,10 +208,19 @@ one of five buckets per app:
 | Bucket                          | Meaning                                                                               |
 |---------------------------------|---------------------------------------------------------------------------------------|
 | `CORE_ONLY_VALID`               | Not an app. (Reserved for non-`apps_*` paths the scanner audits.)                     |
-| `APP_OVERLAY_VALID`             | App imports ≥1 canonical spine contract that matches the route(s) it claims to serve. |
-| `APP_STANDALONE_FORBIDDEN`      | App claims a domain runtime route but imports zero spine contracts.                    |
-| `PARTIAL_SPINE_STATIC_ONLY`     | App imports infrastructure (UWG, ledger, BGE) but no authority-class contracts. Static-only spine touch; runtime authority still local. |
+| `APP_OVERLAY_STATIC_EVIDENCE`   | App imports the canonical contracts its declared routes require. **STATIC** evidence only — runtime trace is what proves the contracts are actually used. |
+| `APP_STANDALONE_FORBIDDEN`      | App claims a domain runtime AND imports zero canonical contracts AND zero spine import edges.                    |
+| `PARTIAL_SPINE_STATIC_ONLY`     | App imports infrastructure (UWG, ledger, BGE) but does not satisfy the contract requirements its routes claim. |
 | `UNKNOWN_NEEDS_RUNTIME_TRACE`   | Static evidence is ambiguous. Needs runtime trace (OTEL spans / ledger rows) to classify. |
+
+> **Rename note (W7)**: the historical bucket name `APP_OVERLAY_VALID`
+> is preserved as a legacy alias in the scanner's emoji map for one
+> release cycle so existing CI gates that grep on the old name keep
+> working. New gates MUST read the canonical `runtime_mode` field with
+> the new bucket name. The rename reflects the truth that a static
+> import edge is not delegation evidence — it's only **static
+> evidence** of intent to delegate; runtime trace (OTel spans hitting
+> the contract surfaces) is what proves the contract is actually used.
 
 The scanner does NOT penalize core-only paths. The scanner does NOT
 require `apps_*` for generic core capabilities. The scanner ONLY flags
@@ -219,6 +228,53 @@ require `apps_*` for generic core capabilities. The scanner ONLY flags
 authority-handoff evidence.
 
 ---
+
+## Route-typed contract requirement matrix
+
+A single canonical contract import is too weak a signal: an app that
+claims to serve grounded reads needs `RetrievalPlan` +
+`FinalEvidenceContract`, not `PromptEnvelope`. The scanner therefore
+requires apps to declare WHICH route types they support, then verifies
+the contracts that those routes need.
+
+The canonical mapping (single source of truth in
+`tools/analysis/apps_spine_coverage.py::ROUTE_TYPE_CONTRACT_REQUIREMENTS`):
+
+| Route type            | Required contracts                                                                                                                       |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `R1_cache`            | `ValidatedRequest`                                                                                                                        |
+| `R2_grounded_read`    | `ValidatedRequest`, `L1PlanContract`, `RouteContract`, `RetrievalPlan`, `FinalEvidenceContract`, `CompiledPromptArtifact`, `SealedArtifact`, `ExitReviewPacket` |
+| `R3_action`           | `ValidatedRequest`, `L1PlanContract`, `RouteContract`, `CompiledPromptArtifact`, `SealedArtifact`, `ExitReviewPacket`, `CommitRequest`     |
+| `R4_workflow`         | `ValidatedRequest`, `L1PlanContract`, `RouteContract`, `CompiledPromptArtifact`, `SealedArtifact`, `ExitReviewPacket`, `CommitRequest`     |
+| `R5_fallback`         | `ValidatedRequest`                                                                                                                        |
+| `domain_synthesis`    | `CompiledPromptArtifact`, `SealedArtifact`, `ExitReviewPacket`                                                                            |
+| `durable_write`       | `CommitRequest`                                                                                                                           |
+| `learning_writeback`  | `RuntimeExhaustBundle`                                                                                                                    |
+| `build_time_compiler` | (none) — apps_qna shape; produces a context pack the operator pastes into an external agent. The spine is not in the runtime path of the pasted answer. **Must be explicitly declared in the manifest** to qualify; the scanner does not assume. |
+
+An app declares its routes via `apps_<name>/spine_manifest.yaml`:
+
+```yaml
+schema_version: 1
+app: apps_<name>
+claimed_routes:
+  - type: R2_grounded_read
+    description: "What this route does in your domain."
+  - type: durable_write
+    description: "Why this app needs L4 admission."
+```
+
+When the manifest is present, the scanner unions the per-route
+requirements and checks that the app imports every contract in the
+resulting set. Missing contracts → `PARTIAL_SPINE_STATIC_ONLY` (with
+the missing contracts listed in `manifest_missing_contracts`). All
+present → `APP_OVERLAY_STATIC_EVIDENCE`.
+
+When the manifest is **absent**, the scanner falls back to the legacy
+any-canonical-contract-counts heuristic so existing apps don't regress
+at rollout. Apps SHOULD declare a manifest; until they do, the
+classification is approximate and the evidence string mentions "declare
+a manifest to enable route-typed validation".
 
 ## See also
 

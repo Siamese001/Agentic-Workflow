@@ -12,8 +12,8 @@
 | `apps_qna` | 42 | 5.1% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_research` | 54 | 44.2% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 | `apps_rfp` | 53 | 26.5% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
-| `apps_rg` | 171 | 57.7% | 1 | `PromptEnvelope` | Γ£ô | Γ£à APP_OVERLAY_VALID |
-| `apps_shared` | 194 | 54.1% | 1 | `SealedArtifact` | Γ£ô | Γ£à APP_OVERLAY_VALID |
+| `apps_rg` | 171 | 57.7% | 1 | `PromptEnvelope` | Γ£ô | Γ£à APP_OVERLAY_STATIC_EVIDENCE |
+| `apps_shared` | 194 | 54.1% | 1 | `SealedArtifact` | Γ£ô | Γ£à APP_OVERLAY_STATIC_EVIDENCE |
 | `apps_underwriting_ai` | 68 | 21.1% | 0 | ΓÇö | Γ£ô | ≡ƒƒá PARTIAL_SPINE_STATIC_ONLY |
 
 ## Runtime-mode legend
@@ -27,31 +27,31 @@
 ## Per-app classification evidence
 
 - ≡ƒƒá **`apps_eval`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present
 - ≡ƒƒá **`apps_exec`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present
 - ≡ƒƒá **`apps_lic`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present, control-plane module present
 - ≡ƒƒá **`apps_qna`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: integrations directory present, router subpackage present, package entrypoint present, interactive wizard present
 - ≡ƒƒá **`apps_research`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present
 - ≡ƒƒá **`apps_rfp`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present
-- Γ£à **`apps_rg`** ΓåÆ APP_OVERLAY_VALID
-  - imports 1 canonical contract(s) (PromptEnvelope) directly from agentic_core
+- Γ£à **`apps_rg`** ΓåÆ APP_OVERLAY_STATIC_EVIDENCE
+  - no spine_manifest.yaml; imports 1 canonical contract(s) (PromptEnvelope); declare a manifest to enable route-typed validation
   - contracts: PromptEnvelope
   - claims runtime via: engines directory present, integrations directory present, package entrypoint present
-- Γ£à **`apps_shared`** ΓåÆ APP_OVERLAY_VALID
-  - imports 1 canonical contract(s) (SealedArtifact) directly from agentic_core
+- Γ£à **`apps_shared`** ΓåÆ APP_OVERLAY_STATIC_EVIDENCE
+  - no spine_manifest.yaml; imports 1 canonical contract(s) (SealedArtifact); declare a manifest to enable route-typed validation
   - contracts: SealedArtifact
   - claims runtime via: integrations directory present
 - ≡ƒƒá **`apps_underwriting_ai`** ΓåÆ PARTIAL_SPINE_STATIC_ONLY
-  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as APP_OVERLAY
+  - claims domain runtime AND imports spine infrastructure (UWG/ledger/BGE), BUT zero canonical contract imports; static-only spine touch, runtime authority is local to the app -- not valid as overlay
   - claims runtime via: engines directory present, integrations directory present

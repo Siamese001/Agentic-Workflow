@@ -82,8 +82,10 @@ def test_core_only_does_not_require_apps_star() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_overlay_valid_when_any_canonical_contract_imported(tmp_path: Path) -> None:
-    """Importing one canonical contract directly from agentic_core suffices."""
+def test_overlay_static_evidence_when_any_canonical_contract_imported_no_manifest(
+    tmp_path: Path,
+) -> None:
+    """Lenient legacy path: one canonical contract qualifies when no manifest."""
     app = _make_app(
         tmp_path,
         "apps_synth_overlay",
@@ -99,14 +101,17 @@ def test_overlay_valid_when_any_canonical_contract_imported(tmp_path: Path) -> N
         },
     )
     runtime_mode, evidence, sc = _classify(app)
-    assert runtime_mode == "APP_OVERLAY_VALID"
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
     assert "RouteContract" in sc["distinct_contracts"]
-    assert "RouteContract" in evidence
+    assert "manifest" in evidence.lower()
     assert sc["claims_domain_runtime"] is True
+    assert sc["manifest_present"] is False
 
 
-def test_overlay_valid_with_multiple_contracts(tmp_path: Path) -> None:
-    """Multiple contracts are reported in the evidence."""
+def test_overlay_static_evidence_with_multiple_contracts_no_manifest(
+    tmp_path: Path,
+) -> None:
+    """Multiple contracts are reported in the evidence (no-manifest path)."""
     app = _make_app(
         tmp_path,
         "apps_synth_overlay_multi",
@@ -119,14 +124,142 @@ def test_overlay_valid_with_multiple_contracts(tmp_path: Path) -> None:
             """,
         },
     )
-    runtime_mode, evidence, sc = _classify(app)
-    assert runtime_mode == "APP_OVERLAY_VALID"
+    runtime_mode, _evidence, sc = _classify(app)
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
     assert sc["contract_count"] == 6
     assert set(sc["distinct_contracts"]) == {
         "L1PlanContract", "RouteContract",
         "FinalEvidenceContract", "CompiledPromptArtifact",
         "SealedArtifact", "ExitReviewPacket",
     }
+
+
+# ---------------------------------------------------------------------------
+# Manifest-aware path (W7) -- route-typed contract requirements
+# ---------------------------------------------------------------------------
+
+
+def test_manifest_with_all_required_contracts_is_overlay_static(
+    tmp_path: Path,
+) -> None:
+    """Manifest declares R2_grounded_read; all 8 required contracts present."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_manifest_complete",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_manifest_complete
+                claimed_routes:
+                  - type: R2_grounded_read
+                    description: "Grounded Q&A over the canonical KB."
+            """,
+            "engines/__init__.py": "",
+            "engines/full_r2.py": """
+                from agentic_core.contracts import (
+                    ValidatedRequest, L1PlanContract, RouteContract,
+                    RetrievalPlan, FinalEvidenceContract,
+                    CompiledPromptArtifact, SealedArtifact, ExitReviewPacket,
+                )
+            """,
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
+    assert sc["manifest_present"] is True
+    assert "R2_grounded_read" in sc["manifest_claimed_routes"]
+    assert sc["manifest_missing_contracts"] == []
+    assert "R2_grounded_read" in evidence
+
+
+def test_manifest_with_missing_contracts_is_partial_spine(tmp_path: Path) -> None:
+    """Manifest declares R3_action; only some required contracts present."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_manifest_incomplete",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_manifest_incomplete
+                claimed_routes:
+                  - type: R3_action
+            """,
+            "engines/__init__.py": "",
+            "engines/partial.py": """
+                from agentic_core.contracts import ValidatedRequest, L1PlanContract
+                # R3_action requires 7 contracts; only 2 imported.
+            """,
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "PARTIAL_SPINE_STATIC_ONLY"
+    assert sc["manifest_present"] is True
+    assert sc["manifest_missing_contracts"]  # non-empty
+    # Specific missing contracts are reported.
+    assert "RouteContract" in sc["manifest_missing_contracts"]
+    assert "CommitRequest" in sc["manifest_missing_contracts"]
+    assert "missing" in evidence.lower()
+
+
+def test_manifest_with_build_time_compiler_route_no_contracts_required(
+    tmp_path: Path,
+) -> None:
+    """build_time_compiler route legitimately requires zero contracts.
+
+    apps_qna shape: produces a context pack the operator pastes into an
+    external agent. The spine is not in the runtime path of the pasted
+    answer. Manifest must declare this explicitly to qualify.
+    """
+    app = _make_app(
+        tmp_path,
+        "apps_synth_build_compiler",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_build_compiler
+                claimed_routes:
+                  - type: build_time_compiler
+                    description: "Compiles a context pack at build time."
+            """,
+            "engines/__init__.py": "",
+            "engines/builder.py": """
+                # Build-time tool. No canonical contracts required.
+                def build():
+                    return "pack"
+            """,
+        },
+    )
+    runtime_mode, evidence, sc = _classify(app)
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
+    assert "build_time_compiler" in sc["manifest_claimed_routes"]
+    assert "no canonical contract handoff" in evidence
+
+
+def test_manifest_with_unknown_route_type_surfaces_warning(
+    tmp_path: Path,
+) -> None:
+    """Unknown route types contribute zero contracts AND surface in output."""
+    app = _make_app(
+        tmp_path,
+        "apps_synth_unknown_route",
+        files={
+            "spine_manifest.yaml": """
+                schema_version: 1
+                app: apps_synth_unknown_route
+                claimed_routes:
+                  - type: not_a_real_route_type
+                    description: "Typo in route type."
+            """,
+            "engines/__init__.py": "",
+            "engines/something.py": "def run(): return None",
+        },
+    )
+    runtime_mode, _evidence, sc = _classify(app)
+    assert sc["manifest_present"] is True
+    assert "not_a_real_route_type" in sc["manifest_unknown_routes"]
+    # Unknown route contributes zero contracts -> empty required set ->
+    # falls into the manifest-honored empty-required branch.
+    assert runtime_mode == "APP_OVERLAY_STATIC_EVIDENCE"
 
 
 # ---------------------------------------------------------------------------
@@ -218,7 +351,8 @@ def test_apps_shared_alone_does_not_make_overlay_valid(tmp_path: Path) -> None:
         },
     )
     runtime_mode, _evidence, sc = _classify(app)
-    assert runtime_mode != "APP_OVERLAY_VALID"
+    assert runtime_mode != "APP_OVERLAY_STATIC_EVIDENCE"
+    assert runtime_mode != "APP_OVERLAY_VALID"  # legacy-alias safety
     # Specifically, apps_shared edges count as apps_shared, not as
     # agentic_core authority contracts.
     assert sc["apps_shared_edges"] >= 2
@@ -285,26 +419,32 @@ def test_import_only_coverage_is_not_runtime_compliance(tmp_path: Path) -> None:
     agentic_core utilities, but no canonical contracts → not an overlay.
     """
     # Build an app with MANY agentic_core imports but ZERO contracts.
+    # NOTE: do NOT inline bulk_imports into a triple-quoted block --
+    # textwrap.dedent (used inside _make_app) won't see common leading
+    # whitespace once the imports start at column 0, leaving the file
+    # with mixed indentation that fails ast.parse. Construct the file
+    # text explicitly with all lines at column 0.
     bulk_imports = "\n".join(
         f"from agentic_core.utils.module_{i} import helper_{i}" for i in range(40)
     )
-    app = _make_app(
-        tmp_path,
-        "apps_synth_heavy_no_contracts",
-        files={
-            "engines/__init__.py": "",
-            "engines/heavy_consumer.py": f"""
-                {bulk_imports}
-
-                def run(req):
-                    return helper_0(req)
-            """,
-        },
+    heavy_consumer = (
+        bulk_imports
+        + "\n\ndef run(req):\n    return helper_0(req)\n"
     )
+    app_dir = tmp_path / "apps_synth_heavy_no_contracts"
+    app_dir.mkdir(parents=True, exist_ok=True)
+    (app_dir / "engines").mkdir(parents=True, exist_ok=True)
+    (app_dir / "engines" / "__init__.py").write_text("", encoding="utf-8")
+    (app_dir / "engines" / "heavy_consumer.py").write_text(
+        heavy_consumer, encoding="utf-8"
+    )
+    app = app_dir
     runtime_mode, _evidence, sc = _classify(app)
     # Legacy spine_coverage_pct will be very high because most non-stdlib
     # imports are agentic_core. But runtime_mode must NOT be valid.
     assert sc["spine_coverage_pct"] > 50
+    assert runtime_mode != "APP_OVERLAY_STATIC_EVIDENCE"
+    # Legacy alias check: the old name should also not be assigned.
     assert runtime_mode != "APP_OVERLAY_VALID"
     assert runtime_mode == "PARTIAL_SPINE_STATIC_ONLY"
 
@@ -315,21 +455,31 @@ def test_import_only_coverage_is_not_runtime_compliance(tmp_path: Path) -> None:
 
 
 def test_apps_qna_currently_partial_or_forbidden() -> None:
-    """apps_qna in the LIVE workspace must NOT be APP_OVERLAY_VALID.
+    """apps_qna in the LIVE workspace must NOT be APP_OVERLAY_STATIC_EVIDENCE.
 
     Per the evidence audit: apps_qna imports zero canonical contracts.
-    It claims a domain runtime (engines / integrations / router / CLI /
-    wizard). The classification must be one of the two demotion buckets.
+    It claims a domain runtime. The classification must be one of the
+    two demotion buckets unless apps_qna later declares a
+    build_time_compiler manifest -- in which case the test must be
+    updated and the manifest committed alongside it.
     """
     repo_root = Path(__file__).resolve().parents[4]
     apps_qna = repo_root / "apps_qna"
     if not apps_qna.is_dir():
         pytest.skip("apps_qna not present in this checkout")
     runtime_mode, _evidence, sc = _classify(apps_qna)
-    assert runtime_mode in {
+    # apps_qna may legitimately be APP_OVERLAY_STATIC_EVIDENCE if/when
+    # it declares a build_time_compiler manifest. In that case the
+    # acceptable bucket set widens to include the overlay-static bucket.
+    acceptable = {
         "PARTIAL_SPINE_STATIC_ONLY",
         "APP_STANDALONE_FORBIDDEN",
-    }, f"got {runtime_mode}; expected forbidden-tier classification"
+    }
+    if sc["manifest_present"]:
+        acceptable.add("APP_OVERLAY_STATIC_EVIDENCE")
+    assert runtime_mode in acceptable, (
+        f"got {runtime_mode}; manifest_present={sc['manifest_present']}"
+    )
     assert sc["contract_count"] == 0
     assert sc["claims_domain_runtime"] is True
 
