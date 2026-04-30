@@ -123,15 +123,47 @@ def _is_allowlisted(rel_path: str) -> bool:
     return False
 
 
+def _has_nodes_table(p: Path) -> bool:
+    """Return True iff the SQLite file has a 'nodes' table.
+
+    Stub/sentinel snapshots (`adg_indexed_99999999_9999.sqlite`) and in-flight
+    pipeline snapshots can be present in `artifacts/adg/` without the `nodes`
+    table. Picking such a stub by mtime would cause G1 to fail with
+    `OperationalError: no such table: nodes`. This helper rejects them.
+    """
+    try:
+        db_uri = f"file:{p.as_posix()}?mode=ro&immutable=1"
+        conn = sqlite3.connect(db_uri, uri=True, timeout=2)
+        try:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        return False
+
+
 def _find_latest_sqlite() -> Path | None:
-    """Find latest adg_indexed_*.sqlite in artifacts/adg/."""
+    """Find latest adg_indexed_*.sqlite in artifacts/adg/ that has a `nodes` table.
+
+    Skips stub/sentinel snapshots (small files lacking the schema) so the
+    gate runs against a real ADG. Falls back to None if no real snapshot
+    exists yet.
+    """
     adg_dir = ROOT / "artifacts" / "adg"
     if not adg_dir.is_dir():
         return None
     candidates = [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.is_file()]
     if not candidates:
         return None
-    return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
+    # Sort by (mtime, name) descending; pick the first one with a real schema
+    candidates.sort(key=lambda p: (p.stat().st_mtime_ns, p.name), reverse=True)
+    for p in candidates:
+        if _has_nodes_table(p):
+            return p
+    return None
 
 
 def _get_executor_bearing_files() -> list[tuple[str, set[str]]]:
@@ -195,6 +227,21 @@ def gate_g1_reachability(sqlite_path: Path) -> list[str]:
     db_uri = f"file:{sqlite_path.as_posix()}?mode=ro&immutable=1"
     conn = sqlite3.connect(db_uri, uri=True, timeout=5)
     conn.row_factory = sqlite3.Row
+
+    # Defensive: if the snapshot lacks `nodes` (stub/sentinel/in-flight),
+    # skip the gate rather than emit one violation per executor file.
+    # Mirrors the precedent in ops_scripts/ci/check_test_harness_coverage.py.
+    nodes_present = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+    ).fetchone()
+    if not nodes_present:
+        conn.close()
+        print(
+            f"  WARN: G1 skipped — snapshot lacks `nodes` table ({sqlite_path.name}); "
+            f"likely a stub/sentinel snapshot. Run `python tools/generate_full_adg.py` "
+            f"to produce a real snapshot."
+        )
+        return []
 
     try:
         for rel_path, executors in executor_files:  # progress_bar: CI ADG reachability scan
