@@ -209,24 +209,32 @@ Fail-closed: any other response format must be treated as UNSAFE."""
         }
 
     def _call_mock_safe(self, prompt: str) -> dict[str, Any]:
-        """APPROVED MOCK — produces a well-formed SAFE verdict that
-        conforms to the rubric schema.
+        """MOCK_PROVIDER_ONLY — test / topology-validation use.
 
-        This provider exists to prove the C-primary ALLOW leg of
-        RTC-REQ-056 in environments where no live LLM (local_qwen,
-        anthropic_haiku) is reachable. It is OPT-IN only:
+        This provider is explicitly NOT approved for final RTC-REQ-056
+        certification acceptance. It exists so unit tests and local
+        topology-validation runs can drive the C-primary ALLOW leg end-
+        to-end without a live LLM. The committed CI environment MUST NOT
+        set ``LLMJUDGEVETO_APPROVED_MOCK_SAFE=1`` for the certification
+        path; the honest committed state is INFRASTRUCTURE_GAP for the
+        ALLOW leg until a live approved provider (``anthropic_haiku``,
+        ``local_qwen``, or another approved live provider) returns a
+        valid SAFE decision.
+
+        Gates in force:
 
         - Caller MUST explicitly configure ``provider="mock_safe"`` in the
           orchestrator policy or constructor.
         - The environment variable ``LLMJUDGEVETO_APPROVED_MOCK_SAFE=1``
-          MUST be set when this provider is used in a proof run —
-          ``is_available()`` returns False otherwise, which short-circuits
-          the ALLOW proof to ``INFRASTRUCTURE_GAP`` at the composer layer.
+          MUST be set when this provider is used — ``is_available()``
+          returns False otherwise, and ``evaluate()`` short-circuits to
+          ``ERROR``. The composer treats that as
+          ``R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP``.
 
-        The output is a structured JSON verdict conforming to the rubric
+        Output is a structured JSON verdict conforming to the rubric
         schema; the real parsing + decision logic in ``_parse_verdict``
         runs unchanged. Only the LLM-output-generation step is
-        substituted. The `veto_provider=mock_safe` field is surfaced
+        substituted. The ``veto_provider=mock_safe`` field is surfaced
         prominently in every artifact so the proof is auditable — there
         is no hidden stamping.
         """

@@ -301,7 +301,7 @@ def traces_execute(
 
             try:
                 result = func(*args, **kwargs)
-            except Exception as exc:
+            except Exception as exc:  # guardian: allow-broad-exception -- telemetry wrapper must catch all exceptions to record failure before re-raising; does not swallow
                 # Failure emit — record then re-raise.
                 try:
                     _emit_hard_fails_untranscripted(trace_id, f"{op_name}: {type(exc).__name__}")
