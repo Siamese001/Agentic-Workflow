@@ -199,7 +199,7 @@ def _emit_runtime(category: str, kind: str, qualname: str) -> None:
         # as the source-correlation key. Real call sites that need a trace_id
         # will continue to use inline _emit_records_execution_trace.
         _emit_records_telemetry_event(qualname, category, kind)
-    except Exception:  # guardian: allow-broad-exception -- telemetry must never break callers; ADR-075 broad catch required to protect all callers
+    except Exception:  # guardian: allow-log-and-swallow -- telemetry must never break callers; ADR-075 broad catch required to protect all callers
         _LOGGER.debug(
             "runtime telemetry emit failed: %s/%s in %s",
             category, kind, qualname, exc_info=True,
@@ -296,7 +296,7 @@ def traces_execute(
             # Entry emit — best-effort, never crash the wrapped call.
             try:
                 _emit_records_execution_trace(trace_id, layer, op_name)
-            except Exception:  # guardian: allow-broad-exception -- entry telemetry failure must not break callers; broad catch required
+            except Exception:  # guardian: allow-log-and-swallow -- entry telemetry failure must not break callers; broad catch required
                 _LOGGER.debug("traces_execute entry emit failed for %s", op_name, exc_info=True)
 
             try:
@@ -305,14 +305,14 @@ def traces_execute(
                 # Failure emit — record then re-raise.
                 try:
                     _emit_hard_fails_untranscripted(trace_id, f"{op_name}: {type(exc).__name__}")
-                except Exception:  # guardian: allow-broad-exception -- failure emit must not mask original exception; broad catch required
+                except Exception:  # guardian: allow-log-and-swallow -- failure emit must not mask original exception; broad catch required
                     _LOGGER.debug("traces_execute failure emit failed for %s", op_name, exc_info=True)
                 raise
 
             # Success emit.
             try:
                 _emit_records_telemetry_event(trace_id, op_name, "execute_complete")
-            except Exception:  # guardian: allow-broad-exception -- success telemetry failure must not break callers; broad catch required
+            except Exception:  # guardian: allow-log-and-swallow -- success telemetry failure must not break callers; broad catch required
                 _LOGGER.debug("traces_execute success emit failed for %s", op_name, exc_info=True)
             return result
 
