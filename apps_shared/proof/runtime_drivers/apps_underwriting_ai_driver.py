@@ -201,7 +201,7 @@ class AppsUnderwritingAIDriver:
         if hasattr(obj, "dict"):
             try:
                 return obj.dict()
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow -- pydantic .dict() fallback to __dict__ / str(obj) on failure; multi-strategy coercion
                 pass
         if hasattr(obj, "__dict__"):
             return {k: v for k, v in vars(obj).items() if not k.startswith("_")}

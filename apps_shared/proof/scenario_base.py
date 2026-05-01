@@ -79,7 +79,7 @@ def _safe(obj: Any, depth: int = 6) -> Any:
     if hasattr(obj, "name") and hasattr(obj, "value"):
         try:
             return f"{type(obj).__name__}.{obj.name}"
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- enum-like object repr fallback to repr(obj) when name/value lookup fails
             pass
     return repr(obj)
 

@@ -175,7 +175,7 @@ def _read_contract_payload(scenario_dir: Path, contract_kind: str) -> dict[str, 
         return None
     try:
         parsed = json.loads(matches[-1].read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):  # guardian: allow-return-none -- replay contract loader returns None on malformed/missing JSON; caller surfaces missing-contract fail reason
         return None
     # BUG-FIX (audit pass 3 / BUG #13, found by Hypothesis): json.loads
     # can legitimately return a list / string / number / null when the file
