@@ -174,6 +174,25 @@ _emit_links_execution_to_snapshot("p4", "validation_result_types", "exec_snapsho
 Logger = logging.getLogger(__name__)
 
 
+class ValidationSeverity:
+    """Validation severity levels for apps_rg ValidationResult.
+
+    String-valued constants chosen to match the conventions already present in
+    this module (BLOCK / INFO) plus standard CRITICAL / HIGH / MEDIUM / LOW /
+    WARN tiers. Kept as a class with class-attribute constants (rather than an
+    Enum) to preserve compatibility with str-typed SEVERITY positional args
+    that downstream code already passes by keyword.
+    """
+
+    CRITICAL: str = "CRITICAL"
+    HIGH: str = "HIGH"
+    MEDIUM: str = "MEDIUM"
+    LOW: str = "LOW"
+    INFO: str = "INFO"
+    WARN: str = "WARN"
+    BLOCK: str = "BLOCK"
+
+
 class ValidationResult:
     """Brief description of functionality and purpose."""
 

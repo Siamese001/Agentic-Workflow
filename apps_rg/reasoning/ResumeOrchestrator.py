@@ -294,17 +294,10 @@ class DataEnricher:
         return data, [ValidationResult()]
 
 
-class JDEnforcementValidator:
-    """Stub for JD enforcement validator."""
-
-    def __init__(self) -> None:
-        self._failures: list[str] = []
-
-    def validate_jd_input(self, job_description: str, hop_id: str) -> None:
-        """Validate job description input."""
-        if not job_description or not job_description.strip():
-            self._failures.append("Empty job description")
-
-    def has_failures(self) -> bool:
-        """Check if validation has failures."""
-        return len(self._failures) > 0
+# Real JDEnforcementValidator with 15 enforcement rules — replaces the
+# previous local stub. See apps_rg.validators.jd_enforcement_validator for the
+# rule surface (E1..E15) and design notes. Restoration tracked in plan
+# .windsurf/plans/apps-rg-prior-art-gap-closure-3e3d5b.md (Phase P2).
+from apps_rg.validators.jd_enforcement_validator import (  # noqa: E402
+    JDEnforcementValidator,
+)
