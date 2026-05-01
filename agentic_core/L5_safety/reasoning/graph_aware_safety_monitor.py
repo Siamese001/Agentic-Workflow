@@ -109,7 +109,7 @@ class GraphAwareSafetyMonitor:
 
             return assessment
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- L5 safety monitor must return error dict on ADG query failure rather than crash entire safety subsystem
             logger.error(f"Failed to assess system safety: {e}")
             return {"error": str(e), "timestamp": current_time}
 
@@ -171,7 +171,7 @@ class GraphAwareSafetyMonitor:
 
             return critical_paths
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- L5 safety monitor returns empty critical-paths list on ADG query failure; caller degrades gracefully
             logger.error(f"Failed to identify safety-critical paths: {e}")
             return []
 
@@ -198,7 +198,7 @@ class GraphAwareSafetyMonitor:
 
             return violations
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- L5 safety-violation detector orchestrates 4 sub-detectors; returns empty list on failure so higher-level assessment continues
             logger.error(f"Failed to detect safety violations: {e}")
             return []
 
@@ -232,7 +232,7 @@ class GraphAwareSafetyMonitor:
                 )
                 violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- sub-detector degrades to empty violations on ADG query failure; parent detector logs and continues
             logger.warning(f"Could not detect unsafe exception handling: {e}")
 
         return violations
@@ -274,7 +274,7 @@ class GraphAwareSafetyMonitor:
                 )
                 violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- sub-detector degrades to empty violations on ADG query failure; parent detector logs and continues
             logger.warning(f"Could not detect security violations: {e}")
 
         return violations
@@ -310,7 +310,7 @@ class GraphAwareSafetyMonitor:
                 )
                 violations.append(violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- sub-detector degrades to empty violations on ADG query failure; parent detector logs and continues
             logger.warning(f"Could not detect state consistency violations: {e}")
 
         return violations
@@ -350,7 +350,7 @@ class GraphAwareSafetyMonitor:
                 )
                 violations.append(safety_violation)
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- sub-detector degrades to empty violations on ADG query failure; parent detector logs and continues
             logger.warning(f"Could not detect execution boundary violations: {e}")
 
         return violations
@@ -385,7 +385,7 @@ class GraphAwareSafetyMonitor:
 
             return layer_risks
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- layer-risk assessment returns empty dict on DuckDB analyzer failure; caller degrades gracefully
             logger.error(f"Failed to assess layer risks: {e}")
             return {}
 
@@ -420,7 +420,7 @@ class GraphAwareSafetyMonitor:
                 "total_import_patterns": len(import_patterns.get("import_patterns", [])),
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- dependency-risk analysis returns empty dict on DuckDB analyzer failure; caller degrades gracefully
             logger.error(f"Failed to analyze dependency risks: {e}")
             return {}
 
