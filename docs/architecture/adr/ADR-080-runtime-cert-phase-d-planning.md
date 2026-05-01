@@ -477,7 +477,7 @@ Future sub-phases land one-by-one through the standard Author-Gate cadence. **No
 
 | Sub-phase | Output | Hard rule |
 |---|---|---|
-| **D.1** | Decision-record schema module (`tools/runtime_cert/decisions/cert_decision_record.py`) — frozen dataclass + `to_dict` / `to_json` + constructor invariants matching §5 | No business logic — schema only |
+| **D.1** ✅ | Decision-record schema module (`tools/runtime_cert/decisions/cert_decision_record.py`) — frozen dataclass + `to_dict` / `to_json` + constructor invariants matching §5. **Implemented 2026-05-01** with 54 unit tests in `tests/unit/tools/runtime_cert/decisions/test_cert_decision_record.py`. No app certified; `runtime_certification_status` invariant enforced at construction. | No business logic — schema only |
 | **D.2** | Closeout-to-decision evaluator (`tools/runtime_cert/decisions/cert_decision_evaluator.py`) — pure function `evaluate_phase_c_closeout(report, history) -> CertificationDecisionRecord` | Pure; no I/O; no ledger writes |
 | **D.3** | Cert-ledger writer (`tools/runtime_cert/decisions/cert_decision_ledger.py`) — wraps `emit_ledger_event` with the unique-index dedup + fail-soft contract | Append-only; idempotent; no scanner promotion |
 | **D.4** | Phase D smoke harness (`tools/runtime_cert/smoke/cert_decision_smoke.py`) — end-to-end C.8 → D.2 → D.3 against a single test app, asserting `runtime_certification_status_after == NOT_CERTIFIED` and the ledger row exists | No real apps certified; smoke-only |
