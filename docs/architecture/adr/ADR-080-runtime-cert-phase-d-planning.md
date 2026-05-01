@@ -6,7 +6,166 @@
 **Pairs with**: ADR-074 (Runtime Bucket as OTel View), ADR-079 (L2 Agent ↔ ADG Graph-Layer Contract)
 **Predecessors**: Phase A (binding matrix), Phase B (formal exception evidence helpers), Phase C.1–C.8 (runtime-cert evidence pipeline)
 
-> ⛔ **This ADR designs Phase D only. It does not certify any app, change scanner `runtime_mode`, add CI gates, or modify runtime behavior.** Implementation is gated on a follow-up Author-Gate decision per the open questions in §12.
+> ⛔ **This ADR designs Phase D only. It does not certify any app, change scanner `runtime_mode`, add CI gates, or modify runtime behavior.** Implementation is gated on the Author-Gate decisions captured immediately below.
+
+---
+
+## 0. Author-Gate Decisions Captured
+
+> Captured 2026-05-01 as a documentation-only Author-Gate pass. These
+> decisions resolve enough of §12 to unblock **Phase D.1 schema work only**.
+> They do **not** authorize ledger writing, scanner changes, CI gates, or
+> certification promotion. Phases D.2 / D.3 / D.4 / D.5 each remain gated on
+> their own Author-Gate per §11.
+
+### Resolved
+
+#### Q1 — Exact ADR number → **RESOLVED: `ADR-080`**
+
+Local verification on 2026-05-01: directory scan of `docs/architecture/adr/`
+matched exactly one file with the `ADR-080` prefix (this file). 68 total
+ADRs on disk; the prior maximum was `ADR-079`. No registry conflict found
+through local inspection. External systems (Notion ADR Registry) were not
+queried in this capture pass — if a downstream conflict surfaces, this ADR
+will be renumbered and cross-references in
+`closed-loop-router-enforcement.md`, `intelligence-ledger-family.md`,
+`docs/reports/runtime_cert/phase_c_closeout/*`, and any future Phase D
+modules will be updated in lockstep.
+
+#### Q5 — Deterministic `decision_id` → **RESOLVED: deterministic SHA-256**
+
+`decision_id` is a deterministic SHA-256 hash of the canonicalized input
+tuple `(app_name, manifest_hash, closeout_report_hash)`. The canonical
+input is **JSON with sorted keys, UTF-8 encoded**:
+
+```python
+import hashlib
+import json
+
+def compute_decision_id(
+    *,
+    app_name: str,
+    manifest_hash: str,           # 64-hex SHA-256 from compute_manifest_hash_for_app
+    closeout_report_hash: str,    # 64-hex SHA-256 of the C.8 Markdown bytes
+) -> str:
+    payload = json.dumps(
+        {
+            "app_name": app_name,
+            "manifest_hash": manifest_hash,
+            "closeout_report_hash": closeout_report_hash,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+```
+
+Why JSON-with-sorted-keys instead of a delimiter-joined string:
+
+- **Delimiter-injection safety.** No app name, hash, or report hash can
+  contain `:` or `|` and accidentally collide with a different tuple. JSON
+  escapes any such bytes deterministically.
+- **Field-shape evolution.** If a future Phase D.x adds a fourth canonical
+  input (e.g. `evidence_window_start`), the JSON shape grows backwards-
+  compatibly; old IDs remain valid hashes of the three-field shape.
+- **External regeneration.** Any auditor with a Python interpreter can
+  recompute `decision_id` from the three input strings without parsing a
+  custom delimiter format.
+
+Consequence: the §6 ledger schema's `(app_name, manifest_hash,
+closeout_report_hash)` unique index becomes structurally redundant with
+the `decision_id` PK — the index is the same hash projected onto three
+columns. Phase D.1 schema MAY drop the unique index in favor of the PK
+alone, OR keep both for query convenience. That micro-decision is
+deferred to D.1.
+
+#### Q4 — Ledger format → **RESOLVED: SQLite only for Phase D**
+
+The per-app cert ledger at
+`artifacts/ledgers/cert_decision_<app_name>.sqlite` is SQLite-only for the
+entire Phase D lifecycle (D.1 through D.5). No JSONL mirror, no parallel
+write path, no dual-format invariant.
+
+Rationale:
+
+- **Single source of truth.** Mirrored writes double the surface area for
+  divergence and drift, both of which the §29 closed-loop router
+  enforcement explicitly tries to prevent.
+- **JSONL is downstream-tooling-only.** No current consumer needs JSONL
+  during Phase D. If Phase E (CI gate) or Phase F (scanner extension)
+  later requires a JSONL view for ad-hoc grep / cross-system import, it
+  ships as a separate **export script** (`tools/runtime_cert/decisions/
+  export_to_jsonl.py`) that reads SQLite and emits JSONL — never a
+  parallel writer.
+- **Pattern alignment.** All ten existing intelligence ledgers (ADR-050)
+  are SQLite-only; cert-decision joins as the 11th family member with the
+  same shape.
+
+A JSONL mirror MAY be revisited in Phase E or Phase F if a real downstream
+consumer requires it. The trigger is "named consumer with concrete
+requirement", not "could be useful someday".
+
+### Deferred to D.5 calibration
+
+#### Q2 — Route-specific Wilson thresholds → **DEFERRED**
+
+Phase D.1 / D.2 / D.3 / D.4 use the **ADR-080 §7 global defaults** for
+all evidence kinds (`r3`, `btc`, `formal_exception`):
+
+| Threshold | Default |
+|---|---:|
+| `n` | `≥ 30` |
+| `wilson_lower` | `≥ 0.60` |
+| `z_score` | `≥ 1.96` |
+| `uplift` | `> 0` |
+
+D.5 calibration produces the first weekly Wilson-CI miss report. If that
+report shows that one or more route shapes systematically over- or
+under-fire on the global defaults, Phase D.5 OR a follow-up
+`ROUTER_DECISION:`-style Author-Gate may introduce per-route columns.
+Until calibration evidence exists, the global defaults are the floor.
+
+#### Q3 — Uplift baseline → **DEFERRED with provisional default**
+
+Phase D.1 / D.2 / D.3 / D.4 use **prior weekly closeout** as the
+provisional uplift baseline:
+
+```
+uplift = evidence_rate(this_week) - evidence_rate(last_week)
+```
+
+Where `last_week` is the most recent prior closeout for the same
+`(app_name, manifest_hash)` tuple. If no prior closeout exists (first
+ever run for an app), `baseline_rate = 0.0` and `uplift = evidence_rate`
+on the current run.
+
+This is provisional because:
+
+- Single-week baselines are volatile when `n` is small.
+- A rolling 4-week mean (option (c) in §12.3) is theoretically smoother
+  but adds complexity and a window-resize parameter that itself needs
+  calibration data to set sensibly.
+
+D.5 calibration will produce the empirical evidence to choose between
+prior-weekly and rolling-4-week. Until then, prior-weekly ships.
+
+### Scope statement
+
+> These decisions **unblock Phase D.1 (`CertificationDecisionRecord`
+> schema) only.** They do **not** authorize:
+>
+> - Ledger writing (Phase D.3)
+> - Closeout-to-decision evaluator implementation (Phase D.2)
+> - Smoke harness execution against real apps (Phase D.4)
+> - Scanner `runtime_mode` modification (Phase F — out of scope)
+> - CI gate addition (Phase E — out of scope)
+> - Any change to `runtime_certification_status` (still `NOT_CERTIFIED`
+>   for every app)
+>
+> No app is certified by these decisions. No app will be certified by
+> Phase D.1's implementation either — D.1 produces a Python dataclass
+> definition with constructor invariants, nothing else.
 
 ---
 
@@ -330,7 +489,21 @@ Each sub-phase requires its own Author-Gate decision per §29 closed-loop router
 
 ## 12. Open questions
 
-These MUST be resolved (via Author-Gate decisions) before Phase D implementation begins:
+> ⚙️ **Status update 2026-05-01**: three of the five questions are now
+> **RESOLVED** and two are **DEFERRED to D.5 calibration** with provisional
+> defaults. The captured outcomes appear in §0 ("Author-Gate Decisions
+> Captured") above. The original question text is preserved here for
+> historical context and to make the rationale traceable.
+
+| # | Question | Status | Outcome |
+|---:|---|---|---|
+| Q1 | Exact ADR number | ✅ **RESOLVED** | `ADR-080` confirmed via local directory scan (§0) |
+| Q2 | Are Wilson thresholds route-specific? | ⏸ **DEFERRED to D.5 calibration** | Provisional global defaults (§0) |
+| Q3 | Uplift baseline | ⏸ **DEFERRED to D.5 calibration** | Provisional default = prior weekly closeout (§0) |
+| Q4 | SQLite-only or JSONL mirror? | ✅ **RESOLVED** | SQLite only for entire Phase D (§0) |
+| Q5 | Deterministic `decision_id`? | ✅ **RESOLVED** | SHA-256 over canonical-JSON of three-field tuple (§0) |
+
+### Original question rationale (for historical reference)
 
 1. **Exact ADR number.** Currently provisionally `ADR-080`. Verify no conflicting allocation has happened; if the next ADR has been claimed by another stream, renumber and update cross-references in `closed-loop-router-enforcement.md`, `intelligence-ledger-family.md`, and the C.8 doc. *(Resolution: scan `docs/architecture/adr/` directory and the Notion ADR Registry; pick the next free number.)*
 2. **Are Wilson thresholds route-specific?** The §7 defaults (`n≥30`, `wilson_lower≥0.60`) treat R3 / BTC / formal-exception apps identically. Formal-exception apps may legitimately have smaller sample sizes (low-traffic evaluators) and may need lower `n` thresholds. Counter-argument: lower `n` undermines the Wilson floor's whole point. *(Resolution: carry both default and per-route columns in the ledger; let Phase D.5 calibration data answer empirically.)*
@@ -344,7 +517,9 @@ These MUST be resolved (via Author-Gate decisions) before Phase D implementation
    - **(b)** Deterministic hash of `(app_name, manifest_hash, closeout_report_hash)` — same row idempotency without the secondary index, easier external regeneration
    *(Resolution: option (b) — the unique index in §6 *is* exactly that hash projected onto three columns; making `decision_id` itself the hash collapses it to one constraint and one PK. Trade-off is opaqueness for external observers, which is mitigated by the marker.)*
 
-These five questions are not blockers for *adopting* this ADR — they are blockers for *implementing* Phase D. The ADR's design space is wide enough to absorb any of the resolutions; the implementation sub-phases each pick a single answer and ship.
+With Q1, Q4, Q5 resolved and Q2, Q3 carrying provisional defaults that
+calibration will refine, **Phase D.1 schema work is unblocked**. D.2, D.3,
+D.4, D.5 each remain gated on their own Author-Gate per §11.
 
 ---
 
