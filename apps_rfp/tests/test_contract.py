@@ -46,7 +46,7 @@ class TestAppsRfpContract(unittest.TestCase):
         """SVP review claims duration bounds (1-52 weeks)."""
         try:
             from apps_rfp.types import RoadmapPhase
-        except ImportError:  # guardian: allow-defensive-import -- optional type export for structural check
+        except ImportError:  # guardian: allow-return-none-swallow -- optional type export; test skips on ImportError
             self.skipTest("RoadmapPhase not exported; structure check only")
             return
         # If exposed, duration bounds must reject out-of-range.

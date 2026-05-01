@@ -41,7 +41,7 @@ class TestAppsResearchContract(unittest.TestCase):
         """SVP review claims SourceEntry has bounded [0,1] confidence."""
         try:
             from apps_research.types import SourceEntry
-        except ImportError:  # guardian: allow-defensive-import -- optional type export for structural check
+        except ImportError:  # guardian: allow-return-none-swallow -- optional type export; test skips on ImportError
             self.skipTest("SourceEntry not exported; structure check only")
             return
         # If exposed, confidence must reject out-of-bounds.
