@@ -136,12 +136,14 @@ def _validate_live_provider_attestation(
     if not required_keys.issubset(att.keys()):
         return False, "REJECT_ATTESTATION_SCHEMA_INVALID"
 
+    # Condition 4 — mock_safe is banned (checked before general unapproved
+    # so a mock_safe payload yields the specific reason code, not the
+    # broader unapproved one).
+    if att.get("provider") == "mock_safe" or att.get("mock_safe_used"):
+        return False, "REJECT_MOCK_SAFE_IN_CERTIFICATION"
     # Condition 3 — approved provider
     if att.get("provider") not in W2B_APPROVED_PROVIDERS:
         return False, "REJECT_UNAPPROVED_PROVIDER"
-    # Condition 4 — mock_safe is banned
-    if att.get("mock_safe_used"):
-        return False, "REJECT_MOCK_SAFE_IN_CERTIFICATION"
     # Condition 5 — no deterministic proof stage
     if att.get("deterministic_proof_stage_used"):
         return False, "REJECT_DETERMINISTIC_PROOF_STAGE_IN_CERTIFICATION"

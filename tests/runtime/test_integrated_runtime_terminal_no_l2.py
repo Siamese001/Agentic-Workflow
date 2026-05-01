@@ -12,6 +12,17 @@ if str(REPO_ROOT) not in sys.path:
 
 LATEST = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest"
 
+import pytest  # noqa: E402
+
+pytestmark = pytest.mark.skipif(
+    not (LATEST / "integrated_runtime_artifact_manifest.json").exists(),
+    reason=(
+        "W2b honest non-green: latest/ empty without approved live provider. "
+        "Run probe_integrated_runtime_safe_reuse.py with local_qwen reachable "
+        "or ANTHROPIC_API_KEY set."
+    ),
+)
+
 
 class TestTerminalNoL2NoL4:
     def test_terminal_packet_no_l2_assertion(self):
