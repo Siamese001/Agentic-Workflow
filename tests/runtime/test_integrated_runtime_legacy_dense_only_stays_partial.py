@@ -42,12 +42,44 @@ class TestRTC055Stays:
         assert "PRODUCTION_THRESHOLD_PROOF" in caveat or "CALIBRATION_GAP" in caveat
 
 
-class TestRTC056FlippedIndependently:
-    def test_rtc_req_056_accepted_at_e6(self):
+class TestRTC056HonestInfrastructureGap:
+    """Committed state: RTC-REQ-056 is PENDING because the C-primary
+    ALLOW-path proof is gated on a live approved SAFE-producing provider
+    (anthropic_haiku or local_qwen). The W2 infrastructure is complete
+    but mock_safe is NOT authorized for final certification acceptance.
+
+    When a live approved provider becomes available AND the probe writes
+    ``c_primary_allow.pass = True`` into path_proofs_ledger.json, RTC-REQ-056
+    will flip to ACCEPTED automatically. These assertions encode the
+    committed honest state — update them only when that transition is
+    intentional and supported by live evidence.
+    """
+
+    def test_rtc_req_056_pending_due_to_infrastructure_gap(self):
         ov = json.loads((REPO_ROOT / "artifacts" / "certification"
                          / "runtime_evidence_overrides.json").read_text(encoding="utf-8"))
-        assert ov["final_acceptance_status"]["RTC-REQ-056"] == "ACCEPTED"
-        assert ov["actual_proof_depth"]["RTC-REQ-056"] == "E6_INTEGRATED_RUNTIME_PROOF"
+        # RTC-REQ-056 is either absent (reverting to PENDING default) OR
+        # explicitly PENDING/PARTIAL/BLOCKED — but NEVER ACCEPTED without
+        # a live approved provider.
+        status = ov["final_acceptance_status"].get("RTC-REQ-056")
+        assert status in (None, "PENDING", "PARTIAL", "BLOCKED"), (
+            f"RTC-REQ-056 must not be ACCEPTED in committed state "
+            f"(got {status!r}); mock_safe is MOCK_PROVIDER_ONLY."
+        )
+
+    def test_path_proofs_ledger_records_infrastructure_gap(self):
+        ledger = json.loads((REPO_ROOT / "artifacts" / "certification"
+                             / "integrated_runtime" / "path_proofs_ledger.json"
+                             ).read_text(encoding="utf-8"))
+        # Fail-closed leg always PASSes — that's the real proof we ship.
+        assert ledger["c_primary_fail_closed"]["pass"] is True
+        # Allow leg is gated on a live provider; committed default is not-pass.
+        # If a live provider is configured, allow_pass may be True; we only
+        # assert the ledger structure is present with the expected keys.
+        assert "pass" in ledger["c_primary_allow"]
+        assert "provider_attempted" in ledger["c_primary_allow"]
+        # Structural run must always be labeled STRUCTURAL_ONLY.
+        assert ledger["structural_allow_topology"]["match_status"] == "STRUCTURAL_ONLY"
 
     def test_rtc_req_056_does_not_inherit_threshold_gap(self):
         gating = GATED_ROWS["RTC-REQ-056"]["gating_subclaims"]
