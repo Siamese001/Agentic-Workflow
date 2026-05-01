@@ -17,6 +17,49 @@
 
 ---
 
+## Author-Gate Decisions Captured
+
+> ✅ **Approved 2026-05-01** on branch `rtc-w2b-scenario-a-local-qwen-proof`.
+> All five Phase E.1 Author-Gate decisions (§10) are APPROVED as recommended.
+> This approval is documentation-only. It authorizes **future** E1.W2
+> planning/implementation under a separate scoped prompt. It does **not**
+> create a CI gate, does **not** create a baseline TOML, does **not** modify
+> scanner `runtime_mode`, does **not** certify any app, and leaves Phase F
+> entirely out of scope.
+
+| AG | Status | Decision (as approved) |
+|---|---|---|
+| **E-AG-1** | ✅ APPROVED | Gate reads per-app SQLite ledgers via `read_cert_decision_records(app_name, repo_root=...)`. **No** on-the-fly closeout re-evaluation in E.1. |
+| **E-AG-2** | ✅ APPROVED | Baseline is an explicit TOML file at `docs/reference/runtime_certification/cert_baseline.toml` with `schema_version = "e1-baseline-v1"`. **Not created by this approval.** Creation happens in a later scoped E1.W3 prompt. |
+| **E-AG-3** | ✅ APPROVED | Missing ledger is a **hard fail (exit 1, `MISSING_LEDGER_FOR_REQUIRED_APP`)** only for apps listed in the baseline. Apps not listed in the baseline are **out of E.1 scope** — the gate abstains for them, never fails. |
+| **E-AG-4** | ✅ APPROVED | E.1 gate scope is **opt-in per-app**. Only apps with baseline entries are gated. Apps absent from the baseline are invisible to the gate. |
+| **E-AG-5** | ✅ APPROVED | **Advisory mode first.** Gate ships with `RUNTIME_CERT_GATE_MODE=advisory` default — observable exit codes, no CI wiring. Strict CI workflow wiring (`.pre-commit-config.yaml` / GitHub Actions) requires a **separate Author-Gate** in E1.W4 after clean advisory runs satisfy the §10 E-AG-5 graduation criterion. |
+
+### What this approval authorizes
+
+- ✅ A **future scoped prompt** for E1.W2 implementation planning (core gate module + unit tests)
+- ✅ A **future scoped prompt** for E1.W3 (baseline TOML seed + weekly evidence doc)
+- ✅ A **future, separately gated** E1.W4 Author-Gate for advisory-to-strict CI wiring
+
+### What this approval does NOT authorize
+
+- ❌ **No CI gate** is created by this approval. `ops_scripts/ci/check_runtime_certification.py` does not exist yet; its creation is blocked on a separate E1.W2 scoped prompt.
+- ❌ **No baseline TOML** is created. `docs/reference/runtime_certification/cert_baseline.toml` does not exist yet; its creation is blocked on a separate E1.W3 scoped prompt.
+- ❌ **No pre-commit or CI workflow** is touched. `.pre-commit-config.yaml` and `.github/workflows/` are untouched by this approval and remain untouched until E1.W4 under its own separate Author-Gate.
+- ❌ **No scanner `runtime_mode` change.** The spine scanner bucket list is unchanged. Recognition of `RUNTIME_CERTIFIED` / `FORMAL_EXCEPTION_VERIFIED` remains **Phase F only** and is entirely out of scope for Phase E.
+- ❌ **No app certified.** Every app's `runtime_certification_status` remains `NOT_CERTIFIED`. This approval does not promote, does not mutate, does not write any certification state anywhere.
+- ❌ **No Phase F work.** Promotion workflow, scanner extension, scorecard writes, Notion ADR auto-post, memory writeback — all explicitly **out of scope** and independently gated on a future Author-Gate.
+
+### Provenance
+
+- Plan file: `.windsurf/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md` (this file)
+- Plan commit: `ed65def950` — `plan(runtime_cert): Phase E fail-closed CI gate`
+- Phase D state at approval time: D.1 through D.5 all ✅ on this branch; 191/191 combined decisions + smoke tests passing
+- Approval turn: 2026-05-01 ~08:39 UTC-04:00
+- Branch: `rtc-w2b-scenario-a-local-qwen-proof`
+
+---
+
 ## Wave Structure
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
