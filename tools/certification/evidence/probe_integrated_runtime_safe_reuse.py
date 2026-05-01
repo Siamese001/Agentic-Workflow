@@ -122,16 +122,16 @@ def _build_c_primary_allow_orchestrator() -> tuple[VetoOrchestrator | None, str]
     is available the orchestrator is ``None`` and the caller treats the
     allow leg as INFRASTRUCTURE_GAP without attempting a run.
     """
-    # 1. local_qwen
+    # 1. local_qwen — model_id is discovered at runtime from /v1/models
+    # so the attestation binds the actually-serving model. NEVER hardcode.
     qwen_stage = LLMJudgeVeto(provider="local_qwen",
-                              model_id="Qwen2.5-7B-Instruct",
                               rubric_path=DEFAULT_RUBRIC_PATH)
     if qwen_stage.is_available():
         return VetoOrchestrator(stages=[qwen_stage]), "local_qwen"
-    # 2. anthropic_haiku
+    # 2. anthropic_haiku — model_id pinned inside LLMJudgeVeto per provider
+    # default (claude-3-haiku-20240307); no probe-side hardcoding needed.
     if os.environ.get("ANTHROPIC_API_KEY"):
         anthropic_stage = LLMJudgeVeto(provider="anthropic_haiku",
-                                       model_id="claude-haiku-4-5",
                                        rubric_path=DEFAULT_RUBRIC_PATH)
         return VetoOrchestrator(stages=[anthropic_stage]), "anthropic_haiku"
     # Neither available.
@@ -210,10 +210,24 @@ def main() -> int:
         )
         if allow_succeeded and allow_provider in APPROVED_PROVIDERS:
             veto_provenance = a_manifest["payload"].get("veto_provenance", {}) or {}
-            model_id = {
-                "local_qwen": "Qwen2.5-7B-Instruct",
-                "anthropic_haiku": "claude-haiku-4-5",
-            }[allow_provider]
+            # Bind the actual model the endpoint served during this run —
+            # NEVER a hardcoded string. The veto stage captures
+            # `resolved_model_id` (what was sent in the request body) and
+            # `advertised_model_id` (what /v1/models reported) into its
+            # result metadata; the manifest propagates them into
+            # `veto_provenance`. A later composer / verifier layer flags
+            # any mismatch via REJECT_MODEL_ID_MISMATCH.
+            model_id = (
+                veto_provenance.get("veto_model_id")
+                or veto_provenance.get("model_id")
+                or ""
+            )
+            if not model_id:
+                raise RuntimeError(
+                    "veto_provenance missing model_id — cannot build a valid "
+                    "attestation without binding the actual model used. "
+                    "Check LLMJudgeVeto.resolved_model_id wiring."
+                )
             attestation_payload = build_attestation_payload(
                 provider=allow_provider,
                 model_id=model_id,

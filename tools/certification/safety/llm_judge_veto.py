@@ -33,23 +33,126 @@ class LLMJudgeVeto:
     Implements the VetoStage Protocol with fail-closed behavior.
     """
     
+    # Local-qwen default endpoint; overridable via LOCAL_QWEN_ENDPOINT env.
+    _DEFAULT_LOCAL_QWEN_ENDPOINT = "http://localhost:8000/v1"
+    # Final fallback only if endpoint discovery and env override both fail.
+    _FALLBACK_MODEL_ID = "Qwen2.5-7B-Instruct"
+
     def __init__(
         self,
         provider: str = "local_qwen",
-        model_id: str = "Qwen2.5-7B-Instruct",
+        model_id: str | None = None,
         rubric_path: Path | None = None,
         timeout_ms: int = DEFAULT_TIMEOUT_MS,
         temperature: float = DEFAULT_TEMPERATURE,
         max_input_tokens: int = 4096,
     ):
         self._provider = provider
-        self._model_id = model_id
+        # Model-ID resolution deferred to first use (lazy) so construction
+        # does not do network I/O and unit tests stay hermetic.
+        # Resolution precedence:
+        #   1. Explicit model_id argument (back-compat, tests)
+        #   2. Env var LOCAL_QWEN_MODEL  (operator escape hatch)
+        #   3. GET {endpoint}/v1/models  (discovery — preferred default)
+        #   4. Hardcoded fallback _FALLBACK_MODEL_ID
+        # The resolved id + (when discovery fires) the advertised id are
+        # stored on the instance and surfaced via `resolved_model_id` and
+        # `advertised_model_id` properties; the attestation writer binds
+        # these into `live_provider_attestation.json` so a later-stage
+        # verifier can REJECT any mismatch between what the probe
+        # requested and what the endpoint advertised during the run.
+        self._explicit_model_id = model_id
+        self._model_id: str | None = None  # resolved lazily
+        self._advertised_model_id: str | None = None  # from /v1/models
+        self._model_id_source: str = "unresolved"
         self._rubric_path = rubric_path or DEFAULT_RUBRIC_PATH
         self._timeout_ms = timeout_ms
         self._temperature = temperature
         self._max_input_tokens = max_input_tokens
         self._rubric = None
         self._client = None
+
+    @property
+    def resolved_model_id(self) -> str:
+        """Model id that will be / was sent in the vLLM request body."""
+        if self._model_id is None:
+            self._resolve_model_id()
+        return self._model_id or self._FALLBACK_MODEL_ID
+
+    @property
+    def advertised_model_id(self) -> str | None:
+        """Model id advertised by /v1/models at discovery time, if any."""
+        if self._model_id is None:
+            self._resolve_model_id()
+        return self._advertised_model_id
+
+    @property
+    def model_id_source(self) -> str:
+        """One of: 'explicit', 'env', 'discovery', 'fallback', 'unresolved'."""
+        if self._model_id is None:
+            self._resolve_model_id()
+        return self._model_id_source
+
+    def _local_qwen_endpoint(self) -> str:
+        return os.environ.get("LOCAL_QWEN_ENDPOINT") or self._DEFAULT_LOCAL_QWEN_ENDPOINT
+
+    def _discover_local_qwen_model(self) -> str | None:
+        """Query {endpoint}/v1/models and return the first advertised id.
+
+        Returns None on any failure (transport error, bad JSON, empty list);
+        caller falls through to the next precedence tier.
+        """
+        endpoint = self._local_qwen_endpoint().rstrip("/")
+        try:
+            import urllib.request
+            with urllib.request.urlopen(f"{endpoint}/models", timeout=2) as r:
+                data = json.loads(r.read().decode("utf-8"))
+            lst = data.get("data") or []
+            if lst and isinstance(lst, list):
+                first = lst[0]
+                if isinstance(first, dict):
+                    advertised = first.get("id")
+                    if isinstance(advertised, str) and advertised:
+                        return advertised
+        except Exception:
+            return None
+        return None
+
+    def _resolve_model_id(self) -> None:
+        """Populate self._model_id per the 4-tier precedence."""
+        # 1. Explicit constructor arg wins.
+        if self._explicit_model_id:
+            self._model_id = self._explicit_model_id
+            self._model_id_source = "explicit"
+            # Still attempt discovery so the attestation can record
+            # `advertised_model_id` and a later layer can flag mismatch.
+            if self._provider == "local_qwen":
+                self._advertised_model_id = self._discover_local_qwen_model()
+            return
+        # 2. Env var override.
+        env_override = os.environ.get("LOCAL_QWEN_MODEL")
+        if env_override and self._provider == "local_qwen":
+            self._model_id = env_override
+            self._model_id_source = "env"
+            self._advertised_model_id = self._discover_local_qwen_model()
+            return
+        # 3. Runtime discovery (preferred default for local_qwen).
+        if self._provider == "local_qwen":
+            advertised = self._discover_local_qwen_model()
+            if advertised:
+                self._model_id = advertised
+                self._advertised_model_id = advertised
+                self._model_id_source = "discovery"
+                return
+        # 4. Anthropic has its own hardcoded model in _call_anthropic_haiku;
+        # record it here for introspection symmetry.
+        if self._provider == "anthropic_haiku":
+            self._model_id = "claude-3-haiku-20240307"
+            self._model_id_source = "anthropic_fixed"
+            return
+        # Final fallback.
+        self._model_id = self._FALLBACK_MODEL_ID
+        self._model_id_source = "fallback"
         
     @property
     def name(self) -> str:
@@ -154,11 +257,11 @@ Fail-closed: any other response format must be treated as UNSAFE."""
         try:
             import openai
             client = openai.OpenAI(
-                base_url="http://localhost:8000/v1",
+                base_url=self._local_qwen_endpoint(),
                 api_key="not-needed",
             )
             response = client.chat.completions.create(
-                model=self._model_id,
+                model=self.resolved_model_id,
                 messages=[
                     {"role": "system", "content": "You are a safety judge. Respond only with valid JSON."},
                     {"role": "user", "content": prompt},
@@ -415,7 +518,9 @@ Fail-closed: any other response format must be treated as UNSAFE."""
                 latency_ms=latency_ms,
                 metadata={
                     "provider": self._provider,
-                    "model_id": self._model_id,
+                    "model_id": self.resolved_model_id,
+                    "advertised_model_id": self.advertised_model_id,
+                    "model_id_source": self.model_id_source,
                     "raw_response": raw[:500],  # truncated for logging
                 },
             )
@@ -429,7 +534,9 @@ Fail-closed: any other response format must be treated as UNSAFE."""
             latency_ms=latency_ms,
             metadata={
                 "provider": self._provider,
-                "model_id": self._model_id,
+                "model_id": self.resolved_model_id,
+                "advertised_model_id": self.advertised_model_id,
+                "model_id_source": self.model_id_source,
                 "raw_response": raw[:500],
             },
         )
