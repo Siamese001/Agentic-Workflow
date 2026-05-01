@@ -1,0 +1,263 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-workflow.local/schemas/certification/veto_policy.schema.json",
+  "title": "Semantic Cache Veto Policy",
+  "description": "Configuration for layered safety veto stages in semantic cache reuse (W1p5)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "enabled_stages",
+    "stage_order",
+    "fail_closed_defaults",
+    "latency_budget_ms"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for compatibility checking"
+    },
+    "policy_id": {
+      "type": "string",
+      "pattern": "^SEMCACHE-VETO-[0-9]{3}$",
+      "description": "Unique policy identifier (e.g., SEMCACHE-VETO-001)"
+    },
+    "parent_policy": {
+      "type": ["string", "null"],
+      "description": "Previous policy this supersedes, if any"
+    },
+    "enabled_stages": {
+      "type": "object",
+      "description": "Which veto stages are active",
+      "properties": {
+        "lexical_intent_pre_veto": {
+          "type": "boolean",
+          "default": true,
+          "description": "Layer 1: fast deterministic lexical rules (Option A)"
+        },
+        "cross_encoder": {
+          "type": "boolean",
+          "default": false,
+          "description": "Layer 2 primary: cross-encoder semantic verification (Option B)"
+        },
+        "llm_judge": {
+          "type": "boolean",
+          "default": false,
+          "description": "Layer 2 primary: LLM-as-judge (Option C)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stage_order": {
+      "type": "array",
+      "description": "Execution order of stages (must match enabled_stages)",
+      "items": {
+        "type": "string",
+        "enum": ["lexical_intent_pre_veto", "cross_encoder", "llm_judge"]
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "layer_0_threshold": {
+      "type": "object",
+      "description": "Dense cosine candidate generator threshold (unchanged from W1p4)",
+      "properties": {
+        "static": {
+          "type": "number",
+          "const": 1.0,
+          "description": "L1 exact match threshold (conceptual)"
+        },
+        "dynamic": {
+          "type": "number",
+          "const": 0.95,
+          "description": "L2 semantic similarity threshold (BGE-M3 cosine)"
+        }
+      }
+    },
+    "lexical_intent_config": {
+      "type": "object",
+      "description": "Configuration for Layer 1 lexical pre-veto",
+      "properties": {
+        "lexicon_path": {
+          "type": "string",
+          "default": "config/certification/safety_lexicon.json",
+          "description": "Path to opposing-verb lexicon data file"
+        },
+        "case_sensitive": {
+          "type": "boolean",
+          "default": false
+        },
+        "delegate_on_ambiguous": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, ambiguous cases delegate to Layer 2; if false, VETO"
+        },
+        "max_latency_ms": {
+          "type": "number",
+          "default": 5,
+          "description": "Maximum allowed latency for lexical veto"
+        }
+      }
+    },
+    "cross_encoder_config": {
+      "type": "object",
+      "description": "Configuration for Layer 2 cross-encoder veto (Option B)",
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "enum": [
+            "BAAI/bge-reranker-v2-m3",
+            "cross-encoder/ms-marco-MiniLM-L-12-v2"
+          ],
+          "description": "Cross-encoder model to load"
+        },
+        "veto_threshold": {
+          "type": "number",
+          "minimum": -1.0,
+          "maximum": 1.0,
+          "description": "Score threshold for SAFE verdict (calibrated from dataset)"
+        },
+        "device": {
+          "type": "string",
+          "enum": ["auto", "cuda", "cpu"],
+          "default": "auto"
+        },
+        "max_latency_ms": {
+          "type": "number",
+          "default": 500,
+          "description": "Timeout for cross-encoder inference"
+        },
+        "batch_size": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 8
+        }
+      },
+      "required": ["model_id", "veto_threshold"]
+    },
+    "llm_judge_config": {
+      "type": "object",
+      "description": "Configuration for Layer 2 LLM-judge veto (Option C)",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": ["local_qwen", "anthropic_haiku", "mock"],
+          "description": "Which LLM provider to use"
+        },
+        "model_id": {
+          "type": "string",
+          "description": "Model identifier (e.g., 'Qwen2.5-7B-Instruct' or 'claude-3-haiku')"
+        },
+        "rubric_path": {
+          "type": "string",
+          "default": "config/certification/llm_judge_rubric.md",
+          "description": "Path to judge rubric markdown file"
+        },
+        "max_latency_ms": {
+          "type": "number",
+          "default": 2000,
+          "description": "Timeout for LLM call (fail-closed on timeout)"
+        },
+        "temperature": {
+          "type": "number",
+          "default": 0.0,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Sampling temperature (0 = deterministic)"
+        },
+        "escalation_only": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, only called for action-sensitive/policy-sensitive queries"
+        },
+        "max_input_tokens": {
+          "type": "integer",
+          "default": 4096,
+          "description": "Maximum tokens for query + cached_query + cached_answer"
+        }
+      },
+      "required": ["provider", "model_id"]
+    },
+    "fail_closed_defaults": {
+      "type": "object",
+      "description": "Fail-closed behavior when stages error or timeout",
+      "properties": {
+        "on_timeout": {
+          "type": "string",
+          "const": "VETO",
+          "description": "Must be VETO (fail-closed)"
+        },
+        "on_parse_error": {
+          "type": "string",
+          "const": "VETO",
+          "description": "Must be VETO (fail-closed)"
+        },
+        "on_model_error": {
+          "type": "string",
+          "const": "VETO",
+          "description": "Must be VETO (fail-closed)"
+        },
+        "on_unknown_stage": {
+          "type": "string",
+          "const": "VETO",
+          "description": "Must be VETO (fail-closed)"
+        }
+      }
+    },
+    "latency_budget_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total latency budget for all veto stages combined"
+    },
+    "calibration": {
+      "type": "object",
+      "description": "Calibration metadata from W1p5 dataset evaluation",
+      "properties": {
+        "dataset_version": {
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+$"
+        },
+        "dataset_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "train_pairs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holdout_pairs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "recall_at_fp0": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "calibrated_threshold": {
+          "type": "number"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Audit trail for policy changes",
+      "properties": {
+        "created_by": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "adr_reference": {
+          "type": "string",
+          "pattern": "^SEMCACHE-[A-Z]+-[0-9]+$"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

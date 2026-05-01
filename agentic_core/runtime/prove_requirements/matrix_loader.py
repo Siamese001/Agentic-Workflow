@@ -43,7 +43,9 @@ CANONICAL_CSV_PATH: Final[Path] = (
 
 # The hardened CSV's known-good count. Tests assert this and the verifiers
 # fail-closed if a freshly loaded CSV produces a different count.
-CANONICAL_REQUIREMENT_COUNT: Final[int] = 86
+# W1p6 (2026-04-30): incremented from 86 → 87 on addition of RTC-REQ-059
+# (safe-reuse composite proof for the approved dense+veto architecture).
+CANONICAL_REQUIREMENT_COUNT: Final[int] = 87
 
 # All 32 columns required by the hardened schema (RTC-REQ-002, RTC-REQ-110).
 REQUIRED_COLUMNS: Final[tuple[str, ...]] = (

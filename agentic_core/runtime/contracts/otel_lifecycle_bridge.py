@@ -396,7 +396,7 @@ def otel_lifecycle_capture(
             emit_memory_promotion(_op)
             emit_route_contract_telemetry(_op)
             emit_audit_replay_consistency(_op)
-        except ImportError:  # guardian: allow-req-evidence-optional -- module absent in stripped builds
+        except ImportError:  # guardian: allow-silent-swallow -- req_evidence module absent in stripped builds; bridge install still succeeds
             pass
     try:
         yield bridge
