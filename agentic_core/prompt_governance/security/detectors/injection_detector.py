@@ -338,14 +338,7 @@ class InjectionDetector:
                     detection_counts=self._detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except (
-            ImportError,
-            AttributeError,
-            OSError,
-            TypeError,
-            ValueError,
-            RuntimeError,
-        ) as e:  # guardian: allow-log-and-swallow -- system learning emission optional: non-fatal, detection proceeds without it
+        except (ImportError, AttributeError, OSError, TypeError, ValueError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- system learning emission optional: non-fatal, detection proceeds without it
             # System learning unavailable - continue without emission
             import logging
 
@@ -429,14 +422,7 @@ class InjectionDetector:
                     detection_counts=self._context_detection_counts.copy(),
                     timestamp_utc=int(time.time() * 1000),
                 )
-        except (
-            ImportError,
-            AttributeError,
-            OSError,
-            TypeError,
-            ValueError,
-            RuntimeError,
-        ) as e:  # guardian: allow-log-and-swallow -- system learning emission optional: non-fatal, detection proceeds without it
+        except (ImportError, AttributeError, OSError, TypeError, ValueError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- system learning emission optional: non-fatal, detection proceeds without it
             # System learning unavailable - continue without emission
             import logging
 

@@ -235,14 +235,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         visitor = DarkReasoningVisitor()
         visitor.visit(tree)
         issues.extend(visitor.issues)
-    except (
-        SyntaxError,
-        ValueError,
-        TypeError,
-        AttributeError,
-        OSError,
-        RuntimeError,
-    ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+    except (SyntaxError, ValueError, TypeError, AttributeError, OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- AST parse/visit failure: non-fatal; file skipped in dark reasoning check
         import logging
 
         logging.getLogger(__name__).debug(

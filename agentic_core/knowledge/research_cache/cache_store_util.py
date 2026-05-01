@@ -252,13 +252,7 @@ class ResearchCache:
                     if i == line_num:
                         entry = json.loads(line.strip())
                         return entry.get("result")
-        except (
-            json.JSONDecodeError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (json.JSONDecodeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- cache entry read failure: non-fatal; None returned signals cache miss to caller
             Logger.error(f"Failed to retrieve cache entry: {e}")
         return None
 

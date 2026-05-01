@@ -214,13 +214,7 @@ class AgentRegistry:
             try:
                 file_agents = self._scan_file_for_agents(file_path)
                 agents.extend(file_agents)
-            except (
-                AttributeError,
-                OSError,
-                RuntimeError,
-                TypeError,
-                ValueError,
-            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- file scan failure: non-fatal; agent discovery continues with remaining files
                 logger.warning(f"Failed to scan {file_path}: {e}")
         self.discovered_agents = agents
         logger.info(f"Discovered {len(agents)} agents across {len(python_files)} files")
@@ -281,13 +275,7 @@ class AgentRegistry:
                 module_path=self._get_module_path(file_path),
             )
             agents.append(agent)
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- file parse failure: non-fatal; agent discovery continues with remaining files
             logger.debug(f"Failed to parse {file_path}: {e}")
         return agents
 

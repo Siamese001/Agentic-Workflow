@@ -216,7 +216,7 @@ def install_and_tag(app_id: str, op: str = "") -> object | None:
         emit_memory_promotion(op)
         emit_route_contract_telemetry(op)
         emit_audit_replay_consistency(op)
-    except (TypeError, ValueError, AttributeError) as exc:  # guardian: allow-defensive -- emit helpers should never raise; if they do, bridge install still succeeds
+    except (TypeError, ValueError, AttributeError) as exc:  # guardian: allow-log-and-swallow -- REQ emission helpers should never raise; bridge install still succeeds without emit
         logging.getLogger(__name__).warning(
             "install_and_tag: REQ emission failed (%s); bridge still installed",
             exc,

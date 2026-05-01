@@ -229,13 +229,7 @@ class ElevatorShaftConsistencyEnforcer:
                     _adg_violates,
                     _bp.behavioral_score,
                 )
-        except (
-            ImportError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- behavioral profile unavailable: non-fatal; consistency check continues without ADG scoring
             import logging
 
             logging.getLogger(__name__).debug(

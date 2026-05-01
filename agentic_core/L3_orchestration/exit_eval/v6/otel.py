@@ -303,7 +303,7 @@ def _try_emit_to_sdk(name: str, attributes: Mapping[str, Any]) -> None:
                     sdk_span.set_attribute(k, v)
                 else:
                     sdk_span.set_attribute(k, str(v))
-    except (RuntimeError, OSError, ValueError) as exc:  # pragma: no cover
+    except (RuntimeError, OSError, ValueError) as exc:  # guardian: allow-log-and-swallow -- OTEL SDK emission optional: non-fatal; span attributes continue without SDK emit  # pragma: no cover
         logger.debug("OTEL SDK emission failed for span=%s: %s", name, exc)
 
 

@@ -421,13 +421,7 @@ class ExecutionOrchestrator:
                 payload_key,
                 json.dumps(_serializable, sort_keys=True, default=str, separators=(",", ":")),
             )
-        except (
-            ImportError,
-            AttributeError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as _e:  # guardian: allow-log-and-swallow -- D1 exact cache writeback is opportunistic; failure must not fail the request
+        except (ImportError, AttributeError, RuntimeError, TypeError, ValueError) as _e:  # guardian: allow-log-and-swallow -- D1 exact cache writeback is opportunistic; failure must not fail the request
             Logger.debug("[L0-ORCH] D1 exact cache writeback skipped: %s", _e)
 
     def plan_execution_with_impact_analysis(self, changed_files: list[str]) -> dict[str, Any]:

@@ -128,7 +128,7 @@ def emit_span(name: str, attributes: dict[str, Any] | None = None) -> Iterator[N
             with tracer.start_as_current_span(name, attributes=attrs):
                 yield
                 return
-        except (RuntimeError, ValueError, TypeError) as exc:  # pragma: no cover
+        except (RuntimeError, ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- OTEL span start failure: non-fatal; runtime gate continues without telemetry  # pragma: no cover
             logger.debug("runtime_gates otel emit failed: %s", exc)
     yield
 

@@ -293,13 +293,7 @@ class L3OrchestrationBase(SovereignBaseAgent):
                 else "hybrid"
             )
             _adg_scope_widening = sorted(_bp.antipattern_signals)
-        except (
-            ImportError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:  # guardian: allow-log-and-swallow -- behavioral profile unavailable: non-fatal; plan_execution degrades to static mode
             logger.debug("L3OrchestrationBase.plan_execution degraded to static mode: %s", e)
         return {
             "task": task,

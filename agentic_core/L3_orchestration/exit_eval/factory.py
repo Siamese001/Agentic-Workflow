@@ -92,7 +92,7 @@ def _resolve_rubric_version(gate_id: str, rubric_dir: Path) -> str:
                 v = block.get(gate_id) or block.get(gate_id.upper())
                 if isinstance(v, str) and v.strip():
                     return v.strip()
-        except (OSError, UnicodeDecodeError, ValueError, yaml.YAMLError) as exc:
+        except (OSError, UnicodeDecodeError, ValueError, yaml.YAMLError) as exc:  # guardian: allow-log-and-swallow -- version resolution failed: non-fatal; fallback version applied
             # Non-fatal — fall through to v1 default. Surface in logs.
             import logging  # noqa: PLC0415
 

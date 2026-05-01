@@ -254,13 +254,7 @@ class SovereignReasoningMemory(SovereignBaseAgent):
             try:
                 raw = self.redis_client.lrange(self.redis_reasoning_key, 0, -1)
                 return [json.loads(x) for x in raw]
-            except (
-                AttributeError,
-                OSError,
-                RuntimeError,
-                TypeError,
-                ValueError,
-            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- Redis lrange failure: non-fatal; reasoning history unavailable, returns empty list
                 import logging
 
                 logging.getLogger(__name__).debug(
