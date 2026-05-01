@@ -221,7 +221,7 @@ class RuntimeExhaustCollector:
             try:
                 if int(cur) < int(prior):
                     defects.append(ExhaustDefect.IMPOSSIBLE_STAGE_ORDER)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow -- step_id comparison: non-numeric step IDs are valid; skip ordering check silently
                 pass
         ph = record.get("policy_hash")
         php = record.get("policy_hash_at_planning")

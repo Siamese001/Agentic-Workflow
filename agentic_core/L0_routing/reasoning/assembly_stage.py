@@ -453,7 +453,7 @@ def _estimate_tokens(text: str, provider: str | None = None) -> int:
 
                 enc = tiktoken.get_encoding("cl100k_base")
                 return len(enc.encode(text))
-            except (ImportError, ModuleNotFoundError, KeyError, AttributeError):
+            except (ImportError, ModuleNotFoundError, KeyError, AttributeError):  # guardian: allow-silent-swallow -- tiktoken optional; falls back to char/4 estimate
                 pass
         elif prov.startswith(("anthropic", "claude")):
             try:
@@ -463,7 +463,7 @@ def _estimate_tokens(text: str, provider: str | None = None) -> int:
                     client = anthropic.Anthropic()
                     if hasattr(client, "count_tokens"):
                         return int(client.count_tokens(text))
-            except (ImportError, ModuleNotFoundError, AttributeError, TypeError):
+            except (ImportError, ModuleNotFoundError, AttributeError, TypeError):  # guardian: allow-silent-swallow -- anthropic SDK optional; falls back to char/4 estimate
                 pass
     return max(0, len(text) // 4)
 

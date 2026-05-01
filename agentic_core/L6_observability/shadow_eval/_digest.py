@@ -67,7 +67,7 @@ def stamp_digest(record: Any) -> Any:
     digest = compute_digest(record)
     try:
         object.__setattr__(record, DIGEST_FIELD, digest)
-    except (AttributeError, dataclasses.FrozenInstanceError):
+    except (AttributeError, dataclasses.FrozenInstanceError):  # guardian: allow-silent-swallow -- frozen/namedtuple record: setattr not possible; digest stamp skipped, record returned as-is
         # Last resort for namedtuple-style or fully immutable structures.
         pass
     return record

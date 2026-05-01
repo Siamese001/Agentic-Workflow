@@ -395,7 +395,7 @@ def _apply_refine_tactic(plan: RetrievalPlan, tactic: RefineTactic) -> Retrieval
 
 def _replace_plan(plan: RetrievalPlan, **kwargs) -> RetrievalPlan:
     """Frozen-dataclass replace helper that round-trips through the constructor."""
-    fields = {f: getattr(plan, f) for f in plan.__dataclass_fields__}
+    fields = {f: getattr(plan, f) for f in plan.__dataclass_fields__}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads frozen dataclass fields by name
     fields.update(kwargs)
     return RetrievalPlan(**fields)
 

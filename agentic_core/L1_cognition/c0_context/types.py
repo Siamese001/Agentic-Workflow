@@ -359,7 +359,7 @@ class ScoreBreakdown:
     ACL_confidence: float = 0.0
 
     def as_dict(self) -> dict[str, float]:
-        return {dim: getattr(self, dim) for dim in SCORE_DIMENSIONS}
+        return {dim: getattr(self, dim) for dim in SCORE_DIMENSIONS}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads score dimension attrs by name
 
 
 @dataclass(frozen=True)

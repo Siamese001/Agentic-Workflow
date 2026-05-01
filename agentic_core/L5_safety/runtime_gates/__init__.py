@@ -85,7 +85,7 @@ _GATE_MODULES = [
 for _mod in _GATE_MODULES:
     try:
         __import__(f"agentic_core.L5_safety.runtime_gates.{_mod}")
-    except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow -- gate module not yet implemented: tolerated during rollout; other gates unaffected
         # Module not yet implemented — tolerated during rollout.
         pass
 

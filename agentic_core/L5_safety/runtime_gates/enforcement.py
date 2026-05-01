@@ -195,7 +195,7 @@ def enforces_layer(
             try:
                 # Attach for callers that want to introspect.
                 output.__runtime_gate_result__ = result  # type: ignore[attr-defined]
-            except (AttributeError, TypeError):
+            except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- output attribute annotation: non-fatal; output returned regardless
                 pass
             return output
 

@@ -116,7 +116,7 @@ class _WriteLockManager:
                     if surface not in contentions:
                         try:
                             self._locks[surface].release()
-                        except RuntimeError:  # noqa: PERF203
+                        except RuntimeError:  # guardian: allow-silent-swallow -- lock release on rollback: lock may already be released; RuntimeError is normal here  # noqa: PERF203
                             pass
                 return (False, contentions)
             for surface in target_surfaces:
@@ -130,7 +130,7 @@ class _WriteLockManager:
                     try:
                         self._locks[surface].release()
                         self._holders.pop(surface, None)
-                    except (RuntimeError, KeyError):
+                    except (RuntimeError, KeyError):  # guardian: allow-silent-swallow -- lock release: lock already released or key gone; both are benign during concurrent release
                         pass
 
 

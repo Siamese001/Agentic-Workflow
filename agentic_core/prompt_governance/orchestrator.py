@@ -52,7 +52,7 @@ from agentic_core.prompt_governance.prompt_assembly import (
 from agentic_core.prompt_governance.prompt_assembly.pa5_budget import BudgetClass
 
 
-_DEFAULT_SECRET_ENV = "PROMPT_ASSEMBLY_HMAC_KEY"
+_DEFAULT_SECRET_ENV = "PROMPT_ASSEMBLY_HMAC_KEY"  # guardian: allow-hardcoded-secret -- env var name only (not a secret value); actual key is read from environment at runtime
 _FALLBACK_SECRET = b"proof-harness-fallback-do-not-use-in-prod"
 
 

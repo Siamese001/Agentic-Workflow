@@ -24,7 +24,7 @@ class SovereignEnv:
             cls._instance = super().__new__(cls)
             try:
                 cls._instance._load(normalized_root)
-            except Exception:
+            except Exception:  # guardian: allow-broad-catch -- singleton init failed: reset instance to None then re-raise; broad catch ensures any init failure rolls back
                 cls._instance = None
                 raise
             cls._loaded_env_path = normalized_root / ".env"

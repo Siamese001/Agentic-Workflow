@@ -738,7 +738,7 @@ def verify_sealed_artifact_contract(contents: Any) -> ContractCheckResult:
     try:
         if getattr(contents, "has_commit_payload", False):
             durable_commit = True
-    except AttributeError:
+    except AttributeError:  # guardian: allow-silent-swallow -- has_commit_payload absent: non-fatal; durable_commit stays False
         pass
 
     return ContractCheckResult(

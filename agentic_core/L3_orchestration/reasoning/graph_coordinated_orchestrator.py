@@ -97,7 +97,7 @@ class GraphCoordinatedOrchestrator:
             self._active_workflows[workflow_id] = plan
             return plan
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- workflow planning failure: non-fatal; error dict returned so caller can handle gracefully
             logger.error(f"Failed to plan workflow {workflow_id}: {e}")
             return {"error": str(e), "workflow_id": workflow_id}
 
@@ -143,7 +143,7 @@ class GraphCoordinatedOrchestrator:
 
                 analyzed_steps.append(analyzed_step)
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- step analysis failure: non-fatal; degraded step included in results
                 logger.error(f"Failed to analyze step {step}: {e}")
                 analyzed_steps.append({**step, "graph_analysis": {"found": False, "error": str(e)}})
 
@@ -365,7 +365,7 @@ class GraphCoordinatedOrchestrator:
 
             return critical_paths
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- critical path check failure: non-fatal; empty list returned
             logger.warning(f"Could not check critical path involvement: {e}")
             return []
 

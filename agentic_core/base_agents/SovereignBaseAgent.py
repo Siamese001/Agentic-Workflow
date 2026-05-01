@@ -476,7 +476,7 @@ class SovereignBaseAgent(
         try:
             entry = {"status": status, "message": message, **kwargs}
             results.append(entry)
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- results list append failure: frozen or None list; entry silently dropped
             pass
 
     def log_info(self, message: str) -> None:

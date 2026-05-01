@@ -358,13 +358,7 @@ class CachedStateLedger(SovereignBaseAgent):
                     keys = self.redis.keys(f"{self.prefix_context}:*")
                     for key in keys:
                         self.redis.delete(key)
-                except (
-                    AttributeError,
-                    TypeError,
-                    ValueError,
-                    OSError,
-                    RuntimeError,
-                ):  # guardian: allow-silent-swallow  -- ADG-burn: silent_exception_swallow
+                except (AttributeError, TypeError, ValueError, OSError, RuntimeError):  # guardian: allow-silent-swallow -- Redis cache flush failure: non-fatal; cache may be partially flushed but state remains consistent
                     pass
             else:
                 self._memory_cache.clear()
