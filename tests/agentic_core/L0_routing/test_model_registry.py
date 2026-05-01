@@ -46,24 +46,24 @@ class TestModelRegistry:
         assert model_registry.GEMINI_FLASH_MODEL_ID == "gemini-3-flash-preview"
 
     def test_gemini_pro_model_id(self):
-        """Test Gemini Pro model ID."""
-        assert model_registry.GEMINI_PRO_MODEL_ID == "gemini-2.5-pro"
+        """Test Gemini Pro model ID (refreshed 2026-05-01)."""
+        assert model_registry.GEMINI_PRO_MODEL_ID == "gemini-3.1-pro-preview"
 
     def test_openai_model_id(self):
-        """Test OpenAI model ID for consensus."""
-        assert model_registry.OPENAI_MODEL_ID == "gpt-4o"
+        """Test OpenAI model ID for consensus (refreshed 2026-05-01)."""
+        assert model_registry.OPENAI_MODEL_ID == "gpt-5.4-mini"
 
     def test_anthropic_model_id(self):
         """Test Anthropic model ID for consensus."""
         assert model_registry.ANTHROPIC_MODEL_ID == "claude-sonnet-4-6"
 
     def test_consensus_jurors_default(self):
-        """Test default consensus jurors (3 jurors)."""
+        """Test default consensus jurors (3 jurors, refreshed 2026-05-01)."""
         jurors = model_registry.CONSENSUS_JURORS
         assert len(jurors) == 3
-        assert "gpt-4o" in jurors
+        assert "gpt-5.4-mini" in jurors
         assert "claude-sonnet-4-6" in jurors
-        assert "gemini-2.5-pro" in jurors
+        assert "gemini-3.1-pro-preview" in jurors
 
     def test_consensus_jurors_with_qwen(self):
         """Test consensus jurors with Qwen enabled."""
@@ -77,7 +77,7 @@ class TestModelRegistry:
 
     def test_consensus_jurors_env_override(self):
         """Test consensus jurors can be overridden by env var."""
-        custom_jurors = "gpt-4o,claude-sonnet-4-6,gemini-2.5-pro,o3"
+        custom_jurors = "gpt-5.4-mini,claude-sonnet-4-6,gemini-3.1-pro-preview,o3"
         with patch.dict("os.environ", {"CONSENSUS_JURORS": custom_jurors}):
             import importlib
 

@@ -91,29 +91,46 @@ GEMINI_FLASH_MODEL_ID: Final[str] = os.getenv(
 
 GEMINI_PRO_MODEL_ID: Final[str] = os.getenv(
     "GEMINI_PRO_MODEL",
-    "gemini-2.5-pro",
+    "gemini-3.1-pro-preview",
 )
-"""Identifier for the higher-reasoning Gemini model (escalation tier for structural / novel failures)."""
+"""Identifier for the higher-reasoning Gemini model (escalation tier for structural / novel failures).
+
+Default refreshed 2026-05-01 per operator directive. Previous default
+``gemini-2.5-pro`` was stale relative to the current Google fleet. W2b
+certification consensus jury uses this pin as its Google juror. Override
+via ``GEMINI_PRO_MODEL`` env var for deployment-specific pinning.
+"""
 
 
 # ============================================================================
-# NON-QWEN CONSENSUS JURORS (used only by L1 consensus_validator)
+# NON-QWEN CONSENSUS JURORS (used by L1 consensus_validator AND by W2b
+# certification consensus jury — see plan rtc-w2b-consensus-jury-rewrite-9a4c71)
 # ============================================================================
 
-OPENAI_MODEL_ID: Final[str] = os.getenv("OPENAI_MODEL", "gpt-4o")
-"""Identifier for the OpenAI juror in ConsensusEngine."""
+OPENAI_MODEL_ID: Final[str] = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
+"""Identifier for the OpenAI juror in ConsensusEngine and W2b cert consensus.
+
+Default refreshed 2026-05-01 per operator directive. Previous default
+``gpt-4o`` was stale relative to the current OpenAI fleet. Override via
+``OPENAI_MODEL`` env var for deployment-specific pinning.
+"""
 
 ANTHROPIC_MODEL_ID: Final[str] = os.getenv(
     "ANTHROPIC_MODEL",
     "claude-sonnet-4-6",
 )
-"""Identifier for the Anthropic juror in ConsensusEngine."""
+"""Identifier for the Anthropic juror in ConsensusEngine and W2b cert consensus.
+
+Default ``claude-sonnet-4-6`` confirmed current per operator directive
+2026-05-01. Override via ``ANTHROPIC_MODEL`` env var.
+"""
 
 
 # Wave H4 C2 (2026-04-21, plan consensus-validator-unification-5e9f3a):
 # Canonical juror set for ConsensusEngine. Defaults to the 3-juror strict-
 # majority configuration. Env-var CONSENSUS_JURORS allows comma-separated
-# override (e.g. CONSENSUS_JURORS="gpt-4o,claude-sonnet-4-6,gemini-2.5-pro,o3")
+# override (e.g.
+# CONSENSUS_JURORS="gpt-5.4-mini,claude-sonnet-4-6,gemini-3.1-pro-preview")
 # without redeploy. Empty override → fallback to default.
 def _resolve_consensus_jurors() -> tuple[str, ...]:
     raw = os.getenv("CONSENSUS_JURORS", "").strip()
@@ -141,11 +158,13 @@ CONSENSUS_JURORS: Final[tuple[str, ...]] = _resolve_consensus_jurors()
 """Canonical juror list for ConsensusEngine.
 
 Rationale for default selection (3 jurors, heterogeneous):
-  - OpenAI (gpt-4o) — dominant general-purpose reasoning baseline
+  - OpenAI (gpt-5.4-mini) — dominant general-purpose reasoning baseline,
+    GPT-5 family, refreshed 2026-05-01
   - Anthropic (claude-sonnet-4-6) — alternative reasoning topology, known
     for catching logic bugs the OpenAI family misses
-  - Google (gemini-2.5-pro) — third diverse family, strong context
-    integration; tie-breaker when the first two disagree
+  - Google (gemini-3.1-pro-preview) — third diverse family, Gemini-3.1
+    generation (refreshed 2026-05-01), strong context integration;
+    tie-breaker when the first two disagree
 
 Strict-majority threshold for 3 jurors = 2/3 (see
 `path_constants.consensus_majority_threshold`). Adding a 4th juror auto-
