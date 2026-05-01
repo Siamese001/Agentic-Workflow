@@ -22,6 +22,21 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple, Union
 
+# --- begin E1.W3.1 CLI bootstrap ---
+# When this module is executed as a script
+# (``python ops_scripts/ci/check_runtime_certification.py``), Python only
+# places the script's parent directory on ``sys.path``. The
+# ``tools.runtime_cert.decisions.*`` imports below live at the repo root,
+# so the script invocation fails with ``ModuleNotFoundError`` unless the
+# operator manually sets ``PYTHONPATH=.``. Insert the repo root onto
+# ``sys.path`` BEFORE those imports so direct invocation works without
+# environment fiddling. When imported (pytest, ``python -m``), the repo
+# root is already on ``sys.path`` and this block is a no-op.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+# --- end E1.W3.1 CLI bootstrap ---
+
 try:  # Python >= 3.11
     import tomllib  # type: ignore[import-not-found]
 except ModuleNotFoundError:  # pragma: no cover - portability fallback

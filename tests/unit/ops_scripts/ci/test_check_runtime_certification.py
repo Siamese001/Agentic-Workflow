@@ -8,8 +8,11 @@ ledger rows via D.3's public writer (tmp_path-scoped).
 from __future__ import annotations
 
 import json
+import os
 import re
 import sqlite3
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -497,3 +500,61 @@ def test_deterministic_failure_ordering(tmp_path: Path) -> None:
         gate.FAILURE_LATEST_DECISION_BELOW_BASELINE,
         gate.FAILURE_MANIFEST_HASH_MISMATCH,
     )
+
+
+# ---------------------------------------------------------------------------
+# E1.W3.1: direct script invocation must work without PYTHONPATH
+# ---------------------------------------------------------------------------
+
+
+def test_direct_script_invocation_works_without_pythonpath(
+    tmp_path: Path,
+) -> None:
+    """Running the gate as a script from repo root must succeed without
+    operator-set PYTHONPATH. Validates the W3.1 sys.path bootstrap.
+    """
+    # Write a minimal advisory baseline into tmp_path.
+    baseline_dir = tmp_path / "docs" / "reference" / "runtime_certification"
+    baseline_dir.mkdir(parents=True)
+    baseline_path = baseline_dir / "cert_baseline.toml"
+    baseline_path.write_text(
+        _baseline_text(apps_block=_app_block()), encoding="utf-8"
+    )
+
+    # Locate the script via Path arithmetic — no reliance on sys.path.
+    repo_root = Path(__file__).resolve().parents[4]
+    script = repo_root / "ops_scripts" / "ci" / "check_runtime_certification.py"
+    assert script.is_file(), f"gate script missing at {script}"
+    # Defensive: the bootstrap derives repo root via parents[2] from the
+    # script path. Confirm tools/ exists so a directory rename surfaces fast.
+    assert (
+        script.resolve().parents[2] / "tools" / "runtime_cert"
+    ).is_dir(), "tools/runtime_cert not at expected location relative to script"
+
+    # Strip PYTHONPATH so the bootstrap is the only thing that can succeed.
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--repo-root",
+            str(tmp_path),
+            "--baseline",
+            str(baseline_path),
+        ],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=30,
+        check=False,
+    )
+
+    assert proc.returncode == 0, (
+        f"exit={proc.returncode}\nstdout={proc.stdout}\nstderr={proc.stderr}"
+    )
+    assert "ModuleNotFoundError" not in proc.stderr
+    assert NOT_CERTIFIED in proc.stdout
+    # Baseline requires apps_research ledger; tmp_path has none -> LEDGER_MISSING.
+    assert "passed           : False" in proc.stdout
+    assert "LEDGER_MISSING" in (proc.stdout + proc.stderr)
