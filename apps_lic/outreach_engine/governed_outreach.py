@@ -5,22 +5,15 @@ Integrates L4 Temporal Awareness with Action Layer and L5 MEMemory
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-# Import the temporal vetting function
-# Original import replaced 2026-05-01 during restore — the
-# `temporal_vetting` module never existed in the repo. The
-# placeholder below lets governed_outreach import cleanly. Replace
-# with the real temporal vetting engine when one is authored.
-def vet_lead_optimal_time(lead_timezone, current_utc_time_hm, tools, logger):
-    """Placeholder — returns status=TEMPORAL_DELAY unconditionally.
-
-    This preserves the call-shape that execute_governed_outreach_sequence
-    expects without silently claiming compliance.
-    """
-    return {
-        "status": "TEMPORAL_DELAY",
-        "lead_local_time": None,
-        "decision": "placeholder_temporal_vetting_engine",
-    }
+# Import the temporal vetting function.
+# 2026-05-01 (restore): stubbed as an inline placeholder.
+# 2026-05-01 (W3-P7):   replaced placeholder with the real engine at
+# apps_lic.engines.temporal_vetting_engine. Returns OPTIMAL when
+# recipient local time falls in the primary send window
+# (Tue/Wed 10-12 local), TEMPORAL_DELAY for business-hours-outside-
+# primary, OFF_HOURS for evenings/weekends, and UNKNOWN_TZ for invalid
+# IANA zone names. See ADR-TBD (Bundle D) for the A/B measurement plan.
+from apps_lic.engines.temporal_vetting_engine import vet_lead_optimal_time
 
 
 def _get_and_process_current_time(get_current_time_tool: Any, logger: Optional[Any]) -> Optional[str]:
