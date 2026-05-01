@@ -184,7 +184,7 @@ def _publish_trace_ingest_freshness(spans: list[dict[str, Any]]) -> None:
         record_trace_ingest_freshness(
             get_v6_kpi_board(), newest_span_epoch=newest
         )
-    except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break ingest
+    except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break ingest
         logger.warning("v6_kpi_trace_ingest_freshness_failed: %s", exc)
 
 

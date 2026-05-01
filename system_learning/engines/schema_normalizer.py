@@ -160,7 +160,7 @@ class SchemaNormalizer:
                           "total": self._counters.total},
             )
             board.record(sample)
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break ingest
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break ingest
             logger.warning("v7_kpi_evidence_field_completeness_failed: %s", exc)
 
 

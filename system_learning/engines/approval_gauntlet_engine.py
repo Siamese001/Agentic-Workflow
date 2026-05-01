@@ -264,7 +264,7 @@ class ApprovalGauntletEngine:
                 reverted_promotions=self._reverted_promotions,
                 total_promotions=self._total_promotions,
             )
-        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break gauntlet
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break gauntlet
             logger.warning("v6_kpi_gauntlet_false_promote_rate_failed: %s", exc)
 
     def run_gauntlet(

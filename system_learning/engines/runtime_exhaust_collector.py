@@ -286,7 +286,7 @@ class RuntimeExhaustCollector:
                 metadata={"bundle_id": bundle.bundle_id,
                           "records": len(bundle.raw_evidence_refs)},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break collection
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break collection
             logger.warning("v6_kpi_trace_ingest_freshness_failed: %s", exc)
 
 

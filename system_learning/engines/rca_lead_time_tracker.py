@@ -115,7 +115,7 @@ class RCALeadTimeTracker:
                 p95_seconds=self.p95_lead_time_seconds(),
                 sample_size=len(self._samples),
             )
-        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break orchestration
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break orchestration
             logger.warning("v6_kpi_rca_lead_time_publish_failed: %s", exc)
 
 

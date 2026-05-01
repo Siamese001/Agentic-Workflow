@@ -164,7 +164,7 @@ class TrajectoryEvaluator:
                 metadata={"graded": self._counters.graded,
                           "total_non_ret": self._counters.total_non_ret},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break eval
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break eval
             logger.warning("v7_kpi_trajectory_eval_coverage_failed: %s", exc)
 
 

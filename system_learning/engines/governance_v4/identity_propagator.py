@@ -136,7 +136,7 @@ class IdentityPropagator:
                 timestamp=ts, source="identity_propagator",
                 metadata={"count": self._delegation_breaches},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break propagation
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break propagation
             logger.warning("v7_kpi_identity_propagator_failed: %s", exc)
 
 

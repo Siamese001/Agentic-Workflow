@@ -136,7 +136,7 @@ class RiskTierClassifier:
                 metadata={"classified": self._classified,
                           "total": self._total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break classification
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break classification
             logger.warning("v7_kpi_risk_tier_band_coverage_failed: %s", exc)
 
 

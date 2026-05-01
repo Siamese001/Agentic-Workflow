@@ -194,7 +194,7 @@ class RolloutReceiptGenerator:
                 metadata={"reachable": self._reachable,
                           "total": self._total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break receipt gen
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break receipt gen
             logger.warning("v7_kpi_rollback_reachability_failed: %s", exc)
 
 

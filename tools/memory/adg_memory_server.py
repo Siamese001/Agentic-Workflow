@@ -350,7 +350,7 @@ def mem_health_check() -> dict[str, Any]:
     except (
         _sqlite3.Error,
         OSError,
-    ) as exc:  # guardian: allow-specific-multi -- health check must never raise
+    ) as exc:  # guardian: allow-log-and-swallow-multi -- health check must never raise
         report["errors"].append(f"schema_probe: {exc}")
         report["status"] = "error"
 

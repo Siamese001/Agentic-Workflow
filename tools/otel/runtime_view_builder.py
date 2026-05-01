@@ -164,7 +164,7 @@ def _iter_runtime_snapshots(
 
     try:
         from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
-    except ImportError as exc:  # guardian: allow-specific -- soft-dep on system_learning
+    except ImportError as exc:  # guardian: allow-log-and-swallow -- soft-dep on system_learning
         logger.warning("runtime_view_builder.import_store_failed: %s", exc)
         return []
 

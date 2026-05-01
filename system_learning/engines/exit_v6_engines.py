@@ -178,7 +178,7 @@ class ExitDispositionTracker:
                 metadata={"correct": self._unknown_routed_correct,
                           "total": self._unknown_routed_total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break disposition tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break disposition tracking
             logger.warning("v7_kpi_exit_disposition_failed: %s", exc)
 
 
@@ -275,7 +275,7 @@ class ClearanceReceiptTracker:
                 source="clearance_receipt_tracker",
                 metadata={"count": self._unauthorized_writes},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break clearance tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break clearance tracking
             logger.warning("v7_kpi_clearance_receipt_failed: %s", exc)
 
 
@@ -373,7 +373,7 @@ class L2ExecuteV4Tracker:
                 metadata={"misrouted": self._confidence_misroutes,
                           "total": self._confidence_routes},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break L2 v4 tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break L2 v4 tracking
             logger.warning("v7_kpi_l2_execute_v4_failed: %s", exc)
 
 
@@ -473,7 +473,7 @@ class L5GovernanceV5Tracker:
                 metadata={"agreed": self._guard_reviews_agreed,
                           "total": self._guard_reviews_total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break L5 v5 tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break L5 v5 tracking
             logger.warning("v7_kpi_l5_governance_v5_failed: %s", exc)
 
 

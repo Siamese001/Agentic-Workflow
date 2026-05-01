@@ -162,7 +162,7 @@ class ForensicReplayVerifier:
                 source="forensic_replay_verifier",
                 metadata={"success": self._success, "total": self._total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break verification
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break verification
             logger.warning(
                 "v7_kpi_replay_envelope_reconstruction_failed: %s", exc
             )

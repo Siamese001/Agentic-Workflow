@@ -16,7 +16,7 @@ try:  # Wave 1: Core Pipeline Infrastructure
         ApprovalGauntletEngine,
         ApprovalGauntletResult,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.case_compilation_engine import (  # noqa: F401
@@ -24,14 +24,14 @@ try:
         CaseRecordBuilder,
         SealedOutputReader,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 
 try:  # Wave 2: Evaluation Components (B, C, D)
     from system_learning.engines.g_gate_regression_checker import (  # noqa: F401
         GGateRegressionChecker,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.human_calibration_engine import (  # noqa: F401
@@ -39,7 +39,7 @@ try:
         HumanCalibrationEngine,
         HumanJudgment,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 
 try:  # Wave 4: Control & Calibration (Components A, F)
@@ -47,7 +47,7 @@ try:  # Wave 4: Control & Calibration (Components A, F)
         ExitControlResult,
         LiveExitControlGate,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.outcome_evaluation_engine import (  # noqa: F401
@@ -55,7 +55,7 @@ try:
         GroundednessChecker,
         OutcomeEvaluationEngine,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 
 try:  # Wave 3: System Learning Pipeline (Steps 6-7)
@@ -64,7 +64,7 @@ try:  # Wave 3: System Learning Pipeline (Steps 6-7)
         RuleDraftingResult,
         RuleProposal,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.signal_aggregator_engine import (  # noqa: F401
@@ -73,20 +73,20 @@ try:
         SignalAggregatorEngine,
         TelemetryMetric,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.stage_barrier_enforcer import (  # noqa: F401
         MetaLearningStage,
         StageBarrierEnforcer,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 try:
     from system_learning.engines.trajectory_evaluation_engine import (  # noqa: F401
         TrajectoryEvaluationEngine,
     )
-except ImportError:  # guardian: allow-specific -- transitive dep may be absent under shimmed pytest collection
+except ImportError:  # guardian: allow-log-and-swallow -- transitive dep may be absent under shimmed pytest collection
     pass
 
 __all__ = [

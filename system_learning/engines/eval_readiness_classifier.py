@@ -131,7 +131,7 @@ class EvalReadinessClassifier:
                 metadata={"ready_or_partial": self._ready_or_partial,
                           "total": self._total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break ingest
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break ingest
             logger.warning("v7_kpi_eval_readiness_coverage_failed: %s", exc)
 
 

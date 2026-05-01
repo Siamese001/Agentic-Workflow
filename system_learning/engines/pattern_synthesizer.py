@@ -188,7 +188,7 @@ class PatternSynthesizer:
                 metadata={"localized": self._localized,
                           "total": self._total_incidents},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break synth
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break synth
             logger.warning("v7_kpi_root_cause_localization_failed: %s", exc)
 
 

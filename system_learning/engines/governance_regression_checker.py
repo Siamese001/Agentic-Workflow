@@ -143,7 +143,7 @@ class GovernanceRegressionChecker:
                 metadata={"checked": self._high_risk_checked,
                           "total": self._high_risk_total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break governance check
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break governance check
             logger.warning("v7_kpi_governance_eval_coverage_failed: %s", exc)
 
 

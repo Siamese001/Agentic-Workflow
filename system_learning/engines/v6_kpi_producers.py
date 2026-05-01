@@ -55,7 +55,7 @@ def _record(
             timestamp=timestamp,
             metadata=metadata,
         )
-    except (ValueError, TypeError, KeyError) as exc:  # guardian: allow-specific -- KPI recording must not crash producer
+    except (ValueError, TypeError, KeyError) as exc:  # guardian: allow-log-and-swallow -- KPI recording must not crash producer
         logger.warning(
             "v6_kpi_producers: failed to record %s from %s: %s",
             name.value,

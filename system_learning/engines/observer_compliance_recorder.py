@@ -100,7 +100,7 @@ class ObserverComplianceRecorder:
                 source="observer_compliance_recorder",
                 metadata={"receipts": len(self._state.receipts)},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break ingest
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break ingest
             logger.warning(
                 "v7_kpi_observer_law_violation_count_failed: %s", exc
             )

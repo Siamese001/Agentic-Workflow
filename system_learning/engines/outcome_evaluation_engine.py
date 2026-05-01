@@ -165,7 +165,7 @@ class OutcomeEvaluationEngine:
                 runs_with_eval=self._runs_with_eval,
                 total_runs=self._total_runs,
             )
-        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break eval
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break eval
             logger.warning("v6_kpi_eval_coverage_failed: %s", exc)
 
     def evaluate_outcome(

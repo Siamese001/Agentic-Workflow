@@ -172,7 +172,7 @@ class ProposalAdmissionGate:
                 metadata={"evidence_complete": self._evidence_complete_decisions,
                           "total": self._total_decisions},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break gate
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break gate
             logger.warning(
                 "v7_kpi_proposal_evidence_completeness_failed: %s", exc
             )

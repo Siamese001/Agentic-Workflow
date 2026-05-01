@@ -111,7 +111,7 @@ class McpConnectorRegistry:
                 source="mcp_connector_registry",
                 metadata={"count": self._violations},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break authorization
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break authorization
             logger.warning(
                 "v7_kpi_mcp_connector_allowlist_violations_failed: %s", exc
             )

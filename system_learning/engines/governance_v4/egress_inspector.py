@@ -125,7 +125,7 @@ class EgressInspector:
                 source="egress_inspector",
                 metadata={"blocked": self._blocked, "total": self._total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break inspection
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break inspection
             logger.warning("v7_kpi_egress_block_rate_failed: %s", exc)
 
 
@@ -180,7 +180,7 @@ class HardConstraintEnforcer:
                 source="hard_constraint_enforcer",
                 metadata={"count": self._attempts},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break enforcement
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break enforcement
             logger.warning(
                 "v7_kpi_hard_constraint_remediate_attempts_failed: %s", exc
             )

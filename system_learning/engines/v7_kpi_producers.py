@@ -95,7 +95,7 @@ class ReplayDivergenceLocalizer:
                 metadata={"failed": self._failed_replays,
                           "localized": self._localized_failures},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break replay tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break replay tracking
             logger.warning("v6_kpi_replay_divergence_localization_failed: %s", exc)
 
 
@@ -147,7 +147,7 @@ class SaturationWatcher:
                 metadata={"static_evals": int(ratio * len(self._evals)),
                           "total_evals": len(self._evals)},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break saturation tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break saturation tracking
             logger.warning("v6_kpi_saturation_watch_failed: %s", exc)
 
 
@@ -191,7 +191,7 @@ class ExemplarHitTracker:
                 metadata={"hits": self._plans_with_exemplar_hit,
                           "eligible": self._eligible_plans},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break exemplar tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break exemplar tracking
             logger.warning("v6_kpi_exemplar_hit_rate_failed: %s", exc)
 
 
@@ -236,7 +236,7 @@ class GauntletFalsePromoteTracker:
                 metadata={"reverted": self._reverted,
                           "promotions": self._promotions},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break promote tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break promote tracking
             logger.warning(
                 "v6_kpi_gauntlet_false_promote_rate_failed: %s", exc
             )
@@ -289,7 +289,7 @@ class HeldProposalAgingTracker:
                 source="held_proposal_aging_tracker",
                 metadata={"held": len(self._hold_starts)},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break aging tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break aging tracking
             logger.warning("v7_kpi_held_proposal_aging_failed: %s", exc)
 
 
@@ -334,7 +334,7 @@ class GoldenSetRegressionTracker:
                 metadata={"passed": self._critical_passed,
                           "total": self._critical_total},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break golden tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break golden tracking
             logger.warning(
                 "v7_kpi_golden_set_regression_pass_rate_failed: %s", exc
             )
@@ -382,7 +382,7 @@ class OrphanArtifactTracker:
                 metadata={"orphans": self._orphan_artifacts,
                           "total": self._total_artifacts},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break orphan tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break orphan tracking
             logger.warning("v7_kpi_orphan_artifact_rate_failed: %s", exc)
 
 
@@ -426,7 +426,7 @@ class CitationDriftTracker:
                 metadata={"baseline": self.baseline_precision,
                           "samples": len(self._current_precisions)},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break drift tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break drift tracking
             logger.warning("v7_kpi_citation_support_drift_failed: %s", exc)
 
 
@@ -474,7 +474,7 @@ class AbstainCalibrationTracker:
                           "false_abstains": self._false_abstains,
                           "total": self._abstains},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break abstain tracking
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break abstain tracking
             logger.warning(
                 "v7_kpi_abstain_refusal_calibration_drift_failed: %s", exc
             )

@@ -260,7 +260,7 @@ def _load_mcp_whitelist() -> set[str]:
         OSError,
         json.JSONDecodeError,
         ValueError,
-    ):  # guardian: allow-specific -- MCP whitelist load: fail-open on OSError/JSON parse/value errors means gate allows all MCP calls when config is unreadable
+    ):  # guardian: allow-log-and-swallow -- MCP whitelist load: fail-open on OSError/JSON parse/value errors means gate allows all MCP calls when config is unreadable
         _mcp_whitelist_cache = set()
         return set()
 

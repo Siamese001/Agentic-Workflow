@@ -407,7 +407,7 @@ class DeterministicReplayEngine:
                 localized_failures=self._localized_failures,
                 total_failures=self._total_failures,
             )
-        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break replay
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break replay
             import logging  # noqa: PLC0415
 
             logging.getLogger(__name__).warning(

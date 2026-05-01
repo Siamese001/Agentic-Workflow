@@ -111,7 +111,7 @@ def publish_uwg_uniqueness_kpi(
                 offenders,
             )
         return count
-    except (OSError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break callers
+    except (OSError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break callers
         logger.warning("uwg_ink_path_monitor publish failed: %s", exc)
         return 0
 

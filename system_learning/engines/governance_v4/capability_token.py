@@ -189,7 +189,7 @@ class CapabilityTokenMinter:
                 timestamp=ts, source="capability_token_minter",
                 metadata={"count": self._scope_violations},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break minting
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break minting
             logger.warning("v7_kpi_capability_token_violations_failed: %s", exc)
 
 

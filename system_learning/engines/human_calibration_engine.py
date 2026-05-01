@@ -291,7 +291,7 @@ class HumanCalibrationEngine:
                 total_judges=self._total_judges,
                 now=now,
             )
-        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-specific -- KPI must not break calibration
+        except (ImportError, AttributeError, RuntimeError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break calibration
             logger.warning("v6_kpi_human_calibration_publish_failed: %s", exc)
 
     def record_judgment(

@@ -170,7 +170,7 @@ class BusUPublisher:
                 metadata={"correct": self._correct,
                           "total_attempts": self._total_attempts},
             ))
-        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-specific -- KPI must not break publish
+        except (ImportError, AttributeError, RuntimeError, ValueError) as exc:  # guardian: allow-log-and-swallow -- KPI must not break publish
             logger.warning("v7_kpi_bus_u_activation_correctness_failed: %s", exc)
 
 

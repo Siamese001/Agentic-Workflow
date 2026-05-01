@@ -160,7 +160,7 @@ class ConfidenceScorer:
             RuntimeError,
             ValueError,
             TypeError,
-        ):  # guardian: allow-specific-multi -- model.predict() may raise any of several framework errors; tuple-catch then fallback is required for routing safety
+        ):  # guardian: allow-log-and-swallow-multi -- model.predict() may raise any of several framework errors; tuple-catch then fallback is required for routing safety
             return self._classify_heuristic(signal)
 
         if elapsed_us > 1000:

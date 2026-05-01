@@ -194,7 +194,7 @@ class DAGStrategy(ExecutionStrategy):
                     RuntimeError,
                     ValueError,
                     TypeError,
-                ) as e:  # guardian: allow-specific -- step execution failure returns workflow error
+                ) as e:  # guardian: allow-log-and-swallow -- step execution failure returns workflow error
                     return WorkflowResult(
                         workflow_id=context.workflow_id,
                         status=ExecutionStatus.FAILED,
@@ -277,7 +277,7 @@ class StateMachineStrategy(ExecutionStrategy):
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as e:  # guardian: allow-specific -- state execution failure returns workflow error
+            ) as e:  # guardian: allow-log-and-swallow -- state execution failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
@@ -353,7 +353,7 @@ class EventDrivenStrategy(ExecutionStrategy):
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as e:  # guardian: allow-specific -- event execution failure returns workflow error
+            ) as e:  # guardian: allow-log-and-swallow -- event execution failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
@@ -411,7 +411,7 @@ class ReactiveStrategy(ExecutionStrategy):
                 RuntimeError,
                 ValueError,
                 TypeError,
-            ) as e:  # guardian: allow-specific -- stream step failure returns workflow error
+            ) as e:  # guardian: allow-log-and-swallow -- stream step failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,

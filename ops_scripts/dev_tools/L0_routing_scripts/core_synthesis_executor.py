@@ -432,7 +432,7 @@ class CoreSynthesisExecutor:
 
             return True
 
-        except (OSError, ValueError) as e:  # guardian: allow-specific -- logic merge failure returns False
+        except (OSError, ValueError) as e:  # guardian: allow-log-and-swallow -- logic merge failure returns False
             print(f"❌ Failed to merge logic into {target_path}: {e}")
             return False
 
@@ -468,7 +468,7 @@ class CoreSynthesisExecutor:
             except (
                 OSError,
                 shutil.Error,
-            ) as e:  # guardian: allow-specific -- eviction failure continues with others
+            ) as e:  # guardian: allow-log-and-swallow -- eviction failure continues with others
                 print(f"❌ Failed to evict {file_path.name}: {e}")
                 return False
 
@@ -495,7 +495,7 @@ class CoreSynthesisExecutor:
             except (
                 OSError,
                 UnicodeDecodeError,
-            ) as e:  # guardian: allow-specific -- file read error returns False
+            ) as e:  # guardian: allow-log-and-swallow -- file read error returns False
                 print(f"❌ Error checking {file_path.name}: {e}")
                 return False
 
