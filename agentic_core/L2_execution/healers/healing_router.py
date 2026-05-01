@@ -531,14 +531,7 @@ class HealingRouter:
                 f"{brier:.4f}" if brier is not None else "n/a",
                 int(latency_ms),
             )
-        except (
-            ImportError,
-            AttributeError,
-            TypeError,
-            ValueError,
-            RuntimeError,
-            OSError,
-        ):  # guardian: allow-log-and-swallow -- outcome binding is best-effort; dispatch must not fail because of telemetry
+        except (ImportError, AttributeError, TypeError, ValueError, RuntimeError, OSError):  # guardian: allow-log-and-swallow -- outcome binding is best-effort; dispatch must not fail because of telemetry
             _LOGGER.debug("router_l2_cascade outcome bind failed", exc_info=True)
 
     def dispatch_to_executor(

@@ -132,14 +132,7 @@ def _publish_to_bus_t(record: SafetyAuditRecord, signal_type: str) -> None:
             },
             trace_id=record.trace_id or record.run_id or "unknown",
         )
-    except (
-        ImportError,
-        RuntimeError,
-        ValueError,
-        AttributeError,
-        KeyError,
-        TypeError,
-    ) as _exc:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+    except (ImportError, RuntimeError, ValueError, AttributeError, KeyError, TypeError) as _exc:  # guardian: allow-log-and-swallow -- safety audit bus emission optional: non-fatal; audit record still written to local store
         _log.debug("SAFETY_AUDIT_BUS_T_SKIP signal=%s: %s", signal_type, _exc)
 
 

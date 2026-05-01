@@ -361,13 +361,7 @@ class SovereignRagOrchestrator:
             from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
 
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- behavioral profile unavailable: non-fatal; RAG orchestrator continues with default confidence
             import logging
 
             logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)

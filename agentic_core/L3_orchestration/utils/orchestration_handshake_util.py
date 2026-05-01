@@ -88,13 +88,7 @@ def discover_capable_agents(
     if use_cache and redis_client and capable and cache_key:
         try:
             redis_client.set(cache_key, json.dumps(capable), ex=3600)
-        except (
-            AttributeError,
-            TypeError,
-            ValueError,
-            OSError,
-            RuntimeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- Redis cache write failure: non-fatal; capability result still returned to caller
             import logging
 
             logging.getLogger(__name__).debug(

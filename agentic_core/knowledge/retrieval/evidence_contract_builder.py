@@ -1122,7 +1122,7 @@ class EvidenceContractBuilder:
                     plan=original_plan,
                 )
                 all_hops.extend(hops)
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError) as exc:  # guardian: allow-log-and-swallow -- graph hop failure: non-fatal; chunk skipped, contract continues with remaining hops
                 log.debug("graph_hop(%s) failed: %s", chunk_id, exc)
 
         # Update budget report

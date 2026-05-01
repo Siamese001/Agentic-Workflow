@@ -213,14 +213,7 @@ class MetaLearningEngine:
                         cls._kg_bridge = KnowledgeGraphBridge.get_instance()
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
-                    except (
-                        ImportError,
-                        AttributeError,
-                        OSError,
-                        RuntimeError,
-                        ValueError,
-                        TypeError,
-                    ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+                    except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG bridge init failed: non-fatal; agent continues without KG
                         cls._kg_bridge = None
                         Logger.warning("[%s] Knowledge Graph unavailable: %s", agent_name, e)
 
@@ -281,13 +274,7 @@ class MetaLearningEngine:
                 if not isinstance(result, dict):
                     payload = {"result": result, "_wrapped": True}
                 _schedule_learn_task(agent_name, context, payload)
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- learn task scheduling failed: non-fatal; result returned to caller without cache write
             Logger.warning("[%s] DNA WRITE ERROR: Could not learn experience: %s", agent_name, e)
         return result
 
@@ -316,14 +303,7 @@ class MetaLearningEngine:
                 duration_ms=duration_ms,
             )
             cls._kg_bridge.reflect_on_execution(trace)
-        except (
-            ImportError,
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG reflection failed: non-fatal; agent continues without recording trace
             Logger.warning("[%s] Reflection failed: %s", agent_name, e)
 
     @classmethod
@@ -344,13 +324,7 @@ class MetaLearningEngine:
                 success=success,
                 error_type=error_type,
             )
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG interaction record failed: non-fatal; agent continues without interaction log
             Logger.warning("[%s] Interaction recording failed: %s", caller_agent, e)
 
     @classmethod
@@ -360,13 +334,7 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.establish_inheritance(child_entity=child_entity, parent_entity=parent_entity)
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG inheritance setup failed: non-fatal; entities continue without inheritance link
             Logger.warning("[%s] Inheritance setup failed: %s", child_entity, e)
 
     @classmethod
@@ -376,13 +344,7 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.mark_incompatibility(entity_a=entity_a, entity_b=entity_b, reason=reason)
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG incompatibility marking failed: non-fatal; entities continue without incompatibility record
             Logger.warning("[%s] Incompatibility marking failed: %s", entity_a, e)
 
     @classmethod
@@ -392,13 +354,7 @@ class MetaLearningEngine:
             return
         try:
             cls._kg_bridge.add_observation(entity_name=agent_name, observation=observation)
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- KG observation add failed: non-fatal; agent continues without architectural observation
             Logger.warning("[%s] Observation recording failed: %s", agent_name, e)
 
     @classmethod

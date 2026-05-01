@@ -281,14 +281,7 @@ def _publish_to_bus_t(record: ObservabilityRecord, signal_type: str) -> None:
             },
             trace_id=record.trace_id or record.run_id or "unknown",
         )
-    except (
-        ImportError,
-        RuntimeError,
-        ValueError,
-        AttributeError,
-        KeyError,
-        TypeError,
-    ) as _exc:  # guardian: allow-log-and-swallow -- obs bus emission optional: non-fatal, recording continues
+    except (ImportError, RuntimeError, ValueError, AttributeError, KeyError, TypeError) as _exc:  # guardian: allow-log-and-swallow -- obs bus emission optional: non-fatal, recording continues
         _log.debug("OBS_BUS_T_SKIP signal=%s: %s", signal_type, _exc)
 
 
@@ -325,13 +318,7 @@ def _register_in_eval_index(record: ObservabilityRecord) -> None:
             policy_hash=record.policy_hash,
             policy_sensitive=True,
         )
-    except (
-        ImportError,
-        RuntimeError,
-        ValueError,
-        TypeError,
-        AttributeError,
-    ) as _exc:  # guardian: allow-log-and-swallow -- eval index update optional: non-fatal, recording continues
+    except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _exc:  # guardian: allow-log-and-swallow -- eval index update optional: non-fatal, recording continues
         _log.debug("OBS_EVAL_INDEX_SKIP: %s", _exc)
 
 

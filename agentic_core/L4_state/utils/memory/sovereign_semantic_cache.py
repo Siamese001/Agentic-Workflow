@@ -317,13 +317,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
         if self.redis:
             try:
                 self.redis.delete(key)
-            except (
-                AttributeError,
-                OSError,
-                RuntimeError,
-                ValueError,
-                TypeError,
-            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as e:  # guardian: allow-log-and-swallow -- Redis delete failure: non-fatal; cache invalidation best-effort
                 import logging
 
                 logging.getLogger(__name__).debug(

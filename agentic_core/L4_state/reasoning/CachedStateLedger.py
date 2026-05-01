@@ -298,13 +298,7 @@ class CachedStateLedger(SovereignBaseAgent):
         if self.redis:
             try:
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
-            except (
-                AttributeError,
-                OSError,
-                RuntimeError,
-                TypeError,
-                ValueError,
-            ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+            except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- Redis rpush failure: non-fatal; successful trace still recorded in memory mode
                 import logging
 
                 logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)

@@ -344,7 +344,7 @@ class GraphCoordinatedOrchestrator:
                     if dep_name in other_agent or other_agent in dep_name:
                         implicit_deps.add(other_step.get("step_id"))
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-log-and-swallow -- implicit dependency resolution optional: non-fatal; empty set returned to caller
             logger.warning(f"Could not find implicit dependencies: {e}")
 
         return implicit_deps

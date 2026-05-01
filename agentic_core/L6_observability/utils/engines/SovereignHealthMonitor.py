@@ -233,13 +233,7 @@ class SovereignHealthMonitor:
             _root = _Path(__file__).resolve().parents[4]
             _bp = _gbp(_Path(__file__).resolve(), _root)
             _adg_trust_score = round(_bp.behavioral_score, 4)
-        except (
-            ImportError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as e:  # guardian: allow-log-and-swallow  -- ADG-burn: log_and_swallow
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as e:  # guardian: allow-log-and-swallow -- behavioral profile unavailable: non-fatal; health snapshot continues without ADG trust score
             import logging
 
             logging.getLogger(__name__).debug("SovereignHealthMonitor: Exception swallowed at L235: %s", e)
