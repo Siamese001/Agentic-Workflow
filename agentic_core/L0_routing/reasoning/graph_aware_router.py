@@ -93,7 +93,7 @@ class GraphAwareRouter:
                 "risk_assessment": self._assess_risk(fan_in, fan_out, layer_info),
             }
 
-        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- ADG query failure: non-fatal; returns error dict so caller can degrade gracefully
+        except Exception as e:  # guardian: allow-broad-exception -- ADG query failure: non-fatal; returns error dict so caller can degrade gracefully
             logger.error(f"Failed to analyze target module {target_module}: {e}")
             return {"error": str(e)}
 
@@ -185,7 +185,7 @@ class GraphAwareRouter:
 
             return critical_paths
 
-        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- critical path query failure: non-fatal; empty list signals no paths found
+        except Exception as e:  # guardian: allow-broad-exception -- critical path query failure: non-fatal; empty list signals no paths found
             logger.warning(f"Could not identify critical paths: {e}")
             return []
 
@@ -242,7 +242,7 @@ class GraphAwareRouter:
                 "routing_health": "healthy",
             }
 
-        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- routing stats query failure: non-fatal; returns error dict
+        except Exception as e:  # guardian: allow-broad-exception -- routing stats query failure: non-fatal; returns error dict
             logger.error(f"Failed to get routing statistics: {e}")
             return {"error": str(e)}
 

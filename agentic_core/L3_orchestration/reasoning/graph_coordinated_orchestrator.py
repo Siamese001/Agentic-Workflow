@@ -97,7 +97,7 @@ class GraphCoordinatedOrchestrator:
             self._active_workflows[workflow_id] = plan
             return plan
 
-        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- workflow planning failure: non-fatal; error dict returned so caller can handle gracefully
+        except Exception as e:  # guardian: allow-broad-exception -- workflow planning failure: non-fatal; error dict returned so caller can handle gracefully
             logger.error(f"Failed to plan workflow {workflow_id}: {e}")
             return {"error": str(e), "workflow_id": workflow_id}
 
@@ -143,7 +143,7 @@ class GraphCoordinatedOrchestrator:
 
                 analyzed_steps.append(analyzed_step)
 
-            except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- step analysis failure: non-fatal; degraded step included in results
+            except Exception as e:  # guardian: allow-broad-exception -- step analysis failure: non-fatal; degraded step included in results
                 logger.error(f"Failed to analyze step {step}: {e}")
                 analyzed_steps.append({**step, "graph_analysis": {"found": False, "error": str(e)}})
 
@@ -344,7 +344,7 @@ class GraphCoordinatedOrchestrator:
                     if dep_name in other_agent or other_agent in dep_name:
                         implicit_deps.add(other_step.get("step_id"))
 
-        except Exception as e:  # guardian: allow-log-and-swallow -- implicit dependency resolution optional: non-fatal; empty set returned to caller
+        except Exception as e:  # guardian: allow-broad-exception -- implicit dependency resolution optional: non-fatal; empty set returned to caller
             logger.warning(f"Could not find implicit dependencies: {e}")
 
         return implicit_deps
@@ -365,7 +365,7 @@ class GraphCoordinatedOrchestrator:
 
             return critical_paths
 
-        except Exception as e:  # guardian: allow-log-and-swallow allow-broad-catch -- critical path check failure: non-fatal; empty list returned
+        except Exception as e:  # guardian: allow-broad-exception -- critical path check failure: non-fatal; empty list returned
             logger.warning(f"Could not check critical path involvement: {e}")
             return []
 

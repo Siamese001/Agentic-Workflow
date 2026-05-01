@@ -174,7 +174,7 @@ def _classify_veto_stage(orchestrator: "VetoOrchestrator") -> dict[str, Any]:
         policy = orchestrator.get_policy_summary()
         if "llm_judge" in policy.get("instantiated_stages", []):
             primary_mode = "C_PRIMARY_LLM_JUDGE"
-    except Exception:  # pragma: no cover — policy introspection best-effort
+    except Exception:  # guardian: allow-broad-exception -- policy introspection best-effort; non-fatal, primary_mode defaults to C_PRIMARY_LLM_JUDGE  # pragma: no cover
         pass
 
     return {
