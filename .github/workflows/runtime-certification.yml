@@ -43,6 +43,16 @@ on:
         required: false
         default: "false"
         type: string
+      live_provider_acceptance:
+        description: |
+          W2b live-provider acceptance run for RTC-REQ-056. When "true",
+          runs the readiness probe + rubric stability check + probe chain
+          against a real approved provider (local_qwen or anthropic_haiku).
+          Requires LOCAL_QWEN_ENDPOINT OR ANTHROPIC_API_KEY to be configured
+          in repository secrets. Default: false.
+        required: false
+        default: "false"
+        type: string
 
 env:
   # When set to '1', the workflow runs strict-mode certification gates.
@@ -358,3 +368,107 @@ jobs:
             docs/adr/semantic_cache_threshold_recalibration.md
             config/certification/veto_policy_schema.json
           retention-days: 30
+
+  # ──────────────────────────────────────────────────────────────────────
+  # W2b — Live-Provider ALLOW-Path Acceptance (RTC-REQ-056)
+  # ──────────────────────────────────────────────────────────────────────
+  # Manual-dispatch only. Runs the live-provider acceptance chain against
+  # a real approved provider (local_qwen first, anthropic_haiku fallback).
+  #
+  # mock_safe is FORBIDDEN in this job: the env-probe step exits 2 if
+  # LLMJUDGEVETO_APPROVED_MOCK_SAFE is set — mock_safe is MOCK_PROVIDER_ONLY
+  # and cannot be used for RTC-REQ-056 certification per the plan §1
+  # non-negotiables.
+  #
+  # Plan: .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 8
+  live_provider_acceptance:
+    name: W2b live-provider ALLOW-path acceptance
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.live_provider_acceptance == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LOCAL_QWEN_ENDPOINT: ${{ secrets.LOCAL_QWEN_ENDPOINT }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-timeout httpx
+
+      # ── W2b pre-flight: env-probe rejects mock_safe and requires at
+      # least one approved provider secret. Exit 2 if either invariant
+      # is violated — this job cannot produce a valid RTC-REQ-056 proof
+      # without a real provider.
+      - name: W2b.0 env-probe (reject mock_safe, require approved provider)
+        run: |
+          if [ "$LLMJUDGEVETO_APPROVED_MOCK_SAFE" = "1" ]; then
+            echo "FAIL_CLOSED: LLMJUDGEVETO_APPROVED_MOCK_SAFE=1 is FORBIDDEN in this job."
+            echo "mock_safe is MOCK_PROVIDER_ONLY and cannot be used for RTC-REQ-056."
+            exit 2
+          fi
+          if [ -z "$LOCAL_QWEN_ENDPOINT" ] && [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "FAIL_CLOSED: neither LOCAL_QWEN_ENDPOINT nor ANTHROPIC_API_KEY is set."
+            echo "Configure at least one approved provider secret to run W2b acceptance."
+            exit 2
+          fi
+          echo "OK: env-probe passed"
+          echo "  LOCAL_QWEN_ENDPOINT present: $([ -n "$LOCAL_QWEN_ENDPOINT" ] && echo true || echo false)"
+          echo "  ANTHROPIC_API_KEY present:   $([ -n "$ANTHROPIC_API_KEY" ] && echo true || echo false)"
+
+      - name: W2b.1 probe_live_provider_readiness
+        run: python tools/certification/evidence/probe_live_provider_readiness.py
+
+      - name: W2b.2 probe_live_provider_rubric_stability
+        run: python tools/certification/evidence/probe_live_provider_rubric_stability.py
+
+      - name: W2b.3 probe_integrated_runtime_safe_reuse (triple-run)
+        run: python tools/certification/evidence/probe_integrated_runtime_safe_reuse.py
+
+      - name: W2b.4 W2 verifier chain (5 verifiers) + results ledger
+        run: python ops_scripts/ci/record_w2_verifier_results.py
+
+      - name: W2b.5 compose subclaims with live-provider attestation
+        run: python scripts/compose_semantic_cache_subclaims.py
+
+      - name: W2b.6 W2b unit tests
+        run: |
+          python -m pytest \
+            tests/runtime/test_live_provider_readiness.py \
+            tests/runtime/test_live_provider_attestation.py \
+            tests/runtime/test_live_provider_allow_proof.py \
+            tests/runtime/test_integrated_runtime_legacy_dense_only_stays_partial.py \
+            -p no:xdist -p no:testmon -q --timeout=120
+
+      # Secondary env-probe guard: re-assert mock_safe is still absent
+      # after the run so no step inadvertently set it.
+      - name: W2b.7 env-probe post-run re-assert
+        run: |
+          if [ "$LLMJUDGEVETO_APPROVED_MOCK_SAFE" = "1" ]; then
+            echo "FAIL_CLOSED: LLMJUDGEVETO_APPROVED_MOCK_SAFE got set during run."
+            exit 2
+          fi
+          echo "OK: mock_safe env-flag remained unset across W2b acceptance run."
+
+      - name: Upload W2b attestation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w2b-live-provider-acceptance
+          path: |
+            artifacts/certification/integrated_runtime/live_provider_readiness.json
+            artifacts/certification/integrated_runtime/rubric_stability_report.json
+            artifacts/certification/integrated_runtime/path_proofs_ledger.json
+            artifacts/certification/integrated_runtime/verifier_results.json
+            artifacts/certification/integrated_runtime/c_primary_allow/live_provider_attestation.json
+            artifacts/certification/integrated_runtime/c_primary_allow/integrated_runtime_artifact_manifest.json
+          retention-days: 90
