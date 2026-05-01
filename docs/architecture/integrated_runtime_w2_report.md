@@ -3,9 +3,13 @@
 **Date:** 2026-05-01
 **Plan:** `.windsurf/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md`
 **Predecessor:** W1p6 (RTC-REQ-059 ACCEPTED at E5)
-**Status:** COMPLETE — RTC-REQ-056 ACCEPTED at E6_INTEGRATED_RUNTIME_PROOF
-via the **approved C-primary LLMJudgeVeto fail-closed leg** (no
-deterministic proof-stage in the canonical acceptance run).
+**Status:** W2 COMPLETE — fail-closed leg proven, infrastructure landed.
+RTC-REQ-056 remains **PENDING** in the honest committed state: the ALLOW
+leg requires a live approved SAFE-producing provider, and `mock_safe` is
+MOCK_PROVIDER_ONLY. See follow-on report
+`docs/architecture/integrated_runtime_w2b_report.md` for the W2b
+live-provider ALLOW-path proof and the operator runbook for flipping
+RTC-REQ-056 to ACCEPTED.
 
 ## Summary
 
