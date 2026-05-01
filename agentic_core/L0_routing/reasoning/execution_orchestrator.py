@@ -350,13 +350,7 @@ class ExecutionOrchestrator:
                 _e,
             )
             return
-        except (
-            ImportError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-            AttributeError,
-        ) as _e:  # guardian: allow-return-none-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
+        except (ImportError, RuntimeError, ValueError, TypeError, AttributeError) as _e:  # guardian: allow-return-none-swallow -- D2 semantic cache learn is opportunistic: orchestration already succeeded; cache learn failure must not fail the request
             Logger.debug("[L0-ORCH] D2 semantic cache learn skipped: %s", _e)
             return
         # Optional L2 promotion — gated and quality-checked.
