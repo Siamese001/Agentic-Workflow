@@ -121,6 +121,22 @@ class HallucinationDetector(BaseRGEngine):
         "world-class team that I built from scratch", "saved the company",
     )
 
+    # Generic superlative blocklist restored from the 2025-12-08 atomization
+    # snapshot (apps_rg/L5_safety/check_hallucination.py SUPERLATIVES). A bullet
+    # using >=2 of these is flagged as overclaiming. See plan
+    # apps-rg-prior-art-gap-closure-3e3d5b (Phase P3, gap G3).
+    _GENERIC_SUPERLATIVES: tuple[str, ...] = (
+        "revolutionary", "groundbreaking", "unprecedented", "unparalleled",
+        "game-changing", "world-class", "best-in-class", "cutting-edge",
+    )
+    _GENERIC_SUPERLATIVE_THRESHOLD: int = 2
+
+    # Implausible-growth-with-horizon pattern (gap G4) is compiled inside
+    # check_batch alongside team_growth_re and bad_currency_re. The regex is:
+    #   r"\d{3,}%.{0,30}\b(month|quarter|90\s*day)\b"
+    # Restored as gap G4 — current literal "1000%" / "10000%" patterns miss
+    # cases like "100% revenue growth in 6 months".
+
     def check_batch(self, texts: list[str]) -> dict[str, Any]:
         """Batch hallucination heuristic.
 
@@ -129,6 +145,8 @@ class HallucinationDetector(BaseRGEngine):
           - suspicious magnitude pattern: 0.4
           - over-claim phrase: 0.3
           - implausible team-growth (e.g. "from 1 to 100 in 6 months"): 0.4
+          - implausible growth + short horizon (G4): 0.4
+          - >=2 generic superlatives (G3): 0.2
           - mismatched currency suffix (e.g. "$50MM" or "$50MMM"): 0.3
         Result valid when avg score >= 0.7.
         """
@@ -143,6 +161,11 @@ class HallucinationDetector(BaseRGEngine):
         # Precompiled where useful.
         team_growth_re = _re.compile(r"\bfrom\s+(\d+)\s+to\s+(\d+)\b", _re.IGNORECASE)
         bad_currency_re = _re.compile(r"\$\s*\d+(?:\.\d+)?\s*M{2,}\b")
+        # Lazy bind class attr now that re is imported (kept here so the class
+        # body stays self-contained without a top-level import dance).
+        growth_horizon_re = _re.compile(
+            r"\d{3,}%.{0,30}\b(months?|quarters?|90\s*days?)\b", _re.IGNORECASE
+        )
 
         total_score = 0.0
         issues: list[str] = []
@@ -173,6 +196,22 @@ class HallucinationDetector(BaseRGEngine):
             if bad_currency_re.search(text):
                 issues.append("malformed_currency_suffix")
                 score -= 0.3
+            # G4: implausible growth claim within a short horizon
+            # (e.g. "100% revenue growth in 6 months").
+            if growth_horizon_re.search(text):
+                issues.append(
+                    f"implausible_growth_with_horizon: in: {text[:80]}"
+                )
+                score -= 0.4
+            # G3: generic superlative overuse (>=2 distinct superlatives).
+            superlative_hits = sum(
+                1 for word in self._GENERIC_SUPERLATIVES if word in t_lower
+            )
+            if superlative_hits >= self._GENERIC_SUPERLATIVE_THRESHOLD:
+                issues.append(
+                    f"excessive_superlatives: {superlative_hits} found"
+                )
+                score -= 0.2
             total_score += max(0.0, score)
         avg_score = total_score / len(texts) if texts else 0.0
         return {"valid": avg_score >= 0.7, "score": avg_score, "issues": issues}

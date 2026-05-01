@@ -1,5 +1,4 @@
 """
-from agentic_core.runtime.contracts.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 Data enrichment for resume generation HOP-2.
 
 Enriches bullet pool with canonical verbs and deduplication.
@@ -9,6 +8,20 @@ from __future__ import annotations
 
 from typing import Any
 from tqdm import tqdm
+
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
+from agentic_core.L5_safety.validators.verb_canonicalizer_validator import (
+    VerbCanonicalizer,
+)
+
+from apps_rg.engines.duplicate_detector import DuplicateDetector
+from apps_rg.types.validation_result_types import (
+    ValidationResult,
+    ValidationSeverity,
+)
 
 
 class DataEnricher:
@@ -29,7 +42,9 @@ class DataEnricher:
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DataEnricher.enrich")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DataEnricher.enrich"
+        )
 
         validation_results: list[ValidationResult] = []
         if orchestrator is not None:
@@ -44,7 +59,7 @@ class DataEnricher:
                 if forbidden:
                     validation_results.append(
                         ValidationResult(
-                            rule_id="FORBIDDEN_VERB_USAGE",
+                            gate_id="FORBIDDEN_VERB_USAGE",
                             PASSED=False,
                             SEVERITY=ValidationSeverity.MEDIUM,
                             MESSAGE=f"Forbidden verb(s): {', '.join(forbidden)}",
@@ -56,7 +71,7 @@ class DataEnricher:
         if duplicates:
             validation_results.append(
                 ValidationResult(
-                    rule_id="DUPLICATE_BULLETS",
+                    gate_id="DUPLICATE_BULLETS",
                     PASSED=False,
                     SEVERITY=ValidationSeverity.MEDIUM,
                     MESSAGE=f"Found {len(duplicates)} potential duplicate bullets",
@@ -66,7 +81,7 @@ class DataEnricher:
         else:
             validation_results.append(
                 ValidationResult(
-                    rule_id="DUPLICATE_CHECK",
+                    gate_id="DUPLICATE_CHECK",
                     PASSED=True,
                     SEVERITY=ValidationSeverity.INFO,
                     MESSAGE="No duplicate bullets detected",
