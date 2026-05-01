@@ -23,7 +23,7 @@ def _read_json(path: Path) -> Dict[str, Any] | None:
         return None
     try:
         return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):  # guardian: allow-return-none-swallow -- proof artifact unreadable or corrupt JSON; None signals missing artifact to report renderer
         return None
 
 

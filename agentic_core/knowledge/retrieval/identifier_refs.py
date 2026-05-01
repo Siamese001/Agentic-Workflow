@@ -386,7 +386,7 @@ def make_graph_node_resolver(
                 chunk_id=chunk_id,
                 source_path=source_path,
             )
-        except (OSError, ValueError):
+        except (OSError, ValueError):  # guardian: allow-return-none-swallow -- graph hop failure: non-fatal; None signals no identifier context to caller
             return None
 
         if not results:

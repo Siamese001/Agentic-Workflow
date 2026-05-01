@@ -381,13 +381,7 @@ class EmbeddingServiceFactory:
             cpu_index.add(cpu_matrix)
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             return gpu_index
-        except (
-            AttributeError,
-            ImportError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow -- faiss-gpu unavailable: optional GPU acceleration, CPU fallback below
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- faiss-gpu unavailable: optional GPU acceleration; None triggers CPU fallback
             logger.warning(f"[EmbeddingServiceFactory] FAISS GPU index unavailable: {exc}")
             return None
 

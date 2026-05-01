@@ -91,7 +91,7 @@ def _resolve_tracer() -> Any:
             return _TRACER
         try:
             from opentelemetry import trace  # noqa: PLC0415
-        except ImportError:
+        except ImportError:  # guardian: allow-return-none-swallow -- opentelemetry optional; None signals OTel unavailable, tracer disabled
             _OTEL_AVAILABLE = False
             return None
         _TRACER = trace.get_tracer("agentic_core.L2_execution")
@@ -292,7 +292,7 @@ class L2SpanEmitter:
             otel_cm = self._tracer.start_as_current_span(
                 name, attributes=dict(attrs)
             )
-        except (AttributeError, RuntimeError, OSError) as exc:  # guardian: allow-broad-otel -- start_as_current_span failure must not break L2
+        except (AttributeError, RuntimeError, OSError) as exc:  # guardian: allow-return-none-swallow -- start_as_current_span failure must not break L2; yields None to caller as no-op span
             _LOGGER.debug("L2 span start failed for %s: %s", name, exc)
             yield None
             return

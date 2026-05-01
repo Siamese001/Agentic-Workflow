@@ -202,7 +202,7 @@ def install_and_tag(app_id: str, op: str = "") -> object | None:
             install_bridge,
         )
         bridge = install_bridge(app_id=app_id)
-    except ImportError:  # guardian: allow-otel-optional -- bridge module absent in stripped builds
+    except ImportError:  # guardian: allow-return-none-swallow -- otel_lifecycle_bridge absent in stripped builds; None skips REQ evidence emission gracefully
         return None
 
     # Emit all 6 priority REQ evidence markers. Each governed app is

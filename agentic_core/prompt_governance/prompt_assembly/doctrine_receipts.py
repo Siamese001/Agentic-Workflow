@@ -714,7 +714,7 @@ def _parse_status(raw: Any) -> PAStatus | None:
         return None
     try:
         return PAStatus(raw)
-    except ValueError:
+    except ValueError:  # guardian: allow-return-none-swallow -- PAStatus enum coercion: unknown status string; None signals invalid status to caller
         return None
 
 

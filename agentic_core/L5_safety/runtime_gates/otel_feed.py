@@ -44,7 +44,7 @@ def _coerce_float(value: Any) -> float | None:
         return None
     try:
         return float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- _safe_float: type-coercion helper; None signals non-numeric value to caller
         return None
 
 

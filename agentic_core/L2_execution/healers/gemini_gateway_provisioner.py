@@ -130,7 +130,7 @@ class MinimalGeminiGateway:
             return self._sdk
         try:
             import google.generativeai as genai  # noqa: PLC0415
-        except ImportError:
+        except ImportError:  # guardian: allow-return-none-swallow -- google-generativeai optional; None signals SDK unavailable, caller emits error envelopes
             _LOGGER.warning(
                 "google.generativeai not installed — MinimalGeminiGateway will "
                 "return error envelopes. Install with: pip install google-generativeai"
@@ -138,7 +138,7 @@ class MinimalGeminiGateway:
             return None
         try:
             genai.configure(api_key=self._config.api_key)
-        except (RuntimeError, ValueError) as exc:
+        except (RuntimeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- genai.configure failure: SDK unusable; None signals degraded mode
             _LOGGER.warning("genai.configure failed: %s", exc)
             return None
         self._sdk = genai

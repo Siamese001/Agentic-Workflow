@@ -84,7 +84,7 @@ class AdgEmissionToOtelBridge(logging.Handler):
             return
         try:
             msg = record.getMessage()
-        except (TypeError, ValueError):  # guardian: allow-defensive-fallback -- malformed log args; skip span
+        except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- malformed log args; bare return skips span emission without crashing the logging handler
             return
         edge_kind = record.name[len("adg.") :]  # e.g. "records_execution_trace"
 

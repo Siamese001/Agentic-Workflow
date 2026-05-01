@@ -471,7 +471,7 @@ class SovereignBaseAgent(
             results = []
             try:
                 self.results = results  # type: ignore[attr-defined]
-            except (AttributeError, TypeError):
+            except (AttributeError, TypeError):  # guardian: allow-return-none-swallow -- results assignment failed: results list may be frozen; early return is safe, caller has no results to append
                 return
         try:
             entry = {"status": status, "message": message, **kwargs}

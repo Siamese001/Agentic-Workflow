@@ -120,11 +120,11 @@ class BaselineRegistry:
         assert self._path is not None
         try:
             raw = self._path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):  # guardian: allow-return-none-swallow -- baseline file unreadable: load silently skipped; registry stays empty
             return
         try:
             payload = json.loads(raw)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # guardian: allow-return-none-swallow -- baseline file corrupt JSON: load silently skipped; registry stays empty
             return
         if not isinstance(payload, dict):
             return

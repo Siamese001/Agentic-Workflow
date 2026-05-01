@@ -343,13 +343,7 @@ class EvaluationLearningBridge:
 
             return learning_event
 
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as exc:  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:  # guardian: allow-return-none-swallow -- evaluation processing failure: non-fatal; None signals no learning event to caller
             logger.error("[EvalLearningBridge] Evaluation failed: %s", exc)
             return None
 

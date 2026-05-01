@@ -344,7 +344,7 @@ class ExecutionOrchestrator:
                 corpus_version=corpus_version,
                 policy_version=policy_version,
             )
-        except CriticalInfrastructureError as _e:  # ADR-079 / W4 P4.3: strict-mode infra failure must not fail the request — orchestration already succeeded
+        except CriticalInfrastructureError as _e:  # guardian: allow-return-none-swallow -- ADR-079 / W4 P4.3: strict-mode infra failure must not fail the request — orchestration already succeeded; implicit None return is safe
             Logger.critical(
                 "[L0-ORCH] D2 semantic cache learn skipped (STRICT-mode infra unavailable): %s",
                 _e,

@@ -63,7 +63,7 @@ def _now() -> datetime:
 def _parse_iso(ts: str) -> datetime | None:
     try:
         return datetime.fromisoformat(ts)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError):  # guardian: allow-return-none-swallow -- ISO timestamp parse helper; None signals unparseable timestamp to caller
         return None
 
 

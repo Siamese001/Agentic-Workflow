@@ -190,13 +190,7 @@ class EnhancedRagRetrievalCache:
                 provider=provider,  # type: ignore[arg-type]
                 model=model,
             )
-        except (
-            EmbeddingDisabledError,
-            NotImplementedError,
-            ValueError,
-            RuntimeError,
-            OSError,
-        ) as e:  # W4 P4.2: replaced bare `Exception` with precise tuple per Column-5 (§15). ValueError covers create_embedding_client unsupported-provider AND transitively register_embedding_client empty-name. Explicit None return signals "embedding disabled" to the cache __init__ which falls back to basic non-embedding mode; the structured warning below is the durable record so this is degradation-with-receipt, not silent failure.
+        except (EmbeddingDisabledError, NotImplementedError, ValueError, RuntimeError, OSError) as e:  # guardian: allow-return-none-swallow -- W4 P4.2: embedding client unavailable (disabled/unsupported provider); None signals embedding disabled to cache __init__ which falls back to basic non-embedding mode
             logger.warning(f"Failed to initialize embedding client: {e}")
             return None
 

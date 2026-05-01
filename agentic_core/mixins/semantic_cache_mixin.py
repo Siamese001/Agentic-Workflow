@@ -210,7 +210,7 @@ class SemanticCacheMixin:
 
         try:
             return SemanticCacheManager.get_instance()
-        except CriticalInfrastructureError as exc:  # ADR-079 / W4 P4.3: STRICT-mode infra failure must not bubble up to mixin consumers
+        except CriticalInfrastructureError as exc:  # guardian: allow-return-none-swallow -- ADR-079 / W4 P4.3: STRICT-mode infra failure must not bubble up to mixin consumers; None disables semantic cache
             logger.critical(
                 "SemanticCacheMixin: STRICT-mode infra unavailable; semantic cache disabled: %s",
                 exc,

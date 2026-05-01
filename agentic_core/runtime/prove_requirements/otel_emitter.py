@@ -70,7 +70,7 @@ def _try_real_otel_backend() -> Optional[Any]:
         return None
     try:
         from opentelemetry import trace as _otel_trace  # type: ignore[import]  # noqa: F401, PLC0415
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- opentelemetry SDK optional; None keeps behavior in validated in-memory recorder path
         return None
     # Real-SDK adapter is a future Author-Gate deliverable; for now we
     # honor the env var as a no-op signal that the SDK is available but

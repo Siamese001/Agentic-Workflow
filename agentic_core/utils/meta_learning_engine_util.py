@@ -408,13 +408,7 @@ class MetaLearningEngine:
             return None
         try:
             return cls._kg_bridge.get_statistics()
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (AttributeError, OSError, RuntimeError, ValueError, TypeError):  # guardian: allow-return-none-swallow -- KG statistics unavailable: non-fatal; None signals no stats to caller
             return None
 
     @classmethod

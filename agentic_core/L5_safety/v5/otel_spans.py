@@ -105,7 +105,7 @@ def emit_span(name: str, attributes: Mapping[str, Any] | None = None) -> Iterato
             with tracer.start_as_current_span(name, attributes=attrs):
                 yield
                 return
-        except (RuntimeError, ValueError, TypeError):  # pragma: no cover
+        except (RuntimeError, ValueError, TypeError):  # guardian: allow-return-none-swallow -- OTel span start failure: yields None as no-op; L5 safety must not crash on telemetry errors  # pragma: no cover
             yield
             return
     yield

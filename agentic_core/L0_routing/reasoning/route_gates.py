@@ -291,7 +291,7 @@ def check_d2_semantic_cache(
             corpus_version=corpus_version,
             policy_version=policy_version,
         )
-    except CriticalInfrastructureError as exc:  # ADR-079 / W4 P4.3: STRICT-mode infra failure → D2 unavailable, return None to signal miss
+    except CriticalInfrastructureError as exc:  # guardian: allow-return-none-swallow -- ADR-079 / W4 P4.3: STRICT-mode infra failure → D2 unavailable; None signals cache miss
         Logger.critical(
             "route_gates: D2 unavailable (STRICT-mode infra failed): %s", exc
         )

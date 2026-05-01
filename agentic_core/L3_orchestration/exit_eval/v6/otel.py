@@ -292,7 +292,7 @@ def _try_emit_to_sdk(name: str, attributes: Mapping[str, Any]) -> None:
     """
     try:
         from opentelemetry import trace  # type: ignore[import-not-found]
-    except ImportError:
+    except ImportError:  # guardian: allow-return-none-swallow -- opentelemetry optional; returns None (bare return) when SDK absent; caller omits span silently
         return
     try:
         tracer = trace.get_tracer("agentic_core.L3_orchestration.exit_eval.v6")

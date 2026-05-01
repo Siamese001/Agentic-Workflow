@@ -332,13 +332,7 @@ class AgentRegistry:
         """
         try:
             return None
-        except (
-            AttributeError,
-            OSError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ):  # guardian: allow-return-none-swallow  -- ADG-burn: return_none_swallow
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError):  # guardian: allow-return-none-swallow -- class reference lookup failure: non-fatal; None signals class not found to caller
             return None
 
     def _get_module_path(self, file_path: Path) -> str:
