@@ -106,6 +106,62 @@ W2_INTEGRATED_RUNTIME_DIR = REPO_ROOT / "artifacts" / "certification" / "integra
 W2_INTEGRATED_LATEST = W2_INTEGRATED_RUNTIME_DIR / "latest"
 W2_VERIFIER_RESULTS = W2_INTEGRATED_RUNTIME_DIR / "verifier_results.json"
 
+# W2b — approved live providers. mock_safe is NEVER acceptable here.
+W2B_APPROVED_PROVIDERS = frozenset({"local_qwen", "anthropic_haiku"})
+W2B_ATTESTATION_FILENAME = "live_provider_attestation.json"
+
+
+def _validate_live_provider_attestation(
+    attestation_path: Path,
+) -> tuple[bool, str]:
+    """W2b § 5 — 7-condition conjunctive check on the attestation JSON.
+
+    Returns ``(ok, reason_code_or_empty)``. Any failure yields a distinct
+    reason code so the composer notes pinpoint the exact gap.
+    """
+    if not attestation_path.exists():
+        return False, "REJECT_MISSING_ATTESTATION"
+    try:
+        att = json.loads(attestation_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False, "REJECT_ATTESTATION_SCHEMA_INVALID"
+
+    required_keys = {
+        "schema_version", "attestation_kind", "provider", "model_id",
+        "rubric_hash_sha256", "response_hash_sha256", "response_hash_mode",
+        "verdict", "confidence", "veto_stage_class",
+        "deterministic_proof_stage_used", "x3_disposition",
+        "safe_reuse_allow", "mock_safe_used", "approved_provider",
+    }
+    if not required_keys.issubset(att.keys()):
+        return False, "REJECT_ATTESTATION_SCHEMA_INVALID"
+
+    # Condition 3 — approved provider
+    if att.get("provider") not in W2B_APPROVED_PROVIDERS:
+        return False, "REJECT_UNAPPROVED_PROVIDER"
+    # Condition 4 — mock_safe is banned
+    if att.get("mock_safe_used"):
+        return False, "REJECT_MOCK_SAFE_IN_CERTIFICATION"
+    # Condition 5 — no deterministic proof stage
+    if att.get("deterministic_proof_stage_used"):
+        return False, "REJECT_DETERMINISTIC_PROOF_STAGE_IN_CERTIFICATION"
+    # Condition 6 — veto stage class must be LLMJudgeVeto
+    if att.get("veto_stage_class") != "LLMJudgeVeto":
+        return False, "REJECT_UNAPPROVED_VETO_STAGE_CLASS"
+    # Condition 7 — verdict / allow / x3 alignment
+    if att.get("verdict") != "SAFE":
+        return False, "REJECT_NON_SAFE_AS_ALLOW"
+    if att.get("safe_reuse_allow") is not True:
+        return False, "REJECT_NON_SAFE_AS_ALLOW"
+    if att.get("x3_disposition") != "X3D":
+        return False, "REJECT_NON_SAFE_AS_ALLOW"
+    # Hashes must be non-empty strings
+    if not att.get("rubric_hash_sha256"):
+        return False, "REJECT_SAFE_WITHOUT_RUBRIC_HASH"
+    if not att.get("response_hash_sha256"):
+        return False, "REJECT_SAFE_WITHOUT_RESPONSE_HASH"
+    return True, ""
+
 
 def _map_integrated_runtime_proof() -> tuple[str, str]:
     """Return (status, notes) for ``R1B_INTEGRATED_RUNTIME_PROOF``.
@@ -183,6 +239,18 @@ def _map_integrated_runtime_proof() -> tuple[str, str]:
         return "NOT_APPLICABLE", (
             "R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP — "
             f"{gap}"
+        )
+    # W2b § 5 — belt-and-suspenders: independently validate the live
+    # provider attestation JSON that accompanies the allow run. The probe
+    # writes it; the composer re-checks it so no accept-path can be forged
+    # by a malformed ledger alone.
+    attestation_dir = W2_INTEGRATED_RUNTIME_DIR / "c_primary_allow"
+    attestation_path = attestation_dir / W2B_ATTESTATION_FILENAME
+    att_ok, att_reason = _validate_live_provider_attestation(attestation_path)
+    if not att_ok:
+        return "NOT_APPLICABLE", (
+            "R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP — "
+            f"live_provider_attestation.json check failed: {att_reason}"
         )
     if not fc_leg.get("pass"):
         return "NOT_APPLICABLE", (
