@@ -33,6 +33,8 @@ from _w2_verifier_common import (
     resolve_artifact_dir,
 )
 
+import json
+
 REQUIRED_ALIASES = (
     "unsafe_reuse_allowed_count",
     "safe_reuse_blocked_count",
@@ -40,6 +42,63 @@ REQUIRED_ALIASES = (
     "unknown_error_timeout_parse_fail_block_count",
 )
 FAIL_CLOSED_OUTCOMES = {"UNKNOWN", "ERROR", "TIMEOUT", "PARSE_FAIL"}
+
+# W2b § 6 — rejection matrix. These reason codes are consumed by CI +
+# verifier_results.json.
+W2B_APPROVED_PROVIDERS = frozenset({"local_qwen", "anthropic_haiku"})
+W2B_REQUIRED_ATTESTATION_KEYS = frozenset({
+    "schema_version", "attestation_kind", "provider", "model_id",
+    "rubric_hash_sha256", "response_hash_sha256", "response_hash_mode",
+    "verdict", "confidence", "veto_stage_class",
+    "deterministic_proof_stage_used", "x3_disposition",
+    "safe_reuse_allow", "mock_safe_used", "approved_provider",
+})
+
+
+def _verify_live_provider_attestation(art_dir) -> tuple[bool, str, str]:
+    """W2b § 6 — 8-row rejection matrix for live_provider_attestation.json.
+
+    Returns ``(ok, reason_code, detail)``. ``reason_code`` is empty on PASS.
+    """
+    att_path = art_dir / "live_provider_attestation.json"
+    if not att_path.exists():
+        return False, "REJECT_MISSING_ATTESTATION", str(att_path)
+    try:
+        att = json.loads(att_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return False, "REJECT_ATTESTATION_SCHEMA_INVALID", f"{exc}"
+    if not isinstance(att, dict):
+        return False, "REJECT_ATTESTATION_SCHEMA_INVALID", "not a JSON object"
+    missing = W2B_REQUIRED_ATTESTATION_KEYS - set(att.keys())
+    if missing:
+        return False, "REJECT_ATTESTATION_SCHEMA_INVALID", f"missing_keys={sorted(missing)}"
+    provider = att.get("provider")
+    if provider == "mock_safe" or att.get("mock_safe_used"):
+        return False, "REJECT_MOCK_SAFE_IN_CERTIFICATION", f"provider={provider}"
+    if provider not in W2B_APPROVED_PROVIDERS:
+        return False, "REJECT_UNAPPROVED_PROVIDER", f"provider={provider}"
+    if att.get("deterministic_proof_stage_used"):
+        return (False, "REJECT_DETERMINISTIC_PROOF_STAGE_IN_CERTIFICATION",
+                "deterministic_proof_stage_used=True")
+    if att.get("veto_stage_class") != "LLMJudgeVeto":
+        return (False, "REJECT_UNAPPROVED_VETO_STAGE_CLASS",
+                f"veto_stage_class={att.get('veto_stage_class')!r}")
+    verdict = att.get("verdict")
+    if verdict != "SAFE":
+        return False, "REJECT_NON_SAFE_AS_ALLOW", f"verdict={verdict!r}"
+    if att.get("safe_reuse_allow") is not True:
+        return False, "REJECT_NON_SAFE_AS_ALLOW", "safe_reuse_allow != True"
+    if att.get("x3_disposition") != "X3D":
+        return (False, "REJECT_NON_SAFE_AS_ALLOW",
+                f"x3_disposition={att.get('x3_disposition')!r}")
+    if verdict == "SAFE" and not att.get("rubric_hash_sha256"):
+        return False, "REJECT_SAFE_WITHOUT_RUBRIC_HASH", "empty rubric_hash_sha256"
+    if verdict == "SAFE" and not att.get("response_hash_sha256"):
+        return False, "REJECT_SAFE_WITHOUT_RESPONSE_HASH", "empty response_hash_sha256"
+    return True, "", (
+        f"provider={provider}, verdict=SAFE, "
+        f"confidence={att.get('confidence')}"
+    )
 
 
 def main(argv: list[str]) -> int:
@@ -132,6 +191,14 @@ def main(argv: list[str]) -> int:
     if allow and primary_mode == "C_PRIMARY_LLM_JUDGE" and llm_count < 1:
         return fail("LEXICAL_ONLY_BYPASS",
                     f"allow=True with C_PRIMARY_LLM_JUDGE but llm_judge_invocation_count={llm_count}")
+
+    # W2b § 6 — live-provider attestation gate for the ALLOW path.
+    # Only enforced when the canonical run is actually an allow run
+    # (allow=True). Fail-closed runs do not require an attestation.
+    if allow:
+        ok, reason, detail = _verify_live_provider_attestation(art_dir)
+        if not ok:
+            return fail(reason, detail)
 
     return passed(
         f"safe_reuse.allow={allow}, veto_outcome={sr_outcome}, "
