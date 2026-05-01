@@ -50,7 +50,7 @@ class TestRfpProperties(unittest.TestCase):
     def test_roadmap_phase_rejects_out_of_range_duration(self, weeks: int) -> None:
         try:
             from apps_rfp.types import RoadmapPhase
-        except ImportError:
+        except ImportError:  # guardian: allow-defensive-import -- optional type export for property test
             self.skipTest("RoadmapPhase not exported")
             return
         assume(weeks <= 0 or weeks >= 53)
@@ -62,7 +62,7 @@ class TestRfpProperties(unittest.TestCase):
     def test_roadmap_phase_accepts_in_range_duration(self, weeks: int) -> None:
         try:
             from apps_rfp.types import RoadmapPhase
-        except ImportError:
+        except ImportError:  # guardian: allow-defensive-import -- optional type export for property test
             self.skipTest("RoadmapPhase not exported")
             return
         phase = RoadmapPhase(

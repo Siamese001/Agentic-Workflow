@@ -48,7 +48,7 @@ class TestResearchProperties(unittest.TestCase):
     def test_source_entry_rejects_out_of_range_confidence(self, invalid_conf: float) -> None:
         try:
             from apps_research.types import SourceEntry
-        except ImportError:
+        except ImportError:  # guardian: allow-defensive-import -- optional type export for property test
             self.skipTest("SourceEntry not exported")
             return
         # Skip exactly 1.0 / 0.0 boundary (those should be allowed).
@@ -65,7 +65,7 @@ class TestResearchProperties(unittest.TestCase):
     def test_source_entry_accepts_in_range_confidence(self, valid_conf: float) -> None:
         try:
             from apps_research.types import SourceEntry
-        except ImportError:
+        except ImportError:  # guardian: allow-defensive-import -- optional type export for property test
             self.skipTest("SourceEntry not exported")
             return
         entry = SourceEntry(
