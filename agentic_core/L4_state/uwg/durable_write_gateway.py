@@ -671,7 +671,7 @@ class DurableWriteGateway:
                 reason_codes=tuple(validation.reason_codes),
             )
             append_ref = append_receipt.audit_append_receipt_id
-        except AuditLedgerUnavailableError:
+        except AuditLedgerUnavailableError:  # guardian: allow-default-fallback -- audit ledger unavailable is a documented degraded mode; receipt records AUDIT_UNAVAILABLE sentinel for post-hoc reconciliation
             append_ref = "AUDIT_UNAVAILABLE"
 
         receipt = UWGBlockedCommitReceipt(

@@ -23,7 +23,7 @@ def _ledger_path() -> Path | None:
     try:
         from tools.ledgers.schema_registry import get
         return get("apps_qna_pack_lifecycle").db_path
-    except (ImportError, KeyError):
+    except (ImportError, KeyError):  # guardian: allow-return-none-swallow -- optional ledger registry; test skips when unavailable
         return None
 
 

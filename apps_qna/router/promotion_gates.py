@@ -93,7 +93,7 @@ def _ledger_db_path() -> Path | None:
         from tools.ledgers.schema_registry import get
 
         return get(_LEDGER_NAME).db_path
-    except (ImportError, KeyError):
+    except (ImportError, KeyError):  # guardian: allow-return-none-swallow -- ledger schema registry is optional; returns None so caller skips gate when registry missing
         return None
 
 

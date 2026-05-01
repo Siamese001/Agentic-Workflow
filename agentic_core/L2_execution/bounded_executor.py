@@ -290,7 +290,7 @@ def execute(
     final_error: str | None = None
 
     started_overall = time.time()
-    for attempt in range(1, sandbox.max_attempts + 1):
+    for attempt in range(1, sandbox.max_attempts + 1):  # guardian: allow-retry-without-backoff -- bounded retry (max_attempts) with capability-token expiry check as deadline surrogate; no exponential backoff by design
         if token.expired:
             raise L2ExecutorError("capability token expired before invocation")
         started = time.time()

@@ -266,7 +266,7 @@ class ContentQualityAgent(RGAgentBase):
         # Publish to buffer so the orchestrator and downstream consumers can read it.
         try:
             self.ctx.buffer.write("quality_report", quality_report, source_agent=self.__class__.__name__)
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError):  # guardian: allow-silent-swallow -- buffer publish is best-effort; quality_report is ALSO recorded via record_fail/add_signal below
             pass
         if issues:
             self.record_fail(f"Quality issues: {len(issues)}", data=issues)
