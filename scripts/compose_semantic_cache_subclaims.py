@@ -160,6 +160,39 @@ def _map_integrated_runtime_proof() -> tuple[str, str]:
             "proofs only, NOT for RTC-REQ-056 acceptance."
         )
 
+    # W2 proof-hardening (dual-path) — BOTH c_primary_allow and
+    # c_primary_fail_closed runs must independently PASS. The
+    # ``path_proofs_ledger.json`` is written by the probe with boolean
+    # verdicts per leg. Missing ledger OR either leg failing keeps the
+    # subclaim NOT_APPLICABLE.
+    ledger_path = W2_INTEGRATED_LATEST.parent / "path_proofs_ledger.json"
+    if not ledger_path.exists():
+        return "NOT_APPLICABLE", (
+            "W2 path-proofs ledger missing; both allow-path and fail-closed-path "
+            "runs are required. Run: python tools/certification/evidence/"
+            "probe_integrated_runtime_safe_reuse.py"
+        )
+    try:
+        path_proofs = json.loads(ledger_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return "NOT_APPLICABLE", f"path_proofs_ledger unreadable: {exc}"
+    allow_leg = path_proofs.get("c_primary_allow", {})
+    fc_leg = path_proofs.get("c_primary_fail_closed", {})
+    if not allow_leg.get("pass"):
+        gap = allow_leg.get("infrastructure_gap_reason") or "allow_pass=False"
+        return "NOT_APPLICABLE", (
+            "R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP — "
+            f"{gap}"
+        )
+    if not fc_leg.get("pass"):
+        return "NOT_APPLICABLE", (
+            "R1B_INTEGRATED_RUNTIME_FAIL_CLOSED_PATH_PROOF = NOT_PROVEN — "
+            f"match_status={fc_leg.get('match_status')}, "
+            f"det_used={fc_leg.get('deterministic_proof_stage_used')}, "
+            f"allow={fc_leg.get('safe_reuse_allow')}, "
+            f"counters={fc_leg.get('veto_counters')}"
+        )
+
     if not no_harness_path.exists():
         return "NOT_APPLICABLE", "no_harness_stamp_receipt.json missing"
     try:

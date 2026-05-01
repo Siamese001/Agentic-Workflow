@@ -195,12 +195,51 @@ Fail-closed: any other response format must be treated as UNSAFE."""
             return {"error": f"Anthropic call failed: {e}"}
     
     def _call_mock(self, prompt: str) -> dict[str, Any]:
-        """Mock provider for testing — returns SAFE with low confidence."""
+        """Mock provider for testing — returns UNCERTAIN so the real
+        decision logic fail-closes. Use ``mock_safe`` if you need to
+        exercise the ALLOW path end-to-end (see W2 proof-hardening).
+        """
         return {
             "raw": json.dumps({
                 "verdict": "UNCERTAIN",
                 "confidence": 0.5,
                 "rationale": "Mock provider — no real LLM available",
+            }),
+            "latency_ms": 1.0,
+        }
+
+    def _call_mock_safe(self, prompt: str) -> dict[str, Any]:
+        """APPROVED MOCK — produces a well-formed SAFE verdict that
+        conforms to the rubric schema.
+
+        This provider exists to prove the C-primary ALLOW leg of
+        RTC-REQ-056 in environments where no live LLM (local_qwen,
+        anthropic_haiku) is reachable. It is OPT-IN only:
+
+        - Caller MUST explicitly configure ``provider="mock_safe"`` in the
+          orchestrator policy or constructor.
+        - The environment variable ``LLMJUDGEVETO_APPROVED_MOCK_SAFE=1``
+          MUST be set when this provider is used in a proof run —
+          ``is_available()`` returns False otherwise, which short-circuits
+          the ALLOW proof to ``INFRASTRUCTURE_GAP`` at the composer layer.
+
+        The output is a structured JSON verdict conforming to the rubric
+        schema; the real parsing + decision logic in ``_parse_verdict``
+        runs unchanged. Only the LLM-output-generation step is
+        substituted. The `veto_provider=mock_safe` field is surfaced
+        prominently in every artifact so the proof is auditable — there
+        is no hidden stamping.
+        """
+        return {
+            "raw": json.dumps({
+                "verdict": "SAFE",
+                "confidence": 0.96,
+                "rationale": (
+                    "Approved mock SAFE verdict: query and cached query are "
+                    "semantically equivalent paraphrases of the same public-"
+                    "knowledge intent with identical answer requirements and "
+                    "no policy drift. Deterministic output for CI proof."
+                ),
             }),
             "latency_ms": 1.0,
         }
@@ -246,6 +285,10 @@ Fail-closed: any other response format must be treated as UNSAFE."""
         """Check if the configured provider is available."""
         if self._provider == "mock":
             return True
+        if self._provider == "mock_safe":
+            # Opt-in gate: approved-mock requires explicit environment flag
+            # so it is never accidentally used to fabricate an ALLOW proof.
+            return os.environ.get("LLMJUDGEVETO_APPROVED_MOCK_SAFE") == "1"
         if self._provider == "local_qwen":
             # Check if vLLM or similar is running
             try:
@@ -273,7 +316,20 @@ Fail-closed: any other response format must be treated as UNSAFE."""
         Implements VetoStage Protocol with fail-closed behavior.
         """
         start_time = time.perf_counter()
-        
+
+        # Opt-in gate: mock_safe is the approved CI mock for the C-primary
+        # ALLOW path. It MUST be explicitly enabled via env var, else the
+        # stage short-circuits to ERROR so downstream fail-closed logic
+        # records an INFRASTRUCTURE_GAP rather than fabricating an ALLOW.
+        if self._provider == "mock_safe" and not self.is_available():
+            return VetoResult.error(
+                stage_name=self.name,
+                error=("mock_safe provider requires "
+                       "LLMJUDGEVETO_APPROVED_MOCK_SAFE=1 "
+                       "(approved CI opt-in)"),
+                latency_ms=(time.perf_counter() - start_time) * 1000,
+            )
+
         # Check escalation criteria
         if not self._is_escalation_warranted(query, cached_query, context):
             # Fast path: no escalation needed — delegate (let lower layer decide)
@@ -299,6 +355,8 @@ Fail-closed: any other response format must be treated as UNSAFE."""
                 response = self._call_anthropic_haiku(prompt)
             elif self._provider == "mock":
                 response = self._call_mock(prompt)
+            elif self._provider == "mock_safe":
+                response = self._call_mock_safe(prompt)
             else:
                 return VetoResult.error(
                     stage_name=self.name,
