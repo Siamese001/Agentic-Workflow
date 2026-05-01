@@ -98,6 +98,14 @@ def _single_run(veto: LLMJudgeVeto, run_idx: int) -> dict[str, Any]:
     verdict_name = (
         result.status.name if isinstance(result.status, VetoStatus) else str(result.status)
     )
+    # `VetoResult.error` is a CLASSMETHOD FACTORY, not a field — surfacing
+    # it into the JSON crashes json.dumps with
+    # "Object of type method is not JSON serializable". Error information is
+    # communicated by the ERROR status + the rationale (the LLMJudgeVeto
+    # stage embeds the error string into the rationale when it fails).
+    is_error = verdict_name == "ERROR"
+    error_message = result.rationale if is_error else ""
+
     return {
         "run_index": run_idx,
         "verdict": verdict_name,
@@ -107,7 +115,8 @@ def _single_run(veto: LLMJudgeVeto, run_idx: int) -> dict[str, Any]:
         "rationale": result.rationale or "",
         "raw_response_sha256": _sha256_hex(raw_resp) if raw_resp else None,
         "raw_response": raw_resp if STORE_RAW else None,
-        "error": result.error,
+        "is_error": is_error,
+        "error_message": error_message,
     }
 
 
@@ -133,9 +142,9 @@ def _evaluate_stability(runs: list[dict[str, Any]]) -> dict[str, Any]:
             f"latency above {STABILITY_TIMEOUT_MS}ms (got {latencies})"
         )
 
-    if any(r.get("error") for r in runs):
+    if any(r.get("is_error") for r in runs):
         failures.append(
-            f"provider errors present: {[r.get('error') for r in runs]}"
+            f"provider errors present: {[r.get('error_message') for r in runs if r.get('is_error')]}"
         )
 
     # Response hash mode
