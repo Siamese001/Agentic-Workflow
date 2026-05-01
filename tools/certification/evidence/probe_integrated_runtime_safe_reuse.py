@@ -251,9 +251,13 @@ def main() -> int:
             "llm_judge_invocation_count": a_manifest["payload"]["llm_judge_invocation_count"],
             "pass": allow_pass,
             "infrastructure_gap_reason": (
-                f"no SAFE-producing provider available (tried={allow_provider}); "
-                "set ANTHROPIC_API_KEY, run local_qwen at localhost:8000, OR set "
-                "LLMJUDGEVETO_APPROVED_MOCK_SAFE=1 to use the approved mock."
+                f"no live approved SAFE-producing provider available "
+                f"(tried={allow_provider}). For RTC-REQ-056 certification "
+                "acceptance, a LIVE approved provider is required: set "
+                "ANTHROPIC_API_KEY for anthropic_haiku, OR run local_qwen "
+                "at localhost:8000. LLMJUDGEVETO_APPROVED_MOCK_SAFE is "
+                "MOCK_PROVIDER_ONLY (tests / topology validation) and is "
+                "NOT authorized for final certification acceptance."
             ) if not allow_pass else "",
         },
         "c_primary_fail_closed": {
