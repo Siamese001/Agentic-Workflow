@@ -452,7 +452,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
         try:
             client = create_embedding_client("openai", "text-embedding-3-small")
-        except ValueError as exc:  # guardian: allow-broad-exception -- W4 P4.2: create_embedding_client raises ValueError on unsupported provider OR transitively from register_embedding_client (empty name); log and re-raise for caller remediation
+        except ValueError as exc:  # guardian: allow-double-logging -- W4 P4.2: create_embedding_client raises ValueError on unsupported provider OR transitively from register_embedding_client (empty name); log context for remediation, re-raise for caller to decide final log format
             Logger.error(
                 "openai_embedding_factory_value_error: factory rejected OpenAI provider/model: %s",
                 exc,
