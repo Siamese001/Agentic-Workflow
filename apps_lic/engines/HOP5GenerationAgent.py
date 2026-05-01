@@ -16,6 +16,11 @@ from apps_lic.types.TraceRegistry import TraceRegistry
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
+# W1-P3: per-(archetype, section) temperature adjustment. Wires
+# MessagePlanner.temperature_adjustments through to the LLM call sites
+# in K.3 and K.5A. See apps_lic/engines/section_temperature_resolver.py.
+from apps_lic.engines.section_temperature_resolver import resolve_section_temperature
+
 
 @dataclass
 class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
@@ -89,7 +94,9 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
             body_data = self._run_k3_body_generation(hop1, hop2, registry)
 
             # K.5A: Bullet Generation with 3V-3T-1S Provenance
-            bullet_data = self._run_k5a_bullet_generation(hop3, hop2, registry)
+            bullet_data = self._run_k5a_bullet_generation(
+                hop3, hop2, registry, archetype=archetype
+            )
 
             # K.5: CTA Generation (Route-Specific Constraints)
             cta_data = self._run_k5_cta_generation(hop4, registry)
@@ -215,7 +222,14 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
             prompt = self._construct_prompt(
                 hop1, hop2, {}, {"route": "INMAIL", "constraints": {"char_limit": 500}}
             )
-            response = self._run_async(self.llm.generate(prompt, temperature=0.5))
+            # W1-P3: hook-section temperature derived from archetype.
+            # Default base 0.5 preserved; resolver applies per-archetype delta.
+            hook_temp = resolve_section_temperature(archetype, "hook", 0.5)
+            registry.add_trace(
+                "K3_TEMPERATURE_RESOLVED",
+                {"section": "hook", "archetype": archetype, "temperature": hook_temp},
+            )
+            response = self._run_async(self.llm.generate(prompt, temperature=hook_temp))
             body_parts.append(f"\n{response.strip()}")
         else:
             body_parts.append("\nYour strategic initiatives align well with our capabilities.")
@@ -227,13 +241,26 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
 
         return {"text": body_text, "transition_phrase": transition}
 
-    def _run_k5a_bullet_generation(self, hop3: dict, hop2: dict, registry: TraceRegistry) -> dict:
+    def _run_k5a_bullet_generation(
+        self,
+        hop3: dict,
+        hop2: dict,
+        registry: TraceRegistry,
+        *,
+        archetype: str = "OTHER",
+    ) -> dict:
         """
         K.5A: Bullet Generation with 3V-3T-1S Provenance Distribution.
 
         V = Verbatim (from sender profile)
         T = Transformed (research insights)
         S = Synthetic (LLM generated)
+
+        Args:
+            archetype: W1-P3 — drives per-(archetype, section="value")
+                temperature adjustment on the synthetic-bullet LLM call.
+                Default "OTHER" preserves pre-W1-P3 behaviour for callers
+                that do not pass it.
 
         Returns dict with 'bullets' list and 'labels' list.
         """
@@ -272,9 +299,22 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
         if self.llm:
             try:
                 prompt = "Generate a single compelling value proposition in 5-7 words."
-                synthetic = self._run_async(self.llm.generate(prompt, temperature=0.7))
+                # W1-P3: value-section temperature tuned per archetype.
+                # Base 0.7 preserves the original default for "OTHER".
+                value_temp = resolve_section_temperature(archetype, "value", 0.7)
+                registry.add_trace(
+                    "K5A_TEMPERATURE_RESOLVED",
+                    {
+                        "section": "value",
+                        "archetype": archetype,
+                        "temperature": value_temp,
+                    },
+                )
+                synthetic = self._run_async(
+                    self.llm.generate(prompt, temperature=value_temp)
+                )
                 bullets.append(f"• {synthetic.strip()}")
-            except:
+            except (RuntimeError, ValueError, TimeoutError, ConnectionError):  # guardian: allow-log-and-swallow -- LLM failure falls back to static bullet
                 bullets.append("• Innovative partnership opportunities")
         else:
             bullets.append("• Innovative partnership opportunities")
