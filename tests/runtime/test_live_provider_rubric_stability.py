@@ -89,7 +89,7 @@ class TestFullReportIsJsonSerializable:
         stub = _make_stub_veto(VetoStatus.SAFE)
 
         # Patch LLMJudgeVeto constructor to return our stub
-        def fake_ctor(provider, temperature=0.0):
+        def fake_ctor(provider, temperature=0.0, **kwargs):
             s = stub
             s.is_available = lambda: True
             return s
@@ -109,6 +109,62 @@ class TestFullReportIsJsonSerializable:
         for run in report["runs"]:
             assert "is_error" in run
             assert "error" not in run
+
+
+class TestVetoTimeoutBudget:
+    """W2B_VETO_TIMEOUT_MS env override must propagate to both the
+    stability PASS threshold AND the veto's internal request timeout.
+
+    Precedent: 2026-05-01 Scenario A run against 32B AWQ timed out at
+    every run because DEFAULT_TIMEOUT_MS=2000 was tighter than the
+    model's ~7.5s response latency. Hardcoded budgets are not
+    certifiable when the target model changes.
+    """
+
+    def test_default_budget_is_10s(self, monkeypatch):
+        # Module-level constant captures env at import time; reload to
+        # re-evaluate after clearing the override.
+        import importlib
+        monkeypatch.delenv("W2B_VETO_TIMEOUT_MS", raising=False)
+        importlib.reload(P)
+        assert P.STABILITY_TIMEOUT_MS == 10000
+
+    def test_env_override_raises_budget(self, monkeypatch):
+        import importlib
+        monkeypatch.setenv("W2B_VETO_TIMEOUT_MS", "15000")
+        importlib.reload(P)
+        assert P.STABILITY_TIMEOUT_MS == 15000
+        # Restore default for other tests
+        monkeypatch.delenv("W2B_VETO_TIMEOUT_MS", raising=False)
+        importlib.reload(P)
+
+    def test_veto_receives_matching_timeout(self, monkeypatch):
+        """run_stability_probe must pass the same budget to LLMJudgeVeto
+        that it uses in _evaluate_stability — otherwise the veto times
+        out before reaching the probe's PASS threshold."""
+        import importlib
+        monkeypatch.setenv("W2B_VETO_TIMEOUT_MS", "12000")
+        importlib.reload(P)
+
+        captured = {}
+        orig_ctor = P.LLMJudgeVeto
+
+        def fake_ctor(**kwargs):
+            captured.update(kwargs)
+            inst = orig_ctor.__new__(orig_ctor)
+            inst.__init__(**kwargs)
+            # Force unavailable so we do not actually hit an endpoint
+            inst.is_available = lambda: False
+            return inst
+
+        monkeypatch.setattr(P, "LLMJudgeVeto", fake_ctor)
+        P.run_stability_probe("local_qwen")
+        assert captured.get("timeout_ms") == 12000, (
+            f"run_stability_probe must pass timeout_ms=STABILITY_TIMEOUT_MS "
+            f"to LLMJudgeVeto; got {captured.get('timeout_ms')!r}"
+        )
+        monkeypatch.delenv("W2B_VETO_TIMEOUT_MS", raising=False)
+        importlib.reload(P)
 
 
 class TestEvaluateStabilityHandlesNewSchema:

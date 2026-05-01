@@ -124,15 +124,20 @@ def _build_c_primary_allow_orchestrator() -> tuple[VetoOrchestrator | None, str]
     """
     # 1. local_qwen — model_id is discovered at runtime from /v1/models
     # so the attestation binds the actually-serving model. NEVER hardcode.
+    # timeout_ms honors W2B_VETO_TIMEOUT_MS (default 10000); sized by the
+    # operator for the model's tokens-per-second (32B AWQ ~7.5s, 7B <2s).
+    veto_timeout_ms = int(os.environ.get("W2B_VETO_TIMEOUT_MS", "10000"))
     qwen_stage = LLMJudgeVeto(provider="local_qwen",
-                              rubric_path=DEFAULT_RUBRIC_PATH)
+                              rubric_path=DEFAULT_RUBRIC_PATH,
+                              timeout_ms=veto_timeout_ms)
     if qwen_stage.is_available():
         return VetoOrchestrator(stages=[qwen_stage]), "local_qwen"
     # 2. anthropic_haiku — model_id pinned inside LLMJudgeVeto per provider
     # default (claude-3-haiku-20240307); no probe-side hardcoding needed.
     if os.environ.get("ANTHROPIC_API_KEY"):
         anthropic_stage = LLMJudgeVeto(provider="anthropic_haiku",
-                                       rubric_path=DEFAULT_RUBRIC_PATH)
+                                       rubric_path=DEFAULT_RUBRIC_PATH,
+                                       timeout_ms=veto_timeout_ms)
         return VetoOrchestrator(stages=[anthropic_stage]), "anthropic_haiku"
     # Neither available.
     return None, "NONE_AVAILABLE"

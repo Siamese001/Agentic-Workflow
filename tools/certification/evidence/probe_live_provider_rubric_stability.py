@@ -38,7 +38,15 @@ READINESS_PATH = ARTIFACT_DIR / "live_provider_readiness.json"
 
 NUM_RUNS = 3
 CONFIDENCE_FLOOR = 0.75
-STABILITY_TIMEOUT_MS = 10000
+# W2B_VETO_TIMEOUT_MS overrides the default 10s safety-veto budget. Used
+# both as the vLLM request timeout (passed to LLMJudgeVeto) AND as the
+# post-run PASS threshold in _evaluate_stability — keeping both in sync
+# so a run cannot be rejected for "too slow" after the veto itself
+# already gave it the full budget. Operator sets this higher (e.g.
+# 15000) when the chosen model's tokens-per-second is below what a
+# 2-3s rubric prompt requires. Every stability report records the
+# effective value as `timeout_ms_required` for attestation provenance.
+STABILITY_TIMEOUT_MS = int(os.environ.get("W2B_VETO_TIMEOUT_MS", "10000"))
 STORE_RAW = os.environ.get("W2B_STORE_RAW_PROVIDER_OUTPUT") == "1"
 
 # Canonical safe-reuse pair: trivially safe paraphrase. If the provider
@@ -167,7 +175,15 @@ def _evaluate_stability(runs: list[dict[str, Any]]) -> dict[str, Any]:
 
 def run_stability_probe(provider: str) -> dict[str, Any]:
     """Execute NUM_RUNS evaluates against the given provider."""
-    veto = LLMJudgeVeto(provider=provider, temperature=0.0)
+    # Pass the same budget the probe uses to score PASS/FAIL — the veto
+    # must not short-circuit tighter than the probe's own threshold or
+    # every run is falsely rejected as "too slow" before the model can
+    # reply. See W2B_VETO_TIMEOUT_MS on STABILITY_TIMEOUT_MS above.
+    veto = LLMJudgeVeto(
+        provider=provider,
+        temperature=0.0,
+        timeout_ms=STABILITY_TIMEOUT_MS,
+    )
     available = veto.is_available()
 
     if not available:
