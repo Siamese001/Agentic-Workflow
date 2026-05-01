@@ -49,8 +49,14 @@ from agentic_core.runtime.entrypoints.integrated_safe_reuse_run import (
     PRODUCER_COMPONENT,
     run_integrated_safe_reuse,
 )
+from tools.certification.evidence._live_provider_attestation import (
+    APPROVED_PROVIDERS,
+    build_attestation_payload,
+    write_attestation,
+)
 from tools.certification.safety.deterministic_proof_stage import DeterministicProofStage
 from tools.certification.safety.llm_judge_veto import (
+    DEFAULT_RUBRIC_PATH,
     LLMJudgeVeto,
     create_veto_from_policy,
 )
@@ -102,45 +108,34 @@ def _build_c_primary_fail_closed_orchestrator() -> VetoOrchestrator:
     return VetoOrchestrator(stages=[create_veto_from_policy(_policy())])
 
 
-def _build_c_primary_allow_orchestrator() -> tuple[VetoOrchestrator, str]:
-    """Pick the first available SAFE-producing provider for LLMJudgeVeto.
+def _build_c_primary_allow_orchestrator() -> tuple[VetoOrchestrator | None, str]:
+    """Pick the first available approved SAFE-producing provider.
 
-    Order:
-      1. ``anthropic_haiku`` if ``ANTHROPIC_API_KEY`` is set
-      2. ``local_qwen`` if vLLM at localhost:8000 is reachable
-      3. ``mock_safe`` if ``LLMJUDGEVETO_APPROVED_MOCK_SAFE=1``
+    W2b SSOT order (plan § 1):
+      1. ``local_qwen`` if vLLM at localhost:8000 is reachable
+      2. ``anthropic_haiku`` if ``ANTHROPIC_API_KEY`` is set
 
-    Returns (orchestrator, provider_used). If none available, the
-    fallback is a ``mock_safe`` LLMJudgeVeto with ``is_available=False``
-    — the probe will attempt evaluate() and log the gap honestly.
+    ``mock_safe`` is **never** returned from this ladder. It remains
+    behind LLMJUDGEVETO_APPROVED_MOCK_SAFE strictly for unit-test use.
+
+    Returns (orchestrator, provider_used). If neither approved provider
+    is available the orchestrator is ``None`` and the caller treats the
+    allow leg as INFRASTRUCTURE_GAP without attempting a run.
     """
-    from pathlib import Path as _P
-    rubric = _policy().get("llm_judge_config", {}).get(
-        "rubric_path",
-        "tools/certification/safety/rubrics/semantic_cache_equivalence_v1.yaml",
-    )
-    # 1. Anthropic
+    # 1. local_qwen
+    qwen_stage = LLMJudgeVeto(provider="local_qwen",
+                              model_id="Qwen2.5-7B-Instruct",
+                              rubric_path=DEFAULT_RUBRIC_PATH)
+    if qwen_stage.is_available():
+        return VetoOrchestrator(stages=[qwen_stage]), "local_qwen"
+    # 2. anthropic_haiku
     if os.environ.get("ANTHROPIC_API_KEY"):
-        stage = LLMJudgeVeto(provider="anthropic_haiku",
-                             model_id="claude-haiku-4-5",
-                             rubric_path=_P(rubric))
-        return VetoOrchestrator(stages=[stage]), "anthropic_haiku"
-    # 2. local_qwen (probe live)
-    probe_stage = LLMJudgeVeto(provider="local_qwen",
-                               model_id="Qwen2.5-7B-Instruct",
-                               rubric_path=_P(rubric))
-    if probe_stage.is_available():
-        return VetoOrchestrator(stages=[probe_stage]), "local_qwen"
-    # 3. approved mock_safe (opt-in)
-    stage = LLMJudgeVeto(provider="mock_safe",
-                         model_id="mock_safe",
-                         rubric_path=_P(rubric))
-    if stage.is_available():
-        return VetoOrchestrator(stages=[stage]), "mock_safe"
-    # 4. No provider — return a mock_safe stage that will answer SAFE
-    #    anyway, BUT is_available=False means the probe records
-    #    infrastructure_gap and the composer downgrades acceptance.
-    return VetoOrchestrator(stages=[stage]), "NONE_AVAILABLE"
+        anthropic_stage = LLMJudgeVeto(provider="anthropic_haiku",
+                                       model_id="claude-haiku-4-5",
+                                       rubric_path=DEFAULT_RUBRIC_PATH)
+        return VetoOrchestrator(stages=[anthropic_stage]), "anthropic_haiku"
+    # Neither available.
+    return None, "NONE_AVAILABLE"
 
 
 def _build_structural_orchestrator(query: str, cached: str) -> VetoOrchestrator:
@@ -185,15 +180,65 @@ def main() -> int:
         shutil.rmtree(allow_dir)
     allow_orch, allow_provider = _build_c_primary_allow_orchestrator()
     print(f"[probe_integrated_runtime] [c_primary_allow] provider={allow_provider}")
-    a = _run(allow_dir, allow_orch, user_query, namespace)
-    a_manifest = json.loads(
-        (allow_dir / "integrated_runtime_artifact_manifest.json").read_text(encoding="utf-8"))
-    a_match = a_manifest["payload"]["veto_stage_match_status"]
-    a_det = a_manifest["payload"]["deterministic_proof_stage_used"]
-    a_allow = a_manifest["payload"]["safe_reuse_allow"]
-    print(f"[probe_integrated_runtime] [c_primary_allow] match_status={a_match} "
-          f"det_used={a_det} allow={a_allow} x3={a.x3_disposition} "
-          f"outcome={a.gate_verdict_bundle.veto_outcome.value}")
+
+    a = None
+    a_match = "UNAVAILABLE"
+    a_det = False
+    a_allow = False
+    a_x3 = None
+    a_invoke_count = 0
+    attestation_written = False
+    attestation_path_rel: str | None = None
+
+    if allow_orch is not None:
+        a = _run(allow_dir, allow_orch, user_query, namespace)
+        a_manifest = json.loads(
+            (allow_dir / "integrated_runtime_artifact_manifest.json").read_text(encoding="utf-8"))
+        a_match = a_manifest["payload"]["veto_stage_match_status"]
+        a_det = a_manifest["payload"]["deterministic_proof_stage_used"]
+        a_allow = a_manifest["payload"]["safe_reuse_allow"]
+        a_x3 = a.x3_disposition
+        a_invoke_count = a_manifest["payload"].get("llm_judge_invocation_count", 0)
+        print(f"[probe_integrated_runtime] [c_primary_allow] match_status={a_match} "
+              f"det_used={a_det} allow={a_allow} x3={a_x3} "
+              f"outcome={a.gate_verdict_bundle.veto_outcome.value}")
+
+        # Attestation — written only when the allow run actually succeeded
+        # AND the provider is approved. No mock_safe path ever reaches here.
+        allow_succeeded = (
+            a_match == "PASS" and not a_det and a_allow is True and a_x3 == "X3D"
+        )
+        if allow_succeeded and allow_provider in APPROVED_PROVIDERS:
+            veto_provenance = a_manifest["payload"].get("veto_provenance", {}) or {}
+            model_id = {
+                "local_qwen": "Qwen2.5-7B-Instruct",
+                "anthropic_haiku": "claude-haiku-4-5",
+            }[allow_provider]
+            attestation_payload = build_attestation_payload(
+                provider=allow_provider,
+                model_id=model_id,
+                model_version=veto_provenance.get("model_version") or model_id,
+                rubric_path=DEFAULT_RUBRIC_PATH,
+                raw_response=str(veto_provenance.get("raw_response", "")),
+                response_hash_mode="paraphrase_tolerant",
+                verdict="SAFE",
+                confidence=float(veto_provenance.get("confidence", 0.0) or 0.0),
+                latency_ms=float(veto_provenance.get("latency_ms", 0.0) or 0.0),
+                llm_judge_invocation_count=a_invoke_count,
+                veto_stage_class="LLMJudgeVeto",
+                deterministic_proof_stage_used=False,
+                x3_disposition=a_x3,
+                safe_reuse_allow=True,
+            )
+            ap = write_attestation(allow_dir, attestation_payload)
+            attestation_written = True
+            attestation_path_rel = str(ap.relative_to(REPO_ROOT))
+            print(f"[probe_integrated_runtime] attestation written: {attestation_path_rel}")
+    else:
+        print("[probe_integrated_runtime] [c_primary_allow] no approved provider "
+              "available — INFRASTRUCTURE_GAP (honest non-green)")
+        # Ensure the dir exists so downstream tooling finds a placeholder
+        allow_dir.mkdir(parents=True, exist_ok=True)
 
     # ── 2. c_primary_fail_closed ─────────────────────────────────
     fc_dir = ARTIFACT_ROOT / "c_primary_fail_closed"
@@ -226,38 +271,46 @@ def main() -> int:
     latest = ARTIFACT_ROOT / "latest"
     if latest.exists() and latest.is_dir():
         shutil.rmtree(latest)
-    shutil.copytree(allow_dir, latest)
+    if allow_dir.exists() and any(allow_dir.iterdir()):
+        shutil.copytree(allow_dir, latest)
 
     # ── 5. Path-proof classification ledger ──────────────────────
     #   ALLOW path PASS requires: match_status=PASS + det_used=False
-    #                             + allow=True + x3=X3D
+    #                             + allow=True + x3=X3D + attestation written
+    #                             + provider in APPROVED_PROVIDERS
     #   FAIL-CLOSED path PASS requires: match_status=PASS + det_used=False
     #                             + allow=False + fail_closed_count>=1
-    allow_pass = (a_match == "PASS" and not a_det and a_allow is True
-                  and a.x3_disposition == "X3D")
+    allow_pass = (
+        a is not None
+        and a_match == "PASS" and not a_det and a_allow is True
+        and a_x3 == "X3D"
+        and attestation_written
+        and allow_provider in APPROVED_PROVIDERS
+    )
     fc_pass = (f_match == "PASS" and not f_det
                and f.safe_reuse_decision.allow is False
                and int(f_counters.get("fail_closed_count", 0)) >= 1)
 
     path_proofs = {
-        "schema_version": 1,
+        "schema_version": 2,
         "c_primary_allow": {
             "dir": str(allow_dir.relative_to(REPO_ROOT)),
             "provider_attempted": allow_provider,
             "match_status": a_match,
             "deterministic_proof_stage_used": a_det,
             "safe_reuse_allow": a_allow,
-            "x3_disposition": a.x3_disposition,
-            "llm_judge_invocation_count": a_manifest["payload"]["llm_judge_invocation_count"],
+            "x3_disposition": a_x3,
+            "llm_judge_invocation_count": a_invoke_count,
+            "attestation_written": attestation_written,
+            "attestation_path": attestation_path_rel,
             "pass": allow_pass,
             "infrastructure_gap_reason": (
                 f"no live approved SAFE-producing provider available "
                 f"(tried={allow_provider}). For RTC-REQ-056 certification "
-                "acceptance, a LIVE approved provider is required: set "
-                "ANTHROPIC_API_KEY for anthropic_haiku, OR run local_qwen "
-                "at localhost:8000. LLMJUDGEVETO_APPROVED_MOCK_SAFE is "
-                "MOCK_PROVIDER_ONLY (tests / topology validation) and is "
-                "NOT authorized for final certification acceptance."
+                "acceptance, a LIVE approved provider is required: "
+                "local_qwen at localhost:8000, OR set ANTHROPIC_API_KEY for "
+                "anthropic_haiku. mock_safe is MOCK_PROVIDER_ONLY and is "
+                "NEVER authorized for final certification acceptance."
             ) if not allow_pass else "",
         },
         "c_primary_fail_closed": {
