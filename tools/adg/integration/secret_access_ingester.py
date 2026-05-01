@@ -95,7 +95,7 @@ def ingest(sqlite_path: Path, *, use_seed: bool = True) -> int:
     if not records and use_seed:
         records = SEED_RECORDS
 
-    secret_node_path = "agentic_core/runtime/secrets/__virtual_secret_target__"
+    secret_node_path = "agentic_core/runtime/secrets/__virtual_secret_target__"  # guardian: allow-hardcoded-secret -- virtual ADG node path identifier, not a secret value; used as graph node key only
     inserted = 0
     with sqlite3.connect(sqlite_path) as con:
         cur = con.cursor()

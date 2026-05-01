@@ -1,8 +1,8 @@
 {
   "gate": "G-SCHEMA-GRADUATION-READINESS",
   "tier": "B",
-  "advisory_mode": false,
-  "snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-5700\\test_gate_passes_when_clean0\\clean.sqlite",
+  "advisory_mode": true,
+  "snapshot": "artifacts\\adg\\adg_indexed_04302026_2050.sqlite",
   "status": "ready",
   "needs_graduation": [
     "bucket",
@@ -18,5 +18,5 @@
     "authority": 0
   },
   "blockers": [],
-  "timestamp": "2026-04-30T23:13:19.938965+00:00"
+  "timestamp": "2026-05-01T00:57:28.690296+00:00"
 }

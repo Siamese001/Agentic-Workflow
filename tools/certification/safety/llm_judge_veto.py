@@ -1,0 +1,413 @@
+"""W1 Phase 5 — Wave C-C.1: LLM-Judge Veto (Option C primary).
+
+Layer 2 safety veto using a lightweight LLM as judge.
+Escalation-only: called only for action-sensitive or high lexical-overlap cases.
+Fail-closed on timeout, parse error, or any exception.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+# Add repo root to path for imports
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from tools.certification.safety.veto_protocol import VetoResult, VetoStage, VetoStatus
+
+DEFAULT_RUBRIC_PATH = REPO_ROOT / "config" / "certification" / "llm_judge_rubric.md"
+DEFAULT_TIMEOUT_MS = 2000
+DEFAULT_TEMPERATURE = 0.0
+
+
+class LLMJudgeVeto:
+    """LLM-as-judge veto stage for semantic cache safety.
+    
+    Implements the VetoStage Protocol with fail-closed behavior.
+    """
+    
+    def __init__(
+        self,
+        provider: str = "local_qwen",
+        model_id: str = "Qwen2.5-7B-Instruct",
+        rubric_path: Path | None = None,
+        timeout_ms: int = DEFAULT_TIMEOUT_MS,
+        temperature: float = DEFAULT_TEMPERATURE,
+        max_input_tokens: int = 4096,
+    ):
+        self._provider = provider
+        self._model_id = model_id
+        self._rubric_path = rubric_path or DEFAULT_RUBRIC_PATH
+        self._timeout_ms = timeout_ms
+        self._temperature = temperature
+        self._max_input_tokens = max_input_tokens
+        self._rubric = None
+        self._client = None
+        
+    @property
+    def name(self) -> str:
+        return f"llm_judge_{self._provider}"
+    
+    def _load_rubric(self) -> str:
+        """Load the judge rubric from disk."""
+        if self._rubric is None:
+            if not self._rubric_path.exists():
+                # Fallback rubric if file not yet created
+                return self._default_rubric()
+            self._rubric = self._rubric_path.read_text(encoding="utf-8")
+        return self._rubric
+    
+    def _default_rubric(self) -> str:
+        """Default rubric when file not present (Wave C-C.2 creates the real one)."""
+        return """You are a safety judge for semantic cache reuse.
+
+Given:
+- Query: {query}
+- Cached query: {cached_query}
+- Cached answer: {cached_answer}
+
+Task: Determine if it's safe to reuse the cached answer for the new query.
+
+Classify into exactly one of:
+- SAFE: Semantic equivalence, same user intent, safe to reuse
+- UNSAFE_DIFFERENT_INTENT: Different or opposite intent (e.g., enable vs disable, add vs remove)
+- UNSAFE_POLICY_DRIFT: Policy, tenant, or freshness violation
+- UNCERTAIN: Ambiguous, insufficient confidence
+
+Return ONLY valid JSON:
+{"verdict": "SAFE|UNSAFE_DIFFERENT_INTENT|UNSAFE_POLICY_DRIFT|UNCERTAIN", "confidence": 0.0-1.0, "rationale": "brief explanation"}
+
+Fail-closed: any other response format must be treated as UNSAFE."""
+    
+    def _is_escalation_warranted(
+        self,
+        query: str,
+        cached_query: str,
+        context: dict[str, Any] | None,
+    ) -> bool:
+        """Determine if this query warrants LLM-judge escalation.
+        
+        Escalation triggers:
+        - action_sensitive flag in context
+        - policy_sensitive flag in context
+        - high lexical overlap (>80% token overlap) — near-miss risk
+        """
+        if context:
+            if context.get("action_sensitive"):
+                return True
+            if context.get("policy_sensitive"):
+                return True
+        
+        # Check lexical overlap (simple token-based)
+        query_tokens = set(query.lower().split())
+        cached_tokens = set(cached_query.lower().split())
+        if not query_tokens or not cached_tokens:
+            return False
+        
+        intersection = query_tokens & cached_tokens
+        overlap_ratio = len(intersection) / max(len(query_tokens), len(cached_tokens))
+        
+        # Escalate if >80% overlap (near-miss territory)
+        if overlap_ratio > 0.8:
+            return True
+        
+        return False
+    
+    def _build_prompt(
+        self,
+        query: str,
+        cached_query: str,
+        cached_answer: str | None,
+    ) -> str:
+        """Build the judge prompt from rubric template.
+
+        Uses literal placeholder substitution (not str.format) so JSON example
+        braces in the rubric body do not break templating.
+        """
+        rubric = self._load_rubric()
+
+        # Escape JSON-breaking characters in inputs
+        safe_query = json.dumps(query)[1:-1]
+        safe_cached = json.dumps(cached_query)[1:-1]
+        safe_answer = json.dumps(cached_answer or "N/A")[1:-1]
+
+        # Literal replacement avoids str.format() treating JSON examples
+        # (e.g. {"verdict": ...}) as format fields.
+        prompt = (
+            rubric
+            .replace("{query}", safe_query)
+            .replace("{cached_query}", safe_cached)
+            .replace("{cached_answer}", safe_answer)
+        )
+        return prompt
+    
+    def _call_local_qwen(self, prompt: str) -> dict[str, Any]:
+        """Call local Qwen model via appropriate API."""
+        # Try vLLM first (preferred per local-llm-wsl2-gpu.md)
+        try:
+            import openai
+            client = openai.OpenAI(
+                base_url="http://localhost:8000/v1",
+                api_key="not-needed",
+            )
+            response = client.chat.completions.create(
+                model=self._model_id,
+                messages=[
+                    {"role": "system", "content": "You are a safety judge. Respond only with valid JSON."},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=self._temperature,
+                max_tokens=256,
+                timeout=self._timeout_ms / 1000,
+            )
+            return {
+                "raw": response.choices[0].message.content,
+                "latency_ms": 0,  # measured externally
+            }
+        except Exception as e:
+            return {"error": f"vLLM call failed: {e}"}
+    
+    def _call_anthropic_haiku(self, prompt: str) -> dict[str, Any]:
+        """Call Anthropic Haiku API."""
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+            response = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=256,
+                temperature=self._temperature,
+                system="You are a safety judge. Respond only with valid JSON.",
+                messages=[{"role": "user", "content": prompt}],
+                timeout=self._timeout_ms,
+            )
+            return {
+                "raw": response.content[0].text,
+                "latency_ms": 0,
+            }
+        except Exception as e:
+            return {"error": f"Anthropic call failed: {e}"}
+    
+    def _call_mock(self, prompt: str) -> dict[str, Any]:
+        """Mock provider for testing — returns SAFE with low confidence."""
+        return {
+            "raw": json.dumps({
+                "verdict": "UNCERTAIN",
+                "confidence": 0.5,
+                "rationale": "Mock provider — no real LLM available",
+            }),
+            "latency_ms": 1.0,
+        }
+    
+    def _parse_verdict(self, raw: str) -> tuple[VetoStatus, float, str]:
+        """Parse LLM response into VetoStatus.
+        
+        Returns:
+            (status, confidence, rationale)
+        """
+        # Extract JSON from response (handle markdown code blocks)
+        json_match = re.search(r'```json\s*(\{.*?\})\s*```', raw, re.DOTALL)
+        if json_match:
+            raw = json_match.group(1)
+        else:
+            # Try to find bare JSON object
+            json_match = re.search(r'\{[^}]*"verdict"[^}]*\}', raw, re.DOTALL)
+            if json_match:
+                raw = json_match.group(0)
+        
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as e:
+            return VetoStatus.ERROR, 0.0, f"JSON parse error: {e}"
+        
+        verdict = parsed.get("verdict", "UNCERTAIN").upper()
+        confidence = float(parsed.get("confidence", 0.0))
+        rationale = parsed.get("rationale", "")
+        
+        status_map = {
+            "SAFE": VetoStatus.SAFE,
+            "UNSAFE_DIFFERENT_INTENT": VetoStatus.UNSAFE_DIFFERENT_INTENT,
+            "UNSAFE_POLICY_DRIFT": VetoStatus.UNSAFE_POLICY_DRIFT,
+            "UNSAFE": VetoStatus.VETO,
+            "UNCERTAIN": VetoStatus.UNKNOWN,
+            "VETO": VetoStatus.VETO,
+        }
+        
+        status = status_map.get(verdict, VetoStatus.UNKNOWN)
+        return status, confidence, rationale
+    
+    def is_available(self) -> bool:
+        """Check if the configured provider is available."""
+        if self._provider == "mock":
+            return True
+        if self._provider == "local_qwen":
+            # Check if vLLM or similar is running
+            try:
+                import urllib.request
+                urllib.request.urlopen(
+                    "http://localhost:8000/v1/models",
+                    timeout=2,
+                )
+                return True
+            except Exception:
+                return False
+        if self._provider == "anthropic_haiku":
+            return bool(os.environ.get("ANTHROPIC_API_KEY"))
+        return False
+    
+    def evaluate(
+        self,
+        query: str,
+        cached_query: str,
+        cached_answer: str | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> VetoResult:
+        """Evaluate cache reuse safety via LLM judge.
+        
+        Implements VetoStage Protocol with fail-closed behavior.
+        """
+        start_time = time.perf_counter()
+        
+        # Check escalation criteria
+        if not self._is_escalation_warranted(query, cached_query, context):
+            # Fast path: no escalation needed — delegate (let lower layer decide)
+            # Actually for Layer 2 primary, we should still evaluate if called
+            # Escalation-only just means we only CALL this stage when warranted
+            pass  # Continue to evaluation
+        
+        # Build prompt
+        try:
+            prompt = self._build_prompt(query, cached_query, cached_answer)
+        except Exception as e:
+            return VetoResult.error(
+                stage_name=self.name,
+                error=f"Prompt building failed: {e}",
+                latency_ms=(time.perf_counter() - start_time) * 1000,
+            )
+        
+        # Call provider with timeout handling
+        try:
+            if self._provider == "local_qwen":
+                response = self._call_local_qwen(prompt)
+            elif self._provider == "anthropic_haiku":
+                response = self._call_anthropic_haiku(prompt)
+            elif self._provider == "mock":
+                response = self._call_mock(prompt)
+            else:
+                return VetoResult.error(
+                    stage_name=self.name,
+                    error=f"Unknown provider: {self._provider}",
+                    latency_ms=(time.perf_counter() - start_time) * 1000,
+                )
+        except Exception as e:
+            return VetoResult.error(
+                stage_name=self.name,
+                error=f"Provider call exception: {e}",
+                latency_ms=(time.perf_counter() - start_time) * 1000,
+            )
+        
+        latency_ms = (time.perf_counter() - start_time) * 1000
+        
+        # Check timeout
+        if latency_ms > self._timeout_ms:
+            return VetoResult.error(
+                stage_name=self.name,
+                error=f"Timeout: {latency_ms:.0f}ms > {self._timeout_ms}ms limit",
+                latency_ms=latency_ms,
+            )
+        
+        # Check provider error
+        if "error" in response:
+            return VetoResult.error(
+                stage_name=self.name,
+                error=response["error"],
+                latency_ms=latency_ms,
+            )
+        
+        # Parse verdict
+        raw = response.get("raw", "")
+        status, confidence, rationale = self._parse_verdict(raw)
+        
+        # Build result
+        if status == VetoStatus.ERROR:
+            return VetoResult.error(
+                stage_name=self.name,
+                error=rationale or "Parse error",
+                latency_ms=latency_ms,
+            )
+        
+        if status == VetoStatus.UNKNOWN:
+            return VetoResult.unknown(
+                stage_name=self.name,
+                reason=rationale or "Uncertain verdict",
+                latency_ms=latency_ms,
+            )
+        
+        if status == VetoStatus.SAFE:
+            return VetoResult.safe(
+                stage_name=self.name,
+                confidence=confidence,
+                rationale=rationale,
+                latency_ms=latency_ms,
+                metadata={
+                    "provider": self._provider,
+                    "model_id": self._model_id,
+                    "raw_response": raw[:500],  # truncated for logging
+                },
+            )
+        
+        # Any blocking status
+        return VetoResult(
+            status=status,
+            stage_name=self.name,
+            confidence=confidence,
+            rationale=f"{self.name}: {status.value} — {rationale}",
+            latency_ms=latency_ms,
+            metadata={
+                "provider": self._provider,
+                "model_id": self._model_id,
+                "raw_response": raw[:500],
+            },
+        )
+
+
+def create_veto_from_policy(policy: dict[str, Any]) -> LLMJudgeVeto:
+    """Factory: create LLMJudgeVeto from veto policy JSON."""
+    config = policy.get("llm_judge_config", {})
+    return LLMJudgeVeto(
+        provider=config.get("provider", "mock"),
+        model_id=config.get("model_id", "mock"),
+        rubric_path=Path(config.get("rubric_path", DEFAULT_RUBRIC_PATH)),
+        timeout_ms=config.get("max_latency_ms", DEFAULT_TIMEOUT_MS),
+        temperature=config.get("temperature", DEFAULT_TEMPERATURE),
+        max_input_tokens=config.get("max_input_tokens", 4096),
+    )
+
+
+# Module-level instance for import convenience (uses policy file if present)
+_default_veto: LLMJudgeVeto | None = None
+
+
+def get_default_veto() -> LLMJudgeVeto:
+    """Get or create the default LLMJudgeVeto from policy file."""
+    global _default_veto
+    if _default_veto is None:
+        policy_path = (
+            REPO_ROOT
+            / "artifacts"
+            / "certification"
+            / "semantic_cache_veto_policy.json"
+        )
+        if policy_path.exists():
+            policy = json.loads(policy_path.read_text(encoding="utf-8"))
+            _default_veto = create_veto_from_policy(policy)
+        else:
+            # Fallback to mock provider if no policy
+            _default_veto = LLMJudgeVeto(provider="mock")
+    return _default_veto

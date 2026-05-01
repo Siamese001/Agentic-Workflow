@@ -169,7 +169,7 @@ def main() -> int:
 
     _write_json(COUNT_RECEIPT, receipt)
 
-    print(f"[verify_matrix] PASS: 86 rows, sha256={result.csv_sha256[:12]}")
+    print(f"[verify_matrix] PASS: {result.row_count} rows, sha256={result.csv_sha256[:12]}")
     print(f"[verify_matrix] wrote: {UNIVERSE_MANIFEST.relative_to(REPO_ROOT)}")
     print(f"[verify_matrix] wrote: {COUNT_RECEIPT.relative_to(REPO_ROOT)}")
     return 0

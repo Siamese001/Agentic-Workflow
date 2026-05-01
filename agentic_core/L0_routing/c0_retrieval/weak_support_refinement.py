@@ -645,7 +645,7 @@ def seal_ledger(ledger: RefinementAttemptLedger) -> RefinementAttemptLedger:
     if ledger.ledger_hash:
         return ledger
     h = compute_ledger_hash(ledger)
-    fields_dict = {f: getattr(ledger, f) for f in ledger.__dataclass_fields__}
+    fields_dict = {f: getattr(ledger, f) for f in ledger.__dataclass_fields__}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads frozen dataclass fields by name
     fields_dict["ledger_hash"] = h
     return RefinementAttemptLedger(**fields_dict)
 

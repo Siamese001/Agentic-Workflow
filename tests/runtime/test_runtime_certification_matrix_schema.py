@@ -102,9 +102,10 @@ class TestRowCount:
         result = load_matrix()
         assert result.row_count == CANONICAL_REQUIREMENT_COUNT
 
-    def test_canonical_count_is_86(self):
-        # If this fails the CSV was modified — confirm intentionally
-        assert CANONICAL_REQUIREMENT_COUNT == 86
+    def test_canonical_count_is_87(self):
+        # W1p6: incremented to 87 on addition of RTC-REQ-059 (safe-reuse
+        # composite). If this fails the CSV was modified — confirm intentionally.
+        assert CANONICAL_REQUIREMENT_COUNT == 87
 
 
 class TestDuplicateDetection:

@@ -150,7 +150,7 @@ class BaselineRegistry:
             # Best-effort cleanup on failure.
             try:
                 os.unlink(tmp_path)
-            except OSError:
+            except OSError:  # guardian: allow-silent-swallow -- tmp file cleanup on write failure: best-effort unlink; outer OSError is re-raised regardless
                 pass
             raise
 

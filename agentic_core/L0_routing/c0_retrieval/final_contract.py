@@ -314,7 +314,7 @@ def seal_final_contract(
         source_manifest_hash=rm.source_manifest_hash,
     )
     # Use dataclasses.replace via dict route to avoid circular import.
-    fields_dict = {f: getattr(contract, f) for f in contract.__dataclass_fields__}
+    fields_dict = {f: getattr(contract, f) for f in contract.__dataclass_fields__}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads frozen dataclass fields by name
     fields_dict["replay_metadata"] = new_rm
     return FinalEvidenceContract(**fields_dict)
 

@@ -330,12 +330,8 @@ class HotspotIndex:
         """
         all_paths = self._all_modules | set(self._fan_in) | set(self._fan_out)
         scored = [self.metrics(p) for p in all_paths]
-        scored = [
-            m for m in scored if getattr(m, key) >= threshold
-        ]  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin for dynamic field access on Metrics dataclass; detector false positive
-        return sorted(scored, key=lambda m: -getattr(m, key))[
-            :n
-        ]  # guardian: allow-hallucinated-tool-name -- same as above; sort key dynamic access
+        scored = [m for m in scored if getattr(m, key) >= threshold]  # guardian: allow-hallucinated-tool-name -- getattr is a Python stdlib builtin for dynamic field access on Metrics dataclass; detector false positive
+        return sorted(scored, key=lambda m: -getattr(m, key))[:n]  # guardian: allow-hallucinated-tool-name -- same as above; sort key dynamic access
 
     def importers_of(self, module_path: str) -> list[str]:
         """Sorted list of modules that directly depend on module_path."""

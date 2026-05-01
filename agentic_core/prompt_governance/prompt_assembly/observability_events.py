@@ -151,7 +151,7 @@ class EventBuffer:
     def to_dicts(self) -> list[dict[str, Any]]:
         out: list[dict[str, Any]] = []
         for ev in self.events:
-            d = {f: getattr(ev, f) for f in ev.__dataclass_fields__}  # type: ignore[attr-defined]
+            d = {f: getattr(ev, f) for f in ev.__dataclass_fields__}  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads event dataclass fields by name  # type: ignore[attr-defined]
             d["event_type"] = ev.event_type
             out.append(d)
         return out

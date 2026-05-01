@@ -262,7 +262,7 @@ class RuntimeSpanRecorder:
         try:
             yield span_id
             final_status = status
-        except Exception:
+        except Exception:  # guardian: allow-broad-catch -- span context manager: sets ERROR status then re-raises; broad catch required to catch any span body failure
             final_status = "ERROR"
             raise
         finally:

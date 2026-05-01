@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-30T23:12:08.231815+00:00",
+  "timestamp": "2026-05-01T10:09:27.805670+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 417,
+    "total_tests": 419,
     "passed_tests": 0,
-    "failed_tests": 220,
+    "failed_tests": 222,
     "skipped_tests": 197,
     "exit_status": 1,
     "failed_by_category": {
@@ -23,6 +23,8 @@
       "forensic": [],
       "other": [
         "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
+        "tests/runtime/test_integrated_runtime_entrypoint_safe_reuse.py",
+        "tests/runtime/test_integrated_runtime_safe_reuse_veto.py",
         "tests/unit/L1_cognition/test_routing_feature_producer.py",
         "tests/unit/L3_orchestration/test_c0_claim_confidences.py",
         "tests/unit/L3_orchestration/test_claim_confidence_producer.py",

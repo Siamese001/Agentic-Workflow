@@ -437,7 +437,7 @@ class TelemetryKeysV15:
 
     def __post_init__(self) -> None:
         for name in TelemetryKeysV15._FIELDS:
-            _require_nonempty_str(getattr(self, name), f"TelemetryKeysV15.{name}")
+            _require_nonempty_str(getattr(self, name), f"TelemetryKeysV15.{name}")  # guardian: allow-hallucinated-tool-name -- getattr is Python stdlib; reads frozen dataclass field by name for validation
 
 
 @dataclass(frozen=True)

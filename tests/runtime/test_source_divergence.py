@@ -75,7 +75,7 @@ class TestBaselinePass:
         report = json.loads((ARTIFACTS_DIR / "source_divergence_report.json").read_text(encoding="utf-8"))
         assert report["status"] == "PASS"
         assert report["divergences"] == []
-        assert report["baseline_count"] == 86
+        assert report["baseline_count"] == 87  # W1p6: +RTC-REQ-059
 
 
 class TestRowCountMismatch:

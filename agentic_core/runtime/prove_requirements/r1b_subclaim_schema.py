@@ -92,13 +92,29 @@ from typing import Any, Final, Mapping
 # Canonical subclaim catalog
 # ──────────────────────────────────────────────────────────────────────
 
-CORE_SUBCLAIMS: Final[tuple[str, ...]] = (
+# Legacy RTC-REQ-055 gating set — DENSE-ONLY semantic cache reuse proof.
+# Keeps R1B_PRODUCTION_THRESHOLD_PROOF in the gating, so RTC-REQ-055
+# remains PARTIAL/CALIBRATION_GAP until SEMCACHE-THRESH-001 is approved.
+# This preserves the W1p4 finding — see W1p6 migration report.
+LEGACY_RTC_REQ_055_SUBCLAIMS: Final[tuple[str, ...]] = (
     "R1B_DENSE_SIMILARITY_COMPOSITION_PROOF",
     "R1B_APPROVED_MODEL_PROOF",
     "R1B_PRODUCTION_THRESHOLD_PROOF",
     "R1B_POLICY_FRESHNESS_TENANT_REUSE_PROOF",
     "R1B_NEGATIVE_CONTROL_PROOF",
     "R1B_TERMINAL_EXIT_PROOF",
+    # W1p5: layered safety veto proof added to the legacy R1B parent.
+    "R1B_SEMANTIC_CACHE_SAFETY_VETO_PROOF",
+)
+
+# All core subclaims that MUST appear in the sidecar. The composer emits
+# all of these on every run.
+CORE_SUBCLAIMS: Final[tuple[str, ...]] = LEGACY_RTC_REQ_055_SUBCLAIMS + (
+    # W1p6: dense + veto composite "safe reuse" proof. Gates RTC-REQ-059
+    # (new requirement reflecting the approved dense+veto architecture).
+    # Explicitly NOT part of LEGACY_RTC_REQ_055_SUBCLAIMS so dense-only
+    # RTC-REQ-055 remains pinned to its W1p4 CALIBRATION_GAP finding.
+    "R1B_SAFE_REUSE_COMPOSITE_PROOF",
 )
 
 CONDITIONAL_SUBCLAIMS: Final[tuple[str, ...]] = (
@@ -142,28 +158,73 @@ SCOPE_FLAG_TO_CONDITIONAL_SUBCLAIM: Final[Mapping[str, str]] = {
 }
 
 # Row id -> (required_proof_depth, scope_flag, gating_subclaims).
-# RTC-REQ-055 is the always-evaluated R1B parent.
-# 056/057/058 are conditional on their scope flag.
+#   - RTC-REQ-055: legacy dense-only R1B parent. Pinned to
+#     LEGACY_RTC_REQ_055_SUBCLAIMS so the W1p4 CALIBRATION_GAP finding
+#     on R1B_PRODUCTION_THRESHOLD_PROOF is preserved regardless of W1p6
+#     additions.
+#   - RTC-REQ-056/057/058: conditional runtime/OTEL/replay. Also pinned to
+#     the legacy set so W1p6 doesn't retroactively change their gating.
+#   - RTC-REQ-059: NEW. Certifies the approved dense+veto "safe reuse"
+#     architecture. Gated by R1B_SAFE_REUSE_COMPOSITE_PROOF plus the
+#     subclaims that materially feed the composite (model, veto, negatives,
+#     policy/freshness, terminal exit). Does NOT gate on the legacy
+#     R1B_PRODUCTION_THRESHOLD_PROOF because that subclaim is now scoped
+#     to dense-only semantic-equivalence claims, not safe-reuse claims.
 GATED_ROWS: Final[Mapping[str, dict[str, Any]]] = {
     "RTC-REQ-055": {
         "required_proof_depth": "E5_COMPOSITION_PROOF",
-        "scope_flag":           None,  # always evaluated
-        "gating_subclaims":     tuple(CORE_SUBCLAIMS),
+        "scope_flag":           None,
+        "gating_subclaims":     LEGACY_RTC_REQ_055_SUBCLAIMS,
     },
+    # W2 (2026-05-01): RTC-REQ-056 is the integrated-runtime companion row
+    # for the dense+veto SAFE-REUSE composite (the approved architecture).
+    # It mirrors RTC-REQ-059's gating set + the W2 R1B_INTEGRATED_RUNTIME_PROOF.
+    # It does NOT gate on R1B_PRODUCTION_THRESHOLD_PROOF — the W1p4
+    # CALIBRATION_GAP finding remains pinned to RTC-REQ-055 only. RTC-REQ-056
+    # certifies "the safe-reuse architecture (dense+veto) was driven through
+    # a single production integrated-runtime entry point, with the full
+    # artifact chain and all 5 W2 verifiers passing", not "dense-only
+    # semantic equivalence is calibrated".
     "RTC-REQ-056": {
         "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
         "scope_flag":           "runtime_certification_claimed",
-        "gating_subclaims":     tuple(CORE_SUBCLAIMS) + ("R1B_INTEGRATED_RUNTIME_PROOF",),
+        "gating_subclaims":     (
+            "R1B_INTEGRATED_RUNTIME_PROOF",
+            "R1B_SAFE_REUSE_COMPOSITE_PROOF",
+            "R1B_APPROVED_MODEL_PROOF",
+            "R1B_SEMANTIC_CACHE_SAFETY_VETO_PROOF",
+            "R1B_NEGATIVE_CONTROL_PROOF",
+            "R1B_POLICY_FRESHNESS_TENANT_REUSE_PROOF",
+            "R1B_TERMINAL_EXIT_PROOF",
+        ),
     },
     "RTC-REQ-057": {
         "required_proof_depth": "E7_REAL_OTEL_EXPORT",
         "scope_flag":           "observability_certification_claimed",
-        "gating_subclaims":     tuple(CORE_SUBCLAIMS) + ("R1B_REAL_OTEL_PROOF",),
+        "gating_subclaims":     LEGACY_RTC_REQ_055_SUBCLAIMS + ("R1B_REAL_OTEL_PROOF",),
     },
     "RTC-REQ-058": {
         "required_proof_depth": "E8_REPLAY_DETERMINISM",
         "scope_flag":           "replay_certification_claimed",
-        "gating_subclaims":     tuple(CORE_SUBCLAIMS) + ("R1B_REPLAY_PROOF",),
+        "gating_subclaims":     LEGACY_RTC_REQ_055_SUBCLAIMS + ("R1B_REPLAY_PROOF",),
+    },
+    # W1p6: new row certifying the approved dense+veto safe-reuse
+    # architecture. PASS requires the composite subclaim PLUS each of its
+    # material inputs. Legacy R1B_PRODUCTION_THRESHOLD_PROOF is
+    # intentionally absent — its role here is candidate generation, which
+    # the composite subclaim evaluates via the threshold_sweep_results_with_veto
+    # confusion matrix (unsafe_fp_count=0 at configured threshold).
+    "RTC-REQ-059": {
+        "required_proof_depth": "E5_COMPOSITION_PROOF",
+        "scope_flag":           None,
+        "gating_subclaims":     (
+            "R1B_SAFE_REUSE_COMPOSITE_PROOF",
+            "R1B_APPROVED_MODEL_PROOF",
+            "R1B_SEMANTIC_CACHE_SAFETY_VETO_PROOF",
+            "R1B_NEGATIVE_CONTROL_PROOF",
+            "R1B_POLICY_FRESHNESS_TENANT_REUSE_PROOF",
+            "R1B_TERMINAL_EXIT_PROOF",
+        ),
     },
 }
 
@@ -555,6 +616,7 @@ def compute_row_outcomes(
 __all__ = [
     "ALL_SUBCLAIMS",
     "CORE_SUBCLAIMS",
+    "LEGACY_RTC_REQ_055_SUBCLAIMS",
     "CONDITIONAL_SUBCLAIMS",
     "ALLOWED_STATUSES",
     "HARD_BLOCKER_STATUSES",
