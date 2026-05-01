@@ -1,0 +1,40 @@
+# Phase E.1 runtime-certification baseline -- advisory seed.
+#
+# SCOPE
+#   This file declares which apps the Phase E.1 advisory gate at
+#   ops_scripts/ci/check_runtime_certification.py reads evidence for.
+#   Apps absent from this file are INVISIBLE to the gate.
+#
+# NON-CERTIFICATION
+#   This file does NOT certify any app. Every entry pins
+#   expected_runtime_certification_status = "NOT_CERTIFIED" as a
+#   defense-in-depth check against accidental drift. The advisory gate
+#   reads the Phase D cert-decision ledgers in read-only fashion and
+#   returns a build signal, NEVER a certification signal.
+#
+# MODE
+#   mode = "advisory" forbids the CLI --strict flag from taking effect
+#   regardless of who sets it. Flipping to "strict_allowed" requires the
+#   separate E1.W4 Author-Gate.
+#
+# CONSUMERS
+#   - ops_scripts/ci/check_runtime_certification.py
+#   - docs/reports/runtime_cert/phase_e_runs/<YYYY-Www>.md (evidence)
+#
+# REFERENCES
+#   - Phase E.1 plan: .windsurf/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md
+#   - E1.W2 plan:     .windsurf/plans/runtime-cert-e1w2-gate-module-9a4b2e.md
+#   - E1.W3 plan:     .windsurf/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md
+#   - ADR anchor:     docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md
+
+schema_version = "e1-baseline-v1"
+mode = "advisory"
+
+[[apps]]
+app_name = "apps_research"
+route_shape = "R3_grounded_read"
+expected_runtime_certification_status = "NOT_CERTIFIED"
+min_verdict = "hold"
+require_ledger = true
+manifest_hash = ""
+notes = "Initial advisory baseline. Empty manifest_hash skips hash check until stable weekly evidence is available."
