@@ -1,0 +1,23 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- threshold_profile_id: atp::apps_rfp::rfp_response::v1
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: elevated
+  route_id: rfp.rfp_response.default
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: none
+  policy_hash: policy://apps_rfp/v1
+  dimension_minimums:
+    requirement_coverage: 0.95
+    factual_grounding: 0.95
+    compliance_with_rfp_constraints: 0.95
+    competitive_positioning: 0.55
+    win_theme_alignment: 0.55
+    no_fabricated_credentials: 0.99
+    pricing_integrity: 0.99
+  source_app_config_ref: apps_rfp/config/
+  created_at: '2026-05-01'

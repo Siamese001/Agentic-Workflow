@@ -1,0 +1,25 @@
+- threshold_profile_id: atp::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: elevated
+  route_id: "lic.outreach_message.default"
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: required_on_low
+  policy_hash: "policy://apps_lic/v1"
+  dimension_minimums:
+    audience_fit: 0.55
+    personalization_integrity: 0.95
+    offer_clarity: 0.60
+    response_likelihood: 0.0
+    brevity_and_channel_fit: 0.85
+    compliance: 0.95
+    sequence_coherence: 0.0
+    brand_voice: 0.0
+    no_fake_personalization: 0.99
+    no_sensitive_targeting: 0.99
+  source_app_config_ref: "apps_lic/config/lic_thresholds.yaml"
+  created_at: "2026-05-01"

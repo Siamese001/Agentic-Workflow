@@ -1,0 +1,25 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- negative_control_id: aneg::apps_rfp::rfp_response::fabricated_capability
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: no_fabricated_credentials
+  expected_failure_reason: Response claims a certification not in company KB.
+  input_ref: tests/fixtures/apps_rfp/neg_fabricated_capability.json
+  expected_gate_results:
+    no_fabricated_credentials: FAIL
+  source_app_config_ref: apps_rfp/tests/fixtures/
+  created_at: '2026-05-01'
+- negative_control_id: aneg::apps_rfp::rfp_response::missed_requirement
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: requirement_coverage
+  expected_failure_reason: RFP has N requirements; response only addresses N-1.
+  input_ref: tests/fixtures/apps_rfp/neg_missed_requirement.json
+  expected_gate_results:
+    requirement_coverage: FAIL
+  source_app_config_ref: apps_rfp/tests/fixtures/
+  created_at: '2026-05-01'

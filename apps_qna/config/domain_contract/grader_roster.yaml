@@ -1,0 +1,20 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- grader_roster_id: agr::apps_qna::qna_pack_build::v1
+  app_id: apps_qna
+  task_class: qna_pack_build
+  version: 1.0.0
+  status: active
+  fallback_behavior: fail_closed
+  deterministic_graders:
+  - qna::route_fit_grader::v1
+  - qna::factual_grounding_grader::v1
+  - qna::de_duplication_grader::v1
+  - qna::freshness_grader::v1
+  - qna::no_paste_of_forbidden_content_grader::v1
+  llm_judge_graders: []
+  ensemble_or_consensus_graders:
+  - qna::coverage_hybrid::v1
+  calibration_refs:
+  - calibration://apps_qna/judges/2026-04-weekly
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

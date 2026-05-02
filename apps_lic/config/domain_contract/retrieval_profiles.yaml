@@ -1,0 +1,32 @@
+- retrieval_profile_id: arp::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  freshness_class: bounded
+  source_lineage_required: true
+  policy_hash: "policy://apps_lic/v1"
+  allowed_sources:
+    - "verified_company_kb"
+    - "verified_directory_recipient_profile"
+    - "consent_attested_recipient_self_published"
+    - "tenant_sender_voice_profile"
+    - "campaign_kb"
+    - "prior_thread_messages_with_consent"
+  prohibited_sources:
+    - "scraped_personal_blog_unverified"
+    - "private_chat_logs_unconsented"
+    - "social_media_personal_posts_protected"
+    - "data_broker_inferred_attributes"
+    - "company_internal_documents_third_party"
+    - "real_time_open_web_unattested"
+  required_evidence_for:
+    - "every claim in personalization_block"
+    - "every named-entity in opening (mutual contact, event, role, milestone)"
+    - "any reference to a specific recipient action or post"
+  acl_requirements:
+    - "tenant_scoped"
+    - "recipient_consent_artifact_required"
+    - "regional_compliance_check (CAN-SPAM, GDPR, CASL as applicable)"
+  source_app_config_ref: "apps_lic/config/lic_policies.yaml"
+  created_at: "2026-05-01"

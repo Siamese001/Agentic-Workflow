@@ -1,0 +1,22 @@
+# apps_exec Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- threshold_profile_id: atp::apps_exec::brief_assembly::v1
+  app_id: apps_exec
+  task_class: brief_assembly
+  version: 1.0.0
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: standard
+  route_id: exec.brief_assembly.default
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: none
+  policy_hash: policy://apps_exec/v1
+  dimension_minimums:
+    exec_signal_density: 0.6
+    factual_grounding: 0.95
+    concision: 0.8
+    priority_ordering: 0.55
+    no_boilerplate: 0.5
+    decision_clarity: 0.6
+  source_app_config_ref: apps_exec/config/
+  created_at: '2026-05-01'

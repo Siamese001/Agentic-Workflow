@@ -1,0 +1,42 @@
+input_contract_id: aic::apps_lic::outreach_message::v1
+app_id: apps_lic
+task_class: outreach_message
+version: "1.0.0"
+status: active
+missing_input_behavior: fail_closed
+ambiguity_behavior: escalate
+required_inputs:
+  - recipient_profile_verified
+  - sender_profile
+  - channel                       # email | linkedin_inmail | linkedin_chat | sms
+  - campaign_intent
+  - tenant_id
+  - run_id
+optional_inputs:
+  - prior_thread_messages
+  - voice_profile
+  - send_time_window
+  - subject_line_constraints
+forbidden_inputs:
+  - third_party_company_internal_data
+  - inferred_sensitive_attributes
+  - scraped_personal_blog_unverified
+  - private_chat_logs_unconsented
+input_normalization_rules:
+  - "trim_whitespace_in_string_fields"
+  - "lowercase_email_fields"
+  - "normalize_company_name_against_verified_company_kb"
+data_boundary_rules:
+  - "recipient_profile.company must match verified-company KB OR carry origin_trust=verified_directory"
+  - "recipient_profile.role_title must come from verified-directory or recipient self-published"
+  - "consent_artifact_ref must be present and not expired"
+origin_trust_requirements:
+  - "recipient_profile: trust_label in {verified_directory, recipient_self_published, opted_in}"
+  - "sender_profile: trust_label in {tenant_authored, verified_sender}"
+validation_rules:
+  - "recipient_profile.email or linkedin_handle must be present and consent-attested"
+  - "channel in {email, linkedin_inmail, linkedin_chat, sms}"
+  - "sender_profile.identity_verified == true"
+  - "campaign_intent in {introduction, follow_up, response, scheduling, nurture}"
+source_app_config_ref: "apps_lic/config/lic_policies.yaml"
+created_at: "2026-05-01"

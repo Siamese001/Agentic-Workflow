@@ -1,0 +1,42 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- fixture_id: afix::apps_rfp::rfp_response::golden_primary
+  app_id: apps_rfp
+  task_class: rfp_response
+  fixture_type: golden
+  version: 1.0.0
+  status: active
+  input_ref: tests/fixtures/apps_rfp/golden_primary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    requirement_coverage: PASS
+    factual_grounding: PASS
+    compliance_with_rfp_constraints: PASS
+    competitive_positioning: PASS
+    win_theme_alignment: PASS
+    no_fabricated_credentials: PASS
+    pricing_integrity: PASS
+  expected_output_assertions:
+  - required_sections present
+  - every claim in body cites sources_or_evidence
+  source_app_config_ref: apps_rfp/tests/fixtures/
+  created_at: '2026-05-01'
+- fixture_id: afix::apps_rfp::rfp_response::golden_secondary
+  app_id: apps_rfp
+  task_class: rfp_response
+  fixture_type: golden
+  version: 1.0.0
+  status: active
+  input_ref: tests/fixtures/apps_rfp/golden_secondary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    requirement_coverage: PASS
+    factual_grounding: PASS
+    compliance_with_rfp_constraints: PASS
+    competitive_positioning: PASS
+    win_theme_alignment: PASS
+    no_fabricated_credentials: PASS
+    pricing_integrity: PASS
+  expected_output_assertions:
+  - required_sections present
+  source_app_config_ref: apps_rfp/tests/fixtures/
+  created_at: '2026-05-01'

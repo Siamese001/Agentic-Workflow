@@ -1,0 +1,59 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- eval_rubric_id: aer::apps_research::company_brief::v1
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  policy_hash: policy://apps_research/v1
+  score_dimensions:
+  - dimension_id: factual_grounding
+    description: Every claim cites a source.
+    weight: 0.3
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: source_quality
+    description: Sources are authoritative, not aggregator-only.
+    weight: 0.15
+    grader_type: hybrid
+    min_required_score: 0.65
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: freshness
+    description: Sources within freshness_class window.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.85
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: completeness
+    description: All required sections populated.
+    weight: 0.1
+    grader_type: deterministic
+    min_required_score: 0.9
+    evidence_required: false
+    fail_closed_if_unknown: true
+  - dimension_id: balance
+    description: No single-source bias.
+    weight: 0.1
+    grader_type: hybrid
+    min_required_score: 0.55
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: concision
+    description: Respects research_depth budget.
+    weight: 0.05
+    grader_type: deterministic
+    min_required_score: 0.7
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: no_speculation
+    description: No claim presented as fact unless supported.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

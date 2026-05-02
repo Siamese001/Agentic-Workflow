@@ -1,0 +1,24 @@
+- grader_roster_id: agr::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  fallback_behavior: fail_closed
+  deterministic_graders:
+    - "lic::personalization_integrity_grader::v1"
+    - "lic::brevity_channel_fit_grader::v1"
+    - "lic::compliance_grader::v1"
+    - "lic::no_fake_personalization_guardrail::v1"
+    - "lic::no_sensitive_targeting_guardrail::v1"
+  llm_judge_graders:
+    - "lic::response_likelihood_judge::v1"
+    - "lic::brand_voice_judge::v1"
+  ensemble_or_consensus_graders:
+    - "lic::audience_fit_hybrid_v1"
+    - "lic::offer_clarity_hybrid_v1"
+    - "lic::sequence_coherence_hybrid_v1"
+  calibration_refs:
+    - "calibration://apps_lic/judges/2026-04-weekly"
+    - "calibration://apps_lic/response_likelihood/historical_reply_data_v1"
+  source_app_config_ref: "apps_eval/config/rubrics/rub_apps_lic_outreach_v1.yaml"
+  created_at: "2026-05-01"

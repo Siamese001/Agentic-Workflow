@@ -1,0 +1,59 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- eval_rubric_id: aer::apps_rfp::rfp_response::v1
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  policy_hash: policy://apps_rfp/v1
+  score_dimensions:
+  - dimension_id: requirement_coverage
+    description: Every RFP requirement addressed.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: factual_grounding
+    description: Claims cite company KB or past wins.
+    weight: 0.2
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: compliance_with_rfp_constraints
+    description: Page limits, format, required sections per RFP.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: false
+    fail_closed_if_unknown: true
+  - dimension_id: competitive_positioning
+    description: Clear differentiation vs common competitors.
+    weight: 0.1
+    grader_type: hybrid
+    min_required_score: 0.55
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: win_theme_alignment
+    description: Response aligns with identified win themes.
+    weight: 0.1
+    grader_type: llm_as_judge
+    min_required_score: 0.55
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: no_fabricated_credentials
+    description: Every claimed capability/cert is in company KB.
+    weight: 0.1
+    grader_type: deterministic
+    min_required_score: 0.99
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: pricing_integrity
+    description: No unauthorized pricing commitments.
+    weight: 0.1
+    grader_type: deterministic
+    min_required_score: 0.99
+    evidence_required: true
+    fail_closed_if_unknown: true
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

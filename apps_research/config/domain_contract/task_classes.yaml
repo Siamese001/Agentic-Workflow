@@ -1,0 +1,7 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- task_class: company_brief
+  kind: generation
+  description: Generate a sourced, fact-checked company brief from public KB and verified
+    internal sources.
+  risk_tier: standard
+  hitl_required: false
