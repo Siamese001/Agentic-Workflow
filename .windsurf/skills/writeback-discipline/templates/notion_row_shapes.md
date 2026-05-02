@@ -167,7 +167,6 @@ One row per new violation:
 | Database | Database ID | Trigger |
 |---|---|---|
 | Constitutional Rules Registry | `1c1379bc-32ca-4216-898a-3672f0316f69` | Rule added/modified in `.windsurf/rules/` |
-| SVP Engineering Reviews | `6660be70-638e-4698-826a-aa7e8c17d7fd` | SVP review completed on a module |
 | Anti-Pattern Burndown | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | Burndown run or ratchet-ceiling change |
 
 For these, retrieve the live schema via `API-retrieve-a-data-source` (read-only ID from AGENTS.md column 2) before first use, then apply the pattern from §1–§5.

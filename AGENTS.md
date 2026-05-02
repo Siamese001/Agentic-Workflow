@@ -63,7 +63,6 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
 | Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
 | MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
-| SVP Engineering Reviews | `814e26d3-d665-4472-9b92-c7e0f89241d0` | `6660be70-638e-4698-826a-aa7e8c17d7fd` | "SVP review", "module certification", "test pass rate" | On SVP review completion |
 | ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | `6ed25e12-bd92-4352-ac7a-3a971311f024` | "ADR status", "architectural decisions", "which ADRs" | On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename |
 | Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
@@ -71,6 +70,32 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 **Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
 
 <!-- NOTION-MAP:END -->
+
+### Plans DB Status Taxonomy (canonical — added 2026-05-02)
+
+The `Plans` data source uses the following 5-status taxonomy. Any other status value is forbidden.
+
+| Status | Color | Meaning | Required Conditions |
+|---|---|---|---|
+| 🟢 **Live** | green | Someone is working on this right now | File exists on disk · edited within last 14 days · has wave/phase work in progress |
+| 🟡 **Draft** | yellow | Written, not started | File exists on disk · no execution work yet |
+| 🔵 **Completed** | blue | Work landed | All waves/phases done · audit trail kept |
+| 🟣 **Retired** | purple | No longer relevant | Replaced by another plan, OR stale-by-design, OR work obsolete, OR file gone from disk — specific reason in Summary field |
+| ⚪ **Archived** | gray | Hidden from views | Reserved — not for routine use |
+
+**Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted; the blue `Complete` option is the canonical "done" status. Notion UI may still show `Complete` — manual one-click rename to `Completed` in the Status field dropdown will align UI with doctrine (Notion API does not support option rename).
+
+**Invariants**:
+- A row with `Status = Live` MUST have `Exists On Disk = true`
+- A row with `Status = Live` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
+- A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
+- A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
+
+**Migration history (2026-05-02)**:
+- 50 plans flipped Live → Retired in one session (Plans DB had become a graveyard with `Live` as default-and-never-decay)
+- Schema rename pass: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted, blue `Complete` retained as canonical
+- Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
+- 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring
 
 ### Backlog Snapshot — preferred read path (added 2026-04-23)
 

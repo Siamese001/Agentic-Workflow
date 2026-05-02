@@ -62,13 +62,6 @@ databases:
     read_trigger: '"MCP status", "which MCPs are active", "server registry"'
     write_trigger: "On ANY `mcp_config.json` change or gate-behavior change"
 
-  - key: svp_engineering_reviews
-    name: "SVP Engineering Reviews"
-    id: "814e26d3-d665-4472-9b92-c7e0f89241d0"
-    database_id: "6660be70-638e-4698-826a-aa7e8c17d7fd"
-    read_trigger: '"SVP review", "module certification", "test pass rate"'
-    write_trigger: "On SVP review completion"
-
   - key: adr_registry
     name: "ADR Registry"
     id: "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"

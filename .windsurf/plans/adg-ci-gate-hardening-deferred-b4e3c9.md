@@ -1,3 +1,5 @@
+> SUPERSEDED 2026-05-02 - Notion status flipped to Superseded. Burndown/backlog/followup/deferred framing retired in favor of ratcheting CI gates (where applicable) or absorption into successor plans. Daily-drift counts are stale by design and not plan-tracked. Kept on disk for archive only.
+
 ---
 plan_type: governance
 ---
