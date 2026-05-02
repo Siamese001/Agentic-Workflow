@@ -1,0 +1,51 @@
+# Rubric: HOP1 LLM-Fallback Classifier Judge
+#
+# Judges only the LLM-fallback branch of HOP1's archetype classifier
+# (~10% of classifications, the long tail of ambiguous titles). The
+# deterministic CXO-precedence + heuristic chain does not need a
+# Judge — it is policy-driven (after W3 of plan b3a4d2 lands).
+#
+# Deterministic backend: confidence-floor + reasoning-string
+# faithfulness check (does the reasoning cite at least one token
+# from the input title?). LLM backend can swap in without changing
+# HOP1 integration (D2).
+
+rubric_id: "judge_hop1_llm_fallback"
+rubric_version: "1.0.0"
+judge_name: "HOP1_LLMFallbackClassifier"
+description: |
+  Judges classifications produced by HOP1's LLM-fallback branch only.
+  Asks: does the reasoning string ground its archetype assignment in
+  evidence drawn from the input title? Confidence floor is enforced
+  per the params block. Skipped entirely when HOP1 short-circuited
+  via the deterministic policy chain.
+
+score_bands:
+  - min_score: 0.0
+    band: "WEAK"
+  - min_score: 0.50
+    band: "MODERATE"
+  - min_score: 0.75
+    band: "STRONG"
+
+params:
+  # Minimum confidence threshold. LLM-fallback branches reporting
+  # below this floor are flagged for HITL routing.
+  confidence_floor: 0.55
+  # Reasoning string must reference at least one token from the
+  # title (after stopword removal) to score above WEAK.
+  min_title_tokens_referenced: 1
+  # Tokens shorter than this from the title are ignored (likely
+  # connector words, prepositions, etc.).
+  min_token_length: 4
+  stopwords:
+    - "senior"
+    - "junior"
+    - "lead"
+    - "staff"
+    - "principal"
+
+remediation_hints:
+  weak: "LLM reasoning does not cite title evidence and confidence is below floor. Route to human override queue."
+  moderate: "LLM reasoning is partially grounded. Surface for human spot-check."
+  strong: ""

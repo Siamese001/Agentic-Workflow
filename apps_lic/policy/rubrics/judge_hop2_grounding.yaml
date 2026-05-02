@@ -1,0 +1,41 @@
+# Rubric: HOP2 Strategic Brief Faithfulness Judge
+#
+# Judges whether the strategic_brief synthesized by HOP2 is grounded
+# in evidence_pack artifacts. Deterministic backend: every meaningful
+# claim sentence in strategic_brief must lexically reference at least
+# one summary or artifact_id from evidence_pack. LLM backend swap-in
+# replaces lexical match with semantic faithfulness scoring (D2).
+
+rubric_id: "judge_hop2_strategic_brief_faithfulness"
+rubric_version: "1.0.0"
+judge_name: "HOP2_StrategicBriefFaithfulness"
+description: |
+  Judges the strategic_brief output for citation faithfulness, recency
+  of underlying evidence, and source-weight floor. ABSTAIN when
+  evidence_pack is empty (no signal possible).
+
+score_bands:
+  - min_score: 0.0
+    band: "WEAK"
+  - min_score: 0.40
+    band: "MODERATE"
+  - min_score: 0.70
+    band: "STRONG"
+
+params:
+  # Minimum number of evidence_pack artifacts required for the Judge
+  # to score; below this, ABSTAIN.
+  min_artifacts: 1
+  # Maximum age in days for an artifact to count toward the score.
+  max_artifact_age_days: 90
+  # Minimum source_weight for an artifact to count.
+  min_source_weight: 0.4
+  # Minimum claim-sentences (period-delimited) required to evaluate.
+  min_claim_sentences: 1
+  # Tokens shorter than this are stopwords.
+  min_token_length: 4
+
+remediation_hints:
+  weak: "Strategic brief contains claims not grounded in evidence_pack. Re-summarize with strict citation discipline."
+  moderate: "Most claims are cited; a minority are speculative. Flag the unsupported claims for review."
+  strong: ""
