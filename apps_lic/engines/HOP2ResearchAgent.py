@@ -146,15 +146,50 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         # 5. Strategic Brief Generation (Specialist Hook)
         strategic_brief = self._summarize_for_archetype(evidence_pack, archetype)
 
+        # 5b. Company Trigger Extraction (W2-P4 follow-up wiring 2026-05-01).
+        # Pure module — never raises on malformed input. HOP5 K.5A consumes
+        # the highest-strength trigger when composing the opener line.
+        from apps_lic.engines.company_trigger_extractor import (
+            extract_best_trigger,
+            extract_triggers,
+        )
+
+        all_triggers = extract_triggers(evidence_pack)
+        best_trigger = extract_best_trigger(evidence_pack)
+
         # 6. Write to Immutable Buffer
         output_data = {
             "evidence_pack": evidence_pack,
             "strategic_brief": strategic_brief,
+            "company_triggers": [
+                {
+                    "trigger_type": t.trigger_type,
+                    "raw_excerpt": t.raw_excerpt,
+                    "strength": t.strength,
+                    "source_id": t.source_id,
+                    "matched_keyword": t.matched_keyword,
+                }
+                for t in all_triggers
+            ],
+            "best_company_trigger": (
+                {
+                    "trigger_type": best_trigger.trigger_type,
+                    "raw_excerpt": best_trigger.raw_excerpt,
+                    "strength": best_trigger.strength,
+                    "source_id": best_trigger.source_id,
+                    "matched_keyword": best_trigger.matched_keyword,
+                }
+                if best_trigger is not None
+                else None
+            ),
             "metadata": {"wants_count": len(wants), "retrieval_count": len(retrievals)},
         }
 
         buffer.write_once("hop2_research", output_data)
-        registry.add_trace("RETRIEVAL_PLAN_COMPLETED", {"artifacts": len(evidence_pack)})
+        registry.add_trace(
+            "RETRIEVAL_PLAN_COMPLETED",
+            {"artifacts": len(evidence_pack), "triggers_extracted": len(all_triggers)},
+        )
 
     def _derive_wants(self, archetype: str, mission_input: dict) -> list[str]:
         """K.3 Logic: Determines context needs based on seniority and mission targets."""

@@ -59,6 +59,16 @@ class HOP6ValidationAgent(LICAgentBase, SubatomicTestingMixin):
 
         draft_text = hop5["selected_draft"]["text"]
 
+        # Resolve archetype from HOP-1 for archetype-aware validators added
+        # in the W1-P2 / W2-P6 / W3-P8 follow-up wiring (2026-05-01). Falls
+        # back to "OTHER" when HOP-1 is absent or malformed — those
+        # validators degrade to non-required mode for unknown archetypes.
+        try:
+            hop1 = buffer.read("hop1_analysis") or {}
+        except Exception:
+            hop1 = {}
+        archetype = hop1.get("Archetype") or hop1.get("archetype") or "OTHER"
+
         # 2. Specialist Validation Execution (K.7 Heuristics)
         registry.add_trace("PHASE_STEP", {"action": "starting_rule_execution"})
 
@@ -74,6 +84,15 @@ class HOP6ValidationAgent(LICAgentBase, SubatomicTestingMixin):
 
         # Rule: LIC-E008 (Forbidden Verbs) - MEDIUM
         results.append(self._check_forbidden_verbs(draft_text, rules_config))
+
+        # Rule: LIC-E020 (Archetype Length Cap) - HIGH (W1-P2 follow-up)
+        results.append(self._check_archetype_length(draft_text, archetype))
+
+        # Rule: LIC-E021 (Question Ending) - HIGH (W2-P6 follow-up)
+        results.append(self._check_question_ending(draft_text, archetype))
+
+        # Rule: LIC-E022 (Spam Trigger Phrases) - varies (W3-P8 follow-up)
+        results.append(self._check_spam_triggers(draft_text))
 
         # 3. Calculate Report and Failure Classification
         critical_issues = [r for r in results if r["severity"] == "CRITICAL" and not r["passed"]]
@@ -154,4 +173,72 @@ class HOP6ValidationAgent(LICAgentBase, SubatomicTestingMixin):
             "message": f"Found forbidden verbs: {found}"
             if found
             else "No forbidden verbs detected",
+        }
+
+    # ------------------------------------------------------------------
+    # Follow-up wiring (2026-05-01) — W1-P2 / W2-P6 / W3-P8 validators.
+    # Each delegates to a pure validator module under apps_lic.validators
+    # so HOP-6 stays a thin orchestrator. Pure modules are independently
+    # unit-tested; these wrappers convert their results into the
+    # rule_id / severity / passed / message dict shape HOP-7 expects.
+    # ------------------------------------------------------------------
+
+    def _check_archetype_length(self, text: str, archetype: str) -> dict:
+        """LIC-E020: archetype-specific message length cap (W1-P2)."""
+        from apps_lic.validators.archetype_message_length_validator import (
+            validate_length,
+        )
+
+        result = validate_length(text, archetype)
+        return {
+            "rule_id": "LIC-E020",
+            "severity": "HIGH",
+            "passed": result.is_valid,
+            "message": (
+                f"Archetype length OK ({result.message_length}/{result.cap} chars "
+                f"for {archetype})"
+                if result.is_valid
+                else result.reason
+            ),
+        }
+
+    def _check_question_ending(self, text: str, archetype: str) -> dict:
+        """LIC-E021: question-ending hard gate for senior archetypes (W2-P6)."""
+        from apps_lic.validators.question_ending_validator import (
+            validate_question_ending,
+        )
+
+        result = validate_question_ending(text, archetype)
+        return {
+            "rule_id": "LIC-E021",
+            "severity": "HIGH" if result.required_for_archetype else "MEDIUM",
+            "passed": result.is_valid,
+            "message": (
+                f"Question-ending OK ({archetype}, ends_in_question="
+                f"{result.ends_in_question})"
+                if result.is_valid
+                else result.reason
+            ),
+        }
+
+    def _check_spam_triggers(self, text: str) -> dict:
+        """LIC-E022: spam-trigger phrase blocklist (W3-P8)."""
+        from apps_lic.validators.spam_trigger_phrase_validator import (
+            validate_message_for_spam_triggers,
+        )
+
+        result = validate_message_for_spam_triggers(text)
+        # Hard reject on critical/high severity; soft on medium-only hits.
+        hard_severities = {"critical", "high"}
+        has_hard_hit = any(h.severity in hard_severities for h in result.hits)
+        severity = "HIGH" if has_hard_hit else ("MEDIUM" if result.hits else "LOW")
+        return {
+            "rule_id": "LIC-E022",
+            "severity": severity,
+            "passed": result.is_valid,
+            "message": (
+                "No spam-trigger phrases detected"
+                if not result.hits
+                else result.reason
+            ),
         }

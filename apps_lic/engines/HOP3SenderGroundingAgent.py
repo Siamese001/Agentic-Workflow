@@ -86,15 +86,39 @@ class HOP3SenderGroundingAgent(LICAgentBase, SubatomicTestingMixin):
         # Organizes achievements by metric for HOP-5 bullet generation
         metric_map = self._map_metrics(grounding_map["achievements"])
 
+        # 3b. Mutual-Connection Priming (W2-P5 follow-up wiring 2026-05-01).
+        # Pure resolver — empty/missing candidate list yields empty priming
+        # line, which HOP5 interprets as "use default opener". Candidates
+        # are sourced from mission_input["mutual_connections"] when the
+        # caller supplies them; the resolver tolerates absence cleanly.
+        from apps_lic.engines.mutual_connection_resolver import (
+            MutualConnectionResolver,
+        )
+
+        try:
+            mission_input = buffer.read("mission_input") or {}
+        except Exception:
+            mission_input = {}
+        candidates = mission_input.get("mutual_connections", []) or []
+        priming_line = MutualConnectionResolver().resolve_priming_line(candidates)
+
         # 4. Write to Immutable Buffer
         output_data = {
             "grounding_whitelists": grounding_map,
             "metric_source_map": metric_map,
-            "metadata": {"sources_loaded": len(loaded_sources)},
+            "mutual_connection_priming_line": priming_line,
+            "metadata": {
+                "sources_loaded": len(loaded_sources),
+                "mutual_candidates_considered": len(candidates),
+                "priming_line_rendered": bool(priming_line),
+            },
         }
 
         buffer.write_once("hop3_sender_grounding", output_data)
-        registry.add_trace("DECISION_FINAL", {"status": "GROUNDING_COMPLETE"})
+        registry.add_trace(
+            "DECISION_FINAL",
+            {"status": "GROUNDING_COMPLETE", "priming_rendered": bool(priming_line)},
+        )
 
     def _load_json_file(self, filename: str) -> dict[str, Any] | None:
         """Load and parse a JSON file, returning None on failure."""
