@@ -316,6 +316,53 @@ def verify() -> dict:
         fail(f"signature envelope report_sha256 drifts from disk: "
              f"env={sig.get('report_sha256', '')[:12]} disk={report_disk_sha[:12]}")
 
+    # 18b. When the envelope claims VERIFIED, this bundle verifier MUST
+    # independently re-perform the cryptographic check. Reflecting the
+    # envelope's claim verbatim is not enough — the envelope itself could
+    # be tampered. We re-verify ed25519 against the on-disk public key.
+    if sig_status == "VERIFIED":
+        checks_run += 1
+        try:
+            import base64 as _b64  # local import to avoid hard dep when unsigned
+            from cryptography.exceptions import InvalidSignature  # type: ignore
+            from cryptography.hazmat.primitives import serialization  # type: ignore
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import (  # type: ignore
+                Ed25519PublicKey,
+            )
+
+            sig_alg = sig.get("signature_algorithm", "")
+            sig_b64 = sig.get("signature_value", "") or ""
+            env_pub_pem = (sig.get("signer_public_key_pem") or "").encode("ascii")
+            pub_path = REPO_ROOT / "config" / "release_signer" / "release_signer.pub.pem"
+
+            if sig_alg != "ed25519":
+                fail(f"envelope status=VERIFIED but signature_algorithm={sig_alg!r} "
+                     f"(only ed25519 is recognized for VERIFIED)")
+            elif not sig_b64:
+                fail("envelope status=VERIFIED but signature_value is empty")
+            elif not pub_path.exists():
+                fail(f"envelope status=VERIFIED but on-disk public key missing at "
+                     f"{pub_path.relative_to(REPO_ROOT)}")
+            else:
+                pub_pem_disk = pub_path.read_bytes()
+                if env_pub_pem and env_pub_pem.strip() != pub_pem_disk.strip():
+                    fail("envelope.signer_public_key_pem disagrees with on-disk "
+                         "release_signer.pub.pem (key swap detected)")
+                else:
+                    pub = serialization.load_pem_public_key(pub_pem_disk)
+                    if not isinstance(pub, Ed25519PublicKey):
+                        fail("on-disk public key is not ed25519")
+                    else:
+                        try:
+                            pub.verify(_b64.b64decode(sig_b64),
+                                       REPORT_PATH.read_bytes())
+                        except InvalidSignature:
+                            fail("ed25519 verification FAILED — envelope claims "
+                                 "VERIFIED but signature does not match report bytes")
+        except ImportError:
+            fail("envelope status=VERIFIED but `cryptography` library not "
+                 "available to re-verify ed25519 signature")
+
     # 19. XLSX + markdown are read-only: their rollup counts must match JSON
     # (best-effort — we do not parse XLSX here; just ensure they exist)
     checks_run += 1

@@ -149,3 +149,7 @@ docs/reference/MANIFEST.json
 artifacts/adg/keys/*.key
 !artifacts/adg/keys/*.pub
 
+
+# Fort Knox release signer private key — NEVER commit (added 2026-05-02)
+keys/release_signer/*.key.pem
+keys/release_signer/*.pem
