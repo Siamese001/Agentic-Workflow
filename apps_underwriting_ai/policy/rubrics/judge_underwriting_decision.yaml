@@ -1,0 +1,84 @@
+# Underwriting decision-rationale rubric (Qwen-first explainability judge).
+#
+# Plan: apps-underwriting-ai-activation-e8a3c5 W1 P1.1
+# Owning module: apps_underwriting_ai/engines/decision_packet_assembler.py
+#
+# COMPLIANCE-POSTURE FLOOR (non-negotiable):
+#   This rubric scopes ONLY the human-readable `rationale` text emitted
+#   on a DecisionPacket. The verdict (APPROVE / REFER / DENY /
+#   INSUFFICIENT_EVIDENCE) is computed deterministically upstream and is
+#   NEVER influenced by this LLM call. The judge produces an enriched
+#   explanation paragraph only; failure modes fall through to the
+#   pre-existing deterministic template rationale.
+#
+# Cascade: W4 apps_lic HOP6 pattern + predecessor W2/W3/W5 cascade.
+
+rubric_id: underwriting_decision_rationale_v1
+rubric_version: 1
+owning_app: apps_underwriting_ai
+owning_module: apps_underwriting_ai.engines.decision_packet_assembler
+
+scope:
+  field: DecisionPacket.rationale
+  field_type: human_readable_explanation
+  affects_verdict: false  # invariant — see compliance-posture floor
+
+inputs:
+  required:
+    - verdict           # already-computed DecisionVerdict enum value
+    - evidence_count    # int — number of evidence records registered
+    - feature_count     # int — number of derived risk features
+    - unresolved_count  # int — unresolved document reconciliations
+  optional:
+    - feature_summary   # dict[str, float] — feature values, for grounding
+
+evaluation_criteria:
+  - id: clarity
+    description: >
+      Rationale must be 2-4 sentences, plain English, no jargon, no
+      regulatory citations the judge cannot ground in evidence_refs.
+    weight: 0.35
+  - id: factual_grounding
+    description: >
+      Rationale must NOT fabricate evidence values, regulator names,
+      policy clauses, or quantitative claims that are not present in
+      the input fields. Reference evidence_count / feature_count /
+      unresolved_count only.
+    weight: 0.45
+  - id: verdict_consistency
+    description: >
+      Rationale must align with the deterministic verdict. APPROVE
+      rationale must read as approving; REFER must read as referring
+      to manual review; INSUFFICIENT_EVIDENCE must read as data-
+      gap-driven. The rationale text NEVER contradicts the verdict
+      (because the verdict is fixed before this judge runs).
+    weight: 0.20
+
+failure_floor: |
+  On any of the following, fall through to the deterministic template
+  rationale (preserve byte-identical text the assembler already
+  produced):
+    - Qwen preflight failed (vllm health probe red)
+    - openai SDK absent / model_registry unavailable
+    - Generation timeout / gateway exception
+    - Empty response from model
+    - Output longer than 600 chars (length guard against runaway
+      generation in regulated domain)
+    - Output contains regulator-name tokens not present in inputs
+      (e.g. "FCA", "OCC", "FINRA", "FDIC", "SEC") — guard against
+      hallucinated regulatory grounding
+
+generation_params:
+  temperature: 0.3   # low — explainability judge wants conservative output
+  max_tokens: 250
+  system_prompt: |
+    You are a senior underwriting analyst writing a 2-4 sentence
+    plain-English explanation of an already-decided underwriting
+    verdict. The verdict is fixed; you are NOT making the decision.
+    Reference only the evidence_count / feature_count /
+    unresolved_count provided. Do NOT cite regulators, do NOT
+    quote policy clauses, do NOT invent feature values.
+
+emission:
+  marker_app_name: apps_underwriting_ai.decision_rationale
+  marker_rubric_id: underwriting_decision_rationale_v1
