@@ -164,6 +164,48 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
             evidence_pack, archetype
         )
 
+        # 5b. W3-P2: strategic_brief faithfulness Judge.
+        # Validates that brief claims overlap with evidence_pack
+        # artifacts (citation faithfulness floor). ABSTAIN when
+        # evidence_pack is empty or brief has no claim-sentences.
+        # Deterministic backend ships today; LLM swap-in is a leaf
+        # change per D2.
+        hop2_judge_scorecard = None
+        try:
+            from pathlib import Path as _Path
+
+            from apps_lic.policy import JudgeBase as _JudgeBase
+            from apps_lic.policy.judge_evaluators import (
+                evaluate_hop2_grounding as _evaluate_hop2_grounding,
+            )
+
+            _rubric_path = (
+                _Path(__file__).resolve().parents[1]
+                / "policy"
+                / "rubrics"
+                / "judge_hop2_grounding.yaml"
+            )
+            _judge = _JudgeBase(
+                rubric_path=_rubric_path,
+                evaluate_fn=_evaluate_hop2_grounding,
+                backend="deterministic",
+            )
+            _scorecard = _judge.judge(
+                {"strategic_brief": strategic_brief, "evidence_pack": evidence_pack},
+                rule_id="judge_hop2_strategic_brief_faithfulness",
+            )
+            hop2_judge_scorecard = _scorecard.to_dict()
+            registry.add_trace(
+                "JUDGE_RESOLVED",
+                {
+                    "judge": "HOP2_StrategicBriefFaithfulness",
+                    "x3_disposition": _scorecard.x3_disposition,
+                    "score": _scorecard.score,
+                },
+            )
+        except Exception:  # guardian: allow-log-and-swallow -- Judge failure must not break HOP2 retrieval
+            hop2_judge_scorecard = None
+
         # 5b. Company Trigger Extraction (W2-P4 follow-up wiring 2026-05-01).
         # Pure module — never raises on malformed input. HOP5 K.5A consumes
         # the highest-strength trigger when composing the opener line.
@@ -179,6 +221,7 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         output_data = {
             "evidence_pack": evidence_pack,
             "strategic_brief": strategic_brief,
+            "judge_scorecard": hop2_judge_scorecard,  # W3-P2
             "cache_hit": cache_hit,
             "fallback_used": fallback_used,
             "gaps_identified": gaps_identified,

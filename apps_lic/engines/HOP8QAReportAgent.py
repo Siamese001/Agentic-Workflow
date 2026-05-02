@@ -64,6 +64,55 @@ class HOP8QAReportAgent(LICAgentBase, SubatomicTestingMixin):
 
         registry.add_trace("PHASE_STEP", {"action": "scoring_complete", "total_score": total_score})
 
+        # 2b. W3-P3: narrative executive_summary Judge.
+        # The deterministic backend selects a score-band template and
+        # interpolates top_signal / top_gap from the breakdown. The
+        # narrative is shipped as the first evidence_ref of the
+        # scorecard; we extract it for the buffer payload below.
+        # LLM backend swap-in is a leaf change per D2.
+        executive_summary = ""
+        hop8_judge_scorecard = None
+        try:
+            from pathlib import Path as _Path
+
+            from apps_lic.policy import JudgeBase as _JudgeBase
+            from apps_lic.policy.judge_evaluators import (
+                evaluate_hop8_narrative as _evaluate_hop8_narrative,
+            )
+
+            _rubric_path = (
+                _Path(__file__).resolve().parents[1]
+                / "policy"
+                / "rubrics"
+                / "judge_hop8_narrative.yaml"
+            )
+            _judge = _JudgeBase(
+                rubric_path=_rubric_path,
+                evaluate_fn=_evaluate_hop8_narrative,
+                backend="deterministic",
+            )
+            _scorecard = _judge.judge(
+                {"total_score": total_score, "score_breakdown": scores},
+                rule_id="judge_hop8_narrative",
+            )
+            hop8_judge_scorecard = _scorecard.to_dict()
+            # First evidence_ref is "narrative:<text>" by convention.
+            for ref in _scorecard.evidence_refs:
+                if ref.startswith("narrative:"):
+                    executive_summary = ref[len("narrative:"):]
+                    break
+            registry.add_trace(
+                "JUDGE_RESOLVED",
+                {
+                    "judge": "HOP8_ExecutiveSummary",
+                    "x3_disposition": _scorecard.x3_disposition,
+                    "score": _scorecard.score,
+                },
+            )
+        except Exception:  # guardian: allow-log-and-swallow -- Judge failure must not block report generation
+            executive_summary = ""
+            hop8_judge_scorecard = None
+
         # 3. Generate Markdown
         report_md = self._generate_markdown(states, scores, total_score)
 
@@ -73,6 +122,8 @@ class HOP8QAReportAgent(LICAgentBase, SubatomicTestingMixin):
         output_data = {
             "total_score": total_score,
             "score_breakdown": scores,
+            "executive_summary": executive_summary,  # W3-P3
+            "judge_scorecard": hop8_judge_scorecard,  # W3-P3
             "report_path": str(report_path),
             "timestamp": datetime.utcnow().isoformat(),
         }
