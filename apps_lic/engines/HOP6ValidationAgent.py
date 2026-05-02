@@ -10,11 +10,33 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from pathlib import Path
+
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+
+# DecisionRouter (W2-P2 wiring per .windsurf/plans/decision-router-policy-tables-b3a4d2.md):
+# attaches an X3 disposition row to every validation_results entry, so HOP7
+# becomes a thin shim that reads disposition directly. Module-level import
+# keeps the Sovereign Seal happy (no late-bound attribute writes during
+# __post_init__).
+from apps_lic.policy import DecisionRouter
+
+_EXIT_POLICY_PATH = (
+    Path(__file__).resolve().parents[1] / "policy" / "exit_policy.yaml"
+)
+_EXIT_ROUTER: DecisionRouter | None = None
+
+
+def _exit_router() -> DecisionRouter:
+    """Lazy-singleton accessor — load the exit policy once per process."""
+    global _EXIT_ROUTER
+    if _EXIT_ROUTER is None:
+        _EXIT_ROUTER = DecisionRouter(_EXIT_POLICY_PATH)
+    return _EXIT_ROUTER
 
 
 @dataclass
@@ -100,15 +122,54 @@ class HOP6ValidationAgent(LICAgentBase, SubatomicTestingMixin):
 
         passed = len(critical_issues) == 0 and len(high_issues) == 0
 
+        # 3b. Attach X3 disposition to each validation row (W2-P2).
+        # ExitPolicy maps (severity, rule_id, passed) -> ALLOW/REVISE/DENY/HITL/ABSTAIN
+        # plus the legacy gate_action vocabulary HOP7 currently emits. This
+        # makes HOP7 a pass-through reader of validation_results in W4 and
+        # eliminates the severity->action translation drift surface.
+        router = _exit_router()
+        worst_disposition = "ALLOW"
+        worst_action = "PROCEED"
+        priority_order = ["DENY", "REVISE", "HITL", "ABSTAIN", "ALLOW"]
+        for row in results:
+            state = {
+                "severity": row.get("severity", "LOW"),
+                "rule_id": row.get("rule_id", ""),
+                "passed": row.get("passed", True),
+            }
+            match = router.resolve(state)
+            row["x3_disposition"] = match.verdict["x3_disposition"]
+            row["gate_action"] = match.verdict["gate_action"]
+            row["x3_rule_id"] = match.rule_id
+            row["x3_reason"] = match.verdict["reason"]
+            # Track the worst (highest-priority) disposition seen.
+            if priority_order.index(row["x3_disposition"]) < priority_order.index(
+                worst_disposition
+            ):
+                worst_disposition = row["x3_disposition"]
+                worst_action = row["gate_action"]
+
         # 4. Map Failures for HOP-7 Governor (K.7 Validator logic)
         failure_report = {
             "passed": passed,
             "validation_results": results,
             "stats": {"critical": len(critical_issues), "total_checked": len(results)},
+            # W2-P2: aggregate X3 disposition exposed at top level so HOP7
+            # (and downstream consumers) can read disposition directly
+            # without re-deriving from validation_results.
+            "x3_disposition": worst_disposition,
+            "gate_action": worst_action,
         }
 
         buffer.write_once("hop6_validation_report", failure_report)
-        registry.add_trace("DECISION_FINAL", {"status": "PASS" if passed else "FAIL"})
+        registry.add_trace(
+            "DECISION_FINAL",
+            {
+                "status": "PASS" if passed else "FAIL",
+                "x3_disposition": worst_disposition,
+                "gate_action": worst_action,
+            },
+        )
 
     def _check_placeholders(self, text: str, config: Any) -> dict:
         """
