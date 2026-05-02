@@ -64,7 +64,6 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
 | MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
 | ADR Registry | `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a` | `6ed25e12-bd92-4352-ac7a-3a971311f024` | "ADR status", "architectural decisions", "which ADRs" | On every new ADR spec file — POST row with ADR ID, Status, Impact Layers, Summary, Filename |
-| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed.
 **Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
