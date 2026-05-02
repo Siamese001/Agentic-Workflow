@@ -83,7 +83,7 @@ The `Plans` data source uses the following 5-status taxonomy. Any other status v
 | 🟣 **Retired** | purple | No longer relevant | Replaced by another plan, OR stale-by-design, OR work obsolete, OR file gone from disk — specific reason in Summary field |
 | ⚪ **Archived** | gray | Hidden from views | Reserved — not for routine use |
 
-**Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted; the blue `Complete` option is the canonical "done" status. Notion UI may still show `Complete` — manual one-click rename to `Completed` in the Status field dropdown will align UI with doctrine (Notion API does not support option rename).
+**Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted via `API-update-a-data-source`. Desktop UI rename pass completed for both Plans and Backlog Items DBs: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`. Option IDs preserved across rename (Notion UI rename ≠ API rename — API does not support it).
 
 **Invariants**:
 - A row with `Status = Live` MUST have `Exists On Disk = true`
@@ -91,11 +91,16 @@ The `Plans` data source uses the following 5-status taxonomy. Any other status v
 - A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
 - A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
 
+**Shared taxonomy — Backlog Items DB**: the same 5 status names apply (Live/Draft/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
+- Backlog Items have no `Exists On Disk` field → on-disk-presence invariant is Plans-only
+- Backlog items can legitimately sit in `Draft` for months waiting on dependencies → 14-day staleness clock is Plans-only
+- The "descope → Retired" flip applies to both DBs ✅
+
 **Migration history (2026-05-02)**:
 - 50 plans flipped Live → Retired in one session (Plans DB had become a graveyard with `Live` as default-and-never-decay)
-- Schema rename pass: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted, blue `Complete` retained as canonical
+- Schema rename pass on both Plans DB and Backlog Items DB: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted on Plans DB
 - Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
-- 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring
+- 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring (Plans only)
 
 ### Backlog Snapshot — preferred read path (added 2026-04-23)
 
