@@ -10,11 +10,41 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from pathlib import Path
+
 from apps_lic.config.loader_config import load_agent_specs
 from apps_lic.types.k1_router_types import K1Router
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
 from apps_lic.types.TraceRegistry import TraceRegistry
+
+# W3-P1: LLM-fallback Judge (judge-base-and-four-judges-c5e1f3).
+# Fires only when the imperative classifier's confidence drops below
+# manual_override_threshold and the LLM slow-path takes over. Most
+# classifications short-circuit via the deterministic chain and skip
+# the Judge entirely (~10% of titles see this path in practice).
+from apps_lic.policy import JudgeBase
+from apps_lic.policy.judge_evaluators import evaluate_hop1_llm_fallback
+
+_HOP1_RUBRIC_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "policy"
+    / "rubrics"
+    / "judge_hop1_classifier.yaml"
+)
+_HOP1_JUDGE: JudgeBase | None = None
+
+
+def _hop1_llm_fallback_judge() -> JudgeBase:
+    """Lazy singleton for the HOP1 LLM-fallback Judge."""
+    global _HOP1_JUDGE
+    if _HOP1_JUDGE is None:
+        _HOP1_JUDGE = JudgeBase(
+            rubric_path=_HOP1_RUBRIC_PATH,
+            evaluate_fn=evaluate_hop1_llm_fallback,
+            backend="deterministic",
+        )
+    return _HOP1_JUDGE
 
 # Import mixin with fallback
 try:
@@ -173,6 +203,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
 
         # L3 Slow Path: Reasoning Injection for low confidence
         needs_override = confidence < self.agent_specs.profile_analysis_agent.manual_override_threshold
+        llm_fallback_fired = False
         if needs_override:
             registry.add_trace(
                 "REASONING_ACTIVATED",
@@ -193,6 +224,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
                     llm_response = self._execute_reasoning(
                         title, {"archetype": archetype, "confidence": confidence}
                     )
+                    llm_fallback_fired = True
                     if llm_response["confidence"] > confidence:
                         registry.add_trace(
                             "DECISION_OVERRIDE",
@@ -220,6 +252,39 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
             recipient_name = ""
             recipient_company = ""
 
+        # W3-P1: Run the LLM-fallback Judge ONLY when the LLM slow-path
+        # actually fired. The deterministic CXO + heuristic chain does
+        # not need a Judge — it's policy-driven (after the W3 of plan
+        # b3a4d2 lands archetype_classifier.yaml). When skipped, the
+        # scorecard is None — downstream consumers branch on this.
+        hop1_judge_scorecard = None
+        if llm_fallback_fired:
+            try:
+                _scorecard = _hop1_llm_fallback_judge().judge(
+                    {
+                        "title": title,
+                        "archetype": archetype,
+                        "confidence": confidence,
+                        "reasoning": reasoning,
+                    },
+                    rule_id="judge_hop1_llm_fallback",
+                )
+                hop1_judge_scorecard = _scorecard.to_dict()
+                registry.add_trace(
+                    "JUDGE_RESOLVED",
+                    {
+                        "judge": "HOP1_LLMFallbackClassifier",
+                        "x3_disposition": _scorecard.x3_disposition,
+                        "score": _scorecard.score,
+                    },
+                )
+                # If the Judge says HITL, force needs_manual_override=True
+                # so downstream routing surfaces the case for triage.
+                if _scorecard.x3_disposition in {"HITL", "ABSTAIN"}:
+                    needs_override = True
+            except Exception:  # guardian: allow-log-and-swallow -- Judge failure must not break HOP1 classification
+                hop1_judge_scorecard = None
+
         output_data = {
             "Archetype": archetype,
             "confidence": confidence,
@@ -227,6 +292,7 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
             "reasoning": reasoning,
             "key_indicators": key_indicators,
             "needs_manual_override": needs_override,
+            "judge_scorecard": hop1_judge_scorecard,
             "entrance_gates_passed": ["GATE_1_LIFECYCLE", "GATE_2_BLOCK", "GATE_4_ARCHETYPE"],
             "recipient_title": title,
             "recipient_name": recipient_name,
