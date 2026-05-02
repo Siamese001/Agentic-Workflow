@@ -1,0 +1,3384 @@
+{
+  "claim_type_required_controls": {
+    "COMPONENT_RUNTIME": [
+      "runtime_evidence",
+      "evidence_manifest_hash"
+    ],
+    "COMPOSITION_RUNTIME": [
+      "runtime_evidence",
+      "positive_evidence"
+    ],
+    "INTEGRATED_RUNTIME": [
+      "runtime_evidence",
+      "otel_trace",
+      "source_root_binding",
+      "artifact_payload_hash"
+    ],
+    "MATRIX_GOVERNANCE": [
+      "ci_gate"
+    ],
+    "NO_BYPASS_RUNTIME": [
+      "no_bypass",
+      "runtime_evidence"
+    ],
+    "OBSERVABILITY_RUNTIME": [
+      "otel_trace"
+    ],
+    "PRODUCTION_DEPENDENCY_RUNTIME": [
+      "runtime_evidence",
+      "certifier_signature"
+    ],
+    "REPLAY_RUNTIME": [
+      "replay_receipt"
+    ],
+    "STATIC_CONTRACT": [
+      "required_artifacts",
+      "artifact_payload_hash"
+    ],
+    "STATIC_ENFORCEMENT": [
+      "ci_gate",
+      "layer_boundary"
+    ]
+  },
+  "final_hundred_percent_groups": [
+    "100 Percent Standard"
+  ],
+  "generated_at_utc": "2026-05-01T23:02:21+00:00",
+  "generator": "tools/cert/generate_requirements_source.py",
+  "purpose": "Canonical requirement universe for runtime certification. SSOT consumed by scripts/compile_requirement_signoff.py. Derived from runtime_certification_requirements_100_percent_hardened.csv.",
+  "requirement_count": 87,
+  "requirements": [
+    {
+      "acceptance_rule": "ACCEPTED only when expected count equals actual distinct count and no duplicate/missing/extra IDs exist.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Requirement compiler",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-001",
+      "required_artifacts": [
+        "canonical_universe_manifest",
+        "requirement_count_receipt"
+      ],
+      "required_ci_gate": "verify_runtime_certification_matrix.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Canonical requirement universe declared"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all required proof-depth fields are present and valid.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Requirement matrix schema",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-002",
+      "required_artifacts": [
+        "schema_validation_report"
+      ],
+      "required_ci_gate": "verify_runtime_certification_matrix_schema.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Proof depth fields mandatory"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when claim_type is valid and compatible with required_proof_depth.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Requirement matrix schema",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-003",
+      "required_artifacts": [
+        "claim_type_validation_report"
+      ],
+      "required_ci_gate": "verify_runtime_certification_matrix_schema.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Claim type enum enforced"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when actual_proof_depth >= required_proof_depth and all required subclaims pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Acceptance validator",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-004",
+      "required_artifacts": [
+        "acceptance_legality_report"
+      ],
+      "required_ci_gate": "verify_runtime_certification_acceptance.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Acceptance legality rule"
+    },
+    {
+      "acceptance_rule": "ACCEPTED allowed only as reference integrity, not runtime proof.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Acceptance validator",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-005",
+      "required_artifacts": [
+        "reference_only_policy_report"
+      ],
+      "required_ci_gate": "verify_runtime_certification_acceptance.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Reference-only rows cannot claim runtime"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all required subclaims are SATISFIED.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Requirement compiler",
+      "owner_layer": "00X / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-006",
+      "required_artifacts": [
+        "subclaim_decomposition_report"
+      ],
+      "required_ci_gate": "verify_runtime_certification_subclaims.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Matrix Governance",
+      "title": "Subclaim decomposition mandatory"
+    },
+    {
+      "acceptance_rule": "INTEGRATED_RUNTIME_PROOF accepted only when integrated_runtime_entrypoint_used=true and artifacts are producer-owned.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_entrypoint.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Production runtime entrypoint",
+      "owner_layer": "U0-L6 / Runtime",
+      "priority": "P0",
+      "req_id": "RTC-REQ-010",
+      "required_artifacts": [
+        "ValidatedRequest",
+        "L1PlanContract",
+        "RouteContract_or_TerminalRoutePacket",
+        "RuntimeGateVerdictBundle",
+        "FinalEvidenceContract_when_grounded",
+        "CompiledPromptArtifact_when_model_called",
+        "SealedL2Artifact_when_L2_executes",
+        "TerminalRetPacket_when_short_circuit",
+        "ExitReviewPacket",
+        "X1VerdictBundle",
+        "X3DispositionReceipt",
+        "RuntimeExhaustBundle",
+        "OTELSpanTree",
+        "ReplayReceipt_when_claimed",
+        "NoBypassReceipt"
+      ],
+      "required_ci_gate": "verify_integrated_runtime_entrypoint.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Runtime Chain",
+      "title": "Integrated runtime entry point required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all production artifacts are emitted by owning production modules.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Proof harness",
+      "owner_layer": "99 / Proof Harness",
+      "priority": "P0",
+      "req_id": "RTC-REQ-011",
+      "required_artifacts": [
+        "provenance_chain",
+        "no_harness_stamp_receipt"
+      ],
+      "required_ci_gate": "verify_artifact_provenance.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Chain",
+      "title": "Harness observes only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when ExitReviewPacket and exactly one X3DispositionReceipt are present.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_entrypoint.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Exit evaluation",
+      "owner_layer": "05 Exit",
+      "priority": "P0",
+      "req_id": "RTC-REQ-012",
+      "required_artifacts": [
+        "ExitReviewPacket",
+        "X3DispositionReceipt"
+      ],
+      "required_ci_gate": "verify_exit_completion.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Runtime Chain",
+      "title": "Exit required for completed runtime path"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when terminal path bypasses L2 and enters Exit.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Route/Exit",
+      "owner_layer": "03 L0 / 05 Exit",
+      "priority": "P0",
+      "req_id": "RTC-REQ-013",
+      "required_artifacts": [
+        "RouteContract",
+        "TerminalRetPacket",
+        "ExitReviewPacket"
+      ],
+      "required_ci_gate": "verify_terminal_route_no_l2.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Chain",
+      "title": "Terminal cache route does not execute L2"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when artifact provenance is complete and chain resolves.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "All producer components",
+      "owner_layer": "U0-L6 / Runtime",
+      "priority": "P0",
+      "req_id": "RTC-REQ-014",
+      "required_artifacts": [
+        "artifact_manifest"
+      ],
+      "required_ci_gate": "verify_artifact_manifest.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Runtime Chain",
+      "title": "Runtime artifact provenance fields required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all authority binding fields exist and remain consistent.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_entrypoint.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Authority binding",
+      "owner_layer": "00A L5 / 00B L4",
+      "priority": "P0",
+      "req_id": "RTC-REQ-015",
+      "required_artifacts": [
+        "authority_context_receipt",
+        "runtime_artifact_manifest"
+      ],
+      "required_ci_gate": "verify_runtime_authority_binding.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Runtime Chain",
+      "title": "Policy blueprint registry bound on runtime artifacts"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only with external export evidence and correlated trace/counter proof.",
+      "allowed_artifact_classes": [
+        "OTEL_SPAN_EXPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "OBSERVABILITY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "OTEL pipeline",
+      "owner_layer": "00C / L6 Observability",
+      "priority": "P1",
+      "req_id": "RTC-REQ-020",
+      "required_artifacts": [
+        "collector_receipt",
+        "span_export",
+        "metric_export"
+      ],
+      "required_ci_gate": "verify_otel_export.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "otel_trace"
+      ],
+      "required_proof_depth": "E7_REAL_OTEL_EXPORT",
+      "requirement_group": "Observability",
+      "title": "Collector-backed OTEL required for observability claims"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when trace tree proves path correlation.",
+      "allowed_artifact_classes": [
+        "OTEL_SPAN_EXPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "OBSERVABILITY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "OTEL instrumentation",
+      "owner_layer": "00C / L6 Observability",
+      "priority": "P1",
+      "req_id": "RTC-REQ-021",
+      "required_artifacts": [
+        "span_tree_export"
+      ],
+      "required_ci_gate": "verify_otel_trace_tree.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "otel_trace"
+      ],
+      "required_proof_depth": "E7_REAL_OTEL_EXPORT",
+      "requirement_group": "Observability",
+      "title": "Parent scenario span required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when metric delta is externally visible or collector-exported.",
+      "allowed_artifact_classes": [
+        "OTEL_SPAN_EXPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "OBSERVABILITY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Metric exporter",
+      "owner_layer": "00C / L6 Observability",
+      "priority": "P1",
+      "req_id": "RTC-REQ-022",
+      "required_artifacts": [
+        "metric_delta_report"
+      ],
+      "required_ci_gate": "verify_metric_export.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "otel_trace"
+      ],
+      "required_proof_depth": "E7_REAL_OTEL_EXPORT",
+      "requirement_group": "Observability",
+      "title": "Counter deltas prove metric emission"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when replay comparison passes and negative replay mutation fails closed.",
+      "allowed_artifact_classes": [
+        "REPLAY_COMPARISON_RECEIPT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "REPLAY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Replay verifier",
+      "owner_layer": "00C / 05 Exit / L6",
+      "priority": "P1",
+      "req_id": "RTC-REQ-023",
+      "required_artifacts": [
+        "original_bundle",
+        "replay_bundle",
+        "replay_comparison_receipt"
+      ],
+      "required_ci_gate": "verify_replay_determinism.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "replay_receipt"
+      ],
+      "required_proof_depth": "E8_REPLAY_DETERMINISM",
+      "requirement_group": "Replay",
+      "title": "Replay pair required for replay claims"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when replay mutation negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Replay hardening",
+      "owner_layer": "L6 / Replay",
+      "priority": "P1",
+      "req_id": "RTC-REQ-024",
+      "required_artifacts": [
+        "replay_negative_report"
+      ],
+      "required_ci_gate": "verify_replay_negative.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Replay",
+      "title": "Replay mutation negative required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when master gate is READY and failed_commands=[]",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "All requirements gate",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-030",
+      "required_artifacts": [
+        "all_requirements_gate_result",
+        "all_requirements_gate_report"
+      ],
+      "required_ci_gate": "verify_all_requirements_gates.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Gate and Merkle",
+      "title": "All-requirements gate readiness"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when Merkle root is non-empty and covers canonical universe.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Merkle verifier",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-031",
+      "required_artifacts": [
+        "all_requirements_merkle_root.json",
+        "all_requirements_merkle_leaves.json",
+        "all_requirements_merkle_tree.json"
+      ],
+      "required_ci_gate": "verify_all_requirements_merkle_root.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary",
+        "merkle_leaf"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Gate and Merkle",
+      "title": "Merkle root non-empty and complete"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all verifiers agree on canonical source and count.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Verifier reconciler",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-032",
+      "required_artifacts": [
+        "source_divergence_report"
+      ],
+      "required_ci_gate": "verify_source_divergence.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Gate and Merkle",
+      "title": "Source divergence block"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when hardening_result=PASSED and case_count>=minimum.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Hardening gate",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-033",
+      "required_artifacts": [
+        "hardening_report",
+        "hardening_result"
+      ],
+      "required_ci_gate": "verify_tier_gate_hardening.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Gate and Merkle",
+      "title": "Hardening minimum enforced"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when downgraded row report is generated and complete.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_runtime_certification_acceptance.py",
+        "tools/cert/build_positive_control_fixtures.py",
+        "tools/cert/emit_ci_gate_binding_report_runtime_acceptance.py",
+        "tools/cert/emit_layer_boundary_report_runtime_acceptance.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Report generator",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-034",
+      "required_artifacts": [
+        "downgraded_rows_report.md"
+      ],
+      "required_ci_gate": "generate_runtime_certification_reports.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Gate and Merkle",
+      "title": "Downgraded rows report required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all required semantic-cache subclaims pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager + route_gates",
+      "owner_layer": "L0 / L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-040",
+      "required_artifacts": [
+        "semantic_cache_subclaim_matrix"
+      ],
+      "required_ci_gate": "verify_semantic_cache_certification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Semantic Cache",
+      "title": "Semantic cache requirement decomposed"
+    },
+    {
+      "acceptance_rule": "PASS only when live query differs from seed and L1 exact miss is proven.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager",
+      "owner_layer": "L0 / L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-041",
+      "required_artifacts": [
+        "semantic_cache_bundle"
+      ],
+      "required_ci_gate": "verify_semantic_cache_certification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Seed and live query surface forms differ"
+    },
+    {
+      "acceptance_rule": "PASS only when route-gate emitted semantic reason code after exact miss.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "route_gates + SemanticCacheManager",
+      "owner_layer": "L0 / L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-042",
+      "required_artifacts": [
+        "route_contract",
+        "cache_lookup_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_certification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "L1 exact miss before L2 dense hit"
+    },
+    {
+      "acceptance_rule": "PASS only when vector comparison evidence exists.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-043",
+      "required_artifacts": [
+        "cache_lookup_receipt",
+        "vector_compare_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_vector_compare.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E3_COMPONENT_TEST",
+      "requirement_group": "Semantic Cache",
+      "title": "Live query vector compared to cached vector"
+    },
+    {
+      "acceptance_rule": "PASS only when approved model operational and used.",
+      "allowed_artifact_classes": [
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_production_dependencies.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "PRODUCTION_DEPENDENCY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "EmbeddingFactory + registry",
+      "owner_layer": "L4 Cache / Model Registry",
+      "priority": "P0",
+      "req_id": "RTC-REQ-044",
+      "required_artifacts": [
+        "embedding_model_receipt",
+        "model_registry_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_model.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "certifier_signature"
+      ],
+      "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "Approved embedding model proof"
+    },
+    {
+      "acceptance_rule": "PASS only when production threshold passes or approved ADR recalibrates it.",
+      "allowed_artifact_classes": [
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_production_dependencies.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "PRODUCTION_DEPENDENCY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-045",
+      "required_artifacts": [
+        "production_threshold_calibration.json",
+        "threshold_adr_ref_when_changed"
+      ],
+      "required_ci_gate": "verify_semantic_cache_threshold.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "certifier_signature"
+      ],
+      "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "Production threshold proof"
+    },
+    {
+      "acceptance_rule": "PASS only as composition proof when override is explicit; production proof remains NOT_PROVEN.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager / harness",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-046",
+      "required_artifacts": [
+        "semantic_cache_bundle"
+      ],
+      "required_ci_gate": "verify_semantic_cache_threshold.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Semantic Cache",
+      "title": "Threshold override recorded"
+    },
+    {
+      "acceptance_rule": "PASS only when wrong-tenant negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager.recall",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-047",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Tenant isolation negative"
+    },
+    {
+      "acceptance_rule": "PASS only when namespace negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager.recall",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-048",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Namespace isolation negative"
+    },
+    {
+      "acceptance_rule": "PASS only when stale-policy negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager.recall",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-049",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Policy compatibility negative"
+    },
+    {
+      "acceptance_rule": "PASS only when expired-freshness negative is executable and passes.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager + clock",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-050",
+      "required_artifacts": [
+        "negative_controls_report",
+        "clock_fixture_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Freshness expiration negative"
+    },
+    {
+      "acceptance_rule": "PASS only when missing-embedding negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheEntry admission",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-051",
+      "required_artifacts": [
+        "negative_controls_report",
+        "cache_admission_gate_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Missing embedding ref negative"
+    },
+    {
+      "acceptance_rule": "PASS only when unsafe-reuse negative fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "CacheAdmissionGate / SemanticCacheManager",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-052",
+      "required_artifacts": [
+        "negative_controls_report",
+        "reuse_policy_receipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Unsafe reuse class negative"
+    },
+    {
+      "acceptance_rule": "PASS only when distant query misses.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager.recall",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-053",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Semantic distance miss negative"
+    },
+    {
+      "acceptance_rule": "PASS only when lexical-overlap false positive misses.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager.recall",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-054",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_semantic_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Semantic Cache",
+      "title": "Lexical-overlap different meaning negative"
+    },
+    {
+      "acceptance_rule": "PASS only when terminal and Exit artifacts exist.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPOSITION_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "route_gates + Exit",
+      "owner_layer": "03 L0 / 05 Exit",
+      "priority": "P0",
+      "req_id": "RTC-REQ-055",
+      "required_artifacts": [
+        "TerminalRetPacket",
+        "ExitReviewPacket",
+        "X3DispositionReceipt"
+      ],
+      "required_ci_gate": "verify_semantic_cache_exit_chain.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "positive_evidence"
+      ],
+      "required_proof_depth": "E5_COMPOSITION_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "TerminalRetPacket and Exit proof for R1B"
+    },
+    {
+      "acceptance_rule": "PASS only when integrated runtime entry point is used.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_evidence_chain.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Production runtime entrypoint",
+      "owner_layer": "U0-L6",
+      "priority": "P0",
+      "req_id": "RTC-REQ-056",
+      "required_artifacts": [
+        "ValidatedRequest",
+        "L1PlanContract",
+        "RouteContract_or_TerminalRoutePacket",
+        "RuntimeGateVerdictBundle",
+        "FinalEvidenceContract_when_grounded",
+        "CompiledPromptArtifact_when_model_called",
+        "SealedL2Artifact_when_L2_executes",
+        "TerminalRetPacket_when_short_circuit",
+        "ExitReviewPacket",
+        "X1VerdictBundle",
+        "X3DispositionReceipt",
+        "RuntimeExhaustBundle",
+        "OTELSpanTree",
+        "ReplayReceipt_when_claimed",
+        "NoBypassReceipt"
+      ],
+      "required_ci_gate": "verify_r1b_integrated_runtime.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "R1B integrated runtime proof"
+    },
+    {
+      "acceptance_rule": "PASS only with real collector-backed OTEL evidence.",
+      "allowed_artifact_classes": [
+        "OTEL_SPAN_EXPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "OBSERVABILITY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "OTEL pipeline",
+      "owner_layer": "00C / L6 Observability",
+      "priority": "P0",
+      "req_id": "RTC-REQ-057",
+      "required_artifacts": [
+        "collector_receipt",
+        "span_tree_export",
+        "metric_delta_report"
+      ],
+      "required_ci_gate": "verify_r1b_otel.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "otel_trace"
+      ],
+      "required_proof_depth": "E7_REAL_OTEL_EXPORT",
+      "requirement_group": "Semantic Cache",
+      "title": "R1B real OTEL proof"
+    },
+    {
+      "acceptance_rule": "PASS only with replay pair comparison.",
+      "allowed_artifact_classes": [
+        "REPLAY_COMPARISON_RECEIPT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "REPLAY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Replay verifier",
+      "owner_layer": "05 Exit / L6 Replay",
+      "priority": "P0",
+      "req_id": "RTC-REQ-058",
+      "required_artifacts": [
+        "original_bundle",
+        "replay_bundle",
+        "replay_comparison_receipt"
+      ],
+      "required_ci_gate": "verify_r1b_replay.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "replay_receipt"
+      ],
+      "required_proof_depth": "E8_REPLAY_DETERMINISM",
+      "requirement_group": "Semantic Cache",
+      "title": "R1B replay proof"
+    },
+    {
+      "acceptance_rule": "PASS only when composer emits R1B_SAFE_REUSE_COMPOSITE_PROOF=PASS AND its 5 input subclaims are all PASS AND the sweep confusion matrix at configured threshold shows unsafe_fp_count=0 AND hard_negative_allowed_count=0. Otherwise PARTIAL; BLOCKED if any input is BLOCKED or INFRASTRUCTURE_GAP.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPOSITION_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager + VetoOrchestrator (lexical pre-veto + LLM-judge veto)",
+      "owner_layer": "L4 Cache / L0 Routing",
+      "priority": "P0",
+      "req_id": "RTC-REQ-059",
+      "required_artifacts": [
+        "veto_evaluation_report.json",
+        "threshold_sweep_results_with_veto.json",
+        "semantic_cache_veto_policy.json",
+        "author_gate_w1p5_decision.json",
+        "llm_judge_rubric.md"
+      ],
+      "required_ci_gate": "python scripts/compose_semantic_cache_subclaims.py && python scripts/verify_semantic_cache_certification.py --strict && pytest tests/runtime/test_veto_fail_closed.py tests/runtime/test_safe_reuse_composite.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "positive_evidence"
+      ],
+      "required_proof_depth": "E5_COMPOSITION_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "Safe cache reuse via dense + LLM-judge veto composite proof"
+    },
+    {
+      "acceptance_rule": "PASS only when deterministic exact key proof exists.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Exact cache",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-060",
+      "required_artifacts": [
+        "ExactCacheEntry",
+        "CacheLookupReceipt"
+      ],
+      "required_ci_gate": "verify_exact_cache.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E3_COMPONENT_TEST",
+      "requirement_group": "Cache",
+      "title": "R1A exact cache normalized request hash"
+    },
+    {
+      "acceptance_rule": "PASS only when tenant isolation negative passes.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Exact cache",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-061",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_exact_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Cache",
+      "title": "R1A wrong tenant negative"
+    },
+    {
+      "acceptance_rule": "PASS only when policy negative passes.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Exact cache",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-062",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_exact_cache_negatives.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Cache",
+      "title": "R1A stale policy negative"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only as fixture setup, not L4 durable write proof.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Proof harness",
+      "owner_layer": "99 / L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-063",
+      "required_artifacts": [
+        "fixture_seed_receipt"
+      ],
+      "required_ci_gate": "verify_cache_seed_classification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Cache",
+      "title": "Cache fixture seeding labelled fixture-only"
+    },
+    {
+      "acceptance_rule": "PASS only when UWG receipt exists for durable mutation.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Universal Write Gateway",
+      "owner_layer": "00B L4 / UWG",
+      "priority": "P0",
+      "req_id": "RTC-REQ-064",
+      "required_artifacts": [
+        "CommitRequest",
+        "UWGCommitReceipt",
+        "audit_ledger_receipt"
+      ],
+      "required_ci_gate": "verify_cache_uwg_write.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "uwg_write_path"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Cache",
+      "title": "Production cache mutation through UWG only"
+    },
+    {
+      "acceptance_rule": "PASS only when lineage exists or task class explicitly allows no evidence.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Cache state",
+      "owner_layer": "L4 Cache / C0",
+      "priority": "P0",
+      "req_id": "RTC-REQ-065",
+      "required_artifacts": [
+        "CacheEntry",
+        "source_lineage_receipt"
+      ],
+      "required_ci_gate": "verify_cache_lineage.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Cache",
+      "title": "Cache lineage required for factual answers"
+    },
+    {
+      "acceptance_rule": "PASS only when invalidation path exists and negative proves stale reuse blocked.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Cache invalidation",
+      "owner_layer": "L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-066",
+      "required_artifacts": [
+        "cache_invalidation_receipt"
+      ],
+      "required_ci_gate": "verify_cache_invalidation.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Cache",
+      "title": "Cache invalidation proof"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all required concepts are accounted for.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_CONTRACT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheEntry / CacheLookupReceipt",
+      "owner_layer": "00B L4",
+      "priority": "P0",
+      "req_id": "RTC-REQ-067",
+      "required_artifacts": [
+        "l4_cache_state_schema_proof.json"
+      ],
+      "required_ci_gate": "verify_l4_cache_schema.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "required_artifacts",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Cache",
+      "title": "L4 cache state schema fields accounted"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when direct-write negative blocks.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "L2 execution + UWG",
+      "owner_layer": "04 L2 / 00B UWG",
+      "priority": "P1",
+      "req_id": "RTC-REQ-070",
+      "required_artifacts": [
+        "L2SealedArtifact",
+        "StateDiffCandidate",
+        "no_direct_write_receipt"
+      ],
+      "required_ci_gate": "verify_no_l2_direct_write.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "uwg_write_path"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "L4/UWG",
+      "title": "No direct durable write from L2"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when L6 direct write negative blocks.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "L6 learning + UWG",
+      "owner_layer": "06 L6 / 00B UWG",
+      "priority": "P1",
+      "req_id": "RTC-REQ-071",
+      "required_artifacts": [
+        "LearningProposal",
+        "UWGPromotionRequest",
+        "no_direct_write_receipt"
+      ],
+      "required_ci_gate": "verify_no_l6_direct_write.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "uwg_write_path"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "L4/UWG",
+      "title": "No direct durable write from L6"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when complete UWG write chain exists.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Universal Write Gateway",
+      "owner_layer": "00B UWG",
+      "priority": "P1",
+      "req_id": "RTC-REQ-072",
+      "required_artifacts": [
+        "CommitRequest",
+        "StateDiffValidationReceipt",
+        "WriteLockReceipt",
+        "CommitReceipt",
+        "AuditLedgerReceipt",
+        "ReadSurfaceRefreshReceipt"
+      ],
+      "required_ci_gate": "verify_uwg_write_sequence.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash",
+        "uwg_write_path"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "L4/UWG",
+      "title": "UWG write sequence complete"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when refresh or explicit not-required proof exists.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Read surface manager",
+      "owner_layer": "00B L4",
+      "priority": "P1",
+      "req_id": "RTC-REQ-073",
+      "required_artifacts": [
+        "ReadSurfaceRefreshReceipt"
+      ],
+      "required_ci_gate": "verify_l4_read_surface_refresh.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "L4/UWG",
+      "title": "L4 read-surface refresh after commit"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when UNKNOWN fail-closed tests pass.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GateVerdict schema",
+      "owner_layer": "00C Runtime Gates",
+      "priority": "P1",
+      "req_id": "RTC-REQ-080",
+      "required_artifacts": [
+        "gate_verdict_negative_report"
+      ],
+      "required_ci_gate": "verify_gate_schema_invariants.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Gates",
+      "title": "UNKNOWN is never PASS"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when N/A reason enforcement passes.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GateVerdict schema",
+      "owner_layer": "00C Runtime Gates",
+      "priority": "P1",
+      "req_id": "RTC-REQ-081",
+      "required_artifacts": [
+        "gate_verdict_negative_report"
+      ],
+      "required_ci_gate": "verify_gate_schema_invariants.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Gates",
+      "title": "NOT_APPLICABLE requires reason"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when no-overlap law holds.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Gate mesh + Exit",
+      "owner_layer": "00C Runtime Gates / 05 Exit",
+      "priority": "P1",
+      "req_id": "RTC-REQ-082",
+      "required_artifacts": [
+        "no_overlap_report"
+      ],
+      "required_ci_gate": "verify_no_overlap_runtime_gates_exit.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Runtime Gates",
+      "title": "Gate verdicts are not final X3"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when expected and actual fail reasons match.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Negative test harness",
+      "owner_layer": "99 / Runtime Gates",
+      "priority": "P1",
+      "req_id": "RTC-REQ-083",
+      "required_artifacts": [
+        "negative_controls_report"
+      ],
+      "required_ci_gate": "verify_negative_controls.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence",
+        "negative_controls",
+        "expected_fail_reason"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Gates",
+      "title": "Negative controls must match expected fail reason"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when mutation suite passes all configured cases.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Mutation tests",
+      "owner_layer": "99 / Runtime Gates",
+      "priority": "P1",
+      "req_id": "RTC-REQ-084",
+      "required_artifacts": [
+        "mutation_boundary_report"
+      ],
+      "required_ci_gate": "verify_runtime_mutation_boundaries.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Runtime Gates",
+      "title": "No bypass mutation suite required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when no-overlap and handoff tests pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Request intake",
+      "owner_layer": "01 U0",
+      "priority": "P1",
+      "req_id": "RTC-REQ-090",
+      "required_artifacts": [
+        "u0_no_overlap_report",
+        "ValidatedRequest schema"
+      ],
+      "required_ci_gate": "verify_u0_no_overlap.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Layer Ownership",
+      "title": "U0 intake emits validated or rejected request only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when L1 no-overlap tests pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Planning",
+      "owner_layer": "02 L1",
+      "priority": "P1",
+      "req_id": "RTC-REQ-091",
+      "required_artifacts": [
+        "l1_no_overlap_report",
+        "L1PlanContract schema"
+      ],
+      "required_ci_gate": "verify_l1_no_overlap.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Layer Ownership",
+      "title": "L1 plans but does not route/retrieve/execute"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when exact-one and determinism negatives pass.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Route decision",
+      "owner_layer": "03 L0",
+      "priority": "P1",
+      "req_id": "RTC-REQ-092",
+      "required_artifacts": [
+        "RouteContract",
+        "route_determinism_receipt"
+      ],
+      "required_ci_gate": "verify_l0_route_contract.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Layer Ownership",
+      "title": "L0 emits exactly one deterministic RouteContract"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when C0 no-overlap tests pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Context Engine",
+      "owner_layer": "C0",
+      "priority": "P1",
+      "req_id": "RTC-REQ-093",
+      "required_artifacts": [
+        "FinalEvidenceContract",
+        "c0_no_overlap_report"
+      ],
+      "required_ci_gate": "verify_c0_no_overlap.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Layer Ownership",
+      "title": "C0 retrieves evidence only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when PA boundary tests pass.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Prompt Assembly",
+      "owner_layer": "PA",
+      "priority": "P1",
+      "req_id": "RTC-REQ-094",
+      "required_artifacts": [
+        "CompiledPromptArtifact",
+        "pa_no_overlap_report"
+      ],
+      "required_ci_gate": "verify_pa_no_overlap.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Layer Ownership",
+      "title": "Prompt Assembly composes only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when L2 boundary negatives pass.",
+      "allowed_artifact_classes": [
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_component_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "COMPONENT_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Execution",
+      "owner_layer": "04 L2",
+      "priority": "P1",
+      "req_id": "RTC-REQ-095",
+      "required_artifacts": [
+        "SealedL2Artifact",
+        "proposed_state_diff"
+      ],
+      "required_ci_gate": "verify_l2_boundary.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "evidence_manifest_hash"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Layer Ownership",
+      "title": "L2 bounded execution and sealing only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when Exit X3 and no-write proofs pass.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_evidence_chain.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Exit evaluation",
+      "owner_layer": "05 Exit",
+      "priority": "P1",
+      "req_id": "RTC-REQ-096",
+      "required_artifacts": [
+        "ExitReviewPacket",
+        "X3DispositionReceipt",
+        "CommitRequest_when_applicable"
+      ],
+      "required_ci_gate": "verify_exit_x3_no_write.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Layer Ownership",
+      "title": "Exit emits exactly one X3 and does not write L4"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when observer-law negatives pass.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Shadow evaluation",
+      "owner_layer": "06 L6",
+      "priority": "P1",
+      "req_id": "RTC-REQ-097",
+      "required_artifacts": [
+        "RuntimeExhaustBundle",
+        "LearningProposal",
+        "ObserverComplianceReceipt"
+      ],
+      "required_ci_gate": "verify_l6_firewall.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Layer Ownership",
+      "title": "L6 completed-run learning only"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when semantic cache report is complete.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Report generator",
+      "owner_layer": "99 / Reporting",
+      "priority": "P1",
+      "req_id": "RTC-REQ-100",
+      "required_artifacts": [
+        "semantic_cache_certification_report.md"
+      ],
+      "required_ci_gate": "generate_runtime_certification_reports.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Reporting",
+      "title": "Semantic cache certification report required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when runtime report is complete and honest.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Report generator",
+      "owner_layer": "99 / Reporting",
+      "priority": "P1",
+      "req_id": "RTC-REQ-101",
+      "required_artifacts": [
+        "runtime_certification_report.md"
+      ],
+      "required_ci_gate": "generate_runtime_certification_reports.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Reporting",
+      "title": "Runtime certification report required"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when language matches proof class.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Language validator",
+      "owner_layer": "99 / Reporting",
+      "priority": "P1",
+      "req_id": "RTC-REQ-102",
+      "required_artifacts": [
+        "certification_language_report"
+      ],
+      "required_ci_gate": "verify_certification_language.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Reporting",
+      "title": "Certification language scoped by proof class"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when caveats are specific for non-accepted rows.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Language validator",
+      "owner_layer": "99 / Reporting",
+      "priority": "P1",
+      "req_id": "RTC-REQ-103",
+      "required_artifacts": [
+        "certification_language_report"
+      ],
+      "required_ci_gate": "verify_certification_language.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Reporting",
+      "title": "Allowed partial language"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when CI gate exists and passes/fails correctly.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI",
+      "priority": "P0",
+      "req_id": "RTC-REQ-110",
+      "required_artifacts": [
+        "ci_run_result"
+      ],
+      "required_ci_gate": "ci:runtime-certification-schema",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "CI",
+      "title": "Matrix schema CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when acceptance CI gate is fail-closed.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/emit_ci_gate_binding_report.py",
+        "tools/cert/emit_layer_boundary_report.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI",
+      "priority": "P0",
+      "req_id": "RTC-REQ-111",
+      "required_artifacts": [
+        "ci_run_result"
+      ],
+      "required_ci_gate": "ci:runtime-certification-acceptance",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "CI",
+      "title": "Acceptance legality CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when semantic cache CI gate fails closed.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI / L4 Cache",
+      "priority": "P0",
+      "req_id": "RTC-REQ-112",
+      "required_artifacts": [
+        "ci_run_result",
+        "semantic_cache_certification_report"
+      ],
+      "required_ci_gate": "ci:semantic-cache-certification",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "CI",
+      "title": "Semantic cache CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when collector job passes.",
+      "allowed_artifact_classes": [
+        "OTEL_SPAN_EXPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "OBSERVABILITY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI / Observability",
+      "priority": "P0",
+      "req_id": "RTC-REQ-113",
+      "required_artifacts": [
+        "ci_run_result",
+        "collector_receipt"
+      ],
+      "required_ci_gate": "ci:otel-runtime-certification",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "otel_trace"
+      ],
+      "required_proof_depth": "E7_REAL_OTEL_EXPORT",
+      "requirement_group": "CI",
+      "title": "OTEL collector CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when replay CI gate passes.",
+      "allowed_artifact_classes": [
+        "REPLAY_COMPARISON_RECEIPT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_otel_replay.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "REPLAY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI / Replay",
+      "priority": "P0",
+      "req_id": "RTC-REQ-114",
+      "required_artifacts": [
+        "ci_run_result",
+        "replay_report"
+      ],
+      "required_ci_gate": "ci:replay-runtime-certification",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "replay_receipt"
+      ],
+      "required_proof_depth": "E8_REPLAY_DETERMINISM",
+      "requirement_group": "CI",
+      "title": "Replay CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when mutation CI passes.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_semantic_cache_certification.py",
+        "tools/cert/verify_cache_fixture_vs_uwg.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "GitHub/Windsurf CI",
+      "owner_layer": "CI / Runtime Gates",
+      "priority": "P0",
+      "req_id": "RTC-REQ-115",
+      "required_artifacts": [
+        "ci_run_result",
+        "mutation_boundary_report"
+      ],
+      "required_ci_gate": "ci:no-bypass-mutation",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "CI",
+      "title": "No-bypass mutation CI gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when final gate proves all runtime-sensitive rows complete.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": true,
+      "owner_component": "Final certification gate",
+      "owner_layer": "99 / Certification",
+      "priority": "P1",
+      "req_id": "RTC-REQ-120",
+      "required_artifacts": [
+        "final_runtime_certification_report",
+        "all_requirements_gate_result",
+        "merkle_root_report"
+      ],
+      "required_ci_gate": "verify_100_percent_runtime_certification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "100 Percent Standard",
+      "title": "100.0% runtime certification definition"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when coverage language is scoped.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": true,
+      "owner_component": "Final certification gate",
+      "owner_layer": "99 / Certification",
+      "priority": "P1",
+      "req_id": "RTC-REQ-121",
+      "required_artifacts": [
+        "static_enforcement_report"
+      ],
+      "required_ci_gate": "verify_certification_language.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "100 Percent Standard",
+      "title": "100.0% static enforcement coverage separate from runtime certification"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when blocker list is empty for claimed scope.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": true,
+      "owner_component": "Final certification gate",
+      "owner_layer": "99 / Certification",
+      "priority": "P1",
+      "req_id": "RTC-REQ-122",
+      "required_artifacts": [
+        "final_certification_report"
+      ],
+      "required_ci_gate": "verify_100_percent_runtime_certification.py",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "100 Percent Standard",
+      "title": "No scoped blockers in final claim"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when payload hashes are recomputed and match.",
+      "allowed_artifact_classes": [
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "SUBCLAIMS_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "TODO_NO_ATTESTING_VERIFIER:no_bypass_runtime_evidence_unavailable_see_ADR-092",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "NO_BYPASS_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 72,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Artifact manifest verifier",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-123",
+      "required_artifacts": [
+        "artifact_manifest",
+        "payload_hash_report"
+      ],
+      "required_ci_gate": "ci:artifact-payload-hash",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "no_bypass",
+        "runtime_evidence"
+      ],
+      "required_proof_depth": "E4_NEGATIVE_CONTROL",
+      "requirement_group": "Artifact Integrity",
+      "title": "Artifact payload content-hash validation"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when all verifiers agree on repo/output roots.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Verifier bootstrap",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-124",
+      "required_artifacts": [
+        "verifier_environment_manifest"
+      ],
+      "required_ci_gate": "ci:verifier-root-binding",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Certification Source of Truth",
+      "title": "Single repo root and output directory binding"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when threshold passes at production default or ADR-backed recalibration is complete.",
+      "allowed_artifact_classes": [
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_production_dependencies.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "PRODUCTION_DEPENDENCY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "SemanticCacheManager + ADR registry",
+      "owner_layer": "L4 Cache / Governance",
+      "priority": "P0",
+      "req_id": "RTC-REQ-125",
+      "required_artifacts": [
+        "threshold_adr",
+        "calibration_dataset",
+        "threshold_config_receipt"
+      ],
+      "required_ci_gate": "ci:semantic-cache-threshold-adr",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "certifier_signature"
+      ],
+      "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "Semantic cache production-threshold ADR gate"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when actual=expected for production proof or fallback classified as MISMATCH_EXPLAINED/PARTIAL.",
+      "allowed_artifact_classes": [
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_production_dependencies.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "PRODUCTION_DEPENDENCY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "EmbeddingFactory",
+      "owner_layer": "L4 Cache / Model Registry",
+      "priority": "P0",
+      "req_id": "RTC-REQ-126",
+      "required_artifacts": [
+        "embedding_model_receipt",
+        "fallback_policy_receipt"
+      ],
+      "required_ci_gate": "ci:embedding-model-binding",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "certifier_signature"
+      ],
+      "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "Embedding fallback must be explicit fail-closed or mismatch-explained"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when proof classification is sufficient for required depth.",
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "CSV_GATE_RESULT",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_csv_gate.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "STATIC_ENFORCEMENT",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Acceptance validator",
+      "owner_layer": "99 / Certification",
+      "priority": "P0",
+      "req_id": "RTC-REQ-127",
+      "required_artifacts": [
+        "proof_depth_status_report"
+      ],
+      "required_ci_gate": "ci:proof-classification-legality",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "layer_boundary"
+      ],
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "requirement_group": "Runtime Chain",
+      "title": "Composition proof cannot promote final acceptance automatically"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when gate verdict refs are present in Exit review packet.",
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_integrated_runtime.py",
+        "tools/cert/verify_apps_rg_runtime_evidence_chain.py"
+      ],
+      "claim_type": "INTEGRATED_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 48,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Runtime Gates + Exit",
+      "owner_layer": "00C / 05 Exit",
+      "priority": "P1",
+      "req_id": "RTC-REQ-128",
+      "required_artifacts": [
+        "GateVerdictBundle",
+        "ExitReviewPacket",
+        "X1VerdictBundle"
+      ],
+      "required_ci_gate": "ci:gate-exit-consumption",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "otel_trace",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "requirement_group": "Runtime Gates",
+      "title": "Gate verdict bundle consumed by Exit"
+    },
+    {
+      "acceptance_rule": "ACCEPTED only when calibration dataset meets configured minimum and target precision/recall.",
+      "allowed_artifact_classes": [
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "allowed_verifier_commands": [
+        "scripts/verify_rtc_req_production_dependencies.py",
+        "tools/cert/verify_apps_rg_runtime_universal.py"
+      ],
+      "claim_type": "PRODUCTION_DEPENDENCY_RUNTIME",
+      "depends_on_req_ids": [],
+      "fail_closed_if_missing": true,
+      "freshness_hours": 168,
+      "is_final_hundred_percent_row": false,
+      "owner_component": "Semantic cache calibration",
+      "owner_layer": "L4 Cache / Evaluation",
+      "priority": "P1",
+      "req_id": "RTC-REQ-129",
+      "required_artifacts": [
+        "semantic_cache_calibration_dataset.json",
+        "score_distribution_report.md"
+      ],
+      "required_ci_gate": "ci:semantic-cache-calibration",
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "certifier_signature"
+      ],
+      "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
+      "requirement_group": "Semantic Cache",
+      "title": "R1B score distribution calibration dataset"
+    }
+  ],
+  "schema_version": "fortknox-v2",
+  "source_csv_sha256": ""
+}

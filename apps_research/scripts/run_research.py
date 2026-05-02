@@ -31,8 +31,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mode",
         default="brief",
-        choices=["brief", "comparison", "trend", "position", "thought_leadership"],
+        choices=["brief", "comparison", "trend", "position", "thought_leadership", "company"],
         help="Artifact mode",
+    )
+    parser.add_argument(
+        "--jd-anchor",
+        default="",
+        help="Path to job_description.json for facet weighting (mode=company)",
+    )
+    parser.add_argument(
+        "--depth",
+        default="standard",
+        choices=["shallow", "standard", "deep"],
+        help="Research depth (mode=company)",
     )
     parser.add_argument(
         "--audience",
@@ -63,11 +74,70 @@ def main() -> int:
     )
 
     from agentic_core.runtime.contracts.otel_lifecycle_bridge import otel_lifecycle_capture
+
+    if args.mode == "company":
+        with otel_lifecycle_capture(
+            mission="apps_research.run_research.company", app_id="apps_research"
+        ):
+            return _run_company_brief(args)
+
     from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
     from apps_research.types.research_types import ResearchRequest
 
     with otel_lifecycle_capture(mission="apps_research.run_research", app_id="apps_research"):
         return _run_research(args, ResearchOrchestrator, ResearchRequest)
+
+
+def _run_company_brief(args) -> int:
+    """Mode-company entrypoint.
+
+    Persists a CompanyBrief JSON under <out>/company_research.json and
+    validates it with the apps_rg pydantic schema before returning.
+    """
+    from datetime import datetime, timezone
+
+    from apps_research.engines.company_brief_engine import CompanyBriefEngine
+
+    try:
+        output_dir = Path(_normalize_output_dir(args.out))
+    except ValueError as exc:
+        _log.error(str(exc))
+        return 1
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    run_dir = output_dir / "runs" / timestamp
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    engine = CompanyBriefEngine()
+    payload = {
+        "topic": args.topic,
+        "jd_anchor": args.jd_anchor or None,
+        "depth": args.depth,
+    }
+    try:
+        brief = engine.execute(payload)
+    except (ValueError, RuntimeError) as exc:
+        _log.error("CompanyBriefEngine failed: %s", exc)
+        return 1
+
+    target = run_dir / "company_research.json"
+    target.write_text(json.dumps(brief, indent=2, sort_keys=True), encoding="utf-8")
+
+    # Optional pydantic validation — best-effort, surfaces shape errors early.
+    try:
+        from apps_rg.types.company_research import CompanyBrief
+
+        CompanyBrief.model_validate(brief)
+    except ImportError:
+        pass
+    except Exception as exc:  # guardian: allow-broad-exception -- pydantic v1/v2 raise heterogeneous; surface but do not abort write
+        _log.warning("CompanyBrief schema validation warning: %s", exc)
+
+    if args.json_output:
+        print(json.dumps({"status": "complete", "artifact": str(target)}, indent=2))
+    else:
+        print(f"[apps_research] Wrote company brief to {target}")
+    return 0
 
 
 def _run_research(args, ResearchOrchestrator, ResearchRequest) -> int:

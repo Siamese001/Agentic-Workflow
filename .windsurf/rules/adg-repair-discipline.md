@@ -3,11 +3,7 @@ trigger: model_decision
 description: Use this rule when diagnosing or repairing ADG graph failures, running the ADG repair loop, or resolving graph analysis errors before T2/T3 work.
 ---
 
-> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
->
-> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
->
-> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
 
 # ADG Repair Discipline — Constitutional Rule §ADG-1
 

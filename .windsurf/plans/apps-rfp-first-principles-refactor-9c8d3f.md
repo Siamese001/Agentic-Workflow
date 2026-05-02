@@ -1,7 +1,10 @@
 # Apps_RFP First-Principles Refactor — Phase 0 & 1 Only
 
-Status: **W0+W1 done; W2+ gated on three-bucket completion**
-Last updated: 2026-04-29
+> **Superseded for W0.1 verification (only)**: 2026-05-01 by `apps-portfolio-integrated-evaluation-7d3a91.md` W0/W2.
+> The MULTI_AGENT verification (`ADR-rfp-multi-agent-justification` §Verification) was executed in the integrated plan and the ADR moved to **Accepted**. This plan's W2+ remains gated on three-bucket as originally documented.
+
+Status: **W0+W1 done; W0.1 verification done in integrated plan; W2+ gated on three-bucket completion**
+Last updated: 2026-05-01
 Created: 2026-04-29
 Owner: Cascade
 Plan slug: `apps-rfp-first-principles-refactor-9c8d3f`

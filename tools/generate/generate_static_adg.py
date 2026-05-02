@@ -240,7 +240,13 @@ class CleanLayerVisitor(ast.NodeVisitor):
         """Infer layer from file path."""
         rel_path = self.source_file.replace("\\", "/")
 
-        if "L0_routing" in rel_path:
+        # Neutral shared layer — MUST check before L0-L6 since `_shared` lives
+        # under `agentic_core/` but is NOT a numbered layer. Per ADR-081, this
+        # package holds types/constants consumed cross-layer without creating
+        # gravity violations. See agentic_core/_shared/__init__.py.
+        if "agentic_core/_shared" in rel_path:
+            return "L_SHARED"
+        elif "L0_routing" in rel_path:
             return "L0"
         elif "L1_cognition" in rel_path:
             return "L1"

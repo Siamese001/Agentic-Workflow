@@ -41,6 +41,26 @@ ttl_config = repo_root / ".windsurf" / "config" / "mcp_serialization_ttl.json"
 # `<invoke name="...">`) to reduce false positives from prose mentions.
 _MCP_NAME_RE = re.compile(r"\bmcp\d+_[A-Za-z0-9_\-]+\b")
 
+# Pattern for stripping the `mcpN_` server-index prefix from a tool name.
+# Server indexes shift when `.windsurf/mcp_config.json` is reordered; the
+# tool-name suffix is stable per server identity. We classify remote vs local
+# off the suffix.
+_MCP_PREFIX_STRIP_RE = re.compile(r"^mcp\d+_")
+
+# Tool-name suffix patterns identifying REMOTE / network-bound MCP servers.
+# Calls to these MUST be serialized (no siblings in the same function_calls
+# block); calls to any other MCP server are LOCAL and may batch freely.
+# Empirically derived from the Anthropic upstream race issues, which manifest
+# in concurrent dispatch through HTTP/proxy transport (notion, tavily, etc.),
+# not in local stdio subprocesses.
+_REMOTE_MCP_SUFFIX_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^API-"),                                                # notion
+    re.compile(r"^tavily[_-]"),                                          # tavily
+    re.compile(r"^(ask_question|read_wiki_)"),                           # deepwiki
+    re.compile(r"^(query-docs|resolve-library-id)$"),                    # context7
+    re.compile(r"^(git_|gitkraken_|gitlens_|issues_|pull_request_|repository_)"),  # GitKraken
+)
+
 # Native Cascade tools that can be batched freely with each other but NOT
 # with an mcp*_ call. This set is the authoritative allow-list; anything
 # not here and not mcp*_ is treated as unknown (ignored).
@@ -127,10 +147,19 @@ def _is_bypass() -> bool:
 
 
 def _classify(tool_name: str) -> str:
-    """Return one of ``{"mcp", "native", "unknown"}`` for a tool name."""
+    """Return one of ``{"mcp_remote", "mcp_local", "native", "unknown"}``.
+
+    Remote MCPs go through the HTTP/proxy transport layer that exhibits the
+    Anthropic SDK concurrent-dispatch race; their calls must be serialized.
+    Local stdio MCPs run as same-machine subprocesses and may batch freely.
+    """
 
     if _MCP_NAME_RE.fullmatch(tool_name):
-        return "mcp"
+        suffix = _MCP_PREFIX_STRIP_RE.sub("", tool_name)
+        for pattern in _REMOTE_MCP_SUFFIX_PATTERNS:
+            if pattern.search(suffix):
+                return "mcp_remote"
+        return "mcp_local"
     if tool_name in _NATIVE_TOOL_NAMES:
         return "native"
     return "unknown"
@@ -140,8 +169,13 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
     """Scan *response_text* and return any serialization violations.
 
     A violation is any ``<function_calls>`` block that contains:
-    - ≥1 MCP tool call AND ≥1 non-MCP tool call (mixed-batch violation), OR
-    - ≥2 MCP tool calls (multi-MCP violation).
+    - ≥1 remote MCP call AND ≥1 sibling tool call (local MCP, native, or
+      another remote MCP) — the remote MCP races against the sibling
+      dispatch through the HTTP/proxy transport.
+    - ≥2 remote MCP calls in the same batch (any combination).
+
+    All-local-MCP, all-native, and mixed local-MCP+native batches are
+    compliant (not flagged) under the 2026-05-01 hardened scope.
     """
 
     violations: list[dict[str, Any]] = []
@@ -155,18 +189,25 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
         if len(tool_names) < 2:
             continue  # single-call batches are always compliant
 
-        mcp_calls = [name for name in tool_names if _classify(name) == "mcp"]
-        non_mcp_calls = [name for name in tool_names if _classify(name) != "mcp"]
+        classifications = [(name, _classify(name)) for name in tool_names]
+        remote_mcp_calls = [n for n, c in classifications if c == "mcp_remote"]
+        local_mcp_calls = [n for n, c in classifications if c == "mcp_local"]
+        # Treat "unknown" as native for violation purposes — anything that
+        # isn't classifiable as MCP counts as a sibling of any remote MCP.
+        native_calls = [n for n, c in classifications if c in ("native", "unknown")]
 
-        if not mcp_calls:
-            continue  # all-native batch — allowed, not our concern
+        if not remote_mcp_calls:
+            continue  # batches without any remote MCP are compliant under hardened scope
 
-        if len(mcp_calls) >= 2:
-            violation_type = "multi_mcp_in_single_batch"
-        elif non_mcp_calls:
-            violation_type = "mcp_mixed_with_native"
+        # We have at least one remote MCP and at least 2 total calls -> violation
+        if len(remote_mcp_calls) >= 2:
+            violation_type = "multi_remote_mcp_in_single_batch"
+        elif local_mcp_calls and not native_calls:
+            violation_type = "remote_mcp_mixed_with_local_mcp"
+        elif native_calls and not local_mcp_calls:
+            violation_type = "remote_mcp_mixed_with_native"
         else:
-            continue  # defensive — shouldn't be reachable
+            violation_type = "remote_mcp_mixed_with_local_mcp_and_native"
 
         violations.append(
             {
@@ -175,16 +216,19 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
                 "severity": "error",
                 "block_index": block_idx,
                 "tool_names": tool_names,
-                "mcp_calls": mcp_calls,
-                "non_mcp_calls": non_mcp_calls,
-                "mcp_count": len(mcp_calls),
+                "remote_mcp_calls": remote_mcp_calls,
+                "local_mcp_calls": local_mcp_calls,
+                "native_calls": native_calls,
+                "remote_mcp_count": len(remote_mcp_calls),
                 "remediation": (
-                    "Split MCP tool call into its own response (no sibling tools)."
-                    " If equivalent data is available on disk (artifacts/adg/*.sqlite,"
-                    " .windsurf/, working tree), read it directly instead of calling MCP."
+                    "Split each remote MCP tool call into its own response (no sibling tools)."
+                    " Local MCPs (adg_sqlite, redis, memory, filesystem, vector_db, pytest_mcp,"
+                    " otel_mcp, task_manager, playwright) may batch freely with each other and"
+                    " with native tools."
                 ),
-                "rule": "constitutional.md §25, mcp-serialization.md",
+                "rule": "constitutional.md §25, mcp-serialization.md (hardened 2026-05-01)",
                 "upstream": "anthropics/claude-agent-sdk-typescript#41",
+                "scope": "remote-only-since-2026-05-01",
             }
         )
 

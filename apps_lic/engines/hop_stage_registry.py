@@ -1,13 +1,33 @@
-"""HOP Pipeline Stage Registry.
+"""HOP Pipeline Stage Registry — DEPRECATED 2026-05-01.
 
-Maps stage_id → handler function for HOPPipelineExecutor.
-Stage-specific _process logic is preserved here from the original HOP agents.
-Created: 2026-02-08 (Structural Agent Count Reduction)
+This registry's stage handlers are one-line stubs (returning
+``{"status": "processed"}``); the real domain logic was lost in the
+2026-02-08 consolidation and never re-added here. As of plan
+.windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2) the canonical
+apps_lic pipeline lives in:
+
+- ``apps_lic.config.hop_pipeline.REGISTRY`` — topology
+- ``apps_lic/engines/<stage>_engine.py`` — per-stage domain logic
+- ``apps_lic.reasoning.LicCampaignOrchestrator`` — thin runner
+- ``apps_shared.orchestration.HopPipelineExecutor`` — shared substrate
+
+This module is retained only as a deprecation shim for existing tests
+(``tests/unit/apps_lic/reasoning/test_hop_pipeline_executor.py``).
+New callers MUST use the canonical path above.
 """
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, Callable
+
+warnings.warn(
+    "apps_lic.engines.hop_stage_registry is deprecated since 2026-05-01. "
+    "Use apps_lic.config.hop_pipeline.REGISTRY + "
+    "apps_lic.reasoning.LicCampaignOrchestrator.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 _REGISTRY: dict[int, Callable] = {}
 

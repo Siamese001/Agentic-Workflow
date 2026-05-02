@@ -35,7 +35,7 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import (
+from agentic_core.L2_execution.healers.healing_cascade_registry import (
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
 )

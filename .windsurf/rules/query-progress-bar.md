@@ -1,12 +1,9 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Use when authoring code that contains loops over >10 items, subprocess calls, or functions named scan_/build_/query_/search_/analyze_ with body >15 lines — enforces colored progress bar with ETA. CI gate `check_query_progress_bar.py` is the deterministic enforcement layer; this rule is the advisory detail.
 ---
 
-> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
->
-> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
->
-> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
 
 # Query Progress Bar — Mandatory for Long Operations
 

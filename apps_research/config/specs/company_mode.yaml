@@ -1,0 +1,21 @@
+mode: company
+description: |
+  Company intelligence research producing a structured CompanyBrief
+  conforming to apps_rg/schemas/company_research.schema.json. Used by
+  apps_rg HOP-0.6-COMPANY-RESEARCH for narrative generation.
+required_inputs:
+  - topic
+optional_inputs:
+  - jd_anchor
+  - depth
+output_schema: apps_rg/schemas/company_research.schema.json
+governance:
+  inherits: governed_research_run
+  emit_artifacts:
+    - route_contract
+    - final_evidence_contract
+    - sealed_l2_artifact
+    - exit_review_packet
+defaults:
+  depth: standard
+  freshness_ttl_days: 30

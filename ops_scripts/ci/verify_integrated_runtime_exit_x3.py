@@ -24,6 +24,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 from _w2_verifier_common import (
     EXIT_HARNESS_ERROR,
+    detect_chain_kind,
     fail,
     load_payload,
     passed,
@@ -35,7 +36,17 @@ VALID_X3 = {"X3A", "X3B", "X3C", "X3D", "X3E", "X3F"}
 
 def main(argv: list[str]) -> int:
     art_dir = resolve_artifact_dir(argv[1] if len(argv) > 1 else None)
-    print(f"[verify_integrated_runtime_exit_x3] artifact_dir={art_dir}")
+    kind = detect_chain_kind(art_dir)
+    print(f"[verify_integrated_runtime_exit_x3] artifact_dir={art_dir} chain_kind={kind}")
+
+    if kind == "MANAGED_WORKFLOW":
+        # MW chain has no terminal_ret_packet (no cache-reuse path).
+        # The generic exit/X3 assertions are verified by
+        # verify_spine_proof_bundle.py's ref checks instead.
+        return passed(
+            "MW chain has no terminal_ret_packet; "
+            "X3 shape enforced by verify_spine_proof_bundle"
+        )
 
     try:
         terminal = load_payload(art_dir, "terminal_ret_packet.json")

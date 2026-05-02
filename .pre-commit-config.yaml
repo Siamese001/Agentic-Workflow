@@ -604,6 +604,54 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
+      # Sums bytes of all .windsurf/rules/*.md with `trigger: always_on` and
+      # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic
+      # "Architecture of Agentic RAG" (Apr 2026): always-on rules >50 KB
+      # trigger autonomous context compaction, where the model arbitrarily
+      # discards instructions to free space.
+      # Bypass: ALWAYS_ON_BUDGET_BYPASS=1
+      # Rule SSOT: docs/reference/_notes/Claude RAG Rules and Skills.pdf
+      - id: always-on-token-budget
+        name: "T7r: Always-On Token Budget (Anthropic 50 KB)"
+        entry: py ops_scripts/ci/check_always_on_token_budget.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
+      # Three gates wired independently (separation of duties):
+      #   * clean-bundle gate: compiler + bundle verifier agree, trust_level != FAILED
+      #   * mutation-rejection gate: every adversarial mutation is rejected
+      #   * positive-control gate: RTC-REQ-001 remains SIGNED_OFF (canary)
+      # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (all three honor the same env var).
+      # Rule SSOT: .windsurf/rules/fortknox-certification-discipline.md
+      # Author-Gate trigger: .windsurf/rules/author-gate-decision-points.md §1.11
+      - id: fortknox-clean-bundle
+        name: "T7s.1: Fort Knox clean-bundle (§32)"
+        entry: py ops_scripts/ci/check_fortknox_clean_bundle.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      - id: fortknox-mutation-rejection
+        name: "T7s.2: Fort Knox mutation rejection (§32)"
+        entry: py ops_scripts/ci/check_fortknox_mutation_rejection.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      - id: fortknox-positive-control
+        name: "T7s.3: Fort Knox positive control (§32)"
+        entry: py ops_scripts/ci/check_fortknox_positive_control.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T7r: apps_* spine delegation (ADR-078) ----------------------------------
       # Asserts every apps_*/ top-level package imports the agentic_core spine
       # (L0_routing | L1_cognition | L2_execution). Catches the forbidden

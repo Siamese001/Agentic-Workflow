@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fortknox/requirements_source.schema.json",
+  "title": "Fort Knox Requirements Source",
+  "description": "Canonical declaration of what must be proven. Authored once, never computed.",
+  "type": "object",
+  "required": ["schema_version", "generated_at_utc", "requirements"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"type": "string", "const": "fortknox-v2"},
+    "generated_at_utc": {"type": "string"},
+    "source_csv_sha256": {"type": "string"},
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/Requirement"}
+    }
+  },
+  "$defs": {
+    "Requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "req_id",
+        "title",
+        "priority",
+        "requirement_group",
+        "claim_type",
+        "required_proof_depth",
+        "acceptance_rule",
+        "fail_closed_if_missing",
+        "depends_on_req_ids",
+        "is_final_hundred_percent_row",
+        "required_controls",
+        "allowed_verifier_commands",
+        "allowed_artifact_classes",
+        "freshness_hours"
+      ],
+      "properties": {
+        "req_id": {"type": "string", "pattern": "^RTC-REQ-\\d{3}$"},
+        "title": {"type": "string", "minLength": 1},
+        "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+        "requirement_group": {"type": "string", "minLength": 1},
+        "claim_type": {
+          "type": "string",
+          "enum": [
+            "STATIC_ENFORCEMENT",
+            "STATIC_CONTRACT",
+            "COMPONENT_RUNTIME",
+            "COMPOSITION_RUNTIME",
+            "INTEGRATED_RUNTIME",
+            "OBSERVABILITY_RUNTIME",
+            "REPLAY_RUNTIME",
+            "NO_BYPASS_RUNTIME",
+            "PRODUCTION_DEPENDENCY_RUNTIME"
+          ]
+        },
+        "required_proof_depth": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical tokens: E1..E9 (legacy) or STATIC_EVIDENCE/RUNTIME_EVIDENCE/INTEGRATED_EVIDENCE/OBSERVABILITY_EVIDENCE/ADVERSARIAL_EVIDENCE."
+        },
+        "acceptance_rule": {"type": "string", "minLength": 1},
+        "fail_closed_if_missing": {"type": "boolean"},
+        "depends_on_req_ids": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^RTC-REQ-\\d{3}$"}
+        },
+        "is_final_hundred_percent_row": {"type": "boolean"},
+        "required_controls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/ControlName"}
+        },
+        "supplemental_controls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ControlName"},
+          "default": []
+        },
+        "artifactless_controls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ControlName"},
+          "description": "Controls that are explicitly allowed to have NO artifact. Strongly discouraged.",
+          "default": []
+        },
+        "allowed_verifier_commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "description": "Exact verifier command strings allowed to generate assertions for this row."
+        },
+        "allowed_artifact_classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/ArtifactClass"}
+        },
+        "freshness_hours": {"type": "integer", "minimum": 1, "maximum": 8760},
+        "required_ci_gate": {"type": ["string", "null"]},
+        "required_artifacts": {"type": "array", "items": {"type": "string"}, "default": []},
+        "owner_component": {"type": ["string", "null"]},
+        "owner_layer": {"type": ["string", "null"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "ControlName": {
+      "type": "string",
+      "enum": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "artifact_payload_hash",
+        "evidence_manifest_hash",
+        "source_root_binding",
+        "ci_gate",
+        "layer_boundary",
+        "runtime_evidence",
+        "otel_trace",
+        "replay_receipt",
+        "no_bypass",
+        "negative_controls",
+        "expected_fail_reason",
+        "uwg_write_path",
+        "positive_evidence",
+        "merkle_leaf",
+        "certifier_signature",
+        "required_artifacts"
+      ]
+    },
+    "ArtifactClass": {
+      "type": "string",
+      "enum": [
+        "STATIC_VERIFIER_REPORT",
+        "STATIC_SCAN_REPORT",
+        "COMPONENT_RUNTIME_PROOF",
+        "INTEGRATED_RUNTIME_BUNDLE",
+        "OTEL_SPAN_EXPORT",
+        "REPLAY_COMPARISON_RECEIPT",
+        "NEGATIVE_CONTROL_REPORT",
+        "UWG_WRITE_RECEIPT",
+        "LAYER_BOUNDARY_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE",
+        "PRODUCTION_DEPENDENCY_PROOF",
+        "ACCEPTANCE_LEGALITY_REPORT",
+        "CSV_GATE_RESULT",
+        "SUBCLAIMS_REPORT"
+      ]
+    }
+  }
+}

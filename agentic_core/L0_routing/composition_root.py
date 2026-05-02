@@ -123,8 +123,116 @@ def install_default_resolvers() -> None:
 install_default_resolvers()
 
 
+# ---------------------------------------------------------------------------
+# Scenario runner hook for the standalone agentic_core spine harness.
+#
+# Consumed by ``tools/certification/agentic_core_e2e/run_core_proof.py``. Each
+# scenario returns a dict with an explicit ``status`` field:
+#
+#   * ``ran``             — scenario executed through real spine pieces and
+#                           the harness should mark it as a pass.
+#   * ``not_implemented`` — hook is present but the underlying spine scenario
+#                           runner is not wired yet. Honest fail-closed.
+#   * ``error``           — scenario attempted and failed with evidence.
+#   * ``skipped``         — scenario intentionally out of scope (e.g. requires
+#                           a transitional integration not appropriate here).
+#
+# Contract: inputs are exactly ``scenario_id: str``. The hook MUST NOT raise;
+# it MUST return a dict. Scenario catalogue SSOT:
+# ``tools/certification/agentic_core_e2e/scenarios.py::CORE_SCENARIOS``.
+# ---------------------------------------------------------------------------
+
+SCENARIO_STATUS_RAN = "ran"
+SCENARIO_STATUS_NOT_IMPLEMENTED = "not_implemented"
+SCENARIO_STATUS_SKIPPED = "skipped"
+SCENARIO_STATUS_ERROR = "error"
+
+_NOT_IMPLEMENTED_REASON = (
+    "spine scenario runner not wired at L0 yet. The hook is present so the "
+    "apps_e2e auditability harness can locate it, but the underlying "
+    "orchestration (U0 validated request construction, L1 planning, L0 route "
+    "contract emission, Exit review packet assembly, L6 exhaust handoff) must "
+    "be invokable from a single entrypoint for this scenario to execute. See "
+    "agentic_core/L3_orchestration/ for the orchestration pieces that a future "
+    "implementer would wire into this hook."
+)
+
+
+def _run_terminal_cache_scenario() -> dict:
+    """Terminal-cache scenario — the only scenario with an invokable primitive.
+
+    Exercises the real L4 evidence resolver (already wired by
+    :func:`install_default_resolvers` above). The fail-closed default returns
+    ``False`` for every evidence id — itself a spine behaviour under test. We
+    assert the resolver is installed and responds deterministically.
+
+    This is a structural, not full end-to-end, scenario pass. It proves the
+    L0 composition root is functional without crossing into L1/L2/L3.
+    """
+    if not _INSTALLED:
+        return {
+            "status": SCENARIO_STATUS_NOT_IMPLEMENTED,
+            "reason": "evidence resolver was never installed; L4 cache absent",
+        }
+    # The default resolver must be deterministic: same id → same answer.
+    probe_id = "agentic_core_e2e_probe_never_registered"
+    first = _composed_resolver(probe_id)
+    second = _composed_resolver(probe_id)
+    if first != second:
+        return {
+            "status": SCENARIO_STATUS_ERROR,
+            "reason": f"non-deterministic resolver: {first!r} vs {second!r}",
+        }
+    return {
+        "status": SCENARIO_STATUS_RAN,
+        "probe_id": probe_id,
+        "resolver_fail_closed_default": first is False,
+        "resolver_deterministic": True,
+        "reason": (
+            "L0 composition root live: evidence resolver installed, "
+            "deterministic, and fail-closed by default."
+        ),
+    }
+
+
+def run_scenario(scenario_id: str) -> dict:
+    """Dispatch one core spine scenario by id. Contract: never raises."""
+    dispatch = {
+        "terminal_cache": _run_terminal_cache_scenario,
+    }
+    if not isinstance(scenario_id, str):
+        return {
+            "status": SCENARIO_STATUS_ERROR,
+            "scenario_id": repr(scenario_id),
+            "reason": f"scenario_id must be str, got {type(scenario_id).__name__}",
+        }
+    runner = dispatch.get(scenario_id)
+    if runner is None:
+        return {
+            "status": SCENARIO_STATUS_NOT_IMPLEMENTED,
+            "scenario_id": scenario_id,
+            "reason": _NOT_IMPLEMENTED_REASON,
+            "implemented_scenarios": sorted(dispatch.keys()),
+        }
+    try:
+        return runner()
+    except (RuntimeError, ValueError, TypeError, LookupError, AttributeError) as exc:
+        # guardian: allow-return-none-swallow -- scenario hook must never
+        # raise into the harness; convert to a structured error record.
+        return {
+            "status": SCENARIO_STATUS_ERROR,
+            "scenario_id": scenario_id,
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+
+
 __all__ = [
+    "SCENARIO_STATUS_ERROR",
+    "SCENARIO_STATUS_NOT_IMPLEMENTED",
+    "SCENARIO_STATUS_RAN",
+    "SCENARIO_STATUS_SKIPPED",
     "clear_evidence_source",
     "install_default_resolvers",
     "register_evidence_source",
+    "run_scenario",
 ]

@@ -1,0 +1,103 @@
+# Required-Evidence Matrix — SSOT for formula-driven sign-off
+#
+# Per plan `runtime-cert-formula-driven-signoff-a8f5c2.md` §2.3.
+#
+# For each `claim_type`, this matrix names the evidence-input fields
+# (cols 37-62 of the XLSX Requirements_Full_Overwrite sheet) that MUST
+# be PASS/TRUE for the formula in `computed_signoff_status` to emit
+# `SIGNED_OFF`.
+#
+# Formula behavior:
+#   SIGNED_OFF iff verifier_status=PASS AND all claim_type-required
+#                  evidence-input fields are TRUE
+#   BLOCKED    iff verifier_status=BLOCKED OR any required gate is FALSE
+#   NOT_VERIFIED otherwise
+#
+# Universal gates (applied to every claim_type when present and TRUE):
+#   - last_verified_at_utc must be a non-empty ISO timestamp
+#
+# Field-name keys map directly to XLSX column header names.
+
+schema_version: 1
+
+universal_required_inputs:
+  - verifier_status            # must equal "PASS"
+  - verifier_exit_code         # must equal 0
+  - last_verified_at_utc       # must be non-empty ISO timestamp
+
+per_claim_type_required:
+
+  MATRIX_GOVERNANCE:
+    - ci_gate_verified
+
+  STATIC_ENFORCEMENT:
+    - ci_gate_verified
+    - layer_boundary_verified
+
+  STATIC_CONTRACT:
+    - required_artifacts_verified
+    - artifact_payload_hash_verified
+
+  COMPONENT_RUNTIME:
+    - runtime_evidence_verified
+    - evidence_manifest_hash_verified
+
+  INTEGRATED_RUNTIME:
+    - runtime_evidence_verified
+    - otel_trace_verified
+    - source_root_binding_verified
+    - artifact_payload_hash_verified
+
+  NO_BYPASS_RUNTIME:
+    - no_bypass_verified
+    - runtime_evidence_verified
+
+  COMPOSITION_RUNTIME:
+    - runtime_evidence_verified
+    - positive_evidence_verified
+
+  OBSERVABILITY_RUNTIME:
+    - otel_trace_verified
+
+  REPLAY_RUNTIME:
+    - replay_receipt_verified
+
+  PRODUCTION_DEPENDENCY_RUNTIME:
+    - runtime_evidence_verified
+    - certifier_signature_verified
+
+# Formula-owned columns (NEVER manually edited; only the formula writes here):
+formula_owned_columns:
+  - computed_acceptance_status   # col 65
+  - computed_signoff_status      # col 66
+  - computed_blocking_gap        # col 67
+  - manual_override_detected     # col 68
+
+# Evidence-input columns (the only writable surface per-wave):
+evidence_input_columns:
+  - verifier_status                        # col 37
+  - verifier_exit_code                     # col 38
+  - verifier_report_artifact               # col 39
+  - verifier_report_sha256                 # col 40
+  - evidence_manifest_artifact             # col 41
+  - evidence_manifest_sha256               # col 42
+  - evidence_manifest_hash_verified        # col 43
+  - required_artifacts_verified            # col 44
+  - positive_evidence_verified             # col 45
+  - negative_controls_verified             # col 46
+  - expected_fail_reason_verified          # col 47
+  - ci_gate_verified                       # col 48
+  - runtime_evidence_verified              # col 49
+  - otel_trace_verified                    # col 50
+  - replay_receipt_verified                # col 51
+  - no_bypass_verified                     # col 52
+  - uwg_write_path_verified                # col 53
+  - layer_boundary_verified                # col 54
+  - source_root_binding_verified           # col 55
+  - artifact_payload_hash_verified         # col 56
+  - merkle_leaf_verified                   # col 57
+  - proof_depth_verified                   # col 58
+  - certifier_identity                     # col 59
+  - certifier_signature_artifact           # col 60
+  - certifier_signature_verified           # col 61
+  - last_verified_at_utc                   # col 62

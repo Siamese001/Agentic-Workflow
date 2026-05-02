@@ -103,24 +103,44 @@ class TestCompositionRoot:
         assert second_installed
 
     def test_install_default_resolvers_l4_import_failure(self):
-        """Test install handles L4 cache import failure gracefully."""
-        composition_root._INSTALLED = False
+        """Test install handles L4 cache import failure gracefully.
 
-        with patch(
-            "agentic_core.L0_routing.composition_root.set_evidence_resolver",
-            side_effect=ImportError("L4 not available"),
-        ):
+        `install_default_resolvers` imports ``set_evidence_resolver`` locally
+        inside a try/except ImportError (guardian: L4 cache is optional at
+        L0 boot). To exercise that branch we simulate a real import failure
+        by shadowing the source module in ``sys.modules`` with ``None``,
+        which forces ``from agentic_core.L4_state... import ...`` to raise
+        ModuleNotFoundError (a subclass of ImportError).
+        """
+        import sys as _sys
+
+        composition_root._INSTALLED = False
+        target = "agentic_core.L4_state.utils.memory.semantic_cache_manager"
+        original = _sys.modules.get(target, _sys.modules)
+        _sys.modules[target] = None  # type: ignore[assignment]
+        try:
             # Should not raise, just log and return
             composition_root.install_default_resolvers()
             # Installation flag should remain False due to import failure
             assert composition_root._INSTALLED is False
+        finally:
+            if original is _sys.modules:
+                del _sys.modules[target]
+            else:
+                _sys.modules[target] = original
 
     def test_install_default_resolvers_success(self):
-        """Test successful installation wires the composed resolver."""
+        """Test successful installation wires the composed resolver.
+
+        Patches the source module's binding (``semantic_cache_manager``)
+        rather than the re-imported reference inside composition_root,
+        because the latter is a function-local import and therefore not
+        a module-level attribute.
+        """
         composition_root._INSTALLED = False
 
         with patch(
-            "agentic_core.L0_routing.composition_root.set_evidence_resolver"
+            "agentic_core.L4_state.utils.memory.semantic_cache_manager.set_evidence_resolver"
         ) as mock_set_resolver:
             composition_root.install_default_resolvers()
             mock_set_resolver.assert_called_once_with(

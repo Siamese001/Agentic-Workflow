@@ -124,6 +124,13 @@ class GovernedE2ERunRecord:
     l5_error: str = ""
     l6_error: str = ""
     hitl_error: str = ""
+    # ── Inner-DAG HOP checkpoints (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+    # Populated by ResearchHopOrchestrator after the outer substrate run.
+    # Shape: tuple of dicts with keys stage_id/stage_name/status/duration_ms/error.
+    # Default empty tuple preserves back-compat for callers that existed
+    # before the inner DAG was wired in.
+    hop_checkpoints: tuple[dict, ...] = ()
+    hop_terminal_error: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -183,12 +190,79 @@ class GovernedResearchRun(GovernedAppRunner):
             run_id=run_id,
             inject_chunks=inject_chunks,
         )
+
+        # ── Inner-DAG HOP pipeline (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+        # Run the 3-stage apps_research HOP pipeline after the substrate returns.
+        # Isolated helper so inner-DAG failures cannot take down substrate
+        # record assembly — mirror of apps_lic Wave 2.5 posture.
+        hop_payload = self._run_hop_pipeline(
+            request=request,
+            run_id=run_id,
+            trace_id=request.trace_id or "",
+        )
+
         # W5: build_app_record handles all substrate fields automatically.
         # apps_research renames `query` -> `topic`; everything else is name-matched.
         return build_app_record(
             GovernedE2ERunRecord, core,
             aliases={"topic": "query"},
+            hop_checkpoints=hop_payload["checkpoints"],
+            hop_terminal_error=hop_payload["terminal_error"],
         )
+
+    # ------------------------------------------------------------------
+    # Inner-DAG driver (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9)
+    # ------------------------------------------------------------------
+
+    def _run_hop_pipeline(
+        self,
+        *,
+        request: ResearchRequest,
+        run_id: str,
+        trace_id: str,
+    ) -> dict[str, Any]:
+        """Execute the 3-stage apps_research HOP pipeline.
+
+        Isolated helper so failure modes cannot take down the substrate
+        record assembly — any exception inside the HOP pipeline is
+        captured and surfaced via ``hop_terminal_error`` instead of
+        propagating.
+        """
+        try:
+            # Lazy import keeps the substrate-only import surface unchanged
+            # for existing consumers that don't exercise the inner DAG.
+            from apps_research.reasoning.ResearchHopOrchestrator import (  # noqa: PLC0415
+                ResearchHopOrchestrator,
+            )
+
+            orchestrator = ResearchHopOrchestrator()
+            record = orchestrator.run(
+                context={"research_request": request},
+                run_id=run_id,
+                trace_id=trace_id,
+            )
+            checkpoints = tuple(
+                {
+                    "stage_id": cp.stage_id,
+                    "stage_name": cp.stage_name,
+                    "status": cp.status.value,
+                    "duration_ms": cp.duration_ms,
+                    "error": cp.error,
+                }
+                for cp in record.checkpoints
+            )
+            return {
+                "checkpoints": checkpoints,
+                "terminal_error": record.terminal_error,
+            }
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, ImportError) as exc:
+            # guardian: allow-broad-exception -- inner-DAG failures must not
+            # destroy the substrate record; surface as terminal_error and
+            # continue to record assembly.
+            return {
+                "checkpoints": (),
+                "terminal_error": f"hop_pipeline_error: {type(exc).__name__}: {exc}",
+            }
 
 
 # ----------------------------------------------------------------------

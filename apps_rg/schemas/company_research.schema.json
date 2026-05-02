@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompanyBrief",
+  "type": "object",
+  "required": ["company", "fetched_at", "source", "freshness_ttl_days", "overview", "strategic_priorities", "customer_profile", "language_to_mirror"],
+  "properties": {
+    "company": {"type": "string"},
+    "fetched_at": {"type": "string", "format": "date-time"},
+    "source": {"enum": ["user_uploaded", "tavily_research", "apps_research", "manual"]},
+    "freshness_ttl_days": {"type": "integer", "default": 30},
+    "overview": {
+      "type": "object",
+      "required": ["tagline", "core_offerings"],
+      "properties": {
+        "tagline": {"type": "string"},
+        "founded": {"type": ["integer", "null"]},
+        "size_band": {"type": ["string", "null"]},
+        "ownership": {"type": ["string", "null"]},
+        "headquarters": {"type": ["string", "null"]},
+        "core_offerings": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "strategic_priorities": {"type": "array", "items": {"type": "string"}, "minItems": 2},
+    "customer_profile": {
+      "type": "object",
+      "properties": {
+        "verticals": {"type": "array", "items": {"type": "string"}},
+        "buyer_titles": {"type": "array", "items": {"type": "string"}},
+        "typical_engagement_size": {"type": ["string", "null"]}
+      }
+    },
+    "tech_stack_signals": {"type": "array", "items": {"type": "string"}},
+    "cultural_cues": {"type": "array", "items": {"type": "string"}},
+    "leadership": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "title": {"type": "string"},
+          "background": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "competitive_set": {"type": "array", "items": {"type": "string"}},
+    "pain_points_inferred": {"type": "array", "items": {"type": "string"}},
+    "recent_moves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {"type": "string"},
+          "event": {"type": "string"},
+          "signal": {"type": "string"}
+        }
+      }
+    },
+    "language_to_mirror": {"type": "array", "items": {"type": "string"}, "minItems": 3},
+    "language_to_avoid": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Use when considering `python -c "..."` invocations via run_command — quote-hazard patterns hang pwsh forever. Deterministic enforcement via `pre_run_gate.py` `_check_python_dash_c_quote_hazard`; this rule is the advisory detail with recovery patterns.
 ---
 
 # `python -c "..."` Quote-Hazard Ban — Prevent pwsh Heredoc Hangs

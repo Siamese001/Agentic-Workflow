@@ -1,0 +1,91 @@
+# .codeiumignore — shrink Windsurf local-indexing surface.
+#
+# Rationale: Windsurf's local indexer preprocesses up to a configurable file cap
+# and chunks AST nodes for retrieval. Indexing large archival / generated /
+# fixture directories dilutes retrieval quality and wastes index budget on
+# content Cascade should never read during live work.
+#
+# Pattern rules follow .gitignore syntax. Paths are relative to repo root.
+# Keep this file terse; add exclusions only after observing repeated noise,
+# not prospectively.
+#
+# References:
+#   - .windsurf/rules/scope-containment.md
+#   - .windsurf/plans/llm-containment-hooks-rules-c7a91b.md
+#   - https://windsurf.com/security (local indexing docs)
+
+# --- Archives / tombstoned code -----------------------------------------------
+archives/
+**/archives/
+**/_archived/
+**/_archived_obsolete/
+**/_deleted/
+**/_oneoff/
+**/_oneshot/
+
+# --- Generated reports (humans read these; Cascade should not index them) ----
+reports/
+docs/reports/
+**/reports/
+
+# --- Raw data / fixtures ------------------------------------------------------
+data/
+**/data/sample_*/
+**/data/**/*.json
+**/data/**/*.csv
+**/data/**/*.parquet
+**/fixtures/
+
+# --- Artifacts (build outputs, snapshots, capture logs) ----------------------
+# NOTE: artifacts/adg/adg_indexed_*.sqlite is the canonical ADG snapshot.
+# We DO NOT ignore it — Cascade must reach it for dependency queries.
+# Everything else under artifacts/ is generated and safe to skip.
+artifacts/capture/
+artifacts/windsurf/
+artifacts/memory/
+artifacts/ledgers/
+artifacts/requirements/
+artifacts/**/*.jsonl
+artifacts/**/*.log
+
+# --- Python / tooling caches --------------------------------------------------
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- Virtualenvs / dependencies ----------------------------------------------
+.venv/
+venv/
+env/
+node_modules/
+
+# --- IDE / OS junk ------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# --- Logs / tmp ---------------------------------------------------------------
+*.log
+tmp/
+.tmp/
+.playwright-mcp/
+
+# --- Lock / large JSON surfaces ----------------------------------------------
+**/package-lock.json
+**/yarn.lock
+**/poetry.lock
+classify_out.txt
+eunknown_triage.json
+lowconf_inspection.txt
+notion_backlog.md
+tests_organize_plan.txt

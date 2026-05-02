@@ -34,6 +34,18 @@ This repo uses a **two-tier model**:
 
 ---
 
+## Always-On Discipline
+
+> SSOT for the per-rule preamble that was duplicated across 19 always-on rules until 2026-05-01. Rules now reference this section by anchor instead of restating it.
+
+- **Cascade always-on discipline:** Keep each always-on rule lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards in the rule. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+- **Cascade retrieval discipline:** When a rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+- **Cascade enforcement split:** Advisory guidance lives in rule prose; deterministic blocking, fail-closed checks, and audit capture belong in hooks (`.windsurf/scripts/`) and CI gates (`ops_scripts/ci/`).
+
+Rules with file-specific enforcement preambles (`fortknox-certification-discipline.md`, `mcp-serialization.md`, `deferred-scope-capture.md`, `scope-containment.md`) keep their custom preamble — it carries unique script references that must not be deduped per constitutional §21.
+
+---
+
 
 
 ## Always-On Files

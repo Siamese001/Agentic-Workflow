@@ -17,7 +17,8 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 from _w2_verifier_common import (
     EXIT_HARNESS_ERROR,
-    W2_ARTIFACT_FILENAMES,
+    chain_filenames_for,
+    detect_chain_kind,
     fail,
     is_harness_stamp,
     load_envelope,
@@ -28,10 +29,15 @@ from _w2_verifier_common import (
 
 def main(argv: list[str]) -> int:
     art_dir = resolve_artifact_dir(argv[1] if len(argv) > 1 else None)
-    print(f"[verify_integrated_runtime_no_harness_stamp] artifact_dir={art_dir}")
+    kind = detect_chain_kind(art_dir)
+    print(
+        f"[verify_integrated_runtime_no_harness_stamp] artifact_dir={art_dir} "
+        f"chain_kind={kind}"
+    )
+    chain_filenames = chain_filenames_for(kind)
 
     violations: list[str] = []
-    for fn in W2_ARTIFACT_FILENAMES:
+    for fn in chain_filenames:
         try:
             env = load_envelope(art_dir, fn)
         except FileNotFoundError as exc:
@@ -48,7 +54,10 @@ def main(argv: list[str]) -> int:
         return fail("NO_HARNESS_RECEIPT_NEGATIVE",
                     "no_harness_stamp_receipt.payload.all_artifacts_stamped_by_production is not True")
 
-    return passed(f"all {len(W2_ARTIFACT_FILENAMES)} artifacts stamped by production code only")
+    return passed(
+        f"all {len(chain_filenames)} artifacts stamped by production code only "
+        f"(chain_kind={kind})"
+    )
 
 
 if __name__ == "__main__":

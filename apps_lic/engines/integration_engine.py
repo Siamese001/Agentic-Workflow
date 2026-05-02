@@ -1,0 +1,46 @@
+"""HOP9 integration — assemble fields for the final run record.
+
+Emits ``lic_run_record_fields`` — a dict the outer ``GovernedLicRun``
+reads when building the terminal ``GovernedLicE2ERunRecord``. Keeping
+the record-assembly logic here (instead of inside the orchestrator)
+isolates the final-shape concern from the walk plumbing.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+class IntegrationEngine:
+    """Collate terminal fields from upstream stage outputs."""
+
+    def execute(self, context: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
+        req = context.get("campaign_request")
+        draft = context.get("draft_message") or {}
+        report = context.get("validation_report") or {}
+        qa = context.get("qa_report") or {}
+
+        config = self._attr(req, "config", None)
+
+        return {
+            "lic_run_record_fields": {
+                "campaign_id": str(self._attr(req, "campaign_id", "")),
+                "target_audience": str(self._attr(config, "target_audience", "")),
+                "compliance_level": str(self._attr(config, "compliance_level", "standard")),
+                "draft_body": str(draft.get("body", "")),
+                "validation_passed": bool(report.get("passed", False)),
+                "composite_score": float(qa.get("composite_score", 0.0)),
+                "issues": list(report.get("issues") or []),
+                "generator": str(draft.get("generator", "unknown")),
+            },
+        }
+
+    @staticmethod
+    def _attr(obj: Any, key: str, default: Any) -> Any:
+        if obj is None:
+            return default
+        if hasattr(obj, key):
+            return getattr(obj, key, default)
+        if isinstance(obj, dict):
+            return obj.get(key, default)
+        return default

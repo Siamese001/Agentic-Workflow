@@ -1,0 +1,109 @@
+# apps_lic L3 static DAG — canonical YAML form
+#
+# SSOT for the 9-stage HOP pipeline that runs inside L2 authorize_and_execute.
+# Mirrors apps_lic/config/hop_pipeline.py::_STAGE_SPECS one-to-one. The Python
+# module remains the runtime SSOT; this YAML is the static-DAG-proof contract
+# consumed by tools/certification/apps_e2e/static_dag_inspector.py.
+#
+# Edge derivation: each edge `from`->`to` follows a producer-consumer dataflow
+# match between HopStageSpec.outputs and HopStageSpec.inputs. campaign_request
+# is the run-level input (treated as an external entry token, not a stage).
+#
+# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
+
+dag_id: apps_lic.outreach_pipeline_v1.l3_dag
+dag_name: apps_lic_outreach_v1
+dag_version: "1.0.0"
+app_name: apps_lic
+route_binding: apps_lic.outreach_v1
+
+# L3 invariants — no execute / retrieve / prompt-assemble / L4-write at L3.
+l3_no_execute_policy: true
+l3_no_retrieve_policy: true
+l3_no_prompt_assembly_policy: true
+l3_no_l4_write_policy: true
+
+# Entry nodes consume only the run-level campaign_request token.
+entry_nodes:
+  - profile_analysis
+  - sender_grounding
+
+# Terminal nodes — gate_decision is the gating output; integration is the
+# durable-write hand-off (mutation occurs at L4 / UWG, not at L3).
+terminal_nodes:
+  - gate_decision
+  - integration
+
+nodes:
+  - id: profile_analysis
+    owner: apps_lic.engines.profile_analysis_engine.ProfileAnalysisEngine
+    step_contract_schema: L3StepContract/v1/profile_analysis
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: research
+    owner: apps_lic.engines.research_engine.ResearchEngine
+    step_contract_schema: L3StepContract/v1/research
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: sender_grounding
+    owner: apps_lic.engines.sender_grounding_engine.SenderGroundingEngine
+    step_contract_schema: L3StepContract/v1/sender_grounding
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: routing
+    owner: apps_lic.engines.routing_engine.RoutingEngine
+    step_contract_schema: L3StepContract/v1/routing
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: generation
+    owner: apps_lic.engines.generation_engine.GenerationEngine
+    step_contract_schema: L3StepContract/v1/generation
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: validation
+    owner: apps_lic.engines.validation_engine.ValidationEngine
+    step_contract_schema: L3StepContract/v1/validation
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: gate_decision
+    owner: apps_lic.engines.gate_decision_engine.GateDecisionEngine
+    step_contract_schema: L3StepContract/v1/gate_decision
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+    is_gate: true
+  - id: qa_report
+    owner: apps_lic.engines.qa_report_engine.QaReportEngine
+    step_contract_schema: L3StepContract/v1/qa_report
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+  - id: integration
+    owner: apps_lic.engines.integration_engine.IntegrationEngine
+    step_contract_schema: L3StepContract/v1/integration
+    allowed_execution_surface: l2_authorize_and_execute
+    required: true
+
+# Edges derived from HopStageSpec inputs/outputs producer-consumer matching.
+# profile_features:  profile_analysis -> research, routing
+# evidence_bundle:   research -> routing, validation, qa_report
+# sender_persona:    sender_grounding -> routing, generation
+# generation_prompt: routing -> generation
+# routing_decision:  routing -> (terminal data; not consumed downstream)
+# draft_message:     generation -> validation, qa_report, integration
+# validation_report: validation -> gate_decision, qa_report, integration
+# qa_report:         qa_report -> integration
+edges:
+  - {from: profile_analysis, to: research}
+  - {from: profile_analysis, to: routing}
+  - {from: research, to: routing}
+  - {from: research, to: validation}
+  - {from: research, to: qa_report}
+  - {from: sender_grounding, to: routing}
+  - {from: sender_grounding, to: generation}
+  - {from: routing, to: generation}
+  - {from: generation, to: validation}
+  - {from: generation, to: qa_report}
+  - {from: generation, to: integration}
+  - {from: validation, to: gate_decision}
+  - {from: validation, to: qa_report}
+  - {from: validation, to: integration}
+  - {from: qa_report, to: integration}

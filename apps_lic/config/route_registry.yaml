@@ -1,0 +1,21 @@
+# apps_lic L0 route registry — canonical YAML form
+#
+# Pairs with apps_lic/config/l3_dag.yaml. The route_binding in the DAG must
+# reference one of the route_ids declared here; the static-DAG inspector
+# enforces this match.
+#
+# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
+
+app_name: apps_lic
+
+routes:
+  - route_id: apps_lic.outreach_v1
+    description: |
+      Managed outreach generation pipeline. 9-stage HOP DAG runs inside L2
+      authorize_and_execute under the apps_shared HopPipelineExecutor.
+    execution_form: MANAGED_WORKFLOW
+    static_dag_ref: apps_lic.outreach_pipeline_v1.l3_dag
+    requires_c0_grounding: true
+    requires_prompt_assembly: true
+    requires_l2_execution: true
+    durable_mutation: false

@@ -1,0 +1,31 @@
+# apps_rg L0 route registry.
+#
+# Mirrors apps_qna/config/route_registry.yaml. Declares the apps_rg routes
+# that L0 may select and binds each route to a static L3 DAG. apps_rg's
+# only route today is a deterministic HOP pipeline; L3 runtime
+# orchestration is correctly bypassed (NO_MANAGED_WORKFLOW_REQUIRED) per
+# the e2e proof spec, but the static DAG is registered so the topology
+# is auditable.
+#
+# Schema:
+#   app_name              — owning app
+#   routes[].route_id     — stable route identifier
+#   routes[].execution_form — MANAGED_WORKFLOW | DETERMINISTIC_PIPELINE | ...
+#   routes[].l3_required  — true ⇒ runtime L3 must orchestrate; false ⇒ bypass
+#   routes[].static_dag_ref — path to the static L3 DAG file
+#   routes[].selected_capability — symbolic capability name
+
+app_name: apps_rg
+schema_version: "apps_rg.route_registry/v1"
+
+routes:
+  - route_id: apps_rg.resume_generation_v1
+    execution_form: DETERMINISTIC_PIPELINE
+    l3_required: false
+    static_dag_ref: apps_rg/config/l3_dag.yaml
+    selected_capability: apps_rg.resume_generation_v1
+    description: >-
+      Deterministic HOP pipeline: intake -> generate_resume.main() ->
+      narrative_pass (HOP-4A..4H) -> docx_export. No retry/branch/join
+      logic; runtime L3 orchestration is not required.
+    bypass_reason_when_invoked: NO_MANAGED_WORKFLOW_REQUIRED

@@ -304,23 +304,36 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
             return {"status": "error", "healer": "ControlPlane", "reason": str(exc)}
 
     def _heal_schema(self, incident: dict[str, Any]) -> dict[str, Any]:
-        """Re-run the failing HOP stage via HOPPipelineExecutor."""
+        """Re-run the failing HOP stage via the shared LicCampaignOrchestrator.
+
+        Migrated 2026-05-01 (plan apps-hop-substrate-f7751b, Wave 2 Phase 2.3)
+        from the stub-based ``HOPPipelineExecutor`` to the shared substrate's
+        ``replay_stage`` path. The new path actually executes stage domain
+        logic instead of returning ``{"status": "processed"}``.
+        """
         try:
-            from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor
+            from apps_lic.reasoning.LicCampaignOrchestrator import (
+                LicCampaignOrchestrator,
+            )
 
             stage_id = incident.get("stage_id", 5)
-            executor = HOPPipelineExecutor()
-            result = executor.execute_stage(stage_id, incident.get("context", {}))
+            orchestrator = LicCampaignOrchestrator()
+            checkpoint = orchestrator.replay_stage(
+                stage_id, incident.get("context", {})
+            )
             return {
                 "status": "resolved",
-                "healer": "HOPPipelineExecutor",
+                "healer": "LicCampaignOrchestrator",
                 "stage_id": stage_id,
-                "result": result,
+                "stage_name": checkpoint.stage_name,
+                "stage_status": checkpoint.status.value,
+                "stage_output": dict(checkpoint.output),
+                "stage_error": checkpoint.error,
                 "incident_type": incident.get("type"),
             }
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             Logger.error("[%s] _heal_schema failed: %s", self.__class__.__name__, exc)
-            return {"status": "error", "healer": "HOPPipelineExecutor", "reason": str(exc)}
+            return {"status": "error", "healer": "LicCampaignOrchestrator", "reason": str(exc)}
 
     def _heal_llm_call(self, incident: dict[str, Any]) -> dict[str, Any]:
         """Re-route LLM call via SovereignLLMGateway with corrected model ID."""

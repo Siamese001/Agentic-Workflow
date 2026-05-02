@@ -3,21 +3,24 @@ trigger: model_decision
 description: Use this rule when reading or writing to the persistent memory graph, purging stale entities, or syncing ADG context into the memory store.
 ---
 
-> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
->
-> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
->
-> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
 
 # Memory Management Rules
 
 ## Purpose
 
-Define discipline for maintaining a clean, performant memory graph. Prevent accumulation of stale session data that bloats queries and burns context window.
+Define discipline for maintaining a clean, performant memory graph. Prevent accumulation of stale session data that bloats queries and burns context window. Also asserts the constitutional lifecycle invariants for the memory MCP (merged 2026-05-01 from `agents-memory-lifecycle.md`).
 
 ## See First
 
 For lifecycle (when to read, write, maintain) and tool routing, see the **`memory-mcp` skill** at `.windsurf/skills/memory-mcp/SKILL.md`. This rule covers maintenance policy, CI gates, and storage hygiene that are NOT in the skill.
+
+## Constitutional Lifecycle Invariants (merged from agents-memory-lifecycle.md)
+
+1. **Constitutional §17 — Session-start recall is mandatory.** The first tool call of every conversation MUST be `mem_recall_session_start`. Non-negotiable.
+2. **15/3 Rule.** If solving a problem took >15 minutes, spend up to 3 minutes writing the procedural pattern back to memory. Skipping this is a violation of `memory-notion-writeback.md`.
+3. **Protected entity types only for durable persistence.** `ProceduralPattern`, `ProjectContext`, `ArchitecturalInvariant`, `ArchitectureLayer`, `ConstitutionalRule`, `ArchitecturalDecision`, `EpisodicEvent`. Any other type (especially `"general"`) is purged at the staleness threshold.
+4. **No direct SQLite edits to `artifacts/memory/knowledge_graph.sqlite`.** Use the MCP tools or `tools/memory/purge_sync.py`.
 
 > Note on tool prefixes: live `mcpN_` prefixes shift when server order changes (constitutional Tool Prefix Stability rule). Use bare tool names (`mem_recall_session_start`, `search_nodes`, `mem_cleanup_stale`) and let the runtime resolve the prefix.
 

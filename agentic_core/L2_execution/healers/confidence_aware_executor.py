@@ -29,10 +29,12 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- L2 healer reads SSOT constants from L0
+from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- L2 healer reads infra constants from L0 SSOT
+    QWEN_LOCAL_MAX_MODEL_LEN,
+)
+from agentic_core.L2_execution.healers.healing_cascade_registry import (
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,
-    QWEN_LOCAL_MAX_MODEL_LEN,
     QWEN_LOCAL_MODEL_ID,
 )
 

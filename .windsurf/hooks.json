@@ -24,6 +24,16 @@
         "command": "python .windsurf/scripts/pre_write_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": true
+      },
+      {
+        "command": "python .windsurf/scripts/pre_write_plan_scope_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
+      },
+      {
+        "command": "python .windsurf/scripts/pre_write_fortknox_guard.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
       }
     ],
     "pre_mcp_tool_use": [
@@ -123,6 +133,16 @@
         "show_output": false
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_grep_budget_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_scope_drift_detector.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_writeback_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
@@ -159,6 +179,11 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plan_evidence_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
       }

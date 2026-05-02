@@ -32,6 +32,9 @@ Plan: ``.windsurf/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md``
 from __future__ import annotations
 
 import dataclasses
+import hashlib
+import json
+import os
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -79,26 +82,46 @@ from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
     compute_artifact_hash,
     emit_artifact,
 )
+from agentic_core.runtime.artifacts.spine_proof_bundle import (
+    build_spine_proof_payload,
+    git_commit_and_dirty,
+    utc_iso_now,
+)
+from agentic_core.runtime.contracts.c0_bypass_receipt import (
+    build_c0_bypass_receipt,
+)
+from agentic_core.runtime.contracts.identity import (
+    build_runtime_identity_envelope,
+)
+from agentic_core.runtime.contracts.l3_bypass_receipt import (
+    build_l3_bypass_receipt,
+)
+from agentic_core.runtime.contracts.prompt_assembly_bypass_receipt import (
+    build_prompt_assembly_bypass_receipt,
+)
 from agentic_core.runtime.contracts.runtime_gate_verdict_bundle import (
     GateOutcome,
     RuntimeGateVerdictBundle,
     VetoOutcome,
 )
+from agentic_core.runtime.contracts.runtime_trace_snapshot import (
+    build_runtime_trace_snapshot,
+)
 from agentic_core.runtime.contracts.safe_reuse_decision import SafeReuseDecision
+from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (
+    detect_trace_provenance,
+)
 
-# Optional bundle-aggregation surface (system_learning lives outside the
-# v6 exit pipeline; we use it to produce the user-facing
-# ``runtime_exhaust_bundle.json`` artifact alongside the v6 sealed manifest).
-try:  # pragma: no cover — system_learning is a peer package, present in CI
-    from system_learning.engines.runtime_exhaust_collector import (
-        RuntimeExhaustBundle,
-        RuntimeExhaustCollector,
-    )
-    _HAVE_EXHAUST_COLLECTOR = True
-except ImportError:
-    RuntimeExhaustBundle = None  # type: ignore[assignment,misc]
-    RuntimeExhaustCollector = None  # type: ignore[assignment,misc]
-    _HAVE_EXHAUST_COLLECTOR = False
+# Bundle-aggregation surface. As of 2026-05-01 the canonical home is
+# ``agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle``
+# (promoted from system_learning). The import is unconditional now —
+# the boundary no longer crosses into a peer package.
+from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (
+    RuntimeExhaustBundle,
+    RuntimeExhaustCollector,
+)
+
+_HAVE_EXHAUST_COLLECTOR = True
 
 
 PRODUCER_COMPONENT = "agentic_core.runtime.entrypoints.integrated_safe_reuse_run"
@@ -281,11 +304,37 @@ def _build_raw_envelope(raw_request: dict[str, Any]) -> RawIngressEnvelope:
     )
 
 
+def _compute_deterministic_replay_key(
+    *, raw_request: dict[str, Any], namespace: str, tenant_id: str
+) -> str:
+    """Compute a content-bound replay_key from caller-supplied input.
+
+    Per RTC-REQ-023 (replay pair determinism). This MUST be called with
+    the original caller-supplied ``raw_request`` BEFORE any intake
+    processing so the resulting key has zero per-invocation noise.
+    Excludes: intake_manifest_hash, request_id, trace_root, policy_hash.
+    Includes: the full raw_request payload + namespace + tenant_id —
+    everything the caller can re-supply identically on a replay.
+    """
+    canonical = json.dumps(
+        {
+            "raw_request": raw_request,
+            "namespace": namespace,
+            "tenant_id": tenant_id,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _build_route_contract(
     plan: L1PlanContract,
     vr: ValidatedRequest,
     *,
     namespace: str,
+    replay_key_override: str | None = None,
 ) -> dict[str, Any]:
     """Construct the route-metadata dict carried with the integrated run.
 
@@ -295,6 +344,29 @@ def _build_route_contract(
     reads. Post-gate, the gate verdict bundle carries the actual route
     decision.
     """
+    # RTC-REQ-023: replay_key MUST be deterministic across runs with
+    # identical caller input. Precedence:
+    #   1. ``replay_key_override`` — caller-precomputed from raw_request
+    #      (preferred path; see ``_compute_deterministic_replay_key``).
+    #   2. ``vr.normalized_request_hash`` — populated by the intake
+    #      pipeline when it computes one (legacy fallback).
+    # We deliberately AVOID ``vr.intake_manifest_hash`` /
+    # ``vr.request_id`` / ``vr.normalized_payload`` here because those
+    # carry per-invocation noise (timestamps, nondeterministic policy
+    # state) that breaks replay determinism — the bug fixed 2026-05-01
+    # Wave C. ``replay_key_override`` is computed at entrypoint entry
+    # before any intake, so it is the authoritative replay-bound key.
+    _deterministic_replay_key = (
+        replay_key_override
+        or vr.normalized_request_hash
+        or hashlib.sha256(
+            json.dumps(
+                {"request_id": vr.request_id, "namespace": namespace},
+                sort_keys=True, separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+    )
+
     return {
         "route_id_hint": "R1B_SEMANTIC_CACHE",
         "intent_class": "safe_reuse_dense_candidate_with_veto",
@@ -307,7 +379,7 @@ def _build_route_contract(
         "trace_root": vr.trace_root,
         "policy_hash": vr.intake_manifest_hash or "no-policy",
         "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
-        "replay_key": vr.normalized_request_hash or vr.request_id,
+        "replay_key": _deterministic_replay_key,
         "producer_component": PRODUCER_COMPONENT,
     }
 
@@ -716,6 +788,41 @@ def run_integrated_safe_reuse(
     # Unwrap: intake returns an L1HandoffEnvelope wrapping the ValidatedRequest.
     handoff_env = intake_outcome.handoff_envelope
     vr: ValidatedRequest = getattr(handoff_env, "validated_request", handoff_env)
+
+    # ── 2b. Canonical RuntimeIdentityEnvelope ──
+    # Emitted BEFORE validated_request so the chain root carries a typed
+    # identity binding. RTC-REQ-023: replay_key is computed deterministically
+    # from caller-supplied raw_request + namespace + tenant_id, BEFORE any
+    # intake mutations. Same key flows into the route_contract below — single
+    # source, no per-invocation drift.
+    _deterministic_replay_key = _compute_deterministic_replay_key(
+        raw_request=raw_request, namespace=namespace, tenant_id=tenant_id,
+    )
+    _started_at_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started_at))
+    _policy_hash = vr.intake_manifest_hash or "no-policy"
+    _blueprint_hash = "blueprint::w2-r1b-safe-reuse"
+    # Git state is captured ONCE here and propagated to BOTH the identity
+    # envelope and the spine proof bundle, so the two artifacts agree.
+    _git_commit, _git_dirty = git_commit_and_dirty()
+    _identity = build_runtime_identity_envelope(
+        run_id=vr.request_id,            # R1B aliases run_id := request_id
+        request_id=vr.request_id,
+        trace_root=vr.trace_root,
+        replay_key=_deterministic_replay_key,
+        policy_hash=_policy_hash,
+        blueprint_hash=_blueprint_hash,
+        caller_surface=str(raw_request.get("source_channel", "rest_v2")),
+        entrypoint_command=f"python -m {PRODUCER_COMPONENT}",
+        started_at_utc=_started_at_utc,
+        git_commit=_git_commit,
+        git_dirty=_git_dirty,
+        registry_digest_set={},
+        route_contract_id=R1B_ROUTE_ID,
+        route_id=R1B_ROUTE_ID,
+        app_name=str(raw_request.get("app_name", "")),
+    )
+    _emit("runtime_identity_envelope.json", _identity.to_dict())
+
     _emit("validated_request.json", {
         "request_id": vr.request_id,
         "trace_root": vr.trace_root,
@@ -738,8 +845,56 @@ def run_integrated_safe_reuse(
     })
 
     # ── 4. RouteContract metadata ──
-    route_contract = _build_route_contract(plan, vr, namespace=namespace)
+    # Reuses the replay_key computed above (single source — no recompute).
+    route_contract = _build_route_contract(
+        plan, vr,
+        namespace=namespace,
+        replay_key_override=_deterministic_replay_key,
+    )
     _emit("route_contract.json", route_contract)
+
+    # ── 4b. Typed bypass receipts for L3 / C0 / Prompt Assembly ──
+    # The R1B path is a TERMINAL_SHORTCIRCUIT: by spec it does NOT invoke
+    # L3 (no managed workflow), C0 (no grounding), or Prompt Assembly
+    # (no model execution). These three receipts make that lawful bypass
+    # explicit and machine-checkable. Without them, the spine could not
+    # distinguish "stage skipped" from "stage forgotten".
+    _l3_bypass = build_l3_bypass_receipt(
+        run_id=vr.request_id,
+        request_id=vr.request_id,
+        trace_root=vr.trace_root,
+        route_contract_id=R1B_ROUTE_ID,
+        route_id=R1B_ROUTE_ID,
+        execution_form="TERMINAL_SHORTCIRCUIT",
+        l3_bypass_reason="TERMINAL_SHORTCIRCUIT",
+        why_static_dag_not_used=(
+            "R1B semantic-cache reuse short-circuits before any managed "
+            "workflow is required; no static DAG is invoked or required."
+        ),
+        static_dag_available=False,
+        static_dag_ref="",
+    )
+    _emit("l3_bypass_receipt.json", _l3_bypass.to_dict())
+
+    _c0_bypass = build_c0_bypass_receipt(
+        run_id=vr.request_id,
+        request_id=vr.request_id,
+        trace_root=vr.trace_root,
+        route_contract_id=R1B_ROUTE_ID,
+        route_id=R1B_ROUTE_ID,
+        c0_bypass_reason="CACHE_REUSE_PRIOR_EVIDENCE",
+    )
+    _emit("c0_bypass_receipt.json", _c0_bypass.to_dict())
+
+    _pa_bypass = build_prompt_assembly_bypass_receipt(
+        run_id=vr.request_id,
+        request_id=vr.request_id,
+        trace_root=vr.trace_root,
+        route_contract_id=R1B_ROUTE_ID,
+        route_id=R1B_ROUTE_ID,
+        prompt_assembly_bypass_reason="CACHE_REUSE_NO_PROMPT",
+    )
+    _emit("prompt_assembly_bypass_receipt.json", _pa_bypass.to_dict())
 
     # ── 5. L0 gate cascade + safety veto ──
     # The gate-input dict is the canonical key for D1/D2 lookup. We use a
@@ -937,6 +1092,10 @@ def run_integrated_safe_reuse(
         "request_id": review.request_id, "run_id": review.run_id,
         "session_id": review.session_id, "trace_root": review.trace_root,
         "route_id": review.route_id, "policy_hash": review.policy_hash,
+        # RTC-REQ-015: authority binding — blueprint_hash carries through
+        # from the W2 R1B cascade so exit_review_packet matches route_contract
+        # and terminal_ret_packet.
+        "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
         "replay_key": review.replay_key, "terminal_class": review.terminal_class,
         "exec_trace": dict(review.exec_trace), "state_diff": dict(review.state_diff),
         "output": dict(review.output), "track_label": review.track_label,
@@ -966,15 +1125,65 @@ def run_integrated_safe_reuse(
     )
     _emit("runtime_exhaust_bundle.json", exhaust_bundle_payload)
 
-    # ── 11. Manifest of all 12 artifacts + chain shas ──
+    # ── 10b. Runtime trace snapshot (per-run OTEL / runtime-ADG summary) ──
+    # Pulls span_count, record_count, ingest_quality_score from the
+    # exhaust bundle we just emitted. Detection flags come from the
+    # SSOT synthetic-trace detector; they MUST agree with the spine
+    # bundle's own flags (check_synthetic_trace_flag enforces).
+    _auto_provenance = detect_trace_provenance(artifact_dir)
+    _record_count = len(
+        (exhaust_bundle_payload.get("exhaust_bundle") or {}).get(
+            "raw_evidence_refs", []
+        )
+        if isinstance(exhaust_bundle_payload.get("exhaust_bundle"), dict)
+        else []
+    )
+    _ingest_quality = float(
+        (exhaust_bundle_payload.get("exhaust_bundle") or {}).get(
+            "ingest_quality_score", 1.0
+        )
+        if isinstance(exhaust_bundle_payload.get("exhaust_bundle"), dict)
+        else 1.0
+    )
+    _newest_age = float(
+        (exhaust_bundle_payload.get("exhaust_bundle") or {}).get(
+            "newest_span_age_seconds", 0.0
+        )
+        if isinstance(exhaust_bundle_payload.get("exhaust_bundle"), dict)
+        else 0.0
+    )
+    _trace_snap = build_runtime_trace_snapshot(
+        run_id=vr.request_id,
+        request_id=vr.request_id,
+        trace_root=vr.trace_root,
+        runtime_mode=os.environ.get("AGENTIC_CORE_RUNTIME_MODE", "production"),
+        synthetic_trace_detected=_auto_provenance.synthetic_trace_detected,
+        fixture_mode_detected=_auto_provenance.fixture_mode_detected,
+        mock_mode_detected=_auto_provenance.mock_mode_detected,
+        span_count=_record_count,
+        record_count=_record_count,
+        trace_ingest_quality_score=_ingest_quality,
+        newest_span_age_seconds=_newest_age,
+        detector_reasons=_auto_provenance.reasons,
+    )
+    _emit("runtime_trace_snapshot.json", _trace_snap.to_dict())
+
+    # ── 11. Manifest of all chain artifacts + chain shas ──
+    # The manifest declares EVERY filename in the chain, including the
+    # ones not yet emitted at this point (manifest itself, no_harness
+    # receipt, agentic_core_spine_proof). The verifier
+    # ``verify_integrated_runtime_manifest_exact_refs.py`` asserts the
+    # set equality manifest.artifact_filenames == on-disk artifacts.
     veto_counters = _veto_counters(veto_result, veto_outcome)
     manifest_payload = {
         "invocation_id": invocation_id,
         "entry_point": f"{PRODUCER_COMPONENT}.{PRODUCER_FUNCTION}",
         "integrated_runtime_entrypoint_used": True,
+        "chain_kind": "R1B",
         "artifact_filenames": list(artifact_hashes.keys()) + [
             "integrated_runtime_artifact_manifest.json",
             "no_harness_stamp_receipt.json",
+            "agentic_core_spine_proof.json",
         ],
         "artifact_hashes": dict(artifact_hashes),
         "chain_linkage": [
@@ -1011,6 +1220,22 @@ def run_integrated_safe_reuse(
         "attested_filenames": list(artifact_hashes.keys()),
     }
     _emit("no_harness_stamp_receipt.json", nh_payload)
+
+    # ── 13. Canonical SpineProofBundle (rollup; LAST artifact) ──
+    # References every preceding artifact by sha256 hash, declares
+    # detection flags for runtime_mode/mock/fixture/synthetic, and
+    # accumulates blocking_gaps[] for any required ref that is absent.
+    # Emitted via the same provenance-stamped emitter so it inherits
+    # the chain hash + producer-component + no-harness-stamp invariant.
+    _spine_payload = build_spine_proof_payload(
+        artifact_dir=artifact_dir,
+        artifact_hashes=artifact_hashes,
+        identity_envelope_payload=_identity.to_dict(),
+        started_at_utc=_started_at_utc,
+        finished_at_utc=utc_iso_now(),
+        exit_code=0 if x3_disposition is V6Disposition.ALLOW else 0,  # 0 = run-completed; success flag is the verdict
+    )
+    _emit("agentic_core_spine_proof.json", _spine_payload)
 
     return IntegratedRunResult(
         integrated_runtime_entrypoint_used=True,

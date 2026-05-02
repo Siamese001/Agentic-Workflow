@@ -38,33 +38,50 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L0_routing.config.model_registry import (
-    ANTHROPIC_MODEL_ID,
-    GEMINI_PRO_MODEL_ID,
-    OPENAI_MODEL_ID,
-    QWEN_LOCAL_MODEL_ID,
+from tools.certification.safety.rtc_req_056_panel import (
+    ANTHROPIC_JUROR,
+    GEMINI_JUROR,
+    OPENAI_JUROR,
+    REQUIRED_JURORS as _PANEL_REQUIRED_JURORS,
 )
 from tools.certification.safety.veto_protocol import VetoResult, VetoStatus
 
-# Default 3-juror fleet per registry SSOT. Optional 4th Qwen juror
-# activated via env var for local-first deployments.
-DEFAULT_JURORS: tuple[tuple[str, str], ...] = (
-    ("openai", OPENAI_MODEL_ID),
-    ("anthropic", ANTHROPIC_MODEL_ID),
-    ("google", GEMINI_PRO_MODEL_ID),
+# Default juror fleet is sourced from the RTC-REQ-056 panel registry.
+# The tuple shape is (provider_family, model_id) — the ConsensusVeto
+# then dispatches to the juror_call_impl with that family string. The
+# real impl (``make_real_juror_call_impl`` in consensus_juror_clients.py)
+# validates provider_family against the registry on every call.
+DEFAULT_JURORS: tuple[tuple[str, str], ...] = tuple(
+    (j.provider_family, j.model_id) for j in _PANEL_REQUIRED_JURORS
 )
 
 DEFAULT_TIMEOUT_MS_PER_JUROR = 15000  # matches W2B_VETO_TIMEOUT_MS default
 
 
 def _env_key_for_juror(juror_family: str) -> str:
-    """API-key env var by juror family."""
+    """Primary API-key env var by juror family. Resolves via the
+    RTC-REQ-056 panel registry when possible; falls back to a small
+    compatibility map for legacy values used by older tests."""
+    # Panel-registry families first
+    for j in _PANEL_REQUIRED_JURORS:
+        if j.provider_family.lower() == (juror_family or "").lower():
+            return j.env_key
+    # Legacy compatibility (older test / prototype names)
     return {
         "openai": "OPENAI_API_KEY",
         "anthropic": "ANTHROPIC_API_KEY",
         "google": "GOOGLE_API_KEY",
-        "local_qwen": "__vllm_no_key__",  # local — no key needed
+        "google_gemini": "GEMINI_API_KEY",
+        "local_qwen": "__vllm_no_key__",
     }.get(juror_family, "__unknown__")
+
+
+def _env_key_aliases_for_juror(juror_family: str) -> tuple[str, ...]:
+    """Registered aliases for a juror's API key, per panel registry."""
+    for j in _PANEL_REQUIRED_JURORS:
+        if j.provider_family.lower() == (juror_family or "").lower():
+            return j.env_key_aliases
+    return ()
 
 
 @dataclass(frozen=True)
@@ -119,15 +136,11 @@ class ConsensusVeto:
         max_workers: int | None = None,
         juror_call_impl: JurorCallImpl | None = None,
     ) -> None:
-        # Optional 4th Qwen juror: append QWEN_LOCAL when USE_CERT_JURY_QWEN=1.
+        # Panel registry is the ONLY source of default jurors. No Qwen
+        # opt-in is permitted for the RTC-REQ-056 certification path per
+        # operator directive 2026-05-01. Explicit ``jurors`` arg is kept
+        # for tests and experimental configurations only.
         base_jurors = jurors if jurors is not None else DEFAULT_JURORS
-        if (
-            jurors is None
-            and os.environ.get("USE_CERT_JURY_QWEN", "").strip().lower()
-            in ("1", "true", "yes", "on")
-        ):
-            base_jurors = base_jurors + (("local_qwen", QWEN_LOCAL_MODEL_ID),)
-
         self._jurors = base_jurors
         self._rubric_path = rubric_path
         self._timeout_ms_per_juror = timeout_ms_per_juror
@@ -144,7 +157,8 @@ class ConsensusVeto:
         return "consensus_veto"
 
     def is_available(self) -> bool:
-        """Available iff every juror has its API key present.
+        """Available iff every juror has its API key (or a registered
+        alias) present in the environment.
 
         local_qwen is treated as always-available here (availability is
         endpoint-probed inside the juror call itself). Missing any
@@ -156,7 +170,9 @@ class ConsensusVeto:
                 return False
             if key_env == "__vllm_no_key__":
                 continue  # local — no key check here
-            if not os.environ.get(key_env):
+            aliases = _env_key_aliases_for_juror(family)
+            candidates = (key_env, *aliases)
+            if not any(os.environ.get(c) for c in candidates):
                 return False
         return True
 
@@ -221,6 +237,14 @@ class ConsensusVeto:
     def _aggregate(
         self, per_juror: list[JurorVerdict], latency_ms: float
     ) -> VetoResult:
+        """Aggregate under the ``all_required_safe`` quorum rule.
+
+        The RTC-REQ-056 panel requires ALL registered jurors to return
+        SAFE. Any other outcome (UNSAFE, UNKNOWN, ERROR, or missing)
+        results in a fail-closed VETO. Majority vote is deliberately
+        NOT implemented — adding it requires updating the registry,
+        the gate logic in ``rtc_req_056_gate.py``, and new tests.
+        """
         n = len(per_juror)
         if n == 0:
             return VetoResult.error(
@@ -230,26 +254,28 @@ class ConsensusVeto:
             )
 
         safe_count = sum(1 for v in per_juror if v.verdict == "SAFE")
-        error_count = sum(
-            1 for v in per_juror if v.verdict in ("ERROR", "UNCERTAIN")
+        error_count = sum(1 for v in per_juror if v.verdict == "ERROR")
+        unknown_count = sum(1 for v in per_juror if v.verdict == "UNCERTAIN")
+        unsafe_count = sum(
+            1 for v in per_juror
+            if v.verdict in ("UNSAFE_DIFFERENT_INTENT", "UNSAFE_POLICY_DRIFT")
         )
-        # Strict-majority threshold: (N // 2) + 1 matches
-        # consensus_majority_threshold in agentic_core/utils/path_constants
-        threshold = (n // 2) + 1
 
         shared_metadata: dict[str, Any] = {
             "consensus_mode": None,
+            "quorum_rule": "all_required_safe",
             "safe_count": safe_count,
             "dissent_count": n - safe_count,
             "error_count": error_count,
+            "unknown_count": unknown_count,
+            "unsafe_count": unsafe_count,
             "juror_count": n,
-            "threshold": threshold,
+            "required_juror_count": n,
             "per_juror": [v.to_dict() for v in per_juror],
         }
 
-        # Fail-closed: any juror ERROR => CONSENSUS_INCOMPLETE (schema v2 reason)
-        raw_errors = sum(1 for v in per_juror if v.verdict == "ERROR")
-        if raw_errors > 0:
+        # Fail-closed: any juror ERROR => CONSENSUS_INCOMPLETE
+        if error_count > 0:
             shared_metadata["consensus_mode"] = "incomplete"
             return VetoResult(
                 status=VetoStatus.VETO,
@@ -257,63 +283,43 @@ class ConsensusVeto:
                 confidence=0.0,
                 rationale=(
                     f"{self.name}: CONSENSUS_INCOMPLETE — "
-                    f"{raw_errors}/{n} jurors errored (fail-closed)"
+                    f"{error_count}/{n} jurors errored (fail-closed)"
                 ),
                 latency_ms=latency_ms,
                 metadata=shared_metadata,
             )
 
+        # all_required_safe: only 3/3 SAFE allows
         if safe_count == n:
             shared_metadata["consensus_mode"] = "unanimous"
             avg_conf = sum(v.confidence for v in per_juror) / n
             return VetoResult.safe(
                 stage_name=self.name,
                 confidence=avg_conf,
-                rationale=f"Unanimous SAFE verdict from all {n} jurors",
-                latency_ms=latency_ms,
-                metadata=shared_metadata,
-            )
-
-        if safe_count >= threshold:
-            shared_metadata["consensus_mode"] = "majority"
-            safe_jurors = [v for v in per_juror if v.verdict == "SAFE"]
-            avg_safe_conf = (
-                sum(v.confidence for v in safe_jurors) / len(safe_jurors)
-            )
-            return VetoResult.safe(
-                stage_name=self.name,
-                confidence=avg_safe_conf,
                 rationale=(
-                    f"Strict majority SAFE ({safe_count}/{n}); "
-                    f"{n - safe_count} dissenting juror(s) recorded"
+                    f"all_required_safe met: {n}/{n} jurors returned SAFE"
                 ),
                 latency_ms=latency_ms,
                 metadata=shared_metadata,
             )
 
-        if safe_count == 0:
-            shared_metadata["consensus_mode"] = "unanimous_unsafe"
-            return VetoResult(
-                status=VetoStatus.VETO,
-                stage_name=self.name,
-                confidence=0.0,
-                rationale=(
-                    f"{self.name}: UNANIMOUS_NOT_SAFE — "
-                    f"all {n} jurors returned non-SAFE verdict"
-                ),
-                latency_ms=latency_ms,
-                metadata=shared_metadata,
-            )
-
-        # 1 SAFE / 2 non-SAFE — no majority
-        shared_metadata["consensus_mode"] = "no_majority"
+        # Any non-SAFE -> fail closed
+        if safe_count == 0 and unsafe_count == n:
+            mode = "unanimous_unsafe"
+        elif unknown_count > 0 and unsafe_count == 0 and error_count == 0:
+            mode = "quorum_fail_unknown"
+        else:
+            mode = "quorum_fail"
+        shared_metadata["consensus_mode"] = mode
         return VetoResult(
             status=VetoStatus.VETO,
             stage_name=self.name,
             confidence=0.0,
             rationale=(
-                f"{self.name}: CONSENSUS_NO_MAJORITY — "
-                f"{safe_count}/{n} SAFE (need {threshold})"
+                f"{self.name}: QUORUM_FAIL ({mode}) — "
+                f"{safe_count}/{n} SAFE "
+                f"(unsafe={unsafe_count} unknown={unknown_count} "
+                f"error={error_count})"
             ),
             latency_ms=latency_ms,
             metadata=shared_metadata,

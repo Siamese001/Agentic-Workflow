@@ -1,0 +1,153 @@
+name: apps-e2e-harness-nightly
+# Nightly apps_* end-to-end auditability harness.
+#
+# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md
+#
+# Two jobs:
+#   1. harness-verifier (every PR + push)
+#      Runs the unit + runtime verifier tests against bundles ALREADY
+#      on disk. Cheap (~10 s). Catches harness regressions immediately.
+#
+#   2. nightly-emit (cron + workflow_dispatch)
+#      Runs `python -m apps_*` for every runnable AppSpec, emits
+#      per-app proof bundles + the all-apps matrix, uploads as a
+#      GitHub artifact. Heavy (~20-30 min for the full sweep).
+#
+# Non-goals:
+#   * No SHA256 signing of the bundles (apps_e2e bundles are auditability,
+#     not certification — see plan §"Out of Scope").
+#   * No auto-commit of bundles (the harness writes to artifacts/, which
+#     is gitignored; bundles live as workflow artifacts only).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/certification/apps_e2e/**"
+      - "tools/certification/agentic_core_e2e/**"
+      - "tests/runtime/test_apps_e2e_*.py"
+      - "tests/runtime/test_agentic_core_spine_proof.py"
+      - "tests/unit/apps_e2e/**"
+      - ".windsurf/schemas/apps_e2e_*.schema.json"
+      - "ops_scripts/ci/check_apps_e2e_harness.py"
+  pull_request:
+    paths:
+      - "tools/certification/apps_e2e/**"
+      - "tools/certification/agentic_core_e2e/**"
+      - "tests/runtime/test_apps_e2e_*.py"
+      - "tests/runtime/test_agentic_core_spine_proof.py"
+      - "tests/unit/apps_e2e/**"
+  schedule:
+    # 03:42 UTC nightly — offset from fortknox-nightly (02:17) to spread runner load.
+    - cron: "42 3 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_apps:
+        description: "Space-separated list of apps_* to skip (e.g. 'apps_lic apps_research')"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  harness-verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml pytest pytest-xdist
+
+      - name: Run unit tests
+        run: |
+          python -m pytest tests/unit/apps_e2e/ -q --no-header -p no:cacheprovider
+
+      - name: Emit dry-run bundles (uses on-disk run dirs)
+        run: |
+          python -m tools.certification.apps_e2e.emit_proof_bundle --all --dry-run --skip-non-runnable
+          python -m tools.certification.apps_e2e.matrix_builder
+
+      - name: Run shared verifier + matrix + anti-cheat tests
+        run: |
+          python -m pytest tests/runtime/test_apps_e2e_auditability_harness.py tests/runtime/test_apps_e2e_matrix.py tests/runtime/test_apps_e2e_anti_cheat.py tests/runtime/test_agentic_core_spine_proof.py -q --no-header -p no:cacheprovider
+
+      - name: Run CI gate
+        run: |
+          python -m ops_scripts.ci.check_apps_e2e_harness
+
+      - name: Upload dry-run matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-e2e-dryrun-matrix
+          path: artifacts/certification/apps_e2e/apps_e2e_matrix.json
+          retention-days: 14
+
+  nightly-emit:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    needs: harness-verifier
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install full deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pyyaml pytest pytest-xdist
+
+      - name: Live nightly run (all runnable apps_*)
+        env:
+          SKIP_APPS: ${{ github.event.inputs.skip_apps }}
+        run: |
+          if [ -n "$SKIP_APPS" ]; then
+            python -m tools.certification.apps_e2e.nightly_run --skip $SKIP_APPS
+          else
+            python -m tools.certification.apps_e2e.nightly_run
+          fi
+
+      - name: Run shared verifier against live bundles
+        run: |
+          python -m pytest tests/runtime/test_apps_e2e_auditability_harness.py tests/runtime/test_apps_e2e_matrix.py -q --no-header -p no:cacheprovider
+
+      - name: Upload live bundles + matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-e2e-live-bundles-${{ github.run_id }}
+          path: |
+            artifacts/certification/apps_e2e/**/*.json
+            artifacts/certification/apps_e2e/**/*.log
+          retention-days: 30
+
+      - name: Emit core spine proof (separate harness)
+        if: always()
+        run: |
+          python -m tools.certification.agentic_core_e2e.run_core_proof
+
+      - name: Upload core spine proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentic-core-spine-proof-${{ github.run_id }}
+          path: artifacts/certification/agentic_core_e2e/*.json
+          retention-days: 30

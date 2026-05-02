@@ -29,6 +29,12 @@ powershell_patterns = ("powershell", "pwsh")
 # Handles: trailing slash, Windows backslash, optional trailing args.
 _FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
 
+# Matches pytest invocations that neither scope to a specific test file/dir
+# nor use -k / -m / --lf / --ff / a node-id to narrow selection.
+# Advisory by default; blocks when PYTEST_SCOPE_STRICT=1 is set.
+_PYTEST_LEADING_RE = re.compile(r"(?:^|[;&|])\s*\"?(?:[^\s]*[/\\])?pytest(?:\.exe)?\b", re.IGNORECASE)
+_PYTEST_NARROWERS = ("-k", "-m", "--lf", "--ff", "--last-failed", "--failed-first", "::")
+
 # Script paths that are allowed to reference "powershell" in their name
 # because they are *about* PowerShell (checkers, RCA docs, etc.)
 _allowed_script_suffixes = (
@@ -247,6 +253,24 @@ def check_command(command_line: str) -> int:
             "Full test-suite run blocked during ADG repair (ADG_REPAIR_ACTIVE is set). "
             "Run scoped cluster tests only per constitutional ADG repair discipline.",
         )
+
+    # Pytest-scope advisory: warn (or block in strict mode) when pytest is
+    # invoked without any narrowing flag or node-id. Skips if scope-bypass set.
+    if (
+        _PYTEST_LEADING_RE.search(command_line)
+        and not any(tok in command_line for tok in _PYTEST_NARROWERS)
+        and not os.environ.get("PYTEST_SCOPE_BYPASS", "").strip() == "1"
+    ):
+        strict = os.environ.get("PYTEST_SCOPE_STRICT", "").strip() == "1"
+        msg = (
+            "pytest invoked without scope narrowers (-k / -m / --lf / node-id). "
+            "Targeted test selection is required by testing-framework skill; "
+            "full-suite runs dilute signal and waste wall time. Set "
+            "PYTEST_SCOPE_BYPASS=1 to skip, PYTEST_SCOPE_STRICT=1 to block."
+        )
+        if strict:
+            return _exit_block(msg)
+        print(f"[pre_run_gate] WARNING: {msg}", file=sys.stderr)
 
     return 0
 

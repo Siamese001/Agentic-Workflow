@@ -1,0 +1,141 @@
+{
+  "schema_version": "master_resume_v2.15",
+  "owner": {
+    "name": "Amit Ayer",
+    "contact": {
+      "phone": "+1-917-239-3830",
+      "email": "amitayer1@gmail.com",
+      "linkedin": "https://www.linkedin.com/in/amitayer1"
+    }
+  },
+  "professional_experience": [
+    {
+      "company": "Unify Consulting",
+      "location": "Boca Raton, FL",
+      "title": "Chief AI Officer",
+      "dates": {
+        "start": "February 2023",
+        "end": "Present"
+      },
+      "bullet_pool": [
+        "Designed and deployed context-engineering frameworks with retrieval-augmented pipelines on unified analytics platforms and semantic caching, improving generative AI accuracy by 33% while accelerating customer solution adoption across multiple Fortune 500 portfolio companies.",
+        "Architected LLM deployment pipelines with embedding stores, vector databases on cloud infrastructure, and inference optimization techniques, cutting latency by 38% and improving model throughput to meet production SLAs for regulated financial workloads.",
+        "Deployed agentic API frameworks using chain-of-thought prompting to automate complex workflows, reducing manual intervention in reporting and operations by 28% while improving audit traceability for regulatory compliance requirements across Fortune 500 clients.",
+        "Built senior engineering teams focused on transformer models and attention mechanisms, delivering low-latency inference optimization on cloud infrastructure and reducing fraud detection response times by 42% across client production deployments.",
+        "Recruited and scaled senior LLM and ML engineering practice from 5 to 18 members, delivering enterprise AI adoption for Fortune 500 financial clients and accelerating time-to-production by 37% across regulated programs.",
+        "Built and mentored 12-person professional services AI team, equipping delivery leads with production-grade LLM tools and code accelerators that reduced development sprint cycles by 27% and improved overall project delivery velocity.",
+        "Led multi-year strategic partnerships with leading AWS to co-develop platforms and go-to-market programs that scaled enterprise generative AI adoption, secured $18M in partnership revenue, and expanded professional services reach globally.",
+        "Partnered with C-suite executives to align AI strategy with business outcomes, co-developing generative AI products using cloud platforms that generated $32M in measurable client value and operational transformation initiatives across portfolio companies.",
+        "Drove strategic alliances with AWS and Snowflake to co-develop generative AI solutions, launching 8 client-specific pilots worth $17M in pipeline value and accelerating professional services onboarding across portfolio companies.",
+        "Accelerated professional services onboarding with automated LLM-powered discovery and RAG pipelines on unified analytics platforms, reducing client intake times by 43% and launching enterprise projects faster with standardized AI delivery frameworks.",
+        "Standardized professional services delivery using modular AI architectures and retrieval-augmented generation systems, cutting consultant ramp-up by 32 days and raising client consistency scores to 91% across all engagements.",
+        "Automated repetitive professional services tasks with transformer-based large language models and intelligent workflow orchestration on cloud platforms, reducing overall delivery costs by 22% while maintaining enterprise-grade quality standards across all engagements.",
+        "Automated compliance and risk validation using policy-as-code and transformer-based LLM validators embedded in professional services workflows, cutting regulatory remediation cycles by 37% and accelerating audit timelines for global clients.",
+        "Enabled measurable business outcomes by embedding AI-powered analytics and intelligent chatbot support into client engagements, raising renewal rates by 23% and strengthening long-term partnership relationships across Fortune 500 portfolio companies."
+      ]
+    },
+    {
+      "company": "IBM",
+      "location": "New York, NY",
+      "title": "Lead Client Partner",
+      "dates": {
+        "start": "April 2017",
+        "end": "October 2022"
+      },
+      "bullet_pool": [
+        "Integrated AI decision engines into risk platforms enabling real-time CCAR and Basel III regulatory reporting, raising client renewal rates by 24% across Fortune 500 financial accounts.",
+        "Launched machine learning risk analytics platform on cloud infrastructure serving global markets, improving predictive accuracy by 17% while ensuring compliance with international regulatory frameworks including MiFID II.",
+        "Led multi-region regulatory modernization projects across EMEA and APAC, deploying NLP fraud analytics on cloud platforms that reduced false positives by 29% and improved audit transparency for global clients.",
+        "Introduced AI-infused reporting and compliance automation frameworks, improving regulatory response times by 53% and supporting scalable client transformation programs across financial services portfolios globally.",
+        "Delivered $34M transformation by migrating legacy risk systems to AWS analytics platforms, cutting regulatory response times by 48% for Fortune 500 banking clients.",
+        "Migrated large-scale Monte Carlo risk models to cloud HPC infrastructure, accelerating execution cycles by 43% and reducing annual compute costs by $4.2M for global financial institutions.",
+        "Oversaw global migrations of on-premise risk models to cloud infrastructure, enabling real-time analytics capabilities and saving $3.8M in annual infrastructure costs for Fortune 500 financial institutions.",
+        "Established strategic alliances with leading cloud and data platform providers and systems integrators to co-deliver enterprise solutions, generating $16M in incremental partnership revenue across 32 global markets.",
+        "Partnered with cloud providers and top systems integrators to co-deliver complex AI transformation programs, unlocking $14M in incremental revenue and expanding professional services reach globally.",
+        "Enabled recurring client engagements by launching managed AI services on AWS for insurance and capital markets sectors, increasing client renewal rates by 26% and driving recurring revenue growth.",
+        "Implemented NLP-based fraud analytics on cloud platforms across multi-jurisdictional operations to reduce false positives by 32%, improving detection precision and accelerating investigation timelines for global banking clients.",
+        "Delivered CI/CD pipelines with embedded security scanning on cloud infrastructure, reducing production incidents by 36% and accelerating AI feature releases by 52% globally for Fortune 500 clients.",
+        "Standardized professional services workflows by embedding automated risk controls and AI governance frameworks, reducing delivery timelines by 47% and securing global executive sign-off across all transformation programs.",
+        "Developed data pipelines with standardized delivery playbooks on unified analytics platforms, accelerating feature launches by 49% while maintaining audit trail and compliance standards globally for Fortune 500 clients."
+      ]
+    },
+    {
+      "company": "TraderSense (Early-Stage / Stealth)",
+      "location": "New York, NY",
+      "title": "Chief Technology Officer",
+      "dates": {
+        "start": "April 2014",
+        "end": "March 2017"
+      },
+      "highlights": [
+        "Architected and implemented a high-frequency trading platform using C++ and low-latency queues, achieving sub-millisecond order execution and incorporating real-time risk controls reducing potential slippage costs by an estimated 15%.",
+        "Constructed a robust backtesting framework capable of simulating trading strategies against years of historical market data, enabling rapid validation of algorithm performance and iteration cycles reduced by an estimated 40%.",
+        "Built and managed scalable cloud infrastructure (early AWS adoption) supporting data ingestion, backtesting, and live trading, maintaining >99.8% system uptime critical for continuous operations during market hours.",
+        "Integrated multiple brokerage APIs via FIX protocol for seamless order routing and position management, enabling access to 3 major market centers and reducing manual trade entry errors by over 90%.",
+        "Designed the data warehousing strategy for trade execution analysis, enabling detailed performance attribution and delivering daily capital efficiency reports essential for strategic business evaluation."
+      ]
+    },
+    {
+      "company": "Ernst & Young",
+      "location": "New York, NY",
+      "title": "Principal",
+      "dates": {
+        "start": "October 2009",
+        "end": "March 2014"
+      },
+      "highlights": [
+        "Designed standardized model validation methodologies for derivative pricing and risk models across ~15 global banking clients, enhancing governance frameworks and reducing validation time by an estimated 20% while meeting emerging Basel III expectations.",
+        "Developed stochastic models (Monte Carlo) projecting economic capital needs under Solvency II for 5+ multinational insurers (>$50B AUM), incorporating complex insurance guarantees and improving capital forecast accuracy by ~15%.",
+        "Advised 10+ clients on implementing enterprise risk management (ERM) frameworks, aligning risk appetite with capital projection and stress testing (early CCAR), leading to an average 25% reduction in identified operational risk gaps.",
+        "Managed the design and implementation of financial reporting solutions for FAS 133/157 compliance across derivative portfolios exceeding $100B in notional value, ensuring audit readiness and reducing manual reporting effort by ~30%.",
+        "Built quantitative models for projecting capital adequacy ratios under various stress scenarios for regional and national banks, improving internal capital planning and reducing regulatory query cycles by an estimated 20%.",
+        "Performed independent reviews of actuarial models for variable annuity guarantee products (GMxB) covering policyholder liabilities >$20B, identifying key model risks and improving hedge effectiveness calculations by ~10%.",
+        "Guided financial institutions in developing economic capital allocation methodologies, linking risk metrics to performance for 5+ major business lines, enabling more risk-informed strategic decision-making.",
+        "Designed validation frameworks for ~30 complex derivative pricing models (swaps, options, structured products), ensuring model integrity and reducing model risk findings by an average of 40% across engagements.",
+        "Contributed to 3 published industry whitepapers on emerging regulatory requirements (Dodd-Frank, Basel III) related to market risk and counterparty credit risk capital, influencing client interpretation and implementation strategies.",
+        "Presented complex modeling results and strategic risk recommendations to 20+ senior client committees (CROs, CFOs, Audit Committees), facilitating informed capital management decisions impacting billions in required capital."
+      ]
+    },
+    {
+      "company": "Early Career Roles",
+      "location": "Philadelphia, PA",
+      "title": "Actuarial Consultant and Quantitative Roles",
+      "dates": {
+        "start": "October 2002",
+        "end": "September 2009"
+      },
+      "highlights": [
+        "Designed stochastic pricing models for variable annuities and path-dependent options while developing distributed computing systems on grid clusters to execute large-scale valuations for financial reporting.",
+        "Developed actuarial projection models for variable annuity loss reserving and asset adequacy testing, incorporating dynamic policyholder behavior assumptions under diverse market scenarios.",
+        "Conducted mortality and lapse experience studies on large variable annuity datasets to derive best-estimate assumptions, directly impacting pricing accuracy and reserve adequacy.",
+        "Analyzed the effectiveness of variable annuity guarantee hedging programs using Greeks-based and stochastic methods, contributing to reports quantifying hedge P&L and basis risk exposure."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Biostatistics",
+      "institution": "Columbia University",
+      "notes": "Graduated with Distinction"
+    },
+    {
+      "degree": "Bachelor of Arts in Biology",
+      "institution": "Brown University",
+      "notes": "Graduated Cum Laude"
+    }
+  ],
+  "certifications_and_credentials": [
+    "Certified Machine Learning Engineer – Associate, AWS (2025)",
+    "Databricks Lakehouse Fundamentals Accreditation (2023)",
+    "Certified Solutions Architect – Professional, AWS (2022)",
+    "Fellow of the Society of Actuaries (2010)"
+  ],
+  "strategic_and_technical_competencies": [
+    "• **Enterprise AI Platform Architecture:** Designed multi-cloud AI platforms on leading cloud and analytics infrastructures for financial services driving regulatory compliance, operational efficiency, and 42% performance improvements across organizations.",
+    "• **AI Governance & Risk Management:** Established enterprise governance and bias audit frameworks enabling audit-ready AI model launches while reducing compliance risk by 36% and accelerating regulatory approval cycles for clients.",
+    "• **Production System Scalability & Reliability:** Built scalable AI systems on cloud infrastructure processing millions of daily transactions with 99.9% uptime, deploying containerized microservices and implementing enterprise-grade reliability standards.",
+    "• **Executive Leadership & Strategic Transformation:** Unified senior technical, commercial, and risk leaders to drive enterprise-wide technology programs delivering $50M+ in value and business transformation results across regulated industries.",
+    "• **Strategic Partnership & Alliance Development:** Forged alliances with cloud, data platform, and systems integration providers to expand market reach, co-develop solutions, and accelerate adoption across portfolio companies.",
+    "• **AI-Driven Operational Excellence & Innovation:** Embedded automation and intelligent systems into operational models cutting delivery costs by 37% and improving transformation outcomes through technology adoption."
+  ]
+}

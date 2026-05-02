@@ -4,7 +4,8 @@ Asserts:
   1. integrated_runtime_artifact_manifest.json exists and is well-formed.
   2. payload.integrated_runtime_entrypoint_used == True.
   3. payload.entry_point identifies the production entry point exactly.
-  4. All 12 W2 artifacts are present, each as a valid envelope.
+  4. All declared W2 artifacts (W2_ARTIFACT_FILENAMES) are present, each
+     as a valid envelope.
   5. Every artifact's producer_component starts with "agentic_core.".
 
 Exit codes: 0 PASS / 2 FAIL_CLOSED / 3 HARNESS_ERROR.
@@ -21,21 +22,29 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 from _w2_verifier_common import (
     EXIT_HARNESS_ERROR,
-    W2_ARTIFACT_FILENAMES,
+    chain_filenames_for,
+    detect_chain_kind,
     fail,
     load_envelope,
     passed,
     resolve_artifact_dir,
 )
 
-EXPECTED_ENTRY_POINT = (
-    "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse"
-)
+EXPECTED_ENTRY_POINTS = {
+    "R1B": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "MANAGED_WORKFLOW": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run.run_integrated_managed_workflow",
+}
 
 
 def main(argv: list[str]) -> int:
     art_dir = resolve_artifact_dir(argv[1] if len(argv) > 1 else None)
-    print(f"[verify_integrated_runtime_entrypoint] artifact_dir={art_dir}")
+    kind = detect_chain_kind(art_dir)
+    expected_entry_point = EXPECTED_ENTRY_POINTS.get(kind, "")
+    print(
+        f"[verify_integrated_runtime_entrypoint] artifact_dir={art_dir} "
+        f"chain_kind={kind}"
+    )
+    chain_filenames = chain_filenames_for(kind)
 
     # 1+2+3: manifest must exist and stamp the entry-point use.
     try:
@@ -46,15 +55,15 @@ def main(argv: list[str]) -> int:
     if not payload.get("integrated_runtime_entrypoint_used"):
         return fail("ENTRYPOINT_FLAG_FALSE",
                     f"manifest.payload.integrated_runtime_entrypoint_used={payload.get('integrated_runtime_entrypoint_used')!r}")
-    if payload.get("entry_point") != EXPECTED_ENTRY_POINT:
+    if payload.get("entry_point") != expected_entry_point:
         return fail("ENTRYPOINT_MISMATCH",
-                    f"manifest.payload.entry_point={payload.get('entry_point')!r} != {EXPECTED_ENTRY_POINT!r}")
+                    f"manifest.payload.entry_point={payload.get('entry_point')!r} != {expected_entry_point!r}")
 
-    # 4: all 12 artifacts present, each a valid envelope.
+    # 4: every declared artifact present, each a valid envelope.
     missing = []
     bad_envelope = []
     bad_producer = []
-    for fn in W2_ARTIFACT_FILENAMES:
+    for fn in chain_filenames:
         try:
             env = load_envelope(art_dir, fn)
         except FileNotFoundError:
@@ -75,7 +84,10 @@ def main(argv: list[str]) -> int:
     if bad_producer:
         return fail("PRODUCER_NOT_AGENTIC_CORE", f"{len(bad_producer)}: {bad_producer[:5]}")
 
-    return passed(f"entry_point={EXPECTED_ENTRY_POINT}; all 12 artifacts present and producer-stamped")
+    return passed(
+        f"entry_point={expected_entry_point}; all {len(chain_filenames)} "
+        f"artifacts present and producer-stamped (chain_kind={kind})"
+    )
 
 
 if __name__ == "__main__":

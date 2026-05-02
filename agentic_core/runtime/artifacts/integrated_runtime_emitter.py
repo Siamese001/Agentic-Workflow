@@ -35,38 +35,126 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-# Filename → expected position in the W2 chain (1..12). Used by the
-# manifest emitter and by the verifier to assert all 12 artifacts exist.
+# Filename → expected position in the W2 chain. Used by the manifest
+# emitter and by the verifiers to assert every declared artifact exists.
+#
+# 2026-05-01 — extended from 12 to 17 artifacts to close the R1B
+# auditability gaps surfaced in the Existence Audit:
+#   + runtime_identity_envelope.json     (Phase 1 — canonical identity)
+#   + l3_bypass_receipt.json             (Phase 2 — typed L3 bypass)
+#   + c0_bypass_receipt.json             (Phase 2 — typed C0 bypass)
+#   + prompt_assembly_bypass_receipt.json (Phase 2 — typed PA bypass)
+#   + agentic_core_spine_proof.json      (Phase 4 — top-level rollup)
+#
+# The chain remains linear; each new entry slots in at the position
+# that matches its causal point in the run.
 W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "integrated_runtime_entrypoint_invocation.json",
+    "runtime_identity_envelope.json",
     "validated_request.json",
     "l1_plan_contract.json",
     "route_contract.json",
+    "l3_bypass_receipt.json",
+    "c0_bypass_receipt.json",
+    "prompt_assembly_bypass_receipt.json",
     "runtime_gate_verdict_bundle.json",
     "semantic_cache_safe_reuse_decision.json",
     "terminal_ret_packet.json",
     "exit_review_packet.json",
     "x3_disposition_receipt.json",
     "runtime_exhaust_bundle.json",
+    "runtime_trace_snapshot.json",
     "integrated_runtime_artifact_manifest.json",
     "no_harness_stamp_receipt.json",
+    "agentic_core_spine_proof.json",
 )
 
 # Chain order for upstream_artifact_ref linkage. Each entry is
 # (filename, upstream_filename_or_None).
 W2_CHAIN_LINKAGE: tuple[tuple[str, str | None], ...] = (
     ("integrated_runtime_entrypoint_invocation.json", None),
-    ("validated_request.json", "integrated_runtime_entrypoint_invocation.json"),
+    ("runtime_identity_envelope.json", "integrated_runtime_entrypoint_invocation.json"),
+    ("validated_request.json", "runtime_identity_envelope.json"),
     ("l1_plan_contract.json", "validated_request.json"),
     ("route_contract.json", "l1_plan_contract.json"),
-    ("runtime_gate_verdict_bundle.json", "route_contract.json"),
+    ("l3_bypass_receipt.json", "route_contract.json"),
+    ("c0_bypass_receipt.json", "l3_bypass_receipt.json"),
+    ("prompt_assembly_bypass_receipt.json", "c0_bypass_receipt.json"),
+    ("runtime_gate_verdict_bundle.json", "prompt_assembly_bypass_receipt.json"),
     ("semantic_cache_safe_reuse_decision.json", "runtime_gate_verdict_bundle.json"),
     ("terminal_ret_packet.json", "semantic_cache_safe_reuse_decision.json"),
     ("exit_review_packet.json", "terminal_ret_packet.json"),
     ("x3_disposition_receipt.json", "exit_review_packet.json"),
     ("runtime_exhaust_bundle.json", "x3_disposition_receipt.json"),
-    ("integrated_runtime_artifact_manifest.json", "runtime_exhaust_bundle.json"),
+    ("runtime_trace_snapshot.json", "runtime_exhaust_bundle.json"),
+    ("integrated_runtime_artifact_manifest.json", "runtime_trace_snapshot.json"),
     ("no_harness_stamp_receipt.json", "integrated_runtime_artifact_manifest.json"),
+    ("agentic_core_spine_proof.json", "no_harness_stamp_receipt.json"),
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# Managed-workflow chain (added 2026-05-01).
+#
+# A separate, parallel chain for runs whose ``RouteContract.execution_form
+# == MANAGED_WORKFLOW``. It replaces R1B-specific artifacts with the L3
+# substrate (static_dag_proof + runtime_l3_orchestration_receipt) and
+# drops the cache-reuse-only artifacts (semantic_cache_safe_reuse_decision,
+# terminal_ret_packet).
+#
+# This is "structural-only" in this pass: real L2 execution under MW is
+# deferred. The chain still proves that L3 orchestrated, that the runtime
+# receipt is bound to the static DAG by sha256, and that L3 did not
+# execute / retrieve / assemble prompts / write L4.
+# ─────────────────────────────────────────────────────────────────────────
+
+W2_MW_ARTIFACT_FILENAMES: tuple[str, ...] = (
+    "integrated_runtime_entrypoint_invocation.json",
+    "runtime_identity_envelope.json",
+    "validated_request.json",
+    "l1_plan_contract.json",
+    "route_contract.json",
+    "static_dag_proof.json",
+    "runtime_l3_orchestration_receipt.json",
+    "l2_sealed_artifact.json",
+    "c0_bypass_receipt.json",
+    "prompt_assembly_bypass_receipt.json",
+    "runtime_gate_verdict_bundle.json",
+    "exit_review_packet.json",
+    "x3_disposition_receipt.json",
+    "runtime_exhaust_bundle.json",
+    "runtime_trace_snapshot.json",
+    "integrated_runtime_artifact_manifest.json",
+    "no_harness_stamp_receipt.json",
+    "agentic_core_spine_proof.json",
+)
+
+W2_MW_CHAIN_LINKAGE: tuple[tuple[str, str | None], ...] = (
+    ("integrated_runtime_entrypoint_invocation.json", None),
+    ("runtime_identity_envelope.json", "integrated_runtime_entrypoint_invocation.json"),
+    ("validated_request.json", "runtime_identity_envelope.json"),
+    ("l1_plan_contract.json", "validated_request.json"),
+    ("route_contract.json", "l1_plan_contract.json"),
+    ("static_dag_proof.json", "route_contract.json"),
+    ("runtime_l3_orchestration_receipt.json", "static_dag_proof.json"),
+    ("l2_sealed_artifact.json", "runtime_l3_orchestration_receipt.json"),
+    ("c0_bypass_receipt.json", "l2_sealed_artifact.json"),
+    ("prompt_assembly_bypass_receipt.json", "c0_bypass_receipt.json"),
+    ("runtime_gate_verdict_bundle.json", "prompt_assembly_bypass_receipt.json"),
+    ("exit_review_packet.json", "runtime_gate_verdict_bundle.json"),
+    ("x3_disposition_receipt.json", "exit_review_packet.json"),
+    ("runtime_exhaust_bundle.json", "x3_disposition_receipt.json"),
+    ("runtime_trace_snapshot.json", "runtime_exhaust_bundle.json"),
+    ("integrated_runtime_artifact_manifest.json", "runtime_trace_snapshot.json"),
+    ("no_harness_stamp_receipt.json", "integrated_runtime_artifact_manifest.json"),
+    ("agentic_core_spine_proof.json", "no_harness_stamp_receipt.json"),
+)
+
+# Union of every filename the emitter is allowed to write. emit_artifact
+# uses this so a single emitter can serve both R1B and MW entrypoints
+# without false positives on legitimate MW filenames.
+W2_ALL_ARTIFACT_FILENAMES: frozenset[str] = frozenset(
+    set(W2_ARTIFACT_FILENAMES) | set(W2_MW_ARTIFACT_FILENAMES)
 )
 
 # Anti-cheat: any of these substrings/prefixes in producer_component is
@@ -128,10 +216,11 @@ def emit_artifact(
         ValueError: producer_component is harness-shaped, or
             upstream_artifact_ref is non-empty but malformed.
     """
-    if filename not in W2_ARTIFACT_FILENAMES:
+    if filename not in W2_ALL_ARTIFACT_FILENAMES:
         raise ValueError(
-            f"emit_artifact: filename {filename!r} not in the W2 manifest. "
-            "All emitted artifacts must be one of the 12 declared filenames."
+            f"emit_artifact: filename {filename!r} not in any W2 chain manifest. "
+            f"All emitted artifacts must be in W2_ARTIFACT_FILENAMES (R1B chain) "
+            f"or W2_MW_ARTIFACT_FILENAMES (MANAGED_WORKFLOW chain)."
         )
     if upstream_artifact_ref and not _SHA256_REF_RE.match(upstream_artifact_ref):
         raise ValueError(
@@ -169,8 +258,11 @@ def is_harness_stamp(producer_component: str) -> bool:
 
 __all__ = [
     "ProvenanceStamp",
+    "W2_ALL_ARTIFACT_FILENAMES",
     "W2_ARTIFACT_FILENAMES",
     "W2_CHAIN_LINKAGE",
+    "W2_MW_ARTIFACT_FILENAMES",
+    "W2_MW_CHAIN_LINKAGE",
     "compute_artifact_hash",
     "emit_artifact",
     "is_harness_stamp",

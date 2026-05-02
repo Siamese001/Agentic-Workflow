@@ -53,6 +53,15 @@ One-sentence summary of what this plan accomplishes.
 
 ---
 
+## Out Of Scope
+
+> **Explicit guardrail.** List files, directories, refactors, or "while I'm here" urges that are NOT part of this plan. The scope-containment rule (`.windsurf/rules/scope-containment.md`) uses this section to deter gold-plating. Empty list allowed for narrow single-file plans; prefer explicit over implicit.
+
+- [Out-of-scope item 1]
+- [Out-of-scope item 2]
+
+---
+
 ## Phase-Level Summary
 
 > **MANDATORY for T2/T3 plans.** A plan missing this table is invalid and must not be saved.

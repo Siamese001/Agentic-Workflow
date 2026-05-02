@@ -27,6 +27,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 from _w2_verifier_common import (
     EXIT_HARNESS_ERROR,
+    detect_chain_kind,
     fail,
     load_payload,
     passed,
@@ -103,7 +104,13 @@ def _verify_live_provider_attestation(art_dir) -> tuple[bool, str, str]:
 
 def main(argv: list[str]) -> int:
     art_dir = resolve_artifact_dir(argv[1] if len(argv) > 1 else None)
-    print(f"[verify_r1b_safe_reuse_integrated_runtime] artifact_dir={art_dir}")
+    kind = detect_chain_kind(art_dir)
+    print(
+        f"[verify_r1b_safe_reuse_integrated_runtime] artifact_dir={art_dir} "
+        f"chain_kind={kind}"
+    )
+    if kind == "MANAGED_WORKFLOW":
+        return passed("MW chain has no semantic_cache_safe_reuse_decision (not applicable)")
 
     try:
         sr = load_payload(art_dir, "semantic_cache_safe_reuse_decision.json")

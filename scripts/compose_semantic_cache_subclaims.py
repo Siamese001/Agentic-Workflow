@@ -45,6 +45,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "certification"
 SIDECAR_PATH = ARTIFACTS_DIR / "semantic_cache_subclaims.json"
 
@@ -179,6 +181,34 @@ def _map_integrated_runtime_proof() -> tuple[str, str]:
     Anything missing or any verifier ≠ 0 → ``NOT_APPLICABLE``. The
     composer NEVER returns PASS based on artifact presence alone.
     """
+    # RTC-REQ-056 consensus-jury panel gate (operator directive
+    # 2026-05-01 13:39 UTC-04:00). This is checked FIRST — without a
+    # valid panel attestation, RTC-REQ-056 cannot reach ACCEPTED
+    # regardless of any other W2 evidence. Legacy W2b single-provider
+    # paths cannot certify.
+    from tools.certification.safety.rtc_req_056_gate import (
+        load_panel_attestation,
+        validate_panel_attestation,
+    )
+    _panel_att = load_panel_attestation(REPO_ROOT)
+    _panel_gate = validate_panel_attestation(_panel_att)
+    if not _panel_gate.accepted:
+        _first = (
+            _panel_gate.reason_codes[0]
+            if _panel_gate.reason_codes
+            else "REJECT_MISSING_PANEL_ATTESTATION"
+        )
+        _summary = (
+            "; ".join(_panel_gate.messages[:2]) if _panel_gate.messages else ""
+        )
+        return "NOT_APPLICABLE", (
+            f"RTC-REQ-056 consensus-jury panel gate failed: {_first} "
+            f"row_status={_panel_gate.row_status}. {_summary}. Set "
+            "GEMINI_API_KEY (or GOOGLE_API_KEY), ANTHROPIC_API_KEY, and "
+            "OPENAI_API_KEY, then run probe_integrated_runtime_safe_reuse.py "
+            "to emit the panel attestation."
+        )
+
     manifest_path = W2_INTEGRATED_LATEST / "integrated_runtime_artifact_manifest.json"
     no_harness_path = W2_INTEGRATED_LATEST / "no_harness_stamp_receipt.json"
 
@@ -242,17 +272,33 @@ def _map_integrated_runtime_proof() -> tuple[str, str]:
             "R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP — "
             f"{gap}"
         )
-    # W2b § 5 — belt-and-suspenders: independently validate the live
-    # provider attestation JSON that accompanies the allow run. The probe
-    # writes it; the composer re-checks it so no accept-path can be forged
-    # by a malformed ledger alone.
-    attestation_dir = W2_INTEGRATED_RUNTIME_DIR / "c_primary_allow"
-    attestation_path = attestation_dir / W2B_ATTESTATION_FILENAME
-    att_ok, att_reason = _validate_live_provider_attestation(attestation_path)
-    if not att_ok:
+    # RTC-REQ-056 consensus-jury panel gate (operator directive
+    # 2026-05-01 13:39 UTC-04:00). The panel attestation at
+    # artifacts/certification/integrated_runtime/consensus_jury/
+    #     live_provider_attestation.json
+    # is the ONLY path to ACCEPTED for RTC-REQ-056. The legacy
+    # c_primary_allow/live_provider_attestation.json (schema v1) is
+    # diagnostic-only and cannot certify.
+    from tools.certification.safety.rtc_req_056_gate import (
+        load_panel_attestation,
+        validate_panel_attestation,
+    )
+    panel_att = load_panel_attestation(REPO_ROOT)
+    panel_gate = validate_panel_attestation(panel_att)
+    if not panel_gate.accepted:
+        first_code = (
+            panel_gate.reason_codes[0]
+            if panel_gate.reason_codes
+            else "REJECT_MISSING_PANEL_ATTESTATION"
+        )
+        summary = "; ".join(panel_gate.messages[:3]) if panel_gate.messages else ""
         return "NOT_APPLICABLE", (
-            "R1B_INTEGRATED_RUNTIME_ALLOW_PATH_PROOF = INFRASTRUCTURE_GAP — "
-            f"live_provider_attestation.json check failed: {att_reason}"
+            "RTC-REQ-056 consensus-jury panel gate failed: "
+            f"{first_code} row_status={panel_gate.row_status}. "
+            f"{summary}. "
+            "Run probe_integrated_runtime_safe_reuse.py with the three "
+            "required juror API keys (GEMINI_API_KEY/GOOGLE_API_KEY, "
+            "ANTHROPIC_API_KEY, OPENAI_API_KEY) set."
         )
     if not fc_leg.get("pass"):
         return "NOT_APPLICABLE", (

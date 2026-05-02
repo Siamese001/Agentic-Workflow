@@ -1,105 +1,52 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Apply when non-trivial work completes and a writeback to Memory MCP (procedural patterns, invariants) or Notion MCP (ADRs, wave/phase status, MCP registry, decisions) is required. Demoted from always_on 2026-05-01 per Anthropic two-tier compliance.
 ---
 
-# Memory ↔ Notion Writeback Discipline
+# Memory ↔ Notion Writeback — Invariant-Only Stub
 
-> ⛔ When non-trivial work completes, the knowledge MUST be written back to the correct store. Memory for Cascade's next-session recall, Notion for human audit, both for cross-cutting decisions.
+## Invariant
 
-## The 15/3 Rule
+When solving a problem took >15 minutes (T2/T3 per constitutional Tier Classification), spend up to 3 minutes writing back. **The 15/3 rule is non-negotiable.**
 
-If solving a problem took more than **15 minutes** of real work, spend up to **3 minutes** writing it back. Non-negotiable for work classified T2/T3 per constitutional Tier Classification.
+## Where to write — quick decision
 
-## Decision Table — Where Does It Go?
+| Will Cascade need it next session? | Will a human audit it across days? | Target |
+|---|---|---|
+| ✅ | ❌ | **Memory MCP** only (`ProceduralPattern:*` / `ProjectContext:*`) |
+| ❌ | ✅ | **Notion MCP** only (specific database per AGENTS.md routing) |
+| ✅ | ✅ | **Both** — compact Memory entity with Notion URL in observations |
+| ❌ | ❌ | Neither — disk artifact suffices |
 
-| Signal in current session | Memory MCP (`memory`) | Notion MCP (`notion`) | Neither |
-|---|:---:|:---:|:---:|
-| Non-obvious bug fix / RCA with recurring pattern | ✅ `ProceduralPattern:*` | ⚠️ only if user-audit needed | — |
-| Architectural decision / ADR | ⚠️ short invariant entity | ✅ ADR Registry row | — |
-| Wave/phase status change on a plan | ✅ `Project:*` observation | ✅ Wave/Phase Convergence row | — |
-| Author-Gate decision resolved | — | ✅ Author-Gate Decision Ledger row | — |
-| MCP config or gate behavior change | — | ✅ MCP Registry patch | — |
-| New SC/AP violations emitted by ADG | — | ✅ SC/AP Violation Backlog row(s) | — |
-| New anti-pattern suppression baseline | — | ✅ Anti-Pattern Burndown row | — |
-| Regenerated full ADG / new snapshot | — | — | ✅ (auto-logged in artifact) |
-| Full topology / rationale / diagrams | — | — | ✅ lives on disk (`docs/architecture/*.md`) |
-| Fix that recurs across ≥2 sessions | ✅ `ProceduralPattern:*` | — | — |
-| Project blocker the user must resolve | ✅ `Project:*` observation | ✅ Wave/Phase row with status=blocked | — |
+## Auto-routing triggers (proactive)
 
-**Rule of thumb**: If Cascade will need it in the **first 5 minutes of the next session**, write to **Memory**. If a **human** will audit it across days/weeks, write to **Notion**. If both, write a compact Memory entity with a Notion URL in its observations.
+These events fire writeback without a prompt:
 
-## Memory MCP — Entity Types (canonical)
+1. New `docs/architecture/adr/ADR-*.md` → Notion ADR Registry
+2. `.windsurf/mcp_config.json` change → Notion MCP Registry
+3. Gate behavior change in `.windsurf/scripts/*_gate.py` → Notion MCP Registry Notes
+4. Resolved scored `ask_user_question` → Notion Author-Gate Decision Ledger
+5. New SC/AP defects from `generate_full_adg.py` → Notion SC/AP Violation Backlog (one row per new violation)
+6. New plan file in `.windsurf/plans/` → Memory `Project:<plan-slug>`
+7. Recurring bug or anti-pattern diagnosis → Memory `ProceduralPattern:*`
 
-Write to `memory` MCP via `create_entities` / `add_observations`. Durable entity types (survive `mem_cleanup_stale`):
+## Where the procedural detail lives
 
-| Type | Use |
+| Concern | Location |
 |---|---|
-| `ProceduralPattern` | Fix recipes, tool-usage patterns, debugging playbooks |
-| `ProjectContext` | Project status, next-action, active blockers |
-| `ArchitecturalInvariant` | Rules about code topology that must not be violated |
-| `EpisodicEvent` | Important one-time occurrences (rare — prefer ProceduralPattern) |
+| Full decision table + entity types + DB IDs | `.windsurf/skills/writeback-discipline/SKILL.md` + `AGENTS.md` Notion Workspace Map |
+| Memory MCP usage | `.windsurf/skills/memory-mcp/SKILL.md` + `memory-management.md` |
+| Auto-capture hook | `.windsurf/scripts/post_cascade_writeback_audit.py` |
+| Stale-source sniff test | (this rule was SSOT — full text preserved in git history at HEAD~1) |
+| Bypass | `WRITEBACK_AUDIT_BYPASS=1` |
 
-General-typed entities (without these protected types) are purged at 30 days — do **not** use `"entityType": "general"` for anything you want to persist.
+## Forbidden patterns
 
-SSOT path: `@c:/Git/Agentic-Workflow/artifacts/memory/knowledge_graph.sqlite`
+- Notion narrative duplicating disk content (row should link, not repeat)
+- `entityType: "general"` for anything intended to persist (auto-purged at 30 days)
+- Skipping writeback because "it's small" — if 15/3 triggered, it's required
+- Writing Project:* / Wave row without the stale-source sniff test (precedent: 2026-04-22 false-block)
 
-## Notion MCP — Database Routing (canonical)
+## Constitutional cross-reference
 
-Full workspace map lives in `@c:/Git/Agentic-Workflow/AGENTS.md` (Notion Workspace Map block, auto-synced). Writes use `API-post-page` with `parent: {type: "database_id", database_id: <write-id>}` — **not** data_source_id (that 404s).
-
-The 8 canonical databases and their triggers are listed in AGENTS.md. Never invent a new database without first proposing it; never duplicate narrative from disk into Notion — Notion holds the searchable row, disk holds the full artifact.
-
-## Writeback Triggers (fire these automatically)
-
-Cascade MUST write back without waiting for a prompt when any of these happen in the current response:
-
-1. **New `docs/architecture/adr/ADR-*.md`** → Notion ADR Registry row (`API-post-page`)
-2. **Modified `.windsurf/mcp_config.json`** → Notion MCP Registry patch/post
-3. **Gate behavior changed in `.windsurf/scripts/*_gate.py`** → Notion MCP Registry Notes field update
-4. **Resolved scored `ask_user_question`** → Notion Author-Gate Decision Ledger row
-5. **`generate_full_adg.py` produced NEW SC/AP defects** → Notion SC/AP Violation Backlog row per new violation
-6. **Created/modified `.windsurf/plans/*-<6hex>.md`** → Memory `Project:<plan-slug>` observation with current status + blocker
-7. **Diagnosed a recurring bug or anti-pattern** → Memory `ProceduralPattern:*` entity with diagnosis + fix recipe
-
-## Stale-Source Sniff Test (MANDATORY before writing Project:* or Wave rows)
-
-Plan files go stale when work completes but the header is not updated. Before writing a `Project:*` Memory entity or a Wave/Phase Notion row using a plan file's stated Status, run this 3-step check:
-
-1. **Grep the plan for `Status:`** — read the claimed status
-2. **Run `git log --grep="<plan-slug>"`** — look for a commit containing `complete`, `done`, or the final-wave label
-3. **Verify referenced paths** — files the plan says to **retire** should NOT exist; files it says to **create** SHOULD exist
-
-If (2) or (3) contradicts (1), the plan is stale. Write the ACTUAL status (with a `CORRECTION: plan header was stale` observation) and update the plan header in the same response.
-
-Failure precedent: 2026-04-22 routing-unification-qwen false-blocked writeback. Captured as `ProceduralPattern:WritebackStaleSourceSniffTest`.
-
-## Forbidden Patterns
-
-- ❌ Write Notion narrative that duplicates disk content — row should link to the file, not repeat it.
-- ❌ Use `entityType: "general"` for anything intended to persist (gets purged at 30 days).
-- ❌ Create entities with observations containing only generic strings (e.g., "fixed the bug"). Observations must be recall-actionable in the next session.
-- ❌ Write to Notion without also updating Memory if Cascade will need to recall it next session.
-- ❌ Skip the writeback because "it's small" — if the 15/3 rule triggered, the writeback is required.
-
-## Escape Hatch
-
-Set `WRITEBACK_AUDIT_BYPASS=1` only for: scripted batch runs, tests, or acknowledged one-off exploratory sessions. Each bypass is logged in `@c:/Git/Agentic-Workflow/artifacts/windsurf/writeback_violations.jsonl` with reason=bypass.
-
-## Enforcement
-
-This rule is the **advisory tier**. The deterministic tier is the post-response hook:
-- `@c:/Git/Agentic-Workflow/.windsurf/scripts/post_cascade_writeback_audit.py` (runs on every response)
-- Violations log: `@c:/Git/Agentic-Workflow/artifacts/windsurf/writeback_violations.jsonl`
-
-See the `writeback-discipline` skill for entity/row templates to copy.
-
-## Related Rule — Deferred Scope Capture
-
-This rule covers the **full writeback taxonomy** (ADRs, Wave/Phase rows, SC/AP defects, memory patterns, etc.). For the specific case of **deferred scope from refactoring**, the more strict `.windsurf/rules/deferred-scope-capture.md` rule applies in parallel:
-
-- Every deferred scope item MUST emit a `DEFERRED_SCOPE:` marker (constitutional §24)
-- Post-hook `post_cascade_deferred_scope_capture.py` auto-scores P1..P5 and auto-posts
-- Pre-session hook surfaces unresolved pendings
-- Pre-commit gate blocks prose-only deferred mentions in plan files
-
-When both rules fire (e.g., completing a refactor that defers scope), BOTH the DEFERRED_SCOPE marker AND the `WRITEBACK:` receipt should appear. The deferred-scope hook creates the Wave/Phase row; this rule's hook validates the broader writeback discipline. They are complementary, not duplicative.
+§17 (Memory lifecycle mandatory). Sibling rule `.windsurf/rules/deferred-scope-capture.md` covers `DEFERRED_SCOPE:` markers (constitutional §24).

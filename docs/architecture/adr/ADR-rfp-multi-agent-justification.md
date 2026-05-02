@@ -1,10 +1,12 @@
 # ADR-NNN — apps_rfp Multi-Agent Justification
 
-> **Status**: Proposed (draft)
-> **Date**: 2026-04-29
-> **Plan**: `.windsurf/plans/apps-rfp-first-principles-refactor-9c8d3f.md`
+> **Status**: **Accepted** (2026-05-01)
+> **Date**: 2026-04-29 (Proposed) → 2026-05-01 (Accepted)
+> **Plan**: `.windsurf/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W0/W1.1 evidence) + `.windsurf/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (W0.1 verification, W2 acceptance)
 > **AgentSpec**: `apps_rfp/config/specs/agent_spec.rfp_response.v1.0.0.yaml` (declares `agency.tier=MULTI_AGENT`)
 > **Reference contract**: `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`
+>
+> **Acceptance evidence**: W0.1 verification scan against ADG snapshot `artifacts/adg/adg_indexed_05012026_0632.sqlite` (output: `artifacts/_scan_w0_w1_output.txt`). Cross-orchestrator edge counts across the 5 RFP orchestrators: `writes_to=0`, `emits_side_effect=0`, `resolves_callsite=0`, `controls_flow=0`. The four §Verification checkboxes all pass. The `flows_to=0` caveat is documented in the integrated plan and does not invalidate the tier — it is consistent with the ADR's own Claim 3 (parallel agents whose outputs are independently consumable). Captured in Author-Gate decision K1 of the integrated plan, type=architecture_choice, confidence=0.85, precedent=strong.
 
 ## Context
 

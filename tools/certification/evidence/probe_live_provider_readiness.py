@@ -1,29 +1,22 @@
-"""W2b Phase P1 — Live-provider readiness probe.
+"""RTC-REQ-056 consensus-jury readiness probe.
 
-Diagnostic probe that inspects the environment for approved SAFE-producing
-LLM providers in the order mandated by W2b:
+Reports presence/absence of API keys and resolved model IDs for the
+three required jurors (Gemini / Claude / GPT). Never logs secret values.
 
-    1. ``local_qwen`` (vLLM OpenAI-compatible endpoint at localhost:8000/v1)
-    2. ``anthropic_haiku`` (requires ANTHROPIC_API_KEY)
-
-The ``mock_safe`` provider is NEVER reported as a certification candidate here.
-It remains available for unit tests only, gated on LLMJUDGEVETO_APPROVED_MOCK_SAFE.
-
-This probe is diagnostic, not a gate: it exits 0 regardless of whether any
-provider is available. Downstream composer / verifier interpret absence as
-INFRASTRUCTURE_GAP per plan rtc-w2b-live-provider-allow-proof-b24f8e § 1.
-
-No secret values are logged or persisted — only booleans and public endpoint URLs.
+This is a DIAGNOSTIC probe: it never writes a panel attestation and it
+exits 0 regardless of which jurors are available. If any juror is
+missing, downstream composer / verifier treat RTC-REQ-056 as
+``INFRASTRUCTURE_GAP``.
 
 Output: artifacts/certification/integrated_runtime/live_provider_readiness.json
+
+Per operator directive 2026-05-01 13:39 UTC-04:00.
 """
 
 from __future__ import annotations
 
 import json
-import os
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -32,130 +25,83 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from tools.certification.safety.consensus_juror_clients import (
+    api_key_presence,
+    resolve_model_id,
+)
+from tools.certification.safety.rtc_req_056_panel import (
+    CERTIFICATION_SCOPE,
+    CONTROL_SURFACE,
+    PURPOSE,
+    REQUIRED_JURORS,
+    REQUIRED_JUROR_COUNT,
+    RejectReason,
+)
+
 ARTIFACT_DIR = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime"
 ARTIFACT_PATH = ARTIFACT_DIR / "live_provider_readiness.json"
-
-LOCAL_QWEN_ENDPOINT = os.environ.get(
-    "LOCAL_QWEN_ENDPOINT", "http://localhost:8000/v1"
-)
-LOCAL_QWEN_MODEL = os.environ.get(
-    "LOCAL_QWEN_MODEL", "Qwen/Qwen2.5-7B-Instruct"
-)
-ANTHROPIC_MODEL = os.environ.get(
-    "ANTHROPIC_MODEL", "claude-haiku-4-5"
-)
-PROBE_TIMEOUT_S = 5.0
 
 
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _probe_local_qwen() -> dict[str, Any]:
-    """Probe the local vLLM OpenAI-compatible endpoint.
-
-    Uses a GET /v1/models with a 5s timeout. Records latency and the
-    first reported model id when available. Never raises.
-    """
-    import urllib.error
-    import urllib.request
-
-    url = f"{LOCAL_QWEN_ENDPOINT.rstrip('/')}/models"
-    start = time.perf_counter()
-    try:
-        req = urllib.request.Request(url, method="GET")
-        with urllib.request.urlopen(req, timeout=PROBE_TIMEOUT_S) as resp:
-            latency_ms = round((time.perf_counter() - start) * 1000, 2)
-            body = resp.read().decode("utf-8", errors="replace")
-            try:
-                parsed = json.loads(body)
-            except json.JSONDecodeError:
-                parsed = None
-            reported_model = None
-            if isinstance(parsed, dict):
-                data = parsed.get("data") or []
-                if isinstance(data, list) and data:
-                    entry = data[0]
-                    if isinstance(entry, dict):
-                        reported_model = entry.get("id")
-        return {
-            "provider": "local_qwen",
-            "order": 1,
-            "available": True,
-            "endpoint": LOCAL_QWEN_ENDPOINT,
-            "model_id": reported_model or LOCAL_QWEN_MODEL,
-            "model_version": reported_model or LOCAL_QWEN_MODEL,
-            "probe_latency_ms": latency_ms,
-            "probe_method": "GET /v1/models",
-            "failure_reason": None,
-        }
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        return {
-            "provider": "local_qwen",
-            "order": 1,
-            "available": False,
-            "endpoint": LOCAL_QWEN_ENDPOINT,
-            "model_id": LOCAL_QWEN_MODEL,
-            "model_version": None,
-            "probe_latency_ms": None,
-            "probe_method": "GET /v1/models",
-            "failure_reason": f"{type(exc).__name__}: {exc}",
-        }
-
-
-def _probe_anthropic_haiku() -> dict[str, Any]:
-    """Check for ANTHROPIC_API_KEY presence. Does NOT call the API.
-
-    Recording only a boolean keeps secrets out of artifacts per W2b § 4.
-    """
-    key_present = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    return {
-        "provider": "anthropic_haiku",
-        "order": 2,
-        "available": key_present,
-        "endpoint": "https://api.anthropic.com",
-        "model_id": ANTHROPIC_MODEL,
-        "model_version": ANTHROPIC_MODEL,
-        "probe_latency_ms": None,
-        "probe_method": "env[ANTHROPIC_API_KEY] presence",
-        "failure_reason": (
-            None if key_present else "ANTHROPIC_API_KEY not set in CERT env"
-        ),
-    }
-
-
-def _choose_provider(candidates: list[dict[str, Any]]) -> tuple[str | None, str]:
-    """Pick the first available candidate by declared order.
-
-    Returns ``(chosen_provider_or_None, human_reason)``. Never returns
-    ``mock_safe`` — W2b § 1 forbids it from the certification path.
-    """
-    for cand in sorted(candidates, key=lambda c: c["order"]):
-        if cand["available"]:
-            return cand["provider"], (
-                f"{cand['provider']} available and ordered {cand['order']}"
-            )
-    return None, "No approved provider available; INFRASTRUCTURE_GAP will be raised downstream"
-
-
-def _unavailable_reasons(candidates: list[dict[str, Any]]) -> list[str]:
-    return [
-        f"{c['provider']}: {c['failure_reason']}"
-        for c in candidates
-        if not c["available"] and c["failure_reason"]
-    ]
-
-
 def run_readiness_probe() -> dict[str, Any]:
-    candidates = [_probe_local_qwen(), _probe_anthropic_haiku()]
-    chosen, reason = _choose_provider(candidates)
+    jurors: list[dict[str, Any]] = []
+    missing: list[str] = []
+
+    for j in REQUIRED_JURORS:
+        key_present = api_key_presence(j)
+        effective_model, reject_reason = resolve_model_id(j)
+        entry: dict[str, Any] = {
+            "juror_id": j.juror_id,
+            "control_surface": CONTROL_SURFACE,
+            "provider_family": j.provider_family,
+            "provider": j.provider,
+            "target_model_id": j.model_id,
+            "resolved_model_id": effective_model,
+            "env_key_primary": j.env_key,
+            "env_key_aliases": list(j.env_key_aliases),
+            "env_key_present": key_present,
+            "model_override_env": j.model_env_override,
+            "model_override_reject_reason": reject_reason,
+            "available_for_certification": (
+                key_present and reject_reason is None
+            ),
+        }
+        jurors.append(entry)
+        if not key_present:
+            missing.append(
+                f"{j.juror_id}: no key in {j.env_key} "
+                f"or aliases {list(j.env_key_aliases)}"
+            )
+        if reject_reason is not None:
+            missing.append(
+                f"{j.juror_id}: {reject_reason} "
+                f"(override env {j.model_env_override})"
+            )
+
+    all_required_available = all(
+        e["available_for_certification"] for e in jurors
+    )
+
     return {
-        "schema_version": 1,
+        "schema_version": 3,
+        "certification_scope": CERTIFICATION_SCOPE,
+        "control_surface": CONTROL_SURFACE,
+        "purpose": PURPOSE,
+        "judge_mode": "consensus_jury",
+        "required_juror_count": REQUIRED_JUROR_COUNT,
+        "invoked_juror_count": len(jurors),
+        "all_required_available": all_required_available,
+        "jurors": jurors,
+        "missing_requirements": missing,
+        "rtc_req_056_status_hint": (
+            "READY_FOR_CERTIFICATION"
+            if all_required_available
+            else RejectReason.INFRASTRUCTURE_GAP_MISSING_KEY
+        ),
         "executed_at_utc": _utc_now_iso(),
-        "candidates": candidates,
-        "chosen_provider": chosen,
-        "chosen_reason": reason,
-        "unavailable_reasons": _unavailable_reasons(candidates),
     }
 
 
@@ -166,16 +112,21 @@ def main() -> int:
         json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    chosen = report["chosen_provider"] or "<none>"
-    print(f"[w2b-readiness] chosen_provider={chosen}")
-    for cand in report["candidates"]:
-        status = "ok" if cand["available"] else "unavailable"
-        reason = cand["failure_reason"] or "-"
+    print(
+        f"[readiness] scope={report['certification_scope']} "
+        f"required={report['required_juror_count']} "
+        f"all_available={report['all_required_available']}"
+    )
+    for j in report["jurors"]:
+        status = "ok" if j["available_for_certification"] else "MISSING"
         print(
-            f"[w2b-readiness]   order={cand['order']} "
-            f"provider={cand['provider']} status={status} reason={reason}"
+            f"[readiness]   {j['juror_id']} "
+            f"key_present={j['env_key_present']} "
+            f"resolved_model={j['resolved_model_id']} status={status}"
         )
-    print(f"[w2b-readiness] artifact={ARTIFACT_PATH}")
+    for m in report["missing_requirements"]:
+        print(f"[readiness]   GAP: {m}")
+    print(f"[readiness] artifact={ARTIFACT_PATH}")
     return 0
 
 

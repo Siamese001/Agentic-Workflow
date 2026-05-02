@@ -1,7 +1,9 @@
 # Apps_Exec First-Principles Refactor — Phase 0 & 1 Only
 
-Status: **W0.1 + W1.1 done; W1.2 deferred (code change); W2+ gated on three-bucket**
-Last updated: 2026-04-29
+> **Cross-app verification (orchestrator independence)**: 2026-05-01 — performed in `apps-portfolio-integrated-evaluation-7d3a91.md` W1. All 3 orchestrators (`brief_orchestrator`, `enterprise_brief_orchestrator`, `ExecOrchestrator`) are structurally independent in the ADG (no `writes_to` / `emits_side_effect` / `resolves_callsite` / `controls_flow` between them). No topology-driven consolidation pressure. This plan's W1.2+ remains gated on three-bucket as originally documented.
+
+Status: **W0.1 + W1.1 done; W1.2 deferred (code change); cross-app independence verified in integrated plan; W2+ gated on three-bucket**
+Last updated: 2026-05-01
 Created: 2026-04-29
 Owner: Cascade
 Plan slug: `apps-exec-first-principles-refactor-5e6a4b`

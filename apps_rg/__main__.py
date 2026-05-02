@@ -189,11 +189,164 @@ def _adg_bootstrap() -> None:
 
 def main() -> None:
     _adg_bootstrap()
+    import argparse
     import asyncio
+    from pathlib import Path
 
+    from apps_rg.runtime import governed_run
     from apps_rg.scripts.generate_resume import main as _run
 
-    asyncio.run(_run())
+    parser = argparse.ArgumentParser(prog="apps_rg", add_help=True)
+    parser.add_argument(
+        "--target-company",
+        default=None,
+        help="Target company for narrative pass (HOP-0.6 onward). "
+        "When provided, runs the narrative HOPs after the existing pipeline.",
+    )
+    parser.add_argument(
+        "--research-via",
+        default=None,
+        choices=["apps_research"],
+        help="Cross-app generation source for the company brief.",
+    )
+    parser.add_argument(
+        "--auto-research-internal",
+        action="store_true",
+        help="Use internal CompanyBriefEngine when no manual brief is on disk.",
+    )
+    parser.add_argument(
+        "--auto-research-tavily",
+        action="store_true",
+        help="Supplement null/stale fields in the brief via Tavily.",
+    )
+    parser.add_argument(
+        "--manual-brief",
+        default="apps_rg/scripts/company_research.json",
+        help="Path to manual CompanyBrief JSON.",
+    )
+    parser.add_argument(
+        "--target-role",
+        default=None,
+        help="Target role title for DOCX header.",
+    )
+    args, _unknown = parser.parse_known_args()
+
+    # Wrap the deterministic HOP pipeline in genuine spine receipts.
+    # `governed_run` emits U0/L1/L0/L3-bypass on enter; L2/Exit/L6/OTEL on exit.
+    with governed_run(
+        target_company=args.target_company,
+        target_role=args.target_role,
+        cli_args=sys.argv[1:],
+    ) as gr:
+        with gr.span("apps_rg.entrypoint"):
+            with gr.span("L2_execute.generate_resume"):
+                asyncio.run(_run())
+                gr.mark_stage("generate_resume", "ok")
+
+            if args.target_company:
+                with gr.span("L2_execute.post_pipeline"):
+                    code = _run_post_pipeline(args)
+                    gr.mark_stage("post_pipeline", "ok" if code == 0 else "fail")
+
+            # Resolve the late-bound run dir so post-execution receipts
+            # are sealed alongside generated_resume.json + the DOCX.
+            runs_root = Path("artifacts/apps_rg/runs")
+            if runs_root.exists():
+                candidates = sorted(
+                    (p for p in runs_root.iterdir() if p.is_dir() and p.name[:8].isdigit()),
+                    key=lambda p: p.stat().st_mtime, reverse=True,
+                )
+                if candidates:
+                    gr.set_run_dir(candidates[0])
+
+        gr.set_subprocess_exit_code(0)
+
+
+def _run_post_pipeline(args) -> int:
+    """Run narrative pass + DOCX export against the most recent run dir.
+
+    Returns 0 on success, non-zero on failure. Used by ``governed_run`` to
+    populate L2 stage outcomes and Exit X3 disposition.
+    """
+    import subprocess
+    from pathlib import Path
+
+    runs_root = Path("artifacts/apps_rg/runs")
+    if not runs_root.exists():
+        _log.error("[apps_rg] No runs/ directory found at %s", runs_root)
+        return 1
+    candidates = sorted(
+        (p for p in runs_root.iterdir() if p.is_dir()),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if not candidates:
+        _log.error("[apps_rg] No run directory under %s", runs_root)
+        return 1
+    run_dir = candidates[0]
+    input_resume = run_dir / "generated_resume.json"
+    if not input_resume.exists():
+        _log.error("[apps_rg] %s missing — narrative pass aborted", input_resume)
+        return 1
+
+    # Narrative pass.
+    cmd = [
+        sys.executable,
+        "-m",
+        "apps_rg.scripts.narrative_pass",
+        "--target-company",
+        args.target_company,
+        "--input-resume",
+        str(input_resume),
+        "--out-dir",
+        str(run_dir),
+        "--manual-brief",
+        args.manual_brief,
+    ]
+    if args.research_via:
+        cmd.extend(["--research-via", args.research_via])
+    if args.auto_research_internal:
+        cmd.append("--auto-research-internal")
+    if args.auto_research_tavily:
+        cmd.append("--auto-research-tavily")
+    if args.target_role:
+        cmd.extend(["--target-role", args.target_role])
+
+    _log.info("[apps_rg] Running narrative pass: %s", " ".join(cmd))
+    try:
+        result = subprocess.run(cmd, timeout=600, shell=False)
+    except subprocess.TimeoutExpired:
+        _log.error("[apps_rg] narrative pass timed out")
+        return 124
+
+    if result.returncode != 0:
+        _log.error("[apps_rg] narrative pass exit=%s — DOCX export skipped", result.returncode)
+        return result.returncode
+
+    # DOCX export.
+    docx_cmd = [
+        sys.executable,
+        "-m",
+        "apps_rg.outputs.docx_exporter",
+        "--run-dir",
+        str(run_dir),
+    ]
+    if args.target_role and args.target_company:
+        docx_cmd.extend(
+            [
+                "--target-role",
+                args.target_role,
+                "--target-company",
+                args.target_company,
+            ]
+        )
+    _log.info("[apps_rg] Running DOCX export: %s", " ".join(docx_cmd))
+    try:
+        docx_result = subprocess.run(docx_cmd, timeout=120, shell=False)
+    except subprocess.TimeoutExpired:
+        _log.error("[apps_rg] DOCX export timed out")
+        return 124
+    return docx_result.returncode
 
 
 if __name__ == "__main__":

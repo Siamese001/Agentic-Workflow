@@ -76,6 +76,9 @@ class GovernedRfpE2ERunRecord:
     l5_error: str = ""
     l6_error: str = ""
     hitl_error: str = ""
+    # ── Inner-DAG HOP checkpoints (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+    hop_checkpoints: tuple[dict, ...] = ()
+    hop_terminal_error: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -158,6 +161,13 @@ class GovernedRfpRun(GovernedAppRunner):
             inject_chunks=inject_chunks,
         )
 
+        # ── Inner-DAG HOP pipeline (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+        hop_payload = self._run_hop_pipeline(
+            request=request,
+            run_id=run_id,
+            trace_id=request.trace_id or "",
+        )
+
         # W5: build_app_record handles all substrate fields automatically.
         # Only RFP-specific fields are passed explicitly.
         return build_app_record(
@@ -165,7 +175,58 @@ class GovernedRfpRun(GovernedAppRunner):
             industry=request.industry,
             architecture_posture=request.architecture_posture,
             problem_statement=request.problem_statement[:120],
+            hop_checkpoints=hop_payload["checkpoints"],
+            hop_terminal_error=hop_payload["terminal_error"],
         )
+
+    # ------------------------------------------------------------------
+    # Inner-DAG driver (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9)
+    # ------------------------------------------------------------------
+
+    def _run_hop_pipeline(
+        self,
+        *,
+        request: RfpRequest,
+        run_id: str,
+        trace_id: str,
+    ) -> dict[str, Any]:
+        """Execute the 3-stage apps_rfp HOP pipeline.
+
+        Isolated helper so inner-DAG failures cannot take down substrate
+        record assembly — mirror of apps_lic Wave 2.5 posture.
+        """
+        try:
+            from apps_rfp.reasoning.RfpHopOrchestrator import (  # noqa: PLC0415
+                RfpHopOrchestrator,
+            )
+
+            orchestrator = RfpHopOrchestrator()
+            record = orchestrator.run(
+                context={"rfp_request": request},
+                run_id=run_id,
+                trace_id=trace_id,
+            )
+            checkpoints = tuple(
+                {
+                    "stage_id": cp.stage_id,
+                    "stage_name": cp.stage_name,
+                    "status": cp.status.value,
+                    "duration_ms": cp.duration_ms,
+                    "error": cp.error,
+                }
+                for cp in record.checkpoints
+            )
+            return {
+                "checkpoints": checkpoints,
+                "terminal_error": record.terminal_error,
+            }
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, ImportError) as exc:
+            # guardian: allow-broad-exception -- inner-DAG failures must not
+            # destroy the substrate record; surface as terminal_error.
+            return {
+                "checkpoints": (),
+                "terminal_error": f"hop_pipeline_error: {type(exc).__name__}: {exc}",
+            }
 
 
 # ----------------------------------------------------------------------

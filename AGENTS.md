@@ -95,6 +95,9 @@ Cascade MUST route these events to Notion without being asked. Filesystem remain
 | Resolve a scored `ask_user_question` (Author-Gate decision) | — | `API-post-page` into Author-Gate Decision Ledger with decision type, options, selection, rationale |
 | Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | `API-post-page` per NEW violation into SC/AP Violation Backlog |
 | Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
+| `generate_mutation_rejection_report.py` finds a newly-accepted mutation (Constitutional §32) | `artifacts/certification/fortknox_mutation_rejection_report.json` | `API-post-page` into SC/AP Violation Backlog with severity=CRITICAL, category=`fortknox_regression`, provenance block (mutation name, accepting validator step) |
+| Trust level changes in Fort Knox bundle (e.g. `DEVELOPMENT_PROOF` → `INTEGRITY_PROOF`) | `artifacts/certification/final_requirement_signoff_report.json` | `API-post-page` into ADR Registry with provenance block (merkle_root, signer=UNSIGNED_BLOCKED until P5, date, compiler version) |
+| Positive-control set grows (new `RTC-REQ-*` joins SIGNED_OFF via compiler run) | `certification/evidence_assertions.jsonl` (new rows) + compiler output | `API-patch-page` Wave/Phase Convergence row for that req with Status → Done and evidence pointers |
 
 **Non-goals**: do NOT duplicate narrative content in Notion. Store the row; link the file.
 

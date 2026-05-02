@@ -19,7 +19,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import (  # guardian: allow-layer-violation -- L2 healer reads model-ID constants from L0 SSOT
+from agentic_core.L2_execution.healers.healing_cascade_registry import (
     DETERMINISTIC_MODEL_SENTINEL,
     GEMINI_FLASH_MODEL_ID,
     GEMINI_PRO_MODEL_ID,

@@ -427,6 +427,15 @@ def main():
         # queues) also see the gate. Pass-through when no staged additions.
         # Sibling Windsurf hook: .windsurf/scripts/pre_write_gate.py.
         ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
+        # Control-surface separation — verifies that the healing surface
+        # and the RTC-REQ-056 LLM-as-judge surface remain disjoint on
+        # disk. Read-only; reports `artifacts/certification/
+        # control_surface_separation_report.json`.
+        # Operator directive 2026-05-01.
+        (
+            "Control-surface separation (healing vs llm_as_judge)",
+            "scripts/verify_control_surface_separation.py",
+        ),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)

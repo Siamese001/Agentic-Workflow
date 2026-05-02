@@ -3,11 +3,7 @@ trigger: model_decision
 description: Use this rule when a Author-Gate decision point is reached to apply the correct trigger pattern, option shape, scoring guidance, and telemetry format.
 ---
 
-> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
->
-> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
->
-> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
 
 # Author-Gate Decision Points — Full Doctrine
 
@@ -66,6 +62,16 @@ TRIGGER: ADG staleness creates genuine risk of incorrect blast-radius analysis f
 If ADG is fresh (newer than HEAD): no Author-Gate — proceed.
 If ADG is stale AND T2/T3 refactoring: regenerate immediately, no Author-Gate — this is the only correct answer.
 Author-Gate only if regeneration cost is significant AND task can safely proceed with known-stale graph.
+
+### 1.11 Certification Claim (`certification_claim`) — Constitutional §32
+TRIGGER: Before claiming (in prose or as a tool invocation) that any `RTC-REQ-*` is SIGNED_OFF, FINAL_SIGNED_CERTIFICATION, "certified", or that the bundle `trust_level` has been upgraded.
+Cascade MUST run `scripts/compile_requirement_signoff.py` + `scripts/verify_final_requirement_signoff_bundle.py` in the same response and include the resulting `trust_level` and `merkle_root` in the Author-Gate packet.
+Precedent: all prior certification decisions live in the ADR Registry (Notion MCP) and under `docs/architecture/adr/ADR-*-runtime-cert-*.md`.
+Recommended option defaults to: "Run the compiler + bundle verifier, then report their actual output verbatim — no prose summary until the tools have spoken."
+If compiler / verifier output disagrees with the claim: dominance fires against the claim (do not surface "assert anyway" as a credible candidate).
+If the mutation-rejection report (`artifacts/certification/fortknox_mutation_rejection_report.json`) is older than the report being claimed: require regeneration before proceeding — no Author-Gate on this sub-decision, it is the only correct answer.
+Telemetry: emit `DECISION_CAPTURED: type=certification_claim, repo_area=certification, selected=<verbatim_output|refused_to_claim>, outcome=executed, ...`.
+Advisory rule: `.windsurf/rules/fortknox-certification-discipline.md`. Skill: `.windsurf/skills/fortknox-evidence/SKILL.md`.
 
 ---
 

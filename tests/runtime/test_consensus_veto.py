@@ -1,13 +1,14 @@
-"""Unit tests for ConsensusVeto aggregation logic.
+"""Unit tests for ConsensusVeto under the RTC-REQ-056 all_required_safe rule.
 
-Tests cover all 5 aggregation modes (unanimous, majority, no_majority,
-unanimous_unsafe, incomplete) plus the is_available() env-probe and
-the optional 4th Qwen juror activation.
+Tests cover:
+  - Aggregation: only 3/3 SAFE allows; any other outcome fail-closed.
+  - Juror families sourced from the panel registry
+    (google_gemini / anthropic / openai).
+  - is_available() env-probe honors aliases (GOOGLE_API_KEY, etc).
+  - JurorVerdict serialization shape.
+  - R2.1-foundation fail-closed when no juror_call_impl is wired.
 
-Provider calls are mocked via the juror_call_impl dependency-injection
-hook. No real SDK calls, no network, no API keys required.
-
-Plan: .windsurf/plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md § 4 R4.1
+Provider calls are mocked; no network, no SDK, no keys required.
 """
 
 from __future__ import annotations
@@ -20,21 +21,27 @@ import pytest
 
 from tools.certification.safety.consensus_veto import (
     DEFAULT_JURORS,
-    DEFAULT_TIMEOUT_MS_PER_JUROR,
     ConsensusVeto,
     JurorVerdict,
     hash_raw_response,
 )
+from tools.certification.safety.rtc_req_056_panel import (
+    ANTHROPIC_JUROR,
+    GEMINI_JUROR,
+    OPENAI_JUROR,
+    REQUIRED_JURORS,
+    REQUIRED_JUROR_COUNT,
+)
 from tools.certification.safety.veto_protocol import VetoStatus
 
 
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Fixtures — mock juror call implementations
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 def _make_mock_impl(verdict_by_family: dict[str, str]):
-    """Build a mock juror_call_impl that returns canned verdicts by family."""
+    """Build a mock juror_call_impl returning canned verdicts by family."""
 
     def _impl(
         family: str,
@@ -59,17 +66,17 @@ def _make_mock_impl(verdict_by_family: dict[str, str]):
     return _impl
 
 
-# ----------------------------------------------------------------------
-# Aggregation tests
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Aggregation tests — all_required_safe
+# ---------------------------------------------------------------------------
 
 
-class TestAggregationUnanimous:
-    def test_3_of_3_safe_is_unanimous_allow(self):
+class TestAllRequiredSafeAllows:
+    def test_3_of_3_safe_is_allow(self):
         impl = _make_mock_impl({
-            "openai": "SAFE",
+            "google_gemini": "SAFE",
             "anthropic": "SAFE",
-            "google": "SAFE",
+            "openai": "SAFE",
         })
         veto = ConsensusVeto(juror_call_impl=impl)
         result = veto.evaluate("q1", "q2", "answer")
@@ -79,66 +86,44 @@ class TestAggregationUnanimous:
         assert result.metadata["safe_count"] == 3
         assert result.metadata["dissent_count"] == 0
         assert result.metadata["error_count"] == 0
+        assert result.metadata["quorum_rule"] == "all_required_safe"
         assert len(result.metadata["per_juror"]) == 3
-        # avg confidence = 0.9
-        assert 0.89 <= result.confidence <= 0.91
 
 
-class TestAggregationMajority:
-    def test_2_of_3_safe_is_majority_allow(self):
+class TestAllRequiredSafeBlocks:
+    def test_2_of_3_safe_blocks_under_all_required_safe(self):
+        # Previously 2/3 would allow under majority rule; now BLOCKS
         impl = _make_mock_impl({
-            "openai": "SAFE",
+            "google_gemini": "SAFE",
             "anthropic": "SAFE",
-            "google": "UNSAFE_DIFFERENT_INTENT",
-        })
-        veto = ConsensusVeto(juror_call_impl=impl)
-        result = veto.evaluate("q1", "q2", "answer")
-
-        assert result.status == VetoStatus.SAFE
-        assert result.metadata["consensus_mode"] == "majority"
-        assert result.metadata["safe_count"] == 2
-        assert result.metadata["dissent_count"] == 1
-        # confidence averages ONLY the SAFE jurors
-        assert 0.89 <= result.confidence <= 0.91
-
-    def test_majority_records_dissent_in_per_juror(self):
-        impl = _make_mock_impl({
-            "openai": "SAFE",
-            "anthropic": "SAFE",
-            "google": "UNSAFE_POLICY_DRIFT",
-        })
-        veto = ConsensusVeto(juror_call_impl=impl)
-        result = veto.evaluate("q1", "q2")
-
-        per_juror = result.metadata["per_juror"]
-        dissenting = [j for j in per_juror if j["verdict"] != "SAFE"]
-        assert len(dissenting) == 1
-        assert dissenting[0]["family"] == "google"
-        assert dissenting[0]["verdict"] == "UNSAFE_POLICY_DRIFT"
-
-
-class TestAggregationNoMajority:
-    def test_1_of_3_safe_blocks_with_no_majority(self):
-        impl = _make_mock_impl({
-            "openai": "SAFE",
-            "anthropic": "UNSAFE_DIFFERENT_INTENT",
-            "google": "UNSAFE_POLICY_DRIFT",
+            "openai": "UNSAFE_DIFFERENT_INTENT",
         })
         veto = ConsensusVeto(juror_call_impl=impl)
         result = veto.evaluate("q1", "q2")
 
         assert result.status == VetoStatus.VETO
-        assert result.metadata["consensus_mode"] == "no_majority"
+        assert result.metadata["consensus_mode"] == "quorum_fail"
+        assert result.metadata["safe_count"] == 2
+        assert result.metadata["unsafe_count"] == 1
+
+    def test_1_of_3_safe_blocks(self):
+        impl = _make_mock_impl({
+            "google_gemini": "SAFE",
+            "anthropic": "UNSAFE_DIFFERENT_INTENT",
+            "openai": "UNSAFE_POLICY_DRIFT",
+        })
+        veto = ConsensusVeto(juror_call_impl=impl)
+        result = veto.evaluate("q1", "q2")
+
+        assert result.status == VetoStatus.VETO
+        assert result.metadata["consensus_mode"] == "quorum_fail"
         assert result.metadata["safe_count"] == 1
-        assert "CONSENSUS_NO_MAJORITY" in result.rationale
 
-
-class TestAggregationUnanimousUnsafe:
     def test_0_of_3_safe_is_unanimous_unsafe(self):
         impl = _make_mock_impl({
-            "openai": "UNSAFE_DIFFERENT_INTENT",
+            "google_gemini": "UNSAFE_DIFFERENT_INTENT",
             "anthropic": "UNSAFE_DIFFERENT_INTENT",
-            "google": "UNSAFE_POLICY_DRIFT",
+            "openai": "UNSAFE_POLICY_DRIFT",
         })
         veto = ConsensusVeto(juror_call_impl=impl)
         result = veto.evaluate("q1", "q2")
@@ -146,30 +131,42 @@ class TestAggregationUnanimousUnsafe:
         assert result.status == VetoStatus.VETO
         assert result.metadata["consensus_mode"] == "unanimous_unsafe"
         assert result.metadata["safe_count"] == 0
-        assert "UNANIMOUS_NOT_SAFE" in result.rationale
+        assert "QUORUM_FAIL" in result.rationale
 
-
-class TestAggregationIncomplete:
-    def test_any_error_triggers_incomplete_fail_closed(self):
+    def test_unknown_verdict_blocks_even_with_2_safe(self):
         impl = _make_mock_impl({
-            "openai": "SAFE",
+            "google_gemini": "SAFE",
             "anthropic": "SAFE",
-            "google": "ERROR",  # one juror erred — fail closed
+            "openai": "UNCERTAIN",
         })
         veto = ConsensusVeto(juror_call_impl=impl)
         result = veto.evaluate("q1", "q2")
 
-        # 2/3 SAFE would normally allow, but ERROR forces fail-closed
+        assert result.status == VetoStatus.VETO
+        assert result.metadata["consensus_mode"] == "quorum_fail_unknown"
+        assert result.metadata["unknown_count"] == 1
+
+
+class TestFailClosedOnError:
+    def test_any_error_triggers_incomplete_fail_closed(self):
+        impl = _make_mock_impl({
+            "google_gemini": "SAFE",
+            "anthropic": "SAFE",
+            "openai": "ERROR",
+        })
+        veto = ConsensusVeto(juror_call_impl=impl)
+        result = veto.evaluate("q1", "q2")
+
         assert result.status == VetoStatus.VETO
         assert result.metadata["consensus_mode"] == "incomplete"
         assert result.metadata["error_count"] >= 1
         assert "CONSENSUS_INCOMPLETE" in result.rationale
 
-    def test_all_errors_is_incomplete_not_unanimous_unsafe(self):
+    def test_all_errors_is_incomplete(self):
         impl = _make_mock_impl({
-            "openai": "ERROR",
+            "google_gemini": "ERROR",
             "anthropic": "ERROR",
-            "google": "ERROR",
+            "openai": "ERROR",
         })
         veto = ConsensusVeto(juror_call_impl=impl)
         result = veto.evaluate("q1", "q2")
@@ -184,7 +181,6 @@ class TestAggregationIncomplete:
         veto = ConsensusVeto(juror_call_impl=_raising_impl)
         result = veto.evaluate("q1", "q2")
 
-        # All jurors raised — all captured as ERROR — incomplete mode
         assert result.status == VetoStatus.VETO
         assert result.metadata["consensus_mode"] == "incomplete"
         for j in result.metadata["per_juror"]:
@@ -192,55 +188,34 @@ class TestAggregationIncomplete:
             assert "mock transport failure" in j["rationale"]
 
 
-# ----------------------------------------------------------------------
-# Configuration tests
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Default juror fleet sourced from panel registry
+# ---------------------------------------------------------------------------
 
 
-class TestJurorComposition:
-    def test_default_jurors_match_registry(self):
-        # Sanity: DEFAULT_JURORS uses registry constants, not string literals
+class TestDefaultJurorsFromRegistry:
+    def test_default_jurors_match_panel_registry(self):
         families = [f for f, _ in DEFAULT_JURORS]
-        assert families == ["openai", "anthropic", "google"]
-        assert len(DEFAULT_JURORS) == 3
+        assert len(DEFAULT_JURORS) == REQUIRED_JUROR_COUNT == 3
+        assert "google_gemini" in families
+        assert "anthropic" in families
+        assert "openai" in families
 
-    def test_qwen_opt_in_adds_4th_juror(self):
-        with patch.dict(os.environ, {"USE_CERT_JURY_QWEN": "1"}, clear=False):
-            veto = ConsensusVeto(juror_call_impl=_make_mock_impl({}))
-            assert len(veto._jurors) == 4
-            families = [f for f, _ in veto._jurors]
-            assert "local_qwen" in families
+    def test_default_models_match_registry_pins(self):
+        models = dict(DEFAULT_JURORS)
+        assert models["google_gemini"] == GEMINI_JUROR.model_id
+        assert models["anthropic"] == ANTHROPIC_JUROR.model_id
+        assert models["openai"] == OPENAI_JUROR.model_id
 
-    def test_qwen_opt_in_ignored_when_explicit_jurors(self):
-        with patch.dict(os.environ, {"USE_CERT_JURY_QWEN": "1"}, clear=False):
-            veto = ConsensusVeto(
-                jurors=(("openai", "gpt-5.4-mini"),),
-                juror_call_impl=_make_mock_impl({"openai": "SAFE"}),
-            )
-            # Explicit jurors override env opt-in
-            assert len(veto._jurors) == 1
-
-    def test_4th_juror_raises_threshold_to_3(self):
-        with patch.dict(os.environ, {"USE_CERT_JURY_QWEN": "1"}, clear=False):
-            impl = _make_mock_impl({
-                "openai": "SAFE",
-                "anthropic": "SAFE",
-                "google": "UNSAFE_DIFFERENT_INTENT",
-                "local_qwen": "UNCERTAIN",
-            })
-            veto = ConsensusVeto(juror_call_impl=impl)
-            result = veto.evaluate("q1", "q2")
-
-            # UNCERTAIN counts as NOT SAFE → 2/4 SAFE → threshold is 3/4 → no majority
-            # But UNCERTAIN also not ERROR, so we should land in no_majority, not incomplete
-            assert result.status == VetoStatus.VETO
-            assert result.metadata["consensus_mode"] == "no_majority"
-            assert result.metadata["threshold"] == 3
+    def test_registered_model_pins_are_2026_05_01_fleet(self):
+        assert GEMINI_JUROR.model_id == "gemini-3.1-pro-preview"
+        assert ANTHROPIC_JUROR.model_id == "claude-sonnet-4-6"
+        assert OPENAI_JUROR.model_id == "gpt-5.4-mini"
 
 
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # is_available tests
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class TestIsAvailable:
@@ -248,21 +223,31 @@ class TestIsAvailable:
         with patch.dict(os.environ, {
             "OPENAI_API_KEY": "sk-test",
             "ANTHROPIC_API_KEY": "sk-ant-test",
-            "GOOGLE_API_KEY": "g-test",
+            "GEMINI_API_KEY": "g-test",
         }, clear=False):
+            veto = ConsensusVeto()
+            assert veto.is_available() is True
+
+    def test_available_with_google_api_key_alias(self):
+        # GEMINI_API_KEY is primary, GOOGLE_API_KEY is alias
+        with patch.dict(os.environ, {
+            "OPENAI_API_KEY": "sk-test",
+            "ANTHROPIC_API_KEY": "sk-ant-test",
+            "GOOGLE_API_KEY": "g-test",  # alias path
+        }, clear=True):
             veto = ConsensusVeto()
             assert veto.is_available() is True
 
     def test_unavailable_missing_openai_key(self):
         env = {
             "ANTHROPIC_API_KEY": "sk-ant-test",
-            "GOOGLE_API_KEY": "g-test",
+            "GEMINI_API_KEY": "g-test",
         }
         with patch.dict(os.environ, env, clear=True):
             veto = ConsensusVeto()
             assert veto.is_available() is False
 
-    def test_unavailable_missing_google_key(self):
+    def test_unavailable_missing_gemini_and_google_keys(self):
         env = {
             "OPENAI_API_KEY": "sk-test",
             "ANTHROPIC_API_KEY": "sk-ant-test",
@@ -271,42 +256,29 @@ class TestIsAvailable:
             veto = ConsensusVeto()
             assert veto.is_available() is False
 
-    def test_local_qwen_juror_does_not_require_key(self):
-        with patch.dict(os.environ, {}, clear=True):
-            veto = ConsensusVeto(
-                jurors=(("local_qwen", "Qwen/Qwen2.5-32B-Instruct-AWQ"),),
-            )
-            assert veto.is_available() is True
 
-
-# ----------------------------------------------------------------------
-# R2.1 foundation behavior (no impl wired)
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# R2.1 foundation behavior
+# ---------------------------------------------------------------------------
 
 
 class TestR21FoundationState:
     def test_no_impl_fails_closed(self):
-        """Without juror_call_impl, ConsensusVeto must fail-closed.
-
-        R2.2 wires the real multi-provider impl. Until then, callers
-        get an explicit ERROR — never an accidental allow.
-        """
         veto = ConsensusVeto()
         result = veto.evaluate("q1", "q2")
         assert result.status == VetoStatus.ERROR
         assert "juror_call_impl" in result.rationale.lower()
 
 
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Utility tests
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class TestHashRawResponse:
     def test_hash_of_non_empty_string(self):
         h = hash_raw_response("SAFE")
-        assert len(h) == 64  # sha256 hex
-        # sha256("SAFE") pre-computed
+        assert len(h) == 64
         assert h == "10a87133a313ecf05f5be2f63a927977b5347ec0578bb5d21fcab2f86695d49c"
 
     def test_hash_of_empty_string_is_empty(self):

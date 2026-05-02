@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fortknox/evidence_assertion.schema.json",
+  "title": "Fort Knox Evidence Assertion (atomic)",
+  "description": "ONE assertion proves ONE req_id + ONE control + ONE artifact-backed fact. Anything broader is invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assertion_id",
+    "req_id",
+    "control",
+    "assertion_result",
+    "assertion_class",
+    "generated_by_command",
+    "verifier_exit_code",
+    "verifier_version",
+    "generated_at_utc",
+    "artifact_path",
+    "artifact_sha256",
+    "artifact_class",
+    "artifact_payload_pointer",
+    "artifact_contains_req_id",
+    "artifact_contains_control",
+    "row_specific",
+    "freshness_hours",
+    "proof_payload"
+  ],
+  "properties": {
+    "assertion_id": {
+      "type": "string",
+      "pattern": "^ASRT-[0-9a-f]{16,64}$",
+      "description": "Globally unique deterministic id (sha256 of req_id+control+artifact_sha256+pointer)."
+    },
+    "req_id": {"type": "string", "pattern": "^RTC-REQ-\\d{3}$"},
+    "control": {"type": "string", "minLength": 1},
+    "assertion_result": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED", "NOT_VERIFIED"]
+    },
+    "assertion_class": {
+      "type": "string",
+      "enum": [
+        "STATIC_ASSERTION",
+        "RUNTIME_ASSERTION",
+        "INTEGRATED_ASSERTION",
+        "OBSERVABILITY_ASSERTION",
+        "REPLAY_ASSERTION",
+        "NEGATIVE_CONTROL_ASSERTION",
+        "UWG_WRITE_ASSERTION",
+        "LAYER_BOUNDARY_ASSERTION",
+        "MERKLE_ASSERTION",
+        "SIGNATURE_ASSERTION",
+        "PRODUCTION_DEPENDENCY_ASSERTION",
+        "CI_GATE_ASSERTION"
+      ]
+    },
+    "generated_by_command": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Exact script path that emitted this assertion, e.g. scripts/verify_rtc_req_csv_gate.py"
+    },
+    "verifier_exit_code": {"type": "integer"},
+    "verifier_version": {"type": "string", "minLength": 1},
+    "generated_at_utc": {"type": "string"},
+    "artifact_path": {"type": "string", "minLength": 1},
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact_class": {"type": "string", "minLength": 1},
+    "artifact_payload_pointer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JSON Pointer (RFC 6901) or line/offset locator identifying the exact payload proving this assertion. No #/ prefix required."
+    },
+    "artifact_contains_req_id": {"type": "boolean"},
+    "artifact_contains_control": {"type": "boolean"},
+    "row_specific": {
+      "type": "boolean",
+      "description": "True iff the artifact carries a payload unique to this req_id (not a broad 'all checks passed' marker)."
+    },
+    "freshness_hours": {"type": "integer", "minimum": 1, "maximum": 8760},
+    "proof_payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "The actual fact being asserted, extracted from the artifact. Must include enough to reproduce the claim without re-reading the artifact.",
+      "properties": {
+        "extracted_value": {},
+        "expected_value": {},
+        "match": {"type": "boolean"},
+        "notes": {"type": "string"}
+      }
+    },
+    "supersedes_assertion_id": {
+      "type": ["string", "null"],
+      "description": "If this assertion replaces an earlier one for the same (req_id, control) pair."
+    },
+    "depends_on_assertion_ids": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^ASRT-[0-9a-f]{16,64}$"},
+      "default": []
+    }
+  }
+}

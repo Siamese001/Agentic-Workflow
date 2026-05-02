@@ -1,4 +1,20 @@
-"""HOPPipelineExecutor — Canonical parameterized HOP pipeline stage agent.
+"""HOPPipelineExecutor — DEPRECATED 2026-05-01.
+
+This executor dispatches to ``apps_lic.engines.hop_stage_registry``, whose
+stage handlers are stubs after the 2026-02-08 consolidation. Per plan
+.windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.4) this
+class is retained only as a deprecation shim for two existing tests
+(``tests/unit/apps_lic/reasoning/test_hop_pipeline_executor.py`` and
+``tests/unit/apps_shared/adapters/test_w3_boundary_facades.py``).
+
+The canonical apps_lic inner-DAG entry point is now
+``apps_lic.reasoning.LicCampaignOrchestrator`` which delegates to the
+shared substrate ``apps_shared.orchestration.HopPipelineExecutor``.
+
+ORIGINAL DOCSTRING BELOW (retained for historical context)
+==========================================================
+
+HOPPipelineExecutor — Canonical parameterized HOP pipeline stage agent.
 
 Consolidates: HOP1-HOP9 pipeline stage agents.
 Created: 2026-02-08 (Structural Agent Count Reduction)
@@ -13,8 +29,17 @@ The executor may not modify or override any profile field.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
+
+warnings.warn(
+    "apps_lic.reasoning.HOPPipelineExecutor is deprecated since 2026-05-01. "
+    "Use apps_lic.reasoning.LicCampaignOrchestrator (Wave 2, plan "
+    "apps-hop-substrate-f7751b).",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

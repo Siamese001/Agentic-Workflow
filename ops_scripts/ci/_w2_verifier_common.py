@@ -19,8 +19,11 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import (  # noqa: E402
+    W2_ALL_ARTIFACT_FILENAMES,
     W2_ARTIFACT_FILENAMES,
     W2_CHAIN_LINKAGE,
+    W2_MW_ARTIFACT_FILENAMES,
+    W2_MW_CHAIN_LINKAGE,
     is_harness_stamp,
 )
 
@@ -76,14 +79,51 @@ def passed(message: str) -> int:
     return EXIT_PASS
 
 
+def detect_chain_kind(artifact_dir: Path) -> str:
+    """Return ``"R1B"`` or ``"MANAGED_WORKFLOW"`` based on manifest.
+
+    Falls back to ``"R1B"`` when the manifest is missing or does not
+    declare a chain_kind — that matches the legacy behavior.
+    """
+    try:
+        env = load_envelope(artifact_dir, "integrated_runtime_artifact_manifest.json")
+    except FileNotFoundError:
+        return "R1B"
+    payload = env.get("payload", {}) if isinstance(env, dict) else {}
+    kind = payload.get("chain_kind") if isinstance(payload, dict) else None
+    if kind == "MANAGED_WORKFLOW":
+        return "MANAGED_WORKFLOW"
+    return "R1B"
+
+
+def chain_filenames_for(kind: str) -> tuple[str, ...]:
+    """Chain artifact-filenames tuple for the given chain_kind."""
+    if kind == "MANAGED_WORKFLOW":
+        return W2_MW_ARTIFACT_FILENAMES
+    return W2_ARTIFACT_FILENAMES
+
+
+def chain_linkage_for(kind: str) -> tuple[tuple[str, str | None], ...]:
+    """Chain linkage tuples for the given chain_kind."""
+    if kind == "MANAGED_WORKFLOW":
+        return W2_MW_CHAIN_LINKAGE
+    return W2_CHAIN_LINKAGE
+
+
 __all__ = [
     "DEFAULT_LATEST",
     "EXIT_FAIL_CLOSED",
     "EXIT_HARNESS_ERROR",
     "EXIT_PASS",
     "REPO_ROOT",
+    "W2_ALL_ARTIFACT_FILENAMES",
     "W2_ARTIFACT_FILENAMES",
     "W2_CHAIN_LINKAGE",
+    "W2_MW_ARTIFACT_FILENAMES",
+    "W2_MW_CHAIN_LINKAGE",
+    "chain_filenames_for",
+    "chain_linkage_for",
+    "detect_chain_kind",
     "fail",
     "is_harness_stamp",
     "load_envelope",

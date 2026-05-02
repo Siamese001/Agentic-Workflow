@@ -81,6 +81,14 @@ class GovernedLicE2ERunRecord:
     hitl_class: str = ""
     hitl_ledger_id: str = ""
     hitl_enabled: bool = False
+    # ── Inner-DAG HOP checkpoints (Wave 2 Phase 2.5) ─────────────────────
+    # Populated by LicCampaignOrchestrator after the outer substrate run.
+    # Shape: tuple of dicts with keys stage_id/stage_name/status/duration_ms.
+    # Default empty tuple preserves back-compat for callers that existed
+    # before the inner DAG was wired in.
+    hop_checkpoints: tuple[dict, ...] = ()
+    hop_terminal_error: str = ""
+    hop_composite_score: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -166,6 +174,19 @@ class GovernedLicRun(GovernedAppRunner):
             inject_chunks=inject_chunks,
         )
 
+        # ── Inner-DAG pipeline (Wave 2 Phase 2.5) ────────────────────────
+        # Run the 9-stage apps_lic HOP pipeline after the substrate returns.
+        # The substrate's C0 phase already landed retrieval chunks; in test
+        # harnesses these are the ``inject_chunks``. Production callers get
+        # an empty list until ``GovernedAppRunRecord`` threads shaped chunks
+        # through (tracked as a follow-up).
+        hop_payload = self._run_hop_pipeline(
+            request=request,
+            retrieval_chunks=inject_chunks or [],
+            run_id=run_id,
+            trace_id=request.trace_id or "",
+        )
+
         # W5: build_app_record handles all substrate fields automatically.
         # Only LIC-specific fields are passed explicitly.
         return build_app_record(
@@ -173,7 +194,71 @@ class GovernedLicRun(GovernedAppRunner):
             campaign_id=request.campaign_id,
             target_audience=request.config.target_audience,
             compliance_level=request.config.compliance_level,
+            hop_checkpoints=hop_payload["checkpoints"],
+            hop_terminal_error=hop_payload["terminal_error"],
+            hop_composite_score=hop_payload["composite_score"],
         )
+
+    # ------------------------------------------------------------------
+    # Inner-DAG driver (Wave 2 Phase 2.5)
+    # ------------------------------------------------------------------
+
+    def _run_hop_pipeline(
+        self,
+        *,
+        request: CampaignRequest,
+        retrieval_chunks: list[Any],
+        run_id: str,
+        trace_id: str,
+    ) -> dict[str, Any]:
+        """Execute the 9-stage apps_lic HOP pipeline.
+
+        Isolated helper so failure modes cannot take down the substrate
+        record assembly — any exception inside the HOP pipeline is
+        captured and surfaced via ``hop_terminal_error`` instead of
+        propagating.
+        """
+        try:
+            # Lazy import keeps the substrate-only import surface unchanged
+            # for existing consumers that don't exercise the inner DAG.
+            from apps_lic.reasoning.LicCampaignOrchestrator import (  # noqa: PLC0415
+                LicCampaignOrchestrator,
+            )
+
+            orchestrator = LicCampaignOrchestrator()
+            record = orchestrator.run(
+                context={
+                    "campaign_request": request,
+                    "retrieval_chunks": retrieval_chunks,
+                },
+                run_id=run_id,
+                trace_id=trace_id,
+            )
+            checkpoints = tuple(
+                {
+                    "stage_id": cp.stage_id,
+                    "stage_name": cp.stage_name,
+                    "status": cp.status.value,
+                    "duration_ms": cp.duration_ms,
+                    "error": cp.error,
+                }
+                for cp in record.checkpoints
+            )
+            qa = record.final_context.get("qa_report") or {}
+            return {
+                "checkpoints": checkpoints,
+                "terminal_error": record.terminal_error,
+                "composite_score": float(qa.get("composite_score", 0.0)),
+            }
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, ImportError) as exc:
+            # guardian: allow-broad-exception -- inner-DAG failures must not
+            # destroy the substrate record; surface as terminal_error and
+            # continue to record assembly.
+            return {
+                "checkpoints": (),
+                "terminal_error": f"hop_pipeline_error: {type(exc).__name__}: {exc}",
+                "composite_score": 0.0,
+            }
 
 
 # ----------------------------------------------------------------------

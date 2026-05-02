@@ -2,11 +2,7 @@
 trigger: always_on
 ---
 
-> **Cascade always-on discipline:** Keep this file lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards here. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
->
-> **Cascade retrieval discipline:** When this rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
->
-> **Cascade enforcement split:** Advisory guidance lives here, but deterministic blocking, fail-closed checks, and audit capture belong in hooks and scripts rather than prompt prose.
+> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
 
 # Global Rules - Always-On Policy (Tier 2 SSOT)
 
@@ -50,7 +46,7 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
 Silent degraded fallback (grep without health check + reason code) = `severity: critical` violation.
 
-**MCP serialization (§25) is NEVER an excuse for grep.** When you cannot make a second `adg_sqlite` MCP call due to the one-MCP-per-response rule, the canonical path is direct SQLite, not grep. The fallback hierarchy is:
+**MCP serialization (§25, hardened 2026-05-01) is NEVER an excuse for grep.** Note: §25 now applies only to remote MCPs (notion / tavily / deepwiki / context7 / GitKraken). `adg_sqlite` is a local MCP and may be called multiple times per response, so the original "one-MCP-per-response" framing no longer applies to it. When ADG MCP IS unavailable for any reason, the canonical path is still direct SQLite, not grep. The fallback hierarchy is:
 
 ```
 1. adg_sqlite MCP       ← preferred when MCP healthy AND no other MCP call in flight

@@ -1,0 +1,86 @@
+rubric_id: narrative_judge_v1
+applies_to:
+  - hop_4a_headline
+  - hop_4b_exec_summary
+  - hop_4c_competencies
+  - hop_4d_unify
+  - hop_4e_ibm
+  - hop_4f_tradersense
+  - hop_4g_ey
+
+hard_gates:
+  - gate_id: provenance
+    description: Every factual claim traces to master_resume.json
+    failure_mode: instant_reject
+  - gate_id: length_parity
+    description: Word count within budget tolerance per-bullet or per-section
+    failure_mode: instant_reject
+    config:
+      tolerance: 0.15
+  - gate_id: buzzword_soup
+    description: At most N buzzwords from configured list per bullet
+    failure_mode: instant_reject
+    config:
+      buzzwords:
+        - AI
+        - transformation
+        - agentic
+        - enterprise
+        - Fortune
+        - strategic
+        - C-suite
+        - cloud
+        - digital
+        - innovation
+      max_count: 3
+  - gate_id: mirror_density
+    description: Combined JD+company mirror term density between bounds
+    failure_mode: instant_reject
+    config:
+      min: 0.08
+      max: 0.18
+  - gate_id: adjacent_repetition
+    description: No two consecutive bullets in the same role lead with the same mirror term
+    failure_mode: instant_reject
+  - gate_id: filler_intensifiers
+    description: No instances of forbidden filler words/phrases
+    failure_mode: instant_reject
+    config:
+      forbidden:
+        - leading
+        - world-class
+        - cutting-edge
+        - mission-critical
+        - next-generation
+        - best-in-class
+        - leverage
+        - synergy
+        - enabled
+        - unified
+        - robust
+        - comprehensive
+        - holistic
+
+soft_dimensions:
+  - dimension_id: jd_facet_coverage
+    weight: 0.25
+    min_score: 0.60
+  - dimension_id: company_facet_coverage
+    weight: 0.20
+    min_score: 0.50
+  - dimension_id: tone_executive_register
+    weight: 0.20
+    min_score: 0.80
+    judge_prompt: |
+      Score 0.0-1.0 on whether this reads as prose written by a senior
+      executive describing past work. Penalize: corporate-speak, jargon
+      without substance, breathless framing, ATS-bait phrasing.
+  - dimension_id: naturalness
+    weight: 0.35
+    min_score: 0.80
+    judge_prompt: |
+      Score 0.0-1.0 on whether a human reader would NOT detect this as
+      AI-generated or auto-targeted. Penalize: keyword stuffing,
+      template-rigid structure, verbatim JD language.
+
+composite_threshold: 0.85

@@ -6,45 +6,57 @@ trigger: always_on
 >
 > **Cascade enforcement split:** Advisory guidance lives here, but deterministic detection and audit capture belong in `.windsurf/scripts/post_cascade_mcp_serialization_audit.py` and its violation log.
 
-# MCP Serialization — One MCP Call Per Response
+# MCP Serialization — Remote MCPs Only (Hardened 2026-05-01)
 
-> ⛔ **MCP tool calls (any `mcp*_` prefix) MUST be issued one per response, with no sibling tool calls of any kind in the same `<function_calls>` block.**
+> ⛔ **REMOTE / network-bound MCP tool calls MUST be issued one per response, with no sibling tool calls of any kind in the same `<function_calls>` block.** Local stdio MCPs may batch freely with each other and with native tools.
 
-## The Invariant
+## The Invariant (scoped)
 
 For every Cascade response:
 
-1. If the response contains an `mcp*_` tool call, it MUST contain **exactly one tool call total**.
-2. Non-MCP tools (`read_file`, `edit`, `run_command`, `grep_search`, `search_web`, ...) may be batched freely with each other — but **never** with an MCP call.
-3. Multiple MCP calls in the same response are **also** a violation (even two MCP calls of the same server).
+1. **Remote MCPs serialize.** If the response contains a tool call to a *remote* MCP server (notion, tavily, deepwiki, context7, GitKraken — see Remote MCP Allowlist below), it MUST contain **exactly one tool call total**.
+2. **Local MCPs batch freely.** Tools from local stdio MCP servers (`adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.windsurf/mcp-playwright`) may be batched with each other and with native tools (`read_file`, `edit`, `run_command`, etc.) in the same `<function_calls>` block.
+3. **Mixing local MCP with remote MCP is forbidden.** If a remote MCP call is in the batch, no other tool call (local MCP or native) is allowed in the same batch.
+4. Multiple remote MCP calls in the same response are also a violation, even if they target the same remote server.
 
-## Why (root cause, upstream)
+## Why scoped to remote
 
-The Windsurf/Anthropic MCP client transport has a documented race when two or more tool calls are dispatched concurrently and at least one of them is an MCP invocation. Symptoms: the MCP call appears to hang from Cascade's vantage; the user sees a stuck turn; the MCP server itself is unaffected and healthy.
+**Empirical observation, not a deduced root cause.** This rule's scope is grounded in what hangs in this repo's Cascade sessions, not in a verified causal claim about the upstream SDK race.
 
-Upstream tracking:
+- Cascade's empirical observation: **Notion MCP calls hang when batched with sibling tool calls.** Other remote/HTTP MCPs (tavily, deepwiki, context7, GitKraken) are placed in the same allowlist by analogy because they share Notion's transport profile (HTTP, third-party API, large payloads).
+- Local stdio MCPs (`adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.windsurf/mcp-playwright`) **have not exhibited the same hang behavior** in this repo's sessions. They batch fine.
+- Possible root causes for the Notion hangs include the documented Anthropic SDK race in `anthropics/claude-agent-sdk-typescript#41` (concurrent dispatch issues), Notion API rate-limiting, large-payload serialization in the MCP proxy, or Windsurf's specific MCP client implementation. **We have not isolated which.** The rule prevents the observed behavior regardless of root-cause attribution.
+- Anthropic's own Nov 2025 *Code Execution with MCP* guidance and the *Programmatic Tool Calling* feature explicitly endorse tool-call batching as the recommended pattern. Over-serializing all `mcp*_` calls (the original interpretation, used 2026-04 through 2026-05-01) is an anti-pattern: it slows turns, blocks legitimate parallelism, and pushes Cascade toward direct-SQLite fallbacks when local MCP would have worked.
 
-- `anthropics/claude-agent-sdk-typescript#41` — *"SDK MCP server: 'Stream closed' errors during concurrent tool calls"* (authoritative; documents the race).
+**If a local MCP starts hanging in your sessions: expand the remote-MCP allowlist.** This rule is empirical; it follows the hangs.
+
+## Remote MCP Allowlist (as of 2026-05-01)
+
+| Server | Why remote | Tool-name pattern (after stripping `mcpN_` prefix) |
+|---|---|---|
+| `notion` | Notion REST API over HTTP | `^API-` |
+| `tavily` | Tavily search API | `^tavily[_-]` |
+| `deepwiki` | Third-party DeepWiki API | `^(ask_question|read_wiki_)` |
+| `context7` | Context7 docs API | `^(query-docs|resolve-library-id)$` |
+| `GitKraken` | GitHub/GitLab/Bitbucket/Azure/Jira/Linear APIs | `^(git_|gitkraken_|gitlens_|issues_|pull_request_|repository_)` |
+
+When in doubt about a new MCP server: if it makes outbound HTTP calls to a third-party service, treat as remote and serialize. If it runs as a local subprocess against on-disk data, batch freely.
+
+## Local MCP Servers (batch freely)
+
+`adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.windsurf/mcp-playwright` (Playwright is local stdio even though it controls a browser).
+
+Advisory tool prefix at any given moment is determined by `.windsurf/mcp_config.json` order; tool-name suffix patterns above are stable per server identity, prefixes are not.
+
+## Upstream tracking (candidate root causes — not confirmed)
+
+These issues describe MCP-related hangs in the Anthropic ecosystem. Whether any of them is THE root cause of the Notion hangs in this repo is unverified.
+
+- `anthropics/claude-agent-sdk-typescript#41` — *"SDK MCP server: 'Stream closed' errors during concurrent tool calls"*.
 - `anthropics/claude-code#38437` — MCP proxy silently drops tool results.
 - `anthropics/claude-code#22451` — Desktop MCP tools hang ~5 min then fail.
 - `anthropics/claude-code#44032` — Silent 4-minute timeout.
-
-The failure is in the **client SDK**, not in the server process or its stdio handler. Behavior shaping in Cascade's prompt is the only lever that addresses the actual mechanism until upstream ships the fix.
-
-## Mitigation Pattern (use first, escalate to MCP second)
-
-Prefer direct on-disk reads over MCP round-trips when the equivalent data is available locally:
-
-| Need | Forbidden | Preferred |
-|---|---|---|
-| Inspect ADG node by id | `adg_node` (server: `adg_sqlite`) | `sqlite3.connect("artifacts/adg/adg_indexed_<ts>.sqlite")` then `SELECT * FROM nodes WHERE id=?` |
-| List violations by category | `adg_violations` (server: `adg_sqlite`) | Same SQLite path, `SELECT ... FROM violations` |
-| Read a file Cascade can reach | `read_text_file` (server: `filesystem`) | Native `read_file` tool |
-| Cache status spot-check | `redis_keys` (server: `redis`) | Only when live Redis state needed; otherwise use the SQLite source of truth |
-| Persistent memory recall | `mem_recall_session_start` (server: `memory`) | No equivalent — this one MUST go through MCP (and alone in its response) |
-| Notion writeback | `API-post-page` (server: `notion`) | No equivalent — this one MUST go through MCP (and alone in its response) |
-
-Rule of thumb: if the data lives in `artifacts/`, `.windsurf/`, or the working tree, read it directly. If it lives behind a remote API or a persistent service (Notion, memory graph, live Redis), then — and only then — issue an MCP call in its own isolated response.
+- `anthropics/claude-code#26156` — Race in `ensureToolResultPairing` corrupts thinking blocks.
 
 ## Hard Rule — SQLite-Direct Fallback Supersedes Grep (added 2026-04-26)
 
@@ -96,22 +108,6 @@ Anything else is a silent fallback.
 
 Every bypass is durable in `artifacts/windsurf/mcp_serialization_violations.jsonl` with `reason: "bypass"`.
 
-## Sunset
+## Sunset + Enforcement
 
-This rule **auto-retires** when upstream `anthropics/claude-agent-sdk-typescript#41` closes and the Windsurf client ships the fix. Procedure:
-
-1. Operator writes `.windsurf/config/mcp_serialization_ttl.json` with `{"retired_after": "<UTC-date>", "issue_url": "...", "verified_by": "<name>"}`.
-2. `post_cascade_mcp_serialization_audit.py` reads that file; after `retired_after` it no-ops.
-3. Set this rule's front-matter to `trigger: manual` with a deprecation banner; remove from always-on load after one full review cycle.
-
-Same lifecycle shape as the deprecated `hitl-*` shim rules (see `.windsurf/RULES_INDEX.md`).
-
-## Enforcement
-
-- **Rule (this file)** — advisory; always-on; shapes composition every turn.
-- **Post-response audit** — `.windsurf/scripts/post_cascade_mcp_serialization_audit.py` — deterministic; appends to `artifacts/windsurf/mcp_serialization_violations.jsonl`; fail-open (exit 0 on any internal error).
-- **Violations log** — never silently truncated; session-start surfacer (future) may display running count to pressure convergence.
-
-## Constitutional Tie-in
-
-Constitutional rule §26 codifies the invariant. See `constitutional.md`.
+Auto-retires when upstream `anthropics/claude-agent-sdk-typescript#41` closes. Operator writes `.windsurf/config/mcp_serialization_ttl.json` with `{"retired_after", "issue_url", "verified_by"}`; the audit script honors it. Enforcement: this rule (advisory) + `post_cascade_mcp_serialization_audit.py` (fail-open) + `artifacts/windsurf/mcp_serialization_violations.jsonl`. Constitutional tie-in: §25.

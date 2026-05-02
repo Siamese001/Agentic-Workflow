@@ -1,0 +1,87 @@
+# Live-sweep fixture requirements per apps_*
+#
+# Captured 2026-05-01 via bounded 60 s-per-app probe of `python -m <app>`.
+# Findings drive the `entrypoint_args` that each AppSpec.entrypoint_command
+# needs to pass on real nightly runs. apps_rg already ships a working example
+# in AppSpec.entrypoint_args; the rows below are the open follow-ups.
+#
+# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 3)
+
+probe_date_utc: "2026-05-02T03:20:00Z"
+probe_timeout_seconds: 60
+probe_invocation: "python -m <app>"
+
+findings:
+  apps_rg:
+    status: works
+    notes: "Reference implementation. entrypoint_args already wired in AppSpec."
+
+  apps_eval:
+    status: blocks_on_setup
+    failure_mode: timeout_60s
+    observed_output: "ADG cache loader log only; main loop never returns"
+    required_fixtures_unknown: true
+    next_step: "Wire a `python -m apps_eval --dry-run --fixture tests/fixtures/eval/smoke.json` CLI path so nightly can invoke without blocking."
+
+  apps_exec:
+    status: blocks_on_setup
+    failure_mode: timeout_60s
+    observed_output: "ADG cache loader log only"
+    required_fixtures_unknown: true
+    next_step: "Wire dry-run CLI mode; document required fixture shape."
+
+  apps_lic:
+    status: blocks_on_setup
+    failure_mode: timeout_60s
+    observed_output: "ADG cache loader log only"
+    required_fixtures_unknown: true
+    next_step: "Wire dry-run CLI mode; HOP pipeline needs campaign_request fixture."
+
+  apps_qna:
+    status: wired
+    exit_code: 0
+    closure_date_utc: "2026-05-02T03:35:00Z"
+    entrypoint_args:
+      - build
+      - --config
+      - apps_qna/tests/fixtures/synthetic_mini/interview.yaml
+      - --dry-run
+    notes: "Live run exits cleanly. 6 remaining blocking_gaps are expected — apps_qna is a BYPASS/pack-builder app, not a managed-workflow app, so spine receipts are legitimately absent."
+
+  apps_research:
+    status: blocks_on_setup
+    failure_mode: timeout_60s
+    observed_output: "ADG cache loader log only"
+    required_fixtures_unknown: true
+    next_step: "Wire dry-run CLI mode; likely requires target company fixture."
+
+  apps_rfp:
+    status: blocks_on_setup
+    failure_mode: timeout_60s
+    observed_output: "ADG cache loader log only"
+    required_fixtures_unknown: true
+    next_step: "Wire dry-run CLI mode; RFP template fixture required."
+
+  apps_underwriting_ai:
+    status: skeleton_only
+    notes: "No __init__.py / __main__.py; harness correctly classifies runtime_mode=skeleton_only."
+
+# Summary (updated 2026-05-02)
+# ----------------------------
+# 2/7 runnable apps have working live-invocation CLIs in the harness:
+#     apps_rg (reference, full end-to-end success)
+#     apps_qna (closed 2026-05-02 — BYPASS-form, runs exit=0 with 6
+#              legitimately-absent spine-receipt gaps)
+# 5/7 (apps_eval, apps_exec, apps_lic, apps_research, apps_rfp) still
+#     block past 60 s on bare `python -m <app>`. These apps need a
+#     `--dry-run` or `--fixture` CLI mode — their __main__.py modules
+#     directly invoke full run paths (8KB+ lifecycle trace emits). Adding
+#     such a mode requires understanding each app's run_main() signature
+#     and introducing a fast-path that short-circuits before the spine is
+#     touched. This is app-owner work, not harness work. The harness
+#     correctly catches TimeoutExpired and emits fail-closed bundles.
+#
+# The harness itself handles these cases correctly: emit_proof_bundle.py
+# catches TimeoutExpired and writes a fail-closed bundle with exit_code=-1,
+# success=false, and an explicit timeout note in blocking_gaps. The nightly
+# workflow surfaces the bundles as GitHub artifacts for review.

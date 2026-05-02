@@ -19,7 +19,8 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 from _w2_verifier_common import (
     EXIT_HARNESS_ERROR,
-    W2_CHAIN_LINKAGE,
+    chain_linkage_for,
+    detect_chain_kind,
     fail,
     load_envelope,
     passed,
@@ -30,10 +31,12 @@ from agentic_core.runtime.artifacts.integrated_runtime_emitter import compute_ar
 
 def main(argv: list[str]) -> int:
     art_dir = resolve_artifact_dir(argv[1] if len(argv) > 1 else None)
-    print(f"[verify_integrated_runtime_artifact_chain] artifact_dir={art_dir}")
+    kind = detect_chain_kind(art_dir)
+    print(f"[verify_integrated_runtime_artifact_chain] artifact_dir={art_dir} chain_kind={kind}")
+    chain_linkage = chain_linkage_for(kind)
 
     hashes: dict[str, str] = {}
-    for filename, _upstream in W2_CHAIN_LINKAGE:
+    for filename, _upstream in chain_linkage:
         try:
             env = load_envelope(art_dir, filename)
         except FileNotFoundError as exc:
@@ -50,7 +53,7 @@ def main(argv: list[str]) -> int:
         hashes[filename] = declared
 
     # 2: upstream linkage check.
-    for filename, upstream in W2_CHAIN_LINKAGE:
+    for filename, upstream in chain_linkage:
         env = load_envelope(art_dir, filename)
         actual_upstream = env.get("upstream_artifact_ref", "")
         if upstream is None:
@@ -68,7 +71,8 @@ def main(argv: list[str]) -> int:
                     f"hash({upstream})={expected!r}",
                 )
     return passed(
-        f"chain verified: {len(W2_CHAIN_LINKAGE)} artifacts, all SHAs and upstream refs match"
+        f"chain verified: {len(chain_linkage)} artifacts, all SHAs and "
+        f"upstream refs match (chain_kind={kind})"
     )
 
 
