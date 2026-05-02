@@ -24,8 +24,10 @@ enforced by:
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
+from apps_underwriting_ai.engines.risk_scorer import DeterministicRiskScorer
 from apps_underwriting_ai.types.underwriting_types import (
     DecisionPacket,
     DecisionVerdict,
@@ -47,7 +49,17 @@ _MAX_RATIONALE_CHARS = 600
 
 
 class DecisionPacketAssembler:
-    """Assembles the final decision packet from upstream stage outputs."""
+    """Assembles the final decision packet from upstream stage outputs.
+
+    Delegates verdict computation to :class:`DeterministicRiskScorer` so
+    the scoring rubric, thresholds, and per-component breakdown live in
+    one inspectable place. The breakdown is surfaced in
+    ``feature_summary`` under stable keys so downstream consumers can
+    audit the decision without re-running the pipeline.
+    """
+
+    def __init__(self, scorer: DeterministicRiskScorer | None = None) -> None:
+        self._scorer = scorer or DeterministicRiskScorer()
 
     def assemble(
         self,
@@ -58,15 +70,11 @@ class DecisionPacketAssembler:
     ) -> DecisionPacket:
         """Assemble a DecisionPacket from the four upstream stage outputs.
 
-        Skeleton verdict heuristic (deterministic, never delegated to LLM):
-            - INSUFFICIENT_EVIDENCE if register is empty AND no features.
-            - REFER if reconciliation has unresolved documents.
-            - APPROVE otherwise (deterministic placeholder — real logic TBD).
-
-        After the verdict is decided, ``_enrich_rationale_via_qwen`` is
-        called to optionally replace the canned template rationale with
-        a richer plain-English explanation. Any failure preserves the
-        deterministic rationale byte-for-byte.
+        Verdict logic delegates to
+        :class:`DeterministicRiskScorer`. The breakdown is exposed via
+        ``feature_summary`` keys with the prefix ``risk_*`` so audit
+        consumers can read the score, ceilings, and per-component
+        contributions without re-running the pipeline.
 
         Args:
             request: The originating UnderwritingRequest.
@@ -78,45 +86,74 @@ class DecisionPacketAssembler:
             DecisionPacket with verdict, rationale, and audit fields populated.
         """
         request_id = request.request_id if request else ""
-        evidence_count = len(register.records) if register else 0
-        feature_count = len(features.feature_vector) if features else 0
-        unresolved = reconciliation.unresolved_count if reconciliation else 0
 
-        if evidence_count == 0 and feature_count == 0:
+        if request is None:
+            # Defensive: callers should always provide a request, but the
+            # legacy tests pass None. Preserve INSUFFICIENT_EVIDENCE behavior.
             verdict = DecisionVerdict.INSUFFICIENT_EVIDENCE
-            deterministic_rationale = (
-                "No evidence registered and no risk features derived."
+            rationale = (
+                "No UnderwritingRequest provided; cannot score. "
+                "[apps_underwriting_ai.decision_packet_assembler/no-request]"
             )
-        elif unresolved > 0:
-            verdict = DecisionVerdict.REFER
-            deterministic_rationale = (
-                f"{unresolved} unresolved document reconciliations require "
-                "manual review."
+            evidence_refs: tuple[str, ...] = (
+                tuple(r.evidence_id for r in register.records) if register else ()
             )
-        else:
-            verdict = DecisionVerdict.APPROVE
-            deterministic_rationale = (
-                "Skeleton placeholder verdict: evidence registered, features "
-                "derived, documents reconciled. Real verdict logic TBD."
+            feature_summary = dict(features.feature_vector) if features else {}
+            return DecisionPacket(
+                request_id=request_id,
+                verdict=verdict,
+                rationale=rationale,
+                evidence_refs=evidence_refs,
+                feature_summary=feature_summary,
+                gate_violations=(),
             )
 
-        # P1.2 — Qwen-first rationale enrichment. NEVER touches verdict.
-        rationale = self._enrich_rationale_via_qwen(
-            verdict=verdict,
-            evidence_count=evidence_count,
-            feature_count=feature_count,
-            unresolved=unresolved,
-            deterministic_rationale=deterministic_rationale,
+        breakdown = self._scorer.score(
+            request=request,
+            register=register,
+            features=features,
+            reconciliation=reconciliation,
         )
 
         evidence_refs = (
             tuple(r.evidence_id for r in register.records) if register else ()
         )
-        feature_summary = dict(features.feature_vector) if features else {}
+        feature_summary: dict[str, float] = (
+            dict(features.feature_vector) if features else {}
+        )
+        # Surface scorer breakdown under stable risk_* keys for audit.
+        feature_summary.update(
+            {
+                "risk_score": breakdown.risk_score,
+                "risk_evidence_completeness": breakdown.evidence_completeness,
+                "risk_reconciliation_completeness": (
+                    breakdown.reconciliation_completeness
+                ),
+                "risk_document_density": breakdown.document_density,
+                "risk_coverage_score": breakdown.coverage_score,
+                "risk_product_tier": breakdown.product_risk_tier,
+            }
+        )
+
+        # Optional Qwen enrichment of the rationale paragraph. Verdict is
+        # already fixed (legally-binding in the regulated domain per the
+        # module docstring); enrichment ONLY edits the human-readable
+        # paragraph. Falls through to the deterministic rationale on any
+        # failure (preflight / SDK / gateway / empty / length / regulator-token).
+        evidence_count = len(register.records) if register else 0
+        feature_count = len(features.feature_vector) if features else 0
+        unresolved = reconciliation.unresolved_count if reconciliation else 0
+        rationale = self._enrich_rationale_via_qwen(
+            verdict=breakdown.verdict,
+            evidence_count=evidence_count,
+            feature_count=feature_count,
+            unresolved=unresolved,
+            deterministic_rationale=breakdown.rationale,
+        )
 
         return DecisionPacket(
             request_id=request_id,
-            verdict=verdict,
+            verdict=breakdown.verdict,
             rationale=rationale,
             evidence_refs=evidence_refs,
             feature_summary=feature_summary,
@@ -137,7 +174,15 @@ class DecisionPacketAssembler:
         Returns the deterministic rationale unchanged on any cascade
         failure path (preflight / SDK / model_registry / client_init /
         gateway / empty / length-guard / regulator-token-guard).
+
+        Test bypass: ``APPS_UW_RATIONALE_LLM_DISABLED=1`` skips the
+        cascade entirely. Used by contract tests that assert the
+        deterministic rationale text — those tests verify the
+        skeleton-stage floor that survives any Qwen failure.
         """
+        if os.environ.get("APPS_UW_RATIONALE_LLM_DISABLED") == "1":
+            return deterministic_rationale
+
         # Preflight via L2 health probe.
         try:
             from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
