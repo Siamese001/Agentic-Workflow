@@ -1,0 +1,19 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- grader_roster_id: agr::apps_underwriting_ai::underwriting_decision::v1
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  fallback_behavior: fail_closed
+  deterministic_graders:
+  - underwriting_ai::evidence_sufficiency_grader::v1
+  - underwriting_ai::feature_derivation_correctness_grader::v1
+  - underwriting_ai::policy_compliance_grader::v1
+  - underwriting_ai::fairness_grader::v1
+  llm_judge_graders: []
+  ensemble_or_consensus_graders:
+  - underwriting_ai::explainability_hybrid::v1
+  calibration_refs:
+  - calibration://apps_underwriting_ai/judges/2026-04-weekly
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

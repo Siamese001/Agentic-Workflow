@@ -1,0 +1,6 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- task_class: qna_pack_build
+  kind: generation
+  description: Build a card pack / paste-set for a given qna route from the KB.
+  risk_tier: standard
+  hitl_required: false

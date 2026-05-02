@@ -71,6 +71,26 @@ class RouteContract:
     Downstream verifiers MUST treat empty as 'unsigned' and apply the
     appropriate policy."""
 
+    # ----- Fort Knox app-domain contract refs (plan apps-domain-contract-fortknox-c4d8e2) -----
+    # All optional and default-empty so existing callers are untouched. When
+    # populated (by agentic_core/L0_routing/app_domain_resolver.py) they bind
+    # the route to a specific apps_* domain contract resolved from L4.
+    app_id: str = ""
+    task_class: str = ""
+    domain_contract_ref: str = ""
+    domain_contract_digest: str = ""
+    rubric_ref: str = ""
+    threshold_profile_ref: str = ""
+    grader_roster_ref: str = ""
+    retrieval_profile_ref: str = ""
+    prompt_profile_ref: str = ""
+    capability_profile_ref: str = ""
+    route_profile_ref: str = ""
+    input_contract_ref: str = ""
+    output_schema_ref: str = ""
+    orchestration_profile_ref: str = ""
+    app_contract_l4_record_refs: tuple[str, ...] = ()
+
     def __post_init__(self) -> None:
         if self.max_k <= 0:
             raise ValueError("max_k must be positive")

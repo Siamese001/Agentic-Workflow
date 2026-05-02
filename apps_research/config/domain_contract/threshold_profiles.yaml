@@ -1,0 +1,23 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- threshold_profile_id: atp::apps_research::company_brief::v1
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: standard
+  route_id: research.company_brief.default
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: none
+  policy_hash: policy://apps_research/v1
+  dimension_minimums:
+    factual_grounding: 0.95
+    source_quality: 0.65
+    freshness: 0.85
+    completeness: 0.9
+    balance: 0.55
+    concision: 0.7
+    no_speculation: 0.95
+  source_app_config_ref: apps_research/config/
+  created_at: '2026-05-01'

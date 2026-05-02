@@ -1,0 +1,43 @@
+- fixture_id: afix::apps_lic::outreach_message::golden_warm
+  app_id: apps_lic
+  task_class: outreach_message
+  fixture_type: golden
+  version: "1.0.0"
+  status: active
+  input_ref: "tests/fixtures/apps_lic/warm_followup_recipient.json"
+  expected_disposition: ALLOW
+  expected_gate_results:
+    personalization_integrity: PASS
+    audience_fit: PASS
+    brevity_and_channel_fit: PASS
+    compliance: PASS
+    no_fake_personalization: PASS
+    no_sensitive_targeting: PASS
+  expected_output_assertions:
+    - "subject_line.length <= 78"
+    - "personalization_block claims trace to recipient_profile_verified evidence_ids"
+    - "signature_block.sender_identity == sender_profile.identity"
+    - "channel-appropriate length respected"
+  source_app_config_ref: "apps_lic/tests/fixtures/"
+  created_at: "2026-05-01"
+
+- fixture_id: afix::apps_lic::outreach_message::golden_cold
+  app_id: apps_lic
+  task_class: outreach_message
+  fixture_type: golden
+  version: "1.0.0"
+  status: active
+  input_ref: "tests/fixtures/apps_lic/cold_intro_recipient.json"
+  expected_disposition: ALLOW
+  expected_gate_results:
+    personalization_integrity: PASS
+    brevity_and_channel_fit: PASS
+    compliance: PASS
+    no_fake_personalization: PASS
+    no_sensitive_targeting: PASS
+  expected_output_assertions:
+    - "personalization is sourced from verified-directory only (cold context)"
+    - "no false claim of mutual acquaintance"
+    - "value_proposition is concrete"
+  source_app_config_ref: "apps_lic/tests/fixtures/"
+  created_at: "2026-05-01"

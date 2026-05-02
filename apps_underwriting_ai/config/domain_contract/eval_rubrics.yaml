@@ -1,0 +1,45 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- eval_rubric_id: aer::apps_underwriting_ai::underwriting_decision::v1
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  policy_hash: policy://apps_underwriting_ai/v1
+  score_dimensions:
+  - dimension_id: evidence_sufficiency
+    description: Decision is backed by minimum evidence set.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: feature_derivation_correctness
+    description: Derived features match expected computation.
+    weight: 0.2
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: policy_compliance
+    description: Decision respects underwriting policy.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.99
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: explainability
+    description: Decision carries an evidence-cited explanation.
+    weight: 0.15
+    grader_type: hybrid
+    min_required_score: 0.7
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: fairness
+    description: No protected-attribute-based signal in decision.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.99
+    evidence_required: true
+    fail_closed_if_unknown: true
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

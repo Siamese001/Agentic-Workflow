@@ -1,0 +1,29 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+input_contract_id: aic::apps_underwriting_ai::underwriting_decision::v1
+app_id: apps_underwriting_ai
+task_class: underwriting_decision
+version: 1.0.0
+status: draft
+missing_input_behavior: fail_closed
+ambiguity_behavior: escalate
+required_inputs:
+- primary_input_ref
+- tenant_id
+- run_id
+optional_inputs:
+- prior_context_ref
+- focus_hints
+forbidden_inputs:
+- protected_attribute_direct_input
+- non_consented_external_scoring
+input_normalization_rules:
+- trim_whitespace_in_string_fields
+data_boundary_rules:
+- all PII fields must carry tenant_id-scoped ACL
+origin_trust_requirements:
+- 'primary_input: trust_label in {verified_kb,user_attested}'
+validation_rules:
+- primary_input_ref non-empty
+- tenant_id non-empty
+source_app_config_ref: apps_underwriting_ai/config/
+created_at: '2026-05-01'

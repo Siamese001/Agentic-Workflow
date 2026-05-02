@@ -1,0 +1,34 @@
+- capability_profile_id: acp::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  side_effect_class: read_only        # no external writes, no billing, no egress
+  policy_hash: "policy://apps_rg/v1"
+  allowed_tools:
+    - "tool::profile_lookup"
+    - "tool::ats_keyword_match"
+    - "tool::voice_profile_apply"
+    - "tool::resume_render"
+    - "tool::resume_validate"
+  forbidden_tools:
+    - "tool::send_email"
+    - "tool::http_post_external"
+    - "tool::file_write_outside_sandbox"
+    - "tool::shell_exec"
+    - "tool::sql_write"
+  allowed_connectors:
+    - "connector::candidate_profile_store_ro"
+    - "connector::company_brief_kb_ro"
+    - "connector::ats_keyword_kb_ro"
+  forbidden_connectors:
+    - "connector::email_outbox"
+    - "connector::crm_writer"
+    - "connector::open_web"
+  hitl_required_for: []                # standard resume generation does not require HITL
+  sandbox_requirements:
+    - "no_network_egress"
+    - "filesystem_write_jailed_to_artifacts/apps_rg/"
+    - "max_subprocess_count=0"
+  source_app_config_ref: "apps_rg/config/rg_policies.yaml"
+  created_at: "2026-05-01"

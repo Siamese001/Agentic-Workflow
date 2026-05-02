@@ -1,0 +1,27 @@
+- retrieval_profile_id: arp::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  freshness_class: bounded
+  source_lineage_required: true
+  policy_hash: "policy://apps_rg/v1"
+  allowed_sources:
+    - "candidate_profile_store"
+    - "company_brief_kb"               # for role context, NOT for inserting employer claims
+    - "ats_keyword_kb"
+    - "voice_profile_store"
+  prohibited_sources:
+    - "third_party_resume_corpus"      # Hard ban: no copying language from other resumes
+    - "open_web_scrape_realtime"
+    - "social_media_personal_posts"
+    - "pii_data_lake_raw"
+  required_evidence_for:
+    - "every claim in experience_block.entries[*].achievements"
+    - "every metric mentioned in professional_summary"
+    - "every credential in education_block / certifications_block"
+  acl_requirements:
+    - "tenant_scoped"
+    - "candidate_consent_artifact_required"
+  source_app_config_ref: "apps_rg/config/rg_policies.yaml"
+  created_at: "2026-05-01"

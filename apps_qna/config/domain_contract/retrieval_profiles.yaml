@@ -1,0 +1,23 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- retrieval_profile_id: arp::apps_qna::qna_pack_build::v1
+  app_id: apps_qna
+  task_class: qna_pack_build
+  version: 1.0.0
+  status: active
+  freshness_class: bounded
+  source_lineage_required: true
+  policy_hash: policy://apps_qna/v1
+  allowed_sources:
+  - tenant_kb
+  - verified_company_kb
+  - policy_store
+  prohibited_sources:
+  - open_web_scrape_realtime
+  - data_broker_inferred
+  - pii_data_lake_raw
+  required_evidence_for:
+  - every factual claim in body
+  acl_requirements:
+  - tenant_scoped
+  source_app_config_ref: apps_qna/config/
+  created_at: '2026-05-01'

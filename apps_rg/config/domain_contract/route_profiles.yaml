@@ -1,0 +1,15 @@
+- route_profile_id: arpf::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  default_route_id: "rg.resume_generation.default"
+  grounding_required: true
+  managed_workflow_allowed: true
+  allowed_route_ids:
+    - "rg.resume_generation.default"
+    - "rg.resume_generation.executive"
+    - "rg.resume_generation.short_form"
+  l3_dag_ref: "apps_rg/config/l3_dag.yaml"
+  source_app_config_ref: "apps_rg/config/route_registry.yaml"
+  created_at: "2026-05-01"

@@ -1,0 +1,28 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+output_schema_id: aos::apps_research::company_brief::v1
+app_id: apps_research
+task_class: company_brief
+version: 1.0.0
+status: active
+output_type: structured_record
+required_sections:
+- header
+- body
+- sources_or_evidence
+optional_sections:
+- appendix
+field_constraints:
+  body: must cite sources_or_evidence ids
+formatting_constraints:
+  total_length_bounded: 'true'
+prohibited_outputs:
+- unsourced_factual_claim
+- stale_source_claim
+- fabricated_source_url
+- speculation_presented_as_fact
+schema_validation_rules:
+- header non-empty
+- body non-empty
+- every body claim cites sources_or_evidence
+source_app_config_ref: apps_research/engines/
+created_at: '2026-05-01'

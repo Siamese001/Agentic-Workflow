@@ -1,0 +1,16 @@
+- route_profile_id: arpf::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  default_route_id: "lic.outreach_message.default"
+  grounding_required: true
+  managed_workflow_allowed: true
+  allowed_route_ids:
+    - "lic.outreach_message.default"
+    - "lic.outreach_message.warm"
+    - "lic.outreach_message.cold"
+    - "lic.outreach_message.follow_up"
+  l3_dag_ref: "apps_lic/config/hop_pipeline.py"
+  source_app_config_ref: "apps_lic/config/agent_specs.json"
+  created_at: "2026-05-01"

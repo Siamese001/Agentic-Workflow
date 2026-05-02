@@ -1,0 +1,38 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- fixture_id: afix::apps_underwriting_ai::underwriting_decision::golden_primary
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  fixture_type: golden
+  version: 1.0.0
+  status: draft
+  input_ref: tests/fixtures/apps_underwriting_ai/golden_primary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    evidence_sufficiency: PASS
+    feature_derivation_correctness: PASS
+    policy_compliance: PASS
+    explainability: PASS
+    fairness: PASS
+  expected_output_assertions:
+  - required_sections present
+  - every claim in body cites sources_or_evidence
+  source_app_config_ref: apps_underwriting_ai/tests/fixtures/
+  created_at: '2026-05-01'
+- fixture_id: afix::apps_underwriting_ai::underwriting_decision::golden_secondary
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  fixture_type: golden
+  version: 1.0.0
+  status: draft
+  input_ref: tests/fixtures/apps_underwriting_ai/golden_secondary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    evidence_sufficiency: PASS
+    feature_derivation_correctness: PASS
+    policy_compliance: PASS
+    explainability: PASS
+    fairness: PASS
+  expected_output_assertions:
+  - required_sections present
+  source_app_config_ref: apps_underwriting_ai/tests/fixtures/
+  created_at: '2026-05-01'

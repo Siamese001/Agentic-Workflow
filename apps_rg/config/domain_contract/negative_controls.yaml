@@ -1,0 +1,39 @@
+# apps_rg negative controls — MUST fail for the named reason.
+- negative_control_id: aneg::apps_rg::resume_generation::fabricated_employer
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  expected_failure_dimension: factual_grounding
+  expected_failure_reason: >-
+    Adversarial profile + role spec induces the generator to insert an
+    employer that is NOT in candidate_profile.experiences. The
+    factual_grounding deterministic grader must detect the mismatch
+    and X3 disposition must be DENY (or SAFE_ABSTAIN if the no_fabrication
+    hard guardrail fires first).
+  input_ref: "tests/fixtures/apps_rg/neg_fabricated_employer_profile.json"
+  expected_gate_results:
+    factual_grounding: FAIL
+    no_fabrication: FAIL
+    format_compliance: PASS
+  source_app_config_ref: "apps_rg/tests/fixtures/"
+  created_at: "2026-05-01"
+
+- negative_control_id: aneg::apps_rg::resume_generation::unsupported_metric
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  expected_failure_dimension: factual_grounding
+  expected_failure_reason: >-
+    Profile contains qualitative outcomes; generator inserts a numeric
+    metric ("grew revenue 47%") that is NOT in profile.evidence. The
+    factual_grounding grader rejects the metric; X3 disposition is DENY
+    or SAFE_ABSTAIN.
+  input_ref: "tests/fixtures/apps_rg/neg_unsupported_metric_profile.json"
+  expected_gate_results:
+    factual_grounding: FAIL
+    specificity: PASS    # metric is "specific" but unsupported
+    no_fabrication: FAIL
+  source_app_config_ref: "apps_rg/tests/fixtures/"
+  created_at: "2026-05-01"

@@ -1,0 +1,29 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- capability_profile_id: acp::apps_rfp::rfp_response::v1
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  side_effect_class: read_only
+  policy_hash: policy://apps_rfp/v1
+  allowed_tools:
+  - tool::kb_lookup
+  - tool::render
+  - tool::validate
+  forbidden_tools:
+  - tool::send_email
+  - tool::http_post_external
+  - tool::shell_exec
+  - tool::sql_write
+  allowed_connectors:
+  - connector::tenant_kb_ro
+  - connector::policy_store_ro
+  forbidden_connectors:
+  - connector::open_web
+  - connector::email_outbox
+  hitl_required_for: []
+  sandbox_requirements:
+  - no_network_egress
+  - filesystem_write_jailed_to_artifacts/apps_rfp/
+  source_app_config_ref: apps_rfp/config/
+  created_at: '2026-05-01'

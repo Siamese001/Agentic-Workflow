@@ -1,0 +1,22 @@
+- orchestration_profile_id: aop::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  orchestration_kind: dag
+  hop_sequence: []
+  dag_node_refs:
+    - "rg::profile_normalization"
+    - "rg::role_analysis"
+    - "rg::keyword_alignment"
+    - "rg::experience_section_compose"
+    - "rg::summary_compose"
+    - "rg::skills_compose"
+    - "rg::education_compose"
+    - "rg::format_render"
+    - "rg::ats_validate"
+    - "rg::factual_grounding_check"
+    - "rg::no_fabrication_guardrail"
+  blueprint_ref: "apps_rg/spine_manifest.yaml"
+  source_app_config_ref: "apps_rg/config/l3_dag.yaml"
+  created_at: "2026-05-01"

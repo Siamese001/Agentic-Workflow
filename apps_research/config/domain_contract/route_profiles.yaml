@@ -1,0 +1,16 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- route_profile_id: arpf::apps_research::company_brief::v1
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  default_route_id: research.company_brief.default
+  grounding_required: true
+  managed_workflow_allowed: true
+  allowed_route_ids:
+  - research.company_brief.default
+  - research.company_brief.fast
+  - research.company_brief.deep
+  l3_dag_ref: ''
+  source_app_config_ref: apps_research/config/
+  created_at: '2026-05-01'

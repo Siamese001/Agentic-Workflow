@@ -1,0 +1,26 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- negative_control_id: aneg::apps_qna::qna_pack_build::route_mismatch
+  app_id: apps_qna
+  task_class: qna_pack_build
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: route_fit
+  expected_failure_reason: Pack built for route X contains cards labeled for route
+    Y.
+  input_ref: tests/fixtures/apps_qna/neg_route_mismatch.json
+  expected_gate_results:
+    route_fit: FAIL
+  source_app_config_ref: apps_qna/tests/fixtures/
+  created_at: '2026-05-01'
+- negative_control_id: aneg::apps_qna::qna_pack_build::forbidden_content_leak
+  app_id: apps_qna
+  task_class: qna_pack_build
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: no_paste_of_forbidden_content
+  expected_failure_reason: Pack contains a PII snippet from source docs.
+  input_ref: tests/fixtures/apps_qna/neg_forbidden_content_leak.json
+  expected_gate_results:
+    no_paste_of_forbidden_content: FAIL
+  source_app_config_ref: apps_qna/tests/fixtures/
+  created_at: '2026-05-01'

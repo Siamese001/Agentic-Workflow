@@ -1,0 +1,52 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- eval_rubric_id: aer::apps_qna::qna_pack_build::v1
+  app_id: apps_qna
+  task_class: qna_pack_build
+  version: 1.0.0
+  status: active
+  policy_hash: policy://apps_qna/v1
+  score_dimensions:
+  - dimension_id: route_fit
+    description: Pack content matches the declared route_id.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.9
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: factual_grounding
+    description: Answers cite KB source_ids.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: de_duplication
+    description: No duplicate cards within a pack.
+    weight: 0.1
+    grader_type: deterministic
+    min_required_score: 0.98
+    evidence_required: false
+    fail_closed_if_unknown: true
+  - dimension_id: coverage
+    description: Pack covers the declared pathology_taxonomy for the route.
+    weight: 0.15
+    grader_type: hybrid
+    min_required_score: 0.7
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: freshness
+    description: Sources within freshness window.
+    weight: 0.1
+    grader_type: deterministic
+    min_required_score: 0.8
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: no_paste_of_forbidden_content
+    description: No forbidden content patterns (PII, secrets).
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.99
+    evidence_required: true
+    fail_closed_if_unknown: true
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

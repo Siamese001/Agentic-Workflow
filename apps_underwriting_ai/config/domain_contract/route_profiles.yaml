@@ -1,0 +1,16 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- route_profile_id: arpf::apps_underwriting_ai::underwriting_decision::v1
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  default_route_id: underwriting_ai.underwriting_decision.default
+  grounding_required: true
+  managed_workflow_allowed: true
+  allowed_route_ids:
+  - underwriting_ai.underwriting_decision.default
+  - underwriting_ai.underwriting_decision.fast
+  - underwriting_ai.underwriting_decision.deep
+  l3_dag_ref: ''
+  source_app_config_ref: apps_underwriting_ai/config/
+  created_at: '2026-05-01'

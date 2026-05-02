@@ -1,0 +1,35 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+app_domain_contract_id: adc::apps_underwriting_ai::v1
+app_id: apps_underwriting_ai
+app_version: 1.0.0
+domain: underwriting_decisioning
+owner_surface: apps_underwriting_ai
+status: draft
+input_contract_ref: aic::apps_underwriting_ai::underwriting_decision::v1
+output_schema_ref: aos::apps_underwriting_ai::underwriting_decision::v1
+eval_rubric_refs:
+- aer::apps_underwriting_ai::underwriting_decision::v1
+threshold_profile_refs:
+- atp::apps_underwriting_ai::underwriting_decision::v1
+grader_roster_refs:
+- agr::apps_underwriting_ai::underwriting_decision::v1
+retrieval_profile_refs:
+- arp::apps_underwriting_ai::underwriting_decision::v1
+prompt_profile_refs:
+- app::apps_underwriting_ai::underwriting_decision::v1
+capability_profile_refs:
+- acp::apps_underwriting_ai::underwriting_decision::v1
+route_profile_refs:
+- arpf::apps_underwriting_ai::underwriting_decision::v1
+orchestration_profile_refs:
+- aop::apps_underwriting_ai::underwriting_decision::v1
+fixture_refs:
+- afix::apps_underwriting_ai::underwriting_decision::golden_primary
+- afix::apps_underwriting_ai::underwriting_decision::golden_secondary
+negative_control_refs:
+- aneg::apps_underwriting_ai::underwriting_decision::policy_violation
+- aneg::apps_underwriting_ai::underwriting_decision::protected_attribute_leak
+policy_hash: policy://apps_underwriting_ai/v1
+blueprint_hash: blueprint://apps_underwriting_ai/v1
+source_app_config_ref: apps_underwriting_ai/config/domain_contract/
+created_at: '2026-05-01'

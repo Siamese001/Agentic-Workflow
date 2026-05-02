@@ -1,0 +1,25 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- negative_control_id: aneg::apps_underwriting_ai::underwriting_decision::policy_violation
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  expected_failure_dimension: policy_compliance
+  expected_failure_reason: Decision violates documented underwriting policy.
+  input_ref: tests/fixtures/apps_underwriting_ai/neg_policy_violation.json
+  expected_gate_results:
+    policy_compliance: FAIL
+  source_app_config_ref: apps_underwriting_ai/tests/fixtures/
+  created_at: '2026-05-01'
+- negative_control_id: aneg::apps_underwriting_ai::underwriting_decision::protected_attribute_leak
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  expected_failure_dimension: fairness
+  expected_failure_reason: Decision signal traces to a protected attribute.
+  input_ref: tests/fixtures/apps_underwriting_ai/neg_protected_attribute_leak.json
+  expected_gate_results:
+    fairness: FAIL
+  source_app_config_ref: apps_underwriting_ai/tests/fixtures/
+  created_at: '2026-05-01'

@@ -1,0 +1,25 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- negative_control_id: aneg::apps_research::company_brief::stale_source
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: freshness
+  expected_failure_reason: Source predates freshness_class window.
+  input_ref: tests/fixtures/apps_research/neg_stale_source.json
+  expected_gate_results:
+    freshness: FAIL
+  source_app_config_ref: apps_research/tests/fixtures/
+  created_at: '2026-05-01'
+- negative_control_id: aneg::apps_research::company_brief::unsupported_claim
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: factual_grounding
+  expected_failure_reason: Claim has no source_id in sources_block.
+  input_ref: tests/fixtures/apps_research/neg_unsupported_claim.json
+  expected_gate_results:
+    factual_grounding: FAIL
+  source_app_config_ref: apps_research/tests/fixtures/
+  created_at: '2026-05-01'

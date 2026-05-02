@@ -1,0 +1,27 @@
+app_domain_contract_id: adc::apps_lic::v1
+app_id: apps_lic
+app_version: "1.0.0"
+domain: outreach_personalization
+owner_surface: apps_lic
+status: active
+input_contract_ref: aic::apps_lic::outreach_message::v1
+output_schema_ref: aos::apps_lic::outreach_message::v1
+eval_rubric_refs: [aer::apps_lic::outreach_message::v1]
+threshold_profile_refs: [atp::apps_lic::outreach_message::v1]
+grader_roster_refs: [agr::apps_lic::outreach_message::v1]
+retrieval_profile_refs: [arp::apps_lic::outreach_message::v1]
+prompt_profile_refs: [app::apps_lic::outreach_message::v1]
+capability_profile_refs: [acp::apps_lic::outreach_message::v1]
+route_profile_refs: [arpf::apps_lic::outreach_message::v1]
+orchestration_profile_refs: [aop::apps_lic::outreach_message::v1]
+fixture_refs:
+  - afix::apps_lic::outreach_message::golden_warm
+  - afix::apps_lic::outreach_message::golden_cold
+negative_control_refs:
+  - aneg::apps_lic::outreach_message::fake_personalization
+  - aneg::apps_lic::outreach_message::sensitive_targeting
+  - aneg::apps_lic::outreach_message::channel_length
+policy_hash: "policy://apps_lic/v1"
+blueprint_hash: "blueprint://apps_lic/v1"
+source_app_config_ref: "apps_lic/config/domain_contract/"
+created_at: "2026-05-01"

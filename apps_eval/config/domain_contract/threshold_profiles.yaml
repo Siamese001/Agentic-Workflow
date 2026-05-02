@@ -1,0 +1,22 @@
+# apps_eval Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- threshold_profile_id: atp::apps_eval::eval_self::v1
+  app_id: apps_eval
+  task_class: eval_self
+  version: 1.0.0
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: standard
+  route_id: eval.eval_self.default
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: none
+  policy_hash: policy://apps_eval/v1
+  dimension_minimums:
+    grader_calibration: 0.7
+    rubric_consistency: 0.9
+    taxonomy_correctness: 0.9
+    threshold_alignment: 0.95
+    no_self_contradiction: 0.95
+    reporting_completeness: 0.95
+  source_app_config_ref: apps_eval/config/
+  created_at: '2026-05-01'

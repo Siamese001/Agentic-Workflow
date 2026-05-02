@@ -1,0 +1,26 @@
+# apps_eval Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- negative_control_id: aneg::apps_eval::eval_self::taxonomy_misclassification
+  app_id: apps_eval
+  task_class: eval_self
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: taxonomy_correctness
+  expected_failure_reason: Input suite_id has `cap_` prefix but judge classifies as
+    regression.
+  input_ref: tests/fixtures/apps_eval/neg_taxonomy_misclassification.json
+  expected_gate_results:
+    taxonomy_correctness: FAIL
+  source_app_config_ref: apps_eval/tests/fixtures/
+  created_at: '2026-05-01'
+- negative_control_id: aneg::apps_eval::eval_self::threshold_drift
+  app_id: apps_eval
+  task_class: eval_self
+  version: 1.0.0
+  status: active
+  expected_failure_dimension: threshold_alignment
+  expected_failure_reason: Override threshold not matching eval_thresholds.yaml.
+  input_ref: tests/fixtures/apps_eval/neg_threshold_drift.json
+  expected_gate_results:
+    threshold_alignment: FAIL
+  source_app_config_ref: apps_eval/tests/fixtures/
+  created_at: '2026-05-01'
