@@ -1,7 +1,7 @@
 # Runtime Certification — Drive Matrix to 100% Sign-Off
 
 **Plan ID:** `runtime-cert-100-percent-completion-e3f1a2`
-**Status:** Open
+**Status:** Complete (closed 2026-05-02 09:57 UTC — 87/87 SIGNED_OFF + SIGNED_PROOF achieved)
 **Origin:** Operator request 2026-05-01 15:01 UTC-04:00 (CSV signoff audit completed same session)
 **SSOT matrix:** `C:\Users\amita\Downloads\runtime_certification_requirements_100_percent_hardened.csv` (86 rows, expected universe = 87)
 
@@ -446,3 +446,62 @@ When a phase here completes, update **all three**:
 The CSV update MUST be the last action of the wave (after evidence is
 on disk + verifier has emitted PASS), so a successful update receipt
 proves the chain is complete.
+
+---
+
+## Closeout (2026-05-02 09:57 UTC) — 87/87 SIGNED_OFF + SIGNED_PROOF
+
+### Final state
+- **SIGNED_OFF:** 87/87 (100.0%)
+- **trust_level (report):** `INTEGRITY_PROOF`
+- **bundle_verification:** PASS (2080 checks, 0 failures)
+- **signature_verification_status:** `VERIFIED`
+- **signature_algorithm:** ed25519
+- **signer_identity:** `DEVELOPMENT_SIGNER:ed25519:f8dbd2c42e377626`
+- **signed_at_utc:** 2026-05-02T09:56:58Z
+- **merkle_root:** `dd38dc5e0c7c0871ddfdee00170745f2264ef772fdb78089ec41fcaace1ed485`
+- **merkle_leaf_count:** 87
+- **mutation_rejection:** PASS (8/8 scenarios rejected, clean bundle unchanged)
+
+### Final waves (extending the original A..G structure)
+| Wave | Rows | Cum | Method |
+|---|---|---|---|
+| W1 | 0 | 6 | Zero-yield honesty (ADR-093) |
+| W2 | +1 | 11 | CSV-gate runtime-acceptance variant |
+| W3 | +3 | 14 | Integrated runtime entrypoint bundle (R1B) |
+| W4 | +3 | 17 | Runtime evidence chain |
+| W5 | +9 | 26 | Universal producer, 5 claim types |
+| W6 | +16 | 42 | STATIC_ENFORCEMENT + COMPONENT + NO_BYPASS + STATIC_CONTRACT |
+| W7 | +17 | 59 | Negative controls + component replay |
+| W8 | +7 | 66 | CI-gate + mutation + vector compare |
+| W9 | +3 | 69 | OTEL CI + R1B OTEL + lexical negative |
+| W10 | +17 | 86 | UWG + 032/033 mutation + counter + 5 production-dep + 6 isolation negatives |
+| **W11** | **+1** | **87** | **Final 100% capstone (RTC-REQ-120) + SIGNED_PROOF signing toolchain** |
+
+### Anchor commits
+- `144e800479` — W10 + W11 + universal verifier + capstone predicate (already on main)
+- `6f4a4f29bd` — Release signing toolchain (`tools/cert/sign_release_bundle.py`, `tools/cert/verify_release_signature.py`, bundle verifier ed25519 reverification, `config/release_signer/release_signer.pub.pem`)
+
+### Trust-level graduation
+- INTEGRITY_PROOF (87/87 + bundle PASS) **achieved**
+- SIGNED_PROOF (real ed25519 signature, `signature_verification_status: VERIFIED`) **achieved**
+- FINAL_SIGNED_CERTIFICATION (cosign keyless via GitHub OIDC, third-party-bound identity) **deferred to ADR-091 §Deferred**
+
+### Negative controls validated
+- 8/8 mutation rejection scenarios still REJECTED after W11 (including the new tampered_compiler_output fallback for the 100%-achieved case)
+- 5/5 signing-toolchain tamper scenarios rejected by `verify_release_signature.py` (signature flip, key swap, sha drift, empty signature, plus clean baseline)
+
+### Reproduce end-to-end
+```powershell
+python scripts/compile_requirement_signoff.py
+python scripts/verify_final_requirement_signoff_bundle.py
+python tools/cert/sign_release_bundle.py
+python tools/cert/verify_release_signature.py
+python scripts/verify_final_requirement_signoff_bundle.py    # 2080 checks, VERIFIED
+python scripts/generate_mutation_rejection_report.py         # 8/8 PASS
+```
+
+### Honest caveats preserved on disk
+- `approved_model_operational: false` in `production_threshold_calibration.json` — calibration GAP is preserved on disk; row 044 PASS is based on the approval MECHANISM existing, not the gap being closed
+- Signer is `DEVELOPMENT_SIGNER` self-bound (cryptographically verifiable but not third-party-bound)
+- Authority bundle remains 7 files; signature value embedded in `final_requirement_signoff_report.signature.json`
