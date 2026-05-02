@@ -1,0 +1,11 @@
+- task_class: outreach_message
+  kind: generation
+  description: >-
+    Generate a personalized outreach message (email / LinkedIn InMail /
+    chat-channel) targeted at a specific recipient using verified-only
+    personalization signals. The message must be channel-appropriate in
+    length, factually grounded in available recipient evidence, free of
+    sensitive-attribute targeting, and compliant with regional outreach
+    rules.
+  risk_tier: elevated
+  hitl_required: false

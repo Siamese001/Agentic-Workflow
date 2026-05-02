@@ -1,0 +1,25 @@
+- threshold_profile_id: atp::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: standard
+  route_id: "rg.resume_generation.default"
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: required_on_low
+  policy_hash: "policy://apps_rg/v1"
+  # Per-dimension minimums — Exit enforces these in addition to overall_pass_threshold.
+  # Source: apps_rg/config/rg_thresholds.yaml (migrated to L4 via UWG).
+  dimension_minimums:
+    factual_grounding: 0.95
+    role_alignment: 0.65
+    ats_readability: 0.80
+    executive_positioning: 0.0       # not always required
+    specificity: 0.55
+    concision: 0.60
+    format_compliance: 0.95
+    no_fabrication: 0.99
+  source_app_config_ref: "apps_rg/config/rg_thresholds.yaml"
+  created_at: "2026-05-01"

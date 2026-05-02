@@ -1,0 +1,43 @@
+- capability_profile_id: acp::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  side_effect_class: read_only       # generation only; sending is downstream/separate
+  policy_hash: "policy://apps_lic/v1"
+  allowed_tools:
+    - "tool::recipient_profile_lookup_verified"
+    - "tool::company_kb_lookup"
+    - "tool::voice_profile_apply"
+    - "tool::message_render"
+    - "tool::message_validate"
+    - "tool::compliance_check"
+  forbidden_tools:
+    - "tool::send_email"             # forbidden at generation time; egress is separate
+    - "tool::send_linkedin_inmail"
+    - "tool::send_sms"
+    - "tool::http_post_external"
+    - "tool::shell_exec"
+    - "tool::sql_write"
+    - "tool::pii_inference"
+    - "tool::sensitive_attribute_inference"
+  allowed_connectors:
+    - "connector::verified_directory_ro"
+    - "connector::company_kb_ro"
+    - "connector::tenant_voice_profile_ro"
+    - "connector::campaign_kb_ro"
+  forbidden_connectors:
+    - "connector::email_outbox"
+    - "connector::linkedin_send"
+    - "connector::sms_send"
+    - "connector::open_web"
+    - "connector::data_broker"
+  hitl_required_for:
+    - "compliance_score_below_floor"
+    - "first_outreach_to_high_value_target"
+  sandbox_requirements:
+    - "no_network_egress"
+    - "filesystem_write_jailed_to_artifacts/apps_lic/"
+    - "max_subprocess_count=0"
+  source_app_config_ref: "apps_lic/config/lic_policies.yaml"
+  created_at: "2026-05-01"

@@ -1,0 +1,40 @@
+# apps_qna Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- fixture_id: afix::apps_qna::qna_pack_build::golden_primary
+  app_id: apps_qna
+  task_class: qna_pack_build
+  fixture_type: golden
+  version: 1.0.0
+  status: active
+  input_ref: tests/fixtures/apps_qna/golden_primary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    route_fit: PASS
+    factual_grounding: PASS
+    de_duplication: PASS
+    coverage: PASS
+    freshness: PASS
+    no_paste_of_forbidden_content: PASS
+  expected_output_assertions:
+  - required_sections present
+  - every claim in body cites sources_or_evidence
+  source_app_config_ref: apps_qna/tests/fixtures/
+  created_at: '2026-05-01'
+- fixture_id: afix::apps_qna::qna_pack_build::golden_secondary
+  app_id: apps_qna
+  task_class: qna_pack_build
+  fixture_type: golden
+  version: 1.0.0
+  status: active
+  input_ref: tests/fixtures/apps_qna/golden_secondary.json
+  expected_disposition: ALLOW
+  expected_gate_results:
+    route_fit: PASS
+    factual_grounding: PASS
+    de_duplication: PASS
+    coverage: PASS
+    freshness: PASS
+    no_paste_of_forbidden_content: PASS
+  expected_output_assertions:
+  - required_sections present
+  source_app_config_ref: apps_qna/tests/fixtures/
+  created_at: '2026-05-01'

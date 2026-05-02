@@ -1,0 +1,21 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- grader_roster_id: agr::apps_research::company_brief::v1
+  app_id: apps_research
+  task_class: company_brief
+  version: 1.0.0
+  status: active
+  fallback_behavior: fail_closed
+  deterministic_graders:
+  - research::factual_grounding_grader::v1
+  - research::freshness_grader::v1
+  - research::completeness_grader::v1
+  - research::concision_grader::v1
+  - research::no_speculation_grader::v1
+  llm_judge_graders: []
+  ensemble_or_consensus_graders:
+  - research::source_quality_hybrid::v1
+  - research::balance_hybrid::v1
+  calibration_refs:
+  - calibration://apps_research/judges/2026-04-weekly
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'

@@ -1,0 +1,16 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- orchestration_profile_id: aop::apps_underwriting_ai::underwriting_decision::v1
+  app_id: apps_underwriting_ai
+  task_class: underwriting_decision
+  version: 1.0.0
+  status: draft
+  orchestration_kind: hop
+  hop_sequence:
+  - underwriting_ai::hop1
+  - underwriting_ai::hop2
+  - underwriting_ai::hop3
+  - underwriting_ai::hop4
+  dag_node_refs: []
+  blueprint_ref: apps_underwriting_ai/config/hop_pipeline.py
+  source_app_config_ref: apps_underwriting_ai/config/
+  created_at: '2026-05-01'

@@ -1,0 +1,79 @@
+- eval_rubric_id: aer::apps_lic::outreach_message::v1
+  app_id: apps_lic
+  task_class: outreach_message
+  version: "1.0.0"
+  status: active
+  policy_hash: "policy://apps_lic/v1"
+  source_app_config_ref: "apps_eval/config/rubrics/rub_apps_lic_outreach_v1.yaml"
+  created_at: "2026-05-01"
+  score_dimensions:
+    - dimension_id: audience_fit
+      description: "Tone, vocabulary, and framing match the recipient's role, seniority, and channel norms."
+      weight: 0.10
+      grader_type: hybrid
+      min_required_score: 0.55
+      evidence_required: true
+      fail_closed_if_unknown: false
+    - dimension_id: personalization_integrity
+      description: "Every personalization claim traces to verified recipient evidence (no fake 'I noticed you...' without source)."
+      weight: 0.20
+      grader_type: deterministic
+      min_required_score: 0.95
+      evidence_required: true
+      fail_closed_if_unknown: true
+    - dimension_id: offer_clarity
+      description: "Value proposition + call_to_action are concrete, actionable, and unambiguous."
+      weight: 0.10
+      grader_type: hybrid
+      min_required_score: 0.60
+      evidence_required: false
+      fail_closed_if_unknown: false
+    - dimension_id: response_likelihood
+      description: "Predicted likelihood of a positive recipient action given prior similar outreach (calibrated against historical reply data)."
+      weight: 0.10
+      grader_type: llm_as_judge
+      min_required_score: 0.45
+      evidence_required: false
+      fail_closed_if_unknown: false
+    - dimension_id: brevity_and_channel_fit
+      description: "Length, paragraph count, and structure match the channel's expected norms (email != InMail != chat != sms)."
+      weight: 0.10
+      grader_type: deterministic
+      min_required_score: 0.85
+      evidence_required: false
+      fail_closed_if_unknown: true
+    - dimension_id: compliance
+      description: "Outreach respects regional rules (CAN-SPAM, GDPR, opt-out language); consent_artifact verified; no prohibited content."
+      weight: 0.15
+      grader_type: deterministic
+      min_required_score: 0.95
+      evidence_required: true
+      fail_closed_if_unknown: true
+    - dimension_id: sequence_coherence
+      description: "If part of a multi-touch sequence, the message references prior context coherently and does not repeat or contradict."
+      weight: 0.05
+      grader_type: hybrid
+      min_required_score: 0.50
+      evidence_required: false
+      fail_closed_if_unknown: false
+    - dimension_id: brand_voice
+      description: "Tone, lexicon, and style match the sender's voice_profile (or default tenant voice if not provided)."
+      weight: 0.05
+      grader_type: llm_as_judge
+      min_required_score: 0.50
+      evidence_required: false
+      fail_closed_if_unknown: false
+    - dimension_id: no_fake_personalization
+      description: "Hard guardrail: any claim of recipient detail (\"I saw\", \"I noticed\", \"congrats on\") must be backed by an evidence_id."
+      weight: 0.10
+      grader_type: deterministic
+      min_required_score: 0.99
+      evidence_required: true
+      fail_closed_if_unknown: true
+    - dimension_id: no_sensitive_targeting
+      description: "Hard guardrail: no language targeting protected attributes (gender, race, age, religion, disability, etc.)."
+      weight: 0.05
+      grader_type: deterministic
+      min_required_score: 0.99
+      evidence_required: false
+      fail_closed_if_unknown: true

@@ -1,0 +1,7 @@
+# apps_underwriting_ai Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- task_class: underwriting_decision
+  kind: decisioning
+  description: Derive underwriting decision from collected evidence + derived features.
+    STUB — full implementation deferred (TODO_FAILING_TEST).
+  risk_tier: elevated
+  hitl_required: true

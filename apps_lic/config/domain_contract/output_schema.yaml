@@ -1,0 +1,45 @@
+output_schema_id: aos::apps_lic::outreach_message::v1
+app_id: apps_lic
+task_class: outreach_message
+version: "1.0.0"
+status: active
+output_type: structured_record
+required_sections:
+  - subject_line                  # required for email and linkedin_inmail
+  - opening
+  - personalization_block
+  - value_proposition
+  - call_to_action
+  - signature_block
+optional_sections:
+  - postscript
+field_constraints:
+  subject_line.length: "<=78 chars for email; <=200 chars for linkedin_inmail"
+  opening.length: "<=160 chars"
+  personalization_block.claims[*]: "must trace to recipient_profile_verified evidence_id"
+  call_to_action.kind: "must be in {meeting_request, link_click, reply_request, no_action}"
+  signature_block.sender_identity: "must equal sender_profile.identity exactly"
+formatting_constraints:
+  total_length_email: "<= 1500 characters rendered"
+  total_length_linkedin_inmail: "<= 1900 characters rendered"
+  total_length_linkedin_chat: "<= 300 characters rendered"
+  total_length_sms: "<= 320 characters rendered"
+  paragraph_count_email: "<= 4"
+  emoji_use: "forbidden in subject_line; <=1 in body for non-formal channels"
+prohibited_outputs:
+  - "fake_personalization_unverified"
+  - "sensitive_attribute_reference"        # gender, race, religion, age targeting language
+  - "unsupported_company_trigger_claim"    # "Saw your company just IPO'd" without evidence
+  - "false_mutual_acquaintance_claim"
+  - "scraped_personal_detail_reference"
+  - "false_urgency"
+  - "guarantee_of_outcome"
+  - "instruction_to_send_outside_consent_scope"
+schema_validation_rules:
+  - "every claim in personalization_block traces to recipient_profile_verified evidence_id"
+  - "signature_block.sender_identity == sender_profile.identity"
+  - "if channel=email: subject_line is non-empty and <= 78 chars"
+  - "if channel=linkedin_chat: total length <= 300 chars"
+  - "if channel=sms: total length <= 320 chars; no html"
+source_app_config_ref: "apps_lic/config/validator_rules.json"
+created_at: "2026-05-01"

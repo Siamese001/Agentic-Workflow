@@ -142,6 +142,28 @@ class ExitReviewPacket:
     isolation_anomalies: list[str] = field(default_factory=list)
     drift_warnings: list[str] = field(default_factory=list)
 
+    # ----- Fort Knox app-domain contract refs (plan apps-domain-contract-fortknox-c4d8e2) -----
+    # All optional and default-empty so pre-existing Exit callers are untouched.
+    # Populated by L0 app_domain_resolver (flows through route_contract dict)
+    # and consumed by app_specific_evaluator during X1/X2/X3 stages.
+    app_id: str = ""
+    task_class: str = ""
+    domain_contract_ref: str = ""
+    resolved_domain_contract_digest: str = ""
+    rubric_ref: str = ""
+    threshold_profile_ref: str = ""
+    grader_roster_ref: str = ""
+    retrieval_profile_ref: str = ""
+    prompt_profile_ref: str = ""
+    capability_profile_ref: str = ""
+    route_profile_ref: str = ""
+    input_contract_ref: str = ""
+    output_schema_ref: str = ""
+    app_contract_l4_record_refs: list[str] = field(default_factory=list)
+    # Per-dimension eval results from app_specific_evaluator. Empty when
+    # the route was not bound to an app-domain contract.
+    app_specific_eval: dict[str, Any] = field(default_factory=dict)
+
 
 # ---- X3 disposition packets (required-output shapes from spec §X3) ----
 

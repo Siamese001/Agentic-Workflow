@@ -1,0 +1,34 @@
+# apps_research Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+app_domain_contract_id: adc::apps_research::v1
+app_id: apps_research
+app_version: 1.0.0
+domain: company_research
+owner_surface: apps_research
+status: active
+input_contract_ref: aic::apps_research::company_brief::v1
+output_schema_ref: aos::apps_research::company_brief::v1
+eval_rubric_refs:
+- aer::apps_research::company_brief::v1
+threshold_profile_refs:
+- atp::apps_research::company_brief::v1
+grader_roster_refs:
+- agr::apps_research::company_brief::v1
+retrieval_profile_refs:
+- arp::apps_research::company_brief::v1
+prompt_profile_refs:
+- app::apps_research::company_brief::v1
+capability_profile_refs:
+- acp::apps_research::company_brief::v1
+route_profile_refs:
+- arpf::apps_research::company_brief::v1
+orchestration_profile_refs: []
+fixture_refs:
+- afix::apps_research::company_brief::golden_primary
+- afix::apps_research::company_brief::golden_secondary
+negative_control_refs:
+- aneg::apps_research::company_brief::stale_source
+- aneg::apps_research::company_brief::unsupported_claim
+policy_hash: policy://apps_research/v1
+blueprint_hash: blueprint://apps_research/v1
+source_app_config_ref: apps_research/config/domain_contract/
+created_at: '2026-05-01'

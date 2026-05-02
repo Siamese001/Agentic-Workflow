@@ -59,6 +59,11 @@ ALLOWED_OPERATIONS: Tuple[str, ...] = (
     "memory_promotion",
     "rollback",
     "tombstone",
+    # Fort Knox app-domain contract registration (plan apps-domain-contract-fortknox-c4d8e2).
+    # The registration adapter at agentic_core/L4_state/uwg/app_domain_registration.py
+    # submits one StateDiff per app-domain record kind. Source surface remains "Exit"
+    # per the UWG Exit-only authority rule.
+    "app_domain_contract_register",
 )
 
 

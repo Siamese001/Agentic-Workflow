@@ -1,0 +1,47 @@
+# apps_rg input contract — what the resume_generation task expects to receive.
+input_contract_id: aic::apps_rg::resume_generation::v1
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+missing_input_behavior: fail_closed
+ambiguity_behavior: escalate
+
+required_inputs:
+  - candidate_profile             # structured profile (experiences, skills, education)
+  - target_role_spec              # title, level, JD, ATS keywords
+  - tenant_id
+  - run_id
+
+optional_inputs:
+  - voice_profile                 # tone, style preferences
+  - ats_keywords_override
+  - length_preference             # one_page | two_page | unbounded
+
+forbidden_inputs:
+  - third_party_resume            # cannot ingest someone else's resume
+  - sensitive_attributes_self_disclosed  # gender, race, age must not be in inputs
+
+input_normalization_rules:
+  - "trim_whitespace_in_string_fields"
+  - "lowercase_email_fields"
+  - "deduplicate_skills_list_case_insensitive"
+  - "ensure_iso_8601_dates"
+
+data_boundary_rules:
+  - "candidate_profile.experiences[*].employer must match a verified-employer record by exact name OR carry origin_trust=user_attested"
+  - "candidate_profile.education[*].institution must match a verified-institution record OR carry origin_trust=user_attested"
+  - "all PII fields must carry tenant_id-scoped ACL"
+
+origin_trust_requirements:
+  - "candidate_profile: trust_label in {user_attested, verified_employer, verified_institution}"
+  - "target_role_spec: trust_label in {user_authored, jd_paste, scraped_jd}"
+
+validation_rules:
+  - "candidate_profile.experiences must be non-empty"
+  - "target_role_spec.title must be non-empty"
+  - "target_role_spec.level in {individual_contributor, senior, staff, principal, manager, director, vp, c_level}"
+  - "if length_preference=one_page, max_experiences shown <=5"
+
+source_app_config_ref: "apps_rg/config/rg_policies.yaml"
+created_at: "2026-05-01"

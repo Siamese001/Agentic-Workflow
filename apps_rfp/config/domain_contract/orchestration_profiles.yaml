@@ -1,0 +1,16 @@
+# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- orchestration_profile_id: aop::apps_rfp::rfp_response::v1
+  app_id: apps_rfp
+  task_class: rfp_response
+  version: 1.0.0
+  status: active
+  orchestration_kind: dag
+  hop_sequence: []
+  dag_node_refs:
+  - rfp::rfp_response_collect
+  - rfp::rfp_response_derive
+  - rfp::rfp_response_compose
+  - rfp::rfp_response_validate
+  blueprint_ref: ''
+  source_app_config_ref: apps_rfp/config/
+  created_at: '2026-05-01'

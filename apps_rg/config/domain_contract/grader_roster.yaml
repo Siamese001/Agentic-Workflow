@@ -1,0 +1,21 @@
+- grader_roster_id: agr::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  fallback_behavior: fail_closed
+  deterministic_graders:
+    - "rg::factual_grounding_grader::v1"   # cross-checks every claim against candidate_profile
+    - "rg::ats_readability_grader::v1"
+    - "rg::format_compliance_grader::v1"
+    - "rg::no_fabrication_guardrail::v1"
+    - "rg::concision_grader::v1"
+  llm_judge_graders:
+    - "rg::executive_positioning_judge::v1"
+  ensemble_or_consensus_graders:
+    - "rg::role_alignment_hybrid_v1"        # deterministic keyword match + LLM judge consensus
+    - "rg::specificity_hybrid_v1"
+  calibration_refs:
+    - "calibration://apps_rg/judges/2026-04-weekly"
+  source_app_config_ref: "apps_eval/config/rubrics/rub_apps_rg_resume_generation_v1.yaml"
+  created_at: "2026-05-01"

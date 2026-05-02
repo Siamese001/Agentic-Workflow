@@ -19,6 +19,17 @@ from agentic_core.L4_state.uwg.write_class_severity import (
     classify_write,
     requires_second_judge,
 )
+from agentic_core.L4_state.uwg.app_domain_registration import (
+    AppDomainContractBundle,
+    RegistrationReceipt,
+    register_bundle,
+    register_bundles,
+)
+from agentic_core.L4_state.uwg.app_domain_loader import (
+    DOMAIN_CONTRACT_FILES,
+    discover_app_contract_dirs,
+    load_bundle_from_dir,
+)
 
 __all__ = [
     "ALLOWED_OPERATIONS",
@@ -36,4 +47,12 @@ __all__ = [
     "alias_swap_atomicity_proof",
     "classify_write",
     "requires_second_judge",
+    # App-domain contract pack
+    "AppDomainContractBundle",
+    "RegistrationReceipt",
+    "register_bundle",
+    "register_bundles",
+    "DOMAIN_CONTRACT_FILES",
+    "discover_app_contract_dirs",
+    "load_bundle_from_dir",
 ]
