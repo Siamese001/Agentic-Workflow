@@ -108,6 +108,17 @@ class HOP9IntegrationAgent(LICAgentBase, SubatomicTestingMixin):
             "priority": priority,
         }
 
+        # 3b. Cadence advisory (W3-P9 follow-up wiring 2026-05-01).
+        # HOP-9 currently dispatches single messages; the cadence engine
+        # is consulted in ADVISORY mode — it tells the dispatcher whether
+        # this is the INITIAL touch / a scheduled follow-up / or
+        # cadence-terminated, but does NOT block dispatch. Full
+        # scheduler integration (defer dispatch until next_action_at_utc)
+        # is a downstream concern.
+        cadence_advice = self._compute_cadence_advice(
+            mission_input, recipient_id, registry
+        )
+
         # 4. Write to Buffer and Seal
         buffer.write_once(
             "hop9_integration",
@@ -115,9 +126,73 @@ class HOP9IntegrationAgent(LICAgentBase, SubatomicTestingMixin):
                 "status": "READY_FOR_DELIVERY",
                 "payload": delivery_payload,
                 "checksum": current_checksum,
+                "cadence_advice": cadence_advice,
             },
         )
 
         registry.add_trace(
-            "MISSION_COMPLETED", {"status": "SUCCESS", "route": route, "archetype": archetype}
+            "MISSION_COMPLETED",
+            {
+                "status": "SUCCESS",
+                "route": route,
+                "archetype": archetype,
+                "cadence_action": cadence_advice.get("action") if cadence_advice else None,
+            },
         )
+
+    def _compute_cadence_advice(
+        self,
+        mission_input: Any,
+        recipient_id: Any,
+        registry: Any,
+    ) -> dict:
+        """Consult FollowupCadenceEngine for advisory cadence routing.
+
+        Returns a dict with ``action`` (SEND/WAIT/NO_ACTION),
+        ``message_template`` (initial/followup_1/followup_2/None), the
+        next state, and the recommended ``next_check_at_utc``. Tolerates
+        missing mission_input cleanly — dispatchers that don't supply
+        a campaign_id get a permissive ``advisory_unavailable`` advice.
+        """
+        from apps_lic.engines.followup_cadence_engine import (
+            FollowupCadenceEngine,
+        )
+        from apps_lic.types.cadence_state_types import (
+            CadenceState,
+            CadenceStateRecord,
+        )
+
+        if not mission_input or not recipient_id:
+            return {
+                "action": "advisory_unavailable",
+                "reason": "missing campaign_id or recipient_id",
+            }
+        campaign_id = mission_input.get("campaign_id") if isinstance(
+            mission_input, dict
+        ) else None
+        if not campaign_id:
+            return {
+                "action": "advisory_unavailable",
+                "reason": "missing campaign_id in mission_input",
+            }
+        # In-memory advisory only here. Persistent cadence state lives
+        # in apps_lic.persistence.cadence_state_store; the dispatcher
+        # is responsible for load_or_create + save around this call.
+        record = CadenceStateRecord(
+            campaign_id=str(campaign_id),
+            recipient_id=str(recipient_id),
+            current_state=CadenceState.INITIAL,
+        )
+        engine = FollowupCadenceEngine()
+        decision = engine.advance(record)
+        return {
+            "action": decision.action.value,
+            "next_state": decision.next_state.value,
+            "message_template": decision.message_template,
+            "next_check_at_utc": (
+                decision.next_check_at_utc.isoformat()
+                if decision.next_check_at_utc
+                else None
+            ),
+            "reason": decision.reason,
+        }
