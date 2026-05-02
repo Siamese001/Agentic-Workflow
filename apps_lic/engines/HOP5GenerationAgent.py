@@ -56,6 +56,48 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
         # ``self.llm`` for invocation.
         object.__setattr__(self, "llm", self.llm_client)
 
+    @staticmethod
+    def _resolve_pre_flight(hop1: dict, mission_input: dict) -> dict | None:
+        """Consult PreFlightPolicy YAML for the route + generation envelope.
+
+        Returns the verdict dict (route, char_limit, n_candidates,
+        temperature, signature_required) on match, or None on any
+        failure — callers fall back to legacy hop4_routing buffer read.
+
+        Wired W2-P1 per .windsurf/plans/decision-router-policy-tables-b3a4d2.md.
+        Additive: HOP4 still runs upstream and writes hop4_routing; this
+        function is consulted only when callers want to short-circuit the
+        legacy path. Deletion of HOP4 is gated on the 90-day deprecation
+        window per constitutional §3.
+        """
+        try:
+            from pathlib import Path
+
+            from apps_lic.policy import DecisionRouter
+
+            policy_path = (
+                Path(__file__).resolve().parents[1]
+                / "policy"
+                / "pre_flight_policy.yaml"
+            )
+            router = DecisionRouter(policy_path)
+            state = {
+                "archetype": (hop1 or {}).get("Archetype", "OTHER"),
+                "connection_status": (mission_input or {}).get(
+                    "connection_status", "NOT_CONNECTED"
+                ),
+                "premium_available": (mission_input or {}).get(
+                    "premium_available", False
+                ),
+            }
+            override = (mission_input or {}).get("route_override")
+            if override:
+                state["route_override"] = override
+            match = router.resolve(state)
+            return dict(match.verdict)
+        except Exception:  # guardian: allow-log-and-swallow -- pre-flight policy is best-effort; legacy HOP4 path covers fallback
+            return None
+
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
         Execute generation logic.
@@ -86,8 +128,34 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
         archetype = hop1["Archetype"]
         route = hop4["route"]
 
+        # Legacy archetype switch — preserved as the default envelope.
         n_candidates = config.c_level_n_candidates if archetype == "C_LEVEL" else 1
         temperature = config.base_temperatures.get(archetype, 0.5)
+
+        # 2b. PreFlightPolicy override (W2-P1 wiring). When the YAML
+        # policy resolves a verdict, it supersedes the imperative
+        # archetype switch above. This is the substrate that lets the
+        # archetype/route/connection envelope be tuned without code
+        # edits. ROUTE_RESOLVED trace records the matched rule for
+        # audit replay.
+        try:
+            mission_input = buffer.read("mission_input") or {}
+        except Exception:  # guardian: allow-log-and-swallow -- mission_input optional in unit-test contexts
+            mission_input = {}
+        pre_flight = self._resolve_pre_flight(hop1, mission_input)
+        if pre_flight is not None:
+            n_candidates = int(pre_flight.get("n_candidates", n_candidates))
+            temperature = float(pre_flight.get("temperature", temperature))
+            registry.add_trace(
+                "ROUTE_RESOLVED",
+                {
+                    "source": "pre_flight_policy",
+                    "route": pre_flight.get("route"),
+                    "n_candidates": n_candidates,
+                    "temperature": temperature,
+                    "char_limit": pre_flight.get("char_limit"),
+                },
+            )
 
         registry.add_trace(
             "PHASE_STEP",
