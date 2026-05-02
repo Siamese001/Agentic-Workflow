@@ -1,0 +1,56 @@
+# Rubric: HOP6 Strategic Alignment Judge
+#
+# Replaces the brittle keyword-overlap heuristic in
+# HOP6ValidationAgent._check_strategic_alignment with a Judge-shaped
+# evaluation. Deterministic backend uses lexical overlap + length
+# floor (faithful to existing behavior); LLM backend can swap in
+# without changing HOP6 wiring (D2).
+
+rubric_id: "judge_hop6_strategic_alignment"
+rubric_version: "1.0.0"
+judge_name: "HOP6_StrategicAlignment"
+description: |
+  Judges whether the generated draft meaningfully reflects the
+  strategic_brief produced by HOP2. Score is the lexical-overlap
+  ratio between the draft and the strategic_brief, optionally
+  augmented by an LLM faithfulness check in the backend swap-in.
+
+# Score is in [0, 1]. Bands are evaluated highest-min-score-wins
+# (band_for_score returns the highest threshold the score meets).
+score_bands:
+  - min_score: 0.0
+    band: "WEAK"
+  - min_score: 0.30
+    band: "MODERATE"
+  - min_score: 0.55
+    band: "STRONG"
+
+# Deterministic-backend parameters consumed by the evaluate fn.
+params:
+  # Lower-cased tokens shorter than this are treated as stopwords.
+  min_token_length: 4
+  # Strategic brief shorter than this is treated as "no signal" → ABSTAIN.
+  min_brief_chars: 80
+  # Draft shorter than this means the alignment metric is unreliable.
+  min_draft_chars: 60
+  # Tokens that count as filler and never contribute to overlap.
+  stopwords:
+    - "company"
+    - "their"
+    - "there"
+    - "would"
+    - "should"
+    - "could"
+    - "about"
+    - "which"
+    - "where"
+    - "while"
+    - "going"
+    - "really"
+
+# Verdict-level remediation hints. The deterministic backend may
+# attach one of these when the band is WEAK or MODERATE.
+remediation_hints:
+  weak: "Strategic brief is not reflected in the draft. Re-generate with explicit references to brief facts."
+  moderate: "Draft mentions some brief facts but coverage is shallow. Tighten the alignment with at least 2 verbatim brief references."
+  strong: ""

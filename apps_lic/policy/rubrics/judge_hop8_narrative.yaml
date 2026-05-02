@@ -1,0 +1,43 @@
+# Rubric: HOP8 Narrative Executive Summary Judge
+#
+# Judges the executive_summary narrative attached to the QA report.
+# Deterministic backend: score-band template selector ("excellent" /
+# "solid" / "acceptable" / "needs work") based on the underlying
+# total_score. LLM backend swap-in replaces the template with a
+# rubric-prompted natural-language summary (D2).
+
+rubric_id: "judge_hop8_narrative"
+rubric_version: "1.0.0"
+judge_name: "HOP8_ExecutiveSummary"
+description: |
+  Judges the executive_summary field of the HOP8 QA report. The Judge
+  itself is observability: WEAK score routes to ABSTAIN (proceed with
+  warning), not DENY — observability failures do not block delivery.
+
+score_bands:
+  - min_score: 0.0
+    band: "WEAK"
+  - min_score: 0.50
+    band: "MODERATE"
+  - min_score: 0.80
+    band: "STRONG"
+
+params:
+  # The deterministic backend reads the underlying total_score from
+  # the QA scorecard and maps it to a narrative template. These are
+  # the score thresholds for the templates.
+  total_score_excellent: 0.90
+  total_score_solid: 0.75
+  total_score_acceptable: 0.60
+  # Templates indexed by band. The {placeholders} are filled by the
+  # backend from the scorecard payload.
+  templates:
+    excellent: "Run scored {total_score:.2f}. Strongest evidence: {top_signal}. No remediation required."
+    solid: "Run scored {total_score:.2f}. Strongest evidence: {top_signal}. Minor remediation: {minor_fix}."
+    acceptable: "Run scored {total_score:.2f}. Notable gap: {top_gap}. Recommend: {recommendation}."
+    needs_work: "Run scored {total_score:.2f}. Critical gaps: {top_gap}. Block delivery and remediate before retry."
+
+remediation_hints:
+  weak: "Narrative summary indicates significant quality issues. Audit run details before delivery."
+  moderate: "Narrative summary is mid-quality; review attached evidence before signoff."
+  strong: ""

@@ -12,5 +12,22 @@ from apps_lic.policy.decision_router import (
     PolicyLoadError,
     NoMatchError,
 )
+from apps_lic.policy.judge_base import (
+    JudgeBase,
+    JudgeScorecard,
+    Rubric,
+    RubricLoadError,
+    EvaluateFn,
+)
 
-__all__ = ["DecisionRouter", "PolicyMatch", "PolicyLoadError", "NoMatchError"]
+__all__ = [
+    "DecisionRouter",
+    "PolicyMatch",
+    "PolicyLoadError",
+    "NoMatchError",
+    "JudgeBase",
+    "JudgeScorecard",
+    "Rubric",
+    "RubricLoadError",
+    "EvaluateFn",
+]
