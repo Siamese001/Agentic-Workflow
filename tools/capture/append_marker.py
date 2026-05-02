@@ -50,6 +50,12 @@ _MARKER_PATTERNS: dict[str, re.Pattern[str]] = {
     "DECISION_CAPTURED": re.compile(r"^DECISION_CAPTURED:\s*type=[\w_]+\s*,"),
     "DEFERRED_SCOPE": re.compile(r"^DEFERRED_SCOPE:\s*plan="),
     "NEXT_STEP": re.compile(r"^NEXT_STEP:\s*plan="),
+    # Wave 1 P1.2 addition (plan apps-eval-qwen32b-rollout-b7c4d9): judge
+    # surface emits a distinct marker type so drain consumers can route
+    # judge rows to the judge-calibration ledger without colliding with
+    # the router / decision ledgers. Shape mirrors DECISION_CAPTURED:
+    # ``JUDGE_DECISION: type=judge_decision, <kv-pairs>``.
+    "JUDGE_DECISION": re.compile(r"^JUDGE_DECISION:\s*type=judge_decision\s*,"),
 }
 
 

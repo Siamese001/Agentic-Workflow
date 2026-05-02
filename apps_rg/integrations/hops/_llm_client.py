@@ -52,7 +52,12 @@ def make_generator(
 ) -> Optional[Callable[..., str]]:
     """Return a generator callable, or None if no provider is wired.
 
-    Tries Anthropic → OpenAI → Gemini in order based on env keys.
+    Wave 5 P5.1 (plan apps-eval-qwen32b-rollout-b7c4d9): tries local
+    Qwen-32B vLLM first when the server is healthy. Falls through to
+    Anthropic → OpenAI → Gemini → None on any preflight failure or SDK
+    absence. Same cascade pattern Wave 2/3/4 established for judges
+    and synthesizers — the local path is effectively free per call,
+    cloud APIs are the regulated-egress fallback.
 
     The returned callable accepts an optional ``temperature`` keyword:
         gen(label, prompt) -> uses default temperature
@@ -61,14 +66,137 @@ def make_generator(
     This per-call override lets the ensemble runner sweep a temperature
     ladder across the 3 candidates without instantiating 3 generators.
     """
+    qwen_gen = _make_qwen_generator(
+        timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens
+    )
+    if qwen_gen is not None:
+        return qwen_gen
     if os.getenv("ANTHROPIC_API_KEY"):
         return _make_anthropic_generator(timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens)
     if os.getenv("OPENAI_API_KEY"):
         return _make_openai_generator(timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens)
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         return _make_gemini_generator(timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens)
-    _log.info("[narrative_llm] No LLM API key in env (ANTHROPIC/OPENAI/GEMINI) — using stub")
+    _log.info("[narrative_llm] No LLM provider available (Qwen unhealthy + no cloud key) — using stub")
     return None
+
+
+def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: int):
+    """Return a Qwen-local generator callable, or None when unavailable.
+
+    Wave 5 P5.1. Preflight via :func:`is_qwen_available`; lazy-import
+    the OpenAI SDK and the model registry. Returns ``None`` on any
+    guard failure so :func:`make_generator` falls through to the
+    cloud generators. The closure captures a single ``openai.OpenAI``
+    client (not async — the ensemble runner is sync); reuses the
+    connection pool across the 3+ candidate sweep.
+    """
+    try:
+        from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+            is_qwen_available,
+        )
+    except ImportError:
+        return None
+    if not is_qwen_available():
+        _log.info("[narrative_llm] qwen preflight failed; cascading to cloud")
+        return None
+
+    try:
+        import openai  # type: ignore  # noqa: PLC0415
+    except ImportError:
+        return None
+
+    try:
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            QWEN_LOCAL_MODEL_ID,
+            VLLM_BASE_URL,
+        )
+    except ImportError:
+        return None
+
+    try:
+        client = openai.OpenAI(
+            base_url=VLLM_BASE_URL,
+            api_key="not-needed",  # vLLM ignores auth in local mode
+            timeout=timeout_s,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- OpenAI client init heterogeneous (ssl, network, env); fail-soft cascades to cloud generators
+        _log.info("[narrative_llm] qwen client init failed: %s", exc)
+        return None
+    default_temp = temperature
+
+    def _gen(label: str, prompt: str, *, temperature: float | None = None) -> str:
+        temp = float(temperature) if temperature is not None else default_temp
+        try:
+            resp = client.chat.completions.create(
+                model=QWEN_LOCAL_MODEL_ID,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a senior recruiter rewriting executive resume "
+                            "narrative. Return ONLY the rewritten text — no "
+                            "explanations, no preamble."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=temp,
+                max_tokens=max_tokens,
+            )
+            text = (resp.choices[0].message.content or "") if resp.choices else ""
+            _emit_narrative_generator_marker(
+                accepted=bool(text.strip()),
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="none" if text.strip() else "empty_response",
+            )
+            return text.strip()
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous; per-call fail-soft preserves ensemble (matches sibling cloud generators)
+            _log.warning("[narrative_llm] qwen %s failed: %s", label, exc)
+            _emit_narrative_generator_marker(
+                accepted=False,
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="gateway_exception",
+            )
+            return ""
+
+    _gen.__name__ = "qwen_local"  # type: ignore[attr-defined]
+    return _gen
+
+
+def _emit_narrative_generator_marker(
+    *,
+    accepted: bool,
+    model_used: str,
+    fallback_reason: str,
+) -> None:
+    """Best-effort ``JUDGE_DECISION`` marker for generator availability.
+
+    Used loosely as a generation-availability signal so the W1
+    judge-calibration harness can report Qwen-uptime + fallback-rate
+    for the apps_rg generator surface alongside its judge surfaces.
+    Never raises.
+    """
+    try:
+        from tools.capture.append_marker import append_marker  # noqa: PLC0415
+    except ImportError:
+        return
+    payload = (
+        "JUDGE_DECISION: type=judge_decision, "
+        "app_name=apps_rg.narrative_generator, "
+        "rubric_id=rg_narrative_generator_v1, "
+        "rubric_hash=inline, "
+        f"accepted={accepted}, "
+        "composite=0.0, "
+        f"model_used={model_used}, "
+        f"fallback_reason={fallback_reason}, "
+        "first_failed_gate=none, "
+        "latency_ms=0.0"
+    )
+    try:
+        append_marker(payload, session_hint="apps_rg.narrative_generator")
+    except (OSError, PermissionError):
+        pass
 
 
 def _make_anthropic_generator(*, timeout_s: float, temperature: float, max_tokens: int):

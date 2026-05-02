@@ -54,15 +54,230 @@ def _exit_router() -> DecisionRouter:
 
 
 def _alignment_judge() -> JudgeBase:
-    """Lazy-singleton accessor — load the alignment rubric once per process."""
+    """Lazy-singleton accessor — load the alignment rubric once per process.
+
+    Wave 4 P4.2 (plan apps-eval-qwen32b-rollout-b7c4d9): the Judge now
+    uses a Qwen-first evaluate_fn that falls through to the existing
+    deterministic scorer on any failure (preflight, SDK absent, gateway
+    error, parse failure). The ``backend="qwen"`` tag surfaces the
+    primary path; the scorecard's reason_codes carry the fallback
+    attribution when Qwen demoted to the deterministic backend.
+    """
     global _ALIGNMENT_JUDGE
     if _ALIGNMENT_JUDGE is None:
         _ALIGNMENT_JUDGE = JudgeBase(
             rubric_path=_ALIGNMENT_RUBRIC_PATH,
-            evaluate_fn=_evaluate_strategic_alignment,
-            backend="deterministic",
+            evaluate_fn=_evaluate_strategic_alignment_qwen_first,
+            backend="qwen",
         )
     return _ALIGNMENT_JUDGE
+
+
+def _evaluate_strategic_alignment_qwen_first(state, rubric):
+    """Wave 4 P4.2 — Qwen-first evaluate_fn with deterministic fallback.
+
+    Tries the local Qwen vLLM server for an LLM-judged alignment score
+    in [0, 1]. On any failure (preflight down, SDK absent, model
+    registry import fail, gateway exception, empty response, parse
+    failure) cascades to the existing
+    :func:`_evaluate_strategic_alignment` deterministic scorer. Emits a
+    ``JUDGE_DECISION`` marker per call so the calibration harness can
+    track Qwen-uptime and the rate at which the deterministic floor
+    actually fires.
+
+    The cascade keeps two invariants from the W2-P1 contract:
+    - ABSTAIN-on-too-short signals propagate via the deterministic
+      branch (``ValueError`` raised → JudgeBase converts to ABSTAIN).
+    - Reason-code shape stays consistent with the deterministic scorer
+      so downstream consumers (HOP7 / ExitPolicy mapping) see a stable
+      vocabulary regardless of which backend produced the score.
+    """
+    qwen_result = _try_qwen_alignment(state, rubric)
+    if qwen_result is not None:
+        return qwen_result
+    # Cascade. Deterministic path may raise ValueError → JudgeBase
+    # converts to ABSTAIN scorecard (D6).
+    return _evaluate_strategic_alignment(state, rubric)
+
+
+def _try_qwen_alignment(state, rubric):
+    """Run the rubric prompt against local Qwen; return result tuple or None.
+
+    A ``None`` return signals the caller to fall through to the
+    deterministic scorer. Returns the standard
+    ``(score, reason_codes, evidence_refs, remediation_hint)`` tuple
+    on success.
+    """
+    draft = (state.get("draft_text") or "").strip()
+    brief = (state.get("strategic_brief") or "").strip()
+    params = rubric.params
+    min_brief_chars = int(params.get("min_brief_chars", 80))
+    min_draft_chars = int(params.get("min_draft_chars", 60))
+
+    # Mirror the deterministic guardrails so the Qwen path doesn't
+    # paper over too-short inputs (those should ABSTAIN, not score).
+    if len(brief) < min_brief_chars or len(draft) < min_draft_chars:
+        # Let the deterministic path handle the abstain semantics;
+        # both raise the appropriate ValueError or return the floor.
+        return None
+
+    try:
+        from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+            is_qwen_available,
+        )
+    except ImportError:
+        return None
+    if not is_qwen_available():
+        _emit_hop6_alignment_marker(
+            accepted=False,
+            score=0.0,
+            model_used="deterministic_fallback",
+            fallback_reason="preflight_failed",
+        )
+        return None
+
+    try:
+        import openai  # type: ignore  # noqa: PLC0415
+    except ImportError:
+        return None
+
+    try:
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            QWEN_LOCAL_MODEL_ID,
+            VLLM_BASE_URL,
+        )
+    except ImportError:
+        return None
+
+    prompt = (
+        "You are a strategic-alignment judge for B2B outreach. Score how "
+        "faithfully the DRAFT reflects the STRATEGIC BRIEF on a 0.0-1.0 "
+        "scale. 1.0 = the draft directly references the brief's facts and "
+        "priorities; 0.5 = partial / shallow coverage; 0.0 = unrelated. "
+        "Return STRICT JSON with EXACTLY this shape:\n"
+        '  {"alignment_score": <float 0-1>, "rationale": "<short text>"}\n\n'
+        f"STRATEGIC BRIEF:\n{brief}\n\n"
+        f"DRAFT:\n{draft}\n\nReturn JSON now."
+    )
+
+    import time as _time  # noqa: PLC0415 — local import to avoid module-level coupling
+    started = _time.time()
+    try:
+        client = openai.OpenAI(
+            base_url=VLLM_BASE_URL,
+            api_key="not-needed",
+            timeout=30.0,
+        )
+        resp = client.chat.completions.create(
+            model=QWEN_LOCAL_MODEL_ID,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a strategic-alignment judge. Respond ONLY "
+                        "with valid JSON."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.0,
+            max_tokens=300,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous; fail-soft preserves deterministic floor
+        LOG.info("[hop6] qwen alignment call failed, falling back: %s", exc)
+        _emit_hop6_alignment_marker(
+            accepted=False,
+            score=0.0,
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="gateway_exception",
+            latency_ms=(_time.time() - started) * 1000.0,
+        )
+        return None
+
+    raw = (resp.choices[0].message.content or "") if resp.choices else ""
+    if not raw.strip():
+        _emit_hop6_alignment_marker(
+            accepted=False,
+            score=0.0,
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="empty_response",
+            latency_ms=(_time.time() - started) * 1000.0,
+        )
+        return None
+
+    import json as _json  # noqa: PLC0415
+    try:
+        first = raw.find("{")
+        last = raw.rfind("}")
+        if first < 0 or last <= first:
+            raise ValueError("no JSON braces")
+        parsed = _json.loads(raw[first : last + 1])
+        score = float(parsed.get("alignment_score", 0.0))
+        rationale = str(parsed.get("rationale", ""))
+    except (ValueError, TypeError, KeyError) as exc:
+        LOG.info("[hop6] qwen alignment parse failed: %s", exc)
+        _emit_hop6_alignment_marker(
+            accepted=False,
+            score=0.0,
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="parse_failure",
+            latency_ms=(_time.time() - started) * 1000.0,
+        )
+        return None
+
+    # Clamp + build the standard tuple. Reason codes mirror the
+    # deterministic scorer's vocabulary so downstream consumers don't
+    # need to learn a new dialect.
+    score = max(0.0, min(1.0, score))
+    reason_codes: list[str] = ["qwen_judge"]
+    if score < 0.30:
+        reason_codes.append("alignment_below_moderate_threshold")
+    remediation = ""
+    if score < 0.30:
+        remediation = rubric.raw.get("remediation_hints", {}).get("weak", "")
+    elif score < 0.55:
+        remediation = rubric.raw.get("remediation_hints", {}).get("moderate", "")
+    evidence = [f"qwen_rationale:{rationale[:120]}"] if rationale else []
+
+    _emit_hop6_alignment_marker(
+        accepted=True,
+        score=score,
+        model_used=QWEN_LOCAL_MODEL_ID,
+        fallback_reason="none",
+        latency_ms=(_time.time() - started) * 1000.0,
+    )
+    return (score, reason_codes, evidence, remediation)
+
+
+def _emit_hop6_alignment_marker(
+    *,
+    accepted: bool,
+    score: float,
+    model_used: str,
+    fallback_reason: str,
+    latency_ms: float = 0.0,
+) -> None:
+    """Best-effort ``JUDGE_DECISION`` emission. Never raises."""
+    try:
+        from tools.capture.append_marker import append_marker  # noqa: PLC0415
+    except ImportError:
+        return
+    payload = (
+        "JUDGE_DECISION: type=judge_decision, "
+        "app_name=apps_lic.hop6_alignment, "
+        "rubric_id=judge_hop6_strategic_alignment, "
+        "rubric_hash=inline, "
+        f"accepted={accepted}, "
+        f"composite={score:.4f}, "
+        f"model_used={model_used}, "
+        f"fallback_reason={fallback_reason}, "
+        "first_failed_gate=none, "
+        f"latency_ms={latency_ms:.1f}"
+    )
+    try:
+        append_marker(payload, session_hint="apps_lic.hop6_alignment")
+    except (OSError, PermissionError):
+        pass
 
 
 def _evaluate_strategic_alignment(state, rubric):

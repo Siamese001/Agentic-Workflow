@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -19,6 +20,43 @@ from typing import Any, Dict, List, Optional
 from apps_research.engines.base_research_engine import BaseResearchEngine
 
 _log = logging.getLogger(__name__)
+
+
+def _emit_company_brief_marker(
+    *,
+    accepted: bool,
+    model_used: str,
+    fallback_reason: str,
+    latency_ms: float = 0.0,
+) -> None:
+    """Best-effort ``JUDGE_DECISION`` emission for synthesis observability.
+
+    Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9). The marker is
+    treated as a synthesis-availability observation — the
+    judge-calibration harness uses it to track Qwen-vLLM uptime,
+    parse-success rate, and cloud-fallback ratio for company-brief
+    synthesis. Never raises.
+    """
+    try:
+        from tools.capture.append_marker import append_marker  # noqa: PLC0415
+    except ImportError:
+        return
+    payload = (
+        "JUDGE_DECISION: type=judge_decision, "
+        "app_name=apps_research.company_brief, "
+        "rubric_id=company_brief_synthesis_v1, "
+        "rubric_hash=inline, "
+        f"accepted={accepted}, "
+        "composite=0.0, "
+        f"model_used={model_used}, "
+        f"fallback_reason={fallback_reason}, "
+        "first_failed_gate=none, "
+        f"latency_ms={latency_ms:.1f}"
+    )
+    try:
+        append_marker(payload, session_hint="apps_research.company_brief")
+    except (OSError, PermissionError):
+        pass
 
 
 class CompanyBriefEngine(BaseResearchEngine):
@@ -142,9 +180,18 @@ class CompanyBriefEngine(BaseResearchEngine):
     ) -> Dict[str, Any]:
         """LLM-synthesize raw research into structured facets.
 
-        Falls back to a deterministic stub when no LLM gateway is wired so
-        downstream pipelines can still execute end-to-end.
+        Wave 3 P3.1 (plan apps-eval-qwen32b-rollout-b7c4d9): try local
+        Qwen-32B vLLM first; fall through to SovereignLLMGateway (cloud)
+        when the local server is unavailable; deterministic stub when
+        both gateways fail. Matches the cascade pattern established in
+        Wave 2 for narrative_judge_scorer.
         """
+        prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
+
+        qwen_payload = self._qwen_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
+        if qwen_payload is not None:
+            return qwen_payload
+
         try:
             from agentic_core.runtime.llm.sovereign_llm_gateway import (  # type: ignore
                 SovereignLLMGateway,
@@ -160,7 +207,6 @@ class CompanyBriefEngine(BaseResearchEngine):
             )
             return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
 
-        prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
         try:
             resp = gateway.generate(prompt=prompt, max_tokens=2000, temperature=0.2)
             text = resp.text if hasattr(resp, "text") else str(resp)
@@ -168,6 +214,115 @@ class CompanyBriefEngine(BaseResearchEngine):
         except Exception as exc:  # guardian: allow-broad-exception -- LLM call paths raise heterogeneous (timeout/HTTP/parse); fail-soft to stub
             self.logger.warning("[CompanyBriefEngine] LLM synthesis failed: %s", exc)
             return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
+
+    def _qwen_synthesize(
+        self,
+        *,
+        prompt: str,
+        topic: str,
+        jd_facets: List[str],
+    ) -> Dict[str, Any] | None:
+        """Synthesize via the local Qwen vLLM server.
+
+        Returns the parsed synthesis dict on success, ``None`` when any
+        guard rejects (preflight fail, SDK absent, model_registry absent,
+        gateway exception, parse failure). The ``None`` return signals
+        :meth:`_synthesize` to fall through to the cloud gateway.
+
+        Emits a ``JUDGE_DECISION`` marker per call (treating the
+        synthesis as a free-text generation that the calibration ledger
+        observes; ``app_name=apps_research.company_brief``) so the
+        weekly judge-calibration harness can spot drift in synthesis
+        availability + parse-success rate.
+        """
+        try:
+            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+                is_qwen_available,
+            )
+        except ImportError:
+            return None
+        if not is_qwen_available():
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used="deterministic_fallback",
+                fallback_reason="preflight_failed",
+            )
+            return None
+
+        try:
+            import openai  # type: ignore  # noqa: PLC0415
+        except ImportError:
+            return None
+
+        try:
+            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+                QWEN_LOCAL_MODEL_ID,
+                VLLM_BASE_URL,
+            )
+        except ImportError:
+            return None
+
+        started = time.time()
+        try:
+            client = openai.OpenAI(
+                base_url=VLLM_BASE_URL,
+                api_key="not-needed",
+                timeout=60.0,
+            )
+            resp = client.chat.completions.create(
+                model=QWEN_LOCAL_MODEL_ID,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a corporate intelligence analyst producing strict "
+                            "JSON output. Respond ONLY with valid JSON."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.2,
+                max_tokens=2000,
+            )
+        except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous (APIError/Connection/Timeout); fail-soft preserves cloud fallback
+            self.logger.info("[CompanyBriefEngine] qwen call failed, falling back: %s", exc)
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="gateway_exception",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return None
+
+        text = (resp.choices[0].message.content or "") if resp.choices else ""
+        if not text.strip():
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="empty_response",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return None
+
+        parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
+        # _parse_synthesis returns the stub on any parse failure, which we
+        # treat as a soft fallback (return None so the cloud path can try).
+        if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
+            _emit_company_brief_marker(
+                accepted=False,
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="parse_failure",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return None
+
+        _emit_company_brief_marker(
+            accepted=True,
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="none",
+            latency_ms=(time.time() - started) * 1000.0,
+        )
+        return parsed
 
     @staticmethod
     def _build_synthesis_prompt(

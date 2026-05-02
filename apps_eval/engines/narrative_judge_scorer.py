@@ -13,8 +13,10 @@ fall back to deterministic heuristics so the pipeline stays green.
 
 from __future__ import annotations
 
+import json
 import logging
 import math
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
@@ -148,11 +150,6 @@ class NarrativeJudgeScorer:
         jd_facets: Iterable[str],
         company_facets: Iterable[str],
     ) -> Dict[str, float]:
-        try:
-            from apps_rg.integrations.hops._llm_client import call_judge
-        except ImportError:
-            return {}
-
         prompt = (
             "You are a senior recruiter judging a single piece of resume narrative.\n"
             "Score on a 0.0-1.0 scale and return strict JSON with EXACTLY these keys:\n"
@@ -163,6 +160,21 @@ class NarrativeJudgeScorer:
             f"Company facets: {list(company_facets)[:25]}\n\n"
             f"Candidate:\n{text}\n\nReturn JSON now."
         )
+
+        # Wave 2 P2.1 (plan apps-eval-qwen32b-rollout-b7c4d9): prefer local
+        # Qwen-32B vLLM judge. Same-process, effectively free per call,
+        # deterministic at temperature=0, emits JUDGE_DECISION marker for
+        # the calibration ledger. Falls through to the Anthropic/OpenAI
+        # cloud judge when the local server is unavailable.
+        qwen_scores = _qwen_soft_scores(prompt)
+        if qwen_scores:
+            return qwen_scores
+
+        try:
+            from apps_rg.integrations.hops._llm_client import call_judge
+        except ImportError:
+            return {}
+
         result = call_judge(prompt)
         return result or {}
 
@@ -245,6 +257,158 @@ def _build_rationale(
     if failed:
         return "; ".join(f"{g.gate_id}: {g.detail}" for g in failed)
     return f"composite={composite:.3f} soft={ {k: round(v, 3) for k, v in soft.items()} }"
+
+
+def _qwen_soft_scores(prompt: str) -> Dict[str, float]:
+    """Run the judge prompt against the local Qwen vLLM server.
+
+    Wave 2 P2.1 (plan apps-eval-qwen32b-rollout-b7c4d9). Uses the
+    OpenAI-compatible sync SDK pointed at ``VLLM_BASE_URL`` so this
+    synchronous scorer stays synchronous. Preflights via
+    :func:`is_qwen_available`; returns an empty dict when the server is
+    down, the SDK is missing, the call fails, or the response is not
+    parseable JSON. The empty-dict return triggers the cloud fallback in
+    :meth:`NarrativeJudgeScorer._llm_soft_scores`.
+
+    Emits a ``JUDGE_DECISION`` marker per call so the judge-calibration
+    harness (``ops_scripts/calibration/judge_calibration.py``) can track
+    acceptance rate, composite drift, and fallback ratio per app.
+    """
+    try:
+        from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+            is_qwen_available,
+        )
+    except ImportError:
+        return {}
+    if not is_qwen_available():
+        _emit_narrative_judge_marker(
+            accepted=False,
+            scores={},
+            model_used="deterministic_fallback",
+            fallback_reason="preflight_failed",
+        )
+        return {}
+
+    try:
+        import openai  # type: ignore  # noqa: PLC0415
+    except ImportError:
+        return {}
+
+    try:
+        from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+            QWEN_LOCAL_MODEL_ID,
+            VLLM_BASE_URL,
+        )
+    except ImportError:
+        return {}
+
+    started = time.time()
+    try:
+        client = openai.OpenAI(
+            base_url=VLLM_BASE_URL,
+            api_key="not-needed",
+            timeout=30.0,
+        )
+        resp = client.chat.completions.create(
+            model=QWEN_LOCAL_MODEL_ID,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a senior recruiter scoring resume narrative. "
+                        "Respond ONLY with valid JSON."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.0,
+            max_tokens=256,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-SDK-over-vLLM raises heterogeneous (APIError/Connection/Timeout); fail-soft preserves cloud fallback
+        _log.info("[narrative_judge] qwen call failed, falling back: %s", exc)
+        _emit_narrative_judge_marker(
+            accepted=False,
+            scores={},
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="gateway_exception",
+            latency_ms=(time.time() - started) * 1000.0,
+        )
+        return {}
+
+    try:
+        raw = (resp.choices[0].message.content or "") if resp.choices else ""
+        first = raw.find("{")
+        last = raw.rfind("}")
+        if first < 0 or last <= first:
+            _emit_narrative_judge_marker(
+                accepted=False,
+                scores={},
+                model_used=QWEN_LOCAL_MODEL_ID,
+                fallback_reason="parse_failure",
+                latency_ms=(time.time() - started) * 1000.0,
+            )
+            return {}
+        parsed = json.loads(raw[first : last + 1])
+        scores: Dict[str, float] = {
+            "tone_executive_register": float(parsed.get("tone_executive_register", 0.0)),
+            "naturalness": float(parsed.get("naturalness", 0.0)),
+        }
+    except (ValueError, TypeError, KeyError) as exc:
+        _log.info("[narrative_judge] qwen parse failed: %s", exc)
+        _emit_narrative_judge_marker(
+            accepted=False,
+            scores={},
+            model_used=QWEN_LOCAL_MODEL_ID,
+            fallback_reason="parse_failure",
+            latency_ms=(time.time() - started) * 1000.0,
+        )
+        return {}
+
+    _emit_narrative_judge_marker(
+        accepted=True,
+        scores=scores,
+        model_used=QWEN_LOCAL_MODEL_ID,
+        fallback_reason="none",
+        latency_ms=(time.time() - started) * 1000.0,
+    )
+    return scores
+
+
+def _emit_narrative_judge_marker(
+    *,
+    accepted: bool,
+    scores: Dict[str, float],
+    model_used: str,
+    fallback_reason: str,
+    latency_ms: float = 0.0,
+) -> None:
+    """Best-effort ``JUDGE_DECISION`` emission; never raises."""
+    try:
+        from tools.capture.append_marker import append_marker  # noqa: PLC0415
+    except ImportError:
+        return
+    composite = 0.0
+    if scores:
+        composite = (
+            0.4 * float(scores.get("tone_executive_register", 0.0))
+            + 0.6 * float(scores.get("naturalness", 0.0))
+        )
+    payload = (
+        "JUDGE_DECISION: type=judge_decision, "
+        "app_name=apps_eval.narrative_judge, "
+        "rubric_id=narrative_judge_v1, "
+        "rubric_hash=inline, "
+        f"accepted={accepted}, "
+        f"composite={composite:.4f}, "
+        f"model_used={model_used}, "
+        f"fallback_reason={fallback_reason}, "
+        "first_failed_gate=none, "
+        f"latency_ms={latency_ms:.1f}"
+    )
+    try:
+        append_marker(payload, session_hint="apps_eval.narrative_judge")
+    except (OSError, PermissionError):
+        pass
 
 
 __all__ = ["JudgeVerdict", "NarrativeJudgeScorer"]
