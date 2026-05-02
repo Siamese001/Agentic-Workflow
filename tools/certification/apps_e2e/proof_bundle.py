@@ -200,6 +200,29 @@ def build_proof_bundle(
     runtime_mode = "governed_spine_active" if spine_status == "spine_active" \
         else ("standalone_orchestrator_pre_spine" if spine_status != "spine_active" else "fail_closed")
 
+    # Two-gate certification fields (W1.2). The advisory `certification_level`
+    # is computed now from local evidence ONLY; the verifier ALWAYS recomputes
+    # with the full violation context (amendment 4: bundle-declared level is
+    # never trusted). `runtime_mode_classification` normalizes runtime_mode to
+    # the strict-mode-comparable enum.
+    from tools.certification.apps_e2e.certification_levels import (
+        classify_runtime_mode as _classify_rt_mode,
+        compute_level as _compute_level_advisory,
+    )
+    _bundle_for_advisory = {
+        "runtime_mode": runtime_mode,
+        "mock_mode_detected": mock_mode,
+        "fixture_runtime_mode": False,  # bundle emitter never sets True; only fixture_data is set
+        "fixture_data_used": fixture_mode,
+        "synthetic_trace_detected": synthetic_trace,
+        "success": (exit_code == 0 and not blocking),
+        "blocking_gaps": list(blocking),
+    }
+    _advisory_runtime_class = _classify_rt_mode(_bundle_for_advisory)
+    _advisory_cert_level = str(_compute_level_advisory(
+        _bundle_for_advisory, spec, violations=()
+    ).value)
+
     return {
         "proof_schema_version": PROOF_SCHEMA_VERSION,
         "harness_schema_version": HARNESS_SCHEMA_VERSION,
@@ -215,8 +238,12 @@ def build_proof_bundle(
         "git_commit": commit,
         "git_dirty": dirty,
         "runtime_mode": runtime_mode,
+        "runtime_mode_classification": _advisory_runtime_class,  # W1.2 — verifier recomputes
+        "certification_level": _advisory_cert_level,  # W1.2 advisory only — verifier ALWAYS recomputes
         "mock_mode_detected": mock_mode,
-        "fixture_mode_detected": fixture_mode,
+        "fixture_mode_detected": fixture_mode,  # legacy alias of fixture_data_used
+        "fixture_data_used": fixture_mode,  # amendment 3: deterministic input is allowed in strict
+        "fixture_runtime_mode": False,  # amendment 3: rejected by strict mode if True
         "synthetic_trace_detected": synthetic_trace,
         "success": success,
         "blocking_gaps": blocking,
@@ -273,8 +300,38 @@ def build_proof_bundle(
     }
 
 
+# Mapping from bundle ref-field name -> default ArtifactKind for that slot.
+# Per W2.4 + amendment 6: every manifest row carries `artifact_kind` so the
+# strict verifier can detect missing/duplicated/mismatched kinds. The OTEL
+# slot accepts EITHER otel_trace OR runtime_adg_trace — emitter writes
+# otel_trace by default; deeper inspection of trace-file contents could
+# downgrade to runtime_adg_trace, but that is left for follow-up.
+_REF_FIELD_TO_KIND: dict[str, str] = {
+    "static_dag_ref": "static_l3_dag_proof",
+    "runtime_intake_ref": "runtime_intake",
+    "runtime_l1_plan_ref": "l1_plan_contract",
+    "runtime_route_contract_ref": "route_contract",
+    "runtime_l3_receipt_ref": "l3_runtime_receipt",
+    "runtime_l3_bypass_ref": "l3_bypass_receipt",
+    "runtime_c0_receipt_ref": "c0_grounding_receipt",
+    "runtime_prompt_assembly_ref": "prompt_assembly_receipt",
+    "runtime_l2_artifact_ref": "l2_sealed_artifact",
+    "runtime_exit_disposition_ref": "exit_x3_disposition",
+    "runtime_exhaust_ref": "runtime_exhaust_bundle",
+    "otel_or_runtime_trace_ref": "otel_trace",  # default; runtime_adg_trace also accepted by verifier
+    "runtime_uwg_receipt_ref": "uwg_durable_write_receipt",
+    "run_log_ref": "run_log",
+    "adg_snapshot_ref": "adg_snapshot",
+}
+
+
 def build_artifact_manifest(bundle: dict[str, Any]) -> dict[str, Any]:
-    """Build the per-app manifest mapping every referenced ref to its sha256."""
+    """Build the per-app manifest mapping every referenced ref to its sha256.
+
+    W2.4 (amendment 6): each manifest item carries `artifact_kind` and
+    `run_id` so the strict verifier can validate kind bindings and run_id
+    threading without re-reading every artifact.
+    """
     manifest: dict[str, Any] = {
         "app_name": bundle["app_name"],
         "harness_run_id": bundle["harness_run_id"],
@@ -282,24 +339,22 @@ def build_artifact_manifest(bundle: dict[str, Any]) -> dict[str, Any]:
         "trace_root": bundle["trace_root"],
         "items": [],
     }
-    ref_keys = (
-        "static_dag_ref", "runtime_intake_ref", "runtime_l1_plan_ref",
-        "runtime_route_contract_ref", "runtime_l3_receipt_ref",
-        "runtime_l3_bypass_ref", "runtime_c0_receipt_ref",
-        "runtime_prompt_assembly_ref", "runtime_l2_artifact_ref",
-        "runtime_exit_disposition_ref", "runtime_exhaust_ref",
-        "otel_or_runtime_trace_ref", "runtime_uwg_receipt_ref",
-        "run_log_ref", "adg_snapshot_ref",
-    )
-    for k in ref_keys:
+    bundle_run_id = bundle.get("run_id")
+    for k, kind in _REF_FIELD_TO_KIND.items():
         ref = bundle.get(k)
         if not ref:
-            manifest["items"].append({"key": k, "ref": None, "sha256": None, "present": False})
+            manifest["items"].append({
+                "key": k, "ref_field": k, "artifact_kind": kind,
+                "ref": None, "path": None, "sha256": None,
+                "run_id": bundle_run_id, "present": False,
+            })
             continue
         p = REPO_ROOT / ref
         manifest["items"].append({
-            "key": k, "ref": ref,
+            "key": k, "ref_field": k, "artifact_kind": kind,
+            "ref": ref, "path": ref,
             "sha256": sha256_file(p),
+            "run_id": bundle_run_id,
             "present": p.exists(),
         })
     return manifest

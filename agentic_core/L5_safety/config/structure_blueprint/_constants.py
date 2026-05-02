@@ -21,7 +21,7 @@ territories.py — _constants.py carries only routing-relevant metadata.
 from __future__ import annotations
 
 # Import canonical constants from L0 (L0 can be imported by any layer)
-import warnings
+import os as _os
 from collections.abc import Mapping, Sequence
 from typing import Any, Final, TypedDict
 
@@ -329,177 +329,17 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
 }
 
 
-def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
-    """DEPRECATED: Use get_all_territories() from territories.py instead.
-
-    This stub exists solely for backward-compatible imports. It delegates
-    to the canonical territories API and returns the same dict shape.
-    """
-    warnings.warn(
-        "build_sovereign_territories() is deprecated. Use get_all_territories() "
-        "from structure_blueprint.territories instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    # Lazy import to avoid circular dependency at module level
-    from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        get_all_territories,
-    )
-
-    return get_all_territories()
-
-
 # ============================================================================
 # OPERATIONAL GOVERNANCE CONFIGURATION
 # Merged from governance.py (2026-03-08) — one leaf, zero drift.
 # ============================================================================
 
-import os as _os
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_emits_metric_event,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-    _emit_stores_embedding,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_meta_learning_state,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,
-    emit_replay_key,
-)
-
-_emit_emits_metric_event("_constants", "p4obs", "metric_1")
-_emit_emits_metric_event("_constants", "p4obs", "metric_2")
-_emit_emits_metric_event("_constants", "p4obs", "metric_3")
-_emit_emits_metric_event("_constants", "p4obs", "metric_4")
-_emit_emits_metric_event("_constants", "p4obs", "metric_5")
-_emit_emits_metric_event("_constants", "p4obs", "metric_6")
-_emit_records_incident_event("_constants", "p4obs", "incident")
-_emit_captures_runtime_anomaly("_constants", "p4obs", "anomaly")
-_emit_writes_observability_log("_constants", "p4obs", "obs_log")
-_emit_updates_monitoring_state("_constants", "p4obs", "mon_state")
-_emit_triggers_alert("_constants", "p4obs", "alert")
-_emit_links_incident_trace("_constants", "p4obs", "trace_link")
-_emit_captures_pattern("_constants", "p3lm", "pattern")
-_emit_records_learning_event("_constants", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("_constants", "p3lm", "snapshot")
-_emit_feeds_meta_learning("_constants", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("_constants", "p3lm", "routing")
-_emit_improves_agent_policy("_constants", "p3lm", "policy")
-_emit_stores_learning_state("_constants", "p3lm", "state")
-_emit_records_execution_trace("_constants", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("_constants", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("_constants", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("_constants", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("_constants", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("_constants", "env_read", "p2_env_1")
-_emit_reads_environ("_constants", "env_read", "p2_env_2")
-_emit_reads_runtime_state("_constants", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("_constants", "runtime_state", "p2_rt_2")
-
-_emit_reads_policy_state("p1", "_constants", "L5")
-_emit_escalates_to_human("p1", "_constants", "L5")
-_emit_routes_through("p1", "_constants", "L5")
-_emit_checks_agent_registry("p1", "_constants", "agent_registry")
-_emit_validates_agent_capability("p1", "_constants", "capability")
-_emit_dispatches_execution_plan("p1", "_constants", "exec_plan")
-_emit_agent_executes_agent("p1", "_constants", "sub_agent")
-_emit_routes_to_agent("p1", "_constants", "target_agent")
-_emit_verifies_policy("p1", "_constants", "policy_check")
-_emit_observes_runtime_state("p1", "_constants", "runtime_state")
-_emit_verifies_boundary("p1", "_constants", "boundary_check")
-_emit_transcripts_response("p1", "_constants", "transcript")
-_emit_hard_fails_untranscripted("p1", "_constants")
-_emit_gated_by_confidence("p1", "_constants", "confidence_gate")
-_emit_dispatches_healing_run("p1", "_constants", "L5")
-_emit_records_execution_trace("p0", "evidence", "_constants")
-_emit_applies_guardrail("p0", "_constants", "p0_governance")
-_emit_snapshots_state("p0", "_constants", "state_snapshot")
-_emit_pulls_context("p1", "_constants", "context_pull")
-_emit_pulls_context("p1", "_constants", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "_constants", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "_constants", "uwg_term_secondary")
-_emit_writes_through("p1", "_constants", "write_through")
-_emit_writes_through("p1", "_constants", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "_constants", "safety_validation")
-_emit_invokes_eval("p1", "_constants", "eval_call")
-_emit_proposal_commits_routing("p1", "_constants", "routing_commit")
-emit_replay_key("p0", "_constants")
-emit_determinism_digest("p0", "_constants")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "_constants", "execution_auth")
-_emit_validates_capability("p2", "_constants", "capability_check")
-_emit_routes_to_capability("p2", "_constants", "capability_route")
-_emit_writes_via_uwg("p2", "_constants", "uwg_write")
-_emit_blocks_direct_write("p2", "_constants", "direct_write_block")
-_emit_records_tool_invocation("p2", "_constants", "tool_invocation")
-_emit_captures_execution_output("p2", "_constants", "exec_output")
-_emit_dispatches_agent("p3", "_constants", "agent_dispatch")
-_emit_coordinates_agents("p3", "_constants", "agent_coordination")
-_emit_records_workflow_lineage("p3", "_constants", "workflow_lineage")
-_emit_records_healing_outcome("p3", "_constants", "healing_outcome")
-_emit_escalates_failure("p3", "_constants", "failure_escalation")
-_emit_orchestrates_workflow("p3", "_constants", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "_constants", "healing_dispatch")
-_emit_invokes_evaluation("p3", "_constants", "evaluation_signal")
-_emit_records_telemetry_event("p4", "_constants", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "_constants", "eval_metric")
-_emit_stores_embedding("p4", "_constants", "embedding_store")
-_emit_updates_meta_learning_state("p4", "_constants", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "_constants", "exec_snapshot_link")
+# (Removed 2026-05-02: build_sovereign_territories() deprecated stub +
+#  171 lines of import-time lifecycle_trace_contract _emit_* side effects.
+#  Plan: ssot-consolidation-cleanup-b7f3a1 Phases 1.1 + 1.2.
+#  ADG verified: build_sovereign_territories had 0 consumers; emit calls
+#  were import-time side effects only. Constants modules carry data, not
+#  side effects.)
 
 HEALING_CONFIG: Final[Mapping[str, int]] = {
     "max_rounds": int(_os.getenv("MAX_HEALING_ROUNDS", "10")),

@@ -9,6 +9,10 @@ return a numeric score in [1, 5] or the sentinel string ``"Unknown"``.
 Available backends:
   - :class:`NullBackend` — always returns ``Unknown``. Default safe fallback.
   - :class:`AnthropicBackend` — env-gated stub; real scoring is deferred.
+  - :class:`QwenVllmBackend` — env-gated local-vLLM backend (OpenAI-compatible
+    Chat Completions). Active when ``VLLM_BASE_URL`` is set; otherwise falls
+    back to ``NullBackend`` so the plugin remains safe in any environment.
+    Recommended runtime default per the 2026-05-02 eval/control audit.
 
 This package intentionally does NOT touch rubric weights or consensus policy
 (parent plan ``-ce683b`` §6).
@@ -24,10 +28,14 @@ from agentic_core.L5_safety.eval_spine.judge_backends.null import NullBackend
 from agentic_core.L5_safety.eval_spine.judge_backends.anthropic_stub import (
     AnthropicBackend,
 )
+from agentic_core.L5_safety.eval_spine.judge_backends.qwen_vllm import (
+    QwenVllmBackend,
+)
 
 __all__ = [
     "AnthropicBackend",
     "JudgeBackend",
     "NullBackend",
+    "QwenVllmBackend",
     "backend_name",
 ]

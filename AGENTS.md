@@ -34,7 +34,7 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 | Server ID | Use For | Example Tools | Notes | Skill |
 |---|---|---|---|---|
 | `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. | [`gitkraken`](.windsurf/skills/gitkraken/SKILL.md) |
-| `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan, adg_mv_hotspot_centrality, adg_blast_radius, adg_semantic_fanout, adg_p_view_query` | Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans. **W3 P3.3 (2026-04-30):** added 4 graph-layer tools (`adg_mv_hotspot_centrality`, `adg_blast_radius`, `adg_semantic_fanout`, `adg_p_view_query`) per ADR-074 + plan adg-three-bucket-unified-c4f8e2. **W3 P3.4 (2026-04-30):** L2 runtime-agent consumption contract for these tools is defined in **ADR-079** (latency contract, `__adg_consumer_mode__` declaration, feature-flag fallback, layer-gravity rule). L2 agents MUST honor ADR-079 before consuming graph-layer surfaces in production paths. | [`adg-sqlite`](.windsurf/skills/adg-sqlite/SKILL.md) |
+| `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Primary authority for structural dependencies AND refactoring analysis. Constitutional §22: mv_* materialized views, v_p0_*/v_p1_*/v_p2_*/v_p3_* P-views, and semantic edges (flows_to, reads_from, writes_to, emits_side_effect, controls_flow, resolves_callsite) MUST drive T2/T3 refactoring plans. | [`adg-sqlite`](.windsurf/skills/adg-sqlite/SKILL.md) |
 | `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`deepwiki`](.windsurf/skills/deepwiki/SKILL.md) |
 | `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`filesystem-mcp`](.windsurf/skills/filesystem-mcp/SKILL.md) |
 | `memory` | Persistent cross-session knowledge graph | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Read at session start; write back major decisions. | [`memory-mcp`](.windsurf/skills/memory-mcp/SKILL.md) |
@@ -59,54 +59,20 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 |----------|-----------------------|----------------------|--------------|----------------------------|
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
 | Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.windsurf/plans/<slug>-<6hex>.md`. Create Plans row with Status=Active, Exists On Disk=true, Plan File Path set. |
-| HITL Decision Ledger (Notion = read-only mirror; **SSOT is `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`**) | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Capture path: `tools/capture/append_marker.py` -> `markers.jsonl` -> `tools/capture/queue_to_ledger.py` -> SQLite. Mirror path: `tools/notion/sync_decision_ledger.py --apply` (reads SQLite, posts to Notion, idempotent via `decision_id=` in Notes). Do not write to Notion directly; SQLite is canonical. |
+| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | `0a3b8072-eabd-4516-9473-3c321bb011ff` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
+| HITL Decision Ledger | `5b60fdde-7259-491e-9f2d-e088f1f741ef` | `18bb9145-1320-4191-8b14-6c309776bcf5` | "HITL decisions", "past decisions", "decision history" | Immediately after any scored `ask_user_question` resolution |
+| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
+| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
+| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed.
 **Write pattern (creates)**: `API-post-page` with `parent: {type: "database_id", database_id: <column 3>}`. Using data_source_id for writes returns 404.
 
 <!-- NOTION-MAP:END -->
 
-### Plans DB Status Taxonomy (canonical — added 2026-05-02)
+### Plans + Backlog Status Taxonomy (extracted 2026-05-02)
 
-The `Plans` data source uses the following 5-status taxonomy. Any other status value is forbidden.
-
-| Status | Color | Meaning | Required Conditions |
-|---|---|---|---|
-| 🟢 **Live** | green | Someone is working on this right now | File exists on disk · edited within last 14 days · has wave/phase work in progress |
-| 🟡 **Draft** | yellow | Written, not started | File exists on disk · no execution work yet |
-| 🔵 **Completed** | blue | Work landed | All waves/phases done · audit trail kept |
-| 🟣 **Retired** | purple | No longer relevant | Replaced by another plan, OR stale-by-design, OR work obsolete, OR file gone from disk — specific reason in Summary field |
-| ⚪ **Archived** | gray | Hidden from views | Reserved — not for routine use |
-
-**Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted via `API-update-a-data-source`. Desktop UI rename pass completed for both Plans and Backlog Items DBs: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`. Option IDs preserved across rename (Notion UI rename ≠ API rename — API does not support it).
-
-**Invariants**:
-- A row with `Status = Live` MUST have `Exists On Disk = true`
-- A row with `Status = Live` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
-- A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
-- A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
-
-**Shared taxonomy — Backlog Items DB**: the same 5 status names apply (Live/Draft/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
-- Backlog Items have no `Exists On Disk` field → on-disk-presence invariant is Plans-only
-- Backlog items can legitimately sit in `Draft` for months waiting on dependencies → 14-day staleness clock is Plans-only
-- The "descope → Retired" flip applies to both DBs ✅
-
-**Migration history (2026-05-02)**:
-- 50 plans flipped Live → Retired in one session (Plans DB had become a graveyard with `Live` as default-and-never-decay)
-- Schema rename pass on both Plans DB and Backlog Items DB: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted on Plans DB
-- Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
-- 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring (Plans only)
-
-### Backlog Snapshot — preferred read path (added 2026-04-23)
-
-For any **dashboard / top-N / "what's the current state of the backlog"** question, prefer **one** `API-get-block-children` call on the Backlog Snapshot page over paginating Wave/Phase Convergence:
-
-- **Page ID**: `34b27693-f55c-81b4-93ba-efec5755a20e`
-- **Content**: top-25 open P1+P2 by Impact Score, band distribution, stale flags — pre-rendered markdown
-- **Size**: ~5 KB vs. ~170 KB for full paginated query
-- **Regenerate**: `python tools/notion/snapshot_renderer.py --regenerate` (~4 s, uses only the typed fields backfilled in W1/W2)
-
-Use `API-query-data-source` on Wave/Phase Convergence only when you need a specific filter/sort not in the snapshot (e.g., all rows linked to a specific `Plan` relation).
+The 5-status taxonomy (🟢Live · 🟡Draft · 🔵Completed · 🟣Retired · ⚪Archived), Plans-DB invariants (Live ⇒ Exists On Disk=true · 14-day edit recency · descope path), Backlog-DB shared-taxonomy deltas, migration history, and the **Backlog Snapshot read-path** (page `34b27693-f55c-81b4-93ba-efec5755a20e`, regenerator `python tools/notion/snapshot_renderer.py --regenerate`) all live in conditional rule `@.windsurf/rules/notion-plans-taxonomy.md`. Auto-loads when working with Notion Plans / Backlog Items / status / taxonomy queries.
 
 ### Auto-Routing Rules (proactive — do NOT wait for a prompt)
 
@@ -114,14 +80,14 @@ Cascade MUST route these events to Notion without being asked. Filesystem remain
 
 | Event in Cascade | Filesystem Artifact | Notion Write (parallel) |
 |---|---|---|
-| Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | `API-post-page` into ADR Registry with ADR ID, Status, Decision Date, Impact Layers, Summary, Filename, Deciders |
+| Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | **No Notion write** — on-disk ADR file IS the SSOT since commit `b11200e833` (2026-05-02 consolidation). Filename + metadata live in the markdown frontmatter. Use `rg` over `docs/architecture/adr/` for search. |
 | Modify `.windsurf/mcp_config.json` (add/remove/reconfigure server) | JSON edit | `API-patch-page` (or post new) into MCP Registry with Notes + updated Last Validated; link ADR if applicable |
 | Change gate behavior in `.windsurf/scripts/pre_mcp_gate.py` | Python edit | `API-patch-page` affected MCP Registry entries with Notes (behavior description) + Linked ADR |
 | Resolve a scored `ask_user_question` (Author-Gate decision) | — | `API-post-page` into Author-Gate Decision Ledger with decision type, options, selection, rationale |
 | Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | `API-post-page` per NEW violation into SC/AP Violation Backlog |
 | Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
 | `generate_mutation_rejection_report.py` finds a newly-accepted mutation (Constitutional §32) | `artifacts/certification/fortknox_mutation_rejection_report.json` | `API-post-page` into SC/AP Violation Backlog with severity=CRITICAL, category=`fortknox_regression`, provenance block (mutation name, accepting validator step) |
-| Trust level changes in Fort Knox bundle (e.g. `DEVELOPMENT_PROOF` → `INTEGRITY_PROOF`) | `artifacts/certification/final_requirement_signoff_report.json` | `API-post-page` into ADR Registry with provenance block (merkle_root, signer=UNSIGNED_BLOCKED until P5, date, compiler version) |
+| Trust level changes in Fort Knox bundle (e.g. `DEVELOPMENT_PROOF` → `INTEGRITY_PROOF`) | `artifacts/certification/final_requirement_signoff_report.json` | **No Notion write** — trust-level transitions are recorded in the certification bundle's `trust_level` field (verifiable via `scripts/verify_final_requirement_signoff_bundle.py`). If human-readable narrative is needed, author an ADR markdown file at `docs/architecture/adr/` (on-disk SSOT). |
 | Positive-control set grows (new `RTC-REQ-*` joins SIGNED_OFF via compiler run) | `certification/evidence_assertions.jsonl` (new rows) + compiler output | `API-patch-page` Wave/Phase Convergence row for that req with Status → Done and evidence pointers |
 
 **Non-goals**: do NOT duplicate narrative content in Notion. Store the row; link the file.

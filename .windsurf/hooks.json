@@ -73,6 +73,11 @@
         "command": "python .windsurf/scripts/pre_user_prompt_grep_for_deps_warning.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/pre_user_prompt_weekly_report.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
       }
     ],
     "post_write_code": [
@@ -134,6 +139,16 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_grep_budget_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_read_budget_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_token_telemetry.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
       },

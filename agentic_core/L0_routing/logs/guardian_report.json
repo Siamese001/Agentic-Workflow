@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-02T03:44:25.681493+00:00",
+  "timestamp": "2026-05-02T23:39:42.324272+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 431,
+    "total_tests": 432,
     "passed_tests": 0,
-    "failed_tests": 234,
+    "failed_tests": 235,
     "skipped_tests": 197,
     "exit_status": 1,
     "failed_by_category": {
@@ -78,6 +78,7 @@
         "tests/unit/agentic_core/L2_execution/healers/test_healing_router_wave2.py",
         "tests/unit/agentic_core/L2_execution/healers/test_l2_cascade_router_ledger.py",
         "tests/unit/agentic_core/L2_execution/healers/test_qwen_cascade_fallback.py",
+        "tests/unit/agentic_core/L2_execution/healers/test_qwen_judge_determinism.py",
         "tests/unit/agentic_core/L2_execution/healers/test_routing_gates.py",
         "tests/unit/agentic_core/L2_execution/reasoning/test_compiled_artifact.py",
         "tests/unit/agentic_core/L2_execution/test_exemplar_agents.py",

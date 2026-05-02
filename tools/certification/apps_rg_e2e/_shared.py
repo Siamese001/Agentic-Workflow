@@ -129,9 +129,11 @@ def spine_signal_scan(src: str) -> dict[str, bool]:
 
     (a) **Direct contract use** — file imports/mentions canonical contract
         types (RouteContract, L1PlanContract, ExitReviewPacket, etc.).
-    (b) **Adapter-based wiring** — file imports the apps_rg spine
-        adapter (``governed_run`` from ``apps_rg.runtime``) which emits
-        the contracts under the hood.
+    (b) **Adapter-based wiring** — file imports the shared spine
+        adapter (``governed_run`` from ``apps_shared.spine_emission``)
+        which emits the contracts under the hood. apps_rg used to carry
+        its own adapter at ``apps_rg.runtime``; collapsed to the shared
+        helper per plan ``collapse-apps-rg-runtime-b7e2f5``.
 
     Either is sufficient. The blocking-gap test
     ``apps_rg_main_does_not_import_any_runtime_spine_contract`` clears
@@ -150,6 +152,11 @@ def spine_signal_scan(src: str) -> dict[str, bool]:
         "SovereignBaseAgent":   "SovereignBaseAgent" in src,
         "agentic_core.L0_routing": "from agentic_core.L0_routing" in src,
         "agentic_core.L3_orchestration": "from agentic_core.L3_orchestration" in src,
-        # Adapter-based wiring (apps_rg's chosen integration path)
-        "governed_run_adapter": "from apps_rg.runtime" in src and "governed_run" in src,
+        # Adapter-based wiring (apps_rg's chosen integration path, now
+        # via shared helper; legacy `from apps_rg.runtime` still accepted
+        # for older bundles that predate collapse-apps-rg-runtime-b7e2f5).
+        "governed_run_adapter": (
+            ("from apps_shared.spine_emission" in src and "governed_run" in src)
+            or ("from apps_rg.runtime" in src and "governed_run" in src)
+        ),
     }

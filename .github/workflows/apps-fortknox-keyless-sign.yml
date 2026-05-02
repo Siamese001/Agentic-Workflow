@@ -1,0 +1,146 @@
+name: Apps Fort Knox \u2014 Keyless Sign (W9, FINAL_SIGNED_CERTIFICATION)
+
+# W9 of plan apps-fort-knox-parity-c5d9a3 (OPEN-3 closure).
+#
+# This workflow promotes the apps_e2e Fort Knox track from SIGNED_PROOF to
+# FINAL_SIGNED_CERTIFICATION on every tagged release. It runs the full
+# pipeline (compile \u2192 mutate \u2192 dev-sign \u2192 keyless-sign \u2192 verify both \u2192
+# generate consolidated proof) and asserts ``final_signed_certification=true``
+# in the resulting bundle.
+#
+# Permissions:
+#   id-token: write   \u2014 required to mint the OIDC token for Fulcio
+#   contents: read    \u2014 required to checkout
+#
+# When NOT to use:
+#   - Pull requests (no OIDC subject)
+#   - Pushes to main without a tag (signature would bind to a moving target)
+#   - Forks (workflow OIDC subject would not match the expected identity)
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'apps-fortknox-*'
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: apps-fortknox-keyless-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  keyless-sign-and-prove:
+    name: Sign + verify + consolidated proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install minimal Python deps
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install cosign (Sigstore)
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.4.1'
+
+      - name: Verify cosign on PATH
+        run: |
+          cosign version
+
+      # ---- Pipeline ---------------------------------------------------------
+
+      - name: W2 \u2014 emit atomic assertions
+        run: |
+          python tools/cert/apps_e2e/emit_apps_evidence_assertions.py
+
+      - name: W3 \u2014 compile signoff report
+        run: |
+          python scripts/compile_apps_e2e_signoff.py
+
+      - name: W4 \u2014 mutation rejection driver
+        run: |
+          python tools/cert/apps_e2e/apps_mutation_driver.py
+
+      - name: W5 \u2014 dev-keypair signature
+        run: |
+          python tools/cert/apps_e2e/sign_apps_release_bundle.py
+
+      - name: W5 verify \u2014 dev-keypair signature round-trip
+        run: |
+          python tools/cert/apps_e2e/verify_apps_release_signature.py
+
+      - name: W9 \u2014 keyless cosign signature (Fulcio + Rekor)
+        env:
+          # Cosign 2.x reads the GHA OIDC token via these standard env vars.
+          COSIGN_EXPERIMENTAL: '1'
+        run: |
+          python tools/cert/apps_e2e/sign_apps_release_bundle_keyless.py
+
+      - name: W9 verify \u2014 keyless cosign signature
+        run: |
+          python tools/cert/apps_e2e/verify_apps_release_signature_keyless.py
+
+      - name: W6 \u2014 consolidated proof generator
+        run: |
+          python tools/certification/generate_apps_100pct_runtime_proof.py
+
+      - name: T7s.4 \u2014 apps Fort Knox CI gate
+        run: |
+          python ops_scripts/ci/check_apps_fortknox_signed_proof.py
+
+      - name: Assert FINAL_SIGNED_CERTIFICATION reached
+        run: |
+          python -c "
+          import json, sys
+          p = 'artifacts/certification/apps_e2e/APPS_HUNDRED_PERCENT_RUNTIME_PROOF.json'
+          with open(p, 'r', encoding='utf-8') as fh:
+              b = json.load(fh)
+          h = b.get('headline_claims', {})
+          claims = {
+              'all_gates_pass': h.get('all_gates_pass'),
+              'final_signed_certification': h.get('final_signed_certification'),
+              'effective_trust_level': h.get('effective_trust_level'),
+              'keyless_signature_present': h.get('keyless_signature_present'),
+              'keyless_signature_verified': h.get('keyless_signature_verified'),
+          }
+          print('claims:', json.dumps(claims, indent=2))
+          if not all([
+              h.get('all_gates_pass'),
+              h.get('final_signed_certification'),
+              h.get('effective_trust_level') == 'FINAL_SIGNED_CERTIFICATION',
+          ]):
+              sys.exit('FAIL: FINAL_SIGNED_CERTIFICATION not reached')
+          print('OK \u2014 effective_trust_level=FINAL_SIGNED_CERTIFICATION')
+          "
+
+      # ---- Artifacts --------------------------------------------------------
+
+      - name: Upload Fort Knox apps_e2e bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-fortknox-bundle-${{ github.ref_name }}
+          path: |
+            artifacts/certification/apps_e2e/apps_e2e_signoff_report.json
+            artifacts/certification/apps_e2e/apps_e2e_signoff_report.sha256
+            artifacts/certification/apps_e2e/apps_e2e_signoff_report.merkle.json
+            artifacts/certification/apps_e2e/apps_e2e_signoff_report.signature.json
+            artifacts/certification/apps_e2e/apps_e2e_signoff_report.signature.keyless.json
+            artifacts/certification/apps_e2e/apps_mutation_rejection_report.json
+            artifacts/certification/apps_e2e/APPS_HUNDRED_PERCENT_RUNTIME_PROOF.json
+          if-no-files-found: error
+          retention-days: 90

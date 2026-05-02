@@ -43,10 +43,10 @@
   "final_hundred_percent_groups": [
     "100 Percent Standard"
   ],
-  "generated_at_utc": "2026-05-01T23:02:21+00:00",
+  "generated_at_utc": "2026-05-02T17:01:33+00:00",
   "generator": "tools/cert/generate_requirements_source.py",
   "purpose": "Canonical requirement universe for runtime certification. SSOT consumed by scripts/compile_requirement_signoff.py. Derived from runtime_certification_requirements_100_percent_hardened.csv.",
-  "requirement_count": 87,
+  "requirement_count": 102,
   "requirements": [
     {
       "acceptance_rule": "ACCEPTED only when expected count equals actual distinct count and no duplicate/missing/extra IDs exist.",
@@ -3377,6 +3377,535 @@
       "required_proof_depth": "E9_PRODUCTION_DEPENDENCY_PROOF",
       "requirement_group": "Semantic Cache",
       "title": "R1B score distribution calibration dataset"
+    },
+    {
+      "req_id": "RTC-REQ-130",
+      "title": "L7_AUDITABILITY HOW trace emitted for every certified integrated runtime chain",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when agentic_core_how_trace.json is present in every certified chain bundle and its per-chain hash appears in the L7 plane evidence wrapper.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_agentic_core_how_trace.py",
+      "required_artifacts": [
+        "agentic_core_how_trace.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-131",
+      "title": "L7 route-family coverage matrix emitted per chain",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when agentic_core_l7_route_family_coverage.json is present in every certified chain and classifies each route family honestly (no structural-only promoted to real).",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_agentic_core_l7_route_family_coverage.py",
+      "required_artifacts": [
+        "agentic_core_l7_route_family_coverage.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-132",
+      "title": "Fort Knox L7 per-req evidence rows emitted per chain",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when fortknox_l7_evidence/ directory is populated (>=1 row) in every certified chain bundle.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_l7_fortknox_evidence.py",
+      "required_artifacts": [
+        "fortknox_l7_evidence/*.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-133",
+      "title": "Integrated runtime artifact manifest sealed per chain",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when integrated_runtime_artifact_manifest.json is present in every certified chain and its hash is stable across recomputation.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_integrated_runtime_manifest_exact_refs.py",
+      "required_artifacts": [
+        "integrated_runtime_artifact_manifest.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-134",
+      "title": "Agentic-core spine proof bundle sealed per chain",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when agentic_core_spine_proof.json is present in every certified chain with an intact upstream-artifact hash cascade.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_spine_proof_bundle.py",
+      "required_artifacts": [
+        "agentic_core_spine_proof.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-135",
+      "title": "R1A_EXACT_CACHE chain real D1 exact-hit integrated runtime proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the r1a_latest chain bundle exists, all L7 artifacts present, and the family-specific verifier confirms a real D1 exact-cache hit (no R1B borrowing).",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_r1a_exact_cache_l7_runtime.py",
+      "required_artifacts": [
+        "runtime_gate_verdict_bundle.json",
+        "terminal_ret_packet.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-136",
+      "title": "R5_FALLBACK chain safe-fallback integrated runtime proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the r5_latest chain bundle exists with safe_fallback_decision.json carrying all no-execution assertions and the family verifier passes.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_r5_fallback_l7_runtime.py",
+      "required_artifacts": [
+        "safe_fallback_decision.json",
+        "x3_disposition_receipt.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-137",
+      "title": "UWG_BLOCK_PATH chain integrated DurableWriteGateway block proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the uwg_block_latest chain bundle has uwg_blocked_commit_receipt.json with integrated_runtime_origin=true, commit_request.json present, and attempting_surface is a non-UWG surface.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_uwg_block_path_l7_runtime.py",
+      "required_artifacts": [
+        "commit_request.json",
+        "uwg_blocked_commit_receipt.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-138",
+      "title": "L7 static enforcement verifiers present and CI-bound",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Enforcement",
+      "claim_type": "STATIC_ENFORCEMENT",
+      "required_proof_depth": "E2_STATIC_CHECK",
+      "acceptance_rule": "ACCEPTED only when all 6 L7 verifier scripts (verify_agentic_core_how_trace.py, verify_l7_fortknox_evidence.py, verify_agentic_core_l7_route_family_coverage.py, verify_r1a_exact_cache_l7_runtime.py, verify_r5_fallback_l7_runtime.py, verify_uwg_block_path_l7_runtime.py) exist and .github/workflows/agentic-core-auditability.yml binds them in fail-closed jobs.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "ci_gate",
+        "source_root_binding"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "STATIC_VERIFIER_REPORT",
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_agentic_core_l7_route_family_coverage.py",
+      "required_artifacts": [],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-139",
+      "title": "100% L7_AUDITABILITY plane coverage across governed route families",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Capstone",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when every RTC-REQ-130..138 is SIGNED_OFF AND the coverage matrix reports >=4 route families as REAL_RUNTIME CERTIFIED with no borrow, no fixture-only forgery, and no structural-only masquerade.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [
+        "RTC-REQ-130",
+        "RTC-REQ-131",
+        "RTC-REQ-132",
+        "RTC-REQ-133",
+        "RTC-REQ-134",
+        "RTC-REQ-135",
+        "RTC-REQ-136",
+        "RTC-REQ-137",
+        "RTC-REQ-138"
+      ],
+      "is_final_hundred_percent_row": true,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "source_root_binding"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": null,
+      "required_artifacts": [],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": ""
+    },
+    {
+      "req_id": "RTC-REQ-140",
+      "title": "UWG_COMMIT_PATH chain integrated DurableWriteGateway successful-commit proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the uwg_commit_latest chain bundle exists with uwg_commit_receipt.json commit_status=COMMITTED, snapshot_before != snapshot_after, audit_append_receipt_ref non-empty, and source_surface=Exit.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_uwg_commit_path_l7_runtime.py",
+      "required_artifacts": [
+        "commit_request.json",
+        "uwg_commit_receipt.json",
+        "uwg_refresh_receipts.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": "W4 closure of plan fortknox-100pct-static-runtime-gap-9a3d4f"
+    },
+    {
+      "req_id": "RTC-REQ-141",
+      "title": "R3_GROUNDED_READ chain real C0 retrieval integrated runtime proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the r3_latest chain bundle has final_evidence_contract.json with non-empty evidence_refs (each carrying chunk_ref + payload_sha256), bound to a deterministic corpus_manifest, and integrated_runtime_origin=True.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_r3_grounded_read_l7_runtime.py",
+      "required_artifacts": [
+        "final_evidence_contract.json",
+        "retrieval_corpus_manifest.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": "W4 closure of plan fortknox-100pct-static-runtime-gap-9a3d4f"
+    },
+    {
+      "req_id": "RTC-REQ-142",
+      "title": "R4_SINGLE_ACTION chain real L2 tool invocation integrated runtime proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the r4_latest chain bundle has sealed_l2_artifact.json with structural_only=False, tool_invocations non-empty and deterministic=True, and tool_authorization_receipt.json authorization_status=GRANTED.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_r4_single_action_l7_runtime.py",
+      "required_artifacts": [
+        "sealed_l2_artifact.json",
+        "tool_authorization_receipt.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": "W4 closure of plan fortknox-100pct-static-runtime-gap-9a3d4f"
+    },
+    {
+      "req_id": "RTC-REQ-143",
+      "title": "MANAGED_WORKFLOW_REAL_EXECUTION composed-substrate integrated runtime proof",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Route Families",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when the mw_real_latest chain bundle has managed_workflow_real_execution_receipt.json with managed_workflow_certified=True, gate_verdicts length=29, gate_pass_count=29, gate_fail_count=0, and composed_substrates binds R3 + R4 + UWG_COMMIT receipts.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [
+        "RTC-REQ-140",
+        "RTC-REQ-141",
+        "RTC-REQ-142"
+      ],
+      "is_final_hundred_percent_row": false,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "runtime_evidence",
+        "source_root_binding",
+        "artifact_payload_hash"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_mw_real_execution_l7_runtime.py",
+      "required_artifacts": [
+        "managed_workflow_real_execution_receipt.json"
+      ],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": "W4 closure of plan fortknox-100pct-static-runtime-gap-9a3d4f"
+    },
+    {
+      "req_id": "RTC-REQ-144",
+      "title": "100% L7 REAL_RUNTIME coverage: 8 of 9 route families REAL_RUNTIME CERTIFIED",
+      "priority": "P0",
+      "requirement_group": "L7 Auditability \u00b7 Capstone",
+      "claim_type": "INTEGRATED_RUNTIME",
+      "required_proof_depth": "E6_INTEGRATED_RUNTIME_PROOF",
+      "acceptance_rule": "ACCEPTED only when RTC-REQ-135..137 AND RTC-REQ-140..143 are all SIGNED_OFF AND the coverage matrix reports 8/9 route families as REAL_RUNTIME CERTIFIED (the 1 exception is MANAGED_WORKFLOW_STRUCTURAL which is STRUCTURAL_ONLY by design).",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [
+        "RTC-REQ-135",
+        "RTC-REQ-136",
+        "RTC-REQ-137",
+        "RTC-REQ-140",
+        "RTC-REQ-141",
+        "RTC-REQ-142",
+        "RTC-REQ-143"
+      ],
+      "is_final_hundred_percent_row": true,
+      "required_controls": [
+        "verifier_pass",
+        "verifier_exit_zero",
+        "last_verified_timestamp",
+        "source_root_binding"
+      ],
+      "allowed_verifier_commands": [
+        "tools/cert/emit_l7_plane_evidence.py"
+      ],
+      "allowed_artifact_classes": [
+        "INTEGRATED_RUNTIME_BUNDLE"
+      ],
+      "freshness_hours": 168,
+      "required_ci_gate": "verify_agentic_core_l7_route_family_coverage.py",
+      "required_artifacts": [],
+      "owner_component": "agentic_core L7_AUDITABILITY plane",
+      "owner_layer": "L7 / Auditability",
+      "notes": "W4 closure of plan fortknox-100pct-static-runtime-gap-9a3d4f"
     }
   ],
   "schema_version": "fortknox-v2",

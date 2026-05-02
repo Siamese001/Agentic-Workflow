@@ -44,6 +44,8 @@ from _post_handlers import ParsedResponse  # noqa: E402
 from _post_handlers import cleanup as h_cleanup  # noqa: E402
 from _post_handlers import grep_budget as h_grep_budget  # noqa: E402
 from _post_handlers import heartbeat as h_heartbeat  # noqa: E402
+from _post_handlers import read_budget as h_read_budget  # noqa: E402
+from _post_handlers import token_telemetry as h_token_telemetry  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Native handlers (Phase A — refactored to ParsedResponse contract)
@@ -53,6 +55,8 @@ NATIVE_HANDLERS: list[tuple[str, Callable[[ParsedResponse, Path], None]]] = [
     ("heartbeat", h_heartbeat.run),
     ("cleanup", h_cleanup.run),
     ("grep_budget", h_grep_budget.run),
+    ("read_budget", h_read_budget.run),
+    ("token_telemetry", h_token_telemetry.run),
 ]
 
 # ---------------------------------------------------------------------------

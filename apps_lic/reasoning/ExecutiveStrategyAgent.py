@@ -253,12 +253,28 @@ class ExecutiveStrategyAgent:
         return self._render("executive", "k13_interviewer_sim", payload)
 
     def heal(self, *args, **kwargs) -> dict[str, Any]:
-        """heal() not implemented for ExecutiveStrategyAgent."""
-        raise NotImplementedError("heal() not implemented for ExecutiveStrategyAgent")
+        """No-op healing for ExecutiveStrategyAgent.
+
+        ExecutiveStrategyAgent is a prompt-rendering agent with no mutable state
+        or repository surface to heal. Returns a structured no-op result so
+        callers in the healing chain can proceed without exception handling.
+        """
+        return {
+            "status": "noop",
+            "agent": "ExecutiveStrategyAgent",
+            "reason": "prompt-only agent has no healable surface",
+        }
 
     def heal_repository(self, *args, **kwargs) -> dict[str, Any]:
-        """heal_repository() not implemented for ExecutiveStrategyAgent."""
-        raise NotImplementedError("heal_repository() not implemented for ExecutiveStrategyAgent")
+        """No-op repository heal for ExecutiveStrategyAgent.
+
+        See heal(): this agent owns no repository state.
+        """
+        return {
+            "status": "noop",
+            "agent": "ExecutiveStrategyAgent",
+            "reason": "prompt-only agent owns no repository state",
+        }
 
 
 def get_exec_shadow_audit(payload: dict[str, Any], *, prompt_root: Path | None = None) -> str:

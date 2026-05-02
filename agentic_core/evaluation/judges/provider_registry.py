@@ -229,7 +229,7 @@ class JudgeProviderRegistry:
         }
 
 
-def create_default_registry() -> JudgeProviderRegistry:
+def create_default_registry(*, prefer_local: bool = True) -> JudgeProviderRegistry:
     """Create a registry with NullJudgeProvider and optional cloud/local judges.
 
     Registration order (each is only default when the prior slot is empty):
@@ -243,6 +243,16 @@ def create_default_registry() -> JudgeProviderRegistry:
 
     An explicit ``JUDGE_PROVIDER`` env var (``null`` / ``qwen`` / ``gemini``)
     forces that provider as default if registered.
+
+    Args:
+        prefer_local: When ``True`` (the default, set by the 2026-05-02
+            eval/control gap-closure audit), the locally-hosted Qwen vLLM
+            provider claims the default slot whenever it is registered AND
+            ``JUDGE_PROVIDER`` is not an explicit external override. This
+            makes the cheapest-safe local backend the production default,
+            with external providers reserved for escalation. Set to
+            ``False`` to restore the prior Gemini-wins-on-API-key behavior
+            for callers that need the legacy registration ordering.
     """
     registry = JudgeProviderRegistry()
     registry.register(NullJudgeProvider(), default=True)
@@ -256,6 +266,7 @@ def create_default_registry() -> JudgeProviderRegistry:
         and judge_provider_override != "gemini"
         and judge_provider_override != "null"
     )
+    qwen_registered = False
     if qwen_should_register:
         try:
             from agentic_core.evaluation.judges.qwen_judge_provider import (  # noqa: PLC0415  guardian: allow-log-and-swallow -- optional Qwen backend: registration failure is non-fatal, registry still returns with other providers (Gemini/null)
@@ -263,8 +274,19 @@ def create_default_registry() -> JudgeProviderRegistry:
             )
 
             qwen = QwenJudgeProvider()
-            registry.register(qwen, default=(judge_provider_override == "qwen"))
-            _log.info("[create_default_registry] Qwen judge provider auto-registered")
+            # Qwen claims default when explicitly chosen OR when prefer_local
+            # is True and JUDGE_PROVIDER is not an explicit external override.
+            # The prior behavior (default only when JUDGE_PROVIDER==qwen) is
+            # preserved when prefer_local=False.
+            qwen_default = judge_provider_override == "qwen" or (
+                prefer_local and judge_provider_override not in ("gemini", "null")
+            )
+            registry.register(qwen, default=qwen_default)
+            qwen_registered = True
+            _log.info(
+                "[create_default_registry] Qwen judge provider auto-registered (default=%s)",
+                qwen_default,
+            )
         except (
             RuntimeError,
             ValueError,
@@ -280,10 +302,21 @@ def create_default_registry() -> JudgeProviderRegistry:
                 default_model
             )
             gemini = GeminiJudgeProvider(gemini_client=gemini_model)
-            # Only claim default for Gemini if user did not explicitly pick Qwen.
-            gemini_default = judge_provider_override in ("", "gemini")
+            # Gemini claims default only when (a) explicitly chosen, OR
+            # (b) JUDGE_PROVIDER is empty AND Qwen did not already claim
+            # the default slot. The prefer_local=True path keeps Qwen
+            # in the default slot when both backends are registered.
+            if judge_provider_override == "gemini":
+                gemini_default = True
+            elif prefer_local and qwen_registered:
+                gemini_default = False
+            else:
+                gemini_default = judge_provider_override in ("", "gemini")
             registry.register(gemini, default=gemini_default)
-            _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
+            _log.info(
+                "[create_default_registry] Gemini provider auto-registered (default=%s)",
+                gemini_default,
+            )
         except (
             RuntimeError,
             ValueError,

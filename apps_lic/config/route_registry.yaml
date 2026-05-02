@@ -14,7 +14,15 @@ routes:
       Managed outreach generation pipeline. 9-stage HOP DAG runs inside L2
       authorize_and_execute under the apps_shared HopPipelineExecutor.
     execution_form: MANAGED_WORKFLOW
-    static_dag_ref: apps_lic.outreach_pipeline_v1.l3_dag
+    l3_required: true
+    static_dag_id: apps_lic.outreach_pipeline_v1.l3_dag
+    # File-path ref (for the apps_shared.spine_emission hasher). The
+    # identifier-style ref above is the logical binding; the file ref
+    # below is what the spine emitter hashes into static_dag_sha256.
+    static_dag_ref: apps_lic/config/l3_dag.yaml
+    selected_capability: apps_lic.outreach_v1
+    entry_node: profile_analysis
+    node_count: 9
     requires_c0_grounding: true
     requires_prompt_assembly: true
     requires_l2_execution: true

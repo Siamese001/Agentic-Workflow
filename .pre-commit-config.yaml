@@ -652,6 +652,22 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32 apps arm) -----------------
+      # Re-runs the W6 consolidated proof generator (which orchestrates the W3
+      # compiler + W5 signature re-verify + W4 mutation report read) and asserts
+      # `all_gates_pass=true` on the resulting APPS_HUNDRED_PERCENT_RUNTIME_PROOF.
+      # Gates: canary PASS · trust ∈ SIGNED set · signature VERIFIED ·
+      #        mutation 0 accepts · 0 BLOCKED · 0 NOT_VERIFIED · live re-verify.
+      # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (shared with T7s.1/2/3).
+      # Plan SSOT: .windsurf/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
+      - id: apps-fortknox-signed-proof
+        name: "T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32)"
+        entry: py ops_scripts/ci/check_apps_fortknox_signed_proof.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T7r: apps_* spine delegation (ADR-078) ----------------------------------
       # Asserts every apps_*/ top-level package imports the agentic_core spine
       # (L0_routing | L1_cognition | L2_execution). Catches the forbidden

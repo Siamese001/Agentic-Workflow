@@ -78,6 +78,26 @@ class SourceDiscoveryService:
         _emit_applies_guardrail("p0", "source_discovery", "service_init")
         _emit_snapshots_state("p0", "source_discovery", "service_state")
 
+    def discover_from_query(
+        self,
+        query: str,
+        max_sources: int = 10,
+        trace_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Query-driven source discovery.
+
+        Thin alias around :meth:`discover_sources` with no seed_urls. Exposes
+        the canonical "discover from query" interface alongside
+        :meth:`discover_from_seed_list` for symmetric API surfacing. The
+        underlying mock-or-real discovery delegates to ``discover_sources``.
+        """
+        return self.discover_sources(
+            query=query,
+            seed_urls=None,
+            max_sources=max_sources,
+            trace_id=trace_id,
+        )
+
     def discover_sources(
         self,
         query: str,

@@ -278,12 +278,26 @@ class OutreachMessageAgent:
         except KeyError as e:
             raise OutreachTemplateError(f'Missing template variable {e} in {template_path}') from e
 
-    # guardian: allow-type-erasure
     def heal(self, *args, **kwargs) -> dict:
-        """heal() not implemented for OutreachMessageAgent."""
-        raise NotImplementedError("heal() not implemented for OutreachMessageAgent")
+        """No-op healing for OutreachMessageAgent.
 
-    # guardian: allow-type-erasure
+        OutreachMessageAgent renders messages from YAML prompts + MD
+        templates; it has no mutable state to heal. Convention: see
+        apps_lic/RUNBOOK.md "Heal-Method NotImpl Convention".
+        """
+        return {
+            "status": "noop",
+            "agent": "OutreachMessageAgent",
+            "reason": "prompt+template renderer has no healable surface",
+        }
+
     def heal_repository(self, *args, **kwargs) -> dict:
-        """heal_repository() not implemented for OutreachMessageAgent."""
-        raise NotImplementedError("heal_repository() not implemented for OutreachMessageAgent")
+        """No-op repository heal for OutreachMessageAgent.
+
+        See heal(): this agent owns no repository state.
+        """
+        return {
+            "status": "noop",
+            "agent": "OutreachMessageAgent",
+            "reason": "prompt+template renderer owns no repository state",
+        }

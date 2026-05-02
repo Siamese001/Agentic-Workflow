@@ -1,9 +1,9 @@
 # Apps_* End-to-End Auditability Harness — Implementation Plan
 
 **Plan ID**: `apps-e2e-auditability-harness-7c2a91`
-**Status**: Draft (plan-only; no code in this turn)
+**Status**: **COMPLETE** (closed 2026-05-02 05:55 UTC — see §20 Final Closure)
 **Tier**: T3 (multi-app, multi-layer, governance-critical)
-**Author-Gate decision (silent)**: `architecture_choice` — extend existing `tools/apps_proof/` shared harness rather than create per-app scripts. See §13.
+**Author-Gate decision (silent)**: `architecture_choice` — extend existing `tools/apps_proof/` shared harness rather than create per-app scripts. See §13. *(Implementation deviation: harness shipped at `tools/certification/apps_e2e/` instead of extending `tools/apps_proof/core/`; same architectural intent — single shared harness with thin per-app `AppSpec` declarations.)*
 
 DECISION_CAPTURED: type=architecture_choice, repo_area=tools/apps_proof, selected=extend-shared-harness-not-per-app, outcome=executed, principle=one-shared-harness-for-all-apps, precedent=strong
 
@@ -179,29 +179,29 @@ Existing `artifacts/certification/apps_rg_e2e/` is **migrated** in Wave 2 to `ap
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |---|---|---|---:|---|---|
-| **W1 — Schema + Core** | W1.1, W1.2, W1.3 | Lock schemas, build core/, no apps wired yet | ~12k | Todo | Schemas validate apps_rg's existing bundle; core/ unit tests pass |
-| **W2 — Reference (apps_rg)** | W2.1, W2.2, W2.3 | Wire apps_rg through new adapter; byte-compat with current proof | ~8k | Todo | `python -m apps_rg` + verifier produces success=true; old artifacts equivalent |
-| **W3 — Expansion** | W3.1..W3.6 | Add 6 adapters: eval, exec, lic, qna, research, rfp (one phase each) | ~24k | Todo | Each adapter either success=true OR success=false with explicit blocking_gaps[]; no silent omissions |
-| **W4 — Matrix + Anti-cheat** | W4.1, W4.2 | Generate `apps_e2e_matrix.json`; sabotage_runner integration | ~6k | Todo | Matrix mirrors all 7 bundles; sabotage tests reject mock/fixture/synthetic |
-| **W5 — agentic_core spine harness (separate)** | W5.1..W5.4 | Distinct harness, distinct artifacts, distinct verifier | ~14k | Todo | 7 core scenarios proven; harness cannot substitute for apps harness and vice versa |
-| **W6 — CI wiring + acceptance** | W6.1, W6.2 | Hook into `ops_scripts/ci/`; nightly-only initially | ~5k | Todo | All acceptance commands green on a clean checkout |
+| **W1 — Schema + Core** | W1.1, W1.2, W1.3 | Lock schemas, build core/, no apps wired yet | ~12k | **DONE** | Schemas validate apps_rg's existing bundle; core/ unit tests pass |
+| **W2 — Reference (apps_rg)** | W2.1, W2.2, W2.3 | Wire apps_rg through new adapter; byte-compat with current proof | ~8k | **DONE** | `python -m apps_rg` + verifier produces success=true; old artifacts equivalent |
+| **W3 — Expansion** | W3.1..W3.6 | Add 6 adapters: eval, exec, lic, qna, research, rfp (one phase each) | ~24k | **DONE** | Each adapter either success=true OR success=false with explicit blocking_gaps[]; no silent omissions |
+| **W4 — Matrix + Anti-cheat** | W4.1, W4.2 | Generate `apps_e2e_matrix.json`; sabotage_runner integration | ~6k | **DONE** | Matrix mirrors all 7 bundles; sabotage tests reject mock/fixture/synthetic |
+| **W5 — agentic_core spine harness (separate)** | W5.1..W5.4 | Distinct harness, distinct artifacts, distinct verifier | ~14k | **DONE** | 7 core scenarios proven; harness cannot substitute for apps harness and vice versa |
+| **W6 — CI wiring + acceptance** | W6.1, W6.2 | Hook into `ops_scripts/ci/`; nightly-only initially | ~5k | **DONE** | All acceptance commands green on a clean checkout |
 
 ## 8. Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---:|---|
-| W1.1 | Lock proof schemas | 3 schemas in `.windsurf/schemas/` | Field roster must be additive over apps_rg | ~3k | Todo |
-| W1.2 | Build `tools/apps_proof/core/` | 9 new modules | run_id/trace_root invariant, hash-binding | ~6k | Todo |
-| W1.3 | Core unit tests | `tests/unit/apps_proof/test_core_*.py` | Pure-logic tests, no app run | ~3k | Todo |
-| W2.1 | Adapter base + apps_rg adapter | 2 files in `adapters/` | Preserve apps_rg byte behavior | ~3k | Todo |
-| W2.2 | Migrate apps_rg artifacts to new path | `_layout.py`, one-shot move script | Legacy path back-compat for one cycle | ~2k | Todo |
-| W2.3 | apps_rg verifier round-trip | `tests/runtime/test_apps_e2e_*` | Reference-app must pass first | ~3k | Todo |
-| W3.1..W3.6 | Per-app adapter (one each) | 1 adapter file per app | Discover route_form / DAG presence per app | ~4k each | Todo |
-| W4.1 | Matrix builder | `core/matrix_builder.py` | Generated, never hand-authored | ~3k | Todo |
-| W4.2 | Anti-cheat / sabotage | `tests/runtime/test_apps_e2e_anti_cheat.py` | Mock/fixture/synthetic detection logic | ~3k | Todo |
-| W5.1..W5.4 | agentic_core spine harness | `tools/agentic_core_proof/` + tests | Must not import apps_proof core | ~14k | Todo |
-| W6.1 | CI gate wiring | `ops_scripts/ci/check_apps_e2e_harness.py` | Nightly first, then per-PR | ~3k | Todo |
-| W6.2 | Acceptance commands documented | `docs/runbooks/apps_e2e_harness.md` | Copy-paste runnable | ~2k | Todo |
+| W1.1 | Lock proof schemas | 3 schemas in `.windsurf/schemas/` | Field roster must be additive over apps_rg | ~3k | **DONE** |
+| W1.2 | Build shared core | 10 modules under `tools/certification/apps_e2e/` | run_id/trace_root invariant, hash-binding | ~6k | **DONE** |
+| W1.3 | Core unit tests | `tests/unit/apps_e2e/` (28 tests) | Pure-logic tests, no app run | ~3k | **DONE** |
+| W2.1 | AppSpec base + apps_rg spec | `app_specs.py` | Preserve apps_rg byte behavior | ~3k | **DONE** |
+| W2.2 | Migrate apps_rg artifacts to new path | `paths.py`, `migrate_legacy_paths.py` | Legacy path back-compat via `legacy_path_pointer.json` | ~2k | **DONE** |
+| W2.3 | apps_rg verifier round-trip | `tests/runtime/test_apps_e2e_auditability_harness.py` | Reference-app must pass first | ~3k | **DONE** |
+| W3.1..W3.6 | Per-app spec (one each) | 1 AppSpec entry per app | Discover route_form / DAG presence per app | ~4k each | **DONE** |
+| W4.1 | Matrix builder | `matrix_builder.py` | Generated, never hand-authored | ~3k | **DONE** |
+| W4.2 | Anti-cheat / sabotage | `tests/runtime/test_apps_e2e_anti_cheat.py` (8 tests) | Mock/fixture/synthetic detection logic | ~3k | **DONE** |
+| W5.1..W5.4 | agentic_core spine harness | `tools/certification/agentic_core_e2e/` + tests | AST boundary invariant test enforces no cross-imports | ~14k | **DONE** |
+| W6.1 | CI gate wiring | `ops_scripts/ci/check_apps_e2e_harness.py` | Nightly first, then per-PR | ~3k | **DONE** |
+| W6.2 | Acceptance commands documented | `docs/runbooks/apps_e2e_harness.md` | Copy-paste runnable | ~2k | **DONE** |
 
 ## 9. Acceptance Commands
 
@@ -315,4 +315,83 @@ Not applicable — plan adds a new harness package; no hotspot-driven refactorin
 
 ---
 
-**End of plan. No code in this response.**
+## 20. Final Closure (2026-05-02 05:55 UTC)
+
+### 20.1 Implementation summary
+
+| Wave | Status | Evidence |
+|---|---|---|
+| W1 — Schema + Core | **DONE** | 3 schemas at `.windsurf/schemas/apps_e2e_*.schema.json`; 10 core modules at `tools/certification/apps_e2e/`; 28 unit tests at `tests/unit/apps_e2e/` |
+| W2 — Reference (apps_rg) | **DONE** | Bundle at `artifacts/certification/apps_e2e/apps_rg/apps_rg_e2e_proof.json` shows `success=True, gaps=0`; legacy path migration via `migrate_legacy_paths.py` |
+| W3 — Expansion | **DONE** | All 8 specs registered (apps_rg, apps_eval, apps_exec, apps_lic, apps_qna, apps_research, apps_rfp, apps_underwriting_ai); honest fail-closed bundles for the 6 apps without spine receipts |
+| W4 — Matrix + Anti-cheat | **DONE** | `matrix_builder.py` generates `apps_e2e_matrix.json` from per-app bundles; 16 runtime tests (`test_apps_e2e_matrix.py` + `test_apps_e2e_anti_cheat.py`) |
+| W5 — Core spine harness | **DONE** | `tools/certification/agentic_core_e2e/` with 7 canonical scenarios; AST boundary test asserts no cross-imports between `apps_e2e` and `agentic_core_e2e` |
+| W6 — CI wiring | **DONE** | `ops_scripts/ci/check_apps_e2e_harness.py` (returns 0); `.github/workflows/apps-e2e-harness-nightly.yml` (PR verifier + nightly cron `42 3 * * *`); runbook at `docs/runbooks/apps_e2e_harness.md` |
+
+### 20.2 Deferred-scope closures (post-W6)
+
+| Item | Status | Closure |
+|---|---|---|
+| `nightly_run.py` batch driver | **DONE** | `tools/certification/apps_e2e/nightly_run.py` invokes every spec, builds matrix, prints per-app durations |
+| Legacy-path migration helper | **DONE** | `tools/certification/apps_e2e/migrate_legacy_paths.py` writes `legacy_path_pointer.json` |
+| Core harness hook-path probing | **DONE** | Probes 3 documented paths; bundle records `probed_hook_paths` for diagnosability |
+| AppSpec note tightening from L3 inspection | **DONE** | Only apps_rg + apps_lic have canonical `l3_dag.yaml`; apps_qna confirmed BYPASS via `route_registry.yaml` only |
+
+### 20.3 NEXT_STEP closures (2026-05-01 → 2026-05-02)
+
+| NEXT_STEP | Status | Evidence |
+|---|---|---|
+| `composition_root.run_scenario(scenario_id) -> dict` hook | **DONE** | Hook at `agentic_core/L0_routing/composition_root.py:198` with 4-value inner-status protocol; `terminal_cache` scenario passes through real L4 evidence-resolver determinism + fail-closed probe; 6 dedicated unit tests |
+| `apps_lic/config/l3_dag.yaml` canonical YAML | **DONE** | 9 nodes / 15 edges / max_depth=6 / no cycle / all L3 invariants pass / registry binding matches |
+| First live nightly sweep — 5 timeout apps wired | **DONE** | Shared helper `apps_shared/_apps_e2e_dry_run.py::maybe_short_circuit` called as first statement in each of `apps_eval`, `apps_exec`, `apps_lic`, `apps_research`, `apps_rfp` `__main__.main()`; `--apps-e2e-dry-run` short-circuits in 0.1s with structured marker |
+
+### 20.4 Default-emit objective — 7/7 runnable apps emit clean exit=0 bundles
+
+| App | subprocess exit | bundle.exit_code | success | gaps | mechanism |
+|---|---:|---:|:-:|---:|---|
+| apps_rg | 0 | 0 | **True** | 0 | live `--target-company` / `--auto-research-tavily` |
+| apps_qna | 0 | 0 | False | 6 | own `--dry-run` (BYPASS app, gaps legitimate) |
+| apps_eval | 0 | 0 | False | 9 | `--apps-e2e-dry-run` short-circuit |
+| apps_exec | 0 | 0 | False | 8 | `--apps-e2e-dry-run` short-circuit |
+| apps_lic | 0 | 0 | False | 9 | `--apps-e2e-dry-run` short-circuit |
+| apps_research | 0 | 0 | False | 9 | `--apps-e2e-dry-run` short-circuit |
+| apps_rfp | 0 | 0 | False | 9 | `--apps-e2e-dry-run` short-circuit |
+| apps_underwriting_ai | n/a | n/a | False | 1 | `runnable=False` (skeleton) |
+
+Matrix totals: `{discovered: 8, runnable: 7, succeeded: 1, failed: 7, not_run: 0}`. `success=True` is apps_rg-only because the other 6 apps don't yet emit spine receipts (RouteContract, L1PlanContract, L3OrchestrationReceipt, ExitReviewPacket, RuntimeExhaustBundle, OTEL trace) — those are app-owner deliverables tracked in app-specific plans, NOT harness scope.
+
+### 20.5 Adjacent fixes
+
+| Item | Status | Evidence |
+|---|---|---|
+| 2 pre-existing `test_composition_root` failures | **FIXED** | Tests patched at source module (`semantic_cache_manager`) instead of re-import target; `sys.modules[target]=None` simulates real ImportError; zero production code changes |
+
+### 20.6 Test count evolution
+
+| Pass | State |
+|---|---|
+| Initial W1-W4 | 69 pass |
+| W5-W6 | 76 pass |
+| NEXT_STEP closure (run_scenario tests) | 82 pass |
+| Pre-existing test fix + composition_root suites included | 97 pass |
+| **Default-emit closure (5 helper tests)** | **102 pass + 1 legitimate skip** |
+
+CI gate `ops_scripts/ci/check_apps_e2e_harness` returns 0.
+
+### 20.7 Files of record
+
+- **Plan SSOT**: `.windsurf/plans/apps-e2e-auditability-harness-7c2a91.md` (this file)
+- **Notion plan page**: `apps-e2e-auditability-harness-7c2a91` at `https://app.notion.com/p/apps-e2e-auditability-harness-7c2a91-35427693f55c814097d8ece4dd24cf1c`
+- **Runbook**: `docs/runbooks/apps_e2e_harness.md`
+- **Live-sweep findings**: `tools/certification/apps_e2e/live_sweep_findings.yaml`
+- **CI gate**: `ops_scripts/ci/check_apps_e2e_harness.py`
+- **Workflow**: `.github/workflows/apps-e2e-harness-nightly.yml`
+- **Shared dry-run helper**: `apps_shared/_apps_e2e_dry_run.py`
+
+### 20.8 What remains “open” (by design, not omission)
+
+Full spine integration of `apps_eval`, `apps_exec`, `apps_lic`, `apps_research`, `apps_rfp` (so each can flip `success=False → success=True` by emitting real RouteContract / L1PlanContract / etc.) is **app-owner deliverable territory**, tracked separately. The harness-level objective — *“every runnable app emits a hash-bound, run_id-bound bundle by default with exit=0”* — is fully satisfied.
+
+---
+
+**End of plan. All scope COMPLETE.**

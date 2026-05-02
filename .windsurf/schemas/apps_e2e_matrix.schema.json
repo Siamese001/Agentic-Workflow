@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agentic-workflow.local/schemas/apps_e2e_matrix.schema.json",
   "title": "AppsE2EMatrix",
-  "description": "All-apps roll-up matrix. Generated from per-app proof bundles, never hand-authored.",
+  "description": "All-apps roll-up matrix. Generated from per-app proof bundles, never hand-authored. W1.3 (2026-05-02) added per-row certification_level and totals.certification_level_breakdown.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -24,6 +24,7 @@
         "type": "object",
         "required": [
           "app_name",
+          "certification_level",
           "discovered",
           "entrypoint_command",
           "entrypoint_runnable",
@@ -45,6 +46,16 @@
         ],
         "properties": {
           "app_name": {"type": "string"},
+          "certification_level": {
+            "type": "string",
+            "enum": [
+              "EMITS_BUNDLE",
+              "FAILS_CLOSED_WITH_GAPS",
+              "SPINE_COMPLETE_CERTIFIED",
+              "WAIVED_SKELETON",
+              "WAIVED_NOT_RUNTIME_APP"
+            ]
+          },
           "discovered": {"type": "boolean"},
           "entrypoint_command": {"type": ["string", "null"]},
           "entrypoint_runnable": {"type": "boolean"},
@@ -68,13 +79,31 @@
     },
     "totals": {
       "type": "object",
-      "required": ["discovered", "runnable", "succeeded", "failed", "not_run"],
+      "required": ["discovered", "runnable", "succeeded", "failed", "not_run", "certification_level_breakdown"],
       "properties": {
         "discovered": {"type": "integer"},
         "runnable": {"type": "integer"},
         "succeeded": {"type": "integer"},
         "failed": {"type": "integer"},
-        "not_run": {"type": "integer"}
+        "not_run": {"type": "integer"},
+        "certification_level_breakdown": {
+          "type": "object",
+          "description": "Sum of values MUST equal totals.discovered.",
+          "required": [
+            "EMITS_BUNDLE",
+            "FAILS_CLOSED_WITH_GAPS",
+            "SPINE_COMPLETE_CERTIFIED",
+            "WAIVED_SKELETON",
+            "WAIVED_NOT_RUNTIME_APP"
+          ],
+          "properties": {
+            "EMITS_BUNDLE": {"type": "integer", "minimum": 0},
+            "FAILS_CLOSED_WITH_GAPS": {"type": "integer", "minimum": 0},
+            "SPINE_COMPLETE_CERTIFIED": {"type": "integer", "minimum": 0},
+            "WAIVED_SKELETON": {"type": "integer", "minimum": 0},
+            "WAIVED_NOT_RUNTIME_APP": {"type": "integer", "minimum": 0}
+          }
+        }
       }
     }
   }

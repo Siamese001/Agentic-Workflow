@@ -126,6 +126,19 @@ ALLOWLIST_PATHS: frozenset[str] = frozenset(
         # top-level dirs are valid), not an exclusion set. Semantically orthogonal to
         # GLOBAL_EXCLUDED_DIRS; must remain a deliberate literal.
         "ops_scripts/general/validate_structure.py",
+        # 2026-05-02 (session-burndown-2026-05-02-c8f3a4 W1): mixin_audit is a one-shot
+        # audit tool — its EXCLUDE_DIRS literal mixes canonical tokens (.venv, venv,
+        # node_modules, __pycache__, archives) with repo-specific tombstones
+        # (tools_graveyard_w5.12, _smoke_v1_coerce_e9aa09). Importing GLOBAL_EXCLUDED_DIRS
+        # would force the literal to also drop the tombstone-specific entries, which
+        # breaks the audit's actual scope. Allowlisted as deliberate scan-control set.
+        "tools/analysis/mixin_audit.py",
+        # 2026-05-02 (session-burndown-2026-05-02-c8f3a4 W1): registry_consumer_resolver
+        # uses {"tests", "archives", "_archived", "venv", ".venv", "site-packages"} —
+        # the "tests" + "_archived" + "site-packages" entries are NOT in canonical
+        # GLOBAL_EXCLUDED_DIRS (which excludes test directories explicitly). This is a
+        # deliberate ADG-consumer-walk skip set, not a shadow SSOT.
+        "agentic_core/adg/registry/registry_consumer_resolver.py",
     },
 )
 
@@ -151,6 +164,11 @@ ALLOWLIST_PATH_PREFIXES: tuple[str, ...] = (
     # These scripts are short-lived and frequently deleted; allowlisting the
     # prefix keeps the gate from pinning every debug session.
     "tools/debug/",
+    # 2026-05-02 (session-burndown-2026-05-02-c8f3a4 W1): tools/_oneoff/ is the
+    # tombstoned-scratch territory (per ssot-folder-enforcement.md as a forbidden
+    # NEW-file root). Pre-existing files there are intentionally throwaway and
+    # gitignored; same precedent as tools/debug/ and tools/archive/.
+    "tools/_oneoff/",
 )
 
 DEFAULT_SCAN_ROOTS: tuple[str, ...] = (

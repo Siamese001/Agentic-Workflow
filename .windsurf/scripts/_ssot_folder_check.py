@@ -60,6 +60,12 @@ _SCRIPTS_ALLOW = (
     re.compile(r"^scripts/verify_all_requirements_(gates|merkle_root)\.py$"),
     re.compile(r"^scripts/c0_evidence_harness\.py$"),
     re.compile(r"^scripts/proof/.+\.py$"),
+    # Fort Knox compilers-of-truth (scripts/compile_requirement_signoff.py
+    # and scripts/compile_apps_e2e_signoff.py — sole producers of the
+    # respective *_signoff_report.json envelopes). This archetype is
+    # architectural: the compiler MUST live at a stable, audit-friendly
+    # path that CI gates and constitutional \u00a732 can reference directly.
+    re.compile(r"^scripts/compile_[a-z0-9_]+_signoff\.py$"),
 )
 
 # repo-root *.py — only conftest.py is canonical at the root.

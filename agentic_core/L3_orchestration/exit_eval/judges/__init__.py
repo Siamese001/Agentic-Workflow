@@ -14,10 +14,12 @@ contract defined in ``graders.llm_judge``. They share:
 
 Adapter selection:
 
-- ``AnthropicJudge`` — uses the Anthropic Messages API.
-- ``OpenAIJudge`` — uses the OpenAI Chat Completions API.
+- ``QwenJudge`` — local vLLM (OpenAI-compatible Chat Completions). Recommended
+  default for cost / latency / availability per the 2026-05-02 audit.
+- ``AnthropicJudge`` — uses the Anthropic Messages API. Escalation path.
+- ``OpenAIJudge`` — uses the OpenAI Chat Completions API. Escalation path.
 - ``HttpJudge`` — provider-agnostic generic HTTP adapter for custom
-  endpoints or local vLLM/Ollama servers.
+  endpoints or arbitrary local servers.
 
 All adapters depend only on ``tools.enhanced_http`` internally (if
 available) for retry/backoff/timeout wrapping — falling back to
@@ -36,11 +38,15 @@ from agentic_core.L3_orchestration.exit_eval.judges.prompt_templates import (
     RUBRIC_PROMPTS,
     build_judge_prompt,
 )
+from agentic_core.L3_orchestration.exit_eval.judges.qwen_judge import (
+    QwenJudge,
+)
 
 __all__ = [
     "AnthropicJudge",
     "HttpJudge",
     "OpenAIJudge",
+    "QwenJudge",
     "RUBRIC_PROMPTS",
     "build_judge_prompt",
 ]

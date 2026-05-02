@@ -310,16 +310,25 @@ def _emit_marker(
     accepted: bool,
     model_used: str,
     fallback_reason: str,
+    request_id: str = "",
+    rationale_chars: int = 0,
 ) -> None:
-    """Best-effort ``JUDGE_DECISION`` marker. Never raises."""
-    try:
-        from tools.capture.append_marker import append_marker  # noqa: PLC0415
-    except ImportError:
-        return
+    """Best-effort ``JUDGE_DECISION`` marker + telemetry. Never raises.
+
+    Wired by plan ``apps-underwriting-feature-complete-aa79a7`` W5 P5.1
+    to use the live rubric id + version from
+    :class:`apps_underwriting_ai.services.RubricWiringService` instead of
+    hardcoded constants, and to additionally surface the judge outcome
+    via :class:`apps_underwriting_ai.services.LLMJudgeTelemetryService`.
+    Both enhancements are fail-soft — any failure falls through to the
+    pre-existing marker behavior (regulated-domain compliance floor).
+    """
+    rubric_id, rubric_version = _load_rubric_identity_safe()
     payload = (
         "JUDGE_DECISION: type=judge_decision, "
         "app_name=apps_underwriting_ai.decision_rationale, "
-        "rubric_id=underwriting_decision_rationale_v1, "
+        f"rubric_id={rubric_id}, "
+        f"rubric_version={rubric_version}, "
         "rubric_hash=inline, "
         f"accepted={accepted}, "
         "composite=0.0, "
@@ -329,6 +338,49 @@ def _emit_marker(
         "latency_ms=0.0"
     )
     try:
-        append_marker(payload, session_hint="apps_underwriting_ai.decision")
-    except (OSError, PermissionError):
+        from tools.capture.append_marker import append_marker  # noqa: PLC0415
+
+        try:
+            append_marker(payload, session_hint="apps_underwriting_ai.decision")
+        except (OSError, PermissionError):
+            pass
+    except ImportError:
         pass
+
+    # Additionally emit via ObservabilityAdapter for runtime telemetry
+    # consumers. Fail-soft — never raises.
+    try:
+        from apps_underwriting_ai.services import (  # noqa: PLC0415
+            JudgeTelemetryEvent,
+            LLMJudgeTelemetryService,
+        )
+
+        LLMJudgeTelemetryService().emit(
+            JudgeTelemetryEvent(
+                request_id=request_id,
+                rubric_id=rubric_id,
+                rubric_version=rubric_version,
+                passed=accepted,
+                model_used=model_used,
+                fallback_reason=fallback_reason,
+                rationale_chars=rationale_chars,
+            )
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- telemetry is fail-soft; any failure must fall through to preserve the deterministic rationale pipeline (regulated-domain compliance floor)
+        _LOGGER.info(
+            "[apps_underwriting_ai] judge_result telemetry emit skipped: %s", exc
+        )
+
+
+def _load_rubric_identity_safe() -> tuple[str, int]:
+    """Return (rubric_id, rubric_version); fall back on any failure."""
+    try:
+        from apps_underwriting_ai.services import (  # noqa: PLC0415
+            RubricWiringService,
+        )
+
+        spec = RubricWiringService().load()
+        return spec.rubric_id, int(spec.rubric_version)
+    except Exception as exc:  # guardian: allow-broad-exception -- rubric loader touches disk + yaml + dataclass construction; fail-soft to prior hardcoded identity so the judge marker pipeline never breaks (regulated-domain compliance floor)
+        _LOGGER.info("[apps_underwriting_ai] rubric load fallback: %s", exc)
+        return "underwriting_decision_rationale_v1", 1

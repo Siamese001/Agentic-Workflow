@@ -187,13 +187,65 @@ def _adg_bootstrap() -> None:
         _log.warning("[ADG] bootstrap unavailable: %s", exc)
 
 
+_HOP_PLAN_RATIONALE = (
+    "apps_rg is a deterministic HOP pipeline. Plan is hard-coded by route "
+    "selection; no model-driven planning is required. Grounding and prompt "
+    "assembly are handled internally by the narrative HOPs and do not require "
+    "separate C0/PA stages at the spine level."
+)
+
+
+def _apps_rg_emission_config(
+    target_company: str | None,
+    target_role: str | None,
+):
+    """Build the ``EmissionConfig`` for an apps_rg live run.
+
+    Uses the shared ``apps_shared.spine_emission`` helper — the same one
+    apps_exec/apps_lic/apps_eval/apps_research/apps_rfp use. apps_rg used
+    to carry its own 700-LOC copy under ``apps_rg/runtime/``; that
+    duplication was collapsed per plan ``collapse-apps-rg-runtime-b7e2f5``.
+    """
+    from pathlib import Path
+
+    from apps_shared.spine_emission import EmissionConfig
+    from apps_shared.spine_emission.contracts import L1PlanStep
+
+    repo_root = Path(__file__).resolve().parents[1]
+    return EmissionConfig(
+        app_name="apps_rg",
+        entrypoint_command="python -m apps_rg",
+        runs_root=repo_root / "artifacts" / "apps_rg" / "runs",
+        route_registry_path=repo_root / "apps_rg" / "config" / "route_registry.yaml",
+        l3_dag_path=repo_root / "apps_rg" / "config" / "l3_dag.yaml",
+        plan_steps=[
+            L1PlanStep(step_id="hop_0_intake", name="HOP-0 Intake", kind="ingest"),
+            L1PlanStep(step_id="hop_1_extract", name="HOP-1 Extraction", kind="transform"),
+            L1PlanStep(step_id="hop_2_score", name="HOP-2 Scoring", kind="score"),
+            L1PlanStep(step_id="hop_3_assemble", name="HOP-3 Resume Assembly", kind="render"),
+            L1PlanStep(step_id="hop_4_narrative", name="HOP-4 Narrative Pass", kind="render", optional=True),
+            L1PlanStep(step_id="hop_5_docx", name="HOP-5 DOCX Export", kind="render", optional=True),
+        ],
+        plan_rationale=_HOP_PLAN_RATIONALE,
+        expects_c0_grounding=False,
+        expects_prompt_assembly=False,
+        expects_static_dag=True,
+        expected_execution_form="DETERMINISTIC_PIPELINE",
+        expected_l3_path="BYPASSED",
+        selected_capability="apps_rg.resume_generation_v1",
+        target_company=target_company,
+        target_role=target_role,
+        repo_root=repo_root,
+    )
+
+
 def main() -> None:
     _adg_bootstrap()
     import argparse
     import asyncio
     from pathlib import Path
 
-    from apps_rg.runtime import governed_run
+    from apps_shared.spine_emission import governed_run
     from apps_rg.scripts.generate_resume import main as _run
 
     parser = argparse.ArgumentParser(prog="apps_rg", add_help=True)
@@ -233,11 +285,11 @@ def main() -> None:
 
     # Wrap the deterministic HOP pipeline in genuine spine receipts.
     # `governed_run` emits U0/L1/L0/L3-bypass on enter; L2/Exit/L6/OTEL on exit.
-    with governed_run(
+    cfg = _apps_rg_emission_config(
         target_company=args.target_company,
         target_role=args.target_role,
-        cli_args=sys.argv[1:],
-    ) as gr:
+    )
+    with governed_run(cfg, cli_args=sys.argv[1:]) as gr:
         with gr.span("apps_rg.entrypoint"):
             with gr.span("L2_execute.generate_resume"):
                 asyncio.run(_run())

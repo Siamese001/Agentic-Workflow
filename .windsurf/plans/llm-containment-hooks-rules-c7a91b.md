@@ -46,12 +46,12 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| 1.1 | Create `.codeiumignore` | repo-root `.codeiumignore` | PP-1 unbounded indexing | ~2K | 🔄 IN PROGRESS |
-| 1.2 | Author grep-budget post-hook audit | `.windsurf/scripts/post_cascade_grep_budget_audit.py` | PP-2 shotgun grep | ~3K | 🔄 IN PROGRESS |
-| 1.3 | Author `scope-containment.md` rule | `.windsurf/rules/scope-containment.md` | PP-3 silent scope creep | ~2K | 🔄 IN PROGRESS |
-| 1.4 | Wire hook into `post_cascade_response` chain | `.windsurf/hooks.json` | integration | ~1K | 🔄 IN PROGRESS |
-| 2.1 | Smoke-test audit script (run manually on a synthetic response) | — | verify fail-open | ~1K | 🔲 TODO |
-| 2.2 | Notion writeback: Plans DB row | Notion MCP | durable record | ~2K | 🔲 TODO |
+| 1.1 | Create `.codeiumignore` | repo-root `.codeiumignore` | PP-1 unbounded indexing | ~2K | ✅ DONE |
+| 1.2 | Author grep-budget post-hook audit | `.windsurf/scripts/post_cascade_grep_budget_audit.py` | PP-2 shotgun grep | ~3K | ✅ DONE |
+| 1.3 | Author `scope-containment.md` rule | `.windsurf/rules/scope-containment.md` | PP-3 silent scope creep | ~2K | ✅ DONE |
+| 1.4 | Wire hook into `post_cascade_response` chain | `.windsurf/hooks.json` | integration | ~1K | ✅ DONE |
+| 2.1 | Smoke-test audit script (run manually on a synthetic response) | — | verify fail-open | ~1K | ✅ DONE |
+| 2.2 | Notion writeback: Plans DB row | Notion MCP | durable record | ~2K | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -141,12 +141,14 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 ## Success Criteria
 
-- [ ] `.codeiumignore` exists and excludes `archives/`, `reports/`, `data/`, and most of `artifacts/`
-- [ ] `post_cascade_grep_budget_audit.py` authored, fail-open, bypass honored
-- [ ] `scope-containment.md` rule authored, always_on, lean
-- [ ] `hooks.json` wires the new audit in `post_cascade_response`
-- [ ] Smoke test passes (empty + over-cap + bypass)
-- [ ] Notion Plans DB row created
+- [x] `.codeiumignore` exists and excludes `archives/`, `reports/`, `data/`, and most of `artifacts/`
+- [x] `post_cascade_grep_budget_audit.py` authored, fail-open, bypass honored
+- [x] `scope-containment.md` rule authored, always_on, lean
+- [x] `hooks.json` wires the new audit in `post_cascade_response`
+- [x] Smoke test passes (empty=rc0, over-cap=rc0 + stderr warning + JSONL row, bypass=rc0 + JSONL row with bypass=true) — verified 2026-05-02
+- [x] Notion Plans DB row created (page `35327693-f55c-81c1-8f7f-d51979ceb51c`)
+
+**Status: ✅ COMPLETED 2026-05-02**
 
 ---
 

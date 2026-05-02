@@ -1,27 +1,27 @@
 """
 apps_research Reasoning Layer — Autonomous Research Engine Agents.
 
-Use lazy exports so package import stays safe when optional runtime dependencies
-are not installed yet.
+Eagerly re-exports the agent classes from their submodules. Earlier this
+package used a `__getattr__` lazy-import pattern, but that pattern is
+shadowed by Python's normal submodule lookup when the export name
+matches the submodule filename (e.g. `KnowledgeSynthesisAgent` is both
+the class AND the file `KnowledgeSynthesisAgent.py`). The shadowing
+caused `from apps_research.reasoning import KnowledgeSynthesisAgent` to
+return the MODULE rather than the class, breaking instantiation.
+
+Eager imports avoid the shadowing and keep the public surface intact.
 """
 
 from __future__ import annotations
 
-from importlib import import_module
+from apps_research.reasoning.InsightExtractionAgent import InsightExtractionAgent
+from apps_research.reasoning.KnowledgeSynthesisAgent import KnowledgeSynthesisAgent
+from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+from apps_research.reasoning.SourceDiscoveryAgent import SourceDiscoveryAgent
 
-_EXPORTS = {
-    "ResearchOrchestrator": "apps_research.reasoning.ResearchOrchestrator",
-    "SourceDiscoveryAgent": "apps_research.reasoning.SourceDiscoveryAgent",
-    "InsightExtractionAgent": "apps_research.reasoning.InsightExtractionAgent",
-    "KnowledgeSynthesisAgent": "apps_research.reasoning.KnowledgeSynthesisAgent",
-}
-
-__all__ = list(_EXPORTS)
-
-
-def __getattr__(name: str):
-    module_path = _EXPORTS.get(name)
-    if module_path is None:
-        raise AttributeError(f"module 'apps_research.reasoning' has no attribute {name!r}")
-    module = import_module(module_path)
-    return getattr(module, name)
+__all__ = [
+    "InsightExtractionAgent",
+    "KnowledgeSynthesisAgent",
+    "ResearchOrchestrator",
+    "SourceDiscoveryAgent",
+]

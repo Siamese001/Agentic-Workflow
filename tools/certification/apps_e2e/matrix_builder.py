@@ -37,10 +37,19 @@ def _row_for(spec: AppSpec) -> dict[str, Any]:
     runnable = spec.runnable
     proof_ref = relative_to_repo(paths.proof_bundle) if paths.proof_bundle.exists() else None
 
+    # Compute certification_level for this row. ALWAYS recomputed by the
+    # matrix builder — bundle-declared certification_level is never trusted
+    # (amendment 4). Imported lazily to avoid circular dependencies.
+    from tools.certification.apps_e2e.certification_levels import (
+        compute_level as _compute_cert_level,
+    )
+    _row_level = str(_compute_cert_level(bundle, spec, violations=()).value)
+
     # Default fields when bundle missing
     if bundle is None:
         return {
             "app_name": spec.app_name,
+            "certification_level": _row_level,  # W1.3 — verifier-recomputed
             "discovered": discovered,
             "entrypoint_command": spec.entrypoint_command if runnable else None,
             "entrypoint_runnable": runnable,
@@ -83,6 +92,7 @@ def _row_for(spec: AppSpec) -> dict[str, Any]:
 
     return {
         "app_name": spec.app_name,
+        "certification_level": _row_level,  # W1.3 — verifier-recomputed
         "discovered": discovered,
         "entrypoint_command": bundle.get("entrypoint_command"),
         "entrypoint_runnable": runnable,
@@ -110,6 +120,7 @@ def _row_for(spec: AppSpec) -> dict[str, Any]:
 def build_matrix() -> dict[str, Any]:
     rows = [_row_for(spec) for spec in APP_SPECS]
     commit, _ = git_head()
+    # Standard totals
     totals = {
         "discovered": sum(1 for r in rows if r["discovered"]),
         "runnable": sum(1 for r in rows if r["entrypoint_runnable"]),
@@ -117,6 +128,16 @@ def build_matrix() -> dict[str, Any]:
         "failed": sum(1 for r in rows if not r["success"] and r["proof_bundle_ref"]),
         "not_run": sum(1 for r in rows if not r["proof_bundle_ref"]),
     }
+    # W1.3 — certification-level breakdown. Sum MUST equal discovered.
+    from tools.certification.apps_e2e.certification_levels import CertificationLevel
+    level_breakdown = {lvl.value: 0 for lvl in CertificationLevel}
+    for r in rows:
+        lvl = r.get("certification_level") or "EMITS_BUNDLE"
+        if lvl in level_breakdown:
+            level_breakdown[lvl] += 1
+        else:
+            level_breakdown[lvl] = 1
+    totals["certification_level_breakdown"] = level_breakdown
     return {
         "matrix_schema_version": MATRIX_SCHEMA_VERSION,
         "generated_at_utc": utc_now_iso(),
@@ -130,16 +151,16 @@ def build_matrix() -> dict[str, Any]:
 def print_table(matrix: dict[str, Any]) -> None:
     rows = matrix["apps"]
     cols = (
-        ("App", "app_name", 24),
+        ("App", "app_name", 22),
+        ("CertLevel", "certification_level", 26),  # W1.3
         ("Entry", "entrypoint_runnable", 5),
-        ("StaticDAG", "static_dag_status", 12),
         ("L3", "l3_runtime_status", 10),
         ("Spine", "agentic_core_spine_status", 16),
         ("OTEL", "otel_status", 9),
         ("Exit", "exit_status", 8),
-        ("L6", "l6_status", 8),
-        ("Success", "success", 8),
-        ("Gap", "blocking_gaps", 40),
+        ("Exhaust", "l6_status", 8),
+        ("Success", "success", 7),
+        ("Gap", "blocking_gaps", 30),
     )
     header = "  ".join(f"{name:<{w}}" for name, _, w in cols)
     print(header)

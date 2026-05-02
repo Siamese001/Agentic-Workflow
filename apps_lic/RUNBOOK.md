@@ -134,3 +134,54 @@ apps_lic has two rollback layers:
 - **Primary on-call:** see `CODEOWNERS`
 - **L3 inference owner (composer LLM):** see `agentic_core/L3_orchestration/inference/CODEOWNERS`
 - **Compliance / HITL:** TBD
+
+## Heal-Method NotImpl Convention
+
+**Established 2026-05-02.** apps_lic agents that derive from `LICAgentBase` (or are stateless renderers) inherit a `heal(violation, **kwargs)` and `heal_repository(*args, **kwargs)` ABC contract. Three categories exist:
+
+| Category | Pattern | Example agents |
+|---|---|---|
+| **Real heal** | Implements violation-specific repair logic | `OutreachLearningAgent`, `OutreachSignalRouterAgent`, `MessageDiversityValidator` |
+| **Delegating heal** | Calls `super().heal(violation, **kwargs)` | `LicTemplateOptimizerAgent`, `PIISanitizerSpecialistAgent`, most QA agents |
+| **No-op heal** ← THIS DOC | Returns structured `{"status": "noop", "agent": <name>, "reason": <why>}` | `ExecutiveStrategyAgent`, `GovernanceShieldAgent`, `ValidatorAgent`, `OutreachMessageAgent` |
+
+### When to use no-op heal
+
+Use the no-op pattern when an agent owns **no mutable state and no repository surface** (typically: prompt-only renderers, stateless audit agents, ABC-required surface that doesn't apply). The pattern is:
+
+```python
+def heal_repository(self, *args, **kwargs) -> dict:
+    """No-op repository heal for <AgentName>.
+
+    <AgentName> <one-line role>; it owns no <state-or-repo-surface>.
+    Convention: see apps_lic/RUNBOOK.md "Heal-Method NotImpl Convention".
+    """
+    return {
+        "status": "noop",
+        "agent": "<AgentName>",
+        "reason": "<specific justification>",
+    }
+```
+
+### Why no-op instead of `raise NotImplementedError`
+
+Prior pattern: `raise NotImplementedError("heal_repository() not implemented for <Agent>")` with `# guardian: allow-type-erasure` comment.
+
+Problem: callers in the healing chain had to wrap every `heal_repository()` invocation in a try/except, OR the chain crashed on agents with no healable surface. The structured no-op:
+
+1. Eliminates exception-handling boilerplate at every call site
+2. Makes the "no-op" outcome **observable** — callers can branch on `result["status"] == "noop"`
+3. Removes the `# guardian: allow-type-erasure` exemption requirement (per constitutional §8, generic guardian comments are forbidden — `allow-type-erasure` was borderline)
+
+### Conversion completed (2026-05-02)
+
+Plan `apps-completeness-followups-287d2a` W5 converted the following sites from `raise NotImplementedError` to structured no-op:
+
+- `reasoning/ExecutiveStrategyAgent.py::heal` and `::heal_repository` (predecessor plan `907fac` W1.1)
+- `reasoning/GovernanceShieldAgent.py::heal_repository` (predecessor plan `907fac` W1.2)
+- `reasoning/ValidatorAgent.py::heal_repository`
+- `reasoning/OutreachMessageAgent.py::heal` and `::heal_repository`
+
+### What remains (and why)
+
+`utils/lic_engine_validation_capability_util.py::_validate`, `utils/lic_agent_base_util.py::_process`, `utils/hop_stage_capability_util.py::_process` retain `raise NotImplementedError` — these are **legitimate ABC template-method patterns** ("subclass must override"), not heal-chain stubs. Their NotImpl is structurally correct: invoking them on an unsubclassed instance is a programming error, not a runtime healing-chain branch. **Do not convert these to no-ops.**

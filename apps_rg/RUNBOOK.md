@@ -1,0 +1,109 @@
+# RUNBOOK — apps_rg
+
+> **When to use this:** a generated résumé is wrong, low-quality, fails ATS coverage, or contains fabricated claims.
+> **Companion docs:** `SLO.md` · `SVP_ENGINEERING_REVIEW.md` · `README.md`
+> **Owner:** see `CODEOWNERS`
+
+## On-Call Decision Tree
+
+```
+A résumé generation run is misbehaving
+├── Did the gate flag fabrication (claim with no profile evidence)?
+│   ├── YES → §1 Fabrication Violation (CRITICAL)
+│   └── NO  → continue
+├── Did ATS coverage fall below the 80% floor?
+│   ├── YES → §2 ATS Coverage Failure
+│   └── NO  → continue
+├── Did the anti-overfitting check flag low evidence density?
+│   ├── YES → §3 Anti-Overfitting Flag
+│   └── NO  → continue
+├── Is generation stalled > 5min for a single résumé?
+│   ├── YES → §4 Generation Stall
+│   └── NO  → §5 Generic
+```
+
+## §1 Fabrication Violation (CRITICAL)
+
+**Symptom:** `gate_violations=["FABRICATION:<claim>"]` — the rendered résumé contains a claim that does not trace to any entry in the candidate profile.
+
+**This is the most critical failure type.** A fabricated claim represents the candidate falsely.
+
+**Triage:**
+1. **DO NOT submit the résumé.** The gate already blocked render but verify nothing leaked downstream.
+2. Inspect the offending claim: `python -m apps_rg --inspect --run-id=<id> --filter=fabrication`.
+3. Identify whether the LLM hallucinated (engine bug) or the profile is missing the supporting entry (profile-completeness bug).
+
+**Mitigation:**
+- If engine bug → freeze the assembly engine; root-cause the prompt; add evidence-binding to the failing template.
+- If profile bug → return to candidate to complete the profile entry; do not synthesize.
+- **Never relax the no-fabrication gate.**
+
+## §2 ATS Coverage Failure (<80%)
+
+**Symptom:** `gate_violations=["ATS_COVERAGE_LOW:<pct>"]`.
+
+**Triage:**
+1. Run `python -m apps_rg --inspect --run-id=<id> --filter=ats` to surface missing keywords.
+2. Determine whether the candidate profile genuinely lacks experience for the target role (real gap) or the engine failed to surface relevant experience (engine bug).
+
+**Mitigation:**
+- If genuine gap → flag the role-fit mismatch to the user; lower target-role tier or expand profile.
+- If engine bug → re-run with `--rerender-section experience` and bisect the assembly engine.
+
+## §3 Anti-Overfitting Flag (low evidence density)
+
+**Symptom:** `gate_violations=["EVIDENCE_DENSITY_LOW"]` — claims-per-position exceeds evidence support.
+
+**Triage:** the engine compressed multiple positions into one inflated entry. Spot-check the evidence-density score per position.
+
+**Mitigation:**
+- Re-run with stricter evidence binding.
+- If repeated, freeze the achievement-prioritizer engine and root-cause.
+
+## §4 Generation Stall (>5min)
+
+**Symptom:** résumé run exceeds the 5-min hard ceiling.
+
+**Triage:**
+1. Check Anthropic / Qwen provider health.
+2. Check engine count — résumés invoking >12 specialist engines may legitimately need more time; review hard ceiling for that scope class.
+3. Check retrieval cold-start latency on the candidate-profile index.
+
+**Mitigation:**
+- Cancel the run.
+- For deadline-sensitive work, render a partial résumé with explicit `[INCOMPLETE]` markers.
+
+## §5 Generic Investigation
+
+1. `python -m apps_rg --trace --replay --run-id=<id>`.
+2. Bisect against last 24h commits to `apps_rg/engines/`.
+3. Check `apps_rg/integrations/anti_overfitting.py` and `ats_coverage.py` for threshold drift.
+
+## Rollback Procedure
+
+apps_rg produces résumés as artifacts. Rollback affects only future generations. Past rendered résumés are **immutable** and retained for audit.
+
+1. `git revert <commit>`.
+2. `python -m apps_rg --demo` smoke test.
+3. Re-arm fabrication + ATS-coverage gates.
+
+## Top-3 Failure Modes
+
+1. **Fabrication violation** → §1 (CRITICAL — candidate-trust)
+2. **ATS coverage below floor** → §2 (job-application impact)
+3. **Generation stall near deadline** → §4 (operational reality)
+
+## Key Files
+
+- `engines/achievement_prioritizer_engine.py` — claim-ranking
+- `engines/ats_coverage_engine.py` — keyword coverage check
+- `integrations/anti_overfitting.py` — evidence-density gate
+- `integrations/ats_coverage.py` — coverage gate
+- `enforcement/HardenedanthropicexecutorStrategy.py` — provider hardening
+- `bootstrap_runtime.py` — ADG bootstrap
+
+## Escalation Contacts
+
+- **Primary on-call:** see `CODEOWNERS`
+- **Provider hardening owner:** see `apps_rg/enforcement/CODEOWNERS`
+- **L0 routing owner:** see `agentic_core/L0_routing/CODEOWNERS`

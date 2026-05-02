@@ -44,6 +44,24 @@ from _w2_verifier_common import (  # noqa: E402
 # excluded from the set-equality check.
 _TOLERATED_NON_CHAIN_FILES: frozenset[str] = frozenset({
     "live_provider_attestation.json",
+    # R5_FALLBACK extra (bound via manifest.safe_fallback_decision_ref)
+    "safe_fallback_decision.json",
+    # UWG_BLOCK_PATH extras (bound via manifest.uwg_blocked_commit_receipt_ref
+    # and manifest.commit_request_ref).
+    "commit_request.json",
+    "uwg_blocked_commit_receipt.json",
+    # W4 plan fortknox-100pct-static-runtime-gap-9a3d4f:
+    # UWG_COMMIT_PATH extras
+    "uwg_commit_receipt.json",
+    "uwg_refresh_receipts.json",
+    # R3_GROUNDED_READ extras
+    "final_evidence_contract.json",
+    "retrieval_corpus_manifest.json",
+    # R4_SINGLE_ACTION extras
+    "sealed_l2_artifact.json",
+    "tool_authorization_receipt.json",
+    # MANAGED_WORKFLOW_REAL_EXECUTION extras
+    "managed_workflow_real_execution_receipt.json",
 })
 
 

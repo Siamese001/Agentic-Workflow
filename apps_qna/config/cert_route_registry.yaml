@@ -1,0 +1,29 @@
+# apps_qna L0 cert-facing route registry.
+#
+# apps_qna's PRODUCT routing (9 interview-question intent classes) lives in
+# route_registry.yaml and is consumed by the pack-builder + paste-set bandit.
+# This file is a SIBLING, dedicated to the apps_e2e certification harness:
+# it exposes apps_qna's runtime as a SINGLE_STEP deterministic pack-build
+# pipeline (intake \u2192 validate \u2192 render \u2192 seal). No retries, branches, or
+# joins; L3 runtime orchestration is correctly bypassed.
+#
+# Plan: apps-fort-knox-parity-c5d9a3 post-W10 scope expansion (2026-05-02)
+# \u2014 user requested runtime cert for apps_qna rather than WAIVED_NOT_RUNTIME_APP.
+
+app_name: apps_qna
+schema_version: "apps_qna.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_qna.pack_build_single_step_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    selected_capability: apps_qna.card_pack_build_v1
+    description: >-
+      Deterministic single-step pack build: intake interview YAML + JD +
+      experience \u2192 validate route registry + templates \u2192 render cards \u2192
+      seal output. No retries, branches, or joins.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_qna.pack_build_single_step_v1 because the entrypoint
+      is CardPackBuilder with deterministic template rendering. No managed
+      workflow is required.

@@ -33,6 +33,17 @@ from _w2_verifier_common import (
 EXPECTED_ENTRY_POINTS = {
     "R1B": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
     "MANAGED_WORKFLOW": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run.run_integrated_managed_workflow",
+    # R1A / R5 / UWG_BLOCK are thin wrappers around run_integrated_safe_reuse;
+    # the underlying runner is the actual code path that emits the chain
+    # artifacts, so the stamped entry_point matches.
+    "R1A_EXACT_CACHE": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "R5_FALLBACK": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "UWG_BLOCK_PATH": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    # W4 plan fortknox-100pct-static-runtime-gap-9a3d4f:
+    "UWG_COMMIT_PATH": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "R3_GROUNDED_READ": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "R4_SINGLE_ACTION": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "MANAGED_WORKFLOW_REAL_EXECUTION": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
 }
 
 

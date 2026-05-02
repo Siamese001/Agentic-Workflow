@@ -807,10 +807,19 @@ Format your response as:
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
 
-    # guardian: allow-type-erasure -- Required for generic typing compatibility with mypy enforcement
     def heal_repository(self, *args, **kwargs) -> dict:
-        """heal_repository() not implemented for GovernanceShieldAgent."""
-        raise NotImplementedError("heal_repository() not implemented for GovernanceShieldAgent")
+        """No-op repository heal for GovernanceShieldAgent.
+
+        GovernanceShieldAgent is a stateless audit-and-uplift agent that owns
+        no persistent repository surface. heal() (above) delegates to super()
+        for violation-level healing; this method returns a structured no-op so
+        repository-level healing chains complete without exception handling.
+        """
+        return {
+            "status": "noop",
+            "agent": "GovernanceShieldAgent",
+            "reason": "stateless audit agent owns no repository state",
+        }
 
 
 def create_governance_shield_agent() -> GovernanceShieldAgent:

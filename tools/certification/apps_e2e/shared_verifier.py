@@ -367,10 +367,40 @@ def format_violation(viol: Violation) -> str:
     return " | ".join(parts)
 
 
+def verify_with_mode(
+    bundle: dict | None,
+    spec: AppSpec,
+    mode,
+    *,
+    now=None,
+) -> list[Violation]:
+    """Mode-aware wrapper over verify_bundle (W2.3/W2.4).
+
+    Modes (see verifier_modes.VerifierMode):
+      - smoke / warn : run base verify_bundle only. Bundle-internal-consistency
+                       schema violations only. Honest-fail-closed bundles pass.
+      - strict       : add verify_strict_extras (S1-S19, N16-N20).
+
+    The `mode` argument may be a VerifierMode or a string ("smoke"/"warn"/"strict").
+    """
+    from tools.certification.apps_e2e.verifier_modes import VerifierMode, parse_mode
+    from tools.certification.apps_e2e.verifier_strict import verify_strict_extras
+
+    if isinstance(mode, str):
+        mode = parse_mode(mode)
+    base: list[Violation] = []
+    if bundle is not None:
+        base = list(verify_bundle(bundle, spec))
+    if mode == VerifierMode.STRICT:
+        base = base + verify_strict_extras(bundle, spec, base, now=now)
+    return base
+
+
 __all__ = [
     "ALLOWED_BYPASS_REASONS",
     "REQUIRED_TOP_FIELDS",
     "Violation",
     "verify_bundle",
+    "verify_with_mode",
     "format_violation",
 ]

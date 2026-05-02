@@ -1,0 +1,56 @@
+# apps_underwriting_ai spine manifest
+#
+# Declares which spine route types apps_underwriting_ai serves so the
+# runtime-mode scanner (tools/analysis/apps_spine_coverage.py) can verify
+# direct surfacing of the canonical R3 contract chain.
+#
+# This manifest is STATIC EVIDENCE only. It declares the contract surface
+# apps_underwriting_ai delegates THROUGH (via apps_shared.orchestration.
+# HopPipelineExecutor under UnderwritingHopOrchestrator). It is NOT a
+# runtime certification claim.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research W9, apps_exec W10, apps_lic W11,
+#   apps_rfp W12, apps_rg W13.
+#
+# Maturity: skeleton stage as of 2026-05-02. Real underwriting domain
+# logic (actuarial scoring, regulatory checks, OCR-driven document
+# reconciliation) is deliberately deferred per
+# apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md §"Skeleton Boundary".
+
+schema_version: 1
+app: apps_underwriting_ai
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand underwriting decision packet generation. UnderwritingRequest
+      (request_id + applicant_id + product_class + documents) → 5-stage
+      HOP pipeline (initialize_evidence → reconcile_documents →
+      derive_features → collect_evidence → assemble_decision) →
+      DecisionPacket (verdict + rationale + evidence_refs +
+      feature_summary). The pipeline emits a structured decision artifact
+      as a read-side outcome; no durable writes are issued by
+      apps_underwriting_ai itself. Downstream policy issuance / loan
+      booking systems are responsible for any durable state changes.
+
+    entry_points:
+      - apps_underwriting_ai.engines.underwriting_engine.UnderwritingEngine.run
+      - apps_underwriting_ai.reasoning.UnderwritingHopOrchestrator.UnderwritingHopOrchestrator.run
+      - apps_underwriting_ai.integrations.governed_underwriting_run.governed_underwriting_run
+      - apps_underwriting_ai.integrations.execution_adapter.ExecutionAdapter.execute
+
+    exit_points:
+      - apps_underwriting_ai.types.underwriting_types.DecisionPacket
+      - apps_underwriting_ai.types.underwriting_types.UnderwritingResult
+      - apps_underwriting_ai.integrations.spine_handoff.SpineHandoff.package
+
+# Pre-migration audit (skeleton stage):
+# - ZERO matches in apps_underwriting_ai/ for: CommitRequest, commit_request,
+#   StateDiffCandidate, proposed_state_diff, MutationIntent, durable_write,
+#   write_gateway, publish, policy_issue, loan_book, ledger_write.
+# - The DecisionPacket is a read-side artifact; downstream consumers issue
+#   any durable writes.
+# - Audit will be re-run when feature-complete domain logic lands; the
+#   read-side posture is deliberate per SVP_ENGINEERING_REVIEW.md.

@@ -603,6 +603,18 @@ def run_integrated_managed_workflow(
     )
     _emit("runtime_trace_snapshot.json", _trace_snap.to_dict())
 
+    # 10c. L7_AUDITABILITY HOW trace — mandatory cross-cutting evidence plane.
+    from agentic_core.L7_auditability.how_trace import build_how_trace as _build_how_trace
+    _how_trace = _build_how_trace(artifact_dir, chain_kind="MANAGED_WORKFLOW")
+    _emit("agentic_core_how_trace.json", _how_trace.to_dict())
+
+    # 10d. L7 route-family coverage matrix (honest accounting; non-mutating).
+    from agentic_core.L7_auditability.coverage import (
+        build_l7_route_family_coverage as _build_rfc,
+    )
+    _rfc = _build_rfc(artifact_dir, chain_kind="MANAGED_WORKFLOW", write=False)
+    _emit("agentic_core_l7_route_family_coverage.json", _rfc["payload"])
+
     # 11. Manifest
     manifest_payload = {
         "invocation_id": invocation_id,
@@ -614,6 +626,14 @@ def run_integrated_managed_workflow(
             "no_harness_stamp_receipt.json",
             "agentic_core_spine_proof.json",
         ],
+        "how_trace_ref": "artifact://agentic_core_how_trace.json",
+        "how_trace_sha256": artifact_hashes.get("agentic_core_how_trace.json", ""),
+        "l7_route_family_coverage_ref": (
+            "artifact://agentic_core_l7_route_family_coverage.json"
+        ),
+        "l7_route_family_coverage_sha256": artifact_hashes.get(
+            "agentic_core_l7_route_family_coverage.json", ""
+        ),
         "artifact_hashes": dict(artifact_hashes),
         "chain_linkage": [
             {"filename": fn, "upstream": (up or "")}

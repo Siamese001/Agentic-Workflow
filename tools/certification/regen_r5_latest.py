@@ -1,0 +1,84 @@
+"""Regenerate the R5_FALLBACK chain bundle.
+
+Writes to ``artifacts/certification/integrated_runtime/r5_latest/``.
+"""
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+LATEST = (
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r5_latest"
+)
+
+
+def main() -> int:
+    from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
+        SemanticCacheManager,
+    )
+    from agentic_core.runtime.entrypoints.integrated_fallback_run import (
+        run_integrated_fallback,
+    )
+    from tools.certification.safety.deterministic_proof_stage import (
+        DeterministicProofStage,
+    )
+    from tools.certification.safety.veto_orchestrator import VetoOrchestrator
+
+    if LATEST.exists():
+        shutil.rmtree(LATEST)
+    LATEST.mkdir(parents=True, exist_ok=True)
+
+    user_q = "What is the capital of France?"
+    cached_q = "Tell me the capital of France."
+    namespace = "test_w2_r5_fallback"
+
+    cache = SemanticCacheManager.get_instance()
+    ctx = json.dumps(
+        {
+            "body_text": user_q,
+            "namespace": namespace,
+            "tenant_id": "",
+            "policy_hash": "no-policy",
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    cache.learn(
+        ctx,
+        namespace,
+        {"text": "Paris.", "answer": "Paris.", "cached_query_text": cached_q},
+    )
+
+    os.environ.setdefault("SEMANTIC_CACHE_D2_ENABLED", "1")
+    os.environ.setdefault("AGENTIC_CORE_RUNTIME_MODE", "fixture")
+    proof = VetoOrchestrator(
+        stages=[DeterministicProofStage(verdicts={(user_q, cached_q): "SAFE"})]
+    )
+
+    result = run_integrated_fallback(
+        {"body_text": user_q, "transport": "api"},
+        namespace=namespace,
+        tenant_id="",
+        artifact_dir=LATEST,
+        veto_orchestrator=proof,
+        fallback_reason=(
+            "L0_router_selected_R5_FALLBACK_for_safety_class_intent"
+        ),
+    )
+
+    print(f"[regen_r5_latest] entrypoint_used={result.integrated_runtime_entrypoint_used}")
+    print(f"  run_id={result.run_id}")
+    print(f"  artifact_dir={LATEST.relative_to(REPO_ROOT)}")
+    print(f"  artifact_count={len(result.artifact_hashes)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

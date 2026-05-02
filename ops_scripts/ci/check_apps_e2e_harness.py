@@ -1,19 +1,31 @@
-"""CI gate for the apps_e2e auditability harness.
+"""[DEPRECATED 2026-05-02] CI gate for the apps_e2e auditability harness.
 
-Lightweight gate (NO subprocess invocations of `python -m apps_*` —
-those are expensive and run nightly via emit_proof_bundle --all):
+This gate is kept as a backward-compatible shim. Two-gate certification
+splits its responsibility into:
 
-  1. Every AppSpec must be canonically structured (per unit tests).
-  2. Every existing per-app bundle on disk must pass the shared verifier.
-  3. The matrix, if present, must mirror the bundles (no drift).
-  4. The shared verifier rule list must not regress.
+  - check_apps_e2e_bundle_emission.py  — must pass; smoke mode
+  - check_apps_e2e_spine_certification.py — informational at first; strict mode
 
 Run:
     python -m ops_scripts.ci.check_apps_e2e_harness
 
-Exit 0 = pass, 2 = harness regression detected.
+Exit 0 = pass (legacy semantics: existing bundles + matrix freshness),
+       2 = harness regression detected.
+
+The shim also emits a DeprecationWarning to stderr to alert callers to
+migrate to the two new gates.
 """
 from __future__ import annotations
+
+import warnings as _warnings  # noqa: E402
+
+_warnings.warn(
+    "check_apps_e2e_harness is deprecated; use check_apps_e2e_bundle_emission "
+    "(must-pass) and check_apps_e2e_spine_certification (informational) instead. "
+    "See plan apps-e2e-two-gate-certification-d8b3a1.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import json
 import sys

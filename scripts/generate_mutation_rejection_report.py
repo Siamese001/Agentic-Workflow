@@ -51,10 +51,26 @@ CLEAN_PATHS = {
     REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.sha256",
     REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.merkle.json",
     REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.signature.json",
+    REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_report.xlsx",
     REPO_ROOT / "artifacts" / "certification" / "final_requirement_signoff_bundle_verification.json",
     REPO_ROOT / "artifacts" / "certification" / "positive_control_RTC-REQ-001.json",
     REPO_ROOT / "certification" / "evidence_assertions.jsonl",
     REPO_ROOT / "certification" / "requirements_source.json",
+    # W2.4: widen monitoring to L7 route-family coverage matrices per chain
+    # and the agentic_core_how_trace per chain. Any in-place mutation of
+    # these upstream artifacts would desync the L7 plane's evidence
+    # wrappers from their on-disk sha256, which Fort Knox would reject at
+    # next compile.
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest" / "agentic_core_l7_route_family_coverage.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "mw_latest" / "agentic_core_l7_route_family_coverage.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r1a_latest" / "agentic_core_l7_route_family_coverage.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r5_latest" / "agentic_core_l7_route_family_coverage.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "uwg_block_latest" / "agentic_core_l7_route_family_coverage.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest" / "agentic_core_how_trace.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "mw_latest" / "agentic_core_how_trace.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r1a_latest" / "agentic_core_how_trace.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "r5_latest" / "agentic_core_how_trace.json",
+    REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "uwg_block_latest" / "agentic_core_how_trace.json",
 }
 
 
@@ -495,7 +511,7 @@ def main() -> int:
         if p.exists():
             pre_state[str(p.relative_to(REPO_ROOT)).replace("\\", "/")] = _sha256(p)
 
-    # Run all 8 scenarios
+    # Run all 8 synthesized sandbox scenarios
     scenarios = [
         scenario_01_linked_req_ids_only(),
         scenario_02_broad_all_pass(),
@@ -506,6 +522,17 @@ def main() -> int:
         scenario_07_static_artifact_for_runtime_claim(),
         scenario_08_runtime_artifact_without_otel_fields(),
     ]
+
+    # Append production-artifact mutation scenarios (plan §GAP-5). These
+    # tamper COPIES of real production artifacts, proving the compiler
+    # rejects realistic tampering — not just hand-crafted sandbox JSON.
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "tools" / "cert"))
+        import fortknox_production_mutation_driver as prod_driver  # type: ignore
+        scenarios.extend(prod_driver.generate_production_scenarios())
+    except ImportError as exc:
+        print(f"[mutation_rejection_report] WARN: production driver unavailable: {exc}",
+              file=sys.stderr)
 
     # Post-state snapshot: clean bundle paths must be unchanged
     post_state = {}

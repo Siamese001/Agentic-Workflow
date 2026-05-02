@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fortknox/apps_e2e_signoff_report.schema.json",
+  "title": "Apps_e2e Fort Knox Sign-off Report",
+  "description": "Compiler output. Sole producer: scripts/compile_apps_e2e_signoff.py. Read-only for every other consumer. Adapted from fortknox/final_requirement_signoff_report.schema.json with APPS-REQ-* namespace and apps_e2e trust levels.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "compiler_version",
+    "compiler_path",
+    "run_timestamp_utc",
+    "source_repo_root",
+    "git_commit",
+    "git_dirty",
+    "requirements_source_sha256",
+    "evidence_assertions_sha256",
+    "row_digest",
+    "evidence_digest",
+    "rows",
+    "summary",
+    "trust_level"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "apps_e2e_fortknox-v1"},
+    "compiler_version": {"type": "string"},
+    "compiler_path": {"type": "string"},
+    "compiler_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "run_timestamp_utc": {"type": "string"},
+    "source_repo_root": {"type": "string"},
+    "git_commit": {"type": "string"},
+    "git_dirty": {"type": "boolean"},
+    "requirements_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_assertions_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "row_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rows": {"type": "array", "items": {"$ref": "#/$defs/Row"}},
+    "summary": {"$ref": "#/$defs/Summary"},
+    "trust_level": {
+      "type": "string",
+      "enum": [
+        "DEVELOPMENT_PROOF",
+        "INTEGRITY_PROOF",
+        "SIGNED_PROOF",
+        "SIGNED_OFF_WITH_WAIVERS",
+        "FINAL_SIGNED_CERTIFICATION",
+        "FAILED"
+      ]
+    },
+    "positive_control_status": {"type": "string", "enum": ["PASS", "FAIL"]},
+    "schema_errors": {"type": "array", "items": {"type": "string"}}
+  },
+  "$defs": {
+    "Row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "req_id",
+        "title",
+        "claim_type",
+        "priority",
+        "requirement_group",
+        "is_final_hundred_percent_row",
+        "is_positive_control",
+        "depends_on_req_ids",
+        "required_controls",
+        "computed_status",
+        "blocking_gap",
+        "controls",
+        "assertion_ids",
+        "row_evidence_sha256",
+        "row_digest",
+        "evaluated_at_utc"
+      ],
+      "properties": {
+        "req_id": {"type": "string", "pattern": "^APPS-REQ-\\d{3}$"},
+        "title": {"type": "string"},
+        "claim_type": {"type": "string"},
+        "priority": {"type": "string"},
+        "requirement_group": {"type": "string"},
+        "is_final_hundred_percent_row": {"type": "boolean"},
+        "is_positive_control": {"type": "boolean"},
+        "owner_app": {"type": ["string", "null"]},
+        "depends_on_req_ids": {"type": "array", "items": {"type": "string"}},
+        "required_controls": {"type": "array", "items": {"type": "string"}},
+        "computed_status": {
+          "type": "string",
+          "enum": ["SIGNED_OFF", "SIGNED_OFF_WITH_WAIVER", "BLOCKED", "NOT_VERIFIED"]
+        },
+        "blocking_gap": {"type": ["string", "null"]},
+        "controls": {"type": "array", "items": {"$ref": "#/$defs/ControlEval"}},
+        "assertion_ids": {"type": "array", "items": {"type": "string"}},
+        "row_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "row_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "evaluated_at_utc": {"type": "string"}
+      }
+    },
+    "ControlEval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "passed", "reason", "assertion_id", "artifact_path", "artifact_sha256"],
+      "properties": {
+        "name": {"type": "string"},
+        "passed": {"type": "boolean"},
+        "reason": {"type": ["string", "null"]},
+        "assertion_id": {"type": ["string", "null"]},
+        "artifact_path": {"type": ["string", "null"]},
+        "artifact_sha256": {"type": ["string", "null"]}
+      }
+    },
+    "Summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["total", "signed_off", "blocked", "not_verified", "percent_signed_off"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "signed_off": {"type": "integer", "minimum": 0},
+        "signed_off_with_waiver": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "not_verified": {"type": "integer", "minimum": 0},
+        "percent_signed_off": {"type": "number"},
+        "by_claim_type": {"type": "object"},
+        "canary_status": {"type": "string"}
+      }
+    }
+  }
+}

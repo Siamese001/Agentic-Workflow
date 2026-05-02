@@ -80,10 +80,13 @@ def passed(message: str) -> int:
 
 
 def detect_chain_kind(artifact_dir: Path) -> str:
-    """Return ``"R1B"`` or ``"MANAGED_WORKFLOW"`` based on manifest.
+    """Return the chain_kind from the manifest.
 
-    Falls back to ``"R1B"`` when the manifest is missing or does not
-    declare a chain_kind — that matches the legacy behavior.
+    Recognized values: ``R1B`` (default), ``MANAGED_WORKFLOW``,
+    ``R1A_EXACT_CACHE``, ``R5_FALLBACK``, ``UWG_BLOCK_PATH``. The last
+    three reuse the R1B chain shape (same artifact set, possibly with
+    a small additive extension); the chain_kind tag distinguishes them
+    so verifiers can apply family-specific invariants.
     """
     try:
         env = load_envelope(artifact_dir, "integrated_runtime_artifact_manifest.json")
@@ -91,13 +94,29 @@ def detect_chain_kind(artifact_dir: Path) -> str:
         return "R1B"
     payload = env.get("payload", {}) if isinstance(env, dict) else {}
     kind = payload.get("chain_kind") if isinstance(payload, dict) else None
-    if kind == "MANAGED_WORKFLOW":
-        return "MANAGED_WORKFLOW"
+    if kind in (
+        "MANAGED_WORKFLOW",
+        "R1A_EXACT_CACHE",
+        "R5_FALLBACK",
+        "UWG_BLOCK_PATH",
+        # W4 plan fortknox-100pct-static-runtime-gap-9a3d4f:
+        "UWG_COMMIT_PATH",
+        "R3_GROUNDED_READ",
+        "R4_SINGLE_ACTION",
+        "MANAGED_WORKFLOW_REAL_EXECUTION",
+    ):
+        return kind
     return "R1B"
 
 
 def chain_filenames_for(kind: str) -> tuple[str, ...]:
-    """Chain artifact-filenames tuple for the given chain_kind."""
+    """Chain artifact-filenames tuple for the given chain_kind.
+
+    R1A / R5 / UWG_BLOCK reuse the R1B chain shape. UWG_BLOCK adds two
+    extra integrated artifacts (commit_request, uwg_blocked_commit_receipt)
+    handled separately by the family-specific verifier — not by this
+    common loader.
+    """
     if kind == "MANAGED_WORKFLOW":
         return W2_MW_ARTIFACT_FILENAMES
     return W2_ARTIFACT_FILENAMES

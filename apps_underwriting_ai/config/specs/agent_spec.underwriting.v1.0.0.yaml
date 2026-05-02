@@ -1,0 +1,20 @@
+spec_version: "1.0.0"
+agent_id: underwriting_decision_agent
+capability_class: underwriting_decision
+thresholds:
+  min_evidence_records: 1
+  max_unresolved_documents: 0
+  require_feature_vector: true
+metadata:
+  app: apps_underwriting_ai
+  pipeline_stages:
+    - initialize_evidence
+    - reconcile_documents
+    - derive_features
+    - collect_evidence
+    - assemble_decision
+  spine_route: R3_grounded_read
+  notes: |
+    Skeleton spec for apps_underwriting_ai. Real underwriting domain
+    parameters (risk-tier mappings, regulatory checks, actuarial features)
+    are out of scope for this build and will be layered on top of this spec.

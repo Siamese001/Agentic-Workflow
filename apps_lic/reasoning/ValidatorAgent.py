@@ -196,7 +196,18 @@ class ValidatorAgent(LICAgentBase):
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
 
-    # guardian: allow-type-erasure
     def heal_repository(self, *args, **kwargs) -> dict:
-        """heal_repository() not implemented for ValidatorAgent."""
-        raise NotImplementedError("heal_repository() not implemented for ValidatorAgent")
+        """No-op repository heal for ValidatorAgent.
+
+        ValidatorAgent applies QA rules + limited retries; it owns no
+        persistent repository state. heal() (above) delegates to super()
+        for violation-level healing; this method returns a structured no-op
+        so repository-level healing chains complete without exception
+        handling. Convention: see apps_lic/RUNBOOK.md "Heal-Method NotImpl
+        Convention".
+        """
+        return {
+            "status": "noop",
+            "agent": "ValidatorAgent",
+            "reason": "QA agent owns no repository state",
+        }

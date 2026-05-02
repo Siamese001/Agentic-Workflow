@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agentic-workflow.local/schemas/apps_e2e_proof_bundle.schema.json",
   "title": "AppE2EProofBundle",
-  "description": "Per-app end-to-end auditability proof bundle. One bundle per real `python -m apps_*` run.",
+  "description": "Per-app end-to-end auditability proof bundle. One bundle per real `python -m apps_*` run. W1.2/W1.3 (2026-05-02) added advisory certification_level + runtime_mode_classification + fixture_data_used + fixture_runtime_mode (verifier always recomputes certification_level).",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -67,8 +67,34 @@
         "fail_closed"
       ]
     },
+    "runtime_mode_classification": {
+      "type": "string",
+      "description": "W1.2 — normalized classification used by the strict verifier. Strict mode allows ONLY 'live_run'.",
+      "enum": [
+        "live_run",
+        "dry_run_short_circuit",
+        "standalone_orchestrator_pre_spine",
+        "fixture_runtime",
+        "mock_runtime",
+        "skeleton_only",
+        "unknown"
+      ]
+    },
+    "certification_level": {
+      "type": "string",
+      "description": "W1.2 advisory only — verifier ALWAYS recomputes; bundle-declared value is never trusted (amendment 4).",
+      "enum": [
+        "EMITS_BUNDLE",
+        "FAILS_CLOSED_WITH_GAPS",
+        "SPINE_COMPLETE_CERTIFIED",
+        "WAIVED_SKELETON",
+        "WAIVED_NOT_RUNTIME_APP"
+      ]
+    },
     "mock_mode_detected": {"type": "boolean"},
     "fixture_mode_detected": {"type": "boolean"},
+    "fixture_data_used": {"type": "boolean", "description": "W1.2 amendment 3 — deterministic INPUT data is allowed in strict mode."},
+    "fixture_runtime_mode": {"type": "boolean", "description": "W1.2 amendment 3 — fake RUNTIME is rejected in strict mode."},
     "synthetic_trace_detected": {"type": "boolean"},
     "success": {"type": "boolean"},
     "blocking_gaps": {"type": "array", "items": {"type": "string"}},

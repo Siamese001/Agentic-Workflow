@@ -194,6 +194,8 @@ def build_spine_proof_payload(
             "x3_disposition_receipt.json",
             "runtime_exhaust_bundle.json",
             "runtime_trace_snapshot.json",
+            "agentic_core_how_trace.json",
+            "agentic_core_l7_route_family_coverage.json",
             "integrated_runtime_artifact_manifest.json",
             "no_harness_stamp_receipt.json",
         )
@@ -215,6 +217,8 @@ def build_spine_proof_payload(
             "x3_disposition_receipt.json",
             "runtime_exhaust_bundle.json",
             "runtime_trace_snapshot.json",
+            "agentic_core_how_trace.json",
+            "agentic_core_l7_route_family_coverage.json",
             "integrated_runtime_artifact_manifest.json",
             "no_harness_stamp_receipt.json",
         )
@@ -285,6 +289,55 @@ def build_spine_proof_payload(
     )
     verifier_result_ref: str | None = None  # populated by record_w2_verifier_results
 
+    # ── L7_AUDITABILITY HOW trace refs ──
+    # The HOW trace is mandatory; spine bundle MUST point to it.
+    how_trace_ref = _hash_or_none("agentic_core_how_trace.json")
+    how_trace_env = _read_json(artifact_dir / "agentic_core_how_trace.json")
+    how_trace_status = ""
+    if isinstance(how_trace_env, dict):
+        ht_payload = how_trace_env.get("payload", {}) or {}
+        ht_success = bool(ht_payload.get("success", False))
+        how_trace_status = (
+            "L7_HOW_TRACE_PROVEN" if ht_success else "L7_HOW_TRACE_BLOCKED"
+        )
+    if not how_trace_ref:
+        blocking.append(
+            "agentic_core_how_trace.json missing — L7_AUDITABILITY plane "
+            "requires a HOW trace for every governed run"
+        )
+        how_trace_status = "L7_HOW_TRACE_MISSING"
+
+    # ── L7 route-family coverage matrix refs ──
+    # Mandatory honest accounting of route-family L7 coverage.
+    rfc_ref = _hash_or_none("agentic_core_l7_route_family_coverage.json")
+    rfc_env = _read_json(
+        artifact_dir / "agentic_core_l7_route_family_coverage.json"
+    )
+    rfc_status = ""
+    rfc_summary: dict[str, Any] = {}
+    if isinstance(rfc_env, dict):
+        rfc_payload = rfc_env.get("payload", {}) or {}
+        rfc_summary = dict(rfc_payload.get("summary", {}) or {})
+        # Status surfaces whether *any* route family is CERTIFIED in this run.
+        # If certified>=1, status=PROVEN (the run-family is real-runtime).
+        # If structural_only>=1 and certified==0, STRUCTURAL_ONLY.
+        # If everything is NOT_CERTIFIED, MISSING.
+        cert_n = int(rfc_summary.get("certified", 0) or 0)
+        struct_n = int(rfc_summary.get("structural_only", 0) or 0)
+        if cert_n >= 1:
+            rfc_status = "L7_ROUTE_FAMILY_COVERAGE_PROVEN"
+        elif struct_n >= 1:
+            rfc_status = "L7_ROUTE_FAMILY_COVERAGE_STRUCTURAL_ONLY"
+        else:
+            rfc_status = "L7_ROUTE_FAMILY_COVERAGE_MISSING"
+    if not rfc_ref:
+        blocking.append(
+            "agentic_core_l7_route_family_coverage.json missing — "
+            "L7_AUDITABILITY plane requires a route-family coverage matrix "
+            "for every governed run"
+        )
+        rfc_status = "L7_ROUTE_FAMILY_COVERAGE_MISSING"
+
     # --- blocking-gap accumulation ---
     for fn in REQUIRED_FILES:
         h = _hash_or_none(fn)
@@ -346,6 +399,41 @@ def build_spine_proof_payload(
             "MW_STRUCTURAL_ONLY_PROVEN" if not blocking
             else "MW_STRUCTURAL_ONLY_BLOCKED"
         )
+    elif chain_kind == "R1A_EXACT_CACHE":
+        spine_status = (
+            "R1A_EXACT_CACHE_PROVEN" if not blocking
+            else "R1A_EXACT_CACHE_BLOCKED"
+        )
+    elif chain_kind == "R5_FALLBACK":
+        spine_status = (
+            "R5_FALLBACK_PROVEN" if not blocking
+            else "R5_FALLBACK_BLOCKED"
+        )
+    elif chain_kind == "UWG_BLOCK_PATH":
+        spine_status = (
+            "UWG_BLOCK_PATH_PROVEN" if not blocking
+            else "UWG_BLOCK_PATH_BLOCKED"
+        )
+    elif chain_kind == "UWG_COMMIT_PATH":
+        spine_status = (
+            "UWG_COMMIT_PATH_PROVEN" if not blocking
+            else "UWG_COMMIT_PATH_BLOCKED"
+        )
+    elif chain_kind == "R3_GROUNDED_READ":
+        spine_status = (
+            "R3_GROUNDED_READ_PROVEN" if not blocking
+            else "R3_GROUNDED_READ_BLOCKED"
+        )
+    elif chain_kind == "R4_SINGLE_ACTION":
+        spine_status = (
+            "R4_SINGLE_ACTION_PROVEN" if not blocking
+            else "R4_SINGLE_ACTION_BLOCKED"
+        )
+    elif chain_kind == "MANAGED_WORKFLOW_REAL_EXECUTION":
+        spine_status = (
+            "MW_REAL_EXECUTION_PROVEN" if not blocking
+            else "MW_REAL_EXECUTION_BLOCKED"
+        )
     else:
         spine_status = (
             "R1B_TERMINAL_SHORTCIRCUIT_PROVEN" if not blocking
@@ -399,6 +487,17 @@ def build_spine_proof_payload(
         "otel_or_runtime_trace_ref": otel_or_runtime_trace_ref,
         "artifact_manifest_ref": artifact_manifest_ref,
         "verifier_result_ref": verifier_result_ref,
+        "how_trace_ref": how_trace_ref,
+        "how_trace_sha256": how_trace_ref or "",
+        "how_trace_status": how_trace_status,
+        "how_trace_verifier_ref": "ops_scripts.ci.verify_agentic_core_how_trace",
+        "l7_route_family_coverage_ref": rfc_ref,
+        "l7_route_family_coverage_sha256": rfc_ref or "",
+        "l7_route_family_coverage_status": rfc_status,
+        "l7_route_family_coverage_summary": rfc_summary,
+        "l7_route_family_coverage_verifier_ref": (
+            "ops_scripts.ci.verify_agentic_core_l7_route_family_coverage"
+        ),
     }
 
 

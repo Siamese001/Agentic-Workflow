@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fortknox/apps_e2e_requirements.schema.json",
+  "title": "Apps_e2e Fort Knox Requirements Source",
+  "description": "Canonical declaration of apps_* end-to-end certification requirements. Authored once; consumed by scripts/compile_apps_e2e_signoff.py. Sibling to certification/requirements_source.json (agentic_core Fort Knox catalog) with APPS-REQ-* namespace.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at_utc",
+    "claim_type_required_controls",
+    "requirements"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"type": "string", "const": "apps_e2e_fortknox-v1"},
+    "generated_at_utc": {"type": "string"},
+    "purpose": {"type": "string"},
+    "requirement_count": {"type": "integer", "minimum": 1},
+    "positive_control_req_id": {
+      "type": "string",
+      "pattern": "^APPS-REQ-\\d{3}$",
+      "description": "The canary row. Compiler flips this to FAIL if its own plumbing is broken."
+    },
+    "claim_type_required_controls": {
+      "type": "object",
+      "description": "Map of claim_type -> list of required control names. Consumed by compiler for per-row control checks.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"$ref": "#/$defs/ControlName"}
+      }
+    },
+    "final_hundred_percent_groups": {
+      "type": "array",
+      "items": {"type": "string"},
+      "default": ["Apps_e2e 100 Percent Standard"]
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/Requirement"}
+    }
+  },
+  "$defs": {
+    "Requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "req_id",
+        "title",
+        "priority",
+        "requirement_group",
+        "claim_type",
+        "required_proof_depth",
+        "acceptance_rule",
+        "fail_closed_if_missing",
+        "depends_on_req_ids",
+        "is_final_hundred_percent_row",
+        "is_positive_control",
+        "required_controls",
+        "allowed_verifier_commands",
+        "allowed_artifact_classes",
+        "freshness_hours"
+      ],
+      "properties": {
+        "req_id": {"type": "string", "pattern": "^APPS-REQ-\\d{3}$"},
+        "title": {"type": "string", "minLength": 1},
+        "priority": {"type": "string", "enum": ["P0", "P1", "P2", "P3"]},
+        "requirement_group": {"type": "string", "minLength": 1},
+        "claim_type": {
+          "type": "string",
+          "enum": [
+            "APPS_BUNDLE_EMISSION",
+            "APPS_SPINE_CERTIFIED",
+            "APPS_WAIVER",
+            "APPS_MATRIX_GOVERNANCE",
+            "APPS_NEGATIVE_CONTROL",
+            "APPS_STATIC_CONTRACT",
+            "APPS_POSITIVE_CONTROL"
+          ]
+        },
+        "required_proof_depth": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical tokens: SMOKE_EVIDENCE / STRICT_EVIDENCE / WAIVER_EVIDENCE / CANARY_EVIDENCE."
+        },
+        "acceptance_rule": {"type": "string", "minLength": 1},
+        "fail_closed_if_missing": {"type": "boolean"},
+        "depends_on_req_ids": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^APPS-REQ-\\d{3}$"}
+        },
+        "is_final_hundred_percent_row": {"type": "boolean"},
+        "is_positive_control": {
+          "type": "boolean",
+          "description": "True iff this row is the compiler canary. Exactly one row must have this true."
+        },
+        "required_controls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/ControlName"}
+        },
+        "supplemental_controls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ControlName"},
+          "default": []
+        },
+        "allowed_verifier_commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "description": "Exact verifier/emitter command paths allowed to generate assertions for this row. Enforced by producer allowlist (constitutional \u00a732)."
+        },
+        "allowed_artifact_classes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/ArtifactClass"}
+        },
+        "freshness_hours": {"type": "integer", "minimum": 1, "maximum": 8760},
+        "required_ci_gate": {"type": ["string", "null"]},
+        "required_artifacts": {"type": "array", "items": {"type": "string"}, "default": []},
+        "owner_app": {
+          "type": ["string", "null"],
+          "description": "Set for per-app rows (APPS-REQ-025..030); null for cross-cutting rows."
+        },
+        "waiver_reason": {
+          "type": ["string", "null"],
+          "description": "Set iff claim_type=APPS_WAIVER. Must be non-empty for waiver rows."
+        },
+        "waiver_expiry_utc": {"type": ["string", "null"]},
+        "owner_component": {"type": ["string", "null"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "ControlName": {
+      "type": "string",
+      "enum": [
+        "bundle_emission",
+        "bundle_schema_valid",
+        "matrix_integrity",
+        "spine_emission",
+        "route_contract_consistency",
+        "id_threading",
+        "runtime_artifact_presence",
+        "runtime_artifact_hash_binding",
+        "static_dag_on_disk",
+        "static_dag_hash_binding",
+        "l6_ordering",
+        "exit_disposition_valid",
+        "overlay_consistency",
+        "no_stale_artifacts",
+        "no_synthetic_trace",
+        "no_mock_mode",
+        "no_fixture_runtime_mode",
+        "runtime_mode_in_approved_live_modes",
+        "certification_level_invariant",
+        "artifact_kind_valid",
+        "required_receipt_present",
+        "app_name_consistency",
+        "entrypoint_valid",
+        "harness_pass_semantics",
+        "timestamp_iso_utc",
+        "strict_verifier_pass",
+        "mutation_rejection",
+        "merkle_leaf",
+        "certifier_signature",
+        "waiver_active",
+        "catalog_self_consistency"
+      ]
+    },
+    "ArtifactClass": {
+      "type": "string",
+      "enum": [
+        "APPS_E2E_PROOF_BUNDLE",
+        "APPS_E2E_MATRIX",
+        "APPS_E2E_VERIFIER_REPORT",
+        "APPS_E2E_HARNESS_REPORT",
+        "APPS_MUTATION_REJECTION_REPORT",
+        "APPS_WAIVER_DOCUMENT",
+        "APPS_SIGNOFF_REPORT",
+        "APPS_CATALOG_SELF_REPORT",
+        "MERKLE_TREE_REPORT",
+        "SIGNATURE_ENVELOPE"
+      ]
+    }
+  }
+}

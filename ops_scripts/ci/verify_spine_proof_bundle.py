@@ -68,7 +68,11 @@ _REF_TO_FILE: dict[str, tuple[str, ...]] = {
     ),
     "runtime_exit_disposition_ref": ("x3_disposition_receipt.json",),
     "runtime_exhaust_ref": ("runtime_exhaust_bundle.json",),
-    "uwg_commit_or_block_ref": ("blocked_commit_receipt.json",),
+    "uwg_commit_or_block_ref": (
+        "uwg_blocked_commit_receipt.json",
+        "blocked_commit_receipt.json",
+        "uwg_commit_receipt.json",
+    ),
     "otel_or_runtime_trace_ref": ("runtime_trace_snapshot.json",),
     "runtime_l2_artifact_ref": ("l2_sealed_artifact.json",),
     "artifact_manifest_ref": ("integrated_runtime_artifact_manifest.json",),
@@ -236,12 +240,30 @@ def main(argv: list[str]) -> int:
         )
 
     # 6: managed-workflow honesty.
-    if bundle.get("managed_workflow_certified") is not False:
-        return fail(
-            "SPINE_PROOF_MANAGED_WORKFLOW_OVERCLAIM",
-            f"managed_workflow_certified={bundle.get('managed_workflow_certified')!r}; "
-            f"must be False until static DAG proof + runtime L3 receipt land",
-        )
+    # The MW_STRUCTURAL path (chain_kind=MANAGED_WORKFLOW) must keep
+    # managed_workflow_certified=False — it is structural-only and may not
+    # claim certification. The MW_REAL path (chain_kind=
+    # MANAGED_WORKFLOW_REAL_EXECUTION, plan fortknox-100pct-static-runtime-
+    # gap-9a3d4f §GAP-6d) is the designed home for the True verdict; it
+    # composes R3 + R4 + UWG_COMMIT substrates under a real 29-gate
+    # evaluation and may honestly set the flag.
+    mw_cert = bundle.get("managed_workflow_certified")
+    chain_kind = str(bundle.get("chain_kind", ""))
+    if chain_kind == "MANAGED_WORKFLOW_REAL_EXECUTION":
+        if mw_cert is not True:
+            return fail(
+                "SPINE_PROOF_MW_REAL_NOT_CERTIFIED",
+                f"MW_REAL chain has managed_workflow_certified={mw_cert!r}; "
+                f"expected True",
+            )
+    else:
+        if mw_cert is not False:
+            return fail(
+                "SPINE_PROOF_MANAGED_WORKFLOW_OVERCLAIM",
+                f"managed_workflow_certified={mw_cert!r}; "
+                f"must be False for chain_kind={chain_kind!r} until MW_REAL "
+                f"substrate is exercised",
+            )
 
     # 7: detection-flag invariants.
     runtime_mode = str(bundle.get("runtime_mode", ""))

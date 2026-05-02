@@ -700,6 +700,9 @@ def run_integrated_safe_reuse(
     artifact_dir: Path | str,
     veto_orchestrator: VetoOrchestrator | None = None,
     is_hard_negative_lookup: bool = False,
+    chain_kind: str = "R1B",
+    route_family_override: str | None = None,
+    extra_route_contract_fields: dict[str, Any] | None = None,
 ) -> IntegratedRunResult:
     """Drive the integrated R1B safe-reuse runtime end-to-end.
 
@@ -851,6 +854,16 @@ def run_integrated_safe_reuse(
         namespace=namespace,
         replay_key_override=_deterministic_replay_key,
     )
+    # Apply Tier-A route_family override (R1A_EXACT_CACHE / R5_FALLBACK /
+    # UWG_BLOCK_PATH) and chain-variant fields. Non-mutating to default
+    # R1B behavior — only fires when caller explicitly opts in.
+    if route_family_override:
+        route_contract = dict(route_contract)
+        route_contract["route_family"] = route_family_override
+    if extra_route_contract_fields:
+        route_contract = dict(route_contract)
+        for _k, _v in extra_route_contract_fields.items():
+            route_contract[_k] = _v
     _emit("route_contract.json", route_contract)
 
     # ── 4b. Typed bypass receipts for L3 / C0 / Prompt Assembly ──
@@ -1168,6 +1181,23 @@ def run_integrated_safe_reuse(
     )
     _emit("runtime_trace_snapshot.json", _trace_snap.to_dict())
 
+    # ── 10c. L7_AUDITABILITY HOW trace ──
+    # Mandatory cross-cutting evidence plane. Pure projection over chain
+    # artifacts emitted so far; non-mutating; non-routing. Stamped via
+    # the same provenance-stamped emitter as the rest of the chain.
+    from agentic_core.L7_auditability.how_trace import build_how_trace as _build_how_trace
+    _how_trace = _build_how_trace(artifact_dir, chain_kind=chain_kind)
+    _emit("agentic_core_how_trace.json", _how_trace.to_dict())
+
+    # ── 10d. L7 route-family coverage matrix ──
+    # Honest accounting of which route families have real-runtime,
+    # structural-only, fixture-only, or missing L7 coverage.
+    from agentic_core.L7_auditability.coverage import (
+        build_l7_route_family_coverage as _build_rfc,
+    )
+    _rfc = _build_rfc(artifact_dir, chain_kind=chain_kind, write=False)
+    _emit("agentic_core_l7_route_family_coverage.json", _rfc["payload"])
+
     # ── 11. Manifest of all chain artifacts + chain shas ──
     # The manifest declares EVERY filename in the chain, including the
     # ones not yet emitted at this point (manifest itself, no_harness
@@ -1179,12 +1209,20 @@ def run_integrated_safe_reuse(
         "invocation_id": invocation_id,
         "entry_point": f"{PRODUCER_COMPONENT}.{PRODUCER_FUNCTION}",
         "integrated_runtime_entrypoint_used": True,
-        "chain_kind": "R1B",
+        "chain_kind": chain_kind,
         "artifact_filenames": list(artifact_hashes.keys()) + [
             "integrated_runtime_artifact_manifest.json",
             "no_harness_stamp_receipt.json",
             "agentic_core_spine_proof.json",
         ],
+        "how_trace_ref": "artifact://agentic_core_how_trace.json",
+        "how_trace_sha256": artifact_hashes.get("agentic_core_how_trace.json", ""),
+        "l7_route_family_coverage_ref": (
+            "artifact://agentic_core_l7_route_family_coverage.json"
+        ),
+        "l7_route_family_coverage_sha256": artifact_hashes.get(
+            "agentic_core_l7_route_family_coverage.json", ""
+        ),
         "artifact_hashes": dict(artifact_hashes),
         "chain_linkage": [
             {"filename": fn, "upstream": (up or "")} for fn, up in W2_CHAIN_LINKAGE

@@ -80,9 +80,40 @@ jobs:
 
       - name: Run shared verifier + matrix + anti-cheat tests
         run: |
-          python -m pytest tests/runtime/test_apps_e2e_auditability_harness.py tests/runtime/test_apps_e2e_matrix.py tests/runtime/test_apps_e2e_anti_cheat.py tests/runtime/test_agentic_core_spine_proof.py -q --no-header -p no:cacheprovider
+          python -m pytest tests/runtime/test_apps_e2e_auditability_harness.py tests/runtime/test_apps_e2e_matrix.py tests/runtime/test_apps_e2e_anti_cheat.py tests/runtime/test_apps_e2e_two_gate_negative_controls.py tests/runtime/test_agentic_core_spine_proof.py -q --no-header -p no:cacheprovider
 
-      - name: Run CI gate
+      # ---- W4: Two-gate certification ----
+      # Gate 1: bundle emission. MUST pass.
+      - name: Gate 1 — apps_e2e_bundle_emission (MUST pass)
+        run: |
+          python -m ops_scripts.ci.check_apps_e2e_bundle_emission
+
+      # Gate 2: spine certification. BLOCKING as of 2026-05-02 (per ADR-081).
+      # All 5 runtime-required apps reached SPINE_COMPLETE_CERTIFIED:
+      #   apps_rg, apps_exec, apps_lic, apps_eval, apps_research, apps_rfp
+      # Waived (non-runtime or skeleton): apps_qna, apps_underwriting_ai.
+      #
+      # This gate fails the nightly if any runtime app drifts out of
+      # SPINE_COMPLETE_CERTIFIED or a new runtime app is added without
+      # being wired through apps_shared.spine_emission.
+      #
+      # Emergency bypass (operator-only): set APPS_E2E_SPINE_STRICT_BYPASS=1
+      # at the env level — logged to artifacts/windsurf/apps_e2e_strict_bypass.jsonl.
+      # See docs/adr/ADR-081-apps-e2e-spine-cert-wireup.md for full history.
+      - name: Gate 2 — apps_e2e_spine_certification (BLOCKING)
+        run: |
+          python -m ops_scripts.ci.check_apps_e2e_spine_certification
+
+      - name: Upload verifier_report.json
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-e2e-verifier-report
+          path: artifacts/certification/apps_e2e/verifier_report.json
+          retention-days: 14
+
+      # Legacy gate (deprecated 2026-05-02 — kept for transition).
+      - name: Legacy gate — check_apps_e2e_harness (deprecated)
         run: |
           python -m ops_scripts.ci.check_apps_e2e_harness
 

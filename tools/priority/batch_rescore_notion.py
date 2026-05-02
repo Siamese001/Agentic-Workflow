@@ -53,6 +53,16 @@ TRIAGE_CSV = REPO_ROOT / "docs" / "reports" / "maintenance" / "unscored_manual_t
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "notion_batch_rescore_audit.jsonl"
 
 PBAND_RE = re.compile(r"^\s*\[(P[0-5]|NEXT·P[0-5]|INDEX|RECOVERY|EVIDENCE)\b")
+# Title-prefix -> P-Band select value. Only the concrete P0..P5 bands are valid
+# Notion select options. `[NEXT·Pn]` (next-step-capture rule) also maps to Pn.
+PBAND_SELECT_RE = re.compile(r"^\s*\[(?:NEXT·)?(P[0-5])\]")
+# Terminal / completed / meta prefixes — retroactively tagged P5 (lowest band).
+# Policy decision 2026-05-02 for legacy rows whose priority is moot because the
+# work shipped (Completed) or the row is a meta/wave-planning entry.
+TERMINAL_PREFIX_RE = re.compile(
+    r"^\s*\[(?:DONE|Done|COMPLETE|META|W\d+(?:\.\d+)?)\]",
+    re.IGNORECASE,
+)
 
 
 def _token() -> str:
@@ -103,13 +113,14 @@ def _audit(entry: dict) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def fetch_open_todos(tok: str) -> list[dict]:
+def fetch_unscored(tok: str) -> list[dict]:
+    """Every row where the P-Band select property is empty, regardless of Status."""
     rows: list[dict] = []
     cursor: str | None = None
     while True:
         body: dict = {
             "page_size": 100,
-            "filter": {"property": "Status", "select": {"equals": "Todo"}},
+            "filter": {"property": "P-Band", "select": {"is_empty": True}},
         }
         if cursor:
             body["start_cursor"] = cursor
@@ -164,26 +175,33 @@ def main() -> int:
     dry_run = not args.apply
 
     tok = _token()
-    rows = fetch_open_todos(tok)
+    rows = fetch_unscored(tok)
 
-    fix1_cosmetic: list[tuple[str, str, str]] = []  # (page_id, old_title, new_title)
+    fix1_backfill: list[tuple[str, str, str]] = []  # (page_id, title, band_from_title)
+    fix1b_terminal: list[tuple[str, str]] = []  # (page_id, title) — policy-tagged P5
     fix2_scored: list[tuple[str, str, str, str]] = []  # (page_id, old_title, new_title, band)
     fix3_triage: list[dict] = []
     skipped: int = 0
 
     for row in rows:
         title = _title(row)
-        if not title or _has_band_prefix(title):
+        if not title:
             skipped += 1
             continue
 
         page_id = row["id"]
-        existing_band = _pband(row)
 
-        if existing_band and existing_band != "UNSCORED":
-            # Fix-1: title-format drift only
-            new_title = f"[{existing_band}] {title}"
-            fix1_cosmetic.append((page_id, title, new_title))
+        # Fix-1: title already carries a concrete [P0..P5] prefix — backfill P-Band
+        #        select from the title (authoritative source-of-truth for legacy rows).
+        m = PBAND_SELECT_RE.match(title)
+        if m:
+            band_from_title = m.group(1)
+            fix1_backfill.append((page_id, title, band_from_title))
+            continue
+
+        # Fix-1b: terminal/meta/completed prefix — retroactive P5 (policy 2026-05-02).
+        if TERMINAL_PREFIX_RE.match(title):
+            fix1b_terminal.append((page_id, title))
             continue
 
         # Genuinely unscored — try to score
@@ -231,8 +249,12 @@ def main() -> int:
             })
 
     # Apply patches
-    for page_id, _old, new_title in fix1_cosmetic:
-        props = {"Phase Title": {"title": [{"text": {"content": new_title}}]}}
+    for page_id, _old_title, band in fix1_backfill:
+        props = {"P-Band": {"select": {"name": band}}}
+        _patch_row(tok, page_id, props, dry_run)
+
+    for page_id, _terminal_title in fix1b_terminal:
+        props = {"P-Band": {"select": {"name": "P5"}}}
         _patch_row(tok, page_id, props, dry_run)
 
     for page_id, _old, new_title, band in fix2_scored:
@@ -257,8 +279,9 @@ def main() -> int:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "mode": "dry_run" if dry_run else "apply",
         "rows_inspected": len(rows),
-        "skipped_already_scored": skipped,
-        "fix1_cosmetic_patches": len(fix1_cosmetic),
+        "skipped_empty_title": skipped,
+        "fix1_backfill_from_title": len(fix1_backfill),
+        "fix1b_terminal_p5": len(fix1b_terminal),
         "fix2_scored_and_patched": len(fix2_scored),
         "fix3_manual_triage": len(fix3_triage),
         "triage_csv": str(TRIAGE_CSV.relative_to(REPO_ROOT)) if fix3_triage else None,
@@ -267,12 +290,13 @@ def main() -> int:
 
     print(json.dumps(summary, indent=2))
     print()
-    print(f"  Mode:                  {summary['mode']}")
-    print(f"  Inspected rows:        {summary['rows_inspected']}")
-    print(f"  Already scored:        {summary['skipped_already_scored']}")
-    print(f"  Fix-1 (cosmetic):      {summary['fix1_cosmetic_patches']}")
-    print(f"  Fix-2 (scored+patch):  {summary['fix2_scored_and_patched']}")
-    print(f"  Fix-3 (manual triage): {summary['fix3_manual_triage']}")
+    print(f"  Mode:                      {summary['mode']}")
+    print(f"  Inspected (P-Band empty):  {summary['rows_inspected']}")
+    print(f"  Skipped (empty title):     {summary['skipped_empty_title']}")
+    print(f"  Fix-1 (backfill select):   {summary['fix1_backfill_from_title']}")
+    print(f"  Fix-1b (terminal -> P5):   {summary['fix1b_terminal_p5']}")
+    print(f"  Fix-2 (scored+patch):      {summary['fix2_scored_and_patched']}")
+    print(f"  Fix-3 (manual triage):     {summary['fix3_manual_triage']}")
     if fix3_triage:
         print(f"  Triage CSV:            {summary['triage_csv']}")
 
