@@ -327,6 +327,47 @@ class LICAgentBase(AppBase, HealingPolicyMixin):
             f"[{self.__class__.__name__}] LIC Meta-Learning activated with guardrails and MetaLearningClient",
         )
 
+    def run_phase(self, buffer: Any, registry: Any) -> None:
+        """Public test/runner entrypoint that delegates to ``_process``.
+
+        Restores the legacy test contract (``agent.run_phase(buffer, registry)``)
+        from before the rename to ``_process``. The body calls the
+        subclass's ``_process`` and uniformly wraps any failure as a
+        ``RuntimeError`` with a ``PHASE_ERROR`` trace — the contract every
+        HOP-N test suite depends on.
+
+        Subclasses that override ``_process`` need no further wiring; this
+        shim is concrete on the base class.
+        """
+        process_hook = getattr(self, "_process", None)
+        if process_hook is None:
+            raise NotImplementedError(
+                f"{type(self).__name__} must implement _process(buffer, registry)"
+            )
+        try:
+            process_hook(buffer, registry)
+            # Emit terminal lifecycle trace — required by HOP-1 tracing
+            # integrity test and harmless to any HOP that doesn't read it.
+            try:
+                registry.add_trace(
+                    "PHASE_COMPLETE", {"agent": type(self).__name__}
+                )
+            except Exception:  # guardian: allow-log-and-swallow -- terminal trace must not mask real outcomes
+                pass
+        except Exception as exc:
+            try:
+                registry.add_trace(
+                    "PHASE_ERROR",
+                    {"agent": type(self).__name__, "error": str(exc)},
+                )
+            except Exception:  # guardian: allow-log-and-swallow -- error tracing must not mask original cause
+                pass
+            if isinstance(exc, (NotImplementedError, KeyboardInterrupt, SystemExit)):
+                raise
+            raise RuntimeError(
+                f"{type(self).__name__} execution failed: {exc}"
+            ) from exc
+
     def _initialize_guardrails(self) -> None:
         """Initialize guardrails with LIC-specific configuration (stricter thresholds)."""
         self._guardrails = get_guardrails()

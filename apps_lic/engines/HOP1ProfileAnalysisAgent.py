@@ -120,7 +120,9 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
             about = profile.get("about", "")
         else:
             registry.add_trace("DATA_ERROR", {"msg": "Missing mission_input or recipient_profile"})
-            raise ValueError("HOP-1 requires mission_input or recipient_profile in buffer")
+            raise ValueError(
+                "HOP-1 requires 'recipient_profile' or 'mission_input' in buffer"
+            )
 
         # Defensive Title Normalization
         title = (title or "").strip()
@@ -170,18 +172,23 @@ class HOP1ProfileAnalysisAgent(LICAgentBase, SubatomicTestingMixin):
             reasoning = result["reasoning"]
 
         # L3 Slow Path: Reasoning Injection for low confidence
-        needs_override = confidence < self.config.profile_analysis_agent.manual_override_threshold
+        needs_override = confidence < self.agent_specs.profile_analysis_agent.manual_override_threshold
         if needs_override:
             registry.add_trace(
                 "REASONING_ACTIVATED",
                 {
                     "reason": "low_confidence",
                     "score": confidence,
-                    "threshold": self.config.profile_analysis_agent.manual_override_threshold,
+                    "threshold": self.agent_specs.profile_analysis_agent.manual_override_threshold,
                 },
             )
             # [Logic: Internal LLM call for CoT/ToT reasoning if confidence < threshold]
-            if self.toggles.use_cot and self.llm:
+            # Defensive: ``self.toggles`` and ``self.llm`` are runtime-injected
+            # attributes that may be absent in unit-test contexts. Treat
+            # missing attributes as "feature disabled" rather than crashing.
+            _toggles = getattr(self, "toggles", None)
+            _llm = getattr(self, "llm", None)
+            if _toggles is not None and getattr(_toggles, "use_cot", False) and _llm:
                 try:
                     llm_response = self._execute_reasoning(
                         title, {"archetype": archetype, "confidence": confidence}

@@ -42,14 +42,17 @@ def populated_buffer(resources):
 
 
 @pytest.fixture
-def mock_gen_config():
+def mock_gen_config(monkeypatch):
     """Mock configuration for generation."""
     mock_specs = MagicMock()
     mock_specs.generation_agent = GenerationConfig(
         base_temperatures={"C_LEVEL": 0.7}, c_level_n_candidates=2
     )
-    with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-        yield mock_specs
+    monkeypatch.setattr(
+        "agentic_core.mixins.configuration_mixin.get_sovereign_config",
+        lambda: mock_specs,
+    )
+    yield mock_specs
 
 
 # --- Tests ---

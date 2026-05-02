@@ -43,16 +43,21 @@ def resources():
 
 @pytest.fixture
 def mock_config(monkeypatch):
-    """Inject mock config into the agent."""
-    # We mock the LICAgentBase configuration loading to return our test config
+    """Inject mock config by patching the sovereign-config singleton getter.
+
+    LICAgentBase exposes ``self.config`` as a lazy property that calls
+    ``get_sovereign_config()``; replacing the getter is the canonical
+    way to inject a test config for HOP-3.
+    """
     mock_specs = MagicMock()
     mock_specs.sender_grounding_agent = SenderGroundingConfig(
         source_files=["kb.json", "resume.json"], extraction_targets=["products", "achievements"]
     )
-
-    # Patch the load_agent_specs used by LICAgentBase
-    with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-        yield mock_specs
+    monkeypatch.setattr(
+        "agentic_core.mixins.configuration_mixin.get_sovereign_config",
+        lambda: mock_specs,
+    )
+    return mock_specs
 
 
 # --- Tests ---
@@ -71,9 +76,14 @@ class TestHOP3Extraction:
                 return mock_open(read_data=MOCK_RESUME_JSON).return_value
             raise FileNotFoundError(filename)
 
+        # Construct agent OUTSIDE the file-mock context — LICAgentBase
+        # __post_init__ touches .env via the meta-client init, and the
+        # narrow file_side_effect would mistakenly raise FileNotFoundError
+        # on .env. The file mock applies only to run_phase, where HOP-3
+        # opens kb.json / resume.json.
+        agent = HOP3SenderGroundingAgent()
         with patch("builtins.open", side_effect=file_side_effect):
             with patch("pathlib.Path.exists", return_value=True):
-                agent = HOP3SenderGroundingAgent()
                 agent.run_phase(buffer, registry)
 
         # Verify Output
@@ -101,9 +111,9 @@ class TestHOP3Extraction:
         def exists_side_effect(self):
             return "kb.json" in str(self)  # Only kb.json exists
 
+        agent = HOP3SenderGroundingAgent()
         with patch("pathlib.Path.exists", side_effect=exists_side_effect, autospec=True):
             with patch("builtins.open", mock_open(read_data=MOCK_KB_JSON)):
-                agent = HOP3SenderGroundingAgent()
                 agent.run_phase(buffer, registry)
 
         # Verify Output contains partial data
@@ -120,10 +130,10 @@ class TestHOP3Extraction:
         """Verify invalid JSON doesn't crash the agent."""
         buffer, registry = resources
 
+        agent = HOP3SenderGroundingAgent()
         with patch("pathlib.Path.exists", return_value=True):
             # Mock open to return garbage
             with patch("builtins.open", mock_open(read_data="{ invalid json ")):
-                agent = HOP3SenderGroundingAgent()
                 agent.run_phase(buffer, registry)
 
         # Result should exist but be empty/partial

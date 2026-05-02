@@ -42,10 +42,19 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
     generation_params: dict[str, Any] = field(
         default_factory=lambda: {"temperature": 0.7, "n_candidates": 3, "max_tokens": 500}
     )
+    # Optional injected dependencies (test fixtures + production wiring).
+    # ``llm_client`` is the canonical kwarg name; ``llm`` is a back-compat
+    # attribute alias that the existing _process body reads.
+    llm_client: Any | None = field(default=None)
 
     def __post_init__(self) -> None:
         """Initialize Sovereign Capabilities."""
         super().__post_init__()
+        # Mirror llm_client onto self.llm without going through the
+        # Sovereign Seal (object.__setattr__ bypasses __setattr__ guards
+        # in subclasses that may seal). Subsequent _process body uses
+        # ``self.llm`` for invocation.
+        object.__setattr__(self, "llm", self.llm_client)
 
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """
@@ -149,15 +158,19 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
         )
 
     def _construct_prompt(self, h1, h2, h3, h4) -> str:
-        """Constructs the prompt from context."""
+        """Constructs the prompt from context. Defensive against partial inputs."""
         # In a real implementation, load template from prompts.json
         # Simplified for V2 logic demo
+        sender_grounding = (h3 or {}).get("sender_grounding") or {}
+        products = sender_grounding.get("products") or []
+        constraints = (h4 or {}).get("constraints") or {}
+        char_limit = constraints.get("char_limit", 2000)
         return f"""
-        Generate a {h4["route"]} message.
-        Recipient: {h1.get("recipient_title")} at {h1.get("recipient_company")}
-        Research: {h2.get("signal_score")} signal
-        Sender: {len(h3["sender_grounding"]["products"])} products
-        Constraints: Max {h4["constraints"]["char_limit"]} chars.
+        Generate a {(h4 or {}).get("route", "INMAIL")} message.
+        Recipient: {(h1 or {}).get("recipient_title")} at {(h1 or {}).get("recipient_company")}
+        Research: {(h2 or {}).get("signal_score")} signal
+        Sender: {len(products)} products
+        Constraints: Max {char_limit} chars.
         """
 
     def _score_and_select(self, candidates: list[dict], constraints: dict) -> dict:

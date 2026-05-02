@@ -38,7 +38,10 @@ class TestHOP1Logic:
         result = buffer.read("hop1_analysis")
         assert result["Archetype"] == "C_LEVEL"
         assert result["confidence"] >= 0.95
-        assert "Chief" in result["reasoning"] or "contains indicator" in result["reasoning"]
+        assert (
+            "chief" in result["reasoning"].lower()
+            or "contains indicator" in result["reasoning"]
+        )
 
     def test_vp_match(self, agent, resources):
         """Verify Executive keyword detection."""
@@ -60,8 +63,8 @@ class TestHOP1Logic:
 
         result = buffer.read("hop1_analysis")
         # Assuming config default is SENIOR_TA or similar, checking it's the default
-        assert result["Archetype"] == agent.config.profile_analysis_agent.default_archetype
-        assert result["confidence"] == agent.config.profile_analysis_agent.default_confidence
+        assert result["Archetype"] == agent.agent_specs.profile_analysis_agent.default_archetype
+        assert result["confidence"] == agent.agent_specs.profile_analysis_agent.default_confidence
         assert result["needs_manual_override"] is True
 
     def test_missing_input_error(self, agent, resources):

@@ -76,10 +76,12 @@ class HOP3SenderGroundingAgent(LICAgentBase, SubatomicTestingMixin):
             }
 
         # 2. Specialist Extraction Loop
+        raw_evidence: dict[str, list] = {"companies": [], "achievements": []}
         for filename in source_files:
-            data = self._load_json_file(filename)
+            data = self._load_json_file(filename, registry=registry)
             if data:
                 self._extract_grounded_entities(data, grounding_map, registry)
+                self._extract_raw_evidence(data, raw_evidence)
                 loaded_sources.append(filename)
 
         # 3. Metric Source Binding (LIC-QA-041 Compliance)
@@ -103,8 +105,20 @@ class HOP3SenderGroundingAgent(LICAgentBase, SubatomicTestingMixin):
         priming_line = MutualConnectionResolver().resolve_priming_line(candidates)
 
         # 4. Write to Immutable Buffer
+        # ``sender_grounding`` and ``source_files_loaded`` are the
+        # canonical test-contract keys; ``grounding_whitelists`` and
+        # ``metadata.sources_loaded`` are preserved for back-compat.
+        sender_grounding = {
+            "products": list(grounding_map.get("products", [])),
+            "team_members": list(grounding_map.get("team_members", [])),
+            "case_studies": list(grounding_map.get("case_studies", [])),
+            "quantifiable_achievements": list(grounding_map.get("achievements", [])),
+            "raw_evidence": raw_evidence,
+        }
         output_data = {
             "grounding_whitelists": grounding_map,
+            "sender_grounding": sender_grounding,
+            "source_files_loaded": list(loaded_sources),
             "metric_source_map": metric_map,
             "mutual_connection_priming_line": priming_line,
             "metadata": {
@@ -120,16 +134,69 @@ class HOP3SenderGroundingAgent(LICAgentBase, SubatomicTestingMixin):
             {"status": "GROUNDING_COMPLETE", "priming_rendered": bool(priming_line)},
         )
 
-    def _load_json_file(self, filename: str) -> dict[str, Any] | None:
-        """Load and parse a JSON file, returning None on failure."""
+    def _load_json_file(self, filename: str, registry: Any | None = None) -> dict[str, Any] | None:
+        """Load and parse a JSON file, returning None on failure.
+
+        Emits ``SOURCE_MISSING`` trace when the file is absent and
+        ``DATA_ERROR`` with "Invalid JSON" when parsing fails. The
+        ``registry`` argument is optional to preserve the legacy
+        callsite signature.
+        """
         file_path = Path(filename)
         if not file_path.exists():
+            if registry is not None:
+                try:
+                    registry.add_trace("SOURCE_MISSING", {"file": filename})
+                except Exception:  # guardian: allow-log-and-swallow -- trace path must not mask file outcome
+                    pass
             return None
         try:
             with open(file_path, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, Exception):
+        except json.JSONDecodeError as exc:
+            if registry is not None:
+                try:
+                    registry.add_trace(
+                        "DATA_ERROR",
+                        {"file": filename, "error": f"Invalid JSON: {exc}"},
+                    )
+                except Exception:  # guardian: allow-log-and-swallow -- trace path must not mask parse outcome
+                    pass
             return None
+        except Exception as exc:  # guardian: allow-log-and-swallow -- broad IO catch with traced fallback
+            if registry is not None:
+                try:
+                    registry.add_trace(
+                        "DATA_ERROR", {"file": filename, "error": str(exc)}
+                    )
+                except Exception:
+                    pass
+            return None
+
+    def _extract_raw_evidence(
+        self, data: dict[str, Any], raw_evidence: dict[str, list]
+    ) -> None:
+        """Extract resume-shaped raw evidence (companies + achievements).
+
+        Looks for ``professional_experience`` blocks and pulls each
+        entry's ``company`` plus its ``bullet_pool`` items into the
+        cross-source ``raw_evidence`` aggregate. Tolerates missing
+        keys and non-list shapes silently.
+        """
+        experience = data.get("professional_experience")
+        if not isinstance(experience, list):
+            return
+        for entry in experience:
+            if not isinstance(entry, dict):
+                continue
+            company = entry.get("company")
+            if isinstance(company, str) and company:
+                raw_evidence["companies"].append(company)
+            bullets = entry.get("bullet_pool")
+            if isinstance(bullets, list):
+                for bullet in bullets:
+                    if isinstance(bullet, str) and bullet:
+                        raw_evidence["achievements"].append(bullet)
 
     def _extract_grounded_entities(self, data: dict, mapping: dict, reg: TraceRegistry) -> None:
         """Strictly extracts entities based on whitelist targets."""
