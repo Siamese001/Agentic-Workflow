@@ -12,6 +12,7 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from apps_lic.config.loader_config import load_agent_specs
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 
@@ -108,23 +109,36 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         """
         Execute HOP-2 Logic: K.3 Retrieval Planning -> Evidence Artifacts.
         """
+        registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
+
         # 1. Read Sovereign Input and Mission Context
         hop1 = buffer.read("hop1_analysis")
         mission_input = buffer.read("mission_input")
 
         if not hop1:
-            registry.add_trace("DATA_ERROR", {"msg": "Missing hop1_analysis"})
-            raise RuntimeError("HOP-2 missing critical upstream context")
+            registry.add_trace("DATA_ERROR", {"msg": "Missing 'hop1_analysis'"})
+            raise RuntimeError("HOP-2 missing 'hop1_analysis' upstream context")
 
-        # Defensive check for C_LEVEL requirements
+        # Defensive check for C_LEVEL requirements. ``mission_input`` may
+        # be absent in unit-test contexts; treat None as empty.
         archetype = hop1.get("Archetype", "UNKNOWN")
-        if archetype == "C_LEVEL" and not mission_input.get("company_id"):
+        mission_input_safe = mission_input if isinstance(mission_input, dict) else {}
+        if archetype == "C_LEVEL" and not mission_input_safe.get("company_id"):
             registry.add_trace("INPUT_WARNING", {"msg": "C_LEVEL mission missing company_id"})
 
         registry.add_trace("PHASE_STEP", {"action": "starting_retrieval_planning"})
 
+        # 1b. Vector-First Cache Path (restored 2026-05-01).
+        # When ``memory_store`` is wired (production + unit-test fixtures),
+        # query company / executive / strategic-brief surfaces and
+        # short-circuit the slow K.3 retrieval plan when the cache is
+        # warm enough. Falls back to ``search_client`` (RAG) on gap.
+        cache_hit, fallback_used, gaps_identified, rag_results, vector_brief_text = (
+            self._run_vector_first_path(hop1, registry)
+        )
+
         # 2. Derive Research 'Wants' (K.3 Logic)
-        wants = self._derive_wants(archetype, mission_input or {})
+        wants = self._derive_wants(archetype, mission_input_safe)
 
         # 3. Build and Execute Retrieval Plan
         # [Logic: Prioritizes Vector DB, falls back to Web Search for gaps]
@@ -144,7 +158,11 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
             )
 
         # 5. Strategic Brief Generation (Specialist Hook)
-        strategic_brief = self._summarize_for_archetype(evidence_pack, archetype)
+        # Prefer the vector-store brief when available (cache hit / RAG
+        # populated); fall back to archetype-summarised evidence_pack.
+        strategic_brief = vector_brief_text or self._summarize_for_archetype(
+            evidence_pack, archetype
+        )
 
         # 5b. Company Trigger Extraction (W2-P4 follow-up wiring 2026-05-01).
         # Pure module — never raises on malformed input. HOP5 K.5A consumes
@@ -161,6 +179,10 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
         output_data = {
             "evidence_pack": evidence_pack,
             "strategic_brief": strategic_brief,
+            "cache_hit": cache_hit,
+            "fallback_used": fallback_used,
+            "gaps_identified": gaps_identified,
+            "rag_results": rag_results,
             "company_triggers": [
                 {
                     "trigger_type": t.trigger_type,
@@ -190,6 +212,110 @@ class HOP2ResearchAgent(LICAgentBase, SubatomicTestingMixin):
             "RETRIEVAL_PLAN_COMPLETED",
             {"artifacts": len(evidence_pack), "triggers_extracted": len(all_triggers)},
         )
+        registry.add_trace(
+            "DECISION_FINAL",
+            {"cache_hit": cache_hit, "fallback_used": fallback_used},
+        )
+
+    def _run_vector_first_path(
+        self, hop1: dict, registry: TraceRegistry
+    ) -> tuple[bool, bool, list[str], list[dict], str]:
+        """Query memory_store + RAG fallback per the V2 cache-first contract.
+
+        Returns ``(cache_hit, fallback_used, gaps_identified, rag_results,
+        strategic_brief_text)``. When ``self.memory_store`` is None the
+        function is a no-op and returns ``(False, False, [], [], "")`` —
+        the legacy K.3 path then drives output.
+        """
+        if self.memory_store is None:
+            return False, False, [], [], ""
+
+        company = hop1.get("recipient_company", "") or ""
+        executive = hop1.get("recipient_name", "") or ""
+
+        try:
+            company_results = list(self.memory_store.query_by_company(company) or [])
+        except Exception:  # guardian: allow-log-and-swallow -- vector store is best-effort
+            company_results = []
+        try:
+            executive_results = list(
+                self.memory_store.query_by_executive(executive) or []
+            )
+        except Exception:  # guardian: allow-log-and-swallow -- vector store is best-effort
+            executive_results = []
+        try:
+            strategic_briefs = list(self.memory_store.get_strategic_briefs(company) or [])
+        except Exception:  # guardian: allow-log-and-swallow -- vector store is best-effort
+            strategic_briefs = []
+
+        registry.add_trace(
+            "VECTOR_RESULTS",
+            {
+                "company": len(company_results),
+                "executive": len(executive_results),
+                "briefs": len(strategic_briefs),
+            },
+        )
+
+        gaps_identified: list[str] = []
+        if not strategic_briefs:
+            gaps_identified.append("strategic_brief")
+        if not company_results:
+            gaps_identified.append("company_context")
+
+        rag_results: list[dict] = []
+        rag_results.extend(company_results)
+        rag_results.extend(executive_results)
+        rag_results.extend(strategic_briefs)
+
+        cache_hit = len(strategic_briefs) > 0 and len(company_results) > 0
+        fallback_used = False
+
+        if cache_hit:
+            registry.add_trace(
+                "DECISION_CACHE_HIT", {"gaps_identified": gaps_identified}
+            )
+        else:
+            registry.add_trace(
+                "DECISION_CACHE_MISS", {"gaps": gaps_identified}
+            )
+            if self.search_client is not None:
+                registry.add_trace("RAG_ACTIVATED", {"gaps": gaps_identified})
+                try:
+                    hits = list(self.search_client.search(company) or [])
+                except Exception:  # guardian: allow-log-and-swallow -- search client is best-effort
+                    hits = []
+                for hit in hits:
+                    rag_results.append(
+                        {
+                            "text": hit.get("snippet", ""),
+                            "metadata": {
+                                "SourceType": "STRATEGIC_BRIEF",
+                                "url": hit.get("link"),
+                                "title": hit.get("title"),
+                            },
+                        }
+                    )
+                fallback_used = True
+            else:
+                registry.add_trace("RAG_SKIPPED", {"reason": "no_search_client"})
+
+        # Compose a strategic_brief_text from briefs + any RAG strategic items.
+        brief_segments: list[str] = []
+        for sb in strategic_briefs:
+            text = sb.get("text") if isinstance(sb, dict) else None
+            if text:
+                brief_segments.append(text)
+        if not brief_segments and fallback_used:
+            for r in rag_results:
+                meta = r.get("metadata") or {} if isinstance(r, dict) else {}
+                if meta.get("SourceType") == "STRATEGIC_BRIEF":
+                    text = r.get("text")
+                    if text:
+                        brief_segments.append(text)
+        strategic_brief_text = "\n".join(brief_segments).strip()
+
+        return cache_hit, fallback_used, gaps_identified, rag_results, strategic_brief_text
 
     def _derive_wants(self, archetype: str, mission_input: dict) -> list[str]:
         """K.3 Logic: Determines context needs based on seniority and mission targets."""

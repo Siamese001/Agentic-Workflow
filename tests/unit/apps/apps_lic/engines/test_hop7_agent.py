@@ -36,8 +36,9 @@ class TestHOP7GateLogic:
         # Mock a passing report
         buffer.write_once("hop6_validation_report", {"passed": True, "validation_results": []})
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP7GateDecisionAgent()
+        agent = HOP7GateDecisionAgent()
+        agent._config_manager = mock_specs
+        if True:
             agent.run_phase(buffer, registry)
 
         result = buffer.read("hop7_gate_decision")
@@ -55,8 +56,9 @@ class TestHOP7GateLogic:
         }
         buffer.write_once("hop6_validation_report", report)
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP7GateDecisionAgent()
+        agent = HOP7GateDecisionAgent()
+        agent._config_manager = mock_specs
+        if True:
             agent.run_phase(buffer, registry)
 
         result = buffer.read("hop7_gate_decision")
@@ -74,8 +76,9 @@ class TestHOP7GateLogic:
         }
         buffer.write_once("hop6_validation_report", report)
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP7GateDecisionAgent()
+        agent = HOP7GateDecisionAgent()
+        agent._config_manager = mock_specs
+        if True:
             agent.run_phase(buffer, registry)
 
         result = buffer.read("hop7_gate_decision")
@@ -87,7 +90,8 @@ class TestHOP7GateLogic:
         buffer, registry = resources
         # No validation report written
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP7GateDecisionAgent()
+        agent = HOP7GateDecisionAgent()
+        agent._config_manager = mock_specs
+        if True:
             with pytest.raises(RuntimeError):
                 agent.run_phase(buffer, registry)

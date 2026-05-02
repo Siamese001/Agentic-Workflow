@@ -51,8 +51,9 @@ class TestHOP8ReportLogic:
         """Verify score is calculated and file is saved."""
         buffer, registry = populated_buffer
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP8QAReportAgent()
+        agent = HOP8QAReportAgent()
+        agent._config_manager = mock_specs
+        if True:
             agent.run_phase(buffer, registry)
 
         result = buffer.read("hop8_qa_report")
@@ -69,8 +70,9 @@ class TestHOP8ReportLogic:
         # Only HOP-1 provided
         buffer.write_once("hop1_analysis", {"recipient_name": "Ghost"})
 
-        with patch("apps_lic.shared.core.agent_base.load_agent_specs", return_value=mock_specs):
-            agent = HOP8QAReportAgent()
+        agent = HOP8QAReportAgent()
+        agent._config_manager = mock_specs
+        if True:
             agent.run_phase(buffer, registry)
 
         result = buffer.read("hop8_qa_report")
