@@ -7,6 +7,14 @@ against defined acceptance criteria.
 
 Deterministic: scenario definitions, scoring logic, regression deltas.
 Model-driven:  none — this is a pure evaluation harness.
+
+Cross-app coupling note (AG-1 Option C, plan apps-cross-app-precursors-c94c71):
+    The `_scenario_exec_*` functions below lazily import
+    `apps_exec.reasoning.ExecOrchestrator` inside their function body with an
+    ImportError -> SKIP fallback. This is a sanctioned eval-harness coupling
+    (scenarios exercise exec dry-run paths as part of cross-app eval scoring).
+    The import is allowlisted in `config/cross_app_import_allowlist.yaml`;
+    CI gate `ops_scripts/ci/check_cross_app_imports.py` forbids NEW couplings.
 """
 
 from __future__ import annotations
