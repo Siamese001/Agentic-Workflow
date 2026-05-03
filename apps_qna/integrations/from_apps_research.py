@@ -12,9 +12,14 @@ from __future__ import annotations
 
 import json
 import re
+import warnings
 from pathlib import Path
 
 from apps_qna.types.qna_types import ResearchClaim, ResearchInputs
+from apps_shared.contracts.cross_app import (
+    EnvelopeLoadError,
+    ResearchBriefEnvelope,
+)
 
 _DEFAULT_RESEARCH_DIR = Path("reports/research")
 _BRIEF_RE = re.compile(r"^research_brief_([0-9a-f]+)\.md$")
@@ -74,11 +79,35 @@ def _claims_from_register(rows: list[dict]) -> list[ResearchClaim]:
     return claims
 
 
+def _inputs_from_envelope(env: ResearchBriefEnvelope) -> ResearchInputs:
+    claims = [
+        ResearchClaim(
+            claim=row.claim,
+            claim_type=row.claim_type,
+            source_id=row.source_id,
+            section_id=row.section_id,
+        )
+        for row in env.payload.source_register
+    ]
+    return ResearchInputs(
+        company_brief=env.payload.company_brief,
+        role_areas_of_focus=list(env.payload.role_areas_of_focus),
+        industry_trends=list(env.payload.industry_trends),
+        interviewer_lenses={},
+        source_register=claims,
+        glossary_entries=[],
+        likely_questions=[],
+    )
+
+
 def load_apps_research(
     trace_id: str | None = None,
     research_dir: Path | None = None,
 ) -> ResearchInputs:
     """Load apps_research outputs into a ResearchInputs.
+
+    Prefers a sibling `research_brief_<trace>.envelope.json`. Falls back to
+    the markdown-regex parser with DeprecationWarning.
 
     Args:
         trace_id: explicit trace id (`<8hex>`). If None, picks the most recent.
@@ -92,8 +121,29 @@ def load_apps_research(
     if trace_id is None:
         trace_id = _latest_trace_id(research_dir)
 
+    envelope_path = research_dir / f"research_brief_{trace_id}.envelope.json"
+    if envelope_path.is_file():
+        try:
+            env = ResearchBriefEnvelope.load(envelope_path)
+            return _inputs_from_envelope(env)
+        except EnvelopeLoadError as exc:
+            warnings.warn(
+                f"Envelope at {envelope_path} failed to load ({exc}); "
+                "falling back to markdown-regex parser.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
     brief_path = research_dir / f"research_brief_{trace_id}.md"
     register_path = research_dir / f"source_register_{trace_id}.json"
+
+    warnings.warn(
+        f"Envelope missing at {envelope_path}; falling back to markdown-regex "
+        "parser. Run `python -m apps_research.outputs.envelope_emitter "
+        f"--trace-id {trace_id}` to produce the envelope.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     if not brief_path.is_file():
         raise FileNotFoundError(f"Research brief not found: {brief_path}")

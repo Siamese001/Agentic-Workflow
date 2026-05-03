@@ -11,7 +11,13 @@ template variable `executive_fit_close_patterns`.
 from __future__ import annotations
 
 import re
+import warnings
 from pathlib import Path
+
+from apps_shared.contracts.cross_app import (
+    EnvelopeLoadError,
+    ExecutiveBriefEnvelope,
+)
 
 _DEFAULT_EXEC_DIR = Path("reports/executive")
 _BRIEF_RE = re.compile(r"^exec_brief_[\w-]+_([0-9a-f]+)\.md$")
@@ -53,6 +59,34 @@ def load_executive_close_patterns(
         brief_path = _latest_brief(exec_dir)
     if not brief_path.is_file():
         raise FileNotFoundError(f"Executive brief not found: {brief_path}")
+
+    # Prefer envelope path (typed, sealed, freshness-checked).
+    envelope_path = brief_path.with_name(
+        brief_path.stem + ".envelope.json"
+    )
+    # exec_brief_<role>_<trace>.md -> exec_brief_<trace>.envelope.json
+    m = re.match(r"^exec_brief_[\w-]+_([0-9a-f]+)$", brief_path.stem)
+    if m:
+        envelope_path = brief_path.parent / f"exec_brief_{m.group(1)}.envelope.json"
+    if envelope_path.is_file():
+        try:
+            env = ExecutiveBriefEnvelope.load(envelope_path)
+            return list(env.payload.close_patterns)[:max_patterns]
+        except EnvelopeLoadError as exc:
+            warnings.warn(
+                f"Envelope at {envelope_path} failed to load ({exc}); "
+                "falling back to markdown-regex parser.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+    warnings.warn(
+        f"Envelope missing at {envelope_path}; falling back to markdown-regex "
+        "parser. Run `python -m apps_exec.outputs.envelope_emitter --brief "
+        f"{brief_path}` to produce the envelope.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     text = brief_path.read_text(encoding="utf-8")
     bullets = [m.group(1).strip() for m in _BULLET_RE.finditer(text)]

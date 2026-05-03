@@ -94,7 +94,8 @@ def emit(
     trace_id = trace_id or uuid.uuid4().hex[:12]
     env = ExperienceLibraryEnvelope.emit(trace_id=trace_id, payload=payload)
     if out_path is None:
-        out_path = env.default_sidecar_path(_DEFAULT_DATA_DIR)
+        # Default: sidecar next to source file.
+        out_path = source_path.with_name(source_path.stem + ".envelope.json")
     env.write_sidecar(out_path)
     return out_path
 

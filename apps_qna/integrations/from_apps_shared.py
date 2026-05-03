@@ -21,12 +21,41 @@ Both flat-string bullet pools (legacy `master_resume.json`) and structured
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 
 from apps_qna.types.qna_types import ExperienceLibrary, ExperiencePoint
+from apps_shared.contracts.cross_app import (
+    EnvelopeLoadError,
+    ExperienceLibraryEnvelope,
+)
 
 _DEFAULT_RESUME = Path("apps_shared/data/master_resume.json")
 _DEFAULT_SVP = Path("apps_shared/data/master_resume_svp.json")
+_DEFAULT_ENVELOPE = Path("apps_shared/data/master_resume.envelope.json")
+_DEFAULT_ENVELOPE_SVP = Path("apps_shared/data/master_resume_svp.envelope.json")
+
+
+def _envelope_for(resume_path: Path) -> Path:
+    return resume_path.with_suffix("").with_suffix(".envelope.json") \
+        if resume_path.suffix == ".json" \
+        else resume_path.with_name(resume_path.stem + ".envelope.json")
+
+
+def _points_from_envelope(env: ExperienceLibraryEnvelope) -> list[ExperiencePoint]:
+    points: list[ExperiencePoint] = []
+    for bullet in env.payload.bullets:
+        text = bullet.text
+        label = bullet.label
+        title = label or (text.split(".", 1)[0] or text)[:60]
+        points.append(
+            ExperiencePoint(
+                title=title,
+                one_liner=text,
+                technical_depth_tags=list(bullet.tags),
+            )
+        )
+    return points
 
 
 def _bullet_to_point(bullet: dict | str, role_title: str) -> ExperiencePoint:
@@ -78,8 +107,31 @@ def load_master_resume(
             _DEFAULT_SVP if (prefer_svp and _DEFAULT_SVP.is_file())
             else _DEFAULT_RESUME
         )
+
+    # Prefer envelope path (typed, sealed, freshness-checked).
+    envelope_path = _envelope_for(resume_path)
+    if envelope_path.is_file():
+        try:
+            env = ExperienceLibraryEnvelope.load(envelope_path)
+            return ExperienceLibrary(points=_points_from_envelope(env))
+        except EnvelopeLoadError as exc:
+            warnings.warn(
+                f"Envelope at {envelope_path} failed to load ({exc}); "
+                "falling back to raw JSON parser.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
     if not resume_path.is_file():
         raise FileNotFoundError(f"Master resume not found: {resume_path}")
+
+    warnings.warn(
+        f"Envelope missing at {envelope_path}; falling back to raw JSON "
+        "parser. Run `python -m apps_shared.outputs.experience_library_emitter` "
+        "to produce the envelope.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     try:
         data = json.loads(resume_path.read_text(encoding="utf-8"))
