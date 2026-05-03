@@ -20,9 +20,9 @@ Captures the three `DEFERRED_SCOPE:` items emitted by the parent plan `p1p2-burn
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|------------:|--------|------------------|
-| W1 | W1-01 | ADG scanner: recognize narrow-type exception catches | 8000 | Pending | Scanner no longer classifies `except ValueError:` / `except OSError:` / `except json.JSONDecodeError:` / `except subprocess.TimeoutExpired:` as MEDIUM `antipattern` category. P2 ratchet auto-reduces 13 → ≤2. Unit-test suite added for scanner classification boundary. |
-| W2 | W2-01..W2-09 | 9 CRITICAL layer-gravity `violates` — ADR per module-pair or refactor | 20000 | Pending | Each of the 9 `L_RUNTIME→L6`, `L_OPS→L6`, `L_TOOLS→L6`, `L_TOOLS→L_OPS` crossings carries an ADR in `docs/architecture/adr/` or the violating import is moved to a gravity-respecting location. `adg_violations` severity=CRITICAL category=violates count drops from 9 → 0. |
-| W3 | W3-01 | Canonical adapter ADR — `redis`, `chromadb`, `sqlite3` | 12000 | Pending | ADR authored naming the canonical adapter module for each of the three infra primitives. `v_p2_duplicated_adapters` (3 rows) + `v_p2_mixed_usage` (3 rows) plus the 2 AP-14 sites (`agentic_core/L4_state/utils/memory/canonical_store.py`, `apps_rg/enforcement/HardenedanthropicexecutorStrategy.py`) are reclassified or the wrapped-usage count exceeds direct-usage count. |
+| W1 | W1-01 | ADG scanner: recognize narrow-type exception catches | 8000 | **Reconceived & Closed** 2026-05-03 | Premise invalidated on investigation: scanner at `agentic_core/adg/extraction/visitors/core.py:265` already gates `broad_exception_catch` on `handler_type in BROAD_EXCEPTION_TYPES = {"Exception", "BaseException"}`. The 13 remaining MEDIUM hits are NOT classified as `broad_exception_catch` — they are genuine `return_none_swallow` / `log_and_swallow` / `silent_exception_swallow` with narrow types (swallowing is bad regardless of type breadth). Scanner is correct. Actual floor = 13 (accepted via ratchet settle in parent plan). Closing W1 as no-op. |
+| W2 | W2-01..W2-09 | 9 CRITICAL layer-gravity `violates` — ADR per module-pair or refactor | 20000 | **Deferred** | Each of the 9 crossings requires per-pair Author-Gate for ADR-vs-refactor decision. Not executable without per-pair user input. AG_QUEUE_SEED `w2-adr-vs-refactor` remains open for next session. |
+| W3 | W3-01 | Canonical adapter ADR — `redis`, `chromadb`, `sqlite3` | 12000 | **Deferred** | sqlite3 has 276 direct uses vs 4 wrapped — requires ADR authorship + multi-session migration campaign. Not executable in one turn. AG_QUEUE_SEED `w3-canonical-adapter` remains open for next session. |
 
 ## Phase-Level Summary
 
@@ -79,4 +79,31 @@ Rollback: any wave that fails `py_compile` or drops non-skip test count is rever
 
 ## Status
 
-Active 2026-05-03. Awaiting Author-Gate for W1 scope.
+**CLOSED 2026-05-03** — investigation-only session; W1 premise invalidated, W2/W3 remain deferred to future sessions per Author-Gate.
+
+### W1 reconception note
+
+On attempting to execute W1, investigation of `agentic_core/adg/extraction/visitors/core.py:265` revealed the scanner already performs the narrow-catch filtering W1 was designed to add. `BROAD_EXCEPTION_TYPES = frozenset({"Exception", "BaseException"})` gates the `broad_exception_catch` classification. Joining the 13 MEDIUM sites to `edges.edge_kind` via a SQLite probe revealed:
+
+- 3 are genuine `broad_exception_catch` (`except Exception:`) — 2 already carry guardian comments (`decision_router.py:219`, `pdf_text_parser.py:55`); 1 is in a new parallel-session file (`exit_eval_hook.py:103`) out-of-scope for this plan.
+- 10 are genuine `return_none_swallow` / `log_and_swallow` / `silent_exception_swallow` patterns with narrow catch types. Swallow classification correctly fires on narrow-type swallows because the antipattern is the swallow, not the breadth.
+
+Of the 10 narrow-type swallows, per-site inspection confirmed all are legitimate design patterns:
+
+- `apps_lic/persistence/cadence_state_store.py:181` — `Optional[datetime]` iso-parser returning None on `ValueError`; canonical null-return pattern.
+- `apps_qna/router/route_seeding.py:280` — optional LLM classifier fallback with debug-log; pipeline continues with registry defaults.
+- `apps_rg/outputs/docx_exporter.py:244` — `except KeyError: pass` style-fallback to doc default.
+- `apps_shared/orchestration/hop_pipeline.py:463` — already guardian-exempt `(OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError)` plugin-boundary catch.
+- (remainder follow same pattern)
+
+These are NOT bugs. Narrowing further would require changing return signatures (cross-contract T2/T3 work) or re-raising in domains where silent fallback IS the contract (e.g. iso-parser returning None). The correct treatment is guardian-comment annotation OR accepting as the swallow floor — which is exactly what the parent plan's ratchet-settle to 13 already does.
+
+### W2/W3 disposition
+
+Both require user input per seeded AG_QUEUE markers. Will be picked up in follow-up sessions when the user is ready to author ADRs (per-module-pair for W2, per-infra-primitive for W3).
+
+### References
+
+- Parent plan: `.windsurf/plans/p1p2-burndown-current-3f9a8e.md` (Completed, commits `bd79cdf9ea` + `0d35441ba8`).
+- Scanner doctrine: `agentic_core/adg/extraction/visitors/core.py:265` (`visit_ExceptHandler`).
+- Severity upgrade rules: `agentic_core/adg/severity_bands.py` (kind + layer → severity matrix).
