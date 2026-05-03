@@ -1,8 +1,22 @@
-# D-Bucket Burndown Wave Plan
+# D-Bucket Burndown Wave Plan — ⚠️ RETIRED
 
-Generated: 2026-05-02  ·  Status: Live  ·  Companion to `backlog-keep-triage-d2e4f1`
+Generated: 2026-05-02  ·  **Status: Retired 2026-05-02** (decomposed into 3 per-wave plans)  ·  Companion (historical): `backlog-keep-triage-d2e4f1`
 
-## Context
+## Retirement Notice
+
+Per Author-Gate 2026-05-02 (session): this aggregator plan was decomposed into three per-wave Live plans so status telemetry cleanly reflects per-wave progress. The aggregator stays Retired in both the on-disk plan file and the Notion Plans-DB row.
+
+| New Plan | Scope | Status |
+|---|---|---|
+| `d-bucket-w2-burndown-a2c4f1.md` | W2 — 17 rows across 3 plans (max impact 444) | Live |
+| `d-bucket-w3-burndown-b3d5e2.md` | W3 — 19 rows across 6 plans (max impact 361) | Live |
+| `d-bucket-w4-burndown-c4e6f3.md` | W4 — 77 rows across 32 plans (max impact 229) | Live |
+
+W1 (1 row, `l6-gravity-hybrid-7c4e2a.md`) completed 2026-05-02 via `session-burndown-2026-05-02-c8f3a4` + ADR-095 and is not carried into a new plan.
+
+**Do not add new content here.** All future D-bucket burndown updates land in the three per-wave plans above.
+
+## Historical Context
 
 Remaining 114 D-bucket rows after mechanical pass 2. These represent real engineering work, not admin. Waves below group by plan file and size by combined impact score. Execution is cross-session: W1 first, then stop for review.
 
@@ -10,8 +24,8 @@ Remaining 114 D-bucket rows after mechanical pass 2. These represent real engine
 
 | Wave | Plans | Row Count | Max Impact | Est. Days | Status |
 |---|---|---:|---:|---:|---|
-| W1 | `l6-gravity-hybrid-7c4e2a.md` (1) | 1 | 677 | 1 | Draft |
-| W2 | `gap-closure-test-impl-b77a11.md` (12), `adg-architectural-p0-violations-cleanup-bced9c.md` (2), `phase-b-blocker-burndown-a8c4f1.md` (3) | 17 | 444 | 5 | Draft |
+| W1 | `l6-gravity-hybrid-7c4e2a.md` (1) | 1 | 677 | 1 | ✅ Done 2026-05-02 (row already Completed via session-burndown-2026-05-02-c8f3a4 + ADR-095) |
+| W2 | `gap-closure-test-impl-b77a11.md` (12; 1 already Completed, 4 P1 runtime-cert rows now Phase-F-gated — Phase E.1 advisory gate delivered 2026-05-02 per `runtime-cert-e1-*.md` family + ADR-080 §9 E row ✅), `adg-architectural-p0-violations-cleanup-bced9c.md` (2), `phase-b-blocker-burndown-a8c4f1.md` (3) | 17 | 444 | 5 | 🔄 In Progress — Phase E.1 wired 2026-05-02; remaining W2 rows = 3 non-gated phase-b P1 + 2 adg-architectural + 8 L2-test P2 |
 | W3 | `audit-uncovered-gates-and-remediation-627368.md` (2), `repo-tech-debt-wave1-b3c8d1.md` (6), `l0-routing-calibration-gap-audit-b3c9d4.md` (5), `runtime-adg-coverage-audit-4f7a21.md | 19 | 361 | 6 | Draft |
 | W4 | `anthropic-rag-gaps-7f3c2a.md` (2), `windsurf-maintenance-2026-q2-0f3564.md` (1), `prompt-assembly-best-practices-gap-b4e1c2.md` (14), `adg-three-bucket-unified-c4f8e2.md` (5), `sc | 77 | 229 | 25 | Draft |
 

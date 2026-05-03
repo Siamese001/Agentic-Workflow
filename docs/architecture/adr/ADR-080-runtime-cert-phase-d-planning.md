@@ -440,7 +440,7 @@ If C.5 reports `missing_controls = (CC-EVAL-01,)` for `apps_eval`, Phase D MUST 
 |---|---|---|
 | **A / B / C** | Evidence pipeline (binding matrix → formal-exception helpers → trace extractors → closeout) | Complete |
 | **D** | Decision records + per-app cert ledger + promotion gate math | **This ADR** — design only |
-| **E** | Fail-closed CI gate (`ops_scripts/ci/check_runtime_certification.py`) running Phase D math against the most recent N closeouts; refuses to merge changes that flip a previously-certifiable app to `reject` or `hold` | Pending — blocked on Phase D implementation |
+| **E** | Fail-closed CI gate (`ops_scripts/ci/check_runtime_certification.py`) running Phase D math against the most recent N closeouts; refuses to merge changes that flip a previously-certifiable app to `reject` or `hold` | **E.1 Delivered 2026-05-02.** Advisory gate module implemented at commit `d59ce88ba9` (37 unit tests pass); CLI UX `sys.path` fix applied; pre-commit hook `runtime-certification` (tier T8r) + `run_contract_gates.py` dispatch entry wired 2026-05-02. Currently advisory (exit 0 + warnings); fail-closed flip requires `--strict` invocation AND a non-advisory baseline entry — deferred until Wilson/z/uplift thresholds calibrate on real data. Plan family: `runtime-cert-e1-*.md`. |
 | **F** | Scanner extension recognizing `RUNTIME_CERTIFIED` / `FORMAL_EXCEPTION_VERIFIED` runtime-mode buckets, plus a promotion workflow that updates Notion (MCP Registry, ADR Registry) and memory MCP from the cert ledger | Pending — blocked on Phase E |
 
 ### Strict invariants for Phase D implementation

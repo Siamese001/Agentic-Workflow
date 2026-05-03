@@ -427,6 +427,16 @@ def main():
         # queues) also see the gate. Pass-through when no staged additions.
         # Sibling Windsurf hook: .windsurf/scripts/pre_write_gate.py.
         ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
+        # T8r — Phase E.1 advisory runtime-certification gate (ADR-080 §11).
+        # Reads per-app Phase D cert-decision ledgers, compares latest
+        # verdict against the TOML baseline at
+        # docs/reference/runtime_certification/cert_baseline.toml. Advisory
+        # today (exit 0 + warnings); `--strict` with a non-advisory baseline
+        # flips to fail-closed after calibration. Non-promoting: every app
+        # stays `runtime_certification_status = NOT_CERTIFIED`.
+        # Plan family: runtime-cert-e1-*.md. Sibling pre-commit hook id
+        # `runtime-certification`.
+        ("T8r Runtime Cert Advisory Gate (Phase E.1)", "ops_scripts/ci/check_runtime_certification.py"),
         # Control-surface separation — verifies that the healing surface
         # and the RTC-REQ-056 LLM-as-judge surface remain disjoint on
         # disk. Read-only; reports `artifacts/certification/
