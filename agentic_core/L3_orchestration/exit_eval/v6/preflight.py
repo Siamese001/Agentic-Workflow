@@ -289,6 +289,23 @@ def normalize_to_packet(receipts: dict[str, Any]) -> ExitReviewPacket:
         replay_guard_violations=list(receipts.get("replay_guard_violations", []) or []),
         isolation_anomalies=list(receipts.get("isolation_anomalies", []) or []),
         drift_warnings=list(receipts.get("drift_warnings", []) or []),
+        # APPS-DOM runtime binding — carry app-specific contract refs onto the
+        # packet so the pipeline's app_specific_evaluator call at §4b can bind
+        # without requiring each caller to pre-populate the packet. Reads
+        # top-level receipt first, then falls back to route_contract. Missing
+        # on both sides preserves the "" default and evaluator returns
+        # bound=False (existing non-app-bound behavior).
+        app_id=str(receipts.get("app_id") or rc.get("app_id", "")),
+        task_class=str(receipts.get("task_class") or rc.get("task_class", "")),
+        rubric_ref=str(receipts.get("rubric_ref") or rc.get("rubric_ref", "")),
+        threshold_profile_ref=str(
+            receipts.get("threshold_profile_ref")
+            or rc.get("threshold_profile_ref", "")
+        ),
+        grader_roster_ref=str(
+            receipts.get("grader_roster_ref")
+            or rc.get("grader_roster_ref", "")
+        ),
     )
 
 

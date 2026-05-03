@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.639899Z",
+  "control_scope": "semantic_cache_ci_gate",
+  "per_req": {
+    "RTC-REQ-112": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.639899Z"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "fortknox-nightly.yml has fortknox-regression-scan job AND invokes verify_final_requirement_signoff_bundle.py AND semantic_cache_certification_report.json present on disk (>1KB)",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "fortknox-nightly.yml has fortknox-regression-scan job AND invokes verify_final_requirement_signoff_bundle.py AND semantic_cache_certification_report.json present on disk (>1KB)",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "f97d72d919ae0b286493d882ec6aad838f4295c8b91ddf44e8aaff179e7171d1",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-112",
+  "schema_version": "runtime-evidence-v1"
+}

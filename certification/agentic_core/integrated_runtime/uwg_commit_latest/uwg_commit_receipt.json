@@ -1,0 +1,35 @@
+{
+  "artifact_hash": "sha256:640b85a2707e72ba62ff4395eb88d265dcdc525d23d2e51c3d084fd26ba55f0e",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "affected_state_surfaces": [
+      "memory"
+    ],
+    "audit_append_receipt_ref": "e3877f24-b3b5-4f2f-b46f-dd93220e178b",
+    "audit_refs": [],
+    "commit_receipt_id": "57b3a39d-88b4-4617-8e66-4bb391f655cc",
+    "commit_request_ref": "cr:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "commit_status": "COMMITTED",
+    "committed_at": "2",
+    "committed_by_surface": "UWG",
+    "deterministic_digest": "3bf63220dbc4435aca21de070f41b49d6b56cfa398b6a142e919d929dbac6486",
+    "integrated_runtime_origin": true,
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_uwg_commit_run.run_integrated_uwg_commit",
+    "read_surface_refresh_plan_ref": "rfp:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "run_id": "56059fd109aa4207ad8bd47a28e1c219",
+    "schema_version": "L4-UWG-1.0.0",
+    "snapshot_after": "snapshot:00000002",
+    "snapshot_before": "snapshot:00000001",
+    "state_diff_refs": [
+      "sd:uwg-commit::56059fd109aa4207ad8bd47a28e1c219"
+    ],
+    "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd",
+    "uwg_validation_receipt_ref": "c770c993-b973-4fb1-956f-f4a777aa03cf",
+    "write_lock_receipt_ref": "a9dc208f-d68a-4fa9-b4f5-23daf4cf65d0"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_uwg_commit_run",
+  "producer_function_or_class": "run_integrated_uwg_commit",
+  "producer_module": "integrated_uwg_commit_run",
+  "upstream_artifact_ref": "sha256:f7269c93b39c18063ce8f76a56e407a863c01890dd8c96188157f60cf7b0e33c"
+}

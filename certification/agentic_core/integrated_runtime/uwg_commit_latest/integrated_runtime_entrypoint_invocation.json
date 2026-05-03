@@ -1,0 +1,21 @@
+{
+  "artifact_hash": "sha256:7ff33e30ae26f92cb61ff31b5cb1614532e8db4768f3048b82ac4ef2eda81ca6",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "56059fd109aa4207ad8bd47a28e1c219",
+    "is_hard_negative_lookup": false,
+    "namespace": "uwg_commit_test",
+    "raw_request_keys": [
+      "category",
+      "query"
+    ],
+    "started_at_epoch": 1777741024.6121225,
+    "tenant_id": "t:uwg-commit-regen"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": ""
+}

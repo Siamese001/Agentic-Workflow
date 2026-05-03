@@ -5,6 +5,8 @@ description: Use this rule for the SVP recommendation lens (1st-5th priorities) 
 
 # Author-Gate SVP Calibration — Unique-Content Stub
 
+> Packet shape SSOT: `.windsurf/schemas/author_gate_packet.schema.json` (plan `author-gate-ssot-consolidation-b7c3e1`). This file owns the **SVP recommendation lens** + **R/Y/G calibration metrics**; trigger taxonomy in `author-gate-decision-points.md`; scoring/marker mechanics in `author-gate-enforcement.md`.
+
 > Trimmed 2026-05-01: trigger taxonomy moved to `author-gate-decision-points.md`; scoring parameters and packet format moved to `author-gate-enforcement.md`. This file retains only the SVP-recommendation lens and the calibration metrics that exist nowhere else.
 
 ## SVP Recommendation Priority Lens
@@ -30,7 +32,8 @@ These five lenses are the calibration vector for `author-gate-enforcement.md` §
 | False stops (no real choice) | >2/session | 1-2/session | 0/session |
 | Missed gates (silent architectural choice) | Any | — | 0 |
 | Options per prompt | <2 or >4 | — | 2-4 |
-| ⭐ Recommendation included | Never | Sometimes | Always |
+| ⭐ Recommendation semantics | Star without dominance (top<0.85 or gap<0.12) | Star rule drifts across turns | Star iff `routing.rule_applied == "dominance_fires"` |
+| `[confidence=0.NN]` prefix on every surfaced option | Missing on any option | Present on some | Present on 100% |
 
 Red metrics are surface-level outage indicators; Yellow is acceptable but trending; Green is target.
 

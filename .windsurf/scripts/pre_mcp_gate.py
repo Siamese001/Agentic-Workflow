@@ -1189,6 +1189,43 @@ def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
     return 0
 
 
+def check_notion_wave_deferral(tool_name: str) -> int:
+    """
+    Block Notion MCP calls while a multi-wave plan is actively executing.
+
+    Rationale: remote MCPs serialize per constitutional §25, so any Notion
+    call mid-plan stalls the response and fragments multi-wave execution.
+    All Notion plan/backlog writes must batch at plan completion.
+
+    Active state is set/cleared by ``tools/windsurf/wave_execution_state.py``
+    (start|complete). Absent state => no active plan => allow.
+
+    Bypass: NOTION_WAVE_DEFERRAL_BYPASS=1 env var (for authored batch scripts
+    or intentional mid-plan reads).
+
+    Returns 0 (allow) or 2 (block).
+    """
+    if os.getenv("NOTION_WAVE_DEFERRAL_BYPASS") == "1":
+        return 0
+    try:
+        import _wave_execution_state as _wes  # type: ignore[import-not-found]
+    except ImportError:
+        # Helper missing — fail-open rather than brick Notion globally.
+        return 0
+    state = _wes.is_active()
+    if state is None:
+        return 0
+    return _exit_block(
+        f"Notion MCP tool {tool_name!r} blocked: multi-wave plan "
+        f"{state.get('plan')!r} is active (started {state.get('started_at')}). "
+        "Per .windsurf/rules/notion-plan-wave-deferral.md, batch ALL Notion "
+        "writes at end of plan. Complete remaining waves, then run: "
+        "python tools/windsurf/wave_execution_state.py complete "
+        f"--plan {state.get('plan')} -- then reissue the Notion call. "
+        "Bypass (exceptional): NOTION_WAVE_DEFERRAL_BYPASS=1"
+    )
+
+
 def check_notion_gate() -> int:
     """
     Check Notion MCP auth gate.
@@ -1482,6 +1519,9 @@ def main() -> int:
 
     # Notion MCP: verify NOTION_TOKEN is set in OS env before any API call
     if server_name == notion_server_name:
+        rc = check_notion_wave_deferral(tool_name)
+        if rc != 0:
+            return rc
         return check_notion_gate()
 
     # Tavily MCP: verify TAVILY_API_KEY is set in OS env before any API call

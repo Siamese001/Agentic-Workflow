@@ -1,0 +1,44 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.604236Z",
+  "control_scope": "parent_scenario_span",
+  "per_req": {
+    "RTC-REQ-021": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.604236Z"
+      },
+      "otel_trace": {
+        "assertion_result": "PASS",
+        "contains_synthetic_spans": false,
+        "run_id": "apps_rg-run-9484926b794d4544",
+        "span_count": 3,
+        "span_names": [
+          "L2_execute.generate_resume",
+          "L2_execute.post_pipeline",
+          "apps_rg.entrypoint"
+        ],
+        "trace_path": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+        "trace_sha256": "dc0295f295b754409538b0e6e8ad840a1ad73950101cea6e08b99db6c2a16819"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "latest apps_rg trace has at least one span name matching entrypoint|scenario",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "35cef3f4c480d4c5a1f069ded2395fbf8d78e1b49cfeb610516c78a185f1a946",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-021",
+  "schema_version": "runtime-evidence-v1"
+}

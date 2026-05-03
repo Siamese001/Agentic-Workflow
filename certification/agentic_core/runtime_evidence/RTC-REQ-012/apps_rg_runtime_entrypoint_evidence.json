@@ -1,0 +1,105 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.447487Z",
+  "control_scope": "integrated_runtime_entrypoint",
+  "per_req": {
+    "RTC-REQ-012": {
+      "artifact_payload_hash": {
+        "artifact_count": 18,
+        "assertion_result": "PASS",
+        "computed_at_utc": "2026-05-02T03:42:18.447487Z",
+        "fresh_artifact_hashes": {
+          "agentic_core_spine_proof.json": "sha256:c920e8af9bf3da85d0c32c65ecd0e1c87e34c045f014e54a442414180596865c",
+          "c0_bypass_receipt.json": "sha256:2b8e68c4b4157f604a4109e08e408e1ad4e46092eebf56429ab1f8a82571674a",
+          "exit_review_packet.json": "sha256:f109f8481db9419f6a3d74d50075e450a3e1a0e4dfdfcdf57d34ced76c49ea4f",
+          "integrated_runtime_artifact_manifest.json": "sha256:95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a",
+          "integrated_runtime_entrypoint_invocation.json": "sha256:8f3674ff6353f0c5097f2d754341af7113c62366b0e6594bbd59cbe91e94a986",
+          "l1_plan_contract.json": "sha256:5f2ebb715b9ae5e156b73be6b90c6c63bcf9a1638583fab301383be8cd115328",
+          "l3_bypass_receipt.json": "sha256:120dff967112534831ad1bdb97940db427dc8c9756459edf0b15270863dac799",
+          "no_harness_stamp_receipt.json": "sha256:d2f0900329f3f2c46cbe15cf89ade74191f8a5c39a575356114f549edbef82cd",
+          "prompt_assembly_bypass_receipt.json": "sha256:5717823a6307c5f54f6b66c895cb80ea5dc5b15f5836f0a9a4876477f657cdfc",
+          "route_contract.json": "sha256:b879ce51f5bae1a79397e34d2c83c361c4c9a038e2fadec9469219a504b94131",
+          "runtime_exhaust_bundle.json": "sha256:e363df2e304672a747633a1e29cf2d4bbe883fa691c10e399607ce4b33afc4bf",
+          "runtime_gate_verdict_bundle.json": "sha256:ce607a0f9a794e19d03235289c3159ff87aefcc104ce26511796f35bb2d19798",
+          "runtime_identity_envelope.json": "sha256:4c47cbd3da87b6dabe9bb4afc32464d981c87e4b76870713f44568711aed4529",
+          "runtime_trace_snapshot.json": "sha256:a015ed250402ee0c199d750bdcdcc90bf34ee9de38cbee75056ac29410b64916",
+          "semantic_cache_safe_reuse_decision.json": "sha256:0b3c020fa4bc8d739548206b5ec43b462885a98dbcb7c514e3445cd5bbc75398",
+          "terminal_ret_packet.json": "sha256:281c854abf019c1d6f9faf00689d65685d1da63dd04b67026ce722db82650d1b",
+          "validated_request.json": "sha256:a034c41c51bca2b174eb459e4cd1cbfe794cae28d1a5b16be8919406a5ff3ff9",
+          "x3_disposition_receipt.json": "sha256:19839305cf1a336c887237d4bceeb5a86005b8ca70e2048b284074f6c23652fd"
+        },
+        "payload_pointer": "/per_req/RTC-REQ-012/artifact_payload_hash"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.447487Z"
+      },
+      "otel_trace": {
+        "assertion_result": "PASS",
+        "contains_synthetic_spans": false,
+        "earliest_start_utc": "2026-05-02T01:12:58.399077Z",
+        "latest_finish_utc": "2026-05-02T01:15:43.957827Z",
+        "run_id": "apps_rg-run-9484926b794d4544",
+        "span_count": 3,
+        "span_names": [
+          "L2_execute.generate_resume",
+          "L2_execute.post_pipeline",
+          "apps_rg.entrypoint"
+        ],
+        "trace_path": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+        "trace_sha256": "dc0295f295b754409538b0e6e8ad840a1ad73950101cea6e08b99db6c2a16819"
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "declared_artifact_filenames": [
+          "integrated_runtime_entrypoint_invocation.json",
+          "runtime_identity_envelope.json",
+          "validated_request.json",
+          "l1_plan_contract.json",
+          "route_contract.json",
+          "l3_bypass_receipt.json",
+          "c0_bypass_receipt.json",
+          "prompt_assembly_bypass_receipt.json",
+          "runtime_gate_verdict_bundle.json",
+          "semantic_cache_safe_reuse_decision.json",
+          "terminal_ret_packet.json",
+          "exit_review_packet.json",
+          "x3_disposition_receipt.json",
+          "runtime_exhaust_bundle.json",
+          "runtime_trace_snapshot.json",
+          "integrated_runtime_artifact_manifest.json",
+          "no_harness_stamp_receipt.json",
+          "agentic_core_spine_proof.json"
+        ],
+        "manifest_path": "artifacts/certification/integrated_runtime/latest/integrated_runtime_artifact_manifest.json",
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a",
+        "missing_artifacts": []
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "bundle_relative_to_prefix": "integrated_runtime/latest",
+        "expected_prefix": "artifacts/certification",
+        "repo_root": "C:/Git/Agentic-Workflow-FRESH",
+        "single_root_verified": true
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "upstream_exit_code": 0
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "upstream_per_req_result": "PASS",
+        "upstream_per_req_title": "Exit + exactly one X3 disposition",
+        "upstream_per_req_violations": [],
+        "upstream_verifier": "scripts/verify_rtc_req_integrated_runtime.py"
+      }
+    }
+  },
+  "per_req_block_sha256": "5179a0851507fa7af85f21c4bd7e174579e9a2b25e30f0e0f2b9c87a7fecfbdc",
+  "producer": "tools/cert/verify_apps_rg_runtime_entrypoint.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-012",
+  "schema_version": "runtime-evidence-v1"
+}

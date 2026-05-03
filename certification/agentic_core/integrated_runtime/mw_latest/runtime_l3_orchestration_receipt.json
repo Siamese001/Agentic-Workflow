@@ -1,0 +1,47 @@
+{
+  "artifact_hash": "sha256:eef3bd368057028d8cedb3b7e00a771bf268c1d99a238ea75fdf329f4c1a64a6",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "dag_id": "mw_demo_two_node",
+    "dag_sha256": "sha256:69f32d94cbc2c80136a316ef94041ec7761588f8b4c54ff041540c2b41270f07",
+    "deterministic_digest": "sha256:aee5afdd8031cd88e0d6eb35967f50c6402600e1b88d85ec53a4d20e683d1699",
+    "l3_no_execute_assertion": true,
+    "l3_no_l4_write_assertion": true,
+    "l3_no_prompt_assembly_assertion": true,
+    "l3_no_retrieve_assertion": true,
+    "l3_required": true,
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_contract_id": "MW_DEMO_TWO_NODE",
+    "route_id": "MW_DEMO_TWO_NODE",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "schema_version": "1.0",
+    "selected_node_ids": [
+      "node_a",
+      "node_b"
+    ],
+    "static_dag_ref": "sha256:e271f40e92f8b94f2f1b50f48bb2dff0ead9c9bf7f8d17cadfaf27b81e707644",
+    "step_contracts": [
+      {
+        "handed_to_l2_at_utc": "2026-05-02T11:18:33Z",
+        "node_id": "node_a",
+        "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+        "skipped_reason": "",
+        "status": "step_handed_to_l2",
+        "step_id": "step_1"
+      },
+      {
+        "handed_to_l2_at_utc": "2026-05-02T11:18:33Z",
+        "node_id": "node_b",
+        "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+        "skipped_reason": "",
+        "status": "step_handed_to_l2",
+        "step_id": "step_2"
+      }
+    ],
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:e271f40e92f8b94f2f1b50f48bb2dff0ead9c9bf7f8d17cadfaf27b81e707644"
+}

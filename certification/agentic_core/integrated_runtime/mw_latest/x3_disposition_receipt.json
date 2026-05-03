@@ -1,0 +1,30 @@
+{
+  "artifact_hash": "sha256:121a838be2d20443136cbb9f4f9079bd7ab5b7905fd194b830178c51d55537c6",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "failed_gate_ids": [],
+    "rationale": "mw_structural_only_allow",
+    "reason_codes": [
+      "mw_structural_only_pass"
+    ],
+    "verdict_count": 1,
+    "x3_disposition": "X3D",
+    "x3_packet": {
+      "commit_receipt_id": "",
+      "disposition": "X3D",
+      "evidence_status": "BYPASSED",
+      "final_response": "(MW structural-only demo run)",
+      "runtime_exhaust_manifest": {
+        "produced_at": 1777720713,
+        "rationale": "mw_structural_only_allow",
+        "track_label": "structural"
+      },
+      "schema_status": "valid",
+      "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+    }
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:4801835f561c9b72b52e37a11e608d35612469aa9d35b61c2ae9b24a0effb447"
+}

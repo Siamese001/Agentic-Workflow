@@ -45,7 +45,32 @@ from agentic_core.L4_state.contracts.records import (
 
 CONTRACT_STATUS_VOCAB: frozenset[str] = frozenset({"draft", "active", "deprecated"})
 GRADER_TYPE_VOCAB: frozenset[str] = frozenset(
-    {"deterministic", "llm_as_judge", "hybrid"},
+    {
+        # Legacy/baseline grader types.
+        "deterministic",
+        "llm_as_judge",
+        "hybrid",
+        # Canonical Anthropic grader types added in
+        # apps-eval-harness-deferred-e4a1b7 W3.P1 — covers agent-eval
+        # parity per Anthropic's "Demystifying evals for AI agents".
+        "tool_calls",       # W3.P1 — trajectory-match grader
+        "state_check",      # W3.P2 — outcome-truth against app-specific state
+        "transcript",       # W3.P3 — tracked-metric grader with bounds
+        "trajectory_match", # W3.P3 — explicit trajectory match-mode handle
+    },
+)
+
+# Trajectory match-modes for grader_type=tool_calls / trajectory_match.
+# Optional; dims can omit the mode and rely on the default "unordered".
+TRAJECTORY_MATCH_MODE_VOCAB: frozenset[str] = frozenset(
+    {"strict", "unordered", "subset", "superset", "none"},
+)
+
+# W5.P3 — capability-vs-regression taxonomy (apps-eval-harness-closeout-b7c9d2).
+# Empty string means "unannotated" and is always accepted; the gate emits
+# an INFO-severity TAXONOMY_COVERAGE finding so operators can track adoption.
+TAXONOMY_CLASS_VOCAB: frozenset[str] = frozenset(
+    {"capability", "regression", "tracked_metric"},
 )
 OUTPUT_TYPE_VOCAB: frozenset[str] = frozenset(
     {"markdown", "json", "html", "text", "composite", "structured_record"},
@@ -90,6 +115,21 @@ class ScoreDimension:
     min_required_score: float = -1.0
     evidence_required: bool = True
     fail_closed_if_unknown: bool = True
+    # W3.P3 — optional trajectory match-mode for tool_calls / trajectory_match
+    # grader types. Default "" = not applicable. When set, must be one of
+    # TRAJECTORY_MATCH_MODE_VOCAB.
+    trajectory_match_mode: str = ""
+    # W4.P1 — optional categorical score bands. When set, overrides
+    # min_required_score with band-index gating (see AppSpecificEvaluator).
+    # Tuple of ascending-threshold band labels, e.g.
+    # ("BAD", "WEAK", "OK", "GOOD", "EXCELLENT"). Empty = disabled.
+    score_bands: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # W5.P3 (apps-eval-harness-closeout-b7c9d2 W2) — capability-vs-regression
+    # taxonomy. Empty = not annotated (gate emits INFO). Values:
+    #   "capability"     — core ability the app MUST demonstrate
+    #   "regression"     — watchdog against known failure modes (guardrail)
+    #   "tracked_metric" — observed but not gated; surfaces in telemetry
+    taxonomy_class: str = ""
 
     def __post_init__(self) -> None:
         if not self.dimension_id:
@@ -105,6 +145,16 @@ class ScoreDimension:
         if self.min_required_score != -1.0 and not 0.0 <= self.min_required_score <= 1.0:
             raise AppDomainContractError(
                 f"ScoreDimension.min_required_score must be -1 or in [0,1], got {self.min_required_score}",
+            )
+        if self.trajectory_match_mode and self.trajectory_match_mode not in TRAJECTORY_MATCH_MODE_VOCAB:
+            raise AppDomainContractError(
+                f"ScoreDimension.trajectory_match_mode {self.trajectory_match_mode!r} "
+                f"not in {sorted(TRAJECTORY_MATCH_MODE_VOCAB)}",
+            )
+        if self.taxonomy_class and self.taxonomy_class not in TAXONOMY_CLASS_VOCAB:
+            raise AppDomainContractError(
+                f"ScoreDimension.taxonomy_class {self.taxonomy_class!r} "
+                f"not in {sorted(TAXONOMY_CLASS_VOCAB)}",
             )
 
 
@@ -582,6 +632,9 @@ class AppDomainContractRecord:
     orchestration_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     fixture_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     negative_control_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # apps-core-contract-rectification-a8f3c2 Phase 1.4 — repair menu contracts.
+    # Optional: apps that have not yet defined repair scenarios omit this field.
+    repair_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     policy_hash: str = ""
     blueprint_hash: str = ""
     registry_digest_set: Tuple[str, ...] = field(default_factory=_empty_tuple)
@@ -670,6 +723,8 @@ __all__ = [
     "AppDomainContractError",
     "CONTRACT_STATUS_VOCAB",
     "GRADER_TYPE_VOCAB",
+    "TRAJECTORY_MATCH_MODE_VOCAB",
+    "TAXONOMY_CLASS_VOCAB",
     "OUTPUT_TYPE_VOCAB",
     "FRESHNESS_CLASS_VOCAB",
     "SIDE_EFFECT_CLASS_VOCAB",

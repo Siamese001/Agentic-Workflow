@@ -57,9 +57,13 @@ Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as
 
 34. **Per-turn retrieval budgets.** Combined `grep_search` + `code_search` invocations ≤ 3 per response (audit: `post_cascade_grep_budget_audit.py`, bypass `GREP_BUDGET_BYPASS=1`). Combined file-read invocations (`read_file`, `read_notebook`, `read_url_content`, MCP `read_text_file`/`read_file`/`read_multiple_files`) ≤ 10 per response (audit: `post_cascade_read_budget_audit.py`, bypass `READ_BUDGET_BYPASS=1`). Per-turn token-burn telemetry: `post_cascade_token_telemetry.py` → `artifacts/windsurf/turn_budget.jsonl`; weekly rollup `ops_scripts/calibration/token_burn_weekly_report.py`. Detail: `scope-containment.md`.
 
+35. **Author-Gate queue drain mandatory.** After ANY wave/phase completion marker (`WAVE_COMPLETE:`, `PHASE_COMPLETE:`, `wave_execution_state.py complete`, or plan row flip to `✅ DONE`), Cascade MUST emit the next pending `AUTHOR_GATE_PACKET:` from `.windsurf/state/author_gate_queue/<slug>.jsonl` in the same or immediately-following response. Queue SSOT helper: `.windsurf/scripts/_author_gate_queue.py`. Plan-time seeding via `AG_QUEUE_SEED:` markers (captured by `post_cascade_ag_queue_seed_capture.py`). Pre-hook surface: `pre_user_prompt_ag_queue_surface.py`. Audit: `post_cascade_ag_queue_drain_audit.py`. Pre-commit prose↔marker parity: `check_ag_queue_seed_markers.py`. Weekly drift: `check_ag_queue_drain_freshness.py`. Detail: `author-gate-queue-drain.md`. Bypass: `AG_QUEUE_DRAIN_BYPASS=1`.
+
+36. **Plan–Notion registration mandatory.** Every new `.windsurf/plans/<slug>-<6hex>.md` MUST emit `PLAN_CREATED:` marker AND post a Plans DB row (Slug, Status, Exists On Disk, Plan File Path, Summary, AI Summary) before wave execution. `wave_execution_state.py start` blocks on unregistered plans. Cascade MUST NOT claim registration status without a live `API-query-data-source` call same-response. Helper: `_plan_registration.py`. Pre-commit T7u: `check_plan_registration_freshness.py`. Detail: `plan-registration-enforcement.md`. Bypass: `PLAN_REGISTRATION_BYPASS=1`.
+
 ## Quick Non-Negotiables (rule-number index)
 
-PowerShell §0 · shell=True §0 · scope growth §18 · grep-vs-ADG §5/§22/§28 · completion-without-verify §19 · anti-pattern §6/§8 · progress bar §16 · `DEFERRED_SCOPE:` §24 · remote-MCP batch §25 · config schema §27 · interactive pagers §26 · `DECISION_CAPTURED:` §30 · refactor-class capture §6/§30 · retrieval budgets §34.
+PowerShell §0 · shell=True §0 · scope growth §18 · grep-vs-ADG §5/§22/§28 · completion-without-verify §19 · anti-pattern §6/§8 · progress bar §16 · `DEFERRED_SCOPE:` §24 · remote-MCP batch §25 · config schema §27 · interactive pagers §26 · `DECISION_CAPTURED:` §30 · refactor-class capture §6/§30 · retrieval budgets §34 · `AG_QUEUE_SEED:` / queue drain §35 · `PLAN_CREATED:` / Notion registration §36.
 
 ## Tier Classification
 

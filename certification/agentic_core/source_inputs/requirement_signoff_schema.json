@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/schemas/requirement_signoff_schema.json",
+  "title": "RuntimeCertificationFinalSignoffReport",
+  "description": "Fail-closed JSON Schema for the runtime certification final signoff report. Forbids unknown statuses, requires evidence + hash verification when SIGNED_OFF, and requires blocking_gap when not.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "compiler_version",
+    "compiler_path",
+    "source_repo_root",
+    "git_commit",
+    "run_timestamp_utc",
+    "requirements_source_sha256",
+    "evidence_manifest_sha256",
+    "summary",
+    "rows",
+    "row_digest",
+    "evidence_digest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "compiler_version": { "type": "string", "minLength": 1 },
+    "compiler_path": { "type": "string", "minLength": 1 },
+    "source_repo_root": { "type": "string", "minLength": 1 },
+    "git_commit": { "type": "string", "pattern": "^([0-9a-f]{40}|UNCOMMITTED|UNKNOWN)$" },
+    "git_dirty": { "type": "boolean" },
+    "run_timestamp_utc": { "type": "string", "format": "date-time" },
+    "requirements_source_path": { "type": "string" },
+    "requirements_source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "evidence_manifest_path": { "type": "string" },
+    "evidence_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "row_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "evidence_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "signed_off", "blocked", "not_verified", "percent_signed_off"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "signed_off": { "type": "integer", "minimum": 0 },
+        "blocked": { "type": "integer", "minimum": 0 },
+        "not_verified": { "type": "integer", "minimum": 0 },
+        "percent_signed_off": { "type": "number", "minimum": 0, "maximum": 100 },
+        "by_claim_type": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["total", "signed_off", "blocked", "not_verified"],
+            "additionalProperties": false,
+            "properties": {
+              "total": { "type": "integer", "minimum": 0 },
+              "signed_off": { "type": "integer", "minimum": 0 },
+              "blocked": { "type": "integer", "minimum": 0 },
+              "not_verified": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Row" }
+    }
+  },
+  "$defs": {
+    "Row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["req_id", "claim_type", "computed_status", "controls"],
+      "properties": {
+        "req_id": { "type": "string", "pattern": "^RTC-REQ-[0-9]{3}$" },
+        "title": { "type": "string" },
+        "priority": { "type": "string" },
+        "requirement_group": { "type": "string" },
+        "claim_type": { "type": "string" },
+        "is_final_hundred_percent_row": { "type": "boolean" },
+        "depends_on_req_ids": { "type": "array", "items": { "type": "string" } },
+        "computed_status": {
+          "type": "string",
+          "enum": ["SIGNED_OFF", "BLOCKED", "NOT_VERIFIED"],
+          "description": "FORBIDS unknown statuses (e.g. 'PARTIAL', 'PASS', 'OK')"
+        },
+        "blocking_gap": { "type": ["string", "null"] },
+        "controls": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ControlResult" }
+        },
+        "evidence_artifacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/EvidenceArtifact" }
+        },
+        "row_evidence_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "evaluated_at_utc": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "description": "When SIGNED_OFF, blocking_gap MUST be null and at least one evidence_artifact MUST be present and hash-verified.",
+          "if": { "properties": { "computed_status": { "const": "SIGNED_OFF" } } },
+          "then": {
+            "properties": {
+              "blocking_gap": { "type": "null" },
+              "evidence_artifacts": { "type": "array", "minItems": 1 }
+            },
+            "required": ["evidence_artifacts", "row_evidence_sha256"]
+          }
+        },
+        {
+          "description": "When NOT SIGNED_OFF (BLOCKED or NOT_VERIFIED), blocking_gap MUST be a non-empty string.",
+          "if": { "not": { "properties": { "computed_status": { "const": "SIGNED_OFF" } } } },
+          "then": {
+            "properties": {
+              "blocking_gap": { "type": "string", "minLength": 1 }
+            },
+            "required": ["blocking_gap"]
+          }
+        }
+      ]
+    },
+    "ControlResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "passed"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "passed": { "type": "boolean" },
+        "reason": { "type": ["string", "null"] },
+        "evidence_path": { "type": ["string", "null"] },
+        "evidence_sha256": { "type": ["string", "null"], "pattern": "^([0-9a-f]{64})?$" }
+      }
+    },
+    "EvidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "exists", "size_bytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "exists": { "type": "boolean", "const": true },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "mtime_utc": { "type": "string", "format": "date-time" },
+        "linked_req_ids": { "type": "array", "items": { "type": "string" } },
+        "verifier_command": { "type": ["string", "null"] },
+        "verifier_exit_code": { "type": ["integer", "null"] },
+        "verifier_version": { "type": ["string", "null"] },
+        "fresh_within_hours": { "type": ["number", "null"] }
+      }
+    }
+  }
+}

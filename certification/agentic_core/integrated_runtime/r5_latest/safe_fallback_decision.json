@@ -1,0 +1,27 @@
+{
+  "artifact_hash": "sha256:02661648683a155d86f68ee6f727d5a46a8183649144895153c9d960a221ef7e",
+  "emitted_at": "2026-05-02T11:23:34Z",
+  "payload": {
+    "actual_x3_disposition": "X3D",
+    "expected_x3_disposition_names": [
+      "ALLOW",
+      "SAFE_ABSTAIN"
+    ],
+    "expected_x3_dispositions": [
+      "X3D",
+      "X3E"
+    ],
+    "fallback_class": "SAFE_FALLBACK",
+    "fallback_reason": "L0_router_selected_R5_FALLBACK_for_safety_class_intent",
+    "no_l4_write_attempted": true,
+    "no_real_l2_execution": true,
+    "no_real_model_call": true,
+    "no_real_tool_call": true,
+    "no_unsafe_execution": true,
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_fallback_run.run_integrated_fallback"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_fallback_run",
+  "producer_function_or_class": "run_integrated_fallback",
+  "producer_module": "integrated_fallback_run",
+  "upstream_artifact_ref": ""
+}

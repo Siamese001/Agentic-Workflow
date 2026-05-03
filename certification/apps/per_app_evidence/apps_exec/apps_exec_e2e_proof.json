@@ -1,0 +1,361 @@
+{
+  "adg_snapshot_ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+  "adg_snapshot_sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8",
+  "agentic_core_spine_status": "spine_active",
+  "app_name": "apps_exec",
+  "app_overlay_authority_status": "overlay_respected",
+  "app_package": "apps_exec",
+  "artifact_manifest_ref": "artifacts/certification/apps_e2e/apps_exec/apps_exec_artifact_manifest.json",
+  "blocking_gaps": [],
+  "certification_level": "SPINE_COMPLETE_CERTIFIED",
+  "entrypoint_command": "python -m apps_exec --apps-e2e-live",
+  "exit_code": 0,
+  "finished_at_utc": "2026-05-03T00:00:56.944064Z",
+  "fixture_data_used": false,
+  "fixture_mode_detected": false,
+  "fixture_runtime_mode": false,
+  "git_commit": "01d4596288",
+  "git_dirty": true,
+  "harness_pass": true,
+  "harness_run_id": "apps_exec-e2e-a8f9a89c3e0c4744",
+  "harness_schema_version": "apps_e2e_harness/2026-05-01/v1",
+  "honest_fail_closed": false,
+  "mock_mode_detected": false,
+  "notes": "Honest fail-closed proof bundle for apps_exec. The harness executed `python -m apps_exec --apps-e2e-live` and recorded real artifacts + real SHA256 hashes. It refused to synthesize spine contracts that the run did not emit. To flip success=true, integrate apps_exec with the governed runtime spine and emit OTEL spans bound to the same run_id.",
+  "otel_or_runtime_trace_ref": "artifacts/apps_exec/runs/20260503_000056/otel_runtime_trace.json",
+  "proof_schema_version": "apps_e2e_proof/2026-05-01/v1",
+  "request_id": "apps_exec-run-5ff8b0cc05d14bb2",
+  "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+  "run_info": {
+    "artifacts": [
+      {
+        "mtime_epoch": 1777766456.918568,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/exit_review_packet.json",
+        "sha256": "709ab5833a95eb51dad34cca97ea6fd53df533637205612f3154c1549b2ab740",
+        "size_bytes": 511
+      },
+      {
+        "mtime_epoch": 1777766456.9170146,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/l1_plan_contract.json",
+        "sha256": "30161b2b6ecf0df884fabf2efbe7c86cbcd27dea707a2c44680be791016f1f9a",
+        "size_bytes": 1183
+      },
+      {
+        "mtime_epoch": 1777766456.918568,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/l2_execution_receipt.json",
+        "sha256": "2132855f70c461c07596f260484b96f9f9cfd46b6ec58f1304da8bbf55f926fe",
+        "size_bytes": 524
+      },
+      {
+        "mtime_epoch": 1777766456.918054,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/l3_bypass_receipt.json",
+        "sha256": "cacf8e2f0440064f153515a45f482046e6a185063c2295e396484553baf676e3",
+        "size_bytes": 696
+      },
+      {
+        "mtime_epoch": 1777766456.919081,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/otel_runtime_trace.json",
+        "sha256": "71e5f2e31e765b97f869ba4122295682e56180a9d38ffdabe47730a08b041c1b",
+        "size_bytes": 833
+      },
+      {
+        "mtime_epoch": 1777766456.918054,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/prompt_assembly_manifest.json",
+        "sha256": "0e415733c0be1bca9e27aa7082fe1dacecb150a7545412f1aa3b7f275e23cea1",
+        "size_bytes": 526
+      },
+      {
+        "mtime_epoch": 1777766456.9170146,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/route_contract.json",
+        "sha256": "917fe65aff69b93b4653e1284e849ba28c08ec24b0effd261020e32bcd1e4d15",
+        "size_bytes": 579
+      },
+      {
+        "mtime_epoch": 1777766456.919081,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/runtime_exhaust_bundle.json",
+        "sha256": "c0db5b32ccb79a0cf3337dd439c983ed764ae9b6adbb9546677a712e46d12945",
+        "size_bytes": 608
+      },
+      {
+        "mtime_epoch": 1777766456.9164605,
+        "mtime_utc": "2026-05-03T00:00:56Z",
+        "path": "artifacts/apps_exec/runs/20260503_000056/u0_intake_envelope.json",
+        "sha256": "b8dad71426cbad4d2c33d5f1a1d25ddafa473637a9928f6dbe1855e159423c0a",
+        "size_bytes": 540
+      }
+    ],
+    "dir_mtime_epoch": 1777766456.919081,
+    "run_dir": "artifacts/apps_exec/runs/20260503_000056",
+    "stale": []
+  },
+  "run_log_ref": "artifacts/certification/apps_e2e/apps_exec/apps_exec_run.log",
+  "runtime_c0_receipt_ref": null,
+  "runtime_exhaust_ref": "artifacts/apps_exec/runs/20260503_000056/runtime_exhaust_bundle.json",
+  "runtime_exit_disposition_ref": "artifacts/apps_exec/runs/20260503_000056/exit_review_packet.json",
+  "runtime_intake_ref": "artifacts/apps_exec/runs/20260503_000056/u0_intake_envelope.json",
+  "runtime_l1_plan_ref": "artifacts/apps_exec/runs/20260503_000056/l1_plan_contract.json",
+  "runtime_l2_artifact_ref": "artifacts/apps_exec/runs/20260503_000056/l2_execution_receipt.json",
+  "runtime_l3_bypass_ref": "artifacts/apps_exec/runs/20260503_000056/l3_bypass_receipt.json",
+  "runtime_l3_receipt_ref": null,
+  "runtime_mode": "governed_spine_active",
+  "runtime_mode_classification": "live_run",
+  "runtime_prompt_assembly_ref": "artifacts/apps_exec/runs/20260503_000056/prompt_assembly_manifest.json",
+  "runtime_route_contract_ref": "artifacts/apps_exec/runs/20260503_000056/route_contract.json",
+  "runtime_uwg_receipt_ref": null,
+  "spine_signals": {
+    "apps_exec/__init__.py": {
+      "exists": true,
+      "sha256": "4015f6d03b0950a011b41b76e69f3d9103bead646a076757ed74768470261f75",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/__main__.py": {
+      "exists": true,
+      "sha256": "67bd3fba0aa1b78ac4269b922779e828f69dda7f22d66381052c23ebfeea7565",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/integrations/__init__.py": {
+      "exists": true,
+      "sha256": "ecbb7de24d73a42db4b1f587573113f8a99ef061060f06c1bce678394a9710da",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/integrations/exec_ingress_runner.py": {
+      "exists": true,
+      "sha256": "1acfad776ac5ff1ef33aac6353096b997645085bc2bad87445d3868d60ad97b1",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/integrations/execution_adapter.py": {
+      "exists": true,
+      "sha256": "34d41706fb096d519d0b1b7acdcba601d4f2dbe96377f0d8e9b76a022bc8acae",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/integrations/governed_exec_run.py": {
+      "exists": true,
+      "sha256": "cdb232485782b9a963dfd2a22b98632e1a656dfa8c470a1b4a69b2387310fa88",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": true
+      }
+    },
+    "apps_exec/integrations/observability_adapter.py": {
+      "exists": true,
+      "sha256": "82ab33ab2dac29712d26f8267537792dc43e9d30c8cf6916404ba44d2cd1177c",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_exec/integrations/spine_handoff.py": {
+      "exists": true,
+      "sha256": "efc2afb970173626afe939a40e0b98dfd9d459c0de50e11cbb5a2cdc1c7799ed",
+      "signals": {
+        "ExitReviewPacket": true,
+        "L1PlanContract": true,
+        "L3StepContract": false,
+        "RouteContract": true,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": true,
+        "agentic_core.L3_orchestration": true,
+        "governed_run_adapter": true
+      }
+    }
+  },
+  "stage_matrix": [
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "static_l3_dag",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/u0_intake_envelope.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "U0_intake",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/l1_plan_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L1_plan",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/route_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L0_route",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/l3_bypass_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L3_orchestrate_or_bypass",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "C0_retrieval",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/prompt_assembly_manifest.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "prompt_assembly",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/l2_execution_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L2_execute",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/exit_review_packet.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "Exit_X3",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/runtime_exhaust_bundle.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L6_exhaust",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_exec/runs/20260503_000056/otel_runtime_trace.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "otel_or_runtime_trace",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "UWG_L4_durable_write",
+      "static_required": false
+    }
+  ],
+  "started_at_utc": "2026-05-03T00:00:56.706790Z",
+  "static_dag_proof_inline_summary": {
+    "dag_id": null,
+    "dag_sha256": null,
+    "fail_reasons": [
+      "no_static_l3_dag_files_for_apps_exec",
+      "static_dag_missing_entirely"
+    ],
+    "present": false
+  },
+  "static_dag_ref": "artifacts/certification/apps_e2e/apps_exec/apps_exec_static_l3_dag_proof.json",
+  "static_dag_sha256": "79dceca7043f5423f7d8e0e2e91357eea417a6ea4f08ee96433d08839b12bc35",
+  "success": true,
+  "synthetic_trace_detected": false,
+  "trace_root": "apps_exec-run-5ff8b0cc05d14bb2",
+  "verifier_result_ref": null
+}

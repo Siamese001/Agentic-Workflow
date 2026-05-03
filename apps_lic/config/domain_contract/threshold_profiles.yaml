@@ -21,5 +21,13 @@
     brand_voice: 0.0
     no_fake_personalization: 0.99
     no_sensitive_targeting: 0.99
+  # W4.P3 (plan apps-eval-harness-parity-f8d4a2): dims listed here keep
+  # min=0.0 deliberately — they remain in the weighted overall score but
+  # are NOT gated per-dim. CI gate check_app_domain_harness_parity.py
+  # suppresses NO_DEAD_THRESHOLDS WARNs for these dims.
+  intentional_zero_dims:
+    - response_likelihood    # LLM-estimated reply rate; inherently noisy, tracked-only
+    - sequence_coherence     # only meaningful in multi-touch sequences, not single messages
+    - brand_voice            # subjective style match; tracked-only until voice profiles calibrate
   source_app_config_ref: "apps_lic/config/lic_thresholds.yaml"
   created_at: "2026-05-01"

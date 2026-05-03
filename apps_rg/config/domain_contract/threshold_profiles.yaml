@@ -21,5 +21,14 @@
     concision: 0.60
     format_compliance: 0.95
     no_fabrication: 0.99
+  # W4.P3 (plan apps-eval-harness-parity-f8d4a2): dims listed here keep
+  # min=0.0 deliberately — they remain in the weighted overall score but
+  # are NOT gated per-dim. Their eval_rubric min_required_score still
+  # applies only as documentation of "ideal" performance; runtime gating
+  # is by the weighted overall_pass_threshold plus the non-zero entries
+  # above. CI gate check_app_domain_harness_parity.py suppresses
+  # NO_DEAD_THRESHOLDS WARNs for these dims.
+  intentional_zero_dims:
+    - executive_positioning  # contextual — only meaningful for senior/exec roles
   source_app_config_ref: "apps_rg/config/rg_thresholds.yaml"
   created_at: "2026-05-01"

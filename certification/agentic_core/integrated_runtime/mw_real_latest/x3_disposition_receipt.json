@@ -1,0 +1,38 @@
+{
+  "artifact_hash": "sha256:766d7ae69eefdb18151384a3b8711619b191bea3fa0d135497fd2a80cdbe29e5",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "failed_gate_ids": [
+      "cache_reuse_safety"
+    ],
+    "rationale": "safe_reuse_composite_blocked:NOT_APPLICABLE",
+    "reason_codes": [
+      "NOT_APPLICABLE",
+      "x3a_deny_unsafe_reuse"
+    ],
+    "verdict_count": 1,
+    "x3_disposition": "X3A",
+    "x3_packet": {
+      "disposition": "X3A",
+      "failed_gate_ids": [
+        "cache_reuse_safety"
+      ],
+      "l6_failure_packet": {
+        "rationale": "safe_reuse_composite_blocked:NOT_APPLICABLE"
+      },
+      "reason_codes": [
+        "NOT_APPLICABLE",
+        "x3a_deny_unsafe_reuse"
+      ],
+      "replan_hint": "",
+      "safe_partial_artifact_id": "",
+      "sub_disposition": "DENY_STOP",
+      "trace_root": "trace-dd46735d034440ac81cde676001e1d3c",
+      "user_safe_message": "Cached answer was blocked by safety veto."
+    }
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:29435fd274b0f67d129d56a7a4ff0b684192ced5aa01317648d2900f52d3ef86"
+}

@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.601699Z",
+  "control_scope": "terminal_ret_and_exit_r1b",
+  "per_req": {
+    "RTC-REQ-055": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.601699Z"
+      },
+      "positive_evidence": {
+        "assertion_result": "PASS",
+        "positive_evidence_predicate": "terminal_ret_packet + exit_review_packet present, route_id R1B_*, chain shows terminal->exit",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "terminal_ret_packet + exit_review_packet present, route_id R1B_*, chain shows terminal->exit",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "b3ee379be807829130adff37d95a94856ffaeb4f31ba20e86f680f66cc684336",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-055",
+  "schema_version": "runtime-evidence-v1"
+}

@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:f7caacf746ea8fcde23238192d8188436dae837b4c8ab49a4e266eb09f7c7221",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "mw real regen"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:f16ca4b8d15ec562d185b9592ff962749f8458e8d0019677ac9da623fefb489d"
+}

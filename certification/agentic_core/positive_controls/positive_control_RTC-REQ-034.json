@@ -1,0 +1,37 @@
+{
+  "approved_verifier": "scripts/verify_runtime_certification_acceptance.py",
+  "dep_artifact": "downgraded_rows_report.json",
+  "dep_artifact_sha256": "3a930d1c5fabd1a287ac5073428d75a661c7485b9df2e511e9dcb44ad7f66070",
+  "fixture_purpose": "positive_control \u2014 honest per-control payload for RTC-REQ-034; controls ci_gate + layer_boundary intentionally absent because the approved verifier does not attest them.",
+  "generated_at_utc": "2026-05-02T03:42:18+00:00",
+  "per_req": {
+    "RTC-REQ-034": {
+      "last_verified_timestamp": {
+        "control": "last_verified_timestamp",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "last_verified_utc": "2026-05-02T03:42:18+00:00",
+        "proof": "approved verifier completed at 2026-05-02T03:42:18+00:00",
+        "result": "PASS"
+      },
+      "verifier_exit_zero": {
+        "control": "verifier_exit_zero",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "observed_exit_code": 0,
+        "proof": "captured exit_code=0 (required 0)",
+        "result": "PASS"
+      },
+      "verifier_pass": {
+        "approved_verifier": "scripts/verify_runtime_certification_acceptance.py",
+        "control": "verifier_pass",
+        "dep_artifact": "downgraded_rows_report.json",
+        "dep_status": "UNKNOWN",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "proof": "scripts/verify_runtime_certification_acceptance.py exited 0; dependency downgraded_rows_report.json status=UNKNOWN",
+        "result": "PASS",
+        "verifier_exit_code": 0
+      }
+    }
+  },
+  "req_id": "RTC-REQ-034",
+  "verifier_exit_code": 0
+}

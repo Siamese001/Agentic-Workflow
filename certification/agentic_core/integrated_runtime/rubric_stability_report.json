@@ -1,0 +1,56 @@
+{
+  "attempted_providers": [
+    "local_qwen"
+  ],
+  "available": true,
+  "canonical_pair_hash_sha256": "297604a67746468dc9ed000ec06c8525c391a431603d902e4f7c914ade3eea64",
+  "executed_at_utc": "2026-05-01T15:42:48.385885Z",
+  "provider": "local_qwen",
+  "runs": [
+    {
+      "confidence": 0.9,
+      "error_message": "",
+      "is_error": false,
+      "latency_ms": 1318.86,
+      "rationale": "Both queries ask for the year when Apollo 11 landed humans on the Moon, expressing the same intent.",
+      "raw_response": null,
+      "raw_response_sha256": null,
+      "run_index": 1,
+      "stage_name": "llm_judge_local_qwen",
+      "verdict": "SAFE"
+    },
+    {
+      "confidence": 0.9,
+      "error_message": "",
+      "is_error": false,
+      "latency_ms": 838.32,
+      "rationale": "Both queries ask for the year when Apollo 11 landed humans on the Moon, expressing the same intent.",
+      "raw_response": null,
+      "raw_response_sha256": null,
+      "run_index": 2,
+      "stage_name": "llm_judge_local_qwen",
+      "verdict": "SAFE"
+    },
+    {
+      "confidence": 0.9,
+      "error_message": "",
+      "is_error": false,
+      "latency_ms": 832.62,
+      "rationale": "Both queries ask for the year when Apollo 11 landed humans on the Moon, expressing the same intent.",
+      "raw_response": null,
+      "raw_response_sha256": null,
+      "run_index": 3,
+      "stage_name": "llm_judge_local_qwen",
+      "verdict": "SAFE"
+    }
+  ],
+  "schema_version": 1,
+  "stability": {
+    "confidence_floor_required": 0.75,
+    "failure_reasons": [],
+    "pass": true,
+    "response_hash_mode": "paraphrase_tolerant",
+    "timeout_ms_required": 15000
+  },
+  "store_raw_provider_output": false
+}

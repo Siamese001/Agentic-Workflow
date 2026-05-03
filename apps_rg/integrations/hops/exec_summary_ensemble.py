@@ -38,14 +38,14 @@ def generate_exec_summary(
     seed_word_count = len(seed_text.split()) if seed_text else 0
     # Anchor to seed (the base master's authentic exec_summary length).
     # No arbitrary floor — if the base is 150 words, we target 150, not 110.
-    target_words = seed_word_count if seed_word_count >= 90 else 120
+    target_words = seed_word_count if seed_word_count >= 60 else 100
     # Sentence count scales with length.
     target_sentences = 3 if target_words < 120 else (4 if target_words < 150 else 5)
     budget = budget_for_section(
         "exec_summary",
         target_words=target_words,
         target_sentences=target_sentences,
-        tolerance=0.15,  # tightened: forces LLM to stay close to target
+        tolerance=0.45,  # widened: local 1.5B model ignores word-count instructions; 45% covers ~48-130 words
     )
     word_band = f"{int(target_words * 0.90)}-{int(target_words * 1.15)}"
     # Minimum word floor — the LLM tends to stay in the lower half of any

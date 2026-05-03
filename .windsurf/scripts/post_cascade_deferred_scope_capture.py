@@ -47,8 +47,10 @@ import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
+    NOTION_BASE,
     NOTION_HTTP_TIMEOUT_S,
     NOTION_POST_URL,
+    PLANS_DATA_SOURCE_ID,
     WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
     WAVE_PHASE_DB_ID,
 )
@@ -199,13 +201,58 @@ def _notion_token() -> str | None:
     return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
 
 
-def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> dict[str, Any]:  # noqa: PLR0914
+PLANS_QUERY_URL = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
+
+
+def _plans_query(filter_obj: dict[str, Any], token: str) -> list[dict[str, Any]]:
+    """POST a filter query to the Plans data-source; returns results list (fail-open)."""
+    try:
+        body = json.dumps({"filter": filter_obj, "page_size": 1}).encode("utf-8")
+        req = urllib.request.Request(
+            PLANS_QUERY_URL,
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Notion-Version": NOTION_API_VERSION,
+            },
+        )
+        with urllib.request.urlopen(req, timeout=NOTION_HTTP_TIMEOUT_S) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return data.get("results") or []
+    except Exception:  # noqa: BLE001  # guardian: allow-broad -- fail-open resolver
+        return []
+
+
+def _resolve_plan_page_id(plan_slug: str, token: str) -> str | None:
+    """Resolve a plan slug to a Plans-DB page id.
+
+    Tries three filters in order, each fail-open:
+      1. Slug property exact match (if property exists)
+      2. Plan File Path rich_text contains slug
+      3. Title (Name) contains slug
+    Returns None on any failure or miss.
+    """
+    for filt in (
+        {"property": "Slug", "rich_text": {"equals": plan_slug}},
+        {"property": "Plan File Path", "rich_text": {"contains": plan_slug}},
+        {"property": "Name", "title": {"contains": plan_slug}},
+    ):
+        results = _plans_query(filt, token)
+        if results:
+            return results[0].get("id")
+    return None
+
+
+def _build_notion_payload(fields: dict[str, str], band: str, impact: float, token: str | None = None) -> dict[str, Any]:  # noqa: PLR0914
     plan = fields["plan"]
     if plan.startswith("NEW:"):
         plan_slug = plan[4:]
         plan_file = f"{plan_slug}.md"
     else:
         plan_file = plan if plan.endswith(".md") else f"{plan}.md"
+        plan_slug = plan_file[:-3] if plan_file.endswith(".md") else plan_file
 
     wave = fields["wave"]
     phase = fields["phase"]
@@ -245,30 +292,31 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float) -> d
         # Wave ID retained (legacy; used for dedup pre-check query). Schema-MECE gate
         # will flip this to derivation from Phase ID in a later refactor.
         "Wave ID": {"rich_text": [{"text": {"content": wave}}]},
-        # Plan File retained (legacy; used for dedup pre-check query). Plan relation
-        # is the SSOT going forward but requires a Plans-DB lookup per write, deferred.
+        # Plan File retained for dedup pre-check query; Plan relation below is SSOT.
         "Plan File": {"rich_text": [{"text": {"content": plan_file}}]},
         # Classification axis (5)
         "P-Band": {"select": {"name": band}},
         "Layer": {"select": {"name": layer}},
         "Surface": {"select": {"name": surface}},
         "Impact Score": {"number": round(float(impact), 2)},
-        # Lifecycle axis (3)
-        "Status": {"select": {"name": "Todo"}},
+        # Lifecycle axis (3) — Status=Draft (canonical Plans-DB taxonomy; was "Todo"
+        # which is not a valid option in Backlog Items DB as of 2026-05-03).
+        "Status": {"select": {"name": "Draft"}},
         "Est Tokens": {"number": est_tokens},
-        # Files & outcome (2)
-        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cascade to fill on execution start."}}]},
+        "Last Updated": {"date": {"start": _utc_today_iso()}},
+        # Outcome (1) — MECE v2 merged field
         "Evidence": {"rich_text": [{"text": {"content": evidence}}]},
     }
     if fan_in_int is not None:
         properties["Fan-In"] = {"number": fan_in_int}
-    # MECE v2 RETIRED fields (stop writing):
-    #   - Sub-Wave (composite of Wave + P-Band; derivable)
-    #   - Parent Plan Summary (duplicates on-disk plan file header)
-    #   - Blocking Items, Success Criteria, Dependencies (merged → Evidence)
-    #   - Coverage Gap % (subsumed by Impact Score)
-    #   - Last Scored (use Notion built-in last_edited_time)
-    # Schema properties still present for back-compat; readers may migrate later.
+    # Plan relation (best-effort, fail-open). Requires NOTION_TOKEN + Plans-DB access.
+    if token:
+        page_id = _resolve_plan_page_id(plan_slug, token)
+        if page_id:
+            properties["Plan"] = {"relation": [{"id": page_id}]}
+    # MECE v2 deleted from Backlog Items DB 2026-05-03:
+    #   Files In Scope, Coverage Gap %, Last Scored, Parent Plan Summary, Sub-Wave,
+    #   Blocking Items, Success Criteria, Dependencies.
 
     return {
         "parent": {"database_id": WAVE_PHASE_DB_ID},
@@ -476,7 +524,7 @@ def _process_marker(
         return {**base_record, "kind": "skipped_notion_duplicate"}
 
     try:
-        payload = _build_notion_payload(fields, result.band, result.impact_score)
+        payload = _build_notion_payload(fields, result.band, result.impact_score, token=token)
         resp = _notion_post(payload, token)
     except urllib.error.HTTPError as exc:
         return {

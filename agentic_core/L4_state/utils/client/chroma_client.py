@@ -12,6 +12,7 @@ from typing import Any
 import chromadb
 
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
+from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 from agentic_core.L4_state.utils.chunk_metadata import (
     CHUNK_METADATA_VERSION,
     coerce_to_v1,
@@ -53,14 +54,15 @@ class SovereignChromaClient:
     For Wave 1, we'll use simple text-based embeddings as a fallback.
     """
 
-    def __init__(self, persist_dir: str = "data/cache/chromadb"):
+    def __init__(self, persist_dir: str | None = None):
         """
         Initialize ChromaDB client.
 
         Args:
-            persist_dir: Directory for persistent ChromaDB storage
+            persist_dir: Directory for persistent ChromaDB storage.
+                Defaults to the canonical SSOT path from chroma_paths.
         """
-        self.persist_dir = Path(persist_dir)
+        self.persist_dir = Path(persist_dir if persist_dir is not None else canonical_persist_dir_str())
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize persistent ChromaDB client

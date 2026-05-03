@@ -26,6 +26,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L3_orchestration.exit_eval.v6 import otel as v6_otel
+from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
+    build_default_app_evaluator,
+)
+from agentic_core.L3_orchestration.exit_eval.v6.app_specific_evaluator import (
+    AppSpecificEvaluator,
+    evaluate_from_packet,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.preflight import (
     PreflightFailure,
     bind_run_identity,
@@ -138,6 +145,12 @@ class ExitEvalPipeline:
     skip_identity_binding: bool = False
     seal_exhaust: bool = True
     build_payload: bool = True
+    # W1.P1 — app-specific evaluator (optional). When None, the pipeline
+    # uses build_default_app_evaluator() which reads per-dim scores from
+    # packet.output.dim_scores. Runs with no rubric_ref/threshold_profile_ref
+    # pass through unbound (fall-through to generic V6 grading) — existing
+    # non-app-bound callers are untouched.
+    app_evaluator: AppSpecificEvaluator | None = None
 
     def run(self, receipts: dict[str, Any]) -> ExitEvalResult:
         """Run the full v6 pipeline against a receipts dict."""
@@ -199,8 +212,93 @@ class ExitEvalPipeline:
                 },
             )
 
+        # 4b. W1.P1 — App-specific (Fort Knox domain rubric) evaluation.
+        # Runs only when the route was bound by L0 app_domain_resolver
+        # (rubric_ref + threshold_profile_ref present on the packet).
+        # Result is serialized into review.app_specific_eval so X2/X3 can
+        # read domain metrics. Non-app-bound runs return bound=False and
+        # leave review.app_specific_eval empty (existing behavior preserved).
+        evaluator = self.app_evaluator or build_default_app_evaluator()
+        try:
+            app_eval = evaluate_from_packet(
+                evaluator=evaluator,
+                app_id=review.app_id,
+                task_class=review.task_class,
+                rubric_ref=review.rubric_ref,
+                threshold_profile_ref=review.threshold_profile_ref,
+                run_context={
+                    "output": review.output or {},
+                    "evidence_bundle": review.evidence_bundle or {},
+                    "final_evidence_contract": review.final_evidence_contract or {},
+                    "state_diff": review.state_diff or {},
+                    "route_contract": review.route_contract or {},
+                    "trace_root": review.trace_root,
+                },
+            )
+        except (RuntimeError, OSError, ValueError, KeyError) as exc:
+            # guardian: allow-log-and-swallow -- any eval-pipeline exception is
+            # treated as unbound (falls through to generic V6). Never crashes
+            # Exit. Logged for operator visibility.
+            logger.warning("pipeline: app_specific_eval raised %s: %s", type(exc).__name__, exc)
+            from agentic_core.L3_orchestration.exit_eval.v6.app_specific_evaluator import (
+                AppSpecificEvalResult,
+            )
+            app_eval = AppSpecificEvalResult(bound=False)
+
+        if app_eval.bound:
+            review.app_specific_eval = app_eval.to_packet_dict()
+            # W4.P3 — domain-metric span attrs (counts by outcome).
+            # W4.P4 — tracked_metrics (Anthropic canonical keys) from
+            # run_context.output.tracked_metrics when upstream producers
+            # populate it. Absence is fine — the span still carries the
+            # core attrs below.
+            _dim_pass = sum(1 for d in app_eval.dimensions if d.status == "PASS")
+            _dim_fail = sum(1 for d in app_eval.dimensions if d.status == "FAIL")
+            _dim_unknown = sum(1 for d in app_eval.dimensions if d.status == "UNKNOWN")
+            _tracked = (review.output or {}).get("tracked_metrics") or {}
+            _tracked = _tracked if isinstance(_tracked, dict) else {}
+            v6_otel.record_span(
+                "exit.app_specific_eval",
+                review,
+                attributes={
+                    "app_id": app_eval.app_id,
+                    "task_class": app_eval.task_class,
+                    "rubric_ref": app_eval.rubric_ref,
+                    "threshold_profile_ref": app_eval.threshold_profile_ref,
+                    "overall_score": app_eval.overall_score,
+                    "overall_pass_threshold": app_eval.overall_pass_threshold,
+                    "passed": app_eval.passed,
+                    "fail_reasons": list(app_eval.fail_reasons),
+                    "dimension_count": len(app_eval.dimensions),
+                    "hitl_policy": app_eval.hitl_policy,
+                    # W4.P3 counts by outcome
+                    "dim_pass_count": _dim_pass,
+                    "dim_fail_count": _dim_fail,
+                    "dim_unknown_count": _dim_unknown,
+                    # W4.P4 canonical tracked_metrics (present if producer emits)
+                    "ttft_ms": float(_tracked.get("ttft_ms", 0.0)) or None,
+                    "ttlt_ms": float(_tracked.get("ttlt_ms", 0.0)) or None,
+                    "output_tokens_per_sec": float(_tracked.get("output_tokens_per_sec", 0.0)) or None,
+                    "n_total_tokens": int(_tracked.get("n_total_tokens", 0)) or None,
+                    "cost_usd": float(_tracked.get("cost_usd", 0.0)) or None,
+                },
+            )
+
         # 5. X2 aggregate
         decision = aggregate_decision(verdicts, review)
+
+        # 5b. W5.P7 — Emit eval_harness_outcome ledger row. Fail-soft: any
+        # exception is swallowed so the ledger cannot crash the Exit pipeline.
+        # The writer itself is best-effort (see tools.ledgers.hook_helpers).
+        try:
+            _emit_eval_harness_outcome(review, app_eval, decision)
+        except Exception as exc:  # noqa: BLE001
+            # guardian: allow-broad-except -- telemetry path MUST never break
+            # Exit; any ledger failure is logged but ignored.
+            logger.warning(
+                "pipeline: eval_harness_outcome ledger emit raised %s: %s",
+                type(exc).__name__, exc,
+            )
         v6_otel.record_span(
             v6_otel.SPAN_X2_AGGREGATE,
             review,
@@ -300,6 +398,88 @@ def run_exit_eval(
 ) -> ExitEvalResult:
     """Convenience wrapper around ``ExitEvalPipeline.run``."""
     return ExitEvalPipeline(uwg_backends=uwg_backends).run(receipts)
+
+
+# ---------------------------------------------------------------------------
+# W5.P7 — eval_harness_outcome ledger writer
+# ---------------------------------------------------------------------------
+
+
+def _score_band_for_ase(
+    app_eval: "AppSpecificEvalResult",  # noqa: F821 -- forward ref; real import below
+    decision: "AggregateDecision",  # noqa: F821
+) -> str:
+    """Collapse the ASE + X2 decision into a single band for the ledger."""
+    if not app_eval.bound:
+        return "unbound"
+    if app_eval.passed:
+        return "pass"
+    # Bound and not passed. Use the X2 disposition to split.
+    disp_value = getattr(decision.disposition, "value", "")
+    if disp_value == "X3B":  # ESCALATE
+        return "escalate"
+    # Check whether any fail reason looks like UNKNOWN (guardrail closed on UNKNOWN)
+    for r in app_eval.fail_reasons:
+        if "unknown_fail_closed" in str(r):
+            return "unknown"
+    return "deny"
+
+
+def _emit_eval_harness_outcome(
+    review: "ExitReviewPacket",  # noqa: F821
+    app_eval: "AppSpecificEvalResult",  # noqa: F821
+    decision: "AggregateDecision",  # noqa: F821
+) -> str:
+    """Emit one eval_harness_outcome ledger row per Exit pipeline run.
+
+    Invariants:
+      - Fail-soft: any writer error returns "" (handled by hook_helpers)
+      - event_kind = "app_eval_bound" | "app_eval_unbound"
+      - prediction_json carries the full ASE snapshot; outcome_json carries
+        the X2 disposition + rationale
+      - repo_area = app_id when bound, else the route_contract route_id
+    """
+    from tools.ledgers.hook_helpers import emit_ledger_event
+
+    dim_count = len(app_eval.dimensions)
+    dim_fail_count = sum(1 for d in app_eval.dimensions if d.status == "FAIL")
+    dim_unknown_count = sum(1 for d in app_eval.dimensions if d.status == "UNKNOWN")
+    prediction = {
+        "bound": app_eval.bound,
+        "app_id": app_eval.app_id,
+        "task_class": app_eval.task_class,
+        "rubric_ref": app_eval.rubric_ref,
+        "threshold_profile_ref": app_eval.threshold_profile_ref,
+        "overall_score": app_eval.overall_score,
+        "overall_pass_threshold": app_eval.overall_pass_threshold,
+        "hitl_policy": app_eval.hitl_policy,
+        "dim_count": dim_count,
+        "dim_fail_count": dim_fail_count,
+        "dim_unknown_count": dim_unknown_count,
+        "fail_reasons": list(app_eval.fail_reasons),
+    }
+    outcome = {
+        "disposition": getattr(decision.disposition, "value", str(decision.disposition)),
+        "rationale": decision.rationale,
+        "failed_gate_ids": list(decision.failed_gate_ids),
+        "reason_codes": list(decision.reason_codes),
+    }
+    repo_area = app_eval.app_id or str(
+        (review.route_contract or {}).get("route_id", "") or ""
+    )
+    return emit_ledger_event(
+        ledger="eval_harness_outcome",
+        event_kind="app_eval_bound" if app_eval.bound else "app_eval_unbound",
+        prediction=prediction,
+        outcome=outcome,
+        score_band=_score_band_for_ase(app_eval, decision),
+        score_numeric=float(app_eval.overall_score),
+        repo_area=repo_area,
+        metadata={
+            "trace_root": review.trace_root,
+            "run_id": review.run_id,
+        },
+    )
 
 
 __all__ = ["ExitEvalPipeline", "ExitEvalResult", "run_exit_eval"]

@@ -1,0 +1,43 @@
+# apps_research L0 cert-facing route registry.
+#
+# apps_research's PRODUCT routing lives in route_registry.yaml. This file
+# is a SIBLING dedicated to the apps_e2e certification harness:
+# apps_research is a SINGLE_STEP hop research pipeline producing company
+# briefs, with C0 grounding and template-driven prompt assembly. The
+# cert entrypoint wraps the deterministic pipeline in
+# apps_shared.spine_emission.governed_run; this route additionally invokes
+# the v6 Exit pipeline so the 10-dim apps_research rubric executes.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Pairs with apps_research/config/domain_contract/rubric_output_map.yaml.
+# NOTE: C0 FEC producer already adopted via sibling plan
+# apps-research-c0-fec-producer-wiring-e7a2c3 — the v6 Exit hook now
+# consumes the producer's output via resolve_fec in __main__.py.
+
+app_name: apps_research
+schema_version: "apps_research.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_research.company_brief_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    # Opt-in flag — when true, the cert entrypoint MUST invoke the v6
+    # Exit pipeline against the sealed L2 artifact so the apps_research
+    # rubric executes. Closes APPS-DOM-002/003 for apps_research per
+    # plan apps-runtime-domain-enforcement-a7e9d4.
+    invoke_exit_eval: true
+    # Declarative rubric output map consumed by
+    # apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores.
+    # Engine is fail-soft; missing paths default to 0.0; evaluator
+    # fail-closes per rubric evidence_required=true.
+    rubric_output_map_path: apps_research/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_research.company_brief_v1
+    description: >-
+      Deterministic hop research pipeline: intake -> retrieve (C0) ->
+      assemble_prompt -> generate_brief -> seal. Grounded by retrieved
+      citations via apps_research.cert.fec_producer.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_research.company_brief_v1 because the entrypoint
+      is the company-brief orchestrator with deterministic hop routing
+      and no managed workflow requirement.

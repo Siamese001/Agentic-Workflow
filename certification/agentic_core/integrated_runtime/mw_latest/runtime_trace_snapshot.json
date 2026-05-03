@@ -1,0 +1,27 @@
+{
+  "artifact_hash": "sha256:973cfc6ae328003b2c5d2c6817b730d7a495ac61fe44f7a37cccda6cd6c127cb",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "detector_reasons": [
+      "env_AGENTIC_CORE_FIXTURE_MODE"
+    ],
+    "deterministic_digest": "sha256:059d9d16ad47ad97d58c06ba5d523d911a9840f7faed25b1768715159bfdf5f9",
+    "fixture_mode_detected": true,
+    "mock_mode_detected": false,
+    "newest_span_age_seconds": 0.0,
+    "record_count": 1,
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "runtime_adg_snapshot_ref": "",
+    "runtime_mode": "fixture",
+    "schema_version": "1.0",
+    "span_count": 1,
+    "synthetic_trace_detected": false,
+    "trace_ingest_quality_score": 0.0,
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:ca78a81161cca53422ae121cb478e3c0b03c0049077be39f230f139ee4109126"
+}

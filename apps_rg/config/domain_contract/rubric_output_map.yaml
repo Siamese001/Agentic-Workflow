@@ -1,0 +1,93 @@
+# apps_rg rubric output map — declarative L2-receipt -> dim_scores extractor.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P1 (2026-05-03).
+# Consumed by apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores
+# at cert-entrypoint time, after governed_run seals the L2 artifact and
+# before apps_shared.cert.maybe_invoke_exit_eval runs the Exit pipeline.
+#
+# Sibling to:
+#   - apps_rg/config/domain_contract/eval_rubrics.yaml (8 rubric dims)
+#   - apps_rg/config/cert_route_registry.yaml (declares this file's path)
+#   - apps_rg/config/domain_contract/grader_roster.yaml (judges for llm/hybrid dims)
+#
+# Design rule: this map is INTENTIONALLY minimal. Only deterministic dims
+# whose score can be projected from receipt structure get YAML entries.
+# llm_as_judge and hybrid dims are left unmapped — the AppSpecificEvaluator
+# invokes their registered graders (see grader_roster.yaml, and stub judges
+# under apps_rg/engines/judges/). Missing dim_scores entries surface as
+# UNKNOWN in the evaluator, which fail-closes per rubric evidence_required=true.
+#
+# Receipt shape (contract with apps_rg/__main__.py live-cert path):
+#   receipt.output.generated_resume        -> rendered resume bundle
+#   receipt.output.run_dir                 -> absolute run dir string
+#   receipt.output.artifacts               -> list of on-disk artifact paths
+#   receipt.output.evidence_refs.<dim_id>  -> per-dim evidence list (when emitted)
+#   receipt.output.grounding_report        -> HOP-2 scoring output
+#   receipt.output.format_validation       -> schema-check result
+
+mapper_id: apps_rg.resume_generation.v1
+app_id: apps_rg
+rubric_id: "aer::apps_rg::resume_generation::v1"
+version: "1.0.0"
+status: active
+
+dimensions:
+  # ---- deterministic dims (projected from receipt) ----
+  - dimension_id: factual_grounding
+    score:
+      type: presence
+      path: $.output.evidence_refs.factual_grounding
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - jsonpath: $.output.evidence_refs.factual_grounding
+        prefix: "evidence:"
+      - template: "grounding_report_present={$.output.grounding_report}"
+
+  - dimension_id: ats_readability
+    score:
+      type: jsonpath
+      path: $.output.format_validation.ats_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.ats_parser"
+      - template: "format_valid={$.output.format_validation.valid}"
+
+  - dimension_id: concision
+    score:
+      type: jsonpath
+      path: $.output.format_validation.concision_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.length_vs_preference"
+      - template: "length_preference={$.output.length_preference}"
+
+  - dimension_id: format_compliance
+    score:
+      type: all_present
+      paths:
+        - $.output.generated_resume
+        - $.output.format_validation.valid
+      default: 0.0
+    evidence:
+      - literal: "grader=deterministic.schema_check"
+      - template: "schema_valid={$.output.format_validation.valid}"
+
+  - dimension_id: no_fabrication
+    score:
+      type: jsonpath
+      path: $.output.grounding_report.fabrication_free_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - jsonpath: $.output.grounding_report.unmatched_claims
+        prefix: "unmatched:"
+      - template: "grader=deterministic.fabrication_check"
+
+  # ---- llm_as_judge / hybrid dims (judge-resolved, no YAML score) ----
+  # executive_positioning: llm_as_judge, stub at apps_rg/engines/judges/executive_positioning_judge.py
+  # role_alignment: hybrid (judge + deterministic keyword overlap)
+  # specificity: hybrid (judge + deterministic metric-density scan)
+  # Intentionally omitted -- AppSpecificEvaluator calls their registered graders.

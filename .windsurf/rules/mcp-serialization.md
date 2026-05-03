@@ -4,16 +4,17 @@ trigger: always_on
 
 # MCP Serialization — Remote MCPs Only (Hardened 2026-05-01)
 
-> ⛔ **REMOTE / network-bound MCP tool calls MUST be issued one per response, with no sibling tool calls in the same `<function_calls>` block.** Local stdio MCPs may batch freely.
+> ⛔ **REMOTE / network-bound MCP tool calls MUST be isolated: each remote-MCP call occupies its own `<function_calls>` block with NO sibling tool calls in that block.** Multiple such blocks may appear sequentially within a single response. Local stdio MCPs may batch freely.
 
-## The Invariant (scoped)
+## The Invariant (scoped — per-block, not per-response)
 
-For every Cascade response:
+For every `<function_calls>` block in a Cascade response:
 
-1. **Remote MCPs serialize.** A response containing a tool call to a remote MCP server (notion, tavily, deepwiki, context7, GitKraken — see allowlist) MUST contain **exactly one tool call total**.
-2. **Local MCPs batch freely.** Tools from local stdio MCPs (`adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.windsurf/mcp-playwright`) may batch with each other and with native tools.
-3. **Mixing local MCP with remote MCP in the same batch is forbidden.**
-4. Multiple remote MCP calls in the same response are also a violation, even if they target the same server.
+1. **Remote MCPs isolate per block.** A `<function_calls>` block containing a remote-MCP call (notion, tavily, deepwiki, context7, GitKraken — see allowlist) MUST contain **exactly one tool call** and NO sibling tools in that same block.
+2. **Sequential remote-MCP blocks are fine.** A single response MAY contain multiple sequential `<function_calls>` blocks, each with one remote-MCP call, as long as each block is isolated. This enables plan-end Notion batching without forcing the user to prompt for every row.
+3. **Local MCPs batch freely.** Tools from local stdio MCPs (`adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.windsurf/mcp-playwright`) may batch with each other and with native tools within the same block.
+4. **Mixing local MCP with remote MCP in the same block is forbidden.**
+5. **Multiple remote-MCP calls in the same block is forbidden** (targeting same or different servers).
 
 ## Why scoped to remote — empirical, not deduced
 

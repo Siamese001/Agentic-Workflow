@@ -1,0 +1,58 @@
+# apps_lic repair profile — apps-core-contract-rectification-a8f3c2 Phase 1.2
+repair_profile_id: rp::apps_lic::outreach_message::v1
+app_id: apps_lic
+version: 1.0.0
+status: active
+source_app_config_ref: apps_lic/config/domain_contract/repair_profiles.yaml
+created_at: '2026-05-03'
+
+repair_scenarios:
+  - scenario_id: retry_hop1_on_profile_analysis_failure
+    stage_id: HOP1_profile_analysis
+    trigger_condition: output_missing:profile_features
+    recovery_action: retry_with_backoff:2
+    rollback_target: HOP1_profile_analysis
+    healing_trigger: ''
+    escalation_path: abort_run
+    max_attempts: 2
+    priority: 1
+
+  - scenario_id: retry_on_low_response_likelihood
+    stage_id: HOP5_generation
+    trigger_condition: score_below_threshold:response_likelihood:0.6
+    recovery_action: retry_with_expanded_context:generation_prompt
+    rollback_target: HOP5_generation
+    healing_trigger: response_likelihood
+    escalation_path: escalate_to_hitl
+    max_attempts: 2
+    priority: 2
+
+  - scenario_id: retry_on_low_brand_voice
+    stage_id: HOP5_generation
+    trigger_condition: score_below_threshold:brand_voice:0.6
+    recovery_action: retry_with_expanded_context:sender_persona
+    rollback_target: HOP5_generation
+    healing_trigger: brand_voice
+    escalation_path: mark_partial_pass
+    max_attempts: 2
+    priority: 3
+
+  - scenario_id: retry_hop7_gate_fail
+    stage_id: HOP7_gate_decision
+    trigger_condition: score_below_threshold:gate_pass:0.8
+    recovery_action: retry_with_backoff:2
+    rollback_target: HOP4_routing
+    healing_trigger: gate_pass
+    escalation_path: escalate_to_hitl
+    max_attempts: 2
+    priority: 4
+
+  - scenario_id: retry_on_stage_exception
+    stage_id: any
+    trigger_condition: stage_exception:RuntimeError
+    recovery_action: retry_with_backoff:2
+    rollback_target: none
+    healing_trigger: ''
+    escalation_path: abort_run
+    max_attempts: 2
+    priority: 5

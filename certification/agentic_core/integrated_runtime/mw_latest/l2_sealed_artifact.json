@@ -1,0 +1,52 @@
+{
+  "artifact_hash": "sha256:96bc1f16703cc3c1cf52367a56e5e1d7dfd1e83945087606e9191e1f32f14608",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "artifact_id": "l2-seal-c48920ae07dc43348cec3ed6836d6869",
+    "escalation_reason": null,
+    "evidence_bundle": {},
+    "exec_trace": {
+      "determinism_digest": "sha256:aee5afdd8031cd88e0d6eb35967f50c6402600e1b88d85ec53a4d20e683d1699",
+      "model_calls": [],
+      "plan_hash": "mw-structural-demo",
+      "policy_hash": "6b45eaad05676683c7b13994c99b4940ebfcdaf49573830525dd5d697b228831",
+      "tool_calls": []
+    },
+    "has_commit_payload": false,
+    "l3_step_contracts_ref": "sha256:eef3bd368057028d8cedb3b7e00a771bf268c1d99a238ea75fdf329f4c1a64a6",
+    "no_l2_real_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "replay_metadata": {
+      "determinism_digest": "sha256:aee5afdd8031cd88e0d6eb35967f50c6402600e1b88d85ec53a4d20e683d1699",
+      "isolation_verified": true,
+      "replay_completeness": 1.0,
+      "replay_key": "e8c5b27f7c248d5004a684f73f40bd70b108409199d5cc36f2a98cc186b71ffb",
+      "seed_captured": true
+    },
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_contract_id": "MW_DEMO_TWO_NODE",
+    "route_id": "MW_DEMO_TWO_NODE",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "run_scope": "CURRENT_RUN",
+    "sealed_at": 1777720713.602714,
+    "state_diff": {},
+    "structural_only": true,
+    "terminal_classification": "SUCCESS",
+    "trace_id": "trace-c91d4ae42f0c40809d6e8a82d2e20941",
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941",
+    "validation_counters": {
+      "env_integrity_checks_failed": 0,
+      "env_integrity_checks_passed": 0,
+      "mutation_auth_checks_failed": 0,
+      "mutation_auth_checks_passed": 0,
+      "policy_checks_failed": 0,
+      "policy_checks_passed": 0,
+      "schema_checks_failed": 0,
+      "schema_checks_passed": 0
+    }
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:eef3bd368057028d8cedb3b7e00a771bf268c1d99a238ea75fdf329f4c1a64a6"
+}

@@ -1,0 +1,46 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.651672Z",
+  "control_scope": "semantic_cache_production_threshold_adr_gate",
+  "per_req": {
+    "RTC-REQ-125": {
+      "certifier_signature": {
+        "assertion_result": "PASS",
+        "certifier_role": "development_certifier",
+        "certifier_signature": "sha256:2a4d1304d899bf239dba164c6ff4e901e9b01c638168f237cfbd0df32566df70",
+        "signature_scheme": "sha256-self-attest",
+        "signed_artifact_path": "docs/adr/semantic_cache_threshold_recalibration.md",
+        "signed_artifact_sha256": "2a4d1304d899bf239dba164c6ff4e901e9b01c638168f237cfbd0df32566df70",
+        "trust_level_note": "DEVELOPMENT_PROOF: sha256 self-attest is honest and verifiable; FINAL_SIGNED_CERTIFICATION requires an additional ed25519/PGP human signature envelope."
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.651672Z"
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "docs/adr/semantic_cache_threshold_recalibration.md exists, has # heading, Decision section, Context section, >1KB",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "e75002796f191b46b95d2f4d57b9aaf92362118ed22eec1baba5751d68a9b635",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-125",
+  "schema_version": "runtime-evidence-v1"
+}

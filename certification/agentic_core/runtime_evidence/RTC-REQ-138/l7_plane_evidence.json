@@ -1,0 +1,43 @@
+{
+  "app_name": "agentic_core",
+  "captured_at_utc": "2026-05-02T19:23:11.008Z",
+  "control_scope": "l7_auditability_plane",
+  "per_req": {
+    "RTC-REQ-138": {
+      "ci_gate": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-138",
+        "workflow_path": ".github/workflows/agentic-core-auditability.yml",
+        "workflow_sha256": "8cdc52424ec669e1da7a4178559a7efdd501a12aef005d33367926abc2802029"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-138",
+        "verified_at_utc": "2026-05-02T19:23:11.003Z"
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-138",
+        "source_repo_root": "C:/Git/Agentic-Workflow-FRESH",
+        "verifier_hash_map": {
+          "ops_scripts/ci/verify_agentic_core_how_trace.py": "054f774f5fe2e9b3f9f83b8b5faf8333af026df7478cbc82356867a3f8d89526",
+          "ops_scripts/ci/verify_agentic_core_l7_route_family_coverage.py": "d16abd6c6ef1d35875d8380a924e46a98846f04aedb09461351ceb31371426b8",
+          "ops_scripts/ci/verify_l7_fortknox_evidence.py": "eef238786d60f9800ed417bf5766c451295cb448e753a8b40dfde561a85e63ca",
+          "ops_scripts/ci/verify_r1a_exact_cache_l7_runtime.py": "c41c6ccbf7cee213cea43014efbb562c0de9f2af2a23e8ea49786387edb30b26",
+          "ops_scripts/ci/verify_r5_fallback_l7_runtime.py": "6c5585e6588acb1402bd748ab56766a7e44d181db7cc58ba147e9031f94ff6bf",
+          "ops_scripts/ci/verify_uwg_block_path_l7_runtime.py": "7be05cf82d296b3ee3f0a435f5c5d09dff32e2cba6d2b0b277cade713035b832"
+        }
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "exit_code": 0,
+        "req_id": "RTC-REQ-138"
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-138"
+      }
+    }
+  },
+  "schema_version": "fortknox-l7-plane-v1"
+}

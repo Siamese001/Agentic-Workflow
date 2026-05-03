@@ -1,0 +1,41 @@
+{
+  "artifact_hash": "sha256:7a62d60f0e94144d703578b10518f9bd77d12dd1e0dc268da31ee3ed877cc545",
+  "emitted_at": "2026-05-01T09:09:52Z",
+  "payload": {
+    "exec_trace": {
+      "model_calls": [],
+      "replay_receipts_present": true,
+      "ret_packet_ref": "trp::2575c95c22cac7d343a6cd0f2be15d6a196a0e2b09c5e0c030c58b0e8f3c841a",
+      "tool_calls": [],
+      "wall_clock_used": false
+    },
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "output": {
+      "citation_precision": 0.95,
+      "completion_score": 0.95,
+      "confidence": 0.95,
+      "faithfulness": 0.95,
+      "format_fit": true,
+      "groundedness": 0.95,
+      "schema_required": false,
+      "schema_valid": true,
+      "text": "The capital of France is Paris."
+    },
+    "policy_hash": "5a607cc948144a7ba7d51c46e18a8e6e3f2e656e7afb20b9f8635e943a474045",
+    "replay_key": "2575c95c22cac7d343a6cd0f2be15d6a196a0e2b09c5e0c030c58b0e8f3c841a",
+    "request_id": "req-939b7f5c40cb48b2a4722b1d05123223",
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "run_id": "req-939b7f5c40cb48b2a4722b1d05123223",
+    "session_id": "sess-b1f279cf2767466b81cc86c64abfe2b6",
+    "source_type": "L2_SEALED_ARTIFACT",
+    "state_diff": {},
+    "terminal_class": "answer_only",
+    "trace_root": "trace-cbb5c6379ef84f439b126684c05d7c5b",
+    "track_label": "production"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:6857f48fd1423143a36bcab2cec16b076c5c1044787ce22c078d701ec2d4425c"
+}

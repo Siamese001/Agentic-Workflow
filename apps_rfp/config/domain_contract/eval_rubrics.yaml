@@ -33,7 +33,7 @@
     grader_type: hybrid
     min_required_score: 0.55
     evidence_required: false
-    fail_closed_if_unknown: false
+    fail_closed_if_unknown: true
   - dimension_id: win_theme_alignment
     description: Response aligns with identified win themes.
     weight: 0.1
@@ -41,6 +41,7 @@
     min_required_score: 0.55
     evidence_required: false
     fail_closed_if_unknown: false
+    informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
   - dimension_id: no_fabricated_credentials
     description: Every claimed capability/cert is in company KB.
     weight: 0.1
@@ -55,5 +56,32 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+  # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 - RAG metric dims with
+  # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
+  # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall
+  # unchanged; these dims are tracked-only until upstream producers populate
+  # output[dim_scores][dim_id]. fail_closed_if_unknown=false prevents
+  # cascading fails on runs where the producer has not wired the metric yet.
+  - dimension_id: context_recall
+    description: RAG retrieval completeness (observed-evidence over needed-evidence).
+    weight: 0.0
+    grader_type: llm_as_judge
+    min_required_score: 0.85
+    evidence_required: true
+    fail_closed_if_unknown: false
+  - dimension_id: context_precision
+    description: RAG retrieval precision (signal-to-noise in retrieved chunks).
+    weight: 0.0
+    grader_type: llm_as_judge
+    min_required_score: 0.70
+    evidence_required: true
+    fail_closed_if_unknown: false
+  - dimension_id: answer_relevancy
+    description: Answer relevancy to the task intent.
+    weight: 0.0
+    grader_type: llm_as_judge
+    min_required_score: 0.80
+    evidence_required: true
+    fail_closed_if_unknown: false
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'

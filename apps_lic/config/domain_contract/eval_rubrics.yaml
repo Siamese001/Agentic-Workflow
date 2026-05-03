@@ -13,7 +13,7 @@
       grader_type: hybrid
       min_required_score: 0.55
       evidence_required: true
-      fail_closed_if_unknown: false
+      fail_closed_if_unknown: true
     - dimension_id: personalization_integrity
       description: "Every personalization claim traces to verified recipient evidence (no fake 'I noticed you...' without source)."
       weight: 0.20
@@ -27,7 +27,7 @@
       grader_type: hybrid
       min_required_score: 0.60
       evidence_required: false
-      fail_closed_if_unknown: false
+      fail_closed_if_unknown: true
     - dimension_id: response_likelihood
       description: "Predicted likelihood of a positive recipient action given prior similar outreach (calibrated against historical reply data)."
       weight: 0.10
@@ -35,6 +35,7 @@
       min_required_score: 0.45
       evidence_required: false
       fail_closed_if_unknown: false
+      informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: brevity_and_channel_fit
       description: "Length, paragraph count, and structure match the channel's expected norms (email != InMail != chat != sms)."
       weight: 0.10
@@ -55,7 +56,7 @@
       grader_type: hybrid
       min_required_score: 0.50
       evidence_required: false
-      fail_closed_if_unknown: false
+      fail_closed_if_unknown: true
     - dimension_id: brand_voice
       description: "Tone, lexicon, and style match the sender's voice_profile (or default tenant voice if not provided)."
       weight: 0.05
@@ -63,6 +64,7 @@
       min_required_score: 0.50
       evidence_required: false
       fail_closed_if_unknown: false
+      informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: no_fake_personalization
       description: "Hard guardrail: any claim of recipient detail (\"I saw\", \"I noticed\", \"congrats on\") must be backed by an evidence_id."
       weight: 0.10

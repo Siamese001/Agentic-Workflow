@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:cddb2a58a973843755878486c52bc7da5831c3975a7e2dfe311153dd76c70564",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "mw demo request"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:bc6f1a7041a4baa2e4ac6d6a4162310a638a9d3c9e8def6e262808d4b9a38e01"
+}

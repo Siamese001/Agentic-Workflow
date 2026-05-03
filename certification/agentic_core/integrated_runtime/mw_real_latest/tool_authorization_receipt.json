@@ -1,0 +1,22 @@
+{
+  "artifact_hash": "sha256:e6fbc074f4f5e5c16ef13055111e1b3090554d6db1c0e0cfe91711ae4a2b4aa1",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "authorization_status": "GRANTED",
+    "authorized_at_utc": "2026-05-02T16:59:17Z",
+    "caller_capabilities": [
+      "cap::deterministic_compute"
+    ],
+    "integrated_runtime_origin": true,
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "required_capability": "cap::deterministic_compute",
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "tool_id": "tool::hash_bytes::v1",
+    "tool_registry_record_sha256": "eec4b69bbc13d2daa57a481a834515f48b14e4540d1cda5d93f6ff36ba58627f",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": ""
+}

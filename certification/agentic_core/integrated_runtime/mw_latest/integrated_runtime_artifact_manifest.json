@@ -1,0 +1,144 @@
+{
+  "artifact_hash": "sha256:7667a30b84cc05f6fe0b1cb30e2a02861b78e8036485a43f266bf52d525aa061",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "artifact_filenames": [
+      "integrated_runtime_entrypoint_invocation.json",
+      "runtime_identity_envelope.json",
+      "validated_request.json",
+      "l1_plan_contract.json",
+      "route_contract.json",
+      "static_dag_proof.json",
+      "runtime_l3_orchestration_receipt.json",
+      "l2_sealed_artifact.json",
+      "c0_bypass_receipt.json",
+      "prompt_assembly_bypass_receipt.json",
+      "runtime_gate_verdict_bundle.json",
+      "exit_review_packet.json",
+      "x3_disposition_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "runtime_trace_snapshot.json",
+      "agentic_core_how_trace.json",
+      "agentic_core_l7_route_family_coverage.json",
+      "integrated_runtime_artifact_manifest.json",
+      "no_harness_stamp_receipt.json",
+      "agentic_core_spine_proof.json"
+    ],
+    "artifact_hashes": {
+      "agentic_core_how_trace.json": "sha256:7bad5a9066f543493c0c5833e715f4126050458ee53ce79ab01fee1f20cb240a",
+      "agentic_core_l7_route_family_coverage.json": "sha256:fc7d714f8f98746e973eb9744ad01b16b9dce3352ecf33190b06ae7d2d718108",
+      "c0_bypass_receipt.json": "sha256:3246f4e5db499d2feb2ed3f08797d3fdff2f1f84ee09b3845ebe8c93c0e850b4",
+      "exit_review_packet.json": "sha256:4801835f561c9b72b52e37a11e608d35612469aa9d35b61c2ae9b24a0effb447",
+      "integrated_runtime_entrypoint_invocation.json": "sha256:9e9777c4a0d956d15d020e825f42e3b50b95837d4827a181d303635dfdd389b2",
+      "l1_plan_contract.json": "sha256:cddb2a58a973843755878486c52bc7da5831c3975a7e2dfe311153dd76c70564",
+      "l2_sealed_artifact.json": "sha256:96bc1f16703cc3c1cf52367a56e5e1d7dfd1e83945087606e9191e1f32f14608",
+      "prompt_assembly_bypass_receipt.json": "sha256:5977623b76a5dbce9d27e238130b5e3c675b55b44edc7f228818ec4811cc1047",
+      "route_contract.json": "sha256:cef47a8b7e8215906588b287869025e1053f31120fed249aa8d49e9d1462cc35",
+      "runtime_exhaust_bundle.json": "sha256:ca78a81161cca53422ae121cb478e3c0b03c0049077be39f230f139ee4109126",
+      "runtime_gate_verdict_bundle.json": "sha256:43af5ba569a6a92f8b2f6ae3b2165f7da70be50582bcce61da81fadc57c7f63f",
+      "runtime_identity_envelope.json": "sha256:a28aa58c59819063874252c8d64e79fd2f9a44ed6fc956e364d8cfefa7700fdb",
+      "runtime_l3_orchestration_receipt.json": "sha256:eef3bd368057028d8cedb3b7e00a771bf268c1d99a238ea75fdf329f4c1a64a6",
+      "runtime_trace_snapshot.json": "sha256:973cfc6ae328003b2c5d2c6817b730d7a495ac61fe44f7a37cccda6cd6c127cb",
+      "static_dag_proof.json": "sha256:e271f40e92f8b94f2f1b50f48bb2dff0ead9c9bf7f8d17cadfaf27b81e707644",
+      "validated_request.json": "sha256:bc6f1a7041a4baa2e4ac6d6a4162310a638a9d3c9e8def6e262808d4b9a38e01",
+      "x3_disposition_receipt.json": "sha256:121a838be2d20443136cbb9f4f9079bd7ab5b7905fd194b830178c51d55537c6"
+    },
+    "chain_kind": "MANAGED_WORKFLOW",
+    "chain_linkage": [
+      {
+        "filename": "integrated_runtime_entrypoint_invocation.json",
+        "upstream": ""
+      },
+      {
+        "filename": "runtime_identity_envelope.json",
+        "upstream": "integrated_runtime_entrypoint_invocation.json"
+      },
+      {
+        "filename": "validated_request.json",
+        "upstream": "runtime_identity_envelope.json"
+      },
+      {
+        "filename": "l1_plan_contract.json",
+        "upstream": "validated_request.json"
+      },
+      {
+        "filename": "route_contract.json",
+        "upstream": "l1_plan_contract.json"
+      },
+      {
+        "filename": "static_dag_proof.json",
+        "upstream": "route_contract.json"
+      },
+      {
+        "filename": "runtime_l3_orchestration_receipt.json",
+        "upstream": "static_dag_proof.json"
+      },
+      {
+        "filename": "l2_sealed_artifact.json",
+        "upstream": "runtime_l3_orchestration_receipt.json"
+      },
+      {
+        "filename": "c0_bypass_receipt.json",
+        "upstream": "l2_sealed_artifact.json"
+      },
+      {
+        "filename": "prompt_assembly_bypass_receipt.json",
+        "upstream": "c0_bypass_receipt.json"
+      },
+      {
+        "filename": "runtime_gate_verdict_bundle.json",
+        "upstream": "prompt_assembly_bypass_receipt.json"
+      },
+      {
+        "filename": "exit_review_packet.json",
+        "upstream": "runtime_gate_verdict_bundle.json"
+      },
+      {
+        "filename": "x3_disposition_receipt.json",
+        "upstream": "exit_review_packet.json"
+      },
+      {
+        "filename": "runtime_exhaust_bundle.json",
+        "upstream": "x3_disposition_receipt.json"
+      },
+      {
+        "filename": "runtime_trace_snapshot.json",
+        "upstream": "runtime_exhaust_bundle.json"
+      },
+      {
+        "filename": "agentic_core_how_trace.json",
+        "upstream": "runtime_trace_snapshot.json"
+      },
+      {
+        "filename": "agentic_core_l7_route_family_coverage.json",
+        "upstream": "agentic_core_how_trace.json"
+      },
+      {
+        "filename": "integrated_runtime_artifact_manifest.json",
+        "upstream": "agentic_core_l7_route_family_coverage.json"
+      },
+      {
+        "filename": "no_harness_stamp_receipt.json",
+        "upstream": "integrated_runtime_artifact_manifest.json"
+      },
+      {
+        "filename": "agentic_core_spine_proof.json",
+        "upstream": "no_harness_stamp_receipt.json"
+      }
+    ],
+    "dag_id": "mw_demo_two_node",
+    "dag_sha256": "sha256:69f32d94cbc2c80136a316ef94041ec7761588f8b4c54ff041540c2b41270f07",
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run.run_integrated_managed_workflow",
+    "how_trace_ref": "artifact://agentic_core_how_trace.json",
+    "how_trace_sha256": "sha256:7bad5a9066f543493c0c5833e715f4126050458ee53ce79ab01fee1f20cb240a",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "adbf00e01f0340dcbe95c0b7e8e5d554",
+    "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
+    "l7_route_family_coverage_sha256": "sha256:fc7d714f8f98746e973eb9744ad01b16b9dce3352ecf33190b06ae7d2d718108",
+    "x3_disposition": "X3D"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:fc7d714f8f98746e973eb9744ad01b16b9dce3352ecf33190b06ae7d2d718108"
+}

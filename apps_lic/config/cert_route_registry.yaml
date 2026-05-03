@@ -1,0 +1,39 @@
+# apps_lic L0 cert-facing route registry.
+#
+# apps_lic's PRODUCT routing lives in route_registry.yaml. This file is a
+# SIBLING dedicated to the apps_e2e certification harness: apps_lic is a
+# MANAGED_WORKFLOW (9-stage HOP DAG at apps_lic/config/l3_dag.yaml), so
+# L3 runtime orchestration IS required (not bypassed). The cert entrypoint
+# wraps a symbolic HOP pipeline in apps_shared.spine_emission.governed_run
+# so real receipts emit; this cert route now additionally invokes the v6
+# Exit pipeline so the 10-dim apps_lic rubric executes.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Pairs with apps_lic/config/domain_contract/rubric_output_map.yaml.
+
+app_name: apps_lic
+schema_version: "apps_lic.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_lic.outreach_v1
+    execution_form: MANAGED_WORKFLOW
+    l3_required: true
+    # Opt-in flag — when true, the cert entrypoint MUST invoke the v6
+    # Exit pipeline against the sealed L2 artifact so the apps_lic rubric
+    # executes. Closes APPS-DOM-002/003 for apps_lic per plan
+    # apps-runtime-domain-enforcement-a7e9d4.
+    invoke_exit_eval: true
+    # Declarative rubric output map consumed by
+    # apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores.
+    # Engine is fail-soft; missing paths default to 0.0 score; evaluator
+    # fail-closes per rubric evidence_required=true.
+    rubric_output_map_path: apps_lic/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_lic.outreach_v1
+    description: >-
+      Managed outreach-generation workflow: profile_analysis -> sender_grounding
+      -> hop_synth_research -> alignment -> narrative -> compose -> score ->
+      threshold_check -> publish_ready. Static DAG on disk is SSOT.
+    route_reason: >-
+      L0 selects apps_lic.outreach_v1 because the 9-stage HOP DAG has
+      entry/exit contracts, producer-consumer dataflow, and managed
+      orchestration under apps_shared HopPipelineExecutor.

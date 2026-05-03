@@ -1,0 +1,19 @@
+{
+  "artifact_hash": "sha256:aaf4fa153fa6beb576633ebf2ac2b4f028c6f5211094a86d92d71984abb50cd5",
+  "emitted_at": "2026-05-02T16:57:05Z",
+  "payload": {
+    "downstream_authority": "none",
+    "intake_status": "VALIDATED_FOR_L1",
+    "normalized_payload": "what does the L7 auditability plane emit",
+    "permitted_next_layer": "L1",
+    "request_id": "req-41e0846cfcfa4219a41edf2b7735748a",
+    "request_shape_class": "service_call",
+    "session_id": "sess-c03f0cc31225431294a5cb376218ffda",
+    "tenant_bind": null,
+    "trace_root": "trace-880d17da007f47c98e7148df65408010"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:a14ec814776fdc800cca2e88d0d182b2de0fb00d9d4201c11d0a3cc029b8019b"
+}

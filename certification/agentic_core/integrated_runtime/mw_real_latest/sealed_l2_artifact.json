@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:05f33f38e243ddbcc5f840822c5ed03531f20f0fcdca07d93ca85f1ffa92ffa8",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "integrated_runtime_origin": true,
+    "l2_execution_deterministic": true,
+    "model_invocation_count": 0,
+    "model_invocations": [],
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "schema_version": "1.0.0",
+    "sealed_l2_artifact_id": "seal::l2::mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "structural_only": false,
+    "tool_authorizations": [
+      {
+        "authorization_receipt_ref": "sha256:e6fbc074f4f5e5c16ef13055111e1b3090554d6db1c0e0cfe91711ae4a2b4aa1",
+        "required_capability": "cap::deterministic_compute",
+        "tool_id": "tool::hash_bytes::v1",
+        "tool_registry_record_sha256": "eec4b69bbc13d2daa57a481a834515f48b14e4540d1cda5d93f6ff36ba58627f"
+      }
+    ],
+    "tool_invocation_count": 1,
+    "tool_invocations": [
+      {
+        "deterministic": true,
+        "input_byte_length": 50,
+        "input_bytes_sha256": "afc4335c13277aa818a312a25027230a98f4ded9395c5d7e90b835277012dbab",
+        "invoked_at_utc": "2026-05-02T16:59:17Z",
+        "output_byte_length": 64,
+        "output_payload": "afc4335c13277aa818a312a25027230a98f4ded9395c5d7e90b835277012dbab",
+        "output_payload_sha256": "622b5cf73f4073034470737068ea7f9141c2f74dd0305a83e96f33a56db87073",
+        "tool_id": "tool::hash_bytes::v1",
+        "tool_invocation_id": "inv::ec49a861-ef0e-4a83-bc14-f5a89c68f567"
+      }
+    ],
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": "sha256:e6fbc074f4f5e5c16ef13055111e1b3090554d6db1c0e0cfe91711ae4a2b4aa1"
+}

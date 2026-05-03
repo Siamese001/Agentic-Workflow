@@ -1,0 +1,19 @@
+{
+  "artifact_hash": "sha256:e244af9f4bfca0f3f53354d60890e4f98a79addfd4f68eaf6d18749b2fd0dcc2",
+  "emitted_at": "2026-05-01T09:05:32Z",
+  "payload": {
+    "downstream_authority": "none",
+    "intake_status": "VALIDATED_FOR_L1",
+    "normalized_payload": "What is the capital of France?",
+    "permitted_next_layer": "L1",
+    "request_id": "req-8138f7e4dffa41569df16781cf5857c3",
+    "request_shape_class": "service_call",
+    "session_id": "sess-c0ac5c8f899749cc8f7c6a1ea55f56ad",
+    "tenant_bind": null,
+    "trace_root": "trace-35925fe7e3a748b4bf130a9dea4843f6"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:87be5fd8cf05c80b0170a5ca131090676d048c2e5db08462ce189e6ed513227b"
+}

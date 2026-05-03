@@ -1,0 +1,12 @@
+{
+  "bundle_verification_status": "PASS",
+  "checks_run": 2449,
+  "failures": [],
+  "notes": "PASS means the compiler's conclusions independently reproduced from requirements_source.json + evidence_assertions.jsonl + on-disk artifacts. FAIL means one or more integrity checks caught drift, tampering, or staleness.",
+  "report_sha256": "39af05a1bcf9cc41143130a08f11f65a7401652b54178a14c965121f6f34b5d3",
+  "schema_version": "fortknox-v2",
+  "signature_verification_status": "UNSIGNED_PENDING_SIGNATURE",
+  "verified_at_utc": "2026-05-02T21:53:11+00:00",
+  "verifier_path": "scripts/verify_final_requirement_signoff_bundle.py",
+  "verifier_version": "v1.0"
+}

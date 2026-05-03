@@ -1,0 +1,22 @@
+{
+  "content_hash_match": true,
+  "evaluated_at_utc": "2026-05-01T19:39:54+00:00",
+  "input_cached_query": "Tell me the capital of France.",
+  "input_query": "What is the capital of France?",
+  "replay_key_match": true,
+  "result": "PASS",
+  "run_1": {
+    "artifact_dir": "artifacts\\certification\\integrated_runtime\\replay\\run_1",
+    "content_hash": "24bd01963fc26dcd7114579caf2e5ba0b0ddbdff191c17944b446dcbc2ba3b0d",
+    "replay_key": "3b61ccf4fff308ea0c568e55778ff8d3d86142bcd542e5af3056808addce9c8b",
+    "trace_root": "trace-4783b8f1cd34473da7321cf3b2dcd7ab"
+  },
+  "run_2": {
+    "artifact_dir": "artifacts\\certification\\integrated_runtime\\replay\\run_2",
+    "content_hash": "24bd01963fc26dcd7114579caf2e5ba0b0ddbdff191c17944b446dcbc2ba3b0d",
+    "replay_key": "3b61ccf4fff308ea0c568e55778ff8d3d86142bcd542e5af3056808addce9c8b",
+    "trace_root": "trace-058432baec7c49ac93f835ab6f111212"
+  },
+  "scope": "RTC-REQ-023 \u2014 replay pair with stable replay_key + deterministic digest",
+  "verifier_input": "scripts/regen_integrated_runtime_replay_pair.py"
+}

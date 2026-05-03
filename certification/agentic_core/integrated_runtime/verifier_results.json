@@ -1,0 +1,35 @@
+{
+  "recorded_at_epoch": 1777638035.8562322,
+  "verifiers": [
+    "verify_integrated_runtime_entrypoint",
+    "verify_r1b_safe_reuse_integrated_runtime",
+    "verify_integrated_runtime_artifact_chain",
+    "verify_integrated_runtime_no_harness_stamp",
+    "verify_integrated_runtime_exit_x3"
+  ],
+  "verify_integrated_runtime_artifact_chain": {
+    "duration_s": 0.116,
+    "exit_code": 2,
+    "summary": "FAIL_CLOSED: ARTIFACT_MISSING \u2014 integrated_runtime_entrypoint_invocation.json: missing artifact: 'integrated_runtime_entrypoint_invocation.json' in C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\integrated_runtime\\latest"
+  },
+  "verify_integrated_runtime_entrypoint": {
+    "duration_s": 0.118,
+    "exit_code": 2,
+    "summary": "FAIL_CLOSED: MANIFEST_MISSING \u2014 missing artifact: 'integrated_runtime_artifact_manifest.json' in C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\integrated_runtime\\latest"
+  },
+  "verify_integrated_runtime_exit_x3": {
+    "duration_s": 0.112,
+    "exit_code": 2,
+    "summary": "FAIL_CLOSED: ARTIFACT_MISSING \u2014 missing artifact: 'terminal_ret_packet.json' in C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\integrated_runtime\\latest"
+  },
+  "verify_integrated_runtime_no_harness_stamp": {
+    "duration_s": 0.113,
+    "exit_code": 2,
+    "summary": "FAIL_CLOSED: ARTIFACT_MISSING \u2014 integrated_runtime_entrypoint_invocation.json: missing artifact: 'integrated_runtime_entrypoint_invocation.json' in C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\integrated_runtime\\latest"
+  },
+  "verify_r1b_safe_reuse_integrated_runtime": {
+    "duration_s": 0.117,
+    "exit_code": 2,
+    "summary": "FAIL_CLOSED: ARTIFACT_MISSING \u2014 missing artifact: 'semantic_cache_safe_reuse_decision.json' in C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\integrated_runtime\\latest"
+  }
+}

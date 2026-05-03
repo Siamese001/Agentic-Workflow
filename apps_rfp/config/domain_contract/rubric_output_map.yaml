@@ -1,0 +1,101 @@
+# apps_rfp rubric output map — declarative L2-receipt -> dim_scores extractor.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Consumed by apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores
+# inside apps_rfp/__main__.py::_run_live_cert after governed_run seals receipts.
+#
+# Sibling to:
+#   - apps_rfp/config/domain_contract/eval_rubrics.yaml (10 rubric dims)
+#   - apps_rfp/config/cert_route_registry.yaml (declares this file's path)
+#   - apps_rfp/config/domain_contract/grader_roster.yaml (judges for llm/hybrid dims)
+#   - apps_rfp/engines/judges/win_theme_alignment_judge.py (judge stub, deferred real impl)
+#
+# Design rule: the cert-path live run is currently a SINGLE_STEP symbolic
+# pipeline (governed_run marks C0/prompt_assembly/L2_execute stages but
+# does not emit a real proposal). The receipt surface is thin; most
+# deterministic dims will default to 0.0 -> UNKNOWN -> fail-closed per
+# evidence_required=true. That is the correct enforcement posture. When
+# apps_rfp graduates to a real live-cert proposal-assembly flow, only
+# the mapper YAML's receipt paths need updating.
+#
+# The 3 RAG tracked-only dims (context_recall, context_precision,
+# answer_relevancy) are weight=0.0 + fail_closed_if_unknown=false in the
+# rubric. They are INTENTIONALLY omitted here so judges produce their
+# UNKNOWN verdict without a YAML override — the rubric's non-fail-close
+# posture lets them track without blocking overall PASS.
+
+mapper_id: apps_rfp.rfp_response.v1
+app_id: apps_rfp
+rubric_id: "aer::apps_rfp::rfp_response::v1"
+version: "1.0.0"
+status: active
+
+dimensions:
+  # ---- deterministic dims (projected from receipt) ----
+  - dimension_id: requirement_coverage
+    score:
+      type: jsonpath
+      path: $.output.requirement_coverage.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.rfp_requirement_matcher"
+      - jsonpath: $.output.requirement_coverage.matched_requirement_ids
+        prefix: "req_matched:"
+      - template: "missing_requirements={$.output.requirement_coverage.missing_requirement_ids}"
+
+  - dimension_id: factual_grounding
+    score:
+      type: jsonpath
+      path: $.output.factual_grounding.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.kb_citation_check"
+      - jsonpath: $.output.factual_grounding.kb_citations
+        prefix: "kb_cite:"
+      - jsonpath: $.output.factual_grounding.past_win_citations
+        prefix: "win_cite:"
+
+  - dimension_id: compliance_with_rfp_constraints
+    score:
+      type: all_present
+      paths:
+        - $.output.rfp_compliance.page_limit_ok
+        - $.output.rfp_compliance.format_ok
+        - $.output.rfp_compliance.required_sections_present
+      default: 0.0
+    evidence:
+      - literal: "grader=deterministic.rfp_constraint_validator"
+      - template: "page_count={$.output.rfp_compliance.page_count} format={$.output.rfp_compliance.format}"
+
+  - dimension_id: no_fabricated_credentials
+    score:
+      type: jsonpath
+      path: $.output.credentials_check.all_in_kb_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.credential_kb_match"
+      - jsonpath: $.output.credentials_check.unbacked_credentials
+        prefix: "unbacked_cred:"
+
+  - dimension_id: pricing_integrity
+    score:
+      type: jsonpath
+      path: $.output.pricing_check.no_unauthorized_commitments_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.pricing_authorization_check"
+      - jsonpath: $.output.pricing_check.unauthorized_commitments
+        prefix: "unauth_price:"
+
+  # ---- judge / hybrid dims (judge-resolved, no YAML score) ----
+  # competitive_positioning (hybrid) -> grader_roster.yaml
+  # win_theme_alignment     (judge)  -> apps_rfp/engines/judges/win_theme_alignment_judge.py (stub)
+  # context_recall          (judge, weight=0.0, tracked-only) -> judge / producer
+  # context_precision       (judge, weight=0.0, tracked-only) -> judge / producer
+  # answer_relevancy        (judge, weight=0.0, tracked-only) -> judge / producer
+  # Intentionally omitted — AppSpecificEvaluator calls their registered graders
+  # and, for the 3 weight=0.0 RAG dims, the non-fail-close posture allows UNKNOWN.

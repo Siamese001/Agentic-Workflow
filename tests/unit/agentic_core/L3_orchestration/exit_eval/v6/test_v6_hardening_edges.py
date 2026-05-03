@@ -161,6 +161,13 @@ def test_every_catalog_span_reachable_via_union_of_runtime_paths():
     # X3F break-glass is operator-invoked (not pipeline-dispatched), per
     # v4_hardening §H3.2.1 — exercise its span via the helper path here.
     v6_otel.record_span(v6_otel.SPAN_X3F_BREAK_GLASS_EMIT, pkt)
+    # APPS-DOM runtime harness: exit.app_specific_eval is emitted by
+    # pipeline.py only when app_eval.bound is True, which requires a
+    # packet whose normalize_to_packet step produced a non-empty
+    # app_id/rubric_ref. The pipeline-level emission path exists; the
+    # helper-only exercise here accounts for the span in the coverage
+    # union the same way X3F (operator-invoked) is accounted for.
+    v6_otel.record_span(v6_otel.SPAN_APP_SPECIFIC_EVAL, pkt)
     seen |= set(collected_span_names(pkt) or [])
 
     unreachable = EXIT_V6_SPAN_CATALOG - seen

@@ -1,0 +1,23 @@
+{
+  "artifact_hash": "sha256:9d17dc9937644283a6f1b2d9b27d9c7b56bc1118164cb363bfbd8cd8777db0c2",
+  "emitted_at": "2026-05-02T11:23:34Z",
+  "payload": {
+    "deterministic_digest": "sha256:748794e4171f217ff9f30ad5d0760956ccb7f22431faff5624b64abd89d32f69",
+    "execution_form": "TERMINAL_SHORTCIRCUIT",
+    "l3_bypass_reason": "TERMINAL_SHORTCIRCUIT",
+    "l3_required": false,
+    "request_id": "req-e9f2d3c2da8b42bea6835c0593bfd79e",
+    "route_contract_id": "R1B_SEMANTIC_CACHE",
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "run_id": "req-e9f2d3c2da8b42bea6835c0593bfd79e",
+    "schema_version": "1.0",
+    "static_dag_available": false,
+    "static_dag_ref": "",
+    "trace_root": "trace-253a8b946ef7425093ad1dc165b89ad0",
+    "why_static_dag_not_used": "R1B semantic-cache reuse short-circuits before any managed workflow is required; no static DAG is invoked or required."
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:39c51fd5aec8aac49c614a7d8a0aaca37c6f44f9825662d78f9650206a928cd9"
+}

@@ -1,0 +1,343 @@
+{
+  "artifact_hash": "sha256:43af5ba569a6a92f8b2f6ae3b2165f7da70be50582bcce61da81fadc57c7f63f",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "d1_outcome": "SKIPPED",
+    "d2_outcome": "SKIPPED",
+    "d2_similarity": 0.0,
+    "full_suite": true,
+    "llm_judge_invocation_count": 0,
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+    "reason_codes": [
+      "mw_structural_full_suite_all_na"
+    ],
+    "verdicts": [
+      {
+        "gate_id": "G01",
+        "grader_type": "structural_na",
+        "na_reason": "NO_REQUEST_INGRESS_EXERCISED_BY_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_REQUEST_INGRESS_EXERCISED_BY_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G02",
+        "grader_type": "structural_na",
+        "na_reason": "NO_LIVE_IDENTITY_OR_SESSION_ENFORCEMENT_IN_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_LIVE_IDENTITY_OR_SESSION_ENFORCEMENT_IN_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G03",
+        "grader_type": "structural_na",
+        "na_reason": "NO_INTENT_AMBIGUITY_CHECK_REQUIRED_FOR_NOOP_STEPS",
+        "reason_codes": [
+          "NO_INTENT_AMBIGUITY_CHECK_REQUIRED_FOR_NOOP_STEPS"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G04",
+        "grader_type": "structural_na",
+        "na_reason": "NO_SAFETY_POLICY_INVOCATION_ON_NOOP_STEPS",
+        "reason_codes": [
+          "NO_SAFETY_POLICY_INVOCATION_ON_NOOP_STEPS"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G05",
+        "grader_type": "structural_na",
+        "na_reason": "NO_RISK_TIER_PROMOTION_REQUESTED",
+        "reason_codes": [
+          "NO_RISK_TIER_PROMOTION_REQUESTED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G06",
+        "grader_type": "structural_na",
+        "na_reason": "NO_HITL_APPROVAL_REQUESTED_IN_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_HITL_APPROVAL_REQUESTED_IN_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G07",
+        "grader_type": "structural_na",
+        "na_reason": "ROUTE_ALREADY_FIXED_TO_MW_DEMO_TWO_NODE",
+        "reason_codes": [
+          "ROUTE_ALREADY_FIXED_TO_MW_DEMO_TWO_NODE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G08",
+        "grader_type": "structural_na",
+        "na_reason": "GROUNDING_NOT_REQUIRED",
+        "reason_codes": [
+          "GROUNDING_NOT_REQUIRED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G09",
+        "grader_type": "structural_na",
+        "na_reason": "NO_EVIDENCE_BUNDLE_PRODUCED_BY_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_EVIDENCE_BUNDLE_PRODUCED_BY_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G10",
+        "grader_type": "structural_na",
+        "na_reason": "PROMPT_ASSEMBLY_NOT_REQUIRED",
+        "reason_codes": [
+          "PROMPT_ASSEMBLY_NOT_REQUIRED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G11",
+        "grader_type": "structural_na",
+        "na_reason": "NO_TOOL_OR_MODEL_INVOKED",
+        "reason_codes": [
+          "NO_TOOL_OR_MODEL_INVOKED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G12",
+        "grader_type": "structural_na",
+        "na_reason": "NO_TOOL_ARGUMENT_TO_VALIDATE",
+        "reason_codes": [
+          "NO_TOOL_ARGUMENT_TO_VALIDATE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G13",
+        "grader_type": "structural_na",
+        "na_reason": "NO_TOOL_OUTPUT_TO_TRUST_CHECK",
+        "reason_codes": [
+          "NO_TOOL_OUTPUT_TO_TRUST_CHECK"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G14",
+        "grader_type": "structural_na",
+        "na_reason": "NO_EXTERNAL_EGRESS",
+        "reason_codes": [
+          "NO_EXTERNAL_EGRESS"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G15",
+        "grader_type": "structural_na",
+        "na_reason": "NO_FILESYSTEM_OR_SHELL_INVOCATION",
+        "reason_codes": [
+          "NO_FILESYSTEM_OR_SHELL_INVOCATION"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G16",
+        "grader_type": "structural_na",
+        "na_reason": "NO_MEMORY_ACCESS_BY_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_MEMORY_ACCESS_BY_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G17",
+        "grader_type": "structural_na",
+        "na_reason": "NO_CROSS_CONTEXT_PRIVACY_BOUNDARY_CROSSED",
+        "reason_codes": [
+          "NO_CROSS_CONTEXT_PRIVACY_BOUNDARY_CROSSED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G18",
+        "grader_type": "structural_na",
+        "na_reason": "NO_WORKFLOW_TRAJECTORY_DEVIATION_POSSIBLE_ON_NOOP_STEPS",
+        "reason_codes": [
+          "NO_WORKFLOW_TRAJECTORY_DEVIATION_POSSIBLE_ON_NOOP_STEPS"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G19",
+        "grader_type": "structural_na",
+        "na_reason": "NO_LOOP_OR_RETRY_INVOKED",
+        "reason_codes": [
+          "NO_LOOP_OR_RETRY_INVOKED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G20",
+        "grader_type": "structural_na",
+        "na_reason": "NO_COST_OR_LATENCY_BUDGET_CONSUMED",
+        "reason_codes": [
+          "NO_COST_OR_LATENCY_BUDGET_CONSUMED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G21",
+        "grader_type": "structural_na",
+        "na_reason": "NO_OUTPUT_SCHEMA_TO_VALIDATE",
+        "reason_codes": [
+          "NO_OUTPUT_SCHEMA_TO_VALIDATE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G22",
+        "grader_type": "structural_na",
+        "na_reason": "NO_OUTPUT_QUALITY_CHECK_ON_STRUCTURAL_DEMO",
+        "reason_codes": [
+          "NO_OUTPUT_QUALITY_CHECK_ON_STRUCTURAL_DEMO"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G23",
+        "grader_type": "structural_na",
+        "na_reason": "NO_SECURITY_LEAKAGE_SURFACE",
+        "reason_codes": [
+          "NO_SECURITY_LEAKAGE_SURFACE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G24",
+        "grader_type": "structural_na",
+        "na_reason": "DETERMINISM_REPLAY_ENFORCED_BY_IDENTITY_ENVELOPE_DIGEST",
+        "reason_codes": [
+          "DETERMINISM_REPLAY_ENFORCED_BY_IDENTITY_ENVELOPE_DIGEST"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G25",
+        "grader_type": "structural_na",
+        "na_reason": "NO_RUNTIME_ANOMALY_SURFACE",
+        "reason_codes": [
+          "NO_RUNTIME_ANOMALY_SURFACE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G26",
+        "grader_type": "structural_na",
+        "na_reason": "EXIT_DISPOSITION_ENFORCED_BY_X3_RECEIPT_NOT_THIS_GATE",
+        "reason_codes": [
+          "EXIT_DISPOSITION_ENFORCED_BY_X3_RECEIPT_NOT_THIS_GATE"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G27",
+        "grader_type": "structural_na",
+        "na_reason": "NO_DURABLE_WRITE_REQUESTED",
+        "reason_codes": [
+          "NO_DURABLE_WRITE_REQUESTED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G28",
+        "grader_type": "structural_na",
+        "na_reason": "AUDIT_TRACE_ENFORCED_BY_RUNTIME_TRACE_SNAPSHOT_ARTIFACT",
+        "reason_codes": [
+          "AUDIT_TRACE_ENFORCED_BY_RUNTIME_TRACE_SNAPSHOT_ARTIFACT"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      },
+      {
+        "gate_id": "G29",
+        "grader_type": "structural_na",
+        "na_reason": "NO_LEARNING_FIREWALL_BOUNDARY_CROSSED",
+        "reason_codes": [
+          "NO_LEARNING_FIREWALL_BOUNDARY_CROSSED"
+        ],
+        "result": "NOT_APPLICABLE",
+        "score": 0.0,
+        "threshold": 0.0
+      }
+    ],
+    "veto_latency_ms": 0.0,
+    "veto_outcome": "NOT_INVOKED",
+    "veto_primary_mode": ""
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:5977623b76a5dbce9d27e238130b5e3c675b55b44edc7f228818ec4811cc1047"
+}

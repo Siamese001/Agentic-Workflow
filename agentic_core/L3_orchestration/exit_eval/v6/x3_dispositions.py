@@ -339,6 +339,27 @@ def build_x3_packet(
         )
 
 
+def _app_specific_eval_blocks_allow(packet: ExitReviewPacket) -> tuple[bool, list[str]]:
+    """W1.P4 — Belt-and-braces: reject ALLOW/COMMIT if app eval failed.
+
+    X2 aggregation (x2_matrix._app_specific_eval_failure) should already
+    have forced DENY on any bound-and-failed app-specific eval, but we
+    re-check here so that *no* downstream path (break-glass, direct
+    disposition override, etc.) can emit ALLOW or COMMIT_REQUEST when the
+    Fort Knox domain rubric did not pass.
+    """
+    ase = packet.app_specific_eval or {}
+    if not isinstance(ase, dict):
+        return False, []
+    if not ase.get("bound"):
+        return False, []
+    if ase.get("passed") is True:
+        return False, []
+    reasons = ase.get("fail_reasons") or []
+    codes = [f"APP_DIM_FAIL::{r}" for r in reasons] or ["APP_DIM_FAIL"]
+    return True, codes
+
+
 def _build_x3_packet_impl(
     packet: ExitReviewPacket,
     decision: AggregateDecision,
@@ -347,6 +368,23 @@ def _build_x3_packet_impl(
     final_response: str = "",
 ):
     """Original build_x3_packet dispatcher (W13 split)."""
+    # W1.P4 — preconditions for ALLOW / COMMIT_REQUEST include
+    # app_specific_eval.passed=True when the eval was bound. If the packet
+    # arrives here with a failed bound eval but a non-DENY disposition,
+    # override to DENY. This catches defects in upstream aggregation,
+    # direct-construction tests, and break-glass misuse.
+    if decision.disposition in {V6Disposition.ALLOW, V6Disposition.COMMIT_REQUEST}:
+        blocked, app_codes = _app_specific_eval_blocks_allow(packet)
+        if blocked:
+            override = AggregateDecision(
+                disposition=V6Disposition.DENY,
+                failed_gate_ids=["APP_DOMAIN"],
+                reason_codes=app_codes,
+                triggering_verdicts=list(decision.triggering_verdicts),
+                rationale="app_specific_eval_failed_override",
+            )
+            return build_x3a_deny(packet, override)
+
     if decision.disposition is V6Disposition.DENY:
         return build_x3a_deny(packet, decision)
     if decision.disposition is V6Disposition.ESCALATE:

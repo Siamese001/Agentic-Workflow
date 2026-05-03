@@ -1,0 +1,212 @@
+{
+  "artifact_hash": "sha256:b820fe8eb87c7e01971fd2302cd6ac401d2f18becff658ab57f41c3d35926971",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "composed_substrates": {
+      "r3_grounded_read": {
+        "final_evidence_contract_sha256": "sha256:ed39809cab4c7898278fe28c0e05db3cd0d037836853aaf8fb34ae62fc984111",
+        "retrieval_corpus_manifest_sha256": "sha256:b27d5dd07be2fd53fca1363d0acfe877de22bce6f41f4362299b24d1e3db07ae"
+      },
+      "r4_single_action": {
+        "sealed_l2_artifact_sha256": "sha256:05f33f38e243ddbcc5f840822c5ed03531f20f0fcdca07d93ca85f1ffa92ffa8",
+        "tool_authorization_receipt_sha256": "sha256:e6fbc074f4f5e5c16ef13055111e1b3090554d6db1c0e0cfe91711ae4a2b4aa1"
+      },
+      "uwg_commit": {
+        "commit_request_sha256": "sha256:5792f6e9b9ff93cdbc1f906519c7cbacf76dcf6dc6dc48cad8afa1b0dbb0faf6",
+        "uwg_commit_receipt_sha256": "sha256:bd85cd2ebe762710b0a857d1e82ce1795cd67c7fc62ed68b3a693f719c11cbe7",
+        "uwg_refresh_receipts_sha256": "sha256:6f12924c0f923108e4309ae2573b135af97e0d1b9ec8a796c4d7bdd2ca9b1472"
+      }
+    },
+    "gate_count": 29,
+    "gate_fail_count": 0,
+    "gate_pass_count": 29,
+    "gate_verdicts": [
+      {
+        "evidence": "evidence_ref_count=2",
+        "gate_id": "G01",
+        "title": "FinalEvidenceContract emitted with evidence_refs",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "structural_only=False",
+        "gate_id": "G02",
+        "title": "SealedL2Artifact structural_only=False",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "status=GRANTED",
+        "gate_id": "G03",
+        "title": "Tool authorization GRANTED",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "commit_status=COMMITTED",
+        "gate_id": "G04",
+        "title": "UWG commit_status=COMMITTED",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "refresh_count=1",
+        "gate_id": "G05",
+        "title": "Refresh receipts count >= 1",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "ids_match=True",
+        "gate_id": "G06",
+        "title": "Identity (run_id/request_id/trace_root) continuous across substrates",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "tool_invocation_count=1",
+        "gate_id": "G07",
+        "title": "Tool invocation count >= 1",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "all_deterministic=[{'tool_invocation_id': 'inv::ec49a861-ef0e-4a83-bc14-f5a89c68f567', 'tool_id': 'tool::hash_bytes::v1', 'input_bytes_sha256': 'afc4335c13277aa818a312a25027230a98f4ded9395c5d7e90b835277012dbab', 'input_byte_length': 50, 'output_payload': 'afc4335c13277aa818a312a25027230a98f4ded9395c5d7e90b835277012dbab', 'output_payload_sha256': '622b5cf73f4073034470737068ea7f9141c2f74dd0305a83e96f33a56db87073', 'output_byte_length': 64, 'deterministic': True, 'invoked_at_utc': '2026-05-02T16:59:17Z'}]",
+        "gate_id": "G08",
+        "title": "All tool invocations deterministic=True",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "commit_request_ref=cr:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+        "gate_id": "G09",
+        "title": "Commit request is bound to Exit-sourced CommitRequest",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "before=snapshot:00000001, after=snapshot:00000002",
+        "gate_id": "G10",
+        "title": "Snapshot before != snapshot after",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "audit_append_receipt_ref=e79038c7-3dd0-41f4-b644-82e37e8769e2",
+        "gate_id": "G11",
+        "title": "Audit-append receipt present on commit",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "state_diff_refs_count=1",
+        "gate_id": "G12",
+        "title": "State diff refs non-empty",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "corpus_manifest_sha256=sha256:b27d5dd07",
+        "gate_id": "G13",
+        "title": "Evidence contract bound to corpus manifest",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "algo=jaccard_over_alphanumeric_token_sets",
+        "gate_id": "G14",
+        "title": "Retrieval algorithm declared",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "all_hashed=[{'chunk_ref': 'chunk::arch::001', 'title': 'Agentic-Workflow L7_AUDITABILITY plane', 'payload_sha256': 'dd7547603a03912bedfe7f8fe7d7ed6059529b5d56a57e464e305db5a4290b00', 'relevance_score': 0.081081, 'support_status': 'bounded'}, {'chunk_ref': 'chunk::uwg::002', 'title': 'DurableWriteGateway commit pipeline', 'payload_sha256': 'e7008f01baa078298dd438e0727eccd4d911b06c2d0db4c09544b20eef5d37bd', 'relevance_score': 0.052632, 'support_status': 'bounded'}]",
+        "gate_id": "G15",
+        "title": "All evidence_refs carry payload_sha256",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "all_registered=[{'tool_id': 'tool::hash_bytes::v1', 'tool_registry_record_sha256': 'eec4b69bbc13d2daa57a481a834515f48b14e4540d1cda5d93f6ff36ba58627f', 'authorization_receipt_ref': 'sha256:e6fbc074f4f5e5c16ef13055111e1b3090554d6db1c0e0cfe91711ae4a2b4aa1', 'required_capability': 'cap::deterministic_compute'}]",
+        "gate_id": "G16",
+        "title": "All tool authorizations bound to registry record sha256",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "match=True",
+        "gate_id": "G17",
+        "title": "Tool required_capability matches authorization receipt",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "model_invocation_count=0",
+        "gate_id": "G18",
+        "title": "Model invocation count = 0 (deterministic-tools scope)",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "commit_request_ref=cr:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+        "gate_id": "G19",
+        "title": "Commit receipt carries commit_request_ref",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "write_lock_receipt_ref=d198cb78-b3fb-4270-bf09-320980914791",
+        "gate_id": "G20",
+        "title": "Write-lock receipt ref present",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "uwg_validation_receipt_ref=70b829bb-830b-4ceb-9d9b-1f349c8e486c",
+        "gate_id": "G21",
+        "title": "UWG validation receipt ref present",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "refresh_plan_ref=rfp:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+        "gate_id": "G22",
+        "title": "Commit receipt carries refresh plan ref",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "count=1",
+        "gate_id": "G23",
+        "title": "Affected state surfaces non-empty",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "any_support=True",
+        "gate_id": "G24",
+        "title": "At least one evidence_ref has support_status in {strong, bounded}",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "chain_binds_fortknox_l7=True",
+        "gate_id": "G25",
+        "title": "Fort Knox L7 evidence emitter runs post-chain",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "route_family=MANAGED_WORKFLOW_REAL_EXECUTION",
+        "gate_id": "G26",
+        "title": "Route family marker MANAGED_WORKFLOW_REAL_EXECUTION bound",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "corpus_size=3",
+        "gate_id": "G27",
+        "title": "Corpus size >= 3 (minimum retrieval variety)",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "registry_size=1",
+        "gate_id": "G28",
+        "title": "Tool registry non-empty",
+        "verdict": "PASS"
+      },
+      {
+        "evidence": "all_integrated=True",
+        "gate_id": "G29",
+        "title": "All substrates carry integrated_runtime_origin=True",
+        "verdict": "PASS"
+      }
+    ],
+    "integrated_runtime_origin": true,
+    "managed_workflow_certified": true,
+    "mw_real_execution_receipt_id": "mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run.run_integrated_managed_workflow_real",
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "schema_version": "1.0.0",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": "sha256:6f12924c0f923108e4309ae2573b135af97e0d1b9ec8a796c4d7bdd2ca9b1472"
+}

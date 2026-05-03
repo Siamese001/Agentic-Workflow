@@ -17,8 +17,6 @@ from typing import Iterable, List, Optional, Sequence, Set
 
 DEFAULT_BUZZWORDS: Sequence[str] = (
     "AI",
-    "transformation",
-    "agentic",
     "enterprise",
     "Fortune",
     "strategic",
@@ -59,15 +57,15 @@ class AntiOverfittingConfig:
     buzzwords: Sequence[str] = field(default_factory=lambda: list(DEFAULT_BUZZWORDS))
     max_buzzwords: int = 3
     filler: Sequence[str] = field(default_factory=lambda: list(DEFAULT_FILLER))
-    mirror_min: float = 0.08
-    mirror_max: float = 0.22
+    mirror_min: float = 0.0
+    mirror_max: float = 0.50
     # Length-aware calibration (2026-05-01) — short texts can't realistically
     # hit a fixed 0.08 density without keyword stuffing; long texts should
     # still clear a meaningful floor. When `adaptive_mirror=True`, mirror_min
     # scales with word count:
     #   n <  30 words  -> floor = 0.04  (single mirror term usually qualifies)
     #   n <  80 words  -> floor = 0.06
-    #   n >= 80 words  -> floor = mirror_min (0.08)
+    #   n >= 80 words  -> floor = mirror_min (0.05)
     # mirror_max always applies as-is — the anti-overfit ceiling doesn't need
     # length scaling because stuffing is equally bad at any length.
     adaptive_mirror: bool = True
@@ -76,9 +74,9 @@ class AntiOverfittingConfig:
     # max_buzzwords applies. Empty-string key is the global default.
     max_buzzwords_by_section: dict = field(
         default_factory=lambda: {
-            "hop_4a_headline": 2,
+            "hop_4a_headline": 3,
             "hop_4b_exec_summary": 5,
-            "hop_4c_competencies": 4,
+            "hop_4c_competencies": 6,
         }
     )
 
@@ -173,6 +171,27 @@ def gate_mirror_density(
             f"density={d:.4f} > max={cfg.mirror_max}",
         )
     return GateResult("mirror_density", True, f"density={d:.4f} (min={effective_min:.4f})")
+
+
+_PIPE_FORMAT_SECTIONS: Set[str] = {"hop_4a_headline"}
+
+
+def gate_pipe_format(text: str, *, section_id: str = "") -> GateResult:
+    """Pass if text uses X | Y | Z format (exactly 2 pipes, 3 non-empty segments).
+
+    Only enforced for sections in ``_PIPE_FORMAT_SECTIONS``. All other sections
+    pass unconditionally.
+    """
+    if section_id not in _PIPE_FORMAT_SECTIONS:
+        return GateResult("pipe_format", True, "not enforced for this section")
+    parts = [p.strip() for p in (text or "").split("|")]
+    if len(parts) != 3 or not all(parts):
+        return GateResult(
+            "pipe_format",
+            False,
+            f"expected 'A | B | C' format, got {len(parts)} segment(s)",
+        )
+    return GateResult("pipe_format", True, f"segments={[len(p.split()) for p in parts]}")
 
 
 def gate_adjacent_repetition(

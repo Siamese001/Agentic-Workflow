@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_rfp",
+  "harness_run_id": "apps_rfp-e2e-2bbd74d5e5724ab5",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "859c9fa8da44588424c3c613d15426bb749d3a60c578046d6a9cb8e5a60317b7"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "5a15f0de4bb106cb82251a9b77a4e845860bf5f1b96dd20a294752e076f762db"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "264a38066d0fbe69582aa9d5c0c19d86ead81e3150bf31546f10996f77788e21"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "d087474027214715841b315915aa731ecd92e7f9947a9629060ea3d0562e8dfa"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "89ad2ebcbc7bc3e6a39994b1b0b351e3193bd9fe8c5aafbf1b89ca8e68770446"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/final_evidence_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/final_evidence_contract.json",
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "b274e3b32627ef75060de492d88019bee100f4b418e154d8e56c4c0a0be75118"
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "46387e02f1b162e8f51dc534ad0aa49ad85f228ffb8c2593437674452a950986"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "4b1ae86a9be3e6daf8125e67036116816d9e447414ba180ec9c5424f4528c6d3"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "7cc97fed55d1fa709d548208ac1d2a1c85b5d49df6ae97e84d4bb5b420def56e"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "1109e09806955d251c1d74695c9ef9322b93ca53fe1fcac54c77f48913ffeb3d"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_rfp/runs/20260503_000100/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_rfp/runs/20260503_000100/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "0e30de3b3347c1150f3455e8a70a4d0124a511dafa7798536aac6248adde234d"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_rfp-run-97b87fd546754cb6",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_rfp-run-97b87fd546754cb6",
+  "trace_root": "apps_rfp-run-97b87fd546754cb6"
+}

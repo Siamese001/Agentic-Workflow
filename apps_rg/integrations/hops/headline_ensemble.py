@@ -38,10 +38,11 @@ def generate_headline(
     budget = budget_for_section("headline", target_words=11, target_sentences=1, tolerance=0.25)
 
     base_seed = seed_text or _archetype_seed(archetype, company, target_role)
+    mirror_list = list(mirror_terms)
     prompt_variants = [
-        ("lead_with_archetype", _prompt_archetype(archetype, company, jd_facets, target_role)),
-        ("marquee", _prompt_marquee(list(marquee_outcomes), company, target_role)),
-        ("pain_point", _prompt_pain_point(list(pain_points), company, target_role)),
+        ("lead_with_archetype", _prompt_archetype(archetype, company, jd_facets, target_role, mirror_list)),
+        ("marquee", _prompt_marquee(list(marquee_outcomes), company, target_role, mirror_list)),
+        ("pain_point", _prompt_pain_point(list(pain_points), company, target_role, mirror_list)),
     ]
     return run_ensemble(
         section_id=SECTION_ID,
@@ -57,50 +58,61 @@ def generate_headline(
 
 def _archetype_seed(archetype: str, company: str, target_role: str = "") -> str:
     archetype = (archetype or "Agentic Transformation Leader").strip()
-    if target_role:
-        return f"{target_role} | {archetype} scaling enterprise AI for {company}"[:140]
-    return f"{archetype} | scaled enterprise AI delivery for {company}"[:140]
+    return f"{archetype} | Scaling Pilot to Production | Driving Organizational Readiness"[:140]
 
 
 def _title_clause(target_role: str) -> str:
+    """Return a context note about the target role without forcing literal repetition.
+    The job title already appears on the resume header — the headline should add
+    signal, not repeat it.
+    """
     if not target_role.strip():
         return ""
     return (
-        f"The headline MUST contain the exact target role '{target_role.strip()}' "
-        "(or its close variant) as the opening phrase. "
+        f"The candidate is applying for '{target_role.strip()}'. "
+        "Do NOT repeat the job title verbatim — the headline must add new signal. "
     )
 
 
-def _prompt_archetype(archetype: str, company: str, jd_facets: Iterable[str], target_role: str = "") -> str:
+def _prompt_archetype(archetype: str, company: str, jd_facets: Iterable[str], target_role: str = "", mirror_list: list | None = None) -> str:
+    facets = list(jd_facets)[:6]
+    top_mirrors = (mirror_list or [])[:3]
     return (
-        f"Write a 9-14 word resume headline (fits one line). "
+        f"Write a resume headline in EXACTLY this format: [Segment A] | [Segment B] | [Segment C]\n"
+        "Each segment is 3-5 words. Total 9-15 words across all three segments (pipes not counted).\n"
         f"{_title_clause(target_role)}"
-        f"Lead with the archetype '{archetype}' for a candidate targeting {company}. "
-        "No filler intensifiers. "
-        f"Mirror at most 2 JD facets from: {list(jd_facets)[:10]}. "
-        "MUST be 9-14 words total. Return only the headline on a single line."
+        f"Archetype: '{archetype}'. Target company: {company}.\n"
+        f"You MUST use at least one of these exact phrases verbatim in the headline: {top_mirrors}.\n"
+        "No filler intensifiers. No generic buzzwords. No job title repetition.\n"
+        "Return ONLY the headline text on a single line, with the two pipe characters."
     )
 
 
-def _prompt_marquee(marquee_outcomes, company: str, target_role: str = "") -> str:
-    sample = "; ".join(str(o) for o in marquee_outcomes[:3])
+def _prompt_marquee(marquee_outcomes, company: str, target_role: str = "", mirror_list: list | None = None) -> str:
+    sample = "; ".join(str(o) for o in marquee_outcomes[:2])
+    top_mirrors = (mirror_list or [])[:2]
     return (
-        f"Write a 9-14 word resume headline (fits one line). "
+        f"Write a resume headline in EXACTLY this format: [Segment A] | [Segment B] | [Segment C]\n"
+        "Each segment is 3-5 words. Total 9-15 words across all three segments (pipes not counted).\n"
         f"{_title_clause(target_role)}"
-        f"Feature one specific outcome from: {sample}. "
-        f"Position the candidate for {company}. No filler. "
-        "MUST be 9-14 words total. Return only the headline on a single line."
+        f"Segment A: one concrete outcome from: {sample}.\n"
+        f"Segments B and C: differentiators for {company}. Use one of these exact phrases: {top_mirrors}.\n"
+        "No filler, no job title repetition, no generic buzzwords.\n"
+        "Return ONLY the headline text on a single line, with the two pipe characters."
     )
 
 
-def _prompt_pain_point(pain_points, company: str, target_role: str = "") -> str:
-    sample = "; ".join(str(p) for p in pain_points[:3])
+def _prompt_pain_point(pain_points, company: str, target_role: str = "", mirror_list: list | None = None) -> str:
+    top_pain = str(pain_points[0]) if pain_points else "moving clients from pilot to production"
+    top_mirrors = (mirror_list or [])[:2]
     return (
-        f"Write a 9-14 word resume headline (fits one line). "
+        f"Write a resume headline in EXACTLY this format: [Segment A] | [Segment B] | [Segment C]\n"
+        "Each segment is 3-5 words. Total 9-15 words across all three segments (pipes not counted).\n"
         f"{_title_clause(target_role)}"
-        f"Frame the candidate as the answer to a specific pain point from: {sample}. "
-        f"For {company}. No filler. "
-        "MUST be 9-14 words total. Return only the headline on a single line."
+        f"Frame around this specific pain point: {top_pain[:160]}.\n"
+        f"You MUST use at least one of these exact phrases verbatim: {top_mirrors}.\n"
+        "No generic buzzwords, no job title repetition, no filler.\n"
+        "Return ONLY the headline text on a single line, with the two pipe characters."
     )
 
 

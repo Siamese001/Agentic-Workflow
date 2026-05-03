@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:4801835f561c9b72b52e37a11e608d35612469aa9d35b61c2ae9b24a0effb447",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "blueprint_hash": "blueprint::mw-demo-two-node",
+    "exec_trace": {
+      "model_calls": [],
+      "replay_receipts_present": true,
+      "ret_packet_ref": "mw::e8c5b27f7c248d5004a684f73f40bd70b108409199d5cc36f2a98cc186b71ffb",
+      "tool_calls": [],
+      "wall_clock_used": false
+    },
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "output": {
+      "citation_precision": 1.0,
+      "completion_score": 1.0,
+      "confidence": 1.0,
+      "faithfulness": 1.0,
+      "format_fit": true,
+      "groundedness": 1.0,
+      "schema_required": false,
+      "schema_valid": true,
+      "text": "(MW structural-only demo run)"
+    },
+    "policy_hash": "6b45eaad05676683c7b13994c99b4940ebfcdaf49573830525dd5d697b228831",
+    "replay_key": "e8c5b27f7c248d5004a684f73f40bd70b108409199d5cc36f2a98cc186b71ffb",
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_id": "MW_DEMO_TWO_NODE",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "session_id": "sess-949055cc07054061bc18ded3d7b9d188",
+    "source_type": "L2_SEALED_ARTIFACT",
+    "state_diff": {},
+    "terminal_class": "mw_structural_only",
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941",
+    "track_label": "structural"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:43af5ba569a6a92f8b2f6ae3b2165f7da70be50582bcce61da81fadc57c7f63f"
+}

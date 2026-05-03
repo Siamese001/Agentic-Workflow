@@ -147,3 +147,38 @@ python -m apps_qna --interview drew-clements-r2 ...
 - Source pattern: `C:\Users\amita\Documents\Dentsu\Drew Clements - 4.29.2026\`
 - Bootstrap plan: `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md`
 - Routing manifest SSOT: `apps_qna/config/route_registry.yaml`
+
+## Eval Harness (apps-eval-harness-closeout-b7c9d2 W3.P1)
+
+The app-specific evaluation rubric and threshold profile live under
+`apps_qna/config/domain_contract/` and are authoritative via the L4
+`AppEvalRubricRecord` + `AppThresholdProfileRecord` registered through
+UWG.
+
+**Rubric**: `apps_qna/config/domain_contract/eval_rubrics.yaml`
+**Threshold profile**: `apps_qna/config/domain_contract/threshold_profiles.yaml`
+**Grader roster**: `apps_qna/config/domain_contract/grader_roster.yaml`
+
+**HITL policy**: see `threshold_profiles.yaml` `hitl_policy` field
+(`none` | `required_on_low` | `required_always`). Soft below-threshold
+failures escalate when `required_on_low`; hard guardrail failures always
+DENY regardless of policy.
+
+**Run the advisory CI gate**:
+
+`ash
+python ops_scripts/ci/check_app_domain_harness_parity.py
+`
+
+Exit 0 with JSON report at `artifacts/ci/app_domain_harness_parity.json`.
+Fail-closed mode via `APP_DOMAIN_HARNESS_PARITY_FAIL_CLOSED=1`.
+
+**Ledger**: per-run outcomes land in
+`artifacts/ledgers/eval_harness_outcome.sqlite` (fail-soft — Exit pipeline
+is never blocked by ledger errors). Weekly rollup:
+
+`ash
+python ops_scripts/calibration/eval_harness_weekly_report.py
+`
+
+Emits JSON + Markdown under `docs/reports/eval_harness/<YYYY-Www>.md`.

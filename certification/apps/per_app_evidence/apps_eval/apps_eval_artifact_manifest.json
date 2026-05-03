@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_eval",
+  "harness_run_id": "apps_eval-e2e-a5e829f7c83f458b",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_eval/apps_eval_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "5a8cc31a40394cbaa87dbd8622a37e1efce6ec202ba302d20dd62bd50a9ad0af"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "9bd3ff82afcbda61570765ba8a8c2893b1d1a6261c1c91c8ff4e9b4017a453da"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "e28c7bb043a5ff6182e48ebf2f81318afff8e19aab0b8fa4a6dd8253eb41afe0"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "561251d9e71d5c5f91e6cb3b4be7f6a45933edc9865c7f45ddb1aa7f3ceb8125"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "f28064c3b2cdbded07b86927ca8500b447711e47980e51a45ec528fb8e76e068"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/final_evidence_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/final_evidence_contract.json",
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "ce5b0d4d4cf080da881151c07efcc04097d3f356b27d099930cce2106ad76a44"
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "ccd53b372ae5208f44a70726f158ffed4aed5243f9005906a3bbe24d40e5573c"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "7ca3522f50ecf996683f006647a0afec32d5614309b8a9feb755045fd55fd860"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "f869351ba948dd9a92ec14f106206051f964df078407f75efa35b48cc284df02"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "d30f45858bfd1700baefcd3370fd585d4f75b4cce90d8aec66be109a424676b1"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_eval/runs/20260503_000055/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_eval/runs/20260503_000055/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "ed69767cc76d5feda9ca1b7610e2806dfd93e6464838496a5e9f59e5a3cf71f6"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_eval/apps_eval_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_eval-run-5830f06076b24f36",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_eval-run-5830f06076b24f36",
+  "trace_root": "apps_eval-run-5830f06076b24f36"
+}

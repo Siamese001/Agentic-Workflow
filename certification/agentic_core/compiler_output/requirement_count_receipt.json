@@ -1,0 +1,40 @@
+{
+  "actual_count": 87,
+  "claim_type_distribution": {
+    "COMPONENT_RUNTIME": 8,
+    "COMPOSITION_RUNTIME": 2,
+    "INTEGRATED_RUNTIME": 8,
+    "NO_BYPASS_RUNTIME": 26,
+    "OBSERVABILITY_RUNTIME": 5,
+    "PRODUCTION_DEPENDENCY_RUNTIME": 5,
+    "REPLAY_RUNTIME": 3,
+    "STATIC_CONTRACT": 1,
+    "STATIC_ENFORCEMENT": 29
+  },
+  "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+  "executed_at_utc": "2026-05-01T18:03:58.888144+00:00",
+  "expected_count": 87,
+  "merkle_readiness": {
+    "complete": true,
+    "leaf_count_would_be": 87,
+    "non_empty": true,
+    "rule": "RTC-REQ-031"
+  },
+  "priority_distribution": {
+    "P0": 56,
+    "P1": 31
+  },
+  "rule": "RTC-REQ-030",
+  "verifier": "verify_runtime_certification_matrix",
+  "wave_distribution": {
+    "W0-certification-source-of-truth": 14,
+    "W0-ci-fail-closed": 6,
+    "W1-cache-state-safety": 8,
+    "W1-semantic-cache-closeout": 22,
+    "W1p6-requirement-architecture-alignment": 1,
+    "W2-integrated-runtime-entrypoint": 7,
+    "W3-otel-replay-observability": 5,
+    "W4-reporting-language": 7,
+    "W5-layer-hardening": 17
+  }
+}

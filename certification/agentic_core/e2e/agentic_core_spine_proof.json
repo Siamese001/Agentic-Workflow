@@ -1,0 +1,191 @@
+{
+  "blocking_gaps": [
+    "core_scenario_grounded_read_not_executable",
+    "core_scenario_single_action_not_executable",
+    "core_scenario_managed_workflow_not_executable",
+    "core_scenario_managed_workflow_bypass_not_executable",
+    "core_scenario_durable_mutation_not_executable",
+    "core_scenario_post_exit_exhaust_not_executable"
+  ],
+  "generated_at_utc": "2026-05-02T03:17:25.410094Z",
+  "git_commit": "7c344fdb54",
+  "git_dirty": true,
+  "harness_kind": "agentic_core_spine",
+  "harness_pass": true,
+  "harness_run_id": "core-e2e-4b5934149fa14e18",
+  "harness_schema_version": "agentic_core_e2e_harness/2026-05-01/v1",
+  "honest_fail_closed": true,
+  "notes": "Agentic core spine harness scaffold. Scenarios cannot be driven without agentic_core.composition_root.run_scenario(scenario_id). When that hook ships, every scenario row will populate result_summary. This harness is INTENTIONALLY DECOUPLED from the apps_* harness — neither imports the other. See plan §14.",
+  "proof_schema_version": "agentic_core_e2e_proof/2026-05-01/v1",
+  "scenarios": [
+    {
+      "description": "Cache-hit terminal short-circuit; L0 → Exit → L6 only.",
+      "expected_route_form": "TERMINAL_SHORTCIRCUIT",
+      "expects_c0": false,
+      "expects_l2": false,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": false,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": true,
+      "probed_hook_paths": null,
+      "reason": "L0 composition root live: evidence resolver installed, deterministic, and fail-closed by default.",
+      "result_summary": {
+        "probe_id": "agentic_core_e2e_probe_never_registered",
+        "reason": "L0 composition root live: evidence resolver installed, deterministic, and fail-closed by default.",
+        "resolver_deterministic": true,
+        "resolver_fail_closed_default": true,
+        "status": "ran"
+      },
+      "scenario_id": "terminal_cache",
+      "status": "ran"
+    },
+    {
+      "description": "C0-grounded read route; PA + L2 model exec required.",
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "expects_c0": true,
+      "expects_l2": true,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": true,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "grounded_read",
+        "status": "not_implemented"
+      },
+      "scenario_id": "grounded_read",
+      "status": "not_implemented"
+    },
+    {
+      "description": "Single deterministic action route; no model exec.",
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "expects_c0": false,
+      "expects_l2": true,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": false,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "single_action",
+        "status": "not_implemented"
+      },
+      "scenario_id": "single_action",
+      "status": "not_implemented"
+    },
+    {
+      "description": "MANAGED_WORKFLOW route bound to a static L3 DAG.",
+      "expected_route_form": "MANAGED_WORKFLOW",
+      "expects_c0": true,
+      "expects_l2": true,
+      "expects_l3": true,
+      "expects_l6": true,
+      "expects_pa": true,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "managed_workflow",
+        "status": "not_implemented"
+      },
+      "scenario_id": "managed_workflow",
+      "status": "not_implemented"
+    },
+    {
+      "description": "L3 capable but bypassed (NO_MANAGED_WORKFLOW_REQUIRED).",
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "expects_c0": false,
+      "expects_l2": true,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": false,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "managed_workflow_bypass",
+        "status": "not_implemented"
+      },
+      "scenario_id": "managed_workflow_bypass",
+      "status": "not_implemented"
+    },
+    {
+      "description": "L2 → Exit → UWG (L4) durable write path.",
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "expects_c0": false,
+      "expects_l2": true,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": false,
+      "expects_uwg": true,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "durable_mutation",
+        "status": "not_implemented"
+      },
+      "scenario_id": "durable_mutation",
+      "status": "not_implemented"
+    },
+    {
+      "description": "L6 RuntimeExhaustBundle handoff observed AFTER Exit.",
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "expects_c0": false,
+      "expects_l2": true,
+      "expects_l3": false,
+      "expects_l6": true,
+      "expects_pa": false,
+      "expects_uwg": false,
+      "hook_path": "agentic_core.L0_routing.composition_root.run_scenario",
+      "pass": false,
+      "probed_hook_paths": null,
+      "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+      "result_summary": {
+        "implemented_scenarios": [
+          "terminal_cache"
+        ],
+        "reason": "spine scenario runner not wired at L0 yet. The hook is present so the apps_e2e auditability harness can locate it, but the underlying orchestration (U0 validated request construction, L1 planning, L0 route contract emission, Exit review packet assembly, L6 exhaust handoff) must be invokable from a single entrypoint for this scenario to execute. See agentic_core/L3_orchestration/ for the orchestration pieces that a future implementer would wire into this hook.",
+        "scenario_id": "post_exit_exhaust",
+        "status": "not_implemented"
+      },
+      "scenario_id": "post_exit_exhaust",
+      "status": "not_implemented"
+    }
+  ],
+  "spine_route_matrix_ref": "artifacts/certification/agentic_core_e2e/agentic_core_route_matrix.json",
+  "success": false
+}

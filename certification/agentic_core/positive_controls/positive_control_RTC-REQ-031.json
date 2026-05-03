@@ -1,0 +1,37 @@
+{
+  "approved_verifier": "scripts/verify_rtc_req_csv_gate.py",
+  "dep_artifact": "rtc_req_csv_gate_result.json",
+  "dep_artifact_sha256": "56d82c79ce71ea6db1f0bb75e1144ea4a76c67b8fc9f52cec5f5c8949ba8a7cd",
+  "fixture_purpose": "positive_control \u2014 honest per-control payload for RTC-REQ-031; controls ci_gate + layer_boundary intentionally absent because the approved verifier does not attest them.",
+  "generated_at_utc": "2026-05-02T03:42:18+00:00",
+  "per_req": {
+    "RTC-REQ-031": {
+      "last_verified_timestamp": {
+        "control": "last_verified_timestamp",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "last_verified_utc": "2026-05-02T03:42:18+00:00",
+        "proof": "approved verifier completed at 2026-05-02T03:42:18+00:00",
+        "result": "PASS"
+      },
+      "verifier_exit_zero": {
+        "control": "verifier_exit_zero",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "observed_exit_code": 0,
+        "proof": "captured exit_code=0 (required 0)",
+        "result": "PASS"
+      },
+      "verifier_pass": {
+        "approved_verifier": "scripts/verify_rtc_req_csv_gate.py",
+        "control": "verifier_pass",
+        "dep_artifact": "rtc_req_csv_gate_result.json",
+        "dep_status": "UNKNOWN",
+        "generated_at_utc": "2026-05-02T03:42:18+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py exited 0; dependency rtc_req_csv_gate_result.json status=UNKNOWN",
+        "result": "PASS",
+        "verifier_exit_code": 0
+      }
+    }
+  },
+  "req_id": "RTC-REQ-031",
+  "verifier_exit_code": 0
+}

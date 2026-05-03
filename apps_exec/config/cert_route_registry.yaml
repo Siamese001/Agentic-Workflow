@@ -1,0 +1,41 @@
+# apps_exec L0 cert-facing route registry.
+#
+# apps_exec's PRODUCT routing lives in route_registry.yaml. This file is a
+# SIBLING dedicated to the apps_e2e certification harness: apps_exec is a
+# SINGLE_STEP deterministic brief-assembly app, template-driven (no C0
+# retrieval). The cert entrypoint wraps the execution pipeline in
+# apps_shared.spine_emission.governed_run; this route additionally invokes
+# the v6 Exit pipeline so the 9-dim apps_exec rubric executes.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Pairs with apps_exec/config/domain_contract/rubric_output_map.yaml.
+# NOTE: FEC producer already adopted via sibling plan
+# apps-exec-c0-fec-producer-wiring-c2e8a5 — the v6 Exit hook now consumes
+# the producer's output via resolve_fec in __main__.py.
+
+app_name: apps_exec
+schema_version: "apps_exec.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_exec.execution_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    # Opt-in flag — when true, the cert entrypoint MUST invoke the v6
+    # Exit pipeline against the sealed L2 artifact so the apps_exec
+    # rubric executes. Closes APPS-DOM-002/003 for apps_exec per plan
+    # apps-runtime-domain-enforcement-a7e9d4.
+    invoke_exit_eval: true
+    # Declarative rubric output map consumed by
+    # apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores.
+    rubric_output_map_path: apps_exec/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_exec.execution_v1
+    description: >-
+      Deterministic brief-assembly pipeline: intake -> plan -> execute ->
+      seal. Template-driven (no C0 retrieval); FEC producer surfaces
+      template_ids and conditionally grounded=True when run context carries
+      c0_retrieval_sources from an upstream brief.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_exec.execution_v1 because the entrypoint is the
+      deterministic execution brief assembler with no managed workflow
+      requirement.

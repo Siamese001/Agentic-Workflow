@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_lic",
+  "harness_run_id": "apps_lic-e2e-fc4fc9fa02744f52",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_lic/apps_lic_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_lic/apps_lic_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "78ab614265601f3cb3504ac7a4ff5da5b251fcc45d8b5f1268e940e82f3ba3bd"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "3e795a00db529315e18000ee547caa1f1a3a2fade85fa8b87fbf9f0d9cadf670"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "c472d8db4c3211df720fa0fd3bc8c3a83e2020fd418f3e1ab08b32c9653f484b"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "49eaa3e6a832d106a62200d28b2d1f2748b06778aed90be9a970498375392839"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/l3_orchestration_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/l3_orchestration_receipt.json",
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "137ed6200a3eaa8928637f5e21b49644b6d12d6478785e3e7fa40d29e3719c07"
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/final_evidence_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/final_evidence_contract.json",
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "ac2fd18afb73fb114f620efd3ed6ec18d87a09dc04bebe617435b546d645c4f8"
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "cf79c9c7d735ca04a8f5bcfcc1ec04849fe3954cebfb2fe4763a2dea11f8a8a8"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "134c7ea8b4296df8dbfd7f3a75ef1e8b5e7325875c930014eed8e35d4db9cacf"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "4d401ccb3f7e8fda181cf41f9fa198ca6ca807f3c836ef51228c6f3a48737e99"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "ca05972488c7d16dd33363a3c7a947d785144ab2a148f383b620b85f6f0c588a"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_lic/runs/20260503_000057/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_lic/runs/20260503_000057/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "e5e7bf3ba4adf5458d0ef834c4752414f170bb35b8fcf7602ed341ca9443a193"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_lic/apps_lic_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_lic/apps_lic_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_lic-run-831419be3a7b4d23",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_lic-run-831419be3a7b4d23",
+  "trace_root": "apps_lic-run-831419be3a7b4d23"
+}

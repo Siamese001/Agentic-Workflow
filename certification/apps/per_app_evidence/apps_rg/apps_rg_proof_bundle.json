@@ -1,0 +1,99 @@
+{
+  "claim_count": 8,
+  "generated_at_utc": "2026-05-03T21:37:14.711833+00:00",
+  "not_verified_count": 8,
+  "pass_count": 0,
+  "producer_version": "apps_rg_proof_producer-v1",
+  "proofs": [
+    {
+      "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\route_contract.json",
+      "artifact_sha256": "9aec266447c0243d6f85e9e5419565176188d0db7be59b121870294c5ea3f667",
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-001",
+      "claim_title": "Canonical RouteContract v15 emitted",
+      "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing fields: ['route_digest', 'hmac_sig', 'policy_hash', 'blueprint_hash', 'replay_key']"
+    },
+    {
+      "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\l2_execution_receipt.json",
+      "artifact_sha256": "f8cb07cbeb290c22a00605160d4cf411cdb53b962080895622510eda2bf8dd17",
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-002",
+      "claim_title": "L2 ExecutionReceipt E1-E5 sealed",
+      "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing fields: ['e1_work_order', 'e2_validation_output', 'e3_attempt_receipt', 'e4_heal_receipt', 'e5_dispatch_receipt']"
+    },
+    {
+      "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\exit_review_packet.json",
+      "artifact_sha256": "ba4c8bf0cc32287bc3657fee0ec5b37c9ed4c319af29250caaad6ed2a54eb12d",
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-003",
+      "claim_title": "ExitReviewPacket X1-X3 canonical",
+      "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing fields: ['x1_verdicts', 'x2_aggregate']"
+    },
+    {
+      "artifact_path": null,
+      "artifact_sha256": null,
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-004",
+      "claim_title": "Runtime gates applicable subset invoked",
+      "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing artifact: gate_verdicts.json"
+    },
+    {
+      "artifact_path": null,
+      "artifact_sha256": null,
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-005",
+      "claim_title": "Spine proof bundle no-bypass construct present",
+      "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing artifact: spine_proof_bundle.json"
+    },
+    {
+      "artifact_path": null,
+      "artifact_sha256": null,
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-006",
+      "claim_title": "Replay verdict emitted",
+      "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing artifact: replay_comparison.json"
+    },
+    {
+      "artifact_path": null,
+      "artifact_sha256": null,
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-007",
+      "claim_title": "ATS coverage floor met (\u22650.73 baseline)",
+      "generated_at_utc": "2026-05-03T21:37:14.711833+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing artifact: ats_coverage_report.json"
+    },
+    {
+      "artifact_path": null,
+      "artifact_sha256": null,
+      "assertion_result": "NOT_VERIFIED",
+      "claim_id": "APPS-REQ-RG-008",
+      "claim_title": "Provenance bound to master resume",
+      "generated_at_utc": "2026-05-03T21:37:14.711833+00:00",
+      "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+      "producer_version": "apps_rg_proof_producer-v1",
+      "reason": "Missing artifact: provenance_report.json"
+    }
+  ],
+  "run_dir": "artifacts\\apps_rg\\runs\\20260503_135650",
+  "schema_version": "apps_rg_proof_bundle/2026-05-03/v1"
+}

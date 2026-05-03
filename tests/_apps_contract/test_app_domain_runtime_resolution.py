@@ -99,16 +99,20 @@ class TestResolveAppContractRefs:
         bundle = resolve_app_contract_refs("apps_rg", "unknown_task")
         assert bundle.app_id == "apps_rg"
 
-    def test_draft_fails_without_allow_draft(self) -> None:
-        # apps_underwriting_ai is draft by design
+    def test_apps_underwriting_ai_resolves_active(self) -> None:
+        """W2.P4: apps_underwriting_ai was flipped draft→active (plan
+        apps-eval-harness-parity-f8d4a2). This test previously asserted that
+        draft resolution raised DraftAppContractError; it now asserts the
+        active-status resolution succeeds without the allow_draft flag.
+
+        The draft-rejection code path is still exercised by unit tests that
+        construct a synthetic draft bundle — see
+        tests/unit/agentic_core/L4_state/contracts/ if a dedicated covering
+        test needs to be added after this flip."""
         dirs = discover_app_contract_dirs(REPO_ROOT)
         register_bundle(load_bundle_from_dir(dirs["apps_underwriting_ai"]))
-        from agentic_core.L4_state.contracts import DraftAppContractError
-        with pytest.raises(DraftAppContractError):
-            resolve_app_contract_refs("apps_underwriting_ai", "underwriting_decision")
-        # With allow_draft=True it succeeds
         bundle = resolve_app_contract_refs(
-            "apps_underwriting_ai", "underwriting_decision", allow_draft=True,
+            "apps_underwriting_ai", "underwriting_decision",
         )
         assert bundle.app_id == "apps_underwriting_ai"
 

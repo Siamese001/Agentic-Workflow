@@ -1,0 +1,47 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.622775Z",
+  "control_scope": "no_direct_durable_write_l2",
+  "per_req": {
+    "RTC-REQ-070": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.622775Z"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "exit_review_packet: no_l2_execution_assertion AND no_l4_write_assertion both true (R1B path)",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "uwg_write_path": {
+        "assertion_result": "PASS",
+        "predicate_passed": true,
+        "uwg_write_path_check": "exit_review_packet: no_l2_execution_assertion AND no_l4_write_assertion both true (R1B path)"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "exit_review_packet: no_l2_execution_assertion AND no_l4_write_assertion both true (R1B path)",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "b1c0c778fcbcfa47bf5d98af48f7c3ba6b0f8823e0f4a1eb1adc42383252ab1b",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-070",
+  "schema_version": "runtime-evidence-v1"
+}

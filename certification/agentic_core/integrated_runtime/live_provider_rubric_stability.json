@@ -1,0 +1,52 @@
+{
+  "all_required_safe": false,
+  "certification_scope": "RTC-REQ-056",
+  "executed_at_utc": "2026-05-01T17:53:05Z",
+  "failure_reasons": [
+    "google_gemini_3_1_pro_preview: verdict=ERROR rationale=INFRASTRUCTURE_GAP_MISSING_KEY: GEMINI_API_KEY not set (aliases=['GOOGLE_API_KEY'])",
+    "anthropic_claude_sonnet_4_6: verdict=ERROR rationale=INFRASTRUCTURE_GAP_MISSING_KEY: ANTHROPIC_API_KEY not set (aliases=[])",
+    "openai_gpt_5_4_mini: verdict=ERROR rationale=INFRASTRUCTURE_GAP_MISSING_KEY: OPENAI_API_KEY not set (aliases=[])"
+  ],
+  "invoked_juror_count": 3,
+  "judge_mode": "consensus_jury",
+  "jurors": [
+    {
+      "confidence": 0.0,
+      "family": "google_gemini",
+      "juror_id": "google_gemini_3_1_pro_preview",
+      "latency_ms": 0.011900003300979733,
+      "model_id": "gemini-3.1-pro-preview",
+      "rationale": "INFRASTRUCTURE_GAP_MISSING_KEY: GEMINI_API_KEY not set (aliases=['GOOGLE_API_KEY'])",
+      "raw_response_sha256": "",
+      "verdict": "ERROR"
+    },
+    {
+      "confidence": 0.0,
+      "family": "anthropic",
+      "juror_id": "anthropic_claude_sonnet_4_6",
+      "latency_ms": 0.0049000082071870565,
+      "model_id": "claude-sonnet-4-6",
+      "rationale": "INFRASTRUCTURE_GAP_MISSING_KEY: ANTHROPIC_API_KEY not set (aliases=[])",
+      "raw_response_sha256": "",
+      "verdict": "ERROR"
+    },
+    {
+      "confidence": 0.0,
+      "family": "openai",
+      "juror_id": "openai_gpt_5_4_mini",
+      "latency_ms": 0.001900014467537403,
+      "model_id": "gpt-5.4-mini",
+      "rationale": "INFRASTRUCTURE_GAP_MISSING_KEY: OPENAI_API_KEY not set (aliases=[])",
+      "raw_response_sha256": "",
+      "verdict": "ERROR"
+    }
+  ],
+  "required_juror_count": 3,
+  "rtc_req_056_status_hint": "RUBRIC_STABILITY_FAIL",
+  "schema_version": 2,
+  "stability_pair": {
+    "cached_answer": "Partly cloudy with 18C and light winds from the west.",
+    "cached_query": "Tell me the current weather in Paris.",
+    "query": "What is the weather in Paris today?"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "app_name": "agentic_core",
+  "captured_at_utc": "2026-05-02T19:23:11.011Z",
+  "control_scope": "l7_auditability_plane",
+  "per_req": {
+    "RTC-REQ-144": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-144",
+        "verified_at_utc": "2026-05-02T19:23:11.003Z"
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-144",
+        "source_repo_root": "C:/Git/Agentic-Workflow-FRESH"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "exit_code": 0,
+        "req_id": "RTC-REQ-144"
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-144"
+      }
+    }
+  },
+  "schema_version": "fortknox-l7-plane-v1"
+}

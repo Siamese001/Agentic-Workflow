@@ -160,4 +160,47 @@ def _invoke_apps_research(
     return latest[0] if latest else None
 
 
-__all__ = ["fetch_company_brief"]
+def lookup_cached_brief(company: str, tenant_id: str = "default") -> Optional[dict]:
+    """Lookup a cached company brief without invoking apps_research.
+
+    This is used by the L0 prerequisite validator to check if a valid
+    historical briefing exists before routing to apps_research.
+
+    Returns the brief as a dict if found and fresh, None otherwise.
+    """
+    cache_root = _DEFAULT_CACHE_ROOT
+    if not cache_root.exists():
+        return None
+
+    # Find matching brief
+    candidates = sorted(
+        cache_root.glob("*/company_research.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+
+    for candidate in candidates:
+        try:
+            data = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+
+        # Check company match
+        if str(data.get("company", "")).strip().lower() != company.strip().lower():
+            continue
+
+        # Check if fresh (not stale)
+        from apps_rg.types.company_research import CompanyBrief
+
+        try:
+            brief = CompanyBrief.model_validate(data)
+            if brief.is_stale(now=datetime.now(timezone.utc)):
+                continue
+            return data  # Return as dict for the validator
+        except Exception:
+            continue
+
+    return None
+
+
+__all__ = ["fetch_company_brief", "lookup_cached_brief"]

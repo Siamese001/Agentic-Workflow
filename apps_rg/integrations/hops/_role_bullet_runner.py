@@ -65,7 +65,7 @@ def run_role_bullets(
     for idx, bullet in enumerate(bullets):
         seed_text = str(bullet.get("text") or "").strip()
         pool_variants = [str(v) for v in (bullet.get("pool_variants") or [])]
-        budget = budget_from_text(f"{role_id}::{idx}", seed_text or "x x x x x")
+        budget = budget_from_text(f"{role_id}::{idx}", seed_text or "x x x x x", tolerance=0.65)
 
         # 1. Pool-first
         pool_choice = pool_first_select(

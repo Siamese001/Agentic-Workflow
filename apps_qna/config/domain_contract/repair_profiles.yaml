@@ -1,0 +1,57 @@
+# apps_qna repair profile — apps-core-contract-rectification-a8f3c2 Phase 1.2
+repair_profile_id: rp::apps_qna::qna_pack_build::v1
+app_id: apps_qna
+version: 1.0.0
+status: active
+source_app_config_ref: apps_qna/config/domain_contract/repair_profiles.yaml
+created_at: '2026-05-03'
+
+repair_scenarios:
+  - scenario_id: retry_on_low_route_fit
+    stage_id: route
+    trigger_condition: score_below_threshold:route_fit:0.9
+    recovery_action: retry_with_backoff:2
+    rollback_target: route
+    healing_trigger: route_fit
+    escalation_path: escalate_to_hitl
+    max_attempts: 2
+    priority: 1
+
+  - scenario_id: retry_on_low_factual_grounding
+    stage_id: pack_assembly
+    trigger_condition: score_below_threshold:factual_grounding:0.95
+    recovery_action: retry_with_expanded_context:retrieval_chunks
+    rollback_target: pack_assembly
+    healing_trigger: factual_grounding
+    escalation_path: escalate_to_hitl
+    max_attempts: 2
+    priority: 2
+
+  - scenario_id: abort_on_forbidden_content
+    stage_id: pack_assembly
+    trigger_condition: score_below_threshold:no_paste_of_forbidden_content:0.99
+    recovery_action: abort_run
+    rollback_target: none
+    escalation_path: escalate_to_hitl
+    max_attempts: 1
+    priority: 3
+
+  - scenario_id: retry_on_stage_exception
+    stage_id: any
+    trigger_condition: stage_exception:RuntimeError
+    recovery_action: retry_with_backoff:3
+    rollback_target: none
+    healing_trigger: ''
+    escalation_path: abort_run
+    max_attempts: 3
+    priority: 4
+
+  - scenario_id: skip_on_low_coverage
+    stage_id: pack_assembly
+    trigger_condition: score_below_threshold:coverage:0.7
+    recovery_action: retry_with_expanded_context:source_ids
+    rollback_target: pack_assembly
+    healing_trigger: coverage
+    escalation_path: mark_partial_pass
+    max_attempts: 2
+    priority: 5

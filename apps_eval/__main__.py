@@ -240,7 +240,105 @@ def _run_live_cert(argv: list[str]) -> int:
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
             gr.mark_stage("L2_execute", "ok")
+        # W2.P3 of plan apps-runtime-domain-enforcement-a7e9d4 (closes W2) —
+        # invoke the v6 Exit pipeline against the sealed L2 artifact so
+        # the 6-dim apps_eval self-rubric executes. Gated by
+        # invoke_exit_eval=true in apps_eval/config/cert_route_registry.yaml.
+        # Fail-soft: any hook failure leaves the cert bundle unaffected.
+        # apps_eval has no pre-existing FEC producer (not in BLOCKER #4
+        # grounded-apps set); final_evidence_contract stays {} as seam.
+        _maybe_run_exit_hook()
     return 0
+
+
+def _load_cert_route_entry(registry_path) -> dict | None:
+    """Return the first route entry from apps_eval's cert_route_registry.yaml.
+
+    Fail-soft: any parse or IO error returns None, making the hook a no-op.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+
+        doc = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert-path adoption must be fail-soft
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    first = routes[0]
+    return first if isinstance(first, dict) else None
+
+
+def _build_exit_receipts(cert_route_entry) -> dict:
+    """Build the receipts dict for run_exit_eval from the symbolic cert path.
+
+    apps_eval's cert-path live run is currently SINGLE_STEP symbolic (no
+    real scorecard emitted), so deterministic dim_scores default to 0.0
+    -> UNKNOWN -> fail-closed per rubric evidence_required=true on
+    taxonomy_correctness + no_self_contradiction. FEC stays empty as a
+    seam for a potential future apps_eval FEC producer.
+
+    Fail-soft.
+    """
+    from pathlib import Path
+
+    receipts_output: dict = {}
+    try:
+        from apps_shared.cert import map_l2_receipt_to_dim_scores
+        map_path = None
+        if isinstance(cert_route_entry, dict):
+            rel = cert_route_entry.get("rubric_output_map_path")
+            if isinstance(rel, str) and rel:
+                map_path = Path(__file__).resolve().parents[1] / rel
+        if map_path and map_path.exists():
+            projected = map_l2_receipt_to_dim_scores(
+                {"output": receipts_output}, map_path,
+            )
+            receipts_output.update(projected)
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- mapper is fail-soft by design
+        pass
+
+    return {
+        "output": receipts_output,
+        "route_contract": {"route_id": "apps_eval.evaluation_v1"},
+        "evidence_bundle": {},
+        "final_evidence_contract": {},  # seam; no FEC producer for apps_eval yet
+        "state_diff": {},
+        "compiled_prompt_artifact": {},
+    }
+
+
+def _maybe_run_exit_hook() -> None:
+    """Invoke the v6 Exit pipeline when apps_eval's cert route opts in.
+
+    Reads ``apps_eval/config/cert_route_registry.yaml`` for the
+    ``invoke_exit_eval`` flag; builds receipts via the declarative rubric
+    output map; calls
+    :func:`apps_shared.cert.maybe_invoke_exit_eval` fail-soft.
+    """
+    from pathlib import Path
+
+    try:
+        from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
+    except ImportError:
+        return
+    registry_path = (
+        Path(__file__).resolve().parents[1]
+        / "apps_eval" / "config" / "cert_route_registry.yaml"
+    )
+    cert_route_entry = _load_cert_route_entry(registry_path)
+    if cert_route_entry is None:
+        return
+    receipts = _build_exit_receipts(cert_route_entry)
+    try:
+        maybe_invoke_exit_eval(receipts, cert_route_entry)
+    except Exception as exc:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert hook MUST NOT break the
+        # bundle-building path; Exit failures are additional evidence only
+        _log.warning("[apps_eval] Exit hook raised %s: %s",
+                     type(exc).__name__, exc)
 
 
 def main() -> None:

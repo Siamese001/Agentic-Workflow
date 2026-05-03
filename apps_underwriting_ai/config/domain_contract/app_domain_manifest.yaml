@@ -4,7 +4,7 @@ app_id: apps_underwriting_ai
 app_version: 1.0.0
 domain: underwriting_decisioning
 owner_surface: apps_underwriting_ai
-status: draft
+status: active
 input_contract_ref: aic::apps_underwriting_ai::underwriting_decision::v1
 output_schema_ref: aos::apps_underwriting_ai::underwriting_decision::v1
 eval_rubric_refs:

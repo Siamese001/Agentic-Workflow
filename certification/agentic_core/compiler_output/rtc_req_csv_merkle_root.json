@@ -1,0 +1,9 @@
+{
+  "canonical_requirement_count": 87,
+  "computed_at_utc": "2026-05-02T03:42:18+00:00",
+  "csv_row_count": 87,
+  "leaf_count": 87,
+  "merkle_root": "e4acb14d67393b11ffad73eb2360db1570aa2b485f6f9ee6fd5ad54191ca7a93",
+  "scope": "RTC-REQ-031 (CSV universe Merkle)",
+  "verifier": "verify_rtc_req_csv_gate"
+}

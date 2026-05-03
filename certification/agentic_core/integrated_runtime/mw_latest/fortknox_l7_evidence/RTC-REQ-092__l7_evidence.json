@@ -1,0 +1,50 @@
+{
+  "approved_verifier": "ops_scripts.ci.verify_agentic_core_how_trace",
+  "artifact_class": "runtime_chain_artifact",
+  "artifact_payload_sha256": "sha256:389f52ec8959a9ca14fef23d61854f701fee3134354db3d86f40819744e17631",
+  "assertion_result": "PASS",
+  "chain_kind": "MANAGED_WORKFLOW",
+  "claim_type": "runtime_stage_evidence",
+  "control": "L7_AUDITABILITY::stage::L0_ROUTE",
+  "deterministic_digest": "sha256:31a028334e4fa2cfa5ebf78dadf9725b16dd936da711e2f8258599437e132203",
+  "evidence_payload_pointer": "mw_latest/route_contract.json",
+  "forbidden_action_assertions": [
+    {
+      "assertion": "exactly_one_route_contract",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_retrieval",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_prompt_assembly",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_execution",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_exit",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_l4_write",
+      "result": "PASS"
+    }
+  ],
+  "generated_by_command": "python -m agentic_core.L7_auditability.fortknox.emit_l7_fortknox_evidence --artifact-dir C:/Git/Agentic-Workflow-FRESH/artifacts/certification/integrated_runtime/mw_latest",
+  "last_verified_utc": "2026-05-02T11:18:33Z",
+  "req_id": "RTC-REQ-092",
+  "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+  "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+  "schema_version": "1.0",
+  "source_artifact_ref": "artifact://route_contract.json",
+  "source_artifact_sha256": "sha256:389f52ec8959a9ca14fef23d61854f701fee3134354db3d86f40819744e17631",
+  "stage_id": "L0_ROUTE",
+  "stage_status": "RAN",
+  "stage_why": "L0 emitted exactly one route contract; execution_form=MANAGED_WORKFLOW.",
+  "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941",
+  "verifier_exit_code": 0
+}

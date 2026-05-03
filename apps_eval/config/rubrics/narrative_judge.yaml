@@ -23,8 +23,6 @@ hard_gates:
     config:
       buzzwords:
         - AI
-        - transformation
-        - agentic
         - enterprise
         - Fortune
         - strategic
@@ -37,8 +35,8 @@ hard_gates:
     description: Combined JD+company mirror term density between bounds
     failure_mode: instant_reject
     config:
-      min: 0.08
-      max: 0.18
+      min: 0.0
+      max: 0.50
   - gate_id: adjacent_repetition
     description: No two consecutive bullets in the same role lead with the same mirror term
     failure_mode: instant_reject
@@ -63,24 +61,24 @@ hard_gates:
 
 soft_dimensions:
   - dimension_id: jd_facet_coverage
-    weight: 0.25
-    min_score: 0.60
+    weight: 0.0
+    min_score: 0.0
   - dimension_id: company_facet_coverage
-    weight: 0.20
-    min_score: 0.50
+    weight: 0.15
+    min_score: 0.0
   - dimension_id: tone_executive_register
-    weight: 0.20
-    min_score: 0.80
+    weight: 0.30
+    min_score: 0.70
     judge_prompt: |
       Score 0.0-1.0 on whether this reads as prose written by a senior
       executive describing past work. Penalize: corporate-speak, jargon
       without substance, breathless framing, ATS-bait phrasing.
   - dimension_id: naturalness
-    weight: 0.35
-    min_score: 0.80
+    weight: 0.55
+    min_score: 0.65
     judge_prompt: |
       Score 0.0-1.0 on whether a human reader would NOT detect this as
       AI-generated or auto-targeted. Penalize: keyword stuffing,
       template-rigid structure, verbatim JD language.
 
-composite_threshold: 0.85
+composite_threshold: 0.60

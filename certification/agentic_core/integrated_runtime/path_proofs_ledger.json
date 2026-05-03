@@ -1,0 +1,41 @@
+{
+  "c_primary_allow": {
+    "attestation_path": null,
+    "attestation_written": false,
+    "deterministic_proof_stage_used": false,
+    "dir": "artifacts\\certification\\integrated_runtime\\c_primary_allow",
+    "infrastructure_gap_reason": "no live approved SAFE-producing provider available (tried=local_qwen). For RTC-REQ-056 certification acceptance, a LIVE approved provider is required: local_qwen at localhost:8000, OR set ANTHROPIC_API_KEY for anthropic_haiku. mock_safe is MOCK_PROVIDER_ONLY and is NEVER authorized for final certification acceptance.",
+    "llm_judge_invocation_count": 1,
+    "match_status": "PASS",
+    "pass": false,
+    "provider_attempted": "local_qwen",
+    "safe_reuse_allow": false,
+    "x3_disposition": "X3A"
+  },
+  "c_primary_fail_closed": {
+    "deterministic_proof_stage_used": false,
+    "dir": "artifacts\\certification\\integrated_runtime\\c_primary_fail_closed",
+    "match_status": "PASS",
+    "pass": true,
+    "safe_reuse_allow": false,
+    "veto_counters": {
+      "allowed_count": 0,
+      "blocked_count": 0,
+      "error_count": 1,
+      "fail_closed_count": 1,
+      "not_invoked_count": 0,
+      "parse_fail_count": 0,
+      "timeout_count": 0,
+      "unknown_count": 0
+    },
+    "x3_disposition": "X3A"
+  },
+  "schema_version": 2,
+  "structural_allow_topology": {
+    "dir": "artifacts\\certification\\integrated_runtime\\structural_allow_topology",
+    "match_status": "STRUCTURAL_ONLY",
+    "note": "STRUCTURAL_ONLY \u2014 documents ALLOW topology; NEVER certifies RTC-REQ-056.",
+    "safe_reuse_allow": true,
+    "x3_disposition": "X3D"
+  }
+}

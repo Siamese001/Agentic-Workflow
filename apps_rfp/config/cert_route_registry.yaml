@@ -1,0 +1,41 @@
+# apps_rfp L0 cert-facing route registry.
+#
+# apps_rfp's PRODUCT routing lives in route_registry.yaml. This file is a
+# SIBLING dedicated to the apps_e2e certification harness: apps_rfp is a
+# SINGLE_STEP proposal-assembly app with C0 grounding and template-driven
+# prompt assembly. The cert entrypoint wraps the deterministic pipeline in
+# apps_shared.spine_emission.governed_run; this route now additionally
+# invokes the v6 Exit pipeline so the 10-dim apps_rfp rubric executes.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Pairs with apps_rfp/config/domain_contract/rubric_output_map.yaml.
+# SUCCESSOR: apps-rfp-c0-fec-producer-wiring-b9d4f1 will populate
+# final_evidence_contract on top of this route (BLOCKER #4 closure).
+
+app_name: apps_rfp
+schema_version: "apps_rfp.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_rfp.proposal_assembly_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    # Opt-in flag — when true, the cert entrypoint MUST invoke the v6
+    # Exit pipeline against the sealed L2 artifact so the apps_rfp rubric
+    # executes. Closes APPS-DOM-002/003 for apps_rfp per plan
+    # apps-runtime-domain-enforcement-a7e9d4.
+    invoke_exit_eval: true
+    # Declarative rubric output map consumed by
+    # apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores.
+    # Engine is fail-soft; missing paths default to 0.0; evaluator
+    # fail-closes per rubric evidence_required=true on deterministic dims.
+    rubric_output_map_path: apps_rfp/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_rfp.proposal_assembly_v1
+    description: >-
+      Deterministic proposal-assembly pipeline: intake -> retrieve (C0) ->
+      assemble_prompt -> assemble_proposal -> seal. C0 grounding is
+      fixture-backed; prompt assembly is template-driven.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_rfp.proposal_assembly_v1 because the entrypoint is
+      the RFP proposal-assembly orchestrator with deterministic routing
+      and no managed workflow requirement.

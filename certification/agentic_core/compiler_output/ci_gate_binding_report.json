@@ -1,0 +1,322 @@
+{
+  "binding_count": 1,
+  "bindings": [
+    {
+      "fail_closed": true,
+      "job_continue_on_error": false,
+      "match_lines": [
+        72
+      ],
+      "matched_job": "fortknox-regression-scan",
+      "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+      "step_continue_on_error": false,
+      "trigger_events": [
+        "schedule",
+        "workflow_dispatch"
+      ],
+      "workflow_file": ".github/workflows/fortknox-nightly.yml",
+      "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+    }
+  ],
+  "covered_req_ids": [
+    "RTC-REQ-001",
+    "RTC-REQ-002",
+    "RTC-REQ-003",
+    "RTC-REQ-004",
+    "RTC-REQ-005",
+    "RTC-REQ-006",
+    "RTC-REQ-030",
+    "RTC-REQ-031",
+    "RTC-REQ-110",
+    "RTC-REQ-111"
+  ],
+  "fail_closed_binding_count": 1,
+  "generated_at_utc": "2026-05-02T02:16:42+00:00",
+  "generated_by_command": "tools/cert/emit_ci_gate_binding_report.py",
+  "overall_result": "PASS",
+  "per_req": {
+    "RTC-REQ-001": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-001",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-002": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-002",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-003": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-003",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-004": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-004",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-005": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-005",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-006": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-006",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-030": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-030",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-031": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-031",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-110": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-110",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    },
+    "RTC-REQ-111": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            72
+          ],
+          "matched_job": "fortknox-regression-scan",
+          "matched_step_name": "Run RTC-REQ CSV gate verifier (fail-closed)",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "schedule",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/fortknox-nightly.yml",
+          "workflow_sha256": "ff1e4aba92f50d3b0c241f35e2018bfd4647f7e81cc21446e73b430a8ae5543b"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_rtc_req_csv_gate.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-111",
+        "result": "PASS",
+        "subject": "scripts/verify_rtc_req_csv_gate.py"
+      }
+    }
+  },
+  "report_class": "CI_GATE_BINDING_REPORT",
+  "schema_version": "fortknox-ci-gate-binding-v1",
+  "subject": "scripts/verify_rtc_req_csv_gate.py"
+}

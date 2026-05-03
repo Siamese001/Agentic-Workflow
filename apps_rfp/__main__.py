@@ -240,7 +240,137 @@ def _run_live_cert(argv: list[str]) -> int:
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
             gr.mark_stage("L2_execute", "ok")
+        # W2.P2 of plan apps-runtime-domain-enforcement-a7e9d4 —
+        # invoke the v6 Exit pipeline against the sealed L2 artifact
+        # so the 10-dim apps_rfp rubric executes. Gated by
+        # invoke_exit_eval=true in apps_rfp/config/cert_route_registry.yaml.
+        # Fail-soft: any hook failure leaves the cert bundle unaffected.
+        # Successor plan apps-rfp-c0-fec-producer-wiring-b9d4f1 will
+        # populate final_evidence_contract on top of this hook (BLOCKER #4).
+        _maybe_run_exit_hook()
     return 0
+
+
+def _load_cert_route_entry(registry_path) -> dict | None:
+    """Return the first route entry from apps_rfp's cert_route_registry.yaml.
+
+    Fail-soft: any parse or IO error returns None, which makes
+    ``maybe_invoke_exit_eval`` a no-op. Never raises.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+
+        doc = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert-path adoption must be fail-soft;
+        # any registry-load failure leaves the hook as a no-op and the cert
+        # bundle continues unaffected
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    first = routes[0]
+    return first if isinstance(first, dict) else None
+
+
+def _build_exit_receipts(cert_route_entry) -> dict:
+    """Build the receipts dict for run_exit_eval from the symbolic cert path.
+
+    apps_rfp's cert-path live run is currently a SINGLE_STEP symbolic
+    pipeline (no real proposal output), so the receipt surface is thin and
+    deterministic dim_scores default to 0.0 -> UNKNOWN -> fail-closed per
+    rubric evidence_required=true. That is the correct posture: enforcement
+    runs, honest UNKNOWN on missing evidence, no false-positive PASS. The
+    3 weight=0.0 RAG tracked-only dims (context_recall, context_precision,
+    answer_relevancy) produce UNKNOWN without blocking overall PASS, by
+    rubric design.
+
+    Fail-soft: returns a minimal shape on any error.
+
+    Successor plan apps-rfp-c0-fec-producer-wiring-b9d4f1 will add a
+    ``final_evidence_contract`` population step before this returns.
+    """
+    from pathlib import Path
+
+    receipts_output: dict = {}
+    try:
+        from apps_shared.cert import map_l2_receipt_to_dim_scores
+        map_path = None
+        if isinstance(cert_route_entry, dict):
+            rel = cert_route_entry.get("rubric_output_map_path")
+            if isinstance(rel, str) and rel:
+                map_path = Path(__file__).resolve().parents[1] / rel
+        if map_path and map_path.exists():
+            projected = map_l2_receipt_to_dim_scores(
+                {"output": receipts_output}, map_path,
+            )
+            receipts_output.update(projected)
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- mapper is fail-soft by design;
+        # projection failure yields empty dim_scores (evaluator fail-closes)
+        pass
+
+    return {
+        "output": receipts_output,
+        "route_contract": {"route_id": "apps_rfp.proposal_assembly_v1"},
+        "evidence_bundle": {},
+        # Populated by plan apps-rfp-c0-fec-producer-wiring-b9d4f1 W1.P2.
+        # Side-effect import registers producer; resolve_fec returns the FEC dict.
+        "final_evidence_contract": _build_fec_for_receipts(),
+        "state_diff": {},
+        "compiled_prompt_artifact": {},
+    }
+
+
+def _build_fec_for_receipts() -> dict:
+    """Resolve apps_rfp FEC via the shared registry. Fail-soft."""
+    try:
+        import apps_rfp.cert  # noqa: F401, PLC0415 — side-effect register
+        from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
+
+        return resolve_fec(
+            "apps_rfp",
+            {
+                "route_id": "apps_rfp.proposal_assembly_v1",
+                "route_contract": {"route_id": "apps_rfp.proposal_assembly_v1"},
+                "template_ids": ["proposal_assembly_v1"],
+            },
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- FEC resolution is fail-soft;
+        # any failure leaves final_evidence_contract as empty dict and the
+        # cert bundle continues unaffected
+        return {}
+
+
+def _maybe_run_exit_hook() -> None:
+    """Invoke the v6 Exit pipeline when apps_rfp's cert route opts in.
+
+    Reads ``apps_rfp/config/cert_route_registry.yaml`` for the
+    ``invoke_exit_eval`` flag; builds receipts via the declarative
+    rubric output map; calls
+    :func:`apps_shared.cert.maybe_invoke_exit_eval` fail-soft.
+    """
+    from pathlib import Path
+
+    try:
+        from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
+    except ImportError:
+        return
+    registry_path = (
+        Path(__file__).resolve().parents[1]
+        / "apps_rfp" / "config" / "cert_route_registry.yaml"
+    )
+    cert_route_entry = _load_cert_route_entry(registry_path)
+    if cert_route_entry is None:
+        return
+    receipts = _build_exit_receipts(cert_route_entry)
+    try:
+        maybe_invoke_exit_eval(receipts, cert_route_entry)
+    except Exception as exc:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert hook MUST NOT break the
+        # bundle-building path; Exit failures are additional evidence only
+        _log.warning("[apps_rfp] Exit hook raised %s: %s", type(exc).__name__, exc)
 
 
 def main() -> None:

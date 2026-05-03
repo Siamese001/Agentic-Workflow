@@ -3,7 +3,7 @@ output_schema_id: aos::apps_underwriting_ai::underwriting_decision::v1
 app_id: apps_underwriting_ai
 task_class: underwriting_decision
 version: 1.0.0
-status: draft
+status: active
 output_type: structured_record
 required_sections:
 - header

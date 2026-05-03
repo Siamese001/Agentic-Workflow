@@ -1,0 +1,442 @@
+{
+  "computed_at_utc": "2026-05-02T03:42:18+00:00",
+  "leaf_count": 87,
+  "leaves": [
+    {
+      "leaf_hash": "307a8f013dff1941401aa0bd643b7a19a152644b78b0a2881cf1440fe5faaac3",
+      "req_id": "RTC-REQ-001",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "1348d6f3a68d60b6bbc6e36b572a26b6902dc88b7bbfcdc067ed768cff81134a",
+      "req_id": "RTC-REQ-002",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "fa5ea23a26a5e9540cc4388d07f938373604ee636a89b744bd0bedc43f7a970b",
+      "req_id": "RTC-REQ-003",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "3d957d8f25813b3551676bd9d8cf84c745a62a5301acf8627e04e2821387834a",
+      "req_id": "RTC-REQ-004",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "adb9ab24b54538312e4ed60e83f020c2546cbc766a6fd8eaab7df0c21c7f3d2b",
+      "req_id": "RTC-REQ-005",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "af465b0bb3deca6b0dfc6df7e9294e556fff1d551ebf7ba2a12743b52e2a2296",
+      "req_id": "RTC-REQ-006",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "8dd9294173da4d1685822067f7d439a5c42740682717209ee8bd12ff0940b49d",
+      "req_id": "RTC-REQ-010",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "4042b6188e28f83ea013f30d2153691dfb07947ffb448601fafa17ff1833944b",
+      "req_id": "RTC-REQ-011",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "2269d3c2949013f2e739e105e09a8a43550f397739ecafe41439818e3adad7a1",
+      "req_id": "RTC-REQ-012",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "cd3bf3bfe0782cc772ae21f8ce1028ba90e50ec8c2375ff3caa24e9e8e4ca0ca",
+      "req_id": "RTC-REQ-013",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "b382904ffb35fb52b701e335989e88fbafc31e6323e7b5a12ffe9029b7f412f9",
+      "req_id": "RTC-REQ-014",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "f1a9d70153d4e0e2595b9c78a95f8e3437f0cc70c7efee0b8eb96d169ce1b217",
+      "req_id": "RTC-REQ-015",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "4397ea1a45660050969a9273f08158cce2f61c4cd597ad502821eedef5f42c05",
+      "req_id": "RTC-REQ-020",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "6648b46d5eb2d8ff84e18e0cec531ce2cb66fac8685195c4c65f331c7b07335a",
+      "req_id": "RTC-REQ-021",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "e0c5cbda4223b22ca571e4747f42057871efca62cf9e8ef5d8b1869d3f8403b2",
+      "req_id": "RTC-REQ-022",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "9bed7a03729f1cd7c33858fe33e381ff13ef35829f43b55d837cf0c48a82105c",
+      "req_id": "RTC-REQ-023",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "7b9f541b8a29d317010de7aaa62bfacfe5793448b7ba1225359a4c8d12161863",
+      "req_id": "RTC-REQ-024",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "cc2886a9c9de57ca272374a2a1f07209a04f4506e7b41c3567a0cf7d2784b67c",
+      "req_id": "RTC-REQ-030",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "02615342fed7b6a4c752b8d501d60f88f0e15aa334b45a41ef9b835109e1ae88",
+      "req_id": "RTC-REQ-031",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "9ca92785b84e350479820a24c4139da476f838e82102b333ab59662142ea6a3b",
+      "req_id": "RTC-REQ-032",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "7384a36d524b6c10b44247e0aa5d11f23a8bdc98985707f50a003a5e2effc07e",
+      "req_id": "RTC-REQ-033",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "ada8809aab09d61c02aec3ad1ad3bb4d16f57e98e1eda071b45ea31adc791bc0",
+      "req_id": "RTC-REQ-034",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "24e8dd10faeb0abccf01e0079fe99d4490b85356a1f7ff603efd95945ffdd7db",
+      "req_id": "RTC-REQ-040",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "bcbfc2c29859fdc5f74c6da100695cbbf82e4d64e3a326119d6b230fe47d0409",
+      "req_id": "RTC-REQ-041",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "b9d5663d7591e6a606e5144b156bf0807d5856fad97f813bf17bccab8bab5491",
+      "req_id": "RTC-REQ-042",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "6f23ae9124b2cd4752c4f5a1c28889ce72d8fb6fd20a9f13d354b97895b3b704",
+      "req_id": "RTC-REQ-043",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "4d14f82d4a39d00e29c5ebfa1b44f3221775d69b242e69b7087a761cac9bce56",
+      "req_id": "RTC-REQ-044",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "85140dd823931ca195d41b4ccee88dc194a68ee8e4fabd83449efcc0d65d3fbd",
+      "req_id": "RTC-REQ-045",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "edcdbc774d557b082f6ed3f5fa2083f9ae92b46072f132bbac12920e3f7cad4d",
+      "req_id": "RTC-REQ-046",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "9221ae4fc845e5726dd0232203d707763e21f92b7ee64c1aa8ae75edf1c6660e",
+      "req_id": "RTC-REQ-047",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "e66970a163aca443b7079dc5bb9da703136bfb9ae3db0201d64b7684402a6427",
+      "req_id": "RTC-REQ-048",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "52d7cebdfb4c2d4482bc2a135d1d8bce567e289a0254b9bef2cb4d986ce43955",
+      "req_id": "RTC-REQ-049",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "7062b572a059b50406852b095f264d61a0286bde4175d255e453a9db26860591",
+      "req_id": "RTC-REQ-050",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "83cdb121215c0bf98c390d98152a9ed988838d47e31673693a1a2a147cff5783",
+      "req_id": "RTC-REQ-051",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "1a0681e93fa1bfc8c9b20d65aa402e8543859bffd9bc02a4b19b0d019cfc53d7",
+      "req_id": "RTC-REQ-052",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "0ef901a07fba7df477569f0caa49df857ea0447fe392c61079f4c5eed449edf4",
+      "req_id": "RTC-REQ-053",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "3afa4ba5f2ff6423509598e929d9046e07c070adbbac18b7d57a25bdbed79c55",
+      "req_id": "RTC-REQ-054",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "4ae5c9a2cc08e08d620293a2477fd06e51ba58e8558b37de948bbd580fee6ac9",
+      "req_id": "RTC-REQ-055",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "88c2ea0fa242a967e8a333a7dc0a5013190b80a5084565582c3c4be4d5b02610",
+      "req_id": "RTC-REQ-056",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "1c255f865247f55ed9bb27bc8c8e38f991e3432d080443ff1d9dc8f8b7ebc45a",
+      "req_id": "RTC-REQ-057",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "140b78304dca0ada44a8a492c85d44c2f4b27c18a3b1b82523f9bebed4e7c8cb",
+      "req_id": "RTC-REQ-058",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "982a279317f2858d68d901914a0bd0d51a98c49b43678eff541b88a2198a1468",
+      "req_id": "RTC-REQ-059",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "2c4061a32b5de0fc4ec8906a00ddcd928532ad05951600f4da20d6a087f32bfe",
+      "req_id": "RTC-REQ-060",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "27272a59ca7004334ddaf0e90d02139b557d2c011a2423a9a902c8ffff4a1743",
+      "req_id": "RTC-REQ-061",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "893cf6c5d21777d99a86dba6ba38a719ffbf17e7c3f46ec66acc6eff6d73276b",
+      "req_id": "RTC-REQ-062",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "165fe341fe1339a82efc7640fe534e1585bf1b82fdeee9c06dd10d8c8a173adf",
+      "req_id": "RTC-REQ-063",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "b48ee87563a143fc19b42722bb4e513b5b6b7755fc8f26a5d7bcd15619d3b399",
+      "req_id": "RTC-REQ-064",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "11c705c6ea5223c882a6c0145afbcd7bd632b8af76d0f6fe14bd56a523f9b198",
+      "req_id": "RTC-REQ-065",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "afaa47baa5603048fa781ea846333590da58f7554bb19aac772067c97e57f2d1",
+      "req_id": "RTC-REQ-066",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "e500f80f2a110da30489545aeec09f0ba880cf4f44513c74ecc18a469ce9976c",
+      "req_id": "RTC-REQ-067",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "4fafd1255be178bc1001be0d4ddd1ce417601f0ab7156b2647520620c32d71f2",
+      "req_id": "RTC-REQ-070",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "fc9b1928233f1bf2971ff0ed0b3f83e4d8b5b4ab1bf0ce87cdd09aeccd4a6791",
+      "req_id": "RTC-REQ-071",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "f71c30cab2bb7448ef4fdf9986a47d9bb24db1287afc3a3aaf66393ac4f64530",
+      "req_id": "RTC-REQ-072",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "59cc8b36a2f53389765cf0796e31d661bd0fcc6c7de7d61c1c46b64a5c1bc271",
+      "req_id": "RTC-REQ-073",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "76b92fe155ba9d0616b906f083b0dbd7bbd33dd8ff069ad1f157e54bdd35c45a",
+      "req_id": "RTC-REQ-080",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "d0112f1e3a926817aa74577a3d95b0201f6cc68993d5af14d7816dcceac26cf9",
+      "req_id": "RTC-REQ-081",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "ffda128e4bf216d7b0bf0957286f2535b805f56cf7710801fb162c3a80547966",
+      "req_id": "RTC-REQ-082",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "4591c59555b07d83704650d09b6fcf6e4a40fbe7622381ed2153ab33e8af312c",
+      "req_id": "RTC-REQ-083",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "ac09564bdfb614f172f6a01fddd037184741d67c6644b8c5ed8dc3c1ebd16576",
+      "req_id": "RTC-REQ-084",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "8692496ea0077b2479a3d9b7ce1336c9042a2d62a74784fe2075468d3adf295f",
+      "req_id": "RTC-REQ-090",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "412cda2b6ed98dc8dbd66b650ddf514dc6a38bd950508a5392da88f6a98d8c15",
+      "req_id": "RTC-REQ-091",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "c47b4e8374f650df948b2d9e631dc38806d4de2455948cbfb4f7a3792cef6651",
+      "req_id": "RTC-REQ-092",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "3cb50cb278bec6c6de54cde4e0942c3355e82ac5cc1d3298f6bbfc5dfc3509bd",
+      "req_id": "RTC-REQ-093",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "372d2c8db9a04be6f4332ef9ab1b340e3fcc791dfe3dfb6d1c7d88e6e823e8c8",
+      "req_id": "RTC-REQ-094",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "211fdaa60eaab0417c592f1636152d85ea9c0cf52beb40cfd0c93a9f6f620212",
+      "req_id": "RTC-REQ-095",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "aecfa84bde7a5121a1fea2afa165c982d5bae668d7952e3331922337a9cde6d2",
+      "req_id": "RTC-REQ-096",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "21d3ff9c529c2fe32644f06d155a22b1b90fc85ba79c85c98ee2ca23f6f1e3dc",
+      "req_id": "RTC-REQ-097",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "b8638dcefd832e1fff68fb0e34d14a86c075fcde33439e37b08a4a3e7036387f",
+      "req_id": "RTC-REQ-100",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "8a25938cf60f7d50cd839cd612f350cf174661b71014e86f9d6270955755931e",
+      "req_id": "RTC-REQ-101",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "9c867386292866ea563680c358a97184d5a6ad81464bef41365cc9f51654cb5d",
+      "req_id": "RTC-REQ-102",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "23147d42455d85e2c4db17c567d3b43234b378c09ca808c7532f2f0bb7ac611a",
+      "req_id": "RTC-REQ-103",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "d420325ce91138945dd99aa0d5b32e88c602aa7c678d1fd30c9d4db09d4b1748",
+      "req_id": "RTC-REQ-110",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "1dd11fddfe957fde93dd9008c02df00c06223de15826b82e1a886cb365a4aff1",
+      "req_id": "RTC-REQ-111",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "a7900f87e1697cb12828b2f9ff217a89255f90cdc0f822bfc6356a9bc280f9e9",
+      "req_id": "RTC-REQ-112",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "9848ef2190a922521fdd2a316abd89c8c0a5bb14dc00492360042ae13b2e1fca",
+      "req_id": "RTC-REQ-113",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "5bfb8174abb3d953075940d584274a4e81f0566056f597e019276a7cdb8278d6",
+      "req_id": "RTC-REQ-114",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "d2a9f7a6ee80efed046240628c064115971e117463585e640b15604555d8505b",
+      "req_id": "RTC-REQ-115",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "f11fdd0229acaaeb074ef86e6c3fcc0b8989b1044f90218e9366bb4da44cdca4",
+      "req_id": "RTC-REQ-120",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "eacd77fc4b4566742ef54a4923a3a9f9a5e303fc522103a74b8f3a04e492a38d",
+      "req_id": "RTC-REQ-121",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "8ddc7740c5639de2a0c06e798c34886c44000627c4cd944095ee0cbc4d022a4a",
+      "req_id": "RTC-REQ-122",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "d4a7dddcb14f749781863a9e6a660e547898b21d193bab8a1f76e33b3f994c7c",
+      "req_id": "RTC-REQ-123",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "51a329f9fc6f97a0990287a79e50dbef4a4a474ec8243115763f29bdea53470c",
+      "req_id": "RTC-REQ-124",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "9f0eba4693ccd9b41e1a439f9dadf32e208f0fcc72fdc8a79daf6639b102d698",
+      "req_id": "RTC-REQ-125",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "5f5f63e52ad3fe523960e5d57c76636a6ccb1b8d8e7127b67ca8d95d53760b4b",
+      "req_id": "RTC-REQ-126",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "2d31e46cbefd56b88886e0bc96b3b9700509454a42b2cf84a707f500a5cd58b6",
+      "req_id": "RTC-REQ-127",
+      "signoff_status": "SIGNED_OFF"
+    },
+    {
+      "leaf_hash": "c232de0095091367fbfe94b1df2add14e1ed48ea9af28794ee0f05929c2d3fca",
+      "req_id": "RTC-REQ-128",
+      "signoff_status": "BLOCKED"
+    },
+    {
+      "leaf_hash": "bf6480bcf5ef1681e9be210a105e7bd0a946be13ac512714016e476eb386386a",
+      "req_id": "RTC-REQ-129",
+      "signoff_status": "BLOCKED"
+    }
+  ],
+  "verifier": "verify_rtc_req_csv_gate"
+}

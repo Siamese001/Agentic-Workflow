@@ -1,0 +1,95 @@
+# apps_research rubric output map — declarative L2-receipt -> dim_scores extractor.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Consumed by apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores
+# inside apps_research/__main__.py::_run_live_cert after governed_run seals.
+#
+# Sibling to:
+#   - apps_research/config/domain_contract/eval_rubrics.yaml (10 rubric dims)
+#   - apps_research/config/cert_route_registry.yaml (declares this file's path)
+#   - apps_research/config/domain_contract/grader_roster.yaml (judges)
+#   - apps_research/cert/fec_producer.py (FEC producer, wired in __main__)
+#
+# Design rule: the cert-path live run currently marks C0/prompt_assembly/
+# L2_execute as "ok" without emitting a real brief, so receipt paths below
+# will not resolve in the current symbolic run; all deterministic dims
+# default to 0.0 -> UNKNOWN -> fail-closed per evidence_required=true.
+# That is the correct enforcement posture. When apps_research graduates
+# to a real live-cert brief-generation flow, only these receipt paths
+# need updating.
+#
+# The 3 RAG tracked-only dims (context_recall, context_precision,
+# answer_relevancy) are weight=0.0 + fail_closed_if_unknown=false in the
+# rubric. Intentionally omitted so judges produce UNKNOWN without blocking.
+
+mapper_id: apps_research.company_brief.v1
+app_id: apps_research
+rubric_id: "aer::apps_research::company_brief::v1"
+version: "1.0.0"
+status: active
+
+dimensions:
+  # ---- deterministic dims (projected from receipt) ----
+  - dimension_id: factual_grounding
+    score:
+      type: jsonpath
+      path: $.output.factual_grounding.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.citation_check"
+      - jsonpath: $.output.factual_grounding.cited_claims
+        prefix: "claim_cited:"
+      - jsonpath: $.output.factual_grounding.uncited_claims
+        prefix: "claim_uncited:"
+
+  - dimension_id: freshness
+    score:
+      type: jsonpath
+      path: $.output.freshness_check.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.freshness_window"
+      - template: "freshness_class={$.output.freshness_check.freshness_class} stale_sources={$.output.freshness_check.stale_source_count}"
+
+  - dimension_id: completeness
+    score:
+      type: jsonpath
+      path: $.output.section_completeness.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.section_presence"
+      - jsonpath: $.output.section_completeness.missing_sections
+        prefix: "missing:"
+
+  - dimension_id: concision
+    score:
+      type: jsonpath
+      path: $.output.concision_check.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.depth_budget_check"
+      - template: "research_depth={$.output.concision_check.research_depth} budget={$.output.concision_check.budget}"
+
+  - dimension_id: no_speculation
+    score:
+      type: jsonpath
+      path: $.output.speculation_check.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.unsupported_claim_detector"
+      - jsonpath: $.output.speculation_check.unsupported_claims
+        prefix: "unsupported:"
+
+  # ---- judge / hybrid / RAG dims (resolved by registered graders) ----
+  # source_quality       (hybrid) -> grader_roster.yaml
+  # balance              (hybrid) -> grader_roster.yaml
+  # context_recall       (judge, weight=0.0) -> producer/judge
+  # context_precision    (judge, weight=0.0) -> producer/judge
+  # answer_relevancy     (judge, weight=0.0) -> producer/judge
+  # Intentionally omitted — AppSpecificEvaluator calls their graders;
+  # the 3 weight=0.0 RAG dims are non-fail-close tracked-only.

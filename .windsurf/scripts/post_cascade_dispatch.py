@@ -70,6 +70,7 @@ LEGACY_SCRIPTS: list[str] = [
     # Slot 3-4 in hooks.json
     "post_cascade_author_gate_capture.py",
     "post_cascade_author_gate_miss_detector.py",
+    "post_cascade_author_gate_schema_audit.py",
     # Slot 5
     "post_cascade_adg_audit.py",
     # Slot 7

@@ -7,6 +7,8 @@ description: Use this rule when a Author-Gate decision point is reached to apply
 
 # Author-Gate Decision Points — Full Doctrine
 
+> **Canonical packet shape**: `.windsurf/schemas/author_gate_packet.schema.json` (plan `author-gate-ssot-consolidation-b7c3e1`). This rule covers **trigger doctrine + score discipline + telemetry format**; per-field packet shape is defined in the schema.
+
 ## §AG-1: Mandatory Decision Point Triggers
 
 ### 1.1 Code Architecture Decisions

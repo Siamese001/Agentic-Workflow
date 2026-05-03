@@ -1,0 +1,69 @@
+{
+  "covered_req_ids": [
+    "RTC-REQ-034"
+  ],
+  "generated_at_utc": "2026-05-02T02:16:42+00:00",
+  "generated_by_command": "tools/cert/emit_layer_boundary_report_runtime_acceptance.py",
+  "observed_imports": [
+    "__future__",
+    "agentic_core.runtime.prove_requirements.acceptance_validator",
+    "agentic_core.runtime.prove_requirements.matrix_loader",
+    "datetime",
+    "json",
+    "pathlib",
+    "sys"
+  ],
+  "overall_result": "PASS",
+  "per_req": {
+    "RTC-REQ-034": {
+      "layer_boundary": {
+        "control": "layer_boundary",
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "observed_imports": [
+          "__future__",
+          "agentic_core.runtime.prove_requirements.acceptance_validator",
+          "agentic_core.runtime.prove_requirements.matrix_loader",
+          "datetime",
+          "json",
+          "pathlib",
+          "sys"
+        ],
+        "prohibited_layer_prefixes": [
+          "agentic_core.L2_execution",
+          "agentic_core.L3_orchestration",
+          "agentic_core.L1_cognition",
+          "agentic_core.L4_",
+          "agentic_core.L5_",
+          "opentelemetry",
+          "otel",
+          "system_learning.replay",
+          "system_learning.runtime",
+          "apps_eval",
+          "apps_exec",
+          "apps_lic",
+          "apps_qna",
+          "apps_research",
+          "apps_rfp",
+          "apps_rg",
+          "apps_underwriting_ai",
+          "requests",
+          "httpx",
+          "urllib3",
+          "aiohttp"
+        ],
+        "proof": "AST static scan of scripts/verify_runtime_certification_acceptance.py: 7 imports analyzed; 0 prohibited-layer matches (PASS). Verifier validates only requirement/governance artifacts.",
+        "req_id": "RTC-REQ-034",
+        "result": "PASS",
+        "scan_methodology": "ast.walk over Import/ImportFrom nodes",
+        "subject": "scripts/verify_runtime_certification_acceptance.py",
+        "subject_sha256": "de67a610a028a375e5fc007669877b12532e4b4564fbafe83a0b6a79e71bbaac",
+        "violations": []
+      }
+    }
+  },
+  "report_class": "LAYER_BOUNDARY_REPORT",
+  "schema_version": "fortknox-layer-boundary-v1",
+  "subject": "scripts/verify_runtime_certification_acceptance.py",
+  "subject_sha256": "de67a610a028a375e5fc007669877b12532e4b4564fbafe83a0b6a79e71bbaac",
+  "violations": []
+}

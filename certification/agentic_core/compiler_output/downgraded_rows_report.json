@@ -1,0 +1,7 @@
+{
+  "downgraded_count": 0,
+  "downgraded_rows": [],
+  "executed_at_utc": "2026-05-02T03:42:18.346689+00:00",
+  "rule": "RTC-REQ-034",
+  "verifier": "verify_runtime_certification_acceptance"
+}

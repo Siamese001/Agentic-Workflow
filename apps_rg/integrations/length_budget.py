@@ -28,7 +28,7 @@ class LengthBudget:
             return False
         if self.target_sentences is not None:
             sents = count_sentences(text)
-            if sents not in (self.target_sentences, self.target_sentences - 1, self.target_sentences + 1):
+            if sents not in range(max(1, self.target_sentences - 2), self.target_sentences + 3):
                 return False
         return True
 

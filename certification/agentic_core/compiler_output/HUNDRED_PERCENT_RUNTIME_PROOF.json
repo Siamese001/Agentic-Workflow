@@ -1,0 +1,1103 @@
+{
+  "bundle_verification": {
+    "duration_ms": 149,
+    "exit_code": 0,
+    "passed": true,
+    "tail": [
+      "[verify_bundle] status=PASS checks=2450 failures=0"
+    ]
+  },
+  "fort_knox_signoff": {
+    "blocked_count": 0,
+    "by_claim_type": {
+      "COMPONENT_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 8,
+        "total": 8
+      },
+      "COMPOSITION_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 2,
+        "total": 2
+      },
+      "INTEGRATED_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 22,
+        "total": 22
+      },
+      "NO_BYPASS_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 26,
+        "total": 26
+      },
+      "OBSERVABILITY_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 5,
+        "total": 5
+      },
+      "PRODUCTION_DEPENDENCY_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 5,
+        "total": 5
+      },
+      "REPLAY_RUNTIME": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 3,
+        "total": 3
+      },
+      "STATIC_CONTRACT": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 1,
+        "total": 1
+      },
+      "STATIC_ENFORCEMENT": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 30,
+        "total": 30
+      }
+    },
+    "compiler_sha256": "dffbb16a9d46e5bdb8871fec5122f8d5e9da6d8ff4ec0525dfd51d53aa4032cc",
+    "evidence_digest": "b032d56b1009865597428f29d26f630a0db69445c0e1bcca93f17161a56dfd43",
+    "git_commit": "b11200e833bf66fb07cadf2a4f1e13f07e65c496",
+    "git_dirty": true,
+    "merkle_root": "b032d56b1009865597428f29d26f630a0db69445c0e1bcca93f17161a56dfd43",
+    "merkle_sha256": "af5734742faa4510f6a43ed32129e847b8e60a98de95f24febf5e3ffc52e95c1",
+    "not_verified_count": 0,
+    "percent_signed_off": 100.0,
+    "present": true,
+    "report_sha256": "644b73f322a92889b8078835d5aad433ae435c0e4e52c179e685b3c0c6e975fb",
+    "requirement_count": 102,
+    "row_digest": "01c42b0efaf6f736ba8dc48804227415260a94c45b60d796ccba8fa5806b97d3",
+    "signature_sha256": "01d60d03221ff370712ff0a5a259326d7d7a095dc3c64b346232026006ab05a5",
+    "signature_status": "VERIFIED",
+    "signed_off_count": 102,
+    "signer_id": null,
+    "trust_level": "SIGNED_PROOF"
+  },
+  "generated_at_utc": "2026-05-02T19:25:17Z",
+  "generator": "tools/certification/generate_100pct_runtime_proof.py",
+  "headline_claims": {
+    "all_chains_pass_all_verifiers": true,
+    "all_route_families_real_runtime_pct": 88.88888888888889,
+    "fortknox_blocked_count": 0,
+    "fortknox_signed_off_count": 102,
+    "fortknox_trust_level": "SIGNED_PROOF",
+    "live_llm_provider_used_for_r1b_certification": "local_qwen",
+    "runnable_route_families_real_runtime_pct": 100.0,
+    "verifier_pass_count": 71,
+    "verifier_pass_pct": 100.0,
+    "verifier_total": 71
+  },
+  "live_provider_attestation": {
+    "approved_provider": true,
+    "attestation_kind": "live_provider_allow_path",
+    "confidence": 0.9,
+    "deterministic_proof_stage_used": false,
+    "file_sha256": "afd92e9261de6f89fbd74a160bda1e5dd4b7c8108855b4f0f7651b34a5eceba1",
+    "latency_ms": 1013.0503000109456,
+    "mock_safe_used": false,
+    "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "present": true,
+    "provider": "local_qwen",
+    "response_hash_sha256": "777b788ba622a564199af77b44830af653dea971a965eb5ce66838731a6a8073",
+    "rubric_hash_sha256": "0db8290d47b90a14ec4509b47c1e3157efaeec812a709ed5c3d1975628130d1e",
+    "schema_version": 1,
+    "verdict": "SAFE",
+    "veto_stage_class": "LLMJudgeVeto",
+    "wall_clock_utc": "2026-05-02T19:22:26.269879Z"
+  },
+  "mutation_rejection": {
+    "clean_bundle_unchanged": true,
+    "file_sha256": "f9b5aed7515f4e89d44f952e2fe57583c0862b408c720fa6790c4d4b9c43b111",
+    "overall_verdict": "PASS",
+    "present": true,
+    "scenarios_rejected": null,
+    "scenarios_total": 40
+  },
+  "per_chain_full_detail": [
+    {
+      "all_verifiers_pass": true,
+      "chain": "latest",
+      "chain_kind": "R1B",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "0a8aac956bcb3156cc6b0a7abfdc0c79300bd096e9cfaa29a23013809e4e6caf",
+      "exists": true,
+      "family": "R1B_SEMANTIC_CACHE",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "ded501ff3ee86086426fbcf5c8c7d8a3221f011f81227a8b38dafd2a1aeaf1ac",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "1853f977124352dd8097b4c98bfab96aa1cb01f47250f14448df7f2275788849",
+      "runtime_mode": "production",
+      "spine_sha256": "1a399f32c62d0ab5cbc1f292a75b3f2ff8925387a8602da2c9f9bef05dd4978a",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 134,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=R1B)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=R1B)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 120,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=production, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=R1B)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 120,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=R1B, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=R1B, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=R1B, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 124,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: safe_reuse.allow=True, veto_outcome=ALLOWED, llm_judge_invocations=1, unsafe_reuse_allowed_count=0, hard_negatives=0"
+          ],
+          "verifier": "verify_r1b_safe_reuse_integrated_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "mw_latest",
+      "chain_kind": "MANAGED_WORKFLOW",
+      "coverage_certification_status": "STRUCTURAL_ONLY",
+      "coverage_proof_class": "STRUCTURAL_ONLY",
+      "coverage_sha256": "a5214bc7065e588fbbc5eb9166744aa153c62c78be08b356e0f28c4af9cb2f3c",
+      "exists": true,
+      "family": "MANAGED_WORKFLOW_STRUCTURAL",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "e83a8a68cc2fbb6af19fd916f9d3cd08ad14d7e1365203cfa7a0bb44b6633085",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "54afd173c2dc0cf0c4e085a6a934061ad7a4c020cab887660b6074bfc6b6add5",
+      "runtime_mode": "fixture",
+      "spine_sha256": "0529d63ec8bc4bbba50b21a06bc4a1d05cff3dd5033f8c69a6024b9476abc985",
+      "spine_status": "MW_STRUCTURAL_ONLY_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 7,
+      "verifier_results": [
+        {
+          "duration_ms": 128,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=MANAGED_WORKFLOW)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 128,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_managed_workflow_run.run_integrated_managed_workflow; all 20 artifacts present and producer-stamped (chain_kind=MANAGED_WORKFLOW)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=MW_STRUCTURAL_ONLY_PROVEN, runtime_mode=fixture, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=MANAGED_WORKFLOW)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=MANAGED_WORKFLOW, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=MANAGED_WORKFLOW, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=MANAGED_WORKFLOW, families=9, certified=0, structural_only=1, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        }
+      ],
+      "verifier_total": 7
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "r1a_latest",
+      "chain_kind": "R1A_EXACT_CACHE",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "16fdbdc82362edd5698118d59b4114ae06e7720d8cc4f309bf89c18510acb15c",
+      "exists": true,
+      "family": "R1A_EXACT_CACHE",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "f0ffe4204919814618a13d6c9693a2032b7d0c5da27e919ad4aae26efeb3017d",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "a20f01bb23d5cfa88af254b00fdaa87f350b69e792fcae040aae22ed1e2b2c10",
+      "runtime_mode": "fixture",
+      "spine_sha256": "381579a8a2184ee6c6d1d073c78a1d205b9e0e07f43f7bb33a365a857218da75",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=R1A_EXACT_CACHE)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 117,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=R1A_EXACT_CACHE)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 120,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=fixture, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 125,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=R1A_EXACT_CACHE)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 133,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=R1A_EXACT_CACHE, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 130,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=R1A_EXACT_CACHE, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 124,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=R1A_EXACT_CACHE, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 129,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: R1A_EXACT_CACHE chain valid (d1_outcome=HIT, reason_codes=['d1_exact_hit'], cached_answer_ref set, how_trace.chain_kind=R1A_EXACT_CACHE, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_r1a_exact_cache_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "r5_latest",
+      "chain_kind": "R5_FALLBACK",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "13245e0ebcafa2947d0843d3b955a7bc889539bc3c55e79db23d04fd6e4fd34d",
+      "exists": true,
+      "family": "R5_FALLBACK",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "930daf14aafdcd4f909cc8d15683d184c08f8442714e858921115673f306dcaa",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "3d494ef5e1306d143b77abae57435f82bc2c4ebff648cc9e58d17c86d71ee9dd",
+      "runtime_mode": "fixture",
+      "spine_sha256": "af174d7f9ea4fef90097673b54d7b7eb299c84de33dc91dc36e365cb5cfb9433",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 130,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=R5_FALLBACK)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 136,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=R5_FALLBACK)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 129,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=fixture, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=R5_FALLBACK)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=R5_FALLBACK, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=R5_FALLBACK, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=R5_FALLBACK, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 120,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: R5_FALLBACK chain valid (x3=X3D, fallback_reason set, no unsafe execution, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_r5_fallback_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "uwg_block_latest",
+      "chain_kind": "UWG_BLOCK_PATH",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "1fe2749435c1a3d8d98b0f2f977f85b37dd1728d4815fa9c197bad369ad13ebd",
+      "exists": true,
+      "family": "UWG_BLOCK_PATH",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "d7357154e6a6eaff4c33d2e7f6def46890140013a6f90dc99253a094b7a8e02e",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "9f12b9f74bc4ca6b403bb55e60726017a56304690ac16540636c6299e2f3d891",
+      "runtime_mode": "fixture",
+      "spine_sha256": "f2fce2776ca23bd2c2d2fe94fd8ba99d99b9c9a7e167a23c35d4c68a621b9e60",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=UWG_BLOCK_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=UWG_BLOCK_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=fixture, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=UWG_BLOCK_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=UWG_BLOCK_PATH, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=UWG_BLOCK_PATH, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=UWG_BLOCK_PATH, families=9, certified=1, structural_only=0, fixture_only=0, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: UWG_BLOCK_PATH chain valid (attempting=L0, integrated_runtime_origin=True, blocked_reason_codes=['non_uwg_surface_attempted_direct_write', 'non_uwg_surface_blocked'], coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_uwg_block_path_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "uwg_commit_latest",
+      "chain_kind": "UWG_COMMIT_PATH",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "4db4b27b8591bb78ba40d46f27b2bd9d254bd18f9d7aa4e163de9ec262f63f44",
+      "exists": true,
+      "family": "UWG_COMMIT_PATH",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "3e5a0cdc008c8386a3e858e8fb832dbd48eca9e180407bc2c6e06b6e33f54626",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "72cdec0ff3df76767d030e4381487fb2c21a55a49b4428ae8abb6f4f57b3a119",
+      "runtime_mode": "production",
+      "spine_sha256": "d8f70bc91455c64ab51f309ed1a7434897412b7d3d3d3687e47b205641ef56a0",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=UWG_COMMIT_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=UWG_COMMIT_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=production, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=UWG_COMMIT_PATH)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 128,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=UWG_COMMIT_PATH, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=UWG_COMMIT_PATH, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 132,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=UWG_COMMIT_PATH, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 126,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: UWG_COMMIT_PATH valid (commit_status=COMMITTED, snapshot snapshot:00000001->snapshot:00000002, source_surface=Exit, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_uwg_commit_path_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "r3_latest",
+      "chain_kind": "R3_GROUNDED_READ",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "99935e3a76af50f7cdadf72ea0705aa5d0e7087a9f57830c6cb2d21f5006ad6d",
+      "exists": true,
+      "family": "R3_GROUNDED_READ",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "5d38756f1b726953d5273e970149b241a85d97758a67cf5c4bd39bbfecefb994",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "d8a0572a98aac3b5f4e14c08aa6739a7b68eb9aa88e0433eab484d06d894f092",
+      "runtime_mode": "production",
+      "spine_sha256": "bf6de0f76e8dfcf3723acfa1fc2327da4f39e79c1903a8e0b4573f2dfef44696",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=R3_GROUNDED_READ)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 118,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=R3_GROUNDED_READ)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=production, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=R3_GROUNDED_READ)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=R3_GROUNDED_READ, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 117,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=R3_GROUNDED_READ, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 124,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=R3_GROUNDED_READ, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 120,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: R3_GROUNDED_READ valid (evidence_ref_count=2, corpus_size=3, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_r3_grounded_read_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "r4_latest",
+      "chain_kind": "R4_SINGLE_ACTION",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "a91580baac647d59b123aaa5347be9ff2eccef38dbbedbfef41ad02bcaca0576",
+      "exists": true,
+      "family": "R4_SINGLE_ACTION",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "d9e7e32c869dba84ef3c45a1220398cd8daa13e43b2b429d410a137e023aa650",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "c1a3fad36a6a85738e8d0e5be87498fab875ae88d31bcfdb2bcff1ab1f8c2d36",
+      "runtime_mode": "production",
+      "spine_sha256": "b52727378267cbd9b6ca5bc501704bd8b6193c9e53303ee9dc83989df9efc105",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 119,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=R4_SINGLE_ACTION)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 115,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=R4_SINGLE_ACTION)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 127,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=R1B_TERMINAL_SHORTCIRCUIT_PROVEN, runtime_mode=production, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 128,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=R4_SINGLE_ACTION)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 121,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=R4_SINGLE_ACTION, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=R4_SINGLE_ACTION, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=R4_SINGLE_ACTION, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 124,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: R4_SINGLE_ACTION valid (tool_invocation_count=1, auth_status=GRANTED, structural_only=False, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_r4_single_action_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "chain": "mw_real_latest",
+      "chain_kind": "MANAGED_WORKFLOW_REAL_EXECUTION",
+      "coverage_certification_status": "CERTIFIED",
+      "coverage_proof_class": "REAL_RUNTIME",
+      "coverage_sha256": "965c6d0cb7e7864f9c61440b47782a0069ac192f78ed1039a67e1dde7fcc88cf",
+      "exists": true,
+      "family": "MANAGED_WORKFLOW_REAL_EXECUTION",
+      "fortknox_l7_evidence_count": 13,
+      "how_trace_sha256": "1b16696b5b129007baa8a9d9525b42c41a8b55ffcc931acf60ba1de3c8806526",
+      "managed_workflow_certified": true,
+      "manifest_sha256": "13a23a3c84a45514ddedb21d8242c68db0fd49f1c020c11f731697fa86852813",
+      "runtime_mode": "production",
+      "spine_sha256": "8de63a085ba7658fc18bf59b26917a1df870bfb24f442213b778c7d8e1e85393",
+      "spine_status": "MW_REAL_EXECUTION_PROVEN",
+      "synthetic_trace_detected": false,
+      "verifier_pass_count": 8,
+      "verifier_results": [
+        {
+          "duration_ms": 135,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: chain verified: 20 artifacts, all SHAs and upstream refs match (chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION)"
+          ],
+          "verifier": "verify_integrated_runtime_artifact_chain"
+        },
+        {
+          "duration_ms": 126,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: entry_point=agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse; all 20 artifacts present and producer-stamped (chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION)"
+          ],
+          "verifier": "verify_integrated_runtime_entrypoint"
+        },
+        {
+          "duration_ms": 126,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: runtime_subject=agentic_core, spine_status=MW_REAL_EXECUTION_PROVEN, runtime_mode=production, blocking_gaps=0"
+          ],
+          "verifier": "verify_spine_proof_bundle"
+        },
+        {
+          "duration_ms": 128,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: manifest declarations == on-disk artifacts == chain_filenames (20 entries, chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION)"
+          ],
+          "verifier": "verify_integrated_runtime_manifest_exact_refs"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: HOW trace valid (chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION, stages=10, success=True, runtime_mode=fixture, audit_mode=MANDATORY, manifest_bound=True, spine_bound=True, digest_ok=True)"
+          ],
+          "verifier": "verify_agentic_core_how_trace"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 Fort Knox evidence valid (chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION, rows_verified=13, dir=fortknox_l7_evidence)"
+          ],
+          "verifier": "verify_l7_fortknox_evidence"
+        },
+        {
+          "duration_ms": 123,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: L7 route-family coverage matrix valid (chain_kind=MANAGED_WORKFLOW_REAL_EXECUTION, families=9, certified=1, structural_only=0, fixture_only=1, not_certified=8)"
+          ],
+          "verifier": "verify_agentic_core_l7_route_family_coverage"
+        },
+        {
+          "duration_ms": 122,
+          "exit_code": 0,
+          "passed": true,
+          "tail": [
+            "PASS: MANAGED_WORKFLOW_REAL_EXECUTION valid (gates=29/29 PASS, certified=True, coverage=CERTIFIED/REAL_RUNTIME)"
+          ],
+          "verifier": "verify_mw_real_execution_l7_runtime"
+        }
+      ],
+      "verifier_total": 8
+    }
+  ],
+  "remaining_external_gaps": {
+    "GAP-2_external_attestation": {
+      "blocks_100pct_runtime": false,
+      "description": "Promotion to FINAL_SIGNED_CERTIFICATION requires an external trust authority (cosign keyless via Sigstore Fulcio under GitHub OIDC, or a KMS-backed long-lived key). Repo-committed Ed25519 signer caps honestly at SIGNED_PROOF.",
+      "remediation": "Wire cosign keyless in CI under GitHub OIDC; commit Fulcio cert + rekor entry as config/release_signer/cosign_bundle.json; extend tools/cert/sign_with_ephemeral_key.py to detect bundle and emit FINAL_SIGNED_CERTIFICATION.",
+      "status": "OPEN"
+    }
+  },
+  "repo_root": "C:\\Git\\Agentic-Workflow-FRESH",
+  "route_family_certification_matrix": [
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "latest",
+      "chain_kind": "R1B",
+      "family": "R1B_SEMANTIC_CACHE",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "1853f977124352dd8097b4c98bfab96aa1cb01f47250f14448df7f2275788849",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "1a399f32c62d0ab5cbc1f292a75b3f2ff8925387a8602da2c9f9bef05dd4978a",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "STRUCTURAL_ONLY",
+      "chain_dir": "mw_latest",
+      "chain_kind": "MANAGED_WORKFLOW",
+      "family": "MANAGED_WORKFLOW_STRUCTURAL",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "54afd173c2dc0cf0c4e085a6a934061ad7a4c020cab887660b6074bfc6b6add5",
+      "proof_class": "STRUCTURAL_ONLY",
+      "spine_sha256": "0529d63ec8bc4bbba50b21a06bc4a1d05cff3dd5033f8c69a6024b9476abc985",
+      "spine_status": "MW_STRUCTURAL_ONLY_PROVEN",
+      "verifier_pass_count": 7,
+      "verifier_total": 7
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "r1a_latest",
+      "chain_kind": "R1A_EXACT_CACHE",
+      "family": "R1A_EXACT_CACHE",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "a20f01bb23d5cfa88af254b00fdaa87f350b69e792fcae040aae22ed1e2b2c10",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "381579a8a2184ee6c6d1d073c78a1d205b9e0e07f43f7bb33a365a857218da75",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "r5_latest",
+      "chain_kind": "R5_FALLBACK",
+      "family": "R5_FALLBACK",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "3d494ef5e1306d143b77abae57435f82bc2c4ebff648cc9e58d17c86d71ee9dd",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "af174d7f9ea4fef90097673b54d7b7eb299c84de33dc91dc36e365cb5cfb9433",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "uwg_block_latest",
+      "chain_kind": "UWG_BLOCK_PATH",
+      "family": "UWG_BLOCK_PATH",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "9f12b9f74bc4ca6b403bb55e60726017a56304690ac16540636c6299e2f3d891",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "f2fce2776ca23bd2c2d2fe94fd8ba99d99b9c9a7e167a23c35d4c68a621b9e60",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "uwg_commit_latest",
+      "chain_kind": "UWG_COMMIT_PATH",
+      "family": "UWG_COMMIT_PATH",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "72cdec0ff3df76767d030e4381487fb2c21a55a49b4428ae8abb6f4f57b3a119",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "d8f70bc91455c64ab51f309ed1a7434897412b7d3d3d3687e47b205641ef56a0",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "r3_latest",
+      "chain_kind": "R3_GROUNDED_READ",
+      "family": "R3_GROUNDED_READ",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "d8a0572a98aac3b5f4e14c08aa6739a7b68eb9aa88e0433eab484d06d894f092",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "bf6de0f76e8dfcf3723acfa1fc2327da4f39e79c1903a8e0b4573f2dfef44696",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "r4_latest",
+      "chain_kind": "R4_SINGLE_ACTION",
+      "family": "R4_SINGLE_ACTION",
+      "managed_workflow_certified": false,
+      "manifest_sha256": "c1a3fad36a6a85738e8d0e5be87498fab875ae88d31bcfdb2bcff1ab1f8c2d36",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "b52727378267cbd9b6ca5bc501704bd8b6193c9e53303ee9dc83989df9efc105",
+      "spine_status": "R1B_TERMINAL_SHORTCIRCUIT_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    },
+    {
+      "all_verifiers_pass": true,
+      "certification_status": "CERTIFIED",
+      "chain_dir": "mw_real_latest",
+      "chain_kind": "MANAGED_WORKFLOW_REAL_EXECUTION",
+      "family": "MANAGED_WORKFLOW_REAL_EXECUTION",
+      "managed_workflow_certified": true,
+      "manifest_sha256": "13a23a3c84a45514ddedb21d8242c68db0fd49f1c020c11f731697fa86852813",
+      "proof_class": "REAL_RUNTIME",
+      "spine_sha256": "8de63a085ba7658fc18bf59b26917a1df870bfb24f442213b778c7d8e1e85393",
+      "spine_status": "MW_REAL_EXECUTION_PROVEN",
+      "verifier_pass_count": 8,
+      "verifier_total": 8
+    }
+  ],
+  "schema_version": 1
+}

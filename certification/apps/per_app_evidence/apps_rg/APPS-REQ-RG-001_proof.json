@@ -1,0 +1,11 @@
+{
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\route_contract.json",
+  "artifact_sha256": "9aec266447c0243d6f85e9e5419565176188d0db7be59b121870294c5ea3f667",
+  "assertion_result": "NOT_VERIFIED",
+  "claim_id": "APPS-REQ-RG-001",
+  "claim_title": "Canonical RouteContract v15 emitted",
+  "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+  "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+  "producer_version": "apps_rg_proof_producer-v1",
+  "reason": "Missing fields: ['route_digest', 'hmac_sig', 'policy_hash', 'blueprint_hash', 'replay_key']"
+}

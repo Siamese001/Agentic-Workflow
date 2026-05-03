@@ -67,8 +67,8 @@ TARGET_COLLECTIONS = [
     "repo_runtime_evidence",
     "repo_incidents_rca",
     "traces",
-    "repo_adg_graph",
     "agentic_best_practices",
+    "repo_git_history",
 ]
 
 BATCH_SIZE = 500

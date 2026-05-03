@@ -102,6 +102,23 @@ def _section_heading(doc: Document, text: str) -> None:
     _add_horizontal_rule(p)
 
 
+def _body_text_spacer(doc: Document, size_pt: float = 6.5) -> None:
+    """Emit an empty ``Body Text`` paragraph to match the template's inter-section spacing."""
+    try:
+        p = doc.add_paragraph(style="Body Text")
+    except KeyError:
+        p = doc.add_paragraph()
+    p.paragraph_format.space_after = Pt(0)
+    run = p.add_run("")
+    run.font.size = Pt(size_pt)
+
+
+def _section_h2(doc: Document, text: str, *, spacer_pt: float = 6.5) -> None:
+    """Spacer + Heading 2 — matches template pattern (every H2 preceded by Body Text blank)."""
+    _body_text_spacer(doc, size_pt=spacer_pt)
+    _add_run(_add_para(doc, style="Heading 2"), text)
+
+
 def _bullet(doc: Document, text: str, bold_prefix: str = "") -> None:
     p = doc.add_paragraph(style="List Bullet")
     p.paragraph_format.space_after = Pt(2)
@@ -371,14 +388,14 @@ def build_docx(
         or resume.get("summary")
     )
     if summary:
-        _add_run(_add_para(doc, style="Heading 2"), "EXECUTIVE SUMMARY")
+        _section_h2(doc, "EXECUTIVE SUMMARY", spacer_pt=9.0)
         p = _add_para(doc, space_after=4)
         _add_run(p, summary if isinstance(summary, str) else json.dumps(summary))
 
     # ---- PROFESSIONAL EXPERIENCE (Heading 2) ----
     exp = _experience(resume)
     if exp:
-        _add_run(_add_para(doc, style="Heading 2"), "PROFESSIONAL EXPERIENCE")
+        _section_h2(doc, "PROFESSIONAL EXPERIENCE")
         for role in exp:
             if _is_early_career_role(role):
                 continue
@@ -431,7 +448,7 @@ def build_docx(
                     text = _bullet_text(b)
                 if not text:
                     continue
-                pb = _add_para(doc, style="List Paragraph", space_before=3)
+                pb = _add_para(doc, space_before=3)
                 _bold_prefixed(pb, text)
 
         # Early career compressed line (HOP-4H) — italic Normal
@@ -443,7 +460,7 @@ def build_docx(
     # ---- EDUCATION (Heading 2) ----
     edu = resume.get("education") or []
     if edu:
-        _add_run(_add_para(doc, style="Heading 2"), "EDUCATION")
+        _section_h2(doc, "EDUCATION")
         for e in edu:
             p = _add_para(doc, style="Heading 3")
             if isinstance(e, str):
@@ -460,7 +477,7 @@ def build_docx(
     # ---- CERTIFICATIONS & CREDENTIALS (Heading 2) ----
     certs = resume.get("certifications_and_credentials") or []
     if certs:
-        _add_run(_add_para(doc, style="Heading 2"), "CERTIFICATIONS & CREDENTIALS")
+        _section_h2(doc, "CERTIFICATIONS & CREDENTIALS")
         for c in certs:
             if isinstance(c, str):
                 text = c
@@ -489,7 +506,7 @@ def build_docx(
     eng_comps = resume.get("engineering_and_platform_competencies") or []
     comps = resume.get("competencies") or resume.get("core_competencies") or []
     if eng_comps:
-        _add_run(_add_para(doc, style="Heading 2"), "ENGINEERING & PLATFORM COMPETENCIES")
+        _section_h2(doc, "ENGINEERING & PLATFORM COMPETENCIES")
         for entry in eng_comps:
             if isinstance(entry, dict):
                 area = (entry.get("area") or entry.get("name") or "").strip()
@@ -501,16 +518,16 @@ def build_docx(
                 line = str(entry).strip()
             if not line:
                 continue
-            p = _add_para(doc, space_before=6, left_indent=3.6)
+            p = _add_para(doc, style="List Paragraph", space_before=6)
             _bold_prefixed(p, line)
     elif comps:
-        _add_run(_add_para(doc, style="Heading 2"), "ENGINEERING & PLATFORM COMPETENCIES")
+        _section_h2(doc, "ENGINEERING & PLATFORM COMPETENCIES")
         for entry in comps:
             text = entry if isinstance(entry, str) else entry.get("text", str(entry))
             text = _strip_bullet_glyph(text).strip()
             if not text:
                 continue
-            p = _add_para(doc, space_before=6, left_indent=3.6)
+            p = _add_para(doc, style="List Paragraph", space_before=6)
             _bold_prefixed(p, text)
 
     return doc

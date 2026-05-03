@@ -28,6 +28,53 @@ def test_pipeline_clean_answer_only_returns_x3d() -> None:
     assert result.preflight_failures == []
 
 
+def test_normalize_populates_app_contract_fields_from_receipts() -> None:
+    """APPS-DOM runtime binding — receipts top-level app_id/rubric_ref/... land on packet."""
+    from agentic_core.L3_orchestration.exit_eval.v6.preflight import normalize_to_packet
+    receipts = base_receipts(
+        app_id="apps_qna",
+        task_class="qna_pack_build",
+        rubric_ref="aer::apps_qna::qna_pack_build::v1",
+        threshold_profile_ref="atp::apps_qna::qna_pack_build::v1",
+        grader_roster_ref="agr::apps_qna::qna_pack_build::v1",
+    )
+    pkt = normalize_to_packet(receipts)
+    assert pkt.app_id == "apps_qna"
+    assert pkt.task_class == "qna_pack_build"
+    assert pkt.rubric_ref == "aer::apps_qna::qna_pack_build::v1"
+    assert pkt.threshold_profile_ref == "atp::apps_qna::qna_pack_build::v1"
+    assert pkt.grader_roster_ref == "agr::apps_qna::qna_pack_build::v1"
+
+
+def test_normalize_populates_app_contract_fields_from_route_contract() -> None:
+    """Fallback: fields under route_contract also land on packet when top-level absent."""
+    from agentic_core.L3_orchestration.exit_eval.v6.preflight import normalize_to_packet
+    receipts = base_receipts(
+        route_contract={
+            "route_id": "R3",
+            "policy_hash": "pol::v1",
+            "blueprint_hash": "bp::v1",
+            "prompt_hash": "ph::v1",
+            "app_id": "apps_lic",
+            "rubric_ref": "aer::apps_lic::outreach::v1",
+            "threshold_profile_ref": "atp::apps_lic::outreach::v1",
+        },
+    )
+    pkt = normalize_to_packet(receipts)
+    assert pkt.app_id == "apps_lic"
+    assert pkt.rubric_ref == "aer::apps_lic::outreach::v1"
+    assert pkt.threshold_profile_ref == "atp::apps_lic::outreach::v1"
+
+
+def test_normalize_preserves_empty_defaults_when_fields_absent() -> None:
+    """Backward compat — packet app contract fields are "" when receipts don't carry them."""
+    from agentic_core.L3_orchestration.exit_eval.v6.preflight import normalize_to_packet
+    pkt = normalize_to_packet(base_receipts())
+    assert pkt.app_id == ""
+    assert pkt.rubric_ref == ""
+    assert pkt.threshold_profile_ref == ""
+
+
 def test_pipeline_preflight_failure_emits_x3a() -> None:
     receipts = base_receipts(policy_hash="")  # §5.0 immediate-fail
     result = run_exit_eval(receipts)

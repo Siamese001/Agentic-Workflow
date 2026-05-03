@@ -1,0 +1,19 @@
+{
+  "artifact_hash": "sha256:16ce8e0e0ed1dc6eb7786f04db09ca5ce75f1e61a99e1a736231618e57a1ae8b",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "downstream_authority": "none",
+    "intake_status": "VALIDATED_FOR_L1",
+    "normalized_payload": "uwg commit path regen",
+    "permitted_next_layer": "L1",
+    "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "request_shape_class": "service_call",
+    "session_id": "sess-62b87721f51f4bf2be6238920d5e018c",
+    "tenant_bind": null,
+    "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:866c56be7b3e02a2fd485a841f0c9578fc8a314ec8fb62cabc55c37fa0983706"
+}

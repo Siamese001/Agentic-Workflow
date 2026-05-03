@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.600194Z",
+  "control_scope": "harness_observes_only",
+  "per_req": {
+    "RTC-REQ-011": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.600194Z"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "upstream verify_rtc_req_integrated_runtime.py per_req[011]==PASS AND no_harness_stamp_receipt.json present",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "upstream verify_rtc_req_integrated_runtime.py per_req[011]==PASS AND no_harness_stamp_receipt.json present",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "b10631fe0bbf91121a7d9609e31416311e72d71218bddcd422691403599f2e98",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-011",
+  "schema_version": "runtime-evidence-v1"
+}

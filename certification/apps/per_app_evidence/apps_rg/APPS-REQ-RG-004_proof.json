@@ -1,0 +1,11 @@
+{
+  "artifact_path": null,
+  "artifact_sha256": null,
+  "assertion_result": "NOT_VERIFIED",
+  "claim_id": "APPS-REQ-RG-004",
+  "claim_title": "Runtime gates applicable subset invoked",
+  "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+  "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+  "producer_version": "apps_rg_proof_producer-v1",
+  "reason": "Missing artifact: gate_verdicts.json"
+}

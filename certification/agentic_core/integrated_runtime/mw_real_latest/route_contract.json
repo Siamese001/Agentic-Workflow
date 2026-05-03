@@ -1,0 +1,26 @@
+{
+  "artifact_hash": "sha256:f8018239174c5f3e14b8b30763e07ece717bd069101a432a279aacf312f3d2ee",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
+    "grounding_required": false,
+    "intent_class": "safe_reuse_dense_candidate_with_veto",
+    "mw_real_composed_substrates": "R3+R4+UWG_COMMIT",
+    "namespace": "mw_real_test",
+    "policy_hash": "775290e50fa3b8420dce53c6bde17a1b7a323075a314fce22c2ee981d00b3add",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+    "query_spec": "internal_action",
+    "replay_key": "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "route_family": "MANAGED_WORKFLOW_REAL_EXECUTION",
+    "route_family_proof_class": "REAL_RUNTIME",
+    "route_id_hint": "R1B_SEMANTIC_CACHE",
+    "task_spec": "intake.service_call",
+    "tenant_bind": "",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:f7caacf746ea8fcde23238192d8188436dae837b4c8ab49a4e266eb09f7c7221"
+}

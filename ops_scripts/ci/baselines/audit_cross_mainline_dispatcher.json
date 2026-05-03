@@ -1,6 +1,6 @@
 {
   "gate_id": "AUDIT_4_cross_mainline_dispatcher",
   "count": 10,
-  "seeded_at": "2026-05-03T09:54:22.193285+00:00",
-  "snapshot": "adg_indexed_05022026_2217.sqlite"
+  "seeded_at": "2026-05-03T10:30:16.830055+00:00",
+  "snapshot": "adg_indexed_05032026_0607.sqlite"
 }

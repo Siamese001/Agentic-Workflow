@@ -1,0 +1,63 @@
+{
+  "binding_count": 1,
+  "bindings": [
+    {
+      "fail_closed": true,
+      "job_continue_on_error": false,
+      "match_lines": [
+        93
+      ],
+      "matched_job": "certification",
+      "matched_step_name": "W0.3 verify_runtime_certification_acceptance",
+      "step_continue_on_error": false,
+      "trigger_events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "workflow_file": ".github/workflows/runtime-certification.yml",
+      "workflow_sha256": "572304b6f57fb1211eed0296bb4e28e5a828b74d5902856cd92b8784a53f5435"
+    }
+  ],
+  "covered_req_ids": [
+    "RTC-REQ-034"
+  ],
+  "fail_closed_binding_count": 1,
+  "generated_at_utc": "2026-05-02T02:16:42+00:00",
+  "generated_by_command": "tools/cert/emit_ci_gate_binding_report_runtime_acceptance.py",
+  "overall_result": "PASS",
+  "per_req": {
+    "RTC-REQ-034": {
+      "ci_gate": {
+        "all_binding_count": 1,
+        "binding": {
+          "fail_closed": true,
+          "job_continue_on_error": false,
+          "match_lines": [
+            93
+          ],
+          "matched_job": "certification",
+          "matched_step_name": "W0.3 verify_runtime_certification_acceptance",
+          "step_continue_on_error": false,
+          "trigger_events": [
+            "pull_request",
+            "push",
+            "workflow_dispatch"
+          ],
+          "workflow_file": ".github/workflows/runtime-certification.yml",
+          "workflow_sha256": "572304b6f57fb1211eed0296bb4e28e5a828b74d5902856cd92b8784a53f5435"
+        },
+        "control": "ci_gate",
+        "fail_closed_binding_count": 1,
+        "generated_at_utc": "2026-05-02T02:16:42+00:00",
+        "proof": "scripts/verify_runtime_certification_acceptance.py appears in 1 workflow(s); 1 fail-closed registration(s) (PASS).",
+        "req_id": "RTC-REQ-034",
+        "result": "PASS",
+        "subject": "scripts/verify_runtime_certification_acceptance.py"
+      }
+    }
+  },
+  "report_class": "CI_GATE_BINDING_REPORT",
+  "schema_version": "fortknox-ci-gate-binding-v1",
+  "subject": "scripts/verify_runtime_certification_acceptance.py"
+}

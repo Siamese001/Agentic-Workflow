@@ -1,0 +1,204 @@
+{
+  "all_nodes_have_allowed_execution_surface": true,
+  "all_nodes_have_owner": true,
+  "all_nodes_have_step_contract_schema": true,
+  "app_name": "apps_lic",
+  "app_name_matches": true,
+  "dag_file_path": "apps_lic/config/l3_dag.yaml",
+  "dag_id": "apps_lic.outreach_pipeline_v1.l3_dag",
+  "dag_name": "apps_lic_outreach_v1",
+  "dag_registry_ref": "apps_lic/config/route_registry.yaml",
+  "dag_registry_sha256": "30bace9ec6485a37398de404788462911e7dc6de3818c4b2031b99c072d5bee0",
+  "dag_sha256": "f9ae0b30318ae666cd8977d738cdf8a99c8d3208ecd4b165a97c9057220af951",
+  "dag_version": "1.0.0",
+  "edge_count": 15,
+  "edge_list": [
+    {
+      "from": "profile_analysis",
+      "to": "research"
+    },
+    {
+      "from": "profile_analysis",
+      "to": "routing"
+    },
+    {
+      "from": "research",
+      "to": "routing"
+    },
+    {
+      "from": "research",
+      "to": "validation"
+    },
+    {
+      "from": "research",
+      "to": "qa_report"
+    },
+    {
+      "from": "sender_grounding",
+      "to": "routing"
+    },
+    {
+      "from": "sender_grounding",
+      "to": "generation"
+    },
+    {
+      "from": "routing",
+      "to": "generation"
+    },
+    {
+      "from": "generation",
+      "to": "validation"
+    },
+    {
+      "from": "generation",
+      "to": "qa_report"
+    },
+    {
+      "from": "generation",
+      "to": "integration"
+    },
+    {
+      "from": "validation",
+      "to": "gate_decision"
+    },
+    {
+      "from": "validation",
+      "to": "qa_report"
+    },
+    {
+      "from": "validation",
+      "to": "integration"
+    },
+    {
+      "from": "qa_report",
+      "to": "integration"
+    }
+  ],
+  "edges_reference_existing_nodes": true,
+  "entry_nodes": [
+    "profile_analysis",
+    "sender_grounding"
+  ],
+  "fail_closed": false,
+  "fail_reasons": [],
+  "generated_at_utc": "2026-05-03T00:00:57.689414Z",
+  "has_cycle": false,
+  "l3_no_execute_policy": true,
+  "l3_no_l4_write_policy": true,
+  "l3_no_prompt_assembly_policy": true,
+  "l3_no_retrieve_policy": true,
+  "max_depth": 6,
+  "node_count": 9,
+  "node_ids": [
+    "profile_analysis",
+    "research",
+    "sender_grounding",
+    "routing",
+    "generation",
+    "validation",
+    "gate_decision",
+    "qa_report",
+    "integration"
+  ],
+  "notes": "Static DAG present for apps_lic — fields populated from canonical YAML pair.",
+  "present": true,
+  "proof_kind": "static_l3_dag_proof",
+  "proof_schema_version": "apps_e2e_proof/2026-05-01/v1",
+  "registry_binding_matches_dag": true,
+  "route_binding_refs": [
+    "apps_lic.outreach_v1"
+  ],
+  "route_ids": [
+    "apps_lic.outreach_v1"
+  ],
+  "scan_method": "deterministic_path_enumeration",
+  "scan_results": {
+    "dag_directories": [
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_lic/workflows"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_lic/dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_lic/l3_dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/dags/apps_lic"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/workflows/apps_lic"
+      }
+    ],
+    "registries": [
+      {
+        "exists": true,
+        "kind": "route_registry",
+        "path": "apps_lic/config/route_registry.yaml",
+        "sha256": "30bace9ec6485a37398de404788462911e7dc6de3818c4b2031b99c072d5bee0",
+        "size_bytes": 1160
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_lic/config/route_registry.yml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_lic/config/route_registry.json",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": true,
+        "kind": "l3_dag_inline",
+        "path": "apps_lic/config/l3_dag.yaml",
+        "sha256": "f9ae0b30318ae666cd8977d738cdf8a99c8d3208ecd4b165a97c9057220af951",
+        "size_bytes": 4471
+      },
+      {
+        "exists": false,
+        "kind": "workflow_inline",
+        "path": "apps_lic/config/workflow.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "dag_inline",
+        "path": "apps_lic/config/dag.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "hop_pipeline_inline",
+        "path": "apps_lic/config/hop_pipeline.yaml",
+        "sha256": null,
+        "size_bytes": null
+      }
+    ]
+  },
+  "terminal_nodes": [
+    "gate_decision",
+    "integration"
+  ]
+}

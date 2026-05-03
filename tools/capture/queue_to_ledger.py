@@ -86,6 +86,9 @@ def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
         "skipped_dup": 0,
         "deferred_scope": 0,
         "next_step": 0,
+        "outcome_inserted": 0,
+        "outcome_updated": 0,
+        "outcome_orphan": 0,
         "failed": 0,
     }
     if not rows:
@@ -120,6 +123,39 @@ def drain(queue_path: Path, *, dry_run: bool = False) -> dict[str, int]:
                 continue
             if mtype == "NEXT_STEP":
                 counts["next_step"] += 1
+                continue
+            if mtype == "DECISION_OUTCOME":
+                # plan author-gate-hardening-a3b8f2 W1.P1.2 — drain outcome markers
+                # via outcome_writer. Imported lazily so missing module can't break
+                # the main decision drain.
+                try:
+                    # pylint: disable=import-outside-toplevel
+                    sys.path.insert(0, str(REPO_ROOT))
+                    from tools.capture.outcome_writer import parse_outcome, write_outcome  # type: ignore[import-not-found]
+                except ImportError as exc:
+                    print(f"[queue_to_ledger] WARN: outcome_writer import: {exc}", file=sys.stderr)
+                    counts["failed"] += 1
+                    continue
+                parsed = parse_outcome(raw)
+                if parsed is None:
+                    counts["failed"] += 1
+                    continue
+                existing_dec = conn.execute(
+                    "SELECT 1 FROM decisions WHERE decision_id = ? LIMIT 1",
+                    (parsed["decision_id"],),
+                ).fetchone()
+                if not existing_dec:
+                    counts["outcome_orphan"] += 1
+                    continue
+                try:
+                    disp = write_outcome(conn, parsed)
+                    if disp == "inserted":
+                        counts["outcome_inserted"] += 1
+                    elif disp == "updated":
+                        counts["outcome_updated"] += 1
+                except sqlite3.Error as exc:
+                    print(f"[queue_to_ledger] WARN: outcome write failed: {exc}", file=sys.stderr)
+                    counts["failed"] += 1
                 continue
 
             try:

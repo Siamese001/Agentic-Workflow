@@ -1,0 +1,18 @@
+{
+  "artifact_hash": "sha256:9e9777c4a0d956d15d020e825f42e3b50b95837d4827a181d303635dfdd389b2",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "chain_kind": "MANAGED_WORKFLOW",
+    "dag_id": "mw_demo_two_node",
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run.run_integrated_managed_workflow",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "adbf00e01f0340dcbe95c0b7e8e5d554",
+    "namespace": "mw_demo",
+    "started_at_epoch": 1777720713.5281453,
+    "tenant_id": ""
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": ""
+}

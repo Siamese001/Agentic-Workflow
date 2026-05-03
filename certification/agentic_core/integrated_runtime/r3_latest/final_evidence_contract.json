@@ -1,0 +1,39 @@
+{
+  "artifact_hash": "sha256:6bc14720bd0c9c789d92733b028b3e9ea71a1cd889b9bbc7ec6c9bef7c2b6968",
+  "emitted_at": "2026-05-02T16:57:05Z",
+  "payload": {
+    "corpus_manifest_sha256": "sha256:6eb02f4de1486c7554a3cafd1524c3939cab39fec088f929b07571aafe54e1c5",
+    "corpus_version": "r3-inmem-v1",
+    "evidence_ref_count": 2,
+    "evidence_refs": [
+      {
+        "chunk_ref": "chunk::arch::001",
+        "payload_sha256": "dd7547603a03912bedfe7f8fe7d7ed6059529b5d56a57e464e305db5a4290b00",
+        "relevance_score": 0.081081,
+        "support_status": "bounded",
+        "title": "Agentic-Workflow L7_AUDITABILITY plane"
+      },
+      {
+        "chunk_ref": "chunk::uwg::002",
+        "payload_sha256": "e7008f01baa078298dd438e0727eccd4d911b06c2d0db4c09544b20eef5d37bd",
+        "relevance_score": 0.052632,
+        "support_status": "bounded",
+        "title": "DurableWriteGateway commit pipeline"
+      }
+    ],
+    "final_evidence_contract_id": "fec::r3::f79ba1c22a0a4764aa51501b2f6e512e",
+    "has_strong_support": false,
+    "integrated_runtime_origin": true,
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_grounded_read_run.run_integrated_grounded_read",
+    "query_text": "what does the L7 auditability plane emit",
+    "request_id": "req-41e0846cfcfa4219a41edf2b7735748a",
+    "retrieval_algorithm": "jaccard_over_alphanumeric_token_sets",
+    "run_id": "f79ba1c22a0a4764aa51501b2f6e512e",
+    "schema_version": "1.0.0",
+    "trace_root": "trace-880d17da007f47c98e7148df65408010"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_grounded_read_run",
+  "producer_function_or_class": "run_integrated_grounded_read",
+  "producer_module": "integrated_grounded_read_run",
+  "upstream_artifact_ref": "sha256:6eb02f4de1486c7554a3cafd1524c3939cab39fec088f929b07571aafe54e1c5"
+}

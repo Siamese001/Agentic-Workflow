@@ -70,6 +70,10 @@ class AppSpecificEvalResult:
     passed: bool = False
     fail_reasons: list[str] = field(default_factory=list)
     dimensions: list[DimensionResult] = field(default_factory=list)
+    # W2.P5 — HITL policy carried from the resolved threshold profile so X2
+    # can route to ESCALATE vs DENY without a store lookup.
+    # Values: "none" | "required_on_low" | "required_always".
+    hitl_policy: str = "none"
 
     def to_packet_dict(self) -> Dict[str, object]:
         """Serialize for ExitReviewPacket.app_specific_eval."""
@@ -83,6 +87,7 @@ class AppSpecificEvalResult:
             "overall_pass_threshold": self.overall_pass_threshold,
             "passed": self.passed,
             "fail_reasons": list(self.fail_reasons),
+            "hitl_policy": self.hitl_policy,
             "dimensions": [
                 {
                     "dimension_id": d.dimension_id,
@@ -129,9 +134,13 @@ class AppSpecificEvaluator:
         *,
         store: Optional[InMemoryAppDomainStore] = None,
         graders: Optional[Dict[str, GraderFn]] = None,
+        default_grader: Optional[GraderFn] = None,
     ) -> None:
         self._store = store or get_default_app_domain_store()
         self._graders: Dict[str, GraderFn] = dict(graders or {})
+        # W1.P2: optional fallback grader used when no per-dim grader is registered.
+        # Preserves existing fail-closed-on-UNKNOWN posture when default_grader is None.
+        self._default_grader: GraderFn = default_grader or _default_grader_not_implemented
 
     def register_grader(self, dimension_id: str, fn: GraderFn) -> None:
         """Install a grader for ``dimension_id``. Overwrites any prior grader."""
@@ -201,7 +210,7 @@ class AppSpecificEvaluator:
         total_weight = 0.0
         # progress: bounded by len(rubric.score_dimensions) — typically 6-10 per app, no UI bar needed
         for dim in rubric.score_dimensions:
-            grader = self._graders.get(dim.dimension_id, _default_grader_not_implemented)
+            grader = self._graders.get(dim.dimension_id, self._default_grader)
             try:
                 raw_score, evidence = grader(dim, run_context)
             except (ValueError, TypeError, RuntimeError) as exc:
@@ -212,6 +221,35 @@ class AppSpecificEvaluator:
                     dim.dimension_id, type(exc).__name__, exc,
                 )
                 raw_score, evidence = GRADER_UNKNOWN_SENTINEL, []
+            # W4.P2 — retry-on-low for llm_as_judge graders. When the first
+            # score is suspiciously low (< min_required_score) AND the grader
+            # type is llm_as_judge AND run_context carries a retry hint, run
+            # the grader exactly once more. This is Anthropic's "re-run
+            # the judge on low scores to guard against transient LLM noise".
+            # Budget: 1 retry per dim per run max. Idempotent: the grader
+            # must return deterministically for the same run_context; only
+            # llm_as_judge graders are allowed to vary and thus retried.
+            if (
+                dim.grader_type == "llm_as_judge"
+                and raw_score != GRADER_UNKNOWN_SENTINEL
+                and dim.min_required_score > 0
+                and raw_score < dim.min_required_score
+                and bool(run_context.get("judge_retry_on_low", False))
+            ):
+                try:
+                    retry_score, retry_evidence = grader(dim, run_context)
+                    # Accept higher of the two — retry only REDUCES false-low;
+                    # it doesn't rescue genuine fails.
+                    if retry_score != GRADER_UNKNOWN_SENTINEL and retry_score > raw_score:
+                        raw_score = retry_score
+                        evidence = list(evidence) + [f"retry_on_low={retry_score:.3f}"] + list(retry_evidence or [])
+                except (ValueError, TypeError, RuntimeError) as retry_exc:
+                    # guardian: allow-log-and-swallow -- retry is best-effort;
+                    # failure preserves original score (fail-closed posture intact)
+                    Logger.info(
+                        "app_specific_evaluator: retry for %s raised %s",
+                        dim.dimension_id, type(retry_exc).__name__,
+                    )
 
             result = self._classify_dimension(dim, raw_score, evidence)
             dim_results.append(result)
@@ -266,6 +304,7 @@ class AppSpecificEvaluator:
             passed=passed,
             fail_reasons=fail_reasons,
             dimensions=dim_results,
+            hitl_policy=threshold.hitl_policy,
         )
 
     def _classify_dimension(

@@ -92,6 +92,108 @@ def _collect_codes(verdicts: list[GateVerdict], result: GateResult) -> list[tupl
     return [(v, c) for v in verdicts if v.result is result for c in v.reason_codes]
 
 
+def _app_specific_eval_failure(packet: ExitReviewPacket) -> tuple[bool, list[str]]:
+    """W1.P3 — Extract app-specific eval failure signal for X2 aggregation.
+
+    Returns ``(is_bound_and_failed, reason_codes)``. When the packet carries
+    a bound app-specific eval result that did not pass, we synthesize
+    reason codes of the form ``APP_DIM_FAIL::<reason>`` for each entry in
+    ``fail_reasons``. X2 treats any bound-and-failed result as a hard fail
+    that forces X3A DENY — a Fort Knox domain rubric violation is not
+    recoverable via re-route or safe-abstain.
+    """
+    ase = packet.app_specific_eval or {}
+    if not isinstance(ase, dict):
+        return False, []
+    if not ase.get("bound"):
+        return False, []
+    if ase.get("passed") is True:
+        return False, []
+    raw_reasons = ase.get("fail_reasons") or []
+    if not isinstance(raw_reasons, (list, tuple)):
+        return True, ["APP_DIM_FAIL"]
+    codes = [f"APP_DIM_FAIL::{r}" for r in raw_reasons] or ["APP_DIM_FAIL"]
+    return True, codes
+
+
+# W2.P5 — Substrings considered "hard" guardrail violations. Checked FIRST
+# because fail_reasons carry a "dimension_fail::<dim_id>::<inner>" shape that
+# would otherwise always look soft if we matched only on top-level prefix.
+# If any of these appears anywhere in a fail_reason, DENY regardless of
+# hitl_policy — a human must never be asked to approve a run where a hard
+# guardrail (no_fabrication / factual_grounding / no_sensitive_targeting)
+# came back UNKNOWN or produced an out-of-range score.
+_APP_HARD_FAIL_SUBSTRINGS: tuple[str, ...] = (
+    "unknown_fail_closed",
+    "evidence_required_but_empty",
+    "score_out_of_range",
+    "unknown_app_contract",
+)
+
+# W2.P5 — Substrings considered "soft" threshold-class fails. Only when
+# every fail_reason is soft and none is hard does hitl_policy=required_on_low
+# escalate to a human review. Kept for forward-compatibility; the primary
+# decision is made by the hard-check above.
+_APP_SOFT_FAIL_SUBSTRINGS: tuple[str, ...] = (
+    "threshold_min",
+    "overall_below_threshold",
+    "below_rubric_min",
+)
+
+
+def _app_hitl_routing(packet: ExitReviewPacket) -> tuple[bool, str, list[str]]:
+    """W2.P5 — Compute HITL routing for a bound app-specific eval.
+
+    Returns ``(should_escalate, rationale, reason_codes)``.
+
+    - ``hitl_policy == "required_always"`` and bound + not passed: ESCALATE
+      (human reviews any below-threshold bound run).
+    - ``hitl_policy == "required_on_low"`` and bound + not passed + ALL
+      fail_reasons are "soft" (threshold-class, not guardrail): ESCALATE.
+    - Any guardrail-class fail_reason present: NOT escalated — falls through
+      to DENY via ``_app_specific_eval_failure``.
+    - ``hitl_policy == "none"`` (default): NOT escalated.
+    """
+    ase = packet.app_specific_eval or {}
+    if not isinstance(ase, dict):
+        return False, "", []
+    if not ase.get("bound"):
+        return False, "", []
+    if ase.get("passed") is True:
+        return False, "", []
+
+    policy = str(ase.get("hitl_policy", "none") or "none").lower()
+    if policy not in {"required_on_low", "required_always"}:
+        return False, "", []
+
+    raw_reasons = ase.get("fail_reasons") or []
+    reasons = [str(r) for r in raw_reasons] if isinstance(raw_reasons, (list, tuple)) else []
+
+    # If any hard guardrail fail is present, do NOT escalate — DENY path.
+    for r in reasons:
+        if any(sub in r for sub in _APP_HARD_FAIL_SUBSTRINGS):
+            return False, "", []
+
+    if policy == "required_always":
+        rationale = "hitl_required_always"
+    else:
+        # required_on_low — escalate only when failures are present and
+        # every failure matches a known soft substring (no unclassified
+        # reasons). Empty reasons list also escalates — the run is "low"
+        # simply because overall_score < overall_pass_threshold.
+        if reasons:
+            all_soft = all(
+                any(sub in r for sub in _APP_SOFT_FAIL_SUBSTRINGS) for r in reasons
+            )
+            if not all_soft:
+                return False, "", []
+        rationale = "hitl_required_on_low"
+
+    codes = [f"APP_DIM_FAIL::{r}" for r in reasons] or ["APP_DIM_FAIL"]
+    codes.append("HUMAN_REQUIRED")
+    return True, rationale, codes
+
+
 def aggregate_decision(
     verdicts: list[GateVerdict],
     packet: ExitReviewPacket,
@@ -103,6 +205,34 @@ def aggregate_decision(
     fail_pairs = _collect_codes(verdicts, GateResult.FAIL)
     warn_pairs = _collect_codes(verdicts, GateResult.WARN)
     unknown_pairs = _collect_codes(verdicts, GateResult.UNKNOWN)
+
+    # W2.P5 — HITL routing: when the resolved threshold profile declares
+    # hitl_policy=required_on_low or required_always and the bound app eval
+    # failed with only soft (threshold-class) reasons, ESCALATE instead of
+    # DENY. Guardrail-class failures always DENY (checked below).
+    should_escalate, hitl_rationale, hitl_codes = _app_hitl_routing(packet)
+    if should_escalate:
+        return AggregateDecision(
+            disposition=V6Disposition.ESCALATE,
+            failed_gate_ids=["APP_DOMAIN"],
+            reason_codes=hitl_codes,
+            triggering_verdicts=[],
+            rationale=hitl_rationale,
+        )
+
+    # W1.P3 — App-specific eval failure is a hard-fail. Checked before the
+    # generic X1-gate hard-fail logic so that a Fort Knox domain rubric
+    # violation (e.g. no_fabrication below 0.99) DENIES even if all 10 X1
+    # gates PASS. Audit BLOCKERs #1, #2, #5, #6 close here.
+    app_failed, app_reason_codes = _app_specific_eval_failure(packet)
+    if app_failed:
+        return AggregateDecision(
+            disposition=V6Disposition.DENY,
+            failed_gate_ids=["APP_DOMAIN"],
+            reason_codes=app_reason_codes,
+            triggering_verdicts=[],
+            rationale="app_specific_eval_failed",
+        )
 
     # ---- 1. HARD FAILS — X3A ----
     hard_fail_hits = [(v, c) for v, c in fail_pairs if c in _HARD_FAIL_CODES]

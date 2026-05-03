@@ -39,6 +39,7 @@ REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 
 TARGET_COLLECTIONS = [
+    # tools/generate/ingestion/ targets (legacy)
     "code_chunks",
     "symbols",
     "arch_docs",
@@ -47,6 +48,15 @@ TARGET_COLLECTIONS = [
     "process_docs",
     "ext_knowledge",
     "incidents_rca",
+    # tools/ingestion/ pipeline collection names (W2.2)
+    "repo_code_chunks",
+    "docs",
+    "repo_tests_guardrails",
+    "repo_runtime_evidence",
+    "repo_incidents_rca",
+    "traces",
+    "agentic_best_practices",
+    "repo_git_history",
 ]
 
 # ---------------------------------------------------------------------------

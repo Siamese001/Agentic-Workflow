@@ -19,5 +19,12 @@
     balance: 0.55
     concision: 0.7
     no_speculation: 0.95
+  # apps-eval-harness-closeout-b7c9d2 W1: RAG baseline dims are
+  # intentionally fail-open pending producer wiring (plan §Non-Goals).
+  # Gate suppresses NO_FAILOPEN_LLM_JUDGE + NO_UNIMPL_JUDGES for these.
+  intentional_failopen_dims:
+    - context_recall
+    - context_precision
+    - answer_relevancy
   source_app_config_ref: apps_research/config/
   created_at: '2026-05-01'

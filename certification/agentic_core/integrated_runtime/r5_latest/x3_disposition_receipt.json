@@ -1,0 +1,31 @@
+{
+  "artifact_hash": "sha256:75afe77ed3dc3ab43df0afd5cf9bf89260590b63dabdbe57ad33186c8bbd739a",
+  "emitted_at": "2026-05-02T11:23:34Z",
+  "payload": {
+    "failed_gate_ids": [],
+    "rationale": "safe_reuse_composite=SAFE_REUSE",
+    "reason_codes": [
+      "SAFE_REUSE",
+      "x3d_allow_terminal_cache"
+    ],
+    "verdict_count": 1,
+    "x3_disposition": "X3D",
+    "x3_packet": {
+      "commit_receipt_id": "",
+      "disposition": "X3D",
+      "evidence_status": "BOUNDED",
+      "final_response": "Paris.",
+      "runtime_exhaust_manifest": {
+        "produced_at": 1777721014,
+        "rationale": "safe_reuse_composite=SAFE_REUSE",
+        "track_label": "production"
+      },
+      "schema_status": "valid",
+      "trace_root": "trace-253a8b946ef7425093ad1dc165b89ad0"
+    }
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:b5ff23d01f3e6d1fbda9b53e8ed8a436783982e500b1fb8bfc0629eda8f0c519"
+}

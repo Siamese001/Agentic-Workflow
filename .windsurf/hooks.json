@@ -78,6 +78,16 @@
         "command": "python .windsurf/scripts/pre_user_prompt_weekly_report.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/pre_user_prompt_ag_queue_surface.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
+      },
+      {
+        "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": true
       }
     ],
     "post_write_code": [
@@ -93,6 +103,11 @@
       },
       {
         "command": "python .windsurf/scripts/post_write_plan_reconcile.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_write_cert_stage.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
       }
@@ -129,6 +144,21 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_author_gate_miss_detector.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_author_gate_ui_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_author_gate_schema_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_ask_user_question_packet_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
       },
@@ -199,6 +229,21 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_ag_queue_drain_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_ag_queue_seed_capture.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_notion_plans_status_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow",
         "show_output": false
       }

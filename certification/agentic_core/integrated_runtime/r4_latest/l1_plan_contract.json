@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:19aa9cbec53c0a255081f762ec5f2a14ce131f02d3921c56dab1ce3ba7efe630",
+  "emitted_at": "2026-05-02T16:57:06Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "r4 single action regen"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:0b9e665331a0b68d76d14c3ed862a60c8d72bd2c591267fe479c108c60461313"
+}

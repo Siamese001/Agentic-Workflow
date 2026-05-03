@@ -366,15 +366,17 @@ class TestE2EAllApps:
             accepted += 1
         assert accepted == len(dirs)
 
-    def test_apps_underwriting_ai_is_draft(self) -> None:
-        """TODO_FAILING_TEST — apps_underwriting_ai is a stub. Promotion to
-        status=active gated on implementation completion."""
+    def test_apps_underwriting_ai_is_active(self) -> None:
+        """W2.P4 closed (plan apps-eval-harness-parity-f8d4a2): apps_underwriting_ai
+        promoted draft→active after RubricOutputMapper producer landed. If this
+        test fails, the manifest/rubric was downgraded back to draft — regression."""
         from agentic_core.L4_state.contracts import get_default_app_domain_store
         dirs = discover_app_contract_dirs(REPO_ROOT)
         bundle = load_bundle_from_dir(dirs["apps_underwriting_ai"])
         register_bundle(bundle)
         store = get_default_app_domain_store()
-        rec = store.get_contract("apps_underwriting_ai", "*", allow_draft=True)
-        assert rec.status == "draft", (
-            "apps_underwriting_ai should remain draft until the app is implemented"
+        rec = store.get_contract("apps_underwriting_ai", "*")
+        assert rec.status == "active", (
+            "apps_underwriting_ai was flipped to status=active in W2.P4; "
+            f"got {rec.status!r} — regression to draft"
         )

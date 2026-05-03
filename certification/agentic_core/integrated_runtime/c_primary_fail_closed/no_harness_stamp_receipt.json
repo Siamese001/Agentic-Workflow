@@ -1,0 +1,27 @@
+{
+  "artifact_hash": "sha256:5ee40df8d321986f19a262706d4f646bb682ac8a6e750ab6580f49ddd7d50d3e",
+  "emitted_at": "2026-05-01T15:46:25Z",
+  "payload": {
+    "all_artifacts_stamped_by_production": true,
+    "attested_filenames": [
+      "integrated_runtime_entrypoint_invocation.json",
+      "validated_request.json",
+      "l1_plan_contract.json",
+      "route_contract.json",
+      "runtime_gate_verdict_bundle.json",
+      "semantic_cache_safe_reuse_decision.json",
+      "terminal_ret_packet.json",
+      "exit_review_packet.json",
+      "x3_disposition_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "integrated_runtime_artifact_manifest.json"
+    ],
+    "harness_check": "passed_self_attestation",
+    "invocation_id": "41537619ad644911a4f323b2079486b0",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:65bb57be99a104e9d646426d78239901827763276a57338b79c2e6b279322d3c"
+}

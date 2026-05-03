@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:9291d328efb09c3485133620019d4524188615eb000d6d2b336d2cab41a8c096",
+  "emitted_at": "2026-05-01T19:39:54Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "What is the capital of Germany?"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:eea67b52700d007ef562e9222265fa09007efbc33d1d83617fa718c223bb3c43"
+}

@@ -1,0 +1,680 @@
+{
+  "adg_snapshot_ref": "artifacts/adg/adg_indexed_05012026_0632.sqlite",
+  "adg_snapshot_sha256": "1bf34ebba35f7ecfa79d2ffed28a750c1f902aa0dde67b47e121b830aaf14fea",
+  "app_name": "apps_rg",
+  "blocking_gaps": [],
+  "entrypoint_command": "python -m apps_rg",
+  "exit_code": 0,
+  "finished_at_utc": "2026-05-02T01:15:44.065927Z",
+  "fixture_mode_detected": false,
+  "git_commit": "67fa40d40d",
+  "git_dirty": true,
+  "harness_pass": true,
+  "harness_run_id": "apps_rg-e2e-5df2244ddd48425b",
+  "honest_fail_closed": false,
+  "mock_mode_detected": false,
+  "notes": "Honest fail-closed proof bundle. The harness executed `python -m apps_rg` and recorded real artifacts + real SHA256 hashes. It refused to synthesize RouteContract/L1PlanContract/L3StepContract/ExitReviewPacket/RuntimeExhaustBundle because none were emitted by the real run. To flip success=true, integrate apps_rg with the governed runtime spine (U0 -> L1 -> L0 -> L3 -> C0 -> L2 -> Exit -> L6), register a static L3 DAG, and emit real OTEL spans bound to the same run_id.",
+  "otel_or_runtime_trace_ref": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+  "proof_schema_version": "apps_rg_e2e_proof/2026-05-01/v1",
+  "request_id": "apps_rg-run-9484926b794d4544",
+  "run_id": "apps_rg-run-9484926b794d4544",
+  "run_info": {
+    "artifacts": [
+      {
+        "mtime_epoch": 1777684543.8742576,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/Amit_Ayer_Resume.docx",
+        "sha256": "19c1c9ca0ba378300c0d13d2800ade0a91b27171e5aa79472ed1f2d1c832a724",
+        "size_bytes": 31420
+      },
+      {
+        "mtime_epoch": 1777684379.4087353,
+        "mtime_utc": "2026-05-02T01:12:59Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/company_research.json",
+        "sha256": "7201d85dab23ab2b59aaa4c1df69f898d6ad7fbcfb34d0675d84cfd0643f622c",
+        "size_bytes": 1916
+      },
+      {
+        "mtime_epoch": 1777684543.972627,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/exit_review_packet.json",
+        "sha256": "d51d4cc174838b4b351f729663b1b0d47f642833784d11dc4cae1e79d03b1328",
+        "size_bytes": 503
+      },
+      {
+        "mtime_epoch": 1777684543.0462658,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/generated_resume.json",
+        "sha256": "1503e4b42d4d1ea0768ac1192a81f6c244db50e0eec34aba1eb08a053a356b1a",
+        "size_bytes": 32991
+      },
+      {
+        "mtime_epoch": 1777684543.970117,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/l1_plan_contract.json",
+        "sha256": "90384cb9e9a783069b7ecec8a5a098b8adeabb33a8313ad4002dc5aa16ea2b37",
+        "size_bytes": 1519
+      },
+      {
+        "mtime_epoch": 1777684543.9716227,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/l2_execution_receipt.json",
+        "sha256": "9b03201f99169b61af0d5ee8560b9d0c6570bdc86ac7942d8c61a38778dab0fa",
+        "size_bytes": 9052
+      },
+      {
+        "mtime_epoch": 1777684543.9716227,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/l3_bypass_receipt.json",
+        "sha256": "4063fae34bc061607501c527a665290af6b5b5d083f271cf681e3648c77e4243",
+        "size_bytes": 890
+      },
+      {
+        "mtime_epoch": 1777684388.647964,
+        "mtime_utc": "2026-05-02T01:13:08Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4a_headline_hop_4a_headline_0_lead_with_archetype_20260502T011308Z.json",
+        "sha256": "35cbeadb364fcb1d6567ae981ec99dac869d2b874fcedc01b507f495673bc520",
+        "size_bytes": 1373
+      },
+      {
+        "mtime_epoch": 1777684388.648657,
+        "mtime_utc": "2026-05-02T01:13:08Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4a_headline_hop_4a_headline_1_marquee_20260502T011308Z.json",
+        "sha256": "6a3bf48cdcf9b3c1a95c2d25e4ddb546c716c28f133a200ac26de2e81626ad09",
+        "size_bytes": 1355
+      },
+      {
+        "mtime_epoch": 1777684388.6496933,
+        "mtime_utc": "2026-05-02T01:13:08Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4a_headline_hop_4a_headline_2_pain_point_20260502T011308Z.json",
+        "sha256": "90a02e82f81f2a2a6ed72408736b69b383df697cf1c354e3ec4a59dd0c325cba",
+        "size_bytes": 1344
+      },
+      {
+        "mtime_epoch": 1777684388.650213,
+        "mtime_utc": "2026-05-02T01:13:08Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4a_headline_scorecard_20260502T011308Z.json",
+        "sha256": "af3bd28a9b82ab5bdeca73b832d500285e99c052f23690ba2f9884f1e120192c",
+        "size_bytes": 4735
+      },
+      {
+        "mtime_epoch": 1777684408.1229804,
+        "mtime_utc": "2026-05-02T01:13:28Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4b_exec_summary_hop_4b_exec_summary_0_structural_a_archetype_first_20260502T011328Z.json",
+        "sha256": "c321e87aa8a2139f5f4ef90f2231c3b8392258db62fc29747857adf6ddd2c2b0",
+        "size_bytes": 2157
+      },
+      {
+        "mtime_epoch": 1777684408.1234832,
+        "mtime_utc": "2026-05-02T01:13:28Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4b_exec_summary_hop_4b_exec_summary_1_structural_b_outcome_first_20260502T011328Z.json",
+        "sha256": "73daa08e381db24b8a82d2b181772dba3ea0aa146490b033f71ccb2f11e91e1a",
+        "size_bytes": 1963
+      },
+      {
+        "mtime_epoch": 1777684408.1234832,
+        "mtime_utc": "2026-05-02T01:13:28Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4b_exec_summary_hop_4b_exec_summary_2_structural_c_priorities_first_20260502T011328Z.json",
+        "sha256": "af1532fb8572fcba67db2f357547b593bd789ca8c0aac323cfc171c088cf9417",
+        "size_bytes": 2356
+      },
+      {
+        "mtime_epoch": 1777684408.124994,
+        "mtime_utc": "2026-05-02T01:13:28Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4b_exec_summary_scorecard_20260502T011328Z.json",
+        "sha256": "8c2011c214f15c3a150f151863cc9f3489aab0610dee332f1d61f03491b5e812",
+        "size_bytes": 7143
+      },
+      {
+        "mtime_epoch": 1777684428.5515099,
+        "mtime_utc": "2026-05-02T01:13:48Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4c_competencies_hop_4c_competencies_0_set_strategy_first_20260502T011348Z.json",
+        "sha256": "273712689177892932fafa809c2fe0839007d1c02dab0e657a285ff3c83cfc69",
+        "size_bytes": 2288
+      },
+      {
+        "mtime_epoch": 1777684428.5515099,
+        "mtime_utc": "2026-05-02T01:13:48Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4c_competencies_hop_4c_competencies_1_set_delivery_first_20260502T011348Z.json",
+        "sha256": "6dee6668c3ed6b53276c3ffd9b37ed0f8eb2ee7351368cabd9b479bb5911f395",
+        "size_bytes": 2363
+      },
+      {
+        "mtime_epoch": 1777684428.5530634,
+        "mtime_utc": "2026-05-02T01:13:48Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4c_competencies_hop_4c_competencies_2_set_governance_first_20260502T011348Z.json",
+        "sha256": "244cce5fbb2c427be1286575e32d145bb654d383f0792d0a5985e6b3e4cda76c",
+        "size_bytes": 2338
+      },
+      {
+        "mtime_epoch": 1777684428.554068,
+        "mtime_utc": "2026-05-02T01:13:48Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/hop_4c_competencies_scorecard_20260502T011348Z.json",
+        "sha256": "b9bb49de0bf500835e1e441256f22690584680fd9b42e5da557ae798c489d88d",
+        "size_bytes": 7656
+      },
+      {
+        "mtime_epoch": 1777684501.6544354,
+        "mtime_utc": "2026-05-02T01:15:01Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__0_role_bullets__ibm__0_0_preserve_metrics_20260502T011501Z.json",
+        "sha256": "304334256500a3db399a787d72c45f74c70905deac3b6b1e914ba258dc18f335",
+        "size_bytes": 1400
+      },
+      {
+        "mtime_epoch": 1777684501.6544354,
+        "mtime_utc": "2026-05-02T01:15:01Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__0_role_bullets__ibm__0_1_compress_to_outcome_20260502T011501Z.json",
+        "sha256": "82a118f5a53e28cffb1fdeff741f02e14dc2b214871277be20f29464493a9141",
+        "size_bytes": 1310
+      },
+      {
+        "mtime_epoch": 1777684501.6544354,
+        "mtime_utc": "2026-05-02T01:15:01Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__0_role_bullets__ibm__0_2_mirror_company_lang_20260502T011501Z.json",
+        "sha256": "a3791b1d3d411db58e445d3b173632bf72bc5a35fe71fb77162d758198e5afa0",
+        "size_bytes": 1404
+      },
+      {
+        "mtime_epoch": 1777684501.6582825,
+        "mtime_utc": "2026-05-02T01:15:01Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__0_scorecard_20260502T011501Z.json",
+        "sha256": "e85438a23da9c47ff260430e54492bfaff5a19014726de0901c22505971fe6e4",
+        "size_bytes": 4782
+      },
+      {
+        "mtime_epoch": 1777684510.7805934,
+        "mtime_utc": "2026-05-02T01:15:10Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__1_role_bullets__ibm__1_0_preserve_metrics_20260502T011510Z.json",
+        "sha256": "f85b906c80a772baa90c492acbe0ac16742d504102ce9e505e63b32f1c13c188",
+        "size_bytes": 1598
+      },
+      {
+        "mtime_epoch": 1777684510.7811239,
+        "mtime_utc": "2026-05-02T01:15:10Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__1_role_bullets__ibm__1_1_compress_to_outcome_20260502T011510Z.json",
+        "sha256": "bbe73b2474132d8269ce83cc6d2a843812da26c676909bec17c0af51e7fe8cd2",
+        "size_bytes": 1570
+      },
+      {
+        "mtime_epoch": 1777684510.7811239,
+        "mtime_utc": "2026-05-02T01:15:10Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__1_role_bullets__ibm__1_2_mirror_company_lang_20260502T011510Z.json",
+        "sha256": "25101644b561916c1ace83b54713017f96460535b1b29f96e9c034db45aed5be",
+        "size_bytes": 1632
+      },
+      {
+        "mtime_epoch": 1777684510.784177,
+        "mtime_utc": "2026-05-02T01:15:10Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__1_scorecard_20260502T011510Z.json",
+        "sha256": "cc2eb93c2e944e30b6cc2675da64e44c40a896598849bc26462c37024e0b545b",
+        "size_bytes": 5528
+      },
+      {
+        "mtime_epoch": 1777684521.206715,
+        "mtime_utc": "2026-05-02T01:15:21Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__2_role_bullets__ibm__2_0_preserve_metrics_20260502T011521Z.json",
+        "sha256": "2f25a1df04e39ffd32b841665f070b76269d563179e38d25c4a670c700501fe5",
+        "size_bytes": 1545
+      },
+      {
+        "mtime_epoch": 1777684521.2072246,
+        "mtime_utc": "2026-05-02T01:15:21Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__2_role_bullets__ibm__2_1_compress_to_outcome_20260502T011521Z.json",
+        "sha256": "fc0922b86cb471b6ccac6ab681d7d8360a716be5471f4084752d9a3608a0fbf9",
+        "size_bytes": 1562
+      },
+      {
+        "mtime_epoch": 1777684521.208229,
+        "mtime_utc": "2026-05-02T01:15:21Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__2_role_bullets__ibm__2_2_mirror_company_lang_20260502T011521Z.json",
+        "sha256": "1d1ff1a300c008f15bda9c7890974bc0cee9fce405ef341f309ddf7ef6140a52",
+        "size_bytes": 1698
+      },
+      {
+        "mtime_epoch": 1777684521.2256677,
+        "mtime_utc": "2026-05-02T01:15:21Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__2_scorecard_20260502T011521Z.json",
+        "sha256": "121577320c14ff97f7d9a1e5443ca8bcda18915f4b98cc9a9a1bf972ac8237ea",
+        "size_bytes": 5533
+      },
+      {
+        "mtime_epoch": 1777684530.726658,
+        "mtime_utc": "2026-05-02T01:15:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__3_role_bullets__ibm__3_0_preserve_metrics_20260502T011530Z.json",
+        "sha256": "1c723eb5f2f845486e186ba933e85100d3033aa1b47dba910565b10c77af0e4f",
+        "size_bytes": 1611
+      },
+      {
+        "mtime_epoch": 1777684530.7276714,
+        "mtime_utc": "2026-05-02T01:15:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__3_role_bullets__ibm__3_1_compress_to_outcome_20260502T011530Z.json",
+        "sha256": "59c94f0e244d8f02dd09c328e061ca1f44d03a5186a096f954ca0c78183f2b24",
+        "size_bytes": 1485
+      },
+      {
+        "mtime_epoch": 1777684530.7276714,
+        "mtime_utc": "2026-05-02T01:15:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__3_role_bullets__ibm__3_2_mirror_company_lang_20260502T011530Z.json",
+        "sha256": "2e8f836b52ad142f12b09d142c977f8a99e3e4814ba24d6475e032bd80537591",
+        "size_bytes": 1574
+      },
+      {
+        "mtime_epoch": 1777684530.7313073,
+        "mtime_utc": "2026-05-02T01:15:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__3_scorecard_20260502T011530Z.json",
+        "sha256": "08add47b5e8117cde79a8c5d597056a799be11f73432d029c30fe8267a5dbdd6",
+        "size_bytes": 5398
+      },
+      {
+        "mtime_epoch": 1777684543.0349834,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__4_role_bullets__ibm__4_0_preserve_metrics_20260502T011543Z.json",
+        "sha256": "07e522a6361b9497bf2e4f06f14399dd37bc100d05a6e6c627d31b0eb1bf0ad8",
+        "size_bytes": 1583
+      },
+      {
+        "mtime_epoch": 1777684543.0349834,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__4_role_bullets__ibm__4_1_compress_to_outcome_20260502T011543Z.json",
+        "sha256": "852d7af1b3cc1c2cc5f8be0a8ea08dfa226393026e5a83c0479781dda56249de",
+        "size_bytes": 1459
+      },
+      {
+        "mtime_epoch": 1777684543.0349834,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__4_role_bullets__ibm__4_2_mirror_company_lang_20260502T011543Z.json",
+        "sha256": "138fa684615d0db57f9a7152e494c3176fc3a364b4fccb0933a26f51eb2dea1b",
+        "size_bytes": 1576
+      },
+      {
+        "mtime_epoch": 1777684543.0397608,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__ibm__4_scorecard_20260502T011543Z.json",
+        "sha256": "126a82745261f12c232e8c7be2991b16d0cdcae4a5be294fc61b5ca7d190ddf3",
+        "size_bytes": 5346
+      },
+      {
+        "mtime_epoch": 1777684438.2407265,
+        "mtime_utc": "2026-05-02T01:13:58Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__0_role_bullets__unify__0_0_preserve_metrics_20260502T011358Z.json",
+        "sha256": "bd3af33e0d5188c5662a3fc8a2036a13e34b7f4caeaa1cb8e4c322b2c6c1df1c",
+        "size_bytes": 1564
+      },
+      {
+        "mtime_epoch": 1777684438.2407265,
+        "mtime_utc": "2026-05-02T01:13:58Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__0_role_bullets__unify__0_1_compress_to_outcome_20260502T011358Z.json",
+        "sha256": "72b382adc6200b43324c68092578d52932eee8fbe0136ed67482ff9dc1fd504e",
+        "size_bytes": 1393
+      },
+      {
+        "mtime_epoch": 1777684438.241727,
+        "mtime_utc": "2026-05-02T01:13:58Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__0_role_bullets__unify__0_2_mirror_company_lang_20260502T011358Z.json",
+        "sha256": "2f3aa9b2a1e2ac04293ab7935c2af4f0243243c8eab3ba4b239c0ca67fa3c3e6",
+        "size_bytes": 1553
+      },
+      {
+        "mtime_epoch": 1777684438.2422338,
+        "mtime_utc": "2026-05-02T01:13:58Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__0_scorecard_20260502T011358Z.json",
+        "sha256": "99f2dcb4571ab947aa90b1557d17b85a25dbddaf82ff0bbca9c7a23f0bdcd3ec",
+        "size_bytes": 5180
+      },
+      {
+        "mtime_epoch": 1777684449.0000167,
+        "mtime_utc": "2026-05-02T01:14:09Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__1_role_bullets__unify__1_0_preserve_metrics_20260502T011409Z.json",
+        "sha256": "8e398af08e29c006cbd6854b661fa06ba839cfd734209332b9e64a95412a0e29",
+        "size_bytes": 1623
+      },
+      {
+        "mtime_epoch": 1777684449.0015252,
+        "mtime_utc": "2026-05-02T01:14:09Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__1_role_bullets__unify__1_1_compress_to_outcome_20260502T011409Z.json",
+        "sha256": "6328f669bc093d3e582398b335324c1bb0021dbb452446c364198fdac9129c6f",
+        "size_bytes": 1594
+      },
+      {
+        "mtime_epoch": 1777684449.0015252,
+        "mtime_utc": "2026-05-02T01:14:09Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__1_role_bullets__unify__1_2_mirror_company_lang_20260502T011409Z.json",
+        "sha256": "aa53c9ceb1b0fbb439bfea1579372c449eac82e5b38cabf88868fe1f50111a18",
+        "size_bytes": 1770
+      },
+      {
+        "mtime_epoch": 1777684449.0015252,
+        "mtime_utc": "2026-05-02T01:14:09Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__1_scorecard_20260502T011409Z.json",
+        "sha256": "e00092e26ce6836e0c59b1b74989ccdc0b5022de96fb79b2811c10433dd87a2f",
+        "size_bytes": 5717
+      },
+      {
+        "mtime_epoch": 1777684459.103779,
+        "mtime_utc": "2026-05-02T01:14:19Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__2_role_bullets__unify__2_0_preserve_metrics_20260502T011419Z.json",
+        "sha256": "33756f85f66c7dc20f909ebb77c135345a7a9a0fa40428ea46f195343960571e",
+        "size_bytes": 1707
+      },
+      {
+        "mtime_epoch": 1777684459.104781,
+        "mtime_utc": "2026-05-02T01:14:19Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__2_role_bullets__unify__2_1_compress_to_outcome_20260502T011419Z.json",
+        "sha256": "29942756124907626a9627e2a64f4b4e2d734072092b591bae93bc84e52ae73c",
+        "size_bytes": 1540
+      },
+      {
+        "mtime_epoch": 1777684459.104781,
+        "mtime_utc": "2026-05-02T01:14:19Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__2_role_bullets__unify__2_2_mirror_company_lang_20260502T011419Z.json",
+        "sha256": "c632f86c4a8c80d1103cde72dbdbc77fb8319a65a5dd7101ab61baeebca6f9b1",
+        "size_bytes": 1719
+      },
+      {
+        "mtime_epoch": 1777684459.1062865,
+        "mtime_utc": "2026-05-02T01:14:19Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__2_scorecard_20260502T011419Z.json",
+        "sha256": "5dc889ea2f5cae104e6e5bc6056751864c9de4e3007d900902782cbed36381a3",
+        "size_bytes": 5696
+      },
+      {
+        "mtime_epoch": 1777684470.8045893,
+        "mtime_utc": "2026-05-02T01:14:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__3_role_bullets__unify__3_0_preserve_metrics_20260502T011430Z.json",
+        "sha256": "7396529389d407a9ea443343eae59247a45abe880558c5b9deafd963ea94ffef",
+        "size_bytes": 1605
+      },
+      {
+        "mtime_epoch": 1777684470.8045893,
+        "mtime_utc": "2026-05-02T01:14:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__3_role_bullets__unify__3_1_compress_to_outcome_20260502T011430Z.json",
+        "sha256": "404af1106705d1ccd1f2b7fb124f7e14a16cccf5e5ef6d9f482d6d81f6f067bc",
+        "size_bytes": 1520
+      },
+      {
+        "mtime_epoch": 1777684470.806099,
+        "mtime_utc": "2026-05-02T01:14:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__3_role_bullets__unify__3_2_mirror_company_lang_20260502T011430Z.json",
+        "sha256": "f7552de2e0be2b051f2504fe63115c4f2be6c0c0bca50a51d1ac80c0789dada9",
+        "size_bytes": 1718
+      },
+      {
+        "mtime_epoch": 1777684470.807106,
+        "mtime_utc": "2026-05-02T01:14:30Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__3_scorecard_20260502T011430Z.json",
+        "sha256": "286f02320a1daf7361949b020c72624b772db9d40c406e01f5a1f1baf78579bc",
+        "size_bytes": 5573
+      },
+      {
+        "mtime_epoch": 1777684481.5928504,
+        "mtime_utc": "2026-05-02T01:14:41Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__4_role_bullets__unify__4_0_preserve_metrics_20260502T011441Z.json",
+        "sha256": "cc1cf1a24b9fbee69474c6699aa7c7d12f3b4eb0737178f93ee8fd544e9587ca",
+        "size_bytes": 1606
+      },
+      {
+        "mtime_epoch": 1777684481.5928504,
+        "mtime_utc": "2026-05-02T01:14:41Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__4_role_bullets__unify__4_1_compress_to_outcome_20260502T011441Z.json",
+        "sha256": "8be4e2af1fc73c28fb699f0257abd9973620d8bdef8f8f1f067224d55319dae1",
+        "size_bytes": 1622
+      },
+      {
+        "mtime_epoch": 1777684481.5928504,
+        "mtime_utc": "2026-05-02T01:14:41Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__4_role_bullets__unify__4_2_mirror_company_lang_20260502T011441Z.json",
+        "sha256": "609b7b88fd48630d70337ddf4cdbffff6926ddce9847389b517db579f5ffb2f4",
+        "size_bytes": 1610
+      },
+      {
+        "mtime_epoch": 1777684481.5953777,
+        "mtime_utc": "2026-05-02T01:14:41Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__4_scorecard_20260502T011441Z.json",
+        "sha256": "01b48eb6b9fa4e40b7922d1af431dbca71df13717ac348827c0f68f3484cf18d",
+        "size_bytes": 5568
+      },
+      {
+        "mtime_epoch": 1777684492.5832343,
+        "mtime_utc": "2026-05-02T01:14:52Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__5_role_bullets__unify__5_0_preserve_metrics_20260502T011452Z.json",
+        "sha256": "1113b34ec9b30c7b055ad52fa23f2b9d6603572acb58ddf748a34b6e12db5da4",
+        "size_bytes": 1685
+      },
+      {
+        "mtime_epoch": 1777684492.5842416,
+        "mtime_utc": "2026-05-02T01:14:52Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__5_role_bullets__unify__5_1_compress_to_outcome_20260502T011452Z.json",
+        "sha256": "0f705d5d12f5eb6bee265e29f548d347efc49abb38f04d231a9585805d251dde",
+        "size_bytes": 1656
+      },
+      {
+        "mtime_epoch": 1777684492.5848029,
+        "mtime_utc": "2026-05-02T01:14:52Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__5_role_bullets__unify__5_2_mirror_company_lang_20260502T011452Z.json",
+        "sha256": "df963d64505839c068831a2e13489fe3c8ac5f084ebfb0bbe5618b1920d128ed",
+        "size_bytes": 1811
+      },
+      {
+        "mtime_epoch": 1777684492.5848029,
+        "mtime_utc": "2026-05-02T01:14:52Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/candidates/role_bullets__unify__5_scorecard_20260502T011452Z.json",
+        "sha256": "ccf352fde957b9c4b2cc9fd4da61ee1ed9cb33b52e0c822770475a94f51b1527",
+        "size_bytes": 5882
+      },
+      {
+        "mtime_epoch": 1777684543.0513606,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/narrative/scorecard.json",
+        "sha256": "b5cd22c33df8a1da630c432202f8f2cfd6e2cd3a2b9b6e424489c4abe31dbad2",
+        "size_bytes": 2540
+      },
+      {
+        "mtime_epoch": 1777684543.972627,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+        "sha256": "dc0295f295b754409538b0e6e8ad840a1ad73950101cea6e08b99db6c2a16819",
+        "size_bytes": 1628
+      },
+      {
+        "mtime_epoch": 1777684543.9711173,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/route_contract.json",
+        "sha256": "13e2ba26c811248ab13d07d7be42b5d757352340358f752bac8adbf5d1865538",
+        "size_bytes": 740
+      },
+      {
+        "mtime_epoch": 1777684543.0513606,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/run_report.json",
+        "sha256": "a0a6322ac958396bf77eacbd1c4a76fdf085c83fc51a13d98b4993ff71229b9a",
+        "size_bytes": 3710
+      },
+      {
+        "mtime_epoch": 1777684543.972627,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/runtime_exhaust_bundle.json",
+        "sha256": "3df19ab724eaf428c3d81cc0583faa24c6ee6c20c958fa0a7e52ccc621501bab",
+        "size_bytes": 21778
+      },
+      {
+        "mtime_epoch": 1777684543.970117,
+        "mtime_utc": "2026-05-02T01:15:43Z",
+        "path": "artifacts/apps_rg/runs/20260501_211258/u0_intake_envelope.json",
+        "sha256": "6877e003952844edfa7f19d047e0ac5abf97823f53a43a2c9aee46358ef8a353",
+        "size_bytes": 602
+      }
+    ],
+    "dir_mtime_epoch": 1777684543.972627,
+    "run_dir": "artifacts/apps_rg/runs/20260501_211258",
+    "stale": []
+  },
+  "run_log_ref": "artifacts/certification/apps_rg_e2e/apps_rg_run.log",
+  "runtime_exhaust_ref": "artifacts/apps_rg/runs/20260501_211258/runtime_exhaust_bundle.json",
+  "runtime_exit_disposition_ref": "artifacts/apps_rg/runs/20260501_211258/exit_review_packet.json",
+  "runtime_intake_ref": "artifacts/apps_rg/runs/20260501_211258/u0_intake_envelope.json",
+  "runtime_l1_plan_ref": "artifacts/apps_rg/runs/20260501_211258/l1_plan_contract.json",
+  "runtime_l2_receipt_ref": "artifacts/apps_rg/runs/20260501_211258/l2_execution_receipt.json",
+  "runtime_l3_bypass_ref": "artifacts/apps_rg/runs/20260501_211258/l3_bypass_receipt.json",
+  "runtime_l3_receipt_ref": null,
+  "runtime_mode": "governed_spine_active",
+  "runtime_route_contract_ref": "artifacts/apps_rg/runs/20260501_211258/route_contract.json",
+  "spine_signals": {
+    "apps_rg/__main__.py": {
+      "exists": true,
+      "sha256": "d262544063b8caa67567acff935ea19137d7f207b2220b1804931e59aac7ce5d",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": true
+      }
+    },
+    "apps_rg/bootstrap_runtime.py": {
+      "exists": true,
+      "sha256": "beddea5923ec1564921a4b7e1e70a18e69be3207589b03c48b81e26be73bf4f3",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_rg/scripts/generate_resume.py": {
+      "exists": true,
+      "sha256": "d85e94fab2d2262c211326c5e10eea27778aca659419d25d91ec7769b4c76ac0",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    }
+  },
+  "stage_matrix": [
+    {
+      "artifact": "artifacts/certification/apps_rg_e2e/apps_rg_static_l3_dag_proof.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": false,
+      "stage": "static_l3_dag",
+      "static_required": true
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/u0_intake_envelope.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "U0_intake",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/l1_plan_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L1_plan",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/route_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L0_route",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/l3_bypass_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L3_orchestrate_or_bypass",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "C0_retrieval",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "prompt_assembly",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/l2_execution_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L2_execute",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/exit_review_packet.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "Exit_X3",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/runtime_exhaust_bundle.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L6_exhaust",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "otel_or_runtime_trace",
+      "static_required": false
+    }
+  ],
+  "started_at_utc": "2026-05-02T01:12:55.469122Z",
+  "static_dag_proof_inline_summary": {
+    "dag_id": "apps_rg.resume_generation_v1.l3_dag",
+    "dag_sha256": "f22ec8506d12703a896a530d2117030a3a34d1ccb65f9f4fd713d008d38d7d6e",
+    "fail_reasons": [],
+    "present": true
+  },
+  "static_dag_ref": "artifacts/certification/apps_rg_e2e/apps_rg_static_l3_dag_proof.json",
+  "static_dag_sha256": "53d5515cb91d279a6cb7fd1f1395d3ebadcbdc76e0bed6afa3943df532e0c5d2",
+  "success": true,
+  "trace_root": "apps_rg-run-9484926b794d4544"
+}

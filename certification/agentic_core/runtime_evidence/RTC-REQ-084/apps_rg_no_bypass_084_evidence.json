@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.617753Z",
+  "control_scope": "no_bypass_mutation_suite",
+  "per_req": {
+    "RTC-REQ-084": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.617753Z"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "fortknox_mutation_rejection_report: overall_verdict==PASS AND all_scenarios_rejected==true AND scenarios_total==scenarios_rejected_as_expected AND no scenarios_incorrectly_accepted",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "fortknox_mutation_rejection_report: overall_verdict==PASS AND all_scenarios_rejected==true AND scenarios_total==scenarios_rejected_as_expected AND no scenarios_incorrectly_accepted",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "ea878a7ca979a3b482fd15031097ae95dbc5bcf8a72831e7a414b6cdb336f9d2",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-084",
+  "schema_version": "runtime-evidence-v1"
+}

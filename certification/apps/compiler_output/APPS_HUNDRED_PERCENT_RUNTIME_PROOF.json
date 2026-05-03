@@ -1,0 +1,327 @@
+{
+  "assertions": {
+    "line_count": 243,
+    "path": "certification/apps_evidence_assertions.jsonl",
+    "present": true,
+    "result_counts": {
+      "BLOCKED": 0,
+      "FAIL": 0,
+      "NOT_VERIFIED": 1,
+      "PASS": 242
+    },
+    "schema_path": "certification/schemas/apps_evidence_assertion.schema.json",
+    "schema_sha256": "eb08268524f47d2a6f8fab322b08dbaba775090b71bbd02f76788257ee50d2f1",
+    "sha256": "138a5cec29188c1cf32c16d245bdaaeee713527a9091104f4bc673c11f66ee30"
+  },
+  "catalog": {
+    "path": "certification/apps_e2e_requirements_source.json",
+    "positive_control_req_id": "APPS-REQ-001",
+    "present": true,
+    "requirement_count": 33,
+    "schema_path": "certification/schemas/apps_e2e_requirements.schema.json",
+    "schema_sha256": "a94f7011d8838993646d3d424dc5c80bd88d4a89d1511cfd3bc45978facc1408",
+    "schema_version": "apps_e2e_fortknox-v1",
+    "sha256": "b895596ceb8a4e620a555cad05b666dafb44a931d3fbf065ae3072a735d397f5"
+  },
+  "generated_at_utc": "2026-05-03T00:04:44Z",
+  "generator": "tools/certification/generate_apps_100pct_runtime_proof.py",
+  "generator_version": "apps_e2e_fortknox_consolidator-v1.0",
+  "headline_claims": {
+    "all_gates_pass": true,
+    "canary_pass": true,
+    "effective_trust_level": "INTEGRITY_PROOF",
+    "final_signed_certification": false,
+    "keyless_signature_present": false,
+    "keyless_signature_verified": false,
+    "live_signature_re_verify_passed": true,
+    "mutation_rejection_rate": 1.0,
+    "mutation_zero_accepts": true,
+    "n_apps_certified": 8,
+    "n_apps_total": 8,
+    "n_apps_waived": 0,
+    "percent_signed_off": 100.0,
+    "row_blocked": 0,
+    "row_not_verified": 0,
+    "row_signed_off": 33,
+    "row_signed_off_with_waiver": 0,
+    "row_total": 33,
+    "signature_verification_status": "VERIFIED",
+    "signature_verified": true,
+    "trust_in_signed_set": true,
+    "trust_level": "INTEGRITY_PROOF"
+  },
+  "keyless_signature": {
+    "path": "artifacts/certification/apps_e2e/apps_e2e_signoff_report.signature.keyless.json",
+    "present": false
+  },
+  "live_keyless_signature_re_verify": {
+    "reason": "keyless envelope absent",
+    "skipped": true
+  },
+  "live_signature_re_verify": {
+    "duration_ms": 96,
+    "exit_code": 0,
+    "passed": true,
+    "stderr_tail": [],
+    "verifier": "tools/cert/apps_e2e/verify_apps_release_signature.py"
+  },
+  "matrix": {
+    "n_apps": 8,
+    "path": "artifacts/certification/apps_e2e/apps_e2e_matrix.json",
+    "present": true,
+    "schema_version": null,
+    "sha256": "4d32798545a694abb366f5774b6556f08ee1decaf96765e76a94a9cd98f6223e"
+  },
+  "mutation_rejection": {
+    "driver_path": "tools/cert/apps_e2e/apps_mutation_driver.py",
+    "driver_version": "apps_mutation_driver-v1.0",
+    "path": "artifacts/certification/apps_e2e/apps_mutation_rejection_report.json",
+    "present": true,
+    "schema_version": "apps_mutation_rejection_report-v1",
+    "sha256": "04da14f2e5bd35c04e5b7c38c68ae7a9d788dad29c67a62b6377df53fa327a0e",
+    "summary": {
+      "accepted": 0,
+      "rejected": 107,
+      "rejection_rate": 1.0,
+      "skipped_not_applicable": 3,
+      "tamper_class_count": 11,
+      "total": 110
+    }
+  },
+  "per_app": [
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_eval",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_artifact_manifest.json",
+      "manifest_sha256": "33720056ba5856c0f118820818f5a4c491d22b9c8745d3fd3c5f02a2d66e6203",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_e2e_proof.json",
+      "proof_bundle_sha256": "b3f45313631936ae244ba77050ac8e4b870f586ad26d9599e8e06629e2393e41",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_static_l3_dag_proof.json",
+      "static_dag_sha256": "5a8cc31a40394cbaa87dbd8622a37e1efce6ec202ba302d20dd62bd50a9ad0af",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_exec",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_exec/apps_exec_artifact_manifest.json",
+      "manifest_sha256": "1910e1b1ed1dd77f872d85b4f372d7f0757a293ec6e3df4f5f28da6d2e0ce9ec",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_exec/apps_exec_e2e_proof.json",
+      "proof_bundle_sha256": "28b9a554af3a2b19fb834b8ab913440a3495cea52eb75336b4de99d01de161bc",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_exec/apps_exec_static_l3_dag_proof.json",
+      "static_dag_sha256": "79dceca7043f5423f7d8e0e2e91357eea417a6ea4f08ee96433d08839b12bc35",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_lic",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_lic/apps_lic_artifact_manifest.json",
+      "manifest_sha256": "e9518813fefdf73bfb35f73896c8fd036573a973b066564138627f207be44d68",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_lic/apps_lic_e2e_proof.json",
+      "proof_bundle_sha256": "03fa8ec371cf78eb10efb9a987be9be09c07832490b7d98dbd39124ffff484b0",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_lic/apps_lic_static_l3_dag_proof.json",
+      "static_dag_sha256": "78ab614265601f3cb3504ac7a4ff5da5b251fcc45d8b5f1268e940e82f3ba3bd",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_qna",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_qna/apps_qna_artifact_manifest.json",
+      "manifest_sha256": "ce628f1e2836d49d9c97f4c14d119f06631212e37387590afbe9a1f40c80c1af",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_qna/apps_qna_e2e_proof.json",
+      "proof_bundle_sha256": "2a8a4884ac62a45aba35fd3c0768cc3b3e6e7070fc149d7c611894203959b827",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_qna/apps_qna_static_l3_dag_proof.json",
+      "static_dag_sha256": "ffc02100f976f46c3e3a93c5a19a565cd5e9d3fbb501f347de9c3f5730b6af2b",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_research",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_research/apps_research_artifact_manifest.json",
+      "manifest_sha256": "6007151f598b1343701d43da8b3894ac42eedad51cc257660f0a8e7c39f045df",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_research/apps_research_e2e_proof.json",
+      "proof_bundle_sha256": "e0ed618432ec512c09ec4f36a92a9261787fa03a24529122916c3a812d166e40",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_research/apps_research_static_l3_dag_proof.json",
+      "static_dag_sha256": "e07555c7ee684e3b93ce1bc7e36822b3a5d30ea30577dbb844b164a6e2465b6b",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_rfp",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_artifact_manifest.json",
+      "manifest_sha256": "d71cea1e3d52d49d25913ba61a614e6c4b0298a6dcb1d5a71d6d592274c9a670",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_e2e_proof.json",
+      "proof_bundle_sha256": "caa8721f514aca72a7cbac9abc192ba32cd484054cafec2d2a8f2f36896bc486",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_rfp/apps_rfp_static_l3_dag_proof.json",
+      "static_dag_sha256": "859c9fa8da44588424c3c613d15426bb749d3a60c578046d6a9cb8e5a60317b7",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_rg",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_rg/apps_rg_artifact_manifest.json",
+      "manifest_sha256": "f74683e5ca727990673cc894c2c4e336e1a197a176848c4a5ca5938a100b8827",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_rg/apps_rg_e2e_proof.json",
+      "proof_bundle_sha256": "72ebf97a83c2855ff1cc979b5df9afbbc1024d8a19aacf8221ca8bb9a95b4738",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_rg/apps_rg_static_l3_dag_proof.json",
+      "static_dag_sha256": "cdfc9d1452ad3597811e39f54179b7bb00be8fc97bd0b6a5b061f7b30380c978",
+      "synthetic_trace_detected": false
+    },
+    {
+      "agentic_core_spine_status": "spine_active",
+      "app_name": "apps_underwriting_ai",
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "exit_code": 0,
+      "fixture_runtime_mode": false,
+      "manifest_path": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_artifact_manifest.json",
+      "manifest_sha256": "098f1e72465c339547e23e147908f3f507b88fa400a8ebf4993d91edf248cadf",
+      "mock_mode_detected": false,
+      "proof_bundle_path": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_e2e_proof.json",
+      "proof_bundle_sha256": "804dfe377490653eb37d9c46eae0839fbe0b23b43071e26e20165711c1873ee8",
+      "runtime_mode": "governed_spine_active",
+      "static_dag_path": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_static_l3_dag_proof.json",
+      "static_dag_sha256": "24acee6fef2e7e4b15319a94d205ee7b491c7fabacd2a560c2df9545473b1be9",
+      "synthetic_trace_detected": false
+    }
+  ],
+  "remaining_external_gaps": {
+    "FINAL_SIGNED_CERTIFICATION": {
+      "blocks_apps_signed_proof": false,
+      "description": "Promotion to FINAL_SIGNED_CERTIFICATION requires a third-party identity authority (cosign keyless via Sigstore Fulcio under GitHub OIDC). Repo-committed Ed25519 signer caps honestly at SIGNED_PROOF. Run .github/workflows/apps-fortknox-keyless-sign.yml on a tagged release to close.",
+      "status": "OPEN"
+    }
+  },
+  "repo_root": "C:/Git/Agentic-Workflow-FRESH",
+  "schema_version": "apps_e2e_hundred_percent_runtime_proof-v1",
+  "signature": {
+    "merkle_root": "a452f09fbbf833fe63ccae18ec925d39b4a73f6e0dea45d76a65eeaf0120f7a9",
+    "path": "artifacts/certification/apps_e2e/apps_e2e_signoff_report.signature.json",
+    "present": true,
+    "report_sha256": "8f0594dc0521bf6c7da00691a29c5cc60e8ff43ba323b8b634483dbb885008c0",
+    "report_trust_level": "INTEGRITY_PROOF",
+    "sha256": "723807471015f6685db0ba7585cb5fa8eb9ffc1141a988bfc67f2a3c3db11492",
+    "signature_algorithm": "ed25519",
+    "signature_verification_status": "VERIFIED",
+    "signer_identity": "DEVELOPMENT_SIGNER:ed25519:f8dbd2c42e377626",
+    "signer_version": "apps_e2e_fortknox_signer-v1",
+    "signing_timestamp_utc": "2026-05-03T00:04:44Z",
+    "transparency_log_entry_id": null
+  },
+  "signoff": {
+    "compiler_path": "scripts/compile_apps_e2e_signoff.py",
+    "compiler_sha256": "6f7ec7edbef50245c9f5a5f65411256b2a107f78463ee5830be1630bcf649ee0",
+    "compiler_version": "apps_e2e_fortknox-v1.0",
+    "evidence_digest": "5397ac861be3f8759ec2b663e7a9b47008678bcc2ab831ad001cb893449076ba",
+    "git_commit": "01d45962880692975564f961c3b59bf2202b9ff2",
+    "git_dirty": true,
+    "merkle_leaf_count": 33,
+    "merkle_path": "artifacts/certification/apps_e2e/apps_e2e_signoff_report.merkle.json",
+    "merkle_root": "a452f09fbbf833fe63ccae18ec925d39b4a73f6e0dea45d76a65eeaf0120f7a9",
+    "merkle_sha256": "351daf6cacc97dc071a977d5914c98bdf8810fc3086053e0767111a2df2f683c",
+    "path": "artifacts/certification/apps_e2e/apps_e2e_signoff_report.json",
+    "positive_control_status": "PASS",
+    "present": true,
+    "row_digest": "69ee040822b06b19a8be90273fd68f7326ce964b25c60baa6df291d909481b8d",
+    "sha256": "8f0594dc0521bf6c7da00691a29c5cc60e8ff43ba323b8b634483dbb885008c0",
+    "sidecar_sha256": "c5671f7c97b65ca26b4438bd529f1abab069659213dbcd7a57aca8d6b91096c5",
+    "sidecar_sha256_path": "artifacts/certification/apps_e2e/apps_e2e_signoff_report.sha256",
+    "summary": {
+      "blocked": 0,
+      "by_claim_type": {
+        "APPS_BUNDLE_EMISSION": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 1,
+          "signed_off_with_waiver": 0,
+          "total": 1
+        },
+        "APPS_MATRIX_GOVERNANCE": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 1,
+          "signed_off_with_waiver": 0,
+          "total": 1
+        },
+        "APPS_NEGATIVE_CONTROL": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 3,
+          "signed_off_with_waiver": 0,
+          "total": 3
+        },
+        "APPS_POSITIVE_CONTROL": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 1,
+          "signed_off_with_waiver": 0,
+          "total": 1
+        },
+        "APPS_SPINE_CERTIFIED": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 20,
+          "signed_off_with_waiver": 0,
+          "total": 20
+        },
+        "APPS_STATIC_CONTRACT": {
+          "blocked": 0,
+          "not_verified": 0,
+          "signed_off": 7,
+          "signed_off_with_waiver": 0,
+          "total": 7
+        }
+      },
+      "not_verified": 0,
+      "percent_signed_off": 100.0,
+      "signed_off": 33,
+      "signed_off_with_waiver": 0,
+      "total": 33
+    },
+    "trust_level": "INTEGRITY_PROOF"
+  },
+  "verifier_report": {
+    "exit_code": 0,
+    "mode": "strict",
+    "n_apps": 8,
+    "n_fail": 0,
+    "n_pass": 8,
+    "path": "artifacts/certification/apps_e2e/verifier_report.json",
+    "present": true,
+    "schema_version": "apps_e2e_verifier_report/2026-05-02/v1",
+    "sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b"
+  }
+}

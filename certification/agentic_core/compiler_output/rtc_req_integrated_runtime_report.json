@@ -1,0 +1,40 @@
+{
+  "bundle_artifact_count": 18,
+  "bundle_dir": "artifacts\\certification\\integrated_runtime\\latest",
+  "evaluated_at_utc": "2026-05-02T03:42:18+00:00",
+  "overall_result": "PASS",
+  "per_req": {
+    "RTC-REQ-010": {
+      "result": "PASS",
+      "title": "Integrated runtime entrypoint required",
+      "violations": []
+    },
+    "RTC-REQ-011": {
+      "result": "PASS",
+      "title": "Harness observes only",
+      "violations": []
+    },
+    "RTC-REQ-012": {
+      "result": "PASS",
+      "title": "Exit + exactly one X3 disposition",
+      "violations": []
+    },
+    "RTC-REQ-013": {
+      "result": "PASS",
+      "title": "Terminal cache route does not execute L2",
+      "violations": []
+    },
+    "RTC-REQ-014": {
+      "result": "PASS",
+      "title": "Provenance fields on every artifact",
+      "violations": []
+    },
+    "RTC-REQ-015": {
+      "result": "PASS",
+      "title": "Authority binding on runtime artifacts",
+      "violations": []
+    }
+  },
+  "scope": "Wave B \u2014 RTC-REQ-010..015",
+  "verifier": "verify_rtc_req_integrated_runtime"
+}

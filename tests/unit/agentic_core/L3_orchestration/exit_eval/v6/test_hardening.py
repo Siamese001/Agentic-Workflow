@@ -268,5 +268,5 @@ def test_v6_package_exports_all_hardening_symbols() -> None:
 
 def test_span_catalog_unchanged_after_h5_attr_addition() -> None:
     """Sanity: extending REQUIRED_ATTRIBUTES doesn't change the span catalog count."""
-    # Catalog is 40 after Wave 1 X3F addition; should remain 40 in Wave 2.
-    assert len(EXIT_V6_SPAN_CATALOG) == 40
+    # Catalog is 41 after APPS-DOM runtime harness added SPAN_APP_SPECIFIC_EVAL.
+    assert len(EXIT_V6_SPAN_CATALOG) == 41

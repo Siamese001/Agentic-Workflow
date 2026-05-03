@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:c8a47fc77e6785eb5e931ba558ef4edbff84dafecee21d78e605b7a358964979",
+  "emitted_at": "2026-05-02T16:57:05Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "what does the L7 auditability plane emit"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:aaf4fa153fa6beb576633ebf2ac2b4f028c6f5211094a86d92d71984abb50cd5"
+}

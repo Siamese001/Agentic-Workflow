@@ -49,14 +49,36 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "decision_record.schema.json"
+# Canonical SSOT schema (plan author-gate-ssot-consolidation-b7c3e1).
+# Legacy decision_record.schema.json remains the ledger-row schema; this
+# packet schema is the emit-time SSOT shared with all 4 audit hooks.
+SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_packet.schema.json"
 RULE_PATH = REPO_ROOT / ".windsurf" / "rules" / "author-gate-enforcement.md"
 PRECEDENT_SCRIPT = Path(__file__).resolve().parent / "precedent_injector.py"
+
+# Shared schema loader — single import surface for emit + audits.
+sys.path.insert(0, str(REPO_ROOT))
+try:
+    from tools.author_gate.schema_loader import validate as _schema_validate  # noqa: E402
+except ImportError:  # guardian: allow-broad -- schema loader optional at boot
+    _schema_validate = None  # type: ignore
 
 SURFACE_THRESHOLD = 0.72
 DOMINANCE_SCORE = 0.85
 DOMINANCE_DELTA = 0.12
 MAX_SURFACE_OPTIONS = 4
+
+# plan author-gate-hardening-a3b8f2 W1.P1.3 — reason-code enum surfaced to approver
+REASON_CODE_PALETTE = [
+    "override_recommendation",
+    "insufficient_precedent",
+    "blast_radius_too_high",
+    "principle_shift",
+    "test_strategy_change",
+    "dependency_risk",
+    "deletion_risk",
+    "other",
+]
 
 GIT_TIMEOUT_S = 10
 PRECEDENT_TIMEOUT_S = 25
@@ -240,8 +262,25 @@ def _validate_option_didactic(opt: dict[str, Any]) -> list[str]:
 
 
 def _validate_schema(packet: dict[str, Any]) -> list[str]:
-    """Minimal jsonschema check (no jsonschema lib dep — hand-validate required fields)."""
+    """Schema-first validation against the canonical SSOT schema.
+
+    Plan author-gate-ssot-consolidation-b7c3e1 W2.P2.1: prefer jsonschema lib
+    against ``.windsurf/schemas/author_gate_packet.schema.json`` and fall back
+    to the legacy hand-rolled checks when the lib is unavailable.
+    """
     errors: list[str] = []
+    if _schema_validate is not None:
+        for finding in _schema_validate(packet):
+            if finding.get("invariant") == "schema_lib_missing":
+                break  # fall through to legacy hand-validation
+            errors.append(
+                f"schema[{finding.get('path')}]: {finding.get('message', '')}"
+            )
+        else:
+            # Append AG-10 didactic checks not expressible in JSON Schema.
+            for opt in packet.get("candidates") or []:
+                errors.extend(_validate_option_didactic(opt))
+            return errors
     for required in ("decision_id", "created_at", "decision_type", "status"):
         if not packet.get(required):
             errors.append(f"missing required field: {required}")
@@ -282,34 +321,45 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
     files_in_scope = spec.get("files_in_scope") or []
     candidates_in = spec.get("candidates") or []
 
-    # Recommendation winner (before routing applies suppression)
+    # Pre-routing ranking for packet-level metadata only.
     ranked = sorted(candidates_in, key=lambda c: float(c.get("confidence_score", 0)), reverse=True)
-    recommended_id = ranked[0].get("id") if ranked else None
 
     annotated, routing = apply_routing([dict(c) for c in candidates_in])
 
-    # Gold-star the recommended option in-place (highest confidence among surfaced)
+    # recommended_option_id is set ONLY when dominance fires; otherwise no recommendation exists.
+    recommended_id = (
+        ranked[0].get("id") if ranked and routing.get("rule_applied") == "dominance_fires" else None
+    )
+
+    # Gold-star ONLY when dominance fires (author-gate-enforcement.md Pipeline step 7).
+    # In any other routing verdict (surface_top_N, low_confidence_ambiguity, empty)
+    # no option is starred — the gate verdict is "user-decision-required" and there
+    # is no recommendation. Every surfaced option still carries a [confidence=0.NN]
+    # prefix so the UI always shows the score.
+    dominance_fired = routing.get("rule_applied") == "dominance_fires"
     surfaced_sorted = sorted(
         (c for c in annotated if c.get("surfaced")),
         key=lambda c: float(c.get("confidence_score", 0)),
         reverse=True,
     )
-    if surfaced_sorted:
-        top = surfaced_sorted[0]
-        top["is_recommended"] = True
-        top["surface_label"] = f"⭐ Recommended — {top.get('thesis', top.get('id', ''))[:80]}"
-        top["surface_description_prefix"] = (
-            f"[RECOMMENDED ⭐ confidence={float(top.get('confidence_score', 0)):.2f}]"
-        )
-        for other in surfaced_sorted[1:]:
-            other["is_recommended"] = False
-            other["surface_label"] = other.get("thesis", other.get("id", ""))[:80]
-            other["surface_description_prefix"] = (
-                f"[confidence={float(other.get('confidence_score', 0)):.2f}]"
-            )
+    for idx, opt in enumerate(surfaced_sorted):
+        score = float(opt.get("confidence_score", 0))
+        title = opt.get("thesis", opt.get("id", ""))[:80]
+        if dominance_fired and idx == 0:
+            opt["is_recommended"] = True
+            opt["surface_label"] = f"⭐ Recommended — {title}"
+            opt["surface_description_prefix"] = f"[RECOMMENDED ⭐ confidence={score:.2f}]"
+        else:
+            opt["is_recommended"] = False
+            opt["surface_label"] = title
+            opt["surface_description_prefix"] = f"[confidence={score:.2f}]"
 
     precedent = _fetch_precedent(decision_type, intent, spec.get("repo_area"))
     fingerprint = _context_fingerprint(files_in_scope)
+
+    # W2.P2.1 — attach signal vector per surfaced candidate when signal_collector
+    # is available. Fail-soft: skill still emits valid packets without it.
+    _attach_signal_vectors(annotated, decision_type, spec)
 
     packet = {
         "decision_id": _make_decision_id(),
@@ -338,8 +388,97 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
         "routing": routing,
         "precedent": precedent,
         "status": "surfaced",
+        # plan author-gate-hardening-a3b8f2 W1.P1.3 — reason-code palette surfaced to approver
+        "reason_code_palette": REASON_CODE_PALETTE,
+        # W3.P3.1 — calibrator stamps (populated by weekly calibrator; NULL during cold-start)
+        "calibrator_version": _latest_calibrator_version(decision_type),
     }
     return packet
+
+
+def _attach_signal_vectors(
+    annotated: list[dict[str, Any]], decision_type: str, spec: dict[str, Any]
+) -> None:
+    """W2.P2.1 — compute a 5-signal confidence vector per surfaced candidate.
+
+    Signals + weights (sum=1.0):
+        verbalized              0.15  (candidate.confidence_score)
+        precedent_agreement     0.30  (spec['precedent_agreement_by_option'][id], default 0.5)
+        blast_radius_penalty    0.20  (1 - min(spec['blast_radius_hops']/5, 1), default 1.0)
+        hotspot_penalty         0.15  (1 - spec['adg_hotspot_rank']/top_N, default 1.0)
+        rule_violation_penalty  0.20  (1 if id not in spec['rule_flagged_options'], else 0)
+
+    Each signal is recorded on the option under ``signals`` as a dict; the
+    weighted raw sum is stored as ``raw_score``. ``confidence_calibrated``
+    is left unset here — the calibrator persists it separately.
+    """
+    weights = {
+        "verbalized": 0.15,
+        "precedent_agreement": 0.30,
+        "blast_radius_penalty": 0.20,
+        "hotspot_penalty": 0.15,
+        "rule_violation_penalty": 0.20,
+    }
+    precedent_by_opt = spec.get("precedent_agreement_by_option") or {}
+    hops = spec.get("blast_radius_hops")
+    hotspot = spec.get("adg_hotspot_rank")
+    hotspot_top_n = spec.get("adg_hotspot_top_n") or 100
+    rule_flagged = set(spec.get("rule_flagged_options") or [])
+
+    for opt in annotated:
+        if not opt.get("surfaced"):
+            continue
+        oid = opt.get("id", "")
+        verbalized = float(opt.get("confidence_score", 0))
+        precedent = float(precedent_by_opt.get(oid, 0.5))
+        if hops is None:
+            blast = 1.0
+        else:
+            try:
+                blast = 1.0 - min(float(hops) / 5.0, 1.0)
+            except (TypeError, ValueError):
+                blast = 1.0
+        if hotspot is None:
+            hspot = 1.0
+        else:
+            try:
+                hspot = max(0.0, 1.0 - (float(hotspot) / float(hotspot_top_n)))
+            except (TypeError, ValueError):
+                hspot = 1.0
+        rule = 0.0 if oid in rule_flagged else 1.0
+        signals = {
+            "verbalized": verbalized,
+            "precedent_agreement": precedent,
+            "blast_radius_penalty": blast,
+            "hotspot_penalty": hspot,
+            "rule_violation_penalty": rule,
+        }
+        raw_score = sum(signals[k] * weights[k] for k in weights)
+        opt["signals"] = signals
+        opt["signal_weights"] = weights
+        opt["raw_score"] = round(raw_score, 4)
+
+
+def _latest_calibrator_version(decision_type: str) -> str | None:
+    """Read the most recent calibrator version for this decision_type, if any.
+
+    Fail-soft: returns None when the ledger / snapshot is not yet populated.
+    """
+    try:
+        import sqlite3 as _sqlite3  # pylint: disable=import-outside-toplevel
+
+        db = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+        if not db.exists():
+            return None
+        with _sqlite3.connect(str(db), timeout=3) as conn:
+            row = conn.execute(
+                "SELECT calibrator_version FROM decision_calibration_snapshots "
+                "WHERE decision_type = ? ORDER BY created_at DESC LIMIT 1",
+                (decision_type,),
+            ).fetchone()
+            return row[0] if row else None
+    except Exception:  # guardian: allow-broad -- fail-soft version probe, non-fatal
+        return None
 
 
 def main() -> int:
@@ -380,6 +519,22 @@ def main() -> int:
     body = json.dumps(packet, indent=2)
     sys.stdout.write("AUTHOR_GATE_PACKET: " + body + "\n")
     sys.stdout.write("HITL_PACKET: " + body + "\n")
+
+    # W3.P3.1 — emit a ROUTER_DECISION marker so the Author-Gate participates
+    # in the closed-loop router family (constitutional §29). `layer=author_gate`
+    # is the 11th synthetic router at the harness plane.
+    rd_fields = [
+        "layer=author_gate",
+        f"decision_id={packet['decision_id']}",
+        f"decision_type={packet['decision_type']}",
+        f"rule_applied={packet['routing'].get('rule_applied', 'unknown')}",
+        f"top_score={packet.get('confidence_top') or 0:.2f}",
+        f"dominance_gap={packet['routing'].get('dominance_delta_observed') or 0:.2f}",
+        f"surfaced={sum(1 for c in packet.get('candidates', []) if c.get('surfaced'))}",
+        f"precedent={packet.get('precedent', {}).get('verdict', 'none')}",
+        "outcome=pending",
+    ]
+    sys.stdout.write("ROUTER_DECISION: " + ", ".join(rd_fields) + "\n")
     return 0
 
 

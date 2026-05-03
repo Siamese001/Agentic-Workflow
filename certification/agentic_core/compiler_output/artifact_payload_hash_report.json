@@ -1,0 +1,38 @@
+{
+  "actual_fail_reason": "",
+  "csv_self_hash_check": {
+    "actual_hash": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+    "kind": "csv_self_hash",
+    "manifest_declared_hashes": {
+      "acceptance_legality_report.json": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "canonical_universe_manifest.json": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "requirement_count_receipt.json": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "schema_validation_report.json": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "source_divergence_report.json": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9"
+    },
+    "matches": [
+      "canonical_universe_manifest.json",
+      "requirement_count_receipt.json",
+      "schema_validation_report.json",
+      "acceptance_legality_report.json",
+      "source_divergence_report.json"
+    ],
+    "mismatches": [],
+    "payload_exists": true,
+    "payload_path": "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reference\\contracts\\certification\\runtime_certification_requirements_100_percent_hardened.csv",
+    "payload_size_bytes": 180935,
+    "rule": "RTC-REQ-123"
+  },
+  "executed_at_utc": "2026-05-01T22:44:44.881627+00:00",
+  "expected_fail_reason": "",
+  "multi_payload_manifest_check": {
+    "kind": "multi_payload_manifest",
+    "manifest_exists": false,
+    "manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\artifact_manifest.json",
+    "rule": "RTC-REQ-123",
+    "skipped_reason": "OPTIONAL_MANIFEST_NOT_PRESENT"
+  },
+  "rule": "RTC-REQ-123",
+  "status": "PASS",
+  "verifier": "verify_artifact_payload_hashes"
+}

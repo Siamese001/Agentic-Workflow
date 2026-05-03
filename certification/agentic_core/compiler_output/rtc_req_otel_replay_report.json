@@ -1,0 +1,33 @@
+{
+  "evaluated_at_utc": "2026-05-02T02:59:19+00:00",
+  "overall_result": "PARTIAL_PASS_WITH_BLOCKED_INFRA",
+  "per_req": {
+    "RTC-REQ-020": {
+      "message": "no external OTEL collector receipt on disk; expected artifacts/certification/otel_collector_receipt.json. Unblock: launch docker-compose.otel.yml and run a probe that exports spans to the collector.",
+      "result": "BLOCKED",
+      "title": "Collector-backed OTEL"
+    },
+    "RTC-REQ-021": {
+      "message": "trace_root='trace-dba6d841cc20407bbe35244ee1236126' consistent across all 4 runtime-sensitive artifacts",
+      "result": "PASS",
+      "title": "Parent scenario span correlation"
+    },
+    "RTC-REQ-022": {
+      "message": "no metric delta report on disk; expected artifacts/certification/otel_metric_delta_report.json. Unblock: instrument R1B path with counters + export deltas via collector. Required attributes per RTC-REQ-022: route_id, cache_tier, namespace, policy_hash, result/reason.",
+      "result": "BLOCKED",
+      "title": "Counter deltas with attributes"
+    },
+    "RTC-REQ-023": {
+      "message": "replay_key match=True, content_hash match=True",
+      "result": "PASS",
+      "title": "Replay pair determinism"
+    },
+    "RTC-REQ-024": {
+      "message": "mutation diverges: replay_key=True, content_hash=True",
+      "result": "PASS",
+      "title": "Replay mutation negative"
+    }
+  },
+  "scope": "Wave C \u2014 RTC-REQ-020..024",
+  "verifier": "verify_rtc_req_otel_replay"
+}

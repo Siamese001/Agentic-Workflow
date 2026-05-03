@@ -1,0 +1,77 @@
+{
+  "exit_code": 0,
+  "generated_at_utc": "2026-05-03T00:01:53.910135Z",
+  "mode": "strict",
+  "rows": [
+    {
+      "app_name": "apps_rg",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_eval",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_exec",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_lic",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_qna",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_research",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_rfp",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    },
+    {
+      "app_name": "apps_underwriting_ai",
+      "bundle_present": true,
+      "certification_level": "SPINE_COMPLETE_CERTIFIED",
+      "mode": "strict",
+      "violation_count": 0,
+      "violations": []
+    }
+  ],
+  "summary": {
+    "n_apps": 8,
+    "n_fail": 0,
+    "n_pass": 8
+  },
+  "verifier_report_schema_version": "apps_e2e_verifier_report/2026-05-02/v1"
+}

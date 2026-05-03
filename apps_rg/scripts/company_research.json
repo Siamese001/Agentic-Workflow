@@ -1,0 +1,174 @@
+{
+  "company": "Blend360",
+  "fetched_at": "2026-05-03T10:50:00Z",
+  "source": "user_uploaded",
+  "freshness_ttl_days": 30,
+  "overview": {
+    "tagline": "Premier data, AI, and marketing consulting firm turning complex enterprise challenges into competitive advantage through analytical rigor and pragmatic execution",
+    "founded": 2016,
+    "size_band": "1001-5000",
+    "ownership": "PE-backed (Recognize Partners minority stake, $100M 2022)",
+    "headquarters": "Columbia, MD",
+    "core_offerings": [
+      "Agentic Transformation consulting",
+      "BlendX Agentic AI Foundry (Snowflake-native)",
+      "Data science and analytics advisory",
+      "AI/ML engineering and implementation",
+      "Organizational readiness and change management",
+      "Private Equity value creation programs"
+    ]
+  },
+  "strategic_priorities": [
+    "Scale Agentic Transformation practice to $15–25M managed revenue",
+    "Move clients from pilot purgatory to scaled production-grade agentic operations",
+    "Execute $300M M&A strategy targeting specialized agentic AI firms and hyperscaler partnerships",
+    "Establish Blend360 as the definitive named partner for enterprise agentic transformation",
+    "Leverage BlendX Agentic AI Foundry as the primary scalable delivery vehicle",
+    "Deepen PE portfolio engagement through compressed value-creation timelines",
+    "Codify institutional playbooks and publish thought leadership to dominate market narrative"
+  ],
+  "customer_profile": {
+    "verticals": [
+      "Financial Services",
+      "Technology, Media & Telecom (TMT)",
+      "Healthcare",
+      "Travel & Hospitality",
+      "Private Equity-backed portfolio companies",
+      "Public Sector"
+    ],
+    "buyer_titles": [
+      "CEO",
+      "CFO",
+      "COO",
+      "CAIO (Chief AI Officer)",
+      "CTO",
+      "PE Operating Partners"
+    ],
+    "typical_engagement_size": "Multi-year enterprise transformation programs; Year 2 target $15–25M managed/influenced revenue per SVP"
+  },
+  "tech_stack_signals": [
+    "Snowflake AI Data Cloud (Premier Partner, BlendX native)",
+    "AWS (Premier Partner, Generative AI Services Competency)",
+    "Databricks (Select Consulting Partner)",
+    "Salesforce Agentforce",
+    "Microsoft Dynamics 365 / Azure",
+    "SAP BTP agent-led toolchains",
+    "Pega Decisioning (certified consultants and Lead System Architects)",
+    "Snowflake Cortex AI",
+    "BlendX — pre-built accelerators compressing AI dev from months to days"
+  ],
+  "cultural_cues": [
+    "Meaningful impact — every engagement must produce quantifiable business outcomes",
+    "Practitioner-led — CEO Ozgur Dogan is an AI practitioner, not a career administrator",
+    "World-class talent acquisition as a core differentiator (Merkle DNA)",
+    "Analytical rigor paired with pragmatic business execution",
+    "Fast-paced PE-backed environment where urgency and accountability are non-negotiable",
+    "Dual DNA: data-science depth + marketing/revenue-growth orientation",
+    "Constellation Research 2026 AI-First Service Firms recognition — disruptor identity, not legacy integrator"
+  ],
+  "leadership": [
+    {
+      "name": "Ozgur Dogan",
+      "title": "Chief Executive Officer",
+      "background": "Co-founder; former President of the Americas; practitioner mandate focused on translating AI into measurable business impact and moving clients from experimentation to full enterprise deployment (named CEO April 2026)"
+    },
+    {
+      "name": "Rob Fuller",
+      "title": "Chief Solutions Officer",
+      "background": "Oversees technological innovation and BlendX Agentic AI Foundry; advocates pragmatic, battle-tested code over black-box platforms"
+    },
+    {
+      "name": "Adam Mincham",
+      "title": "Head of Agentic AI Business Transformation",
+      "background": "Leads specific transformation initiatives; subject matter expert in agentic architectures"
+    },
+    {
+      "name": "Dimo Kostopoulos",
+      "title": "SVP, AI Engineering Solutions",
+      "background": "Manages technical implementation and engineering of AI systems"
+    },
+    {
+      "name": "Paul Evers",
+      "title": "SVP of Client Services",
+      "background": "Appointed April 2026 to deepen executive client relationships and drive exceptional delivery"
+    }
+  ],
+  "competitive_set": [
+    "McKinsey (QuantumBlack)",
+    "Bain & Company",
+    "BCG (Gamma)",
+    "PwC",
+    "Accenture",
+    "Deloitte AI practice",
+    "AlixPartners"
+  ],
+  "pain_points_inferred": [
+    "62% of enterprises experimenting with AI agents but only 23% successfully scaling — the pilot purgatory gap is the core revenue opportunity",
+    "Only 21% of companies have redesigned workflows for AI — organizational readiness is the missing link",
+    "Skeptical CFOs demanding quantified ROI before committing to multi-year transformation spend",
+    "Middle management psychological resistance when autonomous agents displace oversight roles",
+    "Shadow IT and ungoverned consumer AI tools creating data leakage risk in enterprise clients",
+    "Legacy consulting firms unable to move from slide decks to production-grade autonomous deployment",
+    "PE sponsors need EBITDA margin expansion on compressed 3–5 year hold-period timelines"
+  ],
+  "recent_moves": [
+    {
+      "date": "2026-04",
+      "event": "Ozgur Dogan named CEO replacing Patrick Hennessy",
+      "signal": "Shift to practitioner-led executive mandate; accelerating AI-first market positioning"
+    },
+    {
+      "date": "2026-03",
+      "event": "Launched expanded Mexico operations as strategic client and delivery hub with AWS",
+      "signal": "Americas growth play; deepening hyperscaler collaboration for enterprise AI"
+    },
+    {
+      "date": "2026-01",
+      "event": "Named to Constellation Research 2026 AI-First Service Firms list (announced at Davos)",
+      "signal": "Market recognition as disruptor; validates differentiation from legacy systems integrators"
+    },
+    {
+      "date": "2025-10",
+      "event": "Launched BlendX Agentic AI Foundry on Snowflake",
+      "signal": "Productization of agentic services; compresses delivery from months to days with reusable accelerators"
+    },
+    {
+      "date": "2025-06",
+      "event": "Announced $300M M&A investment strategy targeting agentic AI specialists",
+      "signal": "Aggressive inorganic scaling into Financial Services, TMT, Healthcare verticals"
+    }
+  ],
+  "language_to_mirror": [
+    "agentic transformation",
+    "pilot purgatory",
+    "production-grade agentic operations",
+    "organizational readiness",
+    "transformational value",
+    "systems of action",
+    "digital labor",
+    "value architecture",
+    "autonomous workflows",
+    "executive alignment",
+    "C-suite trust",
+    "agentic enterprise",
+    "scaled, repeatable delivery",
+    "meaningful impact",
+    "decision-layer automation",
+    "EBITDA expansion",
+    "Critical 7 framework",
+    "change capacity",
+    "agentic maturity",
+    "practitioner-led"
+  ],
+  "language_to_avoid": [
+    "implementation partner",
+    "digital transformation (generic)",
+    "AI-powered (without specific outcome)",
+    "leverage synergies",
+    "best-in-class (unquantified)",
+    "thought leader (without specific proof)",
+    "co-pilot",
+    "experimental AI",
+    "proof of concept only"
+  ]
+}

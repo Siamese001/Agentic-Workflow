@@ -1,0 +1,128 @@
+# Repair Profile Schema — apps_* domain contract
+# Plan: apps-core-contract-rectification-a8f3c2 Phase 1.1
+#
+# Defines the structure for per-app repair menu contracts used by the spine
+# to invoke app-specific recovery actions when a stage fails or scores below
+# threshold.
+#
+# SSOT: .windsurf/schemas/repair_profile.schema.yaml
+# Referenced by: apps_*/config/domain_contract/repair_profiles.yaml
+# L4 record: AppDomainContractRecord.repair_profile_refs
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: RepairProfile
+description: |
+  Declarative repair menu for an apps_* domain. The spine consults this to
+  select recovery actions without embedding app logic in agentic_core.
+
+type: object
+required:
+  - repair_profile_id
+  - app_id
+  - version
+  - status
+  - repair_scenarios
+
+properties:
+  repair_profile_id:
+    type: string
+    description: Unique ID in format rp::<app_id>::<task_class>::v<N>
+    pattern: "^rp::.+::.+::v\\d+$"
+
+  app_id:
+    type: string
+    description: App identifier (must match AppDomainContractRecord.app_id)
+    pattern: "^apps_"
+
+  version:
+    type: string
+    description: Semantic version (e.g. 1.0.0)
+
+  status:
+    type: string
+    enum: [draft, active, deprecated]
+
+  source_app_config_ref:
+    type: string
+    description: Path to the source YAML file for lineage tracing
+
+  created_at:
+    type: string
+    description: ISO 8601 creation date
+
+  repair_scenarios:
+    type: array
+    description: Ordered list of repair scenarios the spine may invoke
+    minItems: 1
+    items:
+      $ref: "#/definitions/RepairScenario"
+
+definitions:
+  RepairScenario:
+    type: object
+    required:
+      - scenario_id
+      - stage_id
+      - trigger_condition
+      - recovery_action
+      - rollback_target
+    properties:
+      scenario_id:
+        type: string
+        description: Unique within this profile (e.g. retry_hop1_on_low_score)
+
+      stage_id:
+        type: string
+        description: HOP/stage identifier this scenario applies to (e.g. HOP1, route, any)
+
+      trigger_condition:
+        type: string
+        description: |
+          Condition that activates this repair scenario. Examples:
+          - score_below_threshold:<dim_id>:<threshold>
+          - stage_exception:<error_type>
+          - output_missing:<field>
+          - timeout
+
+      recovery_action:
+        type: string
+        description: |
+          Action to take when trigger fires. One of:
+          - retry_with_backoff:<max_attempts>
+          - escalate_to_hitl
+          - fallback_to_stub_output
+          - skip_stage
+          - abort_run
+          - retry_with_expanded_context:<context_key>
+
+      rollback_target:
+        type: string
+        description: |
+          Stage to roll back to before retry. "none" means in-place retry.
+          Examples: HOP1, route, none
+
+      healing_trigger:
+        type: string
+        description: |
+          Optional. Rubric dimension ID that must improve for recovery to be
+          considered successful. Omit if recovery success is binary.
+
+      escalation_path:
+        type: string
+        description: |
+          Optional. What happens if recovery_action fails. One of:
+          - abort_run
+          - escalate_to_hitl
+          - use_previous_output
+          - mark_partial_pass
+
+      max_attempts:
+        type: integer
+        minimum: 1
+        maximum: 10
+        description: Maximum retry attempts before escalation_path fires
+
+      priority:
+        type: integer
+        minimum: 1
+        description: Lower number = higher priority when multiple scenarios trigger simultaneously

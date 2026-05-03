@@ -320,6 +320,23 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="eval_harness_outcome",
+        purpose=(
+            "Per-run AppSpecificEvaluator results from the v6 Exit pipeline — "
+            "bound/passed/score/hitl_policy/disposition per app. Evidence surface "
+            "for audit BLOCKER #10 feedback loop and the apps_* harness-parity "
+            "CI gate (plan apps-eval-harness-parity-f8d4a2 W5.P6/P7)."
+        ),
+        schema_file="eval_harness_outcome_ledger.schema.sql",
+        writer_hook="agentic_core/L3_orchestration/exit_eval/v6/pipeline.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-eval-harness-outcome/SKILL.md",
+        wave="W5.P7",
+        sunset_criterion=(
+            "All 8 runtime apps green on check_app_domain_harness_parity "
+            "AND 4 consecutive weekly rollups show zero fail-open LLM-judge dims"
+        ),
+    ),
+    LedgerSpec(
         name="apps_qna_pack_lifecycle",
         purpose=(
             "apps_qna pack build / lint / self-eval / route-select / paste-set "

@@ -1,0 +1,43 @@
+{
+  "actual_fail_reason": "",
+  "allowed_claim_types": [
+    "COMPONENT_RUNTIME",
+    "COMPOSITION_RUNTIME",
+    "DOC_REFERENCE_ONLY",
+    "INTEGRATED_RUNTIME",
+    "NO_BYPASS_RUNTIME",
+    "OBSERVABILITY_RUNTIME",
+    "PRODUCTION_DEPENDENCY_RUNTIME",
+    "REPLAY_RUNTIME",
+    "STATIC_CONTRACT",
+    "STATIC_ENFORCEMENT"
+  ],
+  "allowed_priority": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "allowed_proof_depths": [
+    "E0_REQUIREMENT_TEXT",
+    "E1_SOURCE_MAPPING",
+    "E2_STATIC_CHECK",
+    "E3_COMPONENT_TEST",
+    "E4_NEGATIVE_CONTROL",
+    "E5_COMPOSITION_PROOF",
+    "E6_INTEGRATED_RUNTIME_PROOF",
+    "E7_REAL_OTEL_EXPORT",
+    "E8_REPLAY_DETERMINISM",
+    "E9_PRODUCTION_DEPENDENCY_PROOF"
+  ],
+  "column_count": 32,
+  "csv_path": "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reference\\contracts\\certification\\runtime_certification_requirements_100_percent_hardened.csv",
+  "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+  "executed_at_utc": "2026-05-01T18:03:59.006802+00:00",
+  "expected_fail_reason": "",
+  "row_count": 87,
+  "rule": "RTC-REQ-002 + RTC-REQ-003 + RTC-REQ-006 + RTC-REQ-110",
+  "status": "PASS",
+  "verifier": "verify_runtime_certification_matrix_schema",
+  "violations": []
+}

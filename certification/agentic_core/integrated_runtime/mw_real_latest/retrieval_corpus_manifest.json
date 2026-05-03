@@ -1,0 +1,38 @@
+{
+  "artifact_hash": "sha256:b27d5dd07be2fd53fca1363d0acfe877de22bce6f41f4362299b24d1e3db07ae",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "chunks": [
+      {
+        "byte_length": 229,
+        "chunk_id": "chunk::arch::001",
+        "payload_sha256": "dd7547603a03912bedfe7f8fe7d7ed6059529b5d56a57e464e305db5a4290b00",
+        "title": "Agentic-Workflow L7_AUDITABILITY plane"
+      },
+      {
+        "byte_length": 297,
+        "chunk_id": "chunk::uwg::002",
+        "payload_sha256": "e7008f01baa078298dd438e0727eccd4d911b06c2d0db4c09544b20eef5d37bd",
+        "title": "DurableWriteGateway commit pipeline"
+      },
+      {
+        "byte_length": 276,
+        "chunk_id": "chunk::retrieval::003",
+        "payload_sha256": "c2008142ec1d66b48f3e54369ab93a9f60cc036194b3eb6ef5c679a88dfe0e56",
+        "title": "Retrieval evidence binding"
+      }
+    ],
+    "corpus_size": 3,
+    "corpus_version": "r3-inmem-v1",
+    "integrated_runtime_origin": true,
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "retrieval_algorithm": "jaccard_over_alphanumeric_token_sets",
+    "retrieval_deterministic": true,
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": ""
+}

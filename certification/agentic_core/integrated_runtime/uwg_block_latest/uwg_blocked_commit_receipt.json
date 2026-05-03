@@ -1,0 +1,31 @@
+{
+  "artifact_hash": "sha256:cf9febdc51c68f74cd81914c87852ed25e6d45cfc64d5a665242cfaee6b52d6d",
+  "emitted_at": "2026-05-02T11:17:59Z",
+  "payload": {
+    "attempting_surface": "L0",
+    "audit_append_receipt_ref": "8404f02f-53c9-49ff-9a56-e7881e786187",
+    "blocked_commit_receipt_id": "f3d4b59a-c6b4-45bd-b5c0-e6c296be990b",
+    "blocked_reason_codes": [
+      "non_uwg_surface_attempted_direct_write",
+      "non_uwg_surface_blocked"
+    ],
+    "commit_request_ref": "NO_COMMIT_REQUEST::direct_attempt_by::L0",
+    "failed_rule_ids": [
+      "UWG_AUTHORITY_REQUIRED"
+    ],
+    "integrated_runtime_origin": true,
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_uwg_block_run.run_integrated_uwg_block",
+    "request_id": "req-d80ac9d7b0b145b69ad275f66b2d6167",
+    "run_id": "3134b036d6494969a594d6d7c710a955",
+    "snapshot_before": "snapshot:00000001",
+    "state_surfaces_requested": [
+      "memory"
+    ],
+    "target_surface": "memory",
+    "trace_root": "trace-24000f237f8648c8b1ce7534dab00c79"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_uwg_block_run",
+  "producer_function_or_class": "run_integrated_uwg_block",
+  "producer_module": "integrated_uwg_block_run",
+  "upstream_artifact_ref": "sha256:d2420caf03c14a7aef94d12ecc1632417402ec81356639c6a87774191ebe6d6d"
+}

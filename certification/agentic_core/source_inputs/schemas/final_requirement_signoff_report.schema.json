@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fortknox/final_requirement_signoff_report.schema.json",
+  "title": "Fort Knox Final Requirement Sign-off Report",
+  "description": "Compiler output. Only the compiler may emit this shape. Exporters may only read.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "compiler_version",
+    "compiler_path",
+    "run_timestamp_utc",
+    "source_repo_root",
+    "git_commit",
+    "git_dirty",
+    "requirements_source_sha256",
+    "evidence_assertions_sha256",
+    "row_digest",
+    "evidence_digest",
+    "rows",
+    "summary",
+    "trust_level"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "fortknox-v2"},
+    "compiler_version": {"type": "string"},
+    "compiler_path": {"type": "string"},
+    "compiler_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "run_timestamp_utc": {"type": "string"},
+    "source_repo_root": {"type": "string"},
+    "git_commit": {"type": "string"},
+    "git_dirty": {"type": "boolean"},
+    "requirements_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_assertions_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "row_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rows": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/Row"}
+    },
+    "summary": {"$ref": "#/$defs/Summary"},
+    "trust_level": {
+      "type": "string",
+      "enum": ["DEVELOPMENT_PROOF", "INTEGRITY_PROOF", "SIGNED_PROOF", "FINAL_SIGNED_CERTIFICATION", "FAILED"]
+    }
+  },
+  "$defs": {
+    "Row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "req_id",
+        "title",
+        "claim_type",
+        "priority",
+        "requirement_group",
+        "is_final_hundred_percent_row",
+        "depends_on_req_ids",
+        "required_controls",
+        "computed_status",
+        "blocking_gap",
+        "controls",
+        "assertion_ids",
+        "row_evidence_sha256",
+        "row_digest",
+        "evaluated_at_utc"
+      ],
+      "properties": {
+        "req_id": {"type": "string"},
+        "title": {"type": "string"},
+        "claim_type": {"type": "string"},
+        "priority": {"type": "string"},
+        "requirement_group": {"type": "string"},
+        "is_final_hundred_percent_row": {"type": "boolean"},
+        "depends_on_req_ids": {"type": "array", "items": {"type": "string"}},
+        "required_controls": {"type": "array", "items": {"type": "string"}},
+        "computed_status": {
+          "type": "string",
+          "enum": ["SIGNED_OFF", "BLOCKED", "NOT_VERIFIED"]
+        },
+        "blocking_gap": {"type": ["string", "null"]},
+        "controls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/ControlEval"}
+        },
+        "assertion_ids": {"type": "array", "items": {"type": "string"}},
+        "row_evidence_sha256": {"type": "string"},
+        "row_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "evaluated_at_utc": {"type": "string"}
+      }
+    },
+    "ControlEval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "passed", "reason", "assertion_id", "artifact_path", "artifact_sha256"],
+      "properties": {
+        "name": {"type": "string"},
+        "passed": {"type": "boolean"},
+        "reason": {"type": ["string", "null"]},
+        "assertion_id": {"type": ["string", "null"]},
+        "artifact_path": {"type": ["string", "null"]},
+        "artifact_sha256": {"type": ["string", "null"]}
+      }
+    },
+    "Summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["total", "signed_off", "blocked", "not_verified", "percent_signed_off"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "signed_off": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "not_verified": {"type": "integer", "minimum": 0},
+        "percent_signed_off": {"type": "number"},
+        "by_claim_type": {"type": "object"}
+      }
+    }
+  }
+}

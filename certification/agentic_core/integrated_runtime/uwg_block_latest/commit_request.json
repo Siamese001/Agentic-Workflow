@@ -1,0 +1,19 @@
+{
+  "artifact_hash": "sha256:d2420caf03c14a7aef94d12ecc1632417402ec81356639c6a87774191ebe6d6d",
+  "emitted_at": "2026-05-02T11:17:59Z",
+  "payload": {
+    "attempting_surface": "L0",
+    "block_reason": "non_uwg_surface_attempted_direct_write",
+    "commit_request_id": "NO_COMMIT_REQUEST::direct_attempt_by::L0",
+    "rejected_by": "agentic_core.L4_state.uwg.durable_write_gateway.DurableWriteGateway.reject_direct_write",
+    "request_id": "req-d80ac9d7b0b145b69ad275f66b2d6167",
+    "run_id": "3134b036d6494969a594d6d7c710a955",
+    "target_surface": "memory",
+    "trace_root": "trace-24000f237f8648c8b1ce7534dab00c79",
+    "would_have_been_committed": false
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_uwg_block_run",
+  "producer_function_or_class": "run_integrated_uwg_block",
+  "producer_module": "integrated_uwg_block_run",
+  "upstream_artifact_ref": ""
+}

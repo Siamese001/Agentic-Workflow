@@ -1,0 +1,43 @@
+{
+  "artifact_hash": "sha256:345d83aec5b9d3e5d00a5f95783889c103f91a7318d1ff29bb3b00b96a46facd",
+  "emitted_at": "2026-05-02T16:57:06Z",
+  "payload": {
+    "integrated_runtime_origin": true,
+    "l2_execution_deterministic": true,
+    "model_invocation_count": 0,
+    "model_invocations": [],
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_single_action_run.run_integrated_single_action",
+    "request_id": "req-a71ba1557794401891d5bfd3ce629b97",
+    "run_id": "f7760cb80467471f8b1dc9ec7819be34",
+    "schema_version": "1.0.0",
+    "sealed_l2_artifact_id": "seal::l2::f7760cb80467471f8b1dc9ec7819be34",
+    "structural_only": false,
+    "tool_authorizations": [
+      {
+        "authorization_receipt_ref": "sha256:b7bb7bdecbda883a2be881bd014bc0f4afbee82cf8b0854ee73c8fb8c38cff4e",
+        "required_capability": "cap::deterministic_compute",
+        "tool_id": "tool::hash_bytes::v1",
+        "tool_registry_record_sha256": "eec4b69bbc13d2daa57a481a834515f48b14e4540d1cda5d93f6ff36ba58627f"
+      }
+    ],
+    "tool_invocation_count": 1,
+    "tool_invocations": [
+      {
+        "deterministic": true,
+        "input_byte_length": 50,
+        "input_bytes_sha256": "e2bc08d07c7991124fd5df6a68868fafa7ab719d2bf657843fc4f2c9048617d7",
+        "invoked_at_utc": "2026-05-02T16:57:06Z",
+        "output_byte_length": 64,
+        "output_payload": "e2bc08d07c7991124fd5df6a68868fafa7ab719d2bf657843fc4f2c9048617d7",
+        "output_payload_sha256": "e7a57c31601854779fc79fddcb7a3965fb52f6b0feab0005258a5874518dd20e",
+        "tool_id": "tool::hash_bytes::v1",
+        "tool_invocation_id": "inv::ef232707-84ad-4fb5-a9b6-4980bb2deca5"
+      }
+    ],
+    "trace_root": "trace-d1468c509dda4837a5dfd3cfff3b5a0c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_run",
+  "producer_function_or_class": "run_integrated_single_action",
+  "producer_module": "integrated_single_action_run",
+  "upstream_artifact_ref": "sha256:b7bb7bdecbda883a2be881bd014bc0f4afbee82cf8b0854ee73c8fb8c38cff4e"
+}

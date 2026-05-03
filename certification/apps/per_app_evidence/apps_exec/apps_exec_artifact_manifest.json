@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_exec",
+  "harness_run_id": "apps_exec-e2e-a8f9a89c3e0c4744",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_exec/apps_exec_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_exec/apps_exec_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "79dceca7043f5423f7d8e0e2e91357eea417a6ea4f08ee96433d08839b12bc35"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "b8dad71426cbad4d2c33d5f1a1d25ddafa473637a9928f6dbe1855e159423c0a"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "30161b2b6ecf0df884fabf2efbe7c86cbcd27dea707a2c44680be791016f1f9a"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "917fe65aff69b93b4653e1284e849ba28c08ec24b0effd261020e32bcd1e4d15"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "cacf8e2f0440064f153515a45f482046e6a185063c2295e396484553baf676e3"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "0e415733c0be1bca9e27aa7082fe1dacecb150a7545412f1aa3b7f275e23cea1"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "2132855f70c461c07596f260484b96f9f9cfd46b6ec58f1304da8bbf55f926fe"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "709ab5833a95eb51dad34cca97ea6fd53df533637205612f3154c1549b2ab740"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "c0db5b32ccb79a0cf3337dd439c983ed764ae9b6adbb9546677a712e46d12945"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_exec/runs/20260503_000056/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_exec/runs/20260503_000056/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "71e5f2e31e765b97f869ba4122295682e56180a9d38ffdabe47730a08b041c1b"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_exec/apps_exec_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_exec/apps_exec_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_exec-run-5ff8b0cc05d14bb2",
+  "trace_root": "apps_exec-run-5ff8b0cc05d14bb2"
+}

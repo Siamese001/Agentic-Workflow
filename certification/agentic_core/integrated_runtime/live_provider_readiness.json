@@ -1,0 +1,63 @@
+{
+  "all_required_available": false,
+  "certification_scope": "RTC-REQ-056",
+  "control_surface": "llm_as_judge",
+  "executed_at_utc": "2026-05-01T18:23:46Z",
+  "invoked_juror_count": 3,
+  "judge_mode": "consensus_jury",
+  "jurors": [
+    {
+      "available_for_certification": false,
+      "control_surface": "llm_as_judge",
+      "env_key_aliases": [
+        "GOOGLE_API_KEY"
+      ],
+      "env_key_present": false,
+      "env_key_primary": "GEMINI_API_KEY",
+      "juror_id": "google_gemini_3_1_pro_preview",
+      "model_override_env": "GEMINI_MODEL",
+      "model_override_reject_reason": null,
+      "provider": "gemini",
+      "provider_family": "google_gemini",
+      "resolved_model_id": "gemini-3.1-pro-preview",
+      "target_model_id": "gemini-3.1-pro-preview"
+    },
+    {
+      "available_for_certification": false,
+      "control_surface": "llm_as_judge",
+      "env_key_aliases": [],
+      "env_key_present": false,
+      "env_key_primary": "ANTHROPIC_API_KEY",
+      "juror_id": "anthropic_claude_sonnet_4_6",
+      "model_override_env": "ANTHROPIC_MODEL",
+      "model_override_reject_reason": null,
+      "provider": "claude",
+      "provider_family": "anthropic",
+      "resolved_model_id": "claude-sonnet-4-6",
+      "target_model_id": "claude-sonnet-4-6"
+    },
+    {
+      "available_for_certification": false,
+      "control_surface": "llm_as_judge",
+      "env_key_aliases": [],
+      "env_key_present": false,
+      "env_key_primary": "OPENAI_API_KEY",
+      "juror_id": "openai_gpt_5_4_mini",
+      "model_override_env": "OPENAI_MODEL",
+      "model_override_reject_reason": null,
+      "provider": "openai",
+      "provider_family": "openai",
+      "resolved_model_id": "gpt-5.4-mini",
+      "target_model_id": "gpt-5.4-mini"
+    }
+  ],
+  "missing_requirements": [
+    "google_gemini_3_1_pro_preview: no key in GEMINI_API_KEY or aliases ['GOOGLE_API_KEY']",
+    "anthropic_claude_sonnet_4_6: no key in ANTHROPIC_API_KEY or aliases []",
+    "openai_gpt_5_4_mini: no key in OPENAI_API_KEY or aliases []"
+  ],
+  "purpose": "certification",
+  "required_juror_count": 3,
+  "rtc_req_056_status_hint": "INFRASTRUCTURE_GAP_MISSING_KEY",
+  "schema_version": 3
+}

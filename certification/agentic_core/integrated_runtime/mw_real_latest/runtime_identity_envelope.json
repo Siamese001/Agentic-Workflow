@@ -1,0 +1,27 @@
+{
+  "artifact_hash": "sha256:c1fc554e8d3251793cc87806a5fbeb48d92948284579f2701a42b27a0fe1beed",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "app_name": "",
+    "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
+    "caller_surface": "rest_v2",
+    "deterministic_digest": "sha256:e4b375a4cac5efbcab7f9c890ceb204f20244b3b67762961e04479e04252e575",
+    "entrypoint_command": "python -m agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+    "git_commit": "bb44b38990b48b34ef136f05ecbd3d8dabbbbef9",
+    "git_dirty": true,
+    "policy_hash": "775290e50fa3b8420dce53c6bde17a1b7a323075a314fce22c2ee981d00b3add",
+    "registry_digest_set": {},
+    "replay_key": "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "route_contract_id": "R1B_SEMANTIC_CACHE",
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "run_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "schema_version": "1.0",
+    "started_at_utc": "2026-05-02T16:59:17Z",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:ab9840bf8f107199baabbd0b1e0ffd189df07dc85f52230efb4ac2b64979f15f"
+}

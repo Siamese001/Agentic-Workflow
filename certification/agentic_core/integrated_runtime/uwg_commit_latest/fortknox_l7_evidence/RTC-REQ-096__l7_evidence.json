@@ -1,0 +1,34 @@
+{
+  "approved_verifier": "ops_scripts.ci.verify_agentic_core_how_trace",
+  "artifact_class": "runtime_chain_artifact",
+  "artifact_payload_sha256": "sha256:88670c33392dc02b676cf2e11acc152e6e2d2364b179d842654638037adf2afd",
+  "assertion_result": "PASS",
+  "chain_kind": "UWG_COMMIT_PATH",
+  "claim_type": "runtime_stage_evidence",
+  "control": "L7_AUDITABILITY::stage::EXIT_X3",
+  "deterministic_digest": "sha256:7f9d91a8be78eee2744882c664aa1b68e0f329b0c3ac8c16ebdad14d12a46645",
+  "evidence_payload_pointer": "uwg_commit_latest/exit_review_packet.json",
+  "forbidden_action_assertions": [
+    {
+      "assertion": "exactly_one_x3_disposition",
+      "result": "PASS"
+    },
+    {
+      "assertion": "unknown_never_pass",
+      "result": "PASS"
+    }
+  ],
+  "generated_by_command": "python -m agentic_core.L7_auditability.fortknox.emit_l7_fortknox_evidence --artifact-dir C:/Git/Agentic-Workflow-FRESH/artifacts/certification/integrated_runtime/uwg_commit_latest",
+  "last_verified_utc": "2026-05-02T16:59:17Z",
+  "req_id": "RTC-REQ-096",
+  "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+  "run_id": "req-a7286f91214e453f92b7871bb7931fbd",
+  "schema_version": "1.0",
+  "source_artifact_ref": "artifact://exit_review_packet.json",
+  "source_artifact_sha256": "sha256:88670c33392dc02b676cf2e11acc152e6e2d2364b179d842654638037adf2afd",
+  "stage_id": "EXIT_X3",
+  "stage_status": "RAN",
+  "stage_why": "Exit produced a typed review packet and exactly one X3 disposition receipt.",
+  "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd",
+  "verifier_exit_code": 0
+}

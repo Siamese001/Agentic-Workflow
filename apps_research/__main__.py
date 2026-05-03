@@ -82,6 +82,10 @@ def _run_live_cert(argv: list[str]) -> int:
         selected_capability="apps_research.company_brief_v1",
         repo_root=repo_root,
     )
+    # FEC producer registration — plan apps-research-c0-fec-producer-wiring-e7a2c3 W1.P2.
+    import apps_research.cert  # noqa: F401, PLC0415
+    from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
+
     with governed_run(cfg, cli_args=argv) as gr:
         with gr.span("C0_retrieval"):
             gr.mark_stage("C0_retrieval", "ok")
@@ -89,7 +93,120 @@ def _run_live_cert(argv: list[str]) -> int:
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
             gr.mark_stage("L2_execute", "ok")
+        # Plan apps-exec-research-exit-hook-adoption-a8d3c5 W2.P2 — resolve
+        # FEC from shared registry, then invoke the v6 Exit pipeline via
+        # the fail-soft helper. Route entry:
+        # apps_research/config/cert_route_registry.yaml.
+        try:
+            _fec = resolve_fec(
+                "apps_research",
+                {
+                    "route_id": "apps_research.company_brief_v1",
+                    "route_contract": {"route_id": "apps_research.company_brief_v1"},
+                    "template_ids": ["company_brief_v1"],
+                },
+            )
+        except Exception:  # noqa: BLE001
+            # guardian: allow-broad-except -- FEC resolution is fail-soft
+            _fec = {}
+        _maybe_run_exit_hook(_fec)
     return 0
+
+
+def _load_cert_route_entry(registry_path) -> dict | None:
+    """Return the first route entry from apps_research's cert_route_registry.yaml.
+
+    Fail-soft: any parse or IO error returns None; makes
+    ``maybe_invoke_exit_eval`` a no-op. Never raises.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+
+        doc = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert-path adoption must be fail-soft;
+        # any registry-load failure leaves the hook as a no-op and the cert
+        # bundle continues unaffected
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    first = routes[0]
+    return first if isinstance(first, dict) else None
+
+
+def _build_exit_receipts(cert_route_entry, fec: dict | None) -> dict:
+    """Build the receipts dict for run_exit_eval.
+
+    apps_research's cert-path live run is currently a SINGLE_STEP symbolic
+    pipeline (no real brief output), so deterministic dim_scores default
+    to 0.0 -> UNKNOWN -> fail-closed per rubric evidence_required=true.
+    The FEC IS populated (producer plan e7a2c3 already landed), so the
+    final_evidence_contract carries real retrieval_sources / template_ids
+    / grounded flags. That is the correct enforcement posture: enforcement
+    runs, FEC is real, dim_scores honestly UNKNOWN on missing evidence.
+
+    Fail-soft: returns a minimal shape on any error.
+    """
+    from pathlib import Path
+
+    receipts_output: dict = {}
+    try:
+        from apps_shared.cert import map_l2_receipt_to_dim_scores
+        map_path = None
+        if isinstance(cert_route_entry, dict):
+            rel = cert_route_entry.get("rubric_output_map_path")
+            if isinstance(rel, str) and rel:
+                map_path = Path(__file__).resolve().parents[1] / rel
+        if map_path and map_path.exists():
+            projected = map_l2_receipt_to_dim_scores(
+                {"output": receipts_output}, map_path,
+            )
+            receipts_output.update(projected)
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- mapper is fail-soft by design;
+        # projection failure yields empty dim_scores (evaluator fail-closes)
+        pass
+
+    return {
+        "output": receipts_output,
+        "route_contract": {"route_id": "apps_research.company_brief_v1"},
+        "evidence_bundle": {},
+        "final_evidence_contract": fec if isinstance(fec, dict) else {},
+        "state_diff": {},
+        "compiled_prompt_artifact": {},
+    }
+
+
+def _maybe_run_exit_hook(fec: dict | None) -> None:
+    """Invoke the v6 Exit pipeline when apps_research's cert route opts in.
+
+    Reads ``apps_research/config/cert_route_registry.yaml`` for the
+    ``invoke_exit_eval`` flag; builds receipts via the declarative rubric
+    output map and the pre-computed FEC; calls
+    :func:`apps_shared.cert.maybe_invoke_exit_eval` fail-soft.
+    """
+    from pathlib import Path
+
+    try:
+        from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
+    except ImportError:
+        return
+    registry_path = (
+        Path(__file__).resolve().parents[1]
+        / "apps_research" / "config" / "cert_route_registry.yaml"
+    )
+    cert_route_entry = _load_cert_route_entry(registry_path)
+    if cert_route_entry is None:
+        return
+    receipts = _build_exit_receipts(cert_route_entry, fec)
+    try:
+        maybe_invoke_exit_eval(receipts, cert_route_entry)
+    except Exception as exc:  # noqa: BLE001
+        # guardian: allow-broad-except -- cert hook MUST NOT break the
+        # bundle-building path; Exit failures are additional evidence only
+        _log.warning("[apps_research] Exit hook raised %s: %s",
+                     type(exc).__name__, exc)
 
 
 def main() -> int:

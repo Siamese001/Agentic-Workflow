@@ -118,6 +118,19 @@ _v2_exit_criteria_re = re.compile(
     re.MULTILINE,
 )
 
+# plan author-gate-hardening-a3b8f2 W1.3 — reason-code + calibration tail fields
+_v2_reason_code_re = re.compile(
+    r"reason_code\s*=\s*(?P<v>override_recommendation|insufficient_precedent|"
+    r"blast_radius_too_high|principle_shift|test_strategy_change|"
+    r"dependency_risk|deletion_risk|other)"
+)
+_v2_confidence_calibrated_re = re.compile(r"confidence_calibrated\s*=\s*(?P<v>[01](?:\.\d+)?)")
+_v2_calibrator_version_re = re.compile(r"calibrator_version\s*=\s*(?P<v>[\w.\-]+)")
+_v2_hotspot_rank_re = re.compile(r"adg_hotspot_rank\s*=\s*(?P<v>\d+)")
+_v2_blast_hops_re = re.compile(r"blast_radius_hops\s*=\s*(?P<v>\d+)")
+_v2_tier_re = re.compile(r"decision_class_tier\s*=\s*(?P<v>T[0-3])")
+_v2_surfaces_re = re.compile(r"surfaces\s*=\s*(?P<v>[A-Za-z,]+)")
+
 
 def _parse_v2_tail(tail: str) -> dict[str, object]:
     """Extract optional v2 calibration fields from the marker tail.
@@ -158,6 +171,39 @@ def _parse_v2_tail(tail: str) -> dict[str, object]:
         raw = m.group("v").strip()
         if raw:
             out["exit_criteria_json"] = raw[:500]
+    # plan author-gate-hardening-a3b8f2 W1.3 — new tail fields
+    m = _v2_reason_code_re.search(tail)
+    if m:
+        out["reason_code"] = m.group("v")
+    m = _v2_confidence_calibrated_re.search(tail)
+    if m:
+        try:
+            out["confidence_calibrated"] = float(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_calibrator_version_re.search(tail)
+    if m:
+        out["calibrator_version"] = m.group("v")[:40]
+    m = _v2_hotspot_rank_re.search(tail)
+    if m:
+        try:
+            out["adg_hotspot_rank"] = int(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_blast_hops_re.search(tail)
+    if m:
+        try:
+            out["blast_radius_hops"] = int(m.group("v"))
+        except ValueError:
+            pass
+    m = _v2_tier_re.search(tail)
+    if m:
+        out["decision_class_tier"] = m.group("v")
+    m = _v2_surfaces_re.search(tail)
+    if m:
+        surfaces = [s.strip() for s in m.group("v").split(",") if s.strip()]
+        if surfaces:
+            out["surface_intersections_json"] = json.dumps(surfaces)
     return out
 
 
@@ -428,8 +474,42 @@ CREATE TABLE IF NOT EXISTS decisions (
     precedent_verdict          TEXT,
     precedent_match_count      INTEGER,
     -- W3.1 (plan 1f4c8a): per-decision testable success conditions
-    exit_criteria_json         TEXT
+    exit_criteria_json         TEXT,
+    -- W1 (plan author-gate-hardening-a3b8f2): calibration + spine-integration columns
+    reason_code                TEXT,
+    confidence_calibrated      REAL,
+    calibrator_version         TEXT,
+    adg_hotspot_rank           INTEGER,
+    blast_radius_hops          INTEGER,
+    surface_intersections_json TEXT,
+    decision_class_tier        TEXT
 );
+
+CREATE TABLE IF NOT EXISTS decision_signals (
+    signal_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    decision_id   TEXT NOT NULL REFERENCES decisions(decision_id),
+    option_id     TEXT NOT NULL,
+    signal_name   TEXT NOT NULL,
+    signal_value  REAL NOT NULL,
+    signal_weight REAL NOT NULL,
+    signal_source TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_decision_signals_decision
+    ON decision_signals(decision_id);
+
+CREATE TABLE IF NOT EXISTS decision_calibration_snapshots (
+    snapshot_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at           TEXT NOT NULL,
+    calibrator_version   TEXT NOT NULL,
+    decision_type        TEXT NOT NULL,
+    n_outcomes           INTEGER NOT NULL,
+    brier_score          REAL,
+    ece_score            REAL,
+    reliability_json     TEXT,
+    isotonic_points_json TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_calib_snap_type_ver
+    ON decision_calibration_snapshots(decision_type, calibrator_version);
 
 CREATE TABLE IF NOT EXISTS decision_scope (
     scope_id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -488,6 +568,18 @@ def _init_db() -> Optional[sqlite3.Connection]:
                 conn.execute("ALTER TABLE decisions ADD COLUMN precedent_verdict TEXT")
             if "precedent_match_count" not in cols:
                 conn.execute("ALTER TABLE decisions ADD COLUMN precedent_match_count INTEGER")
+            # plan author-gate-hardening-a3b8f2 W1: calibration + spine columns (additive)
+            for _col, _typ in (
+                ("reason_code", "TEXT"),
+                ("confidence_calibrated", "REAL"),
+                ("calibrator_version", "TEXT"),
+                ("adg_hotspot_rank", "INTEGER"),
+                ("blast_radius_hops", "INTEGER"),
+                ("surface_intersections_json", "TEXT"),
+                ("decision_class_tier", "TEXT"),
+            ):
+                if _col not in cols:
+                    conn.execute(f"ALTER TABLE decisions ADD COLUMN {_col} {_typ}")
         except sqlite3.Error:
             # guardian: allow-silent-swallow -- additive migration: non-fatal
             pass
@@ -641,14 +733,20 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
              selected_option_id, options_json, status,
              confidence_top, confidence_dominance_gap, override_vs_recommendation,
              selection_latency_ms, principle_at_stake,
-             precedent_verdict, precedent_match_count, exit_criteria_json)
+             precedent_verdict, precedent_match_count, exit_criteria_json,
+             reason_code, confidence_calibrated, calibrator_version,
+             adg_hotspot_rank, blast_radius_hops, surface_intersections_json,
+             decision_class_tier)
         VALUES
             (:decision_id, :created_at, :branch, :commit_sha, :decision_type,
              :request_summary, :normalized_intent, :recommended_option_id,
              :selected_option_id, :options_json, :status,
              :confidence_top, :confidence_dominance_gap, :override_vs_recommendation,
              :selection_latency_ms, :principle_at_stake,
-             :precedent_verdict, :precedent_match_count, :exit_criteria_json)
+             :precedent_verdict, :precedent_match_count, :exit_criteria_json,
+             :reason_code, :confidence_calibrated, :calibrator_version,
+             :adg_hotspot_rank, :blast_radius_hops, :surface_intersections_json,
+             :decision_class_tier)
         """,
         {
             "decision_id": decision_id,
@@ -670,6 +768,13 @@ def _capture_from_marker(m: re.Match[str], text: str, conn: sqlite3.Connection) 
             "precedent_verdict": v2.get("precedent_verdict"),
             "precedent_match_count": v2.get("precedent_match_count"),
             "exit_criteria_json": v2.get("exit_criteria_json"),
+            "reason_code": v2.get("reason_code"),
+            "confidence_calibrated": v2.get("confidence_calibrated"),
+            "calibrator_version": v2.get("calibrator_version"),
+            "adg_hotspot_rank": v2.get("adg_hotspot_rank"),
+            "blast_radius_hops": v2.get("blast_radius_hops"),
+            "surface_intersections_json": v2.get("surface_intersections_json"),
+            "decision_class_tier": v2.get("decision_class_tier"),
         },
     )
     conn.execute(

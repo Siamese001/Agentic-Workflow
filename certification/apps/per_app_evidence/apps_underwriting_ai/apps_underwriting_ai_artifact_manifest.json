@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_underwriting_ai",
+  "harness_run_id": "apps_underwriting_ai-e2e-7ac738d30aad4070",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "24acee6fef2e7e4b15319a94d205ee7b491c7fabacd2a560c2df9545473b1be9"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "7b7de6de92b37bde18649565f4ce2bd79f99c5da92fffdc63a2fa5088dd3f7de"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "ae1132168c30c173ae3cb1d1ba6337ac6b11394a8a214672944b02f128cc6907"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "bbae1a55a99254d1ed613d04b8e79301d55268a0c5247102697eb17df3dca63a"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "2e2aa6cbde2fa3e4e82a06df0b48c3d0ed97f8887cbc209bfef4121f9b9360d6"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "06781d6442493b38a13e26ab1f1d4185ce740cd8d719425f811805b44e331252"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "0c7bd4a7eb55b58a0df5785baa4dd7ae66fecc8bda66262c9833a2b02c0860a0"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "8bd30b71cff1edffc9ed04a04559b113e8564d36e221082788ef6cbdaa4c6f7c"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "c8d35ffcfc73cffb1fcc9258e894b6ad35969c8bf188d35cd18c09d9fa37fde0"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "8d170d152f17ebc9463b8376227956f7d193bdeeb02d8760780a70a22781b149"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "61318b60e80fa9245e3632076ee1addcf04808953b36d31b6ca0460762b937d5"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+  "trace_root": "apps_underwriting_ai-run-60d5d6566d8a41d3"
+}

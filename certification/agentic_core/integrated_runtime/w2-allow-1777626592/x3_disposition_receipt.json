@@ -1,0 +1,31 @@
+{
+  "artifact_hash": "sha256:6c353fc4d632f4e25e0bc87c391c2448a71473b2c51326a521d53f9863cb4e3a",
+  "emitted_at": "2026-05-01T09:09:52Z",
+  "payload": {
+    "failed_gate_ids": [],
+    "rationale": "safe_reuse_composite=SAFE_REUSE",
+    "reason_codes": [
+      "SAFE_REUSE",
+      "x3d_allow_terminal_cache"
+    ],
+    "verdict_count": 1,
+    "x3_disposition": "X3D",
+    "x3_packet": {
+      "commit_receipt_id": "",
+      "disposition": "X3D",
+      "evidence_status": "BOUNDED",
+      "final_response": "The capital of France is Paris.",
+      "runtime_exhaust_manifest": {
+        "produced_at": 1777626592,
+        "rationale": "safe_reuse_composite=SAFE_REUSE",
+        "track_label": "production"
+      },
+      "schema_status": "valid",
+      "trace_root": "trace-cbb5c6379ef84f439b126684c05d7c5b"
+    }
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:7a62d60f0e94144d703578b10518f9bd77d12dd1e0dc268da31ee3ed877cc545"
+}

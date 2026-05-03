@@ -1,0 +1,362 @@
+{
+  "adg_snapshot_ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+  "adg_snapshot_sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8",
+  "agentic_core_spine_status": "spine_active",
+  "app_name": "apps_underwriting_ai",
+  "app_overlay_authority_status": "overlay_respected",
+  "app_package": "apps_underwriting_ai",
+  "artifact_manifest_ref": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_artifact_manifest.json",
+  "blocking_gaps": [],
+  "certification_level": "SPINE_COMPLETE_CERTIFIED",
+  "entrypoint_command": "python -m apps_underwriting_ai --apps-e2e-live",
+  "exit_code": 0,
+  "finished_at_utc": "2026-05-03T00:01:53.041470Z",
+  "fixture_data_used": false,
+  "fixture_mode_detected": false,
+  "fixture_runtime_mode": false,
+  "git_commit": "01d4596288",
+  "git_dirty": true,
+  "harness_pass": true,
+  "harness_run_id": "apps_underwriting_ai-e2e-7ac738d30aad4070",
+  "harness_schema_version": "apps_e2e_harness/2026-05-01/v1",
+  "honest_fail_closed": false,
+  "mock_mode_detected": false,
+  "notes": "Honest fail-closed proof bundle for apps_underwriting_ai. The harness executed `python -m apps_underwriting_ai --apps-e2e-live` and recorded real artifacts + real SHA256 hashes. It refused to synthesize spine contracts that the run did not emit. To flip success=true, integrate apps_underwriting_ai with the governed runtime spine and emit OTEL spans bound to the same run_id.",
+  "otel_or_runtime_trace_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/otel_runtime_trace.json",
+  "proof_schema_version": "apps_e2e_proof/2026-05-01/v1",
+  "request_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+  "run_id": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+  "run_info": {
+    "artifacts": [
+      {
+        "mtime_epoch": 1777766512.8264363,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/exit_review_packet.json",
+        "sha256": "8bd30b71cff1edffc9ed04a04559b113e8564d36e221082788ef6cbdaa4c6f7c",
+        "size_bytes": 555
+      },
+      {
+        "mtime_epoch": 1777766512.824924,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l1_plan_contract.json",
+        "sha256": "ae1132168c30c173ae3cb1d1ba6337ac6b11394a8a214672944b02f128cc6907",
+        "size_bytes": 1565
+      },
+      {
+        "mtime_epoch": 1777766512.824924,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l2_execution_receipt.json",
+        "sha256": "0c7bd4a7eb55b58a0df5785baa4dd7ae66fecc8bda66262c9833a2b02c0860a0",
+        "size_bytes": 588
+      },
+      {
+        "mtime_epoch": 1777766512.824924,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/l3_bypass_receipt.json",
+        "sha256": "2e2aa6cbde2fa3e4e82a06df0b48c3d0ed97f8887cbc209bfef4121f9b9360d6",
+        "size_bytes": 751
+      },
+      {
+        "mtime_epoch": 1777766512.8264363,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/otel_runtime_trace.json",
+        "sha256": "8d170d152f17ebc9463b8376227956f7d193bdeeb02d8760780a70a22781b149",
+        "size_bytes": 1283
+      },
+      {
+        "mtime_epoch": 1777766512.824924,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/prompt_assembly_manifest.json",
+        "sha256": "06781d6442493b38a13e26ab1f1d4185ce740cd8d719425f811805b44e331252",
+        "size_bytes": 570
+      },
+      {
+        "mtime_epoch": 1777766512.824924,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/route_contract.json",
+        "sha256": "bbae1a55a99254d1ed613d04b8e79301d55268a0c5247102697eb17df3dca63a",
+        "size_bytes": 815
+      },
+      {
+        "mtime_epoch": 1777766512.8264363,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/runtime_exhaust_bundle.json",
+        "sha256": "c8d35ffcfc73cffb1fcc9258e894b6ad35969c8bf188d35cd18c09d9fa37fde0",
+        "size_bytes": 653
+      },
+      {
+        "mtime_epoch": 1777766512.8243303,
+        "mtime_utc": "2026-05-03T00:01:52Z",
+        "path": "artifacts/apps_underwriting_ai/runs/20260503_000150/u0_intake_envelope.json",
+        "sha256": "7b7de6de92b37bde18649565f4ce2bd79f99c5da92fffdc63a2fa5088dd3f7de",
+        "size_bytes": 606
+      }
+    ],
+    "dir_mtime_epoch": 1777766512.8264363,
+    "run_dir": "artifacts/apps_underwriting_ai/runs/20260503_000150",
+    "stale": []
+  },
+  "run_log_ref": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_run.log",
+  "runtime_c0_receipt_ref": null,
+  "runtime_exhaust_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/runtime_exhaust_bundle.json",
+  "runtime_exit_disposition_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/exit_review_packet.json",
+  "runtime_intake_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/u0_intake_envelope.json",
+  "runtime_l1_plan_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l1_plan_contract.json",
+  "runtime_l2_artifact_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l2_execution_receipt.json",
+  "runtime_l3_bypass_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/l3_bypass_receipt.json",
+  "runtime_l3_receipt_ref": null,
+  "runtime_mode": "governed_spine_active",
+  "runtime_mode_classification": "live_run",
+  "runtime_prompt_assembly_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/prompt_assembly_manifest.json",
+  "runtime_route_contract_ref": "artifacts/apps_underwriting_ai/runs/20260503_000150/route_contract.json",
+  "runtime_uwg_receipt_ref": null,
+  "spine_signals": {
+    "apps_underwriting_ai/__init__.py": {
+      "exists": true,
+      "sha256": "bd8015c9975e4b0732c66fb118c5a8a03a6f5995114aafebe6091ae3b141ee5f",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_underwriting_ai/__main__.py": {
+      "exists": true,
+      "sha256": "eda72b59954a15dc3307cbd74a9dc71e8fcc250936363f57d6c3d53981e973af",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": true
+      }
+    },
+    "apps_underwriting_ai/integrations/__init__.py": {
+      "exists": true,
+      "sha256": "7072fa0849671910fe1f3b90497253375d35ca67e6a562726388d5086d9ac264",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": true
+      }
+    },
+    "apps_underwriting_ai/integrations/execution_adapter.py": {
+      "exists": true,
+      "sha256": "149f2f725e6a4e647724eff5b4e8a2357977d7e184138ec8dd292b7f268d4c0d",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_underwriting_ai/integrations/governed_underwriting_run.py": {
+      "exists": true,
+      "sha256": "fcd81605825b36b1515568a4e1a0fba483fef0269ab75f98480b7a0cadb7ab55",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_underwriting_ai/integrations/observability_adapter.py": {
+      "exists": true,
+      "sha256": "7c891735f8cd87304e509d82cf88cfb398c39661498c5f3e60d80fcbe6895de2",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_underwriting_ai/integrations/spine_handoff.py": {
+      "exists": true,
+      "sha256": "bd0d885846172c37e64ca1aea57381fcd2fdc678d5fe28c511b2b80df1a5fc14",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": false
+      }
+    },
+    "apps_underwriting_ai/integrations/underwriting_ingress_runner.py": {
+      "exists": true,
+      "sha256": "38143e0b90e6cc1508aad37ee56845a97531f0b3596a69d72687d36245b90733",
+      "signals": {
+        "ExitReviewPacket": false,
+        "L1PlanContract": false,
+        "L3StepContract": false,
+        "RouteContract": false,
+        "RuntimeExhaustBundle": false,
+        "SovereignBaseAgent": false,
+        "agentic_core.L0_routing": false,
+        "agentic_core.L3_orchestration": false,
+        "governed_run_adapter": true
+      }
+    }
+  },
+  "stage_matrix": [
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "static_l3_dag",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/u0_intake_envelope.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "U0_intake",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/l1_plan_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L1_plan",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/route_contract.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L0_route",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/l3_bypass_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L3_orchestrate_or_bypass",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "C0_retrieval",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/prompt_assembly_manifest.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "prompt_assembly",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/l2_execution_receipt.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L2_execute",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/exit_review_packet.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "Exit_X3",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/runtime_exhaust_bundle.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "L6_exhaust",
+      "static_required": false
+    },
+    {
+      "artifact": "artifacts/apps_underwriting_ai/runs/20260503_000150/otel_runtime_trace.json",
+      "gap": null,
+      "pass": true,
+      "present": true,
+      "runtime_required": true,
+      "stage": "otel_or_runtime_trace",
+      "static_required": false
+    },
+    {
+      "artifact": null,
+      "gap": null,
+      "pass": true,
+      "present": false,
+      "runtime_required": false,
+      "stage": "UWG_L4_durable_write",
+      "static_required": false
+    }
+  ],
+  "started_at_utc": "2026-05-03T00:01:50.624372Z",
+  "static_dag_proof_inline_summary": {
+    "dag_id": null,
+    "dag_sha256": null,
+    "fail_reasons": [
+      "no_route_registry_for_apps_underwriting_ai",
+      "no_static_l3_dag_files_for_apps_underwriting_ai",
+      "static_dag_missing_entirely"
+    ],
+    "present": false
+  },
+  "static_dag_ref": "artifacts/certification/apps_e2e/apps_underwriting_ai/apps_underwriting_ai_static_l3_dag_proof.json",
+  "static_dag_sha256": "24acee6fef2e7e4b15319a94d205ee7b491c7fabacd2a560c2df9545473b1be9",
+  "success": true,
+  "synthetic_trace_detected": false,
+  "trace_root": "apps_underwriting_ai-run-60d5d6566d8a41d3",
+  "verifier_result_ref": null
+}

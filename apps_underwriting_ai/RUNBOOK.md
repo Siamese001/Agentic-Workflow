@@ -103,3 +103,38 @@ apps_underwriting_ai produces decisions as artifacts. Rollback affects only futu
 - **Primary on-call:** see `CODEOWNERS`
 - **Underwriting domain SME:** TBD
 - **L3 orchestration owner:** see `agentic_core/L3_orchestration/CODEOWNERS`
+
+## Eval Harness (apps-eval-harness-closeout-b7c9d2 W3.P1)
+
+The app-specific evaluation rubric and threshold profile live under
+`apps_underwriting_ai/config/domain_contract/` and are authoritative via the L4
+`AppEvalRubricRecord` + `AppThresholdProfileRecord` registered through
+UWG.
+
+**Rubric**: `apps_underwriting_ai/config/domain_contract/eval_rubrics.yaml`
+**Threshold profile**: `apps_underwriting_ai/config/domain_contract/threshold_profiles.yaml`
+**Grader roster**: `apps_underwriting_ai/config/domain_contract/grader_roster.yaml`
+
+**HITL policy**: see `threshold_profiles.yaml` `hitl_policy` field
+(`none` | `required_on_low` | `required_always`). Soft below-threshold
+failures escalate when `required_on_low`; hard guardrail failures always
+DENY regardless of policy.
+
+**Run the advisory CI gate**:
+
+`ash
+python ops_scripts/ci/check_app_domain_harness_parity.py
+`
+
+Exit 0 with JSON report at `artifacts/ci/app_domain_harness_parity.json`.
+Fail-closed mode via `APP_DOMAIN_HARNESS_PARITY_FAIL_CLOSED=1`.
+
+**Ledger**: per-run outcomes land in
+`artifacts/ledgers/eval_harness_outcome.sqlite` (fail-soft — Exit pipeline
+is never blocked by ledger errors). Weekly rollup:
+
+`ash
+python ops_scripts/calibration/eval_harness_weekly_report.py
+`
+
+Emits JSON + Markdown under `docs/reports/eval_harness/<YYYY-Www>.md`.

@@ -1,0 +1,25 @@
+{
+  "blocking": [],
+  "canonical_expected_count": 87,
+  "ci_gate_result": "READY",
+  "completed_at_utc": "2026-05-02T03:42:18+00:00",
+  "csv_path": "C:\\Users\\amita\\Downloads\\runtime_certification_requirements_100_percent_hardened.csv",
+  "csv_row_count": 87,
+  "dependency_status": {
+    "acceptance_legality_report.json": "PASS",
+    "canonical_universe_manifest.json": "PASS",
+    "requirement_count_receipt.json": "PASS:87/87",
+    "schema_validation_report.json": "PASS",
+    "source_divergence_report.json": "PASS"
+  },
+  "failed_commands": [],
+  "hardening_result": "PASSED",
+  "result": "READY",
+  "scope": "RTC-REQ-030/031/033 (CSV universe \u2014 87 RTC-REQ rows)",
+  "signoff_rollup": {
+    "BLOCKED": 24,
+    "SIGNED_OFF": 63
+  },
+  "started_at_utc": "2026-05-02T03:42:18+00:00",
+  "verifier": "verify_rtc_req_csv_gate"
+}

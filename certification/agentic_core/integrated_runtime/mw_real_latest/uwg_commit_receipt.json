@@ -1,0 +1,34 @@
+{
+  "artifact_hash": "sha256:bd85cd2ebe762710b0a857d1e82ce1795cd67c7fc62ed68b3a693f719c11cbe7",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "affected_state_surfaces": [
+      "memory"
+    ],
+    "audit_append_receipt_ref": "e79038c7-3dd0-41f4-b644-82e37e8769e2",
+    "audit_refs": [],
+    "commit_receipt_id": "517247eb-0db7-4a8a-b333-9bc5281c1a2a",
+    "commit_request_ref": "cr:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "commit_status": "COMMITTED",
+    "committed_at": "2",
+    "committed_by_surface": "UWG",
+    "deterministic_digest": "1ae5e8ea11d0735950f7fee4955011977acd7c21f6994ac400feac6501ac72a2",
+    "integrated_runtime_origin": true,
+    "read_surface_refresh_plan_ref": "rfp:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "schema_version": "L4-UWG-1.0.0",
+    "snapshot_after": "snapshot:00000002",
+    "snapshot_before": "snapshot:00000001",
+    "state_diff_refs": [
+      "sd:mw-real::b23d1579fdeb4f978826d627dcf7842b"
+    ],
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c",
+    "uwg_validation_receipt_ref": "70b829bb-830b-4ceb-9d9b-1f349c8e486c",
+    "write_lock_receipt_ref": "d198cb78-b3fb-4270-bf09-320980914791"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": "sha256:5792f6e9b9ff93cdbc1f906519c7cbacf76dcf6dc6dc48cad8afa1b0dbb0faf6"
+}

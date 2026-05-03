@@ -1,0 +1,42 @@
+{
+  "approved_verifier": "ops_scripts.ci.verify_agentic_core_how_trace",
+  "artifact_class": "runtime_chain_artifact",
+  "artifact_payload_sha256": "sha256:05cbc151f8f671a6e6da5690e5b75ca976f76811400d64d70dc62238ad4cdcd4",
+  "assertion_result": "PASS",
+  "chain_kind": "R1B",
+  "claim_type": "runtime_stage_evidence",
+  "control": "L7_AUDITABILITY::stage::L2_EXECUTE",
+  "deterministic_digest": "sha256:4642a84b30fd8a2922029f836c33fc5e1a0aa2bf865e46c979eadb3dbfee4144",
+  "evidence_payload_pointer": "latest/terminal_ret_packet.json",
+  "forbidden_action_assertions": [
+    {
+      "assertion": "no_real_l2_execution",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_tool_call",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_model_call",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_l4_write_from_l2",
+      "result": "PASS"
+    }
+  ],
+  "generated_by_command": "python -m agentic_core.L7_auditability.fortknox.emit_l7_fortknox_evidence --artifact-dir C:/Git/Agentic-Workflow-FRESH/artifacts/certification/integrated_runtime/latest",
+  "last_verified_utc": "2026-05-02T19:22:33Z",
+  "req_id": "RTC-REQ-095",
+  "request_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+  "run_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+  "schema_version": "1.0",
+  "source_artifact_ref": "artifact://terminal_ret_packet.json",
+  "source_artifact_sha256": "sha256:05cbc151f8f671a6e6da5690e5b75ca976f76811400d64d70dc62238ad4cdcd4",
+  "stage_id": "L2_EXECUTE",
+  "stage_status": "BYPASSED",
+  "stage_why": "R1B path bypasses L2 entirely (terminal-shortcircuit cache reuse). terminal_ret_packet asserts no_l2_execution=True.",
+  "trace_root": "trace-537e36ca18ea491497e2e0e1c8e71f1a",
+  "verifier_exit_code": 0
+}

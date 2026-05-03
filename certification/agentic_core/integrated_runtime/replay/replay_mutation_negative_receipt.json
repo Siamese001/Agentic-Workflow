@@ -1,0 +1,21 @@
+{
+  "actual_fail_reason": "",
+  "canonical_run": {
+    "content_hash": "24bd01963fc26dcd7114579caf2e5ba0b0ddbdff191c17944b446dcbc2ba3b0d",
+    "input_query": "What is the capital of France?",
+    "replay_key": "3b61ccf4fff308ea0c568e55778ff8d3d86142bcd542e5af3056808addce9c8b"
+  },
+  "content_hash_diverges": true,
+  "evaluated_at_utc": "2026-05-01T19:39:54+00:00",
+  "expected_fail_reason": "input mutation must produce a different replay_key OR content_hash",
+  "mutated_run": {
+    "artifact_dir": "artifacts\\certification\\integrated_runtime\\replay\\run_3_mutated",
+    "content_hash": "a219e4556824c5a272eb087d30f1ae34c8de4fb282d2ca80279820d587891413",
+    "input_query": "What is the capital of Germany?",
+    "replay_key": "129d7e461c8ce7b7300b5da0222e9d577f09cca1ff2e54fef940342da110826b"
+  },
+  "replay_key_diverges": true,
+  "result": "PASS",
+  "scope": "RTC-REQ-024 \u2014 replay mutation negative (mutated input MUST diverge)",
+  "verifier_input": "scripts/regen_integrated_runtime_replay_pair.py"
+}

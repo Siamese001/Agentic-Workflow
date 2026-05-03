@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:8b77949f837605ad9348459aae0a67fff1b195f7bd6e271c6f22c85293f5c57a",
+  "emitted_at": "2026-05-01T19:39:54Z",
+  "payload": {
+    "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
+    "exec_trace": {
+      "model_calls": [],
+      "replay_receipts_present": true,
+      "ret_packet_ref": "trp::129d7e461c8ce7b7300b5da0222e9d577f09cca1ff2e54fef940342da110826b",
+      "tool_calls": [],
+      "wall_clock_used": false
+    },
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "output": {
+      "citation_precision": 0.95,
+      "completion_score": 0.95,
+      "confidence": 0.95,
+      "faithfulness": 0.95,
+      "format_fit": true,
+      "groundedness": 0.95,
+      "schema_required": false,
+      "schema_valid": true,
+      "text": "Paris."
+    },
+    "policy_hash": "47a0046778320ff55185dfd0ef791d531f2bd08a24014acc365bd31211b07fc4",
+    "replay_key": "129d7e461c8ce7b7300b5da0222e9d577f09cca1ff2e54fef940342da110826b",
+    "request_id": "req-a3c79332c9794da58187d167076a8abf",
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "run_id": "req-a3c79332c9794da58187d167076a8abf",
+    "session_id": "sess-c3cd04183c3d4325baef8daede50a3c0",
+    "source_type": "L2_SEALED_ARTIFACT",
+    "state_diff": {},
+    "terminal_class": "answer_only",
+    "trace_root": "trace-360802a8865b4d99b865b34d4b58bfdc",
+    "track_label": "production"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:c5a1463e20f0ba9113281f30e228c7387cceea37b5e2d9e8277b9773269b401f"
+}

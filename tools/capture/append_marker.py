@@ -56,6 +56,11 @@ _MARKER_PATTERNS: dict[str, re.Pattern[str]] = {
     # the router / decision ledgers. Shape mirrors DECISION_CAPTURED:
     # ``JUDGE_DECISION: type=judge_decision, <kv-pairs>``.
     "JUDGE_DECISION": re.compile(r"^JUDGE_DECISION:\s*type=judge_decision\s*,"),
+    # plan author-gate-hardening-a3b8f2 W1.P1.2 — outcome writer marker.
+    # Shape: DECISION_OUTCOME: decision_id=dec_xxx, execution_completed=1,
+    #        tests_passed=1, regression_found=0, rollback_required=0,
+    #        promote_to_pattern=0[, followup_decision_id=...][, notes=...]
+    "DECISION_OUTCOME": re.compile(r"^DECISION_OUTCOME:\s*decision_id=dec_[a-z0-9]+"),
 }
 
 

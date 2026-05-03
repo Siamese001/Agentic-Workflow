@@ -1,0 +1,41 @@
+{
+  "artifact_hash": "sha256:8c1c2dcec71ad64789987e24425c5d2ea18e0b0bc8c9d6d8a57f410e19e0613e",
+  "emitted_at": "2026-05-01T09:05:32Z",
+  "payload": {
+    "exec_trace": {
+      "model_calls": [],
+      "replay_receipts_present": true,
+      "ret_packet_ref": "trp::27a6e55eaa04e2401f49317552681f903cd15efabb34bcce3a5efd7d506eac67",
+      "tool_calls": [],
+      "wall_clock_used": false
+    },
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "output": {
+      "citation_precision": 0.95,
+      "completion_score": 0.95,
+      "confidence": 0.0,
+      "faithfulness": 0.95,
+      "format_fit": true,
+      "groundedness": 0.95,
+      "schema_required": false,
+      "schema_valid": true,
+      "text": "(cached answer)"
+    },
+    "policy_hash": "37743ce3625ceace42ab317415ecaaa55775ca35710d7e49ebaa3ed54d474599",
+    "replay_key": "27a6e55eaa04e2401f49317552681f903cd15efabb34bcce3a5efd7d506eac67",
+    "request_id": "req-8138f7e4dffa41569df16781cf5857c3",
+    "route_id": "R5_FALLBACK",
+    "run_id": "req-8138f7e4dffa41569df16781cf5857c3",
+    "session_id": "sess-c0ac5c8f899749cc8f7c6a1ea55f56ad",
+    "source_type": "L2_SEALED_ARTIFACT",
+    "state_diff": {},
+    "terminal_class": "answer_only",
+    "trace_root": "trace-35925fe7e3a748b4bf130a9dea4843f6",
+    "track_label": "production"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:9f56463e7c6c4b190ede34b61d8ee4c597418bc0e0babfaeed4419cafa1265ba"
+}

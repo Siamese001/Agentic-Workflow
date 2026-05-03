@@ -1,0 +1,23 @@
+{
+  "approved_verifier": "ops_scripts.ci.verify_agentic_core_how_trace",
+  "artifact_class": "runtime_artifact_hash",
+  "artifact_payload_sha256": "sha256:ded501ff3ee86086426fbcf5c8c7d8a3221f011f81227a8b38dafd2a1aeaf1ac",
+  "assertion_result": "PASS",
+  "chain_kind": "R1B",
+  "claim_type": "artifact_payload_hash_validation",
+  "control": "L7_AUDITABILITY::payload_hash::HOW_TRACE",
+  "deterministic_digest": "sha256:d545f26379cc147d8ad7cabd5358e338bea5a52c42107614ccaefa26cf342fed",
+  "evidence_payload_pointer": "latest/agentic_core_how_trace.json",
+  "generated_by_command": "python -m agentic_core.L7_auditability.fortknox.emit_l7_fortknox_evidence --artifact-dir C:/Git/Agentic-Workflow-FRESH/artifacts/certification/integrated_runtime/latest",
+  "last_verified_utc": "2026-05-02T19:22:33Z",
+  "recomputed_deterministic_digest": "sha256:7809c25e47e08797b4df13529e0eb60b628e42392700cf5dd8864ca1ff9e9dae",
+  "req_id": "RTC-REQ-123",
+  "request_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+  "run_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+  "schema_version": "1.0",
+  "source_artifact_ref": "artifact://agentic_core_how_trace.json",
+  "source_artifact_sha256": "sha256:ded501ff3ee86086426fbcf5c8c7d8a3221f011f81227a8b38dafd2a1aeaf1ac",
+  "stored_deterministic_digest": "sha256:7809c25e47e08797b4df13529e0eb60b628e42392700cf5dd8864ca1ff9e9dae",
+  "trace_root": "trace-537e36ca18ea491497e2e0e1c8e71f1a",
+  "verifier_exit_code": 0
+}

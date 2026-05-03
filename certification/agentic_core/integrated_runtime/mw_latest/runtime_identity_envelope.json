@@ -1,0 +1,27 @@
+{
+  "artifact_hash": "sha256:a28aa58c59819063874252c8d64e79fd2f9a44ed6fc956e364d8cfefa7700fdb",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "app_name": "",
+    "blueprint_hash": "blueprint::mw-demo-two-node",
+    "caller_surface": "rest_v2",
+    "deterministic_digest": "sha256:b47fad651288aa8aec01e62ab14cdef2efc947d0815a6bbde144864b9dd8f118",
+    "entrypoint_command": "python -m agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+    "git_commit": "8766388958a853ffd000ce1e42ca5e381cc085e5",
+    "git_dirty": true,
+    "policy_hash": "6b45eaad05676683c7b13994c99b4940ebfcdaf49573830525dd5d697b228831",
+    "registry_digest_set": {},
+    "replay_key": "e8c5b27f7c248d5004a684f73f40bd70b108409199d5cc36f2a98cc186b71ffb",
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_contract_id": "MW_DEMO_TWO_NODE",
+    "route_id": "MW_DEMO_TWO_NODE",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "schema_version": "1.0",
+    "started_at_utc": "2026-05-02T11:18:33Z",
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:9e9777c4a0d956d15d020e825f42e3b50b95837d4827a181d303635dfdd389b2"
+}

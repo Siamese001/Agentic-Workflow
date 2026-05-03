@@ -1,0 +1,117 @@
+{
+  "artifact_hash": "sha256:20334a5c2a8cdd7aa01446f27f78d38ca45b38751332e12684a77118a4f02c98",
+  "emitted_at": "2026-05-01T15:46:24Z",
+  "payload": {
+    "artifact_filenames": [
+      "integrated_runtime_entrypoint_invocation.json",
+      "validated_request.json",
+      "l1_plan_contract.json",
+      "route_contract.json",
+      "runtime_gate_verdict_bundle.json",
+      "semantic_cache_safe_reuse_decision.json",
+      "terminal_ret_packet.json",
+      "exit_review_packet.json",
+      "x3_disposition_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "integrated_runtime_artifact_manifest.json",
+      "no_harness_stamp_receipt.json"
+    ],
+    "artifact_hashes": {
+      "exit_review_packet.json": "sha256:81741099ad33e79217d77c744c998cc7c2e46d49f59ff333ef93d8c0abea7dd4",
+      "integrated_runtime_entrypoint_invocation.json": "sha256:de8cceb915df72ff98d996c7bbec545bc9c49dc63e86092da23cd73afb01ec78",
+      "l1_plan_contract.json": "sha256:2eb9953f97cc1badd711af06934637e12e2bd4e0e0a19802fef4e18a65dcafbc",
+      "route_contract.json": "sha256:b467c02c99d3fab1c411bc71323217f95df2be0c687166ef28f0c5583b24f761",
+      "runtime_exhaust_bundle.json": "sha256:452a31da21628e038d5f419713b3ab1788bfaa5482b01aef278e09d8c7da5a19",
+      "runtime_gate_verdict_bundle.json": "sha256:44257ba6bb48df0bc552b2c38fb3cf303a93a6b5fe21ab30df2758e7e7913e29",
+      "semantic_cache_safe_reuse_decision.json": "sha256:bf403af7a4e8a6528edbd25dfb3141ad6caa071889ceb40ee1b1352a3c7c45bd",
+      "terminal_ret_packet.json": "sha256:3cd516bbbc84854554015565ccc3e99aeedc0f8cdf46bfbd7cd17af2c66af696",
+      "validated_request.json": "sha256:bba0d97221cd6f25bae65a4081f73c78ab7f4c3388821607a6b61202ecd4561f",
+      "x3_disposition_receipt.json": "sha256:f597255651f896fe7f3cbb5f2d3b1288068d0b2c10bf51978fe1e42a4d07f027"
+    },
+    "cache_hit": true,
+    "chain_linkage": [
+      {
+        "filename": "integrated_runtime_entrypoint_invocation.json",
+        "upstream": ""
+      },
+      {
+        "filename": "validated_request.json",
+        "upstream": "integrated_runtime_entrypoint_invocation.json"
+      },
+      {
+        "filename": "l1_plan_contract.json",
+        "upstream": "validated_request.json"
+      },
+      {
+        "filename": "route_contract.json",
+        "upstream": "l1_plan_contract.json"
+      },
+      {
+        "filename": "runtime_gate_verdict_bundle.json",
+        "upstream": "route_contract.json"
+      },
+      {
+        "filename": "semantic_cache_safe_reuse_decision.json",
+        "upstream": "runtime_gate_verdict_bundle.json"
+      },
+      {
+        "filename": "terminal_ret_packet.json",
+        "upstream": "semantic_cache_safe_reuse_decision.json"
+      },
+      {
+        "filename": "exit_review_packet.json",
+        "upstream": "terminal_ret_packet.json"
+      },
+      {
+        "filename": "x3_disposition_receipt.json",
+        "upstream": "exit_review_packet.json"
+      },
+      {
+        "filename": "runtime_exhaust_bundle.json",
+        "upstream": "x3_disposition_receipt.json"
+      },
+      {
+        "filename": "integrated_runtime_artifact_manifest.json",
+        "upstream": "runtime_exhaust_bundle.json"
+      },
+      {
+        "filename": "no_harness_stamp_receipt.json",
+        "upstream": "integrated_runtime_artifact_manifest.json"
+      }
+    ],
+    "deterministic_proof_stage_used": false,
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "e1a2e14d1d5d4764b19a43cdda38b207",
+    "llm_judge_invocation_count": 1,
+    "primary_veto_mode": "",
+    "proof_only_stage_names": [],
+    "safe_reuse_allow": false,
+    "veto_counters": {
+      "allowed_count": 0,
+      "blocked_count": 0,
+      "error_count": 0,
+      "fail_closed_count": 1,
+      "not_invoked_count": 0,
+      "parse_fail_count": 0,
+      "timeout_count": 0,
+      "unknown_count": 1
+    },
+    "veto_model_id": "",
+    "veto_provider": "local_qwen",
+    "veto_rubric_hash": "",
+    "veto_rubric_path": "C:\\Git\\Agentic-Workflow-FRESH\\config\\certification\\llm_judge_rubric.md",
+    "veto_stage_actual": "LLMJudgeVeto",
+    "veto_stage_actual_names": [
+      "LLMJudgeVeto"
+    ],
+    "veto_stage_expected": "LLMJudgeVeto",
+    "veto_stage_match_status": "PASS",
+    "veto_timeout_ms": 15000,
+    "x3_disposition": "X3A"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:452a31da21628e038d5f419713b3ab1788bfaa5482b01aef278e09d8c7da5a19"
+}

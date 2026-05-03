@@ -1,0 +1,11 @@
+{
+  "canonical_bundle": "artifacts/certification/apps_e2e/apps_rg/apps_rg_e2e_proof.json",
+  "canonical_bundle_sha256": "386a313a9c11ed5933aa45ee81c1ca1190eebb0966dc9b784e27f1560ed04ca5",
+  "canonical_path": "artifacts/certification/apps_e2e/apps_rg",
+  "generated_at_utc": "2026-05-02T03:11:19.247832Z",
+  "kind": "legacy_path_pointer",
+  "legacy_bundle": "artifacts/certification/apps_rg_e2e/apps_rg_e2e_proof.json",
+  "legacy_bundle_sha256": "a84e18dcb8d4c72ad7cbf6af5520128922c66d986132d086de8c4a15ae9d8337",
+  "legacy_path": "artifacts/certification/apps_rg_e2e",
+  "notes": "The canonical apps_rg end-to-end proof bundle now lives at the shared apps_e2e harness path. The legacy apps_rg_e2e emitter at tools/certification/apps_rg_e2e/ is preserved unchanged for backward compatibility but is superseded by tools/certification/apps_e2e/. Consumers should read the canonical bundle."
+}

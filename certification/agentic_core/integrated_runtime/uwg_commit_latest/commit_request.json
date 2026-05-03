@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:f7269c93b39c18063ce8f76a56e407a863c01890dd8c96188157f60cf7b0e33c",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "affected_state_surfaces": [
+      "memory"
+    ],
+    "audit_refs": [],
+    "blast_radius": "single_surface",
+    "blueprint_hash": "bh:uwg-commit",
+    "cleared_exit_review_packet_ref": "exr:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "commit_request_id": "cr:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "deterministic_digest": "beb9927a503098dee8dec278720d7042bbecdedd8cdf4d8949e340a96bc91672",
+    "expected_read_surface_refreshes": [
+      "memory_projection"
+    ],
+    "gate_verdict_refs": [
+      "gv:uwg-commit::56059fd109aa4207ad8bd47a28e1c219"
+    ],
+    "hitl_reclearance_refs": [],
+    "integrated_runtime_origin": true,
+    "l5_certification_refs": [],
+    "policy_hash": "ph:uwg-commit",
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_uwg_commit_run.run_integrated_uwg_commit",
+    "replay_key": "rk:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "rollback_plan_ref": "rp:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "route_contract_ref": "rc:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "run_id": "56059fd109aa4207ad8bd47a28e1c219",
+    "schema_version": "L4-UWG-1.0.0",
+    "source_surface": "Exit",
+    "state_diff_refs": [
+      "sd:uwg-commit::56059fd109aa4207ad8bd47a28e1c219"
+    ],
+    "tenant_id": "t:uwg-commit-regen",
+    "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_uwg_commit_run",
+  "producer_function_or_class": "run_integrated_uwg_commit",
+  "producer_module": "integrated_uwg_commit_run",
+  "upstream_artifact_ref": ""
+}

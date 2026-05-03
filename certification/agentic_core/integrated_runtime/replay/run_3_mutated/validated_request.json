@@ -1,0 +1,19 @@
+{
+  "artifact_hash": "sha256:eea67b52700d007ef562e9222265fa09007efbc33d1d83617fa718c223bb3c43",
+  "emitted_at": "2026-05-01T19:39:54Z",
+  "payload": {
+    "downstream_authority": "none",
+    "intake_status": "VALIDATED_FOR_L1",
+    "normalized_payload": "What is the capital of Germany?",
+    "permitted_next_layer": "L1",
+    "request_id": "req-a3c79332c9794da58187d167076a8abf",
+    "request_shape_class": "service_call",
+    "session_id": "sess-c3cd04183c3d4325baef8daede50a3c0",
+    "tenant_bind": null,
+    "trace_root": "trace-360802a8865b4d99b865b34d4b58bfdc"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:e1f784e1f60c3c5a8d2e9443ad819187471327a59de67b48ea3e21483872e459"
+}

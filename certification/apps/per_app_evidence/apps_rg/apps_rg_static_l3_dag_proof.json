@@ -1,0 +1,164 @@
+{
+  "all_nodes_have_allowed_execution_surface": true,
+  "all_nodes_have_owner": true,
+  "all_nodes_have_step_contract_schema": true,
+  "app_name": "apps_rg",
+  "app_name_matches": true,
+  "dag_file_path": "apps_rg/config/l3_dag.yaml",
+  "dag_id": "apps_rg.resume_generation_v1.l3_dag",
+  "dag_name": "apps_rg Resume Generation Pipeline",
+  "dag_registry_ref": "apps_rg/config/route_registry.yaml",
+  "dag_registry_sha256": "54414d020166adcf9388766f54b1d04b914c58b0378a4eca4379e2a4a83d8fa4",
+  "dag_sha256": "f22ec8506d12703a896a530d2117030a3a34d1ccb65f9f4fd713d008d38d7d6e",
+  "dag_version": "1.0.0",
+  "edge_count": 6,
+  "edge_list": [
+    {
+      "from": "intake",
+      "to": "plan"
+    },
+    {
+      "from": "plan",
+      "to": "route"
+    },
+    {
+      "from": "route",
+      "to": "l3_bind"
+    },
+    {
+      "from": "l3_bind",
+      "to": "hop_pipeline"
+    },
+    {
+      "from": "hop_pipeline",
+      "to": "exit_disposition"
+    },
+    {
+      "from": "exit_disposition",
+      "to": "docx_export"
+    }
+  ],
+  "edges_reference_existing_nodes": true,
+  "entry_nodes": [
+    "intake"
+  ],
+  "fail_closed": false,
+  "fail_reasons": [],
+  "generated_at_utc": "2026-05-02T23:59:14.638207Z",
+  "has_cycle": false,
+  "l3_no_execute_policy": true,
+  "l3_no_l4_write_policy": true,
+  "l3_no_prompt_assembly_policy": true,
+  "l3_no_retrieve_policy": true,
+  "max_depth": 6,
+  "node_count": 7,
+  "node_ids": [
+    "intake",
+    "plan",
+    "route",
+    "l3_bind",
+    "hop_pipeline",
+    "exit_disposition",
+    "docx_export"
+  ],
+  "notes": "Static DAG present for apps_rg — fields populated from canonical YAML pair.",
+  "present": true,
+  "proof_kind": "static_l3_dag_proof",
+  "proof_schema_version": "apps_e2e_proof/2026-05-01/v1",
+  "registry_binding_matches_dag": true,
+  "route_binding_refs": [
+    "apps_rg.resume_generation_v1"
+  ],
+  "route_ids": [
+    "apps_rg.resume_generation_v1"
+  ],
+  "scan_method": "deterministic_path_enumeration",
+  "scan_results": {
+    "dag_directories": [
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_rg/workflows"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_rg/dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_rg/l3_dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/dags/apps_rg"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/workflows/apps_rg"
+      }
+    ],
+    "registries": [
+      {
+        "exists": true,
+        "kind": "route_registry",
+        "path": "apps_rg/config/route_registry.yaml",
+        "sha256": "54414d020166adcf9388766f54b1d04b914c58b0378a4eca4379e2a4a83d8fa4",
+        "size_bytes": 1357
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_rg/config/route_registry.yml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_rg/config/route_registry.json",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": true,
+        "kind": "l3_dag_inline",
+        "path": "apps_rg/config/l3_dag.yaml",
+        "sha256": "f22ec8506d12703a896a530d2117030a3a34d1ccb65f9f4fd713d008d38d7d6e",
+        "size_bytes": 3256
+      },
+      {
+        "exists": false,
+        "kind": "workflow_inline",
+        "path": "apps_rg/config/workflow.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "dag_inline",
+        "path": "apps_rg/config/dag.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "hop_pipeline_inline",
+        "path": "apps_rg/config/hop_pipeline.yaml",
+        "sha256": null,
+        "size_bytes": null
+      }
+    ]
+  },
+  "terminal_nodes": [
+    "docx_export"
+  ]
+}

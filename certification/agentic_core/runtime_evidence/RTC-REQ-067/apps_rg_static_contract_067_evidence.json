@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.618752Z",
+  "control_scope": "l4_cache_state_schema",
+  "per_req": {
+    "RTC-REQ-067": {
+      "artifact_payload_hash": {
+        "artifact_path": "artifacts/certification/cache_fixture_vs_uwg_proof.json",
+        "artifact_sha256": "59cacad5e000f92e8cc088a1944e799ccb098419170d6979b7d8211b61d150da",
+        "assertion_result": "PASS",
+        "payload_pointer": "/per_req/RTC-REQ-067/artifact_payload_hash"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.618752Z"
+      },
+      "required_artifacts": {
+        "assertion_result": "PASS",
+        "predicate_passed": true,
+        "required_artifact_check": "cache_fixture_vs_uwg_proof reports agentic_core.L4_state.enforcement.uwg_catalog_checker as importable"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "cache_fixture_vs_uwg_proof reports agentic_core.L4_state.enforcement.uwg_catalog_checker as importable",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "04bcb8d64468ded564961fb6bce74ac1c4521cef2defeac2ea3e561ca322cef8",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-067",
+  "schema_version": "runtime-evidence-v1"
+}

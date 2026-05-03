@@ -1,0 +1,48 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.612882Z",
+  "control_scope": "cert_language_scoped",
+  "per_req": {
+    "RTC-REQ-102": {
+      "ci_gate": {
+        "assertion_result": "PASS",
+        "ci_gate_check": "final report has trust_level scoped to one of {DEVELOPMENT_PROOF, INTEGRITY_PROOF, SIGNED_PROOF, FINAL_SIGNED_CERTIFICATION}",
+        "predicate_passed": true
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.612882Z"
+      },
+      "layer_boundary": {
+        "approved_layer_prefixes": [
+          "agentic_core.",
+          "apps_rg.",
+          "apps_shared."
+        ],
+        "assertion_result": "PASS",
+        "in_layer_count": 18,
+        "layer_boundary_check": "every artifact's producer is under an approved runtime layer",
+        "out_of_layer_count": 0,
+        "out_of_layer_samples": []
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "final report has trust_level scoped to one of {DEVELOPMENT_PROOF, INTEGRITY_PROOF, SIGNED_PROOF, FINAL_SIGNED_CERTIFICATION}",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "1ef556491e0a18c444890333e8a031560bd6378ae902e873922f9e8c74fa530b",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-102",
+  "schema_version": "runtime-evidence-v1"
+}

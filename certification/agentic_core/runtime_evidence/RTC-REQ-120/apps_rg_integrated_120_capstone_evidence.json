@@ -1,0 +1,63 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.661524Z",
+  "control_scope": "final_100_percent_runtime_certification_definition",
+  "per_req": {
+    "RTC-REQ-120": {
+      "artifact_payload_hash": {
+        "artifact_path": "artifacts/certification/cache_fixture_vs_uwg_proof.json",
+        "artifact_sha256": "59cacad5e000f92e8cc088a1944e799ccb098419170d6979b7d8211b61d150da",
+        "assertion_result": "PASS",
+        "payload_pointer": "/per_req/RTC-REQ-120/artifact_payload_hash"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.661524Z"
+      },
+      "otel_trace": {
+        "assertion_result": "PASS",
+        "contains_synthetic_spans": false,
+        "run_id": "apps_rg-run-9484926b794d4544",
+        "span_count": 3,
+        "span_names": [
+          "L2_execute.generate_resume",
+          "L2_execute.post_pipeline",
+          "apps_rg.entrypoint"
+        ],
+        "trace_path": "artifacts/apps_rg/runs/20260501_211258/otel_runtime_trace.json",
+        "trace_sha256": "dc0295f295b754409538b0e6e8ad840a1ad73950101cea6e08b99db6c2a16819"
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "bundle_relative_to_prefix": "integrated_runtime/latest",
+        "expected_prefix": "artifacts/certification",
+        "repo_root": "C:/Git/Agentic-Workflow-FRESH",
+        "single_root_verified": true
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "runtime certification DEFINITION satisfied: bundle complete + OTEL non-synthetic + upstream verifier PASS + single root binding + all artifacts fresh-hashed",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "45f131486063a5785900276625f1c196726247f587559a8e23efa43f801bce87",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-120",
+  "schema_version": "runtime-evidence-v1"
+}

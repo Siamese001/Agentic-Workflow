@@ -1,3 +1,8 @@
+# CANONICAL SSOT — actively imported; do NOT deprecate.
+# Consumers: ops_scripts/calibration/calibration_drift_detector.py, apps_eval/engines/_taxonomy.py
+# Rationale: Owns calibration_drift_policy block consumed by drift detector. Migration would require refactoring drift detector first.
+# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md
+
 # Evaluation Lab Policy Rules
 # SVP Engineering Standards - Explicit policies, evidence-based
 

@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:2eb9953f97cc1badd711af06934637e12e2bd4e0e0a19802fef4e18a65dcafbc",
+  "emitted_at": "2026-05-01T19:39:54Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "What is the capital of France?"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:91371a15de1c5683ca5b4521b3121055a7d5555fcf61304f04298a84f009d6df"
+}

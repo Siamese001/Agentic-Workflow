@@ -1,0 +1,26 @@
+{
+  "artifact_hash": "sha256:80ec191234d152a99adffa07f7ac1f9f0f043fd4b17bf57f2bc192cf0919a345",
+  "emitted_at": "2026-05-01T10:05:57Z",
+  "payload": {
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "2f806ac0c79b40fdb1e9d720632b77d2",
+    "is_hard_negative_lookup": false,
+    "namespace": "w2_safe_reuse_proof",
+    "raw_request_keys": [
+      "auth_credential",
+      "body_text",
+      "content_type",
+      "method",
+      "source_channel",
+      "transport",
+      "user_id"
+    ],
+    "started_at_epoch": 1777629957.4898555,
+    "tenant_id": ""
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": ""
+}

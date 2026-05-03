@@ -3,7 +3,7 @@ input_contract_id: aic::apps_underwriting_ai::underwriting_decision::v1
 app_id: apps_underwriting_ai
 task_class: underwriting_decision
 version: 1.0.0
-status: draft
+status: active
 missing_input_behavior: fail_closed
 ambiguity_behavior: escalate
 required_inputs:

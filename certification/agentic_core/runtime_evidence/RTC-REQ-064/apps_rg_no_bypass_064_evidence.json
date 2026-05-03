@@ -1,0 +1,47 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.622271Z",
+  "control_scope": "production_cache_mutation_uwg_only",
+  "per_req": {
+    "RTC-REQ-064": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.622271Z"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "cache_fixture_vs_uwg_proof: rule_4_uwg_receipt_used + no_production_durable_write_claimed_without_receipt + production_durable_write_claim==false",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "uwg_write_path": {
+        "assertion_result": "PASS",
+        "predicate_passed": true,
+        "uwg_write_path_check": "cache_fixture_vs_uwg_proof: rule_4_uwg_receipt_used + no_production_durable_write_claimed_without_receipt + production_durable_write_claim==false"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "cache_fixture_vs_uwg_proof: rule_4_uwg_receipt_used + no_production_durable_write_claimed_without_receipt + production_durable_write_claim==false",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "ad44763185c328949437334d08e5a84b3de5d2ec6d611e570ba155e20844f9c1",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-064",
+  "schema_version": "runtime-evidence-v1"
+}

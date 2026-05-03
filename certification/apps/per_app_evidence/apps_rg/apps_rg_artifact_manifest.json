@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_rg",
+  "harness_run_id": "apps_rg-e2e-569672b4e963424d",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_rg/apps_rg_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_rg/apps_rg_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "cdfc9d1452ad3597811e39f54179b7bb00be8fc97bd0b6a5b061f7b30380c978"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "541850534f37529417b3303b33ad25ed13d7adc725660f7d151c437c57684ca3"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "e8bed77c575b85d9c7946d9feb24af6bc9a4ad6f8e1d54f56c89c29c9afed8f3"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "f0de1331445b1287d56e100bc541d3c21921cf07f52b9cda559fb0aeb7078cf8"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "78c97ff420605f60e359d9d3799658b93a5a662330c2752a4486a7d1945e1988"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "43bb05705c3a08b9f971f6aec1a1653b896fdaaf3a5785dec181a5e1585e57ef"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "9c5d02309d5ce95721065306d89f7425332fe24134ac1417dde91d01f389bf88"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "288a8615131a42e437c1293bdbf213ebe696e0a56aa48fc70aadd5911a0861d5"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_rg/runs/20260502_200049/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_rg/runs/20260502_200049/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "f684ebb698b00efcf48adc3642f3cf426f50bc583b26c907683bb60212784712"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_rg/apps_rg_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_rg/apps_rg_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "7e3fe31dd84482cd6d49bd42640665f84cc90078c5167d629a288070031a4a7e"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_rg-run-d6d541d113bf48b2",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_rg-run-d6d541d113bf48b2",
+  "trace_root": "apps_rg-run-d6d541d113bf48b2"
+}

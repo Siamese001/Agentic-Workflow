@@ -3,7 +3,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   default_route_id: underwriting_ai.underwriting_decision.default
   grounding_required: true
   managed_workflow_allowed: true

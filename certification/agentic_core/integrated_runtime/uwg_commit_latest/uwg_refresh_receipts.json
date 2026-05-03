@@ -1,0 +1,38 @@
+{
+  "artifact_hash": "sha256:821b646cc5a7f42937875f2bfd84e3d98b9261abef973b936ab3ea11c94786b7",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "integrated_runtime_origin": true,
+    "refresh_count": 1,
+    "refresh_error": null,
+    "refresh_plan_ref": "rfp:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+    "refresh_receipts": [
+      {
+        "after_snapshot": "snap:after:uwg-commit",
+        "audit_refs": [],
+        "before_snapshot": "snap:before:uwg-commit",
+        "completed_at": "2",
+        "deterministic_digest": "320b9c5bcd0f4995c6b06e39c8548b15044ee35067b5c9dc4558f1720ebd4c83",
+        "reason_codes": [],
+        "refresh_plan_ref": "rfp:uwg-commit::56059fd109aa4207ad8bd47a28e1c219",
+        "refresh_receipt_id": "a55c186e-6de2-4b0d-a91c-7eaf95a5fc9b",
+        "refresh_type": "memory_projection",
+        "retry_count": 0,
+        "schema_version": "L4-UWG-1.0.0",
+        "source_commit_receipt_ref": "57b3a39d-88b4-4617-8e66-4bb391f655cc",
+        "stale_projection_warning": null,
+        "started_at": "2",
+        "state_surface": "memory",
+        "status": "SUCCESS"
+      }
+    ],
+    "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "run_id": "56059fd109aa4207ad8bd47a28e1c219",
+    "source_commit_receipt_ref": "57b3a39d-88b4-4617-8e66-4bb391f655cc",
+    "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_uwg_commit_run",
+  "producer_function_or_class": "run_integrated_uwg_commit",
+  "producer_module": "integrated_uwg_commit_run",
+  "upstream_artifact_ref": "sha256:640b85a2707e72ba62ff4395eb88d265dcdc525d23d2e51c3d084fd26ba55f0e"
+}

@@ -1,0 +1,92 @@
+{
+  "artifact_hash": "sha256:bf411ed9b934efed57610b12d87a50d14f155ffc75befba27543f60daebf5331",
+  "emitted_at": "2026-05-01T09:05:32Z",
+  "payload": {
+    "artifact_filenames": [
+      "integrated_runtime_entrypoint_invocation.json",
+      "validated_request.json",
+      "l1_plan_contract.json",
+      "route_contract.json",
+      "runtime_gate_verdict_bundle.json",
+      "semantic_cache_safe_reuse_decision.json",
+      "terminal_ret_packet.json",
+      "exit_review_packet.json",
+      "x3_disposition_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "integrated_runtime_artifact_manifest.json",
+      "no_harness_stamp_receipt.json"
+    ],
+    "artifact_hashes": {
+      "exit_review_packet.json": "sha256:8c1c2dcec71ad64789987e24425c5d2ea18e0b0bc8c9d6d8a57f410e19e0613e",
+      "integrated_runtime_entrypoint_invocation.json": "sha256:87be5fd8cf05c80b0170a5ca131090676d048c2e5db08462ce189e6ed513227b",
+      "l1_plan_contract.json": "sha256:2eb9953f97cc1badd711af06934637e12e2bd4e0e0a19802fef4e18a65dcafbc",
+      "route_contract.json": "sha256:ca77867a3ae79289d65b57ad5c28f28d950d3329674ad885f1fc2860ecf93bbb",
+      "runtime_exhaust_bundle.json": "sha256:6a39822ee574b874f3d79fe0a53c399e41e579f70ddb5f3fae679b6b83644a96",
+      "runtime_gate_verdict_bundle.json": "sha256:c4f1563bb3a803c6bd05a376ac0fd90731f7dc7091115274637e78ba23f10bd8",
+      "semantic_cache_safe_reuse_decision.json": "sha256:52b1ba9c73ddf22e08917d4cc724c5419f80cbcaa6dfae7ba3f6e1534c6080fb",
+      "terminal_ret_packet.json": "sha256:9f56463e7c6c4b190ede34b61d8ee4c597418bc0e0babfaeed4419cafa1265ba",
+      "validated_request.json": "sha256:e244af9f4bfca0f3f53354d60890e4f98a79addfd4f68eaf6d18749b2fd0dcc2",
+      "x3_disposition_receipt.json": "sha256:3f7d4f50190581b31f23a3135bd65365cd998a073ed8ab2bdf2dcbab959b7692"
+    },
+    "cache_hit": false,
+    "chain_linkage": [
+      {
+        "filename": "integrated_runtime_entrypoint_invocation.json",
+        "upstream": ""
+      },
+      {
+        "filename": "validated_request.json",
+        "upstream": "integrated_runtime_entrypoint_invocation.json"
+      },
+      {
+        "filename": "l1_plan_contract.json",
+        "upstream": "validated_request.json"
+      },
+      {
+        "filename": "route_contract.json",
+        "upstream": "l1_plan_contract.json"
+      },
+      {
+        "filename": "runtime_gate_verdict_bundle.json",
+        "upstream": "route_contract.json"
+      },
+      {
+        "filename": "semantic_cache_safe_reuse_decision.json",
+        "upstream": "runtime_gate_verdict_bundle.json"
+      },
+      {
+        "filename": "terminal_ret_packet.json",
+        "upstream": "semantic_cache_safe_reuse_decision.json"
+      },
+      {
+        "filename": "exit_review_packet.json",
+        "upstream": "terminal_ret_packet.json"
+      },
+      {
+        "filename": "x3_disposition_receipt.json",
+        "upstream": "exit_review_packet.json"
+      },
+      {
+        "filename": "runtime_exhaust_bundle.json",
+        "upstream": "x3_disposition_receipt.json"
+      },
+      {
+        "filename": "integrated_runtime_artifact_manifest.json",
+        "upstream": "runtime_exhaust_bundle.json"
+      },
+      {
+        "filename": "no_harness_stamp_receipt.json",
+        "upstream": "integrated_runtime_artifact_manifest.json"
+      }
+    ],
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "bb66245b1d0d431ba92a89e9dd12242d",
+    "safe_reuse_allow": false,
+    "x3_disposition": "X3A"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:6a39822ee574b874f3d79fe0a53c399e41e579f70ddb5f3fae679b6b83644a96"
+}

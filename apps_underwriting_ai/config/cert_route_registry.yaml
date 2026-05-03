@@ -22,6 +22,14 @@ routes:
   - route_id: apps_underwriting_ai.decision_packet_v1
     execution_form: SINGLE_STEP
     l3_required: false
+    # W2.P3 (plan apps-eval-harness-parity-f8d4a2): opt-in flag — when true,
+    # the cert entrypoint MUST invoke run_exit_eval against the sealed L2
+    # artifact so apps_underwriting_ai's 5-dim rubric (evidence_sufficiency,
+    # feature_derivation_correctness, policy_compliance, explainability,
+    # fairness) executes on every cert run. Preserves the SINGLE_STEP form.
+    # Pairs with apps_underwriting_ai.engines.rubric_output_mapper which
+    # populates output["dim_scores"] from the DecisionPacket. Closes BLOCKER #5.
+    invoke_exit_eval: true
     selected_capability: apps_underwriting_ai.decision_packet_v1
     description: >-
       Deterministic single-step underwriting decision: intake request +

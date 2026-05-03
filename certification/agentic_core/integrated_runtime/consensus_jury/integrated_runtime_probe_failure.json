@@ -1,0 +1,9 @@
+{
+  "certification_scope": "RTC-REQ-056",
+  "executed_at_utc": "2026-05-01T18:23:46Z",
+  "message": "One or more required juror API keys missing. Run probe_live_provider_readiness.py to inspect.",
+  "panel_attestation_written": false,
+  "reason_code": "INFRASTRUCTURE_GAP_MISSING_KEY",
+  "schema_version": 2,
+  "status": "INFRASTRUCTURE_GAP"
+}

@@ -1,0 +1,42 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.602705Z",
+  "control_scope": "safe_cache_reuse_composite",
+  "per_req": {
+    "RTC-REQ-059": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.602705Z"
+      },
+      "positive_evidence": {
+        "assertion_result": "PASS",
+        "positive_evidence_predicate": "semantic_cache_safe_reuse_decision present AND x3 reason_codes include SAFE_REUSE AND rationale references safe_reuse",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "semantic_cache_safe_reuse_decision present AND x3 reason_codes include SAFE_REUSE AND rationale references safe_reuse",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "a459f89c1454eeb24688d43f73659825f739eca266c2754b4306ea9bc8867799",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-059",
+  "schema_version": "runtime-evidence-v1"
+}

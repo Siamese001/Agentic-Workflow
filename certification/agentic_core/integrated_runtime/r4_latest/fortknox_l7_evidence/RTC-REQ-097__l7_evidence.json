@@ -1,0 +1,34 @@
+{
+  "approved_verifier": "ops_scripts.ci.verify_agentic_core_how_trace",
+  "artifact_class": "runtime_chain_artifact",
+  "artifact_payload_sha256": "sha256:78a70f92c8d608c38f042e43d94acaedc7ab3e6091647070fb3cf8d2e1d14fe5",
+  "assertion_result": "PASS",
+  "chain_kind": "R4_SINGLE_ACTION",
+  "claim_type": "runtime_stage_evidence",
+  "control": "L7_AUDITABILITY::stage::L6_RUNTIME_EXHAUST",
+  "deterministic_digest": "sha256:412a564dabcc6983a8dff0eb6192ea2a9d60bf122381de4a99368eb2e44354b6",
+  "evidence_payload_pointer": "r4_latest/runtime_exhaust_bundle.json",
+  "forbidden_action_assertions": [
+    {
+      "assertion": "no_synthetic_trace_in_production",
+      "result": "PASS"
+    },
+    {
+      "assertion": "no_l4_write_from_l6",
+      "result": "PASS"
+    }
+  ],
+  "generated_by_command": "python -m agentic_core.L7_auditability.fortknox.emit_l7_fortknox_evidence --artifact-dir C:/Git/Agentic-Workflow-FRESH/artifacts/certification/integrated_runtime/r4_latest",
+  "last_verified_utc": "2026-05-02T16:59:19Z",
+  "req_id": "RTC-REQ-097",
+  "request_id": "req-a71ba1557794401891d5bfd3ce629b97",
+  "run_id": "req-a71ba1557794401891d5bfd3ce629b97",
+  "schema_version": "1.0",
+  "source_artifact_ref": "artifact://runtime_exhaust_bundle.json",
+  "source_artifact_sha256": "sha256:78a70f92c8d608c38f042e43d94acaedc7ab3e6091647070fb3cf8d2e1d14fe5",
+  "stage_id": "L6_RUNTIME_EXHAUST",
+  "stage_status": "RAN",
+  "stage_why": "L6 sealed the runtime exhaust bundle and emitted a typed trace snapshot for cross-chain reference.",
+  "trace_root": "trace-d1468c509dda4837a5dfd3cfff3b5a0c",
+  "verifier_exit_code": 0
+}

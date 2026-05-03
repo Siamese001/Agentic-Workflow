@@ -1,0 +1,28 @@
+{
+  "artifact_hash": "sha256:77d385b719215893d129435b99223f2b5c9f7614dc22ad6f06e86cb84eede0a8",
+  "emitted_at": "2026-05-01T10:06:11Z",
+  "payload": {
+    "allow": false,
+    "d2_similarity": 0.95,
+    "dense_candidate_produced": true,
+    "evidence_refs": [
+      "d2_semantic_hit",
+      "veto_timeout"
+    ],
+    "hard_negative_allowed_count": 0,
+    "legacy_safe_positive_block_count": 0,
+    "legacy_unsafe_fp_count": 0,
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+    "reason_code": "FAIL_CLOSED_TIMEOUT",
+    "safe_reuse_blocked_count": 0,
+    "unknown_error_timeout_parse_fail_block_count": 1,
+    "unsafe_reuse_allowed_count": 0,
+    "upstream_gate_verdict_ref": "sha256:80a21c244fac869cf0c1433aa11156bf3236df0ac3ac24a05917d9ed1e79dce9",
+    "veto_invoked": true,
+    "veto_outcome": "TIMEOUT"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:80a21c244fac869cf0c1433aa11156bf3236df0ac3ac24a05917d9ed1e79dce9"
+}

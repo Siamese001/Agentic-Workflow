@@ -1,3 +1,8 @@
+# CANONICAL SSOT — actively imported; do NOT deprecate.
+# Consumers: apps_rg engines (intentional_zero_dims consumer)
+# Rationale: Has active intentional_zero_dims annotation consumed by harness parity gate. Treat as canonical.
+# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md
+
 # Resume Generation Configuration
 # SVP Engineering Standards - Explicit thresholds, no silent degradation
 

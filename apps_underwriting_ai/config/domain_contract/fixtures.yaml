@@ -4,7 +4,7 @@
   task_class: underwriting_decision
   fixture_type: golden
   version: 1.0.0
-  status: draft
+  status: active
   input_ref: tests/fixtures/apps_underwriting_ai/golden_primary.json
   expected_disposition: ALLOW
   expected_gate_results:
@@ -23,7 +23,7 @@
   task_class: underwriting_decision
   fixture_type: golden
   version: 1.0.0
-  status: draft
+  status: active
   input_ref: tests/fixtures/apps_underwriting_ai/golden_secondary.json
   expected_disposition: ALLOW
   expected_gate_results:

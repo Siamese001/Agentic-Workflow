@@ -283,6 +283,19 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6d2: Author-Gate UI Conformance (star + confidence prefix) ----------------
+      # Enforces post_cascade_author_gate_ui_audit findings are not stale-unresolved
+      # within the 7-day window. Triggered when the audit hook, this gate, or the
+      # violations log changes.
+      - id: author-gate-ui-conformance
+        name: "T6d2: Author-Gate UI Conformance"
+        entry: py ops_scripts/ci/author_gate/check_ui_conformance.py
+        language: system
+        pass_filenames: false
+        files: ^(\.windsurf/scripts/post_cascade_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/windsurf/author_gate_ui_violations\.jsonl)$
+        always_run: false
+        require_serial: true
+
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
       # .windsurf/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
@@ -619,6 +632,37 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+      # -- T7t: Author-Gate queue seed markers (§35) ---------------------------
+      # For each staged `.windsurf/plans/*.md`, counts prose mentions of future
+      # Author-Gate decisions ("Author-Gate required for X", etc.) and compares
+      # against AG_QUEUE_SEED: marker count. Fails when prose > markers so
+      # scheduled AG work can't silently escape into prose. Example/quoted
+      # mentions (wrapped in quotes, backticks, or parens) are excluded.
+      # Bypass: AG_QUEUE_SEED_MARKERS_BYPASS=1
+      # Rule SSOT: .windsurf/rules/author-gate-queue-drain.md
+      - id: ag-queue-seed-markers
+        name: "T7t: Author-Gate Queue Seed Markers (§35)"
+        entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/plans/.*\.md$
+
+      # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
+      # Blocks a commit that adds a new .windsurf/plans/<slug>-<6hex>.md file
+      # without a matching row in the Notion Plans DB. Advisory by default;
+      # flip fail-closed via PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe:
+      # SKIPs when NOTION_API_KEY/NOTION_TOKEN is unset and no local cache
+      # exists. Refreshes the local cache at
+      # .windsurf/state/plan_registration_cache.json as a side effect.
+      # Bypass: PLAN_REGISTRATION_BYPASS=1.
+      # Rule SSOT: .windsurf/rules/plan-registration-enforcement.md
+      - id: plan-registration-freshness
+        name: "T7u: Plan–Notion Registration (§36)"
+        entry: py ops_scripts/ci/check_plan_registration_freshness.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/plans/.*\.md$
 
       # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
       # Three gates wired independently (separation of duties):

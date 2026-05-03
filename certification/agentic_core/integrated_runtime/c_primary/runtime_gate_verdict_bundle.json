@@ -1,0 +1,22 @@
+{
+  "artifact_hash": "sha256:80a21c244fac869cf0c1433aa11156bf3236df0ac3ac24a05917d9ed1e79dce9",
+  "emitted_at": "2026-05-01T10:06:11Z",
+  "payload": {
+    "d1_outcome": "MISS",
+    "d2_outcome": "HIT",
+    "d2_similarity": 0.95,
+    "llm_judge_invocation_count": 1,
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+    "reason_codes": [
+      "d2_semantic_hit",
+      "veto_timeout"
+    ],
+    "veto_latency_ms": 13843.3764000074,
+    "veto_outcome": "TIMEOUT",
+    "veto_primary_mode": ""
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:1f0ad4c853176e7cf5b3b048aaffe2cdfe21736d7d8417c7d9eb1a3f751d4158"
+}

@@ -1,0 +1,23 @@
+{
+  "artifact_hash": "sha256:b7bb7bdecbda883a2be881bd014bc0f4afbee82cf8b0854ee73c8fb8c38cff4e",
+  "emitted_at": "2026-05-02T16:57:06Z",
+  "payload": {
+    "authorization_status": "GRANTED",
+    "authorized_at_utc": "2026-05-02T16:57:06Z",
+    "caller_capabilities": [
+      "cap::deterministic_compute"
+    ],
+    "integrated_runtime_origin": true,
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_single_action_run.run_integrated_single_action",
+    "request_id": "req-a71ba1557794401891d5bfd3ce629b97",
+    "required_capability": "cap::deterministic_compute",
+    "run_id": "f7760cb80467471f8b1dc9ec7819be34",
+    "tool_id": "tool::hash_bytes::v1",
+    "tool_registry_record_sha256": "eec4b69bbc13d2daa57a481a834515f48b14e4540d1cda5d93f6ff36ba58627f",
+    "trace_root": "trace-d1468c509dda4837a5dfd3cfff3b5a0c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_single_action_run",
+  "producer_function_or_class": "run_integrated_single_action",
+  "producer_module": "integrated_single_action_run",
+  "upstream_artifact_ref": ""
+}

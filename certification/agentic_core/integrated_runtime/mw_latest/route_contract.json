@@ -1,0 +1,28 @@
+{
+  "artifact_hash": "sha256:cef47a8b7e8215906588b287869025e1053f31120fed249aa8d49e9d1462cc35",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "blueprint_hash": "blueprint::mw-demo-two-node",
+    "execution_form": "MANAGED_WORKFLOW",
+    "grounding_required": false,
+    "intent_class": "managed_workflow_demo",
+    "l3_required": true,
+    "model_execution_required": false,
+    "namespace": "mw_demo",
+    "policy_hash": "6b45eaad05676683c7b13994c99b4940ebfcdaf49573830525dd5d697b228831",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+    "prompt_assembly_required": false,
+    "query_spec": "mw_demo_query",
+    "replay_key": "e8c5b27f7c248d5004a684f73f40bd70b108409199d5cc36f2a98cc186b71ffb",
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_id_hint": "MW_DEMO_TWO_NODE",
+    "static_dag_ref": "agentic_core.L3_orchestration.registry.static_dag_registry.DEMO_TWO_NODE_DAG_ID",
+    "task_spec": "mw_demo",
+    "tenant_bind": "",
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:cddb2a58a973843755878486c52bc7da5831c3975a7e2dfe311153dd76c70564"
+}

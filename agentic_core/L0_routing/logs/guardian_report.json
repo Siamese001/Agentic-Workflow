@@ -1,14 +1,14 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-03T00:05:24.097332+00:00",
+  "timestamp": "2026-05-03T22:21:18.970060+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 432,
+    "total_tests": 428,
     "passed_tests": 0,
-    "failed_tests": 235,
-    "skipped_tests": 197,
+    "failed_tests": 233,
+    "skipped_tests": 195,
     "exit_status": 1,
     "failed_by_category": {
       "mro_integrity": [],
@@ -122,7 +122,6 @@
         "tests/unit/agentic_core/L4_state/utils/memory/test_template_registry_10slot.py",
         "tests/unit/agentic_core/L4_state/utils/memory/test_template_registry_behavior.py",
         "tests/unit/agentic_core/L5_safety/adapters/test_human_approval_adapter.py",
-        "tests/unit/agentic_core/L5_safety/enforcement/test_capability_token_rotation.py",
         "tests/unit/agentic_core/L5_safety/enforcement/test_ingress_envelope_check.py",
         "tests/unit/agentic_core/L5_safety/enforcement/test_ingress_spec_output_contract.py",
         "tests/unit/agentic_core/L5_safety/eval_spine/judge_backends/test_judge_backends.py",
@@ -251,7 +250,6 @@
         "tests/unit/tools/eval/test_ragbench_runner.py",
         "tests/unit/tools/eval/test_ragbench_runner_edge.py",
         "tests/unit/tools/generate/test_simplification_e2e_9b4c27.py",
-        "tests/unit/tools/ingestion/test_ingest_docs_contextualize.py",
         "tests/unit/tools/mcp/test_enhanced_http_server.py",
         "tests/unit/tools/otel/test_runtime_view_builder.py"
       ]

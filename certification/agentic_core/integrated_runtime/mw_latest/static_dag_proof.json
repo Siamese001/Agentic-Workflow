@@ -1,0 +1,64 @@
+{
+  "artifact_hash": "sha256:e271f40e92f8b94f2f1b50f48bb2dff0ead9c9bf7f8d17cadfaf27b81e707644",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "all_nodes_have_allowed_execution_surface": true,
+    "all_nodes_have_owner": true,
+    "all_nodes_have_step_contract_schema": true,
+    "bounded_loop_max": 0,
+    "dag_file_path": "",
+    "dag_id": "mw_demo_two_node",
+    "dag_name": "MW Demo Two-Node DAG",
+    "dag_registry_ref": "agentic_core.L3_orchestration.registry.static_dag_registry.DEMO_TWO_NODE_DAG_ID",
+    "dag_registry_sha256": "",
+    "dag_sha256": "sha256:69f32d94cbc2c80136a316ef94041ec7761588f8b4c54ff041540c2b41270f07",
+    "dag_version": "1.0",
+    "edge_count": 1,
+    "edge_list": [
+      {
+        "edge_kind": "sequence",
+        "from_node": "node_a",
+        "to_node": "node_b"
+      }
+    ],
+    "entry_nodes": [
+      "node_a"
+    ],
+    "has_cycle": false,
+    "l3_no_execute_policy": true,
+    "l3_no_l4_write_policy": true,
+    "l3_no_prompt_assembly_policy": true,
+    "l3_no_retrieve_policy": true,
+    "max_depth": 2,
+    "node_count": 2,
+    "node_ids": [
+      "node_a",
+      "node_b"
+    ],
+    "nodes": [
+      {
+        "allowed_execution_surface": "L2_NOOP",
+        "node_id": "node_a",
+        "owner": "agentic_core.L3_orchestration.registry.static_dag_registry",
+        "step_contract_schema": "L3StepContract.v1"
+      },
+      {
+        "allowed_execution_surface": "L2_NOOP",
+        "node_id": "node_b",
+        "owner": "agentic_core.L3_orchestration.registry.static_dag_registry",
+        "step_contract_schema": "L3StepContract.v1"
+      }
+    ],
+    "route_ids": [
+      "MW_DEMO_TWO_NODE"
+    ],
+    "schema_version": "1.0",
+    "terminal_nodes": [
+      "node_b"
+    ]
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:cef47a8b7e8215906588b287869025e1053f31120fed249aa8d49e9d1462cc35"
+}

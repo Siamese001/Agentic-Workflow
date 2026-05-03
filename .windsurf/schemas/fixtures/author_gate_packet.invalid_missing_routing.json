@@ -1,0 +1,9 @@
+{
+  "decision_id": "dec_bad99999",
+  "created_at": "2026-05-03T14:15:00+00:00",
+  "decision_type": "refactor_scope",
+  "status": "surfaced",
+  "candidates": [
+    {"id": "x", "confidence_score": 0.9}
+  ]
+}

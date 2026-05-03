@@ -1,0 +1,93 @@
+# apps_lic rubric output map — declarative L2-receipt -> dim_scores extractor.
+#
+# Plan: apps-runtime-domain-enforcement-a7e9d4 W2.P2 (2026-05-03).
+# Consumed by apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores
+# inside apps_lic/__main__.py::_run_live_cert after governed_run seals receipts.
+#
+# Sibling to:
+#   - apps_lic/config/domain_contract/eval_rubrics.yaml (10 rubric dims)
+#   - apps_lic/config/cert_route_registry.yaml (declares this file's path)
+#   - apps_lic/config/domain_contract/grader_roster.yaml (judges for llm/hybrid dims)
+#
+# Design rule: the cert-path live run is currently a SYMBOLIC 9-HOP pipeline
+# (no real compose / no real message output) so the receipt surface is thin.
+# This map projects only the deterministic rubric dims whose fail-closed
+# behavior provides evidence the Exit pipeline is running enforcement.
+# Expected outcome on the symbolic path: most dims default to 0.0 -> UNKNOWN
+# -> fail-closed per evidence_required=true. That is CORRECT — it proves
+# enforcement is live. When apps_lic graduates to a real live-cert compose
+# flow, update the receipt paths here; the rubric stays stable.
+#
+# Judge / hybrid dims intentionally omitted (AppSpecificEvaluator routes to
+# registered graders via apps_lic/config/domain_contract/grader_roster.yaml
+# + apps_lic/engines/judges/{response_likelihood,brand_voice}_judge.py stubs).
+
+mapper_id: apps_lic.outreach_message.v1
+app_id: apps_lic
+rubric_id: "aer::apps_lic::outreach_message::v1"
+version: "1.0.0"
+status: active
+
+dimensions:
+  # ---- deterministic dims (projected from receipt when present) ----
+  - dimension_id: personalization_integrity
+    score:
+      type: jsonpath
+      path: $.output.personalization_check.integrity_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.personalization_source_trace"
+      - jsonpath: $.output.personalization_check.verified_refs
+        prefix: "evidence_ref:"
+
+  - dimension_id: brevity_and_channel_fit
+    score:
+      type: jsonpath
+      path: $.output.channel_fit.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.channel_length_compliance"
+      - template: "channel={$.output.composed_message.channel} length={$.output.composed_message.length}"
+
+  - dimension_id: compliance
+    score:
+      type: all_present
+      paths:
+        - $.output.compliance_check.consent_verified
+        - $.output.compliance_check.opt_out_present
+        - $.output.compliance_check.no_prohibited_content
+      default: 0.0
+    evidence:
+      - literal: "grader=deterministic.compliance_gate"
+      - template: "region={$.output.compliance_check.region} consent_artifact={$.output.compliance_check.consent_artifact}"
+
+  - dimension_id: no_fake_personalization
+    score:
+      type: jsonpath
+      path: $.output.personalization_check.all_claims_backed_score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - jsonpath: $.output.personalization_check.unbacked_claims
+        prefix: "unbacked:"
+      - literal: "grader=deterministic.claim_evidence_binding"
+
+  - dimension_id: no_sensitive_targeting
+    score:
+      type: jsonpath
+      path: $.output.sensitive_targeting_check.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.protected_attribute_scanner"
+      - template: "flags={$.output.sensitive_targeting_check.flags}"
+
+  # ---- judge / hybrid dims (resolved by registered graders, no YAML score) ----
+  # audience_fit          (hybrid)      -> grader_roster.yaml -> deterministic+judge
+  # offer_clarity         (hybrid)      -> grader_roster.yaml
+  # response_likelihood   (llm_as_judge) -> apps_lic/engines/judges/response_likelihood_judge.py
+  # sequence_coherence    (hybrid)      -> grader_roster.yaml
+  # brand_voice           (llm_as_judge) -> apps_lic/engines/judges/brand_voice_judge.py
+  # Intentionally omitted — AppSpecificEvaluator calls their registered graders.

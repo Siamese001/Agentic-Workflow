@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "healing_in_certification_tree": 0,
+    "judge_surface_in_healing_tree": 0,
+    "panel_juror_missing_control_surface": 0,
+    "panel_missing_control_surface": 0
+  },
+  "executed_at_utc": "2026-05-01T22:44:44.980960+00:00",
+  "roots_scanned": {
+    "certification": "artifacts\\certification",
+    "healing": "artifacts\\healing",
+    "panel_dir": "artifacts\\certification\\integrated_runtime\\consensus_jury"
+  },
+  "status": "PASS",
+  "verifier": "verify_control_surface_separation",
+  "violation_count": 0,
+  "violations": []
+}

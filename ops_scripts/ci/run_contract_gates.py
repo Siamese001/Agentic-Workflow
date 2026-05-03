@@ -377,6 +377,58 @@ def main():
         # Advisory by default; flip via ADG_CERTIFIED_STRICT=1 once the consumer-mode
         # gate is permanently strict-mode and runtime evidence is consistently flowing.
         ("3B6 ADG_CERTIFIED aggregate gate", "ops_scripts/ci/check_adg_certified.py"),
+        # W6.P1 (plan apps-eval-harness-deferred-e4a1b7): apps_* eval-harness
+        # parity gate. Advisory by default — flip fail-closed via
+        # APP_DOMAIN_HARNESS_PARITY_FAIL_CLOSED=1 once calibrated.
+        (
+            "AEH1 apps_* eval-harness parity (advisory)",
+            "ops_scripts/ci/check_app_domain_harness_parity.py",
+        ),
+        # NP1 — Plans DB mandatory AI Summary gate. Advisory by default;
+        # flip fail-closed via NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN is unset (offline CI).
+        # Rule: .windsurf/rules/notion-plans-taxonomy.md > Mandatory AI Summary.
+        (
+            "NP1 Notion Plans AI Summary (advisory)",
+            "ops_scripts/ci/check_notion_plans_ai_summary.py",
+        ),
+        # NP2 -- Plans DB Status must use canonical option strings.
+        # Advisory by default; fail-closed via NOTION_PLANS_STATUS_FAIL_CLOSED=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plans-taxonomy.md > CANONICAL Status option strings.
+        (
+            "NP2 Notion Plans Status drift (advisory)",
+            "ops_scripts/ci/check_notion_plans_status_drift.py",
+        ),
+        # NP3 -- Backlog Items rows must have a Plan relation (true orphans ==0).
+        # Advisory by default; fail-closed via BACKLOG_PLAN_LINKAGE_FAIL_CLOSED=1.
+        # Orphan count confirmed 0 (2026-05-03, plan backlog-linkage-followup-c2e9f3).
+        # Ready to promote: set BACKLOG_PLAN_LINKAGE_FAIL_CLOSED=1 to enforce.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-backlog-plan-linkage.md
+        (
+            "NP3 Notion Backlog plan linkage (advisory)",
+            "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
+        ),
+        # PR1 — Plan–Notion registration freshness (Constitutional §36).
+        # Advisory by default; flip fail-closed via
+        # PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe: SKIPs when no
+        # token and no local cache. Rule:
+        # .windsurf/rules/plan-registration-enforcement.md.
+        (
+            "PR1 Plan–Notion Registration (advisory)",
+            "ops_scripts/ci/check_plan_registration_freshness.py",
+        ),
+        # APPS-DOM runtime harness fixture freshness. Fails when
+        # artifacts/apps_otel_traces or sibling harness fixture dirs contain
+        # a fixture older than APPS_DOM_FIXTURE_FRESHNESS_HOURS (default 168h).
+        # Skips when fixture dirs absent (first-run tolerant).
+        # Bypass: APPS_DOM_FIXTURE_FRESHNESS_BYPASS=1. Plan:
+        # .windsurf/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
+        (
+            "AD1 APPS-DOM harness fixture freshness",
+            "ops_scripts/ci/check_apps_dom_fixture_freshness.py",
+        ),
     ]
     for label, script in assurance_gates:
         if not (ROOT / script).is_file():

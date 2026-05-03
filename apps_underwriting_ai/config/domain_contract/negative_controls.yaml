@@ -3,7 +3,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   expected_failure_dimension: policy_compliance
   expected_failure_reason: Decision violates documented underwriting policy.
   input_ref: tests/fixtures/apps_underwriting_ai/neg_policy_violation.json
@@ -15,7 +15,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   expected_failure_dimension: fairness
   expected_failure_reason: Decision signal traces to a protected attribute.
   input_ref: tests/fixtures/apps_underwriting_ai/neg_protected_attribute_leak.json

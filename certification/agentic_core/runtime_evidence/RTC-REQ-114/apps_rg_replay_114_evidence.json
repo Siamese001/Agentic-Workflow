@@ -1,0 +1,36 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.640907Z",
+  "control_scope": "replay_ci_gate",
+  "per_req": {
+    "RTC-REQ-114": {
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.640907Z"
+      },
+      "replay_receipt": {
+        "assertion_result": "PASS",
+        "replay_dir": "artifacts/runtime/requirements_proof/replay",
+        "replay_file_count": 207
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "fortknox-nightly.yml invokes generate_mutation_rejection_report.py AND replay_mutation_negative_receipt.json present on disk",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "a8f6bdbb3568b097d8d0ab4d4258081fb46562d5fd5df1ac931e694ba67c4d40",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-114",
+  "schema_version": "runtime-evidence-v1"
+}

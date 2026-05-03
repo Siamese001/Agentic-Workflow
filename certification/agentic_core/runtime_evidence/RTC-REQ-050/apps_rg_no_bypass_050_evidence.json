@@ -1,0 +1,59 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.619256Z",
+  "control_scope": "freshness_expiration_negative",
+  "per_req": {
+    "RTC-REQ-050": {
+      "expected_fail_reason": {
+        "assertion_result": "PASS",
+        "check": "semantic_cache_negative_controls.anti_cheat_rules_honored.expected_vs_actual_fail_reason_compared",
+        "expected_vs_actual_fail_reason_compared": true
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.619256Z"
+      },
+      "negative_controls": {
+        "assertion_result": "PASS",
+        "negative_control_check": "semantic_cache_negative_controls.negatives non-empty AND row's specific negative included",
+        "negatives_present": [
+          "NEG-5_expired_freshness",
+          "NEG-6_missing_embedding_ref",
+          "NEG-7_unsafe_reuse_class"
+        ],
+        "predicate_passed": true,
+        "report_path": "artifacts/certification/semantic_cache_negative_controls.json",
+        "report_sha256": "2778257e40ceca4b3beab79d54a2aa95963ec72aeef964089ca6c8527912d8e8"
+      },
+      "no_bypass": {
+        "assertion_result": "PASS",
+        "no_bypass_predicate": "semantic_cache_negative_controls includes NEG-5_expired_freshness AND rationale includes 'NEG-5 passes=True' / 'Overall: PASS'",
+        "predicate_passed": true
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "semantic_cache_negative_controls includes NEG-5_expired_freshness AND rationale includes 'NEG-5 passes=True' / 'Overall: PASS'",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "3baa28e88309a2d671241db958f53cae0f0ad25dbadac1515058deadd78f3887",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-050",
+  "schema_version": "runtime-evidence-v1"
+}

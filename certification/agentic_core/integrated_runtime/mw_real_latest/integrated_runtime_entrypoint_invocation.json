@@ -1,0 +1,21 @@
+{
+  "artifact_hash": "sha256:ab9840bf8f107199baabbd0b1e0ffd189df07dc85f52230efb4ac2b64979f15f",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "entry_point": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run.run_integrated_safe_reuse",
+    "integrated_runtime_entrypoint_used": true,
+    "invocation_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "is_hard_negative_lookup": false,
+    "namespace": "mw_real_test",
+    "raw_request_keys": [
+      "category",
+      "query"
+    ],
+    "started_at_epoch": 1777741157.2838044,
+    "tenant_id": "t:mw-real-regen"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": ""
+}

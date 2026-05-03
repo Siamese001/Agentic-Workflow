@@ -1,0 +1,34 @@
+{
+  "artifact_hash": "sha256:3cd516bbbc84854554015565ccc3e99aeedc0f8cdf46bfbd7cd17af2c66af696",
+  "emitted_at": "2026-05-01T15:46:24Z",
+  "payload": {
+    "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
+    "cached_answer_ref": "cache::25d90f53aaf167c7de341945e02bdbfb7fd894a84dd59fb0c5666a909ea51d0b",
+    "confidence": 0.95,
+    "execution_form": "TERMINAL_SHORTCIRCUIT",
+    "exit_review_required": true,
+    "freshness_status": "bounded",
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "policy_hash": "becdb0a9f0b9d227f43af80c2bdbd3b60f320f430d4e28c465f7abbbb15cf328",
+    "prior_evidence_contract_ref": "",
+    "reason_codes": [
+      "d2_semantic_hit",
+      "veto_safe",
+      "safe_reuse_composite_allow"
+    ],
+    "replay_key": "25d90f53aaf167c7de341945e02bdbfb7fd894a84dd59fb0c5666a909ea51d0b",
+    "request_id": "req-bf2e0bf5479544eab838a4ca230fe1d7",
+    "route_digest_ref": "rd::25d90f53aaf167c7de341945e02bdbfb7fd894a84dd59fb0c5666a909ea51d0b",
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "run_id": "req-bf2e0bf5479544eab838a4ca230fe1d7",
+    "safe_response_ref": "",
+    "support_status": "bounded",
+    "tenant_scope_status": "bound",
+    "trace_root": "trace-996c2a5eb50044c2b4ba77f2d9405ac0"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:bf403af7a4e8a6528edbd25dfb3141ad6caa071889ceb40ee1b1352a3c7c45bd"
+}

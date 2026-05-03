@@ -1,0 +1,102 @@
+{
+  "artifact_hash": "sha256:d70d35dd46400833157290e541b82f023aab4348618e573eb74c60a3300b58e0",
+  "emitted_at": "2026-05-02T19:22:26Z",
+  "payload": {
+    "exhaust_bundle": {
+      "artifact_inventory": [
+        "295665dc78ba7008eafa9685ba8e6dbd989b8add8d1074895c3880836ddda62e"
+      ],
+      "bundle_id": "bundle-1777749746259-1",
+      "gap_report": [
+        {
+          "detected_defects": [],
+          "missing_fields": [
+            "parent_span_id",
+            "session_id",
+            "request_id",
+            "route_id",
+            "attempt_id",
+            "blueprint_hash",
+            "prompt_hash",
+            "context_hash",
+            "model_id",
+            "tool_id",
+            "source_lineage",
+            "l4_snapshot_ref",
+            "uwg_receipt_ref"
+          ],
+          "record_id": "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1"
+        }
+      ],
+      "ingest_quality_score": 0.0,
+      "lineage_manifest": {
+        "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1": {
+          "artifact_digest": "295665dc78ba7008eafa9685ba8e6dbd989b8add8d1074895c3880836ddda62e",
+          "policy_hash": "c25fe478b93ee27ebd576a5958fd8a58c52e35f5d0273a52932510e456564533",
+          "provider_lane": "cache",
+          "replay_key": "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1",
+          "run_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+          "span_id": "span-x3-emit",
+          "step_id": 1,
+          "trace_id": "trace-537e36ca18ea491497e2e0e1c8e71f1a"
+        }
+      },
+      "newest_span_age_seconds": 0.0,
+      "raw_evidence_refs": [
+        "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1"
+      ],
+      "stage_map": {
+        "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1": "L0_terminal_cache_reuse"
+      }
+    },
+    "sealed_manifest": {
+      "anomaly_signal_refs": [],
+      "c0_evidence_contract_refs": [],
+      "commit_receipt_refs": [],
+      "cost_latency_token_metrics": {
+        "budget_counters": {
+          "max_tokens": 0,
+          "used_tokens": 0
+        },
+        "cost_tier": "negligible",
+        "timeout_ms": 30000
+      },
+      "deterministic_digest": "295665dc78ba7008eafa9685ba8e6dbd989b8add8d1074895c3880836ddda62e",
+      "exhaust_manifest_id": "exh-bc5041c56c9af2ec",
+      "exit_review_packet_ref": "erp::6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1",
+      "grader_result_refs": [
+        "cache_reuse_safety"
+      ],
+      "hitl_packet_refs": [],
+      "l2_artifact_refs": [],
+      "l3_workflow_package_ref": "",
+      "l6_handoff_allowed": true,
+      "otel_span_refs": [
+        "trace_root:trace-537e36ca18ea491497e2e0e1c8e71f1a",
+        "exit_disposition:ALLOW"
+      ],
+      "prompt_artifact_refs": [],
+      "replay_digest_refs": [
+        "6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1"
+      ],
+      "request_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+      "ret_packet_ref": "trp::6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1",
+      "route_contract_ref": "R1B_SEMANTIC_CACHE",
+      "run_id": "req-71ccfb07d2a64d46b1410003983d36a2",
+      "runtime_boundary_status": "SEALED",
+      "sealed_at": 1777749746,
+      "session_id": "sess-d36c26e3ab6a4bdb867ab7afd021b8b7",
+      "trace_root": "trace-537e36ca18ea491497e2e0e1c8e71f1a",
+      "uwg_receipt_refs": [],
+      "x1_gate_result_bundle_ref": "x1bundle::6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1",
+      "x2_aggregate_decision_ref": "x2::6722da510dafc729bad9d4da5be7cf4e3a83f9f5f7044c72f7336487b19588c1",
+      "x3_disposition_receipt_ref": "x3-13a96ce9d5b5a467",
+      "x3_disposition_value": "X3D"
+    },
+    "x3_disposition": "X3D"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:72a8b62d8f4b98c2caa7f4238739c5cfad600f629855e867c92bb19d7ba44e27"
+}

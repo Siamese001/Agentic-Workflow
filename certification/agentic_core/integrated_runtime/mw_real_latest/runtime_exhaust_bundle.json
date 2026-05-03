@@ -1,0 +1,102 @@
+{
+  "artifact_hash": "sha256:67fcf5bbdc9675775093ff84f34102d1b4d67c05ba14010ce7191ba9cf8690e7",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "exhaust_bundle": {
+      "artifact_inventory": [
+        "74eca5ccab8bbeb7d6a0d0273c95268823185b934a8d75388c3b023fc05e9fbc"
+      ],
+      "bundle_id": "bundle-1777741157361-1",
+      "gap_report": [
+        {
+          "detected_defects": [],
+          "missing_fields": [
+            "parent_span_id",
+            "session_id",
+            "request_id",
+            "route_id",
+            "attempt_id",
+            "blueprint_hash",
+            "prompt_hash",
+            "context_hash",
+            "model_id",
+            "tool_id",
+            "source_lineage",
+            "l4_snapshot_ref",
+            "uwg_receipt_ref"
+          ],
+          "record_id": "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25"
+        }
+      ],
+      "ingest_quality_score": 0.0,
+      "lineage_manifest": {
+        "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25": {
+          "artifact_digest": "74eca5ccab8bbeb7d6a0d0273c95268823185b934a8d75388c3b023fc05e9fbc",
+          "policy_hash": "775290e50fa3b8420dce53c6bde17a1b7a323075a314fce22c2ee981d00b3add",
+          "provider_lane": "cache",
+          "replay_key": "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+          "run_id": "req-bd2703434b2046f09c04960e576b8fc7",
+          "span_id": "span-x3-emit",
+          "step_id": 1,
+          "trace_id": "trace-dd46735d034440ac81cde676001e1d3c"
+        }
+      },
+      "newest_span_age_seconds": 0.0,
+      "raw_evidence_refs": [
+        "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25"
+      ],
+      "stage_map": {
+        "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25": "L0_terminal_cache_reuse"
+      }
+    },
+    "sealed_manifest": {
+      "anomaly_signal_refs": [],
+      "c0_evidence_contract_refs": [],
+      "commit_receipt_refs": [],
+      "cost_latency_token_metrics": {
+        "budget_counters": {
+          "max_tokens": 0,
+          "used_tokens": 0
+        },
+        "cost_tier": "negligible",
+        "timeout_ms": 30000
+      },
+      "deterministic_digest": "74eca5ccab8bbeb7d6a0d0273c95268823185b934a8d75388c3b023fc05e9fbc",
+      "exhaust_manifest_id": "exh-9a28c7af0496d5d6",
+      "exit_review_packet_ref": "erp::f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+      "grader_result_refs": [
+        "cache_reuse_safety"
+      ],
+      "hitl_packet_refs": [],
+      "l2_artifact_refs": [],
+      "l3_workflow_package_ref": "",
+      "l6_handoff_allowed": true,
+      "otel_span_refs": [
+        "trace_root:trace-dd46735d034440ac81cde676001e1d3c",
+        "exit_disposition:ALLOW"
+      ],
+      "prompt_artifact_refs": [],
+      "replay_digest_refs": [
+        "f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25"
+      ],
+      "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+      "ret_packet_ref": "trp::f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+      "route_contract_ref": "R5_FALLBACK",
+      "run_id": "req-bd2703434b2046f09c04960e576b8fc7",
+      "runtime_boundary_status": "SEALED",
+      "sealed_at": 1777741157,
+      "session_id": "sess-4ea5a83ca22c400aa98e268cf7397f4c",
+      "trace_root": "trace-dd46735d034440ac81cde676001e1d3c",
+      "uwg_receipt_refs": [],
+      "x1_gate_result_bundle_ref": "x1bundle::f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+      "x2_aggregate_decision_ref": "x2::f101a3b64dbd5a69a9e845e87841db4518336930063b07490841a2de778d0a25",
+      "x3_disposition_receipt_ref": "x3-545cf31a2d75170e",
+      "x3_disposition_value": "X3A"
+    },
+    "x3_disposition": "X3A"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:766d7ae69eefdb18151384a3b8711619b191bea3fa0d135497fd2a80cdbe29e5"
+}

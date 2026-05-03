@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:8e7138e368ab03eb984d791a013c48b16cc1201214ba9433e8c2b3bb07cb6547",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "blueprint_hash": "blueprint::w2-r1b-safe-reuse",
+    "exec_trace": {
+      "model_calls": [],
+      "replay_receipts_present": true,
+      "ret_packet_ref": "trp::350413ac2c73ed93b886b5bd23939497b63448b7a1cfaddefb46fd07efa2fa2b",
+      "tool_calls": [],
+      "wall_clock_used": false
+    },
+    "no_l2_execution_assertion": true,
+    "no_l4_write_assertion": true,
+    "output": {
+      "citation_precision": 0.95,
+      "completion_score": 0.95,
+      "confidence": 0.0,
+      "faithfulness": 0.95,
+      "format_fit": true,
+      "groundedness": 0.95,
+      "schema_required": false,
+      "schema_valid": true,
+      "text": "(cached answer)"
+    },
+    "policy_hash": "8fad55f08dcaedc7e948557fab77d018c7d8f49731cd6254604864c787d79677",
+    "replay_key": "350413ac2c73ed93b886b5bd23939497b63448b7a1cfaddefb46fd07efa2fa2b",
+    "request_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "route_id": "R5_FALLBACK",
+    "run_id": "req-a7286f91214e453f92b7871bb7931fbd",
+    "session_id": "sess-62b87721f51f4bf2be6238920d5e018c",
+    "source_type": "L2_SEALED_ARTIFACT",
+    "state_diff": {},
+    "terminal_class": "answer_only",
+    "trace_root": "trace-b32615ac8c9b4a17a8ecfc924c39e8bd",
+    "track_label": "production"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:46da49f7a6df01ec9e4ad7e61c7033e997e76740cbfd2b77c67a25de9c0b6182"
+}

@@ -1,0 +1,16 @@
+{
+  "acceptance_caveat": {
+    "RTC-REQ-059": "R1B subclaims with soft blockers prevent ACCEPTED: R1B_SAFE_REUSE_COMPOSITE_PROOF:PARTIAL, R1B_APPROVED_MODEL_PROOF:PARTIAL"
+  },
+  "actual_proof_depth": {
+    "RTC-REQ-055": "E0_REQUIREMENT_TEXT",
+    "RTC-REQ-059": "E0_REQUIREMENT_TEXT"
+  },
+  "blocking_gap": {
+    "RTC-REQ-055": "R1B subclaims with hard blockers prevent acceptance: R1B_PRODUCTION_THRESHOLD_PROOF:BLOCKED"
+  },
+  "final_acceptance_status": {
+    "RTC-REQ-055": "BLOCKED",
+    "RTC-REQ-059": "PARTIAL"
+  }
+}

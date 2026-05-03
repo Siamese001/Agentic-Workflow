@@ -3,7 +3,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   side_effect_class: read_only
   policy_hash: policy://apps_underwriting_ai/v1
   allowed_tools:

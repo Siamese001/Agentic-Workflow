@@ -3,7 +3,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   output_schema_ref: aos::apps_underwriting_ai::underwriting_decision::v1
   policy_hash: policy://apps_underwriting_ai/v1
   required_slots:

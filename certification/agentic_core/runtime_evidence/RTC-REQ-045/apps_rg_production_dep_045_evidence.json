@@ -1,0 +1,46 @@
+{
+  "app_name": "apps_rg",
+  "captured_at_utc": "2026-05-02T03:42:18.650634Z",
+  "control_scope": "production_threshold_proof",
+  "per_req": {
+    "RTC-REQ-045": {
+      "certifier_signature": {
+        "assertion_result": "PASS",
+        "certifier_role": "development_certifier",
+        "certifier_signature": "sha256:f38c61649d210b5a2a3ba194a4a02d994c6d314a3565855a554dd01bfbb63bc6",
+        "signature_scheme": "sha256-self-attest",
+        "signed_artifact_path": "artifacts/proof/l0_route_proof_v2/f4d451f45728/production_threshold_calibration.json",
+        "signed_artifact_sha256": "f38c61649d210b5a2a3ba194a4a02d994c6d314a3565855a554dd01bfbb63bc6",
+        "trust_level_note": "DEVELOPMENT_PROOF: sha256 self-attest is honest and verifiable; FINAL_SIGNED_CERTIFICATION requires an additional ed25519/PGP human signature envelope."
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "verified_at_utc": "2026-05-02T03:42:18.650634Z"
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "bundle_dir": "artifacts/certification/integrated_runtime/latest",
+        "declared_artifact_count": 18,
+        "manifest_sha256": "95303d51e058442b37331bf2bf43968323d2ff833c95c16380423cde8628be9a"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "producer_path": "tools/cert/verify_apps_rg_runtime_universal.py",
+        "producer_self_exit_code": 0,
+        "row_evaluation_completed": true,
+        "row_predicate_passed": true
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "predicate_evaluated_to": true,
+        "row_predicate": "calibration has threshold_in_force in (0,1] AND R1B_PRODUCTION_THRESHOLD_PROOF status field emitted (honest calibration finding)",
+        "verifier_role": "row-specific predicate"
+      }
+    }
+  },
+  "per_req_block_sha256": "ec6ba15542fbbb2b13a9efb4a613938f7534fdb285a7e352fb24addce906bfe7",
+  "producer": "tools/cert/verify_apps_rg_runtime_universal.py",
+  "producer_exit_code": 0,
+  "req_id": "RTC-REQ-045",
+  "schema_version": "runtime-evidence-v1"
+}

@@ -83,6 +83,36 @@ CORE_STAGES: tuple[Stage, ...] = (
         script="ingest_docs.py",
         args=("--source-dir", "docs", "--embedding-provider", "bge-m3"),
     ),
+    # W1.4 (chromadb-retrieval-remaining-gaps-b4e7c2): expand doc ingest to
+    # cover high-value markdown outside docs/.  All stages write to the same
+    # ``docs`` collection via idempotent canonical_digest upsert.
+    Stage(
+        name="docs_windsurf_rules",
+        script="ingest_docs.py",
+        args=("--source-dir", ".windsurf/rules", "--embedding-provider", "bge-m3"),
+    ),
+    Stage(
+        name="docs_windsurf_skills",
+        script="ingest_docs.py",
+        args=("--source-dir", ".windsurf/skills", "--embedding-provider", "bge-m3"),
+    ),
+    Stage(
+        name="docs_agents_md",
+        script="ingest_docs.py",
+        args=("--source-dir", ".", "--embedding-provider", "bge-m3",
+              "--exclude-glob", "**/*.py", "--exclude-glob", "**/*.json",
+              "--exclude-glob", "**/*.yaml", "--exclude-glob", "**/*.yml",
+              "--exclude-glob", "docs/**", "--exclude-glob", ".windsurf/**",
+              "--exclude-glob", "apps_*/**", "--exclude-glob", "agentic_core/**",
+              "--exclude-glob", "tools/**", "--exclude-glob", "tests/**",
+              "--exclude-glob", "scripts/**", "--exclude-glob", "system_learning/**",
+              "--exclude-glob", "infrastructure/**", "--exclude-glob", "ops_scripts/**",
+              "--exclude-glob", "archives/**", "--exclude-glob", "artifacts/**",
+              "--exclude-glob", "certification/**", "--exclude-glob", "config/**",
+              "--exclude-glob", "data/**", "--exclude-glob", "keys/**",
+              "--exclude-glob", "requirements/**", "--exclude-glob", ".github/**",
+              "--limit", "5"),
+    ),
     # ``adg`` stage removed W5.2: repo_adg_graph is redundant with the
     # ``symbols`` collection + live adg_sqlite MCP. See
     # tools/retrieval/drop_repo_adg_graph.py for rationale and teardown.

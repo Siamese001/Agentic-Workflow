@@ -1,0 +1,14 @@
+{
+  "artifact_hash": "sha256:803e25a0254ad7f8732da438d7cb7a654681152e3e4984d80f643104ef24bc81",
+  "emitted_at": "2026-05-02T16:57:04Z",
+  "payload": {
+    "grounding_required": false,
+    "query_spec": "internal_action",
+    "task_spec": "intake.service_call",
+    "user_task_text": "uwg commit path regen"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_safe_reuse_run",
+  "producer_function_or_class": "run_integrated_safe_reuse",
+  "producer_module": "integrated_safe_reuse_run",
+  "upstream_artifact_ref": "sha256:16ce8e0e0ed1dc6eb7786f04db09ca5ce75f1e61a99e1a736231618e57a1ae8b"
+}

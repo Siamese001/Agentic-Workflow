@@ -1,0 +1,34 @@
+{
+  "artifact_hash": "sha256:62c5547052ef11ebd427209e326b6453db2754e3cfaddb52a90375423955d7d4",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "all_artifacts_stamped_by_production": true,
+    "attested_filenames": [
+      "integrated_runtime_entrypoint_invocation.json",
+      "runtime_identity_envelope.json",
+      "validated_request.json",
+      "l1_plan_contract.json",
+      "route_contract.json",
+      "static_dag_proof.json",
+      "runtime_l3_orchestration_receipt.json",
+      "l2_sealed_artifact.json",
+      "c0_bypass_receipt.json",
+      "prompt_assembly_bypass_receipt.json",
+      "runtime_gate_verdict_bundle.json",
+      "exit_review_packet.json",
+      "x3_disposition_receipt.json",
+      "runtime_exhaust_bundle.json",
+      "runtime_trace_snapshot.json",
+      "agentic_core_how_trace.json",
+      "agentic_core_l7_route_family_coverage.json",
+      "integrated_runtime_artifact_manifest.json"
+    ],
+    "harness_check": "passed_self_attestation",
+    "invocation_id": "adbf00e01f0340dcbe95c0b7e8e5d554",
+    "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:7667a30b84cc05f6fe0b1cb30e2a02861b78e8036485a43f266bf52d525aa061"
+}

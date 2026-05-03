@@ -1,0 +1,20 @@
+{
+  "artifact_hash": "sha256:5977623b76a5dbce9d27e238130b5e3c675b55b44edc7f228818ec4811cc1047",
+  "emitted_at": "2026-05-02T11:18:33Z",
+  "payload": {
+    "deterministic_digest": "sha256:031a82da171078a3dbf17ce05e55f654a509eaa190e9119fa0e4e9f1feade718",
+    "model_execution_required": false,
+    "prompt_assembly_bypass_reason": "NO_MODEL_EXECUTION_REQUIRED",
+    "prompt_assembly_required": false,
+    "request_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "route_contract_id": "MW_DEMO_TWO_NODE",
+    "route_id": "MW_DEMO_TWO_NODE",
+    "run_id": "req-f0805645ebba452699feb7edbda2fa24",
+    "schema_version": "1.0",
+    "trace_root": "trace-c91d4ae42f0c40809d6e8a82d2e20941"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_run",
+  "producer_function_or_class": "run_integrated_managed_workflow",
+  "producer_module": "integrated_managed_workflow_run",
+  "upstream_artifact_ref": "sha256:3246f4e5db499d2feb2ed3f08797d3fdff2f1f84ee09b3845ebe8c93c0e850b4"
+}

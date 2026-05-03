@@ -1,0 +1,10 @@
+{
+  "notes": "Signing is out-of-band. UNSIGNED_BLOCKED is fail-closed for FINAL_SIGNED_CERTIFICATION.",
+  "report_sha256": "39af05a1bcf9cc41143130a08f11f65a7401652b54178a14c965121f6f34b5d3",
+  "schema_version": "fortknox-v2",
+  "signature_algorithm": null,
+  "signature_verification_status": "UNSIGNED_PENDING_SIGNATURE",
+  "signed_bytes_sha256": null,
+  "signer_identity": null,
+  "signing_timestamp_utc": null
+}

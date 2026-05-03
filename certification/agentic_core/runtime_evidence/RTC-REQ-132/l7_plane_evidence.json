@@ -1,0 +1,366 @@
+{
+  "app_name": "agentic_core",
+  "captured_at_utc": "2026-05-02T19:23:11.004Z",
+  "control_scope": "l7_auditability_plane",
+  "per_req": {
+    "RTC-REQ-132": {
+      "artifact_payload_hash": {
+        "assertion_result": "PASS",
+        "chain_evidence_map": {
+          "latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e703785199c64a82343d90f0ae87bc26635a57d4c6b5ae6ad318ad1fde38bfe3",
+              "RTC-REQ-071__l7_evidence.json": "0606336c7c9a9896cbab2deafc1787b197c420dd359b2ed746e330e826d8a991",
+              "RTC-REQ-080__l7_evidence.json": "df8010d8f32e9417005daca7bde3d28ee1d7abb49f7b88c5d812b7b5e1debc68",
+              "RTC-REQ-081__l7_evidence.json": "adb634f8bcbacce5d6bf00611eed72e202fe15d0ad56c7a388fe3a1a1481c261",
+              "RTC-REQ-090__l7_evidence.json": "f3055da5409a7ca321e0aac02272b103efe28f7a132758b5a645005d116b4251",
+              "RTC-REQ-091__l7_evidence.json": "b03fbe9115127269488d86d0a417370e8b60e63e9adaa15bab9576336d05a5d2",
+              "RTC-REQ-092__l7_evidence.json": "5240b01885c2ff4bc6eec43358ad13616bc7cf2672ad69c4bc4a3393b3f9e294",
+              "RTC-REQ-093__l7_evidence.json": "eb879a4cea8476dfd3f3851801942b8cbd4bbff933ba49220f595e4c4c54ac75",
+              "RTC-REQ-094__l7_evidence.json": "f0d593a43a1c6db264236f367947bff2cc44f4b06134111530521a4c53a1d880",
+              "RTC-REQ-095__l7_evidence.json": "fa291b5d6132dd1425ec3c54393ba6a4d5765b7de132b4cd5429cd6ef25baff5",
+              "RTC-REQ-096__l7_evidence.json": "777522baee10b4c268152f228410ffde92629db2065bd5f944a1c062377c76a5",
+              "RTC-REQ-097__l7_evidence.json": "62518d43e7dfe855ca9f62c7b3da026d657f054f319a6cfba5061dd444c0d215",
+              "RTC-REQ-123__l7_evidence.json": "229ef2431bc011826051b66012a2ee30a4670c0acda898c6b2ec97d9e24c88c7"
+            }
+          },
+          "mw_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "6f946b05c1b526fa3f4a03aed44731a26601ad3c62899f6ee16c4b7b19e389e1",
+              "RTC-REQ-071__l7_evidence.json": "565d70c94c31b5bfe1f8e474fc512cb56d15dab1d3183265125265e70f43df4d",
+              "RTC-REQ-080__l7_evidence.json": "71a55da6522ce8b0c9496518cba909cbb977d853302ce4852d528dafe476a25f",
+              "RTC-REQ-081__l7_evidence.json": "c058dc0be00c950d54e9a9b435cd61fdcf3c3dcdd0d67ac00b82788b7c4ba2b6",
+              "RTC-REQ-090__l7_evidence.json": "3155f746458b45fc33b18091c9a8513f39056029a78d5be89fdece44cf4748b3",
+              "RTC-REQ-091__l7_evidence.json": "998057ed96f5044878acbb0d5a550f7ffcbaff0adc0837e5443a57ae2b270d6f",
+              "RTC-REQ-092__l7_evidence.json": "f3fd48167511a40a1e8e56dbdcd1510a5bf63035e785633263fa5e06434d9224",
+              "RTC-REQ-093__l7_evidence.json": "e27cb1cfa3ff35661b867ad2269b6baca1607d086d71b3ddb7dd23ee305fb5e1",
+              "RTC-REQ-094__l7_evidence.json": "62b208c6a31889f83e1efa4113e51a654d9ac6061e6bf1c230b0a7ac1950b162",
+              "RTC-REQ-095__l7_evidence.json": "4c02c622ccc757330bd514fc732ce3e1c941564faa2a0a45e49a64bb617a07bc",
+              "RTC-REQ-096__l7_evidence.json": "fc2a261cd0b606115723e39e3290cef44a98315dfc6fe3dcf1eb11cde2a73f1a",
+              "RTC-REQ-097__l7_evidence.json": "f0ff25b40da3bcb76478a67535ac264a165e81125cb8e2f6ca52970b5a750010",
+              "RTC-REQ-123__l7_evidence.json": "af1d17b10f0bc762ae3f563899593e43fda556a06f66d7499d01983f1618d547"
+            }
+          },
+          "mw_real_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "3905ebc92e93ae8b76f92b242349825cc4e8c293f740fbccb53bbbccc502a411",
+              "RTC-REQ-071__l7_evidence.json": "0f76f8336f7c7a5964babcc300a14b5df9fc6ab034461d96e1395bf2614a11aa",
+              "RTC-REQ-080__l7_evidence.json": "c01ef7f9bf28132afc6deb4012a51accec8daa3dbb423d511728494fde5059f5",
+              "RTC-REQ-081__l7_evidence.json": "ccd782a90d762cd6f03a0863692a77d10d63d4d05aa7353a30d89fa6dc96e424",
+              "RTC-REQ-090__l7_evidence.json": "eee0d7bac415ac64df2ba427170bae7d485c3495a97969f8b84dac83ebdcb71a",
+              "RTC-REQ-091__l7_evidence.json": "ae839736d7cd1706ba24f3e904c8b99541170af7f45b7cdb5e41b29923c32dbc",
+              "RTC-REQ-092__l7_evidence.json": "5266a974d3c55b75d5f62a86c270808017c0a7605c9fe7706ad23dc05d6f28ca",
+              "RTC-REQ-093__l7_evidence.json": "a5b6b353c7a8835110a134b53c67d8fefa5f783396e0d636bea2df7f13d3aa6c",
+              "RTC-REQ-094__l7_evidence.json": "828dd59118cd2eb66064450e064fd9f58a7a59238f846c141029a5e20d049756",
+              "RTC-REQ-095__l7_evidence.json": "948e65c34792391d969eec5fd9155e68e5ca1d2ce49c813871d18de84bbc0282",
+              "RTC-REQ-096__l7_evidence.json": "36b6c1c470a33d41fe7dafb1f2418bbec903d257f76b7ecd165e0a941ba18148",
+              "RTC-REQ-097__l7_evidence.json": "06add16cd0b14e126572a222ba6953b44fbcda969a1577fc2052f0d0b4f48dd8",
+              "RTC-REQ-123__l7_evidence.json": "36612932daca8ff32121ede3da7944b077ad128538e5ccf91ae322d0212fcffe"
+            }
+          },
+          "r1a_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "0b276d0299fdf6e8e389d66eb269df1069ccec7e38c0564d3694d5d941c3bea2",
+              "RTC-REQ-071__l7_evidence.json": "24672011271590cf6d33e2bd1b8a9d077b7714f033692416bb3e1182723f110e",
+              "RTC-REQ-080__l7_evidence.json": "ce38ad36b13b93202aa5df138e3d2be21ac421602575382284b802fbc9b2983d",
+              "RTC-REQ-081__l7_evidence.json": "65298a90bcb08d45313fd6d20341ce5b33b11f526c5dfc839f6504ff817343df",
+              "RTC-REQ-090__l7_evidence.json": "22201ed3585225ce0d1dd535c6a414dc40953f87c4c102fef6478b458bc86664",
+              "RTC-REQ-091__l7_evidence.json": "b2f5e2b4dfcf7abe36bb236fa11a3008683916058dd50e8b2bffd5835d90ace4",
+              "RTC-REQ-092__l7_evidence.json": "7e818a9bf33e2fb35c46a0ec9eed0ffe4a17da0646c89d1b7db74da832ec39f7",
+              "RTC-REQ-093__l7_evidence.json": "587d6c385caacba8cad6e81a836d8233fdbe133fd231bc86107077ba0423a3f2",
+              "RTC-REQ-094__l7_evidence.json": "2fba8c885f3fa6dd2336b550acb6665c753d0527b2912afff5b56c87a1a0d87f",
+              "RTC-REQ-095__l7_evidence.json": "71525946db6b81c7df761c72115cf22d6d1deea9c2bc5f4ff07aa7b60dd07396",
+              "RTC-REQ-096__l7_evidence.json": "45a2e510e9c70fdd411eb328705a397ef392ee054035875f8818ba8c46f3fece",
+              "RTC-REQ-097__l7_evidence.json": "c2f7e9f75d114da1c4adef4ee5fd0f0fa2601a4b7792ef63e5036c4edf060a56",
+              "RTC-REQ-123__l7_evidence.json": "b92442924796b2770237e257ab40fc17899da88dfcc9fd11d81b6d6ab30e1100"
+            }
+          },
+          "r3_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "946720af895490524283b446e35ed1bfd4c299d17a75c196630b5792375ef2b0",
+              "RTC-REQ-071__l7_evidence.json": "66d5345b8a404a7d35221e38be2217674adc9028d1419ea155ad9ea0d2ce5ce8",
+              "RTC-REQ-080__l7_evidence.json": "70e2a6ec8dfdf746dee527db80e12297cedafd44fac1c5b4efab55fe5ad6b439",
+              "RTC-REQ-081__l7_evidence.json": "9b580d0416e3c56381b28cd38f3d42384d0a121e73e0cbb5e216d49be486a4df",
+              "RTC-REQ-090__l7_evidence.json": "0cde8e7ad3a78923bc39292d21317a25f8ebcad7731c1ea8c4bff4b21be7c580",
+              "RTC-REQ-091__l7_evidence.json": "be284b8c6eeab58d9bb8eeb1ac44953264e53d11fec577ee259dfdca1e6ad596",
+              "RTC-REQ-092__l7_evidence.json": "83807eaee098532594dc67971f8cee751c3116d96efa5498379b83ef641cfaa2",
+              "RTC-REQ-093__l7_evidence.json": "e67961689a1cb6c4f8bbeef5b60e007d74746c4e8fee8d059f5df3d92fadbd41",
+              "RTC-REQ-094__l7_evidence.json": "8dda964ddb4a1eb7e46d7fa9ab5db5bf2069cb8936e5d1a22df393f73cf6e2da",
+              "RTC-REQ-095__l7_evidence.json": "f88aef41d08cc1c0b821a705d323a59fd97ea389ea30b801d929596b75747bbc",
+              "RTC-REQ-096__l7_evidence.json": "c724732971c8acd2d2643b148d5e952a5dfcdf19c17c5add2cfc658a3472c5eb",
+              "RTC-REQ-097__l7_evidence.json": "d351bb64a641daa4b69f1c1e1821a9c743302f6cb24921a709e840e39eceda35",
+              "RTC-REQ-123__l7_evidence.json": "e48a21af8ccdee1a93e461715a08c039f33302067521e0a6d0ce1766a0bd5ef9"
+            }
+          },
+          "r4_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "dbbc0915eb805b88e6ba18c0e24ef8a30f4f6f4842acc6c6acd2b4c06e213d39",
+              "RTC-REQ-071__l7_evidence.json": "dcad5e186088e36d64410d17dafcc9aab461b675162c88a8e457a6be75b62876",
+              "RTC-REQ-080__l7_evidence.json": "473007cab7960a62cdb0648788a617178a717f0c6f6cd9b24af389222d97349c",
+              "RTC-REQ-081__l7_evidence.json": "e74b4873a40542c657ca660d9dbee9deb7746391e17d5fe93848ad55519cdb0c",
+              "RTC-REQ-090__l7_evidence.json": "b67101df6d83585f45119ec9d94dce6b94385c0813d8f72ee5e00451760e1bf1",
+              "RTC-REQ-091__l7_evidence.json": "e9a10f3a92e8c653cb6cc34fb9cef9af2c9d771c2a16ee0916f10243f4a073a2",
+              "RTC-REQ-092__l7_evidence.json": "f04b6fcb6dec46eeddbda2ec173f8ede16d3fda13192186ddc31bc9d7a5d8cd8",
+              "RTC-REQ-093__l7_evidence.json": "f5b781edf992248421cbcadaa1e30e56ad38743348509153255fbb5bedb98a47",
+              "RTC-REQ-094__l7_evidence.json": "8a30c307ee362b9c98d3eb500b9ebe26738f4bf36293541cd756e2a49f6de5c0",
+              "RTC-REQ-095__l7_evidence.json": "9326bc3dc8f6d7968993e42164f5c8c6c74497451444e0501245a2a212e5856f",
+              "RTC-REQ-096__l7_evidence.json": "c711bcd9bb879fd22c407ff3ba909d4598d9ca30f9c1a4b126f569947a88dadf",
+              "RTC-REQ-097__l7_evidence.json": "8334bb5f2043efaba7d461d9769c1ef6799e8821546f117a5dbf31a8479c9b98",
+              "RTC-REQ-123__l7_evidence.json": "c2bb88cb3a13e65fd2188424bcd2db3961e2552104177c50e165349970350902"
+            }
+          },
+          "r5_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e224cb8417381d10feaa00439760edcb13cb1530145cbfbab0e8e738c030c449",
+              "RTC-REQ-071__l7_evidence.json": "9bcc13a10501d25e10da2202cb316384cd0328d97828513cb9deb98ec403d274",
+              "RTC-REQ-080__l7_evidence.json": "8f8cf7064a1d8658ef3e0ee2138a208db0f1e1090d97357bbf5f1d42dc76662c",
+              "RTC-REQ-081__l7_evidence.json": "a36ee634d5b11e1db0b09ed83a9dc191f2f2655412f612416c00b4312bbb3bb8",
+              "RTC-REQ-090__l7_evidence.json": "ebc026fa3694aa722f8470fc09a5ed72a34ea6a2a660dba323eb92ab531e1ac7",
+              "RTC-REQ-091__l7_evidence.json": "491041abd5b637da3d9eba5141e32b5fb719e7df7efdef359b31883056abdc1a",
+              "RTC-REQ-092__l7_evidence.json": "8271e702354711c226f89842fa8d3a02cd3f8c23a89c5b063a0c1112f7da82da",
+              "RTC-REQ-093__l7_evidence.json": "85e413f2227d5176be51b1cd5b8343d454e0cd6fe9491048d41c099a7bfad774",
+              "RTC-REQ-094__l7_evidence.json": "eedd588d685edc7d69b20d861bee89a40c849e62a4abb46f6f784fd0c46089b0",
+              "RTC-REQ-095__l7_evidence.json": "299462d98e7beec0a36a174ad98c4f6b6c8f3769e65c02528620cc3932fe9ef6",
+              "RTC-REQ-096__l7_evidence.json": "52603238253c27b6ce1562191e56294acb5b8629138c6ed0ae997eae31586feb",
+              "RTC-REQ-097__l7_evidence.json": "406f230fbd46d5d32f0813e46444c34b6a09a3033971bb629b29e7d28b0c97b7",
+              "RTC-REQ-123__l7_evidence.json": "3e4838af26a46e599f29844858b03bd1da47172a832eec617af0bee98d2183c0"
+            }
+          },
+          "uwg_block_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e281cc5084861383c7ecd88fa6144d05b016ca78ff065cf2cb4f821387b7e3bc",
+              "RTC-REQ-071__l7_evidence.json": "30fcf16ee2de1ae3977bc43625411655444d0368004fcb4cf76c1610243c48d9",
+              "RTC-REQ-080__l7_evidence.json": "40fb1d724f3e190c2c4fc243f10d885bdadf12ac75c6685b6ed9286757f8bd42",
+              "RTC-REQ-081__l7_evidence.json": "e0fc0703dcc5d7b9503aed2056f8957cdb3b55b1f938eb6affb63183c4658f09",
+              "RTC-REQ-090__l7_evidence.json": "3de8a427350c7a3160b8363ea3f218e8b06544fff45ec140de0a7c44ce97b0d3",
+              "RTC-REQ-091__l7_evidence.json": "9602f369fc5970258fced261fe24e060cc039d2ea6af3b824dc87c7183b922e1",
+              "RTC-REQ-092__l7_evidence.json": "9590945f881b024c0f1499dffbc7b44c04277ddfe189ab8ae5697ed322eedb15",
+              "RTC-REQ-093__l7_evidence.json": "6edccb3f41d38562526a01cbf227e2cb36076234b2af35dcc167b365a33767d0",
+              "RTC-REQ-094__l7_evidence.json": "d3be7b6c95fd4ff40c4664f91f008377de2e0193cdb2ac6080e2cd94bfd338fe",
+              "RTC-REQ-095__l7_evidence.json": "f8672532dbd97bb8e1628362044149ee836b45a6d126c35a70fb6729452f322e",
+              "RTC-REQ-096__l7_evidence.json": "ce1b0a687d7bd98c55e1f399738dcfae4469a65ca01ec1b13d7fb0679b832b93",
+              "RTC-REQ-097__l7_evidence.json": "58d43c4cffde74b9e7df4d6ffdfe60d6b45d0667bdf3779c092aaf2e6aac0c69",
+              "RTC-REQ-123__l7_evidence.json": "fe8fa7a75b4c071985c422263431853d4e7dea69215c4594eba90ddab5665202"
+            }
+          },
+          "uwg_commit_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e588c3592344b8e0538d0999c530354803506034e72e808b40da2a1e9d853995",
+              "RTC-REQ-071__l7_evidence.json": "90076fbcb9d17a28499ef4a4d3a3d39283ba895dc0951f9b7cd43a1680cc7271",
+              "RTC-REQ-080__l7_evidence.json": "1a3531ce5b3c8052f70f3341212a41436d216ee37a4311beaad313a242e6ff0b",
+              "RTC-REQ-081__l7_evidence.json": "708feb837bbb7f06b52be8cb4f2e6b66112a1ccfb928e1eb5cb1b829d18d1026",
+              "RTC-REQ-090__l7_evidence.json": "14b4a872794b54fc846c1c626158a2a5c57e94791f7293b01b95b7bd6e0452bd",
+              "RTC-REQ-091__l7_evidence.json": "565530eb7e849be294caa2d0e34c011096eae8d39f779d872d822b6acd5886ea",
+              "RTC-REQ-092__l7_evidence.json": "e4c55da75c772a29c455ef446e57349adcafed881e754a8d4c625664e105c4a0",
+              "RTC-REQ-093__l7_evidence.json": "17eed8407cfdddfdd16e6714f5f122acfe19d2201e59584bae18488eca3ffe75",
+              "RTC-REQ-094__l7_evidence.json": "a64109dd3c76d1e51b6c5be19e4cbc1806862f067a33d038fa34fffd39229ffa",
+              "RTC-REQ-095__l7_evidence.json": "6a6c36af38461fa1360455ced89c7126416ba7a74f82ea06361211376c793575",
+              "RTC-REQ-096__l7_evidence.json": "7f8d2ff3d4a0d8f785320b8813772521bb3c18a31e9fc0d521ead63c47e8c7a0",
+              "RTC-REQ-097__l7_evidence.json": "81f67616270f08e3da602090115b40f0c5a01980aadfa9a636bb81284c3f680a",
+              "RTC-REQ-123__l7_evidence.json": "6bf1da262a64ce77d3b6fda269652be7ee9302aaea917748d55ed7e36fa2f0dd"
+            }
+          }
+        },
+        "req_id": "RTC-REQ-132"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-132",
+        "verified_at_utc": "2026-05-02T19:23:11.003Z"
+      },
+      "runtime_evidence": {
+        "assertion_result": "PASS",
+        "chain_count": 9,
+        "chain_evidence_map": {
+          "latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e703785199c64a82343d90f0ae87bc26635a57d4c6b5ae6ad318ad1fde38bfe3",
+              "RTC-REQ-071__l7_evidence.json": "0606336c7c9a9896cbab2deafc1787b197c420dd359b2ed746e330e826d8a991",
+              "RTC-REQ-080__l7_evidence.json": "df8010d8f32e9417005daca7bde3d28ee1d7abb49f7b88c5d812b7b5e1debc68",
+              "RTC-REQ-081__l7_evidence.json": "adb634f8bcbacce5d6bf00611eed72e202fe15d0ad56c7a388fe3a1a1481c261",
+              "RTC-REQ-090__l7_evidence.json": "f3055da5409a7ca321e0aac02272b103efe28f7a132758b5a645005d116b4251",
+              "RTC-REQ-091__l7_evidence.json": "b03fbe9115127269488d86d0a417370e8b60e63e9adaa15bab9576336d05a5d2",
+              "RTC-REQ-092__l7_evidence.json": "5240b01885c2ff4bc6eec43358ad13616bc7cf2672ad69c4bc4a3393b3f9e294",
+              "RTC-REQ-093__l7_evidence.json": "eb879a4cea8476dfd3f3851801942b8cbd4bbff933ba49220f595e4c4c54ac75",
+              "RTC-REQ-094__l7_evidence.json": "f0d593a43a1c6db264236f367947bff2cc44f4b06134111530521a4c53a1d880",
+              "RTC-REQ-095__l7_evidence.json": "fa291b5d6132dd1425ec3c54393ba6a4d5765b7de132b4cd5429cd6ef25baff5",
+              "RTC-REQ-096__l7_evidence.json": "777522baee10b4c268152f228410ffde92629db2065bd5f944a1c062377c76a5",
+              "RTC-REQ-097__l7_evidence.json": "62518d43e7dfe855ca9f62c7b3da026d657f054f319a6cfba5061dd444c0d215",
+              "RTC-REQ-123__l7_evidence.json": "229ef2431bc011826051b66012a2ee30a4670c0acda898c6b2ec97d9e24c88c7"
+            }
+          },
+          "mw_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "6f946b05c1b526fa3f4a03aed44731a26601ad3c62899f6ee16c4b7b19e389e1",
+              "RTC-REQ-071__l7_evidence.json": "565d70c94c31b5bfe1f8e474fc512cb56d15dab1d3183265125265e70f43df4d",
+              "RTC-REQ-080__l7_evidence.json": "71a55da6522ce8b0c9496518cba909cbb977d853302ce4852d528dafe476a25f",
+              "RTC-REQ-081__l7_evidence.json": "c058dc0be00c950d54e9a9b435cd61fdcf3c3dcdd0d67ac00b82788b7c4ba2b6",
+              "RTC-REQ-090__l7_evidence.json": "3155f746458b45fc33b18091c9a8513f39056029a78d5be89fdece44cf4748b3",
+              "RTC-REQ-091__l7_evidence.json": "998057ed96f5044878acbb0d5a550f7ffcbaff0adc0837e5443a57ae2b270d6f",
+              "RTC-REQ-092__l7_evidence.json": "f3fd48167511a40a1e8e56dbdcd1510a5bf63035e785633263fa5e06434d9224",
+              "RTC-REQ-093__l7_evidence.json": "e27cb1cfa3ff35661b867ad2269b6baca1607d086d71b3ddb7dd23ee305fb5e1",
+              "RTC-REQ-094__l7_evidence.json": "62b208c6a31889f83e1efa4113e51a654d9ac6061e6bf1c230b0a7ac1950b162",
+              "RTC-REQ-095__l7_evidence.json": "4c02c622ccc757330bd514fc732ce3e1c941564faa2a0a45e49a64bb617a07bc",
+              "RTC-REQ-096__l7_evidence.json": "fc2a261cd0b606115723e39e3290cef44a98315dfc6fe3dcf1eb11cde2a73f1a",
+              "RTC-REQ-097__l7_evidence.json": "f0ff25b40da3bcb76478a67535ac264a165e81125cb8e2f6ca52970b5a750010",
+              "RTC-REQ-123__l7_evidence.json": "af1d17b10f0bc762ae3f563899593e43fda556a06f66d7499d01983f1618d547"
+            }
+          },
+          "mw_real_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "3905ebc92e93ae8b76f92b242349825cc4e8c293f740fbccb53bbbccc502a411",
+              "RTC-REQ-071__l7_evidence.json": "0f76f8336f7c7a5964babcc300a14b5df9fc6ab034461d96e1395bf2614a11aa",
+              "RTC-REQ-080__l7_evidence.json": "c01ef7f9bf28132afc6deb4012a51accec8daa3dbb423d511728494fde5059f5",
+              "RTC-REQ-081__l7_evidence.json": "ccd782a90d762cd6f03a0863692a77d10d63d4d05aa7353a30d89fa6dc96e424",
+              "RTC-REQ-090__l7_evidence.json": "eee0d7bac415ac64df2ba427170bae7d485c3495a97969f8b84dac83ebdcb71a",
+              "RTC-REQ-091__l7_evidence.json": "ae839736d7cd1706ba24f3e904c8b99541170af7f45b7cdb5e41b29923c32dbc",
+              "RTC-REQ-092__l7_evidence.json": "5266a974d3c55b75d5f62a86c270808017c0a7605c9fe7706ad23dc05d6f28ca",
+              "RTC-REQ-093__l7_evidence.json": "a5b6b353c7a8835110a134b53c67d8fefa5f783396e0d636bea2df7f13d3aa6c",
+              "RTC-REQ-094__l7_evidence.json": "828dd59118cd2eb66064450e064fd9f58a7a59238f846c141029a5e20d049756",
+              "RTC-REQ-095__l7_evidence.json": "948e65c34792391d969eec5fd9155e68e5ca1d2ce49c813871d18de84bbc0282",
+              "RTC-REQ-096__l7_evidence.json": "36b6c1c470a33d41fe7dafb1f2418bbec903d257f76b7ecd165e0a941ba18148",
+              "RTC-REQ-097__l7_evidence.json": "06add16cd0b14e126572a222ba6953b44fbcda969a1577fc2052f0d0b4f48dd8",
+              "RTC-REQ-123__l7_evidence.json": "36612932daca8ff32121ede3da7944b077ad128538e5ccf91ae322d0212fcffe"
+            }
+          },
+          "r1a_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "0b276d0299fdf6e8e389d66eb269df1069ccec7e38c0564d3694d5d941c3bea2",
+              "RTC-REQ-071__l7_evidence.json": "24672011271590cf6d33e2bd1b8a9d077b7714f033692416bb3e1182723f110e",
+              "RTC-REQ-080__l7_evidence.json": "ce38ad36b13b93202aa5df138e3d2be21ac421602575382284b802fbc9b2983d",
+              "RTC-REQ-081__l7_evidence.json": "65298a90bcb08d45313fd6d20341ce5b33b11f526c5dfc839f6504ff817343df",
+              "RTC-REQ-090__l7_evidence.json": "22201ed3585225ce0d1dd535c6a414dc40953f87c4c102fef6478b458bc86664",
+              "RTC-REQ-091__l7_evidence.json": "b2f5e2b4dfcf7abe36bb236fa11a3008683916058dd50e8b2bffd5835d90ace4",
+              "RTC-REQ-092__l7_evidence.json": "7e818a9bf33e2fb35c46a0ec9eed0ffe4a17da0646c89d1b7db74da832ec39f7",
+              "RTC-REQ-093__l7_evidence.json": "587d6c385caacba8cad6e81a836d8233fdbe133fd231bc86107077ba0423a3f2",
+              "RTC-REQ-094__l7_evidence.json": "2fba8c885f3fa6dd2336b550acb6665c753d0527b2912afff5b56c87a1a0d87f",
+              "RTC-REQ-095__l7_evidence.json": "71525946db6b81c7df761c72115cf22d6d1deea9c2bc5f4ff07aa7b60dd07396",
+              "RTC-REQ-096__l7_evidence.json": "45a2e510e9c70fdd411eb328705a397ef392ee054035875f8818ba8c46f3fece",
+              "RTC-REQ-097__l7_evidence.json": "c2f7e9f75d114da1c4adef4ee5fd0f0fa2601a4b7792ef63e5036c4edf060a56",
+              "RTC-REQ-123__l7_evidence.json": "b92442924796b2770237e257ab40fc17899da88dfcc9fd11d81b6d6ab30e1100"
+            }
+          },
+          "r3_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "946720af895490524283b446e35ed1bfd4c299d17a75c196630b5792375ef2b0",
+              "RTC-REQ-071__l7_evidence.json": "66d5345b8a404a7d35221e38be2217674adc9028d1419ea155ad9ea0d2ce5ce8",
+              "RTC-REQ-080__l7_evidence.json": "70e2a6ec8dfdf746dee527db80e12297cedafd44fac1c5b4efab55fe5ad6b439",
+              "RTC-REQ-081__l7_evidence.json": "9b580d0416e3c56381b28cd38f3d42384d0a121e73e0cbb5e216d49be486a4df",
+              "RTC-REQ-090__l7_evidence.json": "0cde8e7ad3a78923bc39292d21317a25f8ebcad7731c1ea8c4bff4b21be7c580",
+              "RTC-REQ-091__l7_evidence.json": "be284b8c6eeab58d9bb8eeb1ac44953264e53d11fec577ee259dfdca1e6ad596",
+              "RTC-REQ-092__l7_evidence.json": "83807eaee098532594dc67971f8cee751c3116d96efa5498379b83ef641cfaa2",
+              "RTC-REQ-093__l7_evidence.json": "e67961689a1cb6c4f8bbeef5b60e007d74746c4e8fee8d059f5df3d92fadbd41",
+              "RTC-REQ-094__l7_evidence.json": "8dda964ddb4a1eb7e46d7fa9ab5db5bf2069cb8936e5d1a22df393f73cf6e2da",
+              "RTC-REQ-095__l7_evidence.json": "f88aef41d08cc1c0b821a705d323a59fd97ea389ea30b801d929596b75747bbc",
+              "RTC-REQ-096__l7_evidence.json": "c724732971c8acd2d2643b148d5e952a5dfcdf19c17c5add2cfc658a3472c5eb",
+              "RTC-REQ-097__l7_evidence.json": "d351bb64a641daa4b69f1c1e1821a9c743302f6cb24921a709e840e39eceda35",
+              "RTC-REQ-123__l7_evidence.json": "e48a21af8ccdee1a93e461715a08c039f33302067521e0a6d0ce1766a0bd5ef9"
+            }
+          },
+          "r4_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "dbbc0915eb805b88e6ba18c0e24ef8a30f4f6f4842acc6c6acd2b4c06e213d39",
+              "RTC-REQ-071__l7_evidence.json": "dcad5e186088e36d64410d17dafcc9aab461b675162c88a8e457a6be75b62876",
+              "RTC-REQ-080__l7_evidence.json": "473007cab7960a62cdb0648788a617178a717f0c6f6cd9b24af389222d97349c",
+              "RTC-REQ-081__l7_evidence.json": "e74b4873a40542c657ca660d9dbee9deb7746391e17d5fe93848ad55519cdb0c",
+              "RTC-REQ-090__l7_evidence.json": "b67101df6d83585f45119ec9d94dce6b94385c0813d8f72ee5e00451760e1bf1",
+              "RTC-REQ-091__l7_evidence.json": "e9a10f3a92e8c653cb6cc34fb9cef9af2c9d771c2a16ee0916f10243f4a073a2",
+              "RTC-REQ-092__l7_evidence.json": "f04b6fcb6dec46eeddbda2ec173f8ede16d3fda13192186ddc31bc9d7a5d8cd8",
+              "RTC-REQ-093__l7_evidence.json": "f5b781edf992248421cbcadaa1e30e56ad38743348509153255fbb5bedb98a47",
+              "RTC-REQ-094__l7_evidence.json": "8a30c307ee362b9c98d3eb500b9ebe26738f4bf36293541cd756e2a49f6de5c0",
+              "RTC-REQ-095__l7_evidence.json": "9326bc3dc8f6d7968993e42164f5c8c6c74497451444e0501245a2a212e5856f",
+              "RTC-REQ-096__l7_evidence.json": "c711bcd9bb879fd22c407ff3ba909d4598d9ca30f9c1a4b126f569947a88dadf",
+              "RTC-REQ-097__l7_evidence.json": "8334bb5f2043efaba7d461d9769c1ef6799e8821546f117a5dbf31a8479c9b98",
+              "RTC-REQ-123__l7_evidence.json": "c2bb88cb3a13e65fd2188424bcd2db3961e2552104177c50e165349970350902"
+            }
+          },
+          "r5_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e224cb8417381d10feaa00439760edcb13cb1530145cbfbab0e8e738c030c449",
+              "RTC-REQ-071__l7_evidence.json": "9bcc13a10501d25e10da2202cb316384cd0328d97828513cb9deb98ec403d274",
+              "RTC-REQ-080__l7_evidence.json": "8f8cf7064a1d8658ef3e0ee2138a208db0f1e1090d97357bbf5f1d42dc76662c",
+              "RTC-REQ-081__l7_evidence.json": "a36ee634d5b11e1db0b09ed83a9dc191f2f2655412f612416c00b4312bbb3bb8",
+              "RTC-REQ-090__l7_evidence.json": "ebc026fa3694aa722f8470fc09a5ed72a34ea6a2a660dba323eb92ab531e1ac7",
+              "RTC-REQ-091__l7_evidence.json": "491041abd5b637da3d9eba5141e32b5fb719e7df7efdef359b31883056abdc1a",
+              "RTC-REQ-092__l7_evidence.json": "8271e702354711c226f89842fa8d3a02cd3f8c23a89c5b063a0c1112f7da82da",
+              "RTC-REQ-093__l7_evidence.json": "85e413f2227d5176be51b1cd5b8343d454e0cd6fe9491048d41c099a7bfad774",
+              "RTC-REQ-094__l7_evidence.json": "eedd588d685edc7d69b20d861bee89a40c849e62a4abb46f6f784fd0c46089b0",
+              "RTC-REQ-095__l7_evidence.json": "299462d98e7beec0a36a174ad98c4f6b6c8f3769e65c02528620cc3932fe9ef6",
+              "RTC-REQ-096__l7_evidence.json": "52603238253c27b6ce1562191e56294acb5b8629138c6ed0ae997eae31586feb",
+              "RTC-REQ-097__l7_evidence.json": "406f230fbd46d5d32f0813e46444c34b6a09a3033971bb629b29e7d28b0c97b7",
+              "RTC-REQ-123__l7_evidence.json": "3e4838af26a46e599f29844858b03bd1da47172a832eec617af0bee98d2183c0"
+            }
+          },
+          "uwg_block_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e281cc5084861383c7ecd88fa6144d05b016ca78ff065cf2cb4f821387b7e3bc",
+              "RTC-REQ-071__l7_evidence.json": "30fcf16ee2de1ae3977bc43625411655444d0368004fcb4cf76c1610243c48d9",
+              "RTC-REQ-080__l7_evidence.json": "40fb1d724f3e190c2c4fc243f10d885bdadf12ac75c6685b6ed9286757f8bd42",
+              "RTC-REQ-081__l7_evidence.json": "e0fc0703dcc5d7b9503aed2056f8957cdb3b55b1f938eb6affb63183c4658f09",
+              "RTC-REQ-090__l7_evidence.json": "3de8a427350c7a3160b8363ea3f218e8b06544fff45ec140de0a7c44ce97b0d3",
+              "RTC-REQ-091__l7_evidence.json": "9602f369fc5970258fced261fe24e060cc039d2ea6af3b824dc87c7183b922e1",
+              "RTC-REQ-092__l7_evidence.json": "9590945f881b024c0f1499dffbc7b44c04277ddfe189ab8ae5697ed322eedb15",
+              "RTC-REQ-093__l7_evidence.json": "6edccb3f41d38562526a01cbf227e2cb36076234b2af35dcc167b365a33767d0",
+              "RTC-REQ-094__l7_evidence.json": "d3be7b6c95fd4ff40c4664f91f008377de2e0193cdb2ac6080e2cd94bfd338fe",
+              "RTC-REQ-095__l7_evidence.json": "f8672532dbd97bb8e1628362044149ee836b45a6d126c35a70fb6729452f322e",
+              "RTC-REQ-096__l7_evidence.json": "ce1b0a687d7bd98c55e1f399738dcfae4469a65ca01ec1b13d7fb0679b832b93",
+              "RTC-REQ-097__l7_evidence.json": "58d43c4cffde74b9e7df4d6ffdfe60d6b45d0667bdf3779c092aaf2e6aac0c69",
+              "RTC-REQ-123__l7_evidence.json": "fe8fa7a75b4c071985c422263431853d4e7dea69215c4594eba90ddab5665202"
+            }
+          },
+          "uwg_commit_latest": {
+            "row_count": 13,
+            "row_sha_map": {
+              "RTC-REQ-070__l7_evidence.json": "e588c3592344b8e0538d0999c530354803506034e72e808b40da2a1e9d853995",
+              "RTC-REQ-071__l7_evidence.json": "90076fbcb9d17a28499ef4a4d3a3d39283ba895dc0951f9b7cd43a1680cc7271",
+              "RTC-REQ-080__l7_evidence.json": "1a3531ce5b3c8052f70f3341212a41436d216ee37a4311beaad313a242e6ff0b",
+              "RTC-REQ-081__l7_evidence.json": "708feb837bbb7f06b52be8cb4f2e6b66112a1ccfb928e1eb5cb1b829d18d1026",
+              "RTC-REQ-090__l7_evidence.json": "14b4a872794b54fc846c1c626158a2a5c57e94791f7293b01b95b7bd6e0452bd",
+              "RTC-REQ-091__l7_evidence.json": "565530eb7e849be294caa2d0e34c011096eae8d39f779d872d822b6acd5886ea",
+              "RTC-REQ-092__l7_evidence.json": "e4c55da75c772a29c455ef446e57349adcafed881e754a8d4c625664e105c4a0",
+              "RTC-REQ-093__l7_evidence.json": "17eed8407cfdddfdd16e6714f5f122acfe19d2201e59584bae18488eca3ffe75",
+              "RTC-REQ-094__l7_evidence.json": "a64109dd3c76d1e51b6c5be19e4cbc1806862f067a33d038fa34fffd39229ffa",
+              "RTC-REQ-095__l7_evidence.json": "6a6c36af38461fa1360455ced89c7126416ba7a74f82ea06361211376c793575",
+              "RTC-REQ-096__l7_evidence.json": "7f8d2ff3d4a0d8f785320b8813772521bb3c18a31e9fc0d521ead63c47e8c7a0",
+              "RTC-REQ-097__l7_evidence.json": "81f67616270f08e3da602090115b40f0c5a01980aadfa9a636bb81284c3f680a",
+              "RTC-REQ-123__l7_evidence.json": "6bf1da262a64ce77d3b6fda269652be7ee9302aaea917748d55ed7e36fa2f0dd"
+            }
+          }
+        },
+        "req_id": "RTC-REQ-132"
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-132",
+        "source_repo_root": "C:/Git/Agentic-Workflow-FRESH"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "exit_code": 0,
+        "req_id": "RTC-REQ-132"
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-132"
+      }
+    }
+  },
+  "schema_version": "fortknox-l7-plane-v1"
+}

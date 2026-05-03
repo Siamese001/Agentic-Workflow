@@ -17,6 +17,14 @@ routes:
   - route_id: apps_qna.pack_build_single_step_v1
     execution_form: SINGLE_STEP
     l3_required: false
+    # W2.P3 (plan apps-eval-harness-parity-f8d4a2): opt-in flag — when true,
+    # the cert entrypoint MUST invoke agentic_core.L3_orchestration.exit_eval.v6.run_exit_eval
+    # against the sealed L2 artifact so the app-specific rubric executes even on
+    # SINGLE_STEP routes. Preserves the SINGLE_STEP form (no L3 orchestration,
+    # no retries/branches); only adds the Exit-gate pass. Closes BLOCKER #5.
+    # Per-app adoption of the hook in __main__.py is tracked as a follow-up
+    # (DEFERRED_SCOPE); gate NO_CERT_EXIT_INVOCATION surfaces adoption gap.
+    invoke_exit_eval: true
     selected_capability: apps_qna.card_pack_build_v1
     description: >-
       Deterministic single-step pack build: intake interview YAML + JD +

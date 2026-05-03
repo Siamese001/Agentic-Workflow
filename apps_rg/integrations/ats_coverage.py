@@ -164,7 +164,8 @@ def headline_contains_title(headline: str, target_title: str) -> bool:
         return True
     # All tokens present (allows reordering): 'SVP, Agentic Transformation'
     # matches 'Agentic Transformation SVP'.
-    title_tokens = [t for t in norm_t.split() if len(t) > 2]
+    _SENIORITY_SKIP = {"svp", "evp", "vp", "md", "gm", "cto", "ceo", "coo", "caio", "cdo", "ciso"}
+    title_tokens = [t for t in norm_t.split() if len(t) > 3 and t not in _SENIORITY_SKIP]
     if not title_tokens:
         return True
     return all(tok in norm_h for tok in title_tokens)

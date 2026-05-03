@@ -73,6 +73,16 @@ def _run_live_cert(argv: list[str]) -> int:
         selected_capability="apps_qna.card_pack_build_v1",
         repo_root=repo_root,
     )
+    # W2.P3 adoption (plan apps-eval-harness-deferred-e4a1b7 W1.P1):
+    # read the cert-route entry's invoke_exit_eval flag and, if true,
+    # invoke the v6 Exit pipeline against the sealed SINGLE_STEP receipts
+    # so the app-specific rubric executes. Fail-soft — Exit disposition
+    # is additional evidence, not a gate on the cert bundle itself.
+    from apps_shared.cert import maybe_invoke_exit_eval
+    from apps_shared.cert.fec_producer import resolve_fec
+    import apps_qna.cert  # noqa: F401 — import side-effect: registers FEC producer
+    cert_route_entry = _load_cert_route_entry(cfg.route_registry_path)
+
     with governed_run(cfg, cli_args=argv) as gr:
         with gr.span("prompt_assembly"):
             gr.mark_stage("prompt_assembly", "ok")
@@ -81,7 +91,48 @@ def _run_live_cert(argv: list[str]) -> int:
             # through its own CLI and is exercised separately by the existing
             # builder/lint tests. Cert-mode proves runtime-contract plumbing.
             gr.mark_stage("L2_execute", "ok")
+        # Opt-in Exit-pipeline pass on the sealed L2 artifact. The hook is a
+        # no-op when invoke_exit_eval is absent/false on the route entry.
+        _run_ctx = {
+            "route_id": "apps_qna.pack_build_single_step_v1",
+            "route_contract": {"route_id": "apps_qna.pack_build_single_step_v1"},
+            "template_ids": ["intake", "validate_routes", "assemble_prompt", "render_cards", "seal"],
+            "c0_retrieval_sources": [],  # apps_qna is template-deterministic; upgrades when C0 wires
+            "grounded": False,
+        }
+        _receipts = {
+            "output": {},  # apps_qna cert path is deterministic no-op; dim_scores deferred
+            "route_contract": _run_ctx["route_contract"],
+            "evidence_bundle": {},
+            "final_evidence_contract": resolve_fec("apps_qna", _run_ctx),
+            "state_diff": {},
+            "compiled_prompt_artifact": {},
+        }
+        maybe_invoke_exit_eval(_receipts, cert_route_entry)
     return 0
+
+
+def _load_cert_route_entry(registry_path) -> dict | None:
+    """Return the first route entry from apps_qna's cert_route_registry.yaml.
+
+    Fail-soft: any parse or IO error returns None, which makes
+    ``maybe_invoke_exit_eval`` a no-op. Never raises.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+
+        text = registry_path.read_text(encoding="utf-8")
+        doc = yaml.safe_load(text)
+    except Exception:  # noqa: BLE001 -- cert hook must never break the bundle
+        # guardian: allow-broad-except -- cert-path adoption must be fail-soft;
+        # any registry-load failure leaves the hook as a no-op and the cert
+        # bundle continues unaffected
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    first = routes[0]
+    return first if isinstance(first, dict) else None
 
 
 def main() -> int:

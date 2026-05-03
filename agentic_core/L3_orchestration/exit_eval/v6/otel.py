@@ -91,6 +91,12 @@ SPAN_X3C_COMMIT_REQUEST_BUILD: Final[str] = "exit.x3c.commit_request_build"
 SPAN_X3C_UWG_HANDOFF_EMIT: Final[str] = "exit.x3c.uwg_handoff_emit"
 SPAN_UWG_RESPONSE_RECEIVE: Final[str] = "exit.uwg_response.receive"
 
+# APPS-DOM runtime harness — app-specific evaluator span. Emitted by
+# pipeline.py line 260 when app_eval is bound. Previously referenced but
+# not declared in the catalog, causing record_span() to ValueError and the
+# pipeline's broad-except to silently drop the span.
+SPAN_APP_SPECIFIC_EVAL: Final[str] = "exit.app_specific_eval"
+
 # Live signal consumption
 SPAN_LIVE_BELL_CONSUME: Final[str] = "exit.live_bell.consume"
 SPAN_EVIDENCE_SEAL_VERIFY: Final[str] = "exit.evidence_seal.verify"
@@ -143,6 +149,8 @@ EXIT_V6_SPAN_CATALOG: frozenset[str] = frozenset(
         SPAN_X3C_COMMIT_REQUEST_BUILD,
         SPAN_X3C_UWG_HANDOFF_EMIT,
         SPAN_UWG_RESPONSE_RECEIVE,
+        # app-specific eval
+        SPAN_APP_SPECIFIC_EVAL,
         # live signal
         SPAN_LIVE_BELL_CONSUME,
         SPAN_EVIDENCE_SEAL_VERIFY,

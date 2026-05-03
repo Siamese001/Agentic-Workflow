@@ -1,0 +1,46 @@
+{
+  "actual_fail_reason": "",
+  "baseline_count": 87,
+  "baseline_csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+  "canonical_count": 87,
+  "divergences": [],
+  "executed_at_utc": "2026-05-01T22:45:31.285195+00:00",
+  "expected_fail_reason": "",
+  "peers": [
+    {
+      "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "exists": true,
+      "load_error": null,
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\canonical_universe_manifest.json",
+      "report": "canonical_universe_manifest",
+      "row_count": 87
+    },
+    {
+      "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "exists": true,
+      "load_error": null,
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\requirement_count_receipt.json",
+      "report": "requirement_count_receipt",
+      "row_count": 87
+    },
+    {
+      "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "exists": true,
+      "load_error": null,
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\schema_validation_report.json",
+      "report": "schema_validation_report",
+      "row_count": 87
+    },
+    {
+      "csv_sha256": "37bcaa4d75519be625212f04e69af127c24e4c0bc8545ca6edb43fe14c201da9",
+      "exists": true,
+      "load_error": null,
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\certification\\acceptance_legality_report.json",
+      "report": "acceptance_legality_report",
+      "row_count": 87
+    }
+  ],
+  "rule": "RTC-REQ-032",
+  "status": "PASS",
+  "verifier": "verify_source_divergence"
+}

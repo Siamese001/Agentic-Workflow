@@ -196,6 +196,14 @@ def _run_narrative_pipeline(
     report: NarrativeRunReport,
     target_role: str = "",
 ) -> None:
+    from apps_rg.integrations.hops._llm_client import make_generator
+    if make_generator() is None:
+        raise NarrativeQualityError(
+            "No LLM provider available. "
+            "Start Docker Desktop and wait for the vLLM container to be healthy, "
+            "or set ANTHROPIC_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY."
+        )
+
     mirror_terms = list(facets.language_to_mirror) + list(facets.differentiation)
     company = brief.company
 

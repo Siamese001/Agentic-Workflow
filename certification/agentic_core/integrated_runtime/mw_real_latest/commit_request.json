@@ -1,0 +1,42 @@
+{
+  "artifact_hash": "sha256:5792f6e9b9ff93cdbc1f906519c7cbacf76dcf6dc6dc48cad8afa1b0dbb0faf6",
+  "emitted_at": "2026-05-02T16:59:17Z",
+  "payload": {
+    "affected_state_surfaces": [
+      "memory"
+    ],
+    "audit_refs": [],
+    "blast_radius": "single_surface",
+    "blueprint_hash": "bh:mw-real",
+    "cleared_exit_review_packet_ref": "exr:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "commit_request_id": "cr:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "deterministic_digest": "0b845207713abdc3cf4875543d576b4268d92f5d193e1b31e8239656e1430593",
+    "expected_read_surface_refreshes": [
+      "memory_projection"
+    ],
+    "gate_verdict_refs": [
+      "gv:mw-real::b23d1579fdeb4f978826d627dcf7842b"
+    ],
+    "hitl_reclearance_refs": [],
+    "integrated_runtime_origin": true,
+    "l5_certification_refs": [],
+    "policy_hash": "ph:mw-real",
+    "produced_by": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run.run_integrated_managed_workflow_real",
+    "replay_key": "rk:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "request_id": "req-bd2703434b2046f09c04960e576b8fc7",
+    "rollback_plan_ref": "rp:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "route_contract_ref": "rc:mw-real::b23d1579fdeb4f978826d627dcf7842b",
+    "run_id": "b23d1579fdeb4f978826d627dcf7842b",
+    "schema_version": "L4-UWG-1.0.0",
+    "source_surface": "Exit",
+    "state_diff_refs": [
+      "sd:mw-real::b23d1579fdeb4f978826d627dcf7842b"
+    ],
+    "tenant_id": "t:mw-real-regen",
+    "trace_root": "trace-dd46735d034440ac81cde676001e1d3c"
+  },
+  "producer_component": "agentic_core.runtime.entrypoints.integrated_managed_workflow_real_run",
+  "producer_function_or_class": "run_integrated_managed_workflow_real",
+  "producer_module": "integrated_managed_workflow_real_run",
+  "upstream_artifact_ref": ""
+}

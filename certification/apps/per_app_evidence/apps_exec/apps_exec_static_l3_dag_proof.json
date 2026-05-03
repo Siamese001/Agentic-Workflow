@@ -1,0 +1,126 @@
+{
+  "all_nodes_have_allowed_execution_surface": null,
+  "all_nodes_have_owner": null,
+  "all_nodes_have_step_contract_schema": null,
+  "app_name": "apps_exec",
+  "app_name_matches": null,
+  "dag_file_path": null,
+  "dag_id": null,
+  "dag_name": null,
+  "dag_registry_ref": null,
+  "dag_registry_sha256": null,
+  "dag_sha256": null,
+  "dag_version": null,
+  "edge_count": null,
+  "edge_list": [],
+  "edges_reference_existing_nodes": null,
+  "entry_nodes": [],
+  "fail_closed": true,
+  "fail_reasons": [
+    "no_static_l3_dag_files_for_apps_exec",
+    "static_dag_missing_entirely"
+  ],
+  "generated_at_utc": "2026-05-03T00:00:56.706276Z",
+  "has_cycle": null,
+  "l3_no_execute_policy": null,
+  "l3_no_l4_write_policy": null,
+  "l3_no_prompt_assembly_policy": null,
+  "l3_no_retrieve_policy": null,
+  "max_depth": null,
+  "node_count": null,
+  "node_ids": [],
+  "notes": "Static DAG for apps_exec does not exist as of this scan.",
+  "present": false,
+  "proof_kind": "static_l3_dag_proof",
+  "proof_schema_version": "apps_e2e_proof/2026-05-01/v1",
+  "registry_binding_matches_dag": null,
+  "route_binding_refs": [],
+  "route_ids": [],
+  "scan_method": "deterministic_path_enumeration",
+  "scan_results": {
+    "dag_directories": [
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_exec/workflows"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_exec/dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "apps_exec/l3_dags"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/dags/apps_exec"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "files": [],
+        "path": "agentic_core/L3_orchestration/workflows/apps_exec"
+      }
+    ],
+    "registries": [
+      {
+        "exists": true,
+        "kind": "route_registry",
+        "path": "apps_exec/config/route_registry.yaml",
+        "sha256": "95beaf84d95db0f1f3eee90e695e0d04ab76c0b9dec09207def8b18ff6917899",
+        "size_bytes": 656
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_exec/config/route_registry.yml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "route_registry",
+        "path": "apps_exec/config/route_registry.json",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "l3_dag_inline",
+        "path": "apps_exec/config/l3_dag.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "workflow_inline",
+        "path": "apps_exec/config/workflow.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "dag_inline",
+        "path": "apps_exec/config/dag.yaml",
+        "sha256": null,
+        "size_bytes": null
+      },
+      {
+        "exists": false,
+        "kind": "hop_pipeline_inline",
+        "path": "apps_exec/config/hop_pipeline.yaml",
+        "sha256": null,
+        "size_bytes": null
+      }
+    ]
+  },
+  "terminal_nodes": []
+}

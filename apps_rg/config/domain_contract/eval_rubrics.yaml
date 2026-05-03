@@ -52,6 +52,7 @@
       evidence_required: true
       fail_closed_if_unknown: false  # not all roles need this
 
+      informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: specificity
       description: >-
         Achievements use concrete metrics, scope, or outcomes (where
@@ -60,7 +61,7 @@
       grader_type: hybrid
       min_required_score: 0.55
       evidence_required: true
-      fail_closed_if_unknown: false
+      fail_closed_if_unknown: true
 
     - dimension_id: concision
       description: >-

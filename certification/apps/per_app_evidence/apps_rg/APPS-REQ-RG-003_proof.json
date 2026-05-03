@@ -1,0 +1,11 @@
+{
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\exit_review_packet.json",
+  "artifact_sha256": "ba4c8bf0cc32287bc3657fee0ec5b37c9ed4c319af29250caaad6ed2a54eb12d",
+  "assertion_result": "NOT_VERIFIED",
+  "claim_id": "APPS-REQ-RG-003",
+  "claim_title": "ExitReviewPacket X1-X3 canonical",
+  "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+  "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
+  "producer_version": "apps_rg_proof_producer-v1",
+  "reason": "Missing fields: ['x1_verdicts', 'x2_aggregate']"
+}

@@ -1,0 +1,53 @@
+{
+  "failing": 6,
+  "generated_at_utc": "2026-05-02T03:17:25.486543Z",
+  "git_commit": "7c344fdb54",
+  "harness_run_id": "core-e2e-4b5934149fa14e18",
+  "matrix_schema_version": "agentic_core_e2e_route_matrix/2026-05-01/v1",
+  "passing": 1,
+  "rows": [
+    {
+      "expected_route_form": "TERMINAL_SHORTCIRCUIT",
+      "pass": true,
+      "scenario_id": "terminal_cache",
+      "status": "ran"
+    },
+    {
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "pass": false,
+      "scenario_id": "grounded_read",
+      "status": "not_implemented"
+    },
+    {
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "pass": false,
+      "scenario_id": "single_action",
+      "status": "not_implemented"
+    },
+    {
+      "expected_route_form": "MANAGED_WORKFLOW",
+      "pass": false,
+      "scenario_id": "managed_workflow",
+      "status": "not_implemented"
+    },
+    {
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "pass": false,
+      "scenario_id": "managed_workflow_bypass",
+      "status": "not_implemented"
+    },
+    {
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "pass": false,
+      "scenario_id": "durable_mutation",
+      "status": "not_implemented"
+    },
+    {
+      "expected_route_form": "SINGLE_STEP_ROUTE",
+      "pass": false,
+      "scenario_id": "post_exit_exhaust",
+      "status": "not_implemented"
+    }
+  ],
+  "scenario_count": 7
+}

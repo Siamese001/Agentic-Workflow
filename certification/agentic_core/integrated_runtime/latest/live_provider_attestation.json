@@ -1,0 +1,27 @@
+{
+  "approved_provider": true,
+  "attestation_kind": "live_provider_allow_path",
+  "confidence": 0.9,
+  "deterministic_proof_stage_used": false,
+  "env_probe": {
+    "ANTHROPIC_API_KEY_present": false,
+    "LLMJUDGEVETO_APPROVED_MOCK_SAFE": "unset",
+    "LOCAL_QWEN_ENDPOINT": "http://localhost:8000/v1"
+  },
+  "latency_ms": 1013.0503000109456,
+  "llm_judge_invocation_count": 1,
+  "mock_safe_used": false,
+  "model_id": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+  "model_version": "Qwen/Qwen2.5-32B-Instruct-AWQ",
+  "provider": "local_qwen",
+  "response_hash_mode": "paraphrase_tolerant",
+  "response_hash_sha256": "777b788ba622a564199af77b44830af653dea971a965eb5ce66838731a6a8073",
+  "rubric_hash_sha256": "0db8290d47b90a14ec4509b47c1e3157efaeec812a709ed5c3d1975628130d1e",
+  "rubric_path": "Git\\Agentic-Workflow-FRESH\\config\\certification\\llm_judge_rubric_calibrated.md",
+  "safe_reuse_allow": true,
+  "schema_version": 1,
+  "verdict": "SAFE",
+  "veto_stage_class": "LLMJudgeVeto",
+  "wall_clock_utc": "2026-05-02T19:22:26.269879Z",
+  "x3_disposition": "X3D"
+}

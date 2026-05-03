@@ -3,7 +3,7 @@
   app_id: apps_underwriting_ai
   task_class: underwriting_decision
   version: 1.0.0
-  status: draft
+  status: active
   freshness_class: bounded
   source_lineage_required: true
   policy_hash: policy://apps_underwriting_ai/v1

@@ -30,6 +30,7 @@ from apps_rg.integrations.anti_overfitting import (
     gate_buzzword_soup,
     gate_filler_intensifiers,
     gate_mirror_density,
+    gate_pipe_format,
 )
 from apps_rg.integrations.length_budget import LengthBudget
 
@@ -99,6 +100,7 @@ class NarrativeJudgeScorer:
         if adjacent_bullets:
             gates.append(gate_adjacent_repetition(list(adjacent_bullets) + [text], mirror_terms))
         gates.append(gate_filler_intensifiers(text, anti_cfg))
+        gates.append(gate_pipe_format(text, section_id=section_id))
 
         soft: Dict[str, float] = {
             "jd_facet_coverage": _facet_coverage(text, jd_facets),

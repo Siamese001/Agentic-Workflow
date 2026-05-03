@@ -99,12 +99,25 @@ def _run_live_cert(argv: list[str]) -> int:
         selected_capability="apps_underwriting_ai.decision_packet_v1",
         repo_root=repo_root,
     )
+    # W2.P3 adoption (plan apps-eval-harness-deferred-e4a1b7 W1.P2):
+    # cert-route invoke_exit_eval flag gates the v6 Exit pipeline pass on
+    # the sealed L2 artifact. Paired with apps_underwriting_ai.engines.
+    # rubric_output_mapper which projects DecisionPacket → dim_scores so
+    # the apps_underwriting_ai 5-dim rubric executes on cert runs.
+    # Regulated-domain floor: the hook is fail-soft. Any Exit failure
+    # leaves the cert bundle unaffected.
+    from apps_shared.cert import maybe_invoke_exit_eval
+    from apps_underwriting_ai.engines.rubric_output_mapper import (
+        map_decision_to_dim_scores,
+    )
+    cert_route_entry = _load_cert_route_entry(cfg.route_registry_path)
+
     with governed_run(cfg, cli_args=argv) as gr:
         with gr.span("prompt_assembly"):
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
             # Drive the real pipeline so the receipts reflect a genuine run.
-            governed_underwriting_run(
+            uw_result = governed_underwriting_run(
                 request_id="cert-live-0001",
                 applicant_id="applicant-cert",
                 product_class="small_business_loan",
@@ -116,7 +129,87 @@ def _run_live_cert(argv: list[str]) -> int:
                 trace_id="cert-live-trace",
             )
             gr.mark_stage("L2_execute", "ok")
+        # Exit-pipeline pass with rubric output projected from the real
+        # DecisionPacket. Fail-soft — telemetry path only.
+        _receipts = _build_exit_receipts_from_uw_result(uw_result, map_decision_to_dim_scores)
+        maybe_invoke_exit_eval(_receipts, cert_route_entry)
     return 0
+
+
+def _load_cert_route_entry(registry_path) -> dict | None:
+    """Return the first route entry from the cert route registry, fail-soft."""
+    try:
+        import yaml  # noqa: PLC0415
+
+        doc = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- regulated-domain compliance floor:
+        # any cert-route load failure leaves the hook as a no-op
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    first = routes[0]
+    return first if isinstance(first, dict) else None
+
+
+def _build_exit_receipts_from_uw_result(uw_result, mapper) -> dict:
+    """Build the receipts dict from an UnderwritingResult for run_exit_eval.
+
+    Fails soft on any missing attribute — returns a minimal shape that
+    still satisfies v6 preflight. The rubric executes on whatever dim
+    scores are derivable; absent ones fall through to UNKNOWN → fail-closed.
+
+    FEC producer wiring: plan apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9 W1.P2.
+    """
+    # Side-effect import: registers apps_underwriting_ai FEC producer.
+    import apps_underwriting_ai.cert  # noqa: F401, PLC0415
+    from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
+    try:
+        from apps_underwriting_ai.engines.risk_scorer import (  # noqa: PLC0415
+            DeterministicRiskScorer,
+        )
+
+        breakdown = DeterministicRiskScorer().score(
+            request=getattr(uw_result, "request", None) or _synthetic_uw_request(),
+            register=getattr(uw_result, "register", None),
+            features=getattr(uw_result, "features", None),
+            reconciliation=getattr(uw_result, "reconciliation", None),
+        )
+        output_bundle = mapper(
+            decision=uw_result.decision,
+            breakdown=breakdown,
+            features=getattr(uw_result, "features", None),
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- receipts building is fail-soft;
+        # Exit hook tolerates partial receipts
+        output_bundle = {"dim_scores": {}, "dim_evidence": {}}
+    _run_ctx = {
+        "route_id": "apps_underwriting_ai.decision_packet_v1",
+        "route_contract": {"route_id": "apps_underwriting_ai.decision_packet_v1"},
+        "uw_result": uw_result,
+    }
+    return {
+        "output": output_bundle,
+        "route_contract": _run_ctx["route_contract"],
+        "evidence_bundle": {},
+        "final_evidence_contract": resolve_fec("apps_underwriting_ai", _run_ctx),
+        "state_diff": {},
+        "compiled_prompt_artifact": {},
+    }
+
+
+def _synthetic_uw_request():
+    """Minimal UnderwritingRequest used when the result carries no request ref."""
+    from apps_underwriting_ai.types.underwriting_types import (  # noqa: PLC0415
+        UnderwritingRequest,
+    )
+    return UnderwritingRequest(
+        request_id="cert-live-0001",
+        applicant_id="applicant-cert",
+        product_class="small_business_loan",
+    )
 
 
 def _run_demo() -> int:

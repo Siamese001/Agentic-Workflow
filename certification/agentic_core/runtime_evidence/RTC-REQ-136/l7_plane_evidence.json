@@ -1,0 +1,57 @@
+{
+  "app_name": "agentic_core",
+  "captured_at_utc": "2026-05-02T19:23:11.007Z",
+  "control_scope": "l7_auditability_plane",
+  "per_req": {
+    "RTC-REQ-136": {
+      "artifact_payload_hash": {
+        "artifact_hash_map": {
+          "agentic_core_how_trace.json": "930daf14aafdcd4f909cc8d15683d184c08f8442714e858921115673f306dcaa",
+          "agentic_core_l7_route_family_coverage.json": "13245e0ebcafa2947d0843d3b955a7bc889539bc3c55e79db23d04fd6e4fd34d",
+          "agentic_core_spine_proof.json": "af174d7f9ea4fef90097673b54d7b7eb299c84de33dc91dc36e365cb5cfb9433",
+          "integrated_runtime_artifact_manifest.json": "3d494ef5e1306d143b77abae57435f82bc2c4ebff648cc9e58d17c86d71ee9dd",
+          "runtime_identity_envelope.json": "e1045fb2b4afbb55354bd013cf729946ef933c92762bd3f51be0a8f0bd39cb53",
+          "safe_fallback_decision.json": "9b3e3573ab85111e206321cf44cfeac5561b350426f16823fa972d6a92f956ba"
+        },
+        "assertion_result": "PASS",
+        "chain_name": "r5_latest",
+        "req_id": "RTC-REQ-136"
+      },
+      "last_verified_timestamp": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-136",
+        "verified_at_utc": "2026-05-02T19:23:11.003Z"
+      },
+      "runtime_evidence": {
+        "artifact_hash_map": {
+          "agentic_core_how_trace.json": "930daf14aafdcd4f909cc8d15683d184c08f8442714e858921115673f306dcaa",
+          "agentic_core_l7_route_family_coverage.json": "13245e0ebcafa2947d0843d3b955a7bc889539bc3c55e79db23d04fd6e4fd34d",
+          "agentic_core_spine_proof.json": "af174d7f9ea4fef90097673b54d7b7eb299c84de33dc91dc36e365cb5cfb9433",
+          "integrated_runtime_artifact_manifest.json": "3d494ef5e1306d143b77abae57435f82bc2c4ebff648cc9e58d17c86d71ee9dd",
+          "runtime_identity_envelope.json": "e1045fb2b4afbb55354bd013cf729946ef933c92762bd3f51be0a8f0bd39cb53",
+          "safe_fallback_decision.json": "9b3e3573ab85111e206321cf44cfeac5561b350426f16823fa972d6a92f956ba"
+        },
+        "assertion_result": "PASS",
+        "chain_name": "r5_latest",
+        "fortknox_l7_evidence_row_count": 13,
+        "req_id": "RTC-REQ-136",
+        "route_family": "R5_FALLBACK"
+      },
+      "source_root_binding": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-136",
+        "source_repo_root": "C:/Git/Agentic-Workflow-FRESH"
+      },
+      "verifier_exit_zero": {
+        "assertion_result": "PASS",
+        "exit_code": 0,
+        "req_id": "RTC-REQ-136"
+      },
+      "verifier_pass": {
+        "assertion_result": "PASS",
+        "req_id": "RTC-REQ-136"
+      }
+    }
+  },
+  "schema_version": "fortknox-l7-plane-v1"
+}

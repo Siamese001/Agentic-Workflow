@@ -168,6 +168,10 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
 
     # Anti-signals — capture markers (DECISION_CAPTURED / AUTHOR_GATE_PACKET /
     # HITL_PACKET) prove a refactor-class decision was logged, so clear score.
+    # Plan author-gate-ssot-consolidation-b7c3e1 W3.P3.3: the packet IS the
+    # canonical SSOT — its presence alone clears the miss. The prior code
+    # already cleared on packet presence, but explicitly reaffirm here so
+    # the contract is unambiguous.
     capture_hits = _has_capture_marker(text)
     if capture_hits:
         return 0, {
@@ -176,8 +180,10 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
             "capture_marker_patterns": capture_hits,
         }
 
-    # ask_user_question shape check — AG-10 packet must include both the
-    # AUTHOR-GATE DECISION header and the ⭐ gold-star recommendation.
+    # ask_user_question without ANY packet → handled by the dedicated
+    # post_cascade_ask_user_question_packet_audit hook (plan W4.P4.1) which
+    # owns severity ladder for the vacuum case. Here we still flag shape
+    # issues for triage, but as a conditional anti-signal not a hard "miss".
     has_ask = bool(_ASK_INVOKE_RE.search(text))
     if has_ask:
         has_header = bool(_AG10_HEADER_RE.search(text))

@@ -1,0 +1,158 @@
+{
+  "app_name": "apps_qna",
+  "harness_run_id": "apps_qna-e2e-203a9b63f95d4565",
+  "items": [
+    {
+      "artifact_kind": "static_l3_dag_proof",
+      "key": "static_dag_ref",
+      "path": "artifacts/certification/apps_e2e/apps_qna/apps_qna_static_l3_dag_proof.json",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_qna/apps_qna_static_l3_dag_proof.json",
+      "ref_field": "static_dag_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "ffc02100f976f46c3e3a93c5a19a565cd5e9d3fbb501f347de9c3f5730b6af2b"
+    },
+    {
+      "artifact_kind": "runtime_intake",
+      "key": "runtime_intake_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/u0_intake_envelope.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/u0_intake_envelope.json",
+      "ref_field": "runtime_intake_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "f473690d8d536ce74d2ffaa0843bf0018f9017213bc50408c04003ebfef8a913"
+    },
+    {
+      "artifact_kind": "l1_plan_contract",
+      "key": "runtime_l1_plan_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/l1_plan_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/l1_plan_contract.json",
+      "ref_field": "runtime_l1_plan_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "e7d166c27619ec09abb96af8647493d8d180238a2aa45f21c6145487c283b250"
+    },
+    {
+      "artifact_kind": "route_contract",
+      "key": "runtime_route_contract_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/route_contract.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/route_contract.json",
+      "ref_field": "runtime_route_contract_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "9812a44583b1872d0b1c02b08d1500f04e45faba68d719d040f4b8fe49d810b9"
+    },
+    {
+      "artifact_kind": "l3_runtime_receipt",
+      "key": "runtime_l3_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_l3_receipt_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "l3_bypass_receipt",
+      "key": "runtime_l3_bypass_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/l3_bypass_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/l3_bypass_receipt.json",
+      "ref_field": "runtime_l3_bypass_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "f8efdc088207feb88f0a30e798d903f772649c6bfeb966f2a0ee3f8306fb1d0d"
+    },
+    {
+      "artifact_kind": "c0_grounding_receipt",
+      "key": "runtime_c0_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_c0_receipt_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "prompt_assembly_receipt",
+      "key": "runtime_prompt_assembly_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/prompt_assembly_manifest.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/prompt_assembly_manifest.json",
+      "ref_field": "runtime_prompt_assembly_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "19a333009e5761f8b7826670d0ef65e17035409238adacb5541b41412cbdc9e2"
+    },
+    {
+      "artifact_kind": "l2_sealed_artifact",
+      "key": "runtime_l2_artifact_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/l2_execution_receipt.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/l2_execution_receipt.json",
+      "ref_field": "runtime_l2_artifact_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "4cb550064e17be900f4bb141620074a163954039e2fdbb780c8e387331c5a615"
+    },
+    {
+      "artifact_kind": "exit_x3_disposition",
+      "key": "runtime_exit_disposition_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/exit_review_packet.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/exit_review_packet.json",
+      "ref_field": "runtime_exit_disposition_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "659f939db7aa65c7a5c2e11d35ec2175038968e5a7b8805188eecf9882d18797"
+    },
+    {
+      "artifact_kind": "runtime_exhaust_bundle",
+      "key": "runtime_exhaust_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/runtime_exhaust_bundle.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/runtime_exhaust_bundle.json",
+      "ref_field": "runtime_exhaust_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "e8130d7e667c31be602db07e77e8b31c89a2a309f0557804ad5832d69a9a1d24"
+    },
+    {
+      "artifact_kind": "otel_trace",
+      "key": "otel_or_runtime_trace_ref",
+      "path": "artifacts/apps_qna/runs/20260503_000058/otel_runtime_trace.json",
+      "present": true,
+      "ref": "artifacts/apps_qna/runs/20260503_000058/otel_runtime_trace.json",
+      "ref_field": "otel_or_runtime_trace_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "15bf248f50b80efd18b5085dcb91aa4c8fc93ced8421e2254a42cc446bb5fbef"
+    },
+    {
+      "artifact_kind": "uwg_durable_write_receipt",
+      "key": "runtime_uwg_receipt_ref",
+      "path": null,
+      "present": false,
+      "ref": null,
+      "ref_field": "runtime_uwg_receipt_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": null
+    },
+    {
+      "artifact_kind": "run_log",
+      "key": "run_log_ref",
+      "path": "artifacts/certification/apps_e2e/apps_qna/apps_qna_run.log",
+      "present": true,
+      "ref": "artifacts/certification/apps_e2e/apps_qna/apps_qna_run.log",
+      "ref_field": "run_log_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_kind": "adg_snapshot",
+      "key": "adg_snapshot_ref",
+      "path": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "present": true,
+      "ref": "artifacts/adg/adg_indexed_05022026_1921.sqlite",
+      "ref_field": "adg_snapshot_ref",
+      "run_id": "apps_qna-run-583e37298c2c48e2",
+      "sha256": "361691c48c7acf211892fb087f3e402c893572f2a3869db88b1efef8fc93ffa8"
+    }
+  ],
+  "run_id": "apps_qna-run-583e37298c2c48e2",
+  "trace_root": "apps_qna-run-583e37298c2c48e2"
+}
