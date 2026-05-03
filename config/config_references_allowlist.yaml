@@ -54,6 +54,9 @@ allowed_external_flags:
   - GITHUB_RUN_NUMBER
   - GITHUB_WORKSPACE
   - GITHUB_EVENT_NAME
+  - GITHUB_WORKFLOW                   # runner-provided workflow file basename
+  - GITHUB_WORKFLOW_REF               # runner-provided workflow ref (path@ref)
+  - ACTIONS_ID_TOKEN_REQUEST_TOKEN    # Sigstore keyless OIDC, GH Actions runner-provided
   - RUNNER_OS
   - RUNNER_TEMP
 
