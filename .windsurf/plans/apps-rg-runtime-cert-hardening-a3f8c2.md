@@ -2,7 +2,7 @@
 
 - **Plan slug**: `apps-rg-runtime-cert-hardening-a3f8c2`
 - **Tier**: T3 (cross-layer — touches `apps_rg/`, `apps_shared/spine_emission/`, `agentic_core/runtime/entrypoints/`, `agentic_core/L5_safety/hitl/`, `tools/cert/apps_e2e/`, `certification/apps_evidence_assertions.jsonl`)
-- **Status**: Draft (planning only — no implementation per user directive 2026-05-03)
+- **Status**: Completed (W1-W7 executed 2026-05-03; follow-up W8 activation plan apps-rg-deferred-activation-w8-a7f4d9 also Completed; gaps tracked in apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4)
 - **Authored from**: live-run RCA against `artifacts/apps_rg/runs/20260503_135650/` (Blend360 SVP Agentic Transformation run) + 2026-05-03 spine-certification audit + 2026-05-03 agentic_core infrastructure inventory.
 - **Revision history**:
   - v1 2026-05-03 — 8 gaps, 7 waves (quality/HITL/cert-wiring focus)
