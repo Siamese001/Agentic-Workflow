@@ -1,0 +1,97 @@
+# Cache Profile Schema — apps_* domain contract
+# Plan: apps-core-contract-rectification-a8f3c2 Phase 3.1
+#
+# Defines the structure for per-app semantic cache contracts consulted by
+# the spine before executing a run to determine if a cached result may be
+# served. Apps declare TTL, invalidation triggers, and semantic similarity
+# thresholds; the spine owns cache read/write mechanics.
+#
+# SSOT: .windsurf/schemas/cache_profile.schema.yaml
+# Referenced by: apps_*/config/domain_contract/cache_profiles.yaml
+# L4 record: AppDomainContractRecord.cache_profile_refs
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: CacheProfile
+description: |
+  Declarative semantic cache policy for an apps_* domain. The spine reads
+  this to decide whether to hit the semantic cache, what TTL to enforce,
+  and when to invalidate cached entries.
+
+type: object
+required:
+  - cache_profile_id
+  - app_id
+  - version
+  - status
+  - semantic_cache_enabled
+  - ttl_seconds
+
+properties:
+  cache_profile_id:
+    type: string
+    description: Unique ID in format cp::<app_id>::<task_class>::v<N>
+    pattern: "^cp::.+::.+::v\\d+$"
+
+  app_id:
+    type: string
+    description: App identifier (must match AppDomainContractRecord.app_id)
+    pattern: "^apps_"
+
+  version:
+    type: string
+
+  status:
+    type: string
+    enum: [draft, active, deprecated]
+
+  source_app_config_ref:
+    type: string
+
+  created_at:
+    type: string
+
+  semantic_cache_enabled:
+    type: boolean
+    description: Whether semantic caching is active for this app/task_class
+
+  ttl_seconds:
+    type: integer
+    minimum: 0
+    description: Cache TTL in seconds. 0 = do not cache (semantic_cache_enabled must be false)
+
+  similarity_threshold:
+    type: number
+    minimum: 0.0
+    maximum: 1.0
+    description: |
+      Cosine similarity threshold above which a cached result is considered a hit.
+      Lower = more cache hits but looser matching. Typically 0.90–0.97.
+
+  invalidation_triggers:
+    type: array
+    description: Events that cause cache invalidation for this app
+    items:
+      type: string
+      description: |
+        Trigger name. Examples:
+        - source_updated: upstream KB or source data changed
+        - config_version_bump: app config version incremented
+        - policy_hash_change: policy hash differs from cached entry
+        - manual: admin-triggered invalidation
+        - time_based: TTL expiry (always implicit; listed for clarity)
+
+  cache_scope:
+    type: string
+    enum: [session, user, global]
+    description: |
+      Scope of cache entries. global = shared across all users/sessions.
+
+  grounded_only:
+    type: boolean
+    description: |
+      If true, only cache results from fully-grounded runs (all dims pass).
+      Partial-pass results are not cached.
+
+  notes:
+    type: string
+    description: Optional notes for operators

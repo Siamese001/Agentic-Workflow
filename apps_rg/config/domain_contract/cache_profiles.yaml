@@ -1,0 +1,20 @@
+# apps_rg cache profile — apps-core-contract-rectification-a8f3c2 Phase 3.2
+cache_profile_id: cp::apps_rg::resume_generation::v1
+app_id: apps_rg
+version: 1.0.0
+status: active
+source_app_config_ref: apps_rg/config/domain_contract/cache_profiles.yaml
+created_at: '2026-05-03'
+
+semantic_cache_enabled: false
+ttl_seconds: 0
+cache_scope: user
+grounded_only: true
+invalidation_triggers:
+  - config_version_bump
+  - policy_hash_change
+notes: >
+  Resume generation is highly personalized per-user; semantic caching is
+  disabled because even highly similar inputs produce meaningfully different
+  outputs depending on user profile. May be revisited when a user-scoped
+  cache surface is available.

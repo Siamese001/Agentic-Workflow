@@ -635,6 +635,12 @@ class AppDomainContractRecord:
     # apps-core-contract-rectification-a8f3c2 Phase 1.4 — repair menu contracts.
     # Optional: apps that have not yet defined repair scenarios omit this field.
     repair_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # apps-core-contract-rectification-a8f3c2 Phase 3.4 — cache and learning policy contracts.
+    # Optional: apps may omit when caching is permanently disabled (e.g. underwriting).
+    cache_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # Optional: apps may omit during initial rollout; L6 promotion gate falls back
+    # to global defaults when absent.
+    learning_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     policy_hash: str = ""
     blueprint_hash: str = ""
     registry_digest_set: Tuple[str, ...] = field(default_factory=_empty_tuple)

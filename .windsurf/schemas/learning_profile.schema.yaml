@@ -1,0 +1,97 @@
+# Learning Profile Schema — apps_* domain contract
+# Plan: apps-core-contract-rectification-a8f3c2 Phase 3.1
+#
+# Defines the structure for per-app learning promotion policy contracts
+# consumed by the L6 promotion gate. Apps declare the criteria under which
+# a candidate policy or model change may be promoted to production; the
+# spine owns the promotion mechanics (Wilson CI, regret accounting).
+#
+# SSOT: .windsurf/schemas/learning_profile.schema.yaml
+# Referenced by: apps_*/config/domain_contract/learning_profiles.yaml
+# L4 record: AppDomainContractRecord.learning_profile_refs
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: LearningProfile
+description: |
+  Declarative L6 promotion policy for an apps_* domain. The L6 promotion
+  gate reads these thresholds before promoting a candidate.
+
+type: object
+required:
+  - learning_profile_id
+  - app_id
+  - version
+  - status
+  - promotion_threshold
+  - min_n_each_arm
+  - holdout_required
+
+properties:
+  learning_profile_id:
+    type: string
+    description: Unique ID in format lp::<app_id>::<task_class>::v<N>
+    pattern: "^lp::.+::.+::v\\d+$"
+
+  app_id:
+    type: string
+    pattern: "^apps_"
+
+  version:
+    type: string
+
+  status:
+    type: string
+    enum: [draft, active, deprecated]
+
+  source_app_config_ref:
+    type: string
+
+  created_at:
+    type: string
+
+  promotion_threshold:
+    type: number
+    minimum: 0.5
+    maximum: 1.0
+    description: |
+      Wilson CI lower bound required for promotion. Minimum 0.50 (coin flip),
+      typical 0.60–0.75 for production gates. L6 default is 0.60.
+
+  min_n_each_arm:
+    type: integer
+    minimum: 10
+    description: Minimum samples per arm (candidate + baseline) before promotion is allowed
+
+  holdout_required:
+    type: boolean
+    description: |
+      If true, promotion requires a passing holdout evaluation in addition to
+      Wilson CI. False = Wilson CI alone sufficient.
+
+  judge_calibration_cadence_days:
+    type: integer
+    minimum: 1
+    description: |
+      How often (in days) the LLM judge for this app must be re-calibrated
+      against a human-labeled holdout. Null = no cadence enforced.
+
+  regret_budget:
+    type: number
+    minimum: 0.0
+    description: |
+      Maximum allowed regret (best_alternative_reward - chosen_reward) per
+      decision before the router's regret ledger triggers a re-evaluation.
+
+  z_score:
+    type: number
+    description: |
+      Z-score for Wilson CI (1.96 = 95% CI, 2.576 = 99% CI). Default 1.96.
+
+  uplift_required:
+    type: boolean
+    description: |
+      If true, candidate must show positive uplift over baseline before
+      promotion. False = neutral (same as baseline) is acceptable.
+
+  notes:
+    type: string

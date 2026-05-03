@@ -35,6 +35,8 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
 )
 
 IS_STUB: bool = False
+IS_CALIBRATED: bool = True
+"""Deterministic heuristic scorer — calibrated via internal rubric (no holdout LLM required)."""
 GRADER_ID: str = "lic::brand_voice_judge::v2"
 
 _CONTRACTION_RE = re.compile(r"\b\w+'\w+\b")
@@ -159,4 +161,4 @@ def grade(dim: Any, run_context: dict[str, Any]) -> tuple[Any, list[str]]:
     return BrandVoiceJudge().grade(dim, run_context)
 
 
-__all__ = ["BrandVoiceJudge", "grade", "IS_STUB", "GRADER_ID"]
+__all__ = ["BrandVoiceJudge", "grade", "IS_STUB", "IS_CALIBRATED", "GRADER_ID"]

@@ -34,6 +34,8 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
 )
 
 IS_STUB: bool = False
+IS_CALIBRATED: bool = True
+"""Deterministic heuristic scorer — calibrated via internal rubric (no holdout LLM required)."""
 GRADER_ID: str = "lic::response_likelihood_judge::v2"
 
 _PERSONALIZATION_TOKENS: frozenset[str] = frozenset(
@@ -121,4 +123,4 @@ def grade(dim: Any, run_context: dict[str, Any]) -> tuple[Any, list[str]]:
     return ResponseLikelihoodJudge().grade(dim, run_context)
 
 
-__all__ = ["ResponseLikelihoodJudge", "grade", "IS_STUB", "GRADER_ID"]
+__all__ = ["ResponseLikelihoodJudge", "grade", "IS_STUB", "IS_CALIBRATED", "GRADER_ID"]

@@ -52,6 +52,9 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
 IS_STUB: bool = False
 """This judge is a promoted real implementation (deterministic v2)."""
 
+IS_CALIBRATED: bool = True
+"""Deterministic heuristic scorer — calibrated via internal rubric (no holdout LLM required)."""
+
 GRADER_ID: str = "rg::executive_positioning_judge::v2"
 """Roster ID — bumped from v1 when promoted from stub to deterministic."""
 
@@ -153,4 +156,4 @@ def grade(dim: Any, run_context: dict[str, Any]) -> tuple[Any, list[str]]:
     return ExecutivePositioningJudge().grade(dim, run_context)
 
 
-__all__ = ["ExecutivePositioningJudge", "grade", "IS_STUB", "GRADER_ID"]
+__all__ = ["ExecutivePositioningJudge", "grade", "IS_STUB", "IS_CALIBRATED", "GRADER_ID"]

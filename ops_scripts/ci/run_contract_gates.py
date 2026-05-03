@@ -384,6 +384,24 @@ def main():
             "AEH1 apps_* eval-harness parity (advisory)",
             "ops_scripts/ci/check_app_domain_harness_parity.py",
         ),
+        # AEH2 — AgentSpec completeness across all apps_* domains.
+        # Advisory by default; fail-closed via
+        # AGENT_SPEC_COMPLETENESS_FAIL_CLOSED=1.
+        # Plan: apps-core-contract-rectification-a8f3c2 Phase 2.3.
+        (
+            "AEH2 AgentSpec completeness (advisory)",
+            "ops_scripts/ci/check_agent_spec_completeness.py",
+        ),
+        # AEH3 — Grounded RAG dim activation gate.
+        # Checks that dims removed from intentional_failopen_dims have
+        # weight>0 and fail_closed_if_unknown=true (i.e. C0 fully wired).
+        # Advisory by default; fail-closed via
+        # GROUNDED_RAG_ACTIVE_FAIL_CLOSED=1.
+        # Plan: apps-core-contract-rectification-a8f3c2 Phase 5.3.
+        (
+            "AEH3 grounded RAG dim activation (advisory)",
+            "ops_scripts/ci/check_grounded_rag_active.py",
+        ),
         # NP1 — Plans DB mandatory AI Summary gate. Advisory by default;
         # flip fail-closed via NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN is unset (offline CI).

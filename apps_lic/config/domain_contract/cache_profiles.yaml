@@ -1,0 +1,19 @@
+# apps_lic cache profile — apps-core-contract-rectification-a8f3c2 Phase 3.2
+cache_profile_id: cp::apps_lic::outreach_message::v1
+app_id: apps_lic
+version: 1.0.0
+status: active
+source_app_config_ref: apps_lic/config/domain_contract/cache_profiles.yaml
+created_at: '2026-05-03'
+
+semantic_cache_enabled: false
+ttl_seconds: 0
+cache_scope: user
+grounded_only: true
+invalidation_triggers:
+  - source_updated
+  - config_version_bump
+  - policy_hash_change
+notes: >
+  Outreach messages are highly personalized (profile-grounded). Semantic
+  caching is disabled to prevent same-message delivery to distinct contacts.

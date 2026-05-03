@@ -66,16 +66,28 @@ def _check_app(app_id: str, errors: list[str], warnings: list[str]) -> None:
     if not exported:
         warnings.append(f"NO_ALL: {app_id}.config.agent_spec_config has no __all__")
 
-    # Find root AgentSpec class — look for class whose name ends with 'AgentSpecs'
-    # or is exactly 'AgentSpec' (apps_rg compatibility)
+    # Find root AgentSpec class — prefer *AgentSpecs (multi-agent roots) first,
+    # then fall back to *AgentSpec singular only if no plural form is found.
     root_cls = None
     for name in dir(mod):
         obj = getattr(mod, name, None)
         if obj is None or not isinstance(obj, type):
             continue
-        if name.endswith("AgentSpecs") or name in ("AgentSpec",):
+        if name.endswith("AgentSpecs"):
             root_cls = obj
             break
+    if root_cls is None:
+        # Fallback: singular *AgentSpec that directly inherits PromptReceptionSpec
+        # (avoids matching inner per-agent spec classes that share the suffix)
+        for name in dir(mod):
+            obj = getattr(mod, name, None)
+            if obj is None or not isinstance(obj, type):
+                continue
+            if name.endswith("AgentSpec"):
+                bases = [b.__name__ for b in getattr(obj, "__mro__", ())]
+                if "PromptReceptionSpec" in bases:
+                    root_cls = obj
+                    break
 
     if root_cls is None:
         errors.append(

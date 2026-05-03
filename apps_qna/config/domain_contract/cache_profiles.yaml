@@ -1,0 +1,20 @@
+# apps_qna cache profile — apps-core-contract-rectification-a8f3c2 Phase 3.2
+cache_profile_id: cp::apps_qna::qna_pack_build::v1
+app_id: apps_qna
+version: 1.0.0
+status: active
+source_app_config_ref: apps_qna/config/domain_contract/cache_profiles.yaml
+created_at: '2026-05-03'
+
+semantic_cache_enabled: true
+ttl_seconds: 3600
+similarity_threshold: 0.95
+cache_scope: global
+grounded_only: true
+invalidation_triggers:
+  - source_updated
+  - config_version_bump
+  - policy_hash_change
+notes: >
+  QnA packs are KB-grounded; cache is safe when the underlying KB is
+  unchanged. TTL 1h prevents stale packs on rapidly-evolving interview data.

@@ -1,0 +1,19 @@
+# apps_underwriting_ai learning profile — apps-core-contract-rectification-a8f3c2 Phase 3.3
+learning_profile_id: lp::apps_underwriting_ai::underwriting_decision::v1
+app_id: apps_underwriting_ai
+version: 1.0.0
+status: active
+source_app_config_ref: apps_underwriting_ai/config/domain_contract/learning_profiles.yaml
+created_at: '2026-05-03'
+
+promotion_threshold: 0.75
+min_n_each_arm: 100
+holdout_required: true
+judge_calibration_cadence_days: 7
+regret_budget: 0.05
+z_score: 2.576
+uplift_required: true
+notes: >
+  Highest bar across all apps: 0.75 threshold, n=100, z=2.576. Legal
+  and compliance sensitivity requires strict promotion criteria.
+  Holdout mandatory. Weekly calibration.

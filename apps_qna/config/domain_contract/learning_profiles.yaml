@@ -1,0 +1,19 @@
+# apps_qna learning profile — apps-core-contract-rectification-a8f3c2 Phase 3.3
+learning_profile_id: lp::apps_qna::qna_pack_build::v1
+app_id: apps_qna
+version: 1.0.0
+status: active
+source_app_config_ref: apps_qna/config/domain_contract/learning_profiles.yaml
+created_at: '2026-05-03'
+
+promotion_threshold: 0.60
+min_n_each_arm: 30
+holdout_required: false
+judge_calibration_cadence_days: 30
+regret_budget: 0.15
+z_score: 1.96
+uplift_required: true
+notes: >
+  Standard L6 promotion criteria. Holdout not required (deterministic
+  graders dominate; no LLM-judge primary dims). Calibration cadence
+  enforced for RAG dims once C0 is wired.

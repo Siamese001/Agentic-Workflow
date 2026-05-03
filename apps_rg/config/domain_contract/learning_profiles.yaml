@@ -1,0 +1,19 @@
+# apps_rg learning profile — apps-core-contract-rectification-a8f3c2 Phase 3.3
+learning_profile_id: lp::apps_rg::resume_generation::v1
+app_id: apps_rg
+version: 1.0.0
+status: active
+source_app_config_ref: apps_rg/config/domain_contract/learning_profiles.yaml
+created_at: '2026-05-03'
+
+promotion_threshold: 0.65
+min_n_each_arm: 30
+holdout_required: true
+judge_calibration_cadence_days: 14
+regret_budget: 0.10
+z_score: 1.96
+uplift_required: true
+notes: >
+  Raised promotion threshold (0.65) due to executive_positioning LLM judge
+  involvement. Holdout required given LLM judge primary dim. Calibration
+  every 14 days for the executive_positioning judge.

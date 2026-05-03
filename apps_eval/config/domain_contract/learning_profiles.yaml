@@ -1,0 +1,19 @@
+# apps_eval learning profile — apps-core-contract-rectification-a8f3c2 Phase 3.3
+learning_profile_id: lp::apps_eval::eval_self::v1
+app_id: apps_eval
+version: 1.0.0
+status: active
+source_app_config_ref: apps_eval/config/domain_contract/learning_profiles.yaml
+created_at: '2026-05-03'
+
+promotion_threshold: 0.70
+min_n_each_arm: 50
+holdout_required: true
+judge_calibration_cadence_days: 7
+regret_budget: 0.05
+z_score: 2.576
+uplift_required: true
+notes: >
+  Evaluation orchestration app; higher bar (0.70, z=2.576, n=50) because
+  eval correctness directly affects all other apps' certification. Holdout
+  required. Weekly calibration to prevent eval drift.

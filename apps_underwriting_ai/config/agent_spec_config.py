@@ -16,6 +16,8 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
+from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
+
 _log = logging.getLogger(__name__)
 
 
@@ -75,8 +77,27 @@ def load_spec(spec_path: Path | str) -> UnderwritingAgentSpec:
     return UnderwritingAgentSpec.model_validate(raw)
 
 
+class UnderwritingAgentSpecs(PromptReceptionSpec, BaseModel):
+    """Root AgentSpec for apps_underwriting_ai.
+
+    Inherits :class:`PromptReceptionSpec` fields:
+
+    - ``adapter_version: Literal['v1', 'v2']`` (default ``'v2'``)
+    - ``exemplar_task_class: str | None`` (default ``None``)
+
+    Adds apps_underwriting_ai-specific topology declarations via
+    ``UnderwritingAgentSpec`` and ``UnderwritingConfig``.
+
+    Plan: apps-core-contract-rectification-a8f3c2 Phase 2.2
+    """
+
+    version: str = "1.0.0"
+    agent_spec: UnderwritingAgentSpec = Field(default_factory=UnderwritingAgentSpec)
+
+
 __all__ = [
     "UnderwritingAgentSpec",
+    "UnderwritingAgentSpecs",
     "UnderwritingConfig",
     "UnderwritingThresholds",
     "load_spec",
