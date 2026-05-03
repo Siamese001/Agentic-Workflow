@@ -52,7 +52,7 @@ Validation provenance: `artifacts/audit_validation_final.json` records the cross
 | W3 | 3.1 | NOTION literal SSOT module | 2000 | `.windsurf/scripts/_notion_constants.py` is acceptable location | Done (2026-04-25) | 21 hardcoded NOTION_* literals replaced with imports |
 | W4 | 4.1 | Observability hooks for 5 truly-blind modules | 4000 | `agentic_core/mixins/L6MetricsEmissionMixin.py` is canonical | Done-via-gate-hardening (2026-04-25) | AUDIT-2 gate hardened to exclude `%/config/%`, `%_config.py`, `%_registry.py`, `%/structure_blueprint/%` paths — observability belongs at call sites that consume them, not at static-data modules. Baseline=1 locks remaining ceiling |
 | W5 | 5.1 | Activate gates as ratchet (CI-blocking) | 3000 | Baselines from W1 hold | Done (2026-04-25) | 6 gates hooked in `.pre-commit-config.yaml` manual stage (audit-ssot-magic-constants, audit-observability-fanin, audit-external-literal-ssot, audit-cross-mainline-dispatcher, audit-env-var-config-layer, audit-violation-aging-sla) |
-| W6 | 6.1 | Final ADG regen + burndown verification | 2000 | All prior waves complete | Deferred | ADG regeneration is long-running (~10-15 min); baseline refresh + gate re-seed deferred to a dedicated calibration session. Ratchets will naturally detect deltas on next `/adg-redis-refresh` run |
+| W6 | 6.1 | Final ADG regen + burndown verification | 2000 | All prior waves complete | Done (2026-05-03) | Full ADG regen executed against snapshot `adg_indexed_05022026_2217.sqlite` (131970 nodes, 816760 edges). All 6 audit baselines re-seeded: AUDIT_1=72 (prev 39 — repo grew; our W2 deletions reflected), AUDIT_2=15 (prev 1 — new high-fan-in modules added since 04-25), AUDIT_3=0 (clean), AUDIT_4=10, AUDIT_5=122, AUDIT_6=11714. Pre-existing P2 ratchet fail (MEDIUM antipattern 22>10 ceiling) is orthogonal to this plan |
 
 ## Phase-Level Summary
 
@@ -70,7 +70,7 @@ Validation provenance: `artifacts/audit_validation_final.json` records the cross
 | 3.1 | NOTION constants SSOT | `.windsurf/scripts/_notion_constants.py` + 21 callers | Cross-script import path | 2000 | Done |
 | 4.1 | Wire 5 blind modules to L6 emission | 5 specific files | Mixin import location | 4000 | Closed-by-gate-hardening — AUDIT-2 now excludes config/registry modules |
 | 5.1 | Pre-commit + CI activation | `.pre-commit-config.yaml`, `.github/workflows/` | Baseline drift | 3000 | Done |
-| 6.1 | Final ADG regen + verify | none (read-only) | Background command | 2000 | Deferred to dedicated calibration session |
+| 6.1 | Final ADG regen + verify | none (read-only) | Background command | 2000 | Done (2026-05-03) |
 
 ## Gap Register
 
@@ -86,15 +86,11 @@ Validation provenance: `artifacts/audit_validation_final.json` records the cross
 
 ## Status
 
-Waves 1-5 complete. W6 (final ADG regen + re-seed) deferred to a dedicated
-calibration session — it is long-running and orthogonal to the deletion work.
-Plan effectively CLOSED for substantive work; only the calibration re-seed
-remains, which is a natural cadence activity rather than plan scope.
-
-DEFERRED_SCOPE: slug=audit-uncovered-gates-627368-w6 phase=W6 reason=regen-long-running ETA=next-calibration-session
+All 6 waves complete. Plan CLOSED.
 
 ## Execution Log
 
 - **2026-04-25** — W1+W3+W5 completed (6 CI gates authored, NOTION SSOT module + 21-caller rewrite, pre-commit wiring).
 - **2026-04-25** — W4 closed via AUDIT-2 gate hardening (config/registry exclusions in SQL).
-- **2026-05-02** — W2 executed: `tools/analysis/_audit_wave2_magic_consts_cleanup.py` deleted the dead 8-line magic-constants boilerplate block from 97 placeholder/scaffolded files. Identity-per-file guard preserved 3 files where identifiers are actually referenced (`tests/governance/test_quorum.py`, `tests/system_learning/waves/w1_strong_determinism_test.py`, `tests/system_learning/waves/w1_strong_negative_control.py`). Ingestion tools (legitimate per-collection BATCH_SIZE tuning) and `tests/_config/common.py` (real BATCH_SIZE = 32) excluded via path list. All 97 modified files pass `py_compile`. Baseline re-seed deferred to next calibration cadence (ratchet will naturally detect the delta).
+- **2026-05-02** — W2 executed: `tools/analysis/_audit_wave2_magic_consts_cleanup.py` deleted the dead 8-line magic-constants boilerplate block from 97 placeholder/scaffolded files. Identity-per-file guard preserved 3 files where identifiers are actually referenced (`tests/governance/test_quorum.py`, `tests/system_learning/waves/w1_strong_determinism_test.py`, `tests/system_learning/waves/w1_strong_negative_control.py`). Ingestion tools (legitimate per-collection BATCH_SIZE tuning) and `tests/_config/common.py` (real BATCH_SIZE = 32) excluded via path list. All 97 modified files pass `py_compile`. Commit `69baccb9a6`.
+- **2026-05-03** — W6 executed: full ADG regen against `adg_indexed_05022026_2217.sqlite` (131970 nodes, 816760 edges). All 6 audit baselines re-seeded. Pre-existing P2 ratchet fail (MEDIUM antipattern 22>10) is orthogonal to this plan — flagged as deferred-scope to a follow-up.
