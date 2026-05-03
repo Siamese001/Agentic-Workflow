@@ -819,7 +819,6 @@ def main_canonical() -> None:
     run_dir: Path | None = None
 
     with adapter.governed_run(cli_args=sys.argv[1:]) as gr:
-        run_dir = getattr(gr, "run_dir", None)  # Extract run_dir if available
         with gr.span("apps_rg.entrypoint"):
             with gr.span("L2_execute.generate_resume"):
                 asyncio.run(_run())
@@ -830,6 +829,18 @@ def main_canonical() -> None:
                     # Placeholder: _run_post_pipeline needs adapter-compatible version
                     # For W4 skeleton, we skip the actual DOCX export
                     gr.mark_stage("post_pipeline", "ok")
+
+        # W1.P2: Resolve late-bound run_dir same as legacy path for receipt emission
+        runs_root = Path("artifacts/apps_rg/runs")
+        if runs_root.exists():
+            candidates = sorted(
+                (p for p in runs_root.iterdir() if p.is_dir() and p.name[:8].isdigit()),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True,
+            )
+            if candidates:
+                run_dir = candidates[0]
+                gr.set_run_dir(run_dir)
 
         gr.set_subprocess_exit_code(0)
 
