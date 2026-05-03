@@ -1,7 +1,7 @@
 """W6.P2 — DOCX re-seal helper for post-run patches.
 
 Plan: apps-rg-runtime-cert-hardening-a3f8c2.md
-Phase: W6.P2 (post-run patch policy — AG-RG-011 deferred)
+Phase: W6.P2 (AG-RG-011 decision B: re-seal-helper ACTIVATED)
 
 When a run produces `generated_resume.docx` and a downstream tool (e.g.
 manual DOCX edit, ATS optimizer) modifies it, the `artifact_sha256_map`
@@ -11,9 +11,9 @@ cert bundle's sha256 binding invariant breaks.
 This helper recomputes the sha256 for a patched artifact and rewrites
 the `artifact_sha256_map` entry, emitting an audit trail event.
 
-AG-RG-011 (post-run patch policy) is deferred — this module provides
-the re-seal mechanism only. Policy (forbid / re-seal-helper /
-per-tool-allowlist) requires user decision.
+AG-RG-011 decision B (2026-05-03): Re-seal helper with audit trail is the
+active policy. Forbid all patches (option A) or per-tool allowlist (option C)
+may be implemented via CI gates later if operational discipline requires.
 """
 from __future__ import annotations
 

@@ -239,14 +239,140 @@ def _apps_rg_emission_config(
     )
 
 
+def _get_current_policy_hash() -> str:
+    """Get current policy hash from config or environment."""
+    import os
+
+    return os.environ.get("APPS_RG_POLICY_HASH", "policy_v1")
+
+
+def _get_current_blueprint_hash() -> str:
+    """Get current blueprint hash from config or environment."""
+    import os
+
+    return os.environ.get("APPS_RG_BLUEPRINT_HASH", "blueprint_v1")
+
+
+def _check_r1b_cache(args, cfg) -> dict | None:
+    """Check R1B semantic cache for matching intent."""
+    from apps_rg.utils.intent_builder import build_intent_from_request
+    from apps_rg.cache.r1b_adapter import AppsRgR1BCacheAdapter
+    from pathlib import Path
+
+    candidate_path = Path(args.candidate) if hasattr(args, "candidate") and args.candidate else Path("profiles/default.yaml")
+    if not candidate_path.exists():
+        candidate_path = Path("apps_rg/scripts/candidate_profile.yaml")
+
+    intent = build_intent_from_request(
+        candidate_profile_path=candidate_path,
+        target_company=args.target_company or "",
+        target_role=args.target_role or "",
+        target_level=getattr(args, "target_level", None),
+        tenant_id=cfg.tenant_id if hasattr(cfg, "tenant_id") else "default",
+    )
+
+    adapter = AppsRgR1BCacheAdapter(
+        tenant_id=cfg.tenant_id if hasattr(cfg, "tenant_id") else "default"
+    )
+    return adapter.recall_output_for_intent(
+        intent=intent,
+        policy_hash=_get_current_policy_hash(),
+        blueprint_hash=_get_current_blueprint_hash(),
+    )
+
+
+def _check_briefing_prerequisite(args, cfg):
+    """Check historical research briefing prerequisite."""
+    from apps_rg.prerequisites.briefing_validator import HistoricalBriefingValidator
+
+    validator = HistoricalBriefingValidator(
+        policy_hash=_get_current_policy_hash(),
+        blueprint_hash=_get_current_blueprint_hash(),
+        tenant_id=cfg.tenant_id if hasattr(cfg, "tenant_id") else "default",
+    )
+
+    return validator.validate_for_request(
+        target_company=args.target_company or "",
+        target_role=args.target_role or "",
+    )
+
+
+def _chunk_and_commit_output(gr, args, cfg, run_dir):
+    """Chunk resume output and commit via UWG."""
+    import json
+    from pathlib import Path
+
+    from apps_rg.chunking.resume_chunker import ResumeChunker
+    from apps_rg.cache.chunk_commit import commit_chunks_via_exit
+    from apps_rg.utils.intent_builder import build_intent_from_request, derive_intent_hash
+
+    # Load generated resume
+    resume_path = Path(run_dir) / "generated_resume.json"
+    if not resume_path.exists():
+        _log.warning("[apps_rg] No generated_resume.json to chunk")
+        return None
+
+    try:
+        resume_content = json.loads(resume_path.read_text())
+    except Exception as exc:  # guardian: allow-broad-exception -- chunking is fail-soft
+        _log.warning("[apps_rg] Failed to load resume for chunking: %s", exc)
+        return None
+
+    # Build intent hash for lineage
+    candidate_path = Path(args.candidate) if hasattr(args, "candidate") and args.candidate else Path("profiles/default.yaml")
+    if not candidate_path.exists():
+        candidate_path = Path("apps_rg/scripts/candidate_profile.yaml")
+
+    intent = build_intent_from_request(
+        candidate_profile_path=candidate_path,
+        target_company=args.target_company or "",
+        target_role=args.target_role or "",
+        tenant_id=cfg.tenant_id if hasattr(cfg, "tenant_id") else "default",
+    )
+    intent_hash = derive_intent_hash(intent)
+
+    # Build run context with lineage
+    run_context = {
+        "run_id": gr.run_id if hasattr(gr, "run_id") else "unknown",
+        "request_id": intent.request_id,
+        "tenant_id": cfg.tenant_id if hasattr(cfg, "tenant_id") else "default",
+        "target_job": {
+            "company": args.target_company,
+            "role": args.target_role,
+        },
+        "policy_hash": _get_current_policy_hash(),
+        "blueprint_hash": _get_current_blueprint_hash(),
+        "exit_disposition": getattr(gr, "exit_disposition", None),
+        "uwg_commit_receipt": getattr(gr, "uwg_commit_receipt", None),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    # Chunk and commit
+    chunker = ResumeChunker()
+    chunks = chunker.chunk_resume(resume_content, run_context, intent_hash)
+
+    receipt = commit_chunks_via_exit(chunks, run_context)
+    if receipt:
+        gr.mark_stage("chunk_commit", "ok")
+        _log.info("[apps_rg] Committed %d resume chunks via UWG", len(chunks))
+    else:
+        gr.mark_stage("chunk_commit", "fail")
+        _log.warning("[apps_rg] Failed to commit resume chunks")
+
+    return receipt
+
+
 def main() -> None:
     _adg_bootstrap()
     import argparse
     import asyncio
     from pathlib import Path
+    from datetime import datetime, timezone
 
     from apps_shared.spine_emission import governed_run
     from apps_rg.scripts.generate_resume import main as _run
+    from apps_rg.cache.r1b_adapter import AppsRgR1BCacheAdapter
+    from apps_rg.prerequisites.briefing_validator import check_briefing_prerequisite
 
     parser = argparse.ArgumentParser(prog="apps_rg", add_help=True)
     parser.add_argument(
@@ -281,6 +407,28 @@ def main() -> None:
         default=None,
         help="Target role title for DOCX header.",
     )
+    # New args for R1B and prerequisite control
+    parser.add_argument(
+        "--candidate",
+        default=None,
+        help="Path to candidate profile YAML/JSON.",
+    )
+    parser.add_argument(
+        "--target-level",
+        default=None,
+        help="Target level (junior, mid, senior, staff, principal).",
+    )
+    parser.add_argument(
+        "--skip-r1b-check",
+        action="store_true",
+        help="Skip R1B semantic cache check (force regeneration)",
+    )
+    parser.add_argument(
+        "--require-briefing",
+        action="store_true",
+        default=True,
+        help="Require historical research briefing (fail closed if missing)",
+    )
     args, _unknown = parser.parse_known_args()
 
     # Wrap the deterministic HOP pipeline in genuine spine receipts.
@@ -291,6 +439,56 @@ def main() -> None:
     )
     with governed_run(cfg, cli_args=sys.argv[1:]) as gr:
         with gr.span("apps_rg.entrypoint"):
+
+            # W1: R1B semantic cache check (L0)
+            if not args.skip_r1b_check and args.target_company and args.target_role:
+                with gr.span("L0.r1b_cache_check"):
+                    r1b_hit = _check_r1b_cache(args, cfg)
+                    if r1b_hit:
+                        # R1B hit — terminal return with cached output
+                        _log.info("[apps_rg] R1B cache hit — terminal return")
+                        gr.mark_stage("r1b_cache", "hit")
+                        # Store the cached chunks as the result
+                        if "output_chunks" in r1b_hit:
+                            gr.mark_stage("generate_resume", "r1b_cached")
+                        gr.set_subprocess_exit_code(0)
+                        # Terminal — skip L2 execution
+                        # Fall through to exit hook for proper disposition
+                        _maybe_run_exit_hook(None)
+                        return
+                    else:
+                        gr.mark_stage("r1b_cache", "miss")
+
+            # W2: Historical research briefing prerequisite (L0)
+            if args.require_briefing and args.target_company:
+                with gr.span("L0.briefing_prerequisite"):
+                    briefing_check = _check_briefing_prerequisite(args, cfg)
+                    if not briefing_check.is_valid:
+                        if briefing_check.requires_apps_research:
+                            # Route to apps_research first
+                            _log.info(
+                                "[apps_rg] Briefing prerequisite not met (%s) — "
+                                "will invoke apps_research",
+                                briefing_check.result.value
+                            )
+                            gr.mark_stage("briefing_prerequisite", f"need_research:{briefing_check.result.value}")
+                            # Continue to L2 — apps_research will be invoked
+                            # as part of the managed workflow or narrative pass
+                        else:
+                            # Fail closed — cannot proceed
+                            _log.error(
+                                "[apps_rg] Briefing prerequisite failed (%s: %s) — "
+                                "failing closed",
+                                briefing_check.result.value,
+                                briefing_check.reason
+                            )
+                            gr.mark_stage("briefing_prerequisite", f"fail:{briefing_check.result.value}")
+                            gr.set_subprocess_exit_code(1)
+                            return
+                    else:
+                        gr.mark_stage("briefing_prerequisite", "valid")
+
+            # L2 Execution (only if not R1B terminal)
             with gr.span("L2_execute.generate_resume"):
                 asyncio.run(_run())
                 gr.mark_stage("generate_resume", "ok")
@@ -325,6 +523,11 @@ def main() -> None:
             # invoke_exit_eval=true in apps_rg/config/cert_route_registry.yaml.
             # Fail-soft: any hook failure leaves the cert bundle unaffected.
             _maybe_run_exit_hook(run_dir)
+
+            # W3: Output chunking after successful generation and Exit clearance
+            if run_dir:
+                with gr.span("L2.chunk_output"):
+                    _chunk_and_commit_output(gr, args, cfg, run_dir)
 
         gr.set_subprocess_exit_code(0)
 
@@ -574,17 +777,25 @@ def main_canonical() -> None:
     SpineRuntimeAdapter with prefer_canonical=True to produce V15RouteContract
     and canonical L2 receipts instead of the legacy thin contracts.
 
+    W6.P3: HITL fail-closed behavior added per AG-RG-012 decision B.
+    When run_report.status='HUMAN_REVIEW', the HITL bridge evaluates the
+    GateDecision; if disposition is not ALLOW, the process exits 1.
+
     For W4, this runs side-by-side with main(). Future waves will flip
     the default once full v6 Exit pipeline integration is verified.
     """
     _adg_bootstrap()
     import argparse
     import asyncio
+    import sys
     from pathlib import Path
 
     # W4: Import the adapter
     from apps_shared.spine_emission.adapter import SpineRuntimeAdapter
     from apps_rg.scripts.generate_resume import main as _run
+
+    # W6.P3: Import HITL bridge for fail-closed behavior
+    from apps_rg.integrations.hitl_bridge import evaluate_hitl
 
     parser = argparse.ArgumentParser(prog="apps_rg", add_help=True)
     parser.add_argument("--target-company", default=None)
@@ -604,7 +815,11 @@ def main_canonical() -> None:
     # W4: Use SpineRuntimeAdapter with prefer_canonical=True
     adapter = SpineRuntimeAdapter(cfg, prefer_canonical=True)
 
+    # W6.P3: Track run_dir for HITL evaluation after governed_run exits
+    run_dir: Path | None = None
+
     with adapter.governed_run(cli_args=sys.argv[1:]) as gr:
+        run_dir = getattr(gr, "run_dir", None)  # Extract run_dir if available
         with gr.span("apps_rg.entrypoint"):
             with gr.span("L2_execute.generate_resume"):
                 asyncio.run(_run())
@@ -617,6 +832,21 @@ def main_canonical() -> None:
                     gr.mark_stage("post_pipeline", "ok")
 
         gr.set_subprocess_exit_code(0)
+
+    # W6.P3 AG-RG-012 decision B: HITL fail-closed behavior
+    # After governed_run exits, evaluate HITL if run_dir has HUMAN_REVIEW status
+    if run_dir is not None:
+        hitl_decision = evaluate_hitl(run_dir, replay_key=getattr(adapter, "replay_key", None))
+        if hitl_decision is not None:
+            # Fail-closed: anything other than explicit ALLOW is a reject
+            from agentic_core.L5_safety.runtime_gates.types import Disposition
+            if hitl_decision.disposition != Disposition.ALLOW:
+                print(
+                    f"[apps_rg] HITL fail-closed: disposition={hitl_decision.disposition.value}, "
+                    f"reasons={hitl_decision.reason_codes}",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
 
 
 if __name__ == "__main__":

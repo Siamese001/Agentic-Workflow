@@ -272,6 +272,7 @@ class AdapterGovernedRun:
         self._stage_outcomes: dict[str, str] = {}
         self._failed_stages: list[str] = []
         self._exit_code: int | None = None
+        self._run_dir: Path | None = None
 
     def __enter__(self) -> "AdapterGovernedRun":
         return self
@@ -290,9 +291,14 @@ class AdapterGovernedRun:
         """Set the subprocess exit code for X3 computation."""
         self._exit_code = code
 
+    @property
+    def run_dir(self) -> Path | None:
+        """Return the run directory for HITL/receipt evaluation."""
+        return self._run_dir
+
     def set_run_dir(self, run_dir: Path) -> None:
         """Late-bound run directory (legacy compat)."""
-        pass  # Canonical path uses agentic_core artifact paths
+        self._run_dir = run_dir
 
     def span(self, name: str):
         """Return a context manager for tracing (legacy compat).
