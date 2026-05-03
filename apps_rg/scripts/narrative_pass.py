@@ -236,7 +236,15 @@ def _run_narrative_pipeline(
         archive_dir=archive_dir,
     )
     # AG-RG-013 option C: do NOT overwrite resume_data["headline"] — preserve
-    # the static brand line. Persist HOP-4A output as a side artifact.
+    # the static brand line.
+    #
+    # AG-RG-014 option A (resolved 2026-05-03): write HOP-4A winner to
+    # resume_data["targeted_headline"] — a new field that the DOCX exporter
+    # and JSON output prefer over the static "headline" when present. This
+    # gives clean per-run role-tailoring while preserving the static brand
+    # line for non-targeted outputs.
+    if head_res.winner.text:
+        resume_data["targeted_headline"] = head_res.winner.text
     if archive_dir is not None:
         try:
             archive_dir.mkdir(parents=True, exist_ok=True)
@@ -246,8 +254,9 @@ def _run_narrative_pipeline(
                         "section_id": head_res.section_id,
                         "winner_text": head_res.winner.text,
                         "target_role": target_role,
-                        "ag_decision": "AG-RG-013/C",
+                        "ag_decision": "AG-RG-013/C + AG-RG-014/A",
                         "static_headline_preserved": str(resume_data.get("headline") or ""),
+                        "targeted_headline_field": "targeted_headline",
                     },
                     indent=2,
                 ),

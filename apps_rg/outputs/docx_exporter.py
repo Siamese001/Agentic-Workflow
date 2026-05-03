@@ -353,8 +353,9 @@ def build_docx(
     h = _add_para(doc, style="Heading 1", align=WD_ALIGN_PARAGRAPH.CENTER)
     _add_run(h, name)
 
-    # ---- Tagline — HOP-4A headline, centered, 12pt bold ----
-    headline = (resume.get("headline") or "").strip()
+    # ---- Tagline — prefer targeted_headline (HOP-4A per-run, AG-RG-014/A)
+    #      then fall back to static headline (owner.headline, AG-RG-013/C) ----
+    headline = (resume.get("targeted_headline") or resume.get("headline") or "").strip()
     if headline:
         t = _add_para(doc, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=0)
         _add_run(t, headline, bold=True, size=12)
