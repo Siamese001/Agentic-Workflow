@@ -484,7 +484,7 @@ class MessagePlanner:
                     "constraint_count": len(plan.constraints),
                     "confidence_score": plan.confidence_score
                 })
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- telemetry emission must not break planner flow; logger.debug records failure
             logger.debug(f"Failed to record telemetry: {e}")
 
     def get_message_summary(self, plan: MessagePlan) -> Dict[str, object]:

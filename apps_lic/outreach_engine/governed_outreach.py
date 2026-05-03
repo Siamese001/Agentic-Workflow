@@ -27,7 +27,7 @@ def _get_and_process_current_time(get_current_time_tool: Any, logger: Optional[A
         if logger:
             logger.info(f"Current UTC time: {current_utc_time_hm}")
         return current_utc_time_hm
-    except Exception as e:
+    except (ValueError, TypeError, AttributeError) as e:
         if logger:
             logger.error(f"Failed to get current time: {e}")
         return None
@@ -67,7 +67,7 @@ def _send_email_compliantly(
                 f"✅ Compliance Passed. Email DISPATCHED. Result: {email_result}")
         return "SENT_COMPLIANT"
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-broad-exception -- external send_email tool boundary; failure logged and surfaced as SENT_FAILED status
         if logger:
             logger.error(f"❌ Email Dispatch Failed: {e}")
         return "SENT_FAILED"
@@ -110,7 +110,7 @@ def _log_audit_observation(
                 "entityName": "OutreachAudit",
                 "contents": [audit_message]
             }])
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- L5 MEMemory audit logging is best-effort; non-critical path
             if logger:
                 logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
 
@@ -225,7 +225,7 @@ def calculate_next_business_time(current_local_time: str, timezone: str) -> str:
             return f"09:00 {timezone} (next business day)"
         else:
             return f"{current_local_time} {timezone}"
-    except Exception as e:  # Fixed by Gemini Force-Fix
+    except (ValueError, IndexError, AttributeError):
         return f"09:00 {timezone} (next business day)"
 
 

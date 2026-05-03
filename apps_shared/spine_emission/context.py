@@ -561,7 +561,7 @@ def governed_run(
     gr.emit_pre_execution_contracts()
     try:
         yield gr
-    except Exception:
+    except Exception:  # guardian: allow-broad-exception -- audit mark_stage + exit_code set before re-raise; does NOT swallow (explicit raise at end)
         gr.mark_stage("entrypoint_exception", "fail")
         if gr._subprocess_exit_code is None:
             gr.set_subprocess_exit_code(1)

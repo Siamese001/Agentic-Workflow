@@ -45,14 +45,14 @@ class PdfTextParser(DocumentParser):
 
         try:
             reader = pypdf.PdfReader(io.BytesIO(raw))
-        except Exception as exc:  # pypdf raises many types
+        except Exception as exc:  # guardian: allow-broad-exception -- pypdf raises many types (PdfReadError, ValueError, KeyError, etc.); all wrapped in DocumentParseError with full context via `from exc`
             raise DocumentParseError(f"pypdf failed to open PDF: {exc}") from exc
 
         pages_text: list[str] = []
         for page in reader.pages:
             try:
                 pages_text.append(page.extract_text() or "")
-            except Exception as exc:  # per-page failures should not abort
+            except Exception as exc:  # guardian: allow-log-and-swallow -- per-page pypdf failure must not abort multi-page parse; empty string recorded for the failed page so downstream retains page alignment
                 pages_text.append("")
                 _ = exc  # swallowed intentionally — see notes below
         text = "\n".join(pages_text).strip()

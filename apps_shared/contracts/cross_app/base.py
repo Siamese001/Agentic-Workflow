@@ -175,7 +175,7 @@ class CrossAppEnvelope(BaseModel):
         )
         try:
             env = cls.model_validate(data)
-        except Exception as exc:  # pydantic ValidationError or field error
+        except Exception as exc:  # guardian: allow-broad-exception -- pydantic model_validate raises many types (ValidationError, TypeError, ValueError); all are schema failures wrapped in EnvelopeSchemaError with full context chained via `from exc`
             raise EnvelopeSchemaError(
                 f"Envelope at {path} failed {cls.__name__} validation: {exc}"
             ) from exc

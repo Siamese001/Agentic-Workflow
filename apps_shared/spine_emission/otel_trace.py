@@ -58,7 +58,7 @@ class StageTracer:
                 status="OK",
                 is_synthetic=False,
             )
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- span status set to ERROR before re-raise; does NOT swallow (explicit raise)
             status = "ERROR"
             raise
         finally:

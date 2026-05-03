@@ -504,7 +504,7 @@ class ProfilePlanner:
                     "confidence": plan.confidence_score,
                     "signal_count": len(plan.signals)
                 })
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- telemetry emission must not break planner flow; logger.debug records failure
             logger.debug(f"Failed to record telemetry: {e}")
 
     def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, object]:
