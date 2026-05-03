@@ -132,16 +132,6 @@ import pytest
 # REMOVED: _emit_updates_meta_learning_state("p4", "conftest", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "conftest", "exec_snapshot_link")
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 # Add project root to allow absolute imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:

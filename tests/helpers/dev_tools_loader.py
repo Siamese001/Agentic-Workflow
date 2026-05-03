@@ -15,16 +15,6 @@ import importlib.util
 from pathlib import Path
 from types import ModuleType
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OPS_SCRIPTS_DIR = "ops_scripts"
 DEV_SCRIPTS_DIR = REPO_ROOT / OPS_SCRIPTS_DIR / "dev_tools" / "l0_scripts"

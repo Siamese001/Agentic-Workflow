@@ -158,16 +158,6 @@ _emit_stores_embedding("p4", "config_provider", "embedding_store")
 _emit_updates_meta_learning_state("p4", "config_provider", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "config_provider", "exec_snapshot_link")
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 logger = logging.getLogger(__name__)
 
 
