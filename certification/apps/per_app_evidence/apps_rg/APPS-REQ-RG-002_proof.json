@@ -1,11 +1,11 @@
 {
-  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_135650\\l2_execution_receipt.json",
-  "artifact_sha256": "f8cb07cbeb290c22a00605160d4cf411cdb53b962080895622510eda2bf8dd17",
-  "assertion_result": "NOT_VERIFIED",
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_194345\\l2_execution_receipt.json",
+  "artifact_sha256": "227b477ab47294ff6f7b54758b29cc19ff57aab680c0134d87b42b067059e7de",
+  "assertion_result": "PASS",
   "claim_id": "APPS-REQ-RG-002",
   "claim_title": "L2 ExecutionReceipt E1-E5 sealed",
-  "generated_at_utc": "2026-05-03T21:37:14.709777+00:00",
+  "generated_at_utc": "2026-05-03T23:44:19.089050+00:00",
   "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
   "producer_version": "apps_rg_proof_producer-v1",
-  "reason": "Missing fields: ['e1_work_order', 'e2_validation_output', 'e3_attempt_receipt', 'e4_heal_receipt', 'e5_dispatch_receipt']"
+  "reason": "All required fields present"
 }

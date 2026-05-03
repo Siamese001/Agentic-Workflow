@@ -1,11 +1,11 @@
 {
-  "artifact_path": null,
-  "artifact_sha256": null,
-  "assertion_result": "NOT_VERIFIED",
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_194345\\spine_proof_bundle.json",
+  "artifact_sha256": "a18580690eb943fe090ad044f9e74bd2a26dbfedc7c640bdf45e393693aff53f",
+  "assertion_result": "PASS",
   "claim_id": "APPS-REQ-RG-005",
   "claim_title": "Spine proof bundle no-bypass construct present",
-  "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+  "generated_at_utc": "2026-05-03T23:44:19.090554+00:00",
   "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
   "producer_version": "apps_rg_proof_producer-v1",
-  "reason": "Missing artifact: spine_proof_bundle.json"
+  "reason": "All required fields present"
 }

@@ -1,11 +1,11 @@
 {
-  "artifact_path": null,
-  "artifact_sha256": null,
-  "assertion_result": "NOT_VERIFIED",
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_194345\\replay_comparison.json",
+  "artifact_sha256": "2b4a881431429bd5e755c55ccb3872afd8ad1f6e24382d86f7f4b4fe3d925942",
+  "assertion_result": "PASS",
   "claim_id": "APPS-REQ-RG-006",
   "claim_title": "Replay verdict emitted",
-  "generated_at_utc": "2026-05-03T21:37:14.711283+00:00",
+  "generated_at_utc": "2026-05-03T23:44:19.091558+00:00",
   "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
   "producer_version": "apps_rg_proof_producer-v1",
-  "reason": "Missing artifact: replay_comparison.json"
+  "reason": "All required fields present"
 }

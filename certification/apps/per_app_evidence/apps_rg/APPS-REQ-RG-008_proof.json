@@ -1,11 +1,11 @@
 {
-  "artifact_path": null,
-  "artifact_sha256": null,
-  "assertion_result": "NOT_VERIFIED",
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_194345\\provenance_report.json",
+  "artifact_sha256": "f6351bda247a588c75933ab03659a0c0c522243914e1a51c41386ba9abcdc748",
+  "assertion_result": "PASS",
   "claim_id": "APPS-REQ-RG-008",
   "claim_title": "Provenance bound to master resume",
-  "generated_at_utc": "2026-05-03T21:37:14.711833+00:00",
+  "generated_at_utc": "2026-05-03T23:44:19.092062+00:00",
   "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
   "producer_version": "apps_rg_proof_producer-v1",
-  "reason": "Missing artifact: provenance_report.json"
+  "reason": "All required fields present"
 }

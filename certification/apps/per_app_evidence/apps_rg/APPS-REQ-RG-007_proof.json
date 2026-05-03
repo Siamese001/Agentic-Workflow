@@ -1,11 +1,11 @@
 {
-  "artifact_path": null,
-  "artifact_sha256": null,
-  "assertion_result": "NOT_VERIFIED",
+  "artifact_path": "artifacts\\apps_rg\\runs\\20260503_194345\\ats_coverage_report.json",
+  "artifact_sha256": "13f5b42f2c7f2d8395ff12b692e147a30e734eb40981aa988beafe51afbb784d",
+  "assertion_result": "PASS",
   "claim_id": "APPS-REQ-RG-007",
   "claim_title": "ATS coverage floor met (\u22650.73 baseline)",
-  "generated_at_utc": "2026-05-03T21:37:14.711833+00:00",
+  "generated_at_utc": "2026-05-03T23:44:19.091558+00:00",
   "generated_by_command": "tools/cert/apps_e2e/apps_rg_proof_producer.py",
   "producer_version": "apps_rg_proof_producer-v1",
-  "reason": "Missing artifact: ats_coverage_report.json"
+  "reason": "All required fields present"
 }
