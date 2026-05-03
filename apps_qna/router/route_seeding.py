@@ -82,12 +82,14 @@ _FALLBACK_ROUTE_ORDER: tuple[str, ...] = (
 )
 
 
-def _build_route_descriptor(route: "Route") -> str:
+def build_route_descriptor(route: "Route") -> str:
     """Concatenate route signals into a single descriptor for embedding.
 
-    Mirrors the bag-of-words approach in ``apps_qna.router.semantic_router``
-    but as a free-text descriptor (BGE-M3 prefers natural-language input
-    over space-joined tokens).
+    Natural-language free-text descriptor suitable for BGE-M3 (preferred over
+    space-joined tokens). W1.2: single canonical route descriptor builder
+    shared by ``semantic_router.SemanticRouter`` and
+    ``route_seeding.rank_routes_by_signal`` — eliminates the prior BoW
+    ``_route_corpus`` vs NL ``_build_route_descriptor`` drift.
     """
     parts = [route.name]
     if route.triggers:
@@ -95,6 +97,10 @@ def _build_route_descriptor(route: "Route") -> str:
     if route.answer_shape:
         parts.append("Answer shape: " + "; ".join(route.answer_shape))
     return ". ".join(parts)
+
+
+# W1.2 back-compat: preserve the legacy private alias for any stray import.
+_build_route_descriptor = build_route_descriptor
 
 
 def _build_signal_document(
@@ -118,6 +124,7 @@ def rank_routes_by_signal(
     registry: "RouteRegistry",
     signal: str,
     top_n: int = _SEED_TOP_N,
+    rerank: bool = True,
 ) -> list[tuple[str, float, str]]:
     """Rank routes against an interviewer signal document.
 
@@ -125,13 +132,21 @@ def rank_routes_by_signal(
     ``mode`` is one of ``{"embedding", "keyword", "empty"}`` (see
     ``classify_section_topic``).
 
+    W2.3 (``apps-qna-dag-enhancements-e4c7b2``): the bi-encoder ranking is
+    optionally refined by a cross-encoder reranker (``apps_qna.router.reranker``).
+    The reranker pass is env-gated via ``APPS_QNA_RERANKER`` — when the
+    flag is unset, it returns the bi-encoder order unchanged and logs a
+    ``rerank_pass`` row with ``mode="bi_encoder_passthrough"`` and
+    ``rerank_delta=0`` to ``apps_qna_pack_lifecycle``. Callers can suppress
+    the reranker pass entirely by passing ``rerank=False``.
+
     When ``signal`` is empty or ``registry`` has no routes, returns an
     empty list — caller should fall back to a hand-curated default order.
     """
     if not signal.strip() or not registry.routes:
         return []
     candidates = {
-        route.id: _build_route_descriptor(route)
+        route.id: build_route_descriptor(route)
         for route in registry.routes
     }
     # Embed each candidate against the signal individually. We invert the
@@ -146,7 +161,26 @@ def rank_routes_by_signal(
         )
         ranked.append((route_id, score, mode))
     ranked.sort(key=lambda r: r[1], reverse=True)
-    return ranked[:top_n]
+    bi_encoder_top = ranked[:top_n]
+
+    if not rerank or not bi_encoder_top:
+        return bi_encoder_top
+
+    # W2.3: cross-encoder pass over the bi-encoder top-K. Fail-soft —
+    # any reranker error returns the bi-encoder order unchanged.
+    try:
+        from apps_qna.router.reranker import rerank_candidate_scores  # noqa: PLC0415
+
+        reranked, _mode, _delta = rerank_candidate_scores(
+            query=signal,
+            candidates=bi_encoder_top,
+            descriptors=candidates,
+            top_n=top_n,
+        )
+        return reranked if reranked else bi_encoder_top
+    except (ImportError, RuntimeError, ValueError) as exc:
+        _log.debug("rank_routes_by_signal rerank pass failed: %r", exc)
+        return bi_encoder_top
 
 
 def seed_likely_questions_from_research(
@@ -254,6 +288,7 @@ def seed_likely_questions_from_research(
 
 
 __all__ = [
+    "build_route_descriptor",
     "rank_routes_by_signal",
     "seed_likely_questions_from_research",
 ]

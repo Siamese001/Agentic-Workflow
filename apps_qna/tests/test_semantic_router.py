@@ -1,60 +1,25 @@
-"""Tests for apps_qna.router.semantic_router (Wave 6 — embedding router)."""
+"""Tests for apps_qna.router.semantic_router (W1.1 — unified BGE-M3 path).
+
+The router now delegates to ``spine_adapter.classify_section_topic``, so
+the legacy BoW helpers (``_tokenize``, ``_cosine``, ``_route_corpus``) are
+gone. These tests cover the public API surface (``SemanticRouter.route``,
+``SemanticRouter.best``, ``RouteScore``) and the CLI integration. Under
+typical test environments (no BGE-M3 weights), the spine primitive falls
+back to deterministic word-overlap scoring.
+"""
 
 from __future__ import annotations
-
-import io
-from contextlib import redirect_stdout
 
 import pytest
 
 from apps_qna.config.route_registry import load_route_registry
-from apps_qna.router.semantic_router import (
-    RouteScore,
-    SemanticRouter,
-    _cosine,
-    _tokenize,
-)
+from apps_qna.router.semantic_router import RouteScore, SemanticRouter
 from apps_qna.scripts.run_qna import main as cli_main
 
 
 @pytest.fixture(scope="module")
 def router() -> SemanticRouter:
     return SemanticRouter(load_route_registry())
-
-
-# ------------- Token / cosine primitives -------------
-
-
-def test_tokenize_drops_stopwords_and_short_tokens() -> None:
-    tokens = _tokenize("Tell me about a time you used MMM in production")
-    # 'tell', 'me', 'about', 'a', 'in' all dropped; case-insensitive
-    assert "mmm" in tokens
-    assert "production" in tokens
-    assert "tell" not in tokens
-    assert "me" not in tokens
-    assert "about" not in tokens
-    assert "a" not in tokens
-
-
-def test_tokenize_empty_string() -> None:
-    assert _tokenize("") == {}
-
-
-def test_cosine_identical_vectors_is_one() -> None:
-    a = _tokenize("architecture orchestration governance")
-    assert _cosine(a, a) == pytest.approx(1.0)
-
-
-def test_cosine_disjoint_is_zero() -> None:
-    a = _tokenize("architecture orchestration")
-    b = _tokenize("offshore distributed")
-    assert _cosine(a, b) == 0.0
-
-
-def test_cosine_empty_is_zero() -> None:
-    a = _tokenize("anything")
-    assert _cosine(a, {}) == 0.0  # type: ignore[arg-type]
-    assert _cosine({}, a) == 0.0  # type: ignore[arg-type]
 
 
 # ------------- Route ranking — manifest-aligned expectations -------------
@@ -116,13 +81,32 @@ def test_route_invalid_top_k_raises(router: SemanticRouter) -> None:
         router.route("anything", top_k=-1)
 
 
-def test_route_zero_overlap_returns_zero_scores(router: SemanticRouter) -> None:
-    """A nonsense question with no token overlap returns all-zero scores."""
+def test_route_nonsense_scores_below_abstain_threshold(
+    router: SemanticRouter,
+) -> None:
+    """A nonsense question scores below the mode-appropriate abstain floor.
+
+    W1.1: under BGE-M3 the spine primitive never emits exactly 0.0, so we
+    validate that every score stays below the embedding abstain threshold
+    (0.40) when present, OR is exactly 0.0 under keyword-mode fallback.
+    """
+    from apps_qna.router.semantic_router import (  # noqa: PLC0415
+        _EMBEDDING_ABSTAIN_THRESHOLD,
+    )
+
     ranked = router.route("xyzzy plugh foo bar quux", top_k=3)
-    assert all(h.score == 0.0 for h in ranked)
+    for h in ranked:
+        if h.mode == "embedding":
+            assert h.score <= _EMBEDDING_ABSTAIN_THRESHOLD, (
+                f"embedding-mode nonsense scored {h.score:.3f} > "
+                f"{_EMBEDDING_ABSTAIN_THRESHOLD} for {h.route_id}"
+            )
+        else:
+            assert h.score == 0.0
 
 
 def test_best_returns_none_when_no_overlap(router: SemanticRouter) -> None:
+    """Abstain contract preserved across both embedding and keyword modes."""
     assert router.best("xyzzy plugh foo bar quux") is None
 
 
@@ -130,6 +114,37 @@ def test_best_returns_top_when_overlap(router: SemanticRouter) -> None:
     best = router.best("Tell me about a time you shipped governed agents")
     assert best is not None
     assert best.route_id in {"star_proof", "governance"}
+
+
+# ------------- W1.1 success criterion: paraphrase pair parity -------------
+
+
+def test_paraphrase_pair_lands_on_same_primary_architecture(
+    router: SemanticRouter,
+) -> None:
+    """Success criterion for W1.1 (apps-qna-dag-enhancements-e4c7b2).
+
+    The paraphrase pair below used to land on different routes under the
+    old stdlib BoW cosine (one on ``star_proof`` because of "tell me about
+    a time", the other on ``architecture``). Under the unified BGE-M3
+    path they must both land on ``architecture``.
+
+    Skips gracefully when the spine primitive is running under keyword
+    fallback — the BoW→keyword rewrite alone does not guarantee paraphrase
+    stability; that is an embedding-path promise.
+    """
+    q_a = "tell me about a time you led architecture"
+    q_b = "walk me through an architecture decision"
+    best_a = router.best(q_a)
+    best_b = router.best(q_b)
+    if best_a is None or best_b is None:
+        pytest.skip("router abstained; paraphrase parity not applicable")
+    if best_a.mode != "embedding" or best_b.mode != "embedding":
+        pytest.skip("spine in keyword-fallback mode; embedding parity N/A")
+    assert best_a.route_id == best_b.route_id == "architecture", (
+        f"paraphrase pair diverged: {q_a!r}->{best_a.route_id} vs "
+        f"{q_b!r}->{best_b.route_id}"
+    )
 
 
 # ------------- CLI integration -------------

@@ -731,7 +731,11 @@ def _run_route(args: argparse.Namespace) -> int:
             f"-> {hit.primary_card}"
         )
     print()
-    if ranked and ranked[0].score == 0.0:
+    # W1.1: delegate the abstain decision to SemanticRouter.best, which
+    # applies a mode-aware threshold (embedding-mode scores are never
+    # exactly zero under BGE-M3, so a keyword-era "score == 0" exit was
+    # unreachable on the embedding path).
+    if router.best(args.question) is None:
         print("(All scores zero — no token overlap with any route corpus.)")
         return 1
     return 0

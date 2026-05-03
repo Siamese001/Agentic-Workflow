@@ -218,18 +218,47 @@ class AppsQnaPasteBandit:
         card_id: str,
         included: bool,
         useful: bool,
+        score: float | None = None,
     ) -> None:
         """Bind paste-set outcome.
 
-        Bernoulli success = ``included AND useful`` — the card was in
-        the paste set AND the operator found it useful during the live
-        rehearsal. Included-but-unused is a False sample (we wasted
-        budget); not-included is no observation (we don't know if it
-        would have been useful).
+        Two paths, mutually exclusive:
+
+        * **Bernoulli path** (``score is None``): success = ``included
+          AND useful`` — the card was in the paste set AND the operator
+          found it useful. Included-but-unused is a False sample (wasted
+          budget); not-included is no observation.
+        * **Graded path** (``score`` provided — W2.2): ``score ∈ [0, 1]``
+          is credited directly to the posterior via
+          ``NamespaceBandit.update_graded``. Typical source: card 22
+          Learnings "which cards were most useful" rehearsal grade.
+          Emits §29 paired marker + ``apps_qna_pack_lifecycle``
+          ``paste_outcome_graded`` row.
         """
         if not included:
             # No observation — caller shouldn't have invoked update for
             # cards never in the paste set. Defensive no-op.
+            return
+        if score is not None:
+            self._bandit.update_graded(namespace, card_id, score=score)
+            decision_id = uuid.uuid4().hex
+            print(
+                f"ROUTER_DECISION: layer={_ROUTER_LAYER} router={_ROUTER_NAME} "
+                f"decision_id={decision_id} selected={card_id} ns={namespace} "
+                f"event=graded_outcome grade_normalized={score:.3f}"
+            )
+            emit_pack_lifecycle_event(
+                event_kind="paste_outcome_graded",
+                prediction={
+                    "namespace": namespace,
+                    "card_id": card_id,
+                    "grade_normalized": float(score),
+                    "included": True,
+                    "useful": bool(useful),
+                },
+                score_numeric=float(score),
+                metadata={"decision_id": decision_id},
+            )
             return
         success = bool(useful)
         self._bandit.update(namespace, card_id, success=success)

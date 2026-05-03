@@ -77,6 +77,25 @@ class BetaPosterior:
         else:
             self.beta += 1.0
 
+    def update_graded(self, score: float) -> None:
+        """Additive graded update — ``score`` in ``[0.0, 1.0]``.
+
+        Credits ``alpha += score`` and ``beta += (1.0 - score)``. One
+        graded outcome is therefore one unit of ``n_observations`` (since
+        ``alpha + beta`` increases by exactly 1), matching the semantics
+        of ``update(success)`` for cold-start accounting. This is the
+        minimal-disruption extension invoked by W2.2 of
+        ``apps-qna-dag-enhancements-e4c7b2``.
+
+        Values outside [0, 1] are clamped. Bernoulli-equivalent call sites
+        should keep using ``update(success)`` to avoid float drift.
+        """
+        if score != score:  # NaN check without importing math
+            raise ValueError("score must not be NaN")
+        clamped = 0.0 if score < 0.0 else 1.0 if score > 1.0 else float(score)
+        self.alpha += clamped
+        self.beta += 1.0 - clamped
+
     def sample(self, rng: random.Random) -> float:
         """Draw a single sample from Beta(alpha, beta)."""
         # Use random.betavariate (deterministic when seeded).
@@ -137,6 +156,28 @@ class NamespaceBandit:
                 )
             except (AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- telemetry is best-effort
                 _LOGGER.debug("namespace_bandit bind_outcome failed", exc_info=True)
+
+    def update_graded(
+        self, namespace: str, route: str, *, score: float
+    ) -> None:
+        """Update posterior with a graded outcome in ``[0, 1]``.
+
+        W2.2 (apps-qna-dag-enhancements-e4c7b2): additive surface that
+        preserves the existing Bernoulli ``update()`` path for back-compat
+        while exposing a graded credit assignment for callers that have a
+        richer signal (e.g. a rehearsal grade in 1-5 stars normalized to
+        [0, 1]). Values outside [0, 1] are clamped inside ``BetaPosterior``.
+
+        Does NOT interact with the closed-loop router helper — the paired
+        ``ROUTER_DECISION:`` marker + ledger binding is the caller's
+        responsibility (apps_qna emits its own §29 markers at the domain
+        layer). Callers wanting the bound-outcome path should continue to
+        use ``update(success=bool)``.
+        """
+        key = BanditKey(namespace=namespace, route=route)
+        with self._lock:
+            posterior = self._posteriors.setdefault(key, BetaPosterior())
+            posterior.update_graded(score)
 
     def posterior(self, namespace: str, route: str) -> BetaPosterior:
         """Read-only snapshot of the posterior. Fresh prior if unseen."""

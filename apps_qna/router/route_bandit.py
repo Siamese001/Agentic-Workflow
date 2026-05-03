@@ -103,6 +103,21 @@ class RouteSelection:
     decision_id: str
 
 
+def _emit_graded_outcome_marker(
+    *,
+    decision_id: str,
+    namespace: str,
+    route: str,
+    score: float,
+) -> None:
+    """Constitutional §29 paired marker for a graded outcome update (W2.2)."""
+    print(
+        f"ROUTER_DECISION: layer={_ROUTER_LAYER} router={_ROUTER_NAME} "
+        f"decision_id={decision_id} selected={route} ns={namespace} "
+        f"event=graded_outcome grade_normalized={score:.3f}"
+    )
+
+
 def _emit_router_decision_marker(
     *,
     decision_id: str,
@@ -263,20 +278,50 @@ class AppsQnaRouteBandit:
         route: str,
         asked: bool,
         landed: bool,
+        score: float | None = None,
     ) -> None:
         """Late-bind a post-rehearsal outcome.
 
-        Bernoulli success = ``asked AND landed``. The interviewer probed
-        the route AND the bound card resolved the answer — both required
-        for the bandit to count it as a positive sample. Asked-but-card-
-        missed and not-asked are both Bernoulli failures (asked-but-card-
-        missed is a routing miss; not-asked is a ranking miss).
+        Two paths, mutually exclusive:
 
-        Updates flow through the spine NamespaceBandit, which also
-        propagates to the L0/bandit ledger via its own closed-loop
-        helper. apps_qna_pack_lifecycle gets a separate
-        event_kind="interview_outcome" row from a higher-level caller.
+        * **Bernoulli path** (``score is None``): success = ``asked AND
+          landed``. The interviewer probed the route AND the bound card
+          resolved the answer — both required for a positive sample.
+          Updates flow through ``NamespaceBandit.update`` which also
+          propagates to the L0/bandit ledger via its closed-loop helper.
+          This is the W4.1 back-compat path.
+        * **Graded path** (``score`` provided — W2.2): ``score ∈ [0, 1]``
+          is credited directly to the posterior via
+          ``NamespaceBandit.update_graded``. Typical source: card 22
+          Learnings rehearsal grade normalized from 1-5 to [0, 1] by
+          ``(grade - 1) / 4``. The graded path does NOT bind the open
+          L0/bandit ledger row; apps_qna emits its own
+          ``apps_qna_pack_lifecycle`` ``interview_outcome_graded`` row
+          instead (constitutional §29 paired emission).
         """
+        if score is not None:
+            self._bandit.update_graded(namespace, route, score=score)
+            # §29 graded-path emission.
+            decision_id = uuid.uuid4().hex
+            _emit_graded_outcome_marker(
+                decision_id=decision_id,
+                namespace=namespace,
+                route=route,
+                score=score,
+            )
+            emit_pack_lifecycle_event(
+                event_kind="route_outcome_graded",
+                prediction={
+                    "namespace": namespace,
+                    "route": route,
+                    "grade_normalized": float(score),
+                    "asked": bool(asked),
+                    "landed": bool(landed),
+                },
+                score_numeric=float(score),
+                metadata={"decision_id": decision_id},
+            )
+            return
         success = bool(asked and landed)
         self._bandit.update(namespace, route, success=success)
 
