@@ -151,12 +151,16 @@ class CompanyBriefEngine(BaseResearchEngine):
         return facets
 
     def _run_research_v2(self, *, topic: str, depth: str) -> Dict[str, str]:
-        """V2 retrieval pipeline: decompose → retrieve → rerank → assemble.
+        """V2 retrieval pipeline: decompose → retrieve (parallel) → rerank → assemble.
 
-        Plan §P1.4. Degrades to empty blobs when TAVILY_API_KEY or SDK
-        unavailable — caller synthesis step handles empty input gracefully.
+        Plan §P1.4 + §P2.4 (parallel dispatch). Degrades to empty blobs
+        when TAVILY_API_KEY or SDK unavailable. Uses a thread pool for
+        per-sub-query retrieval (I/O-bound HTTP calls to Tavily) so
+        wall-clock scales sub-linearly with fan-out.
         """
-        from apps_research.engines.query_decomposer import decompose
+        import concurrent.futures
+
+        from apps_research.engines.query_decomposer import SubQuery, decompose
         from apps_research.integrations.reranker_adapter import rerank
         from apps_research.integrations.tavily_retrieval import retrieve
 
@@ -167,8 +171,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             self.logger.warning("[CompanyBriefEngine v2] decompose failed: %s", exc)
             return {}
 
-        findings: Dict[str, str] = {}
-        for sq in sub_queries:
+        def _fetch(sq: SubQuery) -> tuple[str, str]:
             try:
                 docs = retrieve(sq.text, top_k=10)
             except (RuntimeError, ValueError) as exc:
@@ -177,13 +180,18 @@ class CompanyBriefEngine(BaseResearchEngine):
                     sq.facet,
                     exc,
                 )
-                findings[sq.facet] = ""
-                continue
+                return sq.facet, ""
             top = rerank(sq.text, docs, cutoff=5)
             blob = "\n\n".join(
                 f"- {d.title}: {d.snippet} ({d.url})" for d in top if d.snippet
             )
-            findings[sq.facet] = blob
+            return sq.facet, blob
+
+        findings: Dict[str, str] = {}
+        max_workers = max(1, min(5, len(sub_queries)))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+            for facet, blob in pool.map(_fetch, sub_queries):
+                findings[facet] = blob
         return findings
 
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
