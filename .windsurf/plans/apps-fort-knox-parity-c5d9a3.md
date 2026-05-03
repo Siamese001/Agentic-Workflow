@@ -689,12 +689,12 @@ User asked "Finish P3 and all open scope in waves". Three follow-on waves shippe
 - **Combined apps_e2e suite**: 220 + W9 12 = 232 + 18 W8 + 7 W10 = **257 wave-relevant tests, 268 total in apps_e2e + apps_underwriting_ai narrow surface, all green**
 - **Trust ladder state**: SIGNED_OFF_WITH_WAIVERS (locally) \u2192 will promote to FINAL_SIGNED_CERTIFICATION on next tagged release through CI
 
-### Updated open backlog after W8\u2013W11
+### Updated open backlog after W8\u2013W12
 
 | ID | Status | Remaining work |
 |---|---|---|
-| OPEN-1 | ~~CLOSED-DESIGN~~ \u2192 **CLOSED-BY-IMPLEMENTATION (W11, 2026-05-02 19:33)** | apps_qna now SPINE_COMPLETE_CERTIFIED \u2014 user overrode the design-based close and requested full runtime cert. Wired via `cert_route_registry.yaml` + `--apps-e2e-live` flag + spec flip + catalog row transform. |
-| OPEN-2 | PARTIALLY CLOSED | Spine emission wiring \u2014 separate multi-day plan |
+| OPEN-1 | ~~CLOSED-DESIGN~~ \u2192 **CLOSED-BY-IMPLEMENTATION (W11, 2026-05-02 19:33)** | apps_qna SPINE_COMPLETE_CERTIFIED |
+| OPEN-2 | ~~PARTIALLY CLOSED~~ \u2192 **CLOSED-BY-IMPLEMENTATION (W12, 2026-05-02 19:56)** | apps_underwriting_ai now SPINE_COMPLETE_CERTIFIED \u2014 user mandated runtime cert. Wired via `cert_route_registry.yaml` + `--apps-e2e-live` flag + spec flip + APPS-REQ-032 transform from `APPS_WAIVER` to `APPS_SPINE_CERTIFIED`. Real 5-stage pipeline runs inside `L2_execute` span. |
 | OPEN-3 | PARTIALLY CLOSED | Push a tag through CI to produce real Fulcio cert |
 | OPEN-4 | CLOSED | None |
 
@@ -736,3 +736,57 @@ Pass:    8
 Fail:    0
 
   apps_qna               PASS  level=SPINE_COMPLETE_CERTIFIED   violations=0
+
+---
+
+## 23. W12 - apps_underwriting_ai runtime certification (OPEN-2 closure, 2026-05-02 19:56 UTC-04:00)
+
+User override 2026-05-02 19:56: *"make apps_underwriting_ai mandatory for runtime"*. This closes OPEN-2 (previously held by spine emission wiring). Mirrors W11 apps_qna pattern exactly.
+
+### Delivered
+
+| Artifact | Path | Description |
+|---|---|---|
+| Cert-facing route registry | `apps_underwriting_ai/config/cert_route_registry.yaml` | SINGLE_STEP route with execution_form=SINGLE_STEP, l3_required=false, capability=apps_underwriting_ai.decision_packet_v1 |
+| Live-cert entrypoint | `apps_underwriting_ai/__main__.py` | Added `_is_live_cert_mode()` + `_run_live_cert()`; `--apps-e2e-live` flag wraps the real 5-stage pipeline (intake -> reconcile -> derive_features -> collect_evidence -> decision) in `apps_shared.spine_emission.governed_run` and drives `governed_underwriting_run` inside the L2_execute span |
+| Spec flip | `tools/certification/apps_e2e/app_specs.py` | runnable=True, certification_required=True, expected_route_form=SINGLE_STEP, expected_execution_form=EXECUTION_FORM_SINGLE_STEP, expected_l3_path=L3_PATH_BYPASSED, expects_prompt_assembly=True, expects_l2_execution=True, entrypoint_args=("--apps-e2e-live",), waiver triple cleared |
+| Catalog row transform | `certification/apps_e2e_requirements_source.json` | APPS-REQ-032 changed claim_type APPS_WAIVER -> APPS_SPINE_CERTIFIED, priority P2 -> P1, fail_closed_if_missing false -> true, depends_on includes APPS-REQ-008/010/022/024 (mirrors APPS-REQ-031 shape) |
+| Mutation driver scope | `tools/cert/apps_e2e/apps_mutation_driver.py` | Added apps_qna and apps_underwriting_ai to source-artifacts loop; scenario count grew from 88 to 110 (rejected 85 -> 107) |
+
+### Verification
+
++""++""+
+$ python -m apps_underwriting_ai --apps-e2e-live
+[emits 9 receipts under artifacts/apps_underwriting_ai/runs/<ts>/]
+
+Verifier mode: strict
+Apps: 8  Pass: 8  Fail: 0
+  apps_underwriting_ai   PASS  level=SPINE_COMPLETE_CERTIFIED   violations=0
++""++""+
+
+Full W2-W7 chain after W12:
+- W2 emitter: **243 assertions** (PASS=242 NOT_VERIFIED=1) - up from 214
+- W3 compiler: trust_level=**INTEGRITY_PROOF**; 33 signed_off + 0 with_waiver / 33
+- W4 mutation driver: 110 scenarios; 107 rejected / 0 accepted / 3 skipped; 100% rejection rate
+- W5 signer: VERIFIED, report_sha256=8f0594dc0521...
+- W6 generator: all_gates_pass=true, bundle sha256=51f112951cc8626c96cca7e09cf47fdaa06ae5408092f205d4d8fb29d80e0462, **8 certified / 0 waived / 8**
+- T7s.4 CI gate: OK trust=INTEGRITY_PROOF rows=33+0/33 apps=8+0/8
+
+### Trust-level promotion
+
+SIGNED_OFF_WITH_WAIVERS -> **INTEGRITY_PROOF**: when zero waivers remain in the catalog and every row is signed_off, the compiler promotes one tier. Next tier FINAL_SIGNED_CERTIFICATION requires Sigstore keyless signature envelope from a tag-triggered CI run (OPEN-3, single git command).
+
+### Apps state after W12
+
+| App | Status |
+|---|---|
+| apps_rg | SPINE_COMPLETE_CERTIFIED |
+| apps_eval | SPINE_COMPLETE_CERTIFIED |
+| apps_exec | SPINE_COMPLETE_CERTIFIED |
+| apps_lic | SPINE_COMPLETE_CERTIFIED |
+| apps_qna | SPINE_COMPLETE_CERTIFIED |
+| apps_research | SPINE_COMPLETE_CERTIFIED |
+| apps_rfp | SPINE_COMPLETE_CERTIFIED |
+| **apps_underwriting_ai** | **SPINE_COMPLETE_CERTIFIED (new)** |
+
+= **8 certified / 0 waived / 8 total** - apps_* runtime is 100% Fort Knox.

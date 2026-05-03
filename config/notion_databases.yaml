@@ -41,12 +41,14 @@ databases:
     read_trigger: '"SC/AP violations", "check severity", "promotion status"'
     write_trigger: "When `generate_full_adg` emits new SC/AP rows"
 
-  - key: hitl_decision_ledger
-    name: "HITL Decision Ledger"
-    id: "5b60fdde-7259-491e-9f2d-e088f1f741ef"
-    database_id: "18bb9145-1320-4191-8b14-6c309776bcf5"
-    read_trigger: '"HITL decisions", "past decisions", "decision history"'
-    write_trigger: "Immediately after any scored `ask_user_question` resolution"
+  # HITL Decision Ledger RETIRED 2026-05-02 — superseded by SQLite SSOT at
+  # .windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite (per
+  # constitutional §30). The Notion mirror at data_source 5b60fdde-7259-491e-9f2d-
+  # e088f1f741ef / database 18bb9145-1320-4191-8b14-6c309776bcf5 was a one-way
+  # projection only — every page carried `decision_id=dec_xxxxx` derived from the
+  # SQLite chain. tools/notion/sync_decision_ledger.py was disabled in the same
+  # turn. If decision-history search is needed, query the SQLite FTS index
+  # (`decisions_fts`) directly. Do NOT re-create the Notion mirror.
 
   - key: constitutional_rules_registry
     name: "Constitutional Rules Registry"

@@ -215,7 +215,16 @@ def _get_source_artifacts() -> dict[str, Path]:
         "verifier_report": APPS_E2E_DIR / "verifier_report.json",
         "matrix": APPS_E2E_DIR / "apps_e2e_matrix.json",
     }
-    for app in ("apps_eval", "apps_rg", "apps_research", "apps_lic", "apps_exec", "apps_rfp"):
+    for app in (
+        "apps_eval",
+        "apps_rg",
+        "apps_research",
+        "apps_lic",
+        "apps_exec",
+        "apps_rfp",
+        "apps_qna",
+        "apps_underwriting_ai",
+    ):
         bundle = APPS_E2E_DIR / app / f"{app}_e2e_proof.json"
         if bundle.exists():
             sources[f"bundle_{app}"] = bundle

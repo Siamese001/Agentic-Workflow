@@ -46,11 +46,41 @@ _KINDS = ("Pass", "Ellipsis", "RetNone", "DocOnly", "NotImpl")
 _CATEGORIES = (
     "Protocol",
     "ABC",
+    "ImplicitABC",
     "TypedDict",
+    "TemplateMethodHook",
+    "ContextManagerStub",
+    "NullObject",
     "DeprecationShim",
     "HealerConvention",
     "RealGap",
 )
+
+# Method names where `pass` or `return None` is a legitimate no-op
+# context-manager contract rather than a gap.
+_CONTEXT_MANAGER_METHODS = frozenset(
+    {"__exit__", "__aexit__", "__enter__", "__aenter__"}
+)
+
+# Class-name tokens that signal an implicit-ABC pattern (the class
+# carries abstract methods but doesn't inherit from abc.ABC). Any class
+# whose name matches any of these AND has a NotImpl-bodied method is
+# classified as ImplicitABC, not RealGap.
+_IMPLICIT_ABC_NAME_TOKENS = (
+    "Base",
+    "Abstract",
+    "Client",
+    "Checker",
+    "Processor",
+    "Provider",
+    "Adapter",
+)
+
+# Class-name tokens that signal a Template-Method pattern (a base class
+# with hook methods subclasses override). Combined with a leading-
+# underscore method name AND a DocOnly-or-Pass body, classifies as
+# TemplateMethodHook, not RealGap.
+_TEMPLATE_METHOD_CLASS_TOKENS = ("Base", "Abstract", "Executor", "Invoker")
 
 
 @dataclass(frozen=True)
@@ -172,11 +202,65 @@ def _classify(
     if any("abstractmethod" in d for d in dec_names):
         return "ABC", "method decorated with @abstractmethod"
 
-    # Healer-convention: method is `heal` or `heal_repository` with RetNone+noop
-    # We can't check the body details cheaply here; we recognize the name +
-    # stub_kind combo. The canonical pattern returns a dict, not None; so a
-    # RetNone `heal_repository` is a RealGap, not healer-convention. But a
-    # RetNone+named-heal pattern is rare; keep it as RealGap by default.
+    # ContextManagerStub — dunder methods in the context-manager protocol
+    # are legitimately no-op when there's nothing to clean up.
+    if cls_node is not None and fn_node.name in _CONTEXT_MANAGER_METHODS:
+        if stub_kind in ("Pass", "RetNone", "Ellipsis"):
+            return (
+                "ContextManagerStub",
+                f"context-manager protocol method {fn_node.name} "
+                f"with no-op body",
+            )
+
+    # ImplicitABC — class name suggests "Base"/"Abstract"/"Client"/"Checker"/
+    # "Processor"/"Provider"/"Adapter" AND the method body is NotImpl. Treats
+    # the duck-typed abstract pattern (common in typed Python) as legitimate.
+    if cls_node is not None and stub_kind == "NotImpl":
+        if any(tok in cls_node.name for tok in _IMPLICIT_ABC_NAME_TOKENS):
+            return (
+                "ImplicitABC",
+                f"class {cls_node.name} matches implicit-ABC naming "
+                f"(duck-typed abstract pattern with NotImpl method)",
+            )
+
+    # TemplateMethodHook — private method (leading underscore) on a base/
+    # abstract/executor/invoker class with DocOnly or Pass body. Standard
+    # template-method pattern: subclasses override the hook.
+    if (
+        cls_node is not None
+        and fn_node.name.startswith("_")
+        and not fn_node.name.startswith("__")
+        and stub_kind in ("DocOnly", "Pass", "RetNone")
+    ):
+        if any(tok in cls_node.name for tok in _TEMPLATE_METHOD_CLASS_TOKENS):
+            return (
+                "TemplateMethodHook",
+                f"private hook {fn_node.name} on {cls_node.name} "
+                f"(subclasses override)",
+            )
+
+    # NullObject — module-level function (no class) with a non-empty
+    # docstring and a no-op body (Pass / RetNone). The docstring signals
+    # intent — this is a graceful-fallback null-object, not a gap.
+    #
+    # Exclusion: files under `scripts/` are one-shot utilities where a
+    # no-op body signals unimplemented work, NOT null-object pattern.
+    is_script = "/scripts/" in rel
+    if cls_node is None and stub_kind in ("Pass", "RetNone") and not is_script:
+        body = fn_node.body
+        has_docstring = (
+            body
+            and isinstance(body[0], ast.Expr)
+            and isinstance(body[0].value, ast.Constant)
+            and isinstance(body[0].value.value, str)
+            and len(body[0].value.value.strip()) >= 20
+        )
+        if has_docstring:
+            return (
+                "NullObject",
+                f"module-level {fn_node.name} with descriptive docstring "
+                f"and {stub_kind} body (graceful-fallback null-object)",
+            )
 
     # Everything else is a real gap candidate requiring human follow-up.
     return "RealGap", f"stub={stub_kind}; no Protocol/ABC/TypedDict/shim context"

@@ -1,5 +1,25 @@
 #!/usr/bin/env python3
-"""sync_decision_ledger.py — One-way SQLite -> Notion mirror for the Author-Gate Decision Ledger.
+"""sync_decision_ledger.py — RETIRED 2026-05-02 (no-op stub).
+
+The Notion "HITL / Author-Gate Decision Ledger" mirror DB was retired on
+2026-05-02 because SQLite at
+``.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`` is the
+canonical SSOT (constitutional §30) and the Notion projection added no unique
+data — every mirror row carried ``decision_id=dec_xxxxx`` derived from the
+SQLite chain. The Notion DB was deleted from the workspace; running this
+script would error against a now-missing data source.
+
+This file is preserved as a no-op stub so older docs / cron entries / muscle-
+memory invocations exit cleanly with a deprecation message. Delete entirely
+in a future cleanup wave once no callers remain.
+
+If decision-history search is needed: query the SQLite FTS index directly,
+e.g. ``SELECT decision_id, selected_option_id FROM decisions_fts
+WHERE decisions_fts MATCH 'shell=True'``.
+
+Original docstring follows for historical reference:
+
+One-way SQLite -> Notion mirror for the Author-Gate Decision Ledger.
 
 SQLite (.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite) is the
 canonical SSOT. The Notion "Author-Gate Decision Ledger" data source is a read-only
@@ -228,51 +248,18 @@ def sync_one(row: dict, *, apply: bool) -> dict:
     return result
 
 
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
-    ap.add_argument("--apply", action="store_true", help="Apply changes to Notion (default: dry-run)")
-    ap.add_argument("--since", help="Override watermark with explicit ISO timestamp")
-    ap.add_argument("--no-watermark-update", action="store_true",
-                    help="Don't advance the watermark file even on success")
-    args = ap.parse_args(argv)
+_RETIRED_MSG = (
+    "[sync_decision_ledger] RETIRED 2026-05-02 — Notion HITL/Author-Gate "
+    "Decision Ledger mirror DB was deleted. SQLite at "
+    ".windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite is the "
+    "SSOT (constitutional §30). This script is now a no-op. "
+    "See config/notion_databases.yaml retirement comment for context."
+)
 
-    since = args.since or _read_watermark()
-    print(f"[sync] sqlite={SQLITE_PATH.relative_to(REPO_ROOT)}")
-    print(f"[sync] since watermark: {since or '(none — full sync)'}")
 
-    rows = _query_sqlite(since)
-    print(f"[sync] {len(rows)} rows to consider")
-    if not rows:
-        return 0
-
-    AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
-    audit_lines: list[str] = []
-    counts = {"created": 0, "updated": 0, "would_create": 0, "would_update": 0, "skip": 0, "error": 0}
-    last_synced: str | None = since
-
-    for i, row in enumerate(rows, start=1):
-        res = sync_one(row, apply=args.apply)
-        audit_lines.append(json.dumps({"ts": datetime.now(timezone.utc).isoformat(), **res}))
-        action = res["action"]
-        if res["error"]:
-            counts["error"] += 1
-            print(f"[sync] {i}/{len(rows)}  ERROR  {res['decision_id']}: {res['error']}", file=sys.stderr)
-        else:
-            counts[action] = counts.get(action, 0) + 1
-            print(f"[sync] {i}/{len(rows)}  {action}  {res['decision_id']}")
-            # Advance watermark candidate only on actual success.
-            if args.apply and action in ("created", "updated"):
-                last_synced = row.get("created_at") or last_synced
-
-    AUDIT_LOG.write_text("\n".join(audit_lines) + "\n", encoding="utf-8")
-
-    if args.apply and last_synced and not args.no_watermark_update:
-        _write_watermark(last_synced)
-        print(f"[sync] watermark advanced to: {last_synced}")
-
-    print(f"[sync] summary: {counts}")
-    print(f"[sync] audit: {AUDIT_LOG.relative_to(REPO_ROOT)}")
-    return 0 if counts["error"] == 0 else 1
+def main(argv: list[str] | None = None) -> int:  # noqa: ARG001 — preserved signature
+    print(_RETIRED_MSG, file=sys.stderr)
+    return 0
 
 
 if __name__ == "__main__":

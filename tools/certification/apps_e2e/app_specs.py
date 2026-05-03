@@ -292,42 +292,25 @@ APP_SPECS: tuple[AppSpec, ...] = (
     AppSpec(
         app_name="apps_underwriting_ai",
         app_package="apps_underwriting_ai",
-        runnable=False,  # See waiver_reason — entrypoint exists; verdict logic stubbed.
-        expected_route_form="UNKNOWN",
+        runnable=True,
+        certification_required=True,
+        expected_route_form="SINGLE_STEP",
+        expected_execution_form=EXECUTION_FORM_SINGLE_STEP,
+        expected_l3_path=L3_PATH_BYPASSED,
         expects_static_dag=False,
         expects_c0_grounding=False,
-        expects_prompt_assembly=False,
-        expects_l2_execution=False,
+        expects_prompt_assembly=True,
+        expects_l2_execution=True,
         expects_durable_mutation=False,
-        # W6 — skeleton waiver. Plan: apps-e2e-two-gate-certification-d8b3a1 §8.8.
-        # 2026-05-02 W8 (plan apps-fort-knox-parity-c5d9a3 §20 OPEN-2):
-        # the placeholder-verdict-logic blocker is now CLOSED. The package
-        # has a real DeterministicRiskScorer (apps_underwriting_ai/engines/
-        # risk_scorer.py) with named thresholds, transparent breakdown, 18
-        # tests pinning every band, and explicit non-regulatory disclaimer
-        # in its module docstring. The remaining blocker for full cert
-        # promotion is SPINE EMISSION wiring — the harness expects 6 runtime
-        # artifacts (route_contract, l1_plan, l3_receipt OR bypass, exit_review
-        # OR x3_disposition, exhaust_bundle, otel_trace) which require
-        # apps_shared.spine_emission MANAGED_WORKFLOW wiring (see
-        # apps_research/integrations/governed_research_run.py + plan
-        # apps-e2e-spine-cert-wireup-e1c4d7 W6 for the canonical pattern).
-        # That wiring is multi-day separate-plan work, not Fort Knox plumbing.
-        waiver_reason=(
-            "Runtime pipeline wired AND deterministic risk-scoring rubric "
-            "shipped 2026-05-02 (apps_underwriting_ai/engines/risk_scorer.py). "
-            "Waiver retained because the runtime apps_shared.spine_emission "
-            "wiring (route_contract + l1_plan + l3_receipt + exit_review + "
-            "exhaust_bundle + otel_trace artifacts) is not yet emitted. "
-            "Reference pattern: apps_research/integrations/governed_research_run.py "
-            "+ apps_shared.spine_emission MANAGED_WORKFLOW shape per plan "
-            "apps-e2e-spine-cert-wireup-e1c4d7 W6. See plan "
-            "apps-fort-knox-parity-c5d9a3 §20 OPEN-2 for the path to certification."
-        ),
-        waiver_owner="apps_underwriting_ai-owner@agentic-workflow.local",
-        waiver_expiry="2027-01-01T00:00:00Z",
+        entrypoint_args=("--apps-e2e-live",),
+        # 2026-05-02 W12 (plan apps-fort-knox-parity-c5d9a3 \u00a723):
+        # User mandated runtime cert for apps_underwriting_ai. The waiver
+        # triple is cleared; cert-facing route registry + --apps-e2e-live
+        # mode wired through apps_shared.spine_emission. The 5-stage HOP
+        # pipeline runs deterministically inside the L2_execute span; the
+        # DeterministicRiskScorer pins decision-packet correctness.
         runs_root_glob="artifacts/apps_underwriting_ai/runs/*",
-        notes="Runtime pipeline + DeterministicRiskScorer wired (verified 2026-05-02: `python -m apps_underwriting_ai --demo` runs end-to-end and emits a decision packet with risk_score=28.33→APPROVE for the synthetic demo input). Waiver now held by spine emission wiring (apps_shared.spine_emission MANAGED_WORKFLOW pattern). Cert-promotion path: plan apps-fort-knox-parity-c5d9a3 §20 OPEN-2.",
+        notes="Runtime certified via SINGLE_STEP cert route + --apps-e2e-live mode (apps_shared.spine_emission). 5-stage pipeline (intake \u2192 reconcile \u2192 derive_features \u2192 collect_evidence \u2192 decision) drives a real run inside L2_execute. Decision-packet correctness pinned by DeterministicRiskScorer 18-test suite. Plan: apps-fort-knox-parity-c5d9a3 \u00a723 W12.",
     ),
 )
 

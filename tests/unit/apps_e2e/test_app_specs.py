@@ -27,11 +27,15 @@ def test_app_packages_are_unique() -> None:
     assert len(pkgs) == len(set(pkgs))
 
 
-def test_runnable_specs_excludes_skeleton_apps() -> None:
+def test_all_apps_runnable_post_w12() -> None:
+    """Post-W12 (2026-05-02): every app is runtime-certified, no skeletons."""
     runnables = {s.app_name for s in runnable_specs()}
-    assert "apps_underwriting_ai" not in runnables
-    # apps_rg is the reference app — must always be runnable
+    # apps_rg is the reference app -- must always be runnable
     assert "apps_rg" in runnables
+    # apps_underwriting_ai promoted from skeleton waiver to SPINE_COMPLETE_CERTIFIED
+    # in W12 (plan apps-fort-knox-parity-c5d9a3 §23) -- user mandate.
+    assert "apps_underwriting_ai" in runnables
+    assert "apps_qna" in runnables  # promoted in W11
 
 
 def test_find_spec_returns_known_app() -> None:
@@ -58,7 +62,11 @@ def test_managed_workflow_apps_expect_static_dag() -> None:
             )
 
 
-def test_skeleton_apps_marked_not_runnable() -> None:
-    for s in APP_SPECS:
-        if s.app_name == "apps_underwriting_ai":
-            assert s.runnable is False
+def test_no_skeleton_apps_remain() -> None:
+    """Post-W12: there are no longer any unrunnable skeleton apps.
+
+    Plan: apps-fort-knox-parity-c5d9a3 §23 -- apps_underwriting_ai promoted
+    from WAIVED_SKELETON to SPINE_COMPLETE_CERTIFIED.
+    """
+    not_runnable = [s.app_name for s in APP_SPECS if not s.runnable]
+    assert not_runnable == [], f"Unexpected skeleton apps: {not_runnable}"

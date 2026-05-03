@@ -186,6 +186,32 @@ def adg_enrich(con: sqlite3.Connection, app: str) -> dict:
     }
 
 
+def _load_real_gaps_by_app() -> tuple[dict[str, int], set[str]]:
+    """Return ({app_name: real_gap_count}, {audited_apps}).
+
+    Plan ``apps-shared-stub-audit-7dfe16`` W4 enrichment. The second
+    set carries which apps have been audited so callers can distinguish
+    "audited, zero gaps" (show ``0``) from "not audited" (show ``?``).
+    """
+    census_path = Path("artifacts/analysis/apps_shared_stub_census.json")
+    if not census_path.exists():
+        return {}, set()
+    try:
+        payload = json.loads(census_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}, set()
+    counts: dict[str, int] = defaultdict(int)
+    audited: set[str] = set()
+    for stub in payload.get("stubs", ()):
+        fp = stub.get("file_path", "")
+        # "apps_shared/x/y.py" → "apps_shared"
+        app = fp.split("/", 1)[0] if "/" in fp else fp
+        audited.add(app)
+        if stub.get("category") == "RealGap":
+            counts[app] += 1
+    return dict(counts), audited
+
+
 def main() -> None:
     con = sqlite3.connect(str(SNAP))
     results = []
@@ -193,20 +219,39 @@ def main() -> None:
         s = scan_app(app)
         s.update(adg_enrich(con, app.name))
         results.append(s)
-    out = {"snapshot": str(SNAP), "apps": results}
+    real_gaps_by_app, audited_apps = _load_real_gaps_by_app()
+    out = {
+        "snapshot": str(SNAP),
+        "apps": results,
+        "real_gaps_by_app": real_gaps_by_app,
+        "audited_apps": sorted(audited_apps),
+    }
     Path("artifacts/analysis").mkdir(parents=True, exist_ok=True)
     Path("artifacts/analysis/apps_completeness_review.json").write_text(
         json.dumps(out, indent=2, default=str), encoding="utf-8"
     )
     # Markdown summary
+    # `RealGaps` comes from the apps_shared stub census (plan
+    # apps-shared-stub-audit-7dfe16 W4). When the census is missing or
+    # an app is not in it, the cell shows `?` so readers can distinguish
+    # "not audited" from "audited, zero gaps".
     lines = []
-    lines.append("| App | Files | Funcs | Stubs | Stub% | NotImpl | Pass | Ellipsis | RetNone | DocOnly | ADG Nodes | Zero-Caller | TaskGap | StructGap | PromptGap | ReplayGap | TraceGap | TODO Files |")
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append(
+        "| App | Files | Funcs | Stubs | Stub% | RealGaps | NotImpl | Pass | Ellipsis | RetNone | DocOnly | ADG Nodes | Zero-Caller | TaskGap | StructGap | PromptGap | ReplayGap | TraceGap | TODO Files |"
+    )
+    lines.append(
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+    )
     for r in results:
         b = r["stub_breakdown"]
         g = r["adg_gaps"]
+        if r["app"] in audited_apps:
+            real_gaps = real_gaps_by_app.get(r["app"], 0)
+        else:
+            real_gaps = "?"
         lines.append(
             f"| {r['app']} | {r['py_files']} | {r['funcs_total']} | {r['funcs_stub']} | {r['stub_pct']} | "
+            f"{real_gaps} | "
             f"{b.get('raise_notimpl',0)} | {b.get('pass_only',0)} | {b.get('ellipsis_only',0)} | "
             f"{b.get('return_none_only',0)} | {b.get('docstring_only',0)} | "
             f"{r['adg_nodes']} | {r['adg_zero_caller_funcs']} | "

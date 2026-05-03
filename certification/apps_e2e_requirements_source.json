@@ -935,33 +935,37 @@
     },
     {
       "req_id": "APPS-REQ-032",
-      "title": "apps_underwriting_ai waiver (WAIVED_SKELETON)",
-      "priority": "P2",
-      "requirement_group": "waiver",
-      "claim_type": "APPS_WAIVER",
-      "required_proof_depth": "WAIVER_EVIDENCE",
-      "acceptance_rule": "apps_underwriting_ai is a skeleton implementation with no runtime path yet. Waiver must include reason, owner, and expiry.",
-      "fail_closed_if_missing": false,
-      "depends_on_req_ids": [],
+      "title": "apps_underwriting_ai spine certification",
+      "priority": "P1",
+      "requirement_group": "per-app",
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "required_proof_depth": "STRICT_EVIDENCE",
+      "acceptance_rule": "apps_underwriting_ai live invocation yields apps_e2e_proof.json with certification_level=SPINE_COMPLETE_CERTIFIED, zero blocking_gaps under strict.",
+      "fail_closed_if_missing": true,
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
       "is_final_hundred_percent_row": true,
       "is_positive_control": false,
       "required_controls": [
-        "waiver_active"
+        "spine_emission",
+        "strict_verifier_pass"
       ],
       "allowed_verifier_commands": [
         "tools/cert/apps_e2e/emit_apps_evidence_assertions.py",
         "tools/certification/apps_e2e/verifier_cli.py"
       ],
       "allowed_artifact_classes": [
-        "APPS_WAIVER_DOCUMENT",
+        "APPS_E2E_PROOF_BUNDLE",
         "APPS_E2E_VERIFIER_REPORT"
       ],
-      "freshness_hours": 8760,
+      "freshness_hours": 168,
       "required_ci_gate": "check_apps_e2e_spine_certification.py",
-      "owner_app": "apps_underwriting_ai",
-      "waiver_reason": "Skeleton implementation. HOP engines exist as stubs; no integration adapter wired into apps_shared.spine_emission. Certification deferred until runtime path lands.",
-      "waiver_expiry_utc": null,
-      "owner_component": "apps_underwriting_ai"
+      "owner_component": "apps_underwriting_ai",
+      "owner_app": "apps_underwriting_ai"
     },
     {
       "req_id": "APPS-REQ-033",

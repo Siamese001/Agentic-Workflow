@@ -1,0 +1,37 @@
+# apps_underwriting_ai L0 cert-facing route registry.
+#
+# apps_underwriting_ai's PRODUCT pipeline is a 5-stage HOP pipeline
+# (evidence-init -> reconcile -> derive-features -> collect-evidence ->
+# assemble-decision) driven imperatively by UnderwritingEngine or
+# declaratively via UnderwritingHopOrchestrator + HopPipelineExecutor.
+#
+# This file is dedicated to the apps_e2e certification harness:
+# it exposes apps_underwriting_ai's runtime as a SINGLE_STEP deterministic
+# decision-packet build. No retries, branches, or joins; L3 runtime
+# orchestration is correctly bypassed because the 5 stages are statically
+# ordered and resolve in a single dispatch.
+#
+# Plan: apps-fort-knox-parity-c5d9a3 post-W11 scope expansion (2026-05-02)
+# -- user requested runtime cert for apps_underwriting_ai rather than
+# WAIVED_SKELETON.
+
+app_name: apps_underwriting_ai
+schema_version: "apps_underwriting_ai.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_underwriting_ai.decision_packet_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    selected_capability: apps_underwriting_ai.decision_packet_v1
+    description: >-
+      Deterministic single-step underwriting decision: intake request +
+      documents -> initialize evidence register -> reconcile documents ->
+      derive features -> collect evidence (financial / credit / collateral
+      / relationship / policy) -> assemble decision packet via the
+      DeterministicRiskScorer. No retries, branches, or joins.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_underwriting_ai.decision_packet_v1 because the
+      entrypoint is UnderwritingEngine (or its declarative twin) with
+      deterministic stage progression and a deterministic risk scorer.
+      No managed workflow is required.

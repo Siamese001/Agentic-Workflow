@@ -1,4 +1,19 @@
-"""Comprehensive fixer for cognitive density and micro-fragment violations."""
+"""Comprehensive fixer for cognitive density and micro-fragment violations.
+
+.. deprecated::
+   This is tombstoned scaffolding from a one-shot migration task. The
+   functions ``fix_micro_fragments`` and ``split_large_types_files`` were
+   placeholders that never received real implementations; the underlying
+   work landed via different pathways. The file is retained as a
+   historical reference (it carries the lifecycle-trace wiring that
+   documents what the intended fixer would have emitted) but the two
+   functions are structured no-ops per plan
+   ``apps-shared-stub-audit-7dfe16`` W3. See
+   ``apps_shared/STUB_CENSUS.md`` for the audit trail.
+
+   When re-implementing this functionality, create a fresh utility under
+   ``tools/refactor/`` rather than re-animating this module.
+"""
 
 import logging
 from typing import Any
@@ -148,14 +163,36 @@ _emit_updates_meta_learning_state("p4", "fix_all_violations", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "fix_all_violations", "exec_snapshot_link")
 
 
-def fix_micro_fragments() -> Any:
-    """Docstring."""
-    pass
+def fix_micro_fragments() -> dict[str, Any]:
+    """Tombstoned no-op. See module docstring for history.
+
+    Returns a structured result signaling the no-op so callers can
+    branch on ``result["status"] == "tombstoned"`` rather than relying
+    on exception handling. Mirrors the Heal-Method NotImpl Convention
+    in ``apps_lic/RUNBOOK.md`` (established 2026-05-02).
+    """
+    return {
+        "status": "tombstoned",
+        "function": "fix_micro_fragments",
+        "reason": "placeholder never implemented; superseded by direct refactor pathways",
+        "plan": "apps-shared-stub-audit-7dfe16",
+    }
 
 
-def split_large_types_files() -> Any:
-    """Split remaining _types files with >5 definitions."""
-    pass
+def split_large_types_files() -> dict[str, Any]:
+    """Tombstoned no-op. See module docstring for history.
+
+    Returns a structured result signaling the no-op so callers can
+    branch on ``result["status"] == "tombstoned"`` rather than relying
+    on exception handling. Mirrors the Heal-Method NotImpl Convention
+    in ``apps_lic/RUNBOOK.md`` (established 2026-05-02).
+    """
+    return {
+        "status": "tombstoned",
+        "function": "split_large_types_files",
+        "reason": "placeholder never implemented; types splitting handled by separate plan waves",
+        "plan": "apps-shared-stub-audit-7dfe16",
+    }
 
 
 if __name__ == "__main__":

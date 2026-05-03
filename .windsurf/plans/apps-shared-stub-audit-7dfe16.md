@@ -4,7 +4,7 @@
 **Created:** 2026-05-02
 **Tier:** T2 (audit-heavy, minimal code change)
 **Driver:** DEFERRED_SCOPE row from `apps-completeness-followups-287d2a` (completed 2026-05-02)
-**Status:** Live (plan only — NOT executed this session per Author-Gate 2026-05-02-T19:19)
+**Status:** Completed (2026-05-02)
 **Predecessors:**
 - `.windsurf/plans/apps-completeness-followups-287d2a.md` (Completed 2026-05-02)
 - `.windsurf/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02)
@@ -66,24 +66,20 @@ Expected final classification ratio: ~85-95% legitimate (Protocol / ABC / TypedD
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P1.1, P1.2 | Build audit tooling + run | ~4k | AST scan identifies `Protocol` base class and `ABC`/`ABCMeta` lineage | TODO | `ops_scripts/ci/audit_apps_shared_stubs.py` emits JSON census with 100% of stubs classified |
-| W2 | P2.1 | Write census doc | ~3k | Census JSON → Markdown table; stable section structure | TODO | `apps_shared/STUB_CENSUS.md` exists with per-site row + category + rationale |
-| W3 | P3.1–P3.5 | Fix real gaps | ~3k | Real gaps are ≤5; each is a single-function fix | TODO | All identified real gaps closed OR explicitly documented as `pattern=intentional-stub` |
-| W4 | P4.1 | Scanner enrichment | ~2k | New column: `RealGaps` = total stubs − expected_stubs | TODO | Scanner output distinguishes Protocol/ABC stubs from real gaps |
+| W1 | P1.1, P1.2 | Build audit tooling + run | ~4k | AST classifier with 10 pattern categories; landed in `tools/analysis/` (not `ops_scripts/ci/` — this is analysis, not a CI gate) | DONE | `tools/analysis/audit_apps_shared_stubs.py` shipped with 23 unit tests; classifies 100% of 64 stubs |
+| W2 | P2.1 | Write census doc | ~3k | Census JSON → Markdown; separate renderer in `tools/analysis/_emit_stub_census_md.py` | DONE | `apps_shared/STUB_CENSUS.md` shipped (165 lines, per-category tables + authoring guide) |
+| W3 | P3.1–P3.5 | Fix real gaps | ~3k | Gap count 2 (both in `scripts/fix_all_violations.py` — tombstoned scaffolding never implemented) | DONE | Both stubs converted to structured `{"status": "tombstoned", ...}` no-ops + module docstring calls out deprecation + redirects future work to `tools/refactor/` |
+| W4 | P4.1 | Scanner enrichment | ~2k | `RealGaps` column distinguishes audited-zero-gaps (`0`) from not-audited (`?`) | DONE | Scanner emits `RealGaps=0` for apps_shared (was 72 total stubs; now audit shows 100% legitimate) |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | Build `audit_apps_shared_stubs.py` | 1 new file | AST class-lineage analysis; Protocol base detection; ABC lineage detection (works when `ABC` in bases OR `ABCMeta` as metaclass OR `@abstractmethod` on method) | ~3k | TODO |
-| P1.2 | Run audit + emit `artifacts/analysis/apps_shared_stub_census.json` | 1 command | None — deterministic | ~500 | TODO |
-| P2.1 | Generate `STUB_CENSUS.md` from census JSON | 1 new file | Markdown formatting; keep table sortable | ~2.5k | TODO |
-| P3.1 | Audit `scripts/` stubs (4 sites) | ≤4 files | Tracing ABC lineage for command-runner base classes | ~1k | TODO |
-| P3.2 | Audit `reasoning/` stubs (3 sites) | ≤3 files | Check if these match the healer-stub pattern from `apps_lic` | ~1k | TODO |
-| P3.3 | Audit `enforcement/` stub (1 site) | 1 file | Likely strategy-pattern ABC | ~500 | TODO |
-| P3.4 | Audit `_compat/` stub (1 site) | 1 file | Likely deprecation shim — may be removable | ~500 | TODO |
-| P3.5 | Audit `proof/` stub (1 site) | 1 file | Unknown | ~500 | TODO |
-| P4.1 | Add `RealGaps` column to scanner | 1 edit | Preserve backward compat with existing callers | ~2k | TODO |
+| P1.1 | Build `audit_apps_shared_stubs.py` | `tools/analysis/audit_apps_shared_stubs.py` | 10 pattern categories (Protocol/ABC/ImplicitABC/TypedDict/TemplateMethodHook/ContextManagerStub/NullObject/DeprecationShim/HealerConvention/RealGap); name-token heuristics for implicit-ABC; `scripts/` exclusion from NullObject | ~3k | DONE |
+| P1.2 | Run audit + emit `artifacts/analysis/apps_shared_stub_census.json` | `--out` flag, auto-created parent dir | Deterministic; scans 207 files, finds 64 stubs | ~500 | DONE |
+| P2.1 | Generate `STUB_CENSUS.md` from census JSON | `tools/analysis/_emit_stub_census_md.py` | Per-category detail tables with (File, Line, Symbol, Stub, Rationale); authoring guide for future stub discipline | ~2.5k | DONE |
+| P3.1–P3.5 | Audit + close all 20 initial false-positive RealGaps | classifier enhancement + 1 source file | Enhanced classifier catches ImplicitABC (6), TemplateMethodHook (4), ContextManagerStub (1), NullObject (7) patterns; remaining 2 true gaps in `apps_shared/scripts/fix_all_violations.py` converted to tombstoned structured no-ops | ~3k | DONE |
+| P4.1 | Add `RealGaps` column to scanner | `tools/analysis/_apps_completeness_review2.py` (`_load_real_gaps_by_app` helper) | Census JSON consumed; distinguishes audited (shows 0) from unaudited (shows ?); `audited_apps` set carried in summary JSON | ~2k | DONE |
 
 ## Gap Register
 

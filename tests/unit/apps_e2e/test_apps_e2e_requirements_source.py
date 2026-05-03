@@ -29,9 +29,18 @@ EXPECTED_SCHEMA_VERSION = "apps_e2e_fortknox-v1"
 
 # AppSpec owner_app coverage: the 6 certified runtime apps + 2 waivers.
 EXPECTED_PER_APP_OWNERS = {
-    "apps_rg", "apps_exec", "apps_eval", "apps_research", "apps_rfp", "apps_lic",
+    "apps_rg",
+    "apps_exec",
+    "apps_eval",
+    "apps_research",
+    "apps_rfp",
+    "apps_lic",
+    # Promoted from waiver to APPS_SPINE_CERTIFIED in W11 (apps_qna)
+    # and W12 (apps_underwriting_ai) per plan apps-fort-knox-parity-c5d9a3.
+    "apps_qna",
+    "apps_underwriting_ai",
 }
-EXPECTED_WAIVER_OWNERS = {"apps_qna", "apps_underwriting_ai"}
+EXPECTED_WAIVER_OWNERS: set[str] = set()  # All apps are runtime-certified post-W12.
 
 
 @pytest.fixture(scope="module")
