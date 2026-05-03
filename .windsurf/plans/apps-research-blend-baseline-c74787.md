@@ -29,7 +29,8 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 | `artifacts/blend_svp_pdf.txt` (raw PDF text) | W3 PDF-ingest fixture | ✅ |
 | `artifacts/_blend_briefing_extract.txt` | Prior extraction pass for cross-check | ✅ |
 | ADG snapshot `adg_indexed_05022026_1921.sqlite` | OLD — used for Notion W1 Discovery fan-in (now stale) | ⚠️ superseded |
-| ADG snapshot `adg_indexed_05022026_2152.sqlite` | FRESH regen 2026-05-02 21:52 after reconstruction turn | ✅ primary |
+| ADG snapshot `adg_indexed_05022026_2152.sqlite` | DIRTY-tree regen (with in-flight taxonomy files) 2026-05-02 21:52 | ⚠️ superseded by 2217 |
+| ADG snapshot `adg_indexed_05022026_2217.sqlite` | **CLEAN-tree regen** 2026-05-02 22:17 after stash; SSOT for R5 | ✅ primary |
 | Anthropic multi-agent research post | W1 query-decomposition params | 🔲 (cached in prior W1 Discovery) |
 | OpenAI Deep Research docs | W1 retrieval pattern calibration | 🔲 (cached in prior W1 Discovery) |
 | RAG consensus (contextual-retrieval prefix, 512/50 chunk/overlap) | W3+W4 params | 🔲 (cached in prior W1 Discovery) |
@@ -104,27 +105,37 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 - Fresh snapshot `adg_indexed_05022026_2152.sqlite` contains all 6 `apps_research/engines/` modules: `company_brief_engine.py`, `hop_company_brief_engine.py`, `research_assembly_engine.py`, `hop_research_assembly_engine.py`, `research_retrieval_engine.py`, `hop_research_retrieval_engine.py`.
 - Module node ids: 2909, 2910, 2911, 2912, 2913, 2914 respectively.
 
-**GAP-R4: Working tree is mid-refactor on an unrelated plan** — ⚠️ **STILL OPEN, REINFORCED**
-- `apps-folder-taxonomy-unification-b7d4e1` has ~170 uncommitted file moves touching `apps_research/_telemetry.py` among others.
-- Impact: no `apps_research/` edits in this plan until the taxonomy refactor commits or gets stashed (constitutional §18 + scope-containment).
-- **Reinforced by GAP-R5 below** — mid-refactor state has invalidated the import graph for apps_research/.
+**GAP-R4: Working tree is mid-refactor on an unrelated plan** — ✅ **CLOSED 2026-05-02 22:00 by stash**
+- `apps-folder-taxonomy-unification-b7d4e1` had ~170 uncommitted file moves touching `apps_research/_telemetry.py` among others.
+- Resolution: stashed in two parts to preserve ALL work for later recovery:
+  - `stash@{0}` — untracked files (new `apps_*/THREAT_MODEL.md`, new dirs, new ADR, new ops_scripts gate, etc.)
+  - `stash@{1}` — tracked modifications
+- Recovery path: `git stash pop stash@{0}` then `git stash pop stash@{1}` (order matters — untracked pops first)
+- Working tree is now on `main` commit `69baccb9a6` with only one unrelated modified plan file remaining.
+- This plan's file (`apps-research-blend-baseline-c74787.md`) committed as `d2db452005` — no longer at risk of loss.
 
-**GAP-R5: Fresh ADG shows `fan_in(imports)=0` for ALL 6 `apps_research/engines/` modules** — 🔴 **NEW**
-- Query against fresh snapshot (`2152`) shows zero module-import callers for every engine:
+**GAP-R5: Fresh ADG shows `fan_in(imports)=0` for ALL 6 `apps_research/engines/` modules** — ✅ **CLOSED 2026-05-02 22:17 by clean-tree re-validation**
+- Re-ran ADG after GAP-R4 stash (commit `69baccb9a6`, snapshot `adg_indexed_05022026_2217.sqlite`). Results **identical** to dirty-tree — this is a real codebase property, NOT a mid-refactor artifact:
 
-  | Module | fan_in(imports) | resolves_callsite | emits_side_effect |
-  |---|---|---|---|
-  | `company_brief_engine.py` | 0 | 30 | 4 |
-  | `research_assembly_engine.py` | 0 | 5 | 2 |
-  | `research_retrieval_engine.py` | 0 | 14 | 8 |
-  | `hop_company_brief_engine.py` | 0 | 0 | 0 |
-  | `hop_research_assembly_engine.py` | 0 | 0 | 0 |
-  | `hop_research_retrieval_engine.py` | 0 | 0 | 0 |
+  | Module | imports_in | resolves_callsite | emits_side_effect | flows_to |
+  |---|---|---|---|---|
+  | `company_brief_engine.py` | **0** | 30 | 4 | 0 |
+  | `hop_company_brief_engine.py` | **0** | 0 | 0 | 0 |
+  | `research_assembly_engine.py` | **0** | 5 | 2 | 0 |
+  | `hop_research_assembly_engine.py` | **0** | 0 | 0 | 0 |
+  | `research_retrieval_engine.py` | **0** | 14 | 8 | 0 |
+  | `hop_research_retrieval_engine.py` | **0** | 0 | 0 | 0 |
 
-- **This contradicts the Notion W1 Discovery inventory** (fan_in=3 / 1 / 4 from 2026-05-02 earlier snapshot). The old counts either came from symbol-level (not module-level) queries OR reflect importers that the in-flight taxonomy refactor has since deleted/moved.
-- **Semantic edges survive**: `company_brief_engine` has 30 `resolves_callsite` + 4 `emits_side_effect` — it is NOT dead at the runtime behavior level. **The old G14 "dead-code" verdict on `research_retrieval_engine` is invalidated** — it still carries 14 `resolves_callsite` + 8 `emits_side_effect`.
-- **Three `hop_*` engines are orphaned** in the fresh snapshot (zero incoming edges of any type). Needs root-cause determination before touching.
-- Impact: P1.5 prune-G14 MUST NOT execute against the current graph. The graph is in a transient inconsistent state caused by GAP-R4. The entire W1 Discovery fan-in inventory needs re-validation **after** the taxonomy refactor lands.
+- **Finding 1**: All 6 engines are structurally orphaned (zero module-level import callers) on `main`. This means `apps_research/` is NOT wired into anything that imports it today. W1 Discovery inventory (fan_in=3/1/4 from Notion) was wrong — those numbers did not come from the `imports` edge type on modules.
+- **Finding 2**: 3 of 6 engines carry live semantic behavior (`company_brief_engine`, `research_assembly_engine`, `research_retrieval_engine`). They are invoked at runtime via resolves_callsite + emits_side_effect. The old G14 "dead-code" verdict on `research_retrieval_engine` (14 callsites + 8 side effects) is **definitively invalidated** on clean tree.
+- **Finding 3**: 3 `hop_*` engines have zero incoming edges of ANY type — truly orphaned. Candidates for separate investigation (not P1.5).
+- **Actionable consequence**: P1.5 is NOT a valid prune target. Downgraded in Phase-Level Summary to INVESTIGATION. Blend-baseline W1 goal (wire `company_brief` mode end-to-end) now requires clarifying how `apps_research/` is invoked at all — since nothing imports it at module level, the caller must be CLI or entry-point discovery.
+- **Follow-on (GAP-R7)**: discover the actual invocation path for `apps_research/` before P1.4 executes.
+
+**GAP-R7: Invocation path for `apps_research/` is unclear** — 🔴 **NEW (discovered closing R5)**
+- Zero module-import callers for ALL 6 engines means `apps_research/` is invoked via CLI, `__main__`, entry-point discovery, or dynamic import — NOT via `import apps_research.engines.X`.
+- Before P1.4 wires `company_brief` end-to-end, we need to identify how users currently invoke `apps_research/` so the wiring happens at the right layer.
+- Candidate inspection targets: `apps_research/scripts/run_research.py`, `apps_research/__main__.py` if exists, any `pyproject.toml` entry points, any CLI adapters in `apps_research/integrations/`.
 
 **GAP-R6: P1.1–P4.5 acceptance criteria still missing** — 🔴 **FOLLOW-ON FROM GAP-R1**
 - Closing GAP-R1 in this enrichment turn required only the high-level phase shape (captured). Per-phase Commands / Acceptance / test-paths still need authoring before any phase can execute. This is a known planning debt; not a blocker for documentation but is a blocker for code execution.
