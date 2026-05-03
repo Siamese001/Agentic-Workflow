@@ -65,6 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--horizon", default="", help="Time horizon e.g. '12 months'")
     parser.add_argument("--out", default="reports/research")
+    parser.add_argument(
+        "--reference-doc",
+        default="",
+        help="Path to a PDF / TXT / MD exemplar; chunks added to brief context (plan §P3.1)",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--trace-id", default="")
     parser.add_argument("--json-output", action="store_true")
