@@ -826,9 +826,11 @@ def main_canonical() -> None:
 
             if args.target_company:
                 with gr.span("L2_execute.post_pipeline"):
-                    # Placeholder: _run_post_pipeline needs adapter-compatible version
-                    # For W4 skeleton, we skip the actual DOCX export
-                    gr.mark_stage("post_pipeline", "ok")
+                    # W2.P2.1: Wire narrative_pass (HOP-4A through HOP-4H) + DOCX export
+                    # via the same _run_post_pipeline used by the legacy entrypoint.
+                    # Without this, HOP-4A-HEADLINE never runs in the canonical path.
+                    code = _run_post_pipeline(args)
+                    gr.mark_stage("post_pipeline", "ok" if code == 0 else "fail")
 
         # W1.P2: Resolve late-bound run_dir same as legacy path for receipt emission
         runs_root = Path("artifacts/apps_rg/runs")
