@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from apps_shared.config.prompt_reception_spec import PromptReceptionSpec
 
-from apps_rfp._compat.lifecycle_trace import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -62,7 +62,7 @@ from apps_rfp._compat.lifecycle_trace import (
 _emit_applies_guardrail("p0", "agent_spec_config", "p0_governance")
 _emit_reads_policy_state("p0", "agent_spec_config", "policy_binding")
 _emit_snapshots_state("p0", "agent_spec_config", "state_snapshot")
-from apps_rfp._compat.lifecycle_trace import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

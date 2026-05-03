@@ -37,7 +37,7 @@ except ImportError:
     apps_qwen_telemetry = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
 
-from apps_rfp._compat.lifecycle_trace import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -113,7 +113,7 @@ from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
 _emit_applies_guardrail("p0", "RfpOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "RfpOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "RfpOrchestrator", "state_snapshot")
-from apps_rfp._compat.lifecycle_trace import (
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
