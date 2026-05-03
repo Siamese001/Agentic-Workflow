@@ -73,8 +73,8 @@ from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3d
 # Veto orchestrator + status enum live in tools.certification.safety per
 # the existing W1p5 wiring. The entry point is the ONLY place that
 # instantiates / invokes the orchestrator.
-from tools.certification.safety.veto_orchestrator import VetoOrchestrator
-from tools.certification.safety.veto_protocol import VetoResult, VetoStatus
+from tools.certification.safety.veto_orchestrator import VetoOrchestrator  # guardian: allow-layer-violation -- ADR-096 §Exception L_RUNTIME->L_TOOLS; entry point is the ONLY instantiator of VetoOrchestrator per W1p5 wiring
+from tools.certification.safety.veto_protocol import VetoResult, VetoStatus  # guardian: allow-layer-violation -- ADR-096 §Exception; veto protocol types accompany orchestrator import
 
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
     ProvenanceStamp,
@@ -116,7 +116,7 @@ from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import
 # ``agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle``
 # (promoted from system_learning). The import is unconditional now —
 # the boundary no longer crosses into a peer package.
-from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (
+from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; safe-reuse entrypoint consumes L6 exhaust bundle to emit canonical runtime trace
     RuntimeExhaustBundle,
     RuntimeExhaustCollector,
 )

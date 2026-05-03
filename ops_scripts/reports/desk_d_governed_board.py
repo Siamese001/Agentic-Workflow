@@ -26,8 +26,8 @@ from agentic_core.L3_orchestration.types.human_decision_artifact_types import ( 
 from agentic_core.L5_safety.types.human_decision_artifact_types import (  # guardian: allow-layer-violation -- Path D HITL meta-learning consumer reads canonical L5 HumanDecisionArtifact contract for cross-layer artifact harmonization; type-only import
     HumanDecisionArtifact as L5HumanDecisionArtifact,
 )
-from agentic_core.L6_observability.types.dpo_types import DPOExampleId
-from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
+from agentic_core.L6_observability.types.dpo_types import DPOExampleId  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; Path D reporter consumes L6 DPO types
+from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; Path D reporter drives L6 DPO pair generator
     DefaultDeterministicDPOPairGenerator,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

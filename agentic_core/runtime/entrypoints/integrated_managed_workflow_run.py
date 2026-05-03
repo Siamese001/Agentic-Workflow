@@ -65,7 +65,7 @@ from agentic_core.L3_orchestration.registry import (
 from agentic_core.L5_safety.runtime_gates.structural_na_bundle import (
     build_structural_full_suite_verdicts,
 )
-from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (
+from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; runtime entrypoint consumes L6 exhaust bundle to emit canonical runtime trace
     RuntimeExhaustCollector,
 )
 from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (

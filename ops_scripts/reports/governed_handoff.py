@@ -42,7 +42,7 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from agentic_core.L6_observability.utils.evaluation.promotion_packet import PromotionPacket
+    from agentic_core.L6_observability.utils.evaluation.promotion_packet import PromotionPacket  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; ops report consumes L6 promotion packet type under TYPE_CHECKING
 
 BUS_ROLLOUT_SIGNAL = "PROMOTION_ROLLOUT"
 _PROOF_CLOCK_TICK = 0

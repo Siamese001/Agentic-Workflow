@@ -30,7 +30,7 @@ from _w2_verifier_common import (  # noqa: E402
     resolve_artifact_dir,
 )
 
-from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (  # noqa: E402
+from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (  # noqa: E402  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; CI gate verifies synthetic-trace flag via L6 detector
     detect_trace_provenance,
 )
 

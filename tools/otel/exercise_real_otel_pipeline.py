@@ -218,7 +218,7 @@ def exercise_heal_router_otel(n: int = 3) -> EmitterStats:
 def exercise_consensus_otel(n: int = 3) -> EmitterStats:
     stats = EmitterStats(name="consensus_otel")
     try:
-        from agentic_core.L6_observability.consensus_otel import (
+        from agentic_core.L6_observability.consensus_otel import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; tool exercises the real L6 OTEL consensus emitter for pipeline verification
             ConsensusTelemetryEmitter,
         )
 

@@ -258,7 +258,7 @@ def main() -> int:
         # and surface references. We mirror the gate's checks here.
         import sys as _sys
         _sys.path.insert(0, str(ROOT))
-        from ops_scripts.ci.check_graph_layer_evidence import _evaluate_plan
+        from ops_scripts.ci.check_graph_layer_evidence import _evaluate_plan  # guardian: allow-layer-violation -- ADR-096 §Exception L_TOOLS->L_OPS; maintenance tool reuses the canonical §22 gate evaluator to stay in sync with CI
         if _evaluate_plan(path) is None:
             print(f"[SKIP] {fname} — already passes §22 gate")
             skipped += 1

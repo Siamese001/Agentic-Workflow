@@ -58,7 +58,7 @@ def _attempt_compose() -> tuple[Any | None, list[str], list[str], str]:
     # ── Component 1: L6 observability surface (any module that has L6Eval semantics)
     attempted.append("agentic_core.L6_observability surface")
     try:
-        import agentic_core.L6_observability  # noqa: F401
+        import agentic_core.L6_observability  # noqa: F401  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; composition-proof tool verifies L6 observability surface reachability
         reached.append(attempted[-1])
     except ImportError as exc:
         return None, attempted, reached, f"L6_observability import: {exc}"
