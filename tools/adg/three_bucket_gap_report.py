@@ -19,8 +19,9 @@ Defect classes (set algebra over (src,dst,relation)):
 Usage:
     python tools/adg/three_bucket_gap_report.py [--snapshot PATH]
                                                  [--top-n N]
-                                                 [--out PATH]
+                                                 [--out-dir DIR]
                                                  [--format json|md|both]
+                                                 [--require-runtime-proof]
 
 Outputs (default):
     docs/reports/adg/THREE_BUCKET_GAP_REPORT.json
@@ -179,6 +180,20 @@ def _resolve_node_path(con: sqlite3.Connection, node_id: int) -> str:
         return f"<id={node_id}>"
 
 
+def _classify_runtime_proof_status(has_view: bool, attested_count: int) -> str:
+    """Classify runtime proof for the report JSON and MD output.
+
+    Plan ``adg-audit-pipeline-integration-7f2c93`` W3.1: the three
+    possible states are disambiguated as an enum so the wrapper and the
+    ``--require-runtime-proof`` gate can make a deterministic decision.
+    """
+    if not has_view:
+        return "view_absent"
+    if attested_count <= 0:
+        return "view_present_zero_attested"
+    return "attested"
+
+
 def run_report(snapshot: Path, top_n: int) -> dict[str, Any]:
     con = sqlite3.connect(str(snapshot))
     con.row_factory = sqlite3.Row
@@ -237,13 +252,19 @@ def run_report(snapshot: Path, top_n: int) -> dict[str, Any]:
     )
 
     con.close()
+    runtime_proof_status = _classify_runtime_proof_status(has_runtime, int(runtime_total))
+    try:
+        snapshot_display = str(snapshot.relative_to(REPO_ROOT))
+    except ValueError:
+        snapshot_display = str(snapshot)
     return {
         "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "snapshot": snapshot.name,
-        "snapshot_path": str(snapshot.relative_to(REPO_ROOT)),
+        "snapshot_path": snapshot_display,
         "runtime_view_present": has_runtime,
         "runtime_attested_edges": runtime_total,
+        "runtime_proof_status": runtime_proof_status,
         "total_edges_classified": total_edges,
         "health_score_pct_triplet_attested": health_score,
         "summary_by_class": summary,
@@ -264,14 +285,28 @@ def run_report(snapshot: Path, top_n: int) -> dict[str, Any]:
     }
 
 
-def render_markdown(report: dict[str, Any]) -> str:
+def render_markdown(report: dict[str, Any], *, require_runtime_proof: bool = False) -> str:
     lines = []
     lines.append("# ADG Three-Bucket Gap Report")
     lines.append("")
+    # W3.2 (plan adg-audit-pipeline-integration-7f2c93): loud diagnostic
+    # banner when runtime-proof is NOT attested AND the caller did not
+    # demand it — prevents runtime-thin reports from being mistaken for
+    # certification-clean.
+    rt_status = report.get("runtime_proof_status", "view_absent")
+    if rt_status != "attested" and not require_runtime_proof:
+        lines.append(
+            f"> ⚠ **DIAGNOSTIC ONLY — RUNTIME-THIN (runtime_proof_status={rt_status})**. "
+            "This report was produced without runtime attestation; do NOT treat as "
+            "certification-clean. Re-run with `--require-runtime-proof` in CI once "
+            "OTel attestation is wired."
+        )
+        lines.append("")
     lines.append(f"- **Generated**: {report['generated_at']}")
     lines.append(f"- **Snapshot**: `{report['snapshot']}`")
     lines.append(f"- **Runtime view present**: {report['runtime_view_present']}")
     lines.append(f"- **Runtime-attested edges**: {report['runtime_attested_edges']:,}")
+    lines.append(f"- **Runtime proof status**: `{rt_status}`")
     lines.append(f"- **Total edges classified**: {report['total_edges_classified']:,}")
     lines.append(
         f"- **Health score** (triplet-attested fraction): "
@@ -349,6 +384,14 @@ def main() -> int:
                         help="Output directory.")
     parser.add_argument("--format", choices=("json", "md", "both"), default="both",
                         help="Output format. Default: both.")
+    parser.add_argument(
+        "--require-runtime-proof",
+        action="store_true",
+        help=(
+            "Exit non-zero if the snapshot lacks an attested v_runtime_proof view. "
+            "Use in certification CI; leave off for local dev until OTel is wired."
+        ),
+    )
     args = parser.parse_args()
 
     snapshot = args.snapshot or _latest_snapshot()
@@ -358,15 +401,24 @@ def main() -> int:
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
+    def _display(p: Path) -> str:
+        try:
+            return str(p.relative_to(REPO_ROOT))
+        except ValueError:
+            return str(p)
+
     if args.format in ("json", "both"):
         out_json = args.out_dir / "THREE_BUCKET_GAP_REPORT.json"
         out_json.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        print(f"[gap_report] wrote {out_json.relative_to(REPO_ROOT)}")
+        print(f"[gap_report] wrote {_display(out_json)}")
 
     if args.format in ("md", "both"):
         out_md = args.out_dir / "THREE_BUCKET_GAP_REPORT.md"
-        out_md.write_text(render_markdown(report), encoding="utf-8")
-        print(f"[gap_report] wrote {out_md.relative_to(REPO_ROOT)}")
+        out_md.write_text(
+            render_markdown(report, require_runtime_proof=args.require_runtime_proof),
+            encoding="utf-8",
+        )
+        print(f"[gap_report] wrote {_display(out_md)}")
 
     # One-line summary to stdout for CI/inline use.
     print(
@@ -379,6 +431,15 @@ def main() -> int:
             f"[gap_report]   {row['severity']:>3}  {row['defect_class']:<20} "
             f"{row['edge_count']:>8,}  ({row['edge_pct']:>5}%)"
         )
+    # W3.1: certification gate — runtime proof must be attested.
+    if args.require_runtime_proof and report["runtime_proof_status"] != "attested":
+        print(
+            f"[gap_report] FAIL — --require-runtime-proof set but "
+            f"runtime_proof_status={report['runtime_proof_status']!r} "
+            f"(attested_edges={report['runtime_attested_edges']}).",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 

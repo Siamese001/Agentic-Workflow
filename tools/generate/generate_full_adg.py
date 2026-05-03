@@ -1773,14 +1773,45 @@ def main() -> None:
         os.environ["ADG_CONTINUE_ON_P0"] = "1"
         print("[ADG] --continue-on-p0 enabled: P0 failure will be deferred to end-of-run exit")
 
-    # Pre-flight checks
-    _check_mcp_config_drift()
-    _perform_wal_checkpoint()
-    _check_locked_files()
-
     # Generate timestamp and artifacts directory
     ts = _generate_timestamp()
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
+
+    # W1.1 (plan adg-audit-pipeline-integration-7f2c93): set up the
+    # gate-invocation manifest recorder BEFORE any gate runs. Every gate
+    # call site reads the module-level singleton via current_recorder().
+    from tools.generate._gate_manifest import (  # noqa: PLC0415
+        GateManifestRecorder,
+        runtime_proof_from_sqlite,
+        set_current_recorder,
+    )
+
+    _recorder = GateManifestRecorder(adg_artifacts_dir, ts)
+    set_current_recorder(_recorder)
+
+    # Pre-flight checks (recorded individually so the manifest proves they ran)
+    def _record_preflight(name: str, fn) -> None:  # noqa: ANN001
+        import time as _t
+        _start = _t.monotonic()
+        try:
+            fn()
+        except SystemExit:
+            _recorder.record(name, phase="preflight", kind="python_function",
+                             blocking_mode="hard_fail", status="fail",
+                             duration_s=_t.monotonic() - _start)
+            raise
+        except Exception as _e:  # noqa: BLE001 — preflight integrity: any failure is terminal
+            _recorder.record(name, phase="preflight", kind="python_function",
+                             blocking_mode="hard_fail", status="fail",
+                             duration_s=_t.monotonic() - _start, message=str(_e)[:200])
+            raise
+        _recorder.record(name, phase="preflight", kind="python_function",
+                         blocking_mode="hard_fail", status="pass",
+                         duration_s=_t.monotonic() - _start)
+
+    _record_preflight("mcp_config_drift", _check_mcp_config_drift)
+    _record_preflight("wal_checkpoint", _perform_wal_checkpoint)
+    _record_preflight("locked_files", _check_locked_files)
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
 
@@ -1918,6 +1949,30 @@ def main() -> None:
 
     p0_deferred = is_p0_failure_deferred()
     shared_deferred = _shared_is_failure_deferred()
+
+    # W1.1/W1.2 (plan adg-audit-pipeline-integration-7f2c93): finalize the
+    # gate-invocation + generation manifests BEFORE sys.exit so even
+    # deferred-failure runs produce a complete auditable record. The atexit
+    # hook is a safety net for native crashes; this is the clean path.
+    def _finalize_manifests(gen_rc: int, p0_status: str) -> None:
+        sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
+        rt_status, rt_count = ("view_absent", 0)
+        try:
+            if sqlite_candidate.exists():
+                rt_status, rt_count = runtime_proof_from_sqlite(sqlite_candidate)
+        except Exception:  # noqa: BLE001 — manifest emit must never crash main()
+            pass
+        try:
+            _recorder.finalize(
+                sqlite_path=sqlite_candidate if sqlite_candidate.exists() else None,
+                generation_exit_code=gen_rc,
+                runtime_proof_status=rt_status,
+                runtime_attested_edge_count=rt_count,
+                p0_status=p0_status,
+            )
+        except Exception as _e:  # noqa: BLE001
+            print(f"[ADG] WARN manifest finalize failed: {_e}")
+
     if p0_deferred or shared_deferred:
         # Cascade Wave B summary line + W3.1 markdown table for full visibility.
         if shared_deferred:
@@ -1936,7 +1991,11 @@ def main() -> None:
         # legacy p0_runner-only signal.
         rc = _shared_deferred_exit_code() or deferred_p0_exit_code() or 1
         print(f"[ERROR] One or more failures were deferred; final exit code = {rc}")
+        _finalize_manifests(rc, p0_status="deferred_fail")
         sys.exit(rc)
+
+    # Clean-exit path: all gates passed, no deferred failures.
+    _finalize_manifests(0, p0_status="pass")
 
 
 def _run_post_adg_gate(
@@ -1953,14 +2012,41 @@ def _run_post_adg_gate(
     exit halts the ADG generation run so authors see the gate failure in the
     same window, not later at pre-commit. Generic wrapper so all five post-
     ADG gates share one invocation path and logging shape.
+
+    Plan ``adg-audit-pipeline-integration-7f2c93`` W1.1/W1.2:
+    - Records invocation via the module-level GateManifestRecorder so the
+      wrapper (``tools/adg/run_full_adg_audit.py``) can prove the gate ran.
+    - Missing-script branch FAILS in certification mode (env
+      ``ADG_CERTIFICATION_MODE=1``) instead of silent SKIP.
     """
     import subprocess
+    import time as _time
+
+    from tools.generate._gate_manifest import current_recorder
+
+    recorder = current_recorder()
+    certification_mode = os.environ.get("ADG_CERTIFICATION_MODE") == "1"
 
     gate = ROOT / script_rel
     if not gate.is_file():
-        print(f"[ADG] [{label}] gate script missing ({script_rel}), skipping")
+        msg = f"gate script missing ({script_rel})"
+        if recorder is not None:
+            recorder.record(
+                label,
+                phase="post-ADG-subprocess",
+                kind="subprocess",
+                blocking_mode="hard_fail",
+                status="missing_script",
+                script_rel=script_rel,
+                message=msg,
+            )
+        if certification_mode:
+            print(f"[ADG] [{label}] FAIL — {msg} (certification mode)")
+            sys.exit(2)
+        print(f"[ADG] [{label}] SKIP (diagnostic mode) — {msg}")
         return
     print(f"[ADG] Running {label} gate ({script_rel}) ...")
+    started = _time.monotonic()
     try:
         proc = subprocess.run(
             [sys.executable, str(gate), *args_list],
@@ -1971,15 +2057,50 @@ def _run_post_adg_gate(
             check=False,
         )
     except subprocess.TimeoutExpired:
+        if recorder is not None:
+            recorder.record(
+                label,
+                phase="post-ADG-subprocess",
+                kind="subprocess",
+                blocking_mode="hard_fail",
+                status="timed_out",
+                duration_s=_time.monotonic() - started,
+                script_rel=script_rel,
+                message=f"timed out after {timeout_s}s",
+            )
         print(f"[ADG] [{label}] gate timed out after {timeout_s}s — failing")
         sys.exit(2)
     if proc.stdout:
         print(proc.stdout.rstrip())
     if proc.stderr:
         print(proc.stderr.rstrip())
+    duration = _time.monotonic() - started
     if proc.returncode != 0:
+        if recorder is not None:
+            recorder.record(
+                label,
+                phase="post-ADG-subprocess",
+                kind="subprocess",
+                blocking_mode="hard_fail",
+                status="fail",
+                exit_code=proc.returncode,
+                duration_s=duration,
+                script_rel=script_rel,
+                message=fail_hint,
+            )
         print(f"[ADG] [{label}] FAIL — {fail_hint}")
         sys.exit(proc.returncode)
+    if recorder is not None:
+        recorder.record(
+            label,
+            phase="post-ADG-subprocess",
+            kind="subprocess",
+            blocking_mode="hard_fail",
+            status="pass",
+            exit_code=0,
+            duration_s=duration,
+            script_rel=script_rel,
+        )
     print(f"[ADG] [{label}] PASS")
 
 
@@ -2000,6 +2121,12 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
     """
     import concurrent.futures
     import subprocess
+    import time as _time
+
+    from tools.generate._gate_manifest import current_recorder
+
+    _recorder = current_recorder()
+    _certification_mode = os.environ.get("ADG_CERTIFICATION_MODE") == "1"
 
     def _invoke(spec: dict[str, object]) -> dict[str, object]:
         label = str(spec["label"])
@@ -2016,8 +2143,10 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
                 "stdout": "",
                 "stderr": "",
                 "timed_out": False,
+                "duration_s": 0.0,
                 "fail_hint": spec["fail_hint"],
             }
+        _started = _time.monotonic()
         try:
             proc = subprocess.run(
                 [sys.executable, str(gate), *args_list],
@@ -2035,6 +2164,7 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
                 "stdout": proc.stdout or "",
                 "stderr": proc.stderr or "",
                 "timed_out": False,
+                "duration_s": _time.monotonic() - _started,
                 "fail_hint": spec["fail_hint"],
             }
         except subprocess.TimeoutExpired:
@@ -2046,6 +2176,7 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
                 "stdout": "",
                 "stderr": f"[{label}] gate timed out after {timeout_s}s",
                 "timed_out": True,
+                "duration_s": _time.monotonic() - _started,
                 "fail_hint": spec["fail_hint"],
             }
 
@@ -2065,8 +2196,28 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
     for r in results:
         # progress_bar: bounded by number of post-ADG gate scripts (~5-10 — §16 exempt)
         label = str(r["label"])
+        script_rel = str(r["script_rel"])
+        duration = float(r.get("duration_s") or 0.0)
         if r.get("missing"):
-            print(f"[ADG] [{label}] gate script missing ({r['script_rel']}), skipping")
+            msg = f"gate script missing ({script_rel})"
+            if _recorder is not None:
+                _recorder.record(
+                    label,
+                    phase="post-ADG-subprocess",
+                    kind="subprocess",
+                    blocking_mode="hard_fail",
+                    status="missing_script",
+                    script_rel=script_rel,
+                    message=msg,
+                )
+            if _certification_mode:
+                print(f"[ADG] [{label}] FAIL — {msg} (certification mode)")
+                if first_failure_rc is None:
+                    first_failure_rc = 2
+                    first_failure_label = label
+                    first_failure_hint = msg
+            else:
+                print(f"[ADG] [{label}] SKIP (diagnostic mode) — {msg}")
             continue
         stdout = str(r.get("stdout", ""))
         stderr = str(r.get("stderr", ""))
@@ -2075,13 +2226,37 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
         if stderr:
             print(stderr.rstrip())
         rc = int(r["returncode"])  # type: ignore[arg-type]
+        timed_out = bool(r.get("timed_out"))
         if rc != 0:
+            if _recorder is not None:
+                _recorder.record(
+                    label,
+                    phase="post-ADG-subprocess",
+                    kind="subprocess",
+                    blocking_mode="hard_fail",
+                    status="timed_out" if timed_out else "fail",
+                    exit_code=rc,
+                    duration_s=duration,
+                    script_rel=script_rel,
+                    message=str(r["fail_hint"]),
+                )
             print(f"[ADG] [{label}] FAIL — {r['fail_hint']}")
             if first_failure_rc is None:
                 first_failure_rc = rc
                 first_failure_label = label
                 first_failure_hint = str(r["fail_hint"])
         else:
+            if _recorder is not None:
+                _recorder.record(
+                    label,
+                    phase="post-ADG-subprocess",
+                    kind="subprocess",
+                    blocking_mode="hard_fail",
+                    status="pass",
+                    exit_code=0,
+                    duration_s=duration,
+                    script_rel=script_rel,
+                )
             print(f"[ADG] [{label}] PASS")
     if first_failure_rc is not None:
         # Plan adg-fail-aggregating-gate-chain-9d4e1f W4.1: route Stage-2

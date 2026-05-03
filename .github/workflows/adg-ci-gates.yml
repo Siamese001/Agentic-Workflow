@@ -53,6 +53,31 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: ADG Audit Pipeline (wrapper — Stage-1 generator + Stage-2 gap report)
+        # Plan adg-audit-pipeline-integration-7f2c93: single SSOT entry for
+        # the two-stage certification flow. Runs generate_full_adg.py with
+        # ADG_CERTIFICATION_MODE=1, cross-checks the gate-invocation
+        # manifest against the required-gate registry, then runs the
+        # three-bucket gap report against the exact snapshot declared in
+        # the generation manifest. --require-runtime-proof is OMITTED
+        # until OTel attestation is wired end-to-end (known limitation
+        # #1 in docs/guides/ADG_Audit_Pipeline.md).
+        run: python tools/adg/run_full_adg_audit.py --mode certification --format both
+        env:
+          PYTHONPATH: .
+
+      - name: Upload ADG audit pipeline manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adg-audit-manifests-${{ github.sha }}
+          path: |
+            artifacts/adg/adg_gate_invocation_manifest_*.json
+            artifacts/adg/adg_generation_manifest_*.json
+            docs/reports/adg/AUDIT_PIPELINE_RECEIPT.json
+            docs/reports/adg/THREE_BUCKET_GAP_REPORT.*
+          if-no-files-found: warn
+
       - name: Expected-Wiring Gate (declared call-site assertions)
         # Runs immediately after ADG ingest so wiring regressions surface at the
         # ADG step, not at pre-commit. Reads config/expected_wiring.yaml + asserts
