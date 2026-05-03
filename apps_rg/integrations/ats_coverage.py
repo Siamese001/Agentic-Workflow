@@ -164,6 +164,15 @@ def headline_contains_title(headline: str, target_title: str) -> bool:
         return True
     # All tokens present (allows reordering): 'SVP, Agentic Transformation'
     # matches 'Agentic Transformation SVP'.
+    #
+    # P6.1 investigation (2026-05-03): Kept _SENIORITY_SKIP after runtime
+    # discovery that `owner.headline` is STATIC in apps_shared/data/master_resume.json
+    # (not LLM-generated). Removing the skip caused ensure_title_in_headline to
+    # forcibly prepend target_title when candidate's static brand didn't include
+    # the exact target domain word (e.g. "SVP Engineering" vs "SVP, Agentic
+    # Transformation"). The proper fix requires wiring the headline_ensemble
+    # HOP-4A-HEADLINE into the pipeline (currently absent from pipeline
+    # checkpoints). See docs/reports for W10/P6.1 investigation findings.
     _SENIORITY_SKIP = {"svp", "evp", "vp", "md", "gm", "cto", "ceo", "coo", "caio", "cdo", "ciso"}
     title_tokens = [t for t in norm_t.split() if len(t) > 3 and t not in _SENIORITY_SKIP]
     if not title_tokens:

@@ -62,15 +62,23 @@ def _archetype_seed(archetype: str, company: str, target_role: str = "") -> str:
 
 
 def _title_clause(target_role: str) -> str:
-    """Return a context note about the target role without forcing literal repetition.
-    The job title already appears on the resume header — the headline should add
-    signal, not repeat it.
+    """Return a context note instructing the LLM to weave target_role into the headline.
+
+    P6.1 (2026-05-03): Reversed prior "do NOT repeat" guidance. The headline
+    MUST weave the target_role organically — ATS and recruiter scanners use
+    the headline for title match, and the seniority token (SVP/EVP/VP/etc.)
+    is the single highest-signal ATS keyword. Prior guidance caused headlines
+    like 'SVP Engineering' when target was 'SVP, Agentic Transformation'
+    because the LLM was told not to repeat the title, so it swapped Engineering
+    for Transformation.
     """
     if not target_role.strip():
         return ""
     return (
         f"The candidate is applying for '{target_role.strip()}'. "
-        "Do NOT repeat the job title verbatim — the headline must add new signal. "
+        "Weave the target role (including seniority token like SVP/EVP/VP) "
+        "organically into Segment A. Do NOT prepend mechanically; make it "
+        "read naturally. The seniority token is high-signal for ATS scoring. "
     )
 
 
