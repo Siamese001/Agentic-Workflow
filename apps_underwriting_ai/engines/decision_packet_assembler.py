@@ -302,6 +302,19 @@ class DecisionPacketAssembler:
             model_used=QWEN_LOCAL_MODEL_ID,
             fallback_reason="none",
         )
+        # W3.3 (plan apps-underwriting-ai-activation-e8a3c5): best-effort
+        # frontier-pairing telemetry. NEVER mutates the accepted Qwen
+        # rationale. Runs only when APPS_UW_FRONTIER_PAIRING_ENABLED=1
+        # and the frontier-provider env is configured. All failures are
+        # silent (regulated-domain compliance floor: the Qwen-first
+        # rationale served to the DecisionPacket is final at this point).
+        _pair_with_frontier_best_effort(
+            accepted_qwen_text=text,
+            verdict=verdict,
+            evidence_count=evidence_count,
+            feature_count=feature_count,
+            unresolved=unresolved,
+        )
         return text
 
 
@@ -384,3 +397,51 @@ def _load_rubric_identity_safe() -> tuple[str, int]:
     except Exception as exc:  # guardian: allow-broad-exception -- rubric loader touches disk + yaml + dataclass construction; fail-soft to prior hardcoded identity so the judge marker pipeline never breaks (regulated-domain compliance floor)
         _LOGGER.info("[apps_underwriting_ai] rubric load fallback: %s", exc)
         return "underwriting_decision_rationale_v1", 1
+
+
+def _pair_with_frontier_best_effort(
+    *,
+    accepted_qwen_text: str,
+    verdict: DecisionVerdict,
+    evidence_count: int,
+    feature_count: int,
+    unresolved: int,
+) -> None:
+    """Best-effort frontier-second-judge pairing (W3.3).
+
+    NEVER mutates ``accepted_qwen_text`` — the Qwen-first rationale is
+    already final for the DecisionPacket by the time this runs. Records
+    one :class:`AgreementSample` to the rolling log when both paths
+    produced non-empty text. Silent on every failure path.
+    """
+    if os.environ.get("APPS_UW_FRONTIER_PAIRING_ENABLED") != "1":
+        return
+    try:
+        from apps_underwriting_ai.services import (  # noqa: PLC0415
+            generate_frontier_rationale,
+            record_pair,
+        )
+    except ImportError:
+        return
+    try:
+        frontier_text, frontier_model, _reason = generate_frontier_rationale(
+            verdict_value=verdict.value,
+            evidence_count=evidence_count,
+            feature_count=feature_count,
+            unresolved=unresolved,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- frontier pairing is telemetry-only; ANY failure must fall through silently so the Qwen-first rationale remains the authoritative DecisionPacket.rationale (regulated-domain compliance floor)
+        _LOGGER.info("[apps_underwriting_ai] frontier pairing failed: %s", exc)
+        return
+    if frontier_text is None:
+        return
+    try:
+        record_pair(
+            request_id="",
+            verdict_value=verdict.value,
+            qwen_rationale=accepted_qwen_text,
+            frontier_rationale=frontier_text,
+            frontier_model=frontier_model,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- tracker record is telemetry-only; filesystem or serialization hiccups must never leak into the assembler hot path (regulated-domain compliance floor)
+        _LOGGER.info("[apps_underwriting_ai] agreement record skipped: %s", exc)

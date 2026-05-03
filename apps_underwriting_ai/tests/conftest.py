@@ -19,5 +19,13 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _disable_qwen_rationale_enrichment(monkeypatch: pytest.MonkeyPatch) -> None:
+def _disable_llm_rationale_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Suppress all LLM-touching rationale paths during the contract suite.
+
+    Covers (1) the Qwen-first primary path activated in
+    ``apps-underwriting-ai-activation-e8a3c5`` W1 P1.2 and (2) the
+    frontier-pairing telemetry shim activated in W3.3. Both are re-armed
+    explicitly by the W3 pairing tests via their own monkeypatch.
+    """
     monkeypatch.setenv("APPS_UW_RATIONALE_LLM_DISABLED", "1")
+    monkeypatch.delenv("APPS_UW_FRONTIER_PAIRING_ENABLED", raising=False)
