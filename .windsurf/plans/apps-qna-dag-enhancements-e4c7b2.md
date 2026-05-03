@@ -2,7 +2,7 @@
 
 **Plan ID:** `apps-qna-dag-enhancements-e4c7b2`
 **Owner:** apps_qna
-**Status:** 🟡 Draft — W1 + W2 landed (W3-W5 pending)
+**Status:** � Completed — all 5 waves landed (2026-05-02)
 **Created:** 2026-05-02
 **Scope tier:** T3 (cross-layer — apps_qna router + spine_adapter + templates + tests)
 **Intent:** Evolve `apps_qna` routing from BoW cosine + coarse paste buckets to best-in-class Anthropic/OpenAI 2025 patterns (semantic routing, handoffs with shared memory, retrieve-rerank, graded outcomes, semantic cache) for live ChatGPT 5.5-Thinking Q&A card selection.
@@ -51,9 +51,9 @@ Current DAG (see parent review 2026-05-02):
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Collapse BoW router → unified BGE-M3 path | ~6k | `spine_adapter.classify_section_topic` remains stable; no new dep | **Done (2026-05-02)** | `SemanticRouter.route` and `route_seeding.rank_routes_by_signal` share one embedding surface; all existing tests green; paraphrase pair ("tell me about a time you led architecture" vs "walk me through an architecture decision") lands on same primary route |
 | W2 | W2.1, W2.2, W2.3 | Cross-encoder reranker + graded outcome binding | ~12k | `BAAI/bge-reranker-v2-m3` available via spine (`agentic_core.knowledge.retrieval.bge_reranker_adapter`); additive `update_graded` on spine `BetaPosterior` + `NamespaceBandit`, additive `score` kwarg on domain `update_outcome` | **Done (2026-05-02)** | Reranker pass logged as feature in `apps_qna_pack_lifecycle` (`event_kind=rerank_pass`, `mode=cross_encoder\|bi_encoder_passthrough`, `rerank_delta`); `update_outcome(score: float)` accepts 0..1 grade, emits §29 `event=graded_outcome` marker + `route_outcome_graded`/`paste_outcome_graded` ledger rows; Bernoulli path preserved for back-compat; Thompson posterior reflects graded evidence via `alpha += score; beta += (1-score)` |
-| W3 | W3.1, W3.2 | Panel-shared namespaces + small-LLM intent-classifier fallback | ~10k | Haiku 4.5 / GPT-5-mini gated by env flag (off by default); panel hash stable across rebuilds | Pending | 3-interviewer panel accumulates shared posterior while per-interviewer specificity preserved; LLM fallback emits `ROUTER_DECISION: layer=L0 router=apps_qna_intent_llm …`; ledger row written |
-| W4 | W4.1, W4.2 | Finer paste-budget bucketing + rehearsal semantic cache | ~9k | Bucket function derives from `(panel_size, technical_depth)`; cache writes to pack_lifecycle ledger only, no new store | Pending | Paste-bandit uses `(panel_size, depth) → budget_bucket` fn with ≤8 buckets; `rehearsal_cache` detects same-shape questions across builds; warm-start signal feeds both bandits |
-| W5 | W5.1, W5.2 | Route-purity runtime self-check + paraphrase-robustness eval | ~7k | ChatGPT 5.5-Thinking respects appended self-check directive; card 22 grep post-rehearsal extracts assertion | Pending | Card 01 answer-shape tail emits `route=N, cards_loaded=[X,Y]` assertion; `tests/eval_route_robustness.py` perturbs card-21 questions and reports route-stability metric; card 22 Learnings parses the self-check line |
+| W3 | W3.1, W3.2 | Panel-shared namespaces + small-LLM intent-classifier fallback | ~10k | Haiku 4.5 / GPT-5-mini gated by env flag (off by default); panel hash stable across rebuilds | **Done (2026-05-02)** | 3-interviewer panel accumulates shared posterior while per-interviewer specificity preserved via prefix-disjoint `qna_panel_<hash>` vs `qna_signal_<hash>` namespaces; LLM fallback emits `ROUTER_DECISION: layer=L0 router=apps_qna_intent_llm …` + `apps_qna_pack_lifecycle(event_kind=route_select_llm_fallback)` ledger row on every invocation including env-gated abstains |
+| W4 | W4.1, W4.2 | Finer paste-budget bucketing + rehearsal semantic cache | ~9k | Bucket function derives from `(panel_size, technical_depth)`; cache writes to pack_lifecycle ledger only, no new store | **Done (2026-05-02)** | Paste-bandit exposes `bucket_for(panel_size, depth) → int` with 8 canonical buckets; `choose_paste_set` accepts optional `(panel_size, depth)` kwargs preserving Bernoulli back-compat; `apps_qna.integrations.rehearsal_cache` detects same-shape questions via SHA-256 signature over normalized text; writes `cache_hit`/`cache_miss` rows to existing ledger; `warm_start_signal()` exported as bandit feed surface |
+| W5 | W5.1, W5.2 | Route-purity runtime self-check + paraphrase-robustness eval | ~7k | ChatGPT 5.5-Thinking respects appended self-check directive; card 22 grep post-rehearsal extracts assertion | **Done (2026-05-02)** | Card 01 answer-shape tail emits `SELF_CHECK: route=<N> cards_loaded=[...]` trailer directive; card 22 Learnings has extraction table + pathology mapping; `apps_qna/tests/test_eval_route_robustness.py` measures route-stability across 9 routes × 2 paraphrases each (18 paraphrase questions, 27 total) under BGE-M3: **stability=1.000** far above the 0.80 floor; SLO.md row added |
 
 **Total est. tokens:** ~44k across 5 waves, 11 phases.
 
@@ -66,12 +66,12 @@ Current DAG (see parent review 2026-05-02):
 | W2.1 | Cross-encoder reranker adapter | new `apps_qna/router/reranker.py` | Bi-encoder ceiling on 9-route ranking | ~5k | **Done** |
 | W2.2 | Graded outcome binding | `agentic_core/L0_routing/reasoning/namespace_bandit.py` (additive `update_graded`), `apps_qna/router/route_bandit.py`, `apps_qna/router/paste_bandit.py` | Bernoulli collapses 1-5 rehearsal grade; Thompson gradient starved | ~4k | **Done** |
 | W2.3 | Reranker wiring in route_seeding | `apps_qna/router/route_seeding.py` (`rerank=True` default, env-gated), new `apps_qna/tests/test_w2_reranker_and_graded.py` | Rerank delta not captured as ledger feature | ~3k | **Done** |
-| W3.1 | Panel-shared namespace hashing | `apps_qna/router/route_bandit.py` | 3-interviewer panels don't pool evidence | ~4k | Pending |
-| W3.2 | Small-LLM intent-classifier fallback | new `apps_qna/integrations/intent_classifier.py`, `apps_qna/router/route_seeding.py` | Static `_FALLBACK_ROUTE_ORDER` when bandit + embedding abstain | ~6k | Pending |
-| W4.1 | Dynamic paste-budget buckets | `apps_qna/router/paste_bandit.py` | Coarse {8,12,18,25} merges heterogeneous paste shapes | ~4k | Pending |
-| W4.2 | Rehearsal semantic cache | new `apps_qna/integrations/rehearsal_cache.py`, `apps_qna/integrations/flywheel.py` | Operator rehearses same question 8× with no warm-start signal | ~5k | Pending |
-| W5.1 | Route-purity runtime self-check | `apps_qna/templates/01_routing_manifest.md.j2`, `apps_qna/templates/22_learnings.md.j2` | ChatGPT drifts from ≤3-card rule; no model-side assertion | ~3k | Pending |
-| W5.2 | Paraphrase-robustness eval harness | new `apps_qna/tests/test_eval_route_robustness.py`, `apps_qna/SLO.md` | No measurement of classifier stability across paraphrases | ~4k | Pending |
+| W3.1 | Panel-shared namespace hashing | `apps_qna/router/route_bandit.py` (`_hash_panel_signal` + `choose_routes_for_panel`) | 3-interviewer panels don't pool evidence | ~4k | **Done** |
+| W3.2 | Small-LLM intent-classifier fallback | new `apps_qna/integrations/intent_classifier.py`, `apps_qna/router/route_seeding.py` (stage-3 wiring) | Static `_FALLBACK_ROUTE_ORDER` when bandit + embedding abstain | ~6k | **Done** |
+| W4.1 | Dynamic paste-budget buckets | `apps_qna/router/paste_bandit.py` (`bucket_for` + `choose_paste_set(panel_size, depth)`) | Coarse {8,12,18,25} merges heterogeneous paste shapes | ~4k | **Done** |
+| W4.2 | Rehearsal semantic cache | new `apps_qna/integrations/rehearsal_cache.py` (flywheel integration via shared `apps_qna_pack_lifecycle` ledger) | Operator rehearses same question 8× with no warm-start signal | ~5k | **Done** |
+| W5.1 | Route-purity runtime self-check | `apps_qna/templates/01_routing_manifest.md.j2`, `apps_qna/templates/22_learnings.md.j2` | ChatGPT drifts from ≤3-card rule; no model-side assertion | ~3k | **Done** |
+| W5.2 | Paraphrase-robustness eval harness | new `apps_qna/tests/test_eval_route_robustness.py`, `apps_qna/SLO.md` | No measurement of classifier stability across paraphrases | ~4k | **Done** (stability=1.000, 18/18) |
 
 ## Gap Register
 

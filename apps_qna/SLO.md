@@ -14,6 +14,7 @@ The relevant service-level objectives are **build-time**:
 | Template render success rate | 100% under StrictUndefined for all valid inputs | `pytest apps_qna/tests/test_templates_render.py` |
 | Linter false-positive rate | 0 on the valid_pack fixture | `pytest apps_qna/tests/test_validators.py::test_valid_pack_passes` |
 | Linter false-negative rate | 0 on the 6 invalid_packs fixtures | `pytest apps_qna/tests/test_validators.py::test_invalid_packs_fail` |
+| Paraphrase-robustness (route-stability) — W5.2 | ≥ 0.80 on the 9-route paraphrase sample (≥20 questions) under BGE-M3 | `pytest apps_qna/tests/test_eval_route_robustness.py` |
 
 ## Determinism
 

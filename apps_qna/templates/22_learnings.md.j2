@@ -36,6 +36,29 @@ After the rehearsal, capture:
 
 Repeat for every drift. Carry the deltas forward into the next build.
 
+## Self-check extraction (W5.1)
+Every live answer emits a trailer of shape:
+
+```
+SELF_CHECK: route=<N> cards_loaded=[<primary>,<specialist1>,<specialist2>]
+```
+
+Post-rehearsal, grep the chat transcript for `SELF_CHECK:` lines and
+record one row per answer here:
+
+| # | Question (short) | route= | cards_loaded= | Matched expected? | Pathology (if no) |
+|---|------------------|--------|---------------|-------------------|-------------------|
+| 1 | <paste question> | <N> | [<card>, ...] | ✅ / ❌ | `<P-...>` |
+
+The `route=` and `cards_loaded=` fields are the model's own attestation
+of which route it used and which cards it pulled. Disagreement between
+the model-side self-check and the operator's expected route is a
+`P-DRIFT` pathology (edit card 01 routing or add a tie-breaker before
+the next build). The self-check trailer is the audit hook for route
+purity at rehearsal time — without it, the only signal is the prose
+itself, which is harder to grade deterministically.
+
+
 ## Self-eval workflow
 Run `python -m apps_qna self-eval --pack <output_dir> --previous <prior_pack>` to get an automatic delta report between two builds. The CLI surfaces:
 

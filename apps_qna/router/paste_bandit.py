@@ -52,9 +52,49 @@ _ROUTER_NAME: str = "apps_qna_paste_bandit"
 # bandit treats budgets within a bucket as equivalent.
 _BUDGET_BUCKETS: tuple[int, ...] = (8, 12, 18, 25)
 
+# W4.1 — dynamic buckets derived from (panel_size, technical_depth).
+# At most 8 buckets so posterior evidence does not fragment. Budget
+# arithmetic: starts from the panel-size base and tilts up for deeper
+# technical panels, down for lighter behavioral/executive screens.
+_PANEL_SIZE_BASE: dict[int, int] = {1: 10, 2: 14, 3: 18}
+_DEPTH_DELTA: dict[str, int] = {"light": -2, "medium": 0, "deep": +4}
+_DYNAMIC_BUCKET_CEILING: tuple[int, ...] = (8, 10, 12, 14, 18, 22, 25, 30)
+
+
+def bucket_for(
+    *,
+    panel_size: int,
+    depth: str = "medium",
+) -> int:
+    """Compute the canonical paste bucket for a (panel_size, depth) pair.
+
+    W4.1 (apps-qna-dag-enhancements-e4c7b2): the legacy four-bucket
+    ``(8, 12, 18, 25)`` table folds heterogeneous paste shapes together
+    — a 1-interviewer behavioral screen and a 3-interviewer architecture
+    panel both land in the same bucket whenever the raw budget rounds
+    to the same value. Posterior evidence drifts across shape classes
+    that have nothing to do with each other.
+
+    New derivation: start from a panel-size base (1→10, 2→14, 3→18),
+    add a depth delta (``light=-2``, ``medium=0``, ``deep=+4``), then
+    snap to the nearest ceiling in ``_DYNAMIC_BUCKET_CEILING`` (≤8
+    entries). Unknown depths clamp to ``medium``. The resulting bucket
+    is still an ``int`` so it plugs into the existing
+    ``_hash_signal_with_budget`` namespace projection unchanged.
+    """
+    base = _PANEL_SIZE_BASE.get(max(1, int(panel_size)), 20)
+    delta = _DEPTH_DELTA.get(str(depth).strip().lower(), 0)
+    target = max(1, base + delta)
+    return min(_DYNAMIC_BUCKET_CEILING, key=lambda b: abs(b - target))
+
 
 def _bucket_for_budget(budget: int) -> int:
-    """Snap a paste-budget int to the nearest bucket."""
+    """Snap a paste-budget int to the nearest bucket (legacy path).
+
+    Preserved for back-compat with the W4.1 builder integration, which
+    passes raw budgets. For new call sites prefer ``bucket_for`` which
+    takes semantic ``(panel_size, depth)`` input.
+    """
     if not _BUDGET_BUCKETS:
         return budget
     return min(_BUDGET_BUCKETS, key=lambda b: abs(b - budget))
@@ -141,8 +181,17 @@ class AppsQnaPasteBandit:
         signal: str,
         paste_budget: int,
         admissible_cards: list[str],
+        panel_size: int | None = None,
+        depth: str | None = None,
     ) -> list[CardSelection] | None:
         """Pick the top ``paste_budget`` cards by Thompson sample.
+
+        W4.1: when ``panel_size`` and ``depth`` are provided, the paste
+        bucket is derived from those semantic inputs via ``bucket_for``
+        (finer granularity, ≤8 buckets). Otherwise the legacy
+        ``_bucket_for_budget(paste_budget)`` four-bucket table is used —
+        preserving back-compat for callers that haven't threaded through
+        panel metadata yet.
 
         Returns None on cold-start (caller falls back to the existing
         ``_CARD_SPECS`` paste_order priority).
@@ -152,7 +201,10 @@ class AppsQnaPasteBandit:
         if paste_budget <= 0:
             return []
 
-        bucket = _bucket_for_budget(paste_budget)
+        if panel_size is not None:
+            bucket = bucket_for(panel_size=panel_size, depth=depth or "medium")
+        else:
+            bucket = _bucket_for_budget(paste_budget)
         namespace = _hash_signal_with_budget(signal, bucket)
 
         if self.total_observations(namespace, admissible_cards) < _MIN_OBSERVATIONS_FOR_BANDIT_PRIORITY:
@@ -271,4 +323,5 @@ __all__ = [
     "AppsQnaPasteBandit",
     "BetaPosterior",
     "CardSelection",
+    "bucket_for",
 ]

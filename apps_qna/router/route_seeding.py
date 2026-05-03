@@ -263,6 +263,23 @@ def seed_likely_questions_from_research(
                 mode,
             )
 
+    # Stage 3 (W3.2): optional small-LLM intent-classifier fallback when
+    # the bi-encoder ranking produced zero accepted routes. Env-gated via
+    # APPS_QNA_INTENT_LLM — off by default in test environments. Fail-soft:
+    # a None return falls through to the static hand-curated order below.
+    if not accepted and signal.strip():
+        try:
+            from apps_qna.integrations.intent_classifier import (  # noqa: PLC0415
+                classify_intent,
+            )
+
+            llm_pick = classify_intent(question=signal, registry=registry)
+            if llm_pick:
+                accepted.append(llm_pick)
+                _log.info("route seeding: LLM fallback picked %s", llm_pick)
+        except (ImportError, RuntimeError, ValueError) as exc:
+            _log.debug("intent classifier fallback failed: %r", exc)
+
     # Fill remaining slots from the fallback order (preserving registry
     # validity — only emit ids that exist in the registry).
     valid_ids = {r.id for r in registry.routes}

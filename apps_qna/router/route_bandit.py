@@ -90,6 +90,32 @@ def _hash_signal(signal: str) -> str:
     return f"qna_signal_{h[:12]}"
 
 
+def _hash_panel_signal(signals: list[str]) -> str:
+    """Project a panel of interviewer signals onto a shared namespace (W3.1).
+
+    A panel is a set of interviewers (e.g. a 3-person interview round).
+    W3.1 (apps-qna-dag-enhancements-e4c7b2): in a panel, each interviewer
+    probes the candidate with their own lens, but the routes the panel
+    cares about collectively overlap heavily. Without pooling, each
+    interviewer's bandit cell stays cold forever on low-volume roles.
+
+    Canonicalization: signals are whitespace-stripped, filtered for
+    non-empty entries, and sorted before hashing — so ``[A, B, C]`` and
+    ``[B, C, A]`` and ``[C, A, B]`` all produce the same panel
+    namespace. The empty-panel degenerate case is ``qna_panel_empty``.
+
+    Panel namespaces are DISTINCT from single-interviewer namespaces
+    (prefix ``qna_panel_`` vs ``qna_signal_``) so per-interviewer and
+    per-panel posteriors never alias.
+    """
+    cleaned = sorted(s.strip() for s in signals if s and s.strip())
+    if not cleaned:
+        return "qna_panel_empty"
+    joined = "\x1f".join(cleaned)  # ASCII unit-separator as delimiter
+    h = hashlib.sha256(joined.encode("utf-8")).hexdigest()
+    return f"qna_panel_{h[:12]}"
+
+
 @dataclass(frozen=True)
 class RouteSelection:
     """One bandit-ranked route. Ranks are ordered descending by score."""
@@ -269,6 +295,87 @@ class AppsQnaRouteBandit:
                 metadata={"decision_id": decision_id},
             )
 
+        return selections
+
+    def choose_routes_for_panel(
+        self,
+        signals: list[str],
+        *,
+        top_n: int = 6,
+    ) -> list[RouteSelection] | None:
+        """W3.1: panel-shared variant of ``choose_routes_for_signal``.
+
+        Accepts a list of interviewer signals (one per panel member) and
+        hashes the canonicalized set into a single panel namespace. The
+        bandit then ranks routes using accumulated panel-wide evidence,
+        allowing 3-interviewer panels to pool posteriors while preserving
+        per-interviewer specificity (the individual-signal path is
+        untouched).
+
+        Returns ``None`` on empty panel, cold-start, or empty admissibility.
+        Emits the same §29 paired marker + ledger row as the
+        single-interviewer path, with ``ns=qna_panel_<hash>`` so the
+        audit surface can distinguish panel vs individual decisions.
+        """
+        if not signals:
+            return None
+        namespace = _hash_panel_signal(signals)
+        admissible = self.admissible_route_ids
+        if not admissible:
+            return None
+        if self.total_observations(namespace) < _MIN_OBSERVATIONS_FOR_BANDIT_PRIORITY:
+            _log.debug(
+                "AppsQnaRouteBandit panel cold-start (ns=%s, n_obs=%d)",
+                namespace,
+                self.total_observations(namespace),
+            )
+            return None
+        scored: list[tuple[str, float, float, float]] = []
+        for route in admissible:
+            posterior = self._bandit.posterior(namespace, route)
+            sampled = posterior.sample(self._rng)
+            scored.append((route, sampled, posterior.alpha, posterior.beta))
+        scored.sort(key=lambda r: r[1], reverse=True)
+
+        selections: list[RouteSelection] = []
+        for rank, (route, sampled, alpha, beta) in enumerate(
+            scored[:top_n], start=1
+        ):
+            decision_id = uuid.uuid4().hex
+            mean = alpha / (alpha + beta) if (alpha + beta) > 0 else 0.5
+            selections.append(
+                RouteSelection(
+                    route_id=route,
+                    rank=rank,
+                    posterior_alpha=float(alpha),
+                    posterior_beta=float(beta),
+                    posterior_mean=float(mean),
+                    thompson_sample=float(sampled),
+                    decision_id=decision_id,
+                )
+            )
+            _emit_router_decision_marker(
+                decision_id=decision_id,
+                selected=route,
+                namespace=namespace,
+                posterior_alpha=alpha,
+                posterior_beta=beta,
+            )
+            emit_pack_lifecycle_event(
+                event_kind="route_select",
+                prediction={
+                    "namespace": namespace,
+                    "panel_size": len(signals),
+                    "candidate_routes": admissible,
+                    "selected_route": route,
+                    "rank": rank,
+                    "posterior_alpha": float(alpha),
+                    "posterior_beta": float(beta),
+                    "thompson_sample": float(sampled),
+                },
+                score_band="hit",
+                metadata={"decision_id": decision_id, "panel_mode": True},
+            )
         return selections
 
     def update_outcome(
