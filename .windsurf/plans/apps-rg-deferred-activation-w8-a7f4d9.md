@@ -3,7 +3,7 @@
 - **Plan slug**: `apps-rg-deferred-activation-w8-a7f4d9`
 - **Parent plan**: `apps-rg-runtime-cert-hardening-a3f8c2` (W1-W7 completed 2026-05-03)
 - **Tier**: T2 (activation of skeletons + deferred Author-Gate decisions)
-- **Status**: Draft
+- **Status**: Completed
 - **Authored from**: W6 completion checkpoint; AG-RG-011/012 pending; P6.1 deferred.
 
 ## 1. Goal
