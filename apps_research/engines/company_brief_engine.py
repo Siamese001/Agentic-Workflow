@@ -162,7 +162,10 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         from apps_research.engines.query_decomposer import SubQuery, decompose
         from apps_research.integrations.reranker_adapter import rerank
-        from apps_research.integrations.tavily_retrieval import retrieve
+        from apps_research.integrations.tavily_retrieval import (
+            apply_contextual_prefix,
+            retrieve,
+        )
 
         depth_norm = depth if depth in {"shallow", "standard", "deep"} else "standard"
         try:
@@ -182,8 +185,17 @@ class CompanyBriefEngine(BaseResearchEngine):
                 )
                 return sq.facet, ""
             top = rerank(sq.text, docs, cutoff=5)
+            # Plan §P4.5 — wrap each chunk with Anthropic contextual prefix
+            # so the downstream synthesizer sees the same template audit
+            # grep uses (<document>/<chunk_context>).
             blob = "\n\n".join(
-                f"- {d.title}: {d.snippet} ({d.url})" for d in top if d.snippet
+                apply_contextual_prefix(
+                    f"- {d.title}: {d.snippet} ({d.url})",
+                    doc_title=d.title,
+                    surrounding_text=sq.text,
+                )
+                for d in top
+                if d.snippet
             )
             return sq.facet, blob
 

@@ -43,10 +43,10 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 
 | Wave | Metric | Scope | Checkpoint | Tokens |
 |------|--------|-------|------------|--------|
-| W1 | Topic-driven query decomposition + Tavily retrieval + reranker + wire `company_brief` mode | `apps_research/engines/company_brief_engine.py`, `apps_research/hop_pipeline.py`, retrieval wiring | W1 Discovery ✅, Impl 🔲 | ~26k 🟢 |
-| W2 | URL-cited register + stat-table renderer + `role_profile` mode + parallel tool dispatch | `apps_research/outputs/*renderer.py`, new `role_profile` engine, parallel dispatch in orchestrator | 🔲 | ~22k 🟢 |
-| W3 | `--reference-doc` PDF ingest (512-token chunks / 50 overlap) | new PDF ingest adapter, CLI flag, chunking primitive | 🔲 | ~10k 🟢 |
-| W4 | `long_form` + `corporate_history` timeline + `pe_value_creation` + citation-density gate + contextual-retrieval prefix | new render modes, density-gate CI, contextual-retrieval prefix on all queries | 🔲 | ~26k 🟢 |
+| W1 | Topic-driven query decomposition + Tavily retrieval + reranker + wire `company_brief` mode | `apps_research/engines/company_brief_engine.py`, retrieval wiring | ✅ DONE commit `1bdf1df3b5` | ~26k 🟢 |
+| W2 | URL-cited register + stat-table renderer + `role_profile` mode + parallel tool dispatch | `apps_research/outputs/*renderer.py`, new `role_profile` engine, parallel dispatch | ✅ DONE commit `0b7cc72ec1` | ~22k 🟢 |
+| W3 | `--reference-doc` PDF ingest (512-token chunks / 50 overlap) | PDF ingest adapter, CLI flag, chunking primitive | ✅ DONE commit `8ce4632a68` | ~10k 🟢 |
+| W4 | `long_form` + `corporate_history` timeline + `pe_value_creation` + citation-density gate + contextual-retrieval prefix | render modes, density-gate CI, contextual-retrieval prefix | ✅ DONE (this turn) | ~26k 🟢 |
 
 **Total: ~84k tokens across 4 waves, all GREEN**
 
@@ -70,17 +70,17 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 | P1.3 | Reranker wiring | `apps_research/integrations/reranker_adapter.py` (score-based thin adapter) | PP-3 relevance drift | ~4k | ✅ DONE |
 | P1.4 | Improve `CompanyBriefEngine` content quality (flag `APPS_RESEARCH_RETRIEVAL_V2=1`) | `apps_research/engines/company_brief_engine.py` | V2 retrieval pipeline, backward-compatible | ~6k | ✅ DONE |
 | P1.5 | INVESTIGATION — `hop_*` engines triage | memo `.windsurf/plans/hop-engines-triage-a7e4b2.md` | verdict: ALIVE (dynamic import via HopStageSpec) | ~2k | ✅ DONE |
-| P2.1 | URL-cited source register renderer | `apps_research/outputs/source_register_renderer.py` (new) | PP-4 no URL-level provenance | ~6k | 🔲 TODO |
-| P2.2 | Stat-table renderer | `apps_research/outputs/stat_table_renderer.py` (new) | PP-5 no structured stat surface | ~5k | 🔲 TODO |
-| P2.3 | `role_profile` mode | new engine + hop_pipeline entry | PP-6 no role-scoped output | ~6k | 🔲 TODO |
-| P2.4 | Parallel tool dispatch in orchestrator | `apps_research/integrations/execution_adapter.py` | PP-7 sequential latency | ~5k | 🔲 TODO |
-| P3.1 | `--reference-doc` CLI flag + PDF ingest adapter | `scripts/` or `apps_research/integrations/` (SSOT per §31) | PP-8 no exemplar-calibration path | ~6k | 🔲 TODO |
-| P3.2 | 512-token chunk / 50 overlap chunker | reuse `apps_qna` chunker if present, else new | PP-9 chunk-size mismatch | ~4k | 🔲 TODO |
-| P4.1 | `long_form` render mode | new output engine | PP-10 brief-only output | ~6k | 🔲 TODO |
-| P4.2 | `corporate_history` timeline renderer | new output engine | PP-11 no temporal surface | ~6k | 🔲 TODO |
-| P4.3 | `pe_value_creation` renderer | new output engine | PP-12 no PE-specific lens | ~6k | 🔲 TODO |
-| P4.4 | Citation-density CI gate | new `ops_scripts/ci/check_research_citation_density.py` | PP-13 no density floor enforced | ~4k | 🔲 TODO |
-| P4.5 | Contextual-retrieval prefix on all queries | all retrieval call sites | PP-14 no prefix → context drift | ~4k | 🔲 TODO |
+| P2.1 | URL-cited source register renderer | `apps_research/outputs/source_register_renderer.py` | PP-4 no URL-level provenance | ~6k | ✅ DONE |
+| P2.2 | Stat-table renderer | `apps_research/outputs/stat_table_renderer.py` | PP-5 no structured stat surface | ~5k | ✅ DONE |
+| P2.3 | `role_profile` mode | `apps_research/engines/role_profile_engine.py` + `types/role_profile.py` + CLI | PP-6 no role-scoped output | ~6k | ✅ DONE |
+| P2.4 | Parallel tool dispatch | `company_brief_engine._run_research_v2` via `concurrent.futures.ThreadPoolExecutor` | PP-7 sequential latency | ~5k | ✅ DONE |
+| P3.1 | `--reference-doc` CLI flag + PDF ingest adapter | `apps_research/integrations/pdf_ingest.py` + CLI flag | PP-8 no exemplar-calibration path | ~6k | ✅ DONE |
+| P3.2 | 512-token chunk / 50 overlap chunker | `apps_shared/chunking.py` (tiktoken + whitespace fallback) | PP-9 chunk-size mismatch | ~4k | ✅ DONE |
+| P4.1 | `long_form` render mode | `apps_research/outputs/long_form_renderer.py` + CLI | PP-10 brief-only output | ~6k | ✅ DONE |
+| P4.2 | `corporate_history` timeline renderer | `apps_research/outputs/timeline_renderer.py` + CLI | PP-11 no temporal surface | ~6k | ✅ DONE |
+| P4.3 | `pe_value_creation` renderer | `apps_research/outputs/pe_value_creation_renderer.py` + CLI | PP-12 no PE-specific lens | ~6k | ✅ DONE |
+| P4.4 | Citation-density CI gate | `ops_scripts/ci/check_research_citation_density.py` | PP-13 no density floor enforced | ~4k | ✅ DONE |
+| P4.5 | Contextual-retrieval prefix on all queries | `tavily_retrieval.apply_contextual_prefix` wired into `_run_research_v2` | PP-14 no prefix → context drift | ~4k | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 

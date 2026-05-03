@@ -39,6 +39,9 @@ def build_parser() -> argparse.ArgumentParser:
             "thought_leadership",
             "company",
             "role_profile",
+            "long_form",
+            "corporate_history",
+            "pe_value_creation",
         ],
         help="Artifact mode",
     )

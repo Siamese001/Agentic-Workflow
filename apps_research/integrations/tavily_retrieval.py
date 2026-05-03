@@ -19,6 +19,25 @@ _log = logging.getLogger("apps_research.tavily_retrieval")
 _ENV_VAR = "TAVILY_API_KEY"
 
 
+def apply_contextual_prefix(
+    chunk: str,
+    *,
+    doc_title: str = "",
+    surrounding_text: str = "",
+) -> str:
+    """Wrap ``chunk`` with Anthropic contextual-retrieval template (plan §P4.5).
+
+    Produces ``<document>{doc_title}</document>\\n<chunk_context>{surrounding_text}</chunk_context>\\n{chunk}``.
+    Empty doc_title / surrounding_text render as empty tags (preserves
+    template shape for grep-based audits).
+    """
+    return (
+        f"<document>{doc_title}</document>\n"
+        f"<chunk_context>{surrounding_text}</chunk_context>\n"
+        f"{chunk}"
+    )
+
+
 @dataclass(frozen=True)
 class RetrievedDoc:
     """A single Tavily search hit, normalized for downstream rerank."""
