@@ -216,9 +216,13 @@ def _run_narrative_pipeline(
 
     fail_critical_on_unaccepted = _strict_critical_enabled()
 
-    # HOP-4A Headline — target_role is woven INTO the 9-14 word headline
-    # so the later ATS title-match pass does not need to prepend (which
-    # would push the line over the single-line budget).
+    # HOP-4A Headline — target_role is woven INTO the 9-14 word headline.
+    #
+    # AG-RG-013 (resolved 2026-05-03, option C — Hybrid):
+    #   owner.headline is the STATIC brand line and MUST NOT be overwritten
+    #   per-run. HOP-4A output is preserved as a candidate artifact in the
+    #   run_dir under headline_candidate.json. AG-RG-014 will reconcile
+    #   HOP-4A authority over executive_summary against HOP-4B.
     head_res = generate_headline(
         company=company,
         archetype=archetype,
@@ -231,7 +235,26 @@ def _run_narrative_pipeline(
         target_role=target_role,
         archive_dir=archive_dir,
     )
-    resume_data["headline"] = head_res.winner.text
+    # AG-RG-013 option C: do NOT overwrite resume_data["headline"] — preserve
+    # the static brand line. Persist HOP-4A output as a side artifact.
+    if archive_dir is not None:
+        try:
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            (archive_dir / "headline_candidate.json").write_text(
+                json.dumps(
+                    {
+                        "section_id": head_res.section_id,
+                        "winner_text": head_res.winner.text,
+                        "target_role": target_role,
+                        "ag_decision": "AG-RG-013/C",
+                        "static_headline_preserved": str(resume_data.get("headline") or ""),
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+        except OSError:  # guardian: allow-os-error -- side artifact is best-effort
+            pass
     report.add_verdict(_verdict_from(head_res.section_id, "critical", head_res))
     _abort_if_critical(head_res, fail_critical_on_unaccepted)
 
