@@ -226,6 +226,14 @@ def check_catalog_self_consistency(catalog: dict[str, Any]) -> list[str]:
             f"header={catalog.get('positive_control_req_id')!r}, "
             f"row={canaries[0]['req_id']!r}"
         )
+    # 5. requirement_count lockstep check (W1.P1 of apps-fortknox-evidence-repackage)
+    declared_count = catalog.get("requirement_count")
+    actual_count = len(reqs)
+    if declared_count != actual_count:
+        violations.append(
+            f"requirement_count mismatch: declared={declared_count}, "
+            f"actual={actual_count} (len(requirements))"
+        )
     return violations
 
 

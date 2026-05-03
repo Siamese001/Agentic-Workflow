@@ -3,7 +3,7 @@
   "generated_at_utc": "2026-05-02T20:41:00+00:00",
   "generator": "hand-authored (W1 of plan apps-fort-knox-parity-c5d9a3)",
   "purpose": "Canonical apps_* end-to-end certification requirement universe. SSOT consumed by scripts/compile_apps_e2e_signoff.py (W3). Sibling to certification/requirements_source.json (agentic_core Fort Knox).",
-  "requirement_count": 33,
+  "requirement_count": 45,
   "positive_control_req_id": "APPS-REQ-001",
   "final_hundred_percent_groups": [
     "Apps_e2e 100 Percent Standard"

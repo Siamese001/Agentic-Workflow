@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""W7 of plan apps-fort-knox-parity-c5d9a3 \u2014 apps_e2e Fort Knox CI gate.
+"""W7 of plan apps-fort-knox-parity-c5d9a3 — apps_e2e Fort Knox CI gate.
 
-Constitutional \u00a732 (apps_e2e arm). Runs the consolidated W6 generator
+Constitutional §32 (apps_e2e arm). Runs the consolidated W6 generator
 against the live apps_e2e Fort Knox surface and asserts every headline
 gate passes:
 
   1. positive_control_status == "PASS"   (canary, APPS-REQ-001)
-  2. trust_level \u2208 SIGNED-set
+  2. trust_level ∈ SIGNED-set
   3. signature_verification_status == "VERIFIED" (live re-verify)
   4. mutation_rejection.summary.accepted == 0 (zero accepts)
   5. blocked == 0 AND not_verified == 0
   6. live_signature_re_verify exit 0
+  7. catalog lockstep: requirement_count == len(requirements) (W1.P2)
+  8. dirty-tree discipline: git_dirty must be false OR DIRTY_TREE_ACK set (W3.P1)
 
 The W6 generator already encodes these as `all_gates_pass`; this gate
 re-runs the generator and reads the verdict. Re-running guarantees the
@@ -20,7 +22,8 @@ Fail-closed: exit 1 on any FAIL. Fail-open only via
 `FORTKNOX_DISCIPLINE_BYPASS=1` (shared with the agentic_core arm).
 
 Advisory rule: `.windsurf/rules/fortknox-certification-discipline.md`
-+ plan `.windsurf/plans/apps-fort-knox-parity-c5d9a3.md` \u00a713\u2013\u00a718.
++ plan `.windsurf/plans/apps-fort-knox-parity-c5d9a3.md` §13–§18.
++ plan `.windsurf/plans/apps-fortknox-evidence-repackage-30f5ab.md` W1-W3.
 """
 from __future__ import annotations
 
@@ -123,6 +126,29 @@ def main() -> int:
         failures.append(f"row_blocked={h.get('row_blocked')} > 0")
     if (h.get("row_not_verified") or 0) > 0:
         failures.append(f"row_not_verified={h.get('row_not_verified')} > 0")
+
+    # W1.P2: Catalog lockstep check (requirement_count == actual rows)
+    signoff = bundle.get("signoff", {})
+    catalog_summary = signoff.get("summary", {})
+    declared_total = catalog_summary.get("total", 0)
+    actual_signed_off = (catalog_summary.get("signed_off", 0) +
+                         catalog_summary.get("signed_off_with_waiver", 0) +
+                         catalog_summary.get("blocked", 0) +
+                         catalog_summary.get("not_verified", 0))
+    if declared_total != actual_signed_off and actual_signed_off > 0:
+        failures.append(
+            f"catalog lockstep: declared_total={declared_total} != "
+            f"actual_rows={actual_signed_off}"
+        )
+
+    # W3.P1: Dirty-tree discipline
+    git_dirty = signoff.get("git_dirty", False)
+    dirty_ack = os.environ.get("DIRTY_TREE_ACK", "").strip()
+    if git_dirty and not dirty_ack:
+        failures.append(
+            "git_dirty=true without DIRTY_TREE_ACK env var "
+            "(set DIRTY_TREE_ACK=<comma-list> to acknowledge)"
+        )
 
     if failures or not h.get("all_gates_pass"):
         print(

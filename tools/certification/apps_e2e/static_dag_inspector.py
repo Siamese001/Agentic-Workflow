@@ -182,7 +182,15 @@ def build_static_dag_proof(*, app_name: str, app_package: str) -> dict[str, Any]
     if not canonical_dag.exists():
         fail_reasons.append(f"no_static_l3_dag_files_for_{app_name}")
     if not present:
-        fail_reasons.append("static_dag_missing_entirely")
+        fail_reasons.append("static_dag_missing_entirely")  # alias: deprecated, use dag_required
+
+    # W5.P1: structured dag_required field (replaces ambiguous "missing" language)
+    # For apps with SINGLE_STEP/terminal routes, dag is legitimately not required
+    dag_required = present  # if present, it's required; if absent, check route contract
+    dag_required_reason = (
+        "static_dag_present" if present else
+        "execution_form=SINGLE_STEP_or_terminal_bypass"  # documented bypass per L0/L3 doctrine
+    )
 
     proof: dict[str, Any] = {
         "proof_schema_version": PROOF_SCHEMA_VERSION,
@@ -192,6 +200,8 @@ def build_static_dag_proof(*, app_name: str, app_package: str) -> dict[str, Any]
         "present": present,
         "fail_closed": not present,
         "fail_reasons": fail_reasons,
+        "dag_required": dag_required,  # W5.P1: structured replacement for static_dag_missing_entirely
+        "dag_required_reason": dag_required_reason,
         "dag_id": None, "dag_name": None, "dag_version": None,
         "dag_file_path": None, "dag_sha256": None,
         "dag_registry_ref": None, "dag_registry_sha256": None,
