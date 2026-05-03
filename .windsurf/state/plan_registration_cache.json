@@ -1,41 +1,95 @@
 {
-  "fetched_at": "2026-05-03T20:34:27Z",
-  "fetched_at_epoch": 1777840467.7419379,
+  "fetched_at": "2026-05-03T23:34:31Z",
+  "fetched_at_epoch": 1777851271.5982947,
   "plans": {
-    "backlog-linkage-followup-c2e9f3": {
-      "status": "Draft",
-      "page_id": "35527693-f55c-81f4-ae89-e265f1e419f2",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "apps-rg-runtime-cert-hardening-a3f8c2": {
-      "status": "Draft",
-      "page_id": "35527693-f55c-81ad-92cc-d2cc1737b517",
+    "apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4": {
+      "status": "In Progress",
+      "page_id": "35527693-f55c-81a7-bc48-eb60afb2e72c",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "apps-core-contract-rectification-a8f3c2": {
-      "status": "Draft",
+      "status": "In Progress",
       "page_id": "35527693-f55c-8158-b6b5-d78b6295ba55",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "agentic-core-signoff-hardening-b8e2c4": {
+      "status": "Not Started",
+      "page_id": "35527693-f55c-81cc-ac57-ccb31fb8b099",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-adg-tier1-5-span-naming-a31bcf": {
+      "status": "Not Started",
+      "page_id": "35527693-f55c-81c9-b810-dfd28dafc6e5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "three-bucket-and-apps-spine-closeout-a4f8c2": {
+      "status": "Waiting",
+      "page_id": "35327693-f55c-8158-95ad-d11142db1e84",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "qwen-rollout-followup-burndown-d2a4f8": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81d8-ba30-e3ccce8ebf6a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-four-req-enforcement-c4d2a8": {
+      "status": "Live",
+      "page_id": "35527693-f55c-81f7-b2dd-ce6c44fa0d62",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81d4-aa94-f58ec5c54bcf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "chromadb-retrieval-remaining-gaps-b4e7c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81a9-9d13-ec3303013d46",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-deferred-activation-w8-a7f4d9": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-816e-9156-ffb06bb41ff0",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-r1b-semantic-cache-hardening-c8d4a2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-811c-8d18-c6c8ad9e44f5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "backlog-linkage-followup-c2e9f3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f4-ae89-e265f1e419f2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-runtime-cert-hardening-a3f8c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81ad-92cc-d2cc1737b517",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-fortknox-evidence-repackage-30f5ab": {
-      "status": "Draft",
+      "status": "Completed",
       "page_id": "35527693-f55c-812e-bdd6-fdbda5e3f39e",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "unlinked-backlog-orphan": {
-      "status": "Draft",
+      "status": "Completed",
       "page_id": "35527693-f55c-81f0-be31-dad3f36fa674",
       "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "agentic-core-signoff-hardening-b8e2c4": {
-      "status": "Draft",
-      "page_id": "35527693-f55c-81cc-ac57-ccb31fb8b099",
-      "exists_on_disk": true,
       "has_ai_summary": true
     },
     "windsurf-maintenance-2026-q2-0f3564": {
@@ -59,12 +113,6 @@
     "runtime-adg-tier2h-tier3-c4d8e2": {
       "status": "Completed",
       "page_id": "35527693-f55c-8141-bda6-eb06f7472781",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "runtime-adg-tier1-5-span-naming-a31bcf": {
-      "status": "Draft",
-      "page_id": "35527693-f55c-81c9-b810-dfd28dafc6e5",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -159,7 +207,7 @@
       "has_ai_summary": true
     },
     "chromadb-bge-retrieval-hardening-e9aa09": {
-      "status": "Draft",
+      "status": "Retired",
       "page_id": "35527693-f55c-81f2-93db-e8a189a63ec0",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -488,12 +536,6 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "qwen-rollout-followup-burndown-d2a4f8": {
-      "status": "Waiting",
-      "page_id": "35427693-f55c-81d8-ba30-e3ccce8ebf6a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
     "apps-completeness-followups-287d2a": {
       "status": "Completed",
       "page_id": "35427693-f55c-8134-81ad-fd373a3ed284",
@@ -635,12 +677,6 @@
     "llm-containment-hooks-rules-c7a91b": {
       "status": "Completed",
       "page_id": "35327693-f55c-81c1-8f7f-d51979ceb51c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "three-bucket-and-apps-spine-closeout-a4f8c2": {
-      "status": "Waiting",
-      "page_id": "35327693-f55c-8158-95ad-d11142db1e84",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
