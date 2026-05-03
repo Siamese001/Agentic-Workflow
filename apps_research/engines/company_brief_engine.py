@@ -12,12 +12,21 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
+
+# Plan §P1.4 — V2 retrieval pipeline behind feature flag.
+_RETRIEVAL_V2_FLAG = "APPS_RESEARCH_RETRIEVAL_V2"
+
+
+def _v2_enabled() -> bool:
+    """True when the V2 retrieval pipeline is opted-in via env flag."""
+    return os.environ.get(_RETRIEVAL_V2_FLAG, "").strip() in {"1", "true", "yes", "on"}
 
 _log = logging.getLogger(__name__)
 
@@ -100,7 +109,10 @@ class CompanyBriefEngine(BaseResearchEngine):
         depth = str(self._extract(input_data, "depth", default="standard"))
 
         jd_facets = self._load_jd_facets(jd_anchor)
-        research_findings = self._run_research(topic=topic, depth=depth)
+        if _v2_enabled():
+            research_findings = self._run_research_v2(topic=topic, depth=depth)
+        else:
+            research_findings = self._run_research(topic=topic, depth=depth)
         synthesized = self._synthesize(
             topic=topic, findings=research_findings, jd_facets=jd_facets, depth=depth
         )
@@ -137,6 +149,42 @@ class CompanyBriefEngine(BaseResearchEngine):
             if isinstance(v, list):
                 facets.extend(str(x) for x in v if x)
         return facets
+
+    def _run_research_v2(self, *, topic: str, depth: str) -> Dict[str, str]:
+        """V2 retrieval pipeline: decompose → retrieve → rerank → assemble.
+
+        Plan §P1.4. Degrades to empty blobs when TAVILY_API_KEY or SDK
+        unavailable — caller synthesis step handles empty input gracefully.
+        """
+        from apps_research.engines.query_decomposer import decompose
+        from apps_research.integrations.reranker_adapter import rerank
+        from apps_research.integrations.tavily_retrieval import retrieve
+
+        depth_norm = depth if depth in {"shallow", "standard", "deep"} else "standard"
+        try:
+            sub_queries = decompose(topic, depth=depth_norm)  # type: ignore[arg-type]
+        except ValueError as exc:
+            self.logger.warning("[CompanyBriefEngine v2] decompose failed: %s", exc)
+            return {}
+
+        findings: Dict[str, str] = {}
+        for sq in sub_queries:
+            try:
+                docs = retrieve(sq.text, top_k=10)
+            except (RuntimeError, ValueError) as exc:
+                self.logger.info(
+                    "[CompanyBriefEngine v2] retrieve skipped for facet=%s: %s",
+                    sq.facet,
+                    exc,
+                )
+                findings[sq.facet] = ""
+                continue
+            top = rerank(sq.text, docs, cutoff=5)
+            blob = "\n\n".join(
+                f"- {d.title}: {d.snippet} ({d.url})" for d in top if d.snippet
+            )
+            findings[sq.facet] = blob
+        return findings
 
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
         """Best-effort Tavily research per facet.

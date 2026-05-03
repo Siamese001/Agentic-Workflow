@@ -65,11 +65,11 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | Topic-driven query decomposition primitive | `apps_research/engines/query_decomposer.py` (new); `apps_research/config/agent_spec_config.py` | PP-1 no decomposition; GAP-R2 Anthropic-post params | ~5k | 🔲 TODO |
-| P1.2 | Tavily retrieval adapter | new `apps_research/integrations/tavily_retrieval.py`; env `TAVILY_API_KEY`; MCP serialization compliance (§25) | PP-2 no external retrieval beyond local | ~5k | 🔲 TODO |
-| P1.3 | Reranker wiring | reuse existing reranker from `apps_qna/router/reranker.py` via `apps_shared/` or new adapter | PP-3 relevance drift | ~4k | 🔲 TODO |
-| P1.4 | Wire `company_brief` mode end-to-end | `apps_research/engines/company_brief_engine.py`, `apps_research/hop_pipeline.py` | fan_in=4 but mode not default-routable | ~6k | 🔲 TODO |
-| P1.5 | ~~Prune G14 dead-code `ResearchRetrievalEngine`~~ — **DOWNGRADED to INVESTIGATION** | `apps_research/engines/research_retrieval_engine.py` | G14 verdict invalidated by GAP-R5 (14 `resolves_callsite` + 8 `emits_side_effect` in fresh snapshot); needs semantic-edge blast-radius analysis post-taxonomy-land | ~8k | 🔲 TODO — ⚠️ BLOCKED on GAP-R4 + GAP-R5 |
+| P1.1 | Topic-driven query decomposition primitive | `apps_research/engines/query_decomposer.py` | PP-1 no decomposition | ~5k | ✅ DONE |
+| P1.2 | Tavily retrieval adapter | `apps_research/integrations/tavily_retrieval.py`; env `TAVILY_API_KEY`; `.env.example` entry | PP-2 no external retrieval | ~5k | ✅ DONE |
+| P1.3 | Reranker wiring | `apps_research/integrations/reranker_adapter.py` (score-based thin adapter) | PP-3 relevance drift | ~4k | ✅ DONE |
+| P1.4 | Improve `CompanyBriefEngine` content quality (flag `APPS_RESEARCH_RETRIEVAL_V2=1`) | `apps_research/engines/company_brief_engine.py` | V2 retrieval pipeline, backward-compatible | ~6k | ✅ DONE |
+| P1.5 | INVESTIGATION — `hop_*` engines triage | memo `.windsurf/plans/hop-engines-triage-a7e4b2.md` | verdict: ALIVE (dynamic import via HopStageSpec) | ~2k | ✅ DONE |
 | P2.1 | URL-cited source register renderer | `apps_research/outputs/source_register_renderer.py` (new) | PP-4 no URL-level provenance | ~6k | 🔲 TODO |
 | P2.2 | Stat-table renderer | `apps_research/outputs/stat_table_renderer.py` (new) | PP-5 no structured stat surface | ~5k | 🔲 TODO |
 | P2.3 | `role_profile` mode | new engine + hop_pipeline entry | PP-6 no role-scoped output | ~6k | 🔲 TODO |

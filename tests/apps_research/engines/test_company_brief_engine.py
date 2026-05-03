@@ -4,8 +4,33 @@ from __future__ import annotations
 
 import pytest
 
-from apps_research.engines.company_brief_engine import CompanyBriefEngine
+from apps_research.engines.company_brief_engine import CompanyBriefEngine, _v2_enabled
 from apps_rg.types.company_research import CompanyBrief
+
+
+def test_v2_flag_off_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    """V2 retrieval pipeline is opt-in via APPS_RESEARCH_RETRIEVAL_V2 (plan §P1.4)."""
+    monkeypatch.delenv("APPS_RESEARCH_RETRIEVAL_V2", raising=False)
+    assert _v2_enabled() is False
+
+
+def test_v2_flag_on_when_set(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
+    assert _v2_enabled() is True
+
+
+def test_v2_path_offline_degrades_gracefully(monkeypatch: pytest.MonkeyPatch) -> None:
+    """V2 path with no TAVILY_API_KEY degrades to stub synthesis (plan §P1.4 acceptance).
+
+    Ensures the feature-flag ON case does not regress offline test environments.
+    """
+    for k in ("TAVILY_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
+    engine = CompanyBriefEngine()
+    payload = engine.execute({"topic": "TestCo", "depth": "shallow"})
+    brief = CompanyBrief.model_validate(payload)
+    assert brief.company == "TestCo"
 
 
 @pytest.fixture
