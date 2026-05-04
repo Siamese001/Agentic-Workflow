@@ -1,0 +1,1789 @@
+{
+  "compiler_path": "scripts/compile_apps_e2e_signoff.py",
+  "compiler_sha256": "5c1ed871780d19efc8300a92e1a4dd7f1444bd8247b7ba1f7986bcb095a9de64",
+  "compiler_version": "apps_e2e_fortknox-v1.0",
+  "evidence_assertions_sha256": "1baad3e95da6b1b0ab31a84264d78083f68a1f59f7473a679ad79095eade7823",
+  "evidence_digest": "bc46b6682fe30725093c09a85ccf506af81a8d329fc5ed5f56aa3d0fe46622a8",
+  "git_commit": "d1493fa3ef71933c0d1856f94aa7f01633cee07f",
+  "git_dirty": true,
+  "positive_control_status": "PASS",
+  "requirements_source_sha256": "3a75957efe49c8768a2443c0287ce656f23d5f8331621f63f18f57be877161fa",
+  "row_digest": "b3610e6c3c9d26baa54509d2fe809f52dc721af1533850101b18f69b505d03d5",
+  "rows": [
+    {
+      "assertion_ids": [
+        "ASRT-7a82991b3da7f488d70e9e1236a432dde3de440b"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_WIRING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "apps_eval/config/domain_contract/eval_rubrics.yaml",
+          "artifact_sha256": "06c327bb005e8516de1030e6b7765e197dbf9e92dda57d212c675ead41559463",
+          "assertion_id": "ASRT-7a82991b3da7f488d70e9e1236a432dde3de440b",
+          "name": "app_domain_contract_active",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-001",
+      "required_controls": [
+        "app_domain_contract_active"
+      ],
+      "requirement_group": "domain-wiring",
+      "row_digest": "8d506771be8857fbf4f9210bc97bd3b23d967b3b638b98d6376ceda768453851",
+      "row_evidence_sha256": "9da2b141e181c4d581cd59dae4a7b1645c4052a49b67f9d82dc0c048acc0474b",
+      "title": "Every runtime apps_* has an active domain contract (rubric + threshold + grader roster)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-788aba17306ea0340052d36695ffc5fe54552ba3"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-788aba17306ea0340052d36695ffc5fe54552ba3",
+          "name": "app_specific_evaluator_invoked",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-001"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-002",
+      "required_controls": [
+        "app_specific_evaluator_invoked"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "a8a2af8b64f8afd0c7c050087c32adb49556f47d1569819554d77ed855c1f16e",
+      "row_evidence_sha256": "9a6d3953bcd5400663f2e3f8135355cc7c32dff41fdce38513d5d580c7e4cf6e",
+      "title": "App-specific evaluator is live-invoked on cert runs"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-bcd0d352940cc5555aaccf6bbd85433e0d424baa"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-bcd0d352940cc5555aaccf6bbd85433e0d424baa",
+          "name": "exit_packet_app_eval_bound",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-003",
+      "required_controls": [
+        "exit_packet_app_eval_bound"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "0dbf2286d1642b5f4b4f80510f4f6f5b6fd0519dde02d9557e6483ceae493ebd",
+      "row_evidence_sha256": "e601b5fa1ce77a4b3fc23b21515ea8c52c936a49132369667e2308ba8e126dc8",
+      "title": "Exit packet binds app-specific eval verdict"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-9ab4c9bc7d5c49352d40594a9dea693ac29f0243"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-9ab4c9bc7d5c49352d40594a9dea693ac29f0243",
+          "name": "x1_domain_gate_consumed",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-003"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-004",
+      "required_controls": [
+        "x1_domain_gate_consumed"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "330497e1d281b8e2bca7175e4e5a300f218f157fdbc1ab6b77734702c04cb805",
+      "row_evidence_sha256": "87028a4ba9ccd711f1ca2d7f007e219875b0b58ef2be513cc640730e9e878d3a",
+      "title": "X1 consumes domain metric verdicts"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-a27047b3a13eb4e83ede8330c07f518f58116bc7"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-a27047b3a13eb4e83ede8330c07f518f58116bc7",
+          "name": "x2_domain_aggregate_present",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-004"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-005",
+      "required_controls": [
+        "x2_domain_aggregate_present"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "546b1dc2ef18c905dd005c24abafa88b72511a0d9c1369b601d7718d80e29e73",
+      "row_evidence_sha256": "4d5a399d02669b5d10d29963c4e0fb7115a3f34a4f5421381f82e43cc57e7515",
+      "title": "X2 aggregates domain verdicts"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-03072cfc2edc7e75e80b21297e841dcb6f167231"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_PROOF",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_negative_controls_runtime/apps_eval_negative_trace.json",
+          "artifact_sha256": "4b6bcf7dd59c76bb7df899389b36147fe971396a2ee79ce81e78eb7004d6a8bc",
+          "assertion_id": "ASRT-03072cfc2edc7e75e80b21297e841dcb6f167231",
+          "name": "x3_domain_block_proved",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-005"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-006",
+      "required_controls": [
+        "x3_domain_block_proved"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "4d4ad60d01199012b5a3afa0deccb3e4a11d415d9c97a998443118c4435bf879",
+      "row_evidence_sha256": "7e0768572eb824baa3747fe282043b03d4aeab0fa25579159e385703e6f23ea3",
+      "title": "X3 blocks bad domain output (negative control)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-c827817129657ebd8521a5b48a8702e3e52c6b3a"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "apps_eval/cert/fec_producer.py",
+          "artifact_sha256": "2f01d1685aa628c6e8a64a3ede99d0773dfc64af8ff1b82b4ba148ce8b71ce1a",
+          "assertion_id": "ASRT-c827817129657ebd8521a5b48a8702e3e52c6b3a",
+          "name": "c0_fec_bound",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-003"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-007",
+      "required_controls": [
+        "c0_fec_bound"
+      ],
+      "requirement_group": "domain-evidence",
+      "row_digest": "5828022bbb6544b18d612703f4f651fc6944a6d91aa8ef0d4b943fb96600a35d",
+      "row_evidence_sha256": "d8fcaa01107338033c15907fefbc12c25484165a6c9fd40c9761dbb91beae639",
+      "title": "C0 FEC is bound when evidence is required"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-3baac81d81e00521d56a120f5e19efb7a7262755",
+        "ASRT-d3fa203b1b9dbc42de23ce3cfab35d27e93555c7"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "apps_eval/config/domain_contract/grader_roster.yaml",
+          "artifact_sha256": "016b458465d3cdb1d0b2f2f7a91aa3aa9845acdf7ca1e40a4267a4ea688572b9",
+          "assertion_id": "ASRT-3baac81d81e00521d56a120f5e19efb7a7262755",
+          "name": "judge_roster_populated",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "apps_eval/config/domain_contract/eval_rubrics.yaml",
+          "artifact_sha256": "06c327bb005e8516de1030e6b7765e197dbf9e92dda57d212c675ead41559463",
+          "assertion_id": "ASRT-d3fa203b1b9dbc42de23ce3cfab35d27e93555c7",
+          "name": "unknown_fail_closed",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-001"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-008",
+      "required_controls": [
+        "judge_roster_populated",
+        "unknown_fail_closed"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "bc0744d258fad607eaab8ce48066fc94e5a8a26af245ef85ddec81aa60f234f6",
+      "row_evidence_sha256": "342da2e821da07992f1060ba532a559764cc89e1b606c3a897785f01d545a747",
+      "title": "Judge roster populated and UNKNOWN fail-closed"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-7498fe313e13dd835b712b6be3c5f34151470693"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_PROOF",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-7498fe313e13dd835b712b6be3c5f34151470693",
+          "name": "domain_otel_fields_complete",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-009",
+      "required_controls": [
+        "domain_otel_fields_complete"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "f79d3bc24603a735a210d2b1ae548fa17971ead865352bc1316229ab38eac0e3",
+      "row_evidence_sha256": "60df26c0a32a25c9f99b49d80f8a70ef6d9c249b9b2a70df5e6700ea5428941b",
+      "title": "Domain OTEL proof present"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-fc16d7a59f97a0a68938fe352f5ca3d459183c1c"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_PROOF",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_negative_controls/apps_eval_fabrication.json",
+          "artifact_sha256": "666c30fa93005cedfe6f5988c3ea0c51949de8909682aab7b81c6d3c2c0c865d",
+          "assertion_id": "ASRT-fc16d7a59f97a0a68938fe352f5ca3d459183c1c",
+          "name": "domain_negative_control_blocks",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-001"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-010",
+      "required_controls": [
+        "domain_negative_control_blocks"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "bebb046581c5d91713da4a0ce3be6c36385c5f735a51aad18477f3a0d8736d1f",
+      "row_evidence_sha256": "1e72260553c623768c9a254a17cdde603cb0523d718ea4f3ea2f537ed7224510",
+      "title": "Domain negative control does not allow bad output"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-3680e23492577a19ef59c5a8717f271888fc610c"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "apps_eval/config/cert_route_registry.yaml",
+          "artifact_sha256": "beea261563e456a26e51fc1f9525c622692018a077cc18d4a5bf27481b4842e7",
+          "assertion_id": "ASRT-3680e23492577a19ef59c5a8717f271888fc610c",
+          "name": "single_step_exit_invoked",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-011",
+      "required_controls": [
+        "single_step_exit_invoked"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "f3072f879e94bc31e5954a015a85287f516df67a6ce72a6df6e2c3438fb286c9",
+      "row_evidence_sha256": "facba5d2994a4a9188d8b8669791ae63830d2edee2c799ee0f17c07af2681634",
+      "title": "SINGLE_STEP routes still run Exit enforcement"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-e9f4ba2092618776ace5849e213ec40b71bad9b3"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_DOMAIN_GATING",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/apps_otel_traces/apps_eval_cert_trace.json",
+          "artifact_sha256": "f7dc6a3785014c4baadd9952de00f219372ea1f2097da73ca29c76075f6854df",
+          "assertion_id": "ASRT-e9f4ba2092618776ace5849e213ec40b71bad9b3",
+          "name": "l2_artifact_evaluable",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-DOM-001"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-DOM-012",
+      "required_controls": [
+        "l2_artifact_evaluable"
+      ],
+      "requirement_group": "domain-runtime",
+      "row_digest": "55d426de87248da654e28d52809f7620b34a68ef6efba6f745514db7e4eef1fc",
+      "row_evidence_sha256": "3c20ee3a8de53534f6a1cc06e3cf79beac9f0fd8cd71a385578d04ed36bd8fd8",
+      "title": "L2 sealed artifact carries Exit-evaluable evidence"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-f5f4287fa37cae54b30fad1438a94d55de539f2f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_POSITIVE_CONTROL",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "certification/apps_e2e_requirements_source.json",
+          "artifact_sha256": "3a75957efe49c8768a2443c0287ce656f23d5f8331621f63f18f57be877161fa",
+          "assertion_id": "ASRT-f5f4287fa37cae54b30fad1438a94d55de539f2f",
+          "name": "catalog_self_consistency",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": true,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-001",
+      "required_controls": [
+        "catalog_self_consistency"
+      ],
+      "requirement_group": "canary",
+      "row_digest": "8db8714f9f2e971f8c2baa9df4f2ef3907a9dc22b72dbd81cb43c975bef44242",
+      "row_evidence_sha256": "fdd9f7032ce1b10e5758afa1c620a52c61f4bcca4a87852480dd69ffcc583ec3",
+      "title": "Compiler positive-control canary (catalog self-consistency)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-18d92655ee5676adf6eda519b2bc378711e67a9a",
+        "ASRT-caf8117e3da35ff6224d6adfb5020df102f99f95"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_BUNDLE_EMISSION",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-18d92655ee5676adf6eda519b2bc378711e67a9a",
+          "name": "bundle_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-caf8117e3da35ff6224d6adfb5020df102f99f95",
+          "name": "bundle_schema_valid",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-002",
+      "required_controls": [
+        "bundle_emission",
+        "bundle_schema_valid"
+      ],
+      "requirement_group": "bundle-emission",
+      "row_digest": "8e41e2cd062cb14995b4a4cbd4db65ebea5a653c81cee75c000e9777d2b8d190",
+      "row_evidence_sha256": "99277da897873f4e409ef36de4eba37737febf1d3d16720e45442e9f9ca3a782",
+      "title": "All runtime apps emit an apps_e2e_proof bundle (smoke gate)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-fdcf4097f9c6d0c4146ffd2719948f25c74b1158"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-fdcf4097f9c6d0c4146ffd2719948f25c74b1158",
+          "name": "bundle_schema_valid",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-003",
+      "required_controls": [
+        "bundle_schema_valid"
+      ],
+      "requirement_group": "bundle-schema",
+      "row_digest": "29f26821ca7a6b96a32111d84bf1d81b43382107fd2c9709fcde86c52b7d6059",
+      "row_evidence_sha256": "27b87e3dcb71176ba8769ed7035da6f97c585353bdf14ca5267a9c784d650422",
+      "title": "Bundle schema validity"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-08cef5082c08d171eb78c83052a7b0d82bb2a34f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-08cef5082c08d171eb78c83052a7b0d82bb2a34f",
+          "name": "app_name_consistency",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-004",
+      "required_controls": [
+        "app_name_consistency"
+      ],
+      "requirement_group": "integrity",
+      "row_digest": "bf723bfde18b6f116f4b6926e9cccf589255cb2c3db4608d58dea4f48d5d0515",
+      "row_evidence_sha256": "575e46b6e61e8b02b2a9508a4cfc2cf686d536096f729c093a72456deb2b15e4",
+      "title": "app_name consistency across AppSpec and bundle payload"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-9b69280fac8a0943176415dc786697f02436160f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-9b69280fac8a0943176415dc786697f02436160f",
+          "name": "entrypoint_valid",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-005",
+      "required_controls": [
+        "entrypoint_valid"
+      ],
+      "requirement_group": "integrity",
+      "row_digest": "5e616a222047a994a18f5b195228314f3ed74e624a72924b156551c2c35cc836",
+      "row_evidence_sha256": "9ef25bfaa017d1a39535582c2678059d61e3f90a427ae7fa859e1b6ca729e488",
+      "title": "entrypoint_command validity"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-f937786a3d8c4d86e96331afb457048b360c65e3"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-f937786a3d8c4d86e96331afb457048b360c65e3",
+          "name": "harness_pass_semantics",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-006",
+      "required_controls": [
+        "harness_pass_semantics"
+      ],
+      "requirement_group": "integrity",
+      "row_digest": "b15ec0717f6803f1ecb369a2048c01f85bc5aed15e1e1c15a3b5cc1e64f04042",
+      "row_evidence_sha256": "c626ff73afdd120eab33a431258e1f8272bc624952370488a08b80363c0d4e9c",
+      "title": "harness_pass semantics"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-eb2ac52d5caa078bda9ebff9a720230b13a7cb6f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-eb2ac52d5caa078bda9ebff9a720230b13a7cb6f",
+          "name": "timestamp_iso_utc",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P2",
+      "req_id": "APPS-REQ-007",
+      "required_controls": [
+        "timestamp_iso_utc"
+      ],
+      "requirement_group": "integrity",
+      "row_digest": "4cb698998f70b7ffdc2cd55f3e8eda257a078905735d4c3bb5f008c97db169fd",
+      "row_evidence_sha256": "1d8e962ef7e06a497bf3acc9980eb11dc25694a626e45895bdf05d582d0213d3",
+      "title": "Timestamps are ISO UTC"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-c1065be15fa52da2786b053830dd040caba97e86"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-c1065be15fa52da2786b053830dd040caba97e86",
+          "name": "id_threading",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-008",
+      "required_controls": [
+        "id_threading"
+      ],
+      "requirement_group": "threading",
+      "row_digest": "9476e21017061e769d7098576348247195d3f45fe77cb35a00f12c647cb55b51",
+      "row_evidence_sha256": "39bae1abada7bd2f749ce0ccb3d3ce219c4f2b870288f65d1b7ddbaeadbc7e23",
+      "title": "ID threading (run_id, request_id, trace_root) across receipts"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-54eaebc08aec5a0554f4b71f06422f0745280987",
+        "ASRT-e089b82e0fe9818c5ddc90565d20b2c01eef92b8"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-e089b82e0fe9818c5ddc90565d20b2c01eef92b8",
+          "name": "runtime_artifact_presence",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-54eaebc08aec5a0554f4b71f06422f0745280987",
+          "name": "required_receipt_present",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-009",
+      "required_controls": [
+        "runtime_artifact_presence",
+        "required_receipt_present"
+      ],
+      "requirement_group": "artifacts",
+      "row_digest": "5d7f486288f410496aba28c87906bd29365e385c1183602d5dcba1bb1a75af7b",
+      "row_evidence_sha256": "daf45e6cbfc451c5b20cf07e380d90077c1e3f00952a22840a6c66bda8128248",
+      "title": "Runtime artifact presence (all required receipt refs)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-63a9714d69a3bd873dee50cdde9ba3abecc2c218"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-63a9714d69a3bd873dee50cdde9ba3abecc2c218",
+          "name": "runtime_artifact_hash_binding",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-009"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-010",
+      "required_controls": [
+        "runtime_artifact_hash_binding"
+      ],
+      "requirement_group": "artifacts",
+      "row_digest": "6ae4cb2005542c13769e9afeb31a4e5ce8d967b09bd50dc2cc8fc3517a578eb3",
+      "row_evidence_sha256": "be0bdbe9efa3e86a867d9bd9bbc75a0e5d03a75a3b5469ecb0b96a7b08ba88ba",
+      "title": "Runtime artifact hash binding"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-b5454000f9e229c98138999a762337b27203a4ae"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-b5454000f9e229c98138999a762337b27203a4ae",
+          "name": "static_dag_on_disk",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-011",
+      "required_controls": [
+        "static_dag_on_disk"
+      ],
+      "requirement_group": "static-dag",
+      "row_digest": "288fb88984bbd1f08e84a3f00b8abd4bfeb5015e9ccd8eb2c85e5967728cfe84",
+      "row_evidence_sha256": "6d7e070e64327e1e0635690b63b2accf816442175fba5517811a4f80a6b4a672",
+      "title": "Static DAG proof on disk (managed-workflow apps)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-6d796c2939c89ac443de21fec29171b78035ce45"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-6d796c2939c89ac443de21fec29171b78035ce45",
+          "name": "static_dag_hash_binding",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-011"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-012",
+      "required_controls": [
+        "static_dag_hash_binding"
+      ],
+      "requirement_group": "static-dag",
+      "row_digest": "41e12061a048537489b6062ac23b77fba3ebeb6857736d3bd599ba3c618c13ab",
+      "row_evidence_sha256": "cdddec2e27ab45501c914728e78ba0e83899199624604ff69d62a6536febd531",
+      "title": "Static DAG hash binding (L3 receipt \u2194 bundle \u2194 inline summary)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-83b7c709e8a0729d522923fcbb5714cb1c37669a"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-83b7c709e8a0729d522923fcbb5714cb1c37669a",
+          "name": "route_contract_consistency",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-013",
+      "required_controls": [
+        "route_contract_consistency"
+      ],
+      "requirement_group": "route-contract",
+      "row_digest": "eefdfe90f0828d3d625f5d687c9548f1b2e4f9842505c63276cb30e13bacc01a",
+      "row_evidence_sha256": "ce24e56c5d7d9112304d0fe101f036490fd034cd5ae3c16dbca4a3f518e27418",
+      "title": "Route contract consistency (no bypass-id mismatch, no duplicate routes)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-a1c14b56b14c22ac5f07b8d3386681147d1c4011"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-a1c14b56b14c22ac5f07b8d3386681147d1c4011",
+          "name": "l6_ordering",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-014",
+      "required_controls": [
+        "l6_ordering"
+      ],
+      "requirement_group": "ordering",
+      "row_digest": "d6e15c5456e37edb60bff2fd309d272c48edb550d3c205a863163e87cca91e88",
+      "row_evidence_sha256": "a4ce45db06128208c070d0d60d810347cc38e4febff840760ad3c8f7894de0e2",
+      "title": "L6 emission ordering (L6 observed after Exit)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-daffdee2843955ad5529454303a49650359e11c6"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-daffdee2843955ad5529454303a49650359e11c6",
+          "name": "exit_disposition_valid",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-015",
+      "required_controls": [
+        "exit_disposition_valid"
+      ],
+      "requirement_group": "exit",
+      "row_digest": "51195d4d4c16a4451e8ea0cc783ecb45d3b5c631d455bf19b8bd40da3f8d6fae",
+      "row_evidence_sha256": "0dcab9d2e87c918551aa9f7fa5ab3544e3c26a36c6e1f7face8402071d3e86a4",
+      "title": "Exit disposition value is from approved set"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-569e9af79d60b8cf560d5ba8954885a7bf2c20bc"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-569e9af79d60b8cf560d5ba8954885a7bf2c20bc",
+          "name": "overlay_consistency",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P2",
+      "req_id": "APPS-REQ-016",
+      "required_controls": [
+        "overlay_consistency"
+      ],
+      "requirement_group": "overlay",
+      "row_digest": "19440595c6affcec420484258f93fc04c773aa292615e25385bc11ba3981f01e",
+      "row_evidence_sha256": "06d74b95660f6ed49afba264887ead7698f960f3b8ccc9b1ac78852ab071a8bd",
+      "title": "Overlay consistency with success"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-857d0e6e11aa46b5a853255bc13252b53bb2c93b"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-857d0e6e11aa46b5a853255bc13252b53bb2c93b",
+          "name": "no_stale_artifacts",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P2",
+      "req_id": "APPS-REQ-017",
+      "required_controls": [
+        "no_stale_artifacts"
+      ],
+      "requirement_group": "hygiene",
+      "row_digest": "4b51c8f9109b48057a55a5e8b4af33b424437248c1f5c04ec84f18a21ee2202a",
+      "row_evidence_sha256": "66ef4c6a74d598d414ac5378bd452c8ebfd50855e2735b7cc6df8f0d50e26764",
+      "title": "No stale artifacts in run_dir"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-23601e5eb00ab5abd5fe0b33cbafd277d25e11f9",
+        "ASRT-ee40059997473ef27123edca59b9ff99dc88045c"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_NEGATIVE_CONTROL",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_e2e_proof.json",
+          "artifact_sha256": "b3f45313631936ae244ba77050ac8e4b870f586ad26d9599e8e06629e2393e41",
+          "assertion_id": "ASRT-23601e5eb00ab5abd5fe0b33cbafd277d25e11f9",
+          "name": "no_synthetic_trace",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_mutation_rejection_report.json",
+          "artifact_sha256": "04da14f2e5bd35c04e5b7c38c68ae7a9d788dad29c67a62b6377df53fa327a0e",
+          "assertion_id": "ASRT-ee40059997473ef27123edca59b9ff99dc88045c",
+          "name": "mutation_rejection",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-018",
+      "required_controls": [
+        "no_synthetic_trace",
+        "mutation_rejection"
+      ],
+      "requirement_group": "negative-controls",
+      "row_digest": "12254db7809d0416ebd32937edb40ef407fbdbebf0824367c180fd94c59d69aa",
+      "row_evidence_sha256": "2f4763466f2386e10392f0f692c732de4e2b3acf907e771d12b7c5888528f21e",
+      "title": "No synthetic trace in certified bundle (negative control)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-017a79a21c3d92d49a01091ab8f2d3dd246168e0",
+        "ASRT-26d413bb69c169cb2a06d6d554bfde47fa003f0f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_NEGATIVE_CONTROL",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_e2e_proof.json",
+          "artifact_sha256": "b3f45313631936ae244ba77050ac8e4b870f586ad26d9599e8e06629e2393e41",
+          "assertion_id": "ASRT-26d413bb69c169cb2a06d6d554bfde47fa003f0f",
+          "name": "no_mock_mode",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_mutation_rejection_report.json",
+          "artifact_sha256": "04da14f2e5bd35c04e5b7c38c68ae7a9d788dad29c67a62b6377df53fa327a0e",
+          "assertion_id": "ASRT-017a79a21c3d92d49a01091ab8f2d3dd246168e0",
+          "name": "mutation_rejection",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-019",
+      "required_controls": [
+        "no_mock_mode",
+        "mutation_rejection"
+      ],
+      "requirement_group": "negative-controls",
+      "row_digest": "a11ccc872ca2bd58820958abc0252d5bbffbea61ec220f5265dd594ff4b728cd",
+      "row_evidence_sha256": "726aa225452ad11ae564b33859d600505e354ac58f4482a8a6fea82f21124a33",
+      "title": "No mock_mode in certified bundle (negative control)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-4ae0e7385d4ae6ac2824fcae0510616254066fd9",
+        "ASRT-aeb7da9765096f328220d2771ecb5c56a7f7e48e"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_NEGATIVE_CONTROL",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_eval/apps_eval_e2e_proof.json",
+          "artifact_sha256": "b3f45313631936ae244ba77050ac8e4b870f586ad26d9599e8e06629e2393e41",
+          "assertion_id": "ASRT-4ae0e7385d4ae6ac2824fcae0510616254066fd9",
+          "name": "no_fixture_runtime_mode",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_mutation_rejection_report.json",
+          "artifact_sha256": "04da14f2e5bd35c04e5b7c38c68ae7a9d788dad29c67a62b6377df53fa327a0e",
+          "assertion_id": "ASRT-aeb7da9765096f328220d2771ecb5c56a7f7e48e",
+          "name": "mutation_rejection",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-020",
+      "required_controls": [
+        "no_fixture_runtime_mode",
+        "mutation_rejection"
+      ],
+      "requirement_group": "negative-controls",
+      "row_digest": "dcf8f2f5ab5896d7e7b3d5066a655ae70f36d1347c27e81ec6ccb2f14e2c5c1b",
+      "row_evidence_sha256": "7f0db7b3f1313308466b9fa70f7e7710379458ee6a02f441b1946d48ab53ae04",
+      "title": "No fixture runtime_mode in certified bundle (negative control)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-7f5db6d1e777ad5703d8b360fbb8a87deaf10fb3"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-7f5db6d1e777ad5703d8b360fbb8a87deaf10fb3",
+          "name": "runtime_mode_in_approved_live_modes",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-021",
+      "required_controls": [
+        "runtime_mode_in_approved_live_modes"
+      ],
+      "requirement_group": "runtime-modes",
+      "row_digest": "6c043f24b44a59061233106fb4b4494b3f55c6fb52045abb1e68dc6171154e87",
+      "row_evidence_sha256": "3fed7d686d84eabac0ef9e52933eb8d30bbc57379b26b044d910157e7bd35282",
+      "title": "runtime_mode is in approved_live_modes under strict"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-7156cfea707763d36f5e47eeaf16eee9640abbb3"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-7156cfea707763d36f5e47eeaf16eee9640abbb3",
+          "name": "certification_level_invariant",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-022",
+      "required_controls": [
+        "certification_level_invariant"
+      ],
+      "requirement_group": "level-invariant",
+      "row_digest": "90a3a7f3516546169d24906c4c13d4fe86f1f967dec3ca7e58e2a22ec33cd2e4",
+      "row_evidence_sha256": "09af3f9f38bbcd5f918384a9aa29603ec53dd378fd04e522569660e654377300",
+      "title": "certification_level invariant (level \u2194 success \u2194 blocking_gaps)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-4a2b7fa9237985e04b9ab397001eaf698e22a707"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_STATIC_CONTRACT",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-4a2b7fa9237985e04b9ab397001eaf698e22a707",
+          "name": "artifact_kind_valid",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": false,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-023",
+      "required_controls": [
+        "artifact_kind_valid"
+      ],
+      "requirement_group": "artifact-kind",
+      "row_digest": "d63f8f8f0cc181f58450667ca465d5bfe45a6159cf3602d9856839c029d023b2",
+      "row_evidence_sha256": "63700882c47d926fb0f8d3ab2473c381a6ea7e974532172613fe25f2476732e6",
+      "title": "artifact_kind schema validity (strict)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-1fd41b3b4f6c49f2de67b300dc09e20614914966"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-1fd41b3b4f6c49f2de67b300dc09e20614914966",
+          "name": "required_receipt_present",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-009"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P0",
+      "req_id": "APPS-REQ-024",
+      "required_controls": [
+        "required_receipt_present"
+      ],
+      "requirement_group": "receipts",
+      "row_digest": "75e683aefb3461d85d08213537c0a74e5475358d56e09916929c5086735113e9",
+      "row_evidence_sha256": "9a8d212a6e610b6f89f07896ecf82d13491e6d1aec067f48642da8c339aaaa9c",
+      "title": "required_receipts present per AppSpec"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-55c873958eb12881e78b100484e75dc9195c62ee",
+        "ASRT-67c7125de903a52845c1956f38e14d4ed67cc896"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-55c873958eb12881e78b100484e75dc9195c62ee",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-67c7125de903a52845c1956f38e14d4ed67cc896",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-012",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_rg",
+      "priority": "P0",
+      "req_id": "APPS-REQ-025",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "94120dc8081713db48587afd18ceb2101dd1d7c86c5f412391059625566806dd",
+      "row_evidence_sha256": "25ca64415d6c4a17db3e886715e785928f8a66113d9e25606b82ec2af2c14350",
+      "title": "apps_rg spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-37f20741751943ebcd89a9bb54181b9d680a5363",
+        "ASRT-aa06c26df02e8ef82cda84d3d509b657d28d7db7"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-aa06c26df02e8ef82cda84d3d509b657d28d7db7",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-37f20741751943ebcd89a9bb54181b9d680a5363",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_exec",
+      "priority": "P0",
+      "req_id": "APPS-REQ-026",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "fd88259479e12451f031dccbce31e0bb2729f1168a90242eb1e5fb23b1cb6386",
+      "row_evidence_sha256": "909dc7f6c327ffdcbfe368ad845aeba76b6808341cf42a19050ef7574e1b26f9",
+      "title": "apps_exec spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-9fb29d7ef44dc55a1058343e1fa75c757540910d",
+        "ASRT-c0078e80371b40632fac25e65fc7fcd01d7d29dd"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-c0078e80371b40632fac25e65fc7fcd01d7d29dd",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-9fb29d7ef44dc55a1058343e1fa75c757540910d",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_eval",
+      "priority": "P0",
+      "req_id": "APPS-REQ-027",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "14fc27560cfe1f2c8653b5da068373b9ad7d9b867bfb5f552870527e49d4c240",
+      "row_evidence_sha256": "1475530416f63527a4713a15b9455fbe06512e3ade54a695ab31f488acd5b9d6",
+      "title": "apps_eval spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-be1890c973604a3333eb210433786df28146d5b5",
+        "ASRT-e165f6eb94f8502e769449a143da5bdecc2c19b2"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-e165f6eb94f8502e769449a143da5bdecc2c19b2",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-be1890c973604a3333eb210433786df28146d5b5",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_research",
+      "priority": "P0",
+      "req_id": "APPS-REQ-028",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "179646195197f3681331850f96cf18f3a95eabf32d05b42cd76aeb257d444afa",
+      "row_evidence_sha256": "08fad11b7b9ccd54ec706688ed4143efa7483687f7abfc93aaa9d7ec44e7315c",
+      "title": "apps_research spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-33e0017dc2316331bc88abf0d4885b5039d0e43f",
+        "ASRT-ab5dd91d33cc594512e1ac64731e1298ce4a3473"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-33e0017dc2316331bc88abf0d4885b5039d0e43f",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-ab5dd91d33cc594512e1ac64731e1298ce4a3473",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_rfp",
+      "priority": "P0",
+      "req_id": "APPS-REQ-029",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "d76877cf487baf94194815f33c210b6972a36d778ae514e0e271cd1f36b790c6",
+      "row_evidence_sha256": "b1297b8c66bd181f1d238910b2b9560fe34df9913a3eae9dbed0449873158fe3",
+      "title": "apps_rfp spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-53d8d2d2a15c4c18716fc99aa94d18df543605bc",
+        "ASRT-82f8b48cf855af30cb5b34a7aedf2cac93cbf5bd",
+        "ASRT-aae894257b7dbd71e305794317441028b4962dbd"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-53d8d2d2a15c4c18716fc99aa94d18df543605bc",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-aae894257b7dbd71e305794317441028b4962dbd",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-82f8b48cf855af30cb5b34a7aedf2cac93cbf5bd",
+          "name": "static_dag_hash_binding",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-011",
+        "APPS-REQ-012",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_lic",
+      "priority": "P0",
+      "req_id": "APPS-REQ-030",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass",
+        "static_dag_hash_binding"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "b90dd608a8fd2757354adfe54ec5ddf8620dc81f943e41b0b9dbd3399e510ebc",
+      "row_evidence_sha256": "8898243bc77ae2154512d6edb718b376917a72cdd1e21271149222a41fd82ce4",
+      "title": "apps_lic spine certification (managed workflow + static DAG)"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-8980b76b593851a119273dd70bceb5944fa367da",
+        "ASRT-d285d551ffa862e2e23a22358d7b140347fe2726"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-8980b76b593851a119273dd70bceb5944fa367da",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-d285d551ffa862e2e23a22358d7b140347fe2726",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_qna",
+      "priority": "P1",
+      "req_id": "APPS-REQ-031",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "903515fe0fdd9c96436172b900f18d8e829f089f44d473066600e87ce0e2a9fc",
+      "row_evidence_sha256": "b5e7859820b5cd73a704dcbcf3e29561327b2cccc158e70d5029c44a8ba26d47",
+      "title": "apps_qna spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-56afbb5618f94d2cc860ed05529c813636fcc4f3",
+        "ASRT-63d6fe0669be1985b363897e8e6e616f9f13759f"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_SPINE_CERTIFIED",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-56afbb5618f94d2cc860ed05529c813636fcc4f3",
+          "name": "spine_emission",
+          "passed": true,
+          "reason": null
+        },
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/verifier_report.json",
+          "artifact_sha256": "4b6d0196cd21a29fc916041350b9632904f1edd0da8668d85887f42e2332e92b",
+          "assertion_id": "ASRT-63d6fe0669be1985b363897e8e6e616f9f13759f",
+          "name": "strict_verifier_pass",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-008",
+        "APPS-REQ-010",
+        "APPS-REQ-022",
+        "APPS-REQ-024"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": "apps_underwriting_ai",
+      "priority": "P1",
+      "req_id": "APPS-REQ-032",
+      "required_controls": [
+        "spine_emission",
+        "strict_verifier_pass"
+      ],
+      "requirement_group": "per-app",
+      "row_digest": "ce39bcc6522571ab04434c5ca9a88e2ea28d98087da24f7f7a07d2c4f94e4d60",
+      "row_evidence_sha256": "2af9ba2d42b749096831d35d544233964b9e853d6c9b8c2d3a07413d5ba7b43a",
+      "title": "apps_underwriting_ai spine certification"
+    },
+    {
+      "assertion_ids": [
+        "ASRT-47e22c9eae158efa494bfff266099c3b8197002b"
+      ],
+      "blocking_gap": null,
+      "claim_type": "APPS_MATRIX_GOVERNANCE",
+      "computed_status": "SIGNED_OFF",
+      "controls": [
+        {
+          "artifact_path": "artifacts/certification/apps_e2e/apps_e2e_matrix.json",
+          "artifact_sha256": "4d32798545a694abb366f5774b6556f08ee1decaf96765e76a94a9cd98f6223e",
+          "assertion_id": "ASRT-47e22c9eae158efa494bfff266099c3b8197002b",
+          "name": "matrix_integrity",
+          "passed": true,
+          "reason": null
+        }
+      ],
+      "depends_on_req_ids": [
+        "APPS-REQ-002"
+      ],
+      "evaluated_at_utc": "2026-05-03T22:28:06+00:00",
+      "is_final_hundred_percent_row": true,
+      "is_positive_control": false,
+      "owner_app": null,
+      "priority": "P1",
+      "req_id": "APPS-REQ-033",
+      "required_controls": [
+        "matrix_integrity"
+      ],
+      "requirement_group": "matrix-governance",
+      "row_digest": "d59add17dcd8bca5b2a646c1681d356f915294d6bdd2d5310596fe03bfd12cdb",
+      "row_evidence_sha256": "85e39129fa8f2d41cb4cb72d09c0f8d7fa67833a7ad8bcc04a3b3763e6901065",
+      "title": "apps_e2e_matrix integrity (sha256 + row count)"
+    }
+  ],
+  "run_timestamp_utc": "2026-05-03T22:28:06+00:00",
+  "schema_version": "apps_e2e_fortknox-v1",
+  "source_repo_root": "C:/Git/Agentic-Workflow-FRESH",
+  "summary": {
+    "blocked": 0,
+    "by_claim_type": {
+      "APPS_BUNDLE_EMISSION": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 1,
+        "signed_off_with_waiver": 0,
+        "total": 1
+      },
+      "APPS_DOMAIN_GATING": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 8,
+        "signed_off_with_waiver": 0,
+        "total": 8
+      },
+      "APPS_DOMAIN_PROOF": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 3,
+        "signed_off_with_waiver": 0,
+        "total": 3
+      },
+      "APPS_DOMAIN_WIRING": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 1,
+        "signed_off_with_waiver": 0,
+        "total": 1
+      },
+      "APPS_MATRIX_GOVERNANCE": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 1,
+        "signed_off_with_waiver": 0,
+        "total": 1
+      },
+      "APPS_NEGATIVE_CONTROL": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 3,
+        "signed_off_with_waiver": 0,
+        "total": 3
+      },
+      "APPS_POSITIVE_CONTROL": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 1,
+        "signed_off_with_waiver": 0,
+        "total": 1
+      },
+      "APPS_SPINE_CERTIFIED": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 20,
+        "signed_off_with_waiver": 0,
+        "total": 20
+      },
+      "APPS_STATIC_CONTRACT": {
+        "blocked": 0,
+        "not_verified": 0,
+        "signed_off": 7,
+        "signed_off_with_waiver": 0,
+        "total": 7
+      }
+    },
+    "canary_status": "SIGNED_OFF",
+    "not_verified": 0,
+    "percent_signed_off": 100.0,
+    "signed_off": 45,
+    "signed_off_with_waiver": 0,
+    "total": 45
+  },
+  "trust_level": "INTEGRITY_PROOF"
+}

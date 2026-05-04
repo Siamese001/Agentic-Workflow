@@ -2,12 +2,12 @@
   "compiler_path": "scripts/compile_requirement_signoff.py",
   "compiler_sha256": "dffbb16a9d46e5bdb8871fec5122f8d5e9da6d8ff4ec0525dfd51d53aa4032cc",
   "compiler_version": "fortknox-v2.0",
-  "evidence_assertions_sha256": "27d6528886eaf53da4e5f3bd685e0454c476b391453a9e901fec591c1249f8ed",
-  "evidence_digest": "b032d56b1009865597428f29d26f630a0db69445c0e1bcca93f17161a56dfd43",
-  "git_commit": "34446a483bbe03556d2bf525fdc7b00c3360fefd",
+  "evidence_assertions_sha256": "6601ec66e51b151a7339b0025646ad17f0183a5f88d80d875bb401b1f36926ae",
+  "evidence_digest": "317b4dad9426c7999ef6e25b9f6b01903c9e195be54f051cc5ebe98c41b034af",
+  "git_commit": "1cf2050595bc3dfc635719f7a7de51d65e176f84",
   "git_dirty": true,
   "requirements_source_sha256": "f9049d6d9a4bf0d8622e7574ef289402b43249797b04ecdbce05d66762edb6de",
-  "row_digest": "01c42b0efaf6f736ba8dc48804227415260a94c45b60d796ccba8fa5806b97d3",
+  "row_digest": "33a52f89b8a89cc9ba769ff6e17d047f0cf3f1ffe38dfe03af43c9009f202cf1",
   "rows": [
     {
       "assertion_ids": [
@@ -63,7 +63,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-001",
@@ -133,7 +133,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-002",
@@ -203,7 +203,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-003",
@@ -273,7 +273,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-004",
@@ -343,7 +343,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-005",
@@ -413,7 +413,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-006",
@@ -501,7 +501,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-010",
@@ -573,7 +573,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-011",
@@ -661,7 +661,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-012",
@@ -733,7 +733,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-013",
@@ -803,7 +803,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-014",
@@ -891,7 +891,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-015",
@@ -954,7 +954,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-020",
@@ -1014,7 +1014,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-021",
@@ -1074,7 +1074,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-022",
@@ -1134,7 +1134,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-023",
@@ -1221,7 +1221,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-024",
@@ -1293,7 +1293,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-030",
@@ -1372,7 +1372,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-031",
@@ -1443,7 +1443,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-032",
@@ -1513,7 +1513,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-033",
@@ -1583,7 +1583,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-034",
@@ -1653,7 +1653,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-040",
@@ -1723,7 +1723,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-041",
@@ -1793,7 +1793,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-042",
@@ -1863,7 +1863,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-043",
@@ -1933,7 +1933,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-044",
@@ -2003,7 +2003,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-045",
@@ -2073,7 +2073,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-046",
@@ -2161,7 +2161,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-047",
@@ -2251,7 +2251,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-048",
@@ -2341,7 +2341,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-049",
@@ -2431,7 +2431,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-050",
@@ -2521,7 +2521,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-051",
@@ -2611,7 +2611,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-052",
@@ -2701,7 +2701,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-053",
@@ -2791,7 +2791,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-054",
@@ -2863,7 +2863,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-055",
@@ -2951,7 +2951,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-056",
@@ -3014,7 +3014,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-057",
@@ -3074,7 +3074,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-058",
@@ -3143,7 +3143,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-059",
@@ -3213,7 +3213,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-060",
@@ -3301,7 +3301,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-061",
@@ -3391,7 +3391,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-062",
@@ -3463,7 +3463,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-063",
@@ -3542,7 +3542,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-064",
@@ -3613,7 +3613,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-065",
@@ -3683,7 +3683,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-066",
@@ -3753,7 +3753,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-067",
@@ -3832,7 +3832,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-070",
@@ -3912,7 +3912,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-071",
@@ -4010,7 +4010,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-072",
@@ -4083,7 +4083,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-073",
@@ -4153,7 +4153,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-080",
@@ -4223,7 +4223,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-081",
@@ -4293,7 +4293,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-082",
@@ -4381,7 +4381,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-083",
@@ -4453,7 +4453,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-084",
@@ -4523,7 +4523,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-090",
@@ -4593,7 +4593,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-091",
@@ -4663,7 +4663,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-092",
@@ -4733,7 +4733,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-093",
@@ -4803,7 +4803,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-094",
@@ -4873,7 +4873,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-095",
@@ -4961,7 +4961,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-096",
@@ -5033,7 +5033,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-097",
@@ -5103,7 +5103,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-100",
@@ -5173,7 +5173,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-101",
@@ -5243,7 +5243,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-102",
@@ -5313,7 +5313,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-103",
@@ -5383,7 +5383,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-110",
@@ -5453,7 +5453,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-111",
@@ -5523,7 +5523,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-112",
@@ -5584,7 +5584,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-113",
@@ -5644,7 +5644,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-114",
@@ -5713,7 +5713,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-115",
@@ -5801,7 +5801,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": true,
       "priority": "P1",
       "req_id": "RTC-REQ-120",
@@ -5873,7 +5873,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": true,
       "priority": "P1",
       "req_id": "RTC-REQ-121",
@@ -5943,7 +5943,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": true,
       "priority": "P1",
       "req_id": "RTC-REQ-122",
@@ -6013,7 +6013,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-123",
@@ -6083,7 +6083,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-124",
@@ -6153,7 +6153,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-125",
@@ -6223,7 +6223,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-126",
@@ -6293,7 +6293,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-127",
@@ -6381,7 +6381,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-128",
@@ -6453,7 +6453,7 @@
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P1",
       "req_id": "RTC-REQ-129",
@@ -6471,12 +6471,12 @@
     },
     {
       "assertion_ids": [
-        "ASRT-2f5c91a582c7b4a6e3ab0d430aff0d4965ddc406",
-        "ASRT-52aa6ed586d3b3258104abb35be417a66f6ae932",
-        "ASRT-72a7c7947b0766a3518824898d92ff8cacc91463",
-        "ASRT-7d77b4a74e8cd2bc46db4a4b7a9b1b2fc9e01e6b",
-        "ASRT-b4c15b3373a0532c60033ac01553685e5092329f",
-        "ASRT-c39b427de1ddd83871459f24c2f65cd79f708583"
+        "ASRT-2cc20387ac164e43b2b5de4f948ac9184c67f4f1",
+        "ASRT-37f8d5fc79f8b0b98d3c8ceb492f3113db5003e4",
+        "ASRT-44848223a48bba4b614fac7ace298e0951ccc760",
+        "ASRT-aa58524da59e3d599fb57eb53358262b6b2e074e",
+        "ASRT-d730f06dbd9770fc8cdda9110fcfd14c52edb624",
+        "ASRT-dc58d233f66c55c6d18d30fcaab41ff8693addfd"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6484,55 +6484,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-c39b427de1ddd83871459f24c2f65cd79f708583",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-dc58d233f66c55c6d18d30fcaab41ff8693addfd",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-b4c15b3373a0532c60033ac01553685e5092329f",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-44848223a48bba4b614fac7ace298e0951ccc760",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-72a7c7947b0766a3518824898d92ff8cacc91463",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-2cc20387ac164e43b2b5de4f948ac9184c67f4f1",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-2f5c91a582c7b4a6e3ab0d430aff0d4965ddc406",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-d730f06dbd9770fc8cdda9110fcfd14c52edb624",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-52aa6ed586d3b3258104abb35be417a66f6ae932",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-aa58524da59e3d599fb57eb53358262b6b2e074e",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-130/l7_plane_evidence.json",
-          "artifact_sha256": "d9b4803657bdbed28db0d9f0606c46485d0c932b4ed73209498553c4769402c4",
-          "assertion_id": "ASRT-7d77b4a74e8cd2bc46db4a4b7a9b1b2fc9e01e6b",
+          "artifact_sha256": "c174b655a80ec8173d52697e50edac0af5e9e37ec10b5dd7bd85fcdf545bae28",
+          "assertion_id": "ASRT-37f8d5fc79f8b0b98d3c8ceb492f3113db5003e4",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-130",
@@ -6545,18 +6545,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability",
-      "row_digest": "cfc28f0f0b62e87ec9809b35601df4b084f25975ac4f54166320967fc5fa29cb",
-      "row_evidence_sha256": "890da1da2c2867fb972509b4aa7c5156e3163d3385f83e37f9f1d6812d6b0103",
+      "row_digest": "5ea4f613f04f092347b57dad2a44896a28e668a61c39a5364982bb337487e478",
+      "row_evidence_sha256": "8ffa021a406b3771fa6f5d5ed042a7107c5b04289ca890d58ab2ff15a3947593",
       "title": "L7_AUDITABILITY HOW trace emitted for every certified integrated runtime chain"
     },
     {
       "assertion_ids": [
-        "ASRT-040bdcad4a9a9279dc6bfdc26d102c7da86054a1",
-        "ASRT-0617f58a260a66566fc8b4b237fe7b04c90a0568",
-        "ASRT-8316c8b2a01c444e9aa60c1467837c1eabb9625c",
-        "ASRT-8c023b303dc15c02aae9c8cc86b35bc1e2eb0580",
-        "ASRT-8fce2a5ce2027ffde4a8ce3d4b6ab79af013be66",
-        "ASRT-e7a720dac9da77504fa8e8b5ecee75b334105e0d"
+        "ASRT-238a7c112665272e1891a6f563f35ea7ac637467",
+        "ASRT-2997d92141b1a9e5dd41a8071e8ac08902d47e14",
+        "ASRT-401b456a932e730e4111fb2032ee73a85068a435",
+        "ASRT-73780a77d8dc50f81f2829465f301b7841754ac3",
+        "ASRT-be26b885ce5a8cc56038906debcf238da60476fb",
+        "ASRT-d0085b19936fa6c010c86fbc613cdfd17c62e0af"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6564,55 +6564,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-8fce2a5ce2027ffde4a8ce3d4b6ab79af013be66",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-be26b885ce5a8cc56038906debcf238da60476fb",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-8c023b303dc15c02aae9c8cc86b35bc1e2eb0580",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-401b456a932e730e4111fb2032ee73a85068a435",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-040bdcad4a9a9279dc6bfdc26d102c7da86054a1",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-73780a77d8dc50f81f2829465f301b7841754ac3",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-0617f58a260a66566fc8b4b237fe7b04c90a0568",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-d0085b19936fa6c010c86fbc613cdfd17c62e0af",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-e7a720dac9da77504fa8e8b5ecee75b334105e0d",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-238a7c112665272e1891a6f563f35ea7ac637467",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-131/l7_plane_evidence.json",
-          "artifact_sha256": "1e977d2f7958fd1f7aa18b5eab46fd97e6bd953ce8921e70e95e119c2c08e9cc",
-          "assertion_id": "ASRT-8316c8b2a01c444e9aa60c1467837c1eabb9625c",
+          "artifact_sha256": "5d5f6dfc4ad2f0df51bb41a4c10390ac8e7b633351e42e0bac7770a96934e274",
+          "assertion_id": "ASRT-2997d92141b1a9e5dd41a8071e8ac08902d47e14",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-131",
@@ -6625,18 +6625,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability",
-      "row_digest": "f3ea2113b1fe25f7a3f04e5c5de8e84965f5b4c3690e9aad630a6858d26bf5b9",
-      "row_evidence_sha256": "ec30be38d78f16f3a75afd0414dd0702ab12736fac7dc6a55f15323778731d1f",
+      "row_digest": "b3ed7a17b60dcf643d4507883f30b5adc8f5e3ed4eb863e4816d1cd8b558a52a",
+      "row_evidence_sha256": "14308a9c7c3654f8fc20ea40eb32746f9e5a62eee97455d96effb94d0b5556c5",
       "title": "L7 route-family coverage matrix emitted per chain"
     },
     {
       "assertion_ids": [
-        "ASRT-08212b5cdc63feddbaeffd0c1fd5b17a7fabbc85",
-        "ASRT-2b90b301002b26c1054853b8fa324a338b66a24c",
-        "ASRT-82051b41920b899dc78edc34a5935e4ad598bda1",
-        "ASRT-96ccadf19fd4d6512d2a073418c4f7b388fe95f5",
-        "ASRT-aebef4f8614468a8771ad453d01e40e42f533896",
-        "ASRT-edb1c38c4cda62353cdb3d458f5634fc99465ec3"
+        "ASRT-5c47d0f150eb4779ad9910723ecbca2a813f9034",
+        "ASRT-7f5ce8a87b0ceaeff17be3ce210da4c0da2229fe",
+        "ASRT-984e79fa19313a97ea1fdf9965f8b4f4b811a930",
+        "ASRT-b83ca504bb2c7c338858bc767bb532c451dbf494",
+        "ASRT-ccd848963c86f1c567c1e81abc684d57436ed174",
+        "ASRT-f778723cf344539c3bbdec09e37c26b118f600e6"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6644,55 +6644,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-08212b5cdc63feddbaeffd0c1fd5b17a7fabbc85",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-7f5ce8a87b0ceaeff17be3ce210da4c0da2229fe",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-82051b41920b899dc78edc34a5935e4ad598bda1",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-b83ca504bb2c7c338858bc767bb532c451dbf494",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-2b90b301002b26c1054853b8fa324a338b66a24c",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-ccd848963c86f1c567c1e81abc684d57436ed174",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-aebef4f8614468a8771ad453d01e40e42f533896",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-f778723cf344539c3bbdec09e37c26b118f600e6",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-96ccadf19fd4d6512d2a073418c4f7b388fe95f5",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-984e79fa19313a97ea1fdf9965f8b4f4b811a930",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-132/l7_plane_evidence.json",
-          "artifact_sha256": "7f906f92670dbc655d1eafaec357a62e809abadd2fe5ffcb2ec6df3c221c9dbe",
-          "assertion_id": "ASRT-edb1c38c4cda62353cdb3d458f5634fc99465ec3",
+          "artifact_sha256": "aa016c2b1fd133c1c2f157c9dea49c1d0781e87c557678c54b38885cec6c21a6",
+          "assertion_id": "ASRT-5c47d0f150eb4779ad9910723ecbca2a813f9034",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-132",
@@ -6705,18 +6705,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability",
-      "row_digest": "eadf1f4bbec57a0bdd616eb612a991b311c8fa121d089d17bbf2fdadb5643b03",
-      "row_evidence_sha256": "d00b8db9c38cdd1a4ee02aa86ea6f09ab1edb8044829b211f842b6b420fb030d",
+      "row_digest": "34479bb5f8e15d2e8c5953da457b9f0c7e83c7892d48eecf8c26d15406d15595",
+      "row_evidence_sha256": "df6cafbbe09901acdc327d130cc7f0632cb8f406ee60f6533f9749998f3eef8d",
       "title": "Fort Knox L7 per-req evidence rows emitted per chain"
     },
     {
       "assertion_ids": [
-        "ASRT-08b75533b9ab9ae2d4ad93e7c885c49c7f658711",
-        "ASRT-3a2b2be70e579612ce9b7d997f1644fd58e6df07",
-        "ASRT-47f5cfdcf98619489926695bc953aeb7185c49fb",
-        "ASRT-ab52f092dd9f21fc79e7fecbbd6ca9e94a14b2f1",
-        "ASRT-be4e1c6d510563f044d7d3d934eb64d2ac65fd69",
-        "ASRT-e6a7e8601926c3f4f74614f8084aea4cfa3cbb57"
+        "ASRT-07e9ba3cb5fa0df74cc81e612a78297f00c87ca2",
+        "ASRT-41657d810a79c947fc6fb2de6e970c4e2668505a",
+        "ASRT-cffec036706012feb8840782e9beeb99f10c806b",
+        "ASRT-d009d04bb4974f805ef64cc5d7dc493a3a9b9fd2",
+        "ASRT-f3772a33b0a216b6c9d01ab6601c0ef327cee603",
+        "ASRT-f916ef31c78bb8b7c3cf97ed1d22e787736bc577"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6724,55 +6724,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-e6a7e8601926c3f4f74614f8084aea4cfa3cbb57",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-f916ef31c78bb8b7c3cf97ed1d22e787736bc577",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-3a2b2be70e579612ce9b7d997f1644fd58e6df07",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-07e9ba3cb5fa0df74cc81e612a78297f00c87ca2",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-47f5cfdcf98619489926695bc953aeb7185c49fb",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-cffec036706012feb8840782e9beeb99f10c806b",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-08b75533b9ab9ae2d4ad93e7c885c49c7f658711",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-f3772a33b0a216b6c9d01ab6601c0ef327cee603",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-be4e1c6d510563f044d7d3d934eb64d2ac65fd69",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-d009d04bb4974f805ef64cc5d7dc493a3a9b9fd2",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-133/l7_plane_evidence.json",
-          "artifact_sha256": "bfbfc2880a19c091a01b4003f5ebd3aa25ce9253efeea6ec6c22d74e9a066ac7",
-          "assertion_id": "ASRT-ab52f092dd9f21fc79e7fecbbd6ca9e94a14b2f1",
+          "artifact_sha256": "3afe5ef42b44e32a8efbd4c6840be2a15571f381949f5cdcd805826f21f4023f",
+          "assertion_id": "ASRT-41657d810a79c947fc6fb2de6e970c4e2668505a",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-133",
@@ -6785,18 +6785,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability",
-      "row_digest": "fe416269dac34c6d9813a8d8ad7c9d89b1418f6b14c19d8d1e53023561ca70af",
-      "row_evidence_sha256": "4a73781eb31ed8bb69ef905a72399f31aa1925622e880c666bce82d418adb630",
+      "row_digest": "9f1629ddf4e15c5d59c09f3ba419ea2163f87c0b2662cf1660d71f2efda96d84",
+      "row_evidence_sha256": "08c95605ab03f16933de109e0f881d2b2467d0d3ca8b773babb2206a10feb2c7",
       "title": "Integrated runtime artifact manifest sealed per chain"
     },
     {
       "assertion_ids": [
-        "ASRT-545729167c8f7f7b389e63c4c62480642b3b2bdf",
-        "ASRT-56f7fafd4d83d26651db63fea0004ba56178bc43",
-        "ASRT-614891b5b8c5900ba729e0d9576462a48f728a7d",
-        "ASRT-b6353044d5878bdd352f17c1b050617c85e51e7f",
-        "ASRT-cd4f72b51cb0241290e3ab67918aa2f4a20009aa",
-        "ASRT-cdd658192f6044ddc6dc866448feb51e5005f95c"
+        "ASRT-14b81ac345060ed05681abe6bdd3a941b83bac3e",
+        "ASRT-3ca34ebcb9453c72274c5db3f09b58d18c926509",
+        "ASRT-4a3dfed3cf7349c76155d88b9c6a5fde1691e409",
+        "ASRT-797693cf580fa0a56e848f224340755be2e6746f",
+        "ASRT-a5a9901546f8f1ab3896b5523a31331a6f5361a0",
+        "ASRT-bf647ac020f1cb7f5224179ec010520c88249412"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6804,55 +6804,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-b6353044d5878bdd352f17c1b050617c85e51e7f",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-797693cf580fa0a56e848f224340755be2e6746f",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-cdd658192f6044ddc6dc866448feb51e5005f95c",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-4a3dfed3cf7349c76155d88b9c6a5fde1691e409",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-56f7fafd4d83d26651db63fea0004ba56178bc43",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-bf647ac020f1cb7f5224179ec010520c88249412",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-545729167c8f7f7b389e63c4c62480642b3b2bdf",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-14b81ac345060ed05681abe6bdd3a941b83bac3e",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-614891b5b8c5900ba729e0d9576462a48f728a7d",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-a5a9901546f8f1ab3896b5523a31331a6f5361a0",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-134/l7_plane_evidence.json",
-          "artifact_sha256": "13a35e55f523b2cd064d50626baa8286950cb025062f740c66224b8d7def1dfc",
-          "assertion_id": "ASRT-cd4f72b51cb0241290e3ab67918aa2f4a20009aa",
+          "artifact_sha256": "95c9dcb76f59159bdc73c06c22a765a88595a0ce4c81e2a17ec78a0e5857e160",
+          "assertion_id": "ASRT-3ca34ebcb9453c72274c5db3f09b58d18c926509",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-134",
@@ -6865,18 +6865,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability",
-      "row_digest": "09dff07cccbce16999529b9f1fc26eb6b933841fa5aca3737bac6b317c020647",
-      "row_evidence_sha256": "07b2729cae7cdb2c5bbf09391db0b11707351ea14fff23862c5b36eb0cea70ce",
+      "row_digest": "f2e312c5b5168fd601814c438180fa1430a3225b08dc075a27e5f341a17c4586",
+      "row_evidence_sha256": "eacebd215905320b4041551c90b0c0ca325fc2fc7d996b446dbaa9318885cc11",
       "title": "Agentic-core spine proof bundle sealed per chain"
     },
     {
       "assertion_ids": [
-        "ASRT-48280c9857ed906d557e3b73069ca554e9c5c4a4",
-        "ASRT-7c30d706a6d25391794097388e3231095dec878d",
-        "ASRT-837238d5ac4eccf1354cc0861dabd313dfee20f6",
-        "ASRT-aee6d6d202dcabafdfe3f2070ce641ebcc141dc8",
-        "ASRT-b7392faef62635b96765d392fdb590576a995872",
-        "ASRT-f75c43d470994fa478ec55a7196650e5db464c13"
+        "ASRT-4aadef0d8edf174ecb050c5f4e4f8162d523fd6e",
+        "ASRT-70ad3d816402789805e4041ae5b928ff5b0f34b3",
+        "ASRT-8803da1715cf1cb3651dfad570da25e724cf4505",
+        "ASRT-a02fa01ad6711ef8b4cfebf26a5564e4684e7594",
+        "ASRT-d10810f4f8d9c15bf2fea8ad21a0b81c67049357",
+        "ASRT-e9af808f885a813e07e781c1dcb7336c40112820"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6884,55 +6884,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-48280c9857ed906d557e3b73069ca554e9c5c4a4",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-8803da1715cf1cb3651dfad570da25e724cf4505",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-aee6d6d202dcabafdfe3f2070ce641ebcc141dc8",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-a02fa01ad6711ef8b4cfebf26a5564e4684e7594",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-b7392faef62635b96765d392fdb590576a995872",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-d10810f4f8d9c15bf2fea8ad21a0b81c67049357",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-f75c43d470994fa478ec55a7196650e5db464c13",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-70ad3d816402789805e4041ae5b928ff5b0f34b3",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-837238d5ac4eccf1354cc0861dabd313dfee20f6",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-4aadef0d8edf174ecb050c5f4e4f8162d523fd6e",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-135/l7_plane_evidence.json",
-          "artifact_sha256": "a01b20fdf4a166b8917240a02b3077f2cba4c72e8bb9bcf771a0bf6581e8d9b7",
-          "assertion_id": "ASRT-7c30d706a6d25391794097388e3231095dec878d",
+          "artifact_sha256": "3bc37e9ab5d8b39572f29bd9af8f8e50c0143b7def03dc3684dae3f9e548e3fe",
+          "assertion_id": "ASRT-e9af808f885a813e07e781c1dcb7336c40112820",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-135",
@@ -6945,18 +6945,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "dcef8958b421482aca003705cb50dbdd9fddf8b2e4428735dc8ff89f3dbe6901",
-      "row_evidence_sha256": "a7227321d7bc9ee0b59e9383decc879df822274050b878e3e603fcd1ebcec3c0",
+      "row_digest": "2f071dddc8c210b737ab16eb0ac241c75d1d9b9278964d29ede581e21f62f85c",
+      "row_evidence_sha256": "077e0f2459c776bd7d8b7ab75a90e2eb15a19a13a2efa5e3e7ce58bef8a0148e",
       "title": "R1A_EXACT_CACHE chain real D1 exact-hit integrated runtime proof"
     },
     {
       "assertion_ids": [
-        "ASRT-18f51256eb1b1d227f80039baf06769260fd9784",
-        "ASRT-57aceda48b4a82155fbfb7c16290d0a9bbba0b4a",
-        "ASRT-7aa162a0ff2413d50130802718d8add18e84c88f",
-        "ASRT-95b382ff55a9d236bbb8b9638ee0532a67a8f2e9",
-        "ASRT-e74752c699de5a07bbb5889abba0f01899070651",
-        "ASRT-f33c3cdba5a9b79953eeb233ba9c51271c7957b5"
+        "ASRT-740d900e3fd6eaff354ab2d69c5153946a07a683",
+        "ASRT-7cbf8089953ab3b2c0567d2cf9ca42753fb2d74b",
+        "ASRT-9ba8ddb4dd33c5cd7aa7ca78e0d8409313d1408c",
+        "ASRT-b1795bf23ac08b3667f80a1253e777d4b90a456f",
+        "ASRT-c1bf812e68bbf9c2c43e927ed4eeee32c82b3985",
+        "ASRT-d89ef6951ba5c44a7d2bcde22a3f17020eb283aa"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -6964,55 +6964,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-18f51256eb1b1d227f80039baf06769260fd9784",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-740d900e3fd6eaff354ab2d69c5153946a07a683",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-e74752c699de5a07bbb5889abba0f01899070651",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-b1795bf23ac08b3667f80a1253e777d4b90a456f",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-95b382ff55a9d236bbb8b9638ee0532a67a8f2e9",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-9ba8ddb4dd33c5cd7aa7ca78e0d8409313d1408c",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-57aceda48b4a82155fbfb7c16290d0a9bbba0b4a",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-c1bf812e68bbf9c2c43e927ed4eeee32c82b3985",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-7aa162a0ff2413d50130802718d8add18e84c88f",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-7cbf8089953ab3b2c0567d2cf9ca42753fb2d74b",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-136/l7_plane_evidence.json",
-          "artifact_sha256": "586b42b6eeb4ce5f7dc9e3a7dfb088883b398f1055ca5d29595b937eeb6f876d",
-          "assertion_id": "ASRT-f33c3cdba5a9b79953eeb233ba9c51271c7957b5",
+          "artifact_sha256": "61b57b7cb3ae1e4cf79559ae239a202db81aac50ed633b4894672ab69e910315",
+          "assertion_id": "ASRT-d89ef6951ba5c44a7d2bcde22a3f17020eb283aa",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-136",
@@ -7025,18 +7025,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "5e1611170d5b1ca4249fe6d39ec01d696ae67fbb41b5e9e6ca2d821eed6c935e",
-      "row_evidence_sha256": "f6bb74744b77b7b3d4530c6eeb115c03a09d285a147ea5422e4f68fe1aaf8fca",
+      "row_digest": "f9f56efbd1ad414a96aa7e8321b51ef01d54d073913a91dbf0c3b6a782a0cc65",
+      "row_evidence_sha256": "9b492e6cf77b554b7b5da9e2b2f3710c3f49a387b4b94922d447e5cfc21ba355",
       "title": "R5_FALLBACK chain safe-fallback integrated runtime proof"
     },
     {
       "assertion_ids": [
-        "ASRT-1941a6ac65e8c8dd8d3a238cc4217dfda824ff4f",
-        "ASRT-378243b505c99ac0c04741699d4700fe4615fab7",
-        "ASRT-8adce02afdabe705a33344ded0b2cb732ed66481",
-        "ASRT-9b4890eec1f26a39f1798aa206ae8c8a2673ad2f",
-        "ASRT-a2ea45cea2330b38dd0fa0bdd2d043a7d75e889a",
-        "ASRT-be1d1015e96598da52885db53c1ac9742a959804"
+        "ASRT-05b11e6f26f38bbe2cfdb89eb11477b99a26e9b0",
+        "ASRT-19d4b9954ac7fec3c80fad26dd3c0abc65b8b5f6",
+        "ASRT-41150d55e640d538c219055448c4bafc0d63e72d",
+        "ASRT-a4f56fe5f9b71c492ebbd79ef706a32cc32fee90",
+        "ASRT-b20627808d253aa0fe8fd9e6536381e30ef79854",
+        "ASRT-c165b9d5b3c3acd5f618f2b9f9a3cf6f90b55837"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7044,55 +7044,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-378243b505c99ac0c04741699d4700fe4615fab7",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-a4f56fe5f9b71c492ebbd79ef706a32cc32fee90",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-1941a6ac65e8c8dd8d3a238cc4217dfda824ff4f",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-19d4b9954ac7fec3c80fad26dd3c0abc65b8b5f6",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-9b4890eec1f26a39f1798aa206ae8c8a2673ad2f",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-c165b9d5b3c3acd5f618f2b9f9a3cf6f90b55837",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-be1d1015e96598da52885db53c1ac9742a959804",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-b20627808d253aa0fe8fd9e6536381e30ef79854",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-a2ea45cea2330b38dd0fa0bdd2d043a7d75e889a",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-05b11e6f26f38bbe2cfdb89eb11477b99a26e9b0",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-137/l7_plane_evidence.json",
-          "artifact_sha256": "f34194a63fa9ba2d68c56b583764cedc5087c97701a55606063f188a9878e24e",
-          "assertion_id": "ASRT-8adce02afdabe705a33344ded0b2cb732ed66481",
+          "artifact_sha256": "73267d300502e75c9d53182a820d21e0f4c1c80673dacd96823e1db35be8445c",
+          "assertion_id": "ASRT-41150d55e640d538c219055448c4bafc0d63e72d",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-137",
@@ -7105,17 +7105,17 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "2c926abef782b7f92c5a17ab94649f3630cf4078a81634f2ef7e12c3457b3aa1",
-      "row_evidence_sha256": "2d4bb6d6269dacad51c0d688626b8cb6b7530943e182649ed7ed3f9bc329492f",
+      "row_digest": "f5b208610452d274fc179454e523116641e1da1d6cc5e30f29c887ca052f88ef",
+      "row_evidence_sha256": "31ce4bcbe237c5da5b62dcf297d5734c6c36b88fe3afda74843ca5a4bf4081a7",
       "title": "UWG_BLOCK_PATH chain integrated DurableWriteGateway block proof"
     },
     {
       "assertion_ids": [
-        "ASRT-0197fa36269beb13a39d6eccb41604b082ef7858",
-        "ASRT-0907a8fb66a573f2c246e09674825bcff71b9283",
-        "ASRT-2b8704dc47cb40a0452c4245f7d6e95067bdcbf9",
-        "ASRT-4966d1f6b498837ebda28a04a107063029d5d0c3",
-        "ASRT-792d45107d789e747d8fa56b8b2c612a6decf973"
+        "ASRT-146d163ee12c600b15d209b677061dd9aa9fdac7",
+        "ASRT-4d1366e7b3c4d4c54bae93210a6966c98fd1c149",
+        "ASRT-81c41af51c2cabc55dccead676eaf45dde0b3190",
+        "ASRT-f215b37b5272e587e498b0234b493ecbd22224b1",
+        "ASRT-ff604f125c4dc25cc016b6e8e4a0fdf927617cc3"
       ],
       "blocking_gap": null,
       "claim_type": "STATIC_ENFORCEMENT",
@@ -7123,47 +7123,47 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-138/l7_plane_evidence.json",
-          "artifact_sha256": "e1039c229787549f944d43e7d5d06edbb04740f20810b86c35b8cef4e91b7a44",
-          "assertion_id": "ASRT-0197fa36269beb13a39d6eccb41604b082ef7858",
+          "artifact_sha256": "3d0f25e0c403a0737b2e0f0249c5414cdf023ede1d996d8901a77f5d0e858bd1",
+          "assertion_id": "ASRT-146d163ee12c600b15d209b677061dd9aa9fdac7",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-138/l7_plane_evidence.json",
-          "artifact_sha256": "e1039c229787549f944d43e7d5d06edbb04740f20810b86c35b8cef4e91b7a44",
-          "assertion_id": "ASRT-4966d1f6b498837ebda28a04a107063029d5d0c3",
+          "artifact_sha256": "3d0f25e0c403a0737b2e0f0249c5414cdf023ede1d996d8901a77f5d0e858bd1",
+          "assertion_id": "ASRT-ff604f125c4dc25cc016b6e8e4a0fdf927617cc3",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-138/l7_plane_evidence.json",
-          "artifact_sha256": "e1039c229787549f944d43e7d5d06edbb04740f20810b86c35b8cef4e91b7a44",
-          "assertion_id": "ASRT-2b8704dc47cb40a0452c4245f7d6e95067bdcbf9",
+          "artifact_sha256": "3d0f25e0c403a0737b2e0f0249c5414cdf023ede1d996d8901a77f5d0e858bd1",
+          "assertion_id": "ASRT-81c41af51c2cabc55dccead676eaf45dde0b3190",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-138/l7_plane_evidence.json",
-          "artifact_sha256": "e1039c229787549f944d43e7d5d06edbb04740f20810b86c35b8cef4e91b7a44",
-          "assertion_id": "ASRT-792d45107d789e747d8fa56b8b2c612a6decf973",
+          "artifact_sha256": "3d0f25e0c403a0737b2e0f0249c5414cdf023ede1d996d8901a77f5d0e858bd1",
+          "assertion_id": "ASRT-4d1366e7b3c4d4c54bae93210a6966c98fd1c149",
           "name": "ci_gate",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-138/l7_plane_evidence.json",
-          "artifact_sha256": "e1039c229787549f944d43e7d5d06edbb04740f20810b86c35b8cef4e91b7a44",
-          "assertion_id": "ASRT-0907a8fb66a573f2c246e09674825bcff71b9283",
+          "artifact_sha256": "3d0f25e0c403a0737b2e0f0249c5414cdf023ede1d996d8901a77f5d0e858bd1",
+          "assertion_id": "ASRT-f215b37b5272e587e498b0234b493ecbd22224b1",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-138",
@@ -7175,16 +7175,16 @@
         "source_root_binding"
       ],
       "requirement_group": "L7 Auditability \u00b7 Enforcement",
-      "row_digest": "117bc11ae0d9ff9ec2e579da6f73519b594c8c3c2b5cff9b9e93cd90c0565d2d",
-      "row_evidence_sha256": "cd629232f770cafd81b9a454113275adac2ea90db4bd6dc392600cd668f0d408",
+      "row_digest": "b47bc572220a83f0ef25d5af70890a6f2abfe5ee6ec212e9017f24c9c5b868d5",
+      "row_evidence_sha256": "628f18651fee50b6efd04aac871ad5a49590c4fb71ebb686d35d546351edb632",
       "title": "L7 static enforcement verifiers present and CI-bound"
     },
     {
       "assertion_ids": [
-        "ASRT-013e1ec343de50eaa0595d392b97a26c8611c66f",
-        "ASRT-27d3222d5f2f45a5d5f898f2e2c0f53890d0d12c",
-        "ASRT-7112b4b471f0acd18f94a55800bc24be35235781",
-        "ASRT-b1e002fd07fec2f1ca787d266e1d4276d120d5de"
+        "ASRT-0e0ad3d6785cd8425c3c2eb75824be8429396d52",
+        "ASRT-1bb34340ce729c3da015c1f1eea73b7a7316d283",
+        "ASRT-7e5a25a880f58d7b3a1a2b856b79be70bc160ded",
+        "ASRT-cfe6079597df1c8a2f525743ffb434e9c4be4e02"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7192,32 +7192,32 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-139/l7_plane_evidence.json",
-          "artifact_sha256": "b10ab041e773cb870595c3ac79474a0318ade3dbe91412feb0826ad275240712",
-          "assertion_id": "ASRT-b1e002fd07fec2f1ca787d266e1d4276d120d5de",
+          "artifact_sha256": "2360cac59f08e1578afd6878aa0b2ba02a796b9398d36692427ba896817d5803",
+          "assertion_id": "ASRT-0e0ad3d6785cd8425c3c2eb75824be8429396d52",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-139/l7_plane_evidence.json",
-          "artifact_sha256": "b10ab041e773cb870595c3ac79474a0318ade3dbe91412feb0826ad275240712",
-          "assertion_id": "ASRT-27d3222d5f2f45a5d5f898f2e2c0f53890d0d12c",
+          "artifact_sha256": "2360cac59f08e1578afd6878aa0b2ba02a796b9398d36692427ba896817d5803",
+          "assertion_id": "ASRT-7e5a25a880f58d7b3a1a2b856b79be70bc160ded",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-139/l7_plane_evidence.json",
-          "artifact_sha256": "b10ab041e773cb870595c3ac79474a0318ade3dbe91412feb0826ad275240712",
-          "assertion_id": "ASRT-013e1ec343de50eaa0595d392b97a26c8611c66f",
+          "artifact_sha256": "2360cac59f08e1578afd6878aa0b2ba02a796b9398d36692427ba896817d5803",
+          "assertion_id": "ASRT-cfe6079597df1c8a2f525743ffb434e9c4be4e02",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-139/l7_plane_evidence.json",
-          "artifact_sha256": "b10ab041e773cb870595c3ac79474a0318ade3dbe91412feb0826ad275240712",
-          "assertion_id": "ASRT-7112b4b471f0acd18f94a55800bc24be35235781",
+          "artifact_sha256": "2360cac59f08e1578afd6878aa0b2ba02a796b9398d36692427ba896817d5803",
+          "assertion_id": "ASRT-1bb34340ce729c3da015c1f1eea73b7a7316d283",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
@@ -7234,7 +7234,7 @@
         "RTC-REQ-137",
         "RTC-REQ-138"
       ],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": true,
       "priority": "P0",
       "req_id": "RTC-REQ-139",
@@ -7245,18 +7245,18 @@
         "source_root_binding"
       ],
       "requirement_group": "L7 Auditability \u00b7 Capstone",
-      "row_digest": "b2f3437a217aafb71feb15d7d44b29da20218b75e290ec64a2dd1a22f397137a",
-      "row_evidence_sha256": "b5f3b1dc84471c053d357e78a9c58ab531b3fd127e8bc917069096340ca60818",
+      "row_digest": "757306fca993f4fed618ee18b89ed393eefe5f76afd8d2753087ccfab6ec5c8e",
+      "row_evidence_sha256": "ba18f6bc44a7ba6815c96bf9d9aa392a50e2ba401536f41042a52b3e05489b22",
       "title": "100% L7_AUDITABILITY plane coverage across governed route families"
     },
     {
       "assertion_ids": [
-        "ASRT-035b2e6d9c753e3748bde1fd2a282d1b42aeec02",
-        "ASRT-37da93e3cbcfd7258e0d7a3248dd295cf65836ce",
-        "ASRT-6955534e7729a9dc0d2c04c43dba98573b0716c9",
-        "ASRT-76b52dc8bb2152e7e4be1c904bf756f85d0b86cf",
-        "ASRT-b10247b750582233d4f17b10ba1d3ca2d886498a",
-        "ASRT-df36b0036d8678e2472218f43eaf5721e829e9ff"
+        "ASRT-51c40c997bec0e45e366c936645bb6e2a24a29dc",
+        "ASRT-5f3736f740f71129913e78b160b7e51bc9724551",
+        "ASRT-7b345c3f9d65fccac22b8789f6bf2a1ea9a90cee",
+        "ASRT-9760e837d3165f69abdfeb8bc68a7bfeb755cbe4",
+        "ASRT-ae6b4a0665231b0338df200abd3fe7f9ae62e36a",
+        "ASRT-e4e0452ce7171176d2a78fdb12366ffd2980bc79"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7264,55 +7264,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-76b52dc8bb2152e7e4be1c904bf756f85d0b86cf",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-51c40c997bec0e45e366c936645bb6e2a24a29dc",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-035b2e6d9c753e3748bde1fd2a282d1b42aeec02",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-ae6b4a0665231b0338df200abd3fe7f9ae62e36a",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-6955534e7729a9dc0d2c04c43dba98573b0716c9",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-e4e0452ce7171176d2a78fdb12366ffd2980bc79",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-37da93e3cbcfd7258e0d7a3248dd295cf65836ce",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-9760e837d3165f69abdfeb8bc68a7bfeb755cbe4",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-df36b0036d8678e2472218f43eaf5721e829e9ff",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-7b345c3f9d65fccac22b8789f6bf2a1ea9a90cee",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-140/l7_plane_evidence.json",
-          "artifact_sha256": "ba103610ee6eda7a696437e3503346b8d61b20f5f18b7afb80069a27d4952600",
-          "assertion_id": "ASRT-b10247b750582233d4f17b10ba1d3ca2d886498a",
+          "artifact_sha256": "6eb9f3adaf624413badf1040576813c7f7a8e3a5137dfb5dceeeb0efb5cdc8de",
+          "assertion_id": "ASRT-5f3736f740f71129913e78b160b7e51bc9724551",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-140",
@@ -7325,18 +7325,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "6aad67655c97d7de335d2fbd775ba35f6da6eb891096f5edb823728ae507e139",
-      "row_evidence_sha256": "874752e21e2ce573b052dc3e4ddf81af16aad8806075204c88ca7bd17bfec56f",
+      "row_digest": "4fb11bf5ee58f702cdb32952f06a3a68262747c141a4c06045c4475fc68093ef",
+      "row_evidence_sha256": "3f064069ad42ed37a4cb1202d4868788e7eea77e343e55fb676f23cb046bbcd3",
       "title": "UWG_COMMIT_PATH chain integrated DurableWriteGateway successful-commit proof"
     },
     {
       "assertion_ids": [
-        "ASRT-15e692cebc1c49c97e33ba976caea09ea0adbf69",
-        "ASRT-23e57f1f330695d5f0b86160b6ba235b3c9faf89",
-        "ASRT-c0ced3a3ef2198ae217215fbc2b8f48afbdd514d",
-        "ASRT-c53692eeb4d4b19c17f6300935b9d05fb20c0568",
-        "ASRT-c76a14edcb594b0a4ae1528c92634a2e6d73ca17",
-        "ASRT-df8d142138bfab42f2d6ffdd05258ed3f8ee0637"
+        "ASRT-0ecc77bd478470565bb3fd1cafc94d763207578a",
+        "ASRT-418a7e20230a428ea4abe8b6cb2a8a34d2c06c1e",
+        "ASRT-53bbae747f28530c723dfbb0075317fda99d884d",
+        "ASRT-5bd22c943f56d87e6966850fedd490dd065bb520",
+        "ASRT-c4a8d59be5f216280b57dee2e935d908fd59b86c",
+        "ASRT-fa2e0bf4f904ef1a5d2ff7a9a1cfdbec470a1bfa"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7344,55 +7344,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-df8d142138bfab42f2d6ffdd05258ed3f8ee0637",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-53bbae747f28530c723dfbb0075317fda99d884d",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-15e692cebc1c49c97e33ba976caea09ea0adbf69",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-fa2e0bf4f904ef1a5d2ff7a9a1cfdbec470a1bfa",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-23e57f1f330695d5f0b86160b6ba235b3c9faf89",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-c4a8d59be5f216280b57dee2e935d908fd59b86c",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-c0ced3a3ef2198ae217215fbc2b8f48afbdd514d",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-5bd22c943f56d87e6966850fedd490dd065bb520",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-c53692eeb4d4b19c17f6300935b9d05fb20c0568",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-418a7e20230a428ea4abe8b6cb2a8a34d2c06c1e",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-141/l7_plane_evidence.json",
-          "artifact_sha256": "d94c44bdf8b19bfc1ae55be83ed7141820a4c8d8f65796049962c8c8742613ca",
-          "assertion_id": "ASRT-c76a14edcb594b0a4ae1528c92634a2e6d73ca17",
+          "artifact_sha256": "d75e3e75c86b1081203c27f378a079ff7a1be0d6cb3f16f3d28ef387d688ff05",
+          "assertion_id": "ASRT-0ecc77bd478470565bb3fd1cafc94d763207578a",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-141",
@@ -7405,18 +7405,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "f964c0e7826434befc158ee51c1ef9ec808966fa9bb92a2b39367bff7fc1ca29",
-      "row_evidence_sha256": "95f92819a1dc293ecf6c1b788af58a6a1973b3949625fe0b6f554bc737be4cad",
+      "row_digest": "f682e2af98530babeb3e623b8f5ecc7e00d02569bf3577ab9bf7799df936f080",
+      "row_evidence_sha256": "2310faf47d9c6b0f1f3e14d5098e93c83daf84a92aeb283e59922d8648b42ef8",
       "title": "R3_GROUNDED_READ chain real C0 retrieval integrated runtime proof"
     },
     {
       "assertion_ids": [
-        "ASRT-1554d8a5f11bd8d66fdc80ff0351e4325085f85e",
-        "ASRT-19f294b2449185d314ec5e53884992382d5ac969",
-        "ASRT-3d7051c4fdd899c9a299a06fe85e2022d845b3b6",
-        "ASRT-ce3daa7db9d9c5aa21bdd7d7f6d52ee62fa5e752",
-        "ASRT-d2a6bfb63425e7f113a8511053f7838f685d75d6",
-        "ASRT-dacbc0ee16f70445b93b3afead14c926c08c1517"
+        "ASRT-3a6205912b7a1d1d0c08454a80f3b035ca5121e1",
+        "ASRT-55df8ac24ab1db7a51798645ca2e6ba9f3f6c8e2",
+        "ASRT-b21a5e4e3c9d12e2c4bc0918552fea25302963f7",
+        "ASRT-c70af8cb1ab32ebe23798007c2005baa37aae61b",
+        "ASRT-daf438677bc9002f3f05db536694395c19da4e23",
+        "ASRT-ef915f7e7555d55b2a3195a862de173fac54c9cf"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7424,55 +7424,55 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-19f294b2449185d314ec5e53884992382d5ac969",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-daf438677bc9002f3f05db536694395c19da4e23",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-ce3daa7db9d9c5aa21bdd7d7f6d52ee62fa5e752",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-55df8ac24ab1db7a51798645ca2e6ba9f3f6c8e2",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-dacbc0ee16f70445b93b3afead14c926c08c1517",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-c70af8cb1ab32ebe23798007c2005baa37aae61b",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-3d7051c4fdd899c9a299a06fe85e2022d845b3b6",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-3a6205912b7a1d1d0c08454a80f3b035ca5121e1",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-d2a6bfb63425e7f113a8511053f7838f685d75d6",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-b21a5e4e3c9d12e2c4bc0918552fea25302963f7",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-142/l7_plane_evidence.json",
-          "artifact_sha256": "3c998e2d8ed65f9eb9cae0fcdabbe7062480cca5d6f1b0ece001204294bf05f4",
-          "assertion_id": "ASRT-1554d8a5f11bd8d66fdc80ff0351e4325085f85e",
+          "artifact_sha256": "126ee87de803935cf18199644dcdc4f65583045a2eab1d3b5a1dc5efca1ec05a",
+          "assertion_id": "ASRT-ef915f7e7555d55b2a3195a862de173fac54c9cf",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
         }
       ],
       "depends_on_req_ids": [],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-142",
@@ -7485,18 +7485,18 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "de6bd415e6b41f017200e8aad1d16520c72b9a4d27ff27d331b9420b5e3c22e6",
-      "row_evidence_sha256": "9c282d6e8fe93edae855c5f74fb9562464f2ca315014a5f7a2e96d854d6e2657",
+      "row_digest": "b2a4bcae3a6476d48dffec71623a06f246b558b065c61fdf52eb592acb1fbeaa",
+      "row_evidence_sha256": "da66c1bca131e4b1d28a66d4e28ce26d42400eb27daa381dba9b3f644b82f62e",
       "title": "R4_SINGLE_ACTION chain real L2 tool invocation integrated runtime proof"
     },
     {
       "assertion_ids": [
-        "ASRT-21f65305ba17c14a9f1e0efcceb97ac6bca7de81",
-        "ASRT-35a736aacdb474232b5611ad8291245c68c44441",
-        "ASRT-50b553d29dfc546caf8e518a3ab3561963b94b47",
-        "ASRT-93e48e834c7380f2bae589e88973c2c155a9a295",
-        "ASRT-c6be859bccbc55fab3808a591a0f757659bf39b5",
-        "ASRT-c7a683832df49961ef7f66c50cd00f1ba9bd0176"
+        "ASRT-18d85c777b0493399867862da6a436ee0d1c6d00",
+        "ASRT-21196e35640e51187b4fa253f172743616994e31",
+        "ASRT-2a1e54d4e01bd64beb5770ae146f62b7c3c1d0cc",
+        "ASRT-4be268ccd39142fbc78d865938bee674993b459a",
+        "ASRT-6fdc3192261dc233679683fd897ecaa624ac83c8",
+        "ASRT-edf72661089b9d10f71b3ef6880e8640b0d3543d"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7504,48 +7504,48 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-93e48e834c7380f2bae589e88973c2c155a9a295",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-18d85c777b0493399867862da6a436ee0d1c6d00",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-35a736aacdb474232b5611ad8291245c68c44441",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-edf72661089b9d10f71b3ef6880e8640b0d3543d",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-c6be859bccbc55fab3808a591a0f757659bf39b5",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-6fdc3192261dc233679683fd897ecaa624ac83c8",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-c7a683832df49961ef7f66c50cd00f1ba9bd0176",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-4be268ccd39142fbc78d865938bee674993b459a",
           "name": "runtime_evidence",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-21f65305ba17c14a9f1e0efcceb97ac6bca7de81",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-2a1e54d4e01bd64beb5770ae146f62b7c3c1d0cc",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-143/l7_plane_evidence.json",
-          "artifact_sha256": "a25c7d50a458d9c212ff253bbf48fc67499316fc3919520a3369340437c8aa57",
-          "assertion_id": "ASRT-50b553d29dfc546caf8e518a3ab3561963b94b47",
+          "artifact_sha256": "b1487e0a9e2437757fb48a32a683fa4055dd7d4b11882d28e249c1df218319b2",
+          "assertion_id": "ASRT-21196e35640e51187b4fa253f172743616994e31",
           "name": "artifact_payload_hash",
           "passed": true,
           "reason": null
@@ -7556,7 +7556,7 @@
         "RTC-REQ-141",
         "RTC-REQ-142"
       ],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": false,
       "priority": "P0",
       "req_id": "RTC-REQ-143",
@@ -7569,16 +7569,16 @@
         "artifact_payload_hash"
       ],
       "requirement_group": "L7 Auditability \u00b7 Route Families",
-      "row_digest": "30d675ab267250da90deab0da211a28c6bf04a5411854bf41d6a29c913c505a1",
-      "row_evidence_sha256": "e3c58b482ed0f780871f357d2f261b8980c82489938c6d27f173ada6251e6721",
+      "row_digest": "03977359b645b14e6c63115429e61d3e76b64f8100c3d5b1ea761dc585283351",
+      "row_evidence_sha256": "7b5b8a3d23bea5f6f71f7b1fad55dfc784e9ff959feb1bd500989e7fdbd212c9",
       "title": "MANAGED_WORKFLOW_REAL_EXECUTION composed-substrate integrated runtime proof"
     },
     {
       "assertion_ids": [
-        "ASRT-1084f1bcd0c39f9e7f9eb1f72f5297c2f6372e5a",
-        "ASRT-267c5d704753b6752bbdd3bae353031b51b8fc42",
-        "ASRT-8df6ac75fc6a40e40cb23a413ee6af42d87b4b2d",
-        "ASRT-afef0e2869b13cb9e39534cbb79658d2090cc38d"
+        "ASRT-4c01f40fbe97918b2ca9c070c94ddfb5ef53cc1b",
+        "ASRT-5dcdc62b2f0ae6b5c88dc38561d32c0cb27c310c",
+        "ASRT-73a419d99b2b3b1754919b420299c7df552d3833",
+        "ASRT-8b2585b263d93efb8ef6ab5153912dedd67b669e"
       ],
       "blocking_gap": null,
       "claim_type": "INTEGRATED_RUNTIME",
@@ -7586,32 +7586,32 @@
       "controls": [
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-144/l7_plane_evidence.json",
-          "artifact_sha256": "fb77c0d01b1a9d5525a24fd8836e8aecc66ee7a436765cc6347786a4c5aa6b88",
-          "assertion_id": "ASRT-1084f1bcd0c39f9e7f9eb1f72f5297c2f6372e5a",
+          "artifact_sha256": "8f3d3ac2b57cd85051bc61e18561eeb5f47724090e19739f6a1686f1eade9f5c",
+          "assertion_id": "ASRT-5dcdc62b2f0ae6b5c88dc38561d32c0cb27c310c",
           "name": "verifier_pass",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-144/l7_plane_evidence.json",
-          "artifact_sha256": "fb77c0d01b1a9d5525a24fd8836e8aecc66ee7a436765cc6347786a4c5aa6b88",
-          "assertion_id": "ASRT-afef0e2869b13cb9e39534cbb79658d2090cc38d",
+          "artifact_sha256": "8f3d3ac2b57cd85051bc61e18561eeb5f47724090e19739f6a1686f1eade9f5c",
+          "assertion_id": "ASRT-4c01f40fbe97918b2ca9c070c94ddfb5ef53cc1b",
           "name": "verifier_exit_zero",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-144/l7_plane_evidence.json",
-          "artifact_sha256": "fb77c0d01b1a9d5525a24fd8836e8aecc66ee7a436765cc6347786a4c5aa6b88",
-          "assertion_id": "ASRT-267c5d704753b6752bbdd3bae353031b51b8fc42",
+          "artifact_sha256": "8f3d3ac2b57cd85051bc61e18561eeb5f47724090e19739f6a1686f1eade9f5c",
+          "assertion_id": "ASRT-8b2585b263d93efb8ef6ab5153912dedd67b669e",
           "name": "last_verified_timestamp",
           "passed": true,
           "reason": null
         },
         {
           "artifact_path": "artifacts/certification/runtime/RTC-REQ-144/l7_plane_evidence.json",
-          "artifact_sha256": "fb77c0d01b1a9d5525a24fd8836e8aecc66ee7a436765cc6347786a4c5aa6b88",
-          "assertion_id": "ASRT-8df6ac75fc6a40e40cb23a413ee6af42d87b4b2d",
+          "artifact_sha256": "8f3d3ac2b57cd85051bc61e18561eeb5f47724090e19739f6a1686f1eade9f5c",
+          "assertion_id": "ASRT-73a419d99b2b3b1754919b420299c7df552d3833",
           "name": "source_root_binding",
           "passed": true,
           "reason": null
@@ -7626,7 +7626,7 @@
         "RTC-REQ-142",
         "RTC-REQ-143"
       ],
-      "evaluated_at_utc": "2026-05-02T21:53:10+00:00",
+      "evaluated_at_utc": "2026-05-03T23:58:21+00:00",
       "is_final_hundred_percent_row": true,
       "priority": "P0",
       "req_id": "RTC-REQ-144",
@@ -7637,12 +7637,12 @@
         "source_root_binding"
       ],
       "requirement_group": "L7 Auditability \u00b7 Capstone",
-      "row_digest": "eaf6a14f0d16ee44f78dca9ff64fcc1aea6c6dd4e6a921d31558cc3c996c7d9c",
-      "row_evidence_sha256": "07ed86845dba3b2aecdc71518f5e168b086b4f0ff65e018842bf9bb75f9c2f3a",
+      "row_digest": "85842d9e2757748f9f903fc5b852670c547189d46fed1bef9bb8e7d249577acf",
+      "row_evidence_sha256": "885fc359bc84c558a1bbca5b9c82655143e72e4bc55d387c7a566f57c09de38c",
       "title": "100% L7 REAL_RUNTIME coverage: 8 of 9 route families REAL_RUNTIME CERTIFIED"
     }
   ],
-  "run_timestamp_utc": "2026-05-02T21:53:11+00:00",
+  "run_timestamp_utc": "2026-05-03T23:58:21+00:00",
   "schema_version": "fortknox-v2",
   "source_repo_root": "C:/Git/Agentic-Workflow-FRESH",
   "summary": {
@@ -7708,5 +7708,5 @@
     "signed_off": 102,
     "total": 102
   },
-  "trust_level": "INTEGRITY_PROOF"
+  "trust_level": "SIGNED_PROOF"
 }

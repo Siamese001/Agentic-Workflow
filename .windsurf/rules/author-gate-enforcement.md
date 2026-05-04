@@ -19,7 +19,16 @@ When facing an author-gate decision point:
 4. **Filter** below `surface_threshold` (0.72 prod / 0.60 bootstrap)
 5. **Dominance**: top ≥0.85 AND gap ≥0.12 → surface alone
 6. **Material distinctness**: collapse cosmetic variants
-7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every surfaced option description MUST begin with `[confidence=0.NN]` (or `[RECOMMENDED ⭐ confidence=0.NN]` when dominance fires). The ⭐ Recommended label fires iff `routing.rule_applied == "dominance_fires"`; in every other routing verdict NO option is starred.
+7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every surfaced option description MUST satisfy the **four-requirement contract** below. The canonical wire description is `candidate.surface_description` minted by `emit_packet.py`; consumers (renderer, Cascade composition) MUST pass it through unchanged or extend it without dropping any requirement.
+
+   | # | Requirement | Concrete shape | Enforced by |
+   |---|---|---|---|
+   | 1 | **Cascade clickable** | options reach `ask_user_question` (Windsurf-rendered clickable list, not chat prose) | `post_cascade_ask_user_question_packet_audit.py` (vacuum-closure: invalid packet OR missing packet at high decision-density → severity high/critical) |
+   | 2 | **Confidence prefix** | `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]` at start of `description` | `post_cascade_author_gate_ui_audit.py` invariant 1 |
+   | 3 | **Pros/cons (tradeoff segment)** | ` · trade-off: <≥20 chars>` somewhere after the prefix; emitter sets `surface_description_floor` from `key_tradeoffs[0]`, callers may extend via `surface_description` | `post_cascade_author_gate_ui_audit.py` invariant 4 (added by plan `author-gate-four-req-enforcement-c4d2a8`) |
+   | 4 | **Dominance star** | `⭐` prefix appears on **exactly one** option iff `routing.rule_applied == "dominance_fires"`, **zero** options otherwise | `post_cascade_author_gate_ui_audit.py` invariants 2 + 3 |
+
+   Failure modes log to `artifacts/windsurf/author_gate_ui_violations.jsonl` (UI invariants 1–4) and `artifacts/windsurf/ask_user_question_packet_violations.jsonl` (vacuum-closure). CI freshness gates: `ops_scripts/ci/author_gate/check_ui_conformance.py` and `ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py`.
 8. **Wait** for explicit user selection
 9. **Execute** chosen option; emit `DECISION_CAPTURED:` marker (refactor-class only) as **first plain-text line** of the response
 

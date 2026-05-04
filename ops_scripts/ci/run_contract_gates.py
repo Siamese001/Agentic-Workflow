@@ -278,6 +278,28 @@ def main():
         print(stdout or stderr)
         sys.exit(1)
 
+    # Gate: ask_user_question packet vacuum-closure freshness
+    # (plan author-gate-four-req-enforcement-c4d2a8 W2.P1).
+    # Watches artifacts/windsurf/ask_user_question_packet_violations.jsonl
+    # produced by post_cascade_ask_user_question_packet_audit.py.
+    # Bypass: ASK_PACKET_AUDIT_FRESHNESS_BYPASS=1.
+    returncode, stdout, stderr = run_cmd(
+        [
+            sys.executable,
+            str(
+                _script(
+                    "ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py"
+                )
+            ),
+        ],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ Author-gate ask_user_question packet freshness check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ Author-gate ask_user_question packet freshness validated")
+
     # Gate: Author-Gate v2/W4 completeness (plan 1f4c8a W5) — advisory by
     # default; emits warnings without blocking. Set AUTHOR_GATE_V2_STRICT=1
     # to fail closed once the ledger is clean for one full 7-day window.

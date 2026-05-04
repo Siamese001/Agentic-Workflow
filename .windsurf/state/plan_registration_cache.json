@@ -1,21 +1,21 @@
 {
-  "fetched_at": "2026-05-03T23:34:31Z",
-  "fetched_at_epoch": 1777851271.5982947,
+  "fetched_at": "2026-05-03T23:47:24Z",
+  "fetched_at_epoch": 1777852044.0790017,
   "plans": {
     "apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35527693-f55c-81a7-bc48-eb60afb2e72c",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "apps-core-contract-rectification-a8f3c2": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35527693-f55c-8158-b6b5-d78b6295ba55",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "agentic-core-signoff-hardening-b8e2c4": {
-      "status": "Not Started",
+      "status": "In Progress",
       "page_id": "35527693-f55c-81cc-ac57-ccb31fb8b099",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -27,7 +27,7 @@
       "has_ai_summary": true
     },
     "three-bucket-and-apps-spine-closeout-a4f8c2": {
-      "status": "Waiting",
+      "status": "Completed",
       "page_id": "35327693-f55c-8158-95ad-d11142db1e84",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -38,8 +38,14 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "three-bucket-wa6-strict-flip-e22a51": {
+      "status": "Waiting",
+      "page_id": "35527693-f55c-81ce-a121-e9c986cd820c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "author-gate-four-req-enforcement-c4d2a8": {
-      "status": "Live",
+      "status": "Completed",
       "page_id": "35527693-f55c-81f7-b2dd-ce6c44fa0d62",
       "exists_on_disk": true,
       "has_ai_summary": true

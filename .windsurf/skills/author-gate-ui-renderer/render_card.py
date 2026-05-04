@@ -104,21 +104,35 @@ def render_card(packet: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
             s = float(alt.get("confidence_score", 0))
             lines.append(f"   • {alt.get('id')}: {_confidence_pill(s)} {s:.2f} — {_thesis(alt)}")
 
-    # Build ask_user_question options (≤4)
+    # Build ask_user_question options (≤4).
+    #
+    # Plan author-gate-four-req-enforcement-c4d2a8 W1.P2:
+    # The CANONICAL description is `candidate.surface_description` minted by
+    # emit_packet.py — it carries the four-requirement floor (confidence prefix,
+    # optional ⭐ for dominance, and a · trade-off: <text> segment that
+    # post_cascade_author_gate_ui_audit.py invariant 4 enforces).
+    # Renderer falls through floor → prefix → locally-built description for
+    # back-compat with older packets emitted before this plan.
     options: list[dict[str, str]] = []
     for i, opt in enumerate(candidates[:4]):
-        s = float(opt.get("confidence_score", 0))
-        pill = _confidence_pill(s)
-        is_rec = (i == 0 and rule == "dominance_fires")
-        tag = "recommended · " if is_rec else ""
-        flip_hint = ""
-        wf = opt.get("what_would_flip")
-        if isinstance(wf, list) and wf:
-            flip_hint = f" · flip: {_one_line(wf[0], 40)}"
-        elif isinstance(wf, str) and wf:
-            flip_hint = f" · flip: {_one_line(wf, 40)}"
-        description = f"{pill} {s:.2f} · {tag}precedent: {precedent}{flip_hint}"
-        options.append({"label": _thesis(opt)[:90], "description": description[:200]})
+        canonical_desc = opt.get("surface_description") or opt.get("surface_description_floor")
+        if isinstance(canonical_desc, str) and canonical_desc.strip():
+            description = canonical_desc.strip()
+        else:
+            # Legacy fallback path — pre-W1.P1 packets.
+            s = float(opt.get("confidence_score", 0))
+            pill = _confidence_pill(s)
+            is_rec = (i == 0 and rule == "dominance_fires")
+            tag = "recommended · " if is_rec else ""
+            flip_hint = ""
+            wf = opt.get("what_would_flip")
+            if isinstance(wf, list) and wf:
+                flip_hint = f" · flip: {_one_line(wf[0], 40)}"
+            elif isinstance(wf, str) and wf:
+                flip_hint = f" · flip: {_one_line(wf, 40)}"
+            prefix = opt.get("surface_description_prefix") or f"{pill} {s:.2f}"
+            description = f"{prefix} · {tag}precedent: {precedent}{flip_hint}"
+        options.append({"label": _thesis(opt)[:90], "description": description[:240]})
     return "\n".join(lines), options
 
 

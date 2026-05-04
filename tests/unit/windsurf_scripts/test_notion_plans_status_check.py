@@ -33,13 +33,13 @@ def test_canonical_values_pass(value: str) -> None:
 
 
 def test_canonical_via_data_source_id() -> None:
-    assert decide(PLANS_DATA_SOURCE_ID, "Status", "Draft") is None
+    assert decide(PLANS_DATA_SOURCE_ID, "Status", "Not Started") is None
 
 
 def test_canonical_lowercase_and_undashed_ids_still_match_plans() -> None:
     # Tolerant matching: dashed vs un-dashed, upper vs lower.
-    assert decide(PLANS_DB_ID.upper(), "Status", "Live") is None
-    assert decide(PLANS_DB_ID.replace("-", ""), "Status", "Live") is None
+    assert decide(PLANS_DB_ID.upper(), "Status", "In Progress") is None
+    assert decide(PLANS_DB_ID.replace("-", ""), "Status", "In Progress") is None
 
 
 # ---------------------------------------------------------------------------
@@ -97,14 +97,14 @@ def test_none_value_blocked() -> None:
 # ---------------------------------------------------------------------------
 
 def test_check_tuple_alias_pass() -> None:
-    assert check(PLANS_DB_ID, "Status", "Draft") == (False, None, None)
+    assert check(PLANS_DB_ID, "Status", "Not Started") == (False, None, None)
 
 
 def test_check_tuple_alias_stale() -> None:
     blocked, msg, suggested = check(PLANS_DB_ID, "Status", "🟡Draft")
     assert blocked is True
-    assert suggested == "Draft"
-    assert msg is not None and "Draft" in msg
+    assert suggested == "Not Started"
+    assert msg is not None and "Not Started" in msg
 
 
 def test_case_sensitive_canonical() -> None:

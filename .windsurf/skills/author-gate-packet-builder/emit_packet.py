@@ -348,11 +348,43 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
         if dominance_fired and idx == 0:
             opt["is_recommended"] = True
             opt["surface_label"] = f"⭐ Recommended — {title}"
-            opt["surface_description_prefix"] = f"[RECOMMENDED ⭐ confidence={score:.2f}]"
+            prefix = f"[RECOMMENDED ⭐ confidence={score:.2f}]"
         else:
             opt["is_recommended"] = False
             opt["surface_label"] = title
-            opt["surface_description_prefix"] = f"[confidence={score:.2f}]"
+            prefix = f"[confidence={score:.2f}]"
+        opt["surface_description_prefix"] = prefix
+        # Plan author-gate-four-req-enforcement-c4d2a8 W1.P1.
+        # Floor = prefix + ` · trade-off: <first key_tradeoff truncated>`. This is
+        # the deterministic minimum every surfaced option ships with so the
+        # approver always sees one tradeoff. UI-audit invariant 4 enforces this
+        # segment is present.
+        # surface_description = the canonical wire description the renderer feeds
+        # into ask_user_question. Defaults to floor; callers may set it on the
+        # input spec to extend (e.g., append a second tradeoff sentence).
+        tradeoffs = opt.get("key_tradeoffs") or []
+        first_tradeoff = ""
+        if isinstance(tradeoffs, list) and tradeoffs:
+            t0 = tradeoffs[0]
+            if isinstance(t0, str):
+                first_tradeoff = t0.strip()[:80]
+        # Fallback if the option somehow lacks a tradeoff (didactic validator
+        # would already have warned at emit time): use what_youd_miss as a
+        # last-ditch tradeoff sentence so the floor stays well-formed.
+        if not first_tradeoff:
+            wym = str(opt.get("what_youd_miss") or "").strip()
+            first_tradeoff = wym[:80] if wym else "see candidate.key_tradeoffs"
+        floor = f"{prefix} · trade-off: {first_tradeoff}"
+        opt["surface_description_floor"] = floor
+        existing = opt.get("surface_description")
+        if isinstance(existing, str) and existing.strip():
+            # Caller supplied an extension; prepend the floor if not already there.
+            if not existing.startswith(prefix):
+                opt["surface_description"] = f"{floor} · {existing.strip()}"
+            else:
+                opt["surface_description"] = existing.strip()
+        else:
+            opt["surface_description"] = floor
 
     precedent = _fetch_precedent(decision_type, intent, spec.get("repo_area"))
     fingerprint = _context_fingerprint(files_in_scope)

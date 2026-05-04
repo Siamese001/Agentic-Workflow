@@ -1,0 +1,28 @@
+name: Amit Ayer
+email: ''
+phone: ''
+location: ''
+linkedIn: ''
+summary: Engineering executive building production-grade AI platforms and the runtime
+  architecture that makes autonomous systems usable in regulated enterprise environments.
+skills:
+- Agentic AI Platforms
+- Multi-agent orchestration
+- AI Runtime Governance
+- Policy enforcement
+- Retrieval & Context Engineering
+- GraphRAG
+- LLMOps & Reliability
+- Evaluation pipelines
+experience_summary:
+- SVP Engineering, Chief Agentic AI Officer at Unify Consulting
+- Lead Client Partner at IBM
+- Chief Technology Officer at InsurTech Cloud Solutions
+education_summary:
+- Master of Science in Biostatistics, Columbia University
+- Bachelor of Arts in Biology, Brown University
+level: senior
+target_roles:
+- Senior ML Engineer
+- Staff Engineer
+- VP Engineering

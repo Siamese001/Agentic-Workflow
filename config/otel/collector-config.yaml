@@ -1,0 +1,56 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # memory_limiter MUST be first — pushes back on receivers before other
+  # processors consume memory that would then be dropped anyway.
+  # Spec: opentelemetry.io/docs/collector/configuration/processors/memory_limiter
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+  batch:
+    timeout: 1s
+    send_batch_size: 512
+
+exporters:
+  # File exporter writes every span to a JSON file — the probe reads this
+  # to confirm external receipt and build otel_collector_receipt.json.
+  file:
+    path: /tmp/otel-export/spans.json
+    rotation:
+      max_megabytes: 10
+      max_days: 1
+      max_backups: 1
+
+  # Prometheus exporter exposes metric deltas for RTC-REQ-022.
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: agentic_core
+    send_timestamps: true
+    metric_expiration: 5m
+
+  # Debug exporter logs spans to stdout for visibility.
+  debug:
+    verbosity: detailed
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [file, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus, debug]

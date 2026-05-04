@@ -285,7 +285,7 @@ def build_pre_run_report(
 
         from agentic_core.adg.runtime.cache_loader import load_or_scan
 
-        result = load_or_scan(repo_root=str(repo_root))
+        result = load_or_scan(repo_root=str(repo_root), force_cache=not force_fresh)
         engine = ChangeImpactEngine(result, repo_root=repo_root)
         impact = engine.analyze(norm_files, include_tests=True)
 

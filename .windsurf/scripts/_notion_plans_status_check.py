@@ -56,9 +56,11 @@ _PLANS_IDS: frozenset[str] = frozenset({
 })
 
 # Canonical Plans Status option names. Exact match required (case-sensitive).
+# Renamed 2026-05-03: "Live" → "In Progress", "Draft" → "Not Started" (same
+# Notion option IDs, display names changed in the Notion UI).
 CANONICAL_STATUSES: frozenset[str] = frozenset({
-    "Live",
-    "Draft",
+    "In Progress",
+    "Not Started",
     "Waiting",
     "Completed",
     "Retired",
@@ -69,17 +71,20 @@ CANONICAL_STATUSES: frozenset[str] = frozenset({
 # reported with a concrete suggestion.  Any other non-canonical value
 # still violates, but carries no mapping.
 STALE_EQUIVALENTS: dict[str, str] = {
-    "🟢Live": "Live",
-    "🟡Draft": "Draft",
+    # Old emoji-prefixed forms.
+    "🟢Live": "In Progress",
+    "🟡Draft": "Not Started",
     "🔵Completed": "Completed",
     "🟣Retired": "Retired",
     "⚪Archived": "Archived",
-    # Also catch the space-separated forms seen in some rules prose.
-    "🟢 Live": "Live",
-    "🟡 Draft": "Draft",
+    "🟢 Live": "In Progress",
+    "🟡 Draft": "Not Started",
     "🔵 Completed": "Completed",
     "🟣 Retired": "Retired",
     "⚪ Archived": "Archived",
+    # Old plain-word forms superseded by the 2026-05-03 rename.
+    "Live": "In Progress",
+    "Draft": "Not Started",
 }
 
 # Property names that map to the Plans Status field.  Exact match required —

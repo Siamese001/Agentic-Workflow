@@ -3,7 +3,7 @@
 post_cascade_author_gate_ui_audit.py — Windsurf post_cascade_response UI conformance audit.
 
 Scans the cascade response for ask_user_question invocations and the most recent
-AUTHOR_GATE_PACKET: block in the turn. Validates three invariants from
+AUTHOR_GATE_PACKET: block in the turn. Validates four invariants from
 author-gate-enforcement.md Pipeline step 7:
 
     1. Every surfaced option description begins with
@@ -12,6 +12,12 @@ author-gate-enforcement.md Pipeline step 7:
     3. Star presence matches routing verdict:
          - packet.routing.rule_applied == "dominance_fires"  -> exactly 1 star required
          - any other verdict                                 -> zero stars required
+    4. Every surfaced option description carries a tradeoff segment, namely
+       ` · trade-off: <≥20 non-whitespace chars>` somewhere after the prefix.
+       Plan author-gate-four-req-enforcement-c4d2a8 W1.P3 — closes the
+       pros/cons enforcement gap. The emitter (`emit_packet.py`) sets a
+       deterministic floor; this invariant catches any consumer that drops
+       or rebuilds the description without preserving the tradeoff.
 
 Violations append JSONL to artifacts/windsurf/author_gate_ui_violations.jsonl.
 
@@ -40,6 +46,14 @@ VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_ui_violatio
 # Patterns
 _CONFIDENCE_PREFIX_RE = re.compile(r"^\[(RECOMMENDED \u2b50 )?confidence=0\.\d{2}\]")
 _STAR_PREFIX_RE = re.compile(r"^\[RECOMMENDED \u2b50 confidence=0\.\d{2}\]")
+# Plan author-gate-four-req-enforcement-c4d2a8 W1.P3 — invariant 4 regex.
+# Matches ` · trade-off: <≥20 non-whitespace chars>` anywhere after the prefix.
+# The 20-char floor avoids accepting "trade-off: tbd" or other placeholders.
+_TRADEOFF_SEGMENT_RE = re.compile(
+    r"\s\u00b7\s*trade-off:\s*(\S(?:.*?\S){19,})",
+    re.DOTALL,
+)
+_TRADEOFF_MIN_CHARS = 20
 _PACKET_START_RE = re.compile(r"AUTHOR_GATE_PACKET:\s*(?=\{)")
 # ask_user_question invocations: locate the start of the options array; the end
 # is resolved by bracket-balanced scan because descriptions may contain `]`.
@@ -158,6 +172,27 @@ def _audit_invocation(
                 "invariant": "multiple_stars",
                 "star_indices": star_indices,
                 "count": len(star_indices),
+            }
+        )
+
+    # Invariant 4: every description carries a tradeoff segment.
+    # Plan author-gate-four-req-enforcement-c4d2a8 W1.P3.
+    missing_tradeoff: list[int] = []
+    for i, d in enumerate(descriptions):
+        match = _TRADEOFF_SEGMENT_RE.search(d)
+        if match is None:
+            missing_tradeoff.append(i)
+            continue
+        body = match.group(1).strip()
+        if len(body) < _TRADEOFF_MIN_CHARS:
+            missing_tradeoff.append(i)
+    if missing_tradeoff:
+        violations.append(
+            {
+                "invariant": "description_missing_tradeoff",
+                "option_indices": missing_tradeoff,
+                "count": len(missing_tradeoff),
+                "min_chars": _TRADEOFF_MIN_CHARS,
             }
         )
 

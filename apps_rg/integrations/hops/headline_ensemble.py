@@ -35,7 +35,10 @@ def generate_headline(
     # rendering at 11pt bold. When target_role is supplied, the LLM is asked
     # to weave it into the headline directly (so ensure_title_in_headline
     # later becomes a no-op and no prepend-bloat happens).
-    budget = budget_for_section("headline", target_words=11, target_sentences=1, tolerance=0.25)
+    # target_words=13 accounts for the 2 pipe chars in '[A] | [B] | [C]' format
+    # (count_words treats '|' as a token). tolerance=0.40 → range [8, 18] words
+    # which comfortably covers 9-15 content words plus 2 pipes.
+    budget = budget_for_section("headline", target_words=13, target_sentences=1, tolerance=0.40)
 
     base_seed = seed_text or _archetype_seed(archetype, company, target_role)
     mirror_list = list(mirror_terms)

@@ -1,0 +1,11 @@
+# WSL2 systemd configuration
+# Place this file at /etc/wsl.conf inside your WSL Ubuntu distro
+# Then run: wsl --shutdown from Windows PowerShell (admin)
+# On next WSL start, systemd will be enabled
+
+[boot]
+systemd=true
+
+# Optional: Set default user
+[user]
+default=your-username

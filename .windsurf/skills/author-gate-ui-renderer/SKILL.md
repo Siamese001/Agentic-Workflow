@@ -57,18 +57,32 @@ Apply the same mapping to every alternative.
 
 ## `ask_user_question` Option Descriptions
 
-Each option's `description` field MUST begin with the confidence pill + recommendation flag + precedent:
+The canonical description for every surfaced option is **`candidate.surface_description`** — minted by `emit_packet.py` (plan `author-gate-four-req-enforcement-c4d2a8` W1.P1). Pass it through `OPTIONS_JSON` unchanged. The floor it guarantees is:
 
 ```
-{"label": "<thesis (≤80ch)>",
- "description": "🟢 <score> · recommended · precedent: <verdict> · flip: <cond>"}
+[<RECOMMENDED ⭐ if dominance_fires>confidence=0.NN] · trade-off: <key_tradeoffs[0][:80]>
 ```
 
-For non-recommended options:
+Equivalent to the four-requirement contract in `author-gate-enforcement.md` Pipeline step 7:
+
+| # | Requirement | Where it shows up |
+|---|---|---|
+| 1 | clickable | the option itself in `ask_user_question` |
+| 2 | confidence | `[confidence=0.NN]` (or `[RECOMMENDED ⭐ confidence=0.NN]`) prefix |
+| 3 | pros/cons | ` · trade-off: <text>` segment |
+| 4 | dominance star | `⭐` iff `routing.rule_applied == "dominance_fires"`, exactly once |
+
+### Extending the description
+
+Callers MAY supply a richer `surface_description` on the input spec. The emitter prepends the floor automatically when the supplied text does not begin with the prefix, so the four requirements are preserved no matter how the caller composed it. Sample extended description:
 
 ```
-{"description": "🟡 <score> · precedent: <verdict> · <1-line key_tradeoff>"}
+[confidence=0.85] · trade-off: Higher coverage but bigger blast · also: rolls back cleanly via single git revert
 ```
+
+### Renderer fallback for legacy packets
+
+Pre-W1.P1 packets carry only `surface_description_prefix`. `render_card.py` falls through `surface_description` → `surface_description_floor` → locally-built description (`<pill> <score> · precedent: <verdict> · flip: <cond>`) so older packets still render, but they will fail UI-audit invariant 4 if they reach `ask_user_question`.
 
 ## Files
 

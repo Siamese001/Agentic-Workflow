@@ -130,8 +130,17 @@ def test_emit_packet_low_confidence_no_star(emit):
 def test_ui_audit_clean_when_dominance_fires_with_one_star(ui_audit):
     packet = {"routing": {"rule_applied": "dominance_fires"}, "decision_id": "dec_test"}
     options = [
-        {"label": "⭐ Recommended — A", "description": "[RECOMMENDED ⭐ confidence=0.90] alpha wins"},
-        {"label": "B", "description": "[confidence=0.70] beta"},
+        {
+            "label": "⭐ Recommended — A",
+            "description": (
+                "[RECOMMENDED ⭐ confidence=0.90] · trade-off: "
+                "Gains reversibility, loses coverage of L4 pattern"
+            ),
+        },
+        {
+            "label": "B",
+            "description": "[confidence=0.70] · trade-off: Higher coverage but bigger blast radius",
+        },
     ]
     response = _make_response(packet, options)
     assert ui_audit.audit_response(response) == []
@@ -140,8 +149,14 @@ def test_ui_audit_clean_when_dominance_fires_with_one_star(ui_audit):
 def test_ui_audit_clean_when_surface_top_n_with_zero_stars(ui_audit):
     packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
     options = [
-        {"label": "A", "description": "[confidence=0.77] alpha"},
-        {"label": "B", "description": "[confidence=0.74] beta"},
+        {
+            "label": "A",
+            "description": "[confidence=0.77] · trade-off: Localized change, narrow test surface",
+        },
+        {
+            "label": "B",
+            "description": "[confidence=0.74] · trade-off: Cross-layer change, wider test surface",
+        },
     ]
     response = _make_response(packet, options)
     assert ui_audit.audit_response(response) == []
@@ -150,8 +165,8 @@ def test_ui_audit_clean_when_surface_top_n_with_zero_stars(ui_audit):
 def test_ui_audit_fails_on_missing_confidence_prefix(ui_audit):
     packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
     options = [
-        {"label": "A", "description": "alpha without prefix"},
-        {"label": "B", "description": "[confidence=0.74] beta"},
+        {"label": "A", "description": "alpha without prefix · trade-off: still has tradeoff text here"},
+        {"label": "B", "description": "[confidence=0.74] · trade-off: beta has the prefix and tradeoff"},
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
@@ -161,8 +176,17 @@ def test_ui_audit_fails_on_missing_confidence_prefix(ui_audit):
 def test_ui_audit_fails_on_star_without_dominance(ui_audit):
     packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
     options = [
-        {"label": "A", "description": "[RECOMMENDED ⭐ confidence=0.77] star without dominance"},
-        {"label": "B", "description": "[confidence=0.74] beta"},
+        {
+            "label": "A",
+            "description": (
+                "[RECOMMENDED ⭐ confidence=0.77] · trade-off: "
+                "star applied without dominance verdict"
+            ),
+        },
+        {
+            "label": "B",
+            "description": "[confidence=0.74] · trade-off: beta has the standard prefix",
+        },
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
@@ -172,8 +196,14 @@ def test_ui_audit_fails_on_star_without_dominance(ui_audit):
 def test_ui_audit_fails_on_multiple_stars(ui_audit):
     packet = {"routing": {"rule_applied": "dominance_fires"}, "decision_id": "dec_test"}
     options = [
-        {"label": "A", "description": "[RECOMMENDED ⭐ confidence=0.90] first star"},
-        {"label": "B", "description": "[RECOMMENDED ⭐ confidence=0.88] second star"},
+        {
+            "label": "A",
+            "description": "[RECOMMENDED ⭐ confidence=0.90] · trade-off: first star with tradeoff",
+        },
+        {
+            "label": "B",
+            "description": "[RECOMMENDED ⭐ confidence=0.88] · trade-off: second star with tradeoff",
+        },
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
@@ -183,7 +213,10 @@ def test_ui_audit_fails_on_multiple_stars(ui_audit):
 def test_ui_audit_fails_when_dominance_missing_star(ui_audit):
     packet = {"routing": {"rule_applied": "dominance_fires"}, "decision_id": "dec_test"}
     options = [
-        {"label": "A", "description": "[confidence=0.90] no star despite dominance"},
+        {
+            "label": "A",
+            "description": "[confidence=0.90] · trade-off: no star despite dominance verdict",
+        },
     ]
     response = _make_response(packet, options)
     violations = ui_audit.audit_response(response)
@@ -193,6 +226,110 @@ def test_ui_audit_fails_when_dominance_missing_star(ui_audit):
 def test_ui_audit_noop_when_no_ask_user_question(ui_audit):
     response = "Just some prose with AUTHOR_GATE_PACKET: {\"routing\": {\"rule_applied\": \"dominance_fires\"}}"
     assert ui_audit.audit_response(response) == []
+
+
+# ------------------------------ UI audit invariant 4: tradeoff segment ------------------------------
+# Plan author-gate-four-req-enforcement-c4d2a8 W2.P4 — close pros/cons gap.
+
+
+def test_ui_audit_invariant4_passes_with_tradeoff_segment(ui_audit):
+    """Description carrying ` · trade-off: <≥20 chars>` passes invariant 4."""
+    packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
+    options = [
+        {
+            "label": "A",
+            "description": "[confidence=0.80] · trade-off: Gains reversibility but loses test coverage",
+        },
+        {
+            "label": "B",
+            "description": "[confidence=0.74] · trade-off: Cheaper to ship but harder to roll back",
+        },
+    ]
+    response = _make_response(packet, options)
+    violations = ui_audit.audit_response(response)
+    assert all(v["invariant"] != "description_missing_tradeoff" for v in violations)
+
+
+def test_ui_audit_invariant4_fails_when_tradeoff_segment_absent(ui_audit):
+    """Description without any ` · trade-off:` segment fails invariant 4."""
+    packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
+    options = [
+        {"label": "A", "description": "[confidence=0.80] just the prefix, no tradeoff segment"},
+        {"label": "B", "description": "[confidence=0.74] · trade-off: B has the segment though"},
+    ]
+    response = _make_response(packet, options)
+    violations = ui_audit.audit_response(response)
+    missing = [v for v in violations if v["invariant"] == "description_missing_tradeoff"]
+    assert len(missing) == 1
+    assert missing[0]["option_indices"] == [0]
+    assert missing[0]["count"] == 1
+
+
+def test_ui_audit_invariant4_fails_on_short_tradeoff(ui_audit):
+    """Tradeoff body shorter than 20 non-whitespace chars fails invariant 4."""
+    packet = {"routing": {"rule_applied": "surface_top_1"}, "decision_id": "dec_test"}
+    options = [
+        {"label": "A", "description": "[confidence=0.80] · trade-off: tbd"},
+    ]
+    response = _make_response(packet, options)
+    violations = ui_audit.audit_response(response)
+    assert any(v["invariant"] == "description_missing_tradeoff" for v in violations)
+
+
+def test_ui_audit_invariant4_does_not_double_count_with_invariant1(ui_audit):
+    """A description missing both prefix and tradeoff yields BOTH violations independently."""
+    packet = {"routing": {"rule_applied": "surface_top_1"}, "decision_id": "dec_test"}
+    options = [
+        {"label": "A", "description": "plain text without prefix or tradeoff"},
+    ]
+    response = _make_response(packet, options)
+    violations = ui_audit.audit_response(response)
+    invariants = {v["invariant"] for v in violations}
+    assert "confidence_prefix_missing" in invariants
+    assert "description_missing_tradeoff" in invariants
+
+
+# ------------------------------ emit_packet floor + surface_description ------------------------------
+
+
+def test_emit_packet_mints_surface_description_with_tradeoff_floor(emit):
+    """Surfaced candidates carry surface_description containing the tradeoff floor."""
+    spec = {
+        "decision_type": "refactor_scope",
+        "normalized_intent": "floor smoke",
+        "candidates": [_cand("a", 0.90, "alpha"), _cand("b", 0.70, "beta")],
+    }
+    emit._fetch_precedent = lambda *a, **kw: {"verdict": "none", "matched_ids": [], "summary": ""}
+    packet = emit.build_packet(spec)
+    surfaced = [c for c in packet["candidates"] if c.get("surfaced")]
+    assert surfaced, "At least one candidate must be surfaced"
+    for c in surfaced:
+        floor = c.get("surface_description_floor")
+        desc = c.get("surface_description")
+        assert isinstance(floor, str) and floor.startswith("[")
+        assert " · trade-off: " in floor
+        assert isinstance(desc, str) and desc.startswith("[")
+        assert " · trade-off: " in desc
+
+
+def test_emit_packet_surface_description_extension_preserves_floor(emit):
+    """When a caller supplies a custom surface_description, emitter prepends the floor."""
+    extension = "author appends a longer rationale paragraph here"
+    spec = {
+        "decision_type": "refactor_scope",
+        "normalized_intent": "extension test",
+        "candidates": [
+            {**_cand("a", 0.90, "alpha"), "surface_description": extension},
+            _cand("b", 0.70, "beta"),
+        ],
+    }
+    emit._fetch_precedent = lambda *a, **kw: {"verdict": "none", "matched_ids": [], "summary": ""}
+    packet = emit.build_packet(spec)
+    a = next(c for c in packet["candidates"] if c["id"] == "a")
+    desc = a["surface_description"]
+    assert desc.startswith("[")  # prefix preserved
+    assert " · trade-off: " in desc
+    assert extension in desc  # extension appended
 
 
 # ------------------------------ helpers ------------------------------

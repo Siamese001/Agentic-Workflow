@@ -11,7 +11,7 @@
 - **Created**: 2026-05-02
 - **Owner**: Cascade
 - **Predecessor**: `apps-eval-qwen32b-rollout-b7c4d9`
-- **Status**: Live
+- **Status**: Completed (2026-05-03)
 
 ## Supersedes / Related
 
@@ -67,3 +67,27 @@ For P1.1 the relevant graph fact is the existing edge: `apps_lic.HOP5GenerationA
 3. **P4.1** — fires conditionally on P2.4 producing latency p95-under-SLO evidence.
 4. **P3.x** — fires conditionally on agreement-drift or section-taxonomy-change triggers.
 5. **P5.1, P6.1** — out-of-scope / external; not Cascade work items.
+
+## Closeout — 2026-05-03
+
+### ADG-revalidated final dispositions
+
+| Phase | Final disposition | Owner after closeout |
+|-------|-------------------|----------------------|
+| **P1.1** | ✅ Shipped — ADG-verified imports of `openai`, `is_qwen_available`, `QWEN_LOCAL_MODEL_ID`, `VLLM_BASE_URL` in `apps_lic/engines/generation_engine.py`; substrate pipeline `_STAGE_SPECS[4]` (stage_id=5) routes HOP5 to `GenerationEngine`; legacy `HOP5GenerationAgent` has 0 production fan-in. | None — code-resident |
+| **P2.1–P2.6** | Transferred to `ops_scripts/calibration/judge_calibration.py` weekly emitter. Eligibility (≥30 paired runs, Wilson-CI thresholds) is detected by the harness, not by this plan. | `judge_calibration.py` + capture queue at `artifacts/capture/markers.jsonl` |
+| **P3.1** | Trigger-conditioned `NEXT_STEP:` emitted (frontier second-judge pairing if Wilson-CI agreement < 0.85 over 4-week rolling window). | Backlog — spawns new T2/T3 plan on trigger |
+| **P3.2** | Trigger-conditioned `NEXT_STEP:` emitted (apps_rfp HOP3b/HOP3c reopen if any `SectionType` graduates from templated to free-text). | Backlog — spawns new T2/T3 plan on trigger |
+| **P4.1** | Gated `NEXT_STEP:` emitted (apps_rg `n_candidates: 3 → 5` — single-line edit in `apps_rg/config/rg_agent_specs.json:36`, fires only when P2.4 latency data shows p95 under SLO at N=5). NOT shipped here — would risk SLO without the gating evidence. | Backlog — micro-plan on trigger |
+| **P5.1** | Already non-goal — `apps_underwriting_ai` activation will spawn its own plan when preconditions hold (predecessor §"Wave 8 findings"). | Separate future plan |
+| **P6.1** | External CI — RTC-REQ / mutation-rejection / OTel coverage gates fire on next pipeline run independently of plan state. | CI |
+
+### Why closing now is safe
+
+- Every "passive" item is owned by an autonomous system (`judge_calibration.py`) that does not reference this plan's slug. ADG fan-in confirms zero structural coupling between the plan and the data pipeline.
+- Every "trigger-conditioned" item now has a durable `NEXT_STEP:` marker — the trigger surface (Wilson-CI watchdog, section-taxonomy diff) is in code, not in plan prose.
+- P4.1's gate condition (latency p95 fits SLO at N=5) is unmet today; shipping it now would violate the plan's own success criteria.
+
+### Author-Gate
+
+No Author-Gate fired for closeout: dispositions are deterministic (data-gated → harness; trigger-conditioned → NEXT_STEP; gated config → NEXT_STEP; out-of-scope → already non-goal; external → CI). No competing options.

@@ -1,0 +1,37 @@
+# OTEL collector stack for RTC-REQ-020/022 certification receipt.
+#
+# Runs an OpenTelemetry Collector with:
+#   - OTLP gRPC receiver on :4317
+#   - OTLP HTTP receiver on :4318
+#   - File exporter → /tmp/otel-export/spans.json (mounted to ./artifacts/otel_collector_export/)
+#   - Prometheus metrics exporter on :8889 (for metric delta proof)
+#
+# Usage:
+#   docker compose -f docker-compose.otel.yml up -d
+#   python tools/cert/run_otel_collector_probe.py
+#   docker compose -f docker-compose.otel.yml down
+#
+# Artifacts produced by the probe:
+#   artifacts/certification/otel_collector_receipt.json
+#   artifacts/certification/otel_metric_delta_report.json
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.99.0
+    container_name: agentic_otel_collector
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ./config/otel/collector-config.yaml:/etc/otel/config.yaml:ro
+      - ./artifacts/otel_collector_export:/tmp/otel-export
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8889:8889"   # Prometheus metrics scrape
+      - "13133:13133" # Health check
+    restart: unless-stopped
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:13133/"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

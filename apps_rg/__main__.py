@@ -431,6 +431,14 @@ def main() -> None:
     )
     args, _unknown = parser.parse_known_args()
 
+    # Interactive prompt for missing required inputs
+    if not args.target_role:
+        args.target_role = input("Enter target role (e.g., 'Senior ML Engineer'): ").strip()
+        if not args.target_role:
+            parser.error("--target-role is required")
+    if not args.target_company:
+        args.target_company = input("Enter target company (e.g., 'Google'): ").strip() or None
+
     # Wrap the deterministic HOP pipeline in genuine spine receipts.
     # `governed_run` emits U0/L1/L0/L3-bypass on enter; L2/Exit/L6/OTEL on exit.
     cfg = _apps_rg_emission_config(
@@ -805,6 +813,10 @@ def main_canonical() -> None:
     parser.add_argument("--auto-research-tavily", action="store_true")
     parser.add_argument("--manual-brief", default="apps_rg/scripts/company_research.json")
     args, _unknown = parser.parse_known_args()
+
+    # Require --target-role to proceed; fail fast without required inputs
+    if not args.target_role:
+        parser.error("--target-role is required (e.g., 'Senior ML Engineer')")
 
     # Build config same as legacy path
     cfg = _apps_rg_emission_config(

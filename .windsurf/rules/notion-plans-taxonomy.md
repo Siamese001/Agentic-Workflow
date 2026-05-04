@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-description: Use this rule when interacting with Notion Plans or Backlog Items databases — status field values, invariants for Live/Draft/Completed/Retired/Archived, staleness rules, on-disk-presence checks, or when constructing a Backlog Snapshot read. Extracted from AGENTS.md 2026-05-02 per plan token-burn-followup-f8c2d1 deferred-scope item.
+description: Use this rule when interacting with Notion Plans or Backlog Items databases — status field values, invariants for In Progress/Not Started/Completed/Retired/Archived, staleness rules, on-disk-presence checks, or when constructing a Backlog Snapshot read. Extracted from AGENTS.md 2026-05-02 per plan token-burn-followup-f8c2d1 deferred-scope item.
 ---
 
 # Notion Plans + Backlog Items — Status Taxonomy and Snapshot Read Path
@@ -13,8 +13,8 @@ description: Use this rule when interacting with Notion Plans or Backlog Items d
 
 | Canonical Name | API-literal | Meaning | Required Conditions |
 |---|---|---|---|
-| `Live` | `{"select": {"name": "Live"}}` | green — someone is working on this right now | File exists on disk · edited within last 14 days · has wave/phase work in progress |
-| `Draft` | `{"select": {"name": "Draft"}}` | yellow — written, not started | File exists on disk · no execution work yet |
+| `In Progress` | `{"select": {"name": "In Progress"}}` | green — someone is working on this right now | File exists on disk · edited within last 14 days · has wave/phase work in progress |
+| `Not Started` | `{"select": {"name": "Not Started"}}` | gray — written, not started | File exists on disk · no execution work yet |
 | `Completed` | `{"select": {"name": "Completed"}}` | blue — work landed | All waves/phases done · audit trail kept |
 | `Retired` | `{"select": {"name": "Retired"}}` | purple — no longer relevant | Replaced by another plan, OR stale-by-design, OR work obsolete, OR file gone from disk — specific reason in Summary field |
 | `Archived` | `{"select": {"name": "Archived"}}` | gray — hidden from views | Reserved — not for routine use |
@@ -27,35 +27,36 @@ Left over from migrations; live in the schema but must never be selected:
 
 | Stale string | Stale id | Canonical replacement |
 |---|---|---|
-| `🟡Draft` (red) | `f5abd2a2-03bc-4951-9e38-ae9e1343909c` | `Draft` |
+| `🟡Draft` (red) | `f5abd2a2-03bc-4951-9e38-ae9e1343909c` | `Not Started` |
 | `🔵Completed` (pink) | `6da99522-3194-4aa3-aac4-44296b4048b7` | `Completed` |
 
 Incident precedent (2026-05-03): four per-app FEC producer plans posted with `🟡Draft`; caught and patched to `Draft`. Enforcement now lives in plan `notion-plans-status-enforcement-7a1e2d` (helper + post-cascade audit + CI drift gate NP2).
 
 ### Display mnemonic (for humans only)
 
-When discussing statuses in prose or dashboards, the 🟢Live / 🟡Draft / 🔵Completed / 🟣Retired / ⚪Archived glyph notation is a **display mnemonic** — convenient for eyeballing at a glance. These glyphs MUST NOT appear in any `API-post-page` / `API-patch-page` payload targeting the Plans or Backlog Items `Status` field.
+When discussing statuses in prose or dashboards, the 🟢In Progress / 🟡Not Started / 🔵Completed / 🟣Retired / ⚪Archived glyph notation is a **display mnemonic** — convenient for eyeballing at a glance. These glyphs MUST NOT appear in any `API-post-page` / `API-patch-page` payload targeting the Plans or Backlog Items `Status` field.
 
 **Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted via `API-update-a-data-source`. Desktop UI rename pass completed for both Plans and Backlog Items DBs: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`. Option IDs preserved across rename (Notion UI rename ≠ API rename — API does not support it).
 
 **Plans DB Invariants**:
-- A row with `Status = Live` MUST have `Exists On Disk = true`
-- A row with `Status = Live` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
+- A row with `Status = In Progress` MUST have `Exists On Disk = true`
+- A row with `Status = In Progress` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
 - A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
 - A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
-- **Mandatory `AI Summary` (added 2026-05-03)**: every Plans row with `Status ∈ {Live, Draft, Completed}` MUST have a non-empty `AI Summary` property. Content MUST be **one single sentence, ≤ 12 words, scope + why-it-matters** — NOT bullet-style, NOT a prose recap of the `Summary` field. The DB grid shows only the first line; density per pixel is the goal. Examples: `"Completes apps_* spine migration; soak period before strict ADG certification flip."` (12 words), `"Turns ADG audit into two-stage certification so silent skips can't hide failures."` (12 words). Rows in `Retired`/`Archived` are exempt. Empty `AI Summary` is a reviewability violation — a reader scanning the DB learns nothing from a row without one. Enforcement: `ops_scripts/ci/check_notion_plans_ai_summary.py` checks presence (always) and ≤ 15-word length (advisory soft-cap on top of the 12-word target). Fail-closed via `NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1`.
+- **Mandatory `AI Summary` (added 2026-05-03)**: every Plans row with `Status ∈ {In Progress, Not Started, Completed}` MUST have a non-empty `AI Summary` property. Content MUST be **one single sentence, ≤ 12 words, scope + why-it-matters** — NOT bullet-style, NOT a prose recap of the `Summary` field. The DB grid shows only the first line; density per pixel is the goal. Examples: `"Completes apps_* spine migration; soak period before strict ADG certification flip."` (12 words), `"Turns ADG audit into two-stage certification so silent skips can't hide failures."` (12 words). Rows in `Retired`/`Archived` are exempt. Empty `AI Summary` is a reviewability violation — a reader scanning the DB learns nothing from a row without one. Enforcement: `ops_scripts/ci/check_notion_plans_ai_summary.py` checks presence (always) and ≤ 15-word length (advisory soft-cap on top of the 12-word target). Fail-closed via `NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1`.
 
-**Canonical Status option strings (2026-05-03 incident)**:
-The UI rename pass preserved plain-word option names (`Live`/`Draft`/`Completed`/`Retired`/`Archived`). The 🟢/🟡/🔵/🟣/⚪ notation in this rule is DISPLAY MNEMONIC — not literal option strings. When calling `API-post-page` / `API-patch-page`, pass `{"Status": {"select": {"name": "Draft"}}}` — NEVER `"🟡Draft"`. The emoji-prefixed variants (`🟡Draft` red / `🔵Completed` pink) are STALE DUPLICATES left from an earlier migration and MUST NOT be selected. Before writing status, either (a) cache the canonical option names from prior sessions, or (b) call `API-retrieve-a-data-source` and match the plain-word option.
+**Canonical Status option strings (updated 2026-05-03)**:
+Option names are `In Progress`/`Not Started`/`Waiting`/`Completed`/`Retired`/`Archived` (same option IDs as former `Live`/`Draft` — only display names changed). The 🟢/🟡/🔵/🟣/⚪ notation in this rule is DISPLAY MNEMONIC — not literal option strings. When calling `API-post-page` / `API-patch-page`, pass `{"Status": {"select": {"name": "Not Started"}}}` — NEVER `"🟡Draft"` or `"Draft"`. The emoji-prefixed variants (`🟡Draft` red / `🔵Completed` pink) are STALE DUPLICATES and MUST NOT be selected. The old plain-word forms `Live` and `Draft` are also stale after the 2026-05-03 rename.
 
-**Shared taxonomy — Backlog Items DB**: the same 5 status names apply (Live/Draft/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
+**Shared taxonomy — Backlog Items DB**: the same status names apply (In Progress/Not Started/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
 - Backlog Items have no `Exists On Disk` field → on-disk-presence invariant is Plans-only
-- Backlog items can legitimately sit in `Draft` for months waiting on dependencies → 14-day staleness clock is Plans-only
+- Backlog items can legitimately sit in `Not Started` for months waiting on dependencies → 14-day staleness clock is Plans-only
 - The "descope → Retired" flip applies to both DBs ✅
 
 **Migration history (2026-05-02)**:
 - 50 plans flipped Live → Retired in one session (Plans DB had become a graveyard with `Live` as default-and-never-decay)
 - Schema rename pass on both Plans DB and Backlog Items DB: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted on Plans DB
+- 2026-05-03: `Live`→`In Progress`, `Draft`→`Not Started` (same option IDs, display names changed in Notion UI)
 - Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
 - 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring (Plans only)
 

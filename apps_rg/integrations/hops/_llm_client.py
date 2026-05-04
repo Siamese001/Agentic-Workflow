@@ -97,6 +97,18 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
         )
     except ImportError:
         return None
+
+    # Optional blocking wait for vLLM to become ready (cold-start scenarios)
+    wait_sec = float(os.getenv("VLLM_WAIT_FOR_READY", "0"))  # noqa: PLW1508
+    if wait_sec > 0 and not is_qwen_available():
+        _log.info("[narrative_llm] vLLM not ready, waiting up to %.0fs...", wait_sec)
+        deadline = time.time() + wait_sec
+        while time.time() < deadline:
+            if is_qwen_available():
+                _log.info("[narrative_llm] vLLM became ready after %.1fs", wait_sec - (deadline - time.time()))
+                break
+            time.sleep(2.0)
+
     if not is_qwen_available():
         _log.info("[narrative_llm] qwen preflight failed; cascading to cloud")
         return None

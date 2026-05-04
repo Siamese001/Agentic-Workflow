@@ -1,5 +1,5 @@
 [Unit]
-Description=vLLM OpenAI-compatible server (Qwen2.5-14B-Instruct-AWQ)
+Description=vLLM OpenAI-compatible server (Qwen2.5-32B-Instruct-AWQ)
 After=network-online.target
 Wants=network-online.target
 
@@ -8,7 +8,7 @@ Type=simple
 # Repo path: Windows-side checkout at C:\Git\Agentic-Workflow accessed from WSL via /mnt/c.
 # If you maintain a separate WSL-native clone, edit ExecStart to point at it.
 WorkingDirectory=%h
-ExecStart=/bin/bash /mnt/c/Git/Agentic-Workflow/tools/vllm/start_vllm_server.sh
+ExecStart=/bin/bash /mnt/c/Git/Agentic-Workflow-FRESH/tools/vllm/start_vllm_server_32b.sh
 Restart=on-failure
 RestartSec=10s
 # vLLM loads ~9GiB weights; give it generous stop timeout for clean shutdown
