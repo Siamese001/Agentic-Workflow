@@ -39,7 +39,9 @@ root_directories:
   # Infrastructure / generated
   - archives
   - artifacts
+  - certification
   - infrastructure
+  - keys
   - logs
   - reports
   - requirements   # frozen requirement files (constraints*.txt etc.)
@@ -83,6 +85,7 @@ layer_roots:
   - L4_state
   - L5_safety
   - L6_observability
+  - L7_auditability
 
 lcd_subfolders:
   - config

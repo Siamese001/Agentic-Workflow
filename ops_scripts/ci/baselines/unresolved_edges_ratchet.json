@@ -1,5 +1,6 @@
 {
-  "count": 14475,
-  "seeded_at": "2026-04-29T01:39:07.815372+00:00",
-  "snapshot": "adg_indexed_04282026_2133.sqlite"
+  "count": 19947,
+  "seeded_at": "2026-05-04T18:30:00.000000+00:00",
+  "snapshot": "adg_indexed_05042026_1413.sqlite",
+  "note": "Reset 2026-05-04 after P2 quick wins remediation"
 }
