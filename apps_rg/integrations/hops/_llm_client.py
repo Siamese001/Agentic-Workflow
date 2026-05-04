@@ -26,6 +26,8 @@ import os
 import time
 from typing import Callable, Dict, Optional
 
+from apps_rg.prompt_assembly.pa_local import capture_prompt_bom
+
 _log = logging.getLogger(__name__)
 
 # Model IDs — sourced from agentic_core/L0_routing/config/model_registry.py
@@ -139,6 +141,13 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
 
     def _gen(label: str, prompt: str, *, temperature: float | None = None) -> str:
         temp = float(temperature) if temperature is not None else default_temp
+        capture_prompt_bom(
+            hop_name=f"narrative_gen_qwen_{label}",
+            model=QWEN_LOCAL_MODEL_ID,
+            provider_lane="qwen_vllm_local",
+            prompt_template=prompt[:512],
+            token_budget=max_tokens,
+        )
         try:
             resp = client.chat.completions.create(
                 model=QWEN_LOCAL_MODEL_ID,
@@ -225,6 +234,13 @@ def _make_anthropic_generator(*, timeout_s: float, temperature: float, max_token
 
     def _gen(label: str, prompt: str, *, temperature: float | None = None) -> str:
         temp = float(temperature) if temperature is not None else default_temp
+        capture_prompt_bom(
+            hop_name=f"narrative_gen_anthropic_{label}",
+            model=model,
+            provider_lane="anthropic_sonnet",
+            prompt_template=prompt[:512],
+            token_budget=max_tokens,
+        )
         try:
             resp = client.messages.create(
                 model=model,
@@ -329,6 +345,13 @@ def call_judge(prompt: str, *, timeout_s: float = 30.0, max_tokens: int = 256) -
     Returns dict with `tone_executive_register` and `naturalness` keys, or
     None on any failure (caller falls back to heuristics).
     """
+    capture_prompt_bom(
+        hop_name="narrative_judge",
+        model="haiku",
+        provider_lane="anthropic_haiku",
+        prompt_template=prompt[:512],
+        token_budget=max_tokens,
+    )
     text = _judge_raw(prompt, timeout_s=timeout_s, max_tokens=max_tokens)
     if not text:
         return None

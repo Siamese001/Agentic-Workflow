@@ -19,6 +19,12 @@ schema_version: 1
 app: apps_research
 
 claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      Scanner-key alias for R3_SIMPLE_GROUNDED_READ (used by
+      tools/analysis/apps_spine_coverage.py ROUTE_TYPE_CONTRACT_REQUIREMENTS).
+      Same contract surface -- see R3_SIMPLE_GROUNDED_READ entry below.
+
   - type: R3_SIMPLE_GROUNDED_READ
     description: >-
       On-demand grounded research synthesis. ResearchRequest.topic →

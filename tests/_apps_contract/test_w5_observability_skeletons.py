@@ -36,10 +36,10 @@ class TestJudgeAgreementTracker:
         rc = _run(script, out)
         assert rc == 0
         data = json.loads(out.read_text(encoding="utf-8"))
-        assert data["skeleton"] is True
+        assert data["skeleton"] is False  # promoted to real in DS-1 W4
         assert "per_app" in data
         assert "sample_size" in data
-        assert "holdout_comparison" in data  # null until real holdout lands
+        assert "holdout_comparison" in data  # non-null after DS-1 W4 citation_quality holdout
 
 
 class TestEvalTrendAnomalyDetector:

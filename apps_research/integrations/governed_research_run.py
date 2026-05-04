@@ -27,8 +27,9 @@ from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
     traces_execute,
 )
 
+import dataclasses
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from apps_research.types.research_types import ResearchRequest
@@ -131,6 +132,17 @@ class GovernedE2ERunRecord:
     # before the inner pipeline was wired in (apps-hop-substrate-four-apps-b4a2c9).
     hop_checkpoints: tuple[dict, ...] = ()
     hop_terminal_error: str = ""
+    # ── FEC v1.1 fields (apps-research-spine-deferred-followup-9c3e1a P1.1) ──
+    # Populated from the inner hop pipeline when company_brief engine attaches
+    # _depth_profile and _c0_bundle to the brief output.
+    research_depth_profile: str = ""
+    fec_run_context: dict = dataclasses.field(default_factory=dict)
+    # ── L4 durable write path (apps-research-deferred-scope-b7e3d2 W3 / DS-3) ──
+    # commit_receipt_ref from DurableWriteGateway.commit() after the run.
+    # "PENDING" when the commit was never attempted (degraded path).
+    # "BLOCKED" when UWG rejected the commit.
+    # "COMMIT_FAILED" when the commit raised unexpectedly.
+    l4_brief_committed: str = "PENDING"
 
 
 # ---------------------------------------------------------------------------
@@ -203,12 +215,37 @@ class GovernedResearchRun(GovernedAppRunner):
 
         # W5: build_app_record handles all substrate fields automatically.
         # apps_research renames `query` -> `topic`; everything else is name-matched.
-        return build_app_record(
+        fec_ctx = hop_payload.get("fec_context", {})
+        record = build_app_record(
             GovernedE2ERunRecord, core,
             aliases={"topic": "query"},
             hop_checkpoints=hop_payload["checkpoints"],
             hop_terminal_error=hop_payload["terminal_error"],
+            research_depth_profile=fec_ctx.get("research_depth_profile"),
+            fec_run_context=fec_ctx,
         )
+
+        # ── L4 durable write path (DS-3) — fail-soft ──────────────────────────
+        # Commit a provenance record through UWG.  Import is lazy so that the
+        # substrate path is never broken by import-time failures in the writer.
+        try:
+            from apps_research.integrations.research_brief_uwg_writer import (  # noqa: PLC0415
+                commit_brief_record,
+            )
+
+            brief = commit_brief_record(record)
+            # Return a new frozen record with the commit receipt attached.
+            import dataclasses as _dc  # noqa: PLC0415
+            record = _dc.replace(record, l4_brief_committed=brief.commit_receipt_ref)
+        except (ImportError, AttributeError, TypeError, ValueError, RuntimeError):  # guardian: allow-log-and-swallow -- L4 UWG write is best-effort provenance; research pipeline must never break
+            import logging as _logging  # noqa: PLC0415
+            _logging.getLogger(__name__).warning(
+                "GovernedResearchRun: L4 brief commit failed for run_id=%s",
+                record.run_id,
+                exc_info=True,
+            )
+
+        return record
 
     # ------------------------------------------------------------------
     # Inner pipeline driver (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9)
@@ -251,9 +288,27 @@ class GovernedResearchRun(GovernedAppRunner):
                 }
                 for cp in record.checkpoints
             )
+            # Extract FEC v1.1 context from hop pipeline result
+            fec_context: dict[str, Any] = {}
+            try:
+                final_ctx = getattr(record, "final_context", None) or {}
+                brief = (final_ctx.get("company_brief") or {})
+                if isinstance(brief, dict):
+                    depth_profile = brief.get("_depth_profile")
+                    c0_bundle = brief.get("_c0_bundle")
+                    jd_context = brief.get("_jd_context")
+                    if depth_profile:
+                        fec_context["research_depth_profile"] = depth_profile
+                    if c0_bundle:
+                        fec_context["c0_bundle"] = c0_bundle
+                    if jd_context:
+                        fec_context["jd_context"] = jd_context
+            except (AttributeError, TypeError, KeyError):
+                pass
             return {
                 "checkpoints": checkpoints,
                 "terminal_error": record.terminal_error,
+                "fec_context": fec_context,
             }
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, ImportError) as exc:
             # guardian: allow-broad-exception -- inner-DAG failures must not
@@ -262,6 +317,7 @@ class GovernedResearchRun(GovernedAppRunner):
             return {
                 "checkpoints": (),
                 "terminal_error": f"hop_pipeline_error: {type(exc).__name__}: {exc}",
+                "fec_context": {},
             }
 
 

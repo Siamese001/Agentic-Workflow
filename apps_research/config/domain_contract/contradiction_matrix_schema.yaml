@@ -1,0 +1,142 @@
+# apps_research domain contract — ContradictionMatrix schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# Defines the ContradictionMatrix object emitted by C0 when two or more
+# retrieved sources assert conflicting facts about the same entity attribute.
+#
+# Source precedence order (when resolving contradictions):
+#   1. company_website (primary self-disclosure)
+#   2. sec_filing (legally filed)
+#   3. press_release (company-issued)
+#   4. linkedin_company (platform-verified)
+#   5. news (credible outlet, most recent wins tie)
+#   6. analyst_report
+#   7. crunchbase / pitchbook
+#   8. all other signal sources
+#
+# Contradiction resolution strategies:
+#   use_higher_authority  — pick the source with higher authority tier
+#   use_more_recent       — pick the source with the newer publication date
+#   flag_unresolved       — emit contradiction as unresolved (PA must surface caveat)
+#   jd_override           — JD-derived claim overrides retrieved claim (only for role context)
+#
+# C0 MUST emit a contradiction entry whenever two sources disagree on a
+# directly comparable fact (e.g. employee_count, revenue_range, funding_stage).
+# Unresolved contradictions block C0-to-PA gate at PASS verdict; allow
+# WEAK_WITH_CAVEATS only.
+
+schema_version: "apps_research.contradiction_matrix/v1"
+app_id: apps_research
+task_class: company_brief
+
+source_precedence:
+  - company_website
+  - sec_filing
+  - press_release
+  - linkedin_company
+  - news
+  - analyst_report
+  - crunchbase
+  - pitchbook
+  - linkedin_person
+  - company_blog
+  - g2_or_review_site
+  - glassdoor
+  - builtin
+  - builtwith
+  - github
+  - job_board
+  - company_careers_page
+  - linkedin_jobs
+  - regulatory_database
+  - llm_synthesis
+  - interpretation
+
+resolution_strategies:
+  use_higher_authority:
+    description: >-
+      Pick the claim from the source with the higher precedence rank
+      (lower index in source_precedence list wins).
+  use_more_recent:
+    description: >-
+      When both sources have equal authority, pick the more recently
+      published one. Requires publication_date to be available.
+  flag_unresolved:
+    description: >-
+      Neither source clearly wins. Emit the contradiction as unresolved.
+      PA must surface a caveat note in the brief.
+  jd_override:
+    description: >-
+      JD-derived claim about the target role supersedes retrieved claim.
+      Only valid for role_context coverage family assertions.
+
+contradiction_matrix_output_schema:
+  type: object
+  description: >-
+    ContradictionMatrix emitted by C0. Contains one entry per detected
+    factual conflict between retrieved sources.
+  properties:
+    contradictions:
+      type: array
+      items:
+        type: object
+        required:
+          - contradiction_id
+          - attribute
+          - coverage_family
+          - source_a_id
+          - source_a_claim
+          - source_b_id
+          - source_b_claim
+          - resolution_strategy
+          - resolved
+        properties:
+          contradiction_id:
+            type: string
+            description: Stable ID (sha256[:8] of attribute + source_a_id + source_b_id).
+          attribute:
+            type: string
+            description: >-
+              Human-readable attribute name e.g. "employee_count", "revenue_range",
+              "hq_location", "funding_stage".
+          coverage_family:
+            type: string
+          source_a_id:
+            type: string
+          source_a_claim:
+            type: string
+          source_a_type:
+            type: string
+          source_b_id:
+            type: string
+          source_b_claim:
+            type: string
+          source_b_type:
+            type: string
+          resolution_strategy:
+            type: string
+            enum:
+              - use_higher_authority
+              - use_more_recent
+              - flag_unresolved
+              - jd_override
+          resolved:
+            type: boolean
+          accepted_claim:
+            type: string
+            description: The claim that won after resolution (null if flag_unresolved).
+          accepted_source_id:
+            type: string
+            description: Source ID for the accepted claim (null if flag_unresolved).
+          caveat_note:
+            type: string
+            description: >-
+              Set when resolved=false or strategy=use_more_recent with
+              a close date gap. Forwarded to PA for inline caveat.
+    unresolved_count:
+      type: integer
+      description: >-
+        Count of flag_unresolved entries. C0-to-PA gate cannot emit PASS
+        verdict if unresolved_count > 0; emits WEAK_WITH_CAVEATS instead.
+    total_contradictions:
+      type: integer

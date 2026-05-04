@@ -1,0 +1,61 @@
+# apps_lic Narrative Arc Policy
+# Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS7-P1
+# Schema version: 1.0
+#
+# Controls NarrativeArcEngine arc selection matrix.
+# Feature gate: ARC_ENGINE_ENABLED=1 env var required to activate.
+#
+# Arc matrix: recipient_bucket → distance_bucket → arc_name
+# When a (bucket, distance) key is absent the engine falls back to hardcoded defaults.
+#
+# Canonical arc names:
+#   problem_solution   — identifies a problem the recipient faces
+#   mutual_gain        — shared context or mutual benefit
+#   social_proof       — leads with credibility signals
+#   asymmetric_insight — non-obvious observation about recipient's context
+#   warm_reconnect     — references prior relationship
+#   direct_ask         — brief, low-friction direct request
+
+schema_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Arc selection matrix
+# Keys must match the bucket names used in NarrativeArcEngine:
+#   recipient buckets : exec | hiring | recruiter | default
+#   distance buckets  : cold | warm | referral | known
+# ---------------------------------------------------------------------------
+arc_matrix:
+  exec:
+    cold:     asymmetric_insight
+    warm:     mutual_gain
+    referral: social_proof
+    known:    warm_reconnect
+
+  hiring:
+    cold:     problem_solution
+    warm:     mutual_gain
+    referral: social_proof
+    known:    warm_reconnect
+
+  recruiter:
+    cold:     direct_ask
+    warm:     social_proof
+    referral: social_proof
+    known:    warm_reconnect
+
+  default:
+    cold:     problem_solution
+    warm:     mutual_gain
+    referral: social_proof
+    known:    warm_reconnect
+
+# ---------------------------------------------------------------------------
+# Canonical arc vocabulary (informational — not read by engine)
+# ---------------------------------------------------------------------------
+valid_arcs:
+  - problem_solution
+  - mutual_gain
+  - social_proof
+  - asymmetric_insight
+  - warm_reconnect
+  - direct_ask

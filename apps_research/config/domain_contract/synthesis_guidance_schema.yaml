@@ -1,0 +1,128 @@
+# apps_research domain contract — SynthesisGuidanceForPA schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# Defines the SynthesisGuidanceForPA object emitted by C0 and consumed by
+# PA (ResearchAssemblyEngine). This object tells PA:
+#   1. Which sections to include (driven by BriefingCoverageMatrix)
+#   2. What gate verdict applies and any caveats to surface
+#   3. The JD focal angle (when JD is present)
+#   4. Fenced content blocks for each covered family
+#   5. Claim labelling instructions for unsupported or inferred claims
+#
+# PA MUST treat all retrieved source content in this object as DATA (not
+# analyst commentary). JD-derived context is ALSO DATA. Analyst inferences
+# are labelled ANALYSIS. Assumptions are labelled ANALYSIS with caveat.
+
+schema_version: "apps_research.synthesis_guidance_for_pa/v1"
+app_id: apps_research
+task_class: company_brief
+
+synthesis_guidance_output_schema:
+  type: object
+  description: >-
+    SynthesisGuidanceForPA emitted by C0. Consumed by ResearchAssemblyEngine
+    to drive section composition and citation placement.
+  required:
+    - depth_profile
+    - gate_verdict
+    - sections_to_include
+    - fenced_content_blocks
+  properties:
+    depth_profile:
+      type: string
+      description: Active depth profile ID (e.g. COMPANY_BRIEF_DEEP).
+    gate_verdict:
+      type: string
+      enum: [PASS, WEAK_WITH_CAVEATS, FAIL]
+      description: >-
+        C0-to-PA gate verdict. FAIL means PA must emit a DEGRADED_PACKET
+        rather than a full brief.
+    gate_caveat:
+      type: string
+      description: >-
+        Human-readable caveat text when gate_verdict=WEAK_WITH_CAVEATS.
+        PA prepends this to the brief as a provenance disclaimer.
+    degraded_packet_reason:
+      type: string
+      description: >-
+        Set only when gate_verdict=FAIL. Describes why retrieval was
+        insufficient. PA emits this in the DEGRADED_PACKET.
+    sections_to_include:
+      type: array
+      description: >-
+        Ordered list of section IDs PA should render. Order reflects
+        recommended narrative flow. Only families with status=covered
+        or status=partial (with caveat) are included.
+      items:
+        type: object
+        required: [section_id, coverage_family, include_caveat]
+        properties:
+          section_id:
+            type: string
+          coverage_family:
+            type: string
+          include_caveat:
+            type: boolean
+            description: >-
+              True when family status=partial; PA adds a "limited
+              information available" note for this section.
+          caveat_text:
+            type: string
+    fenced_content_blocks:
+      type: array
+      description: >-
+        Retrieved and synthesised content, fenced by fence_type.
+        PA slots these into section prompts. DATA blocks must not be
+        paraphrased or reordered without explicit citation.
+      items:
+        type: object
+        required: [block_id, coverage_family, fence_type, content]
+        properties:
+          block_id:
+            type: string
+          coverage_family:
+            type: string
+          fence_type:
+            type: string
+            enum: [DATA, ANALYSIS, JD_CONTEXT, CAVEAT]
+            description: >-
+              DATA — retrieved verbatim or near-verbatim from tier_1/tier_2 sources.
+              ANALYSIS — synthesis / interpretation.
+              JD_CONTEXT — derived from the caller-supplied JD document.
+              CAVEAT — provenance or freshness warning text.
+          content:
+            type: string
+          source_ids:
+            type: array
+            items:
+              type: string
+            description: Source IDs backing this block (required for DATA blocks).
+    jd_focal_angle:
+      type: object
+      description: >-
+        Only present when JD context was supplied. Tells PA which aspects of
+        the brief to emphasise given the target role.
+      properties:
+        role_title:
+          type: string
+        seniority:
+          type: string
+        department:
+          type: string
+        focal_coverage_families:
+          type: array
+          items:
+            type: string
+          description: Families PA should foreground in narrative tone.
+        jd_derived_claims:
+          type: array
+          items:
+            type: string
+          description: >-
+            Specific claims derived from JD text that PA must weave into
+            the relevant section. Each is a DATA-fenced assertion.
+    section_gap_report_ref:
+      type: string
+      description: >-
+        Reference to the SectionGapReport object (emitted separately).
+        PA can optionally surface gap notes as "further research recommended" lines.

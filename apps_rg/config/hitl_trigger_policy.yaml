@@ -1,0 +1,113 @@
+# apps_rg HITL trigger policy — 6 declarative trigger conditions.
+#
+# RuntimeAuthorGate reads this file to determine when to freeze the run
+# and request a human decision.  Thresholds and severities are editable
+# without code changes.
+#
+# trigger_kind values must match TRIGGER_KINDS in hitl_schemas.py.
+# Plan: apps-rg-canonical-wireup-c8a4f2 W7 P-HITL5.
+
+triggers:
+  - trigger_kind: MISSING_BRIEF
+    description: >
+      Company research brief file is absent.  The run cannot produce a
+      grounded résumé without it.  Human must supply a valid brief path
+      or approve a waiver.
+    severity: HIGH
+    auto_freeze: true
+    default_options:
+      - option_id: PROVIDE_PATH
+        label: "Provide brief path"
+        consequence: "Run resumes with the supplied path after re-clearance"
+        is_recommended: true
+      - option_id: ABORT
+        label: "Abort run"
+        consequence: "Run exits with R5 BRIEF_MISSING terminal packet"
+        is_recommended: false
+
+  - trigger_kind: STALE_BRIEF
+    description: >
+      Company brief is older than stale_age_days.  Résumé quality may be
+      degraded by outdated market / company context.
+    severity: MEDIUM
+    stale_age_days: 30
+    auto_freeze: false
+    confidence_threshold: null
+    default_options:
+      - option_id: APPROVE_STALE
+        label: "Accept stale brief"
+        consequence: "Run continues; stale brief accepted for this run only"
+        is_recommended: false
+      - option_id: REJECT
+        label: "Reject and abort"
+        consequence: "Run exits; human must refresh the brief before retry"
+        is_recommended: true
+
+  - trigger_kind: UNSUPPORTED_CLAIM
+    description: >
+      Résumé narrative contains a claim the master résumé cannot substantiate.
+      L5 G09 evidence-quality gate flagged the gap.
+    severity: HIGH
+    auto_freeze: true
+    default_options:
+      - option_id: EDIT_CLAIM
+        label: "Edit / override claim"
+        consequence: "Modified claim goes through L5 re-clearance before Exit"
+        is_recommended: true
+      - option_id: REMOVE_CLAIM
+        label: "Remove claim"
+        consequence: "Claim stripped; run continues to Exit"
+        is_recommended: false
+      - option_id: ABORT
+        label: "Abort run"
+        consequence: "Run exits with R5 terminal packet"
+        is_recommended: false
+
+  - trigger_kind: LOW_CONFIDENCE
+    description: >
+      Final artifact overall confidence is below low_confidence_threshold.
+      Human must approve release or reject.
+    severity: MEDIUM
+    low_confidence_threshold: 0.60
+    auto_freeze: false
+    default_options:
+      - option_id: APPROVE_RELEASE
+        label: "Approve low-confidence release"
+        consequence: "Run exits with ALLOW disposition; confidence note in receipt"
+        is_recommended: false
+      - option_id: REJECT_RELEASE
+        label: "Reject — do not release"
+        consequence: "Run exits with DENY disposition"
+        is_recommended: true
+
+  - trigger_kind: RELEASE_APPROVAL
+    description: >
+      Final résumé artifact requires explicit human release approval before
+      the run can exit with an ALLOW disposition.
+    severity: LOW
+    auto_freeze: true
+    default_options:
+      - option_id: APPROVE
+        label: "Approve release"
+        consequence: "Run exits with ALLOW; artifact promoted if cache flag set"
+        is_recommended: true
+      - option_id: REJECT
+        label: "Reject release"
+        consequence: "Run exits with DENY disposition"
+        is_recommended: false
+
+  - trigger_kind: CACHE_PROMOTION
+    description: >
+      Run requests promotion of the résumé artifact to the R1B semantic
+      cache.  Human must approve; write goes through Exit → UWG → L4.
+    severity: LOW
+    auto_freeze: true
+    default_options:
+      - option_id: APPROVE_PROMOTION
+        label: "Approve cache promotion"
+        consequence: "UWG.commit() is called after Exit X3 finalizes; L4 write"
+        is_recommended: true
+      - option_id: SKIP_PROMOTION
+        label: "Skip promotion"
+        consequence: "Artifact kept locally; cache not updated"
+        is_recommended: false

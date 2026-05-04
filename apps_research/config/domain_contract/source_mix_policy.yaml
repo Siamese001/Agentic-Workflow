@@ -1,0 +1,122 @@
+# apps_research domain contract — source mix policies
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# One policy entry per depth profile. Defines the required minimum count of
+# sources per authority tier and per source type to satisfy the C0-to-PA gate.
+# "min" values are hard floors — gate fails if not met for PASS verdict.
+# "soft_min" values trigger WEAK_WITH_CAVEATS rather than FAIL.
+#
+# Mix policy also governs the inferred/assumption tier ceiling: PA is not
+# allowed to synthesise sections where inferred content exceeds the cap.
+
+schema_version: "apps_research.source_mix_policy/v1"
+app_id: apps_research
+task_class: company_brief
+
+policies:
+
+  source_mix::apps_research::light:
+    profile: COMPANY_BRIEF_LIGHT
+    tier_requirements:
+      tier_1_authoritative:
+        min: 1
+        soft_min: 2
+      tier_2_credible:
+        min: 1
+        soft_min: 2
+      tier_3_signals:
+        min: 0
+        soft_min: 0
+      tier_4_inferred:
+        max: 1
+    type_requirements: {}
+    inferred_content_cap_fraction: 0.30
+    authoritative_anchor_required: false
+
+  source_mix::apps_research::standard:
+    profile: COMPANY_BRIEF_STANDARD
+    tier_requirements:
+      tier_1_authoritative:
+        min: 2
+        soft_min: 3
+      tier_2_credible:
+        min: 3
+        soft_min: 5
+      tier_3_signals:
+        min: 1
+        soft_min: 2
+      tier_4_inferred:
+        max: 2
+    type_requirements:
+      news:
+        min: 1
+      company_website:
+        min: 1
+    inferred_content_cap_fraction: 0.20
+    authoritative_anchor_required: true
+
+  source_mix::apps_research::deep:
+    profile: COMPANY_BRIEF_DEEP
+    tier_requirements:
+      tier_1_authoritative:
+        min: 4
+        soft_min: 6
+      tier_2_credible:
+        min: 6
+        soft_min: 9
+      tier_3_signals:
+        min: 3
+        soft_min: 5
+      tier_4_inferred:
+        max: 2
+    type_requirements:
+      news:
+        min: 2
+      company_website:
+        min: 1
+      crunchbase:
+        soft_min: 1
+    inferred_content_cap_fraction: 0.15
+    authoritative_anchor_required: true
+
+  source_mix::apps_research::dossier:
+    profile: COMPANY_BRIEF_DOSSIER
+    tier_requirements:
+      tier_1_authoritative:
+        min: 6
+        soft_min: 9
+      tier_2_credible:
+        min: 10
+        soft_min: 14
+      tier_3_signals:
+        min: 4
+        soft_min: 7
+      tier_4_inferred:
+        max: 1
+    type_requirements:
+      news:
+        min: 3
+      company_website:
+        min: 1
+      sec_filing:
+        soft_min: 1
+      crunchbase:
+        soft_min: 1
+    inferred_content_cap_fraction: 0.10
+    authoritative_anchor_required: true
+
+mix_gate_verdict_logic:
+  PASS:
+    condition: >-
+      All tier min floors met AND all type min floors met AND
+      authoritative_anchor_required satisfied AND unresolved_contradictions == 0.
+  WEAK_WITH_CAVEATS:
+    condition: >-
+      All tier soft_min floors met OR some (but not all) tier min floors
+      unmet AND unresolved_contradictions <= 2. PA must add a provenance
+      caveat in the brief header.
+  FAIL:
+    condition: >-
+      Any tier_1_authoritative min unmet (when authoritative_anchor_required=true)
+      OR freshness gate_fail_triggered OR unsupported_direct_evidence claims > 0
+      OR total deduped sources < depth profile min_sources.

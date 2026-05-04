@@ -1,0 +1,250 @@
+{
+  "timestamp_utc": "2026-04-28T23:56:30.139634Z",
+  "summary": {
+    "total_emissions": 5267,
+    "unique_edge_kinds": 61,
+    "unique_layers": 5,
+    "by_edge_kind": {
+      "reads_through": 852,
+      "records_execution_trace": 344,
+      "emits_metric_event": 343,
+      "reads_env": 114,
+      "reads_runtime_state": 114,
+      "pulls_context": 114,
+      "execution_terminates_at_uwg": 114,
+      "writes_through": 114,
+      "dispatches_healing_run": 71,
+      "writes_via_uwg": 68,
+      "blocks_direct_write": 68,
+      "records_tool_invocation": 68,
+      "captures_execution_output": 68,
+      "dispatches_agent": 68,
+      "checks_agent_registry": 68,
+      "validates_agent_capability": 68,
+      "dispatches_execution_plan": 68,
+      "routes_to_agent": 68,
+      "verifies_policy": 68,
+      "verifies_boundary": 68,
+      "agent_executes_agent": 66,
+      "applies_guardrail": 65,
+      "records_telemetry_event": 58,
+      "writes_observability_log": 58,
+      "updates_monitoring_state": 58,
+      "escalates_to_human": 58,
+      "authorize_and_execute": 57,
+      "validates_capability": 57,
+      "routes_to_capability": 57,
+      "coordinates_agents": 57,
+      "records_workflow_lineage": 57,
+      "records_healing_outcome": 57,
+      "escalates_failure": 57,
+      "orchestrates_workflow": 57,
+      "invokes_evaluation": 57,
+      "captures_evaluation_metric": 57,
+      "stores_embedding": 57,
+      "records_incident_event": 57,
+      "captures_runtime_anomaly": 57,
+      "triggers_alert": 57,
+      "links_incident_trace": 57,
+      "captures_pattern": 57,
+      "records_learning_event": 57,
+      "writes_learning_snapshot": 57,
+      "feeds_meta_learning": 57,
+      "updates_routing_strategy": 57,
+      "improves_agent_policy": 57,
+      "stores_learning_state": 57,
+      "validated_by_safety_plane": 57,
+      "invokes_eval": 57,
+      "proposal_commits_routing": 57,
+      "routes_through": 57,
+      "observes_runtime_state": 57,
+      "transcripts_response": 57,
+      "hard_fails_untranscripted": 57,
+      "gated_by_confidence": 57,
+      "updates_meta_learning_state": 56,
+      "links_execution_to_snapshot": 56,
+      "signs_execution_trace": 53,
+      "reads_policy_state": 52,
+      "snapshots_state": 49
+    },
+    "by_layer": {
+      "L3_ORCHESTRATION": 82,
+      "L0_ROUTING": 59,
+      "L1_REASONING": 57,
+      "L2_EXECUTION": 57,
+      "L4_STATE": 57
+    },
+    "by_module_top20": {
+      "lifecycle_trace_contract": 5267
+    }
+  },
+  "coverage": {
+    "U0_input_intake": {
+      "description": "User input received, validated, normalized",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "transcripts_response": 57,
+        "captures_execution_output": 68
+      },
+      "edge_kinds_missing": [
+        "validates_request",
+        "captures_user_intent"
+      ],
+      "layer_match_count": null
+    },
+    "L1_reasoning_planning": {
+      "description": "Cognition layer: intent \u2192 plan",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "records_execution_trace": 344,
+        "reads_policy_state": 52,
+        "applies_guardrail": 65,
+        "snapshots_state": 49
+      },
+      "edge_kinds_missing": [],
+      "layer_match_count": 57
+    },
+    "L0_routing": {
+      "description": "Provider/agent/tool selection",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "routes_through": 57,
+        "routes_to_agent": 68,
+        "routes_to_capability": 57,
+        "validates_capability": 57,
+        "checks_agent_registry": 68,
+        "validates_agent_capability": 68
+      },
+      "edge_kinds_missing": [],
+      "layer_match_count": 59
+    },
+    "C0_PA_context_plan_action": {
+      "description": "Context engineering / plan-action binding",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "dispatches_execution_plan": 68,
+        "authorize_and_execute": 57,
+        "gated_by_confidence": 57
+      },
+      "edge_kinds_missing": [
+        "reads_l4_surface",
+        "receives_policy_hash"
+      ],
+      "layer_match_count": null
+    },
+    "L3_orchestration": {
+      "description": "Multi-agent / workflow orchestration (if needed)",
+      "covered": true,
+      "optional": true,
+      "edge_kinds_observed": {
+        "orchestrates_workflow": 57,
+        "dispatches_agent": 68,
+        "coordinates_agents": 57,
+        "agent_executes_agent": 66,
+        "records_workflow_lineage": 57
+      },
+      "edge_kinds_missing": [
+        "l3_reads_l4_surface"
+      ],
+      "layer_match_count": 82
+    },
+    "L2_execution_with_healing": {
+      "description": "Tool/agent execution + healing if failures",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "records_tool_invocation": 68,
+        "captures_execution_output": 68,
+        "dispatches_healing_run": 71,
+        "records_healing_outcome": 57,
+        "escalates_failure": 57
+      },
+      "edge_kinds_missing": [],
+      "layer_match_count": 57
+    },
+    "metrics_and_exit_criteria": {
+      "description": "Evaluation metrics + exit gate decisions",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "captures_evaluation_metric": 57,
+        "invokes_evaluation": 57,
+        "emits_metric_event": 343,
+        "captures_pattern": 57
+      },
+      "edge_kinds_missing": [
+        "records_validation_outcome"
+      ],
+      "layer_match_count": null
+    },
+    "meta_learning_bus_feedback": {
+      "description": "Meta-learning feedback bus updates",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "feeds_meta_learning": 57,
+        "updates_meta_learning_state": 56,
+        "improves_agent_policy": 57,
+        "stores_embedding": 57,
+        "links_execution_to_snapshot": 56
+      },
+      "edge_kinds_missing": [],
+      "layer_match_count": null
+    },
+    "L4_state_updates": {
+      "description": "UWG / canonical state writes",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "writes_via_uwg": 68,
+        "blocks_direct_write": 68,
+        "execution_terminates_at_uwg": 114
+      },
+      "edge_kinds_missing": [
+        "claims_write_lock",
+        "syncs_l4_telemetry",
+        "materializes_read_view",
+        "refreshes_retrieval_surface",
+        "swaps_version_alias"
+      ],
+      "layer_match_count": 57
+    },
+    "L5_safety_policy": {
+      "description": "Safety / policy / HITL gates",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "applies_guardrail": 65,
+        "verifies_policy": 68,
+        "verifies_boundary": 68,
+        "escalates_to_human": 58,
+        "hard_fails_untranscripted": 57
+      },
+      "edge_kinds_missing": [
+        "l5_reads_l4_surface"
+      ],
+      "layer_match_count": 0
+    },
+    "runtime_gates_observability": {
+      "description": "Runtime gates + L6 observability",
+      "covered": true,
+      "optional": false,
+      "edge_kinds_observed": {
+        "records_telemetry_event": 58,
+        "captures_runtime_anomaly": 57,
+        "signs_execution_trace": 53
+      },
+      "edge_kinds_missing": [
+        "l6_ingests_l4_trace",
+        "emits_replay_key",
+        "emits_determinism_digest"
+      ],
+      "layer_match_count": 0
+    }
+  },
+  "missing_required_stages": []
+}

@@ -1,0 +1,44 @@
+# apps_rg U0 intake policy.
+#
+# Consumed by integrated_r4_deterministic_pipeline_run.py and the
+# apps_rg-specific rg_identity_resolver.py at U0 ingress to declare
+# which transports are accepted, which fields are required, and which
+# fields trigger immediate rejection.
+#
+# Plan: apps-rg-canonical-wireup-c8a4f2 W4 P11.
+
+schema_version: "apps_rg_intake_policy/v1"
+
+# Transport allowlist.  apps_rg is a CLI-only app; no HTTP, no webhook.
+accepted_transports:
+  - cli
+
+# Required top-level fields in the raw_request dict.
+required_fields:
+  - transport
+  - source_channel
+  - user_id
+  - jd_payload        # dict; may be {} when jd_hash present
+  - jd_hash           # sha256:<hex> fingerprint for replay
+
+# Fields that, if present and truthy, cause immediate U0 E1 rejection.
+rejection_fields: []
+
+# Identity resolution: maps CLI run to a local user identity.
+# rg_identity_resolver.py reads these defaults when no --user-id CLI flag.
+identity_defaults:
+  tenant_id: "local"
+  user_id: "u-apps_rg"
+  source_channel: "apps_rg_cli"
+
+# Schema validation reference for the JD payload (E4 gate).
+jd_schema_path: apps_rg/config/jd_schema.json
+
+# Maximum body_text length forwarded into raw_request (bytes).
+max_body_text_bytes: 4096
+
+# Disposition for missing required fields: reject (U0 E1) or r5_terminal.
+missing_required_field_disposition: reject
+
+# Disposition for JD schema validation failure.
+jd_schema_failure_disposition: reject

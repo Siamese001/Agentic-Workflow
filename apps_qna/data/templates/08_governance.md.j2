@@ -1,0 +1,39 @@
+# 08 Guardian Agents and Safe Actions
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 5 — Governance and risk**. When the question is about hallucinations, guardrails, safety, audit, approval, or client trust, this card drives the answer.
+
+
+## Answer shape
+1. Name the risk.
+2. Separate answer generation from action execution.
+3. Define gates.
+4. Define audit and rollback.
+5. Tie to client trust.
+
+## Core principle
+**The agent that talks is not the agent that acts.** Read paths and write paths must be separated. State changes go through governed actions with explicit approval, lineage, and rollback.
+
+## Control surfaces
+{% for surface in governance_control_surfaces %}- {{ surface }}
+{% endfor %}
+
+## When the question is "LLM as a Judge"
+- A judge model is a model. It needs its own eval, its own drift monitoring, its own calibration.
+- A judge model is not a court. It is a heuristic in a regression suite.
+- Output comparison without a labeled ground truth is opinion, not measurement.
+
+## Anti-patterns the runtime must reject
+- "Guardrails will catch it" — name the gate, not the abstraction.
+- "We will train the model to refuse" — refusal is a control plane, not training data.
+- "We can roll back" — name the rollback path, not the intent.
+
+## Talking points
+{% for point in governance_talking_points %}- {{ point }}
+{% endfor %}
+
+## Cross-exam fallback
+If the interviewer demands specifics, name a concrete control point: a policy gate, an approval checkpoint, an audit log entry, or a rollback path. Stop.

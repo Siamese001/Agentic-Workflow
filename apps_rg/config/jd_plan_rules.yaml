@@ -1,0 +1,58 @@
+# apps_rg L1 JD plan rules.
+#
+# Governs how jd_planner.plan_from_jd() translates a validated JD payload
+# into a JDPlan (target_role, seniority_band, key_skills, company_context).
+# These rules are declarative policy; the planner reads them at runtime.
+#
+# Plan: apps-rg-canonical-wireup-c8a4f2 W4 P11.
+
+schema_version: "apps_rg_jd_plan_rules/v1"
+
+# Seniority-band inference rules.
+# Applied in order; first match wins.  Falls back to "senior" if no rule fires.
+seniority_inference:
+  - pattern: "(?i)\\b(vp|vice president|svp|senior vice president|evp|c-suite|cto|ciso|cpo)\\b"
+    band: svp
+  - pattern: "(?i)\\b(staff|distinguished|fellow|architect)\\b"
+    band: staff
+  - pattern: "(?i)\\b(principal|lead|tech lead)\\b"
+    band: principal
+  - pattern: "(?i)\\b(senior|sr\\.?)\\b"
+    band: senior
+  - pattern: "(?i)\\b(mid.level|mid level|intermediate)\\b"
+    band: mid
+  - pattern: "(?i)\\b(junior|jr\\.?|entry.level|entry level|associate)\\b"
+    band: junior
+  default: senior
+
+# Key-skills extraction: number of skills to surface from requirements array.
+key_skills:
+  max_count: 12
+  fallback_to_description_parse: true   # if requirements array empty, parse description
+
+# Target-role extraction.
+# Prefer explicit "title" field; fall back to first noun-phrase in description.
+target_role:
+  prefer_field: title
+  max_length: 80
+  strip_company_suffix: true            # remove " @ <Company>" trailing phrases
+
+# HOP sequence selection based on seniority band.
+# Controls which narrative HOPs run (4A-4H) after generate_resume.
+hop_sequence_overrides:
+  svp:
+    - hop_4A_headline
+    - hop_4B_exec_summary
+    - hop_4C_competencies
+    - hop_4D_unify_bullets
+    - hop_4E_ibm_bullets
+    - hop_4F_tradersense_bullets
+    - hop_4G_ey_bullets
+    - hop_4H_early_career
+    - hop_47_marquee_outcomes
+  default:
+    - hop_4A_headline
+    - hop_4B_exec_summary
+    - hop_4C_competencies
+    - hop_4D_unify_bullets
+    - hop_47_marquee_outcomes

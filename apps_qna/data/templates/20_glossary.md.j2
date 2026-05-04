@@ -1,0 +1,36 @@
+# 20 Glossary
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+A compact glossary of {{ company.name }}-specific and role-specific terms. The runtime should use these terms naturally and avoid undefined acronyms.
+
+{% if glossary_entries %}
+## {{ company.name }} terms
+{% for entry in glossary_entries %}
+### {{ entry.term }}
+- **Definition**: {{ entry.definition }}
+{% if entry.synonyms %}- **Also known as**: {{ entry.synonyms | join(", ") }}{% endif %}
+{% if entry.usage_note %}- **When to use**: {{ entry.usage_note }}{% endif %}
+
+{% endfor %}
+{% else %}
+## {{ company.name }} terms
+*No glossary entries supplied. Populate `extra_context.glossary_entries` to seed company- and role-specific terms.*
+{% endif %}
+
+## Generic agentic-AI terms — use precisely
+- **agentic system** — a system where an LLM plans, calls tools, observes results, and iterates within a bounded loop.
+- **tool** — a typed function the agent may invoke; not a model, not a prompt.
+- **eval** — an offline regression suite that scores model outputs against a rubric.
+- **judge model** — an LLM used to grade another LLM's output. Use only with calibrated rubrics.
+- **guardrail** — a runtime control plane that blocks or modifies agent actions before they take effect.
+- **governance** — the contract layer that defines what an agent may or may not do, with audit and rollback.
+- **semantic layer** — the typed, versioned contract between data and any consumer (agent or human).
+- **uncertainty translation** — converting a calibrated range or credible interval into a decision-readable band.
+
+## Anti-pattern
+- Do not say "AI" when you mean "LLM" or "agent".
+- Do not say "guardrails solve it" — guardrails are a *control surface*, not a solution.
+- Do not say "Text-to-SQL is a feature" — Text-to-SQL is a governed runtime.

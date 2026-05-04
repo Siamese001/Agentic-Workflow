@@ -82,6 +82,6 @@ def test_step_compiles_from_context_if_no_artifact():
                 result = step(ctx)
     assert result["exit_code"] == 0
     cpa = result["compiled_prompt_artifact"]
-    assert cpa["prompt_id"].startswith("apps_rg.resume_generation.")
+    assert cpa["prompt_id"].startswith("apps_rg.")
     assert cpa["compile_status"] == PACompileStatus.PA_L2_HANDOFF_READY.value
     assert "compiled_prompt_artifact" in ctx

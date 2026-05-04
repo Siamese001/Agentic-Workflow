@@ -1,0 +1,187 @@
+# apps_research domain contract — JD context + claim classification schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.3
+#
+# JD (Job Description / Job Requisition) is a FIRST-CLASS C0 input.
+# When present it:
+#   - Activates the role_context and tech_stack_and_tools coverage families
+#   - Weights query fan-out toward role-relevant signals
+#   - Generates JD-derived claims (typed as direct_evidence when sourced
+#     from the JD text itself; analyst_inference otherwise)
+#   - Contributes jd_focal_angle to SynthesisGuidanceForPA
+#   - Participates in cache key computation (via jd_digest)
+#   - Is fenced as JD_CONTEXT in PA content blocks (not ANALYSIS)
+#
+# jd_ref vs jd_content_hash:
+#   jd_ref           — opaque document reference (path, blob ID, or URI)
+#                      used for human cross-referencing and cache invalidation
+#   jd_content_hash  — sha256 of canonical JD text (stripped of whitespace);
+#                      used as the cache participation key for R1A/R1B
+#
+# IMPORTANT: The JD text is treated as DATA. C0 MUST NOT paraphrase or
+# reinterpret JD text when generating JD-derived claims — only extract.
+
+schema_version: "apps_research.jd_context/v1"
+app_id: apps_research
+task_class: company_brief
+
+jd_context_input_schema:
+  type: object
+  description: >-
+    Structured JD context passed to C0 as first-class input.
+    Optional at the API level; when absent, jd_* coverage families
+    are set to not_required in BriefingCoverageMatrix.
+  properties:
+    jd_ref:
+      type: string
+      description: >-
+        Opaque reference to the source JD document. May be a file path,
+        blob ID, S3 URI, or ATS job ID.
+    jd_content_hash:
+      type: string
+      description: >-
+        sha256 hex digest of the canonical JD text (used as cache key).
+        C0 computes this from jd_text when not supplied by caller.
+    jd_text:
+      type: string
+      description: >-
+        Full text of the job description. Treated as DATA. Required when
+        jd_ref is present but jd_content_hash is absent.
+    structured_fields:
+      type: object
+      description: >-
+        Pre-parsed JD fields. When supplied, C0 uses these directly rather
+        than re-extracting from jd_text. All fields optional; C0 extracts
+        from jd_text when absent.
+      properties:
+        role_title:
+          type: string
+        department:
+          type: string
+        seniority:
+          type: string
+          enum: [intern, associate, individual_contributor, senior, staff, principal,
+                 manager, director, vp, svp, c_suite, unknown]
+        employment_type:
+          type: string
+          enum: [full_time, part_time, contract, temp, unknown]
+        location:
+          type: string
+        remote_policy:
+          type: string
+          enum: [remote, hybrid, onsite, unknown]
+        tech_stack_mentions:
+          type: array
+          items:
+            type: string
+          description: Technologies explicitly named in the JD.
+        required_skills:
+          type: array
+          items:
+            type: string
+        preferred_skills:
+          type: array
+          items:
+            type: string
+        compensation_range:
+          type: object
+          properties:
+            min_usd:
+              type: integer
+            max_usd:
+              type: integer
+            currency:
+              type: string
+        key_responsibilities:
+          type: array
+          items:
+            type: string
+        team_signals:
+          type: array
+          items:
+            type: string
+          description: >-
+            Phrases indicating team context (e.g. "scaling from 5 to 15 engineers",
+            "early-stage ML platform").
+
+jd_claim_classification:
+  description: >-
+    When C0 generates claims from JD text, claim_type rules apply:
+  rules:
+    - condition: "claim_text is a direct quote or near-quote from jd_text"
+      claim_type: direct_evidence
+      requires_citation: true
+      source_type: jd_document
+    - condition: "claim_text synthesises from jd_text without direct quote"
+      claim_type: interpretation
+      requires_citation: true
+      source_type: jd_document
+    - condition: "claim_text infers company intent from JD signals"
+      claim_type: analyst_inference
+      requires_citation: false
+  jd_document_source_type: jd_document
+  jd_document_authority_tier: tier_2_credible
+
+jd_cache_participation:
+  description: >-
+    Cache key construction when JD is present. R1A (exact cache) and
+    R1B (semantic cache) include jd_content_hash to prevent stale JD
+    hits when the JD changes. Cache entry is invalidated when
+    jd_content_hash changes even if topic is identical.
+  cache_key_fields:
+    - topic
+    - depth_profile
+    - jd_content_hash
+  cache_key_fields_without_jd:
+    - topic
+    - depth_profile
+
+jd_negative_controls:
+  description: >-
+    Negative control cases that C0 must handle correctly when JD is present.
+    Used by test_apps_research_spine_alignment.py negative control suite.
+  controls:
+    - id: JD-NEG-001
+      name: jd_missing_role_title
+      scenario: JD present but structured_fields.role_title absent and not extractable from jd_text
+      expected_behavior: role_context family set to partial; caveat emitted; no gate FAIL
+    - id: JD-NEG-002
+      name: jd_text_empty
+      scenario: jd_ref present but jd_text is empty string
+      expected_behavior: jd_context treated as absent; coverage families default to profile without JD
+    - id: JD-NEG-003
+      name: jd_content_hash_mismatch
+      scenario: caller supplies jd_content_hash that does not match sha256(jd_text)
+      expected_behavior: C0 recomputes hash, logs WARN, proceeds with computed hash
+    - id: JD-NEG-004
+      name: jd_tech_stack_contradicts_retrieved
+      scenario: jd_text mentions tech stack that contradicts retrieved tech_stack_and_tools
+      expected_behavior: contradiction added to ContradictionMatrix with jd_override strategy for role_context
+    - id: JD-NEG-005
+      name: jd_seniority_unknown
+      scenario: seniority cannot be extracted and is not supplied
+      expected_behavior: seniority set to unknown; no coverage family dropped; query fan-out unweighted
+    - id: JD-NEG-006
+      name: jd_compensation_absent
+      scenario: compensation_range absent from JD
+      expected_behavior: compensation not surfaced in brief; no error; not a gap
+    - id: JD-NEG-007
+      name: jd_speculative_inference
+      scenario: C0 attempts to infer company culture from a single JD phrase using speculative language
+      expected_behavior: claim_type forced to analyst_inference; speculation_patterns check fails;
+                          claim dropped or labelled [ANALYST_INFERENCE]
+    - id: JD-NEG-008
+      name: jd_claims_unsupported_direct_evidence
+      scenario: C0 emits direct_evidence JD claim with no supporting_source_ids
+      expected_behavior: unsupported_claim_count incremented; C0-to-PA gate FAIL
+    - id: JD-NEG-009
+      name: jd_cache_stale_hit_different_hash
+      scenario: R1B cache hit but jd_content_hash differs from cached entry
+      expected_behavior: cache miss; C0 proceeds to fresh retrieval
+    - id: JD-NEG-010
+      name: jd_role_context_family_absent_sources
+      scenario: JD present, role_context required, but zero job-board / linkedin_jobs sources found
+      expected_behavior: role_context status=partial; include_caveat=true in SynthesisGuidanceForPA
+    - id: JD-NEG-011
+      name: jd_supplied_without_topic
+      scenario: jd_context present but topic (ResearchRequest.topic) is empty
+      expected_behavior: R5 pre-route terminal fires; CLARIFY_PACKET emitted; C0 never invoked

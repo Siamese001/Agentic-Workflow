@@ -21,6 +21,10 @@ def build_intent_from_request(
     output_target: str = "markdown",
     tenant_id: str = "default",
     request_id: Optional[str] = None,
+    policy_hash: str = "unknown",
+    blueprint_hash: str = "unknown",
+    jd_path: Optional[Path] = None,
+    briefing_path: Optional[Path] = None,
 ) -> ResumeGenerationIntent:
     """Normalize CLI request into canonical ResumeGenerationIntent.
 
@@ -37,6 +41,10 @@ def build_intent_from_request(
     normalized_level = _normalize_level(target_level or "mid")
     normalized_function = _normalize_function(target_function or "engineering")
 
+    # W1.P2: Hash JD and briefing for 14-field cache key
+    jd_hash = _hash_file(jd_path) if jd_path and jd_path.exists() else "none"
+    briefing_hash = _hash_file(briefing_path) if briefing_path and briefing_path.exists() else "none"
+
     return ResumeGenerationIntent(
         source_resume_hash=source_hash,
         candidate_identifier=_derive_candidate_id(candidate_profile_path),
@@ -50,6 +58,10 @@ def build_intent_from_request(
         output_target=output_target,
         max_pages=_level_to_max_pages(normalized_level),
         tone_profile=tone_profile,
+        policy_hash=policy_hash,
+        blueprint_hash=blueprint_hash,
+        jd_hash=jd_hash,
+        briefing_hash=briefing_hash,
         request_id=request_id or _generate_request_id(),
         tenant_id=tenant_id,
     )

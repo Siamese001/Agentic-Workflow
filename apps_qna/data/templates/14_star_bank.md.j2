@@ -1,0 +1,59 @@
+# 14 STAR Story Bank and Proof Router
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 2 — STAR proof**. When the question asks for an example, a story, or evidence, this card drives the answer.
+
+
+## Answer shape
+1. Situation
+2. Task
+3. Action
+4. Result
+5. Lesson tied to {{ company.name }}
+
+## Proof router — pick the story by tag
+| Question topic | Story name | Tags |
+|---|---|---|
+{% for story in experience.star_bank.stories %}| {{ story.tags | join(", ") }} | **{{ story.name }}** | {{ story.tags | join(", ") }} |
+{% endfor %}
+
+## Stories
+
+{% for story in experience.star_bank.stories %}
+### {{ story.name }}
+
+**Situation**: {{ story.situation }}
+
+**Task**: {{ story.task }}
+
+**Action**: {{ story.action }}
+
+**Result**: {{ story.result }}
+
+**Lesson**: {{ story.lesson }}
+
+**Tags**: {{ story.tags | join(", ") }}
+
+---
+{% endfor %}
+
+## Story-selection rules
+- Match the **strongest tag overlap** with the question, not the most impressive story.
+- If two stories tie, pick the one closer to the {{ company.name }} domain.
+- Never tell two stories in one answer. Pick one.
+
+## Realism gate
+A story must include:
+- how the work surfaced
+- who cared
+- what made it hard
+- what {{ candidate_first_name }} personally owned
+- what changed in the system or operating model
+- measurable or observable result
+
+## Hand-off
+- If the interviewer pushes for a deeper technical layer, hand to **16_CROSS_EXAM.md**.
+- If the interviewer pivots to "what went wrong instead", hand to **15_RCA.md**.

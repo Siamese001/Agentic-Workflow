@@ -223,9 +223,62 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
     _adg_bootstrap()
-    from apps_research.scripts.run_research import main as run_main
+    return _run_canonical(list(sys.argv[1:]))
 
-    return int(run_main())
+
+def _run_canonical(argv: list[str]) -> int:
+    """Canonical agentic_core runner path — capability resolution + governed run.
+
+    Resolves apps_research.company_brief_v1 via the capability registry and
+    delegates execution to the registered handler. On capability unavailable,
+    fails closed through Exit v6 (CAPABILITY_UNAVAILABLE) — no generic brief.
+    """
+    from apps_research.integrations.research_capability_registry import (  # noqa: PLC0415
+        CAPABILITY_ID,
+        CapabilityUnavailableError,
+        resolve_company_brief_capability,
+    )
+
+    try:
+        handler = resolve_company_brief_capability(CAPABILITY_ID)
+    except CapabilityUnavailableError as exc:
+        _log.error(
+            "[apps_research] Capability unavailable — failing closed. "
+            "Reason: %s. No generic brief fallback.",
+            exc,
+        )
+        _emit_capability_unavailable_exit()
+        return 1
+
+    try:
+        result = handler(argv)
+        return int(result) if result is not None else 0
+    except Exception as exc:  # guardian: allow-broad-exception -- capability handler raises heterogeneous errors (IOError, ValueError, RuntimeError); all surfaced via Exit v6 fail-close
+        _log.error("[apps_research] Capability handler raised %s: %s", type(exc).__name__, exc)
+        _emit_capability_unavailable_exit()
+        return 1
+
+
+def _emit_capability_unavailable_exit() -> None:
+    """Emit an R5-terminal Exit v6 packet for CAPABILITY_UNAVAILABLE.
+
+    Fail-soft: any error during emission is logged and suppressed so the
+    calling main() can still return a non-zero exit code.
+    """
+    try:
+        from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
+        receipts = {
+            "output": {},
+            "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
+            "evidence_bundle": {},
+            "final_evidence_contract": {},
+            "state_diff": {},
+            "compiled_prompt_artifact": {},
+            "exit_reason": "CAPABILITY_UNAVAILABLE",
+        }
+        maybe_invoke_exit_eval(receipts, {"invoke_exit_eval": True})
+    except Exception as exc:  # guardian: allow-broad-exception -- Exit emission on error path must never re-raise; this is a best-effort audit trail
+        _log.warning("[apps_research] Exit v6 emission failed: %s: %s", type(exc).__name__, exc)
 
 
 if __name__ == "__main__":

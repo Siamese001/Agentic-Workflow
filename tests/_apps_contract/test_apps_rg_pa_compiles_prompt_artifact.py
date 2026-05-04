@@ -43,7 +43,7 @@ def test_compile_status_is_ready(valid_request):
 
 def test_artifact_has_prompt_id(valid_request):
     artifact = compile_prompt(valid_request)
-    assert artifact.prompt_id == "apps_rg.resume_generation.strategic_tailor.v1"
+    assert artifact.prompt_id == "apps_rg.strategic_tailor_v1"
 
 
 def test_artifact_has_prompt_template_hash(valid_request):
@@ -137,4 +137,4 @@ def test_all_flows_compile(flow):
     )
     artifact = compile_prompt(req)
     assert artifact.is_ready()
-    assert artifact.prompt_id.startswith("apps_rg.resume_generation.")
+    assert artifact.prompt_id.startswith("apps_rg.")

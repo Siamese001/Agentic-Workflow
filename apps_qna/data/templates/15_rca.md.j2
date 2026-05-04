@@ -1,0 +1,50 @@
+# 15 Failure RCA and Recovery
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 3 — Failure, RCA, or lesson learned**. When the question asks about a mistake, a failure, or what went wrong, this card drives the answer.
+
+
+## Answer shape
+1. Situation
+2. Task
+3. Root cause
+4. Action
+5. Result
+6. Operating-model change
+
+## Core stance
+- Own the failure. Do not deflect to "the team."
+- Name the **root cause**, not the symptom.
+- The most credible part of an RCA story is the **operating-model change** — what stayed changed after the fix.
+
+## RCA stories
+
+{% for story in experience.rca_bank %}
+### {{ story.name }}
+
+**Situation**: {{ story.situation }}
+
+**Task**: {{ story.task }}
+
+**Root cause**: {{ story.root_cause }}
+
+**Action**: {{ story.action }}
+
+**Result**: {{ story.result }}
+
+**Operating-model change**: {{ story.operating_model_change }}
+
+---
+{% endfor %}
+
+## Anti-patterns
+- Do not say "we did not have time" — that is a symptom.
+- Do not name a vendor as the root cause unless you also name the contract you should have written.
+- Do not end on "and we recovered." End on what stayed changed.
+
+## Hand-off
+- If the question turns to governance specifics, hand to **08_GOVERNANCE.md**.
+- If the question pivots to "tell me a success" instead, hand to **14_STAR_BANK.md**.

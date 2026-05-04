@@ -1,0 +1,65 @@
+# apps_rg L0 routing policy.
+#
+# Governs L0 admission and route selection for apps_rg.  The L0 gate reads
+# this file to determine which capability to select, what preconditions must
+# pass before L2 execution is authorised, and which conditions trigger an
+# R5_FALLBACK terminal packet instead of a hard exit.
+#
+# Plan: apps-rg-canonical-wireup-c8a4f2 W4 P11.
+
+schema_version: "apps_rg_l0_policy/v1"
+
+# Capability selected by default for all apps_rg R4 runs.
+default_capability: apps_rg.resume_generation_v1
+
+# Preconditions checked at L0 (BEFORE L2 execution is authorised).
+# All must pass; first failure short-circuits.
+preconditions:
+  - id: jd_file_exists
+    description: "JD JSON file must exist at the --jd path."
+    failure_disposition: reject   # exit 2, U0 E1 rejection
+    failure_r5_reason: null
+  - id: brief_file_exists
+    description: >-
+      Company brief JSON must exist at the --manual-brief path.
+      Failure triggers an R5_FALLBACK terminal packet (not a hard
+      rejection) because the user may route to apps_research to obtain
+      it on a subsequent run.
+    failure_disposition: r5_terminal
+    failure_r5_reason: BRIEF_MISSING
+  - id: jd_json_valid
+    description: "JD file must be valid JSON (parse check only; schema checked at U0 E4)."
+    failure_disposition: reject
+    failure_r5_reason: null
+
+# R1B semantic-cache check.
+# When enabled, L0 queries the R1B cache before authorising L2 execution.
+# A cache hit short-circuits to the cached output (exit 0, no L2 execution).
+r1b_cache:
+  enabled: true
+  skip_flag: --skip-r1b-check
+  cache_adapter: apps_rg.cache.r1b_adapter.AppsRgR1BCacheAdapter
+
+# C0 bypass declaration.
+# apps_rg never performs corpus retrieval; always issue a C0BypassReceipt.
+c0_bypass:
+  always: true
+  reason: GROUNDING_NOT_REQUIRED
+
+# L3 bypass declaration.
+# apps_rg uses a static DAG (l3_required=false in route_registry.yaml).
+l3_bypass:
+  always: true
+  reason: NO_MANAGED_WORKFLOW_REQUIRED
+
+# Fallback policy: what to do when brief is missing.
+# Strict design (Author-Gate W2 decision): no auto-dispatch to apps_research.
+# The user must obtain the brief separately and re-run.
+missing_brief_policy:
+  disposition: r5_terminal
+  r5_reason: BRIEF_MISSING
+  exit_code: 1
+  message: >-
+    Company brief not found.  Run apps_research to generate it, then
+    re-run apps_rg with --manual-brief pointing to the generated file.
+  suppress_apps_research_dispatch: true

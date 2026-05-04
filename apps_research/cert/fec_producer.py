@@ -32,7 +32,7 @@ from typing import Any, Mapping
 
 _LOGGER = logging.getLogger(__name__)
 
-_SCHEMA_VERSION = "1.0"
+_SCHEMA_VERSION = "1.1"
 _PRODUCER_ID = "apps_research.cert.fec_producer"
 _DEFAULT_ROUTE = "R3_SIMPLE_GROUNDED_READ"
 _DEFAULT_TEMPLATE_IDS = ("company_brief_v1",)
@@ -93,6 +93,37 @@ def produce_fec(run_context: Mapping[str, Any]) -> dict[str, Any]:
     else:
         sufficiency = "empty"
 
+    # ── v1.1 fields ──────────────────────────────────────────────────────────
+    research_depth_profile = ctx.get("research_depth_profile") or None
+
+    jd_ctx = ctx.get("jd_context")
+    if not isinstance(jd_ctx, Mapping):
+        jd_ctx = {}
+    jd_present = bool(jd_ctx)
+    jd_ref = jd_ctx.get("jd_ref") if jd_present else None
+    jd_content_hash = jd_ctx.get("jd_content_hash") if jd_present else None
+
+    c0 = ctx.get("c0_bundle")
+    if not isinstance(c0, Mapping):
+        c0 = {}
+
+    freshness_rep = c0.get("freshness_report")
+    if isinstance(freshness_rep, Mapping):
+        freshness_violations: list[str] = list(freshness_rep.get("stale_section_ids") or [])
+    else:
+        freshness_violations = []
+
+    cem = c0.get("claim_evidence_map")
+    unsupported_claim_count: int = int((cem or {}).get("unsupported_claim_count", 0)) if isinstance(cem, Mapping) else 0
+    jd_unsupported_claim_count: int = int((cem or {}).get("jd_unsupported_claim_count", 0)) if isinstance(cem, Mapping) else 0
+    jd_to_company_evidence_map_present: bool = bool((cem or {}).get("jd_to_company_evidence_map_present", False)) if isinstance(cem, Mapping) else False
+
+    sps = c0.get("source_portfolio_summary")
+    citation_anchor_count: int = int((sps or {}).get("total_citation_anchors", 0)) if isinstance(sps, Mapping) else 0
+
+    bcm = c0.get("briefing_coverage_matrix")
+    recruiter_outreach_overlay_present: bool = bool((bcm or {}).get("recruiter_outreach_overlay_present", False)) if isinstance(bcm, Mapping) else False
+
     return {
         "schema_version": _SCHEMA_VERSION,
         "producer": _PRODUCER_ID,
@@ -101,6 +132,17 @@ def produce_fec(run_context: Mapping[str, Any]) -> dict[str, Any]:
         "template_ids": template_ids,
         "route_id": route_id,
         "evidence_sufficiency": sufficiency,
+        # v1.1
+        "research_depth_profile": research_depth_profile,
+        "jd_present": jd_present,
+        "jd_ref": jd_ref,
+        "jd_content_hash": jd_content_hash,
+        "freshness_violations": freshness_violations,
+        "unsupported_claim_count": unsupported_claim_count,
+        "jd_unsupported_claim_count": jd_unsupported_claim_count,
+        "jd_to_company_evidence_map_present": jd_to_company_evidence_map_present,
+        "citation_anchor_count": citation_anchor_count,
+        "recruiter_outreach_overlay_present": recruiter_outreach_overlay_present,
     }
 
 

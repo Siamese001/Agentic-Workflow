@@ -50,6 +50,11 @@ class AppsRgPromptRequest:
     user_task: str = ""
     claim_source_refs: str = ""
     unsupported_claims: str = ""
+    approved_resume_examples: str = ""
+    seniority_band: str = ""
+    target_company: str = ""
+    target_role: str = ""
+    local_evidence_contract_ref: str = ""
     run_id: str = ""
     trace_id: str = ""
     request_id: str = ""
@@ -78,9 +83,15 @@ class PromptCompileReceipt:
     """Receipt for the full PA compilation pipeline."""
 
     prompt_id: str = ""
+    template_id: str = ""
+    template_version: str = ""
     prompt_template_hash: str = ""
     prompt_bom_hash: str = ""
+    prompt_registry_hash: str = ""
     prompt_hash: str = ""
+    manifest_hash: str = ""
+    artifact_hash: str = ""
+    canonical_slot_bytes_hash: str = ""
     policy_hash: str = ""
     blueprint_hash: str = ""
     replay_key: str = ""
@@ -112,9 +123,15 @@ class AppsRgCompiledPromptArtifact:
 
     # Prompt identity
     prompt_id: str = ""
+    template_id: str = ""
+    template_version: str = ""
     prompt_template_hash: str = ""
     prompt_bom_hash: str = ""
+    prompt_registry_hash: str = ""
     prompt_hash: str = ""
+    manifest_hash: str = ""
+    canonical_slot_bytes_hash: str = ""
+    artifact_hash: str = ""
 
     # Governance
     policy_hash: str = ""
@@ -123,7 +140,12 @@ class AppsRgCompiledPromptArtifact:
     provider_lane: str = ""
     symbolic_model_id: str = ""
 
+    # Origin / security
+    origin_label_map: dict[str, str] = field(default_factory=dict)
+    local_evidence_contract_ref: str = ""
+
     # Rendered content
+    rendered_slots: dict[str, str] = field(default_factory=dict)
     structured_slots_used: list[str] = field(default_factory=list)
     provider_specific_messages: list[dict[str, Any]] = field(default_factory=list)
 
@@ -139,6 +161,7 @@ class AppsRgCompiledPromptArtifact:
     slot_validation_receipt: list[PromptSlotReceipt] = field(default_factory=list)
     token_budget_receipt: dict[str, Any] = field(default_factory=dict)
     render_receipt: str = ""
+    audit_refs: dict[str, str] = field(default_factory=dict)
 
     # Status
     compile_status: str = PACompileStatus.PA_INPUT_INCOMPLETE.value

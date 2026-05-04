@@ -35,6 +35,12 @@ class ResumeGenerationIntent:
     max_pages: int
     tone_profile: str  # formal, conversational, executive
 
+    # Blueprint / policy provenance
+    policy_hash: str  # SHA-256 of active policy config
+    blueprint_hash: str  # SHA-256 of resume blueprint/template
+    jd_hash: str  # SHA-256 of job description content
+    briefing_hash: str  # SHA-256 of research briefing content
+
     # Request provenance
     request_id: str
     tenant_id: str
@@ -49,17 +55,21 @@ class ResumeGenerationIntent:
         )
 
     def to_cache_key_dict(self) -> dict:
-        """Serializable dict for cache key derivation."""
+        """Serializable dict for cache key derivation (14 fields)."""
         return {
             "source_resume_hash": self.source_resume_hash,
             "target_company": self.target_company,
             "target_role": self.target_role,
             "target_level": self.target_level,
             "target_function": self.target_function,
+            "target_industry": self.target_industry,
             "role_seniority": self.role_seniority,
             "role_tech_stack": sorted(self.role_tech_stack),
             "output_target": self.output_target,
+            "max_pages": self.max_pages,
             "tone_profile": self.tone_profile,
+            "policy_hash": self.policy_hash,
+            "blueprint_hash": self.blueprint_hash,
             "tenant_id": self.tenant_id,
         }
 

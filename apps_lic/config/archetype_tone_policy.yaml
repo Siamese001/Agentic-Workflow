@@ -1,0 +1,58 @@
+# apps_lic Archetype Tone Policy
+# Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS7-P1
+# Schema version: 1.0
+#
+# Controls ArchetypeToneSelector tone matrix.
+# Feature gate: ARCHETYPE_TONE_ENABLED=1 env var required to activate.
+#
+# ADDITIVE CONTRACT: archetype tone supplements personalization_mode; never replaces it.
+#
+# Canonical tone archetype names:
+#   peer_expert            — knowledgeable peer; avoids condescension
+#   strategic_advisor      — forward-looking perspective; exec audiences
+#   concise_practitioner   — lean, no-frills; respects recipient's time
+#   warm_connector         — relationship-first, human tone
+#   credibility_anchor     — proof-forward; grounds claims in evidence
+
+schema_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Tone selection matrix
+# Keys must match the bucket names used in ArchetypeToneSelector:
+#   recipient buckets : exec | hiring | recruiter | default
+#   distance buckets  : cold | warm | referral | known
+# ---------------------------------------------------------------------------
+tone_matrix:
+  exec:
+    cold:     strategic_advisor
+    warm:     peer_expert
+    referral: warm_connector
+    known:    warm_connector
+
+  hiring:
+    cold:     concise_practitioner
+    warm:     credibility_anchor
+    referral: warm_connector
+    known:    warm_connector
+
+  recruiter:
+    cold:     credibility_anchor
+    warm:     warm_connector
+    referral: warm_connector
+    known:    warm_connector
+
+  default:
+    cold:     concise_practitioner
+    warm:     peer_expert
+    referral: warm_connector
+    known:    warm_connector
+
+# ---------------------------------------------------------------------------
+# Canonical tone vocabulary (informational — not read by engine)
+# ---------------------------------------------------------------------------
+valid_archetypes:
+  - peer_expert
+  - strategic_advisor
+  - concise_practitioner
+  - warm_connector
+  - credibility_anchor

@@ -469,6 +469,17 @@ def main():
             "AD1 APPS-DOM harness fixture freshness",
             "ops_scripts/ci/check_apps_dom_fixture_freshness.py",
         ),
+        # AR1 — apps_research FEC v1.1 wiring gate. Checks that
+        # produce_fec() emits schema_version="1.1" + all 10 v1.1 field keys,
+        # GovernedE2ERunRecord has research_depth_profile + fec_run_context,
+        # and company_brief_engine re-exports catalog shim symbols.
+        # Advisory by default; fail-closed via
+        # APPS_RESEARCH_FEC_V11_FAIL_CLOSED=1.
+        # Plan: apps-research-spine-deferred-followup-9c3e1a P4.2.
+        (
+            "AR1 apps_research FEC v1.1 wiring (advisory)",
+            "ops_scripts/ci/check_apps_research_fec_v11.py",
+        ),
     ]
     for label, script in assurance_gates:
         if not (ROOT / script).is_file():

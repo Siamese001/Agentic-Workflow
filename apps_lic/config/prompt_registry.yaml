@@ -1,0 +1,44 @@
+schema_version: "1.0"
+app: apps_lic
+registry_id: apps_lic_prompt_registry_v1
+owner: apps_lic.prompt_assembly
+templates:
+  outreach_draft_v1:
+    path: apps_lic/prompt_assembly/templates/outreach_draft_v1.yaml
+    required_slots: [S0, I0, C0, U0, D0, E0, Y0, R0]
+    output_contract: OutreachDraft
+    allowed_stage: E3_EXEC
+    required_for_steps:
+      - compose_draft
+  briefing_to_manifest_v1:
+    path: apps_lic/prompt_assembly/templates/briefing_to_manifest_v1.yaml
+    required_slots: [S0, C0, D0, R0]
+    output_contract: PreloadedOutreachContextManifestContext
+    allowed_stage: E2_VALID
+    required_for_steps:
+      - validate_research_and_build_manifest
+  unsupported_claim_omission_v1:
+    path: apps_lic/prompt_assembly/templates/unsupported_claim_omission_v1.yaml
+    required_slots: [S0, I0, C0, D0, R0]
+    output_contract: ClaimOmissionRepair
+    allowed_stage: E4_HEAL
+    required_for_steps:
+      - omit_unsupported_claims
+  repair_antipattern_v1:
+    path: apps_lic/prompt_assembly/templates/repair_antipattern_v1.yaml
+    required_slots: [S0, I0, C0, D0, Y0, R0]
+    output_contract: AntiPatternRepair
+    allowed_stage: E4_HEAL
+    required_for_steps:
+      - remove_forbidden_antipatterns
+  channel_length_repair_v1:
+    path: apps_lic/prompt_assembly/templates/channel_length_repair_v1.yaml
+    required_slots: [S0, I0, C0, D0, Y0, R0]
+    output_contract: ChannelLengthRepair
+    allowed_stage: E4_HEAL
+    required_for_steps:
+      - repair_channel_length
+hash_fields:
+  - schema_version
+  - registry_id
+  - templates

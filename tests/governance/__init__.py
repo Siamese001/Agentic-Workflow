@@ -1,1 +1,1 @@
-# Tests for governance tools
+# Governance tests package

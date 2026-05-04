@@ -1,0 +1,39 @@
+# 13 Executive Fit and Positioning
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 1 — Executive fit**. When the question is "Why this company?", "Why this role?", "Why you?", or "How do you fit?", this card drives the answer.
+
+
+## Answer shape
+1. One-sentence fit thesis.
+2. Two to three proof points.
+3. {{ company.name }}-specific close.
+
+## Fit thesis
+{{ executive_fit_thesis }}
+
+## Proof points
+{% for point in executive_fit_proof_points %}- {{ point }}
+{% endfor %}
+
+## {{ company.name }}-specific close patterns
+{% for close in executive_fit_close_patterns %}- "{{ close }}"
+{% endfor %}
+
+## What "Why you" should land on
+- A pattern of building governed agentic systems where measurement intelligence and platform reuse matter.
+- Operating-model fluency across data science, product, platform, and global engineering.
+- Honesty about uncertainty — willing to translate a credible interval rather than fake precision.
+
+## Anti-patterns
+- Do not list every prior role. Name two or three with a clear thread.
+- Do not over-explain why you are leaving the current role.
+- Do not promise transformation. Name the first 90 days.
+
+## Hand-off
+- If the question turns to a STAR proof, hand to **14_STAR_BANK.md**.
+- If the question turns to architecture, hand to **05_ARCHITECTURE_CORE.md**.
+- If the question turns to 90-day plan, hand to **17_QUESTIONS_AND_90_DAY_PLAN.md**.

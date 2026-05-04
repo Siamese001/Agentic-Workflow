@@ -1,0 +1,127 @@
+# apps_research domain contract — research depth profiles
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.1
+#
+# Four canonical depth profiles for R3_SIMPLE_GROUNDED_READ company briefs.
+# Profile selection is driven by the C0 engine based on caller-supplied
+# `depth` param (or inferred from JD context and request intent).
+#
+# Each profile specifies:
+#   min_sources          — minimum distinct sources required before C0-to-PA gate passes
+#   min_citation_anchors — minimum citation anchor objects in FinalEvidenceContract
+#   max_queries          — maximum Tavily / KB query fan-out per coverage family
+#   coverage_families    — which coverage families C0 MUST populate (see briefing_coverage_matrix_schema.yaml)
+#   coverage_families_optional — families populated when available but not gate-blocking
+#   gate_thresholds      — C0-to-PA gate verdict thresholds for this profile
+#   freshness_policy_ref — which freshness policy applies (see freshness_policy.yaml)
+#   source_mix_policy_ref — which source-mix policy applies (see source_mix_policy.yaml)
+
+schema_version: "apps_research.research_depth_profiles/v1"
+app_id: apps_research
+task_class: company_brief
+
+profiles:
+
+  COMPANY_BRIEF_LIGHT:
+    description: >-
+      Rapid orientation brief — public basics only. Suitable for initial
+      prospect screening or warm-up read before a first call. Mirrors a
+      strong LinkedIn scan + one news source.
+    min_sources: 5
+    min_citation_anchors: 8
+    max_queries: 3
+    coverage_families:
+      - company_basics
+      - leadership_and_org
+    coverage_families_optional:
+      - recent_news_and_signals
+    gate_thresholds:
+      min_pass_score: 0.55
+      weak_with_caveats_floor: 0.40
+    freshness_policy_ref: freshness::apps_research::light
+    source_mix_policy_ref: source_mix::apps_research::light
+
+  COMPANY_BRIEF_STANDARD:
+    description: >-
+      Full pre-meeting brief. Covers all major coverage families at standard
+      source depth. Suitable for most sales, recruiting, and research calls.
+      This is the default when no depth is specified.
+    min_sources: 10
+    min_citation_anchors: 18
+    max_queries: 6
+    coverage_families:
+      - company_basics
+      - role_context
+      - leadership_and_org
+      - recent_news_and_signals
+      - competitive_landscape
+    coverage_families_optional:
+      - financials_and_growth
+      - tech_stack_and_tools
+      - culture_and_values
+    gate_thresholds:
+      min_pass_score: 0.65
+      weak_with_caveats_floor: 0.50
+    freshness_policy_ref: freshness::apps_research::standard
+    source_mix_policy_ref: source_mix::apps_research::standard
+
+  COMPANY_BRIEF_DEEP:
+    description: >-
+      Lincoln-style deep brief. Full adaptive coverage matrix across all
+      families. Required for strategic accounts, executive-level outreach,
+      and RFP qualification. The Lincoln brief is an exemplar for this
+      profile — not a fixed template.
+    min_sources: 18
+    min_citation_anchors: 30
+    max_queries: 10
+    coverage_families:
+      - company_basics
+      - role_context
+      - leadership_and_org
+      - recent_news_and_signals
+      - competitive_landscape
+      - financials_and_growth
+      - tech_stack_and_tools
+      - culture_and_values
+    coverage_families_optional:
+      - regulatory_and_compliance
+      - m_and_a_and_partnerships
+    gate_thresholds:
+      min_pass_score: 0.72
+      weak_with_caveats_floor: 0.58
+    freshness_policy_ref: freshness::apps_research::deep
+    source_mix_policy_ref: source_mix::apps_research::deep
+
+  COMPANY_BRIEF_DOSSIER:
+    description: >-
+      Full intelligence dossier. Maximum source depth across all coverage
+      families including regulatory, M&A, and partnership history. Intended
+      for due-diligence, board-level briefings, and competitive intelligence.
+    min_sources: 25
+    min_citation_anchors: 45
+    max_queries: 15
+    coverage_families:
+      - company_basics
+      - role_context
+      - leadership_and_org
+      - recent_news_and_signals
+      - competitive_landscape
+      - financials_and_growth
+      - tech_stack_and_tools
+      - culture_and_values
+      - regulatory_and_compliance
+      - m_and_a_and_partnerships
+    coverage_families_optional: []
+    gate_thresholds:
+      min_pass_score: 0.78
+      weak_with_caveats_floor: 0.65
+    freshness_policy_ref: freshness::apps_research::dossier
+    source_mix_policy_ref: source_mix::apps_research::dossier
+
+default_profile: COMPANY_BRIEF_STANDARD
+
+depth_param_map:
+  shallow: COMPANY_BRIEF_LIGHT
+  light:   COMPANY_BRIEF_LIGHT
+  standard: COMPANY_BRIEF_STANDARD
+  deep:    COMPANY_BRIEF_DEEP
+  dossier: COMPANY_BRIEF_DOSSIER

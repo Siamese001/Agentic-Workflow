@@ -1,2 +1,0 @@
-FAIL: http://localhost:8000/v1/models unreachable: curl: option --max-time: expected a proper numerical parameter
-curl: try 'curl --help' or 'curl --manual' for more information

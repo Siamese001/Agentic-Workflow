@@ -1,0 +1,52 @@
+# 21 Likely Questions
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+A predicted-questions list, grouped by route, derived from the JD, role, and research. Use this as a rehearsal warmup, not as a script.
+
+{% if likely_questions %}
+{% for group in likely_questions %}
+## Route: {{ group.route_id }}
+{% for q in group.questions %}- {{ q }}
+{% endfor %}
+
+{% endfor %}
+{% else %}
+## Default likely-question seeds
+Use these patterns until a real predicted-questions set is supplied via `extra_context.likely_questions`.
+
+### Executive fit
+- Why this company at this point in your career?
+- What is your read on our agentic strategy?
+- What would make the first 90 days obviously fail?
+
+### Architecture
+- How would you build a governed agentic system for {{ company.name }} from scratch?
+- Where do you draw the line between agent autonomy and human approval?
+- What is the failure mode you design for first?
+
+### Governance
+- How do you prevent hallucination in production?
+- How do you separate advisory output from state-changing actions?
+- What is your evidence floor for promoting a model?
+
+### STAR proof
+- Tell me about a time you shipped a governed agentic system end-to-end.
+- Give me an example of a measurement model you productized.
+- Describe a time you pushed back on a stakeholder about safety.
+
+### RCA
+- Tell me about a production failure you owned.
+- What was the operating-model change that came out of it?
+
+### Cross-exam
+- Be more specific. What exact tools did you use?
+- That sounds high-level. Walk me one layer deeper.
+{% endif %}
+
+## Rehearsal posture
+- Run each predicted question against the routing manifest in card 01.
+- If the same primary card answers ≥ 4 of these, that card is the **highest-leverage** prep target.
+- If a question does not map cleanly to any route, treat it as a **routing gap** and add to card 22 (Learnings).

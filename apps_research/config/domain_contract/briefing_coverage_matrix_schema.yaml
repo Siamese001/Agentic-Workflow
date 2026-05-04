@@ -1,0 +1,182 @@
+# apps_research domain contract — BriefingCoverageMatrix schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# Defines the structure of the BriefingCoverageMatrix emitted by C0
+# (CompanyBriefEngine) for consumption by PA (ResearchAssemblyEngine)
+# and by the FEC producer.
+#
+# The matrix tracks per-family coverage status:
+#   covered       — at least one source found, min_sources_per_family met
+#   partial       — sources found but below min_sources_per_family
+#   missing       — no sources found; section will be flagged in SectionGapReport
+#   not_required  — family not in this depth profile's coverage_families list
+#
+# Coverage families are adaptive: the C0 engine selects which families to
+# populate based on depth profile, JD context (role/sector/seniority), and
+# user intent. Families not in the depth profile are set to not_required.
+
+schema_version: "apps_research.briefing_coverage_matrix/v1"
+app_id: apps_research
+task_class: company_brief
+
+coverage_families:
+
+  company_basics:
+    description: >-
+      Founding story, HQ, employee count, core product/service, business model,
+      stage (public/private/PE-backed), primary sector/vertical.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - company_website
+      - linkedin_company
+      - crunchbase
+      - pitchbook
+    jd_boost: false
+
+  role_context:
+    description: >-
+      Open roles, hiring trends, team structure for the target department,
+      seniority signals, role-specific pain points inferred from JD.
+      Only populated when JD context is present.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - job_board
+      - linkedin_jobs
+      - company_careers_page
+    jd_boost: true
+    jd_required: true
+
+  leadership_and_org:
+    description: >-
+      CEO/CTO/CPO/CHRO profiles, org structure, recent leadership changes,
+      board composition, key decision-makers for the target audience.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - linkedin_person
+      - company_website
+      - news
+    jd_boost: false
+
+  recent_news_and_signals:
+    description: >-
+      Funding rounds, product launches, partnerships, acquisitions, layoffs,
+      executive changes, analyst coverage — last 90 days prioritised.
+    min_sources_per_family: 3
+    authoritative_source_types:
+      - news
+      - press_release
+      - analyst_report
+    jd_boost: false
+    freshness_max_days: 90
+
+  competitive_landscape:
+    description: >-
+      Direct competitors, market positioning, differentiation narrative,
+      win/loss signals from public sources.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - news
+      - analyst_report
+      - g2_or_review_site
+    jd_boost: false
+
+  financials_and_growth:
+    description: >-
+      Revenue range/trajectory (for public companies: exact; for private: range
+      estimate from credible sources), growth stage, burn rate signals,
+      fundraising history.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - sec_filing
+      - crunchbase
+      - pitchbook
+      - news
+    jd_boost: false
+
+  tech_stack_and_tools:
+    description: >-
+      Core tech stack, engineering tooling signals (job postings, blog posts),
+      cloud provider, data infrastructure, known integrations.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - job_board
+      - company_blog
+      - builtwith
+      - github
+    jd_boost: true
+
+  culture_and_values:
+    description: >-
+      Mission, values, DEI signals, employee review signals (Glassdoor/Blind),
+      remote/hybrid policy, employer brand.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - company_website
+      - glassdoor
+      - builtin
+      - news
+    jd_boost: false
+
+  regulatory_and_compliance:
+    description: >-
+      Industry regulations, compliance certifications (SOC2, HIPAA, FedRAMP),
+      regulatory filings, enforcement actions, consent decrees.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - sec_filing
+      - regulatory_database
+      - news
+    jd_boost: false
+
+  m_and_a_and_partnerships:
+    description: >-
+      Acquisition history, strategic partnerships, joint ventures, divestitures,
+      rumoured deals from credible sources.
+    min_sources_per_family: 2
+    authoritative_source_types:
+      - news
+      - sec_filing
+      - crunchbase
+    jd_boost: false
+
+matrix_output_schema:
+  type: object
+  description: >-
+    BriefingCoverageMatrix emitted by C0. One entry per coverage family
+    attempted by the depth profile.
+  properties:
+    profile_id:
+      type: string
+      description: Which depth profile was active (e.g. COMPANY_BRIEF_DEEP)
+    families:
+      type: array
+      items:
+        type: object
+        required: [family_id, status, sources_found, min_sources_required]
+        properties:
+          family_id:
+            type: string
+          status:
+            type: string
+            enum: [covered, partial, missing, not_required]
+          sources_found:
+            type: integer
+          min_sources_required:
+            type: integer
+          representative_source_ids:
+            type: array
+            items:
+              type: string
+          gap_note:
+            type: string
+            description: >-
+              Populated only when status=partial or missing;
+              forwarded to SectionGapReport.
+    overall_coverage_score:
+      type: number
+      description: >-
+        Fraction of required families with status=covered. Used by C0-to-PA gate.
+    jd_coverage_score:
+      type: number
+      description: >-
+        Fraction of jd_required families with status=covered (0.0 when no JD present).

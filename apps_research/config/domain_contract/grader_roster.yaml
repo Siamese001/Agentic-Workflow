@@ -11,7 +11,9 @@
   - research::completeness_grader::v1
   - research::concision_grader::v1
   - research::no_speculation_grader::v1
-  llm_judge_graders: []
+  llm_judge_graders:
+  - research::coverage_depth_judge::v1
+  - research::citation_quality_judge::v1
   ensemble_or_consensus_graders:
   - research::source_quality_hybrid::v1
   - research::balance_hybrid::v1

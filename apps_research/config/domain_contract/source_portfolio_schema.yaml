@@ -1,0 +1,133 @@
+# apps_research domain contract — SourcePortfolioSummary schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# Defines the SourcePortfolioSummary object emitted by C0 for PA and FEC.
+# Captures the full provenance picture: source types present, authority
+# breakdown, freshness distribution, and dedup stats.
+
+schema_version: "apps_research.source_portfolio_summary/v1"
+app_id: apps_research
+task_class: company_brief
+
+source_types:
+  # Canonical source type vocabulary used in retrieval and authority classification.
+  authoritative:
+    - company_website
+    - linkedin_company
+    - linkedin_person
+    - sec_filing
+    - press_release
+    - regulatory_database
+  secondary:
+    - news
+    - analyst_report
+    - crunchbase
+    - pitchbook
+    - g2_or_review_site
+    - glassdoor
+    - builtin
+    - builtwith
+    - github
+    - company_blog
+    - company_careers_page
+    - job_board
+    - linkedin_jobs
+  inferred:
+    - llm_synthesis
+    - interpretation
+
+source_authority_tiers:
+  tier_1_authoritative:
+    description: >-
+      Primary-source documents: company-owned (website, press release, SEC filing)
+      or identity-verified (LinkedIn official page). Highest confidence.
+    source_types: [company_website, linkedin_company, linkedin_person, sec_filing, press_release]
+    confidence_floor: 0.80
+  tier_2_credible:
+    description: >-
+      Credible secondary sources: established news outlets, analyst reports,
+      recognized data providers (Crunchbase, PitchBook).
+    source_types: [news, analyst_report, crunchbase, pitchbook, regulatory_database]
+    confidence_floor: 0.65
+  tier_3_signals:
+    description: >-
+      Signal sources: review sites, job boards, community platforms. Useful for
+      culture, tech-stack, and org signals but require corroboration.
+    source_types: [g2_or_review_site, glassdoor, builtin, builtwith, github, company_blog,
+                   company_careers_page, job_board, linkedin_jobs]
+    confidence_floor: 0.45
+  tier_4_inferred:
+    description: >-
+      Derived content: LLM synthesis, analyst inferences. Must carry explicit
+      claim_type=interpretation or claim_type=analyst_inference label.
+    source_types: [llm_synthesis, interpretation]
+    confidence_floor: 0.00
+
+portfolio_output_schema:
+  type: object
+  description: >-
+    SourcePortfolioSummary emitted by C0. Describes the full set of sources
+    retrieved and their quality distribution.
+  required:
+    - total_sources
+    - deduped_sources
+    - by_type
+    - by_tier
+    - freshness_distribution
+    - authoritative_anchor_present
+  properties:
+    total_sources:
+      type: integer
+      description: Raw source count before dedup.
+    deduped_sources:
+      type: integer
+      description: Unique sources after URL/ID deduplication.
+    by_type:
+      type: object
+      description: Map of source_type → count (deduped).
+      additionalProperties:
+        type: integer
+    by_tier:
+      type: object
+      description: Map of tier_id → count (deduped).
+      properties:
+        tier_1_authoritative:
+          type: integer
+        tier_2_credible:
+          type: integer
+        tier_3_signals:
+          type: integer
+        tier_4_inferred:
+          type: integer
+    freshness_distribution:
+      type: object
+      description: Count of sources by age bucket.
+      properties:
+        last_7_days:
+          type: integer
+        last_30_days:
+          type: integer
+        last_90_days:
+          type: integer
+        last_365_days:
+          type: integer
+        older_than_1_year:
+          type: integer
+        unknown_age:
+          type: integer
+    authoritative_anchor_present:
+      type: boolean
+      description: >-
+        True when at least one tier_1_authoritative source was retrieved.
+        C0-to-PA gate fails if false for STANDARD/DEEP/DOSSIER profiles.
+    mean_confidence:
+      type: number
+      description: Mean confidence score across all deduped sources.
+    min_confidence:
+      type: number
+      description: Min confidence score; gated by source_mix_policy.
+    source_ids:
+      type: array
+      items:
+        type: string
+      description: Ordered list of deduped source IDs (for FEC citation anchors).

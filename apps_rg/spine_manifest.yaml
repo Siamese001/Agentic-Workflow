@@ -93,12 +93,19 @@ claimed_routes:
 #     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
 
 # Prompt Assembly (CANONICAL_PA):
-# apps_rg compiles a CompiledPromptArtifact from PromptBOM before every
-# model-backed step.  No model call without a compiled artifact.
+# apps_rg compiles a CompiledPromptArtifact from PromptBOM + Registry
+# before every model-backed step.  No model call without a compiled artifact.
+# 8-slot model: S0/I0/C0/U0/D0/E0/Y0/R0
+# 8 governed YAML templates registered in prompt_registry.yaml
 prompt_assembly: CANONICAL_PA
-prompt_bom_ref: apps_rg/prompts/prompt_bom.yaml
+prompt_bom_ref: apps_rg/prompt_assembly/prompt_bom.yaml
+prompt_registry_ref: apps_rg/prompt_assembly/prompt_registry.yaml
 compiled_artifact_required_for:
   - hop_4_generate_resume
+  - fact_check_generated_resume
+  - omit_unsupported_resume_claims
+  - repair_bullet_diversity
+  - hop_6_docx_export
 
 # Invariant: No model-backed apps_rg step may call a provider without
 # CompiledPromptArtifact or PA-compatible artifact.

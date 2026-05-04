@@ -1,0 +1,102 @@
+# apps_research domain contract — ClaimEvidenceMap schema
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# Defines the ClaimEvidenceMap object emitted by C0.
+# Maps each claim (sentence-level assertion) to its supporting source(s),
+# claim type, and confidence. PA uses this to enforce the "no unsupported
+# claims" invariant and to populate citation footnotes.
+#
+# Claim classifications (canonical vocabulary):
+#   direct_evidence    — assertion backed by a tier_1 or tier_2 source verbatim
+#   interpretation     — analyst-derived meaning from direct_evidence
+#   analyst_inference  — best-judgment assertion not directly evidenced
+#   assumption         — explicit assumption declared as such in the output
+
+schema_version: "apps_research.claim_evidence_map/v1"
+app_id: apps_research
+task_class: company_brief
+
+claim_types:
+  direct_evidence:
+    requires_citation: true
+    min_source_tier: tier_1_authoritative
+    label_inline: "[DIRECT_EVIDENCE]"
+    pa_fence: DATA
+  interpretation:
+    requires_citation: true
+    min_source_tier: tier_2_credible
+    label_inline: "[INTERPRETATION]"
+    pa_fence: ANALYSIS
+  analyst_inference:
+    requires_citation: false
+    min_source_tier: null
+    label_inline: "[ANALYST_INFERENCE]"
+    pa_fence: ANALYSIS
+    max_fraction_of_claims: 0.20
+  assumption:
+    requires_citation: false
+    min_source_tier: null
+    label_inline: "[ASSUMPTION]"
+    pa_fence: ANALYSIS
+    max_fraction_of_claims: 0.10
+
+claim_support_policy:
+  forbid_unsupported_direct_evidence: true
+  max_unsupported_claim_fraction: 0.05
+  jd_derived_claims_require_source: true
+  speculation_forbidden: true
+  speculation_patterns:
+    - "may be"
+    - "could be"
+    - "seems like"
+    - "presumably"
+    - "I believe"
+
+claim_evidence_map_output_schema:
+  type: object
+  description: >-
+    ClaimEvidenceMap emitted by C0. Array of claim entries with source links.
+  properties:
+    claims:
+      type: array
+      items:
+        type: object
+        required: [claim_id, claim_text, claim_type, coverage_family]
+        properties:
+          claim_id:
+            type: string
+            description: Stable ID (sha256[:8] of claim_text).
+          claim_text:
+            type: string
+            description: The assertion text as it will appear in the brief.
+          claim_type:
+            type: string
+            enum: [direct_evidence, interpretation, analyst_inference, assumption]
+          coverage_family:
+            type: string
+            description: Which coverage family this claim belongs to.
+          supporting_source_ids:
+            type: array
+            items:
+              type: string
+            description: >-
+              Source IDs from SourcePortfolioSummary. Empty list only valid
+              for analyst_inference and assumption claim types.
+          confidence:
+            type: number
+            description: >-
+              Mean confidence of supporting sources; 0.0 for inferred/assumed.
+          jd_derived:
+            type: boolean
+            description: >-
+              True when this claim was generated because of JD context input.
+    unsupported_claim_count:
+      type: integer
+      description: >-
+        Count of direct_evidence claims with zero supporting_source_ids.
+        C0-to-PA gate fails if > 0.
+    claim_type_distribution:
+      type: object
+      description: Map of claim_type → count.
+      additionalProperties:
+        type: integer

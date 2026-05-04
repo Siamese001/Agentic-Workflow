@@ -1,0 +1,22 @@
+# apps_lic Campaign Batch Policy
+# Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W5 D4-P1
+# Schema version: 1.0
+
+schema_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Rate control
+# ---------------------------------------------------------------------------
+max_recipients_per_batch: 50    # hard ceiling; excess entries → RATE_LIMITED
+
+# ---------------------------------------------------------------------------
+# Deduplication
+# ---------------------------------------------------------------------------
+# manifest_hash collision → DUPLICATE_SKIPPED (no re-dispatch)
+# manifest_hash is computed from sender_id + recipient_id + policy_hash
+
+# ---------------------------------------------------------------------------
+# Partial failure policy
+# ---------------------------------------------------------------------------
+# abort_on_first_failure: false  (hardcoded — one failure never aborts batch)
+# Each recipient result carries its own disposition.

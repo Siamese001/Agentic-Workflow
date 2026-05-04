@@ -10,6 +10,7 @@ Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P1.2).
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -19,6 +20,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
+
+# W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — import catalog
+# and helpers from query_decomposer (L1 cognition layer). Re-export them
+# here so existing test imports from company_brief_engine continue to work
+# as a backward-compat shim.
+from apps_research.engines.query_decomposer import (  # noqa: F401
+    QueryPlan,
+    _COVERAGE_FAMILY_CATALOG,
+    _DEPTH_PARAM_MAP,
+    _DEPTH_PROFILES,
+    _PROFILE_REQUIRED_FAMILIES,
+    _resolve_depth_profile,
+    decompose_coverage_families,
+)
 
 # Plan §P1.4 — V2 retrieval pipeline behind feature flag.
 _RETRIEVAL_V2_FLAG = "APPS_RESEARCH_RETRIEVAL_V2"
@@ -101,26 +116,56 @@ class CompanyBriefEngine(BaseResearchEngine):
         if not topic or not isinstance(topic, str):
             raise ValueError("CompanyBriefEngine requires non-empty 'topic' (company name)")
 
+        raw_depth = str(self._extract(input_data, "depth", default="standard"))
+        depth_profile = _resolve_depth_profile(raw_depth)
+
+        # W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — C0 path.
+        # When a canonical depth profile is passed (or resolved from an alias),
+        # use _run_research_adaptive + _build_c0_bundle + _evaluate_c0_pa_gate.
+        jd_context: Dict[str, Any] = self._resolve_jd_context(input_data)
+
+        if _v2_enabled():
+            research_findings = self._run_research_v2(topic=topic, depth=raw_depth)
+        else:
+            research_findings = self._run_research_adaptive(
+                topic=topic, depth_profile=depth_profile, jd_context=jd_context
+            )
+
         jd_anchor: Optional[Path] = None
         raw_anchor = self._extract(input_data, "jd_anchor", default=None)
         if raw_anchor:
             jd_anchor = Path(raw_anchor) if not isinstance(raw_anchor, Path) else raw_anchor
-
-        depth = str(self._extract(input_data, "depth", default="standard"))
-
         jd_facets = self._load_jd_facets(jd_anchor)
-        if _v2_enabled():
-            research_findings = self._run_research_v2(topic=topic, depth=depth)
-        else:
-            research_findings = self._run_research(topic=topic, depth=depth)
+
+        profile_cfg = _DEPTH_PROFILES[depth_profile]
         synthesized = self._synthesize(
-            topic=topic, findings=research_findings, jd_facets=jd_facets, depth=depth
+            topic=topic, findings=research_findings, jd_facets=jd_facets, depth=depth_profile
         )
 
+        c0_bundle = self._build_c0_bundle(
+            topic=topic,
+            depth_profile=depth_profile,
+            profile_cfg=profile_cfg,
+            findings=research_findings,
+            synthesis=synthesized,
+            jd_context=jd_context,
+        )
+        gate_verdict, gate_caveat, degraded_reason = self._evaluate_c0_pa_gate(
+            c0_bundle=c0_bundle, depth_profile=depth_profile
+        )
+        c0_bundle["synthesis_guidance"]["gate_verdict"] = gate_verdict
+        c0_bundle["synthesis_guidance"]["gate_caveat"] = gate_caveat
+        c0_bundle["synthesis_guidance"]["degraded_packet_reason"] = degraded_reason
+
         brief = self._assemble_brief(topic=topic, synthesis=synthesized)
+        brief["_c0_bundle"] = c0_bundle
+        brief["_depth_profile"] = depth_profile
+        brief["_gate_verdict"] = gate_verdict
+
         self.record_pass(
-            f"CompanyBrief assembled for {topic}",
-            data={"facets_synthesized": len(synthesized)},
+            f"CompanyBrief assembled for {topic} [{depth_profile}] gate={gate_verdict}",
+            data={"facets_synthesized": len(synthesized), "depth_profile": depth_profile,
+                  "gate_verdict": gate_verdict, "jd_present": bool(jd_context)},
         )
         return brief
 
@@ -318,7 +363,9 @@ class CompanyBriefEngine(BaseResearchEngine):
             return None
 
         try:
-            import openai  # type: ignore  # noqa: PLC0415
+            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
+            if _OpenAI is None:
+                return None
         except ImportError:
             return None
 
@@ -332,7 +379,7 @@ class CompanyBriefEngine(BaseResearchEngine):
 
         started = time.time()
         try:
-            client = openai.OpenAI(
+            client = _OpenAI(
                 base_url=VLLM_BASE_URL,
                 api_key="not-needed",
                 timeout=60.0,
@@ -459,6 +506,272 @@ class CompanyBriefEngine(BaseResearchEngine):
             "language_to_mirror": list(dict.fromkeys(mirror_seed + ["partnership", "outcomes"])),
             "language_to_avoid": ["world-class", "best-in-class", "leverage", "synergy"],
         }
+
+    # ------------------------------------------------------------------
+    # W2 C0 pipeline methods
+    # (apps-research-spine-deferred-followup-9c3e1a P2.2)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _resolve_jd_context(input_data: Any) -> Dict[str, Any]:
+        """Extract and normalise JD context from input_data.
+
+        Accepts either a plain dict under 'jd_context' key or a
+        'jd_anchor' path. Computes jd_content_hash when absent.
+        """
+        jd: Any = None
+        if isinstance(input_data, dict):
+            jd = input_data.get("jd_context")
+        elif hasattr(input_data, "jd_context"):
+            jd = getattr(input_data, "jd_context", None)
+
+        if not isinstance(jd, dict) or not jd:
+            return {}
+
+        result: Dict[str, Any] = dict(jd)
+        # Compute content hash when absent
+        if not result.get("jd_content_hash"):
+            content = str(result.get("content") or result.get("jd_ref") or "")
+            if content:
+                result["jd_content_hash"] = "sha256-" + hashlib.sha256(
+                    content.encode("utf-8")
+                ).hexdigest()[:16]
+        return result
+
+    def _run_research_adaptive(
+        self,
+        *,
+        topic: str,
+        depth_profile: str,
+        jd_context: Dict[str, Any],
+    ) -> Dict[str, str]:
+        """Run research using coverage-family fan-out from query_decomposer.
+
+        Delegates family selection + query generation to
+        ``decompose_coverage_families()``. Degrades gracefully when Tavily
+        is unavailable — returns empty blobs per family so the pipeline
+        remains green in offline test environments.
+        """
+        plans = decompose_coverage_families(topic, depth_profile, jd_context or None)
+        findings: Dict[str, str] = {p.family: "" for p in plans}
+
+        try:
+            from tools.retrieval.tavily_client import TavilySearchClient  # type: ignore
+        except ImportError:
+            self.logger.info(
+                "[CompanyBriefEngine] Tavily unavailable; returning stub findings"
+            )
+            return findings
+
+        profile_cfg = _DEPTH_PROFILES.get(depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"])
+        max_queries = profile_cfg["max_queries"]
+
+        try:
+            client = TavilySearchClient()
+        except Exception as exc:  # guardian: allow-broad-exception -- Tavily init raises heterogeneous errors; fail-soft preserves pipeline
+            self.logger.warning("[CompanyBriefEngine] Tavily init failed: %s", exc)
+            return findings
+
+        for plan in plans[:max_queries]:
+            try:
+                resp = client.search(query=plan.query, max_results=5)
+                snippets = [r.get("content", "") for r in (resp or {}).get("results", [])]
+                findings[plan.family] = "\n".join(snippets)[:4000]
+            except Exception as exc:  # guardian: allow-broad-exception -- per-family Tavily HTTP errors; fail-soft preserves partial brief
+                self.logger.warning(
+                    "[CompanyBriefEngine] Tavily query failed (family=%s): %s", plan.family, exc
+                )
+        return findings
+
+    def _build_c0_bundle(
+        self,
+        *,
+        topic: str,
+        depth_profile: str,
+        profile_cfg: Dict[str, Any],
+        findings: Dict[str, str],
+        synthesis: Dict[str, Any],
+        jd_context: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Build the 7-object C0 output bundle from research findings + synthesis."""
+        required_families = list(
+            _PROFILE_REQUIRED_FAMILIES.get(depth_profile, [])
+        )
+        jd_present = bool(jd_context)
+
+        # ── BriefingCoverageMatrix ──────────────────────────────────────────
+        coverage_entries: List[Dict[str, Any]] = []
+        covered = 0
+        for fam in required_families:
+            blob = findings.get(fam, "")
+            has_content = bool(blob and blob.strip())
+            if has_content:
+                covered += 1
+            coverage_entries.append({"family": fam, "covered": has_content, "source_count": len(blob.split("\n")) if has_content else 0})
+
+        jd_req_families = ["role_context", "tech_stack_and_tools"] if jd_present else []
+        jd_covered = sum(
+            1 for f in jd_req_families if (findings.get(f) or "").strip()
+        )
+        overall_coverage_score = covered / len(required_families) if required_families else 0.0
+        jd_coverage_score = jd_covered / len(jd_req_families) if jd_req_families else 0.0
+        briefing_coverage_matrix = {
+            "profile_id": depth_profile,
+            "families": coverage_entries,
+            "overall_coverage_score": round(overall_coverage_score, 4),
+            "jd_coverage_score": round(jd_coverage_score, 4),
+            "recruiter_outreach_overlay_present": False,
+        }
+
+        # ── SourcePortfolioSummary ──────────────────────────────────────────
+        # Count explicit URL lines for grounded evidence; fall back to
+        # non-empty content lines as citation-anchor proxies (offline/stub mode).
+        all_urls: List[str] = []
+        all_content_lines: List[str] = []
+        for blob in findings.values():
+            for line in blob.split("\n"):
+                stripped_line = line.strip()
+                if not stripped_line:
+                    continue
+                all_content_lines.append(stripped_line)
+                if stripped_line.startswith("http"):
+                    all_urls.append(stripped_line)
+
+        total_url_sources = len(set(all_urls))
+        total_citation_anchors = len(all_urls) if all_urls else len(all_content_lines)
+        # total_final_sources: prefer unique URL count; fall back to covered family count
+        total_sources = total_url_sources if total_url_sources > 0 else covered
+        source_portfolio_summary = {
+            "total_final_sources": total_sources,
+            "total_citation_anchors": total_citation_anchors,
+            "authoritative_anchor_present": total_sources > 0,
+            "source_urls": sorted(set(all_urls))[:50],
+        }
+
+        # ── ClaimEvidenceMap ────────────────────────────────────────────────
+        unsupported = max(0, len(required_families) - covered)
+        claim_evidence_map = {
+            "total_claims": len(required_families),
+            "supported_count": covered,
+            "unsupported_direct_evidence_count": unsupported,
+            "unsupported_claim_count": unsupported,
+        }
+
+        # ── ContradictionMatrix ─────────────────────────────────────────────
+        contradiction_matrix = {
+            "total_contradictions": 0,
+            "unresolved_critical": 0,
+            "resolved_count": 0,
+        }
+
+        # ── FreshnessReport ─────────────────────────────────────────────────
+        freshness_report = {
+            "policy_id": f"freshness::apps_research::{depth_profile.split('_')[-1].lower()}",
+            "sources": [],
+            "stale_excluded_count": 0,
+            "gate_fail_triggered": False,
+            "stale_section_ids": [],
+        }
+
+        # ── SectionGapReport ────────────────────────────────────────────────
+        gap_families = [fam for fam in required_families if not (findings.get(fam) or "").strip()]
+        section_gap_report = {
+            "gap_families": gap_families,
+            "gap_count": len(gap_families),
+        }
+
+        # ── SynthesisGuidance ───────────────────────────────────────────────
+        synthesis_guidance: Dict[str, Any] = {
+            "depth_profile": depth_profile,
+            "gate_verdict": "PENDING",
+            "gate_caveat": "",
+            "degraded_packet_reason": "",
+            "ordered_sections": required_families,
+        }
+        if jd_present:
+            synthesis_guidance["jd_focal_angle"] = jd_context.get("jd_ref", "")
+            synthesis_guidance["apps_rg_downstream_fields"] = {
+                "jd_ref": jd_context.get("jd_ref"),
+                "jd_content_hash": jd_context.get("jd_content_hash"),
+                "responsibilities": jd_context.get("responsibilities", []),
+            }
+
+        # ── JD context block ────────────────────────────────────────────────
+        bundle: Dict[str, Any] = {
+            "briefing_coverage_matrix": briefing_coverage_matrix,
+            "source_portfolio_summary": source_portfolio_summary,
+            "claim_evidence_map": claim_evidence_map,
+            "contradiction_matrix": contradiction_matrix,
+            "freshness_report": freshness_report,
+            "section_gap_report": section_gap_report,
+            "synthesis_guidance": synthesis_guidance,
+        }
+        if jd_present:
+            bundle["jd_context"] = dict(jd_context)
+
+        return bundle
+
+    def _evaluate_c0_pa_gate(
+        self,
+        *,
+        c0_bundle: Dict[str, Any],
+        depth_profile: str,
+    ) -> tuple[str, str, str]:
+        """Evaluate the C0 PA gate; return (verdict, caveat, degraded_reason).
+
+        Verdict values: 'PASS', 'WEAK_WITH_CAVEATS', 'FAIL'.
+        """
+        profile_cfg = _DEPTH_PROFILES.get(
+            depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"]
+        )
+        min_sources = profile_cfg["min_sources"]
+        coverage_floor = profile_cfg["coverage_floor"]
+        gate_weak_floor = profile_cfg["gate_weak_floor"]
+
+        sps = c0_bundle.get("source_portfolio_summary", {})
+        total_sources = sps.get("total_final_sources", 0)
+        authoritative = sps.get("authoritative_anchor_present", False)
+
+        bcm = c0_bundle.get("briefing_coverage_matrix", {})
+        coverage_score = bcm.get("overall_coverage_score", 0.0)
+
+        contradiction_matrix = c0_bundle.get("contradiction_matrix", {})
+        unresolved_critical = contradiction_matrix.get("unresolved_critical", 0)
+
+        freshness = c0_bundle.get("freshness_report", {})
+        freshness_fail = freshness.get("gate_fail_triggered", False)
+
+        cem = c0_bundle.get("claim_evidence_map", {})
+        unsupported = cem.get("unsupported_direct_evidence_count", 0)
+
+        # Hard-fail conditions
+        if total_sources < min_sources:
+            return (
+                "FAIL",
+                "",
+                f"Insufficient sources: {total_sources} found, {min_sources} required for {depth_profile}.",
+            )
+        if unresolved_critical > 0:
+            return ("FAIL", "", f"Unresolved critical contradictions: {unresolved_critical}.")
+        if freshness_fail:
+            return ("FAIL", "", "Freshness gate triggered.")
+
+        # PASS
+        if coverage_score >= coverage_floor and authoritative and unsupported == 0:
+            return ("PASS", "", "")
+
+        # WEAK_WITH_CAVEATS
+        if coverage_score >= gate_weak_floor:
+            caveats = []
+            if coverage_score < coverage_floor:
+                caveats.append(f"coverage {coverage_score:.0%} below floor {coverage_floor:.0%}")
+            if not authoritative:
+                caveats.append("no authoritative anchor")
+            if unsupported > 0:
+                caveats.append(f"{unsupported} unsupported claims")
+            return ("WEAK_WITH_CAVEATS", "; ".join(caveats), "")
+
+        return ("FAIL", "", f"Coverage {coverage_score:.0%} below weak floor {gate_weak_floor:.0%}.")
 
     @staticmethod
     def _assemble_brief(*, topic: str, synthesis: Dict[str, Any]) -> Dict[str, Any]:

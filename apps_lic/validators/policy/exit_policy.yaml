@@ -1,0 +1,86 @@
+# Exit Policy — replaces HOP7GateDecisionAgent imperative chain.
+#
+# Maps (severity, rule_id) tuples from HOP6 validation_results to the
+# X3 disposition vocabulary (ALLOW / REVISE / DENY / HITL / ABSTAIN)
+# plus the legacy back-hop action consumed by the orchestrator.
+#
+# Authoritative for HOP6 ExitRouter wiring and (after 90-day deprecation)
+# HOP7 deletion.
+
+policy_name: "exit_policy"
+layer: "L5"           # Exit-eval / safety plane
+router: "exit_gate"
+inputs:
+  - severity          # one of: CRITICAL, HIGH, MEDIUM, LOW
+  - rule_id           # validation rule that fired (placeholder_check, strategic_alignment_check, ...)
+  - passed            # bool — did the validation row pass
+
+# First-match. Order matters: most-severe / most-specific rules first.
+rules:
+  # 1. Successful validation row → ALLOW path with PROCEED action
+  - rule_id: "row_passed"
+    when:
+      passed: true
+    then:
+      x3_disposition: "ALLOW"
+      gate_action: "PROCEED"
+      reason: "Validation row passed; no remediation required"
+
+  # 2. CRITICAL severity → DENY (hard stop, no retry)
+  - rule_id: "critical_severity"
+    when:
+      severity: "CRITICAL"
+      passed: false
+    then:
+      x3_disposition: "DENY"
+      gate_action: "FAIL"
+      reason: "Critical validation failure; outbound message blocked"
+
+  # 3. HIGH severity factual gap → REVISE via research re-query (back-hop to HOP2)
+  - rule_id: "high_factual_gap"
+    when:
+      severity: "HIGH"
+      rule_id: ["strategic_alignment_check", "factual_grounding_check"]
+      passed: false
+    then:
+      x3_disposition: "REVISE"
+      gate_action: "RETRY_HOP2"
+      reason: "Factual / strategic-alignment gap; broaden research query"
+
+  # 4. HIGH severity creative flaw → REVISE via regeneration (back-hop to HOP5)
+  - rule_id: "high_creative_flaw"
+    when:
+      severity: "HIGH"
+      passed: false
+    then:
+      x3_disposition: "REVISE"
+      gate_action: "RETRY_HOP5"
+      reason: "Creative quality flaw; regenerate candidates with stricter constraints"
+
+  # 5. MEDIUM severity → HITL queue (humans triage; do not auto-retry)
+  - rule_id: "medium_severity"
+    when:
+      severity: "MEDIUM"
+      passed: false
+    then:
+      x3_disposition: "HITL"
+      gate_action: "MANUAL_REVIEW"
+      reason: "Medium-severity validation failure; route to human review queue"
+
+  # 6. LOW severity → ABSTAIN (proceed but log; do not block)
+  - rule_id: "low_severity"
+    when:
+      severity: "LOW"
+      passed: false
+    then:
+      x3_disposition: "ABSTAIN"
+      gate_action: "PROCEED_WITH_WARNING"
+      reason: "Low-severity advisory; proceed but record warning in QA report"
+
+# Default catches edge cases (missing severity, malformed input).
+# ABSTAIN is correct here: we cannot DENY without evidence and cannot ALLOW
+# blindly. HITL is the safe-by-default disposition.
+default:
+  x3_disposition: "HITL"
+  gate_action: "MANUAL_REVIEW"
+  reason: "Unrecognized validation outcome; route to human review by default"

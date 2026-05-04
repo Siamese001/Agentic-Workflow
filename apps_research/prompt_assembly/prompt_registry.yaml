@@ -1,0 +1,63 @@
+schema_version: "1.0"
+registry_id: apps_research_prompt_registry_v1
+owner: apps_research.prompt_assembly
+purpose: >
+  Maps template IDs to their YAML template files for apps_research.
+  All templates must be loaded through this registry — no direct path
+  construction in application code.
+templates:
+  company_brief_synthesis_v1:
+    path: apps_research/prompt_assembly/templates/company_brief_synthesis_v1.yaml
+    description: >
+      Primary synthesis template. Produces a grounded company brief from
+      C0 evidence. Used for LIGHT, STANDARD, DEEP, and DOSSIER depth profiles.
+    depth_profiles:
+      - LIGHT
+      - STANDARD
+      - DEEP
+      - DOSSIER
+    allowed_stage: E3_EXEC
+  research_retrieval_plan_v1:
+    path: apps_research/prompt_assembly/templates/research_retrieval_plan_v1.yaml
+    description: >
+      Retrieval planning template. Produces a structured retrieval plan
+      (query set, source priorities, evidence expectations) for the C0 pass.
+    depth_profiles:
+      - STANDARD
+      - DEEP
+      - DOSSIER
+    allowed_stage: E1_C0_GATE
+  evidence_gap_analysis_v1:
+    path: apps_research/prompt_assembly/templates/evidence_gap_analysis_v1.yaml
+    description: >
+      Evidence gap analysis template. Identifies missing evidence after
+      the C0 pass to support brief coverage scoring.
+    depth_profiles:
+      - DEEP
+      - DOSSIER
+    allowed_stage: E2_PA_COMPILE
+  brief_citation_repair_v1:
+    path: apps_research/prompt_assembly/templates/brief_citation_repair_v1.yaml
+    description: >
+      Citation repair template. Fixes citation anchor gaps in a synthesis
+      output when citation_anchor_rate falls below threshold.
+    depth_profiles:
+      - STANDARD
+      - DEEP
+      - DOSSIER
+    allowed_stage: E3_EXEC
+  depth_profile_downgrade_v1:
+    path: apps_research/prompt_assembly/templates/depth_profile_downgrade_v1.yaml
+    description: >
+      Depth profile downgrade notice template. Emitted when C0 evidence
+      is insufficient for the requested depth profile and downgrade occurs.
+    depth_profiles:
+      - LIGHT
+      - STANDARD
+      - DEEP
+      - DOSSIER
+    allowed_stage: E1_C0_GATE
+hash_fields:
+  - schema_version
+  - registry_id
+  - templates

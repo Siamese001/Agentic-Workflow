@@ -1,0 +1,410 @@
+{
+  "contact_info": {
+    "name": "Amit Ayer",
+    "email": "amitayer1@gmail.com",
+    "phone": "+1-917-239-3830",
+    "linkedin": "https://www.linkedin.com/in/amitayer1/",
+    "github": "https://github.com/Siamese001/Agentic-Workflow"
+  },
+  "headline": "SVP Engineering | Agentic AI Platforms | AI Runtime Governance | Distributed AI Infrastructure",
+  "summary": "Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.",
+  "skills": [
+    "Generative AI",
+    "Large Language Models",
+    "LLM",
+    "Agentic Systems",
+    "Multi-Agent Orchestration",
+    "Deterministic Routing",
+    "GraphRAG",
+    "RAG",
+    "Retrieval-Augmented Generation",
+    "Vector Databases",
+    "Vector Indexing",
+    "Embedding Pipelines",
+    "Semantic Retrieval",
+    "Sandboxed Execution",
+    "Policy Enforcement",
+    "Replayable Execution Traces",
+    "AI Governance",
+    "AI Runtime Governance",
+    "Model Risk Management",
+    "MRM",
+    "Human-in-the-Loop",
+    "Validation Gates",
+    "Tool-Execution Controls",
+    "Evaluation Harnesses",
+    "LLM-as-a-judge",
+    "Drift Detection",
+    "Anomaly Detection",
+    "Prompt Injection Mitigation",
+    "Observability",
+    "Telemetry",
+    "AI CI/CD",
+    "MLOps",
+    "LLMOps",
+    "Rollback Controls",
+    "Release Gating",
+    "AWS",
+    "AWS Bedrock",
+    "Azure",
+    "Azure AI",
+    "Google Cloud",
+    "Google Vertex AI",
+    "Databricks",
+    "Databricks Lakehouse",
+    "Snowflake",
+    "Salesforce",
+    "Adobe",
+    "Microsoft",
+    "Cloud-Native Microservices",
+    "Event-Driven Architecture",
+    "API Gateways",
+    "Distributed Systems",
+    "High Availability",
+    "Identity Management",
+    "Non-Human Identity",
+    "Python",
+    "Machine Learning",
+    "Data Science",
+    "Data Lineage",
+    "Enterprise Architecture",
+    "Integration Patterns",
+    "Platform Architecture",
+    "Solution Accelerators",
+    "Productization",
+    "Hyperscaler Alliances",
+    "Co-Sell Motions",
+    "Strategic Partnerships",
+    "Commercialization",
+    "P&L Management",
+    "Engineering Leadership",
+    "Team Scaling",
+    "Hiring and Leveling",
+    "Architecture Governance",
+    "Platform Standards",
+    "Cross-Functional Leadership",
+    "Executive Presence",
+    "C-Suite Advisory",
+    "Fortune 500 Client Delivery",
+    "Digital Transformation",
+    "Regulatory Compliance",
+    "Solvency II",
+    "AG43",
+    "CCAR",
+    "Basel III",
+    "SOC 2",
+    "Actuarial Science"
+  ],
+  "experience": [
+    {
+      "company": "Unify Consulting",
+      "title": "SVP Engineering, Chief Agentic AI Officer",
+      "bullets": [
+        {
+          "bullet_text": "Platform Commercialization and Engineering Leadership: Productized core agentic AI primitives into reusable platform services, generating $15M in IP-led revenue and shifting the organization from bespoke engagements to scalable platform economics tied to repeatable production adoption; expanded gross margins by 20%; and scaled the ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+          "quantified_metrics": [
+            "$15M",
+            "20%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Enterprise Agentic AI Platform Architecture: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows, combining deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Dependency Graph Accelerator: Built and applied software dependency graph intelligence to accelerate the path from legacy system analysis to governed agentic deployment, improving architecture visibility, exposing dependency chains, and reducing refactor risk across complex enterprise environments.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Governed Runtime Reliability: Strengthened enterprise retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards, improving production reliability and making AI behavior more traceable, supportable, and repeatable in live enterprise workflows.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Production Adoption: Standardized the AI systems lifecycle across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving deterministic auditability and runtime stability.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Distributed Ecosystem Engineering: Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers supporting parallel decision workflows.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "IBM",
+      "title": "Lead Client Partner",
+      "bullets": [
+        {
+          "bullet_text": "AI and Data Platform Architecture: Architected cloud-native AI and analytics platforms that enabled governed enterprise decision systems operating at 99.9% uptime across regulated financial environments.",
+          "quantified_metrics": [
+            "99.9%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Cloud Infrastructure Modernization: Led migration from legacy on-prem environments to scalable cloud-native architectures, reducing infrastructure overhead by 30% and creating the data and compute foundation for faster analytics and ML deployment.",
+          "quantified_metrics": [
+            "30%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Reusable Platform Design: Converted bespoke regulatory and analytics workflows into reusable SaaS-like platforms, improving renewal rates by 25% through standardized architecture, shared services, and repeatable lifecycle management.",
+          "quantified_metrics": [
+            "25%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Latency, Lineage, and Observability: Engineered near-real-time ingestion, lineage, and observability frameworks that reduced regulatory response latency by 50% while improving trace integrity and operational transparency across distributed data flows.",
+          "quantified_metrics": [
+            "50%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Strategic Partnerships: Structured multi-year hyperscaler alliances generating $15M in incremental revenue through co-sell motions aligned to platform modernization and AI growth.",
+          "quantified_metrics": [
+            "$15M"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "bullets": [
+        {
+          "bullet_text": "Legacy-to-Cloud Transformation: Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures, reducing total cost of ownership by 40% while retiring long-standing technical debt and improving delivery speed for client-facing insurance platforms.",
+          "quantified_metrics": [
+            "40%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Operational Resilience: Re-architected underwriting and operational systems for high availability, achieving 99.99% uptime and enabling real-time ingestion to support dynamic pricing, faster decisions, and more responsive core insurance workflows.",
+          "quantified_metrics": [
+            "99.99%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Governance and Security: Designed SOC 2-aligned cloud control frameworks that enabled regulated insurers to adopt modern analytics and ML capabilities with stronger security, auditability, and operational discipline.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "Ernst & Young",
+      "title": "Principal",
+      "bullets": [
+        {
+          "bullet_text": "Regulatory Analytics Modernization: Directed a $15M transformation program that improved lineage, controls, and predictive risk capabilities across audit and regulatory workflows.",
+          "quantified_metrics": [
+            "$15M"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Commercial Turnaround: Achieved a 40% reduction in audit remediation costs by implementing automated data lineage and predictive risk modeling across regulatory workflows.",
+          "quantified_metrics": [
+            "40%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        },
+        {
+          "bullet_text": "Capital Optimization: Optimized capital reserve requirements under Solvency II and AG43, reducing redundant capital holdings for insurance clients by 12% while maintaining full compliance.",
+          "quantified_metrics": [
+            "12%"
+          ],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        }
+      ]
+    },
+    {
+      "company": "Early Career Roles",
+      "title": "Actuarial Consultant and Quantitative Roles",
+      "bullets": [
+        {
+          "bullet_text": "Foundational Engineering: Built high-performance valuation frameworks and deterministic modeling systems for insurance and risk analysis, developing the quantitative rigor, control discipline, and systems thinking that now underpin my work in AI platform architecture and runtime governance.",
+          "quantified_metrics": [],
+          "canonical_verbs": [
+            "managed",
+            "led"
+          ]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Biostatistics",
+      "field": "Biostatistics",
+      "school": "Columbia University",
+      "year": null,
+      "notes": "Graduated with Distinction"
+    },
+    {
+      "degree": "Bachelor of Arts in Biology",
+      "field": "Biology",
+      "school": "Brown University",
+      "year": null,
+      "notes": "Graduated Cum Laude"
+    }
+  ],
+  "certifications_and_credentials": [
+    {
+      "name": "Certified Machine Learning Engineer - Associate, AWS",
+      "year": 2025
+    },
+    {
+      "name": "Databricks Lakehouse Fundamentals Accreditation",
+      "year": 2023
+    },
+    {
+      "name": "Certified Solutions Architect - Professional, AWS",
+      "year": 2023
+    },
+    {
+      "name": "Fellow of the Society of Actuaries (FSA)",
+      "year": 2010
+    }
+  ],
+  "competencies": {
+    "Agentic AI Platforms": [
+      "Multi-agent orchestration",
+      "Deterministic routing",
+      "Governed autonomy",
+      "Tiered escalation",
+      "Tool-execution controls",
+      "Sandboxed runtime isolation",
+      "Replayable execution traces"
+    ],
+    "AI Runtime Governance": [
+      "Policy enforcement",
+      "Validation gates",
+      "Controlled write and mutation paths",
+      "Auditability",
+      "Traceability",
+      "Human-in-the-loop escalation",
+      "Release gating for production AI systems"
+    ],
+    "Retrieval & Context Engineering": [
+      "GraphRAG",
+      "Vector indexing",
+      "Embedding pipelines",
+      "Semantic retrieval",
+      "Metadata-aware ranking",
+      "Context assembly",
+      "Structured and unstructured integration",
+      "Retrieval quality optimization"
+    ],
+    "LLMOps & Reliability": [
+      "Evaluation pipelines",
+      "AI CI/CD",
+      "Rollback controls",
+      "Drift monitoring",
+      "Anomaly detection",
+      "Prompt injection mitigation",
+      "Observability instrumentation",
+      "Runtime quality assurance"
+    ],
+    "Distributed Systems Engineering": [
+      "Cloud-native microservices",
+      "Event-driven architectures",
+      "API gateways",
+      "Identity and non-human access controls",
+      "Distributed compute",
+      "High-availability decision infrastructure"
+    ],
+    "Platform Productization": [
+      "Reusable AI primitives",
+      "Platform roadmap ownership",
+      "Solution accelerator development",
+      "Pricing strategy",
+      "Commercialization",
+      "Partner packaging",
+      "Enterprise adoption enablement"
+    ],
+    "Strategic Partnerships & Ecosystem Execution": [
+      "Hyperscaler alliances",
+      "Partner solution architecture",
+      "Co-sell motions",
+      "Reference architectures",
+      "Field enablement",
+      "Procurement pathways",
+      "Partner-led platform adoption"
+    ],
+    "Engineering Leadership": [
+      "Architecture governance",
+      "Platform standards",
+      "Experimentation controls",
+      "Technical leadership development",
+      "Hiring and leveling",
+      "Cross-functional alignment with product, security, legal, compliance, and field teams"
+    ]
+  },
+  "metadata": {
+    "source": "SVP Engineering Resume_Ayer.docx",
+    "source_path": "C:/Users/amita/Documents/Resumes/SVP Engineering Resume_Ayer.docx",
+    "last_updated_utc": "2026-04-28T22:42:00Z"
+  }
+}

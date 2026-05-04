@@ -1,0 +1,135 @@
+# apps_lic HITL Freeze Policy Configuration
+#
+# Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W1 D2-P1
+# ADR reference: ADR-023 (Runtime HITL Exit Control)
+#
+# This file governs when a draft is FROZEN (held for human review) rather
+# than immediately routed to ALLOW_FINISH or SAFE_ABSTAIN.
+#
+# Freeze ≠ reject. A frozen draft enters the review queue; it can be:
+#   - APPROVED  → disposition X3=ALLOW_FINISH, re-clearance path emits new X3
+#   - REJECTED  → disposition X3=DENY, run closed
+#   - RETURNED  → disposition X3=REROUTE, returned to L1 for revision
+#
+# Design invariants (ADR-023):
+#   1. Freeze evaluation is DECISION-ONLY — no durable state writes in the engine.
+#   2. Re-clearance path emits a new X3 disposition; it does NOT mutate the
+#      current run's state.
+#   3. Hard-fail dims always take precedence over freeze (fail before freeze).
+#   4. The freeze engine is non-blocking: if policy eval raises, the run
+#      continues with freeze_status="policy_eval_error" and is routed to HITL.
+
+schema_version: "1.0"
+app: apps_lic
+
+# ---------------------------------------------------------------------------
+# Freeze triggers: exit rubric dim failures that route to freeze rather than
+# immediate SAFE_ABSTAIN / DENY
+# ---------------------------------------------------------------------------
+freeze_on_dim_low_score:
+  - dim_id: tone_fit_seniority
+    threshold: 0.4
+    condition: "recipient_class in [EXECUTIVE, C_LEVEL, CTO, VP_ENG]"
+    note: >
+      Senior exec outreach with low tone score: freeze for human review
+      rather than blocking outright. Reviewer may approve with edits.
+
+  - dim_id: proof_appropriate_for_recipient
+    threshold: 0.5
+    condition: "recipient_class in [EXECUTIVE, C_LEVEL, CTO, VP_ENG] AND technical_claim_depth_high"
+    note: >
+      Exec outreach with insufficient proof for technical claims: freeze.
+      Reviewer verifies proof quality before approving send.
+
+  - dim_id: clear_cta
+    threshold: 0.35
+    condition: null
+    note: >
+      Very weak or missing CTA: freeze for review regardless of recipient class.
+
+  - dim_id: ask_friction_score
+    threshold: 0.6
+    condition: "recipient_class in [EXECUTIVE, C_LEVEL, CTO, VP_ENG]"
+    note: >
+      High friction ask for exec cold outreach: freeze before block.
+      Score > 0.6 (not just > 0.5 from exit_rubric fail_closed) triggers freeze
+      to give reviewer opportunity to approve a revised ask.
+
+  - dim_id: personalization_mode_appropriate
+    threshold: 0.4
+    condition: null
+    note: >
+      Personalization mode misalignment: freeze for review.
+      Reviewer confirms whether the outreach context warrants the mode used.
+
+  - dim_id: asymmetric_insight_present
+    threshold: 0.3
+    condition: "asymmetric_insight_required == true"
+    note: >
+      Required insight not present or insufficient: freeze for review rather
+      than silently allowing. Reviewer determines if existing insight suffices.
+
+# ---------------------------------------------------------------------------
+# Freeze triggers: omission policy escalations
+# ---------------------------------------------------------------------------
+freeze_on_omission_policy:
+  - policy: hitl_required
+    action: freeze
+    x3_disposition: ESCALATE_HITL
+    note: >
+      Any claim with omission_policy=hitl_required present in draft: always freeze.
+      This is the primary omission-HITL path (exit_rubric hitl_required behavior).
+
+# ---------------------------------------------------------------------------
+# Freeze triggers: confidence-based escalation
+# ---------------------------------------------------------------------------
+freeze_on_low_confidence:
+  confidence_threshold: 0.55
+  condition: "recipient_class in [EXECUTIVE, C_LEVEL, CTO, VP_ENG]"
+  note: >
+    Overall run confidence below 0.55 for senior-exec outreach: freeze for
+    human review. Low confidence often indicates insufficient source coverage.
+
+# ---------------------------------------------------------------------------
+# Re-clearance state machine
+# ---------------------------------------------------------------------------
+reclearance:
+  valid_states:
+    - frozen          # initial freeze state
+    - under_review    # reviewer has opened the draft
+    - cleared         # reviewer approved → X3=ALLOW_FINISH emitted
+    - rejected        # reviewer denied → X3=DENY emitted
+    - returned_to_l1  # reviewer requested revision → X3=REROUTE emitted
+
+  allowed_transitions:
+    frozen:
+      - under_review
+    under_review:
+      - cleared
+      - rejected
+      - returned_to_l1
+
+  terminal_states:
+    - cleared
+    - rejected
+    - returned_to_l1
+
+  disposition_map:
+    cleared: ALLOW_FINISH
+    rejected: DENY
+    returned_to_l1: REROUTE
+
+  note: >
+    State machine is EVALUATED by HITLFreezePolicy — it does not write state.
+    The caller (governed_lic_run.py re-clearance path) receives a
+    HITLReClearanceDecision and records the new X3 disposition on the run record.
+
+# ---------------------------------------------------------------------------
+# Bypass / override
+# ---------------------------------------------------------------------------
+bypass:
+  env_var: HITL_FREEZE_BYPASS
+  note: >
+    Set HITL_FREEZE_BYPASS=1 to skip all freeze evaluation. Bypass is logged
+    to freeze_status="bypassed" on the run record. Use only in test harnesses
+    or scripted batch runs. NEVER set in production.

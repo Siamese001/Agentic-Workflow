@@ -66,6 +66,28 @@ apps_research is the only in-portfolio app with:
 - 600s hard ceiling: tolerant ceiling for "thorough research" workflow; users typically background the task and check back.
 - Quality SLOs ground-truthed against `data/research_brief_*.md` historical outputs.
 
+## Depth-Profile SLO Thresholds
+
+Per-profile retrieval SLOs enforced by the C0 PA gate (`_evaluate_c0_pa_gate`).
+
+| Profile | min_sources | min_citation_anchors | max_queries | gate_weak_floor | p99 ceiling |
+|---|---:|---:|---:|---:|---:|
+| COMPANY_BRIEF_LIGHT | 5 | 8 | 3 | 0.40 | 60s |
+| COMPANY_BRIEF_STANDARD | 10 | 18 | 6 | 0.58 | 120s |
+| COMPANY_BRIEF_DEEP | 18 | 30 | 10 | 0.60 | 180s |
+| COMPANY_BRIEF_DOSSIER | 25 | 45 | 15 | 0.75 | 300s |
+| **COMPANY_BRIEF_COMPETITIVE_SCAN** | **20** | **35** | **12** | **0.65** | **240s** |
+| **COMPANY_BRIEF_FORENSIC** | **35** | **60** | **20** | **0.80** | **480s** |
+
+> DS-5 W5 (`apps-research-deferred-scope-b7e3d2`): COMPETITIVE_SCAN targets competitive-intelligence use cases (market share, win/loss, competitive-landscape depth); FORENSIC targets regulatory due-diligence and legal-risk analysis. Both are background-task profiles; FORENSIC p99 ceiling is 480s (users background the run and check back).
+
+### DOSSIER SLO Baseline (W3 — apps-research-spine-deferred-followup-9c3e1a)
+
+- **Status:** TARGETS — first live run with `TAVILY_API_KEY` establishes concrete baseline.
+- **Measurement:** `tests/e2e/test_apps_research_live.py::TestAppsResearchDossierLive` (skipped without `TAVILY_API_KEY`).
+- **Artifacts:** Emitted to `artifacts/slo/apps_research_dossier_<run_id>.json` per live run.
+- **Verified mocked (P3.1):** 25 stub URL sources → `gate_verdict` in {PASS, WEAK_WITH_CAVEATS}.
+
 ## Measurement Plan (W4.3)
 
 - Per-section OTEL span with `app=apps_research`, `section_id`, `latency_ms`, `source_count`, `citation_count`, `contradiction_count`.

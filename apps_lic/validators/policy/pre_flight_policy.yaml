@@ -1,0 +1,105 @@
+# Pre-Flight Policy — replaces HOP4RoutingAgent imperative chain plus the
+# `if archetype == "C_LEVEL"` n_candidates / temperature switches embedded
+# inside HOP5GenerationAgent.
+#
+# Resolves message archetype + connection state + premium availability into
+# the full route + length + candidate-count + temperature envelope before
+# HOP5 begins generation.
+
+policy_name: "pre_flight_policy"
+layer: "L3"           # Orchestration plane (route + generation envelope)
+router: "pre_flight"
+inputs:
+  - archetype               # C_LEVEL / VP / DIRECTOR / IC / OTHER
+  - connection_status       # CONNECTED / NOT_CONNECTED
+  - premium_available       # bool
+  - route_override          # optional explicit override
+
+# First-match. Order: explicit override → CONNECTED state → INMAIL premium → CONNECT_REQ fallback.
+rules:
+  # 1. Explicit override always wins (mission-input directive)
+  - rule_id: "explicit_override"
+    when:
+      route_override: "*"
+    then:
+      route: "OVERRIDE"   # caller substitutes mission_input.route_override
+      char_limit: 1900
+      n_candidates: 2
+      temperature: 0.65
+      signature_required: true
+
+  # 2. Already connected → DIRECT_MESSAGE / FOLLOW_UP route, full length
+  - rule_id: "connected_followup_c_level"
+    when:
+      connection_status: "CONNECTED"
+      archetype: "C_LEVEL"
+    then:
+      route: "FOLLOW_UP"
+      char_limit: 1900
+      n_candidates: 2
+      temperature: 0.7
+      signature_required: true
+
+  - rule_id: "connected_followup_default"
+    when:
+      connection_status: "CONNECTED"
+    then:
+      route: "FOLLOW_UP"
+      char_limit: 1900
+      n_candidates: 1
+      temperature: 0.6
+      signature_required: true
+
+  # 3. Premium available + not connected → INMAIL with C_LEVEL premium envelope
+  - rule_id: "inmail_c_level"
+    when:
+      connection_status: "NOT_CONNECTED"
+      premium_available: true
+      archetype: "C_LEVEL"
+    then:
+      route: "INMAIL"
+      char_limit: 1900
+      n_candidates: 2
+      temperature: 0.7
+      signature_required: true
+
+  - rule_id: "inmail_default"
+    when:
+      connection_status: "NOT_CONNECTED"
+      premium_available: true
+    then:
+      route: "INMAIL"
+      char_limit: 1900
+      n_candidates: 1
+      temperature: 0.6
+      signature_required: true
+
+  # 4. No premium + not connected → CONNECTION_REQ short opener
+  - rule_id: "connection_req_c_level"
+    when:
+      connection_status: "NOT_CONNECTED"
+      archetype: "C_LEVEL"
+    then:
+      route: "CONNECTION_REQ"
+      char_limit: 300
+      n_candidates: 2
+      temperature: 0.65
+      signature_required: false
+
+  - rule_id: "connection_req_default"
+    when:
+      connection_status: "NOT_CONNECTED"
+    then:
+      route: "CONNECTION_REQ"
+      char_limit: 300
+      n_candidates: 1
+      temperature: 0.55
+      signature_required: false
+
+# Conservative fallback. CONNECTION_REQ with n=1 is the minimum-risk envelope.
+default:
+  route: "CONNECTION_REQ"
+  char_limit: 300
+  n_candidates: 1
+  temperature: 0.55
+  signature_required: false

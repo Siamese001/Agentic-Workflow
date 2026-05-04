@@ -1,0 +1,62 @@
+{
+  "contact_info": {
+    "name": "Your Name",
+    "email": "your.email@example.com",
+    "phone": "+1-555-0123",
+    "linkedin": "linkedin.com/in/yourprofile",
+    "github": "github.com/yourusername"
+  },
+  "summary": "Experienced software engineer with X years of expertise in full-stack development, cloud architecture, and team leadership.",
+  "experience": [
+    {
+      "company": "Previous Company 1",
+      "title": "Senior Software Engineer",
+      "duration": "2020 - Present",
+      "bullets": [
+        "Led development of microservices architecture serving 1M+ users, improving system reliability by 40%",
+        "Reduced infrastructure costs by $500K annually through cloud optimization initiatives",
+        "Mentored team of 5 junior developers, improving code quality and delivery speed",
+        "Implemented CI/CD pipelines that reduced deployment time from 2 hours to 15 minutes"
+      ]
+    },
+    {
+      "company": "Previous Company 2",
+      "title": "Software Engineer",
+      "duration": "2018 - 2020",
+      "bullets": [
+        "Developed RESTful APIs using Python and Django, handling 10K+ requests per second",
+        "Built responsive web applications with React and TypeScript, improving user engagement by 25%",
+        "Optimized database queries resulting in 60% faster page load times",
+        "Collaborated in agile teams to deliver features ahead of schedule"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Science in Computer Science",
+      "school": "University Name",
+      "year": "2018",
+      "gpa": "3.8"
+    }
+  ],
+  "skills": {
+    "programming": ["Python", "JavaScript", "TypeScript", "Java", "SQL"],
+    "frameworks": ["Django", "React", "Node.js", "FastAPI"],
+    "cloud": ["AWS", "Docker", "Kubernetes", "Terraform"],
+    "tools": ["Git", "Jenkins", "Jira", "PostgreSQL", "MongoDB"]
+  },
+  "projects": [
+    {
+      "name": "Personal Project",
+      "description": "Built a full-stack application using modern technologies",
+      "technologies": ["React", "Node.js", "MongoDB"],
+      "url": "https://github.com/yourusername/project"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect",
+      "year": "2021"
+    }
+  ]
+}

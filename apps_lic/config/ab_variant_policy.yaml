@@ -1,0 +1,19 @@
+# apps_lic A/B Variant Policy
+# Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W6 D5-P1
+# Schema version: 1.0
+
+schema_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Default experiment (used when no ABVariantConfig is passed to assign())
+# ---------------------------------------------------------------------------
+default_experiment_id: "lic_outreach_arc_v1"
+treatment_pct: 50       # percent of traffic in treatment arm
+holdout_pct: 10         # percent of traffic in holdout (withheld from treatment)
+salt: "lic_v1"          # per-experiment salt for hash independence
+
+# ---------------------------------------------------------------------------
+# Feature gate
+# ---------------------------------------------------------------------------
+# Engine disabled unless AB_VARIANT_ENABLED=1 env var is set.
+# Non-blocking: callers MUST proceed with control arm if engine returns disabled.

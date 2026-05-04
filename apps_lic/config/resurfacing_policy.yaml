@@ -1,0 +1,44 @@
+# apps_lic Resurfacing Policy
+# Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS6-P1
+# Schema version: 1.0
+#
+# Controls ResurfacingDetector thresholds.
+# Feature gate: RESURFACING_ENABLED=1 env var required to activate.
+
+schema_version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Cool-off window — minimum days since last contact before resurfacing is
+# allowed. Below this threshold the engine returns "blocked".
+# ---------------------------------------------------------------------------
+cool_off_days: 14         # default; applies when relationship_distance not matched below
+
+# Per-distance overrides (all fall back to cool_off_days if key absent)
+cool_off_by_distance:
+  cold:         21        # give cold contacts more breathing room
+  warm:         10        # warm relationships can re-engage sooner
+  follow_up:    7         # explicit follow-up chain — short window
+  referral:     10        # referral context — treat like warm
+  warm_referral: 7        # strong referral — short window
+  known:        7         # known relationship — short window
+  prior_contact: 10
+
+# ---------------------------------------------------------------------------
+# Warm resurface threshold — days elapsed (no response) before a warm
+# contact is eligible for conditional resurfacing.
+# ---------------------------------------------------------------------------
+warm_resurface_days: 30   # >= this → conditional; < this → not_recommended
+
+# ---------------------------------------------------------------------------
+# Trigger event boost
+# ---------------------------------------------------------------------------
+# When trigger_event_detected=True the engine always returns "recommended"
+# regardless of cool-off, unless blocked (days_since_last_contact < cool_off).
+# This is hard-coded behaviour — not configurable.
+
+# ---------------------------------------------------------------------------
+# Bypass
+# ---------------------------------------------------------------------------
+bypass:
+  env_var: RESURFACING_BYPASS
+  # Set RESURFACING_BYPASS=1 to skip gate (returns "disabled" sentinel).

@@ -1,0 +1,70 @@
+schema_version: "1.0"
+app: apps_lic
+bom_id: apps_lic_prompt_bom_v1
+owner: apps_lic.prompt_assembly
+purpose: >
+  Defines canonical Prompt Assembly slots for governed professional outreach drafts,
+  briefing-to-manifest conversion, unsupported claim omission, anti-pattern repair,
+  and channel-length repair.
+required_slots:
+  - S0
+  - I0
+  - C0
+  - U0
+  - D0
+  - E0
+  - Y0
+  - R0
+slot_definitions:
+  S0:
+    name: system_and_governance
+    authority: system_governance
+    required: true
+    description: Governing spine, safety, and authority instructions.
+  I0:
+    name: outreach_rules
+    authority: app_instruction
+    required: true
+    description: apps_lic outreach rules, channel constraints, and forbidden patterns.
+  C0:
+    name: verified_briefing_context
+    authority: data_only
+    required: true
+    description: Verified briefing context from PreloadedOutreachContextManifest.
+  U0:
+    name: user_outreach_request
+    authority: user_intent_only
+    required: true
+    description: User request and desired outreach outcome.
+  D0:
+    name: origin_and_injection_fences
+    authority: security_boundary
+    required: true
+    description: Origin labels and data/instruction boundaries.
+  E0:
+    name: approved_examples_optional
+    authority: approved_example_data
+    required: false
+    description: Approved examples, if available.
+  Y0:
+    name: approved_writing_preferences
+    authority: approved_user_style
+    required: true
+    description: Amit writing preferences and signature rules.
+  R0:
+    name: output_schema_and_send_mode_restrictions
+    authority: schema_contract
+    required: true
+    description: OutreachDraft schema and send mode restrictions.
+hash_fields:
+  - schema_version
+  - bom_id
+  - required_slots
+  - slot_definitions
+  - template_registry_refs
+template_registry_refs:
+  - outreach_draft_v1
+  - briefing_to_manifest_v1
+  - unsupported_claim_omission_v1
+  - repair_antipattern_v1
+  - channel_length_repair_v1

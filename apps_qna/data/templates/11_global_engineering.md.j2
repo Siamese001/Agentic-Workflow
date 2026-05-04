@@ -1,0 +1,37 @@
+# 11 Global Engineering Model
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+Primary card for **Route 8 — Global engineering and DGS**. When the question is about offshore teams, distributed pods, engineering standards, or onshore/offshore alignment, this card drives the answer.
+
+
+## Answer shape
+1. Set operating model.
+2. Define architecture ownership.
+3. Define delivery cadence.
+4. Define quality gates.
+5. Explain how onshore / offshore stays aligned.
+
+## Operating-model anchors
+{% for anchor in global_engineering_anchors %}- {{ anchor }}
+{% endfor %}
+
+## Talking points
+{% for point in global_engineering_talking_points %}- {{ point }}
+{% endfor %}
+
+## Honest patterns
+- "Architecture decisions stay onshore. Implementation is global. Quality gates are shared."
+- "We don't follow the sun for thinking. We follow the sun for execution behind a clear contract."
+- "Distributed pods need a typed interface boundary, just like services do."
+
+## Anti-patterns
+- Do not pitch "lower cost" as the value. Pitch consistency, throughput, and timezone resilience.
+- Do not promise "seamless" handoffs. Name the artifact and the cadence.
+- Do not collapse engineering culture into process. Name what onshore owns vs what offshore owns.
+
+## Hand-off
+- If the question turns to product / ROI, hand to **12_PRODUCTIZATION.md**.
+- If the question turns to architecture specifics, hand to **05_ARCHITECTURE_CORE.md**.

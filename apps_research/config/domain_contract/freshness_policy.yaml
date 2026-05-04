@@ -1,0 +1,165 @@
+# apps_research domain contract — freshness policies
+# Plan: apps-research-spine-alignment-c0-briefing-2f8a4b W2.P2.2
+#
+# One policy entry per depth profile. Each policy defines:
+#   max_age_days_per_type — per source_type max allowed age (days); null = no limit
+#   stale_behavior        — what C0 does when a source violates max_age
+#   warn_age_days         — age at which a WARN is emitted but source still accepted
+#   freshness_report_ref  — which FreshnessReport schema applies
+#
+# Stale behaviors:
+#   exclude            — drop the source from the portfolio entirely
+#   downgrade_tier     — accept but downgrade from current tier to tier_3_signals
+#   flag_in_report     — keep source, add entry to FreshnessReport with stale flag
+#   fail_gate          — trigger C0-to-PA gate FAIL (reserved for financial data)
+
+schema_version: "apps_research.freshness_policy/v1"
+app_id: apps_research
+task_class: company_brief
+
+policies:
+
+  freshness::apps_research::light:
+    profile: COMPANY_BRIEF_LIGHT
+    description: Lenient freshness for rapid orientation briefs.
+    stale_behavior_default: flag_in_report
+    warn_age_days: 365
+    max_age_days_per_type:
+      news: 180
+      press_release: 365
+      sec_filing: 365
+      analyst_report: 365
+      company_website: null
+      linkedin_company: null
+      linkedin_person: null
+      crunchbase: 365
+      pitchbook: 365
+      job_board: 90
+      linkedin_jobs: 90
+    emit_freshness_report: true
+
+  freshness::apps_research::standard:
+    profile: COMPANY_BRIEF_STANDARD
+    description: Standard freshness — news and signals must be recent.
+    stale_behavior_default: flag_in_report
+    warn_age_days: 180
+    max_age_days_per_type:
+      news: 90
+      press_release: 180
+      sec_filing: 365
+      analyst_report: 180
+      company_website: null
+      linkedin_company: null
+      linkedin_person: null
+      crunchbase: 180
+      pitchbook: 180
+      g2_or_review_site: 365
+      glassdoor: 365
+      builtin: 365
+      builtwith: 180
+      github: 365
+      company_blog: 365
+      job_board: 30
+      linkedin_jobs: 30
+    stale_behavior_overrides:
+      job_board: exclude
+      linkedin_jobs: exclude
+    emit_freshness_report: true
+
+  freshness::apps_research::deep:
+    profile: COMPANY_BRIEF_DEEP
+    description: Strict freshness for deep briefs — financial data especially.
+    stale_behavior_default: downgrade_tier
+    warn_age_days: 90
+    max_age_days_per_type:
+      news: 90
+      press_release: 90
+      sec_filing: 365
+      analyst_report: 120
+      company_website: null
+      linkedin_company: null
+      linkedin_person: null
+      crunchbase: 90
+      pitchbook: 90
+      g2_or_review_site: 180
+      glassdoor: 180
+      builtin: 180
+      builtwith: 90
+      github: 180
+      company_blog: 180
+      job_board: 14
+      linkedin_jobs: 14
+      regulatory_database: 365
+    stale_behavior_overrides:
+      job_board: exclude
+      linkedin_jobs: exclude
+      crunchbase: downgrade_tier
+      pitchbook: downgrade_tier
+    emit_freshness_report: true
+
+  freshness::apps_research::dossier:
+    profile: COMPANY_BRIEF_DOSSIER
+    description: >-
+      Maximum freshness discipline for dossier-grade briefs. Financial data
+      older than 90 days triggers gate FAIL.
+    stale_behavior_default: exclude
+    warn_age_days: 30
+    max_age_days_per_type:
+      news: 30
+      press_release: 60
+      sec_filing: 365
+      analyst_report: 60
+      company_website: null
+      linkedin_company: null
+      linkedin_person: null
+      crunchbase: 60
+      pitchbook: 60
+      g2_or_review_site: 90
+      glassdoor: 90
+      builtin: 90
+      builtwith: 60
+      github: 90
+      company_blog: 90
+      job_board: 7
+      linkedin_jobs: 7
+      regulatory_database: 180
+      m_and_a_source: 90
+    stale_behavior_overrides:
+      crunchbase: fail_gate
+      pitchbook: fail_gate
+      sec_filing: flag_in_report
+    emit_freshness_report: true
+
+freshness_report_output_schema:
+  type: object
+  description: >-
+    FreshnessReport emitted by C0. Lists each source with its age and
+    freshness verdict.
+  properties:
+    policy_id:
+      type: string
+    sources:
+      type: array
+      items:
+        type: object
+        required: [source_id, source_type, publication_date_iso, age_days, verdict]
+        properties:
+          source_id:
+            type: string
+          source_type:
+            type: string
+          publication_date_iso:
+            type: string
+            description: ISO-8601 date string; null if unknown.
+          age_days:
+            type: integer
+            description: Days since publication_date; -1 if unknown.
+          verdict:
+            type: string
+            enum: [fresh, warn, stale_flagged, stale_downgraded, stale_excluded, gate_fail]
+          stale_note:
+            type: string
+    stale_excluded_count:
+      type: integer
+    gate_fail_triggered:
+      type: boolean

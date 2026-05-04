@@ -40,7 +40,7 @@ def test_missing_template_blocks_model_call():
         "flow_route": "strategic_tailor",
     }
     with mock.patch(
-        "apps_rg.prompt_assembly.compiler._load_template",
+        "apps_rg.prompt_assembly.compiler._load_template_yaml",
         side_effect=FileNotFoundError("template missing"),
     ):
         with pytest.raises(RuntimeError, match="PA_COMPILE_FAILED"):

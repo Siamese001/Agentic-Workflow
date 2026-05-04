@@ -34,7 +34,7 @@ def test_template_only_path() -> None:
     from apps_research.cert.fec_producer import produce_fec
 
     fec = produce_fec({})
-    assert fec["schema_version"] == "1.0"
+    assert fec["schema_version"] == "1.1"
     assert fec["producer"] == "apps_research.cert.fec_producer"
     assert fec["grounded"] is False
     assert fec["template_ids"] == ["company_brief_v1"]

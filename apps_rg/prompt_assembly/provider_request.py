@@ -12,66 +12,82 @@ from typing import Any
 
 _log = logging.getLogger(__name__)
 
+_REQUIRED_HASH_FIELDS = (
+    "prompt_bom_hash",
+    "prompt_registry_hash",
+    "prompt_template_hash",
+    "prompt_hash",
+    "manifest_hash",
+    "canonical_slot_bytes_hash",
+    "artifact_hash",
+)
+
 
 def artifact_to_provider_request(
-    artifact: "AppsRgCompiledPromptArtifact",
+    artifact_dict: dict[str, Any],
 ) -> dict[str, Any]:
-    """Convert a compiled prompt artifact to a provider request dict.
-
-    The returned dict contains the fields a provider gateway expects:
-      - messages: list of role/content dicts (from artifact)
-      - model: symbolic model ID or provider lane
-      - metadata: prompt identity, hashes, replay key
-      - output_schema_ref: expected output schema
+    """Convert a compiled prompt artifact dict to a provider request dict.
 
     Args:
-        artifact: A compiled prompt artifact with PA_L2_HANDOFF_READY status.
+        artifact_dict: The compiled artifact as a JSON-safe dict.
 
     Returns:
-        Provider request dict.
+        A dict ready to pass to the provider SDK.
 
     Raises:
-        RuntimeError: If artifact is not ready for handoff.
+        RuntimeError: If artifact is not ready or messages are missing.
     """
-    from apps_rg.prompt_assembly.contracts import PACompileStatus
-
-    if artifact.compile_status != PACompileStatus.PA_L2_HANDOFF_READY.value:
+    status = artifact_dict.get("compile_status", "")
+    if status != "PA_L2_HANDOFF_READY":
         raise RuntimeError(
-            f"PA_GUARD_FAILED: artifact not ready for provider handoff "
-            f"(status={artifact.compile_status})"
+            f"PA_PROVIDER_REQUEST_BLOCKED: artifact not ready "
+            f"(status={status}). Compiled prompt artifact required."
         )
 
-    if not artifact.provider_specific_messages:
+    messages = artifact_dict.get("provider_specific_messages", [])
+    if not messages:
         raise RuntimeError(
-            "PA_GUARD_FAILED: artifact has no provider_specific_messages"
+            "PA_PROVIDER_REQUEST_BLOCKED: no provider_specific_messages in artifact."
+        )
+
+    missing_hashes = [f for f in _REQUIRED_HASH_FIELDS if not artifact_dict.get(f)]
+    if missing_hashes:
+        raise RuntimeError(
+            f"PA_PROVIDER_REQUEST_BLOCKED: missing required hash fields: {missing_hashes}"
         )
 
     provider_request = {
-        "messages": artifact.provider_specific_messages,
-        "model": artifact.symbolic_model_id or artifact.provider_lane,
-        "metadata": {
-            "artifact_id": artifact.artifact_id,
-            "prompt_id": artifact.prompt_id,
-            "prompt_hash": artifact.prompt_hash,
-            "prompt_template_hash": artifact.prompt_template_hash,
-            "prompt_bom_hash": artifact.prompt_bom_hash,
-            "policy_hash": artifact.policy_hash,
-            "blueprint_hash": artifact.blueprint_hash,
-            "replay_key": artifact.replay_key,
-            "provider_lane": artifact.provider_lane,
-            "output_schema_ref": artifact.output_schema_ref,
-            "output_schema_hash": artifact.output_schema_hash,
-            "source_refs": artifact.source_refs,
-            "run_id": artifact.run_id,
-            "trace_id": artifact.trace_id,
-        },
-        "output_schema_ref": artifact.output_schema_ref,
+        "messages": messages,
+        "model": artifact_dict.get("symbolic_model_id", ""),
+        "prompt_id": artifact_dict.get("prompt_id", ""),
+        "template_id": artifact_dict.get("template_id", ""),
+        "template_version": artifact_dict.get("template_version", ""),
+        "prompt_hash": artifact_dict.get("prompt_hash", ""),
+        "prompt_template_hash": artifact_dict.get("prompt_template_hash", ""),
+        "prompt_bom_hash": artifact_dict.get("prompt_bom_hash", ""),
+        "prompt_registry_hash": artifact_dict.get("prompt_registry_hash", ""),
+        "manifest_hash": artifact_dict.get("manifest_hash", ""),
+        "canonical_slot_bytes_hash": artifact_dict.get("canonical_slot_bytes_hash", ""),
+        "artifact_hash": artifact_dict.get("artifact_hash", ""),
+        "policy_hash": artifact_dict.get("policy_hash", ""),
+        "blueprint_hash": artifact_dict.get("blueprint_hash", ""),
+        "replay_key": artifact_dict.get("replay_key", ""),
+        "provider_lane": artifact_dict.get("provider_lane", ""),
+        "output_schema_ref": artifact_dict.get("output_schema_ref", ""),
+        "output_schema_hash": artifact_dict.get("output_schema_hash", ""),
+        "source_refs": artifact_dict.get("source_refs", {}),
+        "origin_label_map": artifact_dict.get("origin_label_map", {}),
+        "local_evidence_contract_ref": artifact_dict.get("local_evidence_contract_ref", ""),
+        "artifact_id": artifact_dict.get("artifact_id", ""),
+        "request_id": artifact_dict.get("request_id", ""),
+        "run_id": artifact_dict.get("run_id", ""),
+        "trace_id": artifact_dict.get("trace_id", ""),
     }
 
     _log.info(
         "[provider_request] Built request: prompt_id=%s, artifact_id=%s",
-        artifact.prompt_id,
-        artifact.artifact_id,
+        artifact_dict.get("prompt_id", ""),
+        artifact_dict.get("artifact_id", ""),
     )
     return provider_request
 

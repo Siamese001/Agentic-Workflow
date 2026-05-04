@@ -228,12 +228,17 @@ class ResearchAssemblyResult:
     when the engine ran with provenance attached. It is opt-in (built only
     when sections carry source citations) so existing callers see no shape
     change. See :mod:`apps_research.provenance`.
+
+    The ``pa_slot_bindings`` field carries optional PA (Presentation Assembly)
+    slot binding metadata when the engine is invoked with a ``c0_bundle``
+    that includes JD context fencing information.
     """
 
     sections: list[ResearchSection] = field(default_factory=list)
     comparison_matrix: list[ComparisonRow] = field(default_factory=list)
     source_register: list[SourceEntry] = field(default_factory=list)
     claim_provenance: object | None = None  # ProvenanceLedger; typed loosely to avoid import cycle
+    pa_slot_bindings: dict | None = None  # PA slot binding metadata keyed by slot name
 
 
 class ResearchAssemblyEngine:
@@ -249,14 +254,24 @@ class ResearchAssemblyEngine:
         self._config = config
 
     @traces_execute(layer="L3_ORCHESTRATION")
-    def execute(self, request: ResearchRequest) -> ResearchAssemblyResult:
+    def execute(
+        self,
+        request: ResearchRequest,
+        *,
+        company_brief_result: dict | None = None,
+        **kwargs: object,
+    ) -> ResearchAssemblyResult:
         """Assemble research artifact.
 
         Args:
             request: ResearchRequest with topic, mode, audience.
+            company_brief_result: Optional dict from CompanyBriefEngine containing
+                ``_c0_bundle`` and ``_gate_verdict``. When present, JD context
+                fencing metadata is extracted and surfaced in ``pa_slot_bindings``.
 
         Returns:
-            ResearchAssemblyResult with sections, matrix, source register.
+            ResearchAssemblyResult with sections, matrix, source register,
+            and optional pa_slot_bindings.
         """
         import uuid as _uuid  # noqa: PLC0415
 
@@ -277,18 +292,36 @@ class ResearchAssemblyEngine:
 
         claim_ledger = build_ledger_from_sections(sections)
 
+        # Extract PA slot bindings from c0_bundle when company_brief_result is supplied.
+        # JD context is fenced as JD_CONTEXT (not INSTRUCTION) per spine contract.
+        pa_slot_bindings: dict | None = None
+        if company_brief_result:
+            c0_bundle = company_brief_result.get("_c0_bundle") or {}
+            synthesis_guidance = c0_bundle.get("synthesis_guidance") or {}
+            jd_focal_angle = synthesis_guidance.get("jd_focal_angle")
+            if jd_focal_angle or request.jd_context:
+                pa_slot_bindings = {
+                    "jd_context": {
+                        "_fence": "JD_CONTEXT",
+                        "jd_focal_angle": jd_focal_angle,
+                        "source": "c0_bundle.synthesis_guidance",
+                    }
+                }
+
         _log.info(
-            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d claims=%d",
+            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d claims=%d pa_slots=%s",
             mode,
             len(sections),
             len(sources),
             len(claim_ledger.claims),
+            list((pa_slot_bindings or {}).keys()),
         )
         return ResearchAssemblyResult(
             sections=sections,
             comparison_matrix=matrix,
             source_register=sources,
             claim_provenance=claim_ledger,
+            pa_slot_bindings=pa_slot_bindings,
         )
 
     def _build_source_register(self, request: ResearchRequest) -> list[SourceEntry]:

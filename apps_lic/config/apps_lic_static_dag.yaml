@@ -84,8 +84,34 @@ stages:
     r5_reason_codes:
       planning_failed: L0_POLICY_VIOLATION
 
-  - stage_id: compose_draft
+  - stage_id: compile_prompt
     order: 4
+    description: >
+      Compile the prompt using lic_pa_compiler and the validated MessagePlan.
+      Produces a CompiledPromptArtifact with governance binding to manifest_hash,
+      policy_hash, blueprint_hash, and replay_key. No provider calls here —
+      compilation only. The artifact is consumed by compose_draft.
+    inputs:
+      - name: message_plan
+        type: MessagePlan
+        source: plan_message.message_plan
+      - name: validated_manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_context.validated_manifest
+    outputs:
+      - name: compiled_prompt_artifact
+        type: CompiledPromptArtifact
+    fail_closed_on:
+      - compilation_failed
+      - template_not_found
+      - bom_slot_mismatch
+    r5_reason_codes:
+      compilation_failed: PROMPT_COMPILATION_FAILED
+      template_not_found: TEMPLATE_REGISTRY_MISSING
+      bom_slot_mismatch: PROMPT_BOM_VALIDATION_FAILED
+
+  - stage_id: compose_draft
+    order: 5
     description: >
       Execute the hop-based K3 draft composition using the MessagePlan.
       All claims are grounded through source_items in the manifest.
@@ -113,7 +139,7 @@ stages:
       high_friction_ask: HIGH_FRICTION_ASK
 
   - stage_id: seal_output
-    order: 5
+    order: 6
     description: >
       Seal the OutreachDraft with a content hash bound to the manifest_hash.
       Emit the L2 execution receipt. Validate that send_mode is in the

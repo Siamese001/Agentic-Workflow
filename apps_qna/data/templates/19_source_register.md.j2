@@ -1,0 +1,46 @@
+# 19 Source Register
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+This card is the **citation backbone** for everything in the pack. Every research-derived claim has a `[S#]` citation that resolves here.
+
+## Inline citation grammar
+- `[S1]`, `[S2]`, ... reference entries in the table below.
+- A claim with no `[S#]` is either personal experience (STAR / RCA) or a generic principle.
+- Direct evidence beats interpretation; interpretation beats inference; inference beats assumption.
+- Never invent a `[S#]` that is not registered here.
+
+## Source register
+
+{% if research and research.source_register %}
+| ID | Type | Claim | Source |
+|----|------|-------|--------|
+{% for claim in research.source_register %}| `{{ claim.source_id }}` | {{ claim.claim_type }} | {{ claim.claim }} | {% if claim.section_id %}{{ claim.section_id }}{% else %}—{% endif %} |
+{% endfor %}
+{% else %}
+*No source register supplied. All claims in this pack are either personal experience or generic principle. If you import a research brief, populate `research.source_register` and rebuild.*
+{% endif %}
+
+## Claim-type ladder
+Each row is labeled with one of:
+
+- **`direct_evidence`** — verbatim from a primary source (annual report, press release, SEC filing, signed exec quote).
+- **`interpretation`** — an analyst summary that combines two or more direct sources.
+- **`analyst_inference`** — a third-party analyst's downstream inference about a direction or strategy.
+- **`assumption`** — explicit working hypothesis with no source backing; flag in any answer that uses it.
+
+## Anti-pattern
+Do **not** quote an `analyst_inference` row as if it were `direct_evidence`. If {{ company.name }} pushes back, downgrade the citation honestly.
+
+## Example usage in a live answer
+Without source register:
+
+> "I think Acme is investing in measurement intelligence."
+
+With source register:
+
+> "Acme's most recent investor day called out measurement intelligence as a 2026 priority `[S2]`. My read is that this lines up with their decisioning practice expansion."
+
+The first sentence is a direct citation. The second is labeled "my read" so the listener knows it is interpretation.

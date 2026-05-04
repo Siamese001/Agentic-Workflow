@@ -1,0 +1,51 @@
+# 04 {{ company.name }} Decisioning Overlay
+
+{% include "_always_on_header.md.j2" %}
+
+
+## Purpose
+This card encodes {{ company.name }}-specific facts, vocabulary, and anchors. It does not answer questions on its own; it sharpens other route answers so they sound native to {{ company.name }}.
+
+
+## Company facts
+- **Name**: {{ company.name }}
+{% if company.division %}- **Division**: {{ company.division }}{% endif %}
+{% if company.practice %}- **Practice**: {{ company.practice }}{% endif %}
+
+## Anchors — words to use naturally
+{% for anchor in company.anchors %}- {{ anchor }}
+{% endfor %}
+
+## Avoid phrases
+Never say or imply:
+{% for phrase in company.avoid_phrases %}- "{{ phrase }}"
+{% endfor %}
+
+## Overlay facts
+{% for fact in company.overlay_facts %}- {{ fact }}
+{% endfor %}
+
+{% if research and research.company_brief %}
+## Company brief (from deep research)
+{{ research.company_brief }}
+{% endif %}
+
+{% if research and research.industry_trends %}
+## Industry trends shaping the role
+{% for trend in research.industry_trends %}- {{ trend }}
+{% endfor %}
+{% endif %}
+
+{% if research and research.role_areas_of_focus %}
+## Areas of focus for this role
+{% for area in research.role_areas_of_focus %}- {{ area }}
+{% endfor %}
+{% endif %}
+
+{% if research and research.source_register and include_research_register %}
+## Source register
+Each claim is labeled by type. Direct evidence > interpretation > inference > assumption.
+
+{% for claim in research.source_register %}- *[{{ claim.claim_type }}]* {{ claim.claim }} — `{{ claim.source_id }}`
+{% endfor %}
+{% endif %}

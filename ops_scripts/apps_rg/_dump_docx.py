@@ -1,0 +1,18 @@
+"""Extract text from a .docx by parsing its XML directly (no python-docx)."""
+import sys, zipfile, re, xml.etree.ElementTree as ET
+
+path = sys.argv[1]
+ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+
+with zipfile.ZipFile(path) as z:
+    with z.open("word/document.xml") as f:
+        tree = ET.parse(f)
+
+root = tree.getroot()
+out_lines = []
+for para in root.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"):
+    texts = [t.text or "" for t in para.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t")]
+    line = "".join(texts).strip()
+    if line:
+        out_lines.append(line)
+print("\n".join(out_lines))

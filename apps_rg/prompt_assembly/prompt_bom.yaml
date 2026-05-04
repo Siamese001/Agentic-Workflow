@@ -1,0 +1,73 @@
+schema_version: "1.0"
+app: apps_rg
+bom_id: apps_rg_prompt_bom_v1
+owner: apps_rg.prompt_assembly
+purpose: >
+  Defines canonical Prompt Assembly slots for governed resume generation,
+  resume tailoring, resume enhancement, fact checking, unsupported claim omission,
+  bullet diversity repair, and DOCX artifact manifest generation.
+required_slots:
+  - S0
+  - I0
+  - C0
+  - U0
+  - D0
+  - E0
+  - Y0
+  - R0
+slot_definitions:
+  S0:
+    name: system_and_governance
+    authority: system_governance
+    required: true
+    description: Governing spine, safety, authority, no-fabrication, and execution-boundary instructions.
+  I0:
+    name: resume_generation_rules
+    authority: app_instruction
+    required: true
+    description: apps_rg resume writing, tailoring, evidence, and claim-use rules.
+  C0:
+    name: verified_resume_context
+    authority: data_only
+    required: true
+    description: Preloaded JD, master resume, company brief, claim-source map, and local evidence contract.
+  U0:
+    name: user_resume_request
+    authority: user_intent_only
+    required: true
+    description: User request, target role, target company, and selected resume generation mode.
+  D0:
+    name: origin_and_injection_fences
+    authority: security_boundary
+    required: true
+    description: Origin labels and instruction/data boundary rules for JD, resume, company brief, prior artifacts, and user text.
+  E0:
+    name: approved_examples_optional
+    authority: approved_example_data
+    required: false
+    description: Approved resume examples or prior patterns if freshness and policy compatible.
+  Y0:
+    name: approved_resume_style_preferences
+    authority: approved_user_style
+    required: true
+    description: Resume tone, positioning, and external-writing constraints.
+  R0:
+    name: output_schema_and_provenance_contract
+    authority: schema_contract
+    required: true
+    description: GeneratedResume schema, claim-source requirements, provenance requirements, and artifact restrictions.
+hash_fields:
+  - schema_version
+  - bom_id
+  - required_slots
+  - slot_definitions
+  - template_registry_refs
+template_registry_refs:
+  - strategic_tailor_v1
+  - tailor_existing_v1
+  - generate_scratch_v1
+  - enhance_current_v1
+  - resume_fact_check_v1
+  - unsupported_claim_omission_v1
+  - bullet_diversity_repair_v1
+  - docx_manifest_v1

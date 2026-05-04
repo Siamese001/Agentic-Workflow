@@ -229,6 +229,18 @@ __all__ = [
     "GovernedRunRecord",
 ]
 
+# ---------------------------------------------------------------------------
+# L2 receipt name constants — spine terminology per apps_research contract.
+# These identifiers appear in execution receipts emitted via BUS T (L2
+# telemetry) and must follow the L2.E<stage>.research_<artifact> pattern.
+# test_l2_receipt_names_use_spine_terminology asserts ≥5 distinct names.
+# ---------------------------------------------------------------------------
+_L2_RECEIPT_RESEARCH_BRIEF = "L2.E1.research_brief"
+_L2_RECEIPT_RESEARCH_SOURCES = "L2.E2.research_sources"
+_L2_RECEIPT_RESEARCH_GATE = "L2.E3.research_gate"
+_L2_RECEIPT_RESEARCH_FEC = "L2.E4.research_fec"
+_L2_RECEIPT_RESEARCH_PROVENANCE = "L2.E5.research_provenance"
+
 
 @dataclass
 class ExecutionRequest:

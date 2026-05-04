@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.jd_schema.v1",
+  "title": "apps_rg Job Description (JD) Schema",
+  "description": "U0 E4 schema for validating the job-description payload passed to apps_rg. Consumed by intake_policy.yaml jd_schema_path reference. Plan: apps-rg-canonical-wireup-c8a4f2 W4 P11.",
+  "type": "object",
+  "required": [],
+  "additionalProperties": true,
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Job title / role name.",
+      "minLength": 1
+    },
+    "company": {
+      "type": "string",
+      "description": "Hiring company name.",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "Full JD body text.",
+      "minLength": 10
+    },
+    "requirements": {
+      "type": "array",
+      "description": "List of required skills / qualifications.",
+      "items": { "type": "string" }
+    },
+    "preferred": {
+      "type": "array",
+      "description": "List of preferred / nice-to-have skills.",
+      "items": { "type": "string" }
+    },
+    "location": {
+      "type": "string",
+      "description": "Job location or 'Remote'."
+    },
+    "seniority_level": {
+      "type": "string",
+      "description": "Seniority band inferred or declared (junior/mid/senior/staff/principal/svp).",
+      "enum": ["junior", "mid", "senior", "staff", "principal", "svp", ""]
+    },
+    "employment_type": {
+      "type": "string",
+      "description": "Full-time / Part-time / Contract.",
+      "enum": ["full-time", "part-time", "contract", ""]
+    },
+    "salary_range": {
+      "type": "string",
+      "description": "Optional compensation range string."
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL the JD was sourced from.",
+      "format": "uri"
+    }
+  }
+}

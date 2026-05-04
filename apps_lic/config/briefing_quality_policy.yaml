@@ -1,0 +1,76 @@
+# apps_lic Briefing Quality Policy
+# Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1
+#       Updated: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS9-P1
+# Schema version: 1.1
+#
+# Controls BriefingQualityGate thresholds.
+# Marginal quality does NOT block R4 — it flags for potential HITL review.
+# Only "fail" quality triggers a DispatchFailurePacket.
+
+schema_version: "1.1"
+
+# ---------------------------------------------------------------------------
+# Coverage — number of evidence items required
+# ---------------------------------------------------------------------------
+coverage:
+  min_evidence_items: 2       # ≥ 2 → pass
+  marginal_evidence_items: 1  # == 1 → marginal (proceed with flag)
+  # < marginal → fail (APPS_RESEARCH_WEAK_SUPPORT)
+
+# ---------------------------------------------------------------------------
+# Recency — age thresholds by recipient_class
+#
+# Lookup order (BriefingQualityGate):
+#   1. Exact recipient_class match in per_class overrides (case-insensitive)
+#   2. Bucket fallback: executive / recruiter / default
+#   3. Unknown age → conservative pass (treated as fresh)
+# ---------------------------------------------------------------------------
+recency:
+  # -- bucket-level defaults (used when no per_class key matches) ----------
+  executive:      # EXECUTIVE, C_LEVEL, CTO, VP_ENG
+    fail_days: 7
+    marginal_days: 14
+  recruiter:      # RECRUITER, SENIOR_TA
+    fail_days: 30
+    marginal_days: 60
+  default:        # HIRING_MANAGER and others
+    fail_days: 14
+    marginal_days: 30
+
+  # -- per-class overrides (take precedence over bucket defaults) ----------
+  per_class:
+    CTO:
+      fail_days: 5
+      marginal_days: 10
+    C_LEVEL:
+      fail_days: 5
+      marginal_days: 10
+    VP_ENG:
+      fail_days: 7
+      marginal_days: 14
+    EXECUTIVE:
+      fail_days: 7
+      marginal_days: 14
+    HIRING_MANAGER:
+      fail_days: 14
+      marginal_days: 30
+    RECRUITER:
+      fail_days: 30
+      marginal_days: 60
+    SENIOR_TA:
+      fail_days: 21
+      marginal_days: 45
+
+# ---------------------------------------------------------------------------
+# Source diversity — minimum distinct source domains/labels
+# ---------------------------------------------------------------------------
+diversity:
+  min_unique_sources: 2   # < 2 → marginal (never hard-fail by itself)
+
+# ---------------------------------------------------------------------------
+# Bypass
+# ---------------------------------------------------------------------------
+bypass:
+  env_var: BRIEFING_QUALITY_BYPASS
+  # Set BRIEFING_QUALITY_BYPASS=1 to skip gate evaluation entirely.
+  # Gate returns a synthetic "pass" decision with quality_level="bypassed".

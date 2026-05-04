@@ -82,7 +82,7 @@ def test_artifact_has_source_refs(sealed_result):
 
 def test_artifact_has_prompt_id(sealed_result):
     cpa = sealed_result["compiled_prompt_artifact"]
-    assert cpa["prompt_id"].startswith("apps_rg.resume_generation.")
+    assert cpa["prompt_id"].startswith("apps_rg.")
 
 
 def test_artifact_has_output_schema(sealed_result):

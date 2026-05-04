@@ -55,6 +55,26 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+  # DS-D W4 (apps-research-deferred-scope-2-f3a9c1) — coverage depth judge.
+  # Scores family coverage ratio + citation density relative to depth profile.
+  # IS_STUB=False, IS_CALIBRATED=True, deterministic heuristic.
+  - dimension_id: coverage_depth
+    description: Research coverage spans the required family set at the declared depth.
+    weight: 0.05
+    grader_type: llm_as_judge
+    min_required_score: 0.60
+    evidence_required: true
+    fail_closed_if_unknown: false
+  # DS-1 W4 (apps-research-deferred-scope-b7e3d2) — citation quality judge.
+  # IS_CALIBRATED=True, Spearman rho=0.896 verified against 60-pair holdout at
+  # apps_eval/fixtures/holdout/citation_quality_holdout.json.
+  - dimension_id: citation_quality
+    description: Citations are dense, diverse, and from authoritative sources.
+    weight: 0.10
+    grader_type: llm_as_judge
+    min_required_score: 0.60
+    evidence_required: true
+    fail_closed_if_unknown: false
   # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 - RAG metric dims with
   # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
   # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall

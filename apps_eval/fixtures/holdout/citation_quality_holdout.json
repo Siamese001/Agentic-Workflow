@@ -1,0 +1,1655 @@
+{
+  "dim_id": "citation_quality",
+  "grader_id": "research::citation_quality_judge::v1",
+  "n": 60,
+  "schema_version": "1.0",
+  "pairs": [
+    {
+      "pair_id": "cq_000",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 10,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://reddit.com/r/tech/7"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.48,
+      "human_label": 0.5368
+    },
+    {
+      "pair_id": "cq_001",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 10,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://arxiv.org/abs/2"
+            },
+            {
+              "url": "https://arxiv.org/abs/1"
+            },
+            {
+              "url": "https://arxiv.org/abs/5"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.6867,
+      "human_label": 0.6192
+    },
+    {
+      "pair_id": "cq_002",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/7"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.4667,
+      "human_label": 0.4474
+    },
+    {
+      "pair_id": "cq_003",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/10"
+            },
+            {
+              "url": "https://research.google.com/doc/7"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.7045,
+      "human_label": 0.6662
+    },
+    {
+      "pair_id": "cq_004",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/4"
+            },
+            {
+              "url": "https://arxiv.org/abs/6"
+            }
+          ],
+          "text": " Brief text sample."
+        }
+      },
+      "model_score": 0.5667,
+      "human_label": 0.5329
+    },
+    {
+      "pair_id": "cq_005",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 5,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/9"
+            },
+            {
+              "url": "https://research.google.com/doc/14"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.6222,
+      "human_label": 0.5322
+    },
+    {
+      "pair_id": "cq_006",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/19"
+            },
+            {
+              "url": "https://research.google.com/doc/3"
+            },
+            {
+              "url": "https://research.google.com/doc/16"
+            },
+            {
+              "url": "https://arxiv.org/abs/12"
+            },
+            {
+              "url": "https://reddit.com/r/tech/2"
+            },
+            {
+              "url": "https://reddit.com/r/tech/1"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.8333,
+      "human_label": 0.872
+    },
+    {
+      "pair_id": "cq_007",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/17"
+            }
+          ],
+          "text": "[1] [2] [3] Brief text sample."
+        }
+      },
+      "model_score": 0.74,
+      "human_label": 0.7288
+    },
+    {
+      "pair_id": "cq_008",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 5,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/17"
+            },
+            {
+              "url": "https://arxiv.org/abs/4"
+            },
+            {
+              "url": "https://quora.com/q/9"
+            },
+            {
+              "url": "https://reddit.com/r/tech/5"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.6133,
+      "human_label": 0.6215
+    },
+    {
+      "pair_id": "cq_009",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/14"
+            },
+            {
+              "url": "https://research.google.com/doc/0"
+            },
+            {
+              "url": "https://reddit.com/r/tech/1"
+            },
+            {
+              "url": "https://reddit.com/r/tech/7"
+            },
+            {
+              "url": "https://quora.com/q/9"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.66,
+      "human_label": 0.7332
+    },
+    {
+      "pair_id": "cq_010",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/0"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.47,
+      "human_label": 0.401
+    },
+    {
+      "pair_id": "cq_011",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/16"
+            },
+            {
+              "url": "https://arxiv.org/abs/8"
+            },
+            {
+              "url": "https://arxiv.org/abs/15"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://research.google.com/doc/14"
+            },
+            {
+              "url": "https://reddit.com/r/tech/8"
+            },
+            {
+              "url": "https://quora.com/q/8"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.635,
+      "human_label": 0.7305
+    },
+    {
+      "pair_id": "cq_012",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/11"
+            },
+            {
+              "url": "https://reddit.com/r/tech/2"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.62,
+      "human_label": 0.6814
+    },
+    {
+      "pair_id": "cq_013",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://research.google.com/doc/18"
+            },
+            {
+              "url": "https://arxiv.org/abs/4"
+            },
+            {
+              "url": "https://research.google.com/doc/4"
+            },
+            {
+              "url": "https://research.google.com/doc/9"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.6667,
+      "human_label": 0.607
+    },
+    {
+      "pair_id": "cq_014",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/14"
+            },
+            {
+              "url": "https://arxiv.org/abs/17"
+            },
+            {
+              "url": "https://research.google.com/doc/1"
+            },
+            {
+              "url": "https://arxiv.org/abs/7"
+            },
+            {
+              "url": "https://arxiv.org/abs/18"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.85,
+      "human_label": 0.8343
+    },
+    {
+      "pair_id": "cq_015",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/11"
+            },
+            {
+              "url": "https://research.google.com/doc/12"
+            },
+            {
+              "url": "https://arxiv.org/abs/6"
+            },
+            {
+              "url": "https://arxiv.org/abs/19"
+            },
+            {
+              "url": "https://research.google.com/doc/18"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.8129,
+      "human_label": 0.7826
+    },
+    {
+      "pair_id": "cq_016",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/0"
+            },
+            {
+              "url": "https://research.google.com/doc/11"
+            },
+            {
+              "url": "https://arxiv.org/abs/1"
+            },
+            {
+              "url": "https://arxiv.org/abs/7"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.5533,
+      "human_label": 0.6563
+    },
+    {
+      "pair_id": "cq_017",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://reddit.com/r/tech/2"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.49,
+      "human_label": 0.3906
+    },
+    {
+      "pair_id": "cq_018",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/10"
+            },
+            {
+              "url": "https://arxiv.org/abs/16"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.74,
+      "human_label": 0.8294
+    },
+    {
+      "pair_id": "cq_019",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/19"
+            },
+            {
+              "url": "https://research.google.com/doc/5"
+            },
+            {
+              "url": "https://research.google.com/doc/3"
+            },
+            {
+              "url": "https://research.google.com/doc/8"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.8029,
+      "human_label": 0.7913
+    },
+    {
+      "pair_id": "cq_020",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/8"
+            },
+            {
+              "url": "https://quora.com/q/7"
+            }
+          ],
+          "text": " Brief text sample."
+        }
+      },
+      "model_score": 0.35,
+      "human_label": 0.2852
+    },
+    {
+      "pair_id": "cq_021",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.43,
+      "human_label": 0.3262
+    },
+    {
+      "pair_id": "cq_022",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 0,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/5"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.11,
+      "human_label": 0.0414
+    },
+    {
+      "pair_id": "cq_023",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://research.google.com/doc/6"
+            },
+            {
+              "url": "https://arxiv.org/abs/12"
+            },
+            {
+              "url": "https://arxiv.org/abs/6"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            },
+            {
+              "url": "https://quora.com/q/1"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.4586,
+      "human_label": 0.4403
+    },
+    {
+      "pair_id": "cq_024",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [],
+          "text": " Brief text sample."
+        }
+      },
+      "model_score": 0.2333,
+      "human_label": 0.2099
+    },
+    {
+      "pair_id": "cq_025",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 5,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/14"
+            },
+            {
+              "url": "https://quora.com/q/4"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.63,
+      "human_label": 0.5436
+    },
+    {
+      "pair_id": "cq_026",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/4"
+            },
+            {
+              "url": "https://research.google.com/doc/8"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.65,
+      "human_label": 0.5421
+    },
+    {
+      "pair_id": "cq_027",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/3"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.48,
+      "human_label": 0.4766
+    },
+    {
+      "pair_id": "cq_028",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://reddit.com/r/tech/0"
+            }
+          ],
+          "text": "[1] [2] [3] Brief text sample."
+        }
+      },
+      "model_score": 0.34,
+      "human_label": 0.4565
+    },
+    {
+      "pair_id": "cq_029",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://research.google.com/doc/11"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            },
+            {
+              "url": "https://reddit.com/r/tech/9"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.5586,
+      "human_label": 0.4908
+    },
+    {
+      "pair_id": "cq_030",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 0,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/0"
+            },
+            {
+              "url": "https://arxiv.org/abs/3"
+            },
+            {
+              "url": "https://research.google.com/doc/17"
+            },
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://research.google.com/doc/12"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.45,
+      "human_label": 0.5507
+    },
+    {
+      "pair_id": "cq_031",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.5056,
+      "human_label": 0.4302
+    },
+    {
+      "pair_id": "cq_032",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 9,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/7"
+            },
+            {
+              "url": "https://research.google.com/doc/16"
+            },
+            {
+              "url": "https://arxiv.org/abs/15"
+            },
+            {
+              "url": "https://research.google.com/doc/17"
+            },
+            {
+              "url": "https://research.google.com/doc/18"
+            },
+            {
+              "url": "https://reddit.com/r/tech/1"
+            }
+          ],
+          "text": "[1] [2] [3] Brief text sample."
+        }
+      },
+      "model_score": 0.8067,
+      "human_label": 0.8354
+    },
+    {
+      "pair_id": "cq_033",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/13"
+            },
+            {
+              "url": "https://research.google.com/doc/0"
+            },
+            {
+              "url": "https://arxiv.org/abs/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/16"
+            },
+            {
+              "url": "https://quora.com/q/2"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.6115,
+      "human_label": 0.6527
+    },
+    {
+      "pair_id": "cq_034",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/9"
+            },
+            {
+              "url": "https://research.google.com/doc/19"
+            }
+          ],
+          "text": " Brief text sample."
+        }
+      },
+      "model_score": 0.4786,
+      "human_label": 0.5982
+    },
+    {
+      "pair_id": "cq_035",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/16"
+            },
+            {
+              "url": "https://arxiv.org/abs/8"
+            },
+            {
+              "url": "https://research.google.com/doc/2"
+            },
+            {
+              "url": "https://arxiv.org/abs/4"
+            },
+            {
+              "url": "https://reddit.com/r/tech/7"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.83,
+      "human_label": 0.7987
+    },
+    {
+      "pair_id": "cq_036",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/13"
+            },
+            {
+              "url": "https://arxiv.org/abs/0"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/19"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.5633,
+      "human_label": 0.5068
+    },
+    {
+      "pair_id": "cq_037",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/18"
+            },
+            {
+              "url": "https://research.google.com/doc/18"
+            },
+            {
+              "url": "https://arxiv.org/abs/13"
+            },
+            {
+              "url": "https://research.google.com/doc/1"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.4367,
+      "human_label": 0.4817
+    },
+    {
+      "pair_id": "cq_038",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/3"
+            },
+            {
+              "url": "https://arxiv.org/abs/5"
+            },
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://reddit.com/r/tech/8"
+            },
+            {
+              "url": "https://reddit.com/r/tech/1"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.62,
+      "human_label": 0.5009
+    },
+    {
+      "pair_id": "cq_039",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 2,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/8"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.4976,
+      "human_label": 0.5122
+    },
+    {
+      "pair_id": "cq_040",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/2"
+            },
+            {
+              "url": "https://research.google.com/doc/3"
+            },
+            {
+              "url": "https://research.google.com/doc/17"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/9"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.8367,
+      "human_label": 0.7473
+    },
+    {
+      "pair_id": "cq_041",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://reddit.com/r/tech/7"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.3467,
+      "human_label": 0.3116
+    },
+    {
+      "pair_id": "cq_042",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/10"
+            },
+            {
+              "url": "https://arxiv.org/abs/11"
+            },
+            {
+              "url": "https://research.google.com/doc/6"
+            },
+            {
+              "url": "https://arxiv.org/abs/1"
+            },
+            {
+              "url": "https://reddit.com/r/tech/5"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.6309,
+      "human_label": 0.6877
+    },
+    {
+      "pair_id": "cq_043",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 5,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/10"
+            },
+            {
+              "url": "https://arxiv.org/abs/6"
+            },
+            {
+              "url": "https://research.google.com/doc/4"
+            },
+            {
+              "url": "https://arxiv.org/abs/2"
+            },
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://reddit.com/r/tech/7"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.6267,
+      "human_label": 0.5546
+    },
+    {
+      "pair_id": "cq_044",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/1"
+            },
+            {
+              "url": "https://arxiv.org/abs/12"
+            },
+            {
+              "url": "https://quora.com/q/2"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.5744,
+      "human_label": 0.5332
+    },
+    {
+      "pair_id": "cq_045",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/14"
+            },
+            {
+              "url": "https://research.google.com/doc/1"
+            },
+            {
+              "url": "https://reddit.com/r/tech/0"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            },
+            {
+              "url": "https://reddit.com/r/tech/8"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.4633,
+      "human_label": 0.3862
+    },
+    {
+      "pair_id": "cq_046",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/0"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.51,
+      "human_label": 0.4178
+    },
+    {
+      "pair_id": "cq_047",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 9,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://arxiv.org/abs/0"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.81,
+      "human_label": 0.8148
+    },
+    {
+      "pair_id": "cq_048",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://arxiv.org/abs/4"
+            },
+            {
+              "url": "https://research.google.com/doc/1"
+            },
+            {
+              "url": "https://research.google.com/doc/19"
+            },
+            {
+              "url": "https://research.google.com/doc/0"
+            },
+            {
+              "url": "https://reddit.com/r/tech/3"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.6228,
+      "human_label": 0.6755
+    },
+    {
+      "pair_id": "cq_049",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 4,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/5"
+            },
+            {
+              "url": "https://arxiv.org/abs/18"
+            },
+            {
+              "url": "https://quora.com/q/7"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            }
+          ],
+          "text": "[1] [2] Brief text sample."
+        }
+      },
+      "model_score": 0.54,
+      "human_label": 0.5209
+    },
+    {
+      "pair_id": "cq_050",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/16"
+            },
+            {
+              "url": "https://arxiv.org/abs/19"
+            },
+            {
+              "url": "https://research.google.com/doc/5"
+            },
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/0"
+            },
+            {
+              "url": "https://reddit.com/r/tech/9"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.6548,
+      "human_label": 0.6037
+    },
+    {
+      "pair_id": "cq_051",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 6,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/8"
+            },
+            {
+              "url": "https://arxiv.org/abs/13"
+            },
+            {
+              "url": "https://research.google.com/doc/12"
+            },
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://reddit.com/r/tech/5"
+            },
+            {
+              "url": "https://reddit.com/r/tech/2"
+            }
+          ],
+          "text": "[1] [2] [3] Brief text sample."
+        }
+      },
+      "model_score": 0.6133,
+      "human_label": 0.5614
+    },
+    {
+      "pair_id": "cq_052",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 10,
+            "uncited_count": 5
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/19"
+            },
+            {
+              "url": "https://arxiv.org/abs/14"
+            },
+            {
+              "url": "https://arxiv.org/abs/12"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            },
+            {
+              "url": "https://reddit.com/r/tech/0"
+            }
+          ],
+          "text": " Brief text sample."
+        }
+      },
+      "model_score": 0.5,
+      "human_label": 0.3911
+    },
+    {
+      "pair_id": "cq_053",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/8"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            },
+            {
+              "url": "https://quora.com/q/2"
+            }
+          ],
+          "text": "[1] [2] [3] Brief text sample."
+        }
+      },
+      "model_score": 0.4445,
+      "human_label": 0.4432
+    },
+    {
+      "pair_id": "cq_054",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/6"
+            },
+            {
+              "url": "https://research.google.com/doc/7"
+            },
+            {
+              "url": "https://arxiv.org/abs/14"
+            },
+            {
+              "url": "https://arxiv.org/abs/11"
+            },
+            {
+              "url": "https://research.google.com/doc/13"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.75,
+      "human_label": 0.7415
+    },
+    {
+      "pair_id": "cq_055",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 1
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://quora.com/q/4"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            },
+            {
+              "url": "https://quora.com/q/7"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.4356,
+      "human_label": 0.4585
+    },
+    {
+      "pair_id": "cq_056",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 7,
+            "uncited_count": 4
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/15"
+            },
+            {
+              "url": "https://research.google.com/doc/8"
+            },
+            {
+              "url": "https://arxiv.org/abs/10"
+            },
+            {
+              "url": "https://research.google.com/doc/10"
+            },
+            {
+              "url": "https://arxiv.org/abs/16"
+            },
+            {
+              "url": "https://reddit.com/r/tech/7"
+            },
+            {
+              "url": "https://reddit.com/r/tech/8"
+            },
+            {
+              "url": "https://quora.com/q/6"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] [6] Brief text sample."
+        }
+      },
+      "model_score": 0.7295,
+      "human_label": 0.7258
+    },
+    {
+      "pair_id": "cq_057",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 3,
+            "uncited_count": 2
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://arxiv.org/abs/18"
+            },
+            {
+              "url": "https://arxiv.org/abs/15"
+            },
+            {
+              "url": "https://arxiv.org/abs/17"
+            }
+          ],
+          "text": "[1] [2] [3] [4] [5] Brief text sample."
+        }
+      },
+      "model_score": 0.64,
+      "human_label": 0.6006
+    },
+    {
+      "pair_id": "cq_058",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 8,
+            "uncited_count": 0
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/4"
+            },
+            {
+              "url": "https://reddit.com/r/tech/4"
+            }
+          ],
+          "text": "[1] Brief text sample."
+        }
+      },
+      "model_score": 0.63,
+      "human_label": 0.6795
+    },
+    {
+      "pair_id": "cq_059",
+      "run_context": {
+        "output": {
+          "factual_grounding": {
+            "cited_count": 1,
+            "uncited_count": 3
+          },
+          "retrieval_sources": [
+            {
+              "url": "https://research.google.com/doc/9"
+            },
+            {
+              "url": "https://research.google.com/doc/6"
+            },
+            {
+              "url": "https://arxiv.org/abs/3"
+            },
+            {
+              "url": "https://reddit.com/r/tech/6"
+            },
+            {
+              "url": "https://quora.com/q/3"
+            }
+          ],
+          "text": "[1] [2] [3] [4] Brief text sample."
+        }
+      },
+      "model_score": 0.54,
+      "human_label": 0.5135
+    }
+  ]
+}

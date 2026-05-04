@@ -18,7 +18,7 @@ _ALLOWED_URL_SCHEMES = frozenset({"http", "https", "urn"})
 
 ResearchStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
-ArtifactMode = Literal["brief", "comparison", "trend", "position", "thought_leadership"]
+ArtifactMode = Literal["brief", "comparison", "trend", "position", "thought_leadership", "company"]
 
 ClaimType = Literal["direct_evidence", "interpretation", "analyst_inference", "assumption"]
 
@@ -104,7 +104,7 @@ class ResearchConfig(BaseModel):
 class ResearchRequest(BaseModel):
     """Input contract for a single research run."""
 
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
 
     topic: str = Field(..., min_length=1, description="Research topic")
     mode: ArtifactMode = Field("brief", description="Artifact mode")
@@ -114,6 +114,8 @@ class ResearchRequest(BaseModel):
     config: ResearchConfig = Field(default_factory=ResearchConfig, description="Research configuration")
     dry_run: bool = Field(False, description="Dry run mode")
     trace_id: str = Field("", description="Trace identifier")
+    depth_profile: str = Field("standard", description="Research depth profile key (e.g. COMPANY_BRIEF_STANDARD)")
+    jd_context: dict = Field(default_factory=dict, description="Job description context for JD-grounded research")
 
     @field_validator("topic")
     @classmethod

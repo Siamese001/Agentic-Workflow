@@ -1,0 +1,112 @@
+# Judge Disposition Policy (D3) — maps Judge (rule_id, score_band) tuples
+# onto the constitutional X3 disposition vocabulary
+# (ALLOW / REVISE / DENY / HITL / ABSTAIN).
+#
+# This is the SECOND policy in the apps_lic/policy/ family (after
+# exit_policy.yaml shipped in plan b3a4d2). exit_policy maps row-level
+# validation outcomes; this policy maps Judge-level scorecards. Both
+# are consumed by the same DecisionRouter primitive — no new engine.
+#
+# The score_bands referenced here come from each Judge's own rubric
+# YAML (judge_hop1_classifier.yaml etc.). The bands are intentionally
+# coarse (STRONG / MODERATE / WEAK / UNKNOWN) so the disposition
+# policy stays readable and the per-rubric thresholds carry the
+# numeric tuning.
+
+policy_name: "judge_disposition_policy"
+layer: "L5"               # Exit-eval / safety plane (Judges live here)
+router: "judge_dispositions"
+inputs:
+  - rule_id               # Judge identity (rubric_id or caller-provided)
+  - score_band            # STRONG / MODERATE / WEAK / UNKNOWN
+  - verdict               # PASS / FAIL / UNKNOWN — pre-disposition
+
+# First-match. Order: ABSTAIN-on-UNKNOWN first, then per-band defaults,
+# then per-Judge overrides if any.
+rules:
+  # 1. UNKNOWN verdict ALWAYS abstains. Never guess.
+  - rule_id: "verdict_unknown_abstain"
+    when:
+      verdict: "UNKNOWN"
+    then:
+      x3_disposition: "ABSTAIN"
+      confidence: 0.0
+      gate_action: "MANUAL_REVIEW"
+
+  # 2. STRONG band → ALLOW with high confidence.
+  - rule_id: "strong_band_allow"
+    when:
+      score_band: "STRONG"
+    then:
+      x3_disposition: "ALLOW"
+      confidence: 0.95
+      gate_action: "PROCEED"
+
+  # 3. MODERATE band → REVISE (the candidate is not bad, but tighten it).
+  - rule_id: "moderate_band_revise"
+    when:
+      score_band: "MODERATE"
+    then:
+      x3_disposition: "REVISE"
+      confidence: 0.75
+      gate_action: "REVISE_AND_RETRY"
+
+  # 4. WEAK band → DENY for HOP6 (safety-gatekeeper Judge); other Judges
+  #    surface as HITL by default. Per-rule_id overrides below give
+  #    HOP6 the harder verdict.
+  - rule_id: "weak_band_hop6_strategic_alignment"
+    when:
+      rule_id: "judge_hop6_strategic_alignment"
+      score_band: "WEAK"
+    then:
+      x3_disposition: "DENY"
+      confidence: 0.9
+      gate_action: "FAIL"
+
+  # 5. WEAK band on HOP1 LLM-fallback → HITL (don't auto-deny a recipient
+  #    classification; route to human triage).
+  - rule_id: "weak_band_hop1_llm_fallback"
+    when:
+      rule_id: "judge_hop1_llm_fallback"
+      score_band: "WEAK"
+    then:
+      x3_disposition: "HITL"
+      confidence: 0.7
+      gate_action: "MANUAL_REVIEW"
+
+  # 6. WEAK band on HOP2 strategic_brief → REVISE (re-summarize stricter).
+  - rule_id: "weak_band_hop2_grounding"
+    when:
+      rule_id: "judge_hop2_strategic_brief_faithfulness"
+      score_band: "WEAK"
+    then:
+      x3_disposition: "REVISE"
+      confidence: 0.85
+      gate_action: "RETRY_HOP2"
+
+  # 7. WEAK band on HOP8 narrative → ABSTAIN (observability, not safety;
+  #    don't block delivery just because the narrative is weak).
+  - rule_id: "weak_band_hop8_narrative"
+    when:
+      rule_id: "judge_hop8_narrative"
+      score_band: "WEAK"
+    then:
+      x3_disposition: "ABSTAIN"
+      confidence: 0.6
+      gate_action: "PROCEED_WITH_WARNING"
+
+  # 8. WEAK band fallback (any Judge not enumerated above) → HITL.
+  - rule_id: "weak_band_default_hitl"
+    when:
+      score_band: "WEAK"
+    then:
+      x3_disposition: "HITL"
+      confidence: 0.6
+      gate_action: "MANUAL_REVIEW"
+
+# Fallback for unrecognized state. ABSTAIN is correct here — D6 says
+# never guess. HITL is the safe-by-default destination.
+default:
+  x3_disposition: "ABSTAIN"
+  confidence: 0.0
+  gate_action: "MANUAL_REVIEW"
