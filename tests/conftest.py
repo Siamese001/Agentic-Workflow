@@ -25,6 +25,20 @@ _REPO_ROOT = str(Path(__file__).resolve().parents[1])
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
+# Purge known test-directory shadow modules that break collection when cached early.
+# Test directories with __init__.py mirror source packages; if imported first they
+# shadow the real source and cause ModuleNotFoundError for later collectors.
+_SHADOW_PREFIXES = [
+    "agentic_core.L1_cognition.utils",
+    "agentic_core.L2_execution.healers",
+    "agentic_core.L2_execution.types",
+    "apps_lic.utils",
+]
+for _prefix in _SHADOW_PREFIXES:
+    _doomed = [k for k in list(sys.modules) if k == _prefix or k.startswith(_prefix + ".")]
+    for _k in _doomed:
+        del sys.modules[_k]
+
 import types
 
 import pytest

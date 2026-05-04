@@ -4,6 +4,7 @@ Tests edge cases, error conditions, resilience, and security scenarios.
 """
 
 import json
+import sys
 import time
 from pathlib import Path
 from unittest.mock import patch
@@ -310,6 +311,7 @@ class TestMCPL6ObservabilityStoreHardening:
         # Should handle corrupted file gracefully during loading
         # (if implementation supports loading)
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="Windows file locking breaks concurrent cleanup race test")
     def test_concurrent_cleanup_race_condition(self, tmp_path):
         """Test race conditions during cleanup operations."""
         import threading
