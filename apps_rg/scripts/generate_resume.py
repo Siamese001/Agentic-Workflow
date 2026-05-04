@@ -110,6 +110,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from apps_rg.engines.resume_orchestrator_engine import ResumeOrchestratorEngine
+from apps_rg.prompt_assembly.compiler import compile_prompt
+from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+from apps_rg.prompt_assembly.provider_request import artifact_to_provider_request
 from apps_rg.types.SovereignContext import SovereignContext
 
 _emit_emits_metric_event("generate_resume", "p4obs", "metric_1")
@@ -238,12 +241,30 @@ async def main():
     Logger.info("Loading canonical master_resume: %s", canonical_master)
     with open(canonical_master, encoding="utf-8") as f:
         resume_data = json.load(f)
+    # --- PA: compile governed prompt artifact before model calls ---
+    jd_text = jd_data.get("description", "")
+    pa_request = AppsRgPromptRequest(
+        flow_route="strategic_tailor",
+        jd_data=jd_text,
+        master_resume_data=json.dumps(resume_data, default=str),
+    )
+    compiled_artifact = compile_prompt(pa_request)
+    compiled_artifact_dict = compiled_artifact.to_dict()
+    provider_req = artifact_to_provider_request(compiled_artifact_dict)
+    Logger.info(
+        "📋 PA artifact compiled: prompt_id=%s, artifact_hash=%s",
+        compiled_artifact.prompt_id,
+        compiled_artifact.artifact_hash,
+    )
+
     ctx = SovereignContext()
     ctx.master_resume = resume_data
+    ctx.compiled_prompt_artifact = compiled_artifact_dict
+    ctx.provider_request = provider_req
     Logger.info("⚡ Processing your resume against the job description...")
     orchestrator = ResumeOrchestratorEngine(ctx)
     try:
-        result = await orchestrator.execute(jd_data["description"])
+        result = await orchestrator.execute(jd_text)
         Logger.info("-" * 50)
         Logger.info(f"🏁 GENERATION COMPLETE in {(datetime.now() - start_time).total_seconds():.2f}s")
         Logger.info(f"STATUS: {result.get('status')}")

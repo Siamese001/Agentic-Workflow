@@ -77,6 +77,12 @@ class _PAGuard:
                 company_brief_data=context.get("company_brief_data", ""),
                 user_task=context.get("user_task", ""),
                 claim_source_refs=context.get("claim_source_refs", ""),
+                unsupported_claims=context.get("unsupported_claims", ""),
+                approved_resume_examples=context.get("approved_resume_examples", ""),
+                seniority_band=context.get("seniority_band", ""),
+                target_company=context.get("target_company", ""),
+                target_role=context.get("target_role", ""),
+                local_evidence_contract_ref=context.get("local_evidence_contract_ref", ""),
                 run_id=context.get("run_id", ""),
                 trace_id=context.get("trace_id", ""),
                 request_id=context.get("request_id", ""),
@@ -138,18 +144,148 @@ class GenerateResumeStep:
             "compiled_prompt_artifact": {
                 "artifact_id": artifact_dict.get("artifact_id", ""),
                 "prompt_id": artifact_dict.get("prompt_id", ""),
+                "template_id": artifact_dict.get("template_id", ""),
+                "template_version": artifact_dict.get("template_version", ""),
                 "prompt_hash": artifact_dict.get("prompt_hash", ""),
                 "prompt_template_hash": artifact_dict.get("prompt_template_hash", ""),
                 "prompt_bom_hash": artifact_dict.get("prompt_bom_hash", ""),
+                "prompt_registry_hash": artifact_dict.get("prompt_registry_hash", ""),
+                "manifest_hash": artifact_dict.get("manifest_hash", ""),
+                "canonical_slot_bytes_hash": artifact_dict.get("canonical_slot_bytes_hash", ""),
+                "artifact_hash": artifact_dict.get("artifact_hash", ""),
                 "replay_key": artifact_dict.get("replay_key", ""),
                 "policy_hash": artifact_dict.get("policy_hash", ""),
                 "blueprint_hash": artifact_dict.get("blueprint_hash", ""),
                 "provider_lane": artifact_dict.get("provider_lane", ""),
                 "compile_status": artifact_dict.get("compile_status", ""),
                 "source_refs": artifact_dict.get("source_refs", {}),
+                "origin_label_map": artifact_dict.get("origin_label_map", {}),
+                "local_evidence_contract_ref": artifact_dict.get("local_evidence_contract_ref", ""),
                 "output_schema_ref": artifact_dict.get("output_schema_ref", ""),
                 "output_schema_hash": artifact_dict.get("output_schema_hash", ""),
             },
+        }
+
+
+class FactCheckStep:
+    """E4_HEAL: Fact-check the generated resume against source data.
+
+    Uses the ``resume_fact_check_v1`` governed template via PA compiler.
+    """
+
+    STEP_ID = "fact_check_generated_resume"
+    REQUIRES_PA = True
+
+    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
+        from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+        from apps_rg.prompt_assembly.compiler import compile_prompt
+
+        request = AppsRgPromptRequest(
+            flow_route="fact_check",
+            jd_data=context.get("jd_data", ""),
+            master_resume_data=context.get("master_resume_data", ""),
+            claim_source_refs=context.get("claim_source_refs", ""),
+            run_id=context.get("run_id", ""),
+            trace_id=context.get("trace_id", ""),
+        )
+        artifact = compile_prompt(request)
+        artifact_dict = artifact.to_dict()
+        _log.info("[L2 step] %s: compiled (prompt_id=%s)", self.STEP_ID, artifact.prompt_id)
+        return {
+            "step_id": self.STEP_ID,
+            "exit_code": 0,
+            "compiled_prompt_artifact": artifact_dict,
+        }
+
+
+class ClaimOmissionStep:
+    """E4_HEAL: Omit unsupported claims from the generated resume.
+
+    Uses the ``unsupported_claim_omission_v1`` governed template via PA compiler.
+    """
+
+    STEP_ID = "omit_unsupported_resume_claims"
+    REQUIRES_PA = True
+
+    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
+        from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+        from apps_rg.prompt_assembly.compiler import compile_prompt
+
+        request = AppsRgPromptRequest(
+            flow_route="claim_omission",
+            jd_data=context.get("jd_data", ""),
+            master_resume_data=context.get("master_resume_data", ""),
+            unsupported_claims=context.get("unsupported_claims", ""),
+            run_id=context.get("run_id", ""),
+            trace_id=context.get("trace_id", ""),
+        )
+        artifact = compile_prompt(request)
+        artifact_dict = artifact.to_dict()
+        _log.info("[L2 step] %s: compiled (prompt_id=%s)", self.STEP_ID, artifact.prompt_id)
+        return {
+            "step_id": self.STEP_ID,
+            "exit_code": 0,
+            "compiled_prompt_artifact": artifact_dict,
+        }
+
+
+class BulletDiversityRepairStep:
+    """E4_HEAL: Repair bullet-point diversity in the generated resume.
+
+    Uses the ``bullet_diversity_repair_v1`` governed template via PA compiler.
+    """
+
+    STEP_ID = "repair_bullet_diversity"
+    REQUIRES_PA = True
+
+    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
+        from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+        from apps_rg.prompt_assembly.compiler import compile_prompt
+
+        request = AppsRgPromptRequest(
+            flow_route="bullet_diversity_repair",
+            jd_data=context.get("jd_data", ""),
+            master_resume_data=context.get("master_resume_data", ""),
+            run_id=context.get("run_id", ""),
+            trace_id=context.get("trace_id", ""),
+        )
+        artifact = compile_prompt(request)
+        artifact_dict = artifact.to_dict()
+        _log.info("[L2 step] %s: compiled (prompt_id=%s)", self.STEP_ID, artifact.prompt_id)
+        return {
+            "step_id": self.STEP_ID,
+            "exit_code": 0,
+            "compiled_prompt_artifact": artifact_dict,
+        }
+
+
+class DocxManifestStep:
+    """E5_SEAL: Generate DOCX artifact manifest for the sealed output.
+
+    Uses the ``docx_manifest_v1`` governed template via PA compiler.
+    """
+
+    STEP_ID = "docx_manifest_seal"
+    REQUIRES_PA = True
+
+    def __call__(self, context: dict[str, Any]) -> dict[str, Any]:
+        from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+        from apps_rg.prompt_assembly.compiler import compile_prompt
+
+        request = AppsRgPromptRequest(
+            flow_route="docx_manifest",
+            jd_data=context.get("jd_data", ""),
+            master_resume_data=context.get("master_resume_data", ""),
+            run_id=context.get("run_id", ""),
+            trace_id=context.get("trace_id", ""),
+        )
+        artifact = compile_prompt(request)
+        artifact_dict = artifact.to_dict()
+        _log.info("[L2 step] %s: compiled (prompt_id=%s)", self.STEP_ID, artifact.prompt_id)
+        return {
+            "step_id": self.STEP_ID,
+            "exit_code": 0,
+            "compiled_prompt_artifact": artifact_dict,
         }
 
 

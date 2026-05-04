@@ -203,6 +203,8 @@ class SovereignContext:
         # so attribute access never raises before a HOP populates them.
         self.master_resume: dict[str, Any] | None = None
         self.current_resume: dict[str, Any] | None = None
+        self.compiled_prompt_artifact: dict[str, Any] | None = None
+        self.provider_request: dict[str, Any] | None = None
         self._signals: list[str] = []
         self._success_history: list[dict[str, Any]] = []
 

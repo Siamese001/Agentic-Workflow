@@ -239,6 +239,7 @@ class RgResumeOrchestrator(RGAgentBase):
         super().__post_init__()
         self.constraints = None
         self.jd_enforcer = None
+        self._compiled_artifact: dict[str, Any] | None = None
 
         # Initialize Qwen vLLM integration
         self._qwen_gateway = None
@@ -389,6 +390,7 @@ class RgResumeOrchestrator(RGAgentBase):
                         qwen_result = await self.generate_resume_with_qwen(
                             job_description=JobDescription,
                             candidate_profile=self.master_resume,
+                            compiled_artifact=getattr(self, "_compiled_artifact", None),
                         )
                         _adapter.record_local_success(severity="medium")
                     except (  # guardian: allow-double-logging -- LOCAL_FIRST_DISPOSITION audit log emitted before re-raise; required for compliance telemetry
@@ -447,6 +449,7 @@ class RgResumeOrchestrator(RGAgentBase):
             "checkpoints": [c.get("hop_id") for c in self.hop_checkpoints],
             "repo_signals": repo_signals,
             "local_first_disposition": _dsp.as_dict() if _dsp is not None else None,
+            "compiled_prompt_artifact": self._compiled_artifact,
         }
         if qwen_result is not None:
             result["qwen_resume_content"] = qwen_result
@@ -461,12 +464,17 @@ class RgResumeOrchestrator(RGAgentBase):
         self,
         job_description: str,
         candidate_profile: dict[str, Any],
+        compiled_artifact: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Generate resume content using Qwen vLLM inference.
 
         Args:
             job_description: Job description text
             candidate_profile: Candidate profile information
+            compiled_artifact: Optional compiled PA artifact dict. When present,
+                the governed ``provider_specific_messages`` are used instead of
+                the legacy ad hoc prompt constructed by
+                ``_prepare_resume_generation_prompt``.
 
         Returns:
             Dictionary with generated resume content and metadata
@@ -475,8 +483,27 @@ class RgResumeOrchestrator(RGAgentBase):
             return {"success": False, "error": "qwen_disabled", "content": None}
 
         try:
-            # Prepare prompt for resume generation
-            prompt = self._prepare_resume_generation_prompt(job_description, candidate_profile)
+            from apps_rg.prompt_assembly.pa_local import capture_prompt_bom  # noqa: PLC0415
+
+            # Use governed artifact messages when available; fall back to ad hoc
+            if compiled_artifact and compiled_artifact.get("provider_specific_messages"):
+                msgs = compiled_artifact["provider_specific_messages"]
+                prompt = "\n\n".join(m.get("content", "") for m in msgs)
+                _logger.info(
+                    "Using governed PA artifact for model call (prompt_id=%s)",
+                    compiled_artifact.get("prompt_id", "?"),
+                )
+            else:
+                prompt = self._prepare_resume_generation_prompt(job_description, candidate_profile)
+
+            # Capture prompt BOM (W2.P2: apps-rg-spine-deferred-followup-d4e7b2)
+            capture_prompt_bom(
+                hop_name="H3_qwen_resume_generation",
+                model=QWEN_LOCAL_MODEL_ID,
+                provider_lane="qwen_vllm_local",
+                prompt_template=prompt[:512],
+                token_budget=2048,
+            )
 
             # Create Qwen request
             request = AppsQwenRequest(
