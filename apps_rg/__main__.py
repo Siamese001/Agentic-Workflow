@@ -439,6 +439,19 @@ def main() -> None:
     if not args.target_company:
         args.target_company = input("Enter target company (e.g., 'Google'): ").strip() or None
 
+    # HARDENED: Candidate profile is REQUIRED - no silent defaults
+    if not args.candidate:
+        args.candidate = input("Enter candidate profile path (e.g., 'apps_rg/scripts/candidate_profile.yaml'): ").strip()
+        if not args.candidate:
+            print("ERROR: --candidate is required. Generate one with:", file=sys.stderr)
+            print("  python tools/rg/build_candidate_profile_from_master.py", file=sys.stderr)
+            parser.error("--candidate is required")
+        if not Path(args.candidate).exists():
+            print(f"ERROR: Candidate profile not found: {args.candidate}", file=sys.stderr)
+            print("Generate one with:", file=sys.stderr)
+            print("  python tools/rg/build_candidate_profile_from_master.py", file=sys.stderr)
+            sys.exit(2)
+
     # Wrap the deterministic HOP pipeline in genuine spine receipts.
     # `governed_run` emits U0/L1/L0/L3-bypass on enter; L2/Exit/L6/OTEL on exit.
     cfg = _apps_rg_emission_config(
