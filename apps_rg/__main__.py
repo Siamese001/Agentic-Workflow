@@ -431,26 +431,88 @@ def main() -> None:
     )
     args, _unknown = parser.parse_known_args()
 
-    # Interactive prompt for missing required inputs
-    if not args.target_role:
-        args.target_role = input("Enter target role (e.g., 'Senior ML Engineer'): ").strip()
-        if not args.target_role:
-            parser.error("--target-role is required")
-    if not args.target_company:
-        args.target_company = input("Enter target company (e.g., 'Google'): ").strip() or None
+    # L0 INTAKE — 3 required inputs per apps_rg contract
+    # 1. Company (target_company)
+    # 2. JD — Job Description JSON file path
+    # 3. Research Briefing — if missing, route to apps_research; if apps_research fails, apps_rg fails
+    print("=" * 70, file=sys.stderr)
+    print("apps_rg L0 INTAKE", file=sys.stderr)
+    print("=" * 70, file=sys.stderr)
 
-    # HARDENED: Candidate profile is REQUIRED - no silent defaults
-    if not args.candidate:
-        args.candidate = input("Enter candidate profile path (e.g., 'apps_rg/scripts/candidate_profile.yaml'): ").strip()
-        if not args.candidate:
-            print("ERROR: --candidate is required. Generate one with:", file=sys.stderr)
-            print("  python tools/rg/build_candidate_profile_from_master.py", file=sys.stderr)
-            parser.error("--candidate is required")
-        if not Path(args.candidate).exists():
-            print(f"ERROR: Candidate profile not found: {args.candidate}", file=sys.stderr)
-            print("Generate one with:", file=sys.stderr)
-            print("  python tools/rg/build_candidate_profile_from_master.py", file=sys.stderr)
+    # 1. Company
+    if not args.target_company:
+        args.target_company = input("[1/3] Target company (e.g., 'Google', 'Blend360'): ").strip()
+        if not args.target_company:
+            parser.error("target company is required")
+
+    # 2. JD — Job Description file
+    jd_path_default = "apps_rg/scripts/job_description.json"
+    jd_path_input = input(f"[2/3] Job Description JSON path [default: {jd_path_default}]: ").strip()
+    jd_path = jd_path_input or jd_path_default
+    if not Path(jd_path).exists():
+        print(f"ERROR: Job Description not found: {jd_path}", file=sys.stderr)
+        print("Expected format: {\"title\": \"...\", \"company\": \"...\", \"description\": \"...\"}", file=sys.stderr)
+        sys.exit(2)
+    # Derive target_role from JD title if not specified
+    if not args.target_role:
+        try:
+            import json as _json  # noqa: PLC0415
+            with open(jd_path, encoding="utf-8") as _f:
+                _jd = _json.load(_f)
+            args.target_role = _jd.get("title", "").strip()
+            if not args.target_role:
+                args.target_role = input("JD has no 'title' field — enter target role: ").strip()
+                if not args.target_role:
+                    parser.error("target role is required (from JD.title or prompt)")
+            else:
+                print(f"       → role from JD: {args.target_role}", file=sys.stderr)
+        except Exception as exc:
+            print(f"ERROR: Failed to parse JD at {jd_path}: {exc}", file=sys.stderr)
             sys.exit(2)
+    # Copy JD to canonical location if user provided a different path
+    if jd_path != jd_path_default:
+        import shutil as _shutil  # noqa: PLC0415
+        _shutil.copy(jd_path, jd_path_default)
+        print(f"       → copied JD to canonical path: {jd_path_default}", file=sys.stderr)
+
+    # 3. Research Briefing — check prerequisite, route to apps_research if missing
+    brief_path = args.manual_brief or "apps_rg/scripts/company_research.json"
+    brief_exists = Path(brief_path).exists()
+    if brief_exists:
+        print(f"[3/3] Research briefing: FOUND at {brief_path}", file=sys.stderr)
+    else:
+        print(f"[3/3] Research briefing: MISSING at {brief_path}", file=sys.stderr)
+        choice = input("       Route to apps_research to generate briefing? [Y/n]: ").strip().lower()
+        if choice in ("", "y", "yes"):
+            print(f"       → Invoking apps_research for company='{args.target_company}'...", file=sys.stderr)
+            import subprocess as _subprocess  # noqa: PLC0415
+            try:
+                result = _subprocess.run(
+                    [sys.executable, "-m", "apps_research",
+                     "--target-company", args.target_company,
+                     "--output", brief_path],
+                    timeout=300,
+                    shell=False,
+                )
+                if result.returncode != 0 or not Path(brief_path).exists():
+                    print(f"ERROR: apps_research failed (exit {result.returncode}) — apps_rg cannot proceed", file=sys.stderr)
+                    sys.exit(1)
+                print(f"       → apps_research succeeded; briefing at {brief_path}", file=sys.stderr)
+                args.manual_brief = brief_path
+            except _subprocess.TimeoutExpired:
+                print("ERROR: apps_research timed out after 5 minutes — apps_rg fails", file=sys.stderr)
+                sys.exit(1)
+            except Exception as exc:
+                print(f"ERROR: apps_research invocation failed: {exc} — apps_rg fails", file=sys.stderr)
+                sys.exit(1)
+        else:
+            print("ERROR: Research briefing is required. apps_rg cannot proceed without one.", file=sys.stderr)
+            sys.exit(2)
+
+    print("=" * 70, file=sys.stderr)
+    print(f"Company: {args.target_company} | Role: {args.target_role}", file=sys.stderr)
+    print(f"JD: {jd_path_default} | Briefing: {brief_path}", file=sys.stderr)
+    print("=" * 70, file=sys.stderr)
 
     # Wrap the deterministic HOP pipeline in genuine spine receipts.
     # `governed_run` emits U0/L1/L0/L3-bypass on enter; L2/Exit/L6/OTEL on exit.
