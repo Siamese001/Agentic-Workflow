@@ -30,27 +30,42 @@ class TestLlmStepRequiresPAGuard:
             step(context)
 
     def test_generate_resume_passes_with_pa_compatible(self):
-        """GenerateResumeStep passes PA guard when pa_compatible=True."""
+        """GenerateResumeStep passes PA guard with a compiled artifact."""
         from apps_rg.l2_recipe.steps import GenerateResumeStep
+        from apps_rg.prompt_assembly.contracts import PACompileStatus
         from unittest import mock
 
         step = GenerateResumeStep()
         context = {
             "target_company": "TestCo",
             "target_role": "Engineer",
-            "pa_compatible": True,
+            "compiled_prompt_artifact": {
+                "compile_status": PACompileStatus.PA_L2_HANDOFF_READY.value,
+                "artifact_id": "test_123",
+                "prompt_id": "apps_rg.resume_generation.strategic_tailor.v1",
+                "prompt_hash": "abcd1234abcd1234",
+                "prompt_template_hash": "tmpl1234tmpl1234",
+                "prompt_bom_hash": "bom12345bom12345",
+                "replay_key": "replay_test",
+                "policy_hash": "",
+                "blueprint_hash": "",
+                "provider_lane": "default",
+                "source_refs": {},
+                "output_schema_ref": "generated_resume.json",
+                "output_schema_hash": "",
+            },
         }
 
-        # Mock the actual generate_resume.main to avoid running real pipeline
         with mock.patch("apps_rg.scripts.generate_resume.main", new_callable=mock.AsyncMock):
-            with mock.patch("pathlib.Path.exists", return_value=False):
+            with mock.patch("apps_rg.l2_recipe.steps.Path") as mock_path:
+                mock_path.return_value.exists.return_value = False
                 result = step(context)
 
         assert result["step_id"] == "hop_4_generate_resume"
         assert result["exit_code"] == 0
 
-    def test_generate_resume_passes_with_prompt_bom_dir(self):
-        """GenerateResumeStep passes PA guard when prompt_bom_dir set."""
+    def test_generate_resume_passes_with_governed_context(self):
+        """GenerateResumeStep passes PA guard when governed context provided."""
         from apps_rg.l2_recipe.steps import GenerateResumeStep
         from unittest import mock
 
@@ -58,14 +73,18 @@ class TestLlmStepRequiresPAGuard:
         context = {
             "target_company": "TestCo",
             "target_role": "Engineer",
-            "prompt_bom_dir": "/tmp/prompt_boms",
+            "jd_data": "Software Engineer at TestCo",
+            "master_resume_data": "Experienced developer resume",
+            "flow_route": "strategic_tailor",
         }
 
         with mock.patch("apps_rg.scripts.generate_resume.main", new_callable=mock.AsyncMock):
-            with mock.patch("pathlib.Path.exists", return_value=False):
+            with mock.patch("apps_rg.l2_recipe.steps.Path") as mock_path:
+                mock_path.return_value.exists.return_value = False
                 result = step(context)
 
         assert result["exit_code"] == 0
+        assert "compiled_prompt_artifact" in result
 
     def test_narrative_step_does_not_require_pa(self):
         """NarrativePassStep has REQUIRES_PA=False — no PA check."""

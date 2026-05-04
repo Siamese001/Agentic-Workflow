@@ -25,28 +25,77 @@ _log = logging.getLogger("apps_rg.l2_recipe.steps")
 
 
 class _PAGuard:
-    """Fail-closed guard: LLM-backed steps must have a PA-compatible artifact."""
+    """Fail-closed guard: LLM-backed steps must have a CompiledPromptArtifact.
+
+    If the context already carries a compiled artifact (``compiled_prompt_artifact``),
+    validation passes.  Otherwise, if enough governed context exists (JD, resume,
+    flow_route), the guard compiles the artifact via the apps_rg PA compiler.
+    If compilation fails, the step fails closed — no model call.
+    """
 
     @staticmethod
-    def check(context: dict[str, Any], step_name: str) -> None:
-        """Raise if the context lacks PA artifact evidence for model calls.
+    def check(context: dict[str, Any], step_name: str) -> dict[str, Any]:
+        """Ensure context has a compiled prompt artifact.
 
-        Current implementation checks for ``prompt_bom_dir`` OR
-        ``pa_artifact_ref`` in context.  Full CompiledPromptArtifact
-        enforcement is tracked separately — this is the hard fail-closed
-        stub.
+        Returns the compiled artifact dict (or the pre-existing one).
+
+        Raises:
+            RuntimeError: PA_GUARD_FAILED or PA_COMPILE_FAILED if no artifact
+                can be produced.
         """
-        has_pa = bool(
-            context.get("prompt_bom_dir")
-            or context.get("pa_artifact_ref")
-            or context.get("pa_compatible")
-        )
-        if not has_pa:
+        # Path 1: artifact already compiled (e.g., by upstream step or test)
+        existing = context.get("compiled_prompt_artifact")
+        if existing:
+            from apps_rg.prompt_assembly.contracts import PACompileStatus
+            status = existing.get("compile_status", "") if isinstance(existing, dict) else getattr(existing, "compile_status", "")
+            if status == PACompileStatus.PA_L2_HANDOFF_READY.value:
+                return existing if isinstance(existing, dict) else existing.to_dict()
+
+        # Path 2: compile from governed context
+        jd_data = context.get("jd_data", "")
+        resume_data = context.get("master_resume_data", "")
+        flow_route = context.get("flow_route", "")
+
+        if not jd_data or not resume_data or not flow_route:
             raise RuntimeError(
-                f"PA_GUARD_FAILED: {step_name} requires PA-compatible prompt "
-                f"artifact before model invocation. Set 'pa_compatible=True' "
-                f"or provide 'prompt_bom_dir' in L2 context."
+                f"PA_GUARD_FAILED: {step_name} requires CompiledPromptArtifact "
+                f"or governed context (jd_data + master_resume_data + flow_route) "
+                f"to compile one. Missing: "
+                f"{'jd_data ' if not jd_data else ''}"
+                f"{'master_resume_data ' if not resume_data else ''}"
+                f"{'flow_route' if not flow_route else ''}"
             )
+
+        try:
+            from apps_rg.prompt_assembly.contracts import AppsRgPromptRequest
+            from apps_rg.prompt_assembly.compiler import compile_prompt
+
+            request = AppsRgPromptRequest(
+                flow_route=flow_route,
+                jd_data=jd_data,
+                master_resume_data=resume_data,
+                company_brief_data=context.get("company_brief_data", ""),
+                user_task=context.get("user_task", ""),
+                claim_source_refs=context.get("claim_source_refs", ""),
+                run_id=context.get("run_id", ""),
+                trace_id=context.get("trace_id", ""),
+                request_id=context.get("request_id", ""),
+                provider_lane=context.get("provider_lane", "default"),
+                symbolic_model_id=context.get("symbolic_model_id", ""),
+                policy_hash=context.get("policy_hash", ""),
+                blueprint_hash=context.get("blueprint_hash", ""),
+            )
+            artifact = compile_prompt(request)
+            artifact_dict = artifact.to_dict()
+            context["compiled_prompt_artifact"] = artifact_dict
+            return artifact_dict
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            raise RuntimeError(
+                f"PA_COMPILE_FAILED: {step_name} failed to compile prompt "
+                f"artifact: {exc}"
+            ) from exc
 
 
 class GenerateResumeStep:
@@ -64,9 +113,10 @@ class GenerateResumeStep:
         import asyncio
         from apps_rg.scripts.generate_resume import main as _generate
 
-        _PAGuard.check(context, self.STEP_ID)
+        artifact_dict = _PAGuard.check(context, self.STEP_ID)
 
-        _log.info("[L2 step] %s: starting generate_resume", self.STEP_ID)
+        _log.info("[L2 step] %s: starting generate_resume (prompt_id=%s)",
+                  self.STEP_ID, artifact_dict.get("prompt_id", "?"))
         asyncio.run(_generate())
 
         runs_root = Path("artifacts/apps_rg/runs")
@@ -85,6 +135,21 @@ class GenerateResumeStep:
             "step_id": self.STEP_ID,
             "exit_code": 0,
             "run_dir": run_dir,
+            "compiled_prompt_artifact": {
+                "artifact_id": artifact_dict.get("artifact_id", ""),
+                "prompt_id": artifact_dict.get("prompt_id", ""),
+                "prompt_hash": artifact_dict.get("prompt_hash", ""),
+                "prompt_template_hash": artifact_dict.get("prompt_template_hash", ""),
+                "prompt_bom_hash": artifact_dict.get("prompt_bom_hash", ""),
+                "replay_key": artifact_dict.get("replay_key", ""),
+                "policy_hash": artifact_dict.get("policy_hash", ""),
+                "blueprint_hash": artifact_dict.get("blueprint_hash", ""),
+                "provider_lane": artifact_dict.get("provider_lane", ""),
+                "compile_status": artifact_dict.get("compile_status", ""),
+                "source_refs": artifact_dict.get("source_refs", {}),
+                "output_schema_ref": artifact_dict.get("output_schema_ref", ""),
+                "output_schema_hash": artifact_dict.get("output_schema_hash", ""),
+            },
         }
 
 

@@ -92,6 +92,17 @@ claimed_routes:
 # - tools/analysis/apps_spine_coverage.py
 #     R3_grounded_read row in ROUTE_TYPE_CONTRACT_REQUIREMENTS.
 
+# Prompt Assembly (CANONICAL_PA):
+# apps_rg compiles a CompiledPromptArtifact from PromptBOM before every
+# model-backed step.  No model call without a compiled artifact.
+prompt_assembly: CANONICAL_PA
+prompt_bom_ref: apps_rg/prompts/prompt_bom.yaml
+compiled_artifact_required_for:
+  - hop_4_generate_resume
+
+# Invariant: No model-backed apps_rg step may call a provider without
+# CompiledPromptArtifact or PA-compatible artifact.
+
 # Disclaimer (constitutional honesty):
 # This manifest declares STATIC contract-surfacing evidence. It does
 # NOT certify that the runtime path actually exercises every contract

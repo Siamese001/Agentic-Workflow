@@ -1,0 +1,41 @@
+# apps_rg Prompt Bill of Materials (BOM)
+#
+# Each entry maps a flow route to its canonical prompt template.
+# The PA compiler loads this file, selects the prompt_id by flow route,
+# loads the template, computes hashes, and emits a CompiledPromptArtifact.
+#
+# Invariant: No model-backed apps_rg step may call a provider without
+# a CompiledPromptArtifact compiled from this BOM.
+
+schema_version: "1.0"
+app_name: apps_rg
+bom_id: apps_rg.prompt_bom.v1
+
+resume_generation:
+  strategic_tailor:
+    prompt_id: apps_rg.resume_generation.strategic_tailor.v1
+    template: apps_rg/prompts/resume_generation/strategic_tailor.md
+    description: Full strategic tailoring with thematic analysis (K.0 flow)
+    requires_pa: true
+    model_backed: true
+
+  tailor_existing:
+    prompt_id: apps_rg.resume_generation.tailor_existing.v1
+    template: apps_rg/prompts/resume_generation/tailor_existing.md
+    description: Modify existing resume for target role
+    requires_pa: true
+    model_backed: true
+
+  generate_scratch:
+    prompt_id: apps_rg.resume_generation.generate_scratch.v1
+    template: apps_rg/prompts/resume_generation/generate_scratch.md
+    description: Build resume from scratch against JD
+    requires_pa: true
+    model_backed: true
+
+  enhance_current:
+    prompt_id: apps_rg.resume_generation.enhance_current.v1
+    template: apps_rg/prompts/resume_generation/enhance_current.md
+    description: Polish and enhance existing resume content
+    requires_pa: true
+    model_backed: true
