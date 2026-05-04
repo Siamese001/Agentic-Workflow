@@ -94,7 +94,7 @@ import os
 import urllib.parse
 from typing import Any
 
-import redis
+from agentic_core.cache.redis_cache_client import redis_module as redis
 
 from agentic_core.config.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError

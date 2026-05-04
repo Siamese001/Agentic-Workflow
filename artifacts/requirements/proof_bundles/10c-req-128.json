@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-128",
   "selected_at_utc": "2026-04-30T15:31:10.218605+00:00",
-  "evidence_bound_at_utc": "2026-04-30T15:31:10.218605+00:00",
+  "evidence_bound_at_utc": "2026-05-04T20:18:38.228349+00:00",
   "canonical_owner_surface": "06_L6_Shadow_Evaluation_System_Learning",
   "runtime_artifact_ref": "L6EvalRecord",
   "otel_span_ref": "l6.eval.record_sealed",
@@ -9,70 +9,11 @@
   "negative_control_result": "PASS",
   "test_file": "tests/unit/agentic_core/L6_observability/test_10c_req_128.py",
   "acceptance_command": "python -m pytest tests/unit/agentic_core/L6_observability/test_10c_req_128.py -v --no-header",
-  "ci_gate_name": "ops_scripts/ci/check_l6_shadow_eval_proof.py",
+  "ci_gate_name": "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_head_at_test_time": "694303203dd8ed350a5e90e123688031be6f1786",
   "git_dirty_at_test_time": false,
-  "content_hash": "b4ff565dada376710406689bc3e3f304c9e12b19b92a311032734bfc7ec76796",
-  "otel_proof": {
-    "harness": "tools.proof.otel_collector_proof",
-    "harness_mode": "in_memory_exporter_batch",
-    "target": "tests/unit/agentic_core/L6_observability/test_10c_req_128.py",
-    "expected_span": "l6.eval.record_sealed",
-    "span_count": 0,
-    "expected_seen": false,
-    "status": "NO_SPANS_EMITTED",
-    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
-    "captured_spans": [],
-    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "captured_at_utc": "2026-04-30T18:20:59.572528+00:00"
-  },
-  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.632483+00:00",
-  "actual_proof_depth": "E5_COMPOSITION_PROOF",
-  "composition_proof": {
-    "harness": "tools.proof.composition_proof_*",
-    "req_id": "10C-REQ-128",
-    "status": "SATISFIED",
-    "actual_proof_depth": "E5_COMPOSITION_PROOF",
-    "reason": "composition reached 2 top-level components and emitted l6.eval.record_sealed",
-    "components_attempted": [
-      "agentic_core.L6_observability surface",
-      "opentelemetry tracer for l6.eval span"
-    ],
-    "components_reached": [
-      "agentic_core.L6_observability surface",
-      "opentelemetry tracer for l6.eval span"
-    ],
-    "otel_proof": {
-      "harness": "tools.proof.otel_collector_proof",
-      "harness_mode": "in_memory_exporter",
-      "target": "composition.10C-REQ-128",
-      "expected_span": "l6.eval.record_sealed",
-      "span_count": 1,
-      "expected_seen": true,
-      "status": "SATISFIED",
-      "actual_proof_depth": "E6.5_INTEGRATED_RUNTIME",
-      "captured_spans": [
-        {
-          "name": "l6.eval.record_sealed",
-          "kind": "INTERNAL",
-          "status": "UNSET",
-          "attrs": {
-            "harness": "tools.proof.composition_proof_provenance_chain",
-            "provenance_sources": "lifecycle_trace_contract|L4_state_telemetry_shelf|L6_observability_baseline",
-            "provenance_sources_reached": 3,
-            "read_only": true,
-            "req_id": "10C-REQ-128"
-          }
-        }
-      ],
-      "replay_digest": "6581aa49d67e2b358ef54707c06e076681dac046090960611c207f1d6e24d253",
-      "captured_at_utc": "2026-04-30T18:21:34.683355+00:00",
-      "git_head": "1f157bd273090232a681951e43f76b0aad5682ae",
-      "git_dirty": true,
-      "target_exit_code": 0
-    }
-  }
+  "content_hash": "c8e19bc737223916b3f540f38aa33b0d7771ae3209b4a62cd3fd8660b84fc1f7"
 }

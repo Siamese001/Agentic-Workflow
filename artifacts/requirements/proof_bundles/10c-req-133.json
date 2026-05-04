@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-133",
   "selected_at_utc": "2026-04-30T15:25:26.958401+00:00",
-  "evidence_bound_at_utc": "2026-04-30T15:25:26.958401+00:00",
+  "evidence_bound_at_utc": "2026-05-04T20:18:38.202423+00:00",
   "canonical_owner_surface": "06_L6_Shadow_Evaluation_System_Learning",
   "runtime_artifact_ref": "L6EvalRecord",
   "otel_span_ref": "l6.eval.record_sealed",
@@ -9,26 +9,11 @@
   "negative_control_result": "PASS",
   "test_file": "tests/unit/agentic_core/L6_observability/test_10c_req_133.py",
   "acceptance_command": "python -m pytest tests/unit/agentic_core/L6_observability/test_10c_req_133.py -v --no-header",
-  "ci_gate_name": "ops_scripts/ci/check_l6_shadow_eval_proof.py",
+  "ci_gate_name": "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "3324888db4e60267618b09af1a40525642fcea86",
+  "git_head_at_test_time": "694303203dd8ed350a5e90e123688031be6f1786",
   "git_dirty_at_test_time": false,
-  "content_hash": "1fab1021d29bb4078789fa6588ea7960090a2548278ef14f9e225db4285f3fa7",
-  "otel_proof": {
-    "harness": "tools.proof.otel_collector_proof",
-    "harness_mode": "in_memory_exporter_batch",
-    "target": "tests/unit/agentic_core/L6_observability/test_10c_req_133.py",
-    "expected_span": "l6.eval.record_sealed",
-    "span_count": 0,
-    "expected_seen": false,
-    "status": "NO_SPANS_EMITTED",
-    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
-    "captured_spans": [],
-    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "captured_at_utc": "2026-04-30T18:20:59.572528+00:00"
-  },
-  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.632483+00:00",
-  "actual_proof_depth": "E4_NEGATIVE_CONTROL"
+  "content_hash": "b445adab0c82724f60e16dc4d80aa4d018e7c0f58b1146168c5d8772afd15b46"
 }

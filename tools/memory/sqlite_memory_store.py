@@ -19,11 +19,12 @@ import datetime as _dt
 import logging as _logging
 import math
 import os
-import sqlite3
 import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
+
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 _logger = _logging.getLogger(__name__)
 

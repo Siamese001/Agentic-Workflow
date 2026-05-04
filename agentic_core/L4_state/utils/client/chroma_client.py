@@ -309,3 +309,7 @@ class SovereignChromaClient:
         except (AttributeError, RuntimeError, TypeError, ValueError) as e:
             logger.error(f"Failed to delete collection '{collection_name}': {e}")
             raise
+
+# Re-export the raw chromadb module so consumers can route through this canonical
+# adapter instead of importing chromadb directly (constitutional §22, P2 infra wiring).
+chromadb_module = chromadb

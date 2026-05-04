@@ -450,3 +450,7 @@ _emit_verifies_boundary("p1", "redis_cache_client", "boundary_check")
 _emit_transcripts_response("p1", "redis_cache_client", "transcript")
 _emit_hard_fails_untranscripted("p1", "redis_cache_client")
 _emit_gated_by_confidence("p1", "redis_cache_client", "confidence_gate")
+
+# Re-export the raw redis module so consumers can route through this canonical
+# adapter instead of importing redis directly (constitutional §22, P2 infra wiring).
+redis_module = redis

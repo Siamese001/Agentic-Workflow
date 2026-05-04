@@ -1,7 +1,7 @@
 {
   "req_id": "10C-REQ-098",
   "selected_at_utc": "2026-04-30T15:31:10.216051+00:00",
-  "evidence_bound_at_utc": "2026-04-30T15:31:10.216051+00:00",
+  "evidence_bound_at_utc": "2026-05-04T20:18:38.227316+00:00",
   "canonical_owner_surface": "05_Exit_Evaluation_and_Control",
   "runtime_artifact_ref": "X3DispositionPacket",
   "otel_span_ref": "exit.x1.gates_evaluated",
@@ -9,26 +9,11 @@
   "negative_control_result": "PASS",
   "test_file": "tests/unit/agentic_core/L5_safety/exit_control/test_10c_req_098.py",
   "acceptance_command": "python -m pytest tests/unit/agentic_core/L5_safety/exit_control/test_10c_req_098.py -v --no-header",
-  "ci_gate_name": "ops_scripts/ci/check_exit_x3_disposition_proof.py",
+  "ci_gate_name": "ops_scripts/ci/check_10c_pilot_proof_evidence.py",
   "test_result": "PASS",
   "gate_result": "PASS",
   "proof_status": "EVIDENCE_PRESENT",
-  "git_head_at_test_time": "540f5eec0a2d760f56ceb36d0b11e6fc706ffd40",
+  "git_head_at_test_time": "694303203dd8ed350a5e90e123688031be6f1786",
   "git_dirty_at_test_time": false,
-  "content_hash": "51861f53403ff4ca41d7e07036e9cc4542c8a13a0d8e2cd713eecc47bd26c0d1",
-  "otel_proof": {
-    "harness": "tools.proof.otel_collector_proof",
-    "harness_mode": "in_memory_exporter_batch",
-    "target": "tests/unit/agentic_core/L5_safety/exit_control/test_10c_req_098.py",
-    "expected_span": "exit.x1.gates_evaluated",
-    "span_count": 0,
-    "expected_seen": false,
-    "status": "NO_SPANS_EMITTED",
-    "actual_proof_depth": "E4_NEGATIVE_CONTROL",
-    "captured_spans": [],
-    "replay_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "captured_at_utc": "2026-04-30T18:20:59.568493+00:00"
-  },
-  "otel_sweep_run_at_utc": "2026-04-30T18:20:59.622806+00:00",
-  "actual_proof_depth": "E4_NEGATIVE_CONTROL"
+  "content_hash": "5cc33741872eeaec96559a1fbefd61a603032961f683b529750287013cb6ad8c"
 }

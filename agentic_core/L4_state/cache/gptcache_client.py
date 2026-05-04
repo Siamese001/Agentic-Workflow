@@ -10,13 +10,14 @@ import datetime
 import hashlib
 import json as _json
 import logging
-import sqlite3
 import time
 from pathlib import Path
 from typing import Any
 
-import chromadb
+from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
 from tqdm import tqdm
+
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 Logger = logging.getLogger(__name__)
 

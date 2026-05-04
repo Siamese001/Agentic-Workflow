@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
-import sqlite3
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 
 @dataclass

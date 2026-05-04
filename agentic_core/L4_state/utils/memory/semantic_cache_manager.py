@@ -26,11 +26,12 @@ import json
 import logging
 import os
 import random
-import sqlite3
 import threading
 import time
 import uuid
 from typing import Any, Callable
+
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 # GPTCacheClient import for persistent Layer 2 backend
 try:
@@ -748,7 +749,7 @@ class SemanticCacheManager:
             Exception if connection failed, None if successful
         """
         try:
-            import redis
+            from agentic_core.cache.redis_cache_client import redis_module as redis
 
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
             self.redis_client = redis.from_url(redis_url, decode_responses=True)
