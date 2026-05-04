@@ -13,12 +13,12 @@ if str(REPO_ROOT) not in sys.path:
 
 
 class TestMainCanonicalImports:
-    """Verify main_canonical entrypoint is importable and wired correctly."""
+    """Verify main entrypoint is importable and wired correctly."""
 
-    def test_main_canonical_importable(self) -> None:
-        """main_canonical() can be imported from apps_rg.__main__."""
-        from apps_rg.__main__ import main_canonical
-        assert callable(main_canonical)
+    def test_main_importable(self) -> None:
+        """main() can be imported from apps_rg.__main__."""
+        from apps_rg.__main__ import main
+        assert callable(main)
 
     def test_spine_runtime_adapter_import_in_main(self) -> None:
         """SpineRuntimeAdapter is imported inside main_canonical scope."""
@@ -45,25 +45,20 @@ class TestMainCanonicalImports:
 
 
 class TestMainCanonicalVsMain:
-    """Compare main() (legacy) and main_canonical() (adapter) entrypoints."""
+    """Verify main() is the single entrypoint (pure shim to R4 runner)."""
 
-    def test_both_entrypoints_exist(self) -> None:
-        """Both main() and main_canonical() are available."""
-        from apps_rg.__main__ import main, main_canonical
+    def test_single_main_entrypoint(self) -> None:
+        """Only main() exists — main_canonical was removed in shim refactor."""
+        from apps_rg.__main__ import main
         assert callable(main)
-        assert callable(main_canonical)
-        # They are distinct functions
-        assert main is not main_canonical
+        assert not hasattr(__import__("apps_rg.__main__", fromlist=["main"]), "main_canonical")
 
-    def test_emission_config_builder_reused(self) -> None:
-        """Both entrypoints use the same _apps_rg_emission_config builder."""
-        from apps_rg.__main__ import _apps_rg_emission_config
-        cfg = _apps_rg_emission_config(
-            target_company="TestCorp",
-            target_role="TestRole",
-        )
-        assert cfg.app_name == "apps_rg"
-        assert cfg.expected_execution_form == "DETERMINISTIC_PIPELINE"
+    def test_main_passes_app_name_to_r4(self) -> None:
+        """main() delegates to R4 runner with app_name='apps_rg'."""
+        import inspect
+        from apps_rg.__main__ import main
+        source = inspect.getsource(main)
+        assert 'app_name="apps_rg"' in source
 
 
 class TestAdapterGovernedRunCompatibility:

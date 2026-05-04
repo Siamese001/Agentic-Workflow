@@ -57,31 +57,29 @@ class TestNarrativePassWiresHop4A:
         assert "generate_headline(" in source
 
 
-class TestMainCanonicalWiresPostPipeline:
-    """main_canonical() routes target_company runs through _run_post_pipeline."""
+class TestMainDelegatesToCoreRecipe:
+    """main() delegates all L2 execution to core-resolved recipe (post shim refactor).
 
-    def test_main_canonical_calls_run_post_pipeline(self):
+    Legacy main_canonical() and _run_post_pipeline() were removed — all post-pipeline
+    steps (narrative pass, docx export) are now L2 step adapters resolved by core.
+    """
+
+    def test_main_has_no_post_pipeline(self):
+        """__main__.py no longer contains _run_post_pipeline (moved to L2 steps)."""
         source = (
             Path(__file__).resolve().parents[2]
             / "apps_rg" / "__main__.py"
         ).read_text(encoding="utf-8")
-        # Locate main_canonical body
-        idx = source.index("def main_canonical(")
-        canonical_body = source[idx:]
-        # _run_post_pipeline must be invoked from main_canonical
-        assert "_run_post_pipeline(args)" in canonical_body, (
-            "main_canonical() must invoke _run_post_pipeline so HOP-4A-HEADLINE runs"
+        assert "_run_post_pipeline" not in source, (
+            "_run_post_pipeline was removed — post-pipeline steps are L2 step adapters"
         )
 
-    def test_main_canonical_no_placeholder_for_post_pipeline(self):
-        """The W4 placeholder skip must be removed."""
+    def test_main_has_no_main_canonical(self):
+        """__main__.py no longer contains main_canonical (single main() shim)."""
         source = (
             Path(__file__).resolve().parents[2]
             / "apps_rg" / "__main__.py"
         ).read_text(encoding="utf-8")
-        idx = source.index("def main_canonical(")
-        canonical_body = source[idx:]
-        # The old comment 'we skip the actual DOCX export' indicates the stub
-        assert "we skip the actual DOCX export" not in canonical_body, (
-            "Placeholder stub must be replaced by real _run_post_pipeline call"
+        assert "def main_canonical(" not in source, (
+            "main_canonical was removed — main() is the sole entrypoint"
         )
