@@ -49,8 +49,6 @@ Pure: no subprocess, no Notion API calls, no env reads. Specific
 exceptions only. Constitutional tie-in: §36 (new).
 """
 
-from __future__ import annotations
-
 import json
 import re
 import time

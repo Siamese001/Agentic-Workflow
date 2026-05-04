@@ -30,7 +30,6 @@ Exit codes
 1  at least one marker failed
 2  invalid input (no markers found, unreadable file)
 """
-from __future__ import annotations
 
 import argparse
 import json

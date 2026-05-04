@@ -30,8 +30,6 @@ exceptions only. All writes append-only; reads tolerate malformed rows
 by skipping (corruption recovery). Constitutional tie-in: §35 (new).
 """
 
-from __future__ import annotations
-
 import json
 from datetime import datetime, timezone
 from pathlib import Path

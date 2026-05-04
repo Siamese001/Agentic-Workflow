@@ -19,8 +19,6 @@ Both were non-deterministic across subprocesses and caused session-state
 divergence.
 """
 
-from __future__ import annotations
-
 import hashlib
 import os
 from pathlib import Path

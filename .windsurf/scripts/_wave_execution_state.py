@@ -35,8 +35,6 @@ Public API
     state_path()                -> Path            # canonical path for this session
 """
 
-from __future__ import annotations
-
 import json
 import os
 import time

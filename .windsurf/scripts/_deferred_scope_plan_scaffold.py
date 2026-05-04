@@ -23,8 +23,6 @@ session when the deferred item becomes active work; the scaffold is just
 enough to satisfy the plan-location SSOT and the pre-commit marker gate.
 """
 
-from __future__ import annotations
-
 import re
 import secrets
 from dataclasses import dataclass

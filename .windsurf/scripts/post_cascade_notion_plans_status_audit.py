@@ -25,8 +25,6 @@ Status option strings (2026-05-03).
 Bypass: NOTION_PLANS_STATUS_BYPASS=1 env var -- logs a bypass row and exits 0.
 """
 
-from __future__ import annotations
-
 import json
 import os
 import re

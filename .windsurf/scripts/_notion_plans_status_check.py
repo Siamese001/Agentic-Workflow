@@ -31,8 +31,6 @@ The helper does NOT read the environment or the filesystem; callers honor
 ``NOTION_PLANS_STATUS_BYPASS=1`` themselves.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------

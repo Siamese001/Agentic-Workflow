@@ -43,8 +43,6 @@ CONSTITUTIONAL
     - Bounded: JSONL reads capped at 10k lines
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sqlite3
@@ -54,7 +52,6 @@ from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # Library-backed calibration math (W2). Inline Wilson/binning has been retired.

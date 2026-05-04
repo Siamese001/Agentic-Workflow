@@ -32,11 +32,9 @@ THRESHOLDS (adjustable via --min-bind-rate etc.)
 CONSTITUTIONAL
     No shell, subprocess shell=False, UTF-8 stdio, specific exceptions.
 """
-from __future__ import annotations
 
 import argparse
 import json
-import math
 import sqlite3
 import subprocess
 import sys

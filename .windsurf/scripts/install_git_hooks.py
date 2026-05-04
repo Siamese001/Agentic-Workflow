@@ -23,8 +23,6 @@ CONSTITUTIONAL
     - Catches OSError specifically (no bare except)
 """
 
-from __future__ import annotations
-
 import argparse
 import os
 import stat

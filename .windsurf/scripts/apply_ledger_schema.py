@@ -23,8 +23,6 @@ Constitutional compliance:
     - subprocess unused (pure sqlite3)
 """
 
-from __future__ import annotations
-
 import argparse
 import re
 import sqlite3

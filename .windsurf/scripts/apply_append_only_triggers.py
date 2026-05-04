@@ -22,8 +22,6 @@ Exit codes:
 Constitutional: pure stdlib; specific exceptions; UTF-8; bounded.
 """
 
-from __future__ import annotations
-
 import argparse
 import glob
 import sqlite3

@@ -30,8 +30,6 @@ Bypass: callers are responsible for honoring SSOT_FOLDER_BYPASS=1 themselves
 Constitutional tie-in: §31 (see `.windsurf/rules/ssot-folder-enforcement.md`).
 """
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 from pathlib import PurePosixPath
