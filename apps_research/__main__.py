@@ -101,8 +101,8 @@ def _run_live_cert(argv: list[str]) -> int:
             _fec = resolve_fec(
                 "apps_research",
                 {
-                    "route_id": "R3_SIMPLE_GROUNDED_READ",
-                    "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
+                    "route_id": "apps_research.company_brief_v1",
+                    "route_contract": {"route_id": "apps_research.company_brief_v1"},
                     "template_ids": ["company_brief_v1"],
                 },
             )
@@ -170,7 +170,7 @@ def _build_exit_receipts(cert_route_entry, fec: dict | None) -> dict:
 
     return {
         "output": receipts_output,
-        "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
+        "route_contract": {"route_id": "apps_research.company_brief_v1"},
         "evidence_bundle": {},
         "final_evidence_contract": fec if isinstance(fec, dict) else {},
         "state_diff": {},
@@ -269,7 +269,7 @@ def _emit_capability_unavailable_exit() -> None:
         from apps_shared.cert import maybe_invoke_exit_eval  # noqa: PLC0415
         receipts = {
             "output": {},
-            "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
+            "route_contract": {"route_id": "apps_research.company_brief_v1"},
             "evidence_bundle": {},
             "final_evidence_contract": {},
             "state_diff": {},

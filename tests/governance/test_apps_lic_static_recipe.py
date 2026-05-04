@@ -483,16 +483,16 @@ class TestAppsLicPromptCompilationInRecipe:
         
         # Check required fields
         assert artifact.artifact_id, "Must have artifact_id"
-        assert artifact.prompt_hash, "Must have prompt_hash"
-        assert artifact.template_ref, "Must have template_ref"
-        assert artifact.bound_manifest_hash, "Must have bound_manifest_hash"
-        assert artifact.bound_policy_hash, "Must have bound_policy_hash"
-        assert artifact.bound_blueprint_hash, "Must have bound_blueprint_hash"
-        assert artifact.bound_replay_key, "Must have bound_replay_key"
+        assert artifact.artifact_hash, "Must have artifact_hash"
+        assert artifact.template_id, "Must have template_id"
+        assert artifact.manifest_hash, "Must have manifest_hash"
+        assert artifact.policy_hash, "Must have policy_hash"
+        assert artifact.blueprint_hash, "Must have blueprint_hash"
+        assert artifact.replay_key, "Must have replay_key"
         
         # Verify binding to execution context
-        assert artifact.bound_manifest_hash == "sha256:test_manifest"
-        assert artifact.bound_policy_hash == "test_policy"
+        assert artifact.manifest_hash == "sha256:test_manifest"
+        assert artifact.policy_hash == "test_policy"
 
     def test_compile_prompt_step_uses_real_pa_compiler_not_stub(self):
         """Assert compile_prompt step adapter calls real PA compiler, not hand-built stub."""
@@ -543,8 +543,8 @@ class TestAppsLicPromptCompilationInRecipe:
         
         # Verify it has real computed fields (not placeholder UUIDs)
         assert len(artifact.artifact_id) == 32, "artifact_id should be 32-char hex hash"
-        assert artifact.prompt_hash, "prompt_hash should be computed from content"
-        assert artifact.compiled_body, "compiled_body should contain rendered prompt"
+        assert artifact.artifact_hash, "artifact_hash should be computed from content"
+        assert artifact.rendered_slots, "rendered_slots should contain rendered prompt"
 
 
 class TestAppsLicRecipeRegistryIntegration:

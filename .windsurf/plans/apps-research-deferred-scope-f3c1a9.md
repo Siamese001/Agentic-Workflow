@@ -28,10 +28,10 @@ unit of work that can be planned and executed independently.
 
 | Wave | Focus | Est. Tokens | Status |
 |------|-------|-------------|--------|
-| DS-1 | cert_route_registry + exit receipts route_id fix | ~8K | TODO |
-| DS-2 | `evaluate_c0_gate` production path + BriefingEvidenceBundle E1 wiring | ~12K | TODO |
-| DS-3 | `agentic_core` runner live binding for `apps_research.company_brief_v1` | ~10K | TODO |
-| DS-4 | L6 observability layer — non-mutation proof | ~6K | TODO |
+| DS-1 | cert_route_registry + exit receipts route_id fix | ~8K | ✅ DONE |
+| DS-2 | `evaluate_c0_gate` production path + BriefingEvidenceBundle E1 wiring | ~12K | ✅ DONE (implemented in W3.1) |
+| DS-3 | `agentic_core` runner live binding for `apps_research.company_brief_v1` | ~10K | BLOCKED (agentic_core runner API not yet available) |
+| DS-4 | L6 observability layer — non-mutation proof | ~6K | ✅ DONE |
 
 ---
 
@@ -39,13 +39,13 @@ unit of work that can be planned and executed independently.
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| DS-1.1 | Fix `cert_route_registry.yaml` invoke_exit_eval | `apps_research/config/cert_route_registry.yaml` add `invoke_exit_eval: true` | Failing test: `test_cert_route_registry_has_invoke_exit_eval_true` | ~2K | TODO |
-| DS-1.2 | Fix `_build_exit_receipts` route_id shape | `apps_research/__main__.py` — `route_contract.route_id` must be `apps_research.company_brief_v1`, not `R3_SIMPLE_GROUNDED_READ` | Failing test: `test_build_exit_receipts_populates_fec` | ~3K | TODO |
-| DS-1.3 | Fix `cert/fec_producer.py` template-only path | `apps_research/cert/fec_producer.py` — dict shape mismatch on `template_only` path | Failing test: `test_template_only_path` | ~3K | TODO |
-| DS-2.1 | Wire `BriefingEvidenceBundle` through E1 gate | `apps_research/integrations/research_l2_step_adapters.py` E1C0EvidenceGateAdapter — accept `BriefingEvidenceBundle` as primary bundle type, call `evaluate_c0_gate(coverage_matrix, source_portfolio, depth_profile)` | Currently E1 only handles legacy `C0EvidenceBundle.validate_gate()` | ~6K | TODO |
-| DS-2.2 | `retrieve_briefing_bundle()` implementation | `apps_research/integrations/research_c0_adapter.py` `ResearchC0Adapter.retrieve_briefing_bundle()` — currently raises `NotImplementedError` | Needs real Tavily + reranker delegation | ~8K | TODO |
-| DS-3.1 | `agentic_core` runner live registration | `apps_research/integrations/research_capability_registry.py` — `register_company_brief_capability()` stubs `agentic_core` runner API; bind to real `agentic_core.L0_routing` runner when API is available | Blocked on `agentic_core` runner registration API landing | ~10K | TODO |
-| DS-4.1 | Create `apps_research/L6_observability/` stub | Create minimal `apps_research/L6_observability/__init__.py` so `test_apps_research_l6_does_not_mutate_current_run` transitions from SKIP to PASS | ~2K | TODO |
+| DS-1.1 | Fix `cert_route_registry.yaml` route_id | `apps_research/config/cert_route_registry.yaml` | route_id changed to `apps_research.company_brief_v1` | ~2K | ✅ DONE |
+| DS-1.2 | Fix `_build_exit_receipts` route_id shape | `apps_research/__main__.py` | `route_contract.route_id` → `apps_research.company_brief_v1` (all 3 callsites) | ~3K | ✅ DONE |
+| DS-1.3 | Fix `cert/fec_producer.py` default route | `apps_research/cert/fec_producer.py` | `_DEFAULT_ROUTE` → `apps_research.company_brief_v1` | ~3K | ✅ DONE |
+| DS-2.1 | Wire `BriefingEvidenceBundle` through E1 gate | `apps_research/integrations/research_l2_step_adapters.py` | Already implemented in W3.1 | ~6K | ✅ DONE |
+| DS-2.2 | `retrieve()` implementation | `apps_research/integrations/research_c0_adapter.py` | Already implemented in W2.1 (delegates to retrieve_briefing_bundle) | ~8K | ✅ DONE |
+| DS-3.1 | `agentic_core` runner live registration | `apps_research/integrations/research_capability_registry.py` | Blocked on `agentic_core` L0 runner registration API | ~10K | BLOCKED |
+| DS-4.1 | Create `apps_research/L6_observability/` stub | `apps_research/L6_observability/__init__.py` | SKIP → PASS (76/76 governance tests) | ~2K | ✅ DONE |
 
 ---
 

@@ -18,7 +18,7 @@ app_name: apps_research
 schema_version: "apps_research.cert_route_registry/v1"
 
 routes:
-  - route_id: R3_SIMPLE_GROUNDED_READ
+  - route_id: apps_research.company_brief_v1
     execution_form: SINGLE_STEP
     l3_required: false
     # Opt-in flag — when true, the cert entrypoint MUST invoke the v6
