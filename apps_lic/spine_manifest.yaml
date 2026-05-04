@@ -24,29 +24,48 @@
 schema_version: 1
 app: apps_lic
 
+# W4 P10: Updated to reflect the canonical apps_lic route surface.
+# apps_lic serves two outreach routes (R4 + R3R4) and one briefing-only route (R3).
+# The prior R3_grounded_read-only claim was inaccurate for the outreach path.
+
 claimed_routes:
-  - type: R3_grounded_read
+  - type: R4_SINGLE_ACTION
     description: >-
-      On-demand LIC outreach campaign / message-draft grounded
-      synthesis. CampaignRequest (campaign_id + target_audience +
-      compliance_level + name) → query construction → L1
-      query_planner.decompose_query → L0 AgenticRouter.route
-      (target=lic_campaign_assembly) → C0 hybrid retrieval over the
-      ``lic_docs`` collection (degrades gracefully when absent) →
-      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is
-      a sealed message-draft artifact (GovernedLicE2ERunRecord)
-      carrying grounded citations + support coverage + the LIC
-      domain context (campaign_id, target_audience, compliance_level).
-      The user reviews and sends the draft manually -- no LinkedIn
-      send-API call, no compliance-log write, no L4 admission.
+      Standard outreach draft path when a fresh PreloadedOutreachContextManifest
+      is present. U0 → L1 → L0 (emits R4_SINGLE_ACTION) → PA compiler (8 slots)
+      → L2 hop-based draft composition → Exit V6. Output is an OutreachDraft
+      sealed with content hash bound to manifest_hash. No durable state writes.
+      The user reviews and optionally sends — no LinkedIn send-API call is made.
     notes:
-      - "No CommitRequest expected -- the GovernedLicE2ERunRecord shape carries no commit / durable-write field."
-      - "compliance_level is synthesis METADATA describing the message draft, not evidence of a write to a durable compliance log. The audit found no compliance-log write surface."
-      - "output_<mission_id>.json (saved by run_workflow_lic) is LOCAL output-artifact persistence (json.dump to CWD), not L4-admitted durable state. Same shape as apps_research and apps_exec output saving."
-      - "No R3R4_managed_workflow semantics -- audit found no durable-write surface; promoting to R3R4 would be contract theater."
-      - "No build_time_compiler semantics -- requests run on demand, not at build time."
-      - "No formal exception -- apps_lic uses the standard GovernedAppRunner substrate; not exempt."
-      - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+      - "Fires when manifest.freshness_status='fresh' and BriefingReady validation passes."
+      - "No CommitRequest for raw outreach drafts. COMMIT_REQUEST reserved for approved reusable templates only."
+      - "All durable writes flow through Exit V6 → UWG → L4 only."
+      - "send_mode restricted to: draft_only, review_required, send_ready_candidate."
+      - "Forbidden send_mode values (send_now, auto_send, connector_send) route to R5 terminal."
+
+  - type: R3R4_MANAGED_WORKFLOW
+    description: >-
+      Managed workflow path for missing or stale briefing. U0 → L1 → L0
+      (emits R3R4_MANAGED_WORKFLOW) → L3 orchestrator dispatches
+      RequestForBriefing to AppsResearchBridge → apps_research produces
+      BriefingReady → convert to PreloadedOutreachContextManifest → resume
+      R4_SINGLE_ACTION path. On any research failure: fail-closed through
+      Exit V6 with the appropriate R5 reason code (no fallback draft).
+    notes:
+      - "Fires when manifest.missing=True OR manifest.stale=True AND research_authorized=True."
+      - "research_authorized=False when manifest.missing routes to R5 terminal (BRIEFING_MISSING_RESEARCH_NOT_AUTHORIZED)."
+      - "All 5 research failure codes (FAILED/EMPTY/BLOCKED/STALE/WEAK_SUPPORT) are fail-closed terminals."
+      - "Chain linkage receipt (L3RuntimeOrchestrationReceipt) binds R3 research run_id + R4 manifest_hash."
+
+  - type: R3_SIMPLE_GROUNDED_READ
+    description: >-
+      Briefing-only path when the request explicitly targets briefing artifact
+      production (briefing_only=true in OutreachRequest). C0 or apps_research
+      evidence path → optional PA/L2 synthesis → Exit. Produces a governed
+      briefing artifact only — NEVER an outreach draft.
+    notes:
+      - "Fires when explicit_briefing_only_request=true in L0 decision matrix."
+      - "No outreach draft is produced on this path — briefing artifact only."
 
 # HITL posture (informational, not a route-shape modifier):
 #   apps_lic.integrations.governed_lic_run.GovernedLicRun.HITL_ENABLED = True

@@ -167,6 +167,52 @@ logging.basicConfig(
 _log = logging.getLogger("apps_lic")
 
 
+R5_REASON_CODES = frozenset({
+    "BRIEFING_MISSING_RESEARCH_NOT_AUTHORIZED",
+    "BRIEFING_STALE_RESEARCH_NOT_AUTHORIZED",
+    "APPS_RESEARCH_FAILED",
+    "APPS_RESEARCH_EMPTY",
+    "APPS_RESEARCH_STALE",
+    "APPS_RESEARCH_WEAK_SUPPORT",
+    "APPS_RESEARCH_BLOCKED",
+    "UNSUPPORTED_MANDATORY_CLAIM",
+    "HIGH_FRICTION_ASK",
+    "FORBIDDEN_SEND_MODE",
+    "INVALID_ROUTE_CONTRACT",
+    "L0_POLICY_VIOLATION",
+    "CAPABILITY_UNAVAILABLE",
+    "SCHEMA_REJECTION",
+})
+
+
+def _emit_r5_terminal_via_exit(
+    reason_code: str,
+    detail: str = "",
+    *,
+    exit_code: int = 1,
+) -> None:
+    """Route every R5 / fail-closed terminal path through Exit V6 before process exit.
+
+    L0 MUST NOT call sys.exit() directly on a terminal path — every failure
+    must pass through this function so the Exit V6 receipt is emitted and the
+    X3 disposition recorded. Durable writes are Exit → UWG → L4 only.
+
+    Args:
+        reason_code: One of R5_REASON_CODES. Unknown codes are logged as warnings.
+        detail: Human-readable context for the failure.
+        exit_code: Process exit code (default 1; use 2 for schema rejection / U0 pre-routing).
+    """
+    if reason_code not in R5_REASON_CODES:
+        _log.warning(
+            "[apps_lic] _emit_r5_terminal_via_exit: unknown reason_code=%r — "
+            "add to R5_REASON_CODES; proceeding with exit",
+            reason_code,
+        )
+    _log.error("[apps_lic] R5 terminal: reason=%s detail=%s", reason_code, detail or "(none)")
+    _emit_escalates_failure("r5_terminal", "__main__", reason_code)
+    sys.exit(exit_code)
+
+
 def _adg_bootstrap() -> None:
     try:
         from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
@@ -360,6 +406,17 @@ def _maybe_run_exit_hook() -> None:
         _log.warning("[apps_lic] Exit hook raised %s: %s", type(exc).__name__, exc)
 
 
+def _emit_l0_route_contract(route_id: str) -> None:
+    """Emit the L0 RouteContract decision before any execution dispatch.
+
+    L0 is decision-only. Every non-terminal path MUST call this function
+    to record which route was selected before handing off to L2/L3.
+    Terminal paths use _emit_r5_terminal_via_exit instead.
+    """
+    _emit_proposal_commits_routing("l0_decision", "__main__", route_id)
+    _log.info("[apps_lic] L0 RouteContract: route_id=%s", route_id)
+
+
 def main() -> None:
     # Live certification path — emits real spine receipts and exits 0.
     if _is_live_cert_mode():
@@ -369,6 +426,13 @@ def main() -> None:
     from apps_shared._apps_e2e_dry_run import maybe_short_circuit
     maybe_short_circuit("apps_lic")
     _adg_bootstrap()
+
+    # L0 decision-only guard: emit RouteContract before any execution dispatch.
+    # The canonical path (run_workflow_lic) is treated as R4_SINGLE_ACTION until
+    # the full manifest-aware router (W2-W3) is wired.
+    # L0 MUST NOT execute work, call providers, or write durable state.
+    _emit_l0_route_contract("R4_SINGLE_ACTION")
+
     import asyncio
 
     from agentic_core.runtime.contracts.otel_lifecycle_bridge import (

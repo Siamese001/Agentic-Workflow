@@ -123,7 +123,7 @@ class ResearchOrchestrator:
     dry_run: bool = False
     output_dir: str = "reports/research"
     gate_mode: str = "HARD_FAIL"
-    hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    stage_checkpoints: list[dict[str, Any]] = field(default_factory=list)  # renamed from hop_checkpoints; back-compat alias below
     qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
@@ -342,7 +342,7 @@ class ResearchOrchestrator:
 
         try:
             assembly = self._assembly.execute(request)
-            self._record_hop("HOP-1-ASSEMBLY", bool(assembly.sections))
+            self._record_hop("STAGE-ASSEMBLY", bool(assembly.sections))
             result.sections = assembly.sections
             result.comparison_matrix = assembly.comparison_matrix
             result.source_register = assembly.source_register
@@ -355,7 +355,7 @@ class ResearchOrchestrator:
 
             result.status = "gate_checking"
             gate = self._gate.validate(assembly.sections, assembly.source_register, required_ids)
-            self._record_hop("HOP-2-GATE", gate.passed)
+            self._record_hop("STAGE-GATE", gate.passed)
             result.quality_score = gate.quality_score
             result.gate_violations = [f"[{v.rule_id}:{v.severity}] {v.message}" for v in gate.violations]
 
@@ -368,14 +368,14 @@ class ResearchOrchestrator:
                 if not is_dry:
                     paths = self._emit_artifacts(result, trace_id)
                     result.artifact_paths = paths
-                    self._record_hop("HOP-3-EMIT", True)
+                    self._record_hop("STAGE-EMIT", True)
 
         except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             _log.error("[ResearchOrchestrator] Pipeline error trace=%s: %s", trace_id, exc, exc_info=True)
             result.status = "failed"
             result.error = str(exc)
             self._record_hop("PIPELINE-ERROR", False)
-            result.provenance["checkpoints"] = [c["hop_id"] for c in self.hop_checkpoints]
+            result.provenance["checkpoints"] = [c["hop_id"] for c in self.stage_checkpoints]
 
         summary = ResearchRunSummary(
             trace_id=trace_id,
@@ -487,7 +487,12 @@ class ResearchOrchestrator:
         return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
-        self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
+        self.stage_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
+
+    @property
+    def hop_checkpoints(self) -> list[dict[str, Any]]:
+        """Back-compat alias for stage_checkpoints."""
+        return self.stage_checkpoints
 
     async def synthesize_research_with_qwen(
         self,

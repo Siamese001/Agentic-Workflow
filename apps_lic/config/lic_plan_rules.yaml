@@ -1,0 +1,231 @@
+# apps_lic Plan Rules
+#
+# Channel-specific architectural config for L1 message planning.
+# Consumed by MessagePlanner and lic_pa_compiler.py.
+#
+# These rules are L1 planning constraints — not L0 policy gates.
+# L0 uses l0_policy.yaml; this file governs how the message is structured
+# once a route has been decided.
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P12
+
+schema_version: "1.0"
+app: apps_lic
+
+# ---------------------------------------------------------------------------
+# Channel-specific architecture
+# ---------------------------------------------------------------------------
+channel_rules:
+  email:
+    max_word_counts:
+      EXECUTIVE_cold:           100
+      EXECUTIVE_warm_referral:  120
+      C_LEVEL_cold:             100
+      C_LEVEL_warm_referral:    120
+      VP_ENG_cold:              100
+      VP_ENG_warm_referral:     120
+      CTO_cold:                 100
+      CTO_warm_referral:        120
+      HIRING_MANAGER_cold:      150
+      HIRING_MANAGER_warm:      200
+      RECRUITER_cold:           150
+      RECRUITER_warm:           200
+      SENIOR_TA_cold:           150
+      SENIOR_TA_warm:           200
+    ceiling_tolerance: 1.10     # fail_closed_when: word_count > ceiling * tolerance
+    forbidden_patterns:
+      - em_dash                 # — or –
+      - passive_opener          # "Hope this finds you well"
+      - generic_opener          # "I would love to learn more"
+      - plain_links_only        # no hyperlinked text, bare URLs only
+    required_structure:
+      - subject_line
+      - opening_hook
+      - value_proposition
+      - cta
+    signature_required: true
+
+  linkedin:
+    max_word_counts:
+      any_cold:                 60
+      any_warm_referral:        80
+    ceiling_tolerance: 1.10
+    forbidden_patterns:
+      - em_dash
+      - passive_opener
+      - generic_opener
+      - would_love_to_connect   # "would love to connect"
+    required_structure:
+      - opening_hook
+      - value_proposition
+      - cta
+    subject_line_required: false
+    signature_required: false
+
+  text:
+    max_word_counts:
+      any: 50
+    ceiling_tolerance: 1.05
+    forbidden_patterns:
+      - em_dash
+      - generic_opener
+    required_structure:
+      - cta
+    subject_line_required: false
+    signature_required: false
+
+# ---------------------------------------------------------------------------
+# Recipient-class persona rules
+# ---------------------------------------------------------------------------
+recipient_class_rules:
+  EXECUTIVE:
+    tone: executive_peer
+    personalization_depth: high
+    require_trigger_if_available: true
+    cold_ask: low_friction_reciprocity_first
+    asymmetric_insight_required: true
+    briefing_depth: deep
+    confidence_threshold: 0.5   # fail-closed if below AND no safe generic note
+
+  C_LEVEL:
+    tone: executive_peer
+    personalization_depth: high
+    require_trigger_if_available: true
+    cold_ask: low_friction_reciprocity_first
+    asymmetric_insight_required: true
+    briefing_depth: deep
+    confidence_threshold: 0.5
+
+  CTO:
+    tone: executive_peer_technical
+    personalization_depth: high
+    require_trigger_if_available: true
+    cold_ask: low_friction_reciprocity_first
+    asymmetric_insight_required: true
+    briefing_depth: deep
+    confidence_threshold: 0.5
+
+  VP_ENG:
+    tone: executive_peer_technical
+    personalization_depth: high
+    require_trigger_if_available: true
+    cold_ask: low_friction_reciprocity_first
+    asymmetric_insight_required: true
+    briefing_depth: deep
+    confidence_threshold: 0.5
+
+  HIRING_MANAGER:
+    tone: professional_direct
+    personalization_depth: medium
+    require_trigger_if_available: true
+    cold_ask: direct_value_first
+    asymmetric_insight_required: false
+    briefing_depth: standard
+    confidence_threshold: 0.3
+
+  RECRUITER:
+    tone: professional_concise
+    personalization_depth: low
+    require_trigger_if_available: false
+    cold_ask: direct
+    asymmetric_insight_required: false
+    briefing_depth: standard
+    confidence_threshold: 0.3
+
+  SENIOR_TA:
+    tone: professional_concise
+    personalization_depth: low
+    require_trigger_if_available: false
+    cold_ask: direct
+    asymmetric_insight_required: false
+    briefing_depth: standard
+    confidence_threshold: 0.3
+
+  REFERRAL_CONTACT:
+    tone: warm_collegial
+    personalization_depth: medium
+    require_trigger_if_available: false
+    cold_ask: make_forwarding_easy
+    asymmetric_insight_required: false
+    briefing_depth: standard
+    confidence_threshold: 0.3
+
+# ---------------------------------------------------------------------------
+# Outreach mode modifiers
+# ---------------------------------------------------------------------------
+outreach_mode_modifiers:
+  cold:
+    cta_style: low_ask        # short, easy-to-decline ask
+    personalization_leads: true
+    value_before_ask: true
+
+  warm:
+    cta_style: medium_ask
+    personalization_leads: false
+    reference_shared_context: true
+
+  referral:
+    cta_style: medium_ask
+    reference_referrer: true
+    make_forwarding_easy: true
+
+  followup:
+    cta_style: light_nudge
+    reference_prior_message: true
+    brevity_priority: high
+
+# ---------------------------------------------------------------------------
+# PA compiler slot defaults
+# ---------------------------------------------------------------------------
+pa_compiler_slots:
+  S0:
+    name: system_and_governance
+    required: true
+    notes: "spine identity, constitutional constraints, app_name=apps_lic"
+
+  I0:
+    name: outreach_rules
+    required: true
+    notes: "channel rules, length ceilings, anti-pattern list, send_mode restrictions"
+
+  C0:
+    name: verified_briefing_context
+    required: true
+    notes: "recipient/company brief — all external text fenced as DATA; bound to manifest content_hashes"
+
+  U0:
+    name: user_ask
+    required: true
+    notes: "outreach request — channel, outreach_mode, recipient_class, personalization_claims"
+
+  D0:
+    name: origin_and_injection_fences
+    required: true
+    notes: "label all external text as data; prevents prompt injection from briefing content"
+
+  E0:
+    name: approved_examples
+    required: false
+    notes: "approved prior messages (optional); only from approved examples corpus"
+
+  Y0:
+    name: approved_writing_preferences
+    required: false
+    notes: "voice/style preferences (optional); from sender config"
+
+  R0:
+    name: output_schema
+    required: true
+    notes: "OutreachDraft schema + send_mode restrictions + omission_policy"
+
+# ---------------------------------------------------------------------------
+# Global plan rules
+# ---------------------------------------------------------------------------
+global_rules:
+  no_fabricated_relationship: true       # hard-fail always
+  no_fabricated_application_status: true # hard-fail always
+  no_confidential_leakage: true          # hard-fail always
+  antipattern_check: required            # hard-fail on any of 15+ patterns
+  factual_support_for_remaining_claims: true
+  omission_policy_respected: true        # omit_unsupported claims tracked in OutreachDraft.omitted_claims
+  send_mode_enforcement: true            # forbidden modes → R5 terminal

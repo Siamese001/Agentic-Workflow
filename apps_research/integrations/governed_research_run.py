@@ -124,11 +124,11 @@ class GovernedE2ERunRecord:
     l5_error: str = ""
     l6_error: str = ""
     hitl_error: str = ""
-    # ── Inner-DAG HOP checkpoints (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+    # ── Inner pipeline checkpoints (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
     # Populated by ResearchHopOrchestrator after the outer substrate run.
     # Shape: tuple of dicts with keys stage_id/stage_name/status/duration_ms/error.
     # Default empty tuple preserves back-compat for callers that existed
-    # before the inner DAG was wired in.
+    # before the inner pipeline was wired in (apps-hop-substrate-four-apps-b4a2c9).
     hop_checkpoints: tuple[dict, ...] = ()
     hop_terminal_error: str = ""
 
@@ -191,9 +191,9 @@ class GovernedResearchRun(GovernedAppRunner):
             inject_chunks=inject_chunks,
         )
 
-        # ── Inner-DAG HOP pipeline (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
-        # Run the 3-stage apps_research HOP pipeline after the substrate returns.
-        # Isolated helper so inner-DAG failures cannot take down substrate
+        # ── Inner pipeline checkpoints (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9) ──
+        # Run the 3-stage apps_research inner pipeline after the substrate returns.
+        # Isolated helper so inner pipeline failures cannot take down substrate
         # record assembly — mirror of apps_lic Wave 2.5 posture.
         hop_payload = self._run_hop_pipeline(
             request=request,
@@ -211,7 +211,7 @@ class GovernedResearchRun(GovernedAppRunner):
         )
 
     # ------------------------------------------------------------------
-    # Inner-DAG driver (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9)
+    # Inner pipeline driver (Wave 5 — plan apps-hop-substrate-four-apps-b4a2c9)
     # ------------------------------------------------------------------
 
     def _run_hop_pipeline(
@@ -221,16 +221,16 @@ class GovernedResearchRun(GovernedAppRunner):
         run_id: str,
         trace_id: str,
     ) -> dict[str, Any]:
-        """Execute the 3-stage apps_research HOP pipeline.
+        """Execute the 3-stage apps_research inner pipeline (R3_SIMPLE_GROUNDED_READ).
 
         Isolated helper so failure modes cannot take down the substrate
-        record assembly — any exception inside the HOP pipeline is
+        record assembly — any exception inside the inner pipeline is
         captured and surfaced via ``hop_terminal_error`` instead of
         propagating.
         """
         try:
             # Lazy import keeps the substrate-only import surface unchanged
-            # for existing consumers that don't exercise the inner DAG.
+            # for existing consumers that don't exercise the inner pipeline.
             from apps_research.reasoning.ResearchHopOrchestrator import (  # noqa: PLC0415
                 ResearchHopOrchestrator,
             )

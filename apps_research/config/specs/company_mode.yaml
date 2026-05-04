@@ -1,8 +1,9 @@
 mode: company
 description: |
   Company intelligence research producing a structured CompanyBrief
-  conforming to apps_rg/schemas/company_research.schema.json. Used by
-  apps_rg HOP-0.6-COMPANY-RESEARCH for narrative generation.
+  conforming to apps_rg/schemas/company_research.schema.json. Served via
+  the R3_SIMPLE_GROUNDED_READ route for downstream consumers (apps_rg narrative
+  generation, apps_lic outreach, etc.).
 required_inputs:
   - topic
 optional_inputs:

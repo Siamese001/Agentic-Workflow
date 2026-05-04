@@ -8,9 +8,13 @@
   grounding_required: true
   managed_workflow_allowed: true
   allowed_route_ids:
-  - research.company_brief.default
-  - research.company_brief.fast
-  - research.company_brief.deep
+    - R3_SIMPLE_GROUNDED_READ
+    - R5_PRE_ROUTE_FALLBACK
+    - R1A_EXACT_CACHE
+    - R1B_SEMANTIC_CACHE
+    - research.company_brief.default
+    - research.company_brief.fast
+    - research.company_brief.deep
   l3_dag_ref: ''
   source_app_config_ref: apps_research/config/
   created_at: '2026-05-01'

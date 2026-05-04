@@ -14,7 +14,7 @@ Shape
         "grounded": <bool>,
         "retrieval_sources": [<citation_url | doc_id>, ...],
         "template_ids": [<template_id>, ...],
-        "route_id": "apps_research.company_brief_v1",
+        "route_id": "R3_SIMPLE_GROUNDED_READ",
         "evidence_sufficiency": "grounded" | "template_only" | "empty",
     }
 
@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 
 _SCHEMA_VERSION = "1.0"
 _PRODUCER_ID = "apps_research.cert.fec_producer"
-_DEFAULT_ROUTE = "apps_research.company_brief_v1"
+_DEFAULT_ROUTE = "R3_SIMPLE_GROUNDED_READ"
 _DEFAULT_TEMPLATE_IDS = ("company_brief_v1",)
 
 

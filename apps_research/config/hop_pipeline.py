@@ -1,8 +1,10 @@
-"""apps_research HOP pipeline topology.
+"""apps_research inner pipeline stage registry.
 
-Declares the 3-stage inner DAG for the autonomous research pipeline:
-retrieve prior research artifacts -> generate company brief ->
-assemble final research artifact.
+Registers the 3 stages of the apps_research inner pipeline under the
+canonical R3_SIMPLE_GROUNDED_READ route:
+  1. research_retrieval  — retrieve prior research artifacts
+  2. company_brief       — generate company brief (C0 grounded)
+  3. research_assembly   — assemble final research artifact
 
 This substrate adoption is **additive**: the existing imperative runtime
 (``BaseResearchEngine`` subclasses driven by
@@ -12,6 +14,7 @@ callers drive the same 3 stages declaratively via the standard
 ``HopPipelineExecutor`` surface — useful for replay, composability, and
 per-stage checkpointing.
 
+Route: R3_SIMPLE_GROUNDED_READ (SIMPLE=no L3, GROUNDED=C0 required, READ=informational)
 Plan: .windsurf/plans/apps-hop-substrate-four-apps-b4a2c9.md (Wave 1)
 """
 

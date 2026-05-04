@@ -1,0 +1,164 @@
+# apps_lic R4_SINGLE_ACTION static DAG
+#
+# 5-stage recipe for outreach draft composition when a fresh
+# PreloadedOutreachContextManifest is available.
+#
+# Invariants:
+#   - Each stage declares its inputs and outputs explicitly.
+#   - No stage calls providers, subprocess, or writes durable state.
+#   - Durable writes are Exit → UWG → L4 only.
+#   - stages are executed sequentially by the L2 static DAG runner.
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W2 P6
+
+dag_id: apps_lic_r4_static_dag
+version: "1.0.0"
+route_family: R4_SINGLE_ACTION
+app_name: apps_lic
+description: >
+  5-stage R4 recipe: load manifest → validate context → plan message →
+  compose draft → seal output. Requires a fresh PreloadedOutreachContextManifest
+  as input. Never produces an outreach draft from a stale or missing manifest.
+
+stages:
+  - stage_id: load_manifest
+    order: 1
+    description: >
+      Load and deserialize the PreloadedOutreachContextManifest from the
+      validated request. Verify manifest_hash integrity. Fail-closed if
+      manifest is absent, hash-invalid, or freshness_status != "fresh".
+    inputs:
+      - name: validated_request
+        type: ValidatedRequest
+        source: l0_output
+    outputs:
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+    fail_closed_on:
+      - manifest_absent
+      - hash_mismatch
+      - freshness_not_fresh
+    r5_reason_codes:
+      manifest_absent: BRIEFING_MISSING_RESEARCH_NOT_AUTHORIZED
+      hash_mismatch: SCHEMA_REJECTION
+      freshness_not_fresh: BRIEFING_STALE_RESEARCH_NOT_AUTHORIZED
+
+  - stage_id: validate_context
+    order: 2
+    description: >
+      Run BriefingReady validation against the loaded manifest.
+      Checks: confidence_score, freshness, required coverage fields,
+      source_items, audit_refs, content_hashes, origin_label_map,
+      and unsupported_fact_flags classification.
+      Fail-closed with the appropriate R5 reason code on any failure.
+    inputs:
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+        source: load_manifest.manifest
+    outputs:
+      - name: validated_manifest
+        type: PreloadedOutreachContextManifest
+      - name: briefing_ready_result
+        type: BriefingReadyResult
+    fail_closed_on:
+      - briefing_ready_invalid
+    r5_reason_codes:
+      briefing_ready_invalid: pass_through_from_BriefingReadyResult
+
+  - stage_id: plan_message
+    order: 3
+    description: >
+      Invoke MessagePlanner to produce a MessagePlan from the validated
+      manifest. Applies channel constraints, recipient-class persona
+      refinements, and personalization_mode guidance. Does not call
+      any provider — planning only.
+    inputs:
+      - name: validated_manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_context.validated_manifest
+    outputs:
+      - name: message_plan
+        type: MessagePlan
+    fail_closed_on:
+      - planning_failed
+    r5_reason_codes:
+      planning_failed: L0_POLICY_VIOLATION
+
+  - stage_id: compose_draft
+    order: 4
+    description: >
+      Execute the hop-based K3 draft composition using the MessagePlan.
+      All claims are grounded through source_items in the manifest.
+      Omission policy applied per claim_permission_map.
+      send_mode defaults to "draft_only"; forbidden modes (send_now,
+      auto_send, connector_send) cause immediate fail-closed.
+      Output includes omitted_claims list per OutreachDraft schema.
+    inputs:
+      - name: validated_manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_context.validated_manifest
+      - name: message_plan
+        type: MessagePlan
+        source: plan_message.message_plan
+    outputs:
+      - name: outreach_draft
+        type: OutreachDraft
+    fail_closed_on:
+      - forbidden_send_mode
+      - unsupported_mandatory_claim
+      - high_friction_ask
+    r5_reason_codes:
+      forbidden_send_mode: FORBIDDEN_SEND_MODE
+      unsupported_mandatory_claim: UNSUPPORTED_MANDATORY_CLAIM
+      high_friction_ask: HIGH_FRICTION_ASK
+
+  - stage_id: seal_output
+    order: 5
+    description: >
+      Seal the OutreachDraft with a content hash bound to the manifest_hash.
+      Emit the L2 execution receipt. Validate that send_mode is in the
+      allowed set before sealing. No durable writes here — output is
+      passed to Exit V6 via the R4 entrypoint.
+    inputs:
+      - name: outreach_draft
+        type: OutreachDraft
+        source: compose_draft.outreach_draft
+      - name: validated_manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_context.validated_manifest
+    outputs:
+      - name: l2_receipt
+        type: L2ExecutionReceipt
+    fail_closed_on:
+      - seal_failed
+      - forbidden_send_mode_late_check
+    r5_reason_codes:
+      seal_failed: SCHEMA_REJECTION
+      forbidden_send_mode_late_check: FORBIDDEN_SEND_MODE
+
+# ---------------------------------------------------------------------------
+# DAG-level invariants (enforced by static DAG runner)
+# ---------------------------------------------------------------------------
+invariants:
+  - id: INV-1
+    description: >
+      No stage may produce an outreach draft with send_mode in
+      {send_now, auto_send, connector_send}. Violation → immediate
+      fail-closed via R5 terminal.
+
+  - id: INV-2
+    description: >
+      manifest_hash must be verified against all fields at load_manifest
+      and must remain unchanged through all subsequent stages.
+
+  - id: INV-3
+    description: >
+      All claims present in compose_draft.outreach_draft.claims_used must
+      have a corresponding entry in manifest.source_items.
+      Unsourced claims → UNSUPPORTED_MANDATORY_CLAIM unless classified as
+      omit_unsupported in claim_permission_map.
+
+  - id: INV-4
+    description: >
+      The DAG must not write any file, call any provider, or mutate any
+      durable state. Output flows to Exit V6 only.

@@ -19,24 +19,38 @@ schema_version: 1
 app: apps_research
 
 claimed_routes:
-  - type: R3_grounded_read
+  - type: R3_SIMPLE_GROUNDED_READ
     description: >-
       On-demand grounded research synthesis. ResearchRequest.topic →
       L1 query decomposition → L0 intent routing
       (target=research_assembly) → C0 hybrid retrieval over the
       ``process_docs`` collection (degrades gracefully when absent) →
-      L2 authorize_and_execute → L5+L6 evaluate_and_emit. Output is a
-      sealed research artifact (GovernedE2ERunRecord) carrying
-      grounded citations + support coverage. No durable side effect
-      on real-world systems; no ``CommitRequest`` is in scope. The
-      spine IS in the runtime path of every research request, so the
-      full R3 contract chain is surfaced via
-      ``apps_research/integrations/spine_handoff.py``.
+      L2 authorize_and_execute (E1-E5) → FEC Producer → Exit v6 →
+      L5+L6 evaluate_and_emit. Output is a sealed research artifact
+      (GovernedE2ERunRecord) carrying grounded citations + support
+      coverage. No durable side effect on real-world systems; no
+      ``CommitRequest`` is in scope. R3_SIMPLE_GROUNDED_READ:
+      SIMPLE=no L3, GROUNDED=C0 mandatory, READ=informational output.
     notes:
       - "No CommitRequest expected -- this route does not cross L4 admission."
       - "No build_time_compiler semantics -- requests run on demand, not at build time."
       - "No formal exception -- apps_research uses the standard GovernedAppRunner substrate."
       - "Direct contract surfacing required for scanner visibility -- see spine_handoff.py."
+      - "R5 pre-route terminal is distinct from R3: R5 fires before C0 on unroutable requests."
+      - "Post-R3 degraded packets are distinct from R5: emitted by C0-to-PA gate on FAIL."
+      - "The Lincoln brief is a depth exemplar for COMPANY_BRIEF_DEEP -- not a fixed section template."
+
+  - type: R5_PRE_ROUTE_FALLBACK
+    description: >-
+      Pre-route terminal that fires before C0 when a request cannot be
+      routed (ambiguous topic, clarification required, or safe-abstain
+      policy triggered). Returns CLARIFY_PACKET, SAFE_ABSTAIN_PACKET,
+      SAFE_FALLBACK_PACKET, or MARK_DEGRADED_PACKET. Does not invoke C0
+      retrieval. Distinct from post-R3 degraded packets (which are
+      emitted after C0 completes). execution_form: TERMINAL_SHORTCIRCUIT.
+    notes:
+      - "l3_required: false"
+      - "No CommitRequest. No durable writes."
 
 # References:
 # - apps_research/integrations/spine_handoff.py

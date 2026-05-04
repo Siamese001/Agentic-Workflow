@@ -1,0 +1,276 @@
+# apps_lic R3R4_MANAGED_WORKFLOW static DAG
+#
+# 8-stage recipe for the missing/stale briefing path.
+# When L0 routes to R3R4_MANAGED_WORKFLOW (manifest.missing or manifest.stale),
+# this DAG orchestrates apps_research first, converts the result to a
+# PreloadedOutreachContextManifest, then hands off to the R4 path.
+#
+# Invariants:
+#   - Stages 1-4 (research phase) are R3 — no draft output produced.
+#   - Stage 4 is the R3→R4 transition gate: fail-closed if research fails.
+#   - Stages 5-8 mirror apps_lic_static_dag.yaml (R4 path) exactly.
+#   - No stage calls providers or writes durable state.
+#   - All durable writes flow through Exit → UWG → L4 only.
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W3 P8
+
+dag_id: apps_lic_managed_workflow_dag
+version: "1.0.0"
+route_family: R3R4_MANAGED_WORKFLOW
+app_name: apps_lic
+description: >
+  8-stage managed workflow recipe:
+  Stage 1-4 (R3 research phase): validate request → authorize research →
+  call apps_research via bridge → validate research result + build manifest.
+  Stage 5-8 (R4 outreach phase): plan message → compose draft → seal output → emit receipt.
+  Fail-closed at stage 4 on any research failure; the R4 stages never execute
+  without a valid PreloadedOutreachContextManifest.
+
+# ---------------------------------------------------------------------------
+# R3 Phase — Research (stages 1-4)
+# ---------------------------------------------------------------------------
+stages:
+  - stage_id: validate_request_for_briefing
+    order: 1
+    phase: R3_research
+    description: >
+      Validate the incoming RequestForBriefing. Check research_authorized,
+      recipient_class, channel, and outreach_mode are within policy.
+      Fail-closed with APPS_RESEARCH_BLOCKED if research_authorized=False.
+      Fail-closed with SCHEMA_REJECTION for structurally invalid request.
+    inputs:
+      - name: raw_request
+        type: dict
+        source: l0_output
+    outputs:
+      - name: request_for_briefing
+        type: RequestForBriefing
+    fail_closed_on:
+      - research_not_authorized
+      - invalid_schema
+    r5_reason_codes:
+      research_not_authorized: APPS_RESEARCH_BLOCKED
+      invalid_schema: SCHEMA_REJECTION
+
+  - stage_id: authorize_research
+    order: 2
+    phase: R3_research
+    description: >
+      Verify the capability_ref is in the registered apps_research capability
+      registry. Check that the run policy permits auto-research for this
+      recipient_class and outreach_mode. Fail-closed if not permitted.
+      This is a decision-only gate — no research call is made here.
+    inputs:
+      - name: request_for_briefing
+        type: RequestForBriefing
+        source: validate_request_for_briefing.request_for_briefing
+    outputs:
+      - name: authorized_request
+        type: RequestForBriefing
+    fail_closed_on:
+      - capability_not_registered
+      - policy_prohibits_research
+    r5_reason_codes:
+      capability_not_registered: APPS_RESEARCH_BLOCKED
+      policy_prohibits_research: BRIEFING_MISSING_RESEARCH_NOT_AUTHORIZED
+
+  - stage_id: call_apps_research
+    order: 3
+    phase: R3_research
+    description: >
+      Invoke AppsResearchBridge.fetch() with the authorized request context.
+      The bridge handles all exceptions internally and always returns a
+      ResearchResult. This stage translates ResearchResult failure signals
+      into the appropriate R5 reason codes:
+        - is_blocked  → APPS_RESEARCH_BLOCKED
+        - exception   → APPS_RESEARCH_FAILED
+      The bridge calls apps_research via its registered public interface only —
+      no direct imports from apps_research internals.
+    inputs:
+      - name: authorized_request
+        type: RequestForBriefing
+        source: authorize_research.authorized_request
+    outputs:
+      - name: research_result
+        type: ResearchResult
+    fail_closed_on:
+      - research_blocked
+      - research_exception
+    r5_reason_codes:
+      research_blocked: APPS_RESEARCH_BLOCKED
+      research_exception: APPS_RESEARCH_FAILED
+
+  - stage_id: validate_research_and_build_manifest
+    order: 4
+    phase: R3_to_R4_gate
+    description: >
+      Validate the ResearchResult and construct a PreloadedOutreachContextManifest.
+      This is the R3→R4 transition gate. Fail-closed on all research quality failures:
+        - evidence_items empty       → APPS_RESEARCH_EMPTY
+        - is_stale                   → APPS_RESEARCH_STALE
+        - confidence < threshold     → APPS_RESEARCH_WEAK_SUPPORT
+      On success: emits a fresh PreloadedOutreachContextManifest with
+      freshness_status="fresh" bound to the research run_id and trace_id.
+      The R4 stages (5-8) only execute when this stage succeeds.
+    inputs:
+      - name: research_result
+        type: ResearchResult
+        source: call_apps_research.research_result
+      - name: authorized_request
+        type: RequestForBriefing
+        source: authorize_research.authorized_request
+    outputs:
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+    fail_closed_on:
+      - research_empty
+      - research_stale
+      - research_weak_support
+    r5_reason_codes:
+      research_empty: APPS_RESEARCH_EMPTY
+      research_stale: APPS_RESEARCH_STALE
+      research_weak_support: APPS_RESEARCH_WEAK_SUPPORT
+
+# ---------------------------------------------------------------------------
+# R4 Phase — Outreach draft (stages 5-8, mirrors apps_lic_static_dag.yaml)
+# ---------------------------------------------------------------------------
+
+  - stage_id: plan_message
+    order: 5
+    phase: R4_outreach
+    description: >
+      Invoke MessagePlanner to produce a MessagePlan from the validated manifest.
+      Applies channel constraints, recipient-class persona refinements, and
+      personalization_mode guidance. Does not call any provider — planning only.
+      This stage is identical to stage 3 of apps_lic_static_dag.yaml.
+    inputs:
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_research_and_build_manifest.manifest
+    outputs:
+      - name: message_plan
+        type: MessagePlan
+    fail_closed_on:
+      - planning_failed
+    r5_reason_codes:
+      planning_failed: L0_POLICY_VIOLATION
+
+  - stage_id: compose_draft
+    order: 6
+    phase: R4_outreach
+    description: >
+      Execute the hop-based K3 draft composition using the MessagePlan.
+      All claims grounded through source_items in the manifest.
+      Omission policy applied per claim_permission_map.
+      send_mode defaults to "draft_only"; forbidden modes (send_now,
+      auto_send, connector_send) cause immediate fail-closed.
+      Output includes omitted_claims list per OutreachDraft schema.
+    inputs:
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_research_and_build_manifest.manifest
+      - name: message_plan
+        type: MessagePlan
+        source: plan_message.message_plan
+    outputs:
+      - name: outreach_draft
+        type: OutreachDraft
+    fail_closed_on:
+      - forbidden_send_mode
+      - unsupported_mandatory_claim
+      - high_friction_ask
+    r5_reason_codes:
+      forbidden_send_mode: FORBIDDEN_SEND_MODE
+      unsupported_mandatory_claim: UNSUPPORTED_MANDATORY_CLAIM
+      high_friction_ask: HIGH_FRICTION_ASK
+
+  - stage_id: seal_output
+    order: 7
+    phase: R4_outreach
+    description: >
+      Seal the OutreachDraft with a content hash bound to the manifest_hash.
+      Validates send_mode is in the allowed set before sealing.
+      No durable writes here — output is passed to Exit V6 via the
+      managed workflow entrypoint.
+    inputs:
+      - name: outreach_draft
+        type: OutreachDraft
+        source: compose_draft.outreach_draft
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_research_and_build_manifest.manifest
+    outputs:
+      - name: l2_receipt
+        type: L2ExecutionReceipt
+    fail_closed_on:
+      - seal_failed
+      - forbidden_send_mode_late_check
+    r5_reason_codes:
+      seal_failed: SCHEMA_REJECTION
+      forbidden_send_mode_late_check: FORBIDDEN_SEND_MODE
+
+  - stage_id: emit_managed_workflow_receipt
+    order: 8
+    phase: R4_outreach
+    description: >
+      Emit the managed workflow chain linkage receipt. Records:
+        - R3 research run_id + trace_id (for audit)
+        - R4 manifest_hash (for tamper evidence)
+        - L2 receipt hash
+        - chain_kind: MANAGED_WORKFLOW
+      This receipt is the L3RuntimeOrchestrationReceipt that proves both
+      legs (R3 + R4) completed and that they are hash-bound together.
+      No durable writes — receipt flows to Exit V6.
+    inputs:
+      - name: l2_receipt
+        type: L2ExecutionReceipt
+        source: seal_output.l2_receipt
+      - name: manifest
+        type: PreloadedOutreachContextManifest
+        source: validate_research_and_build_manifest.manifest
+    outputs:
+      - name: mw_receipt
+        type: L3RuntimeOrchestrationReceipt
+
+# ---------------------------------------------------------------------------
+# DAG-level invariants
+# ---------------------------------------------------------------------------
+invariants:
+  - id: INV-MW-1
+    description: >
+      Stages 5-8 (R4 phase) MUST NOT execute if stage 4 fails.
+      Any failure in stages 1-4 produces a DispatchFailurePacket with an
+      R5 reason code and exits immediately through Exit V6.
+
+  - id: INV-MW-2
+    description: >
+      The manifest produced by stage 4 must have freshness_status="fresh"
+      and a valid manifest_hash before stage 5 is allowed to proceed.
+
+  - id: INV-MW-3
+    description: >
+      No stage may produce an outreach draft with send_mode in
+      {send_now, auto_send, connector_send}. Violation → immediate
+      fail-closed via R5 terminal at stages 6 or 7.
+
+  - id: INV-MW-4
+    description: >
+      The emit_managed_workflow_receipt (stage 8) must include both
+      the R3 research trace_id and the R4 manifest_hash in a single
+      hash-bound receipt. Receipt without both is invalid.
+
+  - id: INV-MW-5
+    description: >
+      The DAG must not write any file, call any provider, or mutate any
+      durable state. All output flows to Exit V6 only.
+
+# ---------------------------------------------------------------------------
+# Research failure → R5 reason code matrix (P9 reference)
+# ---------------------------------------------------------------------------
+research_failure_codes:
+  research_authorized_false:     APPS_RESEARCH_BLOCKED
+  capability_not_registered:     APPS_RESEARCH_BLOCKED
+  bridge_exception:              APPS_RESEARCH_FAILED
+  evidence_items_empty:          APPS_RESEARCH_EMPTY
+  result_is_stale:               APPS_RESEARCH_STALE
+  confidence_below_threshold:    APPS_RESEARCH_WEAK_SUPPORT

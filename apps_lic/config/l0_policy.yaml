@@ -1,0 +1,145 @@
+# apps_lic L0 Route Policy
+#
+# Governs the L0 routing decision layer for apps_lic.
+# U0 validates structure; L0 decides the route.
+# L0 emits EXACTLY ONE RouteContract per request.
+#
+# Invalid schema → exit_code=2 at U0 (NOT R5 here).
+# All R5 terminals come from L0 POLICY failures on structurally valid requests.
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P11
+
+schema_version: "1.0"
+app: apps_lic
+
+# ---------------------------------------------------------------------------
+# Route Decision Matrix
+# Evaluated in priority order. First matching condition wins.
+# ---------------------------------------------------------------------------
+route_decision:
+  routes:
+    - id: U0_REJECTION
+      priority: 0
+      condition: structurally_invalid_request
+      exit_code: 2
+      produces_r5: false
+      note: >
+        Schema validation failure. U0 rejects before L0 routing.
+        This is NOT an R5 path — it is a structural pre-gate.
+
+    - id: R3_SIMPLE_GROUNDED_READ
+      priority: 1
+      condition: explicit_briefing_only_request
+      condition_detail: "request.briefing_only == true"
+      flow: "C0 or apps_research evidence path → optional PA/L2 synthesis → Exit V6"
+      produces_draft: false
+      note: >
+        Produces governed briefing artifact only. NEVER an outreach draft.
+        No personalization. No send_mode enforcement needed (no draft output).
+
+    - id: R4_SINGLE_ACTION
+      priority: 2
+      condition: manifest_fresh
+      condition_detail: "manifest.freshness_status == 'fresh' AND briefing_ready_validation_passes"
+      flow: "PA compiler (8 slots) → L2 hop draft → seal → Exit V6"
+      note: >
+        Standard outreach path. Fires when PreloadedOutreachContextManifest
+        is present and passes all BriefingReady validation criteria.
+
+    - id: R3R4_MANAGED_WORKFLOW
+      priority: 3
+      condition: manifest_missing_or_stale_and_research_authorized
+      condition_detail: "(manifest.missing == true OR manifest.stale == true) AND research_authorized == true"
+      flow: "L3 dispatcher → apps_research bridge → manifest build → R4 path"
+      note: >
+        L3 orchestrates apps_research. On success: resume R4_SINGLE_ACTION.
+        On any research failure: R5 terminal through Exit V6.
+
+    - id: R5_FALLBACK
+      priority: 4
+      terminal: true
+      routes_through_exit: true
+      conditions:
+        - briefing_missing_research_not_authorized:
+            trigger: "manifest.missing AND research_authorized == false"
+            reason_code: BRIEFING_MISSING_RESEARCH_NOT_AUTHORIZED
+        - apps_research_failed:
+            trigger: "apps_research bridge raised exception"
+            reason_code: APPS_RESEARCH_FAILED
+        - apps_research_empty:
+            trigger: "research result has zero evidence_items"
+            reason_code: APPS_RESEARCH_EMPTY
+        - apps_research_blocked:
+            trigger: "research result is_blocked == true"
+            reason_code: APPS_RESEARCH_BLOCKED
+        - apps_research_stale:
+            trigger: "research result is_stale == true"
+            reason_code: APPS_RESEARCH_STALE
+        - apps_research_weak_support:
+            trigger: "research confidence_score < min_confidence_threshold"
+            reason_code: APPS_RESEARCH_WEAK_SUPPORT
+        - send_mode_forbidden:
+            trigger: "send_mode in [send_now, auto_send, connector_send]"
+            reason_code: SEND_MODE_FORBIDDEN
+        - high_friction_ask:
+            trigger: "HIGH_FRICTION_ASK pattern detected pre-generation"
+            reason_code: HIGH_FRICTION_ASK
+        - unsupported_mandatory_claims:
+            trigger: "mandatory claim not in source_items AND omission_policy == fail_closed"
+            reason_code: UNSUPPORTED_MANDATORY_CLAIMS
+        - low_confidence:
+            trigger: "personalization_confidence < 0.3"
+            reason_code: LOW_CONFIDENCE
+        - low_confidence_senior_exec:
+            trigger: "recipient_class in [EXECUTIVE, C_LEVEL, CTO] AND confidence < 0.5 AND no_safe_generic_note"
+            reason_code: LOW_CONFIDENCE_SENIOR_EXEC
+        - invalid_recipient_class:
+            trigger: "recipient_class not in allowed_set"
+            reason_code: INVALID_RECIPIENT_CLASS
+
+# ---------------------------------------------------------------------------
+# Forbidden in L0
+# L0 is decision-only. These operations MUST NOT appear in L0 code.
+# ---------------------------------------------------------------------------
+forbidden_in_l0:
+  subprocess_execution:
+    - subprocess.run
+    - subprocess.Popen
+    - os.system
+    - os.popen
+
+  provider_api_call:
+    - openai
+    - anthropic
+    - google.generativeai
+    - boto3
+    - llama
+
+  apps_research:
+    - apps_research  # no direct import or call in L0
+
+  file_write:
+    - "open(.*mode.*[wax+])"   # open() with write/append/exclusive/update mode
+    - Path.write_text
+    - Path.write_bytes
+    - "json.dump.*durable"
+    - "yaml.dump.*durable"
+    - shutil.copy
+    - shutil.move
+
+  durable_state:
+    - l4_write
+    - durable_state_mutation
+
+  draft_generation:
+    - generic_fallback_draft   # no best-effort drafts without briefing
+
+# ---------------------------------------------------------------------------
+# L0 allowed operations (informational)
+# ---------------------------------------------------------------------------
+allowed_in_l0:
+  - "open(path, 'r')"         # read-only config loads
+  - yaml.safe_load             # config parsing
+  - json.load                  # config parsing
+  - "dataclass access"         # manifest field reads
+  - "enum comparison"          # policy decision branching

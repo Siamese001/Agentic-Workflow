@@ -1,0 +1,98 @@
+# apps_lic U0 Intake Policy
+#
+# Governs the U0 (intake) validation layer for apps_lic requests.
+# Defines E1-E4 exit conditions, schema validation rules, and the
+# invalid-schema-rejection path (exit code 2, NOT R5).
+#
+# Design: U0 is purely structural/schema validation. U0 never makes
+# routing decisions, never calls providers, never writes state.
+# Route decisions are made exclusively by L0 (see l0_policy.yaml).
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P11
+
+schema_version: "1.0"
+app: apps_lic
+
+# ---------------------------------------------------------------------------
+# E1-E4 Exit Conditions (U0 validation exits)
+# These produce exit_code=2 — NOT R5 reason codes.
+# R5 is reserved for L0 policy failures on structurally valid requests.
+# ---------------------------------------------------------------------------
+exit_conditions:
+  E1:
+    id: E1
+    name: schema_validation_failure
+    description: >
+      Request body fails JSON schema validation against outreach_schema.json.
+      Missing required fields, wrong types, enum value not in allowed set.
+    exit_code: 2
+    produces_r5: false
+    notes:
+      - "Required fields: recipient_id, channel, outreach_mode"
+      - "channel must be in [email, linkedin, text]"
+      - "outreach_mode must be in [cold, warm, referral, followup]"
+      - "recipient_class must be in [RECRUITER, SENIOR_TA, HIRING_MANAGER, EXECUTIVE, C_LEVEL, VP_ENG, CTO, REFERRAL_CONTACT]"
+      - "send_mode must NOT be in [send_now, auto_send, connector_send]"
+
+  E2:
+    id: E2
+    name: forbidden_send_mode_at_intake
+    description: >
+      send_mode is present and set to a forbidden value (send_now, auto_send,
+      connector_send). These are rejected at U0 before routing — they are
+      not routed to L0 at all. Exit code 2.
+    exit_code: 2
+    produces_r5: false
+    forbidden_values:
+      - send_now
+      - auto_send
+      - connector_send
+    notes:
+      - "Rejected before L0 routing — never reaches R5 path"
+      - "Allowed send_mode values: draft_only, review_required, send_ready_candidate"
+
+  E3:
+    id: E3
+    name: missing_identity_fields
+    description: >
+      Request is missing app identity markers required for spine routing.
+      Specifically: source_channel and declared_schema must be present
+      when using the canonical spine entrypoint. Structural gate only.
+    exit_code: 2
+    produces_r5: false
+    required_identity_fields:
+      - source_channel   # expected: "apps_lic_cli"
+      - declared_schema  # expected: "apps_lic_outreach_v1"
+
+  E4:
+    id: E4
+    name: outreach_schema_version_mismatch
+    description: >
+      The request declares a schema version that is not recognized or
+      has been retired. Requests must use a current schema version.
+      Exit code 2 — not a policy failure, purely structural.
+    exit_code: 2
+    produces_r5: false
+    current_schema_version: "apps_lic_outreach_v1"
+
+# ---------------------------------------------------------------------------
+# Schema reference
+# ---------------------------------------------------------------------------
+schema_ref: apps_lic/config/outreach_schema.json
+identity_constants:
+  app_name: apps_lic
+  source_channel: apps_lic_cli
+  declared_schema: apps_lic_outreach_v1
+
+# ---------------------------------------------------------------------------
+# U0 forbidden operations
+# U0 is purely structural. These operations are NEVER permitted in U0.
+# ---------------------------------------------------------------------------
+forbidden_in_u0:
+  - provider_api_call          # no LLM, search, embedding calls
+  - routing_decision           # routing is L0's responsibility
+  - apps_research_call         # no research at intake
+  - durable_state_write        # no state mutations
+  - file_write                 # no file output
+  - subprocess_execution       # no subprocess
+  - fallback_draft_generation  # no drafts

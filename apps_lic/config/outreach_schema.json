@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OutreachRequest",
+  "description": "apps_lic outreach request schema. Schema version: apps_lic_outreach_v1. Plan: apps-lic-canonical-spine-wireup-e7c2a5 W4 P12.",
+  "type": "object",
+  "required": ["recipient_id", "channel", "outreach_mode"],
+  "properties": {
+    "recipient_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for the recipient (person or role)."
+    },
+    "channel": {
+      "enum": ["email", "linkedin", "text"],
+      "description": "Outreach delivery channel."
+    },
+    "outreach_mode": {
+      "enum": ["cold", "warm", "referral", "followup"],
+      "description": "Relationship posture for this outreach."
+    },
+    "recipient_class": {
+      "enum": [
+        "RECRUITER",
+        "SENIOR_TA",
+        "HIRING_MANAGER",
+        "EXECUTIVE",
+        "C_LEVEL",
+        "VP_ENG",
+        "CTO",
+        "REFERRAL_CONTACT"
+      ],
+      "description": "Recipient classification for tone/persona selection."
+    },
+    "target_role_id": {
+      "type": "string",
+      "description": "Target role identifier (empty string for exploratory outreach)."
+    },
+    "company_id": {
+      "type": "string",
+      "description": "Target company identifier."
+    },
+    "application_status": {
+      "enum": ["applied", "referred", "interviewing", "offer", "none"],
+      "description": "Sender's application status relative to the target role."
+    },
+    "preloaded_context_manifest_path": {
+      "type": "string",
+      "description": "Path to a pre-built PreloadedOutreachContextManifest (optional; triggers R4 path when present and fresh)."
+    },
+    "send_mode": {
+      "enum": ["draft_only", "review_required", "send_ready_candidate"],
+      "description": "Allowed send modes. Forbidden values (send_now, auto_send, connector_send) are rejected at U0 with exit_code=2."
+    },
+    "omission_policy": {
+      "enum": ["omit_unsupported", "hitl_required", "fail_closed"],
+      "description": "Policy for handling unsupported personalization claims. omit_unsupported: omit claim, track in OutreachDraft.omitted_claims. hitl_required: escalate to HITL. fail_closed: block draft."
+    },
+    "personalization_claims": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Optional list of specific personalization claims to include. Each must be grounded in source_items."
+    },
+    "briefing_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true: route to R3_SIMPLE_GROUNDED_READ (briefing artifact only, no outreach draft)."
+    },
+    "source_channel": {
+      "type": "string",
+      "description": "Spine identity field. Expected: apps_lic_cli.",
+      "enum": ["apps_lic_cli"]
+    },
+    "declared_schema": {
+      "type": "string",
+      "description": "Schema version declaration. Expected: apps_lic_outreach_v1.",
+      "enum": ["apps_lic_outreach_v1"]
+    }
+  },
+  "not": {
+    "properties": {
+      "send_mode": {
+        "enum": ["send_now", "auto_send", "connector_send"]
+      }
+    },
+    "required": ["send_mode"]
+  },
+  "additionalProperties": false
+}

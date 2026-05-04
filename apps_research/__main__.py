@@ -79,7 +79,7 @@ def _run_live_cert(argv: list[str]) -> int:
         expects_static_dag=False,
         expected_execution_form="SINGLE_STEP",
         expected_l3_path="BYPASSED",
-        selected_capability="apps_research.company_brief_v1",
+        selected_capability="R3_SIMPLE_GROUNDED_READ",
         repo_root=repo_root,
     )
     # FEC producer registration — plan apps-research-c0-fec-producer-wiring-e7a2c3 W1.P2.
@@ -101,8 +101,8 @@ def _run_live_cert(argv: list[str]) -> int:
             _fec = resolve_fec(
                 "apps_research",
                 {
-                    "route_id": "apps_research.company_brief_v1",
-                    "route_contract": {"route_id": "apps_research.company_brief_v1"},
+                    "route_id": "R3_SIMPLE_GROUNDED_READ",
+                    "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
                     "template_ids": ["company_brief_v1"],
                 },
             )
@@ -170,7 +170,7 @@ def _build_exit_receipts(cert_route_entry, fec: dict | None) -> dict:
 
     return {
         "output": receipts_output,
-        "route_contract": {"route_id": "apps_research.company_brief_v1"},
+        "route_contract": {"route_id": "R3_SIMPLE_GROUNDED_READ"},
         "evidence_bundle": {},
         "final_evidence_contract": fec if isinstance(fec, dict) else {},
         "state_diff": {},

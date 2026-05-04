@@ -1,0 +1,333 @@
+# apps_lic Exit Rubric (V6)
+#
+# Governs Exit V6 evaluation for all apps_lic route paths.
+# Consumed by AppSpecificEvaluator and hitl_policy gating.
+#
+# Fail-closed scoping is EXPLICIT — each dimension declares its fail-closed
+# trigger condition. "always" = hard-fail regardless of context.
+# "remaining_claims_in_draft" = only applies to claims that were NOT omitted
+# via omission_policy.
+#
+# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W5 P15/P16/P17
+# Corrected scoping: per plan §B exit_rubric.yaml feedback pass.
+
+schema_version: "1.0"
+app: apps_lic
+
+dimensions:
+  # ---------------------------------------------------------------------------
+  # ALWAYS fail-closed (no scoping — no context, no override)
+  # ---------------------------------------------------------------------------
+
+  - id: no_fabricated_relationship
+    weight: 2.0
+    fail_closed: always
+    grader_type: llm_as_judge
+    taxonomy_class: regression
+    note: >
+      Hard-fail if draft implies an existing relationship with the recipient
+      that is not supported by source data (e.g. "as we discussed", "since we
+      last spoke", "given your interest in my background").
+
+  - id: no_fabricated_application_status
+    weight: 2.0
+    fail_closed: always
+    grader_type: llm_as_judge
+    taxonomy_class: regression
+    note: >
+      Hard-fail if draft states or implies an application status
+      (applied, interviewed, offered, referred) not present in application_status field.
+
+  - id: no_confidential_leakage
+    weight: 2.0
+    fail_closed: always
+    grader_type: llm_as_judge
+    taxonomy_class: regression
+    note: >
+      Hard-fail if draft reveals confidential information from the briefing
+      that is not appropriate for external communication (salary targets,
+      internal notes, private research data, PII beyond name+title).
+
+  - id: antipattern_clean
+    weight: 2.0
+    fail_closed: always
+    grader_type: rule_based
+    taxonomy_class: regression
+    note: >
+      Hard-fail on any match from outreach_antipattern_detector.py (15 default
+      patterns + configurable extension patterns). Produces evidence_refs and
+      reason_codes per matched pattern. Does NOT rewrite content.
+    antipattern_ref: apps_lic/engines/outreach_antipattern_detector.py
+    extension_config: antipattern_extension_patterns
+
+  # ---------------------------------------------------------------------------
+  # Fail-closed for REMAINING claims in draft
+  # (claims omitted via omit_unsupported do NOT trigger these)
+  # ---------------------------------------------------------------------------
+
+  - id: factual_support
+    weight: 2.0
+    fail_closed: remaining_claims_in_draft
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: >
+      Claims omitted via omit_unsupported policy do NOT trigger factual_support failure.
+      Only claims that appear in the draft must be supported by source_items.
+      Unsourced claims that appear in draft → hard-fail.
+
+  - id: no_unsupported_company_facts
+    weight: 1.5
+    fail_closed: remaining_claims_in_draft
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: >
+      Company facts in the draft (funding, headcount, product names, strategy)
+      must be traceable to source_items. Applies only to claims present in draft.
+
+  - id: no_unsupported_recipient_facts
+    weight: 1.5
+    fail_closed: remaining_claims_in_draft
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: >
+      Recipient-level facts (role history, projects, publications, location)
+      must be traceable to source_items. Applies only to claims present in draft.
+
+  # ---------------------------------------------------------------------------
+  # Fail-closed for hard voice rules; contextual for soft rules
+  # ---------------------------------------------------------------------------
+
+  - id: voice_compliance
+    weight: 1.0
+    grader_type: rule_based
+    taxonomy_class: capability
+    hard_rules_fail_closed:
+      - no_em_dash           # em dash (— U+2014) or en dash (– U+2013) forbidden
+      - plain_text_links_only  # hyperlinked text forbidden; bare URLs only
+      - signature_rules_where_applicable  # channel-specific signature format
+    soft_rules_contextual: true
+    note: >
+      Hard rules fire regardless of context (em dash, link format, signature).
+      Soft rules (sentence length, passive voice count) are contextual.
+
+  # ---------------------------------------------------------------------------
+  # Fail-closed when above ceiling × tolerance; contextual below
+  # ---------------------------------------------------------------------------
+
+  - id: channel_length_fit
+    weight: 1.0
+    grader_type: rule_based
+    taxonomy_class: capability
+    fail_closed_when: "word_count > ceiling * tolerance"
+    tolerance: 1.10
+    ceilings:
+      email_EXECUTIVE_cold:           100
+      email_EXECUTIVE_warm_referral:  120
+      email_C_LEVEL_cold:             100
+      email_C_LEVEL_warm_referral:    120
+      email_VP_ENG_cold:              100
+      email_VP_ENG_warm_referral:     120
+      email_CTO_cold:                 100
+      email_CTO_warm_referral:        120
+      email_HIRING_MANAGER_cold:      150
+      email_HIRING_MANAGER_warm:      200
+      email_RECRUITER_cold:           150
+      email_RECRUITER_warm:           200
+      email_SENIOR_TA_cold:           150
+      email_SENIOR_TA_warm:           200
+      linkedin_any_cold:              60
+      linkedin_any_warm_referral:     80
+      referral_intro:                 80
+    note: >
+      Fail-closed only when word_count > ceiling × 1.10.
+      Below ceiling: contextual (soft warning, not block).
+
+  # ---------------------------------------------------------------------------
+  # send_mode enforcement (P17 — always fail-closed)
+  # ---------------------------------------------------------------------------
+
+  - id: send_mode_enforcement
+    weight: 2.0
+    fail_closed: always
+    grader_type: rule_based
+    taxonomy_class: regression
+    allowed_send_modes:
+      - draft_only
+      - review_required
+      - send_ready_candidate
+    forbidden_send_modes:
+      - send_now
+      - auto_send
+      - connector_send
+    note: >
+      Hard-fail if the output OutreachDraft carries a forbidden send_mode.
+      Forbidden modes must be caught at U0/L0; this rubric dimension is the
+      last-line enforcement at Exit. Maps to R5 reason code SEND_MODE_FORBIDDEN.
+
+  # ---------------------------------------------------------------------------
+  # Contextual (not universally fail-closed)
+  # ---------------------------------------------------------------------------
+
+  - id: tone_fit_seniority
+    weight: 1.5
+    contextual: true
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: >
+      Tone calibration for recipient seniority. Not fail-closed — contextual
+      quality signal. Escalates to HITL when score is very low for senior execs.
+
+  - id: clear_cta
+    weight: 1.0
+    contextual: true
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: Single clear call-to-action present in draft.
+
+  # ---------------------------------------------------------------------------
+  # ask_friction_score: fail-closed above bound; contextual below (P15 new)
+  # ---------------------------------------------------------------------------
+
+  - id: ask_friction_score
+    weight: 1.5
+    grader_type: rule_based
+    taxonomy_class: capability
+    fail_closed_when: "score > 0.5 AND NOT override_configured"
+    contextual: true
+    note: >
+      Ask friction score 0.0–1.0. Bound-fail if > 0.5 (unless override configured).
+      Low scores (easy ask) are good. High scores (demanding ask) → fail-closed.
+      Executived cold: reciprocity-first pattern encouraged.
+      Recruiters: more direct ask acceptable.
+
+  # ---------------------------------------------------------------------------
+  # Scoped by recipient_class + outreach_mode (P15 new)
+  # ---------------------------------------------------------------------------
+
+  - id: proof_appropriate_for_recipient
+    weight: 1.0
+    contextual: true
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    required_when:
+      - recipient_class: [EXECUTIVE, C_LEVEL, CTO, VP_ENG, HIRING_MANAGER]
+        AND: technical_claim_depth_high
+        proof_formats: [github_link, linkedin_project, resume_metric, public_artifact, briefing_deck_ref]
+    not_required_when:
+      - recipient_class: [RECRUITER, SENIOR_TA]
+        UNLESS: strong_technical_claim_present
+      - condition: no_technical_claims_in_draft
+    note: >
+      NOT universally mandatory. Required only when recipient_class is exec/technical
+      AND draft contains technical claims of meaningful depth.
+      Recruiters/SENIOR_TA are exempt unless a strong technical claim is present.
+      Short LinkedIn messages where proof inclusion would hurt channel fit are exempt.
+
+  - id: personalization_mode_appropriate
+    weight: 1.0
+    contextual: true
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    note: >
+      Personalization mode (none/company/role/recipient/relationship/asymmetric)
+      must be appropriate for the recipient_class and outreach_mode combination.
+      Over-personalization for a cold recruiter outreach is as bad as under-personalization
+      for a warm executive outreach.
+
+  # ---------------------------------------------------------------------------
+  # Asymmetric insight (config-gated, P15 new)
+  # ---------------------------------------------------------------------------
+
+  - id: asymmetric_insight_present
+    weight: 1.5
+    grader_type: llm_as_judge
+    taxonomy_class: capability
+    required_when: "asymmetric_insight_required == true in lic_plan_rules.yaml for (recipient_class, outreach_mode)"
+    note: >
+      NOT universally mandatory. Required ONLY when asymmetric_insight_required=true
+      is configured for this (recipient_class, outreach_mode) pair.
+      Simple recruiter follow-up does NOT require asymmetric insight.
+      Executives cold-outreach DO require it (when configured).
+
+  # ---------------------------------------------------------------------------
+  # Omission policy enforcement (P16)
+  # ---------------------------------------------------------------------------
+
+  - id: omission_policy_respected
+    weight: 2.0
+    fail_closed: always
+    grader_type: rule_based
+    taxonomy_class: regression
+    omission_policies:
+      omit_unsupported:
+        behavior: omit_claim
+        track_in: OutreachDraft.omitted_claims
+        note: >
+          Claim is silently omitted from the draft. OutreachDraft.omitted_claims
+          must list all omitted claim ids. Does NOT trigger factual_support failure.
+      hitl_required:
+        behavior: escalate_to_hitl
+        x3_disposition: ESCALATE_HITL
+        note: >
+          Draft is produced but routed to HITL for human review before any send.
+      fail_closed:
+        behavior: block_draft
+        x3_disposition: SAFE_ABSTAIN
+        r5_reason_code: UNSUPPORTED_MANDATORY_CLAIMS
+        note: >
+          Draft is NOT produced. Fail-closed terminal through Exit V6.
+    note: >
+      Hard-fail if any claim with omission_policy=fail_closed is unsupported
+      (not in source_items) AND appears in the draft. If properly omitted:
+      no failure. Tracking: omitted_claims in OutreachDraft.
+
+# ---------------------------------------------------------------------------
+# X3 dispositions (all valid outcomes for apps_lic)
+# ---------------------------------------------------------------------------
+
+x3_dispositions:
+  - ALLOW_FINISH           # safe draft-only output
+  - ESCALATE_HITL          # review-needed drafts (hitl_required omission, low-confidence exec, etc.)
+  - SAFE_ABSTAIN           # no safe output (research failure, mandatory claim failure, antipattern)
+  - REROUTE                # upstream remediation valid (e.g. fetch fresh briefing)
+  - DENY                   # unsafe or fabricated output
+  - COMMIT_REQUEST         # approved reusable templates/patterns ONLY — never raw outreach drafts
+
+# ---------------------------------------------------------------------------
+# HITL escalation policy
+# ---------------------------------------------------------------------------
+
+hitl_policy:
+  hard_substring_triggers:
+    - fabricated
+    - confidential
+    - send_now
+    - auto_send
+  escalate_on_dim_fail:
+    - no_fabricated_relationship
+    - no_fabricated_application_status
+    - no_confidential_leakage
+    - antipattern_clean
+    - omission_policy_respected
+    - send_mode_enforcement
+  escalate_on_low_score:
+    - factual_support
+    - tone_fit_seniority
+  executive_escalation: >
+    recipient_class in [EXECUTIVE, C_LEVEL, CTO, VP_ENG] AND any_bound_fail
+  hitl_required_escalation: >
+    any claim with omission_policy=hitl_required is present in draft
+
+# ---------------------------------------------------------------------------
+# Configurable extension patterns for antipattern_clean dimension
+# ---------------------------------------------------------------------------
+
+antipattern_extension_patterns: []
+# Add app-instance-specific hard-fail patterns here.
+# Each entry has the same semantics as the 15 default patterns in
+# apps_lic/engines/outreach_antipattern_detector.py.
+# Example:
+# antipattern_extension_patterns:
+#   - pattern: "excited to share"
+#     id: EXT_001
+#     reason_code: EXTENSION_ANTIPATTERN

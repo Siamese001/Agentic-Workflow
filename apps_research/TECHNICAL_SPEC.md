@@ -1,5 +1,31 @@
 # TECHNICAL SPEC — apps_research: Autonomous Research Engine
 
+## Canonical Spine Route
+
+apps_research operates as a **direct R3_SIMPLE_GROUNDED_READ** path on the
+canonical `agentic_core` spine. SIMPLE = no L3 orchestration; GROUNDED = C0
+retrieval mandatory; READ = informational/briefing output only.
+
+- **R3_SIMPLE_GROUNDED_READ** — the primary execution path for all research
+  requests. U0 Intake → L1 Plan → L0 Route Decision → C0 Context Engine →
+  PA Prompt Assembly → L2 Execute (E1-E5) → FEC Producer → Exit v6 → L6.
+- **R5 Pre-route terminal** — fires before C0 when the request cannot be routed
+  (e.g. ambiguous topic requiring clarification). Returns a
+  `CLARIFY_PACKET`/`SAFE_ABSTAIN_PACKET`; distinct from post-R3 degraded packets.
+- **R1A/R1B cache terminals** — checked before C0; exact cache (R1A) and
+  semantic cache (R1B) can short-circuit retrieval when JD-digest and
+  semantic similarity criteria are met.
+- **Post-R3 degraded packet** — emitted by C0-to-PA gate on FAIL when evidence
+  is insufficient. Distinct from R5 (R5 is pre-C0; degraded is post-C0).
+
+The Lincoln brief is a **depth exemplar** for `COMPANY_BRIEF_DEEP` — not a
+fixed section template. Adaptive coverage family selection drives section
+composition per user intent, role, JD context, and sector.
+
+No L3 DAG, no durable side-effects, no `CommitRequest` in scope.
+
+---
+
 ## Module Map
 
 ```
@@ -9,7 +35,7 @@ apps_research/
 ├── engines/
 │   └── research_assembly_engine.py  # ResearchAssemblyEngine: sections + matrix + register
 ├── reasoning/
-│   └── ResearchOrchestrator.py  # ResearchOrchestrator: 3-hop pipeline
+│   └── ResearchOrchestrator.py  # ResearchOrchestrator: assembly → gate → emit
 ├── scripts/
 │   └── run_research.py          # CLI entrypoint
 ├── types/
@@ -55,14 +81,14 @@ class ResearchOrchestrator:
     dry_run: bool = False
     output_dir: str = "reports/research"
     gate_mode: str = "HARD_FAIL"
-    hop_checkpoints: list[dict] = field(default_factory=list)
+    stage_checkpoints: list[dict] = field(default_factory=list)
 
     def run(self, request: ResearchRequest) → ResearchResult: ...
 ```
-**Hops:**
-1. `HOP-1-ASSEMBLY` → `ResearchAssemblyEngine.execute(request)`
-2. `HOP-2-GATE` → `ResearchGateValidator.validate(sections, sources, required_ids)`
-3. `HOP-3-EMIT` → Write `.md` artifact + `source_register.json` + `run_summary.json`
+**Stages (L2 E1-E5 spine):**
+1. `STAGE-ASSEMBLY` → `ResearchAssemblyEngine.execute(request)` (E1 context bind + E3 synthesis)
+2. `STAGE-GATE` → `ResearchGateValidator.validate(sections, sources, required_ids)` (E2 evidence validation)
+3. `STAGE-EMIT` → Write `.md` artifact + `source_register.json` + `run_summary.json` (E5 seal)
 
 ---
 

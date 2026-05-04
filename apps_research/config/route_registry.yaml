@@ -9,12 +9,16 @@ app_name: apps_research
 schema_version: "apps_research.route_registry/v1"
 
 routes:
-  - route_id: apps_research.single_step_v1
+  # R3_SIMPLE_GROUNDED_READ: SIMPLE=no L3 orchestration, GROUNDED=C0 retrieval mandatory,
+  # READ=informational/briefing output. R5 is a pre-route terminal before C0 starts (fires
+  # on ambiguous/unroutable requests). Post-R3 degraded packets are distinct from R5 —
+  # they are emitted by the C0-to-PA gate on FAIL after retrieval completes.
+  - route_id: R3_SIMPLE_GROUNDED_READ
     execution_form: SINGLE_STEP
     l3_required: false
     selected_capability: apps_research.company_brief_v1
     description: >-
-      Deterministic single-step research: intake -> retrieve evidence ->
-      assemble prompt -> generate brief -> seal. No retries, branches, or
-      joins. L3 runtime orchestration is not required.
+      Direct R3_SIMPLE_GROUNDED_READ route: U0 Intake -> L1 Plan -> L0 Route Decision ->
+      C0 Context Engine -> PA Prompt Assembly -> L2 Execute (E1-E5) -> FEC Producer ->
+      Exit v6 -> L6. No L3, no durable writes, no CommitRequest.
     bypass_reason_when_invoked: SINGLE_STEP_ROUTE

@@ -1,10 +1,10 @@
-"""HOP1 research_retrieval — wraps ResearchRetrievalEngine.
+"""Stage 1 research_retrieval — wraps ResearchRetrievalEngine.
 
-Thin substrate-compatible adapter for the HOP pipeline substrate (plan
+Thin substrate-compatible adapter for the inner pipeline substrate (plan
 apps-hop-substrate-four-apps-b4a2c9). The existing imperative path via
 ``BaseResearchEngine`` subclasses remains primary; this adapter is used
 when the shared ``HopPipelineExecutor`` drives the 3-stage walk
-declaratively.
+declaratively under the R3_SIMPLE_GROUNDED_READ route.
 """
 
 from __future__ import annotations
