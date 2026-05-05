@@ -70,6 +70,9 @@ class SpineWiringVerifier:
         "carry_forward_bridge",
         "p2_templates",  # W1.P3: P2 template activation
         "p2_rubric_dims",  # W1.P3: P2 rubric dimensions
+        "sequence_definitions",  # W2.P1: 3-touch sequence definitions
+        "touch_propagation",  # W2.P2: N→N+1 context propagation
+        "sequence_state_machine",  # W2.P3: Sequence state machine
     ]
     
     def verify_all(self) -> SpineWiringReport:
@@ -107,6 +110,9 @@ class SpineWiringVerifier:
             "carry_forward_bridge": self._verify_carry_forward_bridge,
             "p2_templates": self._verify_p2_templates,
             "p2_rubric_dims": self._verify_p2_rubric_dims,
+            "sequence_definitions": self._verify_sequence_definitions,
+            "touch_propagation": self._verify_touch_propagation,
+            "sequence_state_machine": self._verify_sequence_state_machine,
         }
         
         verifier = verifiers.get(component)
@@ -406,6 +412,159 @@ class SpineWiringVerifier:
         except Exception as e:
             return WiringStatus(
                 component="p2_rubric_dims",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_sequence_definitions(self) -> WiringStatus:
+        """Verify W2.P1: 3-touch sequence definitions."""
+        from pathlib import Path
+        
+        try:
+            from apps_lic.sequences.touch_sequence_definitions import (
+                SEQUENCE_REGISTRY,
+                SequenceType,
+                get_sequence_definition,
+            )
+            
+            # Check all 3 sequence types are defined
+            required_types = [
+                SequenceType.STANDARD_3_TOUCH,
+                SequenceType.EXECUTIVE_3_TOUCH,
+                SequenceType.RECRUITER_COMPACT,
+            ]
+            
+            found = []
+            for seq_type in required_types:
+                try:
+                    seq_def = get_sequence_definition(seq_type)
+                    found.append((seq_type.value, len(seq_def.touches)))
+                except ValueError:
+                    pass
+            
+            if len(found) != 3:
+                missing = [t.value for t in required_types if t not in SEQUENCE_REGISTRY]
+                return WiringStatus(
+                    component="sequence_definitions",
+                    connected=False,
+                    error=f"Missing sequence types: {missing}",
+                )
+            
+            return WiringStatus(
+                component="sequence_definitions",
+                connected=True,
+                details={
+                    "sequences": found,
+                    "registry_size": len(SEQUENCE_REGISTRY),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="sequence_definitions",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_touch_propagation(self) -> WiringStatus:
+        """Verify W2.P2: Touch N→N+1 propagation."""
+        try:
+            from apps_lic.sequences.touch_propagation import (
+                TouchContextPropagator,
+                TouchContext,
+                create_touch_context_from_result,
+            )
+            from apps_lic.sequences.touch_sequence_definitions import SequenceType
+            
+            # Test propagation works
+            propagator = TouchContextPropagator()
+            
+            # Create mock source context
+            source = TouchContext(
+                touch_id="test:touch:1",
+                touch_number=1,
+                sequence_type=SequenceType.STANDARD_3_TOUCH,
+                campaign_id="test-campaign",
+                recipient_hash="abc123",
+                sent_at=None,
+                message_body_hash="hash123",
+                response_received=False,
+                context_data={"hook_used": "test-hook"},
+            )
+            
+            # Try propagation to touch 2
+            result = propagator.propagate(source, 2)
+            
+            if not result.success:
+                return WiringStatus(
+                    component="touch_propagation",
+                    connected=False,
+                    error=f"Propagation test failed: {result.error}",
+                )
+            
+            return WiringStatus(
+                component="touch_propagation",
+                connected=True,
+                details={
+                    "propagation_keys": list(result.propagated_context.keys()),
+                    "p2_slots_bound": list(result.p2_slots_bound.keys()),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="touch_propagation",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_sequence_state_machine(self) -> WiringStatus:
+        """Verify W2.P3: Sequence state machine."""
+        try:
+            from apps_lic.state.sequence_state_machine import (
+                SequenceStateMachine,
+                SequenceState,
+                SequenceStateRecord,
+                TouchState,
+                TouchStatus,
+            )
+            from apps_lic.sequences.touch_sequence_definitions import SequenceType
+            
+            # Test state machine operations
+            machine = SequenceStateMachine()
+            
+            # Create a test sequence
+            record = machine.create_sequence(
+                sequence_id="test-seq-001",
+                campaign_id="test-campaign",
+                recipient_hash="recipient123",
+                sequence_type=SequenceType.STANDARD_3_TOUCH,
+            )
+            
+            # Add a touch
+            touch = machine.add_touch_state(record, "touch-001", 1)
+            machine.update_touch_status(record, "touch-001", TouchStatus.SCHEDULED)
+            
+            # Test transition
+            record = machine.transition(record, "touch_scheduled")
+            
+            if record.current_state != SequenceState.SCHEDULED:
+                return WiringStatus(
+                    component="sequence_state_machine",
+                    connected=False,
+                    error=f"State transition failed: expected SCHEDULED, got {record.current_state}",
+                )
+            
+            return WiringStatus(
+                component="sequence_state_machine",
+                connected=True,
+                details={
+                    "initial_state": SequenceState.PENDING,
+                    "transitions_working": True,
+                    "active_sequences": len(machine.get_active_sequences()),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="sequence_state_machine",
                 connected=False,
                 error=str(e),
             )
