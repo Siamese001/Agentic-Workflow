@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from typing import Optional
 
 from apps_rg.types.intent_payload import ResumeGenerationIntent
@@ -17,6 +18,65 @@ _logger = logging.getLogger(__name__)
 
 # apps_rg-specific cache namespace
 APPS_RG_CACHE_NAMESPACE = "apps_rg.resume_generation"
+
+# Default similarity threshold — override via SEMANTIC_CACHE_THRESHOLD env var.
+# Lower values are more permissive (more cache hits); higher values are stricter.
+# Range: 0.0–1.0. Safe default 0.95 keeps false-positive hits low.
+DEFAULT_SIMILARITY_THRESHOLD: float = 0.95
+
+# Default TTL for semantic cache entries in seconds.
+# Override via SEMANTIC_CACHE_TTL_SECONDS env var. 0 = no expiry (legacy behaviour).
+# Default 86400 = 24 h.  Set to 0 to disable TTL enforcement.
+DEFAULT_CACHE_TTL_SECONDS: int = 86400
+
+
+def _get_similarity_threshold() -> float:
+    """Read SEMANTIC_CACHE_THRESHOLD from env, fall back to DEFAULT.
+
+    Out-of-range floats are clamped to [0.0, 1.0] with a warning.
+    Non-numeric values fall back to DEFAULT with a warning.
+    """
+    raw = os.environ.get("SEMANTIC_CACHE_THRESHOLD", "")
+    if raw:
+        try:
+            val = float(raw)
+            if val < 0.0:
+                _logger.warning(
+                    "SEMANTIC_CACHE_THRESHOLD=%s below 0; clamping to 0.0", raw
+                )
+                return 0.0
+            if val > 1.0:
+                _logger.warning(
+                    "SEMANTIC_CACHE_THRESHOLD=%s above 1; clamping to 1.0", raw
+                )
+                return 1.0
+            return val
+        except ValueError:
+            _logger.warning(
+                "SEMANTIC_CACHE_THRESHOLD=%s is not a float; using default %.2f",
+                raw, DEFAULT_SIMILARITY_THRESHOLD,
+            )
+    return DEFAULT_SIMILARITY_THRESHOLD
+
+
+def _get_cache_ttl_seconds() -> int:
+    """Read SEMANTIC_CACHE_TTL_SECONDS from env, fall back to DEFAULT."""
+    raw = os.environ.get("SEMANTIC_CACHE_TTL_SECONDS", "")
+    if raw:
+        try:
+            val = int(raw)
+            if val >= 0:
+                return val
+            _logger.warning(
+                "SEMANTIC_CACHE_TTL_SECONDS=%s is negative; using default %d",
+                raw, DEFAULT_CACHE_TTL_SECONDS,
+            )
+        except ValueError:
+            _logger.warning(
+                "SEMANTIC_CACHE_TTL_SECONDS=%s is not an int; using default %d",
+                raw, DEFAULT_CACHE_TTL_SECONDS,
+            )
+    return DEFAULT_CACHE_TTL_SECONDS
 
 
 class AppsRgR1BCacheAdapter:
@@ -77,7 +137,8 @@ class AppsRgR1BCacheAdapter:
 
         try:
             # Store via SemanticCacheManager
-            entry_id = cache.store(
+            ttl = _get_cache_ttl_seconds()
+            store_kwargs: dict = dict(
                 context=context,
                 response=json.dumps(cache_payload),
                 namespace=APPS_RG_CACHE_NAMESPACE,
@@ -86,8 +147,12 @@ class AppsRgR1BCacheAdapter:
                     "intent_hash": cache_payload["intent_hash"],
                     "run_id": run_context.get("run_id"),
                     "policy_hash": run_context.get("policy_hash"),
+                    "ttl_seconds": ttl,
                 },
             )
+            if ttl > 0:
+                store_kwargs["ttl"] = ttl
+            entry_id = cache.store(**store_kwargs)
             _logger.info("Stored R1B cache entry: %s", entry_id)
             return entry_id
         except Exception as exc:  # guardian: allow-broad-exception -- cache store is fail-soft
@@ -99,13 +164,18 @@ class AppsRgR1BCacheAdapter:
         intent: ResumeGenerationIntent,
         policy_hash: str,
         blueprint_hash: str,
-        similarity_threshold: float = 0.95,
+        similarity_threshold: float | None = None,
     ) -> Optional[dict]:
         """Recall cached output chunks for given intent.
 
-        Returns full cache payload with lineage on hit, None on miss.
-        Validates policy/blueprint compatibility before returning.
+        similarity_threshold defaults to ``_get_similarity_threshold()`` which
+        reads ``SEMANTIC_CACHE_THRESHOLD`` env var at call time.  Pass an explicit
+        value only in tests that need deterministic behaviour.
+        Validates policy/blueprint compatibility and similarity before returning.
         """
+        if similarity_threshold is None:
+            similarity_threshold = _get_similarity_threshold()
+
         cache = self._get_cache()
         if cache is None:
             return None
@@ -193,6 +263,10 @@ def check_r1b_for_apps_rg(
 
 __all__ = [
     "APPS_RG_CACHE_NAMESPACE",
+    "DEFAULT_SIMILARITY_THRESHOLD",
+    "DEFAULT_CACHE_TTL_SECONDS",
     "AppsRgR1BCacheAdapter",
     "check_r1b_for_apps_rg",
+    "_get_similarity_threshold",
+    "_get_cache_ttl_seconds",
 ]

@@ -33,6 +33,24 @@ from typing import Any
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.utils.intent_builder import build_intent_from_request
 
+try:
+    from opentelemetry import trace as _otel_trace
+
+    _tracer = _otel_trace.get_tracer("apps_rg.cache")
+    _OTEL_AVAILABLE = True
+except ImportError:
+    _OTEL_AVAILABLE = False
+    _tracer = None  # type: ignore[assignment]
+
+
+def _span(name: str):
+    """Context manager: OTEL span when available, else no-op."""
+    if _OTEL_AVAILABLE and _tracer is not None:
+        return _tracer.start_as_current_span(name)
+    import contextlib
+    return contextlib.nullcontext()
+
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -208,7 +226,17 @@ def _run_with_args(
         policy_hash=raw_request["policy_hash"],
         blueprint_hash=raw_request["blueprint_hash"],
     )
-    cached_run_dir = check_r1a_cache(r1a_key, runs_dir=_runs_dir)
+    with _span("apps_rg.cache.r1a.check") as r1a_span:
+        cached_run_dir = check_r1a_cache(
+            r1a_key,
+            runs_dir=_runs_dir,
+            policy_hash=raw_request["policy_hash"],
+            blueprint_hash=raw_request["blueprint_hash"],
+        )
+        if _OTEL_AVAILABLE and r1a_span is not None:
+            r1a_span.set_attribute("cache.layer", "r1a")
+            r1a_span.set_attribute("cache.result", "hit" if cached_run_dir else "miss")
+            r1a_span.set_attribute("cache.key_prefix", r1a_key[:16])
     if cached_run_dir is not None:
         _log.info("[apps_rg] R1A exact cache hit — returning cached run at %s", cached_run_dir)
         sys.exit(0)
@@ -218,16 +246,20 @@ def _run_with_args(
         try:
             from apps_rg.cache.r1b_adapter import check_r1b_for_apps_rg
 
-            r1b_hit = check_r1b_for_apps_rg(
-                candidate_profile_path=str(candidate_path),
-                target_company=args.target_company,
-                target_role=args.target_role,
-                policy_hash=raw_request["policy_hash"],
-                blueprint_hash=raw_request["blueprint_hash"],
-                jd_path=jd_path,
-                briefing_path=brief_path,
-                tenant_id=raw_request.get("tenant_id", "default"),
-            )
+            with _span("apps_rg.cache.r1b.check") as r1b_span:
+                r1b_hit = check_r1b_for_apps_rg(
+                    candidate_profile_path=str(candidate_path),
+                    target_company=args.target_company,
+                    target_role=args.target_role,
+                    policy_hash=raw_request["policy_hash"],
+                    blueprint_hash=raw_request["blueprint_hash"],
+                    jd_path=jd_path,
+                    briefing_path=brief_path,
+                    tenant_id=raw_request.get("tenant_id", "default"),
+                )
+                if _OTEL_AVAILABLE and r1b_span is not None:
+                    r1b_span.set_attribute("cache.layer", "r1b")
+                    r1b_span.set_attribute("cache.result", "hit" if r1b_hit else "miss")
             if r1b_hit is not None:
                 _log.info("[apps_rg] R1B semantic cache hit — returning cached result")
                 sys.exit(0)
@@ -254,7 +286,16 @@ def _run_with_args(
     # ── W4 / GAP-4: R1A post-run stamp (only on clean execution) ──
     if not result.fault and not result.terminal_r5:
         try:
-            stamp_r1a_cache(r1a_key, str(artifact_dir))
+            with _span("apps_rg.cache.r1a.stamp") as r1a_stamp_span:
+                stamp_r1a_cache(
+                    r1a_key,
+                    str(artifact_dir),
+                    policy_hash=raw_request["policy_hash"],
+                    blueprint_hash=raw_request["blueprint_hash"],
+                )
+                if _OTEL_AVAILABLE and r1a_stamp_span is not None:
+                    r1a_stamp_span.set_attribute("cache.layer", "r1a")
+                    r1a_stamp_span.set_attribute("cache.operation", "stamp")
             _log.debug("[apps_rg] R1A cache stamped for key=%s", r1a_key[:16])
         except Exception as _stamp_err:  # guardian: allow-broad-exception -- cache stamp is fail-soft; run already succeeded
             _log.warning("[apps_rg] R1A stamp failed (fail-soft): %s", _stamp_err)
@@ -288,17 +329,22 @@ def _run_with_args(
                 adapter = AppsRgR1BCacheAdapter(
                     tenant_id=raw_request.get("tenant_id", "default")
                 )
-                adapter.store_intent_and_output(
-                    intent=intent,
-                    output_chunks=output_chunks,
-                    run_context={
-                        "run_id": result.run_id,
-                        "exit_disposition": result.x3_disposition,
-                        "uwg_commit_receipt": result.run_id,
-                        "policy_hash": raw_request["policy_hash"],
-                        "blueprint_hash": raw_request["blueprint_hash"],
-                    },
-                )
+                with _span("apps_rg.cache.r1b.store") as r1b_store_span:
+                    adapter.store_intent_and_output(
+                        intent=intent,
+                        output_chunks=output_chunks,
+                        run_context={
+                            "run_id": result.run_id,
+                            "exit_disposition": result.x3_disposition,
+                            "uwg_commit_receipt": result.run_id,
+                            "policy_hash": raw_request["policy_hash"],
+                            "blueprint_hash": raw_request["blueprint_hash"],
+                        },
+                    )
+                    if _OTEL_AVAILABLE and r1b_store_span is not None:
+                        r1b_store_span.set_attribute("cache.layer", "r1b")
+                        r1b_store_span.set_attribute("cache.operation", "store")
+                        r1b_store_span.set_attribute("cache.chunks_stored", len(output_chunks))
                 _log.debug("[apps_rg] R1B semantic cache stored %d chunks", len(output_chunks))
         except Exception as _store_err:  # guardian: allow-broad-exception -- R1B store is fail-soft; run already succeeded
             _log.warning("[apps_rg] R1B store failed (fail-soft): %s", _store_err)

@@ -128,8 +128,16 @@ class R4IntegratedRunResult:
 # ---------------------------------------------------------------------------
 
 
-def _load_route_id_for_app(app_name: str) -> str:
-    """Read the primary route_id from the app's route_registry.yaml.
+def _load_route_id_for_app(
+    app_name: str,
+    preferred_label: str | None = None,
+) -> str:
+    """Read the best-matching route_id from the app's route_registry.yaml.
+
+    Selection priority (highest first):
+    1. Route whose ``label`` matches ``preferred_label`` (when provided).
+    2. Route with the lowest ``priority`` integer field (1 = highest priority).
+    3. First route in the list (legacy / single-route behaviour).
 
     Fail-soft: returns the module-level ``ROUTE_ID`` constant if the registry
     is absent, malformed, or contains no routes.  This keeps the pipeline
@@ -145,13 +153,50 @@ def _load_route_id_for_app(app_name: str) -> str:
 
         data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
         routes = data.get("routes", []) if isinstance(data, dict) else []
-        if routes:
-            rid = str(routes[0].get("route_id", "")).strip()
-            if rid:
-                _log.debug(
-                    "[R4] route_registry resolved route_id=%s for app=%s", rid, app_name
-                )
-                return rid
+        if not routes:
+            return ROUTE_ID
+
+        # --- label match (exact) ---
+        if preferred_label:
+            for route in routes:
+                if str(route.get("label", "")).strip() == preferred_label:
+                    rid = str(route.get("route_id", "")).strip()
+                    if rid:
+                        _log.debug(
+                            "[R4] route_registry label-match route_id=%s label=%s app=%s",
+                            rid, preferred_label, app_name,
+                        )
+                        return rid
+            _log.warning(
+                "[R4] preferred_label=%s not found in route_registry for app=%s; "
+                "falling back to priority/first selection",
+                preferred_label, app_name,
+            )
+
+        # --- priority sort (lower int = higher priority; absent = infinity) ---
+        def _priority(r: dict) -> int:
+            try:
+                return int(r.get("priority", 9999))
+            except (TypeError, ValueError):
+                return 9999
+
+        best = min(routes, key=_priority)
+        rid = str(best.get("route_id", "")).strip()
+        if rid:
+            _log.debug(
+                "[R4] route_registry priority-select route_id=%s priority=%s app=%s",
+                rid, best.get("priority", "n/a"), app_name,
+            )
+            return rid
+
+        # --- last resort: first entry ---
+        rid = str(routes[0].get("route_id", "")).strip()
+        if rid:
+            _log.debug(
+                "[R4] route_registry first-entry route_id=%s app=%s", rid, app_name
+            )
+            return rid
+
     except Exception as _exc:  # guardian: allow-broad-exception -- registry read is fail-soft; ROUTE_ID fallback is always valid
         _log.warning(
             "[R4] route_registry.yaml read failed for app=%s (fail-soft): %s",
