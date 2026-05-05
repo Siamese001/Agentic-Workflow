@@ -1,8 +1,9 @@
 # apps_repo_brief L0 cert-facing route registry.
 #
-# CONTRADICTION RESOLVED (cf. apps_exec/cert_route_registry.yaml which said
-# "template-driven (no C0 retrieval)"). The canonical apps_repo_brief route
-# IS grounded — C0 is mandatory. See spine_manifest.yaml for authority.
+# CONTRADICTION RESOLVED: apps_exec/cert_route_registry.yaml previously
+# described the route as template-driven with no retrieval requirement.
+# The canonical apps_repo_brief route IS grounded — C0 is mandatory.
+# See spine_manifest.yaml for authority.
 #
 # Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.3
 # Full cert-route migration and route consolidation in W2/P2.2-P2.3.

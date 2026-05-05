@@ -220,3 +220,69 @@ python ops_scripts/calibration/eval_harness_weekly_report.py
 `
 
 Emits JSON + Markdown under `docs/reports/eval_harness/<YYYY-Www>.md`.
+
+---
+
+## Spine Acceptance — W4 Final (2026-05-05)
+
+**Status**: ✅ ACCEPTED — All waves complete
+
+### Acceptance Proof
+
+```bash
+python -m pytest tests/governance/test_apps_lic_entrypoint_purity.py \
+       tests/governance/test_apps_lic_prompt_assembly.py \
+       tests/governance/test_apps_lic_static_recipe.py \
+       tests/governance/test_apps_lic_r3r4_managed_workflow.py \
+       -q --tb=short
+```
+
+**Result**: `81 passed, 0 failed, 0 skipped`
+
+### Wave Summary
+
+| Wave | Focus | Status | Test Count |
+|------|-------|--------|------------|
+| P0 | Entrypoint purity | ✅ Accepted | 25 |
+| P1.5 | Prompt Assembly, PromptBOM, registry | ✅ Accepted | 25 |
+| W2 | R4 static recipe (E1-E5) | ✅ Accepted | 14 |
+| W3 | R3R4 managed workflow | ✅ Accepted | 17 |
+| **W4** | **Final acceptance, legacy quarantine** | **✅ Accepted** | **81 total** |
+
+### Architecture
+
+**R4 Static Recipe** (briefing present):
+1. `validate_input` — schema validation
+2. `compile_prompt` — PA compiler → CompiledPromptArtifact
+3. `compose_draft` — consumes artifact, produces outreach_draft
+4. `seal_output` — ExitReviewPacket-compatible artifact
+
+**R3R4 Managed Recipe** (briefing missing/stale):
+1. R3: `validate_request_for_briefing` → `authorize_research` → `research_bridge_adapter` → `validate_research_and_build_manifest`
+2. R4: Resume static recipe with fresh PreloadedOutreachContextManifest
+3. Fail-closed on APPS_RESEARCH_BLOCKED/FAILED/EMPTY/STALE/WEAK_SUPPORT
+
+**Legacy Quarantined**:
+- `apps_lic/tools/run_workflow_lic.py` — QUARANTINED, unreachable from all active paths
+
+### Invariants Preserved
+
+- ✅ No callable passing from apps_lic
+- ✅ No direct apps_research import from __main__.py or L0
+- ✅ Bridge executes only as registered L3/L2 managed workflow step
+- ✅ No ad hoc prompt strings
+- ✅ No provider SDK calls outside governed gateway
+- ✅ No legacy fallback
+- ✅ No generic draft on research failure
+
+### Files
+
+| Purpose | Path |
+|---------|------|
+| Recipe registry | `apps_lic/integrations/lic_l2_recipe_registry.py` |
+| Step adapters | `apps_lic/integrations/lic_l2_step_adapters.py` |
+| Static DAG | `apps_lic/config/apps_lic_static_dag.yaml` |
+| Managed DAG | `apps_lic/config/apps_lic_managed_dag.yaml` |
+| Research bridge | `apps_lic/integrations/apps_research_bridge.py` |
+| Workflow dispatcher | `apps_lic/integrations/managed_workflow_dispatcher.py` |
+| Governance tests | `tests/governance/test_apps_lic_*.py` (81 tests) |

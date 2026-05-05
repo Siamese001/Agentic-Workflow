@@ -1,3 +1,32 @@
+# =============================================================================
+# QUARANTINED — LEGACY CODE — DO NOT USE
+# =============================================================================
+# This file is QUARANTINED as of W4 (2026-05-05) per apps_lic spine acceptance.
+#
+# REASON:
+#   This legacy workflow runner is replaced by the governed R3R4 managed workflow
+#   (apps_lic_static and apps_lic_managed recipes via lic_l2_recipe_registry).
+#
+# UNREACHABLE FROM:
+#   - apps_lic/__main__.py (governed spine entrypoint)
+#   - L0 routing (R4_STATIC_RECIPE, R3R4_MANAGED_WORKFLOW route families)
+#   - R4 recipe resolution (static DAG)
+#   - R3R4 recipe resolution (managed DAG)
+#   - Active step adapters (STEP_ADAPTERS registry)
+#
+# ACTIVE PATH:
+#   apps_lic/integrations/lic_l2_recipe_registry.py → resolve_recipe()
+#   apps_lic/integrations/lic_l2_step_adapters.py → STEP_ADAPTERS
+#   apps_lic/config/apps_lic_static_dag.yaml (R4)
+#   apps_lic/config/apps_lic_managed_dag.yaml (R3R4)
+#
+# PRESERVATION:
+#   File retained per W4 hard rules (no deletion without explicit approval).
+#   Not imported by any active code path. Safe to ignore for spine operation.
+#
+# STATUS: QUARANTINED — W4 apps_lic spine acceptance complete
+# =============================================================================
+
 from __future__ import annotations
 
 __version__ = "12.1"

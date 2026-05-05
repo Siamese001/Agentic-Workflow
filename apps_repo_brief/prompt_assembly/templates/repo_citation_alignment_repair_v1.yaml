@@ -1,0 +1,71 @@
+# apps_repo_brief citation alignment repair template.
+#
+# Purpose: Repair template for L2.E4 heal pass. Aligns inline citations
+# to the source portfolio. Repairs malformed citation anchors.
+# Does NOT fetch new evidence.
+# Stage: E4_HEAL.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.11
+
+template_id: repo_citation_alignment_repair_v1
+version: "1.0.0"
+purpose: >-
+  Align inline citations to SourcePortfolioSummary. Repair malformed citation
+  anchors in prior synthesis output. L2.E4 heal pass only.
+allowed_stage: E4_HEAL
+schema_version: "apps_repo_brief.prompt_template/v1"
+
+input_contract:
+  required_inputs:
+    - prior_brief_text          # synthesis output with citation issues
+    - SourcePortfolioSummary    # canonical source refs and citation anchor formats
+    - ClaimEvidenceMap          # maps claim_ids to valid source_refs
+
+required_slots: [C0, R0]
+
+forbidden_behaviors:
+  - retrieve_new_evidence
+  - add_citation_to_source_not_in_portfolio
+  - remove_citation_without_logging
+  - change_claim_content_beyond_citation_fix
+
+authorized_repair_actions:
+  - fix_malformed_citation_anchor        # reformat anchor to match SourcePortfolioSummary
+  - remove_citation_to_nonexistent_source  # remove ref not present in portfolio
+  - add_missing_citation_for_present_claim # add anchor when claim has ClaimEvidenceMap support
+
+slot_bodies:
+  citation_repair_instructions:
+    directive: >-
+      Scan prior_brief_text for citation anchors. For each anchor:
+      (1) Verify it matches a source in SourcePortfolioSummary.
+      (2) If malformed but source exists: reformat to canonical anchor format.
+      (3) If source does not exist in portfolio: remove the citation anchor,
+          log to removed_citation_log.
+      (4) If claim has ClaimEvidenceMap support but no anchor: add anchor.
+    anchor_format: "[SOURCE: <source_id> | <title_short>]"
+    non_intervention_rule: >-
+      Do NOT modify claim text beyond the citation anchor itself.
+      Do NOT change any factual assertion in the process of fixing citations.
+
+output_contract:
+  produces: citation_aligned_brief_text
+  required_fields:
+    - citation_aligned_brief_text
+    - fixed_anchors_log           # list of anchors fixed (malformed→canonical)
+    - removed_citation_log        # list of anchors removed (nonexistent source)
+    - added_citation_log          # list of anchors added (missing citation for supported claim)
+    - repair_incomplete           # bool
+
+validation_rules:
+  - All citation anchors in output must reference source_ids in SourcePortfolioSummary
+  - removed_citation_log must account for every removed anchor
+  - Claim text outside citation anchors must be byte-identical to prior_brief_text
+
+hash_fields:
+  - template_id
+  - version
+  - input_contract
+  - forbidden_behaviors
+  - authorized_repair_actions
+  - validation_rules

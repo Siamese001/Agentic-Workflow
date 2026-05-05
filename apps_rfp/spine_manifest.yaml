@@ -13,7 +13,7 @@
 #
 # Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
 #         §"Route-Shape Taxonomy for apps_*"
-# Pattern: mirrors apps_research W9, apps_exec W10, apps_lic W11.
+# Pattern: mirrors apps_research W9, apps_exec W10 (→apps_repo_brief, W2), apps_lic W11.
 # Pre-migration audit: apps_rfp was confirmed R3_grounded_read,
 #   NOT R3R4_managed_workflow. The audit found ZERO matches in
 #   apps_rfp/ for: CommitRequest, commit_request, StateDiffCandidate,
@@ -96,7 +96,7 @@ claimed_routes:
 #     Doctrine documents that explicitly disclaim portal submission as
 #     out of scope. These are the load-bearing signals that prove
 #     R3_grounded_read (not R3R4) is the correct classification.
-# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml
+# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml (→apps_repo_brief W2)
 #   + apps_lic/spine_manifest.yaml
 #     Sibling R3_grounded_read manifests -- this manifest mirrors their shape.
 # - apps_shared/integrations/governed_app_runner.py

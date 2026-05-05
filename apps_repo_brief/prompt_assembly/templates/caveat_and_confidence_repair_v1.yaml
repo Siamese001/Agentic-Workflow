@@ -1,0 +1,80 @@
+# apps_repo_brief caveat and confidence repair template.
+#
+# Purpose: Repair template for L2.E4 heal pass. Adds explicit caveats to
+# weak or partially-supported claims in a prior synthesis output.
+# Does NOT fetch new evidence — operates on SAME evidence contract.
+# Stage: E4_HEAL — activated when brief_text contains unsupported assertions.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.11
+
+template_id: caveat_and_confidence_repair_v1
+version: "1.0.0"
+purpose: >-
+  Add explicit caveats to weak or partially-supported claims in prior synthesis
+  output. L2.E4 heal pass only. Operates on the same evidence contract.
+allowed_stage: E4_HEAL
+schema_version: "apps_repo_brief.prompt_template/v1"
+
+input_contract:
+  required_inputs:
+    - prior_brief_text          # the output from E3_EXEC that needs repair
+    - FinalEvidenceContract     # same contract as used in synthesis — NOT refreshed
+    - ClaimEvidenceMap          # same as synthesis — identifies weak claims
+    - FreshnessReport           # same as synthesis — staleness caveats
+    - repair_ledger_entry       # what repair actions are authorized
+
+required_slots: [C0, I0, R0]
+
+forbidden_behaviors:
+  - retrieve_new_evidence
+  - change_route_or_capability
+  - upgrade_weak_evidence_to_strong
+  - silently_remove_claim_without_logging_to_repair_ledger
+  - rerun_synthesis_with_different_evidence_contract
+  - change_provider
+
+authorized_repair_actions:
+  - add_caveat_to_weak_claim        # prefix WEAK claim with "[LIMITED EVIDENCE]"
+  - remove_unsupported_claim        # omit claim with support_status=UNSUPPORTED
+  - add_staleness_caveat            # add recency note per FreshnessReport
+  - align_citation_to_source_ref   # fix malformed citation anchors
+  - add_explicit_gap_note          # note missing coverage in unresolved_gaps
+
+slot_bodies:
+  repair_instructions:
+    directive: >-
+      You are performing a targeted repair on the prior_brief_text.
+      Apply ONLY the authorized repair actions listed above.
+      Do NOT retrieve new information. Do NOT change the evidence contract.
+      Do NOT upgrade weak evidence to strong — only label and caveat.
+    per_claim_procedure:
+      - Identify claims in prior_brief_text that have WEAK status in ClaimEvidenceMap.
+      - Prefix each with "[LIMITED EVIDENCE: <claim_id>]".
+      - Identify claims with UNSUPPORTED status — remove entirely.
+      - Check FreshnessReport for stale sources — add "[SOURCE RECENCY: <staleness_class>]" caveat.
+      - Add unresolved_gaps entries for any section omitted in this repair pass.
+    budget_constraint: >-
+      One repair pass only. If the repair cannot be completed within the repair
+      budget, emit repair_incomplete=true and route to Exit for disposition.
+
+output_contract:
+  produces: repaired_brief_text
+  required_fields:
+    - repaired_brief_text
+    - repair_ledger               # list of repair actions applied and their targets
+    - repair_incomplete           # bool — true if budget exhausted before completion
+    - remaining_weak_claim_ids    # claims still WEAK after repair
+
+validation_rules:
+  - repair_ledger must include one entry per repair action applied
+  - removed_claims must appear in repair_ledger with action=remove_unsupported_claim
+  - No newly introduced claims permitted (only caveat/removal of existing)
+  - repaired_brief_text must not contain any UNSUPPORTED claim text
+
+hash_fields:
+  - template_id
+  - version
+  - input_contract
+  - forbidden_behaviors
+  - authorized_repair_actions
+  - validation_rules

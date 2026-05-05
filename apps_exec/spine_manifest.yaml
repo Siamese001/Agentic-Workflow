@@ -1,5 +1,12 @@
 # apps_exec spine manifest
 #
+# DEPRECATION NOTICE (W2 — apps-repo-brief-plan3-zero-loss-overwrite):
+#   apps_exec is being renamed to apps_repo_brief.
+#   Canonical routing target: apps_repo_brief.executive_brief_v1
+#   Artifact paths: exec_brief_* → repo_brief_*
+#   Source collection: exec_docs → repo_brief_docs
+#   This file is retained as a shim through W4; removed in W5.
+#
 # Declares which spine route types apps_exec serves so the
 # runtime-mode scanner (tools/analysis/apps_spine_coverage.py) can
 # verify direct surfacing of the canonical R3 contract chain.

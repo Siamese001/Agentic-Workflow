@@ -1,33 +1,40 @@
-"""Canonical entrypoint for apps_qna.
+"""Canonical entrypoint for apps_qna \u2014 pure CLI envelope parser.
 
-Two modes:
+Three modes:
+
+- **Live interview runtime** (``--interview <slug>``): runs the spine pipeline
+  (U0\u2192L1\u2192L0\u2192C0/Briefing\u2192L2\u2192Exit) for governed live interview pack builds.
+
+- **Live certification mode** (``--apps-e2e-live``): wraps a deterministic
+  pack-build dry-run in ``apps_shared.spine_emission.governed_run`` for the
+  apps_e2e harness.
 
 - **Product mode** (default): runs the CardPackBuilder CLI as before
   (build / lint / self-eval / route / init / feedback subcommands).
 
-- **Live certification mode** (``--apps-e2e-live``): wraps a deterministic
-  pack-build dry-run in ``apps_shared.spine_emission.governed_run`` so the
-  apps_e2e harness captures the 6 required runtime artifacts (route_contract,
-  l1_plan_contract, l3_bypass_receipt, l2_execution_receipt, exit_review_packet,
-  runtime_exhaust_bundle, otel_runtime_trace, plus prompt_assembly_manifest
-  because apps_qna uses deterministic template rendering).
-
-  Plan: apps-fort-knox-parity-c5d9a3 post-W10 scope expansion (2026-05-02) \u2014
-  user requested runtime cert for apps_qna rather than WAIVED_NOT_RUNTIME_APP.
+Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.1
 """
 
 from __future__ import annotations
 
-import logging
 import sys
 
 
 def _is_live_cert_mode() -> bool:
-    """True when ``--apps-e2e-live`` appears in sys.argv; strip flag from argv."""
     if "--apps-e2e-live" in sys.argv:
         sys.argv.remove("--apps-e2e-live")
         return True
     return False
+
+
+def _is_live_interview_mode() -> bool:
+    return "--interview" in sys.argv
+
+
+def _run_live_interview(argv: list[str]) -> int:
+    from apps_qna.live_interview_runtime import run_live_interview
+
+    return run_live_interview(argv)
 
 
 def _run_live_cert(argv: list[str]) -> int:
@@ -136,9 +143,11 @@ def _load_cert_route_entry(registry_path) -> dict | None:
 
 
 def main() -> int:
-    # Live certification path \u2014 emits real spine receipts and exits 0.
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))
+    if _is_live_interview_mode():
+        return _run_live_interview(list(sys.argv[1:]))
+    import logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",

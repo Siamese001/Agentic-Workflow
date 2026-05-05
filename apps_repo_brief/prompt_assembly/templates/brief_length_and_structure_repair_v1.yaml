@@ -1,0 +1,86 @@
+# apps_repo_brief length and structure repair template.
+#
+# Purpose: Repair template for L2.E4 heal pass. Trims over-budget output or
+# repairs missing sections when evidence exists. Runs against SAME evidence
+# contract — does NOT fetch new evidence.
+# Stage: E4_HEAL.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.11
+
+template_id: brief_length_and_structure_repair_v1
+version: "1.0.0"
+purpose: >-
+  Trim over-budget brief output or repair missing required sections when
+  evidence exists. L2.E4 heal pass only. Does not fetch new evidence.
+allowed_stage: E4_HEAL
+schema_version: "apps_repo_brief.prompt_template/v1"
+
+input_contract:
+  required_inputs:
+    - prior_brief_text          # the output from E3_EXEC that needs repair
+    - normalized_repo_brief_task  # original request — audience, depth_profile
+    - FinalEvidenceContract     # same contract — identifies section coverage
+    - BriefingCoverageMatrix    # selected sections and their coverage status
+    - repair_ledger_entry       # authorized repair actions for this pass
+
+required_slots: [C0, U0, R0]
+
+forbidden_behaviors:
+  - retrieve_new_evidence
+  - add_new_factual_claim_not_in_evidence_contract
+  - add_section_without_evidence_support
+  - change_depth_profile
+  - change_audience_persona
+
+authorized_repair_actions:
+  - trim_overbudget_sections     # remove content exceeding depth_profile word budget
+  - repair_missing_required_section   # add section using evidence already in FEC
+  - reorder_sections_per_audience_schema  # structural reorder only — no new content
+  - remove_duplicate_content     # deduplicate within existing content
+
+section_repair_constraint: >-
+  Missing sections may only be repaired if BriefingCoverageMatrix shows
+  coverage_status = COVERED for that section. If coverage_status = GAP
+  or OMIT_IF_UNSUPPORTED, do NOT add the section — list in unresolved_gaps.
+
+slot_bodies:
+  repair_instructions:
+    directive: >-
+      You are performing a structural repair on the prior_brief_text.
+      Apply ONLY the authorized repair actions listed above.
+      Do NOT add any factual claim not already present in the FinalEvidenceContract.
+      Do NOT change the evidence gate result or evidence status.
+    trim_procedure:
+      - Check prior_brief_text word count against depth_profile budget.
+      - If over budget: identify lowest-priority sections per BriefingCoverageMatrix.
+      - Trim from lowest-priority sections first; preserve all REQUIRED sections.
+      - Do not remove citation anchors when trimming.
+    missing_section_procedure:
+      - Check BriefingCoverageMatrix for required sections absent from prior_brief_text.
+      - For each absent required section: verify coverage_status = COVERED.
+      - Add section content using ONLY sources already in FinalEvidenceContract.verified_evidence.
+      - If coverage_status ≠ COVERED: add to unresolved_gaps, do not fabricate.
+
+output_contract:
+  produces: repaired_brief_text
+  required_fields:
+    - repaired_brief_text
+    - repair_ledger               # list of actions applied
+    - sections_trimmed            # list of sections trimmed
+    - sections_added              # list of sections added from evidence
+    - unresolved_gaps             # sections that could not be added due to missing coverage
+    - repair_incomplete           # bool
+
+validation_rules:
+  - No new factual claims may appear in repaired_brief_text
+  - sections_added must reference only sources in FinalEvidenceContract.verified_evidence
+  - sections_trimmed + sections_added must be reflected in repair_ledger
+  - word_count(repaired_brief_text) must not exceed depth_profile budget
+
+hash_fields:
+  - template_id
+  - version
+  - input_contract
+  - forbidden_behaviors
+  - authorized_repair_actions
+  - validation_rules

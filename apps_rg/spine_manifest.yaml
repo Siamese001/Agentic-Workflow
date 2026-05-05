@@ -13,7 +13,7 @@
 #
 # Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
 #         §"Route-Shape Taxonomy for apps_*"
-# Pattern: mirrors apps_research W9, apps_exec W10, apps_lic W11, apps_rfp W12.
+# Pattern: mirrors apps_research W9, apps_exec W10 (→apps_repo_brief, W2), apps_lic W11, apps_rfp W12.
 # Pre-migration audit: apps_rg confirmed R3_grounded_read, NOT
 #   R3R4_managed_workflow. Audit found ZERO matches in apps_rg/ for
 #   CommitRequest, commit_request, StateDiffCandidate,
@@ -83,7 +83,7 @@ claimed_routes:
 #     PRE-EXISTING REAL HANDOFF: build_anthropic_rag_payload consumes a typed PromptEnvelope.
 #     Do NOT remove or rewrite this in the migration -- it is the original load-bearing
 #     R3 contract surface that motivated declaring R3_grounded_read in the first place.
-# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml
+# - apps_research/spine_manifest.yaml + apps_exec/spine_manifest.yaml (→apps_repo_brief W2)
 #   + apps_lic/spine_manifest.yaml + apps_rfp/spine_manifest.yaml
 #     Sibling R3_grounded_read manifests -- this manifest mirrors their shape.
 # - apps_shared/integrations/governed_app_runner.py

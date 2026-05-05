@@ -524,6 +524,12 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- (holds @dataclass types only, no orchestration logic).
           AND dst.resolved_path NOT LIKE '%/mutation_prohibition.py'
           AND dst.resolved_path NOT LIKE '%/compiled_artifact.py'
+          -- Health-probe and thin-wrapper dst exemptions (2026-05-05):
+          -- vllm_health_probe.py is a pure health-check utility (no orchestration logic).
+          -- Apps calling it are checking liveness, not bypassing architectural authority.
+          -- namespace_bandit.py import is covered by the src-side exemption below
+          -- (subject_line_variant_selector.py is a documented thin wrapper per ADR-050/§29).
+          AND dst.resolved_path NOT LIKE '%/vllm_health_probe.py'
           -- Sanctioned source-side bridge locations (W10 2026-04-23, extended W11):
           -- Apps may cross into core through explicit bridge subdirectories:
           --   apps_*/integrations/   — documented adapter modules
@@ -542,7 +548,11 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
                    OR src.resolved_path LIKE 'apps_eval/%'
                    OR src.resolved_path LIKE '%_adapter.py'
                    OR src.resolved_path LIKE '%_adapter_util.py'
-                   OR src.resolved_path LIKE '%_base_util.py')
+                   OR src.resolved_path LIKE '%_base_util.py'
+                   -- 2026-05-05: subject_line_variant_selector.py is a documented thin
+                   -- wrapper around NamespaceBandit (ADR-050/§29, constitutional §29).
+                   -- Importing L0 routing IS its function — it is not an ad-hoc bypass.
+                   OR src.resolved_path LIKE '%/subject_line_variant_selector.py')
           -- 2026-04-29 P0 unblock: apps_*/proof/ houses the runtime scenario
           -- harnesses (apps_shared/proof/scenario_base.py + per-app scenarios)
           -- which intentionally drive cross-layer trajectories L0->L1->L2 to

@@ -189,14 +189,50 @@ If tests fail:
 
 | Metric | Target | Verification |
 |---|---|---|
-| W3 tests | 14 pass | pytest count |
-| Total apps_lic tests | 78 pass | pytest tests/governance/test_apps_lic*.py |
+| W3 tests | 17 pass | pytest count |
+| Total apps_lic tests | 81 pass | pytest tests/governance/test_apps_lic*.py |
 | Skipped tests | 0 | pytest --collect-only |
 | Recipe resolution | works | resolve_recipe("apps_lic", "managed") returns callable |
 
 ---
 
-## ADG_HOTSPOT_REPORT
+## W3 ACCEPTED — 2026-05-05
+
+**Proof Command:**
+```bash
+python -m pytest tests/governance/test_apps_lic_entrypoint_purity.py \
+       tests/governance/test_apps_lic_prompt_assembly.py \
+       tests/governance/test_apps_lic_static_recipe.py \
+       tests/governance/test_apps_lic_r3r4_managed_workflow.py \
+       -q --tb=short
+```
+
+**Proof Output:**
+```
+81 passed, 75 warnings in 21.91s
+```
+
+**Acceptance Verified:**
+- ✅ All 81 tests pass
+- ✅ Zero skipped tests
+- ✅ 17 W3 tests (14 original + 3 hardening)
+- ✅ 25 entrypoint purity tests
+- ✅ 25 prompt assembly tests  
+- ✅ 14 static recipe tests
+
+**Hardening Tests Added:**
+1. `test_apps_lic_apps_research_blocked_fails_closed_no_draft` — APPS_RESEARCH_BLOCKED path
+2. `test_apps_lic_r3r4_does_not_execute_static_r4_until_manifest_valid` — R3→R4 gate
+3. `test_apps_lic_managed_recipe_uses_prompt_registry_hash_after_r4_resume` — Hash binding verification
+
+**Invariants Preserved:**
+- No callable passing from apps_lic
+- No direct apps_research import from __main__.py or L0
+- Bridge executes only as registered L3/L2 managed workflow step
+- No ad hoc prompt strings
+- No provider SDK calls outside governed gateway
+- No legacy fallback
+- No generic draft on research failure
 
 | Rank | File | Layer | Fan-in | Archetype | Surface | Impact |
 |------|------|-------|--------|-----------|---------|--------|
@@ -205,7 +241,61 @@ If tests fail:
 
 ---
 
-## ADG_GRAPH_LAYER_EVIDENCE
+## W4 ACCEPTED — Final Spine Acceptance (2026-05-05)
+
+**Scope**: Final acceptance, legacy quarantine, documentation update
+
+### W4 Completion
+
+| Task | Status | Evidence |
+|------|--------|----------|
+| Full governance suite | ✅ | 81 tests pass |
+| Legacy quarantine | ✅ | run_workflow_lic.py QUARANTINED |
+| Unreachability verified | ✅ | No imports from active paths |
+| RUNBOOK.md updated | ✅ | W4 acceptance section added |
+| Proof captured | ✅ | Command and count recorded |
+
+### Legacy Quarantine Details
+
+**File**: `apps_lic/tools/run_workflow_lic.py`
+
+**Quarantine Header Added**:
+```python
+# =============================================================================
+# QUARANTINED — LEGACY CODE — DO NOT USE
+# =============================================================================
+# This file is QUARANTINED as of W4 (2026-05-05) per apps_lic spine acceptance.
+#
+# REASON:
+#   This legacy workflow runner is replaced by the governed R3R4 managed workflow
+#   (apps_lic_static and apps_lic_managed recipes via lic_l2_recipe_registry).
+#
+# UNREACHABLE FROM:
+#   - apps_lic/__main__.py (governed spine entrypoint)
+#   - L0 routing (R4_STATIC_RECIPE, R3R4_MANAGED_WORKFLOW route families)
+#   - R4 recipe resolution (static DAG)
+#   - R3R4 recipe resolution (managed DAG)
+#   - Active step adapters (STEP_ADAPTERS registry)
+# =============================================================================
+```
+
+### Final Test Count
+
+| Suite | Tests |
+|-------|-------|
+| P0 Entrypoint purity | 25 |
+| P1.5 Prompt Assembly | 25 |
+| W2 Static recipe | 14 |
+| W3 R3R4 managed workflow | 17 |
+| **TOTAL** | **81** |
+
+### Deferred Scope
+
+None — all waves complete.
+
+### SR_SUMMARY Ready
+
+See final SR_SUMMARY output in response.
 
 Graph-layer primitives consulted during plan authoring:
 

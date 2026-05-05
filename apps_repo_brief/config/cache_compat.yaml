@@ -1,0 +1,67 @@
+# apps_repo_brief cache compatibility schema.
+#
+# Defines the strict-compat key set required for exact (R1A) and semantic
+# (R1B) cache terminal-return. Board briefs default to no semantic terminal
+# return unless strict-compat exact match is achieved.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.8, §14
+
+schema_version: "apps_repo_brief.cache_compat/v1"
+app_name: apps_repo_brief
+
+# ---------------------------------------------------------------------------
+# R1A Exact Cache
+# ---------------------------------------------------------------------------
+# May terminal-return a prior sealed artifact ONLY when ALL of the
+# following fields match exactly. Any mismatch → fall-through to R1B or R3.
+# ---------------------------------------------------------------------------
+r1a_exact_cache:
+  required_fields:
+    - normalized_request_hash      # SHA256 of normalized audience + emphasis_areas
+    - audience                     # exact persona string
+    - emphasis_areas_hash          # SHA256 of sorted emphasis_areas list
+    - repo_snapshot_id             # repo commit SHA / manifest hash at brief time
+    - retrieval_surface_id         # identifies the repo_brief_docs L4 surface version
+    - policy_hash                  # current policy document hash
+    - blueprint_hash               # current blueprint hash
+    - persona_schema_version       # audience persona schema version
+    - rubric_version               # active rubric version
+    - source_freshness_window      # declared freshness window class (e.g. 24h, 7d)
+  terminal_return_allowed: true
+  board_brief_note: >-
+    Board briefs may use R1A terminal return ONLY when all fields match.
+    A single mismatch (e.g. new repo_snapshot_id) requires full R3 run.
+
+# ---------------------------------------------------------------------------
+# R1B Semantic Cache
+# ---------------------------------------------------------------------------
+# Semantic cache may be used as HINTS to C0/PA — NOT as terminal returns
+# for board-grade briefs. For non-board audiences the exact fields below
+# must match before considering a semantic terminal return.
+# ---------------------------------------------------------------------------
+r1b_semantic_cache:
+  terminal_return_allowed_audiences:
+    - recruiter           # OK for recruiter — low governance stakes
+    - svp_eng             # OK with strict-compat compat key set
+  terminal_return_forbidden_audiences:
+    - board               # NEVER — board briefs require fresh R3 unless exact-match
+    - cto                 # Forbidden unless snapshot-perfect
+    - head_of_ai          # Forbidden unless snapshot-perfect
+  strict_compat_key_set:
+    - audience
+    - source_digest       # digest of repo_brief_docs source files
+    - emphasis_hash       # hash of emphasis_areas
+    - freshness_class     # SAME_DAY | RECENT_WEEK | RECENT_MONTH | STALE
+  hint_only_mode_note: >-
+    When strict-compat fails, semantic cache entries may be surfaced to
+    C0 as hints (prior evidence maps, artifact refs) only. C0 must treat
+    them as unverified and re-retrieve independently.
+
+# ---------------------------------------------------------------------------
+# Forbidden patterns
+# ---------------------------------------------------------------------------
+forbidden:
+  - semantic_terminal_return_for_board_without_exact_match
+  - skip_r1a_for_returning_user_optimization
+  - cache_bypass_based_on_trust_score_alone
+  - use_cached_evidence_map_as_authoritative_fec

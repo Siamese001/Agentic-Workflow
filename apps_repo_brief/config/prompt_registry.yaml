@@ -1,0 +1,80 @@
+# apps_repo_brief Prompt Registry.
+#
+# Registers all prompt templates used by the apps_repo_brief PA compiler.
+# No ad hoc prompt strings are permitted outside registered templates.
+# Each template entry references a YAML file under prompt_assembly/templates/.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.10, §9
+
+schema_version: "apps_repo_brief.prompt_registry/v1"
+app_name: apps_repo_brief
+
+templates:
+  - template_id: repo_brief_synthesis_v1
+    version: "1.0.0"
+    description: >-
+      Primary synthesis template. Compiles verified C0 evidence into a
+      governed executive brief packet for the target audience.
+    path: apps_repo_brief/prompt_assembly/templates/repo_brief_synthesis_v1.yaml
+    allowed_stage: E3_EXEC
+    required_slots: [S0, I0, C0, U0, A0, D0, R0]
+    optional_slots: [E0, Y0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+  - template_id: repo_evidence_to_prompt_context_v1
+    version: "1.0.0"
+    description: >-
+      Formats FinalEvidenceContract + BriefingCoverageMatrix into the C0
+      prompt slot body. Ensures weak/caveated evidence is flagged.
+      Blocks promotion of weak evidence to strong.
+    path: apps_repo_brief/prompt_assembly/templates/repo_evidence_to_prompt_context_v1.yaml
+    allowed_stage: PA
+    required_slots: [C0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+  - template_id: unsupported_repo_claim_omission_v1
+    version: "1.0.0"
+    description: >-
+      Instructs the model to omit or caveat claims that lack ClaimEvidenceMap
+      support. Activated when evidence_status is WEAK or WEAK_WITH_CAVEATS.
+    path: apps_repo_brief/prompt_assembly/templates/unsupported_repo_claim_omission_v1.yaml
+    allowed_stage: E3_EXEC
+    required_slots: [C0, I0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+  - template_id: caveat_and_confidence_repair_v1
+    version: "1.0.0"
+    description: >-
+      Repair template: adds explicit caveats to weak or partially-supported
+      claims. Used in L2.E4 heal pass when output contains unsupported
+      assertions. Does NOT fetch new evidence.
+    path: apps_repo_brief/prompt_assembly/templates/caveat_and_confidence_repair_v1.yaml
+    allowed_stage: E4_HEAL
+    required_slots: [C0, I0, R0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+  - template_id: brief_length_and_structure_repair_v1
+    version: "1.0.0"
+    description: >-
+      Repair template: trims over-budget output or repairs missing sections
+      when evidence exists. Runs against SAME evidence contract only.
+      Does NOT fetch new evidence.
+    path: apps_repo_brief/prompt_assembly/templates/brief_length_and_structure_repair_v1.yaml
+    allowed_stage: E4_HEAL
+    required_slots: [C0, U0, R0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+  - template_id: repo_citation_alignment_repair_v1
+    version: "1.0.0"
+    description: >-
+      Repair template: aligns inline citations to the source portfolio.
+      Repairs malformed citation anchors. Does NOT fetch new evidence.
+    path: apps_repo_brief/prompt_assembly/templates/repo_citation_alignment_repair_v1.yaml
+    allowed_stage: E4_HEAL
+    required_slots: [C0, R0]
+    audiences: [recruiter, cto, svp_eng, board, head_of_ai]
+
+hash_fields:
+  - schema_version
+  - app_name
+  - templates

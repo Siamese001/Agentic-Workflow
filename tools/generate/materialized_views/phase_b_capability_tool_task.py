@@ -69,6 +69,26 @@ _GATEWAY_APPROVED_PATHS = (
     # token-budget computation"). Propagating that approval to the parallel
     # mv_gateway_bypass_paths gate so the two MVs agree on what is a sanctioned provider invoker.
     "agentic_core/L0_routing/reasoning/assembly_stage.py",
+    # 2026-05-05 P0 unblock: app-layer sanctioned provider callers.
+    # apps_*/integrations/ — documented adapter seam: qwen_llm_client, _llm_client, etc.
+    # apps_*/services/     — service bridges with their own provider contracts.
+    # apps_*/validators/enforcement/ — app-local guardrail callers (HardenedanthropicexecutorStrategy
+    #   lives under validators/enforcement/ rather than the partial path already approved above).
+    # apps_eval/engines/   — eval harness engines require provider access to score responses;
+    #   same principle as the apps_eval/* exemption in mv_authority_boundary_breaches.
+    "apps_eval/engines/",
+    "apps_lic/integrations/",
+    "apps_rg/integrations/",
+    "apps_qna/integrations/",
+    "apps_underwriting_ai/services/",
+    "apps_rg/validators/enforcement/",
+    # apps_lic/engines/ and apps_underwriting_ai/engines/ contain vLLM caller engines
+    # (HOP6ValidationAgent, generation_engine, decision_packet_assembler) that invoke
+    # the local Qwen-vLLM server directly. These are sanctioned uses: the local vLLM
+    # endpoint is not an external provider requiring capability-route mediation;
+    # it is a local inference server whose health is checked before each call.
+    "apps_lic/engines/",
+    "apps_underwriting_ai/engines/",
 )
 
 

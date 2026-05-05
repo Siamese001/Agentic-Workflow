@@ -1,0 +1,69 @@
+# apps_repo_brief unsupported-claim omission template.
+#
+# Purpose: Instruct the synthesis model to omit or caveat claims that
+# lack ClaimEvidenceMap support. Activated when evidence_status is WEAK
+# or WEAK_WITH_CAVEATS.
+# Stage: E3_EXEC — injected into synthesis when evidence gate is WEAK.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.11
+
+template_id: unsupported_repo_claim_omission_v1
+version: "1.0.0"
+purpose: >-
+  Constrain synthesis to omit or caveat claims lacking ClaimEvidenceMap support.
+  Activated when evidence_status is WEAK or WEAK_WITH_CAVEATS.
+allowed_stage: E3_EXEC
+schema_version: "apps_repo_brief.prompt_template/v1"
+
+input_contract:
+  required_inputs:
+    - FinalEvidenceContract     # evidence_status must be WEAK or WEAK_WITH_CAVEATS
+    - ClaimEvidenceMap          # per-claim support status
+    - SynthesisGuidanceForPA    # gap handling instructions
+
+required_slots: [C0, I0]
+
+activation_condition: >-
+  Inject this template slot when FinalEvidenceContract.status.evidence_status
+  in {WEAK, WEAK_WITH_CAVEATS}. Do NOT inject when evidence_status is PASS
+  (unnecessary constraint overhead).
+
+forbidden_behaviors:
+  - present_unsupported_claim_as_fact
+  - omit_unsupported_label_from_claim
+  - use_claim_not_in_evidence_map
+  - downgrade_evidence_gate_result
+
+slot_bodies:
+  claim_constraint_block:
+    rules:
+      - For every claim in the output, check ClaimEvidenceMap.support_status.
+      - If support_status is UNSUPPORTED → OMIT the claim entirely.
+      - If support_status is WEAK → include with prefix "[LIMITED EVIDENCE]".
+      - If support_status is CONTRADICTED → OMIT or flag with "[CONTRADICTED — SEE NOTES]".
+      - If support_status is PASS → include normally with citation anchor.
+      - Do not present any claim without a matching ClaimEvidenceMap entry.
+    gap_handling: >-
+      For sections flagged omit_if_unsupported in SynthesisGuidanceForPA:
+      omit the section entirely and list it in unresolved_gaps.
+      Do not fabricate supporting evidence for omitted sections.
+
+output_contract:
+  produces: claim_constraint_annotation_for_synthesis
+  required_fields:
+    - applied_constraint: unsupported_repo_claim_omission_v1
+    - evidence_status_at_injection   # records gate status at activation time
+    - omitted_claim_ids              # list of claim_ids omitted due to UNSUPPORTED
+    - caveated_claim_ids             # list of claim_ids marked WEAK
+
+validation_rules:
+  - omitted_claim_ids must match ClaimEvidenceMap entries with support_status=UNSUPPORTED
+  - caveated_claim_ids must match ClaimEvidenceMap entries with support_status=WEAK
+  - No omitted claim text may appear in the brief_text output
+
+hash_fields:
+  - template_id
+  - version
+  - input_contract
+  - forbidden_behaviors
+  - validation_rules
