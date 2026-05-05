@@ -208,7 +208,8 @@ def create_runtime_adg() -> None:
             layer TEXT,
             identity_kind TEXT,
             confidence REAL,
-            resolved_path TEXT
+            resolved_path TEXT,
+            entrypoint_kind TEXT
         )
     """)
 

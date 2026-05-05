@@ -30,7 +30,7 @@ _log = logging.getLogger("apps_research.capability_registry")
 CAPABILITY_ID = "apps_research.company_brief_v1"
 
 # Route ID this capability serves
-ROUTE_ID = "R3_SIMPLE_GROUNDED_READ"
+ROUTE_ID = "apps_research.company_brief_v1"
 
 # Execution form declared in route_registry.yaml
 EXECUTION_FORM = "SINGLE_STEP"
@@ -120,7 +120,7 @@ def bootstrap_capability() -> None:
     """Bootstrap the default GovernedResearchRun-backed capability handler.
 
     Builds and registers a handler that:
-    - Parses argv using the run_research argument parser
+    - Parses argv using an inline argparse parser (--topic, --mode, --depth)
     - Constructs a ResearchRequest from parsed args
     - Delegates to GovernedResearchRun.run_governed_e2e()
     - Returns 0 on success, 1 on any error
@@ -132,13 +132,17 @@ def bootstrap_capability() -> None:
 
     def _company_brief_handler(argv: list[str]) -> int:
         """Governed company brief handler — wraps GovernedResearchRun."""
+        import argparse  # noqa: PLC0415
+
         from apps_research.integrations.governed_research_run import (  # noqa: PLC0415
             GovernedResearchRun,
         )
-        from apps_research.scripts.run_research import build_parser  # noqa: PLC0415
         from apps_research.types.research_types import ResearchRequest  # noqa: PLC0415
 
-        parser = build_parser()
+        parser = argparse.ArgumentParser(prog="apps_research")
+        parser.add_argument("--topic", required=True, help="Research topic")
+        parser.add_argument("--mode", default="brief", help="Run mode (brief/deep)")
+        parser.add_argument("--depth", default="standard", help="Depth profile")
         try:
             args = parser.parse_args(argv)
         except SystemExit:
