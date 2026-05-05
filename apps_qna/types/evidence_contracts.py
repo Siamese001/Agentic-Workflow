@@ -33,6 +33,10 @@ class FinalEvidenceContract:
 
     Produced by agentic_core C0 retrieval. apps_qna consumes this
     unchanged via the thin adapter.
+
+    W3 / bge-m3-deferred-scope-remaining-c4e7a1: ``provider_dispatch`` is
+    an optional sidecar dict produced by apps_qna.engines.dispatch. None
+    means the dispatch layer was not invoked (e.g. stub mode or pre-W3 runs).
     """
 
     schema_version: str = "1.0"
@@ -47,9 +51,10 @@ class FinalEvidenceContract:
     freshness_assessment: str = "current"
     claim_confidence: float = 0.0
     contradiction_flags: tuple[str, ...] = ()
+    provider_dispatch: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "schema_version": self.schema_version,
             "producer": self.producer,
             "grounded": self.grounded,
@@ -63,6 +68,9 @@ class FinalEvidenceContract:
             "claim_confidence": self.claim_confidence,
             "contradiction_flags": list(self.contradiction_flags),
         }
+        if self.provider_dispatch is not None:
+            d["provider_dispatch"] = self.provider_dispatch
+        return d
 
 
 @dataclass(frozen=True)
