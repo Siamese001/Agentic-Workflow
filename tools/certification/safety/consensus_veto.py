@@ -71,7 +71,7 @@ def _env_key_for_juror(juror_family: str) -> str:
         "openai": "OPENAI_API_KEY",
         "anthropic": "ANTHROPIC_API_KEY",
         "google": "GOOGLE_API_KEY",
-        "google_gemini": "GEMINI_API_KEY",
+        "google_gemini": "GOOGLE_API_KEY",  # GEMINI_API_KEY deprecated alias
         "local_qwen": "__vllm_no_key__",
     }.get(juror_family, "__unknown__")
 
