@@ -12,7 +12,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from agentic_core.L0_routing.types.routing_artifact_types import L0Route
+
 _CAPABILITY_ID = "apps_underwriting_ai.decision_packet_v1"
+_L0_ROUTE = L0Route.R3R4_MANAGED
 _ROUTE_FAMILY = "R3R4_MANAGED_WORKFLOW"
 _EXECUTION_FORM = "MANAGED_WORKFLOW"
 
@@ -30,6 +33,7 @@ def register_decision_packet_capability() -> None:
     """
     _registry[_CAPABILITY_ID] = {
         "capability_id": _CAPABILITY_ID,
+        "l0_route": _L0_ROUTE.value,
         "route_family": _ROUTE_FAMILY,
         "execution_form": _EXECUTION_FORM,
         "l3_required": True,

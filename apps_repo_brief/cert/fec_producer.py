@@ -28,10 +28,7 @@ Source extraction ladder (defensive, READ-ONLY):
 """
 from __future__ import annotations
 
-import logging
 from typing import Any, Mapping
-
-_LOGGER = logging.getLogger(__name__)
 
 _SCHEMA_VERSION = "1.0"
 _PRODUCER_ID = "apps_repo_brief.cert.fec_producer"
@@ -50,17 +47,7 @@ def _safe_str(value: Any, default: str = "") -> str:
     return value if isinstance(value, str) else default
 
 
-_FEC_PRODUCER_RETIRED = (
-    "apps_repo_brief.cert.fec_producer.produce_fec is RETIRED (W4 P4.5). "
-    "Authoritative FEC.v1 is minted by C0 only (P3.7). "
-    "Use apps_repo_brief.cert.cert_projection_adapter.CertProjectionAdapter "
-    "to project C0 FEC fields for Exit pipeline consumption. "
-    "This function will raise RuntimeError in W5."
-)
-
-
 def produce_fec(run_context: Mapping[str, Any]) -> dict[str, Any]:
-    _LOGGER.warning(_FEC_PRODUCER_RETIRED)
     ctx = run_context if isinstance(run_context, Mapping) else {}
 
     route_id = _safe_str(ctx.get("route_id")) or _DEFAULT_ROUTE
