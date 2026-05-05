@@ -41,9 +41,14 @@ IS_SKELETON: bool = False
 
 HOLDOUT_FIXTURES: list[Path] = [
     REPO_ROOT / "apps_eval" / "fixtures" / "holdout" / "citation_quality_holdout.json",
+    REPO_ROOT / "apps_underwriting_ai" / "holdout" / "rationale_judge_holdout_pairs.json",
 ]
 """Paths to human-labeled holdout JSON files. Each file must have schema:
 {dim_id: str, grader_id: str, n: int, pairs: [{model_score: float, human_label: float}]}.
+
+DS-R6: rationale_judge_holdout_pairs.json is auto-generated from the YAML holdout
+by tools/underwriting/generate_holdout_pairs.py. Run that script after any
+holdout YAML update to keep this fixture current.
 """
 
 

@@ -631,6 +631,10 @@ def main():
             "Control-surface separation (healing vs llm_as_judge)",
             "scripts/verify_control_surface_separation.py",
         ),
+        # DS-R5 — fail-closed Spearman promotion gate for LLM-judge calibration.
+        # Advisory by default; JUDGE_SPEARMAN_FAIL_CLOSED=1 activates blocking.
+        # Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 DS-R5.
+        ("DS-R5 Judge Spearman calibration gate (advisory)", "ops_scripts/ci/check_judge_spearman_gate.py"),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)

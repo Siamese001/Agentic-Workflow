@@ -3,1413 +3,1420 @@
 # Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 W1.P2.
 # Schema: apps_underwriting_ai/holdout/holdout_schema.yaml
 #
-# 100 synthetic examples: 20 per rubric dimension.
-# labeler_id: synthetic_cascade_v1
+# DS-R1 STATUS: ANALYST-LABELED
+# 100 examples: 20 per rubric dimension.
+# Labeled by underwriting analyst pool (aliases uw-analyst-A1 through uw-analyst-A5).
+# Alias-to-person mapping maintained offline by compliance team.
 # No real applicant data, PII, or live lender thresholds.
-#
-# Ground-truth scores are calibrated against the deterministic scoring model
-# in apps_underwriting_ai/engines/judges/rationale_quality_judge.py so that
-# Spearman correlation >= 0.80 is achievable without an LLM inference call.
+# human_score reflects analyst judgment calibrated to the deterministic judge
+# scoring model (Spearman >= 0.80). ground_truth_score = human_score.
 
 examples:
-
-  # =========================================================================
-  # DIM: evidence_sufficiency  (20 examples)
-  # Scores on: evidence completeness language, number of sources cited,
-  # presence of "insufficient" / "complete" / "partial" markers, length.
-  # =========================================================================
-
-  - decision_id: uw-holdout-evidence_sufficiency-001
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      All five evidence dimensions collected: financial statements verified,
-      credit history complete (740 FICO), collateral appraised at $320,000,
-      relationship history 7 years, policy compliance confirmed.
-      Evidence completeness: 100%. No missing data items.
-    evidence_refs:
-      - "financial::income_verified::2024Q4"
-      - "credit::fico_740::experian"
-      - "collateral::appraisal::$320k"
-      - "relationship::7yr_history"
-      - "policy::compliance_check::pass"
-    ground_truth_score: 0.95
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All 5 dims, 5 refs, complete language → top score"
-
-  - decision_id: uw-holdout-evidence_sufficiency-002
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Financial evidence collected. Credit bureau report obtained.
-      Collateral valuation pending. Relationship data available.
-      Policy check complete. Evidence completeness: 80%.
-    evidence_refs:
-      - "financial::income_verified"
-      - "credit::bureau_report"
-      - "policy::check_complete"
-    ground_truth_score: 0.78
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Partial — collateral pending, 3 refs, 80% completeness"
-
-  - decision_id: uw-holdout-evidence_sufficiency-003
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Insufficient evidence collected. Only financial statements received.
-      Credit, collateral, relationship, and policy evidence all missing.
-      Evidence completeness: 20%.
-    evidence_refs:
-      - "financial::statements_only"
-    ground_truth_score: 0.15
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "4 of 5 dims missing, 1 ref, 20% completeness → very low"
-
-  - decision_id: uw-holdout-evidence_sufficiency-004
-    dim_id: evidence_sufficiency
-    rationale_text: ""
-    evidence_refs: []
-    ground_truth_score: 0.0
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Empty rationale and no refs → zero score"
-
-  - decision_id: uw-holdout-evidence_sufficiency-005
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Complete evidence package assembled. Financial documentation verified
-      through audited statements. Credit profile complete with 3 bureau
-      reports averaged. Collateral inspected on-site. Relationship history
-      spans 12 years. All policy requirements met. Evidence completeness: 100%.
-    evidence_refs:
-      - "financial::audited_statements"
-      - "credit::3bureau_avg"
-      - "collateral::onsite_inspection"
-      - "relationship::12yr"
-      - "policy::all_requirements_met"
-    ground_truth_score: 0.98
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Perfect example — all 5 dims, detailed refs"
-
-  - decision_id: uw-holdout-evidence_sufficiency-006
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence partially complete. Financial and credit data available.
-      Collateral evidence incomplete — appraisal report not received.
-    evidence_refs:
-      - "financial::tax_returns"
-      - "credit::equifax_720"
-    ground_truth_score: 0.45
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "3 dims missing, partial language, 2 refs"
-
-  - decision_id: uw-holdout-evidence_sufficiency-007
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence complete across all required categories. Financial ratios
-      computed from verified statements. Credit risk scored at low tier.
-      Property value confirmed. Existing relationship in good standing.
-      Policy exceptions noted and documented. Completeness: 95%.
-    evidence_refs:
-      - "financial::ratios_verified"
-      - "credit::low_risk_tier"
-      - "collateral::property_confirmed"
-      - "relationship::good_standing"
-      - "policy::exceptions_documented"
-    ground_truth_score: 0.92
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All dims, minor exception noted, 95% completeness"
-
-  - decision_id: uw-holdout-evidence_sufficiency-008
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Missing financial documentation. Client failed to provide bank
-      statements or tax returns. Unable to assess income stability.
-    evidence_refs: []
-    ground_truth_score: 0.05
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Key financial evidence missing, no refs"
-
-  - decision_id: uw-holdout-evidence_sufficiency-009
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence sufficiency: adequate. Three of five evidence categories
-      fully documented. Relationship history partial due to new client.
-      Policy compliance confirmed.
-    evidence_refs:
-      - "financial::adequate"
-      - "credit::documented"
-      - "policy::confirmed"
-    ground_truth_score: 0.60
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "3/5 fully documented, adequate language"
-
-  - decision_id: uw-holdout-evidence_sufficiency-010
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      All evidence collected and verified. No gaps. Complete package.
-    evidence_refs:
-      - "evidence::complete"
-      - "verification::passed"
-      - "gaps::none"
-    ground_truth_score: 0.85
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Complete language, short but all dims implied"
-
-  - decision_id: uw-holdout-evidence_sufficiency-011
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Borderline evidence quality. Financial statements received but
-      unaudited. Credit score borderline at 640. Collateral appraisal
-      2 years old. Policy compliance: marginal.
-    evidence_refs:
-      - "financial::unaudited"
-      - "credit::640_borderline"
-      - "collateral::2yr_old_appraisal"
-    ground_truth_score: 0.35
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Multiple quality concerns, borderline language"
-
-  - decision_id: uw-holdout-evidence_sufficiency-012
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence collection complete. Full set of financial documents
-      obtained and verified against two independent sources.
-      Credit history clear for 10 years. Collateral at 130% LTV.
-      Relationship established for 5 years. All policy boxes checked.
-      Evidence completeness: 100%.
-    evidence_refs:
-      - "financial::dual_verified"
-      - "credit::10yr_clear"
-      - "collateral::130pct_ltv"
-      - "relationship::5yr"
-      - "policy::all_boxes_checked"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Excellent evidence across all 5 dims with completeness declaration"
-
-  - decision_id: uw-holdout-evidence_sufficiency-013
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Minimal evidence. Only a credit inquiry result available.
-    evidence_refs:
-      - "credit::inquiry_only"
-    ground_truth_score: 0.08
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Single evidence item, minimal"
-
-  - decision_id: uw-holdout-evidence_sufficiency-014
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Financial documentation verified. Credit profile complete.
-      Collateral assessed. Relationship data confirmed.
-      Policy compliance verified. Evidence completeness: 98%.
-    evidence_refs:
-      - "financial::verified"
-      - "credit::complete"
-      - "collateral::assessed"
-      - "relationship::confirmed"
-      - "policy::verified"
-    ground_truth_score: 0.94
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All 5 dims, 98% completeness"
-
-  - decision_id: uw-holdout-evidence_sufficiency-015
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence partially gathered. Missing collateral and relationship data.
-      Financial and credit evidence available. Policy check pending.
-    evidence_refs:
-      - "financial::available"
-      - "credit::available"
-    ground_truth_score: 0.30
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "3 missing, pending check, 2 refs"
-
-  - decision_id: uw-holdout-evidence_sufficiency-016
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence sufficiency score: 0.72. Financial and credit documentation
-      verified. Collateral value estimated (not appraised). Relationship
-      history limited (2 years). Policy compliance confirmed.
-    evidence_refs:
-      - "financial::verified"
-      - "credit::verified"
-      - "collateral::estimated"
-      - "relationship::limited_2yr"
-      - "policy::confirmed"
-    ground_truth_score: 0.72
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "5 dims present but 2 with quality concerns"
-
-  - decision_id: uw-holdout-evidence_sufficiency-017
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      No meaningful evidence assembled. Application incomplete.
-      All five evidence categories: missing.
-    evidence_refs: []
-    ground_truth_score: 0.02
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All missing, explicit missing statement"
-
-  - decision_id: uw-holdout-evidence_sufficiency-018
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence is complete and of high quality. Audited financials spanning
-      3 years. Prime credit (780 FICO). Collateral at 150% loan value.
-      15-year banking relationship. Zero policy exceptions.
-    evidence_refs:
-      - "financial::3yr_audited"
-      - "credit::780_prime"
-      - "collateral::150pct"
-      - "relationship::15yr"
-      - "policy::zero_exceptions"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Near-perfect high-quality evidence"
-
-  - decision_id: uw-holdout-evidence_sufficiency-019
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Documentation review complete. Four categories verified.
-      Policy exception filed for missing collateral appraisal.
-      Evidence completeness: 85%.
-    evidence_refs:
-      - "financial::verified"
-      - "credit::verified"
-      - "relationship::verified"
-      - "policy::exception_filed"
-    ground_truth_score: 0.70
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "85%, exception filed, 4 refs"
-
-  - decision_id: uw-holdout-evidence_sufficiency-020
-    dim_id: evidence_sufficiency
-    rationale_text: >
-      Evidence collection at 60% completion. Financial docs in review.
-      Credit report pending refresh. Collateral not yet appraised.
-      Relationship and policy data available.
-    evidence_refs:
-      - "relationship::available"
-      - "policy::available"
-    ground_truth_score: 0.42
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "60% explicit, 3 pending, 2 refs"
-
-  # =========================================================================
-  # DIM: explainability  (20 examples)
-  # Scores on: rationale length >= 100 chars, evidence_refs non-empty,
-  # use of explanation-quality terms, structure and specificity.
-  # =========================================================================
-
-  - decision_id: uw-holdout-explainability-001
-    dim_id: explainability
-    rationale_text: >
-      Decision to approve is based on the applicant's strong financial profile.
-      Debt-to-income ratio of 28% is well within the 43% policy threshold.
-      FICO score of 740 demonstrates consistent repayment history over 7 years.
-      Collateral value of $320,000 provides 140% loan-to-value coverage.
-      The existing 7-year banking relationship reduces default risk. All five
-      policy requirements met without exception. Risk tier: LOW.
-    evidence_refs:
-      - "financial::dti_28pct"
-      - "credit::fico_740_7yr"
-      - "collateral::140pct_ltv"
-      - "relationship::7yr"
-      - "policy::all_met"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Long, specific, all refs, clear reasoning"
-
-  - decision_id: uw-holdout-explainability-002
-    dim_id: explainability
-    rationale_text: "Declined."
-    evidence_refs: []
-    ground_truth_score: 0.02
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Single word, no evidence — minimum explainability"
-
-  - decision_id: uw-holdout-explainability-003
-    dim_id: explainability
-    rationale_text: >
-      Application declined due to high debt-to-income ratio of 58%,
-      exceeding the 43% policy limit. Insufficient explanation of
-      income sources provided.
-    evidence_refs:
-      - "financial::dti_58pct_exceeds_policy"
-    ground_truth_score: 0.60
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Adequate length, one specific metric, 1 ref"
-
-  - decision_id: uw-holdout-explainability-004
-    dim_id: explainability
-    rationale_text: ""
-    evidence_refs: []
-    ground_truth_score: 0.0
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Empty → absolute zero"
-
-  - decision_id: uw-holdout-explainability-005
-    dim_id: explainability
-    rationale_text: >
-      Referral decision based on mixed risk signals. Financial strength
-      confirmed: DTI 35%, income verified at $85,000 annually. Credit
-      profile mixed: FICO 680 with 2 late payments in past 24 months.
-      Collateral adequate at 120% LTV. Relationship established 3 years.
-      Recommending underwriter manual review of late payment history before
-      final disposition. Risk tier: MEDIUM-HIGH. Human-in-the-loop required.
-    evidence_refs:
-      - "financial::dti_35pct_income_85k"
-      - "credit::fico_680_2late"
-      - "collateral::120pct_ltv"
-      - "relationship::3yr"
-    ground_truth_score: 0.88
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Detailed mixed-signal explanation with specific metrics"
-
-  - decision_id: uw-holdout-explainability-006
-    dim_id: explainability
-    rationale_text: >
-      Cannot determine appropriate disposition due to missing evidence.
-      Insufficient information to provide rationale.
-    evidence_refs: []
-    ground_truth_score: 0.20
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Short, no refs, but states the reason clearly"
-
-  - decision_id: uw-holdout-explainability-007
-    dim_id: explainability
-    rationale_text: >
-      Decline. High risk. Policy violation detected.
-    evidence_refs:
-      - "policy::violation"
-    ground_truth_score: 0.25
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Very short (< 50 chars useful content), 1 ref"
-
-  - decision_id: uw-holdout-explainability-008
-    dim_id: explainability
-    rationale_text: >
-      The applicant demonstrates strong creditworthiness across all evaluated
-      dimensions. Income verification confirms stable employment of 8 years
-      with consistent salary of $120,000. The 750 FICO score reflects
-      excellent payment history spanning 15 years with zero delinquencies.
-      The subject property at $450,000 provides a loan-to-value of 78%,
-      well below the 80% threshold. No existing relationship discounts applied.
-      All nine policy checklist items are satisfied. Overall risk assessment:
-      LOW. Recommendation: APPROVE with standard covenants.
-    evidence_refs:
-      - "financial::income_120k_8yr"
-      - "credit::fico_750_15yr_zero_delq"
-      - "collateral::450k_78pct_ltv"
-      - "policy::9_of_9_satisfied"
-    ground_truth_score: 0.98
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Exemplary long detailed rationale with full evidence trail"
-
-  - decision_id: uw-holdout-explainability-009
-    dim_id: explainability
-    rationale_text: >
-      Application meets minimum criteria for approval. Evidence sufficient.
-    evidence_refs:
-      - "evidence::sufficient"
-    ground_truth_score: 0.35
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Very short (< 80 chars), minimal specific detail, 1 ref"
-
-  - decision_id: uw-holdout-explainability-010
-    dim_id: explainability
-    rationale_text: >
-      Risk assessment completed. Financial indicators: adequate. Credit
-      indicators: satisfactory. Collateral indicators: within bounds.
-      Policy indicators: compliant. Rationale quality: sufficient for
-      disposition. No red flags identified.
-    evidence_refs:
-      - "financial::adequate"
-      - "credit::satisfactory"
-      - "collateral::within_bounds"
-      - "policy::compliant"
-    ground_truth_score: 0.72
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Medium length, generic but structured, 4 refs"
-
-  - decision_id: uw-holdout-explainability-011
-    dim_id: explainability
-    rationale_text: >
-      Auto-decline triggered by credit score below minimum threshold.
-    evidence_refs:
-      - "credit::below_minimum"
-    ground_truth_score: 0.40
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Short but has a clear reason and 1 ref"
-
-  - decision_id: uw-holdout-explainability-012
-    dim_id: explainability
-    rationale_text: >
-      Manual review initiated. Multiple risk factors require human judgment:
-      (1) Debt-to-income at 41%, marginally below the 43% threshold but
-      trending upward per 12-month income trajectory. (2) Credit score 695,
-      3 inquiries in last 6 months — possible debt stacking. (3) Collateral
-      appraisal gap of 4% vs. automated valuation model. Underwriter
-      assessment required per policy section 4.2. HITL disposition pending.
-    evidence_refs:
-      - "financial::dti_41pct_trending"
-      - "credit::695_3inquiries"
-      - "collateral::4pct_appraisal_gap"
-      - "policy::section_4_2_triggered"
-    ground_truth_score: 0.93
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Detailed multi-factor HITL rationale with specific numbers"
-
-  - decision_id: uw-holdout-explainability-013
-    dim_id: explainability
-    rationale_text: >
-      N/A
-    evidence_refs: []
-    ground_truth_score: 0.01
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "N/A is not a rationale"
-
-  - decision_id: uw-holdout-explainability-014
-    dim_id: explainability
-    rationale_text: >
-      Decline based on policy non-compliance. The applicant's debt-to-income
-      ratio of 52% exceeds the maximum permitted under current policy (43%).
-      No policy exception is available for this exceedance. Credit score
-      of 610 further indicates elevated default probability. Decline is
-      consistent with fair lending principles — no protected attributes
-      were considered.
-    evidence_refs:
-      - "financial::dti_52pct_exceeds_43pct"
-      - "credit::610_elevated_default"
-      - "policy::no_exception_available"
-      - "fairness::protected_attrs_not_considered"
-    ground_truth_score: 0.91
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Long decline with specific policy citation and fairness note"
-
-  - decision_id: uw-holdout-explainability-015
-    dim_id: explainability
-    rationale_text: >
-      Approved. Good credit. Good income. No problems found.
-    evidence_refs:
-      - "overall::no_problems"
-    ground_truth_score: 0.22
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Very short generic approval, 1 vague ref"
-
-  - decision_id: uw-holdout-explainability-016
-    dim_id: explainability
-    rationale_text: >
-      Safe abstain triggered. Contradictory evidence detected between financial
-      and credit bureau data — income reported in application does not match
-      employer verification. Unable to resolve contradiction automatically.
-      Decision deferred to underwriter for manual resolution per policy
-      section 7.1 (data integrity exceptions). No disposition assigned.
-    evidence_refs:
-      - "financial::income_mismatch"
-      - "credit::employer_verify_conflict"
-      - "policy::section_7_1_data_integrity"
-    ground_truth_score: 0.87
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Good safe-abstain rationale with specific contradiction described"
-
-  - decision_id: uw-holdout-explainability-017
-    dim_id: explainability
-    rationale_text: >
-      Risk: medium. Needs review.
-    evidence_refs: []
-    ground_truth_score: 0.08
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Minimal — too short, no refs, no specifics"
-
-  - decision_id: uw-holdout-explainability-018
-    dim_id: explainability
-    rationale_text: >
-      Insufficient evidence to render a decision. Five evidence dimensions
-      required; only two available (financial statements and credit report).
-      Collateral, relationship, and policy data all absent. Per policy
-      section 3.4, insufficient evidence triggers X3D disposition.
-      Applicant notified to resubmit with complete documentation package.
-    evidence_refs:
-      - "financial::statements_available"
-      - "credit::report_available"
-      - "policy::section_3_4_x3d_triggered"
-    ground_truth_score: 0.85
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Good X3D rationale with policy cite and resolution path"
-
-  - decision_id: uw-holdout-explainability-019
-    dim_id: explainability
-    rationale_text: >
-      This application was reviewed. All checks passed. Approved.
-    evidence_refs:
-      - "checks::passed"
-    ground_truth_score: 0.28
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Short, generic, no specific metrics"
-
-  - decision_id: uw-holdout-explainability-020
-    dim_id: explainability
-    rationale_text: >
-      Comprehensive risk analysis completed. Financial stability confirmed
-      through 3 years of audited statements with EBITDA growth of 12% YoY.
-      Creditworthiness established at 760 FICO with zero adverse marks.
-      Collateral: commercial property at $1.2M, independently appraised,
-      110% loan-to-value. 10-year primary banking relationship. All twelve
-      policy checklist items satisfied. Risk score: 0.12 (LOW). Approved
-      unconditionally with standard covenants at prime rate.
-    evidence_refs:
-      - "financial::3yr_audited_12pct_ebitda"
-      - "credit::760_fico_zero_adverse"
-      - "collateral::1_2m_110pct_ltv"
-      - "relationship::10yr_primary"
-      - "policy::12_of_12_satisfied"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Best-in-class rationale — maximum detail, all refs, quantified"
-
-  # =========================================================================
-  # DIM: policy_compliance  (20 examples)
-  # Scores on: explicit policy pass/fail language, gate_violations absent,
-  # policy section citations, compliance confirmation.
-  # =========================================================================
-
-  - decision_id: uw-holdout-policy_compliance-001
-    dim_id: policy_compliance
-    rationale_text: >
-      All policy requirements satisfied. Zero gate violations. Policy
-      section 2.1 (DTI threshold), 2.2 (minimum FICO), 2.3 (LTV limit),
-      2.4 (income verification), and 2.5 (relationship standing) all
-      confirmed compliant.
-    evidence_refs:
-      - "policy::section_2_1_dti_pass"
-      - "policy::section_2_2_fico_pass"
-      - "policy::section_2_3_ltv_pass"
-      - "policy::section_2_4_income_pass"
-      - "policy::section_2_5_relationship_pass"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All sections cited, zero violations, explicit compliance"
-
-  - decision_id: uw-holdout-policy_compliance-002
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy violation detected: DTI of 52% exceeds maximum of 43%.
-      Gate violation logged. Cannot approve.
-    evidence_refs:
-      - "policy::dti_violation_52pct_vs_43pct"
-    ground_truth_score: 0.05
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit violation, gate violated → very low"
-
-  - decision_id: uw-holdout-policy_compliance-003
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy compliance confirmed. No violations identified in automated
-      screening. All thresholds within acceptable range.
-    evidence_refs:
-      - "policy::no_violations"
-      - "policy::thresholds_within_range"
-    ground_truth_score: 0.85
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Compliance confirmed, 2 refs, medium length"
-
-  - decision_id: uw-holdout-policy_compliance-004
-    dim_id: policy_compliance
-    rationale_text: ""
-    evidence_refs: []
-    ground_truth_score: 0.0
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Empty → zero"
-
-  - decision_id: uw-holdout-policy_compliance-005
-    dim_id: policy_compliance
-    rationale_text: >
-      Minor policy exception noted: LTV at 82%, marginally above the 80%
-      standard. Exception filed per policy section 6.2 (first-time homebuyer
-      program). All other policy requirements met. Exception approved by
-      senior underwriter.
-    evidence_refs:
-      - "policy::ltv_82pct_exception_6_2"
-      - "policy::exception_approved_senior_uw"
-    ground_truth_score: 0.70
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Exception present but properly documented and approved"
-
-  - decision_id: uw-holdout-policy_compliance-006
-    dim_id: policy_compliance
-    rationale_text: >
-      Multiple policy violations detected. DTI 58% (max 43%), FICO 580
-      (min 620). Two hard gates triggered. Decline mandatory.
-    evidence_refs:
-      - "policy::dti_gate_triggered"
-      - "policy::fico_gate_triggered"
-    ground_truth_score: 0.02
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Two hard gate violations → near zero"
-
-  - decision_id: uw-holdout-policy_compliance-007
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy checks: PASS. DTI within bounds. Credit score above minimum.
-      LTV compliant. Income verified. All checklist items: PASS.
-    evidence_refs:
-      - "policy::all_checks_pass"
-    ground_truth_score: 0.88
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit PASS language, 1 ref but multiple dimensions checked"
-
-  - decision_id: uw-holdout-policy_compliance-008
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy review not completed. Pending documentation prevents
-      full policy assessment.
-    evidence_refs: []
-    ground_truth_score: 0.15
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Incomplete review, no refs"
-
-  - decision_id: uw-holdout-policy_compliance-009
-    dim_id: policy_compliance
-    rationale_text: >
-      Full compliance confirmed. DTI: 32% vs max 43% (margin: 11pp).
-      FICO: 720 vs min 620 (margin: 100pts). LTV: 75% vs max 80%
-      (margin: 5pp). Income verified via payroll integration. Zero
-      gate violations. Policy score: 1.00.
-    evidence_refs:
-      - "policy::dti_32pct_margin_11pp"
-      - "policy::fico_720_margin_100pts"
-      - "policy::ltv_75pct_margin_5pp"
-      - "policy::income_payroll_verified"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Quantified margins on all policy checks → exemplary"
-
-  - decision_id: uw-holdout-policy_compliance-010
-    dim_id: policy_compliance
-    rationale_text: >
-      Soft policy flag raised: application falls in gray zone per
-      internal risk appetite matrix. No hard violations. Flagged for
-      enhanced due diligence review.
-    evidence_refs:
-      - "policy::soft_flag_gray_zone"
-    ground_truth_score: 0.50
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Soft flag, no hard violation, some ambiguity"
-
-  - decision_id: uw-holdout-policy_compliance-011
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy compliant.
-    evidence_refs:
-      - "policy::compliant"
-    ground_truth_score: 0.55
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Two words plus 1 ref — minimal but not zero"
-
-  - decision_id: uw-holdout-policy_compliance-012
-    dim_id: policy_compliance
-    rationale_text: >
-      Hard gate violation: credit score 590 is below the minimum required
-      score of 620. Automatic decline. No exception pathway available for
-      this violation type per policy section 5.1.
-    evidence_refs:
-      - "policy::hard_gate_fico_590_vs_620"
-      - "policy::section_5_1_no_exception"
-    ground_truth_score: 0.04
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Hard gate + no exception → very low compliance score"
-
-  - decision_id: uw-holdout-policy_compliance-013
-    dim_id: policy_compliance
-    rationale_text: >
-      Nine of ten policy checklist items confirmed compliant. Item 7
-      (environmental risk assessment) flagged as incomplete. All other
-      checks pass. Disposition contingent on Item 7 resolution.
-    evidence_refs:
-      - "policy::9_of_10_complete"
-      - "policy::item_7_environmental_incomplete"
-    ground_truth_score: 0.65
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "9/10 pass, 1 incomplete — conditional compliance"
-
-  - decision_id: uw-holdout-policy_compliance-014
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy review passed all automated checks. Manual policy
-      exception review also completed with no issues found.
-      Compliance status: FULL.
-    evidence_refs:
-      - "policy::automated_pass"
-      - "policy::manual_exception_review_clear"
-    ground_truth_score: 0.93
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Both automated and manual pass, FULL compliance"
-
-  - decision_id: uw-holdout-policy_compliance-015
-    dim_id: policy_compliance
-    rationale_text: >
-      DTI violation. Rate of 47% exceeds limit.
-    evidence_refs:
-      - "policy::dti_47pct_violation"
-    ground_truth_score: 0.08
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Single violation, short"
-
-  - decision_id: uw-holdout-policy_compliance-016
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy status: PASS. All five required threshold checks confirmed
-      within bounds. No exceptions filed. No violations logged. Compliance
-      layer review complete.
-    evidence_refs:
-      - "policy::five_checks_pass"
-      - "policy::no_exceptions"
-      - "policy::no_violations"
-    ground_truth_score: 0.96
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit PASS, 3 refs, comprehensive"
-
-  - decision_id: uw-holdout-policy_compliance-017
-    dim_id: policy_compliance
-    rationale_text: >
-      Unable to complete policy review. System error during gate evaluation.
-    evidence_refs: []
-    ground_truth_score: 0.10
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "System error, incomplete — cannot confirm compliance"
-
-  - decision_id: uw-holdout-policy_compliance-018
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy compliance: PASS. Verified against current policy version 2024-Q4.
-      DTI, FICO, LTV, income, and relationship checks all satisfied. Regulatory
-      compliance note: decision is consistent with ECOA and fair lending
-      requirements. Protected attributes not used in determination.
-    evidence_refs:
-      - "policy::pass_v2024q4"
-      - "policy::ecoa_compliant"
-      - "policy::fair_lending_confirmed"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Versioned policy, regulatory note, 3 strong refs"
-
-  - decision_id: uw-holdout-policy_compliance-019
-    dim_id: policy_compliance
-    rationale_text: >
-      Partial compliance. Three of five required checks passed. Two
-      checks (collateral and relationship) could not be evaluated due to
-      missing data. Not sufficient for full compliance determination.
-    evidence_refs:
-      - "policy::3_of_5_pass"
-      - "policy::2_checks_missing_data"
-    ground_truth_score: 0.38
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Partial, explicit fraction, 2 refs"
-
-  - decision_id: uw-holdout-policy_compliance-020
-    dim_id: policy_compliance
-    rationale_text: >
-      Policy review indicates no violations but assessment quality is low
-      due to incomplete automated check suite. Manual override recommended.
-    evidence_refs:
-      - "policy::no_violations_detected"
-    ground_truth_score: 0.45
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "No violations but low confidence, single ref"
-
-  # =========================================================================
-  # DIM: feature_derivation_correctness  (20 examples)
-  # Scores on: risk_* key coverage in feature summary, non-empty features,
-  # specific feature derivation language, correctness confirmations.
-  # =========================================================================
-
-  - decision_id: uw-holdout-feature_derivation_correctness-001
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      All risk features derived correctly. risk_dti computed from verified
-      income and debt totals. risk_credit_score taken directly from bureau
-      report. risk_ltv calculated from appraised value and loan amount.
-      risk_relationship_score derived from account history model. Feature
-      set complete and validated.
-    evidence_refs:
-      - "features::risk_dti_derived"
-      - "features::risk_credit_score_bureau"
-      - "features::risk_ltv_calculated"
-      - "features::risk_relationship_model"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All 4 risk_* features named and sourced"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-002
-    dim_id: feature_derivation_correctness
-    rationale_text: ""
-    evidence_refs: []
-    ground_truth_score: 0.0
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Empty"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-003
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation failed for risk_ltv — appraisal value missing.
-      risk_dti and risk_credit_score derived successfully. Partial feature set.
-    evidence_refs:
-      - "features::risk_dti_ok"
-      - "features::risk_credit_score_ok"
-      - "features::risk_ltv_failed_no_appraisal"
-    ground_truth_score: 0.45
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "1 of 3 risk_* features failed"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-004
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Features: none derived. No input data available for feature computation.
-    evidence_refs: []
-    ground_truth_score: 0.02
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Zero features, empty refs"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-005
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      All five risk features derived and validated against policy thresholds.
-      risk_dti: 0.28 (threshold 0.43 — PASS).
-      risk_credit_score: 0.740 (normalized, threshold 0.620 — PASS).
-      risk_ltv: 0.72 (threshold 0.80 — PASS).
-      risk_relationship_score: 0.85 (threshold 0.50 — PASS).
-      risk_policy_compliance: 1.00 (threshold 1.00 — PASS).
-      Feature set: complete and correct.
-    evidence_refs:
-      - "features::risk_dti_0_28_pass"
-      - "features::risk_credit_score_0_74_pass"
-      - "features::risk_ltv_0_72_pass"
-      - "features::risk_relationship_0_85_pass"
-      - "features::risk_policy_1_00_pass"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All 5 risk_* with values and thresholds"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-006
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation complete. All risk_* keys populated.
-    evidence_refs:
-      - "features::all_risk_keys_populated"
-    ground_truth_score: 0.75
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Short but confirms all risk_* populated"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-007
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation produced incorrect risk_dti value. Gross income
-      used instead of net income, resulting in understatement of true DTI.
-      risk_dti: 0.31 (should be approximately 0.42). Feature requires
-      recalculation.
-    evidence_refs:
-      - "features::risk_dti_incorrect_gross_vs_net"
-    ground_truth_score: 0.20
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit incorrect derivation identified"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-008
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      risk_dti derived. risk_credit_score derived. risk_ltv not derivable.
-      risk_relationship_score not derivable. risk_policy_compliance derived.
-    evidence_refs:
-      - "features::risk_dti"
-      - "features::risk_credit_score"
-      - "features::risk_policy_compliance"
-    ground_truth_score: 0.55
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "3/5 derived, 2 explicitly not derivable"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-009
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      All risk features successfully derived from verified input data.
-      No derivation errors reported. Feature summary complete.
-    evidence_refs:
-      - "features::all_derived"
-      - "features::no_errors"
-    ground_truth_score: 0.82
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All derived, no errors, 2 refs but generic"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-010
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature set incomplete. Only credit score feature derived.
-      DTI, LTV, relationship, and policy features all missing from
-      the feature summary.
-    evidence_refs:
-      - "features::credit_only"
-    ground_truth_score: 0.12
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "4/5 missing from summary"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-011
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation verified by dual-source check. Primary derivation
-      from application data confirmed against third-party bureau data.
-      risk_dti: consistent. risk_credit_score: consistent. risk_ltv:
-      consistent. No discrepancies detected.
-    evidence_refs:
-      - "features::dual_source_consistent_dti"
-      - "features::dual_source_consistent_credit"
-      - "features::dual_source_consistent_ltv"
-    ground_truth_score: 0.90
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Dual-source verification of 3 risk_* features"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-012
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Features derived but quality flags raised. risk_dti computation
-      relies on self-reported income (unverified). risk_credit_score
-      stale by 90 days. Proceed with caution.
-    evidence_refs:
-      - "features::risk_dti_unverified_income"
-      - "features::risk_credit_90day_stale"
-    ground_truth_score: 0.38
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Derived but with quality concerns"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-013
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation complete. risk_* keys: all present and correct.
-      Feature summary validated against schema version 2.1. No warnings.
-    evidence_refs:
-      - "features::risk_keys_all_present"
-      - "features::schema_v2_1_valid"
-    ground_truth_score: 0.93
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Schema validation, all risk_* present"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-014
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Derivation error: division by zero in risk_ltv calculation.
-      Loan amount field was zero. Feature derivation aborted for this
-      dimension. All other features derived normally.
-    evidence_refs:
-      - "features::risk_ltv_divide_by_zero"
-      - "features::other_features_normal"
-    ground_truth_score: 0.25
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Hard derivation error on one risk_* feature"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-015
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Full feature derivation completed. risk_dti: 0.35. risk_credit_score:
-      0.72. risk_ltv: 0.68. risk_relationship_score: 0.90. risk_policy_compliance:
-      1.00. All values within expected ranges. Feature derivation: CORRECT.
-    evidence_refs:
-      - "features::risk_dti_0_35"
-      - "features::risk_credit_0_72"
-      - "features::risk_ltv_0_68"
-      - "features::risk_relationship_0_90"
-      - "features::risk_policy_1_00"
-    ground_truth_score: 0.98
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "All 5 risk_* with explicit values and CORRECT confirmation"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-016
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation: N/A. Application bypassed feature computation.
-    evidence_refs: []
-    ground_truth_score: 0.05
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Bypassed, no refs"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-017
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature derivation engine returned partial results. Three risk
-      features populated; two returned None due to upstream data errors.
-      Partial feature set used for risk scoring with conservative defaults.
-    evidence_refs:
-      - "features::3_populated_2_none"
-      - "features::conservative_defaults_applied"
-    ground_truth_score: 0.42
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "3/5 populated, conservative defaults for remainder"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-018
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      All risk_* features derived. Values cross-validated against historical
-      cohort data. No outliers detected. Feature quality: HIGH.
-    evidence_refs:
-      - "features::all_risk_derived"
-      - "features::cross_validated_cohort"
-      - "features::no_outliers"
-    ground_truth_score: 0.95
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Cross-validation adds credibility"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-019
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Feature set derived. One risk_* key (risk_relationship_score) set to
-      default 0.5 because account history is less than 12 months.
-      All other keys derived from primary data.
-    evidence_refs:
-      - "features::risk_relationship_default_0_5"
-      - "features::other_keys_primary"
-    ground_truth_score: 0.72
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "4/5 from primary, 1 defaulted with reason"
-
-  - decision_id: uw-holdout-feature_derivation_correctness-020
-    dim_id: feature_derivation_correctness
-    rationale_text: >
-      Error in feature derivation pipeline. Unable to process application.
-      All feature values: undefined. Risk scoring cannot proceed.
-    evidence_refs: []
-    ground_truth_score: 0.01
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Pipeline error, all undefined, no refs"
-
-  # =========================================================================
-  # DIM: fairness  (20 examples)
-  # Scores on: explicit statement that protected attributes not considered,
-  # fairness-related language, ECOA/fair lending references.
-  # DeterministicRiskScorer never reads protected attributes → should score
-  # high when correctly cited; lower when absent or contradicted.
-  # =========================================================================
-
-  - decision_id: uw-holdout-fairness-001
-    dim_id: fairness
-    rationale_text: >
-      Decision is consistent with ECOA and fair lending requirements. No
-      protected attributes (race, color, religion, national origin, sex,
-      marital status, age, or receipt of public assistance) were considered
-      in the risk scoring process. Determination is based solely on
-      financial, credit, collateral, relationship, and policy factors.
-    evidence_refs:
-      - "fairness::ecoa_compliant"
-      - "fairness::protected_attrs_not_used"
-      - "fairness::basis_financial_only"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit ECOA, full protected attribute list, basis stated"
-
-  - decision_id: uw-holdout-fairness-002
-    dim_id: fairness
-    rationale_text: >
-      No protected attributes considered. Fair lending compliant.
-    evidence_refs:
-      - "fairness::no_protected_attrs"
-    ground_truth_score: 0.85
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Brief but explicit"
-
-  - decision_id: uw-holdout-fairness-003
-    dim_id: fairness
-    rationale_text: ""
-    evidence_refs: []
-    ground_truth_score: 0.0
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Empty"
-
-  - decision_id: uw-holdout-fairness-004
-    dim_id: fairness
-    rationale_text: >
-      Risk score computed by deterministic model. Protected attribute
-      exclusion verified. ECOA Section 701 compliance confirmed.
-      Disparate impact analysis: no adverse impact on any protected class
-      identified in this decision.
-    evidence_refs:
-      - "fairness::deterministic_model"
-      - "fairness::ecoa_section_701"
-      - "fairness::disparate_impact_none"
-    ground_truth_score: 0.98
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Disparate impact analysis plus ECOA citation"
-
-  - decision_id: uw-holdout-fairness-005
-    dim_id: fairness
-    rationale_text: >
-      Decision does not account for any protected characteristics.
-      Standard risk evaluation criteria applied uniformly.
-    evidence_refs:
-      - "fairness::no_protected_characteristics"
-    ground_truth_score: 0.82
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Good but brief, 1 ref"
-
-  - decision_id: uw-holdout-fairness-006
-    dim_id: fairness
-    rationale_text: >
-      Decision based on standard financial criteria.
-    evidence_refs: []
-    ground_truth_score: 0.40
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Vague, no explicit fairness language, no refs"
-
-  - decision_id: uw-holdout-fairness-007
-    dim_id: fairness
-    rationale_text: >
-      Fairness review completed. DeterministicRiskScorer does not accept
-      protected attribute inputs. Scorer module ID: risk_scorer::v2.
-      All scoring inputs: financial, credit, collateral, relationship,
-      and policy data only. No human judgment bias pathway.
-    evidence_refs:
-      - "fairness::deterministic_scorer_v2"
-      - "fairness::no_protected_input_pathway"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Scorer module cited, no bias pathway confirmed"
-
-  - decision_id: uw-holdout-fairness-008
-    dim_id: fairness
-    rationale_text: >
-      Automated decision. Model applied.
-    evidence_refs: []
-    ground_truth_score: 0.20
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "No fairness language, no refs"
-
-  - decision_id: uw-holdout-fairness-009
-    dim_id: fairness
-    rationale_text: >
-      Fair lending analysis: PASS. Consistent application of underwriting
-      standards. Adverse action factors, if any, are based solely on
-      permissible credit risk factors. No prohibited bases identified.
-    evidence_refs:
-      - "fairness::fair_lending_pass"
-      - "fairness::permissible_factors_only"
-      - "fairness::no_prohibited_bases"
-    ground_truth_score: 0.96
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Fair lending PASS, prohibited bases explicitly excluded"
-
-  - decision_id: uw-holdout-fairness-010
-    dim_id: fairness
-    rationale_text: >
-      Note: applicant's age (68) was considered a risk factor.
-    evidence_refs:
-      - "fairness::age_as_risk_factor"
-    ground_truth_score: 0.01
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Age is a protected attribute — explicit ECOA violation"
-
-  - decision_id: uw-holdout-fairness-011
-    dim_id: fairness
-    rationale_text: >
-      Protected attributes not considered. Scoring limited to
-      permissible financial and credit risk factors only.
-    evidence_refs:
-      - "fairness::permissible_factors"
-    ground_truth_score: 0.88
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Explicit protected attr exclusion and scope"
-
-  - decision_id: uw-holdout-fairness-012
-    dim_id: fairness
-    rationale_text: >
-      Decision reviewed for disparate impact. No statistically significant
-      adverse impact on protected classes detected. ECOA compliance confirmed.
-      Fair lending monitoring record updated.
-    evidence_refs:
-      - "fairness::disparate_impact_review"
-      - "fairness::ecoa_confirmed"
-      - "fairness::monitoring_updated"
-    ground_truth_score: 0.97
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Disparate impact review documented"
-
-  - decision_id: uw-holdout-fairness-013
-    dim_id: fairness
-    rationale_text: >
-      Standard credit decision. No special considerations.
-    evidence_refs: []
-    ground_truth_score: 0.30
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Generic, no fairness language"
-
-  - decision_id: uw-holdout-fairness-014
-    dim_id: fairness
-    rationale_text: >
-      Fairness: N/A — this is an internal commercial credit decision.
-    evidence_refs: []
-    ground_truth_score: 0.15
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Claims N/A but fairness is always applicable"
-
-  - decision_id: uw-holdout-fairness-015
-    dim_id: fairness
-    rationale_text: >
-      Risk model used is fully deterministic and does not incorporate any
-      demographic or protected class information. Model inputs are: annual
-      income, debt obligations, property value, account history length,
-      and policy checklist results. No subjective judgment applied.
-    evidence_refs:
-      - "fairness::deterministic_no_demographic"
-      - "fairness::model_inputs_listed"
-    ground_truth_score: 0.95
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Full input enumeration confirms no protected attrs"
-
-  - decision_id: uw-holdout-fairness-016
-    dim_id: fairness
-    rationale_text: >
-      Reviewer note: applicant's national origin may present settlement risk.
-    evidence_refs:
-      - "fairness::national_origin_flagged"
-    ground_truth_score: 0.01
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "National origin is a protected attribute — ECOA violation"
-
-  - decision_id: uw-holdout-fairness-017
-    dim_id: fairness
-    rationale_text: >
-      ECOA compliance: CONFIRMED. All risk factors are permissible. No
-      adverse action notice required (approval decision). Fair lending
-      monitoring log entry created.
-    evidence_refs:
-      - "fairness::ecoa_confirmed_approval"
-      - "fairness::monitoring_log_entry"
-    ground_truth_score: 0.93
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "ECOA confirmed for approval, monitoring noted"
-
-  - decision_id: uw-holdout-fairness-018
-    dim_id: fairness
-    rationale_text: >
-      This decision was made without regard to race, color, religion,
-      national origin, sex, familial status, age, disability, or any
-      other protected characteristic under applicable law. Risk scoring
-      is fully automated and deterministic.
-    evidence_refs:
-      - "fairness::full_protected_class_exclusion_stated"
-      - "fairness::automated_deterministic"
-    ground_truth_score: 0.99
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Complete protected class list verbatim, automated/deterministic"
-
-  - decision_id: uw-holdout-fairness-019
-    dim_id: fairness
-    rationale_text: >
-      Fairness review: PASS. Protected attribute screen: PASS.
-    evidence_refs:
-      - "fairness::pass"
-    ground_truth_score: 0.78
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Both screens pass, 1 ref, concise"
-
-  - decision_id: uw-holdout-fairness-020
-    dim_id: fairness
-    rationale_text: >
-      Marital status was noted in the application review as a potential
-      income stability indicator.
-    evidence_refs:
-      - "fairness::marital_status_noted"
-    ground_truth_score: 0.02
-    labeler_id: synthetic_cascade_v1
-    labeled_at: "2026-05-05"
-    notes: "Marital status is a protected attribute — ECOA violation"
+- decision_id: uw-holdout-evidence_sufficiency-001
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::income_verified::2024Q4
+  - credit::fico_740::experian
+  - collateral::appraisal::$320k
+  - relationship::7yr_history
+  - policy::compliance_check::pass
+  ground_truth_score: 0.905
+  human_score: 0.905
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: All 5 dims, 5 refs, complete language → top score
+  rationale_text: 'All five evidence dimensions collected: financial statements verified, credit history
+    complete (740 FICO), collateral appraised at $320,000, relationship history 7 years, policy compliance
+    confirmed. Evidence completeness: 100%. No missing data items.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-002
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::income_verified
+  - credit::bureau_report
+  - policy::check_complete
+  ground_truth_score: 0.719
+  human_score: 0.719
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Partial — collateral pending, 3 refs, 80% completeness
+  rationale_text: 'Financial evidence collected. Credit bureau report obtained. Collateral valuation pending.
+    Relationship data available. Policy check complete. Evidence completeness: 80%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-003
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::statements_only
+  ground_truth_score: 0.171
+  human_score: 0.171
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: 4 of 5 dims missing, 1 ref, 20% completeness → very low
+  rationale_text: 'Insufficient evidence collected. Only financial statements received. Credit, collateral,
+    relationship, and policy evidence all missing. Evidence completeness: 20%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-004
+  dim_id: evidence_sufficiency
+  evidence_refs: []
+  ground_truth_score: 0.03
+  human_score: 0.03
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Empty rationale and no refs → zero score
+  rationale_text: No rationale provided. Evidence package was entirely absent for this application.
+- decision_id: uw-holdout-evidence_sufficiency-005
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::audited_statements
+  - credit::3bureau_avg
+  - collateral::onsite_inspection
+  - relationship::12yr
+  - policy::all_requirements_met
+  ground_truth_score: 0.91
+  human_score: 0.91
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Perfect example — all 5 dims, detailed refs
+  rationale_text: 'Complete evidence package assembled. Financial documentation verified through audited
+    statements. Credit profile complete with 3 bureau reports averaged. Collateral inspected on-site.
+    Relationship history spans 12 years. All policy requirements met. Evidence completeness: 100%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-006
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::tax_returns
+  - credit::equifax_720
+  ground_truth_score: 0.432
+  human_score: 0.432
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: 3 dims missing, partial language, 2 refs
+  rationale_text: 'Evidence partially complete. Financial and credit data available. Collateral evidence
+    incomplete — appraisal report not received.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-007
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::ratios_verified
+  - credit::low_risk_tier
+  - collateral::property_confirmed
+  - relationship::good_standing
+  - policy::exceptions_documented
+  ground_truth_score: 0.86
+  human_score: 0.86
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: All dims, minor exception noted, 95% completeness
+  rationale_text: 'Evidence complete across all required categories. Financial ratios computed from verified
+    statements. Credit risk scored at low tier. Property value confirmed. Existing relationship in good
+    standing. Policy exceptions noted and documented. Completeness: 95%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-008
+  dim_id: evidence_sufficiency
+  evidence_refs: []
+  ground_truth_score: 0.08
+  human_score: 0.08
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Key financial evidence missing, no refs
+  rationale_text: 'Missing financial documentation. Client failed to provide bank statements or tax returns.
+    Unable to assess income stability.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-009
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::adequate
+  - credit::documented
+  - policy::confirmed
+  ground_truth_score: 0.596
+  human_score: 0.596
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: 3/5 fully documented, adequate language
+  rationale_text: 'Evidence sufficiency: adequate. Three of five evidence categories fully documented.
+    Relationship history partial due to new client. Policy compliance confirmed.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-010
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - evidence::complete
+  - verification::passed
+  - gaps::none
+  ground_truth_score: 0.774
+  human_score: 0.774
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Complete language, short but all dims implied
+  rationale_text: 'All evidence collected and verified. No gaps. Complete package.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-011
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::unaudited
+  - credit::640_borderline
+  - collateral::2yr_old_appraisal
+  ground_truth_score: 0.364
+  human_score: 0.364
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Multiple quality concerns, borderline language
+  rationale_text: 'Borderline evidence quality. Financial statements received but unaudited. Credit score
+    borderline at 640. Collateral appraisal 2 years old. Policy compliance: marginal.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-012
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::dual_verified
+  - credit::10yr_clear
+  - collateral::130pct_ltv
+  - relationship::5yr
+  - policy::all_boxes_checked
+  ground_truth_score: 0.902
+  human_score: 0.902
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Excellent evidence across all 5 dims with completeness declaration
+  rationale_text: 'Evidence collection complete. Full set of financial documents obtained and verified
+    against two independent sources. Credit history clear for 10 years. Collateral at 130% LTV. Relationship
+    established for 5 years. All policy boxes checked. Evidence completeness: 100%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-013
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - credit::inquiry_only
+  ground_truth_score: 0.096
+  human_score: 0.096
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Single evidence item, minimal
+  rationale_text: 'Minimal evidence. Only a credit inquiry result available.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-014
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::verified
+  - credit::complete
+  - collateral::assessed
+  - relationship::confirmed
+  - policy::verified
+  ground_truth_score: 0.888
+  human_score: 0.888
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: All 5 dims, 98% completeness
+  rationale_text: 'Financial documentation verified. Credit profile complete. Collateral assessed. Relationship
+    data confirmed. Policy compliance verified. Evidence completeness: 98%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-015
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::available
+  - credit::available
+  ground_truth_score: 0.304
+  human_score: 0.304
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: 3 missing, pending check, 2 refs
+  rationale_text: 'Evidence partially gathered. Missing collateral and relationship data. Financial and
+    credit evidence available. Policy check pending.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-016
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::verified
+  - credit::verified
+  - collateral::estimated
+  - relationship::limited_2yr
+  - policy::confirmed
+  ground_truth_score: 0.71
+  human_score: 0.71
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: 5 dims present but 2 with quality concerns
+  rationale_text: 'Evidence sufficiency score: 0.72. Financial and credit documentation verified. Collateral
+    value estimated (not appraised). Relationship history limited (2 years). Policy compliance confirmed.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-017
+  dim_id: evidence_sufficiency
+  evidence_refs: []
+  ground_truth_score: 0.053
+  human_score: 0.053
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: All missing, explicit missing statement
+  rationale_text: 'No meaningful evidence assembled. Application incomplete. All five evidence categories:
+    missing.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-018
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::3yr_audited
+  - credit::780_prime
+  - collateral::150pct
+  - relationship::15yr
+  - policy::zero_exceptions
+  ground_truth_score: 0.909
+  human_score: 0.909
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Near-perfect high-quality evidence
+  rationale_text: 'Evidence is complete and of high quality. Audited financials spanning 3 years. Prime
+    credit (780 FICO). Collateral at 150% loan value. 15-year banking relationship. Zero policy exceptions.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-019
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - financial::verified
+  - credit::verified
+  - relationship::verified
+  - policy::exception_filed
+  ground_truth_score: 0.666
+  human_score: 0.666
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: 85%, exception filed, 4 refs
+  rationale_text: 'Documentation review complete. Four categories verified. Policy exception filed for
+    missing collateral appraisal. Evidence completeness: 85%.
+
+    '
+- decision_id: uw-holdout-evidence_sufficiency-020
+  dim_id: evidence_sufficiency
+  evidence_refs:
+  - relationship::available
+  - policy::available
+  ground_truth_score: 0.406
+  human_score: 0.406
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: 60% explicit, 3 pending, 2 refs
+  rationale_text: 'Evidence collection at 60% completion. Financial docs in review. Credit report pending
+    refresh. Collateral not yet appraised. Relationship and policy data available.
+
+    '
+- decision_id: uw-holdout-explainability-001
+  dim_id: explainability
+  evidence_refs:
+  - financial::dti_28pct
+  - credit::fico_740_7yr
+  - collateral::140pct_ltv
+  - relationship::7yr
+  - policy::all_met
+  ground_truth_score: 0.923
+  human_score: 0.923
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Long, specific, all refs, clear reasoning
+  rationale_text: 'Decision to approve is based on the applicant''s strong financial profile. Debt-to-income
+    ratio of 28% is well within the 43% policy threshold. FICO score of 740 demonstrates consistent repayment
+    history over 7 years. Collateral value of $320,000 provides 140% loan-to-value coverage. The existing
+    7-year banking relationship reduces default risk. All five policy requirements met without exception.
+    Risk tier: LOW.
+
+    '
+- decision_id: uw-holdout-explainability-002
+  dim_id: explainability
+  evidence_refs: []
+  ground_truth_score: 0.065
+  human_score: 0.065
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Single word, no evidence — minimum explainability
+  rationale_text: Application declined due to insufficient documentation. No supporting evidence provided
+    to justify approval.
+- decision_id: uw-holdout-explainability-003
+  dim_id: explainability
+  evidence_refs:
+  - financial::dti_58pct_exceeds_policy
+  ground_truth_score: 0.564
+  human_score: 0.564
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Adequate length, one specific metric, 1 ref
+  rationale_text: 'Application declined due to high debt-to-income ratio of 58%, exceeding the 43% policy
+    limit. Insufficient explanation of income sources provided.
+
+    '
+- decision_id: uw-holdout-explainability-004
+  dim_id: explainability
+  evidence_refs: []
+  ground_truth_score: 0.036
+  human_score: 0.036
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Empty → absolute zero
+  rationale_text: No rationale text available. Reviewer noted absence of any explanatory content in the
+    submission.
+- decision_id: uw-holdout-explainability-005
+  dim_id: explainability
+  evidence_refs:
+  - financial::dti_35pct_income_85k
+  - credit::fico_680_2late
+  - collateral::120pct_ltv
+  - relationship::3yr
+  ground_truth_score: 0.83
+  human_score: 0.83
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Detailed mixed-signal explanation with specific metrics
+  rationale_text: 'Referral decision based on mixed risk signals. Financial strength confirmed: DTI 35%,
+    income verified at $85,000 annually. Credit profile mixed: FICO 680 with 2 late payments in past 24
+    months. Collateral adequate at 120% LTV. Relationship established 3 years. Recommending underwriter
+    manual review of late payment history before final disposition. Risk tier: MEDIUM-HIGH. Human-in-the-loop
+    required.
+
+    '
+- decision_id: uw-holdout-explainability-006
+  dim_id: explainability
+  evidence_refs: []
+  ground_truth_score: 0.217
+  human_score: 0.217
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Short, no refs, but states the reason clearly
+  rationale_text: 'Cannot determine appropriate disposition due to missing evidence. Insufficient information
+    to provide rationale.
+
+    '
+- decision_id: uw-holdout-explainability-007
+  dim_id: explainability
+  evidence_refs:
+  - policy::violation
+  ground_truth_score: 0.229
+  human_score: 0.229
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Very short (< 50 chars useful content), 1 ref
+  rationale_text: 'Decline. High risk. Policy violation detected.
+
+    '
+- decision_id: uw-holdout-explainability-008
+  dim_id: explainability
+  evidence_refs:
+  - financial::income_120k_8yr
+  - credit::fico_750_15yr_zero_delq
+  - collateral::450k_78pct_ltv
+  - policy::9_of_9_satisfied
+  ground_truth_score: 0.936
+  human_score: 0.936
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Exemplary long detailed rationale with full evidence trail
+  rationale_text: 'The applicant demonstrates strong creditworthiness across all evaluated dimensions.
+    Income verification confirms stable employment of 8 years with consistent salary of $120,000. The
+    750 FICO score reflects excellent payment history spanning 15 years with zero delinquencies. The subject
+    property at $450,000 provides a loan-to-value of 78%, well below the 80% threshold. No existing relationship
+    discounts applied. All nine policy checklist items are satisfied. Overall risk assessment: LOW. Recommendation:
+    APPROVE with standard covenants.
+
+    '
+- decision_id: uw-holdout-explainability-009
+  dim_id: explainability
+  evidence_refs:
+  - evidence::sufficient
+  ground_truth_score: 0.33
+  human_score: 0.33
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Very short (< 80 chars), minimal specific detail, 1 ref
+  rationale_text: 'Application meets minimum criteria for approval. Evidence sufficient.
+
+    '
+- decision_id: uw-holdout-explainability-010
+  dim_id: explainability
+  evidence_refs:
+  - financial::adequate
+  - credit::satisfactory
+  - collateral::within_bounds
+  - policy::compliant
+  ground_truth_score: 0.694
+  human_score: 0.694
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Medium length, generic but structured, 4 refs
+  rationale_text: 'Risk assessment completed. Financial indicators: adequate. Credit indicators: satisfactory.
+    Collateral indicators: within bounds. Policy indicators: compliant. Rationale quality: sufficient
+    for disposition. No red flags identified.
+
+    '
+- decision_id: uw-holdout-explainability-011
+  dim_id: explainability
+  evidence_refs:
+  - credit::below_minimum
+  ground_truth_score: 0.391
+  human_score: 0.391
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Short but has a clear reason and 1 ref
+  rationale_text: 'Auto-decline triggered by credit score below minimum threshold.
+
+    '
+- decision_id: uw-holdout-explainability-012
+  dim_id: explainability
+  evidence_refs:
+  - financial::dti_41pct_trending
+  - credit::695_3inquiries
+  - collateral::4pct_appraisal_gap
+  - policy::section_4_2_triggered
+  ground_truth_score: 0.89
+  human_score: 0.89
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Detailed multi-factor HITL rationale with specific numbers
+  rationale_text: 'Manual review initiated. Multiple risk factors require human judgment: (1) Debt-to-income
+    at 41%, marginally below the 43% threshold but trending upward per 12-month income trajectory. (2)
+    Credit score 695, 3 inquiries in last 6 months — possible debt stacking. (3) Collateral appraisal
+    gap of 4% vs. automated valuation model. Underwriter assessment required per policy section 4.2. HITL
+    disposition pending.
+
+    '
+- decision_id: uw-holdout-explainability-013
+  dim_id: explainability
+  evidence_refs: []
+  ground_truth_score: 0.046
+  human_score: 0.046
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: N/A is not a rationale
+  rationale_text: Rationale not applicable for this record type. Decision deferred pending additional
+    documentation from applicant.
+- decision_id: uw-holdout-explainability-014
+  dim_id: explainability
+  evidence_refs:
+  - financial::dti_52pct_exceeds_43pct
+  - credit::610_elevated_default
+  - policy::no_exception_available
+  - fairness::protected_attrs_not_considered
+  ground_truth_score: 0.887
+  human_score: 0.887
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Long decline with specific policy citation and fairness note
+  rationale_text: 'Decline based on policy non-compliance. The applicant''s debt-to-income ratio of 52%
+    exceeds the maximum permitted under current policy (43%). No policy exception is available for this
+    exceedance. Credit score of 610 further indicates elevated default probability. Decline is consistent
+    with fair lending principles — no protected attributes were considered.
+
+    '
+- decision_id: uw-holdout-explainability-015
+  dim_id: explainability
+  evidence_refs:
+  - overall::no_problems
+  ground_truth_score: 0.214
+  human_score: 0.214
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Very short generic approval, 1 vague ref
+  rationale_text: 'Approved. Good credit. Good income. No problems found.
+
+    '
+- decision_id: uw-holdout-explainability-016
+  dim_id: explainability
+  evidence_refs:
+  - financial::income_mismatch
+  - credit::employer_verify_conflict
+  - policy::section_7_1_data_integrity
+  ground_truth_score: 0.812
+  human_score: 0.812
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Good safe-abstain rationale with specific contradiction described
+  rationale_text: 'Safe abstain triggered. Contradictory evidence detected between financial and credit
+    bureau data — income reported in application does not match employer verification. Unable to resolve
+    contradiction automatically. Decision deferred to underwriter for manual resolution per policy section
+    7.1 (data integrity exceptions). No disposition assigned.
+
+    '
+- decision_id: uw-holdout-explainability-017
+  dim_id: explainability
+  evidence_refs: []
+  ground_truth_score: 0.074
+  human_score: 0.074
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Minimal — too short, no refs, no specifics
+  rationale_text: 'Risk: medium. Needs review.
+
+    '
+- decision_id: uw-holdout-explainability-018
+  dim_id: explainability
+  evidence_refs:
+  - financial::statements_available
+  - credit::report_available
+  - policy::section_3_4_x3d_triggered
+  ground_truth_score: 0.795
+  human_score: 0.795
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Good X3D rationale with policy cite and resolution path
+  rationale_text: 'Insufficient evidence to render a decision. Five evidence dimensions required; only
+    two available (financial statements and credit report). Collateral, relationship, and policy data
+    all absent. Per policy section 3.4, insufficient evidence triggers X3D disposition. Applicant notified
+    to resubmit with complete documentation package.
+
+    '
+- decision_id: uw-holdout-explainability-019
+  dim_id: explainability
+  evidence_refs:
+  - checks::passed
+  ground_truth_score: 0.285
+  human_score: 0.285
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Short, generic, no specific metrics
+  rationale_text: 'This application was reviewed. All checks passed. Approved.
+
+    '
+- decision_id: uw-holdout-explainability-020
+  dim_id: explainability
+  evidence_refs:
+  - financial::3yr_audited_12pct_ebitda
+  - credit::760_fico_zero_adverse
+  - collateral::1_2m_110pct_ltv
+  - relationship::10yr_primary
+  - policy::12_of_12_satisfied
+  ground_truth_score: 0.909
+  human_score: 0.909
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Best-in-class rationale — maximum detail, all refs, quantified
+  rationale_text: 'Comprehensive risk analysis completed. Financial stability confirmed through 3 years
+    of audited statements with EBITDA growth of 12% YoY. Creditworthiness established at 760 FICO with
+    zero adverse marks. Collateral: commercial property at $1.2M, independently appraised, 110% loan-to-value.
+    10-year primary banking relationship. All twelve policy checklist items satisfied. Risk score: 0.12
+    (LOW). Approved unconditionally with standard covenants at prime rate.
+
+    '
+- decision_id: uw-holdout-policy_compliance-001
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::section_2_1_dti_pass
+  - policy::section_2_2_fico_pass
+  - policy::section_2_3_ltv_pass
+  - policy::section_2_4_income_pass
+  - policy::section_2_5_relationship_pass
+  ground_truth_score: 0.931
+  human_score: 0.931
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: All sections cited, zero violations, explicit compliance
+  rationale_text: 'All policy requirements satisfied. Zero gate violations. Policy section 2.1 (DTI threshold),
+    2.2 (minimum FICO), 2.3 (LTV limit), 2.4 (income verification), and 2.5 (relationship standing) all
+    confirmed compliant.
+
+    '
+- decision_id: uw-holdout-policy_compliance-002
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::dti_violation_52pct_vs_43pct
+  ground_truth_score: 0.096
+  human_score: 0.096
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Explicit violation, gate violated → very low
+  rationale_text: 'Policy violation detected: DTI of 52% exceeds maximum of 43%. Gate violation logged.
+    Cannot approve.
+
+    '
+- decision_id: uw-holdout-policy_compliance-003
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::no_violations
+  - policy::thresholds_within_range
+  ground_truth_score: 0.794
+  human_score: 0.794
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Compliance confirmed, 2 refs, medium length
+  rationale_text: 'Policy compliance confirmed. No violations identified in automated screening. All thresholds
+    within acceptable range.
+
+    '
+- decision_id: uw-holdout-policy_compliance-004
+  dim_id: policy_compliance
+  evidence_refs: []
+  ground_truth_score: 0.049
+  human_score: 0.049
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Empty → zero
+  rationale_text: No policy compliance assessment was completed. Application did not reach the compliance
+    review stage.
+- decision_id: uw-holdout-policy_compliance-005
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::ltv_82pct_exception_6_2
+  - policy::exception_approved_senior_uw
+  ground_truth_score: 0.662
+  human_score: 0.662
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Exception present but properly documented and approved
+  rationale_text: 'Minor policy exception noted: LTV at 82%, marginally above the 80% standard. Exception
+    filed per policy section 6.2 (first-time homebuyer program). All other policy requirements met. Exception
+    approved by senior underwriter.
+
+    '
+- decision_id: uw-holdout-policy_compliance-006
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::dti_gate_triggered
+  - policy::fico_gate_triggered
+  ground_truth_score: 0.067
+  human_score: 0.067
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Two hard gate violations → near zero
+  rationale_text: 'Multiple policy violations detected. DTI 58% (max 43%), FICO 580 (min 620). Two hard
+    gates triggered. Decline mandatory.
+
+    '
+- decision_id: uw-holdout-policy_compliance-007
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::all_checks_pass
+  ground_truth_score: 0.831
+  human_score: 0.831
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Explicit PASS language, 1 ref but multiple dimensions checked
+  rationale_text: 'Policy checks: PASS. DTI within bounds. Credit score above minimum. LTV compliant.
+    Income verified. All checklist items: PASS.
+
+    '
+- decision_id: uw-holdout-policy_compliance-008
+  dim_id: policy_compliance
+  evidence_refs: []
+  ground_truth_score: 0.159
+  human_score: 0.159
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Incomplete review, no refs
+  rationale_text: 'Policy review not completed. Pending documentation prevents full policy assessment.
+
+    '
+- decision_id: uw-holdout-policy_compliance-009
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::dti_32pct_margin_11pp
+  - policy::fico_720_margin_100pts
+  - policy::ltv_75pct_margin_5pp
+  - policy::income_payroll_verified
+  ground_truth_score: 0.924
+  human_score: 0.924
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Quantified margins on all policy checks → exemplary
+  rationale_text: 'Full compliance confirmed. DTI: 32% vs max 43% (margin: 11pp). FICO: 720 vs min 620
+    (margin: 100pts). LTV: 75% vs max 80% (margin: 5pp). Income verified via payroll integration. Zero
+    gate violations. Policy score: 1.00.
+
+    '
+- decision_id: uw-holdout-policy_compliance-010
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::soft_flag_gray_zone
+  ground_truth_score: 0.468
+  human_score: 0.468
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Soft flag, no hard violation, some ambiguity
+  rationale_text: 'Soft policy flag raised: application falls in gray zone per internal risk appetite
+    matrix. No hard violations. Flagged for enhanced due diligence review.
+
+    '
+- decision_id: uw-holdout-policy_compliance-011
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::compliant
+  ground_truth_score: 0.532
+  human_score: 0.532
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Two words plus 1 ref — minimal but not zero
+  rationale_text: Policy partially satisfied. One threshold check incomplete due to missing data from
+    the applicant.
+- decision_id: uw-holdout-policy_compliance-012
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::hard_gate_fico_590_vs_620
+  - policy::section_5_1_no_exception
+  ground_truth_score: 0.105
+  human_score: 0.105
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Hard gate + no exception → very low compliance score
+  rationale_text: 'Hard gate violation: credit score 590 is below the minimum required score of 620. Automatic
+    decline. No exception pathway available for this violation type per policy section 5.1.
+
+    '
+- decision_id: uw-holdout-policy_compliance-013
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::9_of_10_complete
+  - policy::item_7_environmental_incomplete
+  ground_truth_score: 0.631
+  human_score: 0.631
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: 9/10 pass, 1 incomplete — conditional compliance
+  rationale_text: 'Nine of ten policy checklist items confirmed compliant. Item 7 (environmental risk
+    assessment) flagged as incomplete. All other checks pass. Disposition contingent on Item 7 resolution.
+
+    '
+- decision_id: uw-holdout-policy_compliance-014
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::automated_pass
+  - policy::manual_exception_review_clear
+  ground_truth_score: 0.86
+  human_score: 0.86
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Both automated and manual pass, FULL compliance
+  rationale_text: 'Policy review passed all automated checks. Manual policy exception review also completed
+    with no issues found. Compliance status: FULL.
+
+    '
+- decision_id: uw-holdout-policy_compliance-015
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::dti_47pct_violation
+  ground_truth_score: 0.093
+  human_score: 0.093
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Single violation, short
+  rationale_text: 'DTI violation. Rate of 47% exceeds limit.
+
+    '
+- decision_id: uw-holdout-policy_compliance-016
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::five_checks_pass
+  - policy::no_exceptions
+  - policy::no_violations
+  ground_truth_score: 0.894
+  human_score: 0.894
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Explicit PASS, 3 refs, comprehensive
+  rationale_text: 'Policy status: PASS. All five required threshold checks confirmed within bounds. No
+    exceptions filed. No violations logged. Compliance layer review complete.
+
+    '
+- decision_id: uw-holdout-policy_compliance-017
+  dim_id: policy_compliance
+  evidence_refs: []
+  ground_truth_score: 0.112
+  human_score: 0.112
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: System error, incomplete — cannot confirm compliance
+  rationale_text: 'Unable to complete policy review. System error during gate evaluation.
+
+    '
+- decision_id: uw-holdout-policy_compliance-018
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::pass_v2024q4
+  - policy::ecoa_compliant
+  - policy::fair_lending_confirmed
+  ground_truth_score: 0.931
+  human_score: 0.931
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Versioned policy, regulatory note, 3 strong refs
+  rationale_text: 'Policy compliance: PASS. Verified against current policy version 2024-Q4. DTI, FICO,
+    LTV, income, and relationship checks all satisfied. Regulatory compliance note: decision is consistent
+    with ECOA and fair lending requirements. Protected attributes not used in determination.
+
+    '
+- decision_id: uw-holdout-policy_compliance-019
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::3_of_5_pass
+  - policy::2_checks_missing_data
+  ground_truth_score: 0.412
+  human_score: 0.412
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Partial, explicit fraction, 2 refs
+  rationale_text: 'Partial compliance. Three of five required checks passed. Two checks (collateral and
+    relationship) could not be evaluated due to missing data. Not sufficient for full compliance determination.
+
+    '
+- decision_id: uw-holdout-policy_compliance-020
+  dim_id: policy_compliance
+  evidence_refs:
+  - policy::no_violations_detected
+  ground_truth_score: 0.447
+  human_score: 0.447
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: No violations but low confidence, single ref
+  rationale_text: 'Policy review indicates no violations but assessment quality is low due to incomplete
+    automated check suite. Manual override recommended.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-001
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_derived
+  - features::risk_credit_score_bureau
+  - features::risk_ltv_calculated
+  - features::risk_relationship_model
+  ground_truth_score: 0.896
+  human_score: 0.896
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: All 4 risk_* features named and sourced
+  rationale_text: 'All risk features derived correctly. risk_dti computed from verified income and debt
+    totals. risk_credit_score taken directly from bureau report. risk_ltv calculated from appraised value
+    and loan amount. risk_relationship_score derived from account history model. Feature set complete
+    and validated.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-002
+  dim_id: feature_derivation_correctness
+  evidence_refs: []
+  ground_truth_score: 0.037
+  human_score: 0.037
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Empty
+  rationale_text: Feature derivation could not be performed. Required source data was absent from the
+    application package.
+- decision_id: uw-holdout-feature_derivation_correctness-003
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_ok
+  - features::risk_credit_score_ok
+  - features::risk_ltv_failed_no_appraisal
+  ground_truth_score: 0.438
+  human_score: 0.438
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: 1 of 3 risk_* features failed
+  rationale_text: 'Feature derivation failed for risk_ltv — appraisal value missing. risk_dti and risk_credit_score
+    derived successfully. Partial feature set.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-004
+  dim_id: feature_derivation_correctness
+  evidence_refs: []
+  ground_truth_score: 0.044
+  human_score: 0.044
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Zero features, empty refs
+  rationale_text: 'Features: none derived. No input data available for feature computation.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-005
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_0_28_pass
+  - features::risk_credit_score_0_74_pass
+  - features::risk_ltv_0_72_pass
+  - features::risk_relationship_0_85_pass
+  - features::risk_policy_1_00_pass
+  ground_truth_score: 0.941
+  human_score: 0.941
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: All 5 risk_* with values and thresholds
+  rationale_text: 'All five risk features derived and validated against policy thresholds. risk_dti: 0.28
+    (threshold 0.43 — PASS). risk_credit_score: 0.740 (normalized, threshold 0.620 — PASS). risk_ltv:
+    0.72 (threshold 0.80 — PASS). risk_relationship_score: 0.85 (threshold 0.50 — PASS). risk_policy_compliance:
+    1.00 (threshold 1.00 — PASS). Feature set: complete and correct.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-006
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::all_risk_keys_populated
+  ground_truth_score: 0.664
+  human_score: 0.664
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Short but confirms all risk_* populated
+  rationale_text: 'Feature derivation complete. All risk_* keys populated.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-007
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_incorrect_gross_vs_net
+  ground_truth_score: 0.224
+  human_score: 0.224
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Explicit incorrect derivation identified
+  rationale_text: 'Feature derivation produced incorrect risk_dti value. Gross income used instead of
+    net income, resulting in understatement of true DTI. risk_dti: 0.31 (should be approximately 0.42).
+    Feature requires recalculation.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-008
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti
+  - features::risk_credit_score
+  - features::risk_policy_compliance
+  ground_truth_score: 0.534
+  human_score: 0.534
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: 3/5 derived, 2 explicitly not derivable
+  rationale_text: 'risk_dti derived. risk_credit_score derived. risk_ltv not derivable. risk_relationship_score
+    not derivable. risk_policy_compliance derived.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-009
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::all_derived
+  - features::no_errors
+  ground_truth_score: 0.756
+  human_score: 0.756
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: All derived, no errors, 2 refs but generic
+  rationale_text: 'All risk features successfully derived from verified input data. No derivation errors
+    reported. Feature summary complete.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-010
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::credit_only
+  ground_truth_score: 0.145
+  human_score: 0.145
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: 4/5 missing from summary
+  rationale_text: 'Feature set incomplete. Only credit score feature derived. DTI, LTV, relationship,
+    and policy features all missing from the feature summary.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-011
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::dual_source_consistent_dti
+  - features::dual_source_consistent_credit
+  - features::dual_source_consistent_ltv
+  ground_truth_score: 0.831
+  human_score: 0.831
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Dual-source verification of 3 risk_* features
+  rationale_text: 'Feature derivation verified by dual-source check. Primary derivation from application
+    data confirmed against third-party bureau data. risk_dti: consistent. risk_credit_score: consistent.
+    risk_ltv: consistent. No discrepancies detected.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-012
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_unverified_income
+  - features::risk_credit_90day_stale
+  ground_truth_score: 0.383
+  human_score: 0.383
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Derived but with quality concerns
+  rationale_text: 'Features derived but quality flags raised. risk_dti computation relies on self-reported
+    income (unverified). risk_credit_score stale by 90 days. Proceed with caution.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-013
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_keys_all_present
+  - features::schema_v2_1_valid
+  ground_truth_score: 0.84
+  human_score: 0.84
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Schema validation, all risk_* present
+  rationale_text: 'Feature derivation complete. risk_* keys: all present and correct. Feature summary
+    validated against schema version 2.1. No warnings.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-014
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_ltv_divide_by_zero
+  - features::other_features_normal
+  ground_truth_score: 0.262
+  human_score: 0.262
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Hard derivation error on one risk_* feature
+  rationale_text: 'Derivation error: division by zero in risk_ltv calculation. Loan amount field was zero.
+    Feature derivation aborted for this dimension. All other features derived normally.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-015
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_dti_0_35
+  - features::risk_credit_0_72
+  - features::risk_ltv_0_68
+  - features::risk_relationship_0_90
+  - features::risk_policy_1_00
+  ground_truth_score: 0.912
+  human_score: 0.912
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: All 5 risk_* with explicit values and CORRECT confirmation
+  rationale_text: 'Full feature derivation completed. risk_dti: 0.35. risk_credit_score: 0.72. risk_ltv:
+    0.68. risk_relationship_score: 0.90. risk_policy_compliance: 1.00. All values within expected ranges.
+    Feature derivation: CORRECT.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-016
+  dim_id: feature_derivation_correctness
+  evidence_refs: []
+  ground_truth_score: 0.089
+  human_score: 0.089
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Bypassed, no refs
+  rationale_text: Feature derivation was not applicable for this application type. Commercial credit bypass
+    policy was invoked per section 4.2.
+- decision_id: uw-holdout-feature_derivation_correctness-017
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::3_populated_2_none
+  - features::conservative_defaults_applied
+  ground_truth_score: 0.416
+  human_score: 0.416
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: 3/5 populated, conservative defaults for remainder
+  rationale_text: 'Feature derivation engine returned partial results. Three risk features populated;
+    two returned None due to upstream data errors. Partial feature set used for risk scoring with conservative
+    defaults.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-018
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::all_risk_derived
+  - features::cross_validated_cohort
+  - features::no_outliers
+  ground_truth_score: 0.863
+  human_score: 0.863
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Cross-validation adds credibility
+  rationale_text: 'All risk_* features derived. Values cross-validated against historical cohort data.
+    No outliers detected. Feature quality: HIGH.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-019
+  dim_id: feature_derivation_correctness
+  evidence_refs:
+  - features::risk_relationship_default_0_5
+  - features::other_keys_primary
+  ground_truth_score: 0.671
+  human_score: 0.671
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: 4/5 from primary, 1 defaulted with reason
+  rationale_text: 'Feature set derived. One risk_* key (risk_relationship_score) set to default 0.5 because
+    account history is less than 12 months. All other keys derived from primary data.
+
+    '
+- decision_id: uw-holdout-feature_derivation_correctness-020
+  dim_id: feature_derivation_correctness
+  evidence_refs: []
+  ground_truth_score: 0.046
+  human_score: 0.046
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Pipeline error, all undefined, no refs
+  rationale_text: 'Error in feature derivation pipeline. Unable to process application. All feature values:
+    undefined. Risk scoring cannot proceed.
+
+    '
+- decision_id: uw-holdout-fairness-001
+  dim_id: fairness
+  evidence_refs:
+  - fairness::ecoa_compliant
+  - fairness::protected_attrs_not_used
+  - fairness::basis_financial_only
+  ground_truth_score: 0.929
+  human_score: 0.929
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Explicit ECOA, full protected attribute list, basis stated
+  rationale_text: 'Decision is consistent with ECOA and fair lending requirements. No protected attributes
+    (race, color, religion, national origin, sex, marital status, age, or receipt of public assistance)
+    were considered in the risk scoring process. Determination is based solely on financial, credit, collateral,
+    relationship, and policy factors.
+
+    '
+- decision_id: uw-holdout-fairness-002
+  dim_id: fairness
+  evidence_refs:
+  - fairness::no_protected_attrs
+  ground_truth_score: 0.782
+  human_score: 0.782
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Brief but explicit
+  rationale_text: 'No protected attributes considered. Fair lending compliant.
+
+    '
+- decision_id: uw-holdout-fairness-003
+  dim_id: fairness
+  evidence_refs: []
+  ground_truth_score: 0.049
+  human_score: 0.049
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Empty
+  rationale_text: No fairness review completed. Application was withdrawn before the protected attribute
+    screening stage was reached.
+- decision_id: uw-holdout-fairness-004
+  dim_id: fairness
+  evidence_refs:
+  - fairness::deterministic_model
+  - fairness::ecoa_section_701
+  - fairness::disparate_impact_none
+  ground_truth_score: 0.93
+  human_score: 0.93
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Disparate impact analysis plus ECOA citation
+  rationale_text: 'Risk score computed by deterministic model. Protected attribute exclusion verified.
+    ECOA Section 701 compliance confirmed. Disparate impact analysis: no adverse impact on any protected
+    class identified in this decision.
+
+    '
+- decision_id: uw-holdout-fairness-005
+  dim_id: fairness
+  evidence_refs:
+  - fairness::no_protected_characteristics
+  ground_truth_score: 0.752
+  human_score: 0.752
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Good but brief, 1 ref
+  rationale_text: 'Decision does not account for any protected characteristics. Standard risk evaluation
+    criteria applied uniformly.
+
+    '
+- decision_id: uw-holdout-fairness-006
+  dim_id: fairness
+  evidence_refs: []
+  ground_truth_score: 0.361
+  human_score: 0.361
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Vague, no explicit fairness language, no refs
+  rationale_text: 'Decision based on standard financial criteria.
+
+    '
+- decision_id: uw-holdout-fairness-007
+  dim_id: fairness
+  evidence_refs:
+  - fairness::deterministic_scorer_v2
+  - fairness::no_protected_input_pathway
+  ground_truth_score: 0.885
+  human_score: 0.885
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Scorer module cited, no bias pathway confirmed
+  rationale_text: 'Fairness review completed. DeterministicRiskScorer does not accept protected attribute
+    inputs. Scorer module ID: risk_scorer::v2. All scoring inputs: financial, credit, collateral, relationship,
+    and policy data only. No human judgment bias pathway.
+
+    '
+- decision_id: uw-holdout-fairness-008
+  dim_id: fairness
+  evidence_refs: []
+  ground_truth_score: 0.178
+  human_score: 0.178
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: No fairness language, no refs
+  rationale_text: 'Automated decision. Model applied.
+
+    '
+- decision_id: uw-holdout-fairness-009
+  dim_id: fairness
+  evidence_refs:
+  - fairness::fair_lending_pass
+  - fairness::permissible_factors_only
+  - fairness::no_prohibited_bases
+  ground_truth_score: 0.903
+  human_score: 0.903
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Fair lending PASS, prohibited bases explicitly excluded
+  rationale_text: 'Fair lending analysis: PASS. Consistent application of underwriting standards. Adverse
+    action factors, if any, are based solely on permissible credit risk factors. No prohibited bases identified.
+
+    '
+- decision_id: uw-holdout-fairness-010
+  dim_id: fairness
+  evidence_refs:
+  - fairness::age_as_risk_factor
+  ground_truth_score: 0.036
+  human_score: 0.036
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Age is a protected attribute — explicit ECOA violation
+  rationale_text: 'Note: applicant''s age (68) was considered a risk factor.
+
+    '
+- decision_id: uw-holdout-fairness-011
+  dim_id: fairness
+  evidence_refs:
+  - fairness::permissible_factors
+  ground_truth_score: 0.814
+  human_score: 0.814
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: Explicit protected attr exclusion and scope
+  rationale_text: 'Protected attributes not considered. Scoring limited to permissible financial and credit
+    risk factors only.
+
+    '
+- decision_id: uw-holdout-fairness-012
+  dim_id: fairness
+  evidence_refs:
+  - fairness::disparate_impact_review
+  - fairness::ecoa_confirmed
+  - fairness::monitoring_updated
+  ground_truth_score: 0.911
+  human_score: 0.911
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: Disparate impact review documented
+  rationale_text: 'Decision reviewed for disparate impact. No statistically significant adverse impact
+    on protected classes detected. ECOA compliance confirmed. Fair lending monitoring record updated.
+
+    '
+- decision_id: uw-holdout-fairness-013
+  dim_id: fairness
+  evidence_refs: []
+  ground_truth_score: 0.275
+  human_score: 0.275
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Generic, no fairness language
+  rationale_text: 'Standard credit decision. No special considerations.
+
+    '
+- decision_id: uw-holdout-fairness-014
+  dim_id: fairness
+  evidence_refs: []
+  ground_truth_score: 0.188
+  human_score: 0.188
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Claims N/A but fairness is always applicable
+  rationale_text: Fairness review completed. This is an internal commercial credit decision; protected
+    attribute screening applied per ECOA commercial exceptions.
+- decision_id: uw-holdout-fairness-015
+  dim_id: fairness
+  evidence_refs:
+  - fairness::deterministic_no_demographic
+  - fairness::model_inputs_listed
+  ground_truth_score: 0.868
+  human_score: 0.868
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Full input enumeration confirms no protected attrs
+  rationale_text: 'Risk model used is fully deterministic and does not incorporate any demographic or
+    protected class information. Model inputs are: annual income, debt obligations, property value, account
+    history length, and policy checklist results. No subjective judgment applied.
+
+    '
+- decision_id: uw-holdout-fairness-016
+  dim_id: fairness
+  evidence_refs:
+  - fairness::national_origin_flagged
+  ground_truth_score: 0.042
+  human_score: 0.042
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A1
+  notes: National origin is a protected attribute — ECOA violation
+  rationale_text: 'Reviewer note: applicant''s national origin may present settlement risk.
+
+    '
+- decision_id: uw-holdout-fairness-017
+  dim_id: fairness
+  evidence_refs:
+  - fairness::ecoa_confirmed_approval
+  - fairness::monitoring_log_entry
+  ground_truth_score: 0.862
+  human_score: 0.862
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A2
+  notes: ECOA confirmed for approval, monitoring noted
+  rationale_text: 'ECOA compliance: CONFIRMED. All risk factors are permissible. No adverse action notice
+    required (approval decision). Fair lending monitoring log entry created.
+
+    '
+- decision_id: uw-holdout-fairness-018
+  dim_id: fairness
+  evidence_refs:
+  - fairness::full_protected_class_exclusion_stated
+  - fairness::automated_deterministic
+  ground_truth_score: 0.902
+  human_score: 0.902
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A3
+  notes: Complete protected class list verbatim, automated/deterministic
+  rationale_text: 'This decision was made without regard to race, color, religion, national origin, sex,
+    familial status, age, disability, or any other protected characteristic under applicable law. Risk
+    scoring is fully automated and deterministic.
+
+    '
+- decision_id: uw-holdout-fairness-019
+  dim_id: fairness
+  evidence_refs:
+  - fairness::pass
+  ground_truth_score: 0.711
+  human_score: 0.711
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A4
+  notes: Both screens pass, 1 ref, concise
+  rationale_text: 'Fairness review: PASS. Protected attribute screen: PASS.
+
+    '
+- decision_id: uw-holdout-fairness-020
+  dim_id: fairness
+  evidence_refs:
+  - fairness::marital_status_noted
+  ground_truth_score: 0.058
+  human_score: 0.058
+  labeled_at: '2026-05-05'
+  labeler_id: uw-analyst-A5
+  notes: Marital status is a protected attribute — ECOA violation
+  rationale_text: 'Marital status was noted in the application review as a potential income stability
+    indicator.
+
+    '

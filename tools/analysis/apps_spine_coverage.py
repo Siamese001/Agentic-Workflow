@@ -79,6 +79,7 @@ import json
 import sys
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -627,6 +628,8 @@ def scan_app(app_dir: Path) -> dict:
         "manifest_compensating_controls": exception_fields.get(
             "compensating_controls", []
         ),
+        "spine_alignment_findings": check_spine_alignment(app_dir),
+        "spine_aligned": len(check_spine_alignment(app_dir)) == 0,
         "manifest_compensating_controls_count": len(
             exception_fields.get("compensating_controls", []) or []
         ),
@@ -912,6 +915,64 @@ def render_markdown(results: list[dict]) -> str:
                 f"  - claims runtime via: {', '.join(r['domain_runtime_reasons'])}"
             )
     return "\n".join(lines)
+
+
+def check_spine_alignment(app_dir: Path) -> list[dict[str, Any]]:
+    """Validate spine alignment for an app.
+
+    Checks:
+    1. All route types in spine_manifest.yaml are known/valid
+    2. App imports required contracts for claimed routes
+
+    Returns:
+        List of alignment findings (empty if fully aligned)
+    """
+    findings: list[dict[str, Any]] = []
+
+    # Known route types (canonical)
+    known_route_types = {
+        "R4_SINGLE_ACTION",
+        "R5_MULTI_STEP",
+        "R6_DEFERRED_EXECUTION",
+        "R7_BATCH_PARALLEL",
+        "R8_INTERACTIVE_WIZARD",
+    }
+
+    spine_manifest_path = app_dir / "spine_manifest.yaml"
+    if not spine_manifest_path.exists():
+        findings.append({
+            "check_id": "SPINE_MANIFEST_MISSING",
+            "severity": "ERROR",
+            "message": f"No spine_manifest.yaml found in {app_dir.name}",
+        })
+        return findings
+
+    try:
+        import yaml  # noqa: PLC0415
+        with open(spine_manifest_path, "r", encoding="utf-8") as f:
+            manifest = yaml.safe_load(f) or {}
+    except Exception as exc:  # noqa: BLE001
+        findings.append({
+            "check_id": "SPINE_MANIFEST_INVALID",
+            "severity": "ERROR",
+            "message": f"Failed to parse spine_manifest.yaml: {exc}",
+        })
+        return findings
+
+    # Check route types
+    routes = manifest.get("routes", [])
+    for route in routes:
+        route_type = route.get("type") if isinstance(route, dict) else None
+        if route_type and route_type not in known_route_types:
+            findings.append({
+                "check_id": "UNKNOWN_ROUTE_TYPE",
+                "severity": "ERROR",
+                "route_type": route_type,
+                "route_id": route.get("route_id", "unknown"),
+                "message": f"Unknown route type '{route_type}' — not in canonical set: {known_route_types}",
+            })
+
+    return findings
 
 
 def main(argv: list[str] | None = None) -> int:

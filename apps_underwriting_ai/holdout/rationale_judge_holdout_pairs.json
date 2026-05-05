@@ -1,0 +1,844 @@
+[
+  {
+    "dim_id": "evidence_sufficiency",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 20,
+    "pairs": [
+      {
+        "model_score": 0.6516666666666666,
+        "human_label": 0.905
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.719
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.171
+      },
+      {
+        "model_score": 0.2025,
+        "human_label": 0.03
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.91
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.432
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.86
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.08
+      },
+      {
+        "model_score": 0.5716666666666665,
+        "human_label": 0.596
+      },
+      {
+        "model_score": 0.3466666666666667,
+        "human_label": 0.774
+      },
+      {
+        "model_score": 0.445,
+        "human_label": 0.364
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.902
+      },
+      {
+        "model_score": 0.185,
+        "human_label": 0.096
+      },
+      {
+        "model_score": 0.5916666666666667,
+        "human_label": 0.888
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.304
+      },
+      {
+        "model_score": 0.6516666666666666,
+        "human_label": 0.71
+      },
+      {
+        "model_score": 0.2425,
+        "human_label": 0.053
+      },
+      {
+        "model_score": 0.45,
+        "human_label": 0.909
+      },
+      {
+        "model_score": 0.4766666666666667,
+        "human_label": 0.666
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.406
+      }
+    ]
+  },
+  {
+    "dim_id": "explainability",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 20,
+    "pairs": [
+      {
+        "model_score": 0.6583333333333333,
+        "human_label": 0.923
+      },
+      {
+        "model_score": 0.31666666666666665,
+        "human_label": 0.065
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.564
+      },
+      {
+        "model_score": 0.2425,
+        "human_label": 0.036
+      },
+      {
+        "model_score": 0.5433333333333333,
+        "human_label": 0.83
+      },
+      {
+        "model_score": 0.31666666666666665,
+        "human_label": 0.217
+      },
+      {
+        "model_score": 0.1105,
+        "human_label": 0.229
+      },
+      {
+        "model_score": 0.685,
+        "human_label": 0.936
+      },
+      {
+        "model_score": 0.215,
+        "human_label": 0.33
+      },
+      {
+        "model_score": 0.545,
+        "human_label": 0.694
+      },
+      {
+        "model_score": 0.3416666666666667,
+        "human_label": 0.391
+      },
+      {
+        "model_score": 0.6666666666666667,
+        "human_label": 0.89
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.046
+      },
+      {
+        "model_score": 0.7600000000000001,
+        "human_label": 0.887
+      },
+      {
+        "model_score": 0.17750000000000002,
+        "human_label": 0.214
+      },
+      {
+        "model_score": 0.485,
+        "human_label": 0.812
+      },
+      {
+        "model_score": 0.042,
+        "human_label": 0.074
+      },
+      {
+        "model_score": 0.485,
+        "human_label": 0.795
+      },
+      {
+        "model_score": 0.31,
+        "human_label": 0.285
+      },
+      {
+        "model_score": 0.45,
+        "human_label": 0.909
+      }
+    ]
+  },
+  {
+    "dim_id": "fairness",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 20,
+    "pairs": [
+      {
+        "model_score": 0.5866666666666667,
+        "human_label": 0.929
+      },
+      {
+        "model_score": 0.39999999999999997,
+        "human_label": 0.782
+      },
+      {
+        "model_score": 0.325,
+        "human_label": 0.049
+      },
+      {
+        "model_score": 0.6466666666666667,
+        "human_label": 0.93
+      },
+      {
+        "model_score": 0.36500000000000005,
+        "human_label": 0.752
+      },
+      {
+        "model_score": 0.13716666666666666,
+        "human_label": 0.361
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.885
+      },
+      {
+        "model_score": 0.0525,
+        "human_label": 0.178
+      },
+      {
+        "model_score": 0.5800000000000001,
+        "human_label": 0.903
+      },
+      {
+        "model_score": 0.18250000000000002,
+        "human_label": 0.036
+      },
+      {
+        "model_score": 0.44000000000000006,
+        "human_label": 0.814
+      },
+      {
+        "model_score": 0.5800000000000001,
+        "human_label": 0.911
+      },
+      {
+        "model_score": 0.1325,
+        "human_label": 0.275
+      },
+      {
+        "model_score": 0.4,
+        "human_label": 0.188
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.868
+      },
+      {
+        "model_score": 0.22,
+        "human_label": 0.042
+      },
+      {
+        "model_score": 0.48,
+        "human_label": 0.862
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.902
+      },
+      {
+        "model_score": 0.3175,
+        "human_label": 0.711
+      },
+      {
+        "model_score": 0.275,
+        "human_label": 0.058
+      }
+    ]
+  },
+  {
+    "dim_id": "feature_derivation_correctness",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 20,
+    "pairs": [
+      {
+        "model_score": 0.4766666666666667,
+        "human_label": 0.896
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.037
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.438
+      },
+      {
+        "model_score": 0.1825,
+        "human_label": 0.044
+      },
+      {
+        "model_score": 0.6599999999999999,
+        "human_label": 0.941
+      },
+      {
+        "model_score": 0.18000000000000002,
+        "human_label": 0.664
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.224
+      },
+      {
+        "model_score": 0.445,
+        "human_label": 0.534
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.756
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.145
+      },
+      {
+        "model_score": 0.43666666666666665,
+        "human_label": 0.831
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.383
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.84
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.262
+      },
+      {
+        "model_score": 0.525,
+        "human_label": 0.912
+      },
+      {
+        "model_score": 0.31,
+        "human_label": 0.089
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.416
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.863
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.671
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.046
+      }
+    ]
+  },
+  {
+    "dim_id": "policy_compliance",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 20,
+    "pairs": [
+      {
+        "model_score": 0.6,
+        "human_label": 0.931
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.096
+      },
+      {
+        "model_score": 0.48,
+        "human_label": 0.794
+      },
+      {
+        "model_score": 0.325,
+        "human_label": 0.049
+      },
+      {
+        "model_score": 0.44500000000000006,
+        "human_label": 0.662
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.067
+      },
+      {
+        "model_score": 0.5516666666666667,
+        "human_label": 0.831
+      },
+      {
+        "model_score": 0.21000000000000002,
+        "human_label": 0.159
+      },
+      {
+        "model_score": 0.5516666666666666,
+        "human_label": 0.924
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.468
+      },
+      {
+        "model_score": 0.4266666666666667,
+        "human_label": 0.532
+      },
+      {
+        "model_score": 0.4716666666666667,
+        "human_label": 0.105
+      },
+      {
+        "model_score": 0.525,
+        "human_label": 0.631
+      },
+      {
+        "model_score": 0.465,
+        "human_label": 0.86
+      },
+      {
+        "model_score": 0.1696666666666667,
+        "human_label": 0.093
+      },
+      {
+        "model_score": 0.52,
+        "human_label": 0.894
+      },
+      {
+        "model_score": 0.1775,
+        "human_label": 0.112
+      },
+      {
+        "model_score": 0.7133333333333334,
+        "human_label": 0.931
+      },
+      {
+        "model_score": 0.5916666666666667,
+        "human_label": 0.412
+      },
+      {
+        "model_score": 0.4316666666666667,
+        "human_label": 0.447
+      }
+    ]
+  },
+  {
+    "dim_id": "all_dims",
+    "grader_id": "underwriting::rationale_quality_judge::v2",
+    "n": 100,
+    "pairs": [
+      {
+        "model_score": 0.6516666666666666,
+        "human_label": 0.905
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.719
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.171
+      },
+      {
+        "model_score": 0.2025,
+        "human_label": 0.03
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.91
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.432
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.86
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.08
+      },
+      {
+        "model_score": 0.5716666666666665,
+        "human_label": 0.596
+      },
+      {
+        "model_score": 0.3466666666666667,
+        "human_label": 0.774
+      },
+      {
+        "model_score": 0.445,
+        "human_label": 0.364
+      },
+      {
+        "model_score": 0.5166666666666667,
+        "human_label": 0.902
+      },
+      {
+        "model_score": 0.185,
+        "human_label": 0.096
+      },
+      {
+        "model_score": 0.5916666666666667,
+        "human_label": 0.888
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.304
+      },
+      {
+        "model_score": 0.6516666666666666,
+        "human_label": 0.71
+      },
+      {
+        "model_score": 0.2425,
+        "human_label": 0.053
+      },
+      {
+        "model_score": 0.45,
+        "human_label": 0.909
+      },
+      {
+        "model_score": 0.4766666666666667,
+        "human_label": 0.666
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.406
+      },
+      {
+        "model_score": 0.6583333333333333,
+        "human_label": 0.923
+      },
+      {
+        "model_score": 0.31666666666666665,
+        "human_label": 0.065
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.564
+      },
+      {
+        "model_score": 0.2425,
+        "human_label": 0.036
+      },
+      {
+        "model_score": 0.5433333333333333,
+        "human_label": 0.83
+      },
+      {
+        "model_score": 0.31666666666666665,
+        "human_label": 0.217
+      },
+      {
+        "model_score": 0.1105,
+        "human_label": 0.229
+      },
+      {
+        "model_score": 0.685,
+        "human_label": 0.936
+      },
+      {
+        "model_score": 0.215,
+        "human_label": 0.33
+      },
+      {
+        "model_score": 0.545,
+        "human_label": 0.694
+      },
+      {
+        "model_score": 0.3416666666666667,
+        "human_label": 0.391
+      },
+      {
+        "model_score": 0.6666666666666667,
+        "human_label": 0.89
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.046
+      },
+      {
+        "model_score": 0.7600000000000001,
+        "human_label": 0.887
+      },
+      {
+        "model_score": 0.17750000000000002,
+        "human_label": 0.214
+      },
+      {
+        "model_score": 0.485,
+        "human_label": 0.812
+      },
+      {
+        "model_score": 0.042,
+        "human_label": 0.074
+      },
+      {
+        "model_score": 0.485,
+        "human_label": 0.795
+      },
+      {
+        "model_score": 0.31,
+        "human_label": 0.285
+      },
+      {
+        "model_score": 0.45,
+        "human_label": 0.909
+      },
+      {
+        "model_score": 0.6,
+        "human_label": 0.931
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.096
+      },
+      {
+        "model_score": 0.48,
+        "human_label": 0.794
+      },
+      {
+        "model_score": 0.325,
+        "human_label": 0.049
+      },
+      {
+        "model_score": 0.44500000000000006,
+        "human_label": 0.662
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.067
+      },
+      {
+        "model_score": 0.5516666666666667,
+        "human_label": 0.831
+      },
+      {
+        "model_score": 0.21000000000000002,
+        "human_label": 0.159
+      },
+      {
+        "model_score": 0.5516666666666666,
+        "human_label": 0.924
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.468
+      },
+      {
+        "model_score": 0.4266666666666667,
+        "human_label": 0.532
+      },
+      {
+        "model_score": 0.4716666666666667,
+        "human_label": 0.105
+      },
+      {
+        "model_score": 0.525,
+        "human_label": 0.631
+      },
+      {
+        "model_score": 0.465,
+        "human_label": 0.86
+      },
+      {
+        "model_score": 0.1696666666666667,
+        "human_label": 0.093
+      },
+      {
+        "model_score": 0.52,
+        "human_label": 0.894
+      },
+      {
+        "model_score": 0.1775,
+        "human_label": 0.112
+      },
+      {
+        "model_score": 0.7133333333333334,
+        "human_label": 0.931
+      },
+      {
+        "model_score": 0.5916666666666667,
+        "human_label": 0.412
+      },
+      {
+        "model_score": 0.4316666666666667,
+        "human_label": 0.447
+      },
+      {
+        "model_score": 0.4766666666666667,
+        "human_label": 0.896
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.037
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.438
+      },
+      {
+        "model_score": 0.1825,
+        "human_label": 0.044
+      },
+      {
+        "model_score": 0.6599999999999999,
+        "human_label": 0.941
+      },
+      {
+        "model_score": 0.18000000000000002,
+        "human_label": 0.664
+      },
+      {
+        "model_score": 0.3566666666666667,
+        "human_label": 0.224
+      },
+      {
+        "model_score": 0.445,
+        "human_label": 0.534
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.756
+      },
+      {
+        "model_score": 0.29000000000000004,
+        "human_label": 0.145
+      },
+      {
+        "model_score": 0.43666666666666665,
+        "human_label": 0.831
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.383
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.84
+      },
+      {
+        "model_score": 0.33,
+        "human_label": 0.262
+      },
+      {
+        "model_score": 0.525,
+        "human_label": 0.912
+      },
+      {
+        "model_score": 0.31,
+        "human_label": 0.089
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.416
+      },
+      {
+        "model_score": 0.37,
+        "human_label": 0.863
+      },
+      {
+        "model_score": 0.39666666666666667,
+        "human_label": 0.671
+      },
+      {
+        "model_score": 0.25,
+        "human_label": 0.046
+      },
+      {
+        "model_score": 0.5866666666666667,
+        "human_label": 0.929
+      },
+      {
+        "model_score": 0.39999999999999997,
+        "human_label": 0.782
+      },
+      {
+        "model_score": 0.325,
+        "human_label": 0.049
+      },
+      {
+        "model_score": 0.6466666666666667,
+        "human_label": 0.93
+      },
+      {
+        "model_score": 0.36500000000000005,
+        "human_label": 0.752
+      },
+      {
+        "model_score": 0.13716666666666666,
+        "human_label": 0.361
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.885
+      },
+      {
+        "model_score": 0.0525,
+        "human_label": 0.178
+      },
+      {
+        "model_score": 0.5800000000000001,
+        "human_label": 0.903
+      },
+      {
+        "model_score": 0.18250000000000002,
+        "human_label": 0.036
+      },
+      {
+        "model_score": 0.44000000000000006,
+        "human_label": 0.814
+      },
+      {
+        "model_score": 0.5800000000000001,
+        "human_label": 0.911
+      },
+      {
+        "model_score": 0.1325,
+        "human_label": 0.275
+      },
+      {
+        "model_score": 0.4,
+        "human_label": 0.188
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.868
+      },
+      {
+        "model_score": 0.22,
+        "human_label": 0.042
+      },
+      {
+        "model_score": 0.48,
+        "human_label": 0.862
+      },
+      {
+        "model_score": 0.405,
+        "human_label": 0.902
+      },
+      {
+        "model_score": 0.3175,
+        "human_label": 0.711
+      },
+      {
+        "model_score": 0.275,
+        "human_label": 0.058
+      }
+    ]
+  }
+]

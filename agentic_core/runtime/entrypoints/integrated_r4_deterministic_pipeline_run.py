@@ -37,11 +37,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
+
+_log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Canonical spine imports — compose, do not reimplement
@@ -123,6 +126,39 @@ class R4IntegratedRunResult:
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
+
+def _load_route_id_for_app(app_name: str) -> str:
+    """Read the primary route_id from the app's route_registry.yaml.
+
+    Fail-soft: returns the module-level ``ROUTE_ID`` constant if the registry
+    is absent, malformed, or contains no routes.  This keeps the pipeline
+    working in test / offline environments that don't have the apps_* tree.
+    """
+    if not app_name:
+        return ROUTE_ID
+    registry_path = Path(f"{app_name}/config/route_registry.yaml")
+    if not registry_path.exists():
+        return ROUTE_ID
+    try:
+        import yaml  # type: ignore[import-untyped]
+
+        data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        routes = data.get("routes", []) if isinstance(data, dict) else []
+        if routes:
+            rid = str(routes[0].get("route_id", "")).strip()
+            if rid:
+                _log.debug(
+                    "[R4] route_registry resolved route_id=%s for app=%s", rid, app_name
+                )
+                return rid
+    except Exception as _exc:  # guardian: allow-broad-exception -- registry read is fail-soft; ROUTE_ID fallback is always valid
+        _log.warning(
+            "[R4] route_registry.yaml read failed for app=%s (fail-soft): %s",
+            app_name,
+            _exc,
+        )
+    return ROUTE_ID
 
 
 def _utc_now_iso() -> str:
@@ -313,6 +349,9 @@ def run_integrated_r4_deterministic_pipeline(
     artifact_dir = Path(artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
+    # W5/GAP-6: resolve route_id from app's route_registry.yaml (fail-soft)
+    effective_route_id = _load_route_id_for_app(app_name)
+
     run_id = str(uuid.uuid4())
     started_at = _utc_now_iso()
     git_commit, git_dirty = git_commit_and_dirty()
@@ -369,7 +408,7 @@ def run_integrated_r4_deterministic_pipeline(
         return R4IntegratedRunResult(
             run_id=run_id,
             request_id=request_id,
-            route_id=ROUTE_ID,
+            route_id=effective_route_id,
             x3_disposition=x3,
             terminal_r5=True,
             terminal_r5_reason=r5_reason,
@@ -385,7 +424,7 @@ def run_integrated_r4_deterministic_pipeline(
         request_id=request_id,
         trace_root=trace_root,
         route_contract_id=route_contract_id,
-        route_id=ROUTE_ID,
+        route_id=effective_route_id,
         c0_bypass_reason="GROUNDING_NOT_REQUIRED",
     )
     c0_hash = _write_json(artifact_dir / _C0_BYPASS_RECEIPT_FILENAME, c0_receipt.to_dict())
@@ -406,7 +445,7 @@ def run_integrated_r4_deterministic_pipeline(
         git_commit=git_commit,
         git_dirty=git_dirty,
         route_contract_id=route_contract_id,
-        route_id=ROUTE_ID,
+        route_id=effective_route_id,
         app_name="apps_rg",
     )
     _write_json(artifact_dir / _IDENTITY_RECEIPT_FILENAME, identity.to_dict())
@@ -447,7 +486,7 @@ def run_integrated_r4_deterministic_pipeline(
             "producer_component": _PRODUCER_COMPONENT,
             "run_id": run_id,
             "request_id": request_id,
-            "route_id": ROUTE_ID,
+            "route_id": effective_route_id,
             "chain_kind": CHAIN_KIND,
             "x3_disposition": x3,
             "terminal_r5": False,
@@ -460,7 +499,7 @@ def run_integrated_r4_deterministic_pipeline(
     return R4IntegratedRunResult(
         run_id=run_id,
         request_id=request_id,
-        route_id=ROUTE_ID,
+        route_id=effective_route_id,
         x3_disposition=x3,
         terminal_r5=False,
         terminal_r5_reason="",

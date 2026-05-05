@@ -75,7 +75,19 @@ IS_STUB: bool = False
 """This judge is a promoted real implementation (deterministic v2)."""
 
 IS_CALIBRATED: bool = True
-"""Deterministic heuristic scorer — calibrated against holdout Spearman ≥ 0.80."""
+"""Deterministic heuristic scorer — calibrated against holdout Spearman ≥ 0.80.
+
+DS-R3: Strict mode is now active. IS_CALIBRATED=True enables fail_closed_if_unknown
+by default — empty/unknown rationale is treated as a score of 0.0 rather than
+routing to HITL. Override per-instance via RationaleQualityJudge(fail_closed_if_unknown=False).
+"""
+
+FAIL_CLOSED_IF_UNKNOWN: bool = True
+"""DS-R8: When True, empty/missing rationale returns score=0.0 instead of GRADER_UNKNOWN_SENTINEL.
+
+Activated now that IS_CALIBRATED=True and global Spearman ρ ≥ 0.80.
+Set to False to restore fail-open behavior (returns GRADER_UNKNOWN_SENTINEL → HITL route).
+"""
 
 GRADER_ID: str = "underwriting::rationale_quality_judge::v2"
 """Roster ID for this judge."""
@@ -254,14 +266,27 @@ class RationaleQualityJudge:
 
     Scores the quality of a DecisionPacket rationale on 0..1 using
     four measurable, LLM-free heuristic features.
+
+    Parameters
+    ----------
+    fail_closed_if_unknown:
+        When True (default, DS-R8), an empty/missing rationale returns
+        ``(0.0, ["rationale_quality::v2::unknown=fail_closed"])`` instead of
+        ``(GRADER_UNKNOWN_SENTINEL, [])``. Set to False to restore fail-open
+        behavior (UNKNOWN → HITL route).
     """
 
     is_stub: bool = False
     grader_id: str = GRADER_ID
 
+    def __init__(self, *, fail_closed_if_unknown: bool = FAIL_CLOSED_IF_UNKNOWN) -> None:
+        self._fail_closed = fail_closed_if_unknown
+
     def grade(self, dim: Any, run_context: dict[str, Any]) -> tuple[Any, list[str]]:
         text = _extract_rationale(run_context or {})
         if not text:
+            if self._fail_closed:
+                return 0.0, ["rationale_quality::v2::unknown=fail_closed"]
             return GRADER_UNKNOWN_SENTINEL, []
         refs = _extract_evidence_refs(run_context or {})
         score = max(0.0, min(1.0, _compute_score(text, refs)))
@@ -276,8 +301,15 @@ class RationaleQualityJudge:
 
 
 def grade(dim: Any, run_context: dict[str, Any]) -> tuple[Any, list[str]]:
-    """Module-level callable form of the judge interface."""
+    """Module-level callable form — uses module-level FAIL_CLOSED_IF_UNKNOWN default."""
     return RationaleQualityJudge().grade(dim, run_context)
 
 
-__all__ = ["RationaleQualityJudge", "grade", "IS_STUB", "IS_CALIBRATED", "GRADER_ID"]
+__all__ = [
+    "RationaleQualityJudge",
+    "grade",
+    "IS_STUB",
+    "IS_CALIBRATED",
+    "FAIL_CLOSED_IF_UNKNOWN",
+    "GRADER_ID",
+]

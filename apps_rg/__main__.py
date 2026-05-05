@@ -30,6 +30,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
+from apps_rg.utils.intent_builder import build_intent_from_request
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -117,6 +120,160 @@ def _build_raw_request(args) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# Core pipeline logic — extracted for testability
+# ---------------------------------------------------------------------------
+
+
+def _run_with_args(
+    args: Any,
+    runs_dir: Path | None = None,
+    artifact_dir_override: Path | None = None,
+) -> None:
+    """Execute the full L0-wired pipeline given parsed CLI args.
+
+    Extracted from ``main()`` so tests can inject args directly without
+    going through argparse or subprocess.  Calls ``sys.exit`` on all paths.
+
+    Parameters
+    ----------
+    args:
+        Namespace-like object with target_company, target_role, candidate,
+        jd, manual_brief, target_level, tenant_id, etc.
+    runs_dir:
+        Override the directory scanned for R1A cache entries.
+        Defaults to ``artifacts/apps_rg/runs``.
+    artifact_dir_override:
+        Override the per-run artifact directory (used by tests to pre-seed
+        ``generated_resume.json`` for R1B store testing).
+    """
+    raw_request = _build_raw_request(args)
+    _runs_dir = runs_dir if runs_dir is not None else Path("artifacts/apps_rg/runs")
+    artifact_dir = (
+        artifact_dir_override
+        if artifact_dir_override is not None
+        else _runs_dir / f"r4_{raw_request['resume_hash'][:8]}"
+    )
+
+    candidate_path = (
+        Path(args.candidate) if getattr(args, "candidate", None)
+        else Path("apps_rg/scripts/candidate_profile.yaml")
+    )
+    jd_path = Path(getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
+    brief_path = Path(getattr(args, "manual_brief", "") or "apps_rg/scripts/company_research.json")
+
+    # ── W1 / GAP-1: R1A exact-cache pre-flight ──
+    r1a_key = compute_r1a_key(
+        source_resume_hash=raw_request["resume_hash"],
+        target_company=raw_request["target_company"],
+        target_role=raw_request["target_role"],
+        jd_hash=raw_request["jd_hash"],
+        briefing_hash=raw_request["brief_hash"],
+        policy_hash=raw_request["policy_hash"],
+        blueprint_hash=raw_request["blueprint_hash"],
+    )
+    cached_run_dir = check_r1a_cache(r1a_key, runs_dir=_runs_dir)
+    if cached_run_dir is not None:
+        _log.info("[apps_rg] R1A exact cache hit — returning cached run at %s", cached_run_dir)
+        sys.exit(0)
+
+    # ── W2 / GAP-2: R1B semantic-cache pre-flight (gated by env flag) ──
+    if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
+        try:
+            from apps_rg.cache.r1b_adapter import check_r1b_for_apps_rg
+
+            r1b_hit = check_r1b_for_apps_rg(
+                candidate_profile_path=str(candidate_path),
+                target_company=args.target_company,
+                target_role=args.target_role,
+                policy_hash=raw_request["policy_hash"],
+                blueprint_hash=raw_request["blueprint_hash"],
+                jd_path=jd_path,
+                briefing_path=brief_path,
+                tenant_id=raw_request.get("tenant_id", "default"),
+            )
+            if r1b_hit is not None:
+                _log.info("[apps_rg] R1B semantic cache hit — returning cached result")
+                sys.exit(0)
+        except Exception as _r1b_err:  # guardian: allow-broad-exception -- R1B recall is fail-soft; a miss is always safe
+            _log.warning("[apps_rg] R1B recall failed (fail-soft): %s", _r1b_err)
+
+    # ── Delegate to agentic_core R4 pipeline (core resolves L2 recipe) ──
+    result: R4IntegratedRunResult = run_integrated_r4_deterministic_pipeline(
+        app_name="apps_rg",
+        raw_request=raw_request,
+        artifact_dir=artifact_dir,
+        policy_hash=raw_request["policy_hash"],
+        blueprint_hash=raw_request["blueprint_hash"],
+    )
+
+    _log.info(
+        "[apps_rg] R4 pipeline complete: run_id=%s x3=%s terminal_r5=%s fault=%s",
+        result.run_id,
+        result.x3_disposition,
+        result.terminal_r5,
+        result.fault or "(none)",
+    )
+
+    # ── W4 / GAP-4: R1A post-run stamp (only on clean execution) ──
+    if not result.fault and not result.terminal_r5:
+        try:
+            stamp_r1a_cache(r1a_key, str(artifact_dir))
+            _log.debug("[apps_rg] R1A cache stamped for key=%s", r1a_key[:16])
+        except Exception as _stamp_err:  # guardian: allow-broad-exception -- cache stamp is fail-soft; run already succeeded
+            _log.warning("[apps_rg] R1A stamp failed (fail-soft): %s", _stamp_err)
+
+    # ── W4 / GAP-5: R1B post-run store (only on clean execution, gated by env flag) ──
+    if not result.fault and not result.terminal_r5 and os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
+        try:
+            from apps_rg.cache.r1b_adapter import AppsRgR1BCacheAdapter
+
+            intent = build_intent_from_request(
+                candidate_profile_path=candidate_path,
+                target_company=args.target_company,
+                target_role=args.target_role,
+                target_level=getattr(args, "target_level", None),
+                policy_hash=raw_request["policy_hash"],
+                blueprint_hash=raw_request["blueprint_hash"],
+                jd_path=jd_path,
+                briefing_path=brief_path,
+                tenant_id=raw_request.get("tenant_id", "default"),
+                request_id=result.run_id,
+            )
+            generated_resume_path = artifact_dir / "generated_resume.json"
+            output_chunks: list[dict] = []
+            if generated_resume_path.exists():
+                try:
+                    resume_data = json.loads(generated_resume_path.read_text(encoding="utf-8"))
+                    output_chunks = resume_data if isinstance(resume_data, list) else [resume_data]
+                except (json.JSONDecodeError, OSError):
+                    pass
+            if output_chunks:
+                adapter = AppsRgR1BCacheAdapter(
+                    tenant_id=raw_request.get("tenant_id", "default")
+                )
+                adapter.store_intent_and_output(
+                    intent=intent,
+                    output_chunks=output_chunks,
+                    run_context={
+                        "run_id": result.run_id,
+                        "exit_disposition": result.x3_disposition,
+                        "uwg_commit_receipt": result.run_id,
+                        "policy_hash": raw_request["policy_hash"],
+                        "blueprint_hash": raw_request["blueprint_hash"],
+                    },
+                )
+                _log.debug("[apps_rg] R1B semantic cache stored %d chunks", len(output_chunks))
+        except Exception as _store_err:  # guardian: allow-broad-exception -- R1B store is fail-soft; run already succeeded
+            _log.warning("[apps_rg] R1B store failed (fail-soft): %s", _store_err)
+
+    if result.fault:
+        _log.error("[apps_rg] Pipeline fault: %s", result.fault)
+        sys.exit(1)
+
+    sys.exit(0)
+
+
+# ---------------------------------------------------------------------------
 # Main entrypoint — pure shim
 # ---------------------------------------------------------------------------
 
@@ -152,32 +309,7 @@ def main() -> None:
     if not args.target_role:
         parser.error("--target-role is required")
 
-    # ── Build request envelope (transport data only) ──
-    raw_request = _build_raw_request(args)
-    artifact_dir = Path("artifacts/apps_rg/runs") / f"r4_{raw_request['resume_hash'][:8]}"
-
-    # ── Delegate to agentic_core R4 pipeline (core resolves L2 recipe) ──
-    result: R4IntegratedRunResult = run_integrated_r4_deterministic_pipeline(
-        app_name="apps_rg",
-        raw_request=raw_request,
-        artifact_dir=artifact_dir,
-        policy_hash=raw_request["policy_hash"],
-        blueprint_hash=raw_request["blueprint_hash"],
-    )
-
-    _log.info(
-        "[apps_rg] R4 pipeline complete: run_id=%s x3=%s terminal_r5=%s fault=%s",
-        result.run_id,
-        result.x3_disposition,
-        result.terminal_r5,
-        result.fault or "(none)",
-    )
-
-    if result.fault:
-        _log.error("[apps_rg] Pipeline fault: %s", result.fault)
-        sys.exit(1)
-
-    sys.exit(0)
+    _run_with_args(args)
 
 
 if __name__ == "__main__":

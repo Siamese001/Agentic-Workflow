@@ -154,6 +154,12 @@ def _build_real_judge(kind: str) -> JudgeProtocol:
         )
 
         return OpenAIJudge(api_key=os.environ.get("OPENAI_API_KEY"))
+    if kind == "google":
+        from agentic_core.L3_orchestration.exit_eval.judges.google_judge import (
+            GoogleJudge,
+        )
+
+        return GoogleJudge(api_key=os.environ.get("GOOGLE_API_KEY"))
     if kind == "http":
         from agentic_core.L3_orchestration.exit_eval.judges.http_judge import (
             HttpJudge,

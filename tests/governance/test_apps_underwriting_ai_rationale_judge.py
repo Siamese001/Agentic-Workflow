@@ -33,6 +33,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
     GRADER_UNKNOWN_SENTINEL,
 )
 from apps_underwriting_ai.engines.judges.rationale_quality_judge import (
+    FAIL_CLOSED_IF_UNKNOWN,
     GRADER_ID,
     IS_CALIBRATED,
     IS_STUB,
@@ -139,18 +140,34 @@ def test_grade_rich_rationale_returns_float() -> None:
 
 
 @pytest.mark.governance
-def test_grade_empty_rationale_returns_sentinel() -> None:
-    """Empty rationale must return GRADER_UNKNOWN_SENTINEL."""
-    ctx: dict = {"output": {"rationale": "", "evidence_refs": []}}
-    score, refs = grade(None, ctx)
-    assert score is GRADER_UNKNOWN_SENTINEL
-    assert refs == []
+def test_fail_closed_if_unknown_flag() -> None:
+    """DS-R8: FAIL_CLOSED_IF_UNKNOWN must be True now that IS_CALIBRATED=True."""
+    assert FAIL_CLOSED_IF_UNKNOWN is True
 
 
 @pytest.mark.governance
-def test_grade_missing_output_returns_sentinel() -> None:
-    """Missing output key must return GRADER_UNKNOWN_SENTINEL."""
+def test_grade_empty_rationale_fail_closed() -> None:
+    """DS-R8: Empty rationale returns score=0.0 when fail_closed_if_unknown=True (default)."""
+    ctx: dict = {"output": {"rationale": "", "evidence_refs": []}}
+    score, refs = grade(None, ctx)
+    assert score == 0.0
+    assert refs == ["rationale_quality::v2::unknown=fail_closed"]
+
+
+@pytest.mark.governance
+def test_grade_missing_output_fail_closed() -> None:
+    """DS-R8: Missing output returns score=0.0 when fail_closed_if_unknown=True (default)."""
     score, refs = grade(None, {})
+    assert score == 0.0
+    assert refs == ["rationale_quality::v2::unknown=fail_closed"]
+
+
+@pytest.mark.governance
+def test_grade_empty_rationale_fail_open_override() -> None:
+    """DS-R8: Explicit fail_closed_if_unknown=False restores GRADER_UNKNOWN_SENTINEL."""
+    judge = RationaleQualityJudge(fail_closed_if_unknown=False)
+    ctx: dict = {"output": {"rationale": "", "evidence_refs": []}}
+    score, refs = judge.grade(None, ctx)
     assert score is GRADER_UNKNOWN_SENTINEL
     assert refs == []
 
