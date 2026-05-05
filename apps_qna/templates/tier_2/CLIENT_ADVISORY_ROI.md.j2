@@ -1,0 +1,8 @@
+{# Tier 2: CLIENT_ADVISORY_ROI #}
+## CLIENT ADVISORY ROI
+
+{% for item in client_roi %}
+- **Client**: {{ item.client }}
+- **Advisory**: {{ item.advisory }}
+- **ROI**: {{ item.roi }}
+{% endfor %}

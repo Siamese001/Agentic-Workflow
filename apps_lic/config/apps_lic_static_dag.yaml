@@ -84,10 +84,53 @@ stages:
     r5_reason_codes:
       planning_failed: L0_POLICY_VIOLATION
 
-  - stage_id: compile_prompt
+  - stage_id: build_narrative_arc_context
     order: 4
     description: >
+      P2a: Build narrative arc context for coherence and structure.
+      Produces narrative_arc_context with sections (opener, hook, proof, ask),
+      arc_coherence_score, and arc_break detection. Feeds Prompt Assembly.
+      No provider calls. No durable writes.
+    inputs:
+      - name: message_plan
+        type: MessagePlan
+        source: plan_message.message_plan
+      - name: recipient_class
+        type: str
+        source: validated_manifest.recipient_class
+    outputs:
+      - name: narrative_arc_context
+        type: NarrativeArc
+    fail_closed_on:
+      - arc_coherence_below_threshold_for_exec
+    r5_reason_codes:
+      arc_coherence_below_threshold_for_exec: NARRATIVE_ARC_INCOHERENT
+
+  - stage_id: calibrate_archetype_tone
+    order: 5
+    description: >
+      P2b: Calibrate archetype tone based on recipient signals.
+      Produces archetype_tone_calibration with vocabulary guidance
+      (boosted/suppressed) and register hints. Feeds Prompt Assembly constraints.
+      No provider calls. No durable writes.
+    inputs:
+      - name: recipient_class
+        type: str
+        source: validated_manifest.recipient_class
+      - name: recipient_trigger_vector
+        type: list
+        source: validated_manifest.trigger_vector
+    outputs:
+      - name: archetype_tone_calibration
+        type: ArchetypeToneCalibration
+    fail_closed_on: []
+    r5_reason_codes: {}
+
+  - stage_id: compile_prompt
+    order: 6
+    description: >
       Compile the prompt using lic_pa_compiler and the validated MessagePlan.
+      Consumes narrative_arc_context and archetype_tone_calibration (P2).
       Produces a CompiledPromptArtifact with governance binding to manifest_hash,
       policy_hash, blueprint_hash, and replay_key. No provider calls here —
       compilation only. The artifact is consumed by compose_draft.
@@ -98,6 +141,12 @@ stages:
       - name: validated_manifest
         type: PreloadedOutreachContextManifest
         source: validate_context.validated_manifest
+      - name: narrative_arc_context
+        type: NarrativeArc
+        source: build_narrative_arc_context.narrative_arc_context
+      - name: archetype_tone_calibration
+        type: ArchetypeToneCalibration
+        source: calibrate_archetype_tone.archetype_tone_calibration
     outputs:
       - name: compiled_prompt_artifact
         type: CompiledPromptArtifact

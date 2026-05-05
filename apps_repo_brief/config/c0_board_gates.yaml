@@ -1,0 +1,80 @@
+# apps_repo_brief C0 Board Gates Configuration
+#
+# P3.12 — Hard gate thresholds for BOARD_DOSSIER depth profile.
+# These gates are checked by C0 BEFORE handing the FEC to PA.
+# If any gate fails, PA/L2 are NOT invoked — Exit emits BLOCK_COMMIT.
+#
+# For non-BOARD_DOSSIER profiles, board_gate_required=false in
+# c0_depth_profiles.yaml — these gates are not checked.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P3.12
+
+schema_version: "apps_repo_brief.c0_board_gates/v1"
+applies_to_profiles:
+  - REPO_BRIEF_BOARD_DOSSIER
+
+gates:
+  section_coverage:
+    name: minimum_section_coverage
+    description: >-
+      At least 95% of required sections must have PASS or WEAK_WITH_CAVEATS
+      evidence status. Sections with UNSUPPORTED, CONTRADICTED, or MISSING
+      status that have omit_if_unsupported=false cause gate failure.
+    threshold_pct: 95.0
+    failure_action: block
+    failure_reason_code: board_gate_section_coverage
+
+  auth_governance_anchor:
+    name: auth_governance_anchor
+    description: >-
+      FEC must carry a verified policy_hash and blueprint_hash binding the
+      evidence to the current governance policy version. Missing or unverified
+      auth anchor causes gate failure.
+    required: true
+    failure_action: block
+    failure_reason_code: board_gate_auth_anchor_missing
+
+  stale_source:
+    name: no_stale_sources
+    description: >-
+      Board dossier tolerates zero stale sources. Any source with is_stale=true
+      causes gate failure. Unlike DEEP profile (caveat), BOARD_DOSSIER blocks.
+    max_stale_count: 0
+    failure_action: block
+    failure_reason_code: board_gate_stale_sources
+
+  critical_contradiction:
+    name: no_unresolved_critical_contradictions
+    description: >-
+      The ContradictionMatrix must have no critical unresolved entries.
+      Critical contradictions (is_critical=true) must have been resolved
+      (not just flagged) before PA may proceed.
+    max_critical_count: 0
+    failure_action: escalate_hitl
+    failure_reason_code: board_gate_critical_contradiction
+
+  cache_terminal_return:
+    name: no_r1b_terminal_return_for_board
+    description: >-
+      BOARD_DOSSIER briefs must NEVER be served from R1B semantic cache
+      terminal return. The cache may be used for sub-queries within C0,
+      but the assembled brief output must come from a live C0 run.
+    semantic_cache_terminal_return_allowed: false
+    failure_action: block
+    failure_reason_code: board_gate_r1b_terminal_return
+
+  min_sources:
+    name: minimum_source_count
+    description: >-
+      At least 30 distinct sources must support the brief.
+    threshold: 30
+    failure_action: block
+    failure_reason_code: board_gate_insufficient_sources
+
+  min_citation_anchors:
+    name: minimum_citation_anchors
+    description: >-
+      At least 25 citation anchors must be present across all sections.
+    threshold: 25
+    failure_action: block
+    failure_reason_code: board_gate_insufficient_citations

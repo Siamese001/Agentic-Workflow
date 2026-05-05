@@ -56,36 +56,36 @@ def pr(tmp_path, monkeypatch):
 
 
 def test_parse_basic_marker(pr):
-    text = "PLAN_CREATED: slug=my-plan-abc123 path=.windsurf/plans/my-plan-abc123.md status=Draft"
+    text = "PLAN_CREATED: slug=my-plan-abc123 path=.windsurf/plans/my-plan-abc123.md status=Not Started"
     out = pr.parse_plan_created_markers(text)
     assert len(out) == 1
     assert out[0]["slug"] == "my-plan-abc123"
     assert out[0]["path"] == ".windsurf/plans/my-plan-abc123.md"
-    assert out[0]["status"] == "Draft"
+    assert out[0]["status"] == "Not Started"
 
 
 def test_parse_multiple_markers(pr):
     text = (
         "Prose intro.\n"
-        "PLAN_CREATED: slug=plan-one-aaaaaa path=.windsurf/plans/plan-one-aaaaaa.md status=Live\n"
+        "PLAN_CREATED: slug=plan-one-aaaaaa path=.windsurf/plans/plan-one-aaaaaa.md status=In Progress\n"
         "More prose.\n"
         "PLAN_CREATED: slug=plan-two-bbbbbb\n"
     )
     out = pr.parse_plan_created_markers(text)
     assert len(out) == 2
-    assert out[0]["status"] == "Live"
+    assert out[0]["status"] == "In Progress"
     assert out[1]["slug"] == "plan-two-bbbbbb"
     assert out[1]["path"] == ".windsurf/plans/plan-two-bbbbbb.md"
-    assert out[1]["status"] == "Draft"  # default
+    assert out[1]["status"] == "Not Started"  # default
 
 
 def test_parse_rejects_invalid_slug(pr):
-    text = "PLAN_CREATED: slug=BadSlug path=x status=Draft"
+    text = "PLAN_CREATED: slug=BadSlug path=x status=Not Started"
     assert pr.parse_plan_created_markers(text) == []
 
 
 def test_parse_rejects_missing_slug(pr):
-    text = "PLAN_CREATED: path=x status=Draft"
+    text = "PLAN_CREATED: path=x status=Not Started"
     assert pr.parse_plan_created_markers(text) == []
 
 
@@ -104,11 +104,11 @@ def test_parse_no_markers(pr):
 
 def test_enqueue_and_list_pending(pr):
     assert pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
-    assert pr.enqueue_plan("slug-two-bbbbbb", ".windsurf/plans/slug-two-bbbbbb.md", "Live")
+    assert pr.enqueue_plan("slug-two-bbbbbb", ".windsurf/plans/slug-two-bbbbbb.md", "In Progress")
     pending = pr.pending_registrations()
     assert len(pending) == 2
     assert {r["slug"] for r in pending} == {"slug-one-aaaaaa", "slug-two-bbbbbb"}
-    assert pending[1]["declared_status"] == "Live"
+    assert pending[1]["declared_status"] == "In Progress"
 
 
 def test_enqueue_is_idempotent(pr):
@@ -157,11 +157,11 @@ def test_queue_survives_corrupt_lines(pr):
 
 
 def test_write_cache_and_read_cache_roundtrip(pr):
-    pr.write_cache({"slug-one-aaaaaa": {"status": "Live", "page_id": "abc"}})
+    pr.write_cache({"slug-one-aaaaaa": {"status": "In Progress", "page_id": "abc"}})
     cache = pr.read_cache()
     assert cache is not None
     assert "fetched_at_epoch" in cache
-    assert cache["plans"]["slug-one-aaaaaa"]["status"] == "Live"
+    assert cache["plans"]["slug-one-aaaaaa"]["status"] == "In Progress"
 
 
 def test_cache_is_fresh_true_for_recent(pr):
@@ -195,11 +195,11 @@ def test_read_cache_malformed_returns_none(pr):
 
 
 def test_check_registration_registered_via_cache(pr):
-    pr.write_cache({"slug-one-aaaaaa": {"status": "Live"}})
+    pr.write_cache({"slug-one-aaaaaa": {"status": "In Progress"}})
     res = pr.check_registration("slug-one-aaaaaa")
     assert res.registered
     assert res.source == "cache"
-    assert res.status == "Live"
+    assert res.status == "In Progress"
 
 
 def test_check_registration_retired_not_registered(pr):
@@ -210,7 +210,7 @@ def test_check_registration_retired_not_registered(pr):
 
 
 def test_check_registration_absent_from_cache(pr):
-    pr.write_cache({"other-slug-aaaaaa": {"status": "Live"}})
+    pr.write_cache({"other-slug-aaaaaa": {"status": "In Progress"}})
     res = pr.check_registration("slug-one-aaaaaa")
     assert not res.registered
     assert res.reason == "not_in_notion_plans_db"
@@ -220,7 +220,7 @@ def test_check_registration_queue_bridges_cache_gap(pr):
     # Slug present in queue with registered=True but NOT in fresh cache yet.
     pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
     pr.mark_registered("slug-one-aaaaaa")
-    pr.write_cache({"other-slug-aaaaaa": {"status": "Live"}})
+    pr.write_cache({"other-slug-aaaaaa": {"status": "In Progress"}})
     res = pr.check_registration("slug-one-aaaaaa")
     assert res.registered
     assert res.source == "queue"
@@ -255,10 +255,10 @@ def test_drift_report_both_directions(pr):
     # On-disk: slug-a + slug-b
     (pr.PLANS_DIR / "slug-a-aaaaaa.md").write_text("x", encoding="utf-8")
     (pr.PLANS_DIR / "slug-b-bbbbbb.md").write_text("x", encoding="utf-8")
-    # Notion: slug-a (Live) + slug-c (Live)
+    # Notion: slug-a (In Progress) + slug-c (In Progress)
     pr.write_cache({
-        "slug-a-aaaaaa": {"status": "Live"},
-        "slug-c-cccccc": {"status": "Live"},
+        "slug-a-aaaaaa": {"status": "In Progress"},
+        "slug-c-cccccc": {"status": "In Progress"},
     })
     report = pr.drift_report()
     assert report["on_disk_not_in_notion"] == ["slug-b-bbbbbb"]
@@ -268,7 +268,7 @@ def test_drift_report_both_directions(pr):
 def test_drift_report_retired_not_counted_as_orphan(pr):
     (pr.PLANS_DIR / "slug-a-aaaaaa.md").write_text("x", encoding="utf-8")
     pr.write_cache({
-        "slug-a-aaaaaa": {"status": "Live"},
+        "slug-a-aaaaaa": {"status": "In Progress"},
         "slug-retired-bbbbbb": {"status": "Retired"},
     })
     report = pr.drift_report()
@@ -303,6 +303,27 @@ def test_list_on_disk_plans_missing_dir(pr, tmp_path, monkeypatch):
 def test_iter_unregistered_on_disk(pr):
     (pr.PLANS_DIR / "slug-a-aaaaaa.md").write_text("x", encoding="utf-8")
     (pr.PLANS_DIR / "slug-b-bbbbbb.md").write_text("x", encoding="utf-8")
-    pr.write_cache({"slug-a-aaaaaa": {"status": "Live"}})
+    pr.write_cache({"slug-a-aaaaaa": {"status": "In Progress"}})
     result = list(pr.iter_unregistered_on_disk())
     assert result == ["slug-b-bbbbbb"]
+
+
+def test_active_statuses_includes_deprioritized(pr):
+    """Deprioritized added 2026-05-05 as valid active status."""
+    assert "Deprioritized" in pr.ACTIVE_STATUSES
+    assert "In Progress" in pr.ACTIVE_STATUSES
+    assert "Not Started" in pr.ACTIVE_STATUSES
+    assert "Waiting" in pr.ACTIVE_STATUSES
+    assert "Completed" in pr.ACTIVE_STATUSES
+    # Retired and Archived are NOT active statuses
+    assert "Retired" not in pr.ACTIVE_STATUSES
+    assert "Archived" not in pr.ACTIVE_STATUSES
+
+
+def test_deprioritized_status_registered_via_cache(pr):
+    """Plans with Deprioritized status are considered registered."""
+    pr.write_cache({"slug-one-aaaaaa": {"status": "Deprioritized"}})
+    res = pr.check_registration("slug-one-aaaaaa")
+    assert res.registered
+    assert res.source == "cache"
+    assert res.status == "Deprioritized"

@@ -70,6 +70,48 @@ KNOWN_POISON_FIELDS = {
 }
 
 
+def _validate_working_directory(
+    working_dir: str,
+    path: str,
+    violations: list[str],
+    entry: dict,
+) -> None:
+    """Fail when a hooks.json entry carries a hardcoded absolute path that
+    does not resolve to the active repo root.
+
+    Why: Windsurf hook runner resolves ``working_directory`` literally. A stale
+    clone path (e.g. ``C:\\Git\\Agentic-Workflow`` when the active workspace is
+    ``C:\\Git\\Agentic-Workflow-FRESH``) silently misdirects every hook invocation
+    to the wrong directory, causing all hook scripts to fail or run against stale
+    code with no user-visible error.
+
+    CI-safe design: the repo root is derived from ``ROOT`` (resolved from ``__file__``
+    of this gate, which lives at ``<repo>/ops_scripts/ci/``). No hardcoded machine
+    path is used. This works on any developer machine and in any CI runner.
+
+    Waiver: if the entry contains a ``_local_only_waiver`` key (underscore-prefix
+    = tolerated by Windsurf schema), the working_directory check is skipped for
+    that entry. The waiver must be explicitly set and is visible in code review.
+    """
+    if entry.get("_local_only_waiver"):
+        return
+    wd_path = Path(working_dir)
+    if not wd_path.is_absolute():
+        return  # relative paths are fine — Windsurf resolves them against workspace
+    try:
+        resolved = wd_path.resolve()
+        if resolved != ROOT.resolve():
+            violations.append(
+                f"  ❌ {path}: working_directory '{working_dir}' resolves to "
+                f"'{resolved}' but the active repo root is '{ROOT.resolve()}'. "
+                f"This silently misdirects the hook. Fix by updating "
+                f"working_directory to the active repo path, or add "
+                f"'_local_only_waiver': true to the entry with a comment."
+            )
+    except OSError:
+        pass  # Path exists check failure on non-existent paths is non-fatal
+
+
 def _check_entry(entry: dict, allowed: set[str], path: str, violations: list[str]) -> None:
     for key in entry.keys():
         if key in allowed:
@@ -125,12 +167,16 @@ def _validate_hooks(violations: list[str]) -> None:
                     f"object, got {type(entry).__name__}"
                 )
                 continue
+            entry_path = f"{HOOKS_PATH.name}.hooks.{event_name}[{idx}]"
             _check_entry(
                 entry,
                 HOOK_ENTRY_FIELDS,
-                f"{HOOKS_PATH.name}.hooks.{event_name}[{idx}]",
+                entry_path,
                 violations,
             )
+            wd = entry.get("working_directory")
+            if isinstance(wd, str):
+                _validate_working_directory(wd, entry_path, violations, entry)
 
 
 def _validate_mcp(violations: list[str]) -> None:

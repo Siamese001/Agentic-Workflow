@@ -1,7 +1,7 @@
 # Static↔Runtime ADG Gap Report
 
-- **Generated:** 2026-05-04 14:05:10 UTC
-- **Static snapshot:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_05042026_0936.sqlite`
+- **Generated:** 2026-05-05 09:54:09 UTC
+- **Static snapshot:** `C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_05052026_0523.sqlite`
 - **Lookback:** 30 days
 - **Static L5/L6 nodes scanned:** 200
 - **Runtime observed layers:** L0_ROUTING, L4_STATE, L6_OBSERVABILITY
@@ -12,7 +12,7 @@
 
 | Layer | Fan-in | Node | File |
 |---|---:|---|---|
-| L5 | 50 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.types.Disposition` | `agentic_core/L5_safety/runtime_gates/types.py` |
+| L5 | 49 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.types.Disposition` | `agentic_core/L5_safety/runtime_gates/types.py` |
 | L5 | 40 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.types.GateDecision` | `agentic_core/L5_safety/runtime_gates/types.py` |
 | L5 | 39 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.types.GateContext` | `agentic_core/L5_safety/runtime_gates/types.py` |
 | L5 | 30 | `ADG::Symbol::agentic_core.L5_safety.runtime_gates.base.register_gate` | `agentic_core/L5_safety/runtime_gates/base.py` |
@@ -35,8 +35,8 @@
 | L5 | 11 | `ADG::Symbol::agentic_core.L5_safety.types.heal_request_types.HealResult` | `agentic_core/L5_safety/types/heal_request_types.py` |
 | L6 | 11 | `ADG::Symbol::agentic_core.L6_observability.semconv.gen_ai.ATTR_OPERATION_NAME` | `agentic_core/L6_observability/semconv/gen_ai.py` |
 | L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.enforcement.ingress_envelope_check.ClarificationRequired` | `agentic_core/L5_safety/enforcement/ingress_envelope_check.py` |
+| L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.eval_spine.exit_eval.SealedArtifact` | `agentic_core/L5_safety/eval_spine/exit_eval.py` |
 | L5 | 10 | `ADG::Symbol::agentic_core.L5_safety.reasoning.location_validator.LocationValidatorAgent` | `agentic_core/L5_safety/reasoning/location_validator.py` |
-| L5 | 9 | `ADG::Symbol::agentic_core.L5_safety.enforcement.ingress_envelope_check.StampedRequest` | `agentic_core/L5_safety/enforcement/ingress_envelope_check.py` |
 
 ## Interpretation
 

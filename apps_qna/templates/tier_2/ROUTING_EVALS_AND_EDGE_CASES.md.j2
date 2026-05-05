@@ -1,0 +1,8 @@
+{# Tier 2: ROUTING_EVALS_AND_EDGE_CASES #}
+## ROUTING EVALS & EDGE CASES
+
+{% for item in routing_evals %}
+- **Scenario**: {{ item.scenario }}
+- **Route**: {{ item.route }}
+- **Edge Case**: {{ item.edge_case }}
+{% endfor %}

@@ -1,0 +1,9 @@
+{# Tier 2: STAR_PROOF — STAR-method proof points #}
+## STAR PROOF POINTS
+
+{% for proof in star_proofs %}
+### {{ proof.situation }}
+- **Task**: {{ proof.task }}
+- **Action**: {{ proof.action }}
+- **Result**: {{ proof.result }}
+{% endfor %}

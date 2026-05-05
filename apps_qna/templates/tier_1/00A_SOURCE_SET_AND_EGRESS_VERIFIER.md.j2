@@ -1,0 +1,23 @@
+{# Tier 1: 00A_SOURCE_SET_AND_EGRESS_VERIFIER — Fake precision blocking #}
+## SOURCE SET & EGRESS VERIFIER
+
+### Blocked Patterns
+The following patterns are **forbidden** in any answer:
+
+1. **Fake Precision**: No invented numbers, percentages, or metrics
+2. **Unsupported Claims**: Every factual claim must reference an evidence card
+3. **Vendor-First Framing**: Do not lead with vendor/product names
+4. **Internal Labels**: Do not use internal-only project names or acronyms
+
+### Allowed Patterns
+- Reference evidence cards by their card ID
+- Use qualitative framing when data is unavailable
+- Flag uncertainty with "Based on available evidence..."
+- Connect claims to business outcomes
+
+### Egress Check
+Before emitting any answer, verify:
+- [ ] No fake precision
+- [ ] All claims have evidence support
+- [ ] No vendor-first framing
+- [ ] No internal labels exposed

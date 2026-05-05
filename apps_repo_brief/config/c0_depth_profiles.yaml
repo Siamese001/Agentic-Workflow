@@ -1,0 +1,101 @@
+# apps_repo_brief C0 Depth Profile Thresholds
+#
+# Resolved AG decision P3.1: Option A — Graduated thresholds.
+# Four distinct tiers with strong gap between DEEP and BOARD_DOSSIER.
+#
+# These thresholds are enforced by:
+#   - RepoBriefC0Adapter.validate_fec() (C0 output validation)
+#   - C0 board gates (P3.12)
+#   - Exit v6 groundedness checks (W4.P4.7)
+#   - Cache strict compat enforcement (P3.13)
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P3.9
+# AG decision: P3.1 Option A, decision_id=dec_19df78cdcdd23acb2
+
+schema_version: "apps_repo_brief.c0_depth_profiles/v1"
+
+profiles:
+  REPO_BRIEF_LIGHT:
+    description: >-
+      Fast brief for recruiter audience. Lower evidence bar — suitable
+      for high-level capability overview. Model is NOT producing board-grade output.
+    audience_default: recruiter
+    min_sources: 5
+    min_coverage_pct: 60.0
+    min_citation_anchors: 3
+    stale_source_policy: caveat
+    auth_governance_anchor_required: false
+    board_gate_required: false
+    c0_retrieval_lanes:
+      - bm25_exact_phrase
+      - dense_semantic
+      - metadata
+    max_retrieval_depth: shallow
+
+  REPO_BRIEF_STANDARD:
+    description: >-
+      Standard brief for CTO / SVP audience. Requires meaningful evidence
+      coverage. Weak claims must carry explicit caveats.
+    audience_default: cto
+    min_sources: 10
+    min_coverage_pct: 75.0
+    min_citation_anchors: 8
+    stale_source_policy: caveat
+    auth_governance_anchor_required: false
+    board_gate_required: false
+    c0_retrieval_lanes:
+      - bm25_exact_phrase
+      - dense_semantic
+      - metadata
+      - graph
+      - code_symbol
+    max_retrieval_depth: standard
+
+  REPO_BRIEF_DEEP:
+    description: >-
+      Deep technical brief for Head-of-AI / deep technical audience.
+      Stale sources are blocked (not just caveated). High citation floor.
+      Implementation and proof claims require code-symbol + proof lane evidence.
+    audience_default: head_of_ai
+    min_sources: 20
+    min_coverage_pct: 85.0
+    min_citation_anchors: 15
+    stale_source_policy: block
+    auth_governance_anchor_required: false
+    board_gate_required: false
+    c0_retrieval_lanes:
+      - bm25_exact_phrase
+      - dense_semantic
+      - metadata
+      - graph
+      - code_symbol
+      - proof
+    max_retrieval_depth: deep
+
+  REPO_BRIEF_BOARD_DOSSIER:
+    description: >-
+      Board-grade dossier. Highest evidence bar. All 7 C0 lanes active.
+      Auth governance anchor required (policy + blueprint hash binding).
+      Stale sources blocked. Critical contradictions → ESCALATE_HITL.
+      Board gate must pass before PA/L2 proceed.
+    audience_default: board
+    min_sources: 30
+    min_coverage_pct: 95.0
+    min_citation_anchors: 25
+    stale_source_policy: block
+    auth_governance_anchor_required: true
+    board_gate_required: true
+    board_gate_thresholds:
+      min_section_coverage_pct: 95.0
+      critical_contradiction_policy: escalate_hitl
+      semantic_cache_terminal_return: false   # never terminal-return board brief from R1B
+      strict_compat_required_for_r1a: true
+    c0_retrieval_lanes:
+      - bm25_exact_phrase
+      - dense_semantic
+      - metadata
+      - graph
+      - code_symbol
+      - proof
+      - prior_artifact
+    max_retrieval_depth: full

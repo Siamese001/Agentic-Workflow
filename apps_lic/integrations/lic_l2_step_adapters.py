@@ -251,6 +251,89 @@ def compile_prompt(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[st
     return result
 
 
+def build_narrative_arc_context(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    E3 Exec: Build narrative arc context for Prompt Assembly.
+    
+    P2a: Adds narrative coherence as context-building step before compile_prompt.
+    Produces NarrativeArc with sections, coherence score, and arc break detection.
+    """
+    result = context.copy()
+    
+    # Import P2a narrative arc engine
+    from apps_lic.engines.narrative_arc_engine import build_narrative_arc_context as build_arc
+    
+    # Extract required inputs from context
+    recipient_class = context.get("recipient_class", "")
+    company_name = context.get("company_name")
+    role_context = context.get("role_context")
+    sender_credibility = context.get("sender_credibility_claims", [])
+    problem_insight = context.get("problem_insight")
+    ask_output = context.get("ask_output")
+    is_recruiter = context.get("is_recruiter_followup", False)
+    
+    # Build narrative arc context
+    arc = build_arc(
+        recipient_class=recipient_class,
+        company_name=company_name,
+        role_context=role_context,
+        sender_credibility_claims=sender_credibility,
+        problem_insight=problem_insight,
+        ask_output=ask_output,
+        is_recruiter_followup=is_recruiter,
+    )
+    
+    # Store arc context for Prompt Assembly
+    result["narrative_arc_context"] = arc
+    result["_e3_narrative_arc_built"] = True
+    result["_e3_arc_coherence_score"] = arc.arc_coherence_score
+    result["_e3_arc_breaks"] = arc.arc_breaks
+    
+    # Check if arc breaks should block draft
+    from apps_lic.engines.narrative_arc_engine import should_block_draft_due_to_arc_breaks
+    should_block, reason = should_block_draft_due_to_arc_breaks(arc, recipient_class)
+    if should_block:
+        result["_e3_narrative_arc_blocked"] = True
+        result["_e3_narrative_arc_block_reason"] = reason
+    
+    return result
+
+
+def calibrate_archetype_tone(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    E3 Exec: Calibrate archetype tone for Prompt Assembly.
+    
+    P2b: Adds tone calibration as context-building step before compile_prompt.
+    Produces ArchetypeToneCalibration with vocabulary and register guidance.
+    """
+    result = context.copy()
+    
+    # Import P2b archetype tone calibrator
+    from apps_lic.engines.archetype_tone_calibrator import calibrate_archetype_tone as calibrate_tone
+    
+    # Extract required inputs from context
+    recipient_class = context.get("recipient_class", "")
+    recipient_seniority = context.get("recipient_seniority")
+    trigger_vector = context.get("recipient_trigger_vector", [])
+    company_briefing = context.get("company_briefing")
+    
+    # Calibrate tone
+    calibration = calibrate_tone(
+        recipient_class=recipient_class,
+        recipient_seniority=recipient_seniority,
+        recipient_trigger_vector=trigger_vector,
+        company_briefing=company_briefing,
+    )
+    
+    # Store calibration for Prompt Assembly
+    result["archetype_tone_calibration"] = calibration
+    result["_e3_archetype_tone_calibrated"] = True
+    result["_e3_archetype_id"] = calibration.archetype_id
+    result["_e3_archetype_confidence"] = calibration.confidence
+    
+    return result
+
+
 def compose_draft_using_compiled_prompt_artifact(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
     """
     E3 Exec: Compose draft using CompiledPromptArtifact via governed provider gateway.
@@ -685,6 +768,10 @@ STEP_ADAPTERS: Dict[str, Callable] = {
     "validate_template_bodies_not_placeholders": validate_template_bodies_not_placeholders,
     # E3 Exec
     "plan_message": plan_message,
+    # P2a/b Signal Enhancement (before compile_prompt)
+    "build_narrative_arc_context": build_narrative_arc_context,
+    "calibrate_archetype_tone": calibrate_archetype_tone,
+    # Core compilation and composition
     "compile_prompt": compile_prompt,
     "compose_draft_using_compiled_prompt_artifact": compose_draft_using_compiled_prompt_artifact,
     # E4 Heal

@@ -43,10 +43,10 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|-------------|--------|------------------|
 | W0 | W0.1-W0.4 | Thin-slice spine proof (U0→L1→L0→C0/Briefing→L2→Exit) | ~35K | ✅ DONE | 18 tests pass; spine contracts emit correctly |
-| W1 | W1.1-W1.3 | Entrypoint purity + registry scaffold + governance | ~30K | 🔲 IN PROGRESS | __main__.py pure shim; 20 governance tests green |
-| W2 | W2.1-W2.4 | C0 thin adapter + briefing validator + evidence contracts | ~40K | 🔲 TODO | C0 calls canonical only; briefing distinct from C0 |
-| W3 | W3.1-W3.4 | Two-tier router + Tier 1/2 templates + domain assembly | ~50K | 🔲 TODO | Router selects 1 primary; Tier 1 always-on, Tier 2 trigger |
-| W4 | W4.1-W4.4 | Exit v6 wiring + egress verifier + cache + acceptance | ~45K | 🔲 TODO | Single X3 per run; 57 tests pass; legacy shimmed |
+| W1 | W1.1-W1.3 | Entrypoint purity + registry scaffold + governance | ~30K | ✅ DONE | __main__.py pure shim; 20 governance tests green |
+| W2 | W2.1-W2.4 | C0 thin adapter + briefing validator + evidence contracts | ~40K | ✅ DONE | C0 calls canonical only; briefing distinct from C0 |
+| W3 | W3.1-W3.4 | Two-tier router + Tier 1/2 templates + domain assembly | ~50K | ✅ DONE | Router selects 1 primary; Tier 1 always-on, Tier 2 trigger |
+| W4 | W4.1-W4.4 | Exit v6 wiring + egress verifier + cache + acceptance | ~45K | 🔲 IN PROGRESS | Single X3 per run; 57 tests pass; legacy shimmed |
 
 **Total: ~200K tokens across 5 waves, 18 phases** (streamlined from ~275K/33 phases)
 
@@ -75,18 +75,18 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 | W0.2 | L0 Router + C0 Adapter scaffold | `l0_router.py`, `c0_adapter.py` | ~9K | ✅ DONE |
 | W0.3 | Briefing Validator + L2 E1-E3 | `briefing_validator.py`, `l2/e1_prep.py`, `e2_valid.py`, `e3_exec.py` | ~10K | ✅ DONE |
 | W0.4 | Exit wiring + W0 tests | `exit_wiring.py`, `tests/test_w0_thin_slice.py` | ~8K | ✅ DONE |
-| W1.1 | Entrypoint purity refactor | `__main__.py` (shim only), remove direct builder imports | ~10K | 🔲 IN PROGRESS |
-| W1.2 | Registry scaffold | `qna_capability_registry.py`, `qna_l2_step_adapters.py`, `qna_exit_fec_producer.py` | ~10K | 🔲 TODO |
-| W1.3 | Governance tests (20 tests) | `tests/governance/test_apps_qna_*.py` | ~10K | 🔲 TODO |
-| W2.1 | C0 thin adapter | `c0_adapter.py` (shape request, call canonical, return unchanged) | ~10K | 🔲 TODO |
-| W2.2 | Briefing validator | `briefing_validator.py`, `types/briefing_contracts.py` | ~10K | 🔲 TODO |
-| W2.3 | Evidence contract types | `types/evidence_contracts.py` (FinalEvidenceContract, UploadedBriefingEvidenceContract) | ~10K | 🔲 TODO |
-| W2.4 | Evidence integration tests | `tests/test_w2_evidence_paths.py` | ~10K | 🔲 TODO |
-| W3.1 | Two-tier router core | `router/two_tier_router.py`, route precedence rules | ~12K | 🔲 TODO |
-| W3.2 | Tier 1 template bodies | `templates/tier_1/*.md.j2` (4 cards: 00, 00A, 01, 03) | ~12K | 🔲 TODO |
-| W3.3 | Tier 2 specialist specs | `templates/tier_2/*.md.j2` (14 specialists), `card_specs/tier_2.py` | ~14K | 🔲 TODO |
-| W3.4 | Domain card context assembly | `card_context/card_context_assembler.py`, `context_budget.py`, `overlay_compressor.py` | ~12K | 🔲 TODO |
-| W4.1 | L2 E4-E5 + egress verifier | `l2/e4_heal.py`, `e5_seal.py`, `egress/blocking_rules.py` | ~12K | 🔲 TODO |
+| W1.1 | Entrypoint purity refactor | `__main__.py` (shim only), remove direct builder imports | ~10K | ✅ DONE |
+| W1.2 | Registry scaffold | `qna_capability_registry.py`, `qna_l2_step_adapters.py`, `qna_exit_fec_producer.py` | ~10K | ✅ DONE |
+| W1.3 | Governance tests (20 tests) | `tests/governance/test_apps_qna_*.py` | ~10K | ✅ DONE |
+| W2.1 | C0 thin adapter | `c0_adapter.py` (shape request, call canonical, return unchanged) | ~10K | ✅ DONE |
+| W2.2 | Briefing validator | `briefing_validator.py`, `types/briefing_contracts.py` | ~10K | ✅ DONE |
+| W2.3 | Evidence contract types | `types/evidence_contracts.py` (FinalEvidenceContract, UploadedBriefingEvidenceContract) | ~10K | ✅ DONE |
+| W2.4 | Evidence integration tests | `tests/test_w2_evidence_paths.py` | ~10K | ✅ DONE |
+| W3.1 | Two-tier router core | `router/two_tier_router.py`, route precedence rules | ~12K | ✅ DONE |
+| W3.2 | Tier 1 template bodies | `templates/tier_1/*.md.j2` (4 cards: 00, 00A, 01, 03) | ~12K | ✅ DONE |
+| W3.3 | Tier 2 specialist specs | `templates/tier_2/*.md.j2` (14 specialists), `card_specs/tier_2.py` | ~14K | ✅ DONE |
+| W3.4 | Domain card context assembly | `card_context/card_context_assembler.py`, `context_budget.py`, `overlay_compressor.py` | ~12K | ✅ DONE |
+| W4.1 | L2 E4-E5 + egress verifier | `l2/e4_heal.py`, `e5_seal.py`, `egress/blocking_rules.py` | ~12K | 🔲 IN PROGRESS |
 | W4.2 | Exit v6 wiring + FEC producer | `exit_wiring.py`, `qna_exit_fec_producer.py` | ~11K | 🔲 TODO |
 | W4.3 | Cache safety (R1A/R1B/R5) | `cache/r1a_exact.py`, `r1b_semantic.py`, `r5_fallback.py` | ~12K | 🔲 TODO |
 | W4.4 | Acceptance sweep + legacy quarantine | `tests/test_acceptance.py`, RUNBOOK/docs updates, legacy shim | ~10K | 🔲 TODO |

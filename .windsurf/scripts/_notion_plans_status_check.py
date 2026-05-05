@@ -56,9 +56,11 @@ _PLANS_IDS: frozenset[str] = frozenset({
 # Canonical Plans Status option names. Exact match required (case-sensitive).
 # Renamed 2026-05-03: "Live" → "In Progress", "Draft" → "Not Started" (same
 # Notion option IDs, display names changed in the Notion UI).
+# Added 2026-05-05: "Deprioritized" for paused/deferred plans.
 CANONICAL_STATUSES: frozenset[str] = frozenset({
     "In Progress",
     "Not Started",
+    "Deprioritized",
     "Waiting",
     "Completed",
     "Retired",

@@ -193,7 +193,7 @@ class RepoBriefPACompiler:
                 f"missing required inputs: {missing_inputs}"
             )
 
-        # --- Compute hashes
+        # --- Compute structural hashes
         bom_hash = _sha256_of(self._bom)
         registry_hash = _sha256_of(self._registry)
         template_hash = _sha256_of(template)
@@ -211,11 +211,17 @@ class RepoBriefPACompiler:
         fec = evidence_bundle.get("FinalEvidenceContract", {})
         evidence_contract_ref = fec.get("contract_type", "apps_repo_brief.FinalEvidenceContract.v1")
 
-        # Canonical slot bytes hash (structural — slot rendering is W3)
+        # --- P3.8 Full slot rendering (AG decision P3.2 Option A)
+        # Each slot is rendered as a formatted string from the template's
+        # slot_bodies definition combined with evidence_bundle values.
+        # L2 consumes rendered_slots directly without touching template YAML.
+        rendered_slots = self._render_slots(template, evidence_bundle)
+
+        # Canonical slot bytes hash now covers actual rendered content
         canonical_slot_bytes = json.dumps(
             {
                 "template_id": template_id,
-                "required_slots": template.get("required_slots", []),
+                "rendered_slot_ids": sorted(rendered_slots.keys()),
                 "evidence_status": fec.get("status", {}).get("evidence_status", "UNKNOWN"),
             },
             sort_keys=True,
@@ -229,13 +235,6 @@ class RepoBriefPACompiler:
             "canonical_slot_bytes_hash": canonical_slot_bytes_hash,
             "replay_key": replay_key,
         })
-
-        # Full slot rendering is completed in W3 (repo_brief_pa_compiler full impl).
-        # W2 scaffold emits structural artifact with hashes only.
-        rendered_slots: dict[str, str] = {
-            slot_id: f"[SLOT:{slot_id} — full rendering in W3]"
-            for slot_id in template.get("required_slots", [])
-        }
 
         artifact: dict[str, Any] = {
             # Identity
@@ -273,7 +272,7 @@ class RepoBriefPACompiler:
             "freshness_report_ref": evidence_bundle.get(
                 "FreshnessReport", {}
             ).get("report_id", ""),
-            # Slots
+            # Fully rendered slots — L2 consumes these directly (P3.8)
             "rendered_slots": rendered_slots,
             "canonical_slot_bytes_hash": canonical_slot_bytes_hash,
             "artifact_hash": artifact_hash,
@@ -281,8 +280,6 @@ class RepoBriefPACompiler:
             "provider_lane": "governed_gateway",
             "output_schema_ref": "governed_repo_brief_packet_v1",
             "audit_refs": [],
-            # Scaffold flag — removed in W3 when full slot rendering lands
-            "_scaffold_w2": True,
         }
 
         _log.debug(
@@ -291,3 +288,160 @@ class RepoBriefPACompiler:
             template_id,
         )
         return artifact
+
+    # ------------------------------------------------------------------
+    # P3.8 — Full slot rendering helpers
+    # ------------------------------------------------------------------
+
+    def _render_slots(
+        self,
+        template: dict[str, Any],
+        evidence_bundle: dict[str, Any],
+    ) -> dict[str, str]:
+        """
+        Render each slot defined in the template's slot_bodies section.
+
+        Slot body rendering (AG P3.2 Option A):
+          1. Start from the template slot_body text.
+          2. Substitute evidence_bundle values for ``{{KEY}}`` tokens.
+          3. Apply gap/caveat injection policy from SynthesisGuidanceForPA.
+          4. Return dict slot_id → fully rendered string.
+
+        Required slots (template.required_slots) that have no slot_body
+        entry are rendered as a structured evidence injection placeholder
+        with the actual evidence value from the bundle (not a scaffold stub).
+
+        Optional slots that are absent from the bundle are omitted from
+        the output (not included in rendered_slots dict).
+        """
+        slot_bodies: dict[str, Any] = template.get("slot_bodies", {})
+        required_slots: list[str] = template.get("required_slots", [])
+        optional_slots: list[str] = template.get("optional_slots", [])
+
+        # Synthesis guidance from evidence bundle (if present)
+        synthesis_guidance = evidence_bundle.get("SynthesisGuidanceForPA") or {}
+        caveat_policy = synthesis_guidance.get("unsupported_claim_policy", "caveat_required")
+        gap_handling = synthesis_guidance.get("gap_handling", "omit")
+
+        rendered: dict[str, str] = {}
+
+        # Render required slots
+        for slot_id in required_slots:
+            body_def = slot_bodies.get(slot_id)
+            evidence_value = evidence_bundle.get(slot_id)
+            rendered[slot_id] = self._render_single_slot(
+                slot_id=slot_id,
+                body_def=body_def,
+                evidence_value=evidence_value,
+                evidence_bundle=evidence_bundle,
+                caveat_policy=caveat_policy,
+                gap_handling=gap_handling,
+                required=True,
+            )
+
+        # Render optional slots only when evidence is present
+        for slot_id in optional_slots:
+            if slot_id not in evidence_bundle:
+                continue
+            body_def = slot_bodies.get(slot_id)
+            evidence_value = evidence_bundle.get(slot_id)
+            rendered[slot_id] = self._render_single_slot(
+                slot_id=slot_id,
+                body_def=body_def,
+                evidence_value=evidence_value,
+                evidence_bundle=evidence_bundle,
+                caveat_policy=caveat_policy,
+                gap_handling=gap_handling,
+                required=False,
+            )
+
+        return rendered
+
+    def _render_single_slot(
+        self,
+        *,
+        slot_id: str,
+        body_def: Any,
+        evidence_value: Any,
+        evidence_bundle: dict[str, Any],
+        caveat_policy: str,
+        gap_handling: str,
+        required: bool,
+    ) -> str:
+        """
+        Render a single slot.
+
+        Priority:
+          1. If body_def is a string template, substitute {{KEY}} tokens from
+             evidence_bundle.
+          2. If body_def is absent but evidence_value is present, inject the
+             evidence value directly with a structured wrapper.
+          3. If neither is present and slot is required, apply gap_handling
+             policy ("omit" → empty marker, "placeholder" → omit-note,
+             "abstain" → ABSTAIN marker).
+        """
+        # Case 1: template body definition available
+        if isinstance(body_def, str) and body_def.strip():
+            rendered = self._substitute_tokens(body_def, evidence_bundle)
+            # Apply caveat injection if evidence status is weak
+            fec = evidence_bundle.get("FinalEvidenceContract") or {}
+            evidence_status = ""
+            if isinstance(fec, dict):
+                evidence_status = fec.get("status", {}).get("evidence_status", "")
+            if evidence_status in ("WEAK", "WEAK_WITH_CAVEATS") and caveat_policy == "caveat_required":
+                rendered = self._inject_caveat(rendered, evidence_status)
+            return rendered
+
+        # Case 2: no body template but evidence_value present
+        if evidence_value is not None:
+            if isinstance(evidence_value, str):
+                return evidence_value
+            try:
+                return json.dumps(evidence_value, ensure_ascii=False, indent=2)
+            except (TypeError, ValueError):
+                return str(evidence_value)
+
+        # Case 3: gap — apply policy
+        if not required:
+            return ""
+        if gap_handling == "abstain":
+            return f"[ABSTAIN:slot={slot_id}] — C0 did not produce evidence for this slot."
+        if gap_handling == "placeholder":
+            return f"[GAP:slot={slot_id}] — evidence not available; section omitted per gap policy."
+        # default: "omit" — return empty string, caller decides whether to include
+        return ""
+
+    @staticmethod
+    def _substitute_tokens(template_text: str, evidence_bundle: dict[str, Any]) -> str:
+        """
+        Substitute ``{{KEY}}`` tokens in template_text with values from evidence_bundle.
+        Unresolved tokens are left as-is (not silently dropped).
+        """
+        import re
+        def replacer(m: "re.Match[str]") -> str:
+            key = m.group(1).strip()
+            val = evidence_bundle.get(key)
+            if val is None:
+                return m.group(0)  # leave unresolved tokens intact
+            if isinstance(val, str):
+                return val
+            try:
+                return json.dumps(val, ensure_ascii=False)
+            except (TypeError, ValueError):
+                return str(val)
+        return re.sub(r"\{\{([^}]+)\}\}", replacer, template_text)
+
+    @staticmethod
+    def _inject_caveat(text: str, evidence_status: str) -> str:
+        """Append a caveat note when evidence is weak."""
+        note = (
+            "\n\n[Caveat: Evidence for this section is partial. "
+            f"Claims should be read with appropriate qualification. "
+            f"Evidence status: {evidence_status}]"
+        )
+        return text + note
+
+    def list_templates(self) -> list[str]:
+        """Return list of registered template_ids."""
+        self._ensure_loaded()
+        return [e.get("template_id", "") for e in self._registry.get("templates", [])]

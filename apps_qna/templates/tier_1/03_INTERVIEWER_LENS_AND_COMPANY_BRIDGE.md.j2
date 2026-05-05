@@ -1,0 +1,36 @@
+{# Tier 1: 03_INTERVIEWER_LENS_AND_COMPANY_BRIDGE — Relevance bridge (passive) #}
+## INTERVIEWER LENS & COMPANY BRIDGE
+
+### Company Context
+- **Company**: {{ interview.company.name }}
+{% if interview.company.division %}
+- **Division**: {{ interview.company.division }}
+{% endif %}
+{% if interview.company.practice %}
+- **Practice**: {{ interview.company.practice }}
+{% endif %}
+
+### Company Anchors
+{% for anchor in interview.company.anchors %}
+- {{ anchor }}
+{% endfor %}
+
+### Interviewer Lens
+{% for interviewer in interview.interviewers %}
+- **{{ interviewer.name }}** ({{ interviewer.title }}, {{ interviewer.team }})
+  - Technical Depth: {{ interviewer.technical_depth }}
+  {% if interviewer.lens %}
+  - Lens: {{ interviewer.lens }}
+  {% endif %}
+{% endfor %}
+
+### Relevance Bridge
+Connect every answer to:
+1. The company's stated anchors and priorities
+2. The interviewer's technical depth and lens
+3. Business outcomes, not technology features
+
+### Avoid
+{% for phrase in interview.company.avoid_phrases %}
+- {{ phrase }}
+{% endfor %}

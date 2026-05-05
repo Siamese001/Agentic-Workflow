@@ -71,7 +71,7 @@ def main() -> int:
     for row in pending[:MAX_LINES]:
         slug = row.get("slug", "?")
         path = row.get("path", "?")
-        status = row.get("declared_status", "Draft")
+        status = row.get("declared_status", "Not Started")
         captured = row.get("captured_at", "?")
         print(
             f"PLAN_REGISTRATION_PENDING: slug={slug} path={path} "

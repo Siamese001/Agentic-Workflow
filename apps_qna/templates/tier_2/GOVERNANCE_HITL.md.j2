@@ -1,0 +1,8 @@
+{# Tier 2: GOVERNANCE_HITL — Governance and HITL control surfaces #}
+## GOVERNANCE & HITL CONTROLS
+
+{% for item in governance_controls %}
+- **Control**: {{ item.control }}
+- **Surface**: {{ item.surface }}
+- **Evidence**: {{ item.evidence }}
+{% endfor %}

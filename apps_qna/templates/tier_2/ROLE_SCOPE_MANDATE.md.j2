@@ -1,0 +1,8 @@
+{# Tier 2: ROLE_SCOPE_MANDATE #}
+## ROLE SCOPE & MANDATE
+
+{% for item in role_scope %}
+- **Scope**: {{ item.scope }}
+- **Mandate**: {{ item.mandate }}
+- **Evidence**: {{ item.evidence }}
+{% endfor %}

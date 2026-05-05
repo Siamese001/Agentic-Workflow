@@ -1,0 +1,23 @@
+{# Tier 1: 01_CARD_SELECTION_MANIFEST — Deterministic routing, route precedence #}
+## CARD SELECTION MANIFEST
+
+### Active Route
+- **Route**: {{ route_id }}
+- **Evidence Source**: {{ evidence_source }}
+- **Tier 1 Cards**: Always loaded (runtime control layer)
+- **Tier 2 Cards**: Trigger-selected by route
+
+### Tier 1 Always-On Cards
+{% for card in tier1_cards %}
+- {{ card }}
+{% endfor %}
+
+### Tier 2 Specialist Cards (Selected)
+{% for card in tier2_cards %}
+- {{ card }}
+{% endfor %}
+
+### Route Precedence
+1. PRIMARY route always wins
+2. SECONDARY routes activate only if PRIMARY is unavailable
+3. FALLBACK routes are last-resort only

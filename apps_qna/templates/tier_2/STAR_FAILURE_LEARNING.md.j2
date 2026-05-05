@@ -1,0 +1,10 @@
+{# Tier 2: STAR_FAILURE_LEARNING — Failure + learning narratives #}
+## FAILURE & LEARNING NARRATIVES
+
+{% for item in failure_learnings %}
+### {{ item.context }}
+- **What failed**: {{ item.failure }}
+- **Root cause**: {{ item.root_cause }}
+- **Learning**: {{ item.learning }}
+- **Applied since**: {{ item.applied_since }}
+{% endfor %}

@@ -1,0 +1,201 @@
+# apps_lic/config/archetype_tone_table.yaml — Archetype Tone Definitions
+#
+# Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W2
+#
+# This file defines the tone vocabulary and register for each recipient archetype.
+# The archetype_tone_calibrator.py engine consumes this configuration.
+
+archetypes:
+  TECHNICAL_BUILDER:
+    description: |
+      Engineers who care about architecture, performance, and implementation details.
+      They value specificity over abstraction and mechanisms over marketing language.
+    
+    vocabulary_boosted:
+      - architecture
+      - performance
+      - scalability
+      - reliability
+      - system design
+      - trade-offs
+      - implementation
+      - latency
+      - throughput
+      - fault tolerance
+    
+    vocabulary_suppressed:
+      - synergy
+      - leverage
+      - paradigm
+      - strategic alignment
+      - value proposition
+      - stakeholder buy-in
+      - vertical integration
+      - holistic approach
+      - seamless integration
+      - best-in-class
+    
+    sentence_structure_hint: "specific over abstract; mechanism over outcome"
+    register: technical_precise
+    
+    detection_weightings:
+      recipient_class_technical: 0.4
+      github_repo_mentions: 0.3
+      technical_blog_posts: 0.2
+      architecture_discussions: 0.2
+
+  BUSINESS_EXECUTIVE:
+    description: |
+      C-suite and business leaders focused on outcomes, ROI, and competitive position.
+      They value business impact over technical implementation details.
+    
+    vocabulary_boosted:
+      - outcome
+      - impact
+      - growth
+      - efficiency
+      - ROI
+      - time-to-value
+      - competitive advantage
+      - market position
+      - revenue
+      - cost reduction
+    
+    vocabulary_suppressed:
+      - implementation details
+      - code structure
+      - database schema
+      - API endpoints
+      - dependency injection
+      - refactoring
+      - unit tests
+      - code coverage
+      - linting
+      - build pipeline
+    
+    sentence_structure_hint: "outcome over mechanism; business value over technical detail"
+    register: business_outcome
+    
+    detection_weightings:
+      c_suite_title: 0.5
+      p_l_ownership: 0.4
+      business_strategy_focus: 0.3
+
+  RESEARCH_ACADEMIC:
+    description: |
+      Scientists, researchers, and academics who value evidence and methodology.
+      They prefer rigorous claims over hype and validation over assertion.
+    
+    vocabulary_boosted:
+      - evidence
+      - methodology
+      - findings
+      - analysis
+      - validation
+      - peer review
+      - empirical
+      - hypothesis
+      - experiment
+      - reproducible
+    
+    vocabulary_suppressed:
+      - revolutionary
+      - game-changing
+      - disruptive
+      - world-class
+      - cutting-edge
+      - thought leader
+      - visionary
+      - ninja
+      - rockstar
+      - guru
+    
+    sentence_structure_hint: "evidence over assertion; method over hype"
+    register: evidence_based
+    
+    detection_weightings:
+      phd_credentials: 0.5
+      research_publications: 0.4
+      conference_presentations: 0.3
+
+  TALENT_SCOUT:
+    description: |
+      Recruiters and talent acquisition focused on fit, culture, and candidate experience.
+      They value opportunity framing over aggressive language.
+    
+    vocabulary_boosted:
+      - fit
+      - opportunity
+      - potential
+      - growth trajectory
+      - impact
+      - team alignment
+      - mission match
+      - career progression
+      - skill development
+      - collaborative
+    
+    vocabulary_suppressed:
+      - aggressive
+      - dominate
+      - crush
+      - kill it
+      - rockstar
+      - ninja
+      - guru
+      - 10x
+      - unicorn
+      - hire and fire
+    
+    sentence_structure_hint: "fit signal over hype; opportunity over pressure"
+    register: opportunity_focussed
+    
+    detection_weightings:
+      recruiter_title: 0.6
+      talent_acquisition: 0.5
+      culture_fit: 0.3
+
+  UNKNOWN:
+    description: |
+      Default archetype when signals are insufficient for confident detection.
+      Falls back to concise professional communication.
+    
+    vocabulary_boosted: []
+    vocabulary_suppressed: []
+    sentence_structure_hint: "concise professional"
+    register: concise_professional
+    
+    detection_weightings:
+      default_fallback: 1.0
+
+# Exit rubric thresholds for tone violations
+tone_violation_thresholds:
+  TECHNICAL_BUILDER:
+    max_business_jargon_count: 1
+    severity: bound_fail
+  
+  BUSINESS_EXECUTIVE:
+    max_implementation_detail_count: 2
+    severity: bound_fail
+  
+  RESEARCH_ACADEMIC:
+    max_hype_phrases_count: 0
+    severity: bound_fail
+  
+  TALENT_SCOUT:
+    max_aggressive_language_count: 1
+    severity: warn
+  
+  UNKNOWN:
+    severity: contextual
+
+# Mapping from recipient_class to default archetype when confidence is low
+recipient_class_fallback:
+  EXECUTIVE: BUSINESS_EXECUTIVE
+  C_LEVEL: BUSINESS_EXECUTIVE
+  CTO: TECHNICAL_BUILDER
+  VP_ENG: TECHNICAL_BUILDER
+  HIRING_MANAGER: TALENT_SCOUT
+  RECRUITER: TALENT_SCOUT
+  SENIOR_TA: TALENT_SCOUT
+  DEFAULT: UNKNOWN

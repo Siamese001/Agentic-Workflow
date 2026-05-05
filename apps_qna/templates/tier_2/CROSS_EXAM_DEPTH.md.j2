@@ -1,0 +1,8 @@
+{# Tier 2: CROSS_EXAM_DEPTH #}
+## CROSS-EXAMINATION DEPTH
+
+{% for item in cross_exam %}
+- **Topic**: {{ item.topic }}
+- **Depth**: {{ item.depth }}
+- **Response Strategy**: {{ item.strategy }}
+{% endfor %}

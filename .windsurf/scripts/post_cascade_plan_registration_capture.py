@@ -10,10 +10,10 @@ on the same response does not create duplicates (enqueue is slug-keyed).
 
 Marker grammar (one per line)::
 
-    PLAN_CREATED: slug=<slug-6hex> path=<repo-relative-path> status=Draft|Live
+    PLAN_CREATED: slug=<slug-6hex> path=<repo-relative-path> status=Not Started|In Progress
 
 ``path`` defaults to ``.windsurf/plans/<slug>.md``. ``status`` defaults to
-``Draft``.
+``Not Started``.
 
 Fail policy: OPEN (exit 0). Never blocks. Bypass: PLAN_REGISTRATION_CAPTURE_BYPASS=1.
 
@@ -110,7 +110,7 @@ def main() -> int:
     captured = 0
     for m in markers:
         try:
-            if helper.enqueue_plan(m["slug"], m["path"], m.get("status", "Draft")):
+            if helper.enqueue_plan(m["slug"], m["path"], m.get("status", "Not Started")):
                 captured += 1
         except (OSError, ValueError):
             continue

@@ -274,12 +274,15 @@ repos:
       # -- T6d: Author-Gate Ledger Schema (harness HITL W2) ---------------------------
       # Verifies decision ledger matches canonical DDL. Triggered when schema or
       # migrator changes, and when the capture script changes.
+      # TRIGGER FIX 2026-05-05: DDL file .windsurf/schemas/decision_ledger.schema.sql
+      # was already in the description but missing from the files: regex — changes to
+      # the DDL alone would not trigger this gate. Added explicitly.
       - id: author-gate-ledger-schema
         name: "T6d: Author-Gate Ledger Schema"
         entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
         language: system
         pass_filenames: false
-        files: ^(\.windsurf/schemas/decision_ledger\.schema\.sql|\.windsurf/scripts/(apply_ledger_schema|post_cascade_hitl_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
+        files: ^(\.windsurf/schemas/decision_ledger\.schema\.sql|\.windsurf/scripts/(apply_ledger_schema|post_cascade_hitl_capture|post_cascade_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
         always_run: false
         require_serial: true
 
@@ -312,14 +315,15 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T6d: AGENTS.md Autogen Block Integrity --------------------------------------
+      # -- T6d3: AGENTS.md Autogen Block Integrity -------------------------------------
       # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
       # byte-identical to the SSOT generator output. Currently covers:
       #   - MCP-QUICK-REFERENCE (mcp_config.json)
       #   - NOTION-MAP          (config/notion_databases.yaml)
       # Fix drift: `python .windsurf/scripts/sync_mcp_config.py`
+      # RENAME 2026-05-05: was labelled T6d (collision with author-gate-ledger-schema).
       - id: agents-md-autogen-sync
-        name: "T6d: AGENTS.md Autogen Sync"
+        name: "T6d3: AGENTS.md Autogen Sync"
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
@@ -397,19 +401,23 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T7e: HITL Rules Corpus Validator ---------------------------------------------
+      # -- T7e2: HITL Rules Corpus Validator --------------------------------------------
       # Validates the HITL rule *corpus* (all 4 files together): §HITL-9 threshold
       # config, §HITL-10 option shape, forbidden 2-4-count patterns, and required
       # pipeline patterns. The validator was refactored 2026-04-19 to accept the
       # post-consolidation split layout (enforcement.md + decision-points.md +
       # svp-calibration.md + anti-pattern-author-gate.md). Triggers on any HITL file
       # change; passes all 4 files together so corpus-level checks work.
+      # TRIGGER FIX 2026-05-05: regex previously only matched `hitl-*.md` and
+      # `anti-pattern-hitl*.md`, missing the actual corpus files
+      # (author-gate-enforcement.md, anti-pattern-author-gate.md, etc.).
+      # Expanded to cover all four validator-owned rule files.
       - id: hitl-rules-corpus
-        name: "T7e: HITL Rules Corpus"
+        name: "T7e2: HITL Rules Corpus"
         entry: py ops_scripts/ci/validate_hitl_rules.py .windsurf/rules/author-gate-enforcement.md .windsurf/rules/author-gate-decision-points.md .windsurf/rules/author-gate-svp-calibration.md .windsurf/rules/anti-pattern-author-gate.md
         language: system
         pass_filenames: false
-        files: ^\.windsurf/rules/(hitl-|anti-pattern-hitl).*\.md$
+        files: ^\.windsurf/rules/(hitl-|anti-pattern-hitl|author-gate-enforcement|author-gate-decision-points|author-gate-svp-calibration|anti-pattern-author-gate).*\.md$
         always_run: false
         require_serial: true
 
@@ -527,6 +535,9 @@ repos:
       # or on any new adg_indexed_*.sqlite appearing in a staged set.
       # Prevents silent regression of plan adg-pipeline-e2e-5287a1 W1 fix
       # (commit 9fb93f698c — enrichment-before-gates ordering).
+      # TWO-LANE COVERAGE (intentional): pre-commit = changed-file protection
+      # (pipeline edit triggers); CI = authoritative full-repo sweep in
+      # run_contract_gates.py assurance plane. Do not remove either lane.
       - id: snapshot-has-mvs
         name: "T7j: Snapshot MV Completeness (§22 artifact side)"
         entry: py ops_scripts/ci/check_snapshot_has_mvs.py
@@ -544,6 +555,8 @@ repos:
       # stages that were previously silent.
       # Ledger emitted by tools/generate/generate_full_adg.py::_record_pipeline_skip
       # per plan adg-pipeline-e2e-5287a1 W4a.
+      # TWO-LANE COVERAGE (intentional): pre-commit = pipeline-edit trigger;
+      # CI = full-repo sweep in run_contract_gates.py. Do not remove either lane.
       - id: pipeline-skips
         name: "T7k: Pipeline Skip Ledger (§22 observability)"
         entry: py ops_scripts/ci/check_pipeline_skips.py
@@ -707,6 +720,12 @@ repos:
       # Plan family: runtime-cert-e1-*.md. Gate module implemented at
       # commit `d59ce88ba9`; 37 unit tests pass. Baseline at
       # docs/reference/runtime_certification/cert_baseline.toml.
+      # STAGE OWNERSHIP 2026-05-05: demoted from [pre-commit, manual] to [manual] only.
+      # Rationale: run_contract_gates.py wiring_gates entry "T8r Runtime Cert Advisory Gate"
+      # is the authoritative always-run sweep. Running this at commit time adds latency
+      # (~12s full ADG read) for every commit, duplicating CI coverage without providing
+      # additional protection. Retain as manual for on-demand investigation.
+      # To run locally: pre-commit run runtime-certification --hook-stage manual --all-files
       - id: runtime-certification
         name: "T8r: Runtime Cert Advisory Gate (Phase E.1)"
         entry: py ops_scripts/ci/check_runtime_certification.py
@@ -714,7 +733,7 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-        stages: [pre-commit, manual]
+        stages: [manual]
 
       # -- T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32 apps arm) -----------------
       # Re-runs the W6 consolidated proof generator (which orchestrates the W3

@@ -1,7 +1,7 @@
 {
   "gate": "G-THREE-BUCKET-GAP",
   "tier": "B",
-  "timestamp": "2026-05-01T00:57:28.265586+00:00",
+  "timestamp": "2026-05-05T09:54:18.328017+00:00",
   "report_path": "docs\\reports\\adg\\THREE_BUCKET_GAP_REPORT.json",
   "snapshot": "adg_indexed_04302026_1933.sqlite",
   "strict_mode": true,

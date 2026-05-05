@@ -1,0 +1,8 @@
+{# Tier 2: RAG_CONTEXT — Retrieval-augmented context anchors #}
+## RAG CONTEXT ANCHORS
+
+{% for item in rag_contexts %}
+- **Source**: {{ item.source }}
+- **Key Point**: {{ item.key_point }}
+- **Relevance**: {{ item.relevance }}
+{% endfor %}

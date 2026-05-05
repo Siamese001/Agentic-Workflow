@@ -23,7 +23,7 @@ Row shape (queue)::
     {
       "slug": "my-plan-abc123",
       "path": ".windsurf/plans/my-plan-abc123.md",
-      "declared_status": "Draft",
+      "declared_status": "Not Started",
       "captured_at": "2026-05-03T11:00:00Z",
       "registered": false,
       "registered_at": null
@@ -35,9 +35,9 @@ Cache shape::
       "fetched_at": "2026-05-03T11:00:00Z",
       "fetched_at_epoch": 1745236800.0,
       "plans": {
-        "my-plan-abc123": {
-          "status": "Live",
-          "page_id": "35527693-...",
+        "slug-a-aaaaaa": {
+          "status": "In Progress",
+          "page_id": "...",
           "exists_on_disk": true,
           "has_ai_summary": true
         },
@@ -78,7 +78,7 @@ class RegistrationStatus:
 
     slug: str
     registered: bool
-    status: str | None         # Notion Status field (Live/Draft/Completed/...)
+    status: str | None         # Notion Status field (In Progress/Not Started/Deprioritized/Waiting/Completed/Retired/Archived)
     source: str                # "cache" | "cache_stale" | "cache_missing" | "queue"
     reason: str | None         # Human-readable detail when registered=False
 
@@ -160,7 +160,7 @@ def _write_queue(rows: list[dict[str, Any]]) -> None:
     tmp.replace(QUEUE_PATH)
 
 
-def enqueue_plan(slug: str, path: str, declared_status: str = "Draft") -> bool:
+def enqueue_plan(slug: str, path: str, declared_status: str = "Not Started") -> bool:
     """
     Idempotently enqueue a PLAN_CREATED capture.
 
@@ -252,7 +252,7 @@ def write_cache(plans: dict[str, dict[str, Any]]) -> None:
 # Statuses that satisfy "registered" for the purpose of wave execution.
 # Retired/Archived mean the plan is not actively tracked; a wave-start on
 # such a plan should still block to force the operator to flip status first.
-ACTIVE_STATUSES: frozenset[str] = frozenset({"Live", "Draft", "Waiting", "Completed"})
+ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started", "Deprioritized", "Waiting", "Completed"})
 
 
 def check_registration(slug: str, cache: dict[str, Any] | None = None) -> RegistrationStatus:
@@ -336,7 +336,7 @@ def drift_report(cache: dict[str, Any] | None = None) -> dict[str, list[str]]:
 
         {
           "on_disk_not_in_notion": [slug, ...],      # missing registrations
-          "notion_active_not_on_disk": [slug, ...],  # orphan Live/Draft rows
+          "notion_active_not_on_disk": [slug, ...],  # orphan In Progress/Not Started/Deprioritized rows
         }
 
     Callers decide whether staleness of cache itself is a blocker.
@@ -382,7 +382,7 @@ def parse_plan_created_markers(text: str) -> list[dict[str, str]]:
 
     Returns a list of dicts with keys ``slug``, ``path``, ``status``.
     Rows missing ``slug`` are dropped; ``path`` and ``status`` default to
-    derived / "Draft" respectively. Never raises.
+    derived / "Not Started" respectively. Never raises.
     """
     if not text:
         return []
@@ -398,7 +398,7 @@ def parse_plan_created_markers(text: str) -> list[dict[str, str]]:
         out.append({
             "slug": slug,
             "path": fields.get("path", plan_file_path(slug)).strip(),
-            "status": fields.get("status", "Draft").strip() or "Draft",
+            "status": fields.get("status", "Not Started").strip() or "Not Started",
         })
     return out
 

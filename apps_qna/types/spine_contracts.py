@@ -1,10 +1,10 @@
 """apps_qna spine contracts — app-owned types distinct from canonical agentic_core.
 
-W0 thin-slice: defines the contract shapes that flow through the spine pipeline.
-These are app-owned (not canonical agentic_core) because they describe
-apps_qna-specific evidence and output shapes.
+W2.3: Evidence contract types moved to evidence_contracts.py.
+This module re-exports them for backward compatibility and keeps
+app-specific pipeline types (CardPackManifestExtended, ExitReviewPacket, X3Disposition).
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.1
+Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W2.3
 """
 
 from __future__ import annotations
@@ -13,49 +13,20 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-
-class BriefingValidationState(str, Enum):
-    """Outcome of uploaded briefing validation."""
-    SUFFICIENT = "SUFFICIENT"
-    STALE = "STALE"
-    INCOMPLETE = "INCOMPLETE"
-    MISMATCH = "MISMATCH"
+from apps_qna.types.evidence_contracts import (
+    BriefingValidationState,
+    EvidenceSufficiency,
+    UploadedBriefingEvidenceContract,
+)
 
 
-class EvidenceSufficiency(str, Enum):
-    """How well the evidence contract satisfies grounding requirements."""
-    GROUNDED = "grounded"
-    TEMPLATE_ONLY = "template_only"
-    EMPTY = "empty"
-
-
-@dataclass(frozen=True)
-class UploadedBriefingEvidenceContract:
-    """Evidence contract derived from a validated uploaded briefing.
-
-    Distinct from the canonical C0 FinalEvidenceContract — this is
-    app-owned and describes briefing-sourced evidence, not retrieval-
-    sourced evidence.
-    """
-
-    schema_version: str = "1.0"
-    producer: str = "apps_qna.briefing_validator"
-    grounded: bool = False
-    retrieval_sources: tuple[str, ...] = ()
-    briefing_hash: str = ""
-    validation_state: BriefingValidationState = BriefingValidationState.SUFFICIENT
-    evidence_sufficiency: EvidenceSufficiency = EvidenceSufficiency.TEMPLATE_ONLY
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "schema_version": self.schema_version,
-            "producer": self.producer,
-            "grounded": self.grounded,
-            "retrieval_sources": list(self.retrieval_sources),
-            "briefing_hash": self.briefing_hash,
-            "validation_state": self.validation_state.value,
-            "evidence_sufficiency": self.evidence_sufficiency.value,
-        }
+class X3Disposition(str, Enum):
+    """Exit X3 disposition — exactly one per run."""
+    ALLOW_FINISH = "ALLOW_FINISH"
+    SAFE_ABSTAIN = "SAFE_ABSTAIN"
+    REROUTE = "REROUTE"
+    ESCALATE_HITL = "ESCALATE_HITL"
+    SAFE_FALLBACK = "SAFE_FALLBACK"
 
 
 @dataclass(frozen=True)

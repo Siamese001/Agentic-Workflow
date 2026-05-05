@@ -1,8 +1,8 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-05-01T00:57:23.776753+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_04302026_2050.sqlite",
+  "timestamp": "2026-05-05T09:54:09.742827+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05052026_0523.sqlite",
   "strict_mode": true,
   "total_rows": 0,
   "by_authority_status": {},
