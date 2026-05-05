@@ -17,10 +17,10 @@ Deferred scope items from the completed `apps-qna-spine-integration-e9c5b3` plan
 
 | Wave | Focus | Est. Tokens | Status |
 |------|-------|-------------|--------|
-| D1 | C0 retrieval implementation + real LLM-judge | ~40K | 🔲 TODO |
-| D2 | UWG/L4 durable write + canonical Prompt Assembly | ~35K | 🔲 TODO |
-| D3 | Production readiness: log mining, holdout, rubric migration | ~30K | 🔲 TODO |
-| D4 | Cross-app alignment + SSOT consolidation | ~25K | 🔲 TODO |
+| D1 | C0 retrieval implementation + real LLM-judge | ~40K | ✅ DONE |
+| D2 | UWG/L4 durable write + canonical Prompt Assembly | ~35K | ✅ DONE |
+| D3 | Production readiness: log mining, holdout, rubric migration | ~30K | ✅ DONE |
+| D4 | Cross-app alignment + SSOT consolidation | ~25K | ✅ DONE |
 
 ---
 

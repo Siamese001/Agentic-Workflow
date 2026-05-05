@@ -11,7 +11,10 @@
   - qna::de_duplication_grader::v1
   - qna::freshness_grader::v1
   - qna::no_paste_of_forbidden_content_grader::v1
-  llm_judge_graders: []
+  llm_judge_graders:
+  - qna::context_recall_judge::v1
+  - qna::context_precision_judge::v1
+  - qna::answer_relevancy_judge::v1
   ensemble_or_consensus_graders:
   - qna::coverage_hybrid::v1
   calibration_refs:
