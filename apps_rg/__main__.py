@@ -260,6 +260,10 @@ def _run_with_args(
                 if _OTEL_AVAILABLE and r1b_span is not None:
                     r1b_span.set_attribute("cache.layer", "r1b")
                     r1b_span.set_attribute("cache.result", "hit" if r1b_hit else "miss")
+                    if r1b_hit is not None:
+                        _sim = r1b_hit.get("_cache_similarity_score")
+                        if _sim is not None:
+                            r1b_span.set_attribute("cache.similarity_score", _sim)
             if r1b_hit is not None:
                 _log.info("[apps_rg] R1B semantic cache hit — returning cached result")
                 sys.exit(0)

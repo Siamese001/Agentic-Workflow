@@ -80,6 +80,44 @@ def _setup_logging() -> None:
     )
 
 
+def _load_from_registry(app_name: str = "apps_rg") -> list[dict[str, str]]:
+    """Load warm-up pairs from <app_name>/config/warmup_pairs.yaml.
+
+    Falls back to TOP_PAIRS if the file is absent or malformed.
+    """
+    registry_path = _REPO_ROOT / app_name / "config" / "warmup_pairs.yaml"
+    if not registry_path.exists():
+        _log.warning(
+            "warmup_pairs.yaml not found at %s — falling back to built-in TOP_PAIRS",
+            registry_path,
+        )
+        return TOP_PAIRS
+    try:
+        import yaml  # type: ignore[import-untyped]
+
+        data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or "pairs" not in data:
+            _log.warning("warmup_pairs.yaml missing 'pairs' key — falling back to TOP_PAIRS")
+            return TOP_PAIRS
+        pairs = data["pairs"]
+        if not isinstance(pairs, list) or not pairs:
+            _log.warning("warmup_pairs.yaml 'pairs' is empty — falling back to TOP_PAIRS")
+            return TOP_PAIRS
+        _log.info("Loaded %d pairs from %s", len(pairs), registry_path)
+        return [
+            {
+                "company": str(p.get("company", "")).strip(),
+                "role": str(p.get("role", "")).strip(),
+                "level": str(p.get("level", "mid")).strip(),
+            }
+            for p in pairs
+            if isinstance(p, dict)
+        ]
+    except Exception as exc:  # guardian: allow-broad-exception -- fail-soft registry read
+        _log.warning("Failed to load warmup_pairs.yaml (%s) — falling back to TOP_PAIRS", exc)
+        return TOP_PAIRS
+
+
 def _load_pairs_file(path: Path) -> list[dict[str, str]]:
     text = path.read_text(encoding="utf-8")
     if path.suffix in (".yaml", ".yml"):
@@ -253,6 +291,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to JSON or YAML file containing [{company, role, level?}] pairs",
     )
     parser.add_argument(
+        "--from-registry",
+        action="store_true",
+        help="Load pairs from apps_rg/config/warmup_pairs.yaml (falls back to TOP_PAIRS if absent)",
+    )
+    parser.add_argument(
         "--top",
         type=int,
         default=20,
@@ -286,6 +329,8 @@ def main(argv: list[str] | None = None) -> int:
             _log.error("pairs-file not found: %s", pairs_path)
             return 1
         pairs = _load_pairs_file(pairs_path)
+    elif args.from_registry:
+        pairs = _load_from_registry()
     else:
         pairs = TOP_PAIRS
 

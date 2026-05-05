@@ -479,6 +479,15 @@ def main():
             "NP3 Notion Backlog plan linkage (advisory)",
             "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
         ),
+        # RG-W3 — R1B semantic cache warm-up smoke gate.
+        # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
+        # and CLI --dry-run --top 3 exits 0 in < 30 s.
+        # Advisory by default; flip fail-closed via R1B_WARMUP_SMOKE_FAIL_CLOSED=1.
+        # Plan: apps-rg-cache-followon-deferred-c7d3a1 W1.
+        (
+            "RG-W3 R1B warmup smoke (advisory)",
+            "ops_scripts/ci/check_r1b_warmup_smoke.py",
+        ),
         # PR1 — Plan–Notion registration freshness (Constitutional §36).
         # Advisory by default; flip fail-closed via
         # PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe: SKIPs when no

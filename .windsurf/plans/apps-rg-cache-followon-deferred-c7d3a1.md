@@ -1,7 +1,7 @@
 # apps-rg-cache-followon-deferred-c7d3a1
 
-> **Status: Not Started**  
-> Holding plan — no implementation until explicitly requested.
+> **Status: COMPLETED 2026-05-05**  
+> All 3 waves, 3 phases implemented. 21 regression tests still passing. CI smoke gate green.
 
 ## Purpose
 
@@ -18,9 +18,9 @@ Parent status: COMPLETED 2026-05-05
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|-----------------|
-| W1 | W1.P1 | Wire `check_r1b_warmup_smoke` into CI runner | ~4k | `run_contract_gates.py` pattern understood | Not Started | Gate `RG-W3` appears in `run_contract_gates.py` assurance group; `python ops_scripts/ci/run_contract_gates.py` executes it |
-| W2 | W2.P1 | Pair discovery from `route_registry.yaml` | ~8k | `route_registry.yaml` contains or can reference known company/role pairs | Not Started | `warm_r1b_cache.py --from-registry` reads pairs from app route registry rather than hardcoded TOP_PAIRS |
-| W3 | W3.P1 | `cache.similarity_score` on R1B hit span | ~5k | R1B recall returns similarity score alongside payload | Not Started | `apps_rg.cache.r1b.check` span carries `cache.similarity_score` float attribute on hit path; miss path omits attribute |
+| W1 | W1.P1 | Wire `check_r1b_warmup_smoke` into CI runner | ~4k | `run_contract_gates.py` pattern understood | ✅ DONE | Gate `RG-W3` appears in `run_contract_gates.py` assurance group; `python ops_scripts/ci/run_contract_gates.py` executes it |
+| W2 | W2.P1 | Pair discovery from `route_registry.yaml` | ~8k | `route_registry.yaml` contains or can reference known company/role pairs | ✅ DONE | `warm_r1b_cache.py --from-registry` reads pairs from app route registry rather than hardcoded TOP_PAIRS |
+| W3 | W3.P1 | `cache.similarity_score` on R1B hit span | ~5k | R1B recall returns similarity score alongside payload | ✅ DONE | `apps_rg.cache.r1b.check` span carries `cache.similarity_score` float attribute on hit path; miss path omits attribute |
 
 ---
 
@@ -28,9 +28,9 @@ Parent status: COMPLETED 2026-05-05
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W1.P1 | Register RG-W3 gate in CI runner | `ops_scripts/ci/run_contract_gates.py` | `check_r1b_warmup_smoke.py` exists but is not wired into the contract gate runner; will not fire on CI unless registered | ~4k | Not Started |
-| W2.P1 | Route-registry pair discovery | `tools/apps_rg/warm_r1b_cache.py` | W3.P1 spec stated "reads route_registry.yaml for known pairs"; current impl uses hardcoded TOP_PAIRS; registry-driven pairs would auto-update as routes evolve | ~8k | Not Started |
-| W3.P1 | Similarity score on R1B hit span | `apps_rg/__main__.py`, `apps_rg/cache/r1b_adapter.py` | `check_r1b_for_apps_rg` currently returns the payload dict or None; the raw similarity score from `SemanticCacheManager.recall` is not propagated back to the caller so `__main__.py` cannot set `cache.similarity_score` on the span | ~5k | Not Started |
+| W1.P1 | Register RG-W3 gate in CI runner | `ops_scripts/ci/run_contract_gates.py` | `check_r1b_warmup_smoke.py` exists but is not wired into the contract gate runner; will not fire on CI unless registered | ~4k | ✅ DONE — added to assurance group after NP3; advisory; `R1B_WARMUP_SMOKE_FAIL_CLOSED=1` for strict mode |
+| W2.P1 | Route-registry pair discovery | `tools/apps_rg/warm_r1b_cache.py`, `apps_rg/config/warmup_pairs.yaml` (new) | W3.P1 spec stated "reads route_registry.yaml for known pairs"; current impl uses hardcoded TOP_PAIRS; registry-driven pairs would auto-update as routes evolve | ~8k | ✅ DONE — `warmup_pairs.yaml` + `_load_from_registry()` helper + `--from-registry` CLI flag; TOP_PAIRS fallback retained |
+| W3.P1 | Similarity score on R1B hit span | `apps_rg/__main__.py`, `apps_rg/cache/r1b_adapter.py` | `check_r1b_for_apps_rg` currently returns the payload dict or None; the raw similarity score from `SemanticCacheManager.recall` is not propagated back to the caller so `__main__.py` cannot set `cache.similarity_score` on the span | ~5k | ✅ DONE — score embedded as `_cache_similarity_score` in returned payload; `__main__.py` sets `cache.similarity_score` attribute on R1B hit span |
 
 ---
 

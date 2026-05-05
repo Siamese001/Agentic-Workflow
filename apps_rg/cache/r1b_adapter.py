@@ -227,6 +227,9 @@ class AppsRgR1BCacheAdapter:
                 return None
 
             _logger.info("R1B cache hit validated: intent_hash=%s", payload.get("intent_hash"))
+            # Embed similarity score for OTEL span attribution in callers.
+            # Uses a reserved underscore key to avoid colliding with payload fields.
+            payload["_cache_similarity_score"] = float(similarity) if isinstance(similarity, (int, float)) else None
             return payload
 
         except Exception as exc:  # guardian: allow-broad-exception -- cache recall is fail-soft
