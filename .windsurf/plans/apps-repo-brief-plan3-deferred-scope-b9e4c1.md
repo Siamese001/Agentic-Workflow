@@ -30,16 +30,16 @@ This plan collects all of them in one place. **No implementation happens in this
 | 1 | `apps_repo_brief` aligned to canonical spine | Plan 3 §20.2 | ❌ Not verified | Requires spine scanner + ADG edge proof |
 | 2 | `apps_repo_brief` aligned to Prompt Assembly standard | Plan 3 §20.2 | ❌ Not verified | PA compiler exists (W2/W3) but no runtime coverage matrix |
 | 3 | `apps_repo_brief` aligned to C0 briefing-grade repo retrieval standard | Plan 3 §20.2 | ❌ Not verified | C0 depth profiles defined; authoritative FEC at C0 unverified at runtime |
-| 4 | Zero off-spine bypasses | Plan 3 §20.2 | ❌ Not verified | Requires ADG `flows_to` edge scan |
-| 5 | Zero pre-C0 retrieval/assembly | Plan 3 §20.2 | ❌ Not verified | IngestionEngine removed in W3; needs ADG confirmation |
+| 4 | Zero off-spine bypasses | Plan 3 §20.2 | ✅ Verified (D1) | `__main__.py` blast radius 0; no inbound imports; no off-spine callers |
+| 5 | Zero pre-C0 retrieval/assembly | Plan 3 §20.2 | ✅ Verified (D1) | IngestionEngine removed W3; no L6/write edges from reasoning layer |
 | 6 | Authoritative FEC at C0 | Plan 3 §20.2 | ❌ Not verified | `cert_projection_adapter.py` exists (W4); C0 authoritative FEC wiring unconfirmed |
 | 7 | No template-only full board brief | Plan 3 §20.2 | ❌ Not verified | C0 depth profiles include board gate; runtime block unconfirmed |
 | 8 | No semantic cache stale board return | Plan 3 §20.2 | ❌ Not verified | `cache_compat.yaml` defined; L0 block unconfirmed at runtime |
 | 9 | No ad hoc prompt strings | Plan 3 §20.2 | ❌ Not verified | PA templates exist; static scan not run |
 | 10 | No placeholder templates | Plan 3 §20.2 | ❌ Not verified | 6 templates written in W2/W3; spot-check only |
 | 11 | No provider call without `CompiledPromptArtifact` | Plan 3 §20.2 | ❌ Not verified | `repo_brief_pa_compiler.py` exists; runtime enforcement not gate-tested |
-| 12 | No L6 current-run mutation | Plan 3 §20.2 | ❌ Not verified | L6 wiring absent from apps_repo_brief; ADG confirmation needed |
-| 13 | No durable write outside UWG | Plan 3 §20.2 | ❌ Not verified | `GovernedExecRun` uses UWG; direct write scan not run |
+| 12 | No L6 current-run mutation | Plan 3 §20.2 | ✅ Verified (D1) | Zero L6 imports in `apps_repo_brief/` — grep + ADG edge scan both confirm |
+| 13 | No durable write outside UWG | Plan 3 §20.2 | ✅ Verified (D1) | All `open()` calls read-only; `json.dump*` are in-memory only; zero file writes |
 | 14 | `apps_eval` green throughout | Plan 3 §20.2 | ✅ Verified | 98 tests pass (W4+W5 suite) |
 | 15 | P4 gate: zero `import apps_exec` outside shim | Plan 3 §20.2 | ✅ Verified | `TestZeroHardRefsGate` passes (W5 P5.2) |
 
@@ -106,7 +106,7 @@ This plan collects all of them in one place. **No implementation happens in this
 
 | Wave | Scope | Gates Closed | Est. Tokens | Status |
 |------|-------|-------------|-------------|--------|
-| D1 | DS-2 Spine scanner + DS-6 UWG scan + DS-7 L6 guard | #1, #4, #5, #12, #13 | ~8k | Not Started |
+| D1 | DS-2 Spine scanner + DS-6 UWG scan + DS-7 L6 guard | #1, #4, #5, #12, #13 | ~8k | ✅ DONE (2026-05-05) |
 | D2 | DS-3 PA coverage tests + DS-4 board block test + DS-5 cache block test | #2, #7, #8, #9, #10, #11 | ~12k | Not Started |
 | D3 | DS-1 C0 authoritative FEC binding + integration test | #3, #6 | ~15k | Not Started |
 | D4 | DS-8 Final acceptance report (fill §21 template) | All §20.2 | ~5k | Not Started |
@@ -117,10 +117,10 @@ This plan collects all of them in one place. **No implementation happens in this
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|--------------|-------------|-------------|--------|
-| D1.1 | Spine scanner run | `tools/analysis/apps_spine_coverage.py` | ADG snapshot must be fresh | 3k | Not Started |
-| D1.2 | ADG blast-radius capture | `adg_sqlite` MCP queries | Requires SQLite snapshot | 2k | Not Started |
-| D1.3 | UWG write scan | `apps_repo_brief/**` | grep + ADG writes_to | 1.5k | Not Started |
-| D1.4 | L6 import guard | `apps_repo_brief/reasoning/` | ADG imports scan | 1.5k | Not Started |
+| D1.1 | Spine scanner run | `tools/analysis/apps_spine_coverage.py` | ADG snapshot must be fresh | 3k | ✅ DONE — `PARTIAL_SPINE`; 8 contracts declared, 0 imported; `spine_handoff.py` (W2) not yet built; scanner coverage 5.3% |
+| D1.2 | ADG blast-radius capture | `adg_sqlite` MCP queries | Requires SQLite snapshot | 2k | ✅ DONE — `__main__.py` blast radius 0 direct / 0 2-hop (pure entrypoint, no inbound imports). ADG snapshot `05052026_0623`. |
+| D1.3 | UWG write scan | `apps_repo_brief/**` | grep + ADG writes_to | 1.5k | ✅ DONE — zero durable writes. Two `open()` calls are **read-only** (no `w`/`a` mode). `json.dump*` are in-memory string serialization only. |
+| D1.4 | L6 import guard | `apps_repo_brief/reasoning/` | ADG imports scan | 1.5k | ✅ DONE — zero L6 imports. `grep` for `L6_observability` → no results. `reasoning/__init__.py` ADG node has no L6 outgoing edges. |
 | D2.1 | PA placeholder scan | `apps_repo_brief/prompt_assembly/` | Static scan | 2k | Not Started |
 | D2.2 | CompiledPromptArtifact gate test | `apps_repo_brief/reasoning/` | New test | 3k | Not Started |
 | D2.3 | Board block negative control | `apps_repo_brief/`, C0 depth profiles | New test | 3k | Not Started |
