@@ -22,6 +22,13 @@ class ValidResult:
     thresholds_valid: bool = False
     judge_available: bool = True
 
+    @property
+    def deterministic_only(self) -> bool:
+        """Pass through from prep_result for FEC resolution."""
+        if self.prep_result:
+            return self.prep_result.deterministic_only
+        return False
+
 
 class EvalValidStage:
     """Validate evaluation inputs before execution."""

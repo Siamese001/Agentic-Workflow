@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from apps_eval.engines.base_eval_engine import EvalResult
+    from apps_eval.contracts.local_eval_evidence import LocalEvalEvidenceContract
 
 logger = logging.getLogger(__name__)
 
@@ -89,25 +90,64 @@ def run_eval_from_cli(
     sealer = EvalSealStage(exec_result)
     seal_result = sealer.run()
 
+    # Resolve FEC (Local Evidence Contract) at exit boundary
+    fec = resolve_fec(
+        suite_ids=suite_ids,
+        prep_result=prep_result,
+        valid_result=valid_result,
+        seal_result=seal_result,
+    )
+
     # Exit: X3 disposition based on execution results
     if seal_result.all_scenarios_passed:
         return exit_disposition(
             terminal_class="SUCCESS",
             x3_code="X3D_ALLOW_FINISH",
             scorecard_path=seal_result.scorecard_path,
+            fec=fec,
         )
     elif seal_result.degraded:
         return exit_disposition(
             terminal_class="DEGRADED_SUCCESS",
             x3_code="X3D_ALLOW_FINISH",
             scorecard_path=seal_result.scorecard_path,
+            fec=fec,
         )
     else:
         return exit_disposition(
             terminal_class="FAILURE",
             x3_code="X3A_DENY_REROUTE",
             scorecard_path=seal_result.scorecard_path,
+            fec=fec,
         )
+
+
+def resolve_fec(
+    suite_ids: list[str],
+    prep_result,
+    valid_result,
+    seal_result,
+) -> "LocalEvalEvidenceContract | None":
+    """Resolve Final Evidence Contract at evaluation exit.
+
+    W2.4: FEC integration wiring — produces LocalEvalEvidenceContract
+    from L2 sealed artifacts for Exit v6 handoff.
+    """
+    from apps_eval.cert.fec_producer import produce_fec
+    from apps_eval.contracts.local_eval_evidence import LocalEvalEvidenceContract
+
+    # Build run_context for FEC producer
+    run_context = {
+        "route_id": "apps_eval.evaluation_v1",
+        "suite_ids": suite_ids,
+        "baseline_mode": prep_result.baseline_mode if prep_result else False,
+        "deterministic_only": valid_result.deterministic_only if valid_result else False,
+        "all_passed": seal_result.all_scenarios_passed if seal_result else False,
+        "degraded": seal_result.degraded if seal_result else False,
+    }
+
+    fec_dict = produce_fec(run_context)
+    return LocalEvalEvidenceContract.from_fec_dict(fec_dict)
 
 
 def _check_cache_or_route(prep_result) -> "RouteResult":

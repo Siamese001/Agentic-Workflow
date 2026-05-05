@@ -19,6 +19,7 @@ def exit_disposition(
     reason: str | None = None,
     scorecard_path: Path | None = None,
     scorecard_ref: str | None = None,
+    **kwargs: Any,
 ) -> int:
     """Emit Exit X3 disposition and return shell exit code.
 
@@ -39,7 +40,7 @@ def exit_disposition(
     }
 
     handler = x3_dispositions.get(x3_code, _handle_x3e)
-    return handler(terminal_class, reason, scorecard_path, scorecard_ref)
+    return handler(terminal_class, reason, scorecard_path, scorecard_ref, **kwargs)
 
 
 def _handle_x3a(
@@ -47,6 +48,7 @@ def _handle_x3a(
     reason: str | None,
     scorecard_path: Path | None,
     scorecard_ref: str | None,
+    **kwargs: Any,
 ) -> int:
     """X3A_DENY_REROUTE — hard failure."""
     logger.error("Exit X3A_DENY_REROUTE: %s", reason or "unknown_failure")
@@ -58,6 +60,7 @@ def _handle_x3d(
     reason: str | None,
     scorecard_path: Path | None,
     scorecard_ref: str | None,
+    **kwargs: Any,
 ) -> int:
     """X3D_ALLOW_FINISH — success or degraded success."""
     if scorecard_path:
@@ -74,6 +77,7 @@ def _handle_x3e(
     reason: str | None,
     scorecard_path: Path | None,
     scorecard_ref: str | None,
+    **kwargs: Any,
 ) -> int:
     """X3E_SAFE_ABSTAIN — safe failure (suite missing, validation failed)."""
     logger.warning("Exit X3E_SAFE_ABSTAIN: %s", reason or "abstained")
