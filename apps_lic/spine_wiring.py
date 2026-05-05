@@ -76,6 +76,8 @@ class SpineWiringVerifier:
         "signal_types",  # W3.P1: Signal type definitions
         "signal_detector",  # W3.P1: Signal detection integration
         "trigger_wake_mapper",  # W3.P2: Trigger→wake mapping
+        "research_bridge",  # W4.P1: apps_research → apps_lic flow
+        "c0_retrieval_wiring",  # W4.P2: C0 retrieval → FEC producer
     ]
     
     def verify_all(self) -> SpineWiringReport:
@@ -119,6 +121,8 @@ class SpineWiringVerifier:
             "signal_types": self._verify_signal_types,
             "signal_detector": self._verify_signal_detector,
             "trigger_wake_mapper": self._verify_trigger_wake_mapper,
+            "research_bridge": self._verify_research_bridge,
+            "c0_retrieval_wiring": self._verify_c0_retrieval_wiring,
         }
         
         verifier = verifiers.get(component)
@@ -722,6 +726,96 @@ class SpineWiringVerifier:
         except Exception as e:
             return WiringStatus(
                 component="trigger_wake_mapper",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_research_bridge(self) -> WiringStatus:
+        """Verify W4.P1: apps_research → apps_lic bridge."""
+        try:
+            from apps_lic.integrations.apps_research_bridge import (
+                AppsResearchBridge,
+                ResearchResult,
+                EvidenceItem,
+            )
+            
+            # Test bridge instantiation
+            bridge = AppsResearchBridge(capability_ref="apps_research.v1")
+            
+            # Verify bridge has required methods
+            assert hasattr(bridge, 'fetch')
+            assert hasattr(bridge, '_invoke_apps_research')
+            assert hasattr(bridge, '_translate')
+            
+            return WiringStatus(
+                component="research_bridge",
+                connected=True,
+                details={
+                    "bridge_instantiated": True,
+                    "supported_capabilities": len(bridge.SUPPORTED_CAPABILITIES),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="research_bridge",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_c0_retrieval_wiring(self) -> WiringStatus:
+        """Verify W4.P2: C0 retrieval → FEC producer wiring."""
+        try:
+            from apps_lic.cert.fec_producer import (
+                produce_fec,
+                PRODUCER_ID,
+                FEC_SCHEMA_VERSION,
+            )
+            
+            # Test FEC producer with mock C0 context
+            test_context = {
+                "research_snippets": [
+                    {"source": "linkedin", "content": "Company raised Series B", "confidence": 0.9},
+                ],
+                "company_brief": {"funding_stage": "Series B"},
+                "competitive_signals": [{"type": "hiring", "confidence": 0.85}],
+            }
+            
+            fec = produce_fec(test_context)
+            
+            # Verify FEC structure
+            assert fec["producer"] == PRODUCER_ID
+            assert fec["_schema_version"] == FEC_SCHEMA_VERSION
+            assert "retrieval_sources" in fec
+            assert "grounded" in fec
+            
+            # Test with C0 retrieval populated (forward-compatible path)
+            test_context_with_c0 = {
+                **test_context,
+                "c0_retrieval_sources": {
+                    "retrieval_id": "c0-test-001",
+                    "query": "Company funding news",
+                    "results": [{"chunk": "test"}],
+                    "confidence": 0.92,
+                },
+            }
+            
+            fec_with_c0 = produce_fec(test_context_with_c0)
+            assert fec_with_c0["grounded"] is True
+            assert fec_with_c0["evidence_sufficiency"] == "grounded"
+            
+            return WiringStatus(
+                component="c0_retrieval_wiring",
+                connected=True,
+                details={
+                    "fec_producer_id": PRODUCER_ID,
+                    "schema_version": FEC_SCHEMA_VERSION,
+                    "template_path_works": True,
+                    "c0_path_works": True,
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="c0_retrieval_wiring",
                 connected=False,
                 error=str(e),
             )

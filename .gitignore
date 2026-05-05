@@ -153,3 +153,7 @@ artifacts/adg/keys/*.key
 # Fort Knox release signer private key — NEVER commit (added 2026-05-02)
 keys/release_signer/*.key.pem
 keys/release_signer/*.pem
+
+# Large ML model binaries — never commit (added 2026-05-05, W6 of apps-rg-l0-cache-deferred-scope-b8e2f4)
+models--BAAI--bge-m3/
+.locks/

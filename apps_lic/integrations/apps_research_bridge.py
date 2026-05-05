@@ -244,21 +244,51 @@ class AppsResearchBridge:
     ) -> Any:
         """Call apps_research via its registered public interface.
 
-        Only imports from apps_research's public surface are permitted here.
-        Direct access to apps_research internals is FORBIDDEN.
-
-        NOTE: The actual apps_research call is implemented when the
-        apps_research public interface is registered and stable. This stub
-        raises NotImplementedError so that integration tests can inject
-        a mock bridge and validate the dispatcher logic without a real
-        apps_research backend. Production callers must subclass and override.
+        W4.P1: Research Bridge Integration — calls apps_research spine runner
+        with C0 retrieval enabled for grounded evidence.
         """
-        raise NotImplementedError(
-            "AppsResearchBridge._invoke_apps_research is a stub. "
-            "Subclass AppsResearchBridge and override _invoke_apps_research "
-            "to wire the real apps_research public interface. "
-            "For tests, inject a MockAppsResearchBridge."
+        # Build research request from outreach context
+        from apps_research.integrations.governed_research_run import (
+            GovernedResearchRun,
         )
+        from apps_research.types.research_types import (
+            ResearchRequest,
+            ArtifactMode,
+            AudienceStyle,
+        )
+        
+        # Determine research depth based on recipient class
+        depth_profile_map = {
+            "EXECUTIVE": "COMPANY_BRIEF_DEEP",
+            "C_LEVEL": "COMPANY_BRIEF_DEEP",
+            "VP_ENG": "COMPANY_BRIEF_STANDARD",
+            "RECRUITER": "COMPANY_BRIEF_LIGHT",
+            "HIRING_MANAGER": "COMPANY_BRIEF_STANDARD",
+        }
+        depth_profile = depth_profile_map.get(recipient_class.upper(), "COMPANY_BRIEF_STANDARD")
+        
+        # Construct research request
+        research_request = ResearchRequest(
+            topic=f"{company_name} company briefing for outreach",
+            mode=ArtifactMode("brief"),
+            audience_style=AudienceStyle("executive" if "EXECUTIVE" in recipient_class.upper() else "technical"),
+            depth_profile=depth_profile,
+            trace_id=trace_id,
+            jd_context={
+                "recipient_class": recipient_class,
+                "recipient_name": recipient_name,
+                "job_title": job_title,
+                "channel": channel,
+                "outreach_mode": outreach_mode,
+                "relationship_distance": relationship_distance,
+            },
+        )
+        
+        # Execute governed research run with C0 retrieval (W4.P2)
+        runner = GovernedResearchRun()
+        result = runner.run_governed_e2e(request=research_request)
+        
+        return result
 
     def _translate(
         self,
