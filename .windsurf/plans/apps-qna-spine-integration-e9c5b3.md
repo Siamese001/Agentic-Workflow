@@ -42,8 +42,8 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|-------------|--------|------------------|
-| W0 | W0.1-W0.4 | Thin-slice spine proof (U0→L1→L0→C0/Briefing→L2→Exit) | ~35K | 🔲 TODO | 10 tests pass; spine contracts emit correctly |
-| W1 | W1.1-W1.3 | Entrypoint purity + registry scaffold + governance | ~30K | 🔲 TODO | __main__.py pure shim; 20 governance tests green |
+| W0 | W0.1-W0.4 | Thin-slice spine proof (U0→L1→L0→C0/Briefing→L2→Exit) | ~35K | ✅ DONE | 18 tests pass; spine contracts emit correctly |
+| W1 | W1.1-W1.3 | Entrypoint purity + registry scaffold + governance | ~30K | 🔲 IN PROGRESS | __main__.py pure shim; 20 governance tests green |
 | W2 | W2.1-W2.4 | C0 thin adapter + briefing validator + evidence contracts | ~40K | 🔲 TODO | C0 calls canonical only; briefing distinct from C0 |
 | W3 | W3.1-W3.4 | Two-tier router + Tier 1/2 templates + domain assembly | ~50K | 🔲 TODO | Router selects 1 primary; Tier 1 always-on, Tier 2 trigger |
 | W4 | W4.1-W4.4 | Exit v6 wiring + egress verifier + cache + acceptance | ~45K | 🔲 TODO | Single X3 per run; 57 tests pass; legacy shimmed |
@@ -71,11 +71,11 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 
 | Phase ID | Title | Scope | Est. Tokens | Status |
 |----------|-------|-------|-------------|--------|
-| W0.1 | U0 Intake + L1 Plan | `u0_intake.py`, `l1_planner.py`, `types/spine_contracts.py` | ~8K | 🔲 TODO |
-| W0.2 | L0 Router + C0 Adapter scaffold | `l0_router.py`, `c0_adapter.py` | ~9K | 🔲 TODO |
-| W0.3 | Briefing Validator + L2 E1-E3 | `briefing_validator.py`, `l2/e1_prep.py`, `e2_valid.py`, `e3_exec.py` | ~10K | 🔲 TODO |
-| W0.4 | Exit wiring + W0 tests | `exit_wiring.py`, `tests/test_w0_thin_slice.py` | ~8K | 🔲 TODO |
-| W1.1 | Entrypoint purity refactor | `__main__.py` (shim only), remove direct builder imports | ~10K | 🔲 TODO |
+| W0.1 | U0 Intake + L1 Plan | `u0_intake.py`, `l1_planner.py`, `types/spine_contracts.py` | ~8K | ✅ DONE |
+| W0.2 | L0 Router + C0 Adapter scaffold | `l0_router.py`, `c0_adapter.py` | ~9K | ✅ DONE |
+| W0.3 | Briefing Validator + L2 E1-E3 | `briefing_validator.py`, `l2/e1_prep.py`, `e2_valid.py`, `e3_exec.py` | ~10K | ✅ DONE |
+| W0.4 | Exit wiring + W0 tests | `exit_wiring.py`, `tests/test_w0_thin_slice.py` | ~8K | ✅ DONE |
+| W1.1 | Entrypoint purity refactor | `__main__.py` (shim only), remove direct builder imports | ~10K | 🔲 IN PROGRESS |
 | W1.2 | Registry scaffold | `qna_capability_registry.py`, `qna_l2_step_adapters.py`, `qna_exit_fec_producer.py` | ~10K | 🔲 TODO |
 | W1.3 | Governance tests (20 tests) | `tests/governance/test_apps_qna_*.py` | ~10K | 🔲 TODO |
 | W2.1 | C0 thin adapter | `c0_adapter.py` (shape request, call canonical, return unchanged) | ~10K | 🔲 TODO |

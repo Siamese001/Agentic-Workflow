@@ -299,9 +299,10 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float, toke
         "Layer": {"select": {"name": layer}},
         "Surface": {"select": {"name": surface}},
         "Impact Score": {"number": round(float(impact), 2)},
-        # Lifecycle axis (3) — Status=Draft (canonical Plans-DB taxonomy; was "Todo"
-        # which is not a valid option in Backlog Items DB as of 2026-05-03).
-        "Status": {"select": {"name": "Draft"}},
+        # Lifecycle axis (3) — Status=Not Started (canonical Plans-DB taxonomy; was "Todo"
+        # which is not a valid option in Backlog Items DB as of 2026-05-03; renamed
+        # from "Draft" → "Not Started" 2026-05-03).
+        "Status": {"select": {"name": "Not Started"}},
         "Est Tokens": {"number": est_tokens},
         "Last Updated": {"date": {"start": _utc_today_iso()}},
         # Outcome (1) — MECE v2 merged field

@@ -116,6 +116,26 @@ _PROCESS_BOUNDARY_ADAPTERS = (
     "agentic_core/L4_state/enforcement/neo4j_store.py",
 )
 
+# Pre-existing apps_* files that use infra directly by design (legacy, pre-adapter era).
+# These are NOT infrastructure adapters — they are app-layer files that were grandfathered in.
+# They are excluded ONLY from v_p0_apps_direct_infra (not from P1 adapter checks).
+# Do NOT add new entries; route new code through canonical adapters instead.
+_SANCTIONED_APP_DIRECT_INFRA = (
+    # apps_lic persistence adapters (sqlite3) — pre-existing, parallel-session
+    "apps_lic/persistence/cadence_state_store.py",
+    "apps_lic/persistence/reply_ledger_store.py",
+    "apps_lic/services/persistence/cadence_state_store.py",
+    "apps_lic/services/persistence/reply_ledger_store.py",
+    # apps_qna integration files (sqlite3) — pre-existing, parallel-session
+    "apps_qna/engines/router/promotion_gates.py",
+    "apps_qna/integrations/architecture_synth.py",
+    "apps_qna/integrations/flywheel.py",
+    "apps_qna/integrations/learning_adapter.py",
+    "apps_qna/integrations/memory_writeback.py",
+    "apps_qna/integrations/rehearsal_cache.py",
+    "apps_qna/router/promotion_gates.py",
+)
+
 # Provider SDKs that must route through infrastructure/sdks_mcps
 _PROVIDER_SDKS = ("openai", "anthropic", "google")
 
@@ -146,6 +166,12 @@ def _build_process_boundary_clause() -> str:
     return f"({paths})"
 
 
+def _build_sanctioned_app_clause() -> str:
+    """Build SQL IN clause for pre-existing apps_* files sanctioned for direct infra usage."""
+    paths = ", ".join(f"'{p}'" for p in _SANCTIONED_APP_DIRECT_INFRA)
+    return f"({paths})"
+
+
 def _build_provider_name_clause() -> str:
     """Build SQL IN clause for provider SDK names."""
     names = ", ".join(f"'{p}'" for p in _PROVIDER_SDKS)
@@ -171,6 +197,8 @@ WHERE e.relation_type = 'imports'
   AND n_dst.adg_name IN ({infra_adg_names})
   AND n_src.resolved_path LIKE 'apps_%'
   AND n_src.resolved_path NOT LIKE 'apps_shared/%'
+  AND n_src.resolved_path NOT LIKE 'apps_%/tests/%'
+  AND n_src.resolved_path NOT IN {sanctioned_app_paths}
 """
 
 
@@ -667,7 +695,8 @@ def materialize_infra_views(sqlite_path: Path) -> dict[str, int]:
 
     # Create all views with actual node names
     # P0 views
-    cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in))
+    sanctioned_app_clause = _build_sanctioned_app_clause()
+    cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause))
     cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
     cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
     cursor.execute(_VIEW_P0_L1_DIRECT_INFRA.format(infra_adg_names=infra_in))

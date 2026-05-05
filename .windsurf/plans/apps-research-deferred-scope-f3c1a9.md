@@ -131,3 +131,25 @@ unit of work that can be planned and executed independently.
 | DS-4 L6 stub | `test_apps_research_l6_does_not_mutate_current_run` transitions from SKIP to PASS | `pytest tests/governance/test_apps_research_l4_write_boundary.py -v` |
 | Overall governance tests | ≥75 pass, 0 fail, 0 skip | `pytest tests/governance/test_apps_research_*.py -q` |
 | Contract regressions | 0 new | `pytest tests/_apps_contract/ -q --tb=no` |
+
+---
+
+## ADG_HOTSPOT_REPORT
+
+| Rank | File | Layer | Fan-in | Archetype | Surface | Impact |
+|------|------|-------|--------|-----------|---------|--------|
+| 1 | apps_research/integrations/research_l2_step_adapters.py | L_APP | 5 | ORCHESTRATOR | Execution Surface | medium |
+| 2 | apps_research/cert/fec_producer.py | L_APP | 3 | STATE_NODE | State Surface | low |
+
+---
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
+Graph-layer primitives consulted during plan authoring:
+
+- `mv_hotspot_centrality` — ranked apps_research modules by degree_centrality
+- `mv_graph_reverse_dependency_hotspots` — identified step adapters as orchestration hotspot
+- `mv_dependency_cone_risk` — assessed blast radius of cert/fec route_id fixes
+- Semantic edge `flows_to`: research step adapters → BriefingEvidenceBundle
+- P-view `v_p1_not_on_spine`: confirmed research_capability_registry.py on spine post-fix
+- P-view `v_p0_apps_direct_infra`: verified zero direct infra violations in deferred scope

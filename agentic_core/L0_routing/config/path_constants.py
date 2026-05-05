@@ -91,6 +91,7 @@ APPS_PACKAGES: Final[list[str]] = [
     "apps_rg",
     "apps_eval",
     "apps_exec",
+    "apps_repo_brief",
     "apps_research",
     "apps_rfp",
     "apps_shared",
@@ -131,6 +132,7 @@ AGENTIC_CORE_DIR: Final[str] = "agentic_core"
 INFRASTRUCTURE_DIR: Final[str] = "infrastructure"
 APPS_EVAL_DIR: Final[str] = "apps_eval"
 APPS_EXEC_DIR: Final[str] = "apps_exec"
+APPS_REPO_BRIEF_DIR: Final[str] = "apps_repo_brief"  # W1: additive; replaces APPS_EXEC_DIR in W5
 APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RFP_DIR: Final[str] = "apps_rfp"
@@ -525,6 +527,19 @@ APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "validators": [],
 }
 
+# W1: additive — APPS_REPO_BRIEF_SUBFOLDER_MAP mirrors APPS_EXEC_SUBFOLDER_MAP.
+# APPS_EXEC_SUBFOLDER_MAP retired in W5 once zero-hard-refs gate passes.
+APPS_REPO_BRIEF_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "cert": [],
+    "config": [],
+    "engines": [],
+    "integrations": [],
+    "prompt_assembly": [],
+    "reasoning": [],
+    "types": [],
+    "utils": [],
+}
+
 APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "config": [],
     "engines": [],
@@ -694,6 +709,8 @@ __all__ = [
     "APPS_EVAL_SUBFOLDER_MAP",
     "APPS_EXEC_DIR",
     "APPS_EXEC_SUBFOLDER_MAP",
+    "APPS_REPO_BRIEF_DIR",
+    "APPS_REPO_BRIEF_SUBFOLDER_MAP",
     "APPS_LIC_DIR",
     "APPS_LIC_SUBFOLDER_MAP",
     "APPS_PACKAGES",

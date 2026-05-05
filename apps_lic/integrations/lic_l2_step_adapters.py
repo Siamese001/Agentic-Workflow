@@ -440,12 +440,67 @@ def seal_l2_artifact_for_exit(context: Dict[str, Any], step_def: Dict[str, Any])
 
 
 # ============================================================================
-# Research Bridge Adapter (R3R4 Managed Workflow)
+# R3R4 Managed Workflow Adapters
 # ============================================================================
+
+def validate_request_for_briefing(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    R3 Stage 1: Validate RequestForBriefing input.
+    
+    Fail-closed if research_authorized=False or schema invalid.
+    """
+    result = context.copy()
+    
+    # Check research authorization
+    if not context.get("research_authorized", False):
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_BLOCKED"
+        result["_r3_fail_detail"] = "research_authorized=False"
+        return result
+    
+    # Validate required fields present
+    required = ["recipient_class", "company_name", "channel", "outreach_mode"]
+    missing = [f for f in required if f not in context]
+    if missing:
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "SCHEMA_REJECTION"
+        result["_r3_fail_detail"] = f"Missing required fields: {missing}"
+        return result
+    
+    result["_r3_request_validated"] = True
+    result["_r3_validation_complete"] = True
+    return result
+
+
+def authorize_research(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    R3 Stage 2: Authorize research capability.
+    
+    Verify capability_ref is supported and policy permits research.
+    """
+    result = context.copy()
+    
+    # Skip if earlier validation failed
+    if context.get("_r3_validation_failed"):
+        return result
+    
+    capability_ref = context.get("research_capability_ref", "")
+    supported = {"apps_research.v1", "apps_research.v2"}
+    
+    if capability_ref not in supported:
+        result["_r3_authorization_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_BLOCKED"
+        result["_r3_fail_detail"] = f"Unsupported capability_ref: {capability_ref}"
+        return result
+    
+    result["_r3_research_authorized"] = True
+    result["_r3_authorization_complete"] = True
+    return result
+
 
 def research_bridge_adapter(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
     """
-    L3/L2 step adapter for AppsResearchBridge.
+    R3 Stage 3: L3/L2 step adapter for AppsResearchBridge.
     
     This adapter wraps AppsResearchBridge.fetch() as a managed workflow step.
     Must handle exceptions internally and return ResearchResult.
@@ -455,35 +510,159 @@ def research_bridge_adapter(context: Dict[str, Any], step_def: Dict[str, Any]) -
     """
     result = context.copy()
     
-    # TODO: Implement during W3.2
-    # - Call AppsResearchBridge.fetch() via governed gateway
-    # - Handle exceptions, translate to R5 reason codes
-    # - is_blocked → APPS_RESEARCH_BLOCKED
-    # - exception → APPS_RESEARCH_FAILED
+    # Skip if earlier stages failed
+    if context.get("_r3_validation_failed") or context.get("_r3_authorization_failed"):
+        return result
     
-    result["_r3_research_complete"] = True
+    # Import bridge here to avoid circular imports at module load
+    from apps_lic.integrations.apps_research_bridge import AppsResearchBridge, MockAppsResearchBridge
+    
+    # Use injected bridge if provided (for testing), otherwise create real bridge
+    bridge = context.get("_r3_bridge")
+    if bridge is None:
+        capability_ref = context.get("research_capability_ref", "apps_research.v1")
+        bridge = AppsResearchBridge(capability_ref=capability_ref)
+    
+    # Call the bridge
+    try:
+        research_result = bridge.fetch(
+            recipient_class=context.get("recipient_class", ""),
+            recipient_name=context.get("recipient_name", ""),
+            company_name=context.get("company_name", ""),
+            job_title=context.get("job_title", ""),
+            channel=context.get("channel", ""),
+            outreach_mode=context.get("outreach_mode", ""),
+            relationship_distance=context.get("relationship_distance", "cold"),
+            capability_ref=context.get("research_capability_ref", "apps_research.v1"),
+            request_id=context.get("request_id", ""),
+            run_id=context.get("run_id", ""),
+            trace_id=context.get("trace_id", ""),
+        )
+        result["_r3_research_result"] = research_result
+        result["_r3_research_complete"] = True
+    except Exception as exc:
+        # All exceptions translate to APPS_RESEARCH_FAILED
+        result["_r3_research_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_FAILED"
+        result["_r3_fail_detail"] = f"{type(exc).__name__}: {exc}"
+    
     return result
 
 
 def validate_research_and_build_manifest(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
     """
-    R3→R4 transition gate: Validate research and build manifest.
+    R3 Stage 4: R3→R4 transition gate - Validate research and build manifest.
     
     Fail-closed on:
-    - research_empty
-    - research_stale
-    - research_weak_support
+    - research_empty (no evidence items)
+    - research_stale (is_stale=True)
+    - research_weak_support (confidence < threshold)
     
-    On success: emit fresh PreloadedOutreachContextManifest
+    On success: emit fresh PreloadedOutreachContextManifest.
     """
     result = context.copy()
     
-    # TODO: Implement during W3.3
-    # - Validate research result
-    # - Build manifest or fail closed
+    # Skip if earlier stages failed
+    if context.get("_r3_validation_failed") or context.get("_r3_authorization_failed") or context.get("_r3_research_failed"):
+        return result
     
+    research_result = context.get("_r3_research_result")
+    if research_result is None:
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_FAILED"
+        result["_r3_fail_detail"] = "No research result available"
+        return result
+    
+    # Check blocked
+    if getattr(research_result, "is_blocked", False):
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_BLOCKED"
+        result["_r3_fail_detail"] = getattr(research_result, "block_reason", "unknown")
+        return result
+    
+    # Check empty evidence
+    evidence_items = getattr(research_result, "evidence_items", [])
+    if not evidence_items:
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_EMPTY"
+        result["_r3_fail_detail"] = "No evidence items in research result"
+        return result
+    
+    # Check stale
+    if getattr(research_result, "is_stale", False):
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_STALE"
+        result["_r3_fail_detail"] = f"Research stale: {getattr(research_result, 'age_days', 0)} days"
+        return result
+    
+    # Check confidence threshold
+    confidence = float(getattr(research_result, "confidence_score", 0.0))
+    threshold = float(context.get("min_confidence_threshold", 0.60))
+    if confidence < threshold:
+        result["_r3_validation_failed"] = True
+        result["_r3_fail_reason"] = "APPS_RESEARCH_WEAK_SUPPORT"
+        result["_r3_fail_detail"] = f"Confidence {confidence:.2f} < threshold {threshold:.2f}"
+        return result
+    
+    # Build manifest using dispatcher's helper
+    from apps_lic.integrations.managed_workflow_dispatcher import (
+        _build_manifest_from_research,
+        RequestForBriefing,
+    )
+    
+    # Construct request from context
+    request = RequestForBriefing(
+        request_id=context.get("request_id", ""),
+        run_id=context.get("run_id", ""),
+        trace_id=context.get("trace_id", ""),
+        recipient_class=context.get("recipient_class", ""),
+        recipient_name=context.get("recipient_name", ""),
+        company_name=context.get("company_name", ""),
+        job_title=context.get("job_title", ""),
+        channel=context.get("channel", ""),
+        outreach_mode=context.get("outreach_mode", ""),
+        relationship_distance=context.get("relationship_distance", "cold"),
+        sender_resume_ref=context.get("sender_resume_ref", ""),
+        sender_policy_hash=context.get("sender_policy_hash", context.get("policy_hash", "")),
+        sender_blueprint_hash=context.get("sender_blueprint_hash", context.get("blueprint_hash", "")),
+        research_authorized=True,
+        research_capability_ref=context.get("research_capability_ref", "apps_research.v1"),
+        freshness_ttl_days=context.get("freshness_ttl_days", 7),
+        min_confidence_threshold=threshold,
+    )
+    
+    manifest = _build_manifest_from_research(
+        request=request,
+        research_result=research_result,
+        confidence=confidence,
+    )
+    
+    result["manifest"] = manifest
     result["_r3_manifest_built"] = True
     result["_r3_to_r4_ready"] = True
+    result["_r3_validation_complete"] = True
+    return result
+
+
+def emit_managed_workflow_receipt(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    R3R4 Stage 8: Emit managed workflow chain linkage receipt.
+    
+    Records R3 research trace + R4 manifest hash in L3RuntimeOrchestrationReceipt.
+    """
+    result = context.copy()
+    
+    # Build chain receipt
+    receipt = {
+        "chain_kind": "MANAGED_WORKFLOW",
+        "r3_research_trace_id": context.get("trace_id", ""),
+        "r4_manifest_hash": getattr(context.get("manifest"), "manifest_hash", ""),
+        "l2_receipt": context.get("_e5_l2_receipt", {}),
+        "sealed": True,
+    }
+    
+    result["_mw_receipt"] = receipt
+    result["_mw_complete"] = True
     return result
 
 
@@ -524,8 +703,11 @@ STEP_ADAPTERS: Dict[str, Callable] = {
     "attach_channel_length_receipt": attach_channel_length_receipt,
     "seal_l2_artifact_for_exit": seal_l2_artifact_for_exit,
     # R3R4 Managed
+    "validate_request_for_briefing": validate_request_for_briefing,
+    "authorize_research": authorize_research,
     "research_bridge_adapter": research_bridge_adapter,
     "validate_research_and_build_manifest": validate_research_and_build_manifest,
+    "emit_managed_workflow_receipt": emit_managed_workflow_receipt,
 }
 
 

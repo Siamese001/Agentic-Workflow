@@ -788,6 +788,20 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         implements_l2_contract=True,
         notes="Test scenario generation execution agent. WAVE 6: Now L2 contract compliant.",
     ),
+    # ============================================
+    # APPS_REPO_BRIEF: Canonical rename of apps_exec (W1 additive dual-entry).
+    # apps_exec entries below are SHIM until W5 zero-hard-refs gate passes.
+    # ============================================
+    "RepoBriefOrchestrator": AgentClassification(
+        file_path="apps_repo_brief/reasoning/__init__.py",
+        class_name="ExecOrchestrator",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.SHIM,
+        is_shim=True,
+        implements_l2_contract=True,
+        notes="W1 shim: re-exports ExecOrchestrator under apps_repo_brief namespace. Full replacement in W3.",
+    ),
     # APPS_EXEC: Additional Orchestrator Agents
     "ExecOrchestrator": AgentClassification(
         file_path="apps_exec/reasoning/ExecOrchestrator.py",

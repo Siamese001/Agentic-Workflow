@@ -339,6 +339,26 @@ _SCENARIO_DEFINITIONS: dict[str, dict[str, Any]] = {
         "expected_outcome": "PASS",
         "deterministic": True,
     },
+    # W1/P1.9 — parallel apps_repo_brief scenarios (additive; apps_exec entries above unchanged).
+    # These use the apps_repo_brief namespace shim during W1-W4 transition.
+    "repo_brief_recruiter": {
+        "description": "apps_repo_brief generates recruiter brief with dry_run=True (W1 shim)",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_repo_brief_recruiter",
+        "expected_outcome": "PASS",
+        "deterministic": True,
+    },
+    "repo_brief_cto": {
+        "description": "apps_repo_brief generates CTO brief with dry_run=True (W1 shim)",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_repo_brief_cto",
+        "expected_outcome": "PASS",
+        "deterministic": True,
+    },
+    "repo_brief_dry_run": {
+        "description": "apps_repo_brief dry_run returns DRY_RUN status without emitting files (W1 shim)",
+        "target_fn": "apps_eval.engines.scenario_runner._scenario_repo_brief_dry_run",
+        "expected_outcome": "PASS",
+        "deterministic": True,
+    },
     "single_hop": {
         "description": "Single-hop orchestration produces checkpoint record",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_single_hop",
@@ -631,6 +651,62 @@ def _scenario_exec_dry_run() -> tuple[ScenarioOutcome, float, str]:
         return "FAIL", 0.0, f"status={str(result.status)} artifacts={result.artifact_paths}"
     except ImportError as e:  # review: Test exceptions should use proper test assertions
         return "SKIP", _SKIP_SCORE, f"apps_exec not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return "FAIL", 0.0, str(exc)
+
+
+def _scenario_repo_brief_recruiter() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from apps_repo_brief.reasoning import ExecOrchestrator
+        from apps_exec.types.exec_types import ExecBriefRequest
+
+        import asyncio as _asyncio
+
+        req = ExecBriefRequest(audience="recruiter", source_dirs=[], dry_run=True)
+        result = _asyncio.run(ExecOrchestrator().run(req))
+        status_str = str(getattr(result, "status", "")).lower()
+        if status_str in ("dry_run", "success"):
+            return "PASS", 1.0, f"repo_brief recruiter dry_run: {str(result.status)}"
+        return "FAIL", 0.0, f"Unexpected status: {str(result.status)}"
+    except ImportError as e:
+        return "SKIP", _SKIP_SCORE, f"apps_repo_brief not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return "FAIL", 0.0, str(exc)
+
+
+def _scenario_repo_brief_cto() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from apps_repo_brief.reasoning import ExecOrchestrator
+        from apps_exec.types.exec_types import ExecBriefRequest
+
+        import asyncio as _asyncio
+
+        req = ExecBriefRequest(audience="cto", source_dirs=[], dry_run=True)
+        result = _asyncio.run(ExecOrchestrator().run(req))
+        status_str = str(getattr(result, "status", "")).lower()
+        if status_str in ("dry_run", "success"):
+            return "PASS", 1.0, f"repo_brief cto dry_run: {str(result.status)}"
+        return "FAIL", 0.0, f"Unexpected status: {str(result.status)}"
+    except ImportError as e:
+        return "SKIP", _SKIP_SCORE, f"apps_repo_brief not available: {e}"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return "FAIL", 0.0, str(exc)
+
+
+def _scenario_repo_brief_dry_run() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from apps_repo_brief.reasoning import ExecOrchestrator
+        from apps_exec.types.exec_types import BriefStatus, ExecBriefRequest
+
+        import asyncio as _asyncio
+
+        req = ExecBriefRequest(audience="board", source_dirs=[], dry_run=True)
+        result = _asyncio.run(ExecOrchestrator().run(req))
+        if str(getattr(result, "status", "")).lower() == "dry_run" and not getattr(result, "artifact_paths", [None]):
+            return "PASS", 1.0, "repo_brief dry_run: DRY_RUN, no artifacts"
+        return "FAIL", 0.0, f"status={str(getattr(result, 'status', '?'))} artifacts={getattr(result, 'artifact_paths', None)}"
+    except ImportError as e:
+        return "SKIP", _SKIP_SCORE, f"apps_repo_brief not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return "FAIL", 0.0, str(exc)
 

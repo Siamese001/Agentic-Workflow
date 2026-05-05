@@ -136,7 +136,7 @@ def _build_payload(slug: str, plan_path: Path) -> dict:
         "parent": {"type": "database_id", "database_id": PLANS_DB_ID},
         "properties": {
             "Slug": {"title": [{"text": {"content": slug}}]},
-            "Status": {"select": {"name": "Draft"}},
+            "Status": {"select": {"name": "Not Started"}},
             "Exists On Disk": {"checkbox": True},
             "Plan File Path": {"rich_text": [{"text": {"content": f".windsurf/plans/{slug}.md"}}]},
             "Summary": {"rich_text": [{"text": {"content": summary}}]},

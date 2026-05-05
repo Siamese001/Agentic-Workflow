@@ -1,0 +1,31 @@
+# apps_repo_brief L0 cert-facing route registry.
+#
+# CONTRADICTION RESOLVED (cf. apps_exec/cert_route_registry.yaml which said
+# "template-driven (no C0 retrieval)"). The canonical apps_repo_brief route
+# IS grounded — C0 is mandatory. See spine_manifest.yaml for authority.
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.3
+# Full cert-route migration and route consolidation in W2/P2.2-P2.3.
+
+app_name: apps_repo_brief
+schema_version: "apps_repo_brief.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_repo_brief.executive_brief_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    c0_required: true
+    # Opt-in flag — cert entrypoint MUST invoke v6 Exit pipeline so the
+    # apps_repo_brief rubric executes. Inherited from apps_exec pattern.
+    invoke_exit_eval: true
+    rubric_output_map_path: apps_repo_brief/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_repo_brief.generate_executive_brief_v1
+    description: >-
+      Canonical R3_SIMPLE_GROUNDED_READ cert route. C0 mandatory.
+      FinalEvidenceContract issued by C0 before PA/L2 (not post-L2).
+      Cert projection adapter in apps_repo_brief/cert/ projects C0 evidence
+      fields — it does NOT mint an authoritative FEC.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects apps_repo_brief.executive_brief_v1 because this is the
+      canonical grounded brief route with mandatory C0 retrieval.

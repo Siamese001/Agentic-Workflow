@@ -1,0 +1,60 @@
+# apps_repo_brief spine manifest
+#
+# Canonical rename of apps_exec (apps-exec-to-repo-brief-rename, Plan 3).
+# Declares R3_SIMPLE_GROUNDED_READ route with mandatory C0 retrieval over
+# the ``repo_brief_docs`` L4 surface.
+#
+# CONTRADICTION RESOLUTION (W1 placeholder — full resolution in W2/P2.3):
+#   The legacy apps_exec/cert_route_registry.yaml described a
+#   "template-driven (no C0 retrieval)" route. That is WRONG for the
+#   canonical apps_repo_brief target. This manifest declares the corrected
+#   C0-required stance. The cert_route_registry will be migrated in W2.
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research W9 (canonical spine reference).
+# Scanner: tools.analysis.apps_spine_coverage.ROUTE_TYPE_CONTRACT_REQUIREMENTS
+
+schema_version: 1
+app: apps_repo_brief
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      On-demand executive brief grounded synthesis. ExecBriefRequest
+      (audience + emphasis_areas) → query construction → L1
+      query_planner.decompose_query → L0 AgenticRouter.route
+      (target=executive_brief_v1) → C0 hybrid retrieval over the
+      ``repo_brief_docs`` collection → PA prompt assembly with
+      CompiledPromptArtifact → L2 authorize_and_execute → Exit v6
+      exactly-one X3 → L6 after-runtime evaluation. Output is a sealed
+      executive-brief artifact carrying grounded citations + section
+      coverage. No real-world side effect; no CommitRequest in scope.
+    c0_required: true
+    pa_required: true
+    l3_required: false
+    source_collection: repo_brief_docs
+    notes:
+      - "C0 is mandatory — this is NOT template-only. SIMPLE ≠ ungrounded."
+      - "No CommitRequest expected — brief is a sealed read artifact."
+      - "No build_time_compiler semantics — requests run on demand."
+      - "No formal exception — uses standard GovernedAppRunner substrate."
+      - "Direct contract surfacing required for scanner visibility — see integrations/spine_handoff.py (W2)."
+      - "L3 off by default; only enabled for multi-audience batch / board pack+appendix / apps_research cross-context."
+
+# HITL posture (informational):
+#   apps_repo_brief HITL_ENABLED = True (inherited from apps_exec GovernedExecRun).
+#   RUNNER POSTURE only — does NOT push into R3R4_managed_workflow.
+#   GovernedExecE2ERunRecord has no commit field.
+
+# References:
+# - apps_exec/spine_manifest.yaml  (legacy, retained until W5 shim sunset)
+# - apps_research/spine_manifest.yaml  (canonical R3_grounded_read reference)
+# - apps_shared/integrations/governed_app_runner.py  (shared substrate)
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does NOT
+# certify runtime path exercises every contract on every call — that
+# requires OTel-trace ingest, out of scope for static-surfacing migration.

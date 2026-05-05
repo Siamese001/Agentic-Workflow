@@ -190,6 +190,25 @@ def _register_default_recipes():
         recipe_id="apps_lic_static",
     )
 
+    # Register managed R3R4 recipe
+    register_managed_recipe(
+        app_name="apps_lic",
+        dag_path=str(repo_root / "apps_lic" / "config" / "apps_lic_managed_dag.yaml"),
+        step_adapters={
+            # R3 Research Phase (stages 1-4)
+            "validate_request_for_briefing": adapters.validate_request_for_briefing,
+            "authorize_research": adapters.authorize_research,
+            "call_apps_research": adapters.research_bridge_adapter,
+            "validate_research_and_build_manifest": adapters.validate_research_and_build_manifest,
+            # R4 Outreach Phase (stages 5-8) - mirrors static DAG
+            "plan_message": adapters.plan_message,
+            "compose_draft": adapters.compose_draft_using_compiled_prompt_artifact,
+            "seal_output": adapters.seal_l2_artifact_for_exit,
+            "emit_managed_workflow_receipt": adapters.emit_managed_workflow_receipt,
+        },
+        recipe_id="apps_lic_managed",
+    )
+
 
 # Register default recipes on module load
 _register_default_recipes()

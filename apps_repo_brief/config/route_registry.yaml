@@ -1,0 +1,55 @@
+# apps_repo_brief L0 route registry.
+#
+# apps_repo_brief is R3_SIMPLE_GROUNDED_READ with mandatory C0 retrieval.
+# SINGLE_STEP execution; L3 off by default.
+#
+# W1: Canonical route declared. Legacy apps_exec routes (single_step_v1,
+#     execution_v1) are deprecated aliases — see W2/P2.2 for full migration.
+#     During W1 the old apps_exec registries remain active (additive only).
+#
+# Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P1.4
+
+app_name: apps_repo_brief
+schema_version: "apps_repo_brief.route_registry/v1"
+
+routes:
+  - route_id: apps_repo_brief.executive_brief_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    c0_required: true
+    pa_required: true
+    selected_capability: apps_repo_brief.generate_executive_brief_v1
+    source_collection: repo_brief_docs
+    route_family: R3_SIMPLE_GROUNDED_READ
+    description: >-
+      Canonical R3_SIMPLE_GROUNDED_READ route. Grounded synthesis from the
+      repo_brief_docs L4 retrieval surface. C0 mandatory; PA mandatory;
+      L3 off by default. Produces sealed executive-brief artifact for the
+      target audience (recruiter / cto / svp_eng / board / head_of_ai).
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+
+  # Deprecated aliases — maintained during W1-W4 transition.
+  # Both collapse to apps_repo_brief.executive_brief_v1 in W2/P2.2.
+  - route_id: apps_exec.execution_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    selected_capability: apps_exec.execution_v1
+    deprecated: true
+    deprecation_replacement: apps_repo_brief.executive_brief_v1
+    deprecation_wave: W2
+    description: >-
+      DEPRECATED alias from apps_exec.execution_v1. Retained for backward
+      compatibility during W1-W4. Will be retired in W5.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+
+  - route_id: apps_exec.single_step_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    selected_capability: apps_exec.execution_v1
+    deprecated: true
+    deprecation_replacement: apps_repo_brief.executive_brief_v1
+    deprecation_wave: W2
+    description: >-
+      DEPRECATED alias from apps_exec.single_step_v1 (legacy second route).
+      Retained for backward compatibility during W1-W4. Will be retired in W5.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE

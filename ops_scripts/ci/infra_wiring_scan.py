@@ -376,7 +376,7 @@ def update_scorecard(
 
     # P2 ratchet ceilings — accepted violations must not regress above these counts
     _P2_CEILING_MIXED = 3  # chromadb + redis + sqlite3 mixed usage (Wave 2 targets)
-    _P2_CEILING_DUPED = 3  # sqlite3 only post-consolidation; ceiling=3 until ADG regen (W3)
+    _P2_CEILING_DUPED = 1  # post-consolidation ceiling: redis+chromadb consolidated; reduced W3 2026-05-05
 
     scorecard = {
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -542,7 +542,7 @@ def main() -> int:
 
         # P2 regression check (warn but don't block — ceiling enforced)
         _P2_CEILING_MIXED = 3
-        _P2_CEILING_DUPED = 3
+        _P2_CEILING_DUPED = 1  # post-consolidation; reduced W3 2026-05-05
         mixed = adg_counts.get("v_p2_mixed_usage", 0)
         duped = adg_counts.get("v_p2_duplicated_adapters", 0)
         if mixed > _P2_CEILING_MIXED or duped > _P2_CEILING_DUPED:
