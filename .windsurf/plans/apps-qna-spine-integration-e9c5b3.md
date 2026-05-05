@@ -46,7 +46,7 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 | W1 | W1.1-W1.3 | Entrypoint purity + registry scaffold + governance | ~30K | ✅ DONE | __main__.py pure shim; 20 governance tests green |
 | W2 | W2.1-W2.4 | C0 thin adapter + briefing validator + evidence contracts | ~40K | ✅ DONE | C0 calls canonical only; briefing distinct from C0 |
 | W3 | W3.1-W3.4 | Two-tier router + Tier 1/2 templates + domain assembly | ~50K | ✅ DONE | Router selects 1 primary; Tier 1 always-on, Tier 2 trigger |
-| W4 | W4.1-W4.4 | Exit v6 wiring + egress verifier + cache + acceptance | ~45K | 🔲 IN PROGRESS | Single X3 per run; 57 tests pass; legacy shimmed |
+| W4 | W4.1-W4.4 | Exit v6 wiring + egress verifier + cache + acceptance | ~45K | ✅ DONE | Single X3 per run; 86 tests pass; legacy shimmed |
 
 **Total: ~200K tokens across 5 waves, 18 phases** (streamlined from ~275K/33 phases)
 
@@ -86,10 +86,10 @@ Merge and streamline two prior plans (a7f4c2, d7e3a1) into one integrated zero-l
 | W3.2 | Tier 1 template bodies | `templates/tier_1/*.md.j2` (4 cards: 00, 00A, 01, 03) | ~12K | ✅ DONE |
 | W3.3 | Tier 2 specialist specs | `templates/tier_2/*.md.j2` (14 specialists), `card_specs/tier_2.py` | ~14K | ✅ DONE |
 | W3.4 | Domain card context assembly | `card_context/card_context_assembler.py`, `context_budget.py`, `overlay_compressor.py` | ~12K | ✅ DONE |
-| W4.1 | L2 E4-E5 + egress verifier | `l2/e4_heal.py`, `e5_seal.py`, `egress/blocking_rules.py` | ~12K | 🔲 IN PROGRESS |
-| W4.2 | Exit v6 wiring + FEC producer | `exit_wiring.py`, `qna_exit_fec_producer.py` | ~11K | 🔲 TODO |
-| W4.3 | Cache safety (R1A/R1B/R5) | `cache/r1a_exact.py`, `r1b_semantic.py`, `r5_fallback.py` | ~12K | 🔲 TODO |
-| W4.4 | Acceptance sweep + legacy quarantine | `tests/test_acceptance.py`, RUNBOOK/docs updates, legacy shim | ~10K | 🔲 TODO |
+| W4.1 | L2 E4-E5 + egress verifier | `l2/e4_heal.py`, `e5_seal.py`, `egress/blocking_rules.py` | ~12K | ✅ DONE |
+| W4.2 | Exit v6 wiring + FEC producer | `exit_wiring.py`, `qna_exit_fec_producer.py` | ~11K | ✅ DONE |
+| W4.3 | Cache safety (R1A/R1B/R5) | `cache/r1a_exact.py`, `r1b_semantic.py`, `r5_fallback.py` | ~12K | ✅ DONE |
+| W4.4 | Acceptance sweep + legacy quarantine | `tests/test_acceptance.py`, RUNBOOK/docs updates, legacy shim | ~10K | ✅ DONE |
 
 ---
 

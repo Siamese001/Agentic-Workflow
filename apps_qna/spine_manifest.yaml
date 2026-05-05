@@ -32,7 +32,24 @@ claimed_routes:
       - "Apps that match this shape: apps_qna (paste-pack), apps_eval (scorecard)"
       - "Distinct from R3_action: no LLM call at build time; no spine routing"
 
+  - type: R4_SINGLE_ACTION
+    description: >-
+      Live interview runtime pack builder with governed spine pipeline
+      (U0→L1→L0→C0/Briefing→L2→Exit). Two sub-routes: grounded
+      (canonical C0 retrieval) and briefing-based (uploaded briefing
+      validation). Emits L1PlanContract, RouteContract,
+      FinalEvidenceContract, L2 execution receipts, ExitReviewPacket.
+      Output is local filesystem artifact (reports/qna/<slug>/), not
+      UWG/L4 durable write by default.
+    route_ids:
+      - apps_qna.live_interview_runtime_pack_v1
+      - apps_qna.live_interview_runtime_pack_from_uploaded_brief_v1
+    notes:
+      - "R4_SINGLE_ACTION per RouteIdV15 canonical enum"
+      - "ExecutionForm: SINGLE_STEP"
+      - "Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md"
+
 # References:
 # - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
-# - .windsurf/plans/apps-qna-spine-integration-e8f3a1.md (W1-W5 history)
+# - .windsurf/plans/apps-qna-spine-integration-e9c5b3.md (W0-W4)
 # - apps_qna/integrations/spine_handoff.py (the wrapper)
