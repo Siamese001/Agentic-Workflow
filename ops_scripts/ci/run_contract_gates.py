@@ -644,6 +644,12 @@ def main():
         # Advisory by default; JUDGE_SPEARMAN_FAIL_CLOSED=1 activates blocking.
         # Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 DS-R5.
         ("DS-R5 Judge Spearman calibration gate (advisory)", "ops_scripts/ci/check_judge_spearman_gate.py"),
+        # AG-WIRE — Author-Gate hook wiring invariant.
+        # Enforces AG-WIRE-1..4: pre_user_prompt reminder hook present+visible,
+        # and all 3 AG audit hooks in post_cascade_response have show_output=true.
+        # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
+        # Plan: author-gate-deferred-scope-b8c1d4 W3.
+        ("AG-WIRE Author-Gate hook wiring invariant (advisory)", "ops_scripts/ci/check_ag_hook_wiring.py"),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
