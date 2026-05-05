@@ -75,6 +75,19 @@
     min_required_score: 0.80
     evidence_required: true
     fail_closed_if_unknown: false
+  # W2 / bge-m3-deferred-scope-remaining-c4e7a1 — real LLM judge (Anthropic).
+  # IS_CALIBRATED=False until Spearman >= 0.80 on holdout verified.
+  # weight=0.0 and fail_closed_if_unknown=false until calibration passes.
+  - dimension_id: interview_card_quality
+    description: Overall LLM-judged quality of the interview card answer (relevance, completeness, accuracy, clarity, actionability).
+    weight: 0.0
+    grader_type: llm_as_judge
+    min_required_score: 0.75
+    evidence_required: true
+    fail_closed_if_unknown: false
+    judge_module: apps_qna.engines.judges.interview_card_quality_judge
+    calibration_status: uncalibrated
+    calibration_target_spearman: 0.80
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'
   # Frozen holdout salt — changing this reassigns all slugs to different partitions.
