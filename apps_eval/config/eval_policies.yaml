@@ -95,12 +95,23 @@ latency_quality_bands:
 gate_policies:
   # Hard gates - cannot be overridden
   hard_gates:
-    - no_critical_errors
-    - min_scenarios_executed
+    - suite_exists
+    - scenario_ids_non_empty
+    - all_thresholds_present
+    - all_judges_available
+    - no_hard_schema_errors
     - taxonomy_regression_class_not_violated   # added 2026-04-25 (G9)
 
-  # Soft gates - can be waived with justification
-  soft_gates:
+# Evaluation suites (added W3.1)
+suites:
+  unit:
+    active: true
+    threshold_profile: default
+    rubric_ids: []
+    timeout_sec: 30
+
+# Soft gates - can be waived with justification
+soft_gates:
     - regression_warnings
     - latency_warnings
     - capability_class_warnings                # added 2026-04-25 (G9)

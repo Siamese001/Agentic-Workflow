@@ -93,7 +93,7 @@ def _build_raw_request(args) -> dict[str, Any]:
             pass
 
     return {
-        "transport": "cli",
+        "transport": "api",
         "method": "POST",
         "content_type": "application/json",
         "source_channel": "apps_rg_cli",
@@ -114,45 +114,6 @@ def _build_raw_request(args) -> dict[str, Any]:
         "auto_research_internal": getattr(args, "auto_research_internal", False),
         "auto_research_tavily": getattr(args, "auto_research_tavily", False),
     }
-
-
-# ---------------------------------------------------------------------------
-# Interactive JD prompt — collects inputs from stdin when args are absent
-# ---------------------------------------------------------------------------
-
-
-def _prompt_jd_interactive() -> tuple[str, str, str, str]:
-    """Interactively collect company, role, location, and JD text from stdin.
-
-    Returns (company, role, location, jd_text).
-    Prompts are written to stdout so they appear even when stdout is a TTY.
-    """
-    print("\n=== apps_rg — Resume Generator ===")
-    print("Paste the job description details below.")
-    print("(Tip: you can also use --target-company / --target-role / --jd flags)\n")
-
-    company = ""
-    while not company.strip():
-        company = input("Target company: ").strip()
-
-    role = ""
-    while not role.strip():
-        role = input("Target role title: ").strip()
-
-    location = input("Location (optional, press Enter to skip): ").strip()
-
-    print()
-    print("Paste the full job description text.")
-    print("When done, enter a line containing only '---' (three dashes) and press Enter:")
-    lines: list[str] = []
-    while True:
-        line = input()
-        if line.strip() == "---":
-            break
-        lines.append(line)
-    jd_text = "\n".join(lines).strip()
-
-    return company, role, location, jd_text
 
 
 # ---------------------------------------------------------------------------
@@ -186,28 +147,13 @@ def main() -> None:
     parser.add_argument("--jd", default=None, help="Job description JSON path")
     args, _unknown = parser.parse_known_args()
 
-    # ── Interactive mode when required args are absent and stdin is a TTY ──
-    _interactive_jd_payload: dict[str, Any] | None = None
-    if (not args.target_company or not args.target_role) and sys.stdin.isatty():
-        company, role, location, jd_text = _prompt_jd_interactive()
-        args.target_company = args.target_company or company
-        args.target_role = args.target_role or role
-        _interactive_jd_payload = {
-            "title": role,
-            "company": company,
-            "location": location,
-            "description": jd_text,
-        }
-    elif not args.target_company:
+    if not args.target_company:
         parser.error("--target-company is required")
-    elif not args.target_role:
+    if not args.target_role:
         parser.error("--target-role is required")
 
     # ── Build request envelope (transport data only) ──
     raw_request = _build_raw_request(args)
-    if _interactive_jd_payload is not None:
-        raw_request["jd_payload"] = _interactive_jd_payload
-        raw_request["body_text"] = json.dumps(_interactive_jd_payload)
     artifact_dir = Path("artifacts/apps_rg/runs") / f"r4_{raw_request['resume_hash'][:8]}"
 
     # ── Delegate to agentic_core R4 pipeline (core resolves L2 recipe) ──

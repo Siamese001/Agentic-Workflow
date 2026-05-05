@@ -89,6 +89,25 @@ def resolve_l2_recipe(
 
     def _composite_l2_callable() -> dict[str, Any]:
         """Execute the L2 recipe steps in sequence."""
+        import json as _json
+        from pathlib import Path as _Path
+
+        jd_payload = raw_request.get("jd_payload") or {}
+        jd_data = (
+            raw_request.get("jd_data")
+            or (_json.dumps(jd_payload) if jd_payload else "")
+            or raw_request.get("body_text", "")
+        )
+        master_resume_data = raw_request.get("master_resume_data", "")
+        if not master_resume_data:
+            _master_path = _Path("apps_shared/data/master_resume.json")
+            if _master_path.exists():
+                try:
+                    master_resume_data = _master_path.read_text(encoding="utf-8")
+                except OSError:
+                    pass
+        flow_route = raw_request.get("flow_route", "tailor_existing")
+
         context: dict[str, Any] = {
             "app_name": app_name,
             "target_company": raw_request.get("target_company", ""),
@@ -98,6 +117,9 @@ def resolve_l2_recipe(
             "auto_research_internal": raw_request.get("auto_research_internal", False),
             "auto_research_tavily": raw_request.get("auto_research_tavily", False),
             "pa_compatible": True,
+            "jd_data": jd_data,
+            "master_resume_data": master_resume_data,
+            "flow_route": flow_route,
         }
         results: list[dict[str, Any]] = []
         for step_cls in step_classes:

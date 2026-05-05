@@ -29,6 +29,8 @@ class ScenarioResult(BaseModel):
     message: str = Field("", description="Status message")
     evidence: str = Field("", description="Evidence reference")
     deterministic: bool = Field(True, description="Whether result is deterministic")
+    passed: bool = Field(False, description="Whether scenario passed")
+    gate_violations: list[dict] = Field(default_factory=list, description="Gate violations")
 
     @validator("score")
     def validate_score_range(cls, v):

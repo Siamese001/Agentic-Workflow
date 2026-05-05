@@ -144,18 +144,16 @@ def _build_raw_envelope(raw_request: dict[str, Any]) -> RawIngressEnvelope:
         or json.dumps(raw_request.get("jd_payload") or {})
     )
     return RawIngressEnvelope(
-        transport=str(raw_request.get("transport", "cli")),
+        transport=str(raw_request.get("transport", "api")),
         method=str(raw_request.get("method", "POST")),
         content_type=str(raw_request.get("content_type", "application/json")),
         source_channel=str(raw_request.get("source_channel", "apps_rg_cli")),
         claimed_tenant_id=raw_request.get("tenant_id"),
         claimed_user_id=str(raw_request.get("user_id", "u-apps_rg")),
+        auth_credential=dict(
+            raw_request.get("auth_credential") or {"kind": "internal", "token": "apps-rg-internal"}
+        ),
         body_text=body_text,
-        body_bytes=None,
-        declared_schema=str(raw_request.get("declared_schema", "apps_rg_jd_v1")),
-        declared_content_length=len(body_text.encode()),
-        attachments=None,
-        modality_manifest=None,
     )
 
 
@@ -327,19 +325,22 @@ def run_integrated_r4_deterministic_pipeline(
     intake_result = run_request_intake(envelope)
 
     # If U0 rejects, return schema-rejection result (not R5 — see plan §W2)
-    if not isinstance(intake_result, ValidatedRequest):
+    if intake_result.validated is None:
+        reason = "unknown"
+        if intake_result.rejection_report is not None:
+            reason = getattr(intake_result.rejection_report.decisive_reason_code, "value", "unknown")
         return R4IntegratedRunResult(
             run_id=run_id,
             request_id=run_id,
             route_id=ROUTE_ID,
-            x3_disposition=V6Disposition.EXIT_DENY.value,
+            x3_disposition=V6Disposition.DENY.value,
             terminal_r5=False,
             terminal_r5_reason="",
             artifact_dir=artifact_dir,
-            fault=f"U0_SCHEMA_REJECTION:{getattr(intake_result, 'reason_code', 'unknown')}",
+            fault=f"U0_SCHEMA_REJECTION:{reason}",
         )
 
-    validated: ValidatedRequest = intake_result
+    validated: ValidatedRequest = intake_result.validated
     request_id = validated.request_id
     trace_root = validated.trace_root
 
@@ -351,7 +352,7 @@ def run_integrated_r4_deterministic_pipeline(
     # ------------------------------------------------------------------
     # L0 — route gates (decision only; no fallback execution)
     # ------------------------------------------------------------------
-    gate_result = check_route_gates(plan_contract)
+    gate_result = check_route_gates(plan_contract, namespace=app_name)
 
     # L0 terminal (R5_FATAL / R5_FALLBACK) — route through Exit V6 before return
     if getattr(gate_result, "terminal", False) or getattr(gate_result, "r5_terminal", False):
