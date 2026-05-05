@@ -192,7 +192,7 @@ def mine_run_log(
     for dim_id, score in dim_scores_raw.items():
         try:
             dim_scores[str(dim_id)] = float(score)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- dim score parsing fail-soft; malformed scores are silently dropped
             pass
 
     return RunMetrics(

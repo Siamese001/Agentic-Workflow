@@ -1,0 +1,101 @@
+# apps_underwriting_ai — Synthetic Demo Fixture: REFER (HITL posture)
+#
+# Scenario: Adequate docs, borderline risk band → REFER with
+# HITL_ADVISORY posture → X3B_REFER.
+#
+# PUBLIC DEMO NOTICE: All applicant data is fully synthetic. No real
+# applicant, real lender, or real credit decision is represented.
+#
+# Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W6.2
+
+demo_packet_id: uw-demo-refer-003
+demo_mode: true
+data_mode: SYNTHETIC_DEMO_ONLY
+scenario: borderline_refer_hitl
+
+# --- Request envelope ---
+request:
+  request_id: req-refer-003
+  applicant_id: synth-applicant-GAMMA-003
+  applicant_type: INDIVIDUAL
+  product_class: MORTGAGE_DEMO
+  demo_policy_profile: demo-policy-borderline-v1
+
+# --- Policy / blueprint bindings ---
+demo_policy_hash: sha256-demo-policy-borderline-v1-112233
+blueprint_hash: sha256-blueprint-mortgage-demo-v1-ddeeff
+route_contract:
+  route_family: R3R4_MANAGED_WORKFLOW
+  route_id: apps_underwriting_ai.decision_packet_v1
+  execution_form: MANAGED_WORKFLOW
+  l3_required: true
+  c0_required: true
+  c0_mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+  exit_mode: FAIL_CLOSED
+  durable_write_path: UWG_ONLY
+
+# --- Submitted synthetic documents ---
+submitted_documents:
+  - document_id: doc-BANK_STATEMENT-007
+    document_class: BANK_STATEMENT
+    content_summary: >
+      Synthetic bank statement. Average monthly balance: $6,200.
+      Two months with balance below $2,000. Employer: Synth Staffing LLC.
+    field_spans:
+      avg_monthly_balance: "6200"
+      employer_name: "Synth Staffing LLC"
+      low_balance_months: "2"
+
+  - document_id: doc-TAX_RETURN-008
+    document_class: TAX_RETURN
+    content_summary: >
+      Synthetic 1040. AGI: $74,000. Freelance income flagged. Two
+      income sources (W-2 + 1099). Tax paid: $9,800.
+    field_spans:
+      adjusted_gross_income: "74000"
+      filing_status: "single"
+      income_sources: "W-2,1099"
+      tax_paid: "9800"
+
+  - document_id: doc-CREDIT_REPORT-009
+    document_class: CREDIT_REPORT
+    content_summary: >
+      Synthetic credit report. FICO proxy: 641. Revolving utilisation: 58%.
+      No derogatory marks but thin file (4 open accounts).
+    field_spans:
+      fico_proxy_score: "641"
+      revolving_utilisation_pct: "58"
+      derogatory_marks: "0"
+      open_account_count: "4"
+
+  - document_id: doc-EMPLOYMENT_VERIFICATION-010
+    document_class: EMPLOYMENT_VERIFICATION
+    content_summary: >
+      Synthetic employment letter. Contractor role. Tenure: 11 months.
+      Annual contract value: $78,000.
+    field_spans:
+      job_title: "Contractor"
+      tenure_years: "0.9"
+      annual_salary: "78000"
+
+# --- C0 expected output ---
+expected_c0:
+  c0_state: WEAK_WITH_CAVEATS
+  support_score: 0.64
+  contradiction_flags:
+    - INCOME_SOURCE_INCONSISTENCY
+  missing_evidence_flags: []
+  evidence_sufficiency: partial
+
+# --- Scorer expected output ---
+# Borderline ratio band triggers HITL_ADVISORY.
+# Rationale support score < 0.70 triggers SOFT_POSTURE escalation.
+expected_verdict: REFER
+expected_reason_codes:
+  - RC010_BORDERLINE_DTI_RATIO
+  - RC011_THIN_CREDIT_FILE
+  - RC012_CONTRACTOR_EMPLOYMENT_RISK
+expected_hitl_posture: HITL_ADVISORY
+
+# --- Exit expected output ---
+expected_x3_disposition: X3B_REFER

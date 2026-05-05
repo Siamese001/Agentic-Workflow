@@ -1,0 +1,79 @@
+# apps_underwriting_ai — Synthetic Demo Fixture: MISSING EVIDENCE
+#
+# Scenario: Missing bank statement → INSUFFICIENT_EVIDENCE or
+# X3E_SAFE_ABSTAIN when FEC c0_state=FAIL.
+#
+# PUBLIC DEMO NOTICE: All applicant data is fully synthetic. No real
+# applicant, real lender, or real credit decision is represented.
+#
+# Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W6.2
+
+demo_packet_id: uw-demo-missing-evidence-002
+demo_mode: true
+data_mode: SYNTHETIC_DEMO_ONLY
+scenario: missing_evidence_bank_statement
+
+# --- Request envelope ---
+request:
+  request_id: req-missing-002
+  applicant_id: synth-applicant-BETA-002
+  applicant_type: INDIVIDUAL
+  product_class: MORTGAGE_DEMO
+  demo_policy_profile: demo-policy-standard-v1
+
+# --- Policy / blueprint bindings ---
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+blueprint_hash: sha256-blueprint-mortgage-demo-v1-ddeeff
+route_contract:
+  route_family: R3R4_MANAGED_WORKFLOW
+  route_id: apps_underwriting_ai.decision_packet_v1
+  execution_form: MANAGED_WORKFLOW
+  l3_required: true
+  c0_required: true
+  c0_mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+  exit_mode: FAIL_CLOSED
+  durable_write_path: UWG_ONLY
+
+# --- Submitted synthetic documents (BANK_STATEMENT intentionally absent) ---
+submitted_documents:
+  - document_id: doc-TAX_RETURN-005
+    document_class: TAX_RETURN
+    content_summary: >
+      Synthetic 1040. AGI: $95,000. Single filer. Tax paid: $14,200.
+    field_spans:
+      adjusted_gross_income: "95000"
+      filing_status: "single"
+      tax_paid: "14200"
+
+  - document_id: doc-CREDIT_REPORT-006
+    document_class: CREDIT_REPORT
+    content_summary: >
+      Synthetic credit report. FICO proxy: 692. Revolving utilisation: 34%.
+      One 30-day late mark (18 months ago).
+    field_spans:
+      fico_proxy_score: "692"
+      revolving_utilisation_pct: "34"
+      derogatory_marks: "1"
+
+# Note: BANK_STATEMENT and EMPLOYMENT_VERIFICATION are absent.
+# C0 adapter will flag missing_evidence_flags for required classes.
+
+# --- C0 expected output ---
+expected_c0:
+  c0_state: FAIL
+  support_score: 0.31
+  contradiction_flags: []
+  missing_evidence_flags:
+    - BANK_STATEMENT
+    - EMPLOYMENT_VERIFICATION
+  evidence_sufficiency: insufficient
+
+# --- Scorer expected output ---
+expected_verdict: INSUFFICIENT_EVIDENCE
+expected_reason_codes: []
+expected_hitl_posture: HITL_NONE
+
+# --- Exit expected output ---
+# With c0_state=FAIL the exit must abstain (X3E) or emit X3D for
+# INSUFFICIENT_EVIDENCE verdict — both are governed fail-closed paths.
+expected_x3_disposition: X3E_SAFE_ABSTAIN

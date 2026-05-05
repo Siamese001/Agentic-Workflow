@@ -1,0 +1,97 @@
+# apps_underwriting_ai — Synthetic Demo Fixture: APPROVE
+#
+# Scenario: Clean Approve — complete docs, strong synthetic cash flow,
+# low contradiction score → X3A_APPROVE.
+#
+# PUBLIC DEMO NOTICE: All applicant data is fully synthetic. No real
+# applicant, real lender, or real credit decision is represented.
+#
+# Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W6.2
+
+demo_packet_id: uw-demo-approve-001
+demo_mode: true
+data_mode: SYNTHETIC_DEMO_ONLY
+scenario: clean_approve
+
+# --- Request envelope ---
+request:
+  request_id: req-approve-001
+  applicant_id: synth-applicant-ALPHA-001
+  applicant_type: INDIVIDUAL
+  product_class: MORTGAGE_DEMO
+  demo_policy_profile: demo-policy-standard-v1
+
+# --- Policy / blueprint bindings ---
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+blueprint_hash: sha256-blueprint-mortgage-demo-v1-ddeeff
+route_contract:
+  route_family: R3R4_MANAGED_WORKFLOW
+  route_id: apps_underwriting_ai.decision_packet_v1
+  execution_form: MANAGED_WORKFLOW
+  l3_required: true
+  c0_required: true
+  c0_mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+  exit_mode: FAIL_CLOSED
+  durable_write_path: UWG_ONLY
+
+# --- Submitted synthetic documents ---
+submitted_documents:
+  - document_id: doc-BANK_STATEMENT-001
+    document_class: BANK_STATEMENT
+    content_summary: >
+      Synthetic 6-month bank statement. Average monthly balance: $18,500.
+      Consistent inflows from employer "Synth Corp". No overdrafts.
+    field_spans:
+      avg_monthly_balance: "18500"
+      employer_name: "Synth Corp"
+      overdraft_count: "0"
+
+  - document_id: doc-TAX_RETURN-002
+    document_class: TAX_RETURN
+    content_summary: >
+      Synthetic W-2 and 1040 for demo year. Adjusted Gross Income: $142,000.
+      Single filer. Tax paid: $24,400.
+    field_spans:
+      adjusted_gross_income: "142000"
+      filing_status: "single"
+      tax_paid: "24400"
+
+  - document_id: doc-CREDIT_REPORT-003
+    document_class: CREDIT_REPORT
+    content_summary: >
+      Synthetic credit report. FICO proxy score: 768. Total revolving
+      utilisation: 12%. No derogatory marks.
+    field_spans:
+      fico_proxy_score: "768"
+      revolving_utilisation_pct: "12"
+      derogatory_marks: "0"
+
+  - document_id: doc-EMPLOYMENT_VERIFICATION-004
+    document_class: EMPLOYMENT_VERIFICATION
+    content_summary: >
+      Synthetic employment letter. Title: Senior Engineer. Tenure: 4.5 years.
+      Employer: Synth Corp. Annual salary: $148,000.
+    field_spans:
+      job_title: "Senior Engineer"
+      tenure_years: "4.5"
+      annual_salary: "148000"
+
+# --- C0 expected output ---
+expected_c0:
+  c0_state: PASS
+  support_score: 0.91
+  contradiction_flags: []
+  missing_evidence_flags: []
+  evidence_sufficiency: sufficient
+
+# --- Scorer expected output ---
+expected_verdict: APPROVE
+expected_reason_codes:
+  - RC000_CREDIT_SCORE_STRONG
+  - RC001_INCOME_VERIFIED
+  - RC002_EMPLOYMENT_CONFIRMED
+  - RC003_BANK_BALANCE_ADEQUATE
+expected_hitl_posture: HITL_NONE
+
+# --- Exit expected output ---
+expected_x3_disposition: X3A_APPROVE

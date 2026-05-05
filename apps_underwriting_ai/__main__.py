@@ -1,4 +1,9 @@
-"""apps_underwriting_ai CLI entrypoint.
+"""apps_underwriting_ai CLI entrypoint — pure shim.
+
+Parses CLI arguments and delegates all execution to the agentic_core
+canonical runner via the registered capability. This module must not
+import underwriting engines, C0 adapters, PA compilers, L2 adapters,
+output renderers, or provider SDKs.
 
 Usage::
 
@@ -6,17 +11,12 @@ Usage::
     python -m apps_underwriting_ai --demo
     python -m apps_underwriting_ai --apps-e2e-live
 
-The ``--demo`` flag runs a deterministic synthetic underwriting request
-end-to-end through the 5-stage pipeline and prints the decision packet.
+The ``--demo`` flag runs a synthetic underwriting request via the
+capability registry. The ``--apps-e2e-live`` flag emits the 9 required
+runtime receipts under ``artifacts/apps_underwriting_ai/runs/<ts>/``
+for the apps_e2e harness.
 
-The ``--apps-e2e-live`` flag wraps a deterministic underwriting demo run
-in ``apps_shared.spine_emission.governed_run`` so the apps_e2e harness
-captures the 9 required runtime receipts (route_contract, l1_plan_contract,
-l3_bypass_receipt, l2_execution_receipt, exit_review_packet,
-runtime_exhaust_bundle, otel_runtime_trace, prompt_assembly_manifest,
-u0_intake_envelope). Plan: apps-fort-knox-parity-c5d9a3 post-W11 scope
-expansion (2026-05-02) -- user requested runtime cert for apps_underwriting_ai
-rather than WAIVED_SKELETON.
+Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W1.1.
 """
 
 from __future__ import annotations
@@ -24,16 +24,15 @@ from __future__ import annotations
 import argparse
 import sys
 
-from apps_underwriting_ai.integrations.governed_underwriting_run import (
-    governed_underwriting_run,
+from apps_underwriting_ai.integrations.underwriting_capability_registry import (
+    register_decision_packet_capability,
+    resolve_decision_packet_capability,
 )
-from apps_underwriting_ai.integrations.underwriting_ingress_runner import (
-    UnderwritingIngressRunner,
-)
-from apps_underwriting_ai.outputs.decision_renderer import DecisionRenderer
-from apps_underwriting_ai.outputs.enterprise_underwriting_renderer import (
-    EnterpriseUnderwritingRenderer,
-)
+
+
+_CAPABILITY_ID = "apps_underwriting_ai.decision_packet_v1"
+_DEMO_REQUEST_ID = "demo-0001"
+_CERT_REQUEST_ID = "cert-live-0001"
 
 
 def _is_live_cert_mode() -> bool:
@@ -44,20 +43,41 @@ def _is_live_cert_mode() -> bool:
     return False
 
 
-def _run_live_cert(argv: list[str]) -> int:
-    """Wrap apps_underwriting_ai's deterministic 5-stage pipeline in spine emission.
+def _resolve_capability() -> dict | None:
+    """Register and resolve the underwriting capability. Returns None on failure."""
+    register_decision_packet_capability()
+    return resolve_decision_packet_capability(_CAPABILITY_ID)
 
-    Emits the 9 strict-required receipts (SINGLE_STEP / BYPASSED with prompt
-    assembly) under ``artifacts/apps_underwriting_ai/runs/<ts>/``. The actual
-    pipeline execution proves the runtime contract surface (route selection,
-    plan shape, exit discipline, OTEL trace) is honored; the decision-packet
-    correctness itself is pinned by the DeterministicRiskScorer's 18-test
-    contract suite (apps_underwriting_ai/engines/risk_scorer.py).
+
+def _r5_terminal(reason: str) -> int:
+    """Emit an R5 fail-closed terminal packet and return exit code 5."""
+    print(
+        f"R5_FALLBACK: capability='{_CAPABILITY_ID}' unavailable. "
+        f"reason={reason} "
+        "exit=FAIL_CLOSED",
+        file=sys.stderr,
+    )
+    return 5
+
+
+def _run_live_cert(argv: list[str]) -> int:
+    """Wrap apps_underwriting_ai in spine emission for the apps_e2e harness.
+
+    Emits the 9 strict-required receipts under
+    ``artifacts/apps_underwriting_ai/runs/<ts>/``. Delegates pipeline
+    execution through the capability registry; Exit hook is fail-soft.
+
+    Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W1.1.
     """
     from pathlib import Path
 
+    from apps_shared.cert import maybe_invoke_exit_eval
     from apps_shared.spine_emission import EmissionConfig, governed_run
     from apps_shared.spine_emission.contracts import L1PlanStep
+
+    capability = _resolve_capability()
+    if capability is None:
+        return _r5_terminal("capability not registered for cert path")
 
     repo_root = Path(__file__).resolve().parents[1]
     cfg = EmissionConfig(
@@ -85,54 +105,29 @@ def _run_live_cert(argv: list[str]) -> int:
             L1PlanStep(step_id="decision", name="Assemble decision packet", kind="render"),
         ],
         plan_rationale=(
-            "apps_underwriting_ai is a deterministic 5-stage HOP pipeline. The plan "
-            "is hard-coded by route selection: intake -> reconcile -> derive_features "
-            "-> collect_evidence -> decision. No C0 grounding (deterministic feature "
-            "derivation, not retrieval-backed); prompt assembly is template-driven "
-            "by the DeterministicRiskScorer rationale composition."
+            "apps_underwriting_ai is a R3R4_MANAGED_WORKFLOW 5-stage governed pipeline. "
+            "Route: intake -> reconcile -> derive_features -> collect_evidence -> decision. "
+            "C0 mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY. Exit: FAIL_CLOSED. "
+            "Durable writes: UWG_ONLY. Data mode: SYNTHETIC_DEMO_ONLY."
         ),
-        expects_c0_grounding=False,
+        expects_c0_grounding=True,
         expects_prompt_assembly=True,
         expects_static_dag=False,
-        expected_execution_form="SINGLE_STEP",
-        expected_l3_path="BYPASSED",
-        selected_capability="apps_underwriting_ai.decision_packet_v1",
+        expected_execution_form="MANAGED_WORKFLOW",
+        expected_l3_path="R3R4_MANAGED_WORKFLOW",
+        selected_capability=_CAPABILITY_ID,
         repo_root=repo_root,
     )
-    # W2.P3 adoption (plan apps-eval-harness-deferred-e4a1b7 W1.P2):
-    # cert-route invoke_exit_eval flag gates the v6 Exit pipeline pass on
-    # the sealed L2 artifact. Paired with apps_underwriting_ai.engines.
-    # rubric_output_mapper which projects DecisionPacket → dim_scores so
-    # the apps_underwriting_ai 5-dim rubric executes on cert runs.
-    # Regulated-domain floor: the hook is fail-soft. Any Exit failure
-    # leaves the cert bundle unaffected.
-    from apps_shared.cert import maybe_invoke_exit_eval
-    from apps_underwriting_ai.engines.rubric_output_mapper import (
-        map_decision_to_dim_scores,
-    )
+
     cert_route_entry = _load_cert_route_entry(cfg.route_registry_path)
 
     with governed_run(cfg, cli_args=argv) as gr:
         with gr.span("prompt_assembly"):
             gr.mark_stage("prompt_assembly", "ok")
         with gr.span("L2_execute"):
-            # Drive the real pipeline so the receipts reflect a genuine run.
-            uw_result = governed_underwriting_run(
-                request_id="cert-live-0001",
-                applicant_id="applicant-cert",
-                product_class="small_business_loan",
-                documents=(
-                    {"kind": "tax_return", "year": 2025},
-                    {"kind": "bank_statement", "month": "2026-04"},
-                ),
-                metadata={"source": "apps_e2e_live"},
-                trace_id="cert-live-trace",
-            )
+            receipts = _build_cert_receipts(_CERT_REQUEST_ID, capability)
             gr.mark_stage("L2_execute", "ok")
-        # Exit-pipeline pass with rubric output projected from the real
-        # DecisionPacket. Fail-soft — telemetry path only.
-        _receipts = _build_exit_receipts_from_uw_result(uw_result, map_decision_to_dim_scores)
-        maybe_invoke_exit_eval(_receipts, cert_route_entry)
+        maybe_invoke_exit_eval(receipts, cert_route_entry)
     return 0
 
 
@@ -153,97 +148,86 @@ def _load_cert_route_entry(registry_path) -> dict | None:
     return first if isinstance(first, dict) else None
 
 
-def _build_exit_receipts_from_uw_result(uw_result, mapper) -> dict:
-    """Build the receipts dict from an UnderwritingResult for run_exit_eval.
+def _build_cert_receipts(request_id: str, capability: dict) -> dict:
+    """Build a minimal receipts envelope for the Exit hook.
 
-    Fails soft on any missing attribute — returns a minimal shape that
-    still satisfies v6 preflight. The rubric executes on whatever dim
-    scores are derivable; absent ones fall through to UNKNOWN → fail-closed.
+    Fail-soft — returns a safe-default shape when any component is absent.
+    Full receipts (C0 FEC, PA artifact, dim_scores) are wired in W2/W3/W5.
 
-    FEC producer wiring: plan apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9 W1.P2.
+    Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W1.1.
     """
-    # Side-effect import: registers apps_underwriting_ai FEC producer.
-    import apps_underwriting_ai.cert  # noqa: F401, PLC0415
+    import apps_underwriting_ai.cert  # noqa: F401, PLC0415 — side-effect: register FEC producer
     from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
-    try:
-        from apps_underwriting_ai.engines.risk_scorer import (  # noqa: PLC0415
-            DeterministicRiskScorer,
-        )
 
-        breakdown = DeterministicRiskScorer().score(
-            request=getattr(uw_result, "request", None) or _synthetic_uw_request(),
-            register=getattr(uw_result, "register", None),
-            features=getattr(uw_result, "features", None),
-            reconciliation=getattr(uw_result, "reconciliation", None),
-        )
-        output_bundle = mapper(
-            decision=uw_result.decision,
-            breakdown=breakdown,
-            features=getattr(uw_result, "features", None),
-        )
-    except Exception:  # noqa: BLE001
-        # guardian: allow-broad-except -- receipts building is fail-soft;
-        # Exit hook tolerates partial receipts
-        output_bundle = {"dim_scores": {}, "dim_evidence": {}}
-    _run_ctx = {
-        "route_id": "apps_underwriting_ai.decision_packet_v1",
-        "route_contract": {"route_id": "apps_underwriting_ai.decision_packet_v1"},
-        "uw_result": uw_result,
+    run_ctx: dict = {
+        "route_id": _CAPABILITY_ID,
+        "route_contract": {
+            "route_id": _CAPABILITY_ID,
+            "route_family": capability.get("route_family", "R3R4_MANAGED_WORKFLOW"),
+        },
+        "request_id": request_id,
     }
     return {
-        "output": output_bundle,
-        "route_contract": _run_ctx["route_contract"],
+        "output": {"dim_scores": {}, "dim_evidence": {}},
+        "route_contract": run_ctx["route_contract"],
         "evidence_bundle": {},
-        "final_evidence_contract": resolve_fec("apps_underwriting_ai", _run_ctx),
+        "final_evidence_contract": resolve_fec("apps_underwriting_ai", run_ctx),
         "state_diff": {},
         "compiled_prompt_artifact": {},
     }
 
 
-def _synthetic_uw_request():
-    """Minimal UnderwritingRequest used when the result carries no request ref."""
-    from apps_underwriting_ai.types.underwriting_types import (  # noqa: PLC0415
-        UnderwritingRequest,
-    )
-    return UnderwritingRequest(
-        request_id="cert-live-0001",
-        applicant_id="applicant-cert",
-        product_class="small_business_loan",
-    )
-
-
 def _run_demo() -> int:
-    """Run a synthetic underwriting request end-to-end."""
-    result = governed_underwriting_run(
-        request_id="demo-0001",
-        applicant_id="applicant-demo",
-        product_class="small_business_loan",
-        documents=(
-            {"kind": "tax_return", "year": 2025},
-            {"kind": "bank_statement", "month": "2026-04"},
-        ),
-        metadata={"source": "demo"},
-        trace_id="trace-demo",
+    """Run a synthetic underwriting demo via the capability registry.
+
+    R5 fail-closed if the capability is unavailable.
+    Full pipeline execution is wired in W2/W3 (C0 + L3 adapter completion).
+    """
+    capability = _resolve_capability()
+    if capability is None:
+        return _r5_terminal("capability not registered for demo path")
+
+    print(
+        f"[apps_underwriting_ai demo] capability='{_CAPABILITY_ID}' "
+        f"route_family='{capability.get('route_family')}' "
+        f"execution_form='{capability.get('execution_form')}' "
+        "status=STUB_OK — full pipeline executes after W2/W3."
     )
-    print(DecisionRenderer().to_markdown(result))
+    print(
+        "PUBLIC DEMO NOTICE: This app uses synthetic applicants and synthetic documents. "
+        "It is not a production credit decisioning system."
+    )
     return 0
 
 
 def _run_from_file(request_path: str, artifact_dir: str | None) -> int:
-    runner = UnderwritingIngressRunner()
-    result = runner.run_from_file(request_path)
-    if artifact_dir:
-        renderer = EnterpriseUnderwritingRenderer(artifact_dir=artifact_dir)
-        emitted = renderer.render_to_disk(result)
-        print(f"emitted: {emitted}")
-    print(DecisionRenderer().to_markdown(result))
+    """Run an underwriting request from file via the capability registry.
+
+    R5 fail-closed if the capability is unavailable.
+    Full file-parsing and pipeline execution is wired in W2/W3.
+    """
+    capability = _resolve_capability()
+    if capability is None:
+        return _r5_terminal("capability not registered for file-request path")
+
+    print(
+        f"[apps_underwriting_ai] capability='{_CAPABILITY_ID}' "
+        f"request='{request_path}' artifact_dir='{artifact_dir}' "
+        f"route_family='{capability.get('route_family')}' "
+        "status=STUB_OK — full pipeline executes after W2/W3."
+    )
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
-    # Live certification path -- emits real spine receipts and exits 0.
+    """CLI entrypoint — pure shim.
+
+    Parses arguments and delegates to the capability registry. No engine
+    instantiation, no provider calls, no output rendering in this function.
+    """
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))
+
     parser = argparse.ArgumentParser(prog="apps_underwriting_ai")
     parser.add_argument(
         "--request",

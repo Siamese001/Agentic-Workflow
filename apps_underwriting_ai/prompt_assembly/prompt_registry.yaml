@@ -1,0 +1,75 @@
+schema_version: "1.0"
+registry_id: apps_underwriting_ai_prompt_registry_v1
+owner: apps_underwriting_ai.prompt_assembly
+purpose: >
+  Maps template IDs to their YAML template files for apps_underwriting_ai.
+  All templates must be loaded through this registry — no direct path
+  construction in application code. LLM rationale firewall: verdict and
+  reason_code_bundle are set by DeterministicRiskScorer before any template
+  is compiled.
+
+templates:
+  decision_rationale_enrichment_v1:
+    path: apps_underwriting_ai/prompt_assembly/templates/decision_rationale_enrichment_v1.yaml
+    description: >
+      Primary rationale enrichment template. Produces a SyntheticUnderwritingRationale
+      from verified C0 evidence and the DeterministicRiskScorer output.
+      LLM explains and formats the deterministic verdict — it does not change it.
+    allowed_stage: E3_EXEC
+    output_type: SyntheticUnderwritingRationale
+    llm_firewall: strict
+    verdict_locked: true
+    reason_codes_locked: true
+
+  evidence_to_rationale_context_v1:
+    path: apps_underwriting_ai/prompt_assembly/templates/evidence_to_rationale_context_v1.yaml
+    description: >
+      Evidence context preparation template. Converts FinalEvidenceContract
+      extracted spans into a structured RationalePromptContext for use in E2
+      validation. Ensures only submitted-document spans enter the rationale lane.
+    allowed_stage: E2_VALID
+    output_type: RationalePromptContext
+    llm_firewall: strict
+    verdict_locked: false
+    reason_codes_locked: false
+
+  unsupported_reason_omission_v1:
+    path: apps_underwriting_ai/prompt_assembly/templates/unsupported_reason_omission_v1.yaml
+    description: >
+      Healing template for rationale outputs that cite reason codes not supported
+      by the C0 evidence contract. Produces UnsupportedReasonRepair that removes
+      or flags unsupported reason references without changing the verdict.
+    allowed_stage: E4_HEAL
+    output_type: UnsupportedReasonRepair
+    llm_firewall: strict
+    verdict_locked: true
+    reason_codes_locked: true
+
+  rationale_caveat_and_confidence_repair_v1:
+    path: apps_underwriting_ai/prompt_assembly/templates/rationale_caveat_and_confidence_repair_v1.yaml
+    description: >
+      Healing template for rationale outputs with missing or incorrect caveat
+      and confidence expressions. Produces RationaleCaveatConfidenceRepair that
+      adds required synthetic-demo caveats without altering the verdict.
+    allowed_stage: E4_HEAL
+    output_type: RationaleCaveatConfidenceRepair
+    llm_firewall: strict
+    verdict_locked: true
+    reason_codes_locked: true
+
+  rationale_length_and_structure_repair_v1:
+    path: apps_underwriting_ai/prompt_assembly/templates/rationale_length_and_structure_repair_v1.yaml
+    description: >
+      Healing template for rationale outputs that are too long, too short,
+      or structurally malformed. Produces RationaleStructureRepair that
+      reformats the rationale to meet schema constraints.
+    allowed_stage: E4_HEAL
+    output_type: RationaleStructureRepair
+    llm_firewall: strict
+    verdict_locked: true
+    reason_codes_locked: true
+
+hash_fields:
+  - schema_version
+  - registry_id
+  - templates

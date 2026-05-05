@@ -243,7 +243,7 @@ def emit_uwg_pack_record(
             reason=blocked_codes,
         )
 
-    except Exception as exc:  # guardian: allow-broad-exception-catch -- UWG write is optional; any failure must be fail-open to not block exit pipeline
+    except Exception as exc:  # guardian: allow-broad-except -- UWG write is optional; any failure must be fail-open to not block exit pipeline
         return UWGWriteResult(skipped=True, reason="uwg_error", error=str(exc))
 
 

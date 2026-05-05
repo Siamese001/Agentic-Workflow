@@ -23,34 +23,76 @@ schema_version: 1
 app: apps_underwriting_ai
 
 claimed_routes:
-  - type: R3_grounded_read
+  - type: R3R4_MANAGED_WORKFLOW
     description: >-
-      On-demand underwriting decision packet generation. UnderwritingRequest
-      (request_id + applicant_id + product_class + documents) → 5-stage
-      HOP pipeline (initialize_evidence → reconcile_documents →
-      derive_features → collect_evidence → assemble_decision) →
-      DecisionPacket (verdict + rationale + evidence_refs +
-      feature_summary). The pipeline emits a structured decision artifact
-      as a read-side outcome; no durable writes are issued by
-      apps_underwriting_ai itself. Downstream policy issuance / loan
-      booking systems are responsible for any durable state changes.
+      On-demand underwriting decision packet generation via managed L3/L2
+      five-stage workflow. UnderwritingRequest (request_id + applicant_id +
+      product_class + documents) → C0 evidence pass (SUBMITTED_DOCUMENT_EVIDENCE_ONLY)
+      → L3 expand (workflow graph declared, HITL posture injected, evidence_refs
+      threaded) → L2 execute (E1 evidence register → E2 document reconciliation
+      → E3a feature derivation → E3b risk scoring → E5 decision assembly) →
+      DecisionPacketCandidate (verdict + reason_codes + evidence_refs) → PA
+      compiler LLM firewall → sealed DecisionPacket.
+      The pipeline emits a structured read-side artifact; no durable writes are
+      issued by apps_underwriting_ai. Downstream policy / loan booking systems
+      are responsible for any durable state changes (UWG-only write path).
+
+    workflow_id: underwriting_decision_packet_v1
+    route_family: R3R4_MANAGED_WORKFLOW
+    stage_count: 5
+
+    c0_contract:
+      mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+      open_web_blocked: true
+      required_document_classes:
+        - BANK_STATEMENT
+        - TAX_RETURN
+        - CREDIT_REPORT
+      c0_states: [PASS, WEAK_WITH_CAVEATS, FAIL]
+
+    hitl_posture:
+      required_triggers:
+        - required_document_missing
+        - contradiction_flags_present
+        - c0_state_fail_adverse
+      advisory_triggers:
+        - borderline_score_band  # score in [0.40, 0.55)
 
     entry_points:
+      - apps_underwriting_ai.integrations.underwriting_l3_workflow_adapter.UnderwritingL3WorkflowAdapter.expand
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.EvidenceRegisterAdapter.run
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.DocumentReconciliationAdapter.run
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.FeatureDerivationAdapter.run
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.RiskScoringAdapter.run
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.DecisionAssemblyAdapter.run
+      - apps_underwriting_ai.integrations.underwriting_c0_adapter.UnderwritingC0Adapter.run
       - apps_underwriting_ai.engines.underwriting_engine.UnderwritingEngine.run
-      - apps_underwriting_ai.reasoning.UnderwritingHopOrchestrator.UnderwritingHopOrchestrator.run
-      - apps_underwriting_ai.integrations.governed_underwriting_run.governed_underwriting_run
       - apps_underwriting_ai.integrations.execution_adapter.ExecutionAdapter.execute
 
     exit_points:
+      - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.L2StepReceipt
+      - apps_underwriting_ai.integrations.underwriting_l3_workflow_adapter.WorkflowExpansion
+      - apps_underwriting_ai.integrations.underwriting_c0_adapter.FinalEvidenceContract
       - apps_underwriting_ai.types.underwriting_types.DecisionPacket
       - apps_underwriting_ai.types.underwriting_types.UnderwritingResult
       - apps_underwriting_ai.integrations.spine_handoff.SpineHandoff.package
 
-# Pre-migration audit (skeleton stage):
+    l2_receipts:
+      - L2.E1.underwriting_execution_context_bound
+      - L2.E2.underwriting_evidence_validated
+      - L2.E3.underwriting_stage_executed
+      - L2.E5.underwriting_artifact_sealed
+
+    l4_write_policy: UWG_ONLY
+    open_web_retrieval: false
+
+# Audit notes (W3 migration):
+# - Route upgraded from R3_grounded_read to R3R4_MANAGED_WORKFLOW.
+# - L3 workflow adapter now declares the full five-stage graph with
+#   dependency edges, HITL posture, and evidence_refs injection.
+# - L2 step adapters are fully implemented: E1-E5, no retrieval, no L4 write.
+# - FinalEvidenceContract (W2.1/W2.2) feeds into the L3 expand() call.
 # - ZERO matches in apps_underwriting_ai/ for: CommitRequest, commit_request,
 #   StateDiffCandidate, proposed_state_diff, MutationIntent, durable_write,
 #   write_gateway, publish, policy_issue, loan_book, ledger_write.
-# - The DecisionPacket is a read-side artifact; downstream consumers issue
-#   any durable writes.
-# - Audit will be re-run when feature-complete domain logic lands; the
-#   read-side posture is deliberate per SVP_ENGINEERING_REVIEW.md.
+# - The DecisionPacket is a read-side artifact; UWG-only write path enforced.

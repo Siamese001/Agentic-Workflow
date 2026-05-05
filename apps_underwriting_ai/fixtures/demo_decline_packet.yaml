@@ -1,0 +1,106 @@
+# apps_underwriting_ai — Synthetic Demo Fixture: DECLINE
+#
+# Scenario: Conflicting revenue signals, high contradiction score,
+# high DTI → DECLINE → X3C_DECLINE.
+#
+# PUBLIC DEMO NOTICE: All applicant data is fully synthetic. No real
+# applicant, real lender, or real credit decision is represented.
+#
+# Plan: apps-underwriting-ai-spine-hardening-d7f3b2 W6.2
+
+demo_packet_id: uw-demo-decline-004
+demo_mode: true
+data_mode: SYNTHETIC_DEMO_ONLY
+scenario: high_contradiction_decline
+
+# --- Request envelope ---
+request:
+  request_id: req-decline-004
+  applicant_id: synth-applicant-DELTA-004
+  applicant_type: INDIVIDUAL
+  product_class: MORTGAGE_DEMO
+  demo_policy_profile: demo-policy-standard-v1
+
+# --- Policy / blueprint bindings ---
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+blueprint_hash: sha256-blueprint-mortgage-demo-v1-ddeeff
+route_contract:
+  route_family: R3R4_MANAGED_WORKFLOW
+  route_id: apps_underwriting_ai.decision_packet_v1
+  execution_form: MANAGED_WORKFLOW
+  l3_required: true
+  c0_required: true
+  c0_mode: SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+  exit_mode: FAIL_CLOSED
+  durable_write_path: UWG_ONLY
+
+# --- Submitted synthetic documents ---
+submitted_documents:
+  - document_id: doc-BANK_STATEMENT-011
+    document_class: BANK_STATEMENT
+    content_summary: >
+      Synthetic bank statement. Reported monthly income: $3,800.
+      Multiple NSF fees. Balance often negative mid-month.
+      Employer listed as "Synth Ventures LLC".
+    field_spans:
+      avg_monthly_balance: "1100"
+      employer_name: "Synth Ventures LLC"
+      nsf_fee_count: "7"
+      avg_monthly_inflow: "3800"
+
+  - document_id: doc-TAX_RETURN-012
+    document_class: TAX_RETURN
+    content_summary: >
+      Synthetic 1040. Reported AGI: $94,000 — contradicts bank inflow
+      implying ~$45,600/year. Business loss carry-forward of $22,000.
+    field_spans:
+      adjusted_gross_income: "94000"
+      filing_status: "single"
+      business_loss_carryforward: "22000"
+      tax_paid: "6200"
+
+  - document_id: doc-CREDIT_REPORT-013
+    document_class: CREDIT_REPORT
+    content_summary: >
+      Synthetic credit report. FICO proxy: 579. Revolving utilisation: 91%.
+      Two 60-day delinquencies in past 24 months. One collection account.
+    field_spans:
+      fico_proxy_score: "579"
+      revolving_utilisation_pct: "91"
+      derogatory_marks: "3"
+      collection_accounts: "1"
+
+  - document_id: doc-EMPLOYMENT_VERIFICATION-014
+    document_class: EMPLOYMENT_VERIFICATION
+    content_summary: >
+      Synthetic employment letter. Self-employed, sole proprietor.
+      Tenure: 1.2 years. Reported income: $92,000 — not verifiable
+      via bank inflows (contradicts BANK_STATEMENT).
+    field_spans:
+      job_title: "Sole Proprietor"
+      tenure_years: "1.2"
+      annual_salary: "92000"
+
+# --- C0 expected output ---
+expected_c0:
+  c0_state: FAIL
+  support_score: 0.28
+  contradiction_flags:
+    - INCOME_DOCUMENT_MISMATCH
+    - BANK_INFLOW_VS_TAX_RETURN_DISCREPANCY
+    - EMPLOYER_CONSISTENCY_FAIL
+  missing_evidence_flags: []
+  evidence_sufficiency: insufficient
+
+# --- Scorer expected output ---
+# High contradiction + sub-threshold FICO proxy + high utilisation → DECLINE.
+expected_verdict: DECLINE
+expected_reason_codes:
+  - RC020_FICO_BELOW_THRESHOLD
+  - RC021_HIGH_REVOLVING_UTILISATION
+  - RC022_INCOME_DOCUMENT_CONTRADICTION
+  - RC023_DEROGATORY_HISTORY
+expected_hitl_posture: HITL_NONE
+
+# --- Exit expected output ---
+expected_x3_disposition: X3C_DECLINE

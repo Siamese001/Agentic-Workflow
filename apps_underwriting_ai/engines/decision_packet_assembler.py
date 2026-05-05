@@ -143,13 +143,38 @@ class DecisionPacketAssembler:
         evidence_count = len(register.records) if register else 0
         feature_count = len(features.feature_vector) if features else 0
         unresolved = reconciliation.unresolved_count if reconciliation else 0
-        rationale = self._enrich_rationale_via_qwen(
+
+        # W4.1 — LLM Firewall gate: PA compiler MUST run before any Qwen call.
+        # The firewall binds verdict_hash + reason_codes_hash into the artifact.
+        # On PromptAssemblyError, firewall returns deterministic_fallback_used=True.
+        firewall_result = self._run_firewall_gate(
             verdict=breakdown.verdict,
-            evidence_count=evidence_count,
-            feature_count=feature_count,
-            unresolved=unresolved,
+            reason_codes=list(breakdown.reason_code_bundle)
+            if hasattr(breakdown, "reason_code_bundle")
+            else [],
+            c0_bundle=feature_summary,
             deterministic_rationale=breakdown.rationale,
+            request_id=request_id,
         )
+        feature_summary["firewall_passed"] = firewall_result.firewall_passed
+        feature_summary["deterministic_rationale_fallback_used"] = (
+            firewall_result.deterministic_fallback_used
+        )
+
+        # When the firewall has passed and no LLM callable was supplied, the
+        # existing Qwen path handles enrichment (preserving prior behavior).
+        if firewall_result.firewall_passed and firewall_result.failure_reason in (
+            "no_llm_callable", "none"
+        ):
+            rationale = self._enrich_rationale_via_qwen(
+                verdict=breakdown.verdict,
+                evidence_count=evidence_count,
+                feature_count=feature_count,
+                unresolved=unresolved,
+                deterministic_rationale=breakdown.rationale,
+            )
+        else:
+            rationale = firewall_result.rationale
 
         return DecisionPacket(
             request_id=request_id,
@@ -159,6 +184,109 @@ class DecisionPacketAssembler:
             feature_summary=feature_summary,
             gate_violations=(),
         )
+
+    def run_pa_firewall(
+        self,
+        *,
+        verdict: str,
+        reason_codes: list[str],
+        c0_bundle: dict[str, Any],
+        deterministic_rationale: str,
+        request_id: str = "",
+        run_id: str = "",
+        trace_id: str = "",
+        template_id: str = "decision_rationale_enrichment_v1",
+        llm_callable: Any = None,
+        slot_overrides: dict[str, str] | None = None,
+    ) -> Any:
+        """Public entry point: run the PA-compiler LLM firewall gate.
+
+        This is the canonical W4 integration surface. Callers that own
+        a `verdict` + `reason_codes` pair from DeterministicRiskScorer
+        invoke this before any LLM call.
+
+        Args:
+            verdict: Locked verdict from DeterministicRiskScorer.
+            reason_codes: Locked reason codes from DeterministicRiskScorer.
+            c0_bundle: FinalEvidenceContract dict from C0 adapter.
+            deterministic_rationale: Fallback if firewall blocks.
+            request_id: Request ID for tracing.
+            run_id: Run ID.
+            trace_id: Trace ID.
+            template_id: PA compiler template (default: rationale enrichment).
+            llm_callable: Optional LLM callable(artifact) -> str.
+            slot_overrides: Optional slot content overrides.
+
+        Returns:
+            FirewallResult from UnderwritingLLMFirewall.gate().
+        """
+        return self._run_firewall_gate(
+            verdict=verdict,
+            reason_codes=reason_codes,
+            c0_bundle=c0_bundle,
+            deterministic_rationale=deterministic_rationale,
+            request_id=request_id,
+            run_id=run_id,
+            trace_id=trace_id,
+            template_id=template_id,
+            llm_callable=llm_callable,
+            slot_overrides=slot_overrides,
+        )
+
+    @staticmethod
+    def _run_firewall_gate(
+        *,
+        verdict: Any,
+        reason_codes: list[str],
+        c0_bundle: dict[str, Any],
+        deterministic_rationale: str,
+        request_id: str = "",
+        run_id: str = "",
+        trace_id: str = "",
+        template_id: str = "decision_rationale_enrichment_v1",
+        llm_callable: Any = None,
+        slot_overrides: dict[str, str] | None = None,
+    ) -> Any:
+        """Instantiate UnderwritingLLMFirewall and run the gate sequence.
+
+        Returns a FirewallResult. Never raises — any internal failure
+        produces a deterministic_fallback_used=True result.
+        """
+        try:
+            from apps_underwriting_ai.integrations.underwriting_llm_firewall import (  # noqa: PLC0415
+                UnderwritingLLMFirewall,
+            )
+
+            verdict_str = verdict.value if hasattr(verdict, "value") else str(verdict)
+            return UnderwritingLLMFirewall().gate(
+                verdict=verdict_str,
+                reason_codes=reason_codes,
+                c0_bundle=c0_bundle,
+                deterministic_rationale=deterministic_rationale,
+                request_id=request_id,
+                run_id=run_id,
+                trace_id=trace_id,
+                template_id=template_id,
+                llm_callable=llm_callable,
+                slot_overrides=slot_overrides,
+            )
+        except Exception as exc:  # guardian: allow-broad-except -- firewall import/init failure must fall through to deterministic rationale (regulated-domain compliance floor)
+            _LOGGER.info("[apps_underwriting_ai] firewall gate error: %s", exc)
+            # Return a minimal duck-typed object so callers work without import.
+            from types import SimpleNamespace  # noqa: PLC0415
+            return SimpleNamespace(
+                rationale=deterministic_rationale,
+                deterministic_fallback_used=True,
+                firewall_passed=False,
+                failure_reason="firewall_import_error",
+                pa_error=True,
+                immutability_violation=False,
+                artifact_id="",
+                artifact_hash="",
+                verdict_hash="",
+                reason_codes_hash="",
+                audit_refs=[],
+            )
 
     @staticmethod
     def _enrich_rationale_via_qwen(

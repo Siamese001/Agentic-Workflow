@@ -1,0 +1,114 @@
+schema_version: "1.0"
+app: apps_underwriting_ai
+bom_id: apps_underwriting_ai_prompt_bom_v1
+owner: apps_underwriting_ai.prompt_assembly
+purpose: >
+  Defines canonical Prompt Assembly slots for governed synthetic underwriting
+  rationale enrichment. R3R4_MANAGED_WORKFLOW: every LLM rationale enrichment
+  step must use a CompiledPromptArtifact produced from this BOM. No ad hoc
+  prompt strings permitted. DeterministicRiskScorer owns verdict and
+  reason_code_bundle; LLM owns plain-English rationale only.
+
+required_slots:
+  - S0
+  - I0
+  - C0
+  - U0
+  - D0
+  - R0
+
+optional_slots:
+  - E0
+  - Y0
+  - P0
+
+slot_definitions:
+  S0:
+    name: system_and_governance
+    authority: system_governance
+    required: true
+    description: >
+      Governing spine, safety, and authority instructions. Establishes
+      apps_underwriting_ai as a SYNTHETIC DEMO system. Declares the LLM
+      rationale firewall: LLM must not change verdict, add or remove reason
+      codes, invent evidence, or cite unsupported spans. DeterministicRiskScorer
+      is authoritative for all underwriting decisions.
+  I0:
+    name: underwriting_rationale_rules
+    authority: app_instruction
+    required: true
+    description: >
+      Underwriting rationale enrichment rules: evidence citation discipline,
+      forbidden invention patterns, reason-code binding constraints, rationale
+      length and structure requirements, caveat and confidence expression rules.
+  C0:
+    name: verified_evidence_context
+    authority: data_only
+    required: true
+    description: >
+      Verified evidence from the C0 submitted-document pass (FinalEvidenceContract).
+      Hydrated at compile time from the E2-validated evidence register. All
+      factual claims in the rationale must trace to this evidence. Open-web
+      content is blocked — only submitted-document spans and approved fixture
+      policy refs are allowed.
+  U0:
+    name: user_underwriting_request
+    authority: user_intent_only
+    required: true
+    description: >
+      Underwriting request: product_class, applicant_type, risk_tier_band,
+      demo_policy_profile. Treated as intent context only — not a source of
+      verified facts and must not override deterministic scoring outcomes.
+  D0:
+    name: origin_and_injection_fences
+    authority: security_boundary
+    required: true
+    description: >
+      Origin labels and data/instruction boundary declarations. Prevents prompt
+      injection from retrieved evidence text or submitted document content.
+      Required before any C0 evidence is inserted into the prompt.
+  R0:
+    name: output_schema_and_constraints
+    authority: schema_contract
+    required: true
+    description: >
+      Rationale output schema, evidence citation format, and structural
+      constraints. LLM must produce exactly this shape. Verdict and reason codes
+      are pre-filled from DeterministicRiskScorer and must appear verbatim.
+  E0:
+    name: approved_examples
+    authority: exemplar_only
+    required: false
+    description: >
+      Optional approved rationale examples from the fixture library. Used for
+      few-shot formatting guidance only — not as evidence for the current case.
+  Y0:
+    name: approved_style_preferences
+    authority: style_only
+    required: false
+    description: >
+      Optional approved style preferences: reading level, tone, explanation
+      depth. Must not alter verdict, reason codes, or evidence traceability.
+  P0:
+    name: demo_policy_profile
+    authority: policy_fixture
+    required: false
+    description: >
+      Optional demo policy profile fixture (identified by hash). Provides
+      approved threshold references for rationale context. Must be loaded
+      by hash — no ad hoc policy content.
+
+hash_fields:
+  - schema_version
+  - bom_id
+  - required_slots
+  - optional_slots
+  - slot_definitions
+  - template_registry_refs
+
+template_registry_refs:
+  - decision_rationale_enrichment_v1
+  - evidence_to_rationale_context_v1
+  - unsupported_reason_omission_v1
+  - rationale_caveat_and_confidence_repair_v1
+  - rationale_length_and_structure_repair_v1
