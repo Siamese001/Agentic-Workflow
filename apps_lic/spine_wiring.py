@@ -68,6 +68,8 @@ class SpineWiringVerifier:
         "fec_producer",
         "identity_service",
         "carry_forward_bridge",
+        "p2_templates",  # W1.P3: P2 template activation
+        "p2_rubric_dims",  # W1.P3: P2 rubric dimensions
     ]
     
     def verify_all(self) -> SpineWiringReport:
@@ -103,6 +105,8 @@ class SpineWiringVerifier:
             "fec_producer": self._verify_fec_producer,
             "identity_service": self._verify_identity_service,
             "carry_forward_bridge": self._verify_carry_forward_bridge,
+            "p2_templates": self._verify_p2_templates,
+            "p2_rubric_dims": self._verify_p2_rubric_dims,
         }
         
         verifier = verifiers.get(component)
@@ -318,6 +322,90 @@ class SpineWiringVerifier:
         except Exception as e:
             return WiringStatus(
                 component="carry_forward_bridge",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_p2_templates(self) -> WiringStatus:
+        """Verify P2 templates with context slots."""
+        from pathlib import Path
+        
+        templates_dir = Path("apps_lic/prompt_assembly/templates")
+        required_templates = [
+            "outreach_draft_v1.yaml",
+            "outreach_draft_v2.yaml",
+            "compact_recruiter_arc.yaml",
+            "exec_positioning.yaml",
+        ]
+        
+        found = []
+        missing = []
+        
+        for template in required_templates:
+            template_path = templates_dir / template
+            if template_path.exists():
+                # Check for P2 slots
+                content = template_path.read_text()
+                has_p2_slots = all(slot in content for slot in ["N0", "A0", "L0"])
+                found.append((template, has_p2_slots))
+            else:
+                missing.append(template)
+        
+        if missing:
+            return WiringStatus(
+                component="p2_templates",
+                connected=False,
+                error=f"Missing templates: {missing}",
+            )
+        
+        # Check if all have P2 slots
+        without_p2 = [t for t, has_p2 in found if not has_p2]
+        if without_p2:
+            return WiringStatus(
+                component="p2_templates",
+                connected=False,
+                error=f"Templates missing P2 slots: {without_p2}",
+            )
+        
+        return WiringStatus(
+            component="p2_templates",
+            connected=True,
+            details={
+                "templates": [t for t, _ in found],
+                "p2_slots": ["N0", "A0", "L0"],
+            },
+        )
+    
+    def _verify_p2_rubric_dims(self) -> WiringStatus:
+        """Verify P2 rubric dimensions registered."""
+        try:
+            from apps_lic.config.domain_contract.eval_rubrics import get_eval_rubric
+            
+            rubric = get_eval_rubric("aer::apps_lic::outreach_message::v1")
+            dim_ids = [d.dimension_id for d in rubric.score_dimensions]
+            
+            p2_dims = ["narrative_coherence", "tone_register_fit", "differentiator_grounded"]
+            found_dims = [d for d in p2_dims if d in dim_ids]
+            missing_dims = [d for d in p2_dims if d not in dim_ids]
+            
+            if missing_dims:
+                return WiringStatus(
+                    component="p2_rubric_dims",
+                    connected=False,
+                    error=f"Missing P2 dimensions: {missing_dims}",
+                )
+            
+            return WiringStatus(
+                component="p2_rubric_dims",
+                connected=True,
+                details={
+                    "p2_dimensions": found_dims,
+                    "total_dimensions": len(dim_ids),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="p2_rubric_dims",
                 connected=False,
                 error=str(e),
             )
