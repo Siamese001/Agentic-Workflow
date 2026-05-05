@@ -35,10 +35,10 @@ index (OpenAI text-embedding-3-large) to apps_qna-specific interview card corpus
 
 | Wave | Focus | Est. Tokens | Status | Unlocks |
 |------|-------|-------------|--------|---------|
-| P1 | Index schema + directory structure | ~8K | 🔲 TODO | P2 |
-| P2 | BGE-M3 embedder adapter | ~12K | 🔲 TODO | P3 |
-| P3 | Interview card corpus ETL | ~15K | 🔲 TODO | P4 |
-| P4 | Index population + verification | ~10K | 🔲 TODO | E1 implementation |
+| P1 | Index schema + directory structure | ~8K | ✅ DONE | P2 |
+| P2 | BGE-M3 embedder adapter | ~12K | ✅ DONE | P3 |
+| P3 | Interview card corpus ETL | ~15K | ✅ DONE | P4 |
+| P4 | Index population + verification | ~10K | ✅ DONE | E1 implementation |
 
 ---
 
@@ -137,12 +137,12 @@ index (OpenAI text-embedding-3-large) to apps_qna-specific interview card corpus
 
 ## Success Criteria
 
-- [ ] `C:\AgenticEmbeddings\indexes\apps_qna_interview_cards\` directory exists with valid manifest
-- [ ] BGE-M3 embedder wrapper in `tools/embedders/` with unit tests
-- [ ] 110 interview card variants embedded and indexed
-- [ ] `apps_qna/integrations/spine_adapter.py` points to new index
-- [ ] CI gate `check_apps_qna_c0_index.py` passes
-- [ ] E1 unblocked: `c0_adapter.py` can call real vector store
+- [x] `C:\AgenticEmbeddings\indexes\apps_qna_interview_cards\` directory exists with valid manifest
+- [x] BGE-M3 embedder wrapper in `tools/embedders/` with unit tests
+- [x] 110 interview card variants embedded and indexed
+- [ ] `apps_qna/integrations/spine_adapter.py` points to new index (separate E1 plan)
+- [x] CI gate `check_apps_qna_c0_index.py` passes
+- [ ] E1 unblocked: `c0_adapter.py` can call real vector store (separate E1 plan)
 
 ---
 
