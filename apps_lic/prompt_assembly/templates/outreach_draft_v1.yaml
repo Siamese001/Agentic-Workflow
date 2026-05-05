@@ -37,6 +37,9 @@ required_slots:
   - E0
   - Y0
   - R0
+  - N0  # P2: NarrativeArc (optional)
+  - A0  # P2: ArchetypeToneCalibration (optional)
+  - L0  # P2: CompetitiveLandscapeContext (optional)
 forbidden_behaviors:
   - invent_relationship
   - invent_application_status
