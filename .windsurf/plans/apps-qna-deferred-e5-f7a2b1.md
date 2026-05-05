@@ -19,7 +19,7 @@ stub/heuristic/optional to production-grade implementations.
 
 | Wave | Focus | Est. Tokens | Status | Reference |
 |------|-------|-------------|--------|-----------|
-| E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | � PARTIAL | Index ✅ Wiring �🔲 see `apps-qna-remaining-e1e2e3e5-54b6c7` |
+| E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | � PARTIAL | Index ✅ Wiring � see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E2 | Production LLM judges (replace deterministic heuristics) | ~40K | 🔲 TODO | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E3 | Live provider SDK dispatch (replace stub model execution) | ~30K | 🔲 TODO | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E4 | Exit-eval hook adoption + __main__.py integration | ~20K | ✅ DONE | |
@@ -142,16 +142,17 @@ stub/heuristic/optional to production-grade implementations.
 
 ## Success Criteria
 
-- [ ] C0 adapter calls real vector store (evidence_sufficiency = "grounded" for indexed slugs)
-- [ ] All three RAG judges backed by LLM calls (not deterministic heuristics)
-- [ ] Judge Spearman-rank calibration baseline established on holdout corpus
-- [ ] QnaProviderContext.dispatch() makes real model calls when model_id configured
-- [ ] PA adapter dispatchable path triggers model execution
-- [x] maybe_invoke_exit_eval called in live_interview_runtime.py _run_pipeline() (E4.1)
-- [x] emit_uwg_pack_record called in live_interview_runtime.py with --uwg-enabled CLI flag (E4.2)
-- [ ] config_inventory drift scan wired into CI (ops_scripts/ci/check_apps_qna_config_drift.py)
-- [ ] spine_alignment check wired into apps-spine-coverage CI scanner
-- [ ] holdout_salt frozen in eval_rubrics.yaml with change-detection gate
+- [x] maybe_invoke_exit_eval called in live_interview_runtime.py _run_pipeline() (E4.1) ✅
+- [x] emit_uwg_pack_record called in live_interview_runtime.py with --uwg-enabled CLI flag (E4.2) ✅
+- [x] BGE-M3 index populated with 110 interview card variants (E1 prerequisite) ✅
+- [ ] C0 adapter calls real vector store (evidence_sufficiency = "grounded") — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] All three RAG judges backed by LLM calls — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] Judge Spearman-rank calibration baseline — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] QnaProviderContext.dispatch() makes real model calls — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] PA adapter dispatchable path triggers model execution — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] config_inventory drift scan wired into CI — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] spine_alignment check wired into apps-spine-coverage CI scanner — see `apps-qna-remaining-e1e2e3e5-54b6c7`
+- [ ] holdout_salt frozen in eval_rubrics.yaml with change-detection gate — see `apps-qna-remaining-e1e2e3e5-54b6c7`
 
 ---
 
