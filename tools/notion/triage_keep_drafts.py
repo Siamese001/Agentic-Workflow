@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Triage the surviving Draft backlog rows into A/B/C/D buckets.
+"""Triage the surviving Not Started backlog rows into A/B/C/D buckets.
 
 Run AFTER bulk_flip_stale_drafts.py has already removed strong-closure +
 missing-plan rows. Operates on whatever Drafts remain.
 
 Buckets:
-  A — Time-gated / dependency-gated   → stay Draft + annotate
-  B — BACKLOG / future ideas           → stay Draft + annotate
+  A — Time-gated / dependency-gated   → stay Not Started + annotate
+  B — BACKLOG / future ideas           → stay Not Started + annotate
   C — Soft-closure (likely done)       → retire (with note)
-  D — Genuinely unblocked work         → stay Draft, surface for ranking
+  D — Genuinely unblocked work         → stay Not Started, surface for ranking
 
 Modes:
   --dry-run             classify only, print counts + samples
@@ -113,10 +113,10 @@ def _audit(entry: dict) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def fetch_drafts(tok: str) -> list[dict]:
+def fetch_not_started(tok: str) -> list[dict]:
     rows, cursor = [], None
     while True:
-        body = {"filter": {"property": "Status", "select": {"equals": "Draft"}}, "page_size": 100}
+        body = {"filter": {"property": "Status", "select": {"equals": "Not Started"}}, "page_size": 100}
         if cursor: body["start_cursor"] = cursor
         data = _http("POST", f"{NOTION_API}/data_sources/{BACKLOG_DS_ID}/query", tok, body)
         rows.extend(data.get("results", []))
@@ -186,7 +186,7 @@ def emit_plan(buckets: dict[str, list[dict]], path: Path) -> None:
     lines.append("")
     lines.append("## Context")
     lines.append("")
-    lines.append("Companion to `bulk_flip_stale_drafts` (2026-05-02): of the 298 Draft "
+    lines.append("Companion to `bulk_flip_stale_not_started` (2026-05-02): of the 298 Not Started "
                  "rows in the Backlog Items DB, 89 were closed (commit-attested) and 54 "
                  "retired (plan deleted). The remaining ~155 are triaged here.")
     lines.append("")
@@ -194,8 +194,8 @@ def emit_plan(buckets: dict[str, list[dict]], path: Path) -> None:
     lines.append("")
     lines.append("| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |")
     lines.append("|---|---|---|---:|---|---|---|")
-    lines.append(f"| W1 | A.1 | Annotate {len(buckets['A'])} time/dep-gated rows: stays Draft, recorded reason | 4000 | Rows have explicit gating language in Blocking Items | Live | All A-rows have Evidence stamped `[TRIAGE {today}] bucket=A` |")
-    lines.append(f"| W2 | B.1 | Annotate {len(buckets['B'])} BACKLOG/future-idea rows: stays Draft, recorded reason | 2000 | Rows tagged MCP-BACKLOG / NEXT·P* / FUTURE | Live | All B-rows stamped `bucket=B` |")
+    lines.append(f"| W1 | A.1 | Annotate {len(buckets['A'])} time/dep-gated rows: stays Not Started, recorded reason | 4000 | Rows have explicit gating language in Blocking Items | Live | All A-rows have Evidence stamped `[TRIAGE {today}] bucket=A` |")
+    lines.append(f"| W2 | B.1 | Annotate {len(buckets['B'])} BACKLOG/future-idea rows: stays Not Started, recorded reason | 2000 | Rows tagged MCP-BACKLOG / NEXT·P* / FUTURE | Live | All B-rows stamped `bucket=B` |")
     lines.append(f"| W3 | C.1 | Retire {len(buckets['C'])} soft-closure rows (work likely done, no commit attestation) | 4000 | Soft-match on 'implemented/complete/landed' without commit SHA; spot-check via audit log | Live | C-rows flipped to Retired with reason |")
     lines.append(f"| W4 | D.1 | Surface {len(buckets['D'])} unblocked rows ranked by Impact Score for next-session pickup | 1000 | No mutation; ranking only | Live | Top-N table emitted in this plan |")
     lines.append("")
@@ -203,9 +203,9 @@ def emit_plan(buckets: dict[str, list[dict]], path: Path) -> None:
     lines.append("")
     lines.append("| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |")
     lines.append("|---|---|---|---|---:|---|")
-    lines.append(f"| A.1 | Annotate gated Drafts | Notion Backlog Items DB ({len(buckets['A'])} rows) | None — pure annotation | 4000 | Live |")
-    lines.append(f"| B.1 | Annotate BACKLOG-tagged Drafts | Notion Backlog Items DB ({len(buckets['B'])} rows) | None — pure annotation | 2000 | Live |")
-    lines.append(f"| C.1 | Retire soft-closure Drafts | Notion Backlog Items DB ({len(buckets['C'])} rows) | False-positive risk if 'complete' refers to phase title | 4000 | Live |")
+    lines.append(f"| A.1 | Annotate gated Not Started rows | Notion Backlog Items DB ({len(buckets['A'])} rows) | None — pure annotation | 4000 | Live |")
+    lines.append(f"| B.1 | Annotate BACKLOG-tagged Not Started rows | Notion Backlog Items DB ({len(buckets['B'])} rows) | None — pure annotation | 2000 | Live |")
+    lines.append(f"| C.1 | Retire soft-closure Not Started rows | Notion Backlog Items DB ({len(buckets['C'])} rows) | False-positive risk if 'complete' refers to phase title | 4000 | Live |")
     lines.append(f"| D.1 | Rank unblocked work queue | Notion Backlog Items DB ({len(buckets['D'])} rows) | None — read-only | 1000 | Live |")
     lines.append("")
     lines.append("## Files In Scope")
@@ -265,10 +265,10 @@ def post_plan_to_notion(tok: str, plan_path: Path, slug: str) -> str:
         "parent": {"type": "database_id", "database_id": PLANS_DB_ID},
         "properties": {
             "Slug": {"title": [{"type": "text", "text": {"content": slug}}]},
-            "Status": {"select": {"name": "Live"}},
+            "Status": {"select": {"name": "In Progress"}},
             "Plan File Path": {"rich_text": [{"type": "text", "text": {"content": str(plan_path.relative_to(REPO_ROOT)).replace("\\", "/")}}]},
             "Exists On Disk": {"checkbox": True},
-            "Summary": {"rich_text": [{"type": "text", "text": {"content": f"Backlog KEEP-bucket triage: A/B/C/D classification of 155 surviving Draft rows after 2026-05-02 bulk-flip. Companion to bulk_flip_stale_drafts.py."}}]},
+            "Summary": {"rich_text": [{"type": "text", "text": {"content": f"Backlog KEEP-bucket triage: A/B/C/D classification of 155 surviving Not Started rows after 2026-05-02 bulk-flip. Companion to bulk_flip_stale_drafts.py."}}]},
         },
     }
     res = _http("POST", f"{NOTION_API}/pages", tok, body)
@@ -286,8 +286,8 @@ def main() -> int:
         ap.error("specify --dry-run or --execute")
 
     tok = _token()
-    rows = fetch_drafts(tok)
-    print(f"draft rows: {len(rows)}", flush=True)
+    rows = fetch_not_started(tok)
+    print(f"not started rows: {len(rows)}", flush=True)
 
     buckets: dict[str, list[dict]] = {"A": [], "B": [], "C": [], "D": []}
     classifications: dict[str, str] = {}
@@ -319,12 +319,12 @@ def main() -> int:
     print("\n--- mutations ---", flush=True)
     n_a, n_b, n_c = 0, 0, 0
     for r in buckets["A"]:
-        annotate(tok, r["id"], "A", "time/dependency gated; stays Draft pending external clock or dependency.", args.dry_run)
+        annotate(tok, r["id"], "A", "time/dependency gated; stays Not Started pending external clock or dependency.", args.dry_run)
         n_a += 1; _audit({"step": "annotate_A", "page_id": r["id"], "dry_run": args.dry_run})
         time.sleep(0.35)
     print(f"A annotated: {n_a}", flush=True)
     for r in buckets["B"]:
-        annotate(tok, r["id"], "B", "BACKLOG / future-idea row; intentionally Draft until promoted.", args.dry_run)
+        annotate(tok, r["id"], "B", "BACKLOG / future-idea row; intentionally Not Started until promoted.", args.dry_run)
         n_b += 1; _audit({"step": "annotate_B", "page_id": r["id"], "dry_run": args.dry_run})
         time.sleep(0.35)
     print(f"B annotated: {n_b}", flush=True)

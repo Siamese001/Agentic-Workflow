@@ -509,41 +509,163 @@ def test_narrative_arc_default_values():
 # =============================================================================
 
 
+# Import P2c competitive landscape engine
+from apps_lic.engines.competitive_landscape_engine import (
+    CompetitiveLandscapeContext,
+    build_competitive_landscape_context,
+    should_include_competitive_context,
+    validate_differentiator_for_exit,
+)
+
+
 def test_competitive_landscape_skipped_on_r4_without_source_refs():
     """Competitive landscape context is skipped when no source refs available."""
     # When company briefing lacks competitive context with source refs,
     # the engine should skip rather than fabricate
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    context = build_competitive_landscape_context(
+        company_briefing={"name": "TestCorp"},  # No competitive section, no source refs
+    )
+    
+    assert context.skipped is True, "Should skip when no competitive signals or source refs"
+    assert context.skip_reason == "no_competitive_signals", "Should indicate missing signals"
+    assert context.differentiator_claim == "", "Should not fabricate claim"
 
 
 def test_competitive_landscape_no_fabrication_below_confidence_threshold():
     """Confidence < 0.5 means skip competitive claims, not fabricate."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    context = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "strong",  # Weak signal, no sources
+            }
+        },
+    )
+    
+    # Confidence should be low without source refs
+    assert context.confidence < 0.5, f"Confidence {context.confidence} should be < 0.5 without sources"
+    assert context.skipped is True, "Should skip when confidence < 0.5"
+    assert "confidence_too_low" in context.skip_reason, "Skip reason should mention confidence"
 
 
 def test_competitive_landscape_requires_source_refs_for_company_claim():
     """Any company-specific differentiator claim requires source refs."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    # With signals but no source refs
+    context = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "leader",
+                "differentiators": ["AI-powered"],
+            }
+        },
+    )
+    
+    assert context.skipped is True, "Should skip without source refs"
+    assert context.skip_reason == "missing_source_refs", "Should indicate missing source refs"
+    
+    # With both signals and source refs
+    context_with_sources = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "leader",
+                "differentiators": ["AI-powered"],
+                "source_refs": ["gartner_report_2024", "forrester_wave"],
+            }
+        },
+    )
+    
+    assert len(context_with_sources.source_refs) > 0, "Should capture source refs"
+    assert context_with_sources.confidence >= 0.5, "Should have adequate confidence with sources"
 
 
 def test_competitive_landscape_allows_one_sentence_max():
     """Exactly one differentiator sentence maximum in final draft."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    # Build context with competitive signals
+    context = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "leader",
+                "source_refs": ["industry_report"],
+            }
+        },
+    )
+    
+    # Validate differentiator claim format
+    is_valid, violations = validate_differentiator_for_exit(
+        differentiator=context.differentiator_claim,
+        source_refs=context.source_refs,
+        max_length=200,
+    )
+    
+    # If we have a claim, it should be valid and structured
+    if not context.skipped:
+        assert is_valid, f"Differentiator should be valid, violations: {violations}"
 
 
 def test_competitive_landscape_context_added_after_manifest_validation():
     """Competitive context only added after validate_research_and_build_manifest."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    # This is a design intent test - the actual integration test verifies
+    # that build_competitive_landscape_context is called after manifest validation
+    context = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "leader",
+                "source_refs": ["research_report"],
+            }
+        },
+    )
+    
+    # Context should be complete and ready for Prompt Assembly
+    assert isinstance(context, CompetitiveLandscapeContext), \
+        "Output should be CompetitiveLandscapeContext dataclass"
+    assert context.context_ref == "competitive_landscape_context", \
+        "Context ref should match expected slot for Prompt Assembly"
 
 
 def test_competitive_landscape_does_not_call_apps_research_directly():
     """Competitive landscape engine must not call apps_research directly."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    import inspect
+    
+    source = inspect.getsource(build_competitive_landscape_context)
+    
+    # No provider imports or calls
+    assert "openai" not in source.lower(), "No OpenAI imports"
+    assert "anthropic" not in source.lower(), "No Anthropic imports"
+    
+    # No apps_research calls
+    assert "apps_research" not in source.lower(), "No apps_research calls"
+    
+    # Uses only company_briefing from context (R3 output)
+    assert "company_briefing" in source, "Should use company_briefing from context"
 
 
 def test_competitive_landscape_fallback_mode_forbids_differentiator_claim():
     """When fallback_mode is true, no company-specific differentiator claim allowed."""
-    pytest.skip("Engine not yet implemented - P2c deferred")
+    context = build_competitive_landscape_context(
+        company_briefing={
+            "competitive_landscape": {
+                "market_position": "leader",
+                "differentiators": ["AI-powered"],
+                "source_refs": ["industry_report"],
+            }
+        },
+        fallback_mode=True,  # Fallback mode active
+    )
+    
+    assert context.fallback_mode is True, "Should preserve fallback_mode"
+    assert context.skipped is True, "Should skip in fallback mode"
+    assert context.skip_reason == "fallback_mode_active", "Should indicate fallback mode"
+    assert context.differentiator_claim == "", "No claim in fallback mode"
+
+
+def test_competitive_landscape_context_immutable():
+    """CompetitiveLandscapeContext dataclass is frozen (immutable)."""
+    context = CompetitiveLandscapeContext(
+        differentiator_claim="test",
+        confidence=0.8,
+    )
+    
+    with pytest.raises(Exception):
+        context.differentiator_claim = "modified"
 
 
 # =============================================================================

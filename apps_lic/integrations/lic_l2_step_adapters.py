@@ -334,6 +334,53 @@ def calibrate_archetype_tone(context: Dict[str, Any], step_def: Dict[str, Any]) 
     return result
 
 
+def build_competitive_landscape_context(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    E3 Exec: Build competitive landscape context for Prompt Assembly.
+    
+    P2c: Adds competitive context after validate_research_and_build_manifest.
+    Produces CompetitiveLandscapeContext with optional differentiator claim.
+    Skipped when no source refs or confidence < 0.5 — never fabricates.
+    """
+    result = context.copy()
+    
+    # Import P2c competitive landscape engine
+    from apps_lic.engines.competitive_landscape_engine import (
+        build_competitive_landscape_context as build_landscape,
+        should_include_competitive_context,
+    )
+    
+    # Extract inputs from context
+    company_briefing = context.get("company_briefing")
+    fallback_mode = context.get("competitive_landscape_fallback_mode", False)
+    recipient_class = context.get("recipient_class", "")
+    
+    # Build competitive landscape context
+    landscape = build_landscape(
+        company_briefing=company_briefing,
+        fallback_mode=fallback_mode,
+        recipient_class=recipient_class,
+    )
+    
+    # Store landscape context for Prompt Assembly
+    result["competitive_landscape_context"] = landscape
+    result["_e3_competitive_landscape_built"] = True
+    result["_e3_competitive_skipped"] = landscape.skipped
+    result["_e3_competitive_skip_reason"] = landscape.skip_reason
+    
+    # Determine if should be included
+    should_include, reason = should_include_competitive_context(landscape, recipient_class)
+    result["_e3_competitive_include"] = should_include
+    result["_e3_competitive_include_reason"] = reason
+    
+    if not landscape.skipped:
+        result["_e3_competitive_confidence"] = landscape.confidence
+        result["_e3_competitive_signals_count"] = len(landscape.competitive_signals)
+        result["_e3_competitive_source_refs_count"] = len(landscape.source_refs)
+    
+    return result
+
+
 def compose_draft_using_compiled_prompt_artifact(context: Dict[str, Any], step_def: Dict[str, Any]) -> Dict[str, Any]:
     """
     E3 Exec: Compose draft using CompiledPromptArtifact via governed provider gateway.
@@ -771,6 +818,8 @@ STEP_ADAPTERS: Dict[str, Callable] = {
     # P2a/b Signal Enhancement (before compile_prompt)
     "build_narrative_arc_context": build_narrative_arc_context,
     "calibrate_archetype_tone": calibrate_archetype_tone,
+    # P2c Competitive Landscape (after archetype, before compile)
+    "build_competitive_landscape_context": build_competitive_landscape_context,
     # Core compilation and composition
     "compile_prompt": compile_prompt,
     "compose_draft_using_compiled_prompt_artifact": compose_draft_using_compiled_prompt_artifact,

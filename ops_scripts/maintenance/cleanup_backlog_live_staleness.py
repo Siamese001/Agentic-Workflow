@@ -29,7 +29,7 @@ from pathlib import Path
 
 DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 STALE_DAYS = 14           # Live older than this → Retired
-ACTIVE_DAYS = 3           # Live older than this (but < STALE_DAYS) → Draft (re-queue)
+ACTIVE_DAYS = 3           # In Progress older than this (but < STALE_DAYS) → Not Started (re-queue)
 RATE_LIMIT_SEC = 0.35
 
 # Title-pattern rules — order matters; first match wins.
@@ -80,7 +80,7 @@ def _iter_live_rows():
     cursor = None
     while True:
         payload = {
-            "filter": {"property": "Status", "select": {"equals": "Live"}},
+            "filter": {"property": "Status", "select": {"equals": "In Progress"}},
             "page_size": 100,
         }
         if cursor:
@@ -100,12 +100,12 @@ def _classify(title: str, staleness_iso: str,
     try:
         le = datetime.fromisoformat(staleness_iso.replace("Z", "+00:00"))
     except (ValueError, AttributeError):
-        return "Live"
+        return "In Progress"
     if le < stale_cutoff:
         return "Retired"
     if le < active_cutoff:
-        return "Draft"   # re-queue: not actively in flight
-    return "Live"
+        return "Not Started"   # re-queue: not actively in flight
+    return "In Progress"
 
 
 def _patch_row(page_id: str, new_status: str, rationale: str, apply: bool) -> None:

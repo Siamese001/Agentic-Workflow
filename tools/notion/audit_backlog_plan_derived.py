@@ -65,7 +65,7 @@ FIELD_MAP: dict[str, str] = {
 SCORER_DEFAULTS: dict[str, str] = {
     "Layer": "L_MIXED",
     "Surface": "None",
-    "Status": "Draft",
+    "Status": "Not Started",
     "Wave ID": "W1",
     "Phase ID": "1.1",
 }

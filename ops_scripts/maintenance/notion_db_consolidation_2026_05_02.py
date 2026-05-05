@@ -3,7 +3,7 @@
 Per Tier 1 plan (2026-05-02):
   1. Fetch all MCP Registry rows; identify BACKLOG/Disabled entries and the
      _serialization_sentinel retirement runbook.
-  2. Migrate BACKLOG rows -> Backlog Items DB (Status=Draft, P-Band=P3).
+  2. Migrate BACKLOG rows -> Backlog Items DB (Status=Not Started, P-Band=P3).
   3. Dump _serialization_sentinel content to a staging file for ADR conversion.
   4. Archive 4 Notion DBs (in_trash=true):
        - MCP Registry            59693bbc-71b1-4c63-bc9f-b31eb8b08a0e
@@ -90,12 +90,12 @@ def _rt(prop) -> str:
 
 
 def _post_backlog_row(title: str, summary: str) -> dict:
-    """Create a Backlog Items row with Status=Draft, P-Band=P3."""
+    """Create a Backlog Items row with Status=Not Started, P-Band=P3."""
     payload = {
         "parent": {"type": "database_id", "database_id": BACKLOG_ITEMS_DBID},
         "properties": {
             "Phase Title": {"title": [{"type": "text", "text": {"content": title[:200]}}]},
-            "Status": {"select": {"name": "Draft"}},
+            "Status": {"select": {"name": "Not Started"}},
             "P-Band": {"select": {"name": "P3"}},
             "Evidence": {"rich_text": [{"type": "text", "text": {"content": summary[:1900]}}]},
         },

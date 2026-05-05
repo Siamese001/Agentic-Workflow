@@ -126,14 +126,38 @@ stages:
     fail_closed_on: []
     r5_reason_codes: {}
 
-  - stage_id: compile_prompt
+  - stage_id: build_competitive_landscape_context
     order: 6
     description: >
+      P2c: Build competitive landscape context from company briefing.
+      Produces competitive_landscape_context with optional differentiator claim.
+      Skipped when no source refs, confidence < 0.5, or fallback_mode=true.
+      Never fabricates claims. Only runs after validate_research_and_build_manifest.
+      No provider calls. No durable writes.
+    inputs:
+      - name: company_briefing
+        type: dict
+        source: validated_manifest.company_briefing
+      - name: recipient_class
+        type: str
+        source: validated_manifest.recipient_class
+      - name: fallback_mode
+        type: bool
+        source: execution_context.competitive_landscape_fallback_mode
+    outputs:
+      - name: competitive_landscape_context
+        type: CompetitiveLandscapeContext
+    fail_closed_on: []
+    r5_reason_codes: {}
+
+  - stage_id: compile_prompt
+    order: 7
+    description: >
       Compile the prompt using lic_pa_compiler and the validated MessagePlan.
-      Consumes narrative_arc_context and archetype_tone_calibration (P2).
-      Produces a CompiledPromptArtifact with governance binding to manifest_hash,
-      policy_hash, blueprint_hash, and replay_key. No provider calls here —
-      compilation only. The artifact is consumed by compose_draft.
+      Consumes narrative_arc_context, archetype_tone_calibration, and 
+      competitive_landscape_context (P2). Produces a CompiledPromptArtifact with 
+      governance binding to manifest_hash, policy_hash, blueprint_hash, and replay_key. 
+      No provider calls here — compilation only. The artifact is consumed by compose_draft.
     inputs:
       - name: message_plan
         type: MessagePlan
@@ -160,11 +184,12 @@ stages:
       bom_slot_mismatch: PROMPT_BOM_VALIDATION_FAILED
 
   - stage_id: compose_draft
-    order: 5
+    order: 8
     description: >
       Execute the hop-based K3 draft composition using the MessagePlan.
-      All claims are grounded through source_items in the manifest.
-      Omission policy applied per claim_permission_map.
+      Consumes narrative_arc_context, archetype_tone_calibration, and
+      competitive_landscape_context (P2). All claims are grounded through 
+      source_items in the manifest. Omission policy applied per claim_permission_map.
       send_mode defaults to "draft_only"; forbidden modes (send_now,
       auto_send, connector_send) cause immediate fail-closed.
       Output includes omitted_claims list per OutreachDraft schema.
@@ -175,6 +200,18 @@ stages:
       - name: message_plan
         type: MessagePlan
         source: plan_message.message_plan
+      - name: compiled_prompt_artifact
+        type: CompiledPromptArtifact
+        source: compile_prompt.compiled_prompt_artifact
+      - name: narrative_arc_context
+        type: NarrativeArc
+        source: build_narrative_arc_context.narrative_arc_context
+      - name: archetype_tone_calibration
+        type: ArchetypeToneCalibration
+        source: calibrate_archetype_tone.archetype_tone_calibration
+      - name: competitive_landscape_context
+        type: CompetitiveLandscapeContext
+        source: build_competitive_landscape_context.competitive_landscape_context
     outputs:
       - name: outreach_draft
         type: OutreachDraft
@@ -188,7 +225,7 @@ stages:
       high_friction_ask: HIGH_FRICTION_ASK
 
   - stage_id: seal_output
-    order: 6
+    order: 9
     description: >
       Seal the OutreachDraft with a content hash bound to the manifest_hash.
       Emit the L2 execution receipt. Validate that send_mode is in the

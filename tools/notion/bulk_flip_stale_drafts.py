@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bulk-flip stale Draft rows in the Backlog Items DB.
+"""Bulk-flip stale Not Started rows in the Backlog Items DB.
 
 Three-step audit + remediation per 2026-05-02 backlog cleanup decision:
 
@@ -112,10 +112,10 @@ def _audit(entry: dict) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def fetch_all_drafts(tok: str) -> list[dict]:
+def fetch_all_not_started(tok: str) -> list[dict]:
     rows, cursor = [], None
     body_base = {
-        "filter": {"property": "Status", "select": {"equals": "Draft"}},
+        "filter": {"property": "Status", "select": {"equals": "Not Started"}},
         "page_size": 100,
     }
     while True:
@@ -218,8 +218,8 @@ def main() -> int:
     on_disk = {f.name for f in PLANS_DIR.iterdir() if f.suffix == ".md"}
     print(f"plans on disk: {len(on_disk)}", flush=True)
 
-    rows = fetch_all_drafts(tok)
-    print(f"draft rows fetched: {len(rows)}", flush=True)
+    rows = fetch_all_not_started(tok)
+    print(f"not started rows fetched: {len(rows)}", flush=True)
 
     buckets: dict[str, list[tuple[dict, str]]] = {"CLOSE_NOW": [], "MISSING_PLAN": [], "KEEP": []}
     for r in rows:

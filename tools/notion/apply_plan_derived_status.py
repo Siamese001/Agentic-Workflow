@@ -4,14 +4,14 @@
 Reads artifacts/notion/backlog_plan_derived_delta.json.
 For each row where:
   - Status.classification == "conflict"
-  - Status.backlog_is_scorer_default == True  (Backlog Status == "Draft")
-  - Status.plan_value in {"Live", "Completed", "Waiting", "Retired", "Archived"}
+  - Status.backlog_is_scorer_default == True  (Backlog Status == "Not Started")
+  - Status.plan_value in {"In Progress", "Completed", "Waiting", "Retired", "Archived"}
 
 Patches the Backlog row's Status with the Plan-derived value, plus an
 Evidence note and Last Updated timestamp.
 
 Idempotent: re-running after rows are updated will produce 0 eligible rows
-(their Status is no longer the scorer-default "Draft").
+(their Status is no longer the scorer-default "Not Started").
 
 Flags:
   --dry-run   Compute but do not PATCH.
@@ -45,9 +45,9 @@ PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{}}"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
 
-_VALID_PLAN_STATUSES = {"Live", "Completed", "Waiting", "Retired", "Archived"}
-_SCORER_DEFAULT_STATUS = "Draft"
-_EVIDENCE_NOTE = "W4 P4.3 upgrade — Status promoted from Plan-derived value (was scorer-default Draft)"
+_VALID_PLAN_STATUSES = {"In Progress", "Completed", "Waiting", "Retired", "Archived"}
+_SCORER_DEFAULT_STATUS = "Not Started"
+_EVIDENCE_NOTE = "W4 P4.3 upgrade — Status promoted from Plan-derived value (was scorer-default Not Started)"
 
 
 def _token() -> str:

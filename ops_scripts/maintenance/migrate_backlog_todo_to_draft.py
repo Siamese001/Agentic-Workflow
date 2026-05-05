@@ -1,10 +1,10 @@
-"""One-shot: migrate Backlog Items Status=Todo -> Draft (canonical taxonomy).
+"""One-shot: migrate Backlog Items Status=Todo -> Not Started (canonical taxonomy).
 
 Plan: .windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md (adjacent
 cleanup). The canonical Backlog Items Status taxonomy (AGENTS.md "Plans DB
-Status Taxonomy" + "Shared taxonomy" note) is 5 options: Live, Draft,
-Completed, Retired, Archived. `Todo` is a legacy drift that survived the
-2026-05-02 `Proposed -> Draft` rename; this script retires it.
+Status Taxonomy" + "Shared taxonomy" note) is 7 options: In Progress, Not Started,
+Deprioritized, Waiting, Completed, Retired, Archived. `Todo` is a legacy drift that survived the
+2026-05-02 `Proposed -> Not Started` rename; this script retires it.
 
 Uses the Notion REST API directly via httpx, bypassing MCP serialization
 constraints (§25 is aimed at Cascade tool-call loops, not one-shot
@@ -43,7 +43,7 @@ HEADERS = {
 
 BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 TARGET_FROM = "Todo"
-TARGET_TO = "Draft"
+TARGET_TO = "Not Started"
 
 
 def query_all_with_status(client: httpx.Client, status: str) -> list[dict]:

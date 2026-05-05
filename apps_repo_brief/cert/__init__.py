@@ -11,7 +11,8 @@ from __future__ import annotations
 from apps_shared.cert.fec_producer import register_producer
 
 from apps_repo_brief.cert.fec_producer import produce_fec
+from apps_repo_brief.cert.cert_projection_adapter import CertProjectionAdapter, CertProjection
 
 register_producer("apps_repo_brief", produce_fec)
 
-__all__ = ["produce_fec"]
+__all__ = ["produce_fec", "CertProjectionAdapter", "CertProjection"]

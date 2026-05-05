@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Repair Plans DB rows whose Status was bulk-set to Draft by the batch uploader.
+"""Repair Plans DB rows whose Status was bulk-set to Not Started by the batch uploader.
 
-For each row created on 2026-05-03 with Status=Draft, reads the on-disk plan
+For each row created on 2026-05-03 with Status=Not Started, reads the on-disk plan
 file and extracts the real Status from the frontmatter or header, then patches
 Notion only if the status differs.
 
@@ -10,10 +10,10 @@ Status extraction priority:
 2. Bold metadata: `**Status**: <value>`
 3. Inline marker: `Status: <value>`
 4. If the plan file contains "SUPERSEDED" → Retired
-5. If the plan file contains "AUTO-SCAFFOLD" → Draft (keep)
-6. Default: Draft (keep, no patch)
+5. If the plan file contains "AUTO-SCAFFOLD" → Not Started (keep)
+6. Default: Not Started (keep, no patch)
 
-Canonical Notion status values: Live, Draft, Waiting, Completed, Retired, Archived
+Canonical Notion status values: In Progress, Not Started, Deprioritized, Waiting, Completed, Retired, Archived
 
 Usage:
     python tools/notion/repair_notion_plan_statuses.py [--dry-run]
@@ -43,12 +43,15 @@ from _notion_constants import (  # noqa: E402
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 TIMEOUT = 30.0
 
-CANONICAL = {"live", "draft", "waiting", "completed", "retired", "archived"}
+CANONICAL = {"in progress", "not started", "deprioritized", "waiting", "completed", "retired", "archived"}
 
 # Map words found in plan files to canonical Notion status names
 _STATUS_MAP = {
-    "live": "Live",
-    "draft": "Draft",
+    "in progress": "In Progress",
+    "live": "In Progress",
+    "not started": "Not Started",
+    "draft": "Not Started",
+    "deprioritized": "Deprioritized",
     "waiting": "Waiting",
     "completed": "Completed",
     "done": "Completed",
@@ -87,7 +90,7 @@ def _query_all_draft_pages() -> list[dict]:
     while True:
         body: dict = {
             "page_size": 100,
-            "filter": {"property": "Status", "select": {"equals": "Draft"}},
+            "filter": {"property": "Status", "select": {"equals": "Not Started"}},
         }
         if cursor:
             body["start_cursor"] = cursor
@@ -132,8 +135,8 @@ def _extract_status_from_plan(md: str) -> str:
     if "SUPERSEDED" in md:
         return "Retired"
 
-    # 5. AUTO-SCAFFOLD = keep as Draft
-    return "Draft"
+    # 5. AUTO-SCAFFOLD = keep as Not Started
+    return "Not Started"
 
 
 def _rich_text_val(prop: dict) -> str:
@@ -145,9 +148,9 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    print("Fetching Draft rows…")
+    print("Fetching Not Started rows…")
     pages = _query_all_draft_pages()
-    print(f"  {len(pages)} Draft rows found\n")
+    print(f"  {len(pages)} Not Started rows found\n")
 
     needs_patch: list[dict] = []
     for page in pages:
@@ -166,7 +169,7 @@ def main() -> None:
         md = plan_file.read_text(encoding="utf-8", errors="replace")
         correct_status = _extract_status_from_plan(md)
 
-        if correct_status != "Draft":
+        if correct_status != "Not Started":
             needs_patch.append({
                 "page_id": page["id"],
                 "slug": slug,

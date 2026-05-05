@@ -194,7 +194,7 @@ def _select_is_structurally_broken(prop: dict | None) -> bool:
 # ──────────────────────────────────────────────────────────────────────────────
 
 _DEFAULT_PHASE_ID = "1.1"
-_DEFAULT_STATUS = "Draft"
+_DEFAULT_STATUS = "Not Started"
 _DEFAULT_WAVE_ID = "W1"
 _EVIDENCE_NOTE = "W3 default applied — no plan-derived value"
 
