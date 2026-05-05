@@ -19,11 +19,11 @@ stub/heuristic/optional to production-grade implementations.
 
 | Wave | Focus | Est. Tokens | Status | Reference |
 |------|-------|-------------|--------|-----------|
-| E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | � PARTIAL | Index ✅ Wiring � see `apps-qna-remaining-e1e2e3e5-54b6c7` |
+| E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | 🟡 PARTIAL | Index ✅ Wiring 🔲 see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E2 | Production LLM judges (replace deterministic heuristics) | ~40K | 🔲 TODO | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E3 | Live provider SDK dispatch (replace stub model execution) | ~30K | 🔲 TODO | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 | E4 | Exit-eval hook adoption + __main__.py integration | ~20K | ✅ DONE | |
-| E5 | SSOT enforcement gate + config drift CI | ~15K | 🔲 TODO | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
+| E5 | SSOT enforcement gate + config drift CI | ~15K | ✅ DONE | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
 
 ---
 

@@ -35,7 +35,7 @@ of C0 retrieval wiring, LLM judges, provider dispatch, and CI gates.
 | E1.1/E1.2 | C0 adapter wiring (replace stub fetcher) | ~25K | 🔲 TODO | Index populated ✅ |
 | E2 | Production LLM judges (3 RAG judges) | ~40K | 🔲 TODO | Model credentials, holdout corpus |
 | E3 | Provider SDK dispatch | ~30K | 🔲 TODO | E1 complete |
-| E5 | SSOT enforcement gates (CI) | ~15K | 🔲 TODO | None — can start anytime |
+| E5 | SSOT enforcement gates (CI) | ~15K | ✅ DONE | None — independent |
 
 ---
 
@@ -147,9 +147,9 @@ E1.1/E1.2 (C0 wiring) → E3 (provider dispatch) → E2 (LLM judges with real co
 - [ ] Judge Spearman calibration ≥ 0.80 on holdout corpus
 - [ ] `QnaProviderContext.dispatch()` makes real model calls
 - [ ] PA adapter triggers model execution when `dispatchable=True`
-- [ ] config_inventory drift scan in CI (check_apps_qna_config_drift.py)
-- [ ] spine_alignment check in apps-spine-coverage CI scanner
-- [ ] holdout_salt frozen with change-detection gate
+- [x] config_inventory drift scan wired into CI (ops_scripts/ci/check_apps_qna_config_drift.py) 
+- [x] spine_alignment check wired into apps-spine-coverage CI scanner 
+- [x] holdout_salt frozen in eval_rubrics.yaml with change-detection gate 
 
 ---
 
