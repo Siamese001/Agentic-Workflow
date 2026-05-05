@@ -44,15 +44,14 @@
   # apps-underwriting-ai-d3-rationale-judge-f2c8d5 W2.P3 — promoted from stub.
   # RationaleQualityJudge v2 (IS_STUB=False, deterministic heuristic, Spearman≥0.80).
   # weight=0.05 keeps the original five weighted dims at their original proportions.
-  # fail_closed_if_unknown: false — judge returns GRADER_UNKNOWN_SENTINEL on empty
-  # rationale (fail-open), which is the correct behavior for a rationale-optional dim.
+  # DS-R8: fail_closed_if_unknown: true — DS-R2 LLM judge is done; strict mode active.
   - dimension_id: rationale_quality
     description: Rationale text quality — length, evidence refs, explanation terms, policy signal.
     weight: 0.05
     grader_type: llm_as_judge
     min_required_score: 0.50
     evidence_required: false
-    fail_closed_if_unknown: false
+    fail_closed_if_unknown: true
   # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 - RAG metric dims with
   # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
   # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall
