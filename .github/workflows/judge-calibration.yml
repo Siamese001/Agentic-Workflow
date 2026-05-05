@@ -35,6 +35,7 @@ on:
           - fake
           - anthropic
           - openai
+          - google
       min_kappa:
         description: "Minimum κ (per dimension) — fail the run below this"
         type: string
@@ -95,7 +96,7 @@ jobs:
           retention-days: 30
 
   real-judge:
-    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.judge == 'anthropic' || github.event.inputs.judge == 'openai') }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.judge == 'anthropic' || github.event.inputs.judge == 'openai' || github.event.inputs.judge == 'google') }}
     runs-on: ubuntu-latest
     # Real-judge runs require manual dispatch from a maintainer because
     # they spend API credit and exercise live network paths.
@@ -115,6 +116,7 @@ jobs:
           PYTHONUTF8: "1"
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
           GOLD_PATH="${{ github.event.inputs.gold_path }}"
           if [ -z "$GOLD_PATH" ]; then
