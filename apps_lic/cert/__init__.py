@@ -1,19 +1,22 @@
-"""apps_lic cert-path utilities.
+"""Certification package for apps_lic.
 
-Importing this package auto-registers the apps_lic FEC producer with the
-shared registry so cert entrypoints resolve a real producer without needing
-explicit wiring at call sites.
+This package provides certification and Final Evidence Contract (FEC)
+producers for apps_lic exit evaluation.
 
-Plan: .windsurf/plans/dom007-fec-producers-followup-e9f3c1.md W2.P1.
-Linked Author-Gate decision: dec_19dedd3f565173b7f (heuristic_split).
+Pattern Source: apps-qna-c0-fec-producer-wiring-d4f1e8
 """
 
 from __future__ import annotations
 
-from apps_shared.cert.fec_producer import register_producer
+# Side-effect: Register FEC producer on import
+from apps_lic.cert.fec_producer import register as _register_fec_producer
+_register_fec_producer()
 
-from apps_lic.cert.fec_producer import produce_fec
+# Exports
+from apps_lic.cert.fec_producer import produce_fec, PRODUCER_ID, FEC_SCHEMA_VERSION
 
-register_producer("apps_lic", produce_fec)
-
-__all__ = ["produce_fec"]
+__all__ = [
+    "produce_fec",
+    "PRODUCER_ID",
+    "FEC_SCHEMA_VERSION",
+]

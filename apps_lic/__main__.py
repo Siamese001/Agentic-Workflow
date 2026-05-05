@@ -26,6 +26,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# Import cert package for FEC producer side-effect registration
+import apps_lic.cert  # noqa: F401
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -106,7 +109,7 @@ def _load_cert_route_entry(registry_path: Path) -> dict | None:
     return first if isinstance(first, dict) else None
 
 
-def _build_exit_receipts(cert_route_entry: dict | None) -> dict:
+def _build_exit_receipts(cert_route_entry: dict | None, run_ctx: dict | None = None) -> dict:
     """Build the receipts dict for run_exit_eval from the symbolic cert path."""
     receipts_output: dict = {}
     try:
@@ -124,17 +127,25 @@ def _build_exit_receipts(cert_route_entry: dict | None) -> dict:
     except Exception:
         pass
 
+    # Resolve FEC for final_evidence_contract
+    final_evidence_contract: dict = {}
+    try:
+        from apps_shared.cert import resolve_fec
+        final_evidence_contract = resolve_fec("apps_lic", run_ctx or {})
+    except Exception:
+        pass
+
     return {
         "output": receipts_output,
         "route_contract": {"route_id": "apps_lic.outreach_v1"},
         "evidence_bundle": {},
-        "final_evidence_contract": {},
+        "final_evidence_contract": final_evidence_contract,
         "state_diff": {},
         "compiled_prompt_artifact": {},
     }
 
 
-def _maybe_run_exit_hook() -> None:
+def _maybe_run_exit_hook(run_ctx: dict | None = None) -> None:
     """Invoke the v6 Exit pipeline when apps_lic's cert route opts in."""
     try:
         from apps_shared.cert import maybe_invoke_exit_eval
@@ -147,7 +158,7 @@ def _maybe_run_exit_hook() -> None:
     cert_route_entry = _load_cert_route_entry(registry_path)
     if cert_route_entry is None:
         return
-    receipts = _build_exit_receipts(cert_route_entry)
+    receipts = _build_exit_receipts(cert_route_entry, run_ctx)
     try:
         maybe_invoke_exit_eval(receipts, cert_route_entry)
     except Exception as exc:
