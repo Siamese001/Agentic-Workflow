@@ -73,6 +73,9 @@ class SpineWiringVerifier:
         "sequence_definitions",  # W2.P1: 3-touch sequence definitions
         "touch_propagation",  # W2.P2: N→N+1 context propagation
         "sequence_state_machine",  # W2.P3: Sequence state machine
+        "signal_types",  # W3.P1: Signal type definitions
+        "signal_detector",  # W3.P1: Signal detection integration
+        "trigger_wake_mapper",  # W3.P2: Trigger→wake mapping
     ]
     
     def verify_all(self) -> SpineWiringReport:
@@ -113,6 +116,9 @@ class SpineWiringVerifier:
             "sequence_definitions": self._verify_sequence_definitions,
             "touch_propagation": self._verify_touch_propagation,
             "sequence_state_machine": self._verify_sequence_state_machine,
+            "signal_types": self._verify_signal_types,
+            "signal_detector": self._verify_signal_detector,
+            "trigger_wake_mapper": self._verify_trigger_wake_mapper,
         }
         
         verifier = verifiers.get(component)
@@ -565,6 +571,157 @@ class SpineWiringVerifier:
         except Exception as e:
             return WiringStatus(
                 component="sequence_state_machine",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_signal_types(self) -> WiringStatus:
+        """Verify W3.P1: Signal type definitions."""
+        try:
+            from apps_lic.signals.types import (
+                SignalType,
+                SignalStrength,
+                SignalSource,
+                ResurfacingSignal,
+                SignalDetectionResult,
+                SIGNAL_PRIORITY,
+            )
+            
+            # Verify all signal types exist
+            signal_types = [
+                SignalType.HIRING_SURGE,
+                SignalType.EXEC_ROLE_OPEN,
+                SignalType.FUNDING_ROUND,
+                SignalType.COMPETITOR_LAUNCH,
+                SignalType.PROFILE_VIEW,
+            ]
+            
+            # Verify signal priority mapping
+            priorities = [SIGNAL_PRIORITY.get(st) for st in signal_types]
+            
+            if None in priorities:
+                missing = [st for st in signal_types if SIGNAL_PRIORITY.get(st) is None]
+                return WiringStatus(
+                    component="signal_types",
+                    connected=False,
+                    error=f"Missing signal priorities: {missing}",
+                )
+            
+            # Test signal creation
+            test_signal = ResurfacingSignal(
+                signal_id="test-sig-001",
+                signal_type=SignalType.FUNDING_ROUND,
+                strength=SignalStrength.STRONG,
+                source=SignalSource.CRUNCHBASE,
+                detected_at=datetime.now(timezone.utc),
+                company_id="test-company",
+            )
+            
+            confidence = test_signal._strength_to_confidence()
+            
+            return WiringStatus(
+                component="signal_types",
+                connected=True,
+                details={
+                    "signal_types_count": len(SignalType),
+                    "test_confidence": confidence,
+                    "signal_sources": len(SignalSource),
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="signal_types",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_signal_detector(self) -> WiringStatus:
+        """Verify W3.P1: Signal detection integration."""
+        try:
+            from apps_lic.signals.detector import (
+                SignalDetector,
+                SignalDetectorConfig,
+            )
+            from apps_lic.signals.types import SignalSource
+            
+            # Create detector
+            config = SignalDetectorConfig(
+                enabled_sources=[SignalSource.RESEARCH, SignalSource.MANUAL],
+            )
+            detector = SignalDetector(config)
+            
+            # Test detection (should work even with RESURFACING_ENABLED off)
+            result = detector.detect_signals(company_id="test-company")
+            
+            return WiringStatus(
+                component="signal_detector",
+                connected=True,
+                details={
+                    "config_loaded": True,
+                    "sources_configured": len(config.enabled_sources),
+                    "detection_result": "initialized" if result.error else "ready",
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="signal_detector",
+                connected=False,
+                error=str(e),
+            )
+    
+    def _verify_trigger_wake_mapper(self) -> WiringStatus:
+        """Verify W3.P2: Trigger→wake mapping."""
+        try:
+            from apps_lic.signals.trigger_wake_mapper import (
+                TriggerWakeMapper,
+                WakeMappingDecision,
+            )
+            from apps_lic.signals.types import (
+                ResurfacingSignal,
+                SignalType,
+                SignalStrength,
+                SignalSource,
+            )
+            from datetime import datetime, timezone
+            
+            # Create mapper
+            mapper = TriggerWakeMapper()
+            
+            # Create test signal
+            signal = ResurfacingSignal(
+                signal_id="test-sig-001",
+                signal_type=SignalType.FUNDING_ROUND,
+                strength=SignalStrength.STRONG,
+                source=SignalSource.CRUNCHBASE,
+                detected_at=datetime.now(timezone.utc),
+            )
+            
+            # Test mapping
+            decision = mapper.map_signal_to_wake(
+                signal=signal,
+                touch_sequence=2,
+            )
+            
+            if not decision.should_wake:
+                return WiringStatus(
+                    component="trigger_wake_mapper",
+                    connected=False,
+                    error="Signal should trigger wake but decision was negative",
+                )
+            
+            return WiringStatus(
+                component="trigger_wake_mapper",
+                connected=True,
+                details={
+                    "mapping_works": True,
+                    "priority": decision.priority,
+                    "cadence_boost_hours": decision.cadence_boost_hours,
+                    "confidence": decision.trigger_confidence,
+                },
+            )
+        except Exception as e:
+            return WiringStatus(
+                component="trigger_wake_mapper",
                 connected=False,
                 error=str(e),
             )
