@@ -34,7 +34,11 @@ def run_eval_from_cli(
     from apps_eval.engines.scenario_runner import ScenarioRunner
     from apps_eval.engines.eval_heal import EvalHealStage
     from apps_eval.engines.eval_seal import EvalSealStage
-    from apps_eval.integrations.exit_adapter import exit_disposition
+    from apps_eval.integrations.exit_adapter import (
+        exit_disposition,
+        ExitContext,
+        ExitX2Aggregate,
+    )
 
     suite_ids = [s.strip() for s in suites_str.split(",") if s.strip()]
     if not suite_ids:
@@ -106,13 +110,29 @@ def run_eval_from_cli(
         seal_result=seal_result,
     )
 
-    # Exit: X3 disposition based on execution results
+    # W4: Build Exit v6 context and aggregation
+    exit_context = ExitContext(
+        trace_id=exec_result.trace_id if exec_result else "",
+        run_dir=prep_result.run_dir if prep_result else None,
+        content_hashes=prep_result.content_hashes if prep_result else None,
+        replay_key=prep_result.replay_key if prep_result else "",
+    )
+    x2_aggregate = ExitX2Aggregate(
+        gate_violations=seal_result.gate_violations if seal_result else [],
+        scenario_results=exec_result.scenario_results if exec_result else [],
+        all_passed=seal_result.all_scenarios_passed if seal_result else False,
+        degraded=seal_result.degraded if seal_result else False,
+    )
+
+    # Exit: X3 disposition based on execution results (with X1, X2, X3 pipeline)
     if seal_result.all_scenarios_passed:
         return exit_disposition(
             terminal_class="SUCCESS",
             x3_code="X3D_ALLOW_FINISH",
             scorecard_path=seal_result.scorecard_path,
             fec=fec,
+            context=exit_context,
+            x2_aggregate=x2_aggregate,
         )
     elif seal_result.degraded:
         return exit_disposition(
@@ -120,6 +140,8 @@ def run_eval_from_cli(
             x3_code="X3D_ALLOW_FINISH",
             scorecard_path=seal_result.scorecard_path,
             fec=fec,
+            context=exit_context,
+            x2_aggregate=x2_aggregate,
         )
     else:
         return exit_disposition(
@@ -127,6 +149,8 @@ def run_eval_from_cli(
             x3_code="X3A_DENY_REROUTE",
             scorecard_path=seal_result.scorecard_path,
             fec=fec,
+            context=exit_context,
+            x2_aggregate=x2_aggregate,
         )
 
 
