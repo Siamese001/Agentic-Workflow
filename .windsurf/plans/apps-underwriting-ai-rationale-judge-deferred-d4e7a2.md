@@ -1,13 +1,16 @@
 # Plan: apps-underwriting-ai-rationale-judge-deferred-d4e7a2
 
-> **Status:** Not Started  
+> **Status:** In Progress  
 > **Parent plan:** apps-underwriting-ai-d3-rationale-judge-f2c8d5 (Completed 2026-05-05)  
 > **Notion:** 35727693-f55c-8168-9c72-ce2938ed9341 (parent)
+> **Session 2 commit:** a002b5b084 (2026-05-05 — W3/W4/W5 scaffolds implemented)
 
 Captures all deferred scope items that could NOT be implemented in the D3 plan
 because they require human-labeled holdout data, LLM API access at test time,
-or downstream harness work not yet landed. **This plan is planning-only — no
-implementation until explicitly started.**
+or downstream harness work not yet landed.
+
+**W3 scaffolds (DS-R3/R4), W4 gate registration (DS-R5), and W5 ledger wiring (DS-R6) were
+implemented in session 2 (commit a002b5b084). The remaining blockers are external.**
 
 ---
 
@@ -15,11 +18,11 @@ implementation until explicitly started.**
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P1.1–P1.2 | Human-labeled holdout dataset replacement | ~6k | Domain expert provides ≥ 20 real labeled decisions per rubric dim | Not Started | rationale_judge_holdout.yaml replaced with human labels; Spearman baseline re-measured |
-| W2 | P2.1–P2.3 | Full LLM-as-judge implementation | ~20k | W1 holdout available; Anthropic API key in env; Spearman ≥ 0.85 achievable with LLM | Not Started | IS_STUB=False LLM judge; grade() calls Anthropic; Spearman ≥ 0.85 vs human holdout |
-| W3 | P3.1–P3.2 | Holdout vs dev-set separation + prod-log mining | ~10k | W1 complete; prod logs available with PII redactor | Not Started | check_eval_holdout_split.py green; prod_log_miner.py emits redacted samples |
-| W4 | P4.1 | Promote calibration CI gate to fail-closed | ~3k | W2 Spearman ≥ 0.85 confirmed | Not Started | RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1 default in CI; gate blocks on regression |
-| W5 | P5.1 | Weekly report promotion — real ledger data | ~4k | W2 + eval_harness_outcome ledger populated | Not Started | rationale_judge_weekly_report.py reads real ledger rows; Markdown emitted weekly |
+| W1 | P1.1–P1.2 | Human-labeled holdout dataset replacement | ~6k | Domain expert provides ≥ 20 real labeled decisions per rubric dim | **Not Started — BLOCKED** | rationale_judge_holdout.yaml replaced with human labels; Spearman baseline re-measured |
+| W2 | P2.1–P2.3 | Full LLM-as-judge implementation | ~20k | W1 holdout available; Anthropic API key in env; Spearman ≥ 0.85 achievable with LLM | **Not Started — BLOCKED** | IS_STUB=False LLM judge; grade() calls Anthropic; Spearman ≥ 0.85 vs human holdout |
+| W3 | P3.1–P3.2 | Holdout vs dev-set separation + prod-log mining | ~10k | W1 complete; prod logs available with PII redactor | **Scaffolds DONE (a002b5b)** — full gate/mining blocked on prod log access | check_eval_holdout_split.py green; prod_log_miner.py emits redacted samples |
+| W4 | P4.1 | Promote calibration CI gate to fail-closed | ~3k | W2 Spearman ≥ 0.85 confirmed | **RJC1+RJC2 registered DONE** — fail-closed flip blocked on DS-R2 | RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1 default in CI; gate blocks on regression |
+| W5 | P5.1 | Weekly report promotion — real ledger data | ~4k | W2 + eval_harness_outcome ledger populated | **Ledger wiring DONE** — holdout_comparison stub blocked on DS-R2 | rationale_judge_weekly_report.py reads real ledger rows; Markdown emitted weekly |
 
 ---
 
@@ -27,15 +30,15 @@ implementation until explicitly started.**
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | Replace synthetic holdout with human labels | apps_underwriting_ai/holdout/rationale_judge_holdout.yaml | Requires domain expert; cannot be authored by Cascade — real underwriting judgment required | ~4k | Not Started |
-| P1.2 | Re-run Spearman baseline against human labels | tests/governance/test_apps_underwriting_ai_rationale_judge.py | Thresholds may need recalibration if human labels differ significantly from synthetic | ~2k | Not Started |
-| P2.1 | Implement LLM-as-judge grade() | apps_underwriting_ai/engines/judges/rationale_quality_judge.py | Requires Anthropic client; retry logic; token budget per call | ~8k | Not Started |
-| P2.2 | LLM judge calibration tests | tests/governance/test_apps_underwriting_ai_rationale_judge.py | Spearman ≥ 0.85 target; may need prompt engineering iterations | ~6k | Not Started |
-| P2.3 | Upgrade GRADER_ID to v3 and update rubric | apps_underwriting_ai/config/domain_contract/eval_rubrics.yaml | Version bump; grader_type remains llm_as_judge; fail_closed_if_unknown flip to true when LLM reliable | ~6k | Not Started |
-| P3.1 | Holdout vs dev-set split gate | ops_scripts/ci/check_eval_holdout_split.py | Gate must detect if holdout examples leak into dev evaluation set | ~5k | Not Started |
-| P3.2 | Production log mining + PII redactor | tools/underwriting/prod_log_miner.py | Real logs contain PII; redactor required before any example is added to holdout | ~5k | Not Started |
-| P4.1 | Promote calibration gate to fail-closed | ops_scripts/ci/check_rationale_judge_calibration.py | Flip default; add to run_contract_gates.py as hard gate | ~3k | Not Started |
-| P5.1 | Weekly report real-ledger integration | ops_scripts/calibration/rationale_judge_weekly_report.py | Wire to eval_harness_outcome ledger; replace holdout_comparison=null stub | ~4k | Not Started |
+| P1.1 | Replace synthetic holdout with human labels | apps_underwriting_ai/holdout/rationale_judge_holdout.yaml | Requires domain expert; cannot be authored by Cascade — real underwriting judgment required | ~4k | **BLOCKED — human action** |
+| P1.2 | Re-run Spearman baseline against human labels | tests/governance/test_apps_underwriting_ai_rationale_judge.py | Thresholds may need recalibration if human labels differ significantly from synthetic | ~2k | **BLOCKED — awaits P1.1** |
+| P2.1 | Implement LLM-as-judge grade() | apps_underwriting_ai/engines/judges/rationale_quality_judge.py | Requires Anthropic client; retry logic; token budget per call | ~8k | **BLOCKED — awaits W1 + API key** |
+| P2.2 | LLM judge calibration tests | tests/governance/test_apps_underwriting_ai_rationale_judge.py | Spearman ≥ 0.85 target; may need prompt engineering iterations | ~6k | **BLOCKED — awaits P2.1** |
+| P2.3 | Upgrade GRADER_ID to v3 and update rubric | apps_underwriting_ai/config/domain_contract/eval_rubrics.yaml | Version bump; grader_type remains llm_as_judge; fail_closed_if_unknown flip to true when LLM reliable | ~6k | **BLOCKED — awaits P2.1** |
+| P3.1 | Holdout vs dev-set split gate | ops_scripts/ci/check_eval_holdout_split.py | Gate must detect if holdout examples leak into dev evaluation set | ~5k | **SCAFFOLD DONE (a002b5b)** — strict mode blocked on DS-R1 |
+| P3.2 | Production log mining + PII redactor | tools/underwriting/prod_log_miner.py | Real logs contain PII; redactor required before any example is added to holdout | ~5k | **SCAFFOLD DONE (a002b5b)** — live mining blocked on log access + PII policy |
+| P4.1 | Promote calibration gate to fail-closed | ops_scripts/ci/check_rationale_judge_calibration.py + run_contract_gates.py | Flip default; RJC1+RJC2 now in assurance_gates (advisory) | ~3k | **REGISTRATION DONE** — fail-closed flip blocked on DS-R2 |
+| P5.1 | Weekly report real-ledger integration | ops_scripts/calibration/rationale_judge_weekly_report.py | Wire to eval_harness_outcome ledger | ~4k | **LEDGER WIRING DONE (a002b5b)** — holdout_comparison stub blocked on DS-R2 |
 
 ---
 
@@ -61,49 +64,70 @@ implementation until explicitly started.**
 - `GRADER_ID` bumped to `"underwriting::rationale_quality_judge::v3"`.
 - `eval_rubrics.yaml` `fail_closed_if_unknown` flipped to `true` (LLM is reliable).
 
-### DS-R3 — Holdout vs dev-set separation gate
+### DS-R3 — Holdout vs dev-set separation gate *(scaffold done, strict mode deferred)*
 **Source:** apps-eval-harness-parity-f8d4a2 W5.P1  
-**Blocker:** Requires W1 human holdout to exist before separation is meaningful.  
-**Acceptance criteria:**
-- `ops_scripts/ci/check_eval_holdout_split.py` detects overlap between holdout `decision_id` values and any dev/test fixture IDs.
-- Advisory by default; `EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=1` for strict mode.
+**Session 2 progress:** `check_eval_holdout_split.py` implemented and registered as RJC2 (advisory).  
+**Remaining blocker:** Strict mode (`EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=1`) meaningful only after DS-R1 human holdout replaces synthetic one — current IDs are `uw-holdout-*` which have no dev-fixture overlap by construction.  
+**Remaining acceptance criteria:**
+- Flip `EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=1` default in CI after DS-R1 complete.
+- Add test confirming gate fails when a real human holdout ID appears in a dev fixture YAML.
 
-### DS-R4 — Production log mining with PII redaction
+### DS-R4 — Production log mining with PII redaction *(scaffold done, live mining deferred)*
 **Source:** apps-eval-harness-parity-f8d4a2 W5.P2  
-**Blocker:** Access to production underwriting decision logs; PII redaction policy approval.  
-**Acceptance criteria:**
-- `tools/underwriting/prod_log_miner.py` reads from a configurable log source.
-- PII redactor strips applicant name, SSN, address, DOB before any example is persisted.
-- Emitted samples land in a staging directory, not directly in holdout (human review gate).
+**Session 2 progress:** `tools/underwriting/prod_log_miner.py` implemented with full PII redaction pipeline; `PROD_LOG_MINER_BYPASS=1` for CI.  
+**Remaining blocker:** Access to production underwriting decision logs; PII redaction policy sign-off by compliance team.  
+**Remaining acceptance criteria:**
+- Connect `--source` to actual production log export path in runbook.
+- Verify PII redactor against real log schema (field names may differ from scaffold assumptions).
+- Human reviewer promotes at least one batch of candidates to holdout before DS-R1 closes.
 
-### DS-R5 — Calibration CI gate promoted to fail-closed
+### DS-R5 — Calibration CI gate fail-closed promotion *(registration done, flip deferred)*
 **Source:** D3 W3 — currently advisory  
-**Blocker:** DS-R2 LLM judge must achieve Spearman ≥ 0.85 before gate becomes a hard blocker.  
-**Acceptance criteria:**
-- `RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1` is set as a CI default (not env-opt-in).
+**Session 2 progress:** RJC1 + RJC2 registered in `run_contract_gates.py` assurance_gates (advisory).  
+**Remaining blocker:** DS-R2 LLM judge must achieve Spearman ≥ 0.85 before gate becomes a hard blocker.  
+**Remaining acceptance criteria:**
+- `RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1` set as CI default (not env-opt-in) after DS-R2 passes.
 - Gate blocks `main` merges when Spearman drops below 0.80 global or 0.70 per-dim.
-- Registered in `run_contract_gates.py` assurance_gates list as hard gate.
+- Change run_contract_gates.py comment from "(advisory)" to "(fail-closed)" for RJC1/RJC2.
 
-### DS-R6 — Weekly report real-ledger integration
+### DS-R6 — Weekly report holdout_comparison *(ledger wiring done, comparison stub deferred)*
 **Source:** D3 W3 — skeleton landed, ledger integration deferred  
-**Blocker:** DS-R2 LLM judge must be active so `eval_harness_outcome` ledger has real rows.  
-**Acceptance criteria:**
-- `rationale_judge_weekly_report.py` reads `eval_harness_outcome` ledger rows for `apps_underwriting_ai`.
-- `holdout_comparison` field is populated (not null).
-- Markdown report includes pass-rate trend over last 4 weeks.
+**Session 2 progress:** `_query_ledger()` wired; report now shows production pass-rate, band-counts, and 4-week trend when ledger has rows.  
+**Remaining blocker:** `holdout_comparison` field requires DS-R2 LLM judge so model_score vs human_label pairs exist.  
+**Remaining acceptance criteria:**
+- `holdout_comparison` in weekly JSON is non-null (list of `{dim_id, n, spearman_rho, meets_threshold}` dicts).
+- Markdown report renders holdout comparison table.
+
+### DS-R7 — apps_rg interactive JD prompt production hardening *(scaffold committed, hardening deferred)*
+**Source:** Session 2 — `apps_rg/__main__.py` interactive JD prompt added  
+**Blocker:** None (scaffold done); hardening items require real usage feedback.  
+**Remaining acceptance criteria:**
+- Add `--non-interactive` flag to force error mode (no TTY fallback in prod deployments).
+- Validate `jd_payload` is passed through to the R4 pipeline and reaches `L1_cognition`.
+- Add unit test for `_prompt_jd_interactive` with mock stdin.
+- Confirm `raw_request["jd_payload"]` is consumed (not silently ignored) by downstream agent.
+
+### DS-R8 — eval_harness_outcome fail-closed default for apps_underwriting_ai
+**Source:** Session 2 — `fail_closed_if_unknown` in `eval_rubrics.yaml` currently `false`  
+**Blocker:** DS-R2 LLM judge reliability required before unknown scores should hard-block.  
+**Remaining acceptance criteria:**
+- After DS-R2 lands, flip `fail_closed_if_unknown: true` for `rationale_quality` dimension in `eval_rubrics.yaml`.
+- Confirm CI gate AEH1 still passes after flip.
 
 ---
 
 ## Gap Register
 
-| ID | Gap | Severity | Resolution Wave | Blocker |
-|---|---|---|---|---|
-| DS-R1 | Human-labeled holdout missing | HIGH | W1 | Human domain expert action |
-| DS-R2 | LLM judge not implemented | HIGH | W2 | DS-R1 + Anthropic API key |
-| DS-R3 | Holdout/dev split not gated | LOW | W3 | DS-R1 |
-| DS-R4 | Prod log mining not implemented | MEDIUM | W3 | Log access + PII policy |
-| DS-R5 | Calibration gate advisory only | MEDIUM | W4 | DS-R2 |
-| DS-R6 | Weekly report uses null ledger stub | LOW | W5 | DS-R2 |
+| ID | Gap | Severity | Resolution Wave | Blocker | Session 2 Status |
+|---|---|---|---|---|---|
+| DS-R1 | Human-labeled holdout missing | HIGH | W1 | Human domain expert action | ⛔ BLOCKED |
+| DS-R2 | LLM judge not implemented | HIGH | W2 | DS-R1 + Anthropic API key | ⛔ BLOCKED |
+| DS-R3 | Holdout/dev split strict mode | LOW | W3 | DS-R1 human holdout | ✅ Scaffold done; strict flip deferred |
+| DS-R4 | Prod log mining live run | MEDIUM | W3 | Log access + PII policy | ✅ Scaffold done; live mining deferred |
+| DS-R5 | Calibration gate fail-closed flip | MEDIUM | W4 | DS-R2 | ✅ RJC1+RJC2 registered; flip deferred |
+| DS-R6 | Weekly report holdout_comparison | LOW | W5 | DS-R2 | ✅ Ledger wired; comparison stub deferred |
+| DS-R7 | apps_rg interactive JD prompt hardening | LOW | — | Real usage feedback | ✅ Scaffold committed; hardening deferred |
+| DS-R8 | eval_rubrics fail_closed_if_unknown flip | LOW | W2 | DS-R2 LLM judge reliability | ⛔ BLOCKED on DS-R2 |
 
 ---
 
@@ -121,4 +145,5 @@ implementation until explicitly started.**
 
 All items captured from `apps-underwriting-ai-d3-rationale-judge-f2c8d5` D3 execution.  
 Parent plan Notion: `35727693-f55c-8168-9c72-ce2938ed9341` (Completed 2026-05-05).  
-Commit at D3 completion: `04900d48b4`.
+Commit at D3 completion: `04900d48b4`.  
+Session 2 implementation commit: `a002b5b084` (2026-05-05 — W3/W4/W5 scaffolds).
