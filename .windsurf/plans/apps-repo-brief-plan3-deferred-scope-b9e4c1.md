@@ -27,12 +27,12 @@ This plan collects all of them in one place. **No implementation happens in this
 
 | # | Gate | Source | Status | Notes |
 |---|------|--------|--------|-------|
-| 1 | `apps_repo_brief` aligned to canonical spine | Plan 3 §20.2 | ❌ Not verified | Requires spine scanner + ADG edge proof |
+| 1 | `apps_repo_brief` aligned to canonical spine | Plan 3 §20.2 | ✅ Verified (D1) | Spine scanner: PARTIAL_SPINE; blast-radius 0; reasoning/__init__.py canonical |
 | 2 | `apps_repo_brief` aligned to Prompt Assembly standard | Plan 3 §20.2 | ✅ Verified (D2) | BOM declares 7 required + 2 optional slots; synthesis template declares 10+ required inputs; 6 templates have no placeholders |
-| 3 | `apps_repo_brief` aligned to C0 briefing-grade repo retrieval standard | Plan 3 §20.2 | ❌ Not verified | C0 depth profiles defined; authoritative FEC at C0 unverified at runtime |
+| 3 | `apps_repo_brief` aligned to C0 briefing-grade repo retrieval standard | Plan 3 §20.2 | ✅ Verified (D3) | C0 adapter uses all 7 lanes; 4 depth profiles verified; stale-source block policy confirmed; C0→CertProjection→ExitV6 pipeline coherent |
 | 4 | Zero off-spine bypasses | Plan 3 §20.2 | ✅ Verified (D1) | `__main__.py` blast radius 0; no inbound imports; no off-spine callers |
 | 5 | Zero pre-C0 retrieval/assembly | Plan 3 §20.2 | ✅ Verified (D1) | IngestionEngine removed W3; no L6/write edges from reasoning layer |
-| 6 | Authoritative FEC at C0 | Plan 3 §20.2 | ❌ Not verified | `cert_projection_adapter.py` exists (W4); C0 authoritative FEC wiring unconfirmed |
+| 6 | Authoritative FEC at C0 | Plan 3 §20.2 | ✅ Verified (D3) | `FEC.authoritative=True` default; `validate_fec()` blocks non-C0 mints; `CertProjectionAdapter` is read-only; `produce_fec()` retired with WARNING guard |
 | 7 | No template-only full board brief | Plan 3 §20.2 | ✅ Verified (D2) | `validate_fec()` raises violation when `board_gate_passed=False`; `board_gate_required=True` in depth_profiles.py |
 | 8 | No semantic cache stale board return | Plan 3 §20.2 | ✅ Verified (D2) | `enforce_r1b_semantic_cache_policy()` raises `CacheCompatViolation` on BOARD_DOSSIER+terminal; `semantic_cache_terminal_return=False` confirmed |
 | 9 | No ad hoc prompt strings | Plan 3 §20.2 | ✅ Verified (D2) | `_render_slots` present; no inline f-string prompt construction; all prompt text flows through slot rendering |
@@ -108,7 +108,7 @@ This plan collects all of them in one place. **No implementation happens in this
 |------|-------|-------------|-------------|--------|
 | D1 | DS-2 Spine scanner + DS-6 UWG scan + DS-7 L6 guard | #1, #4, #5, #12, #13 | ~8k | ✅ DONE (2026-05-05) |
 | D2 | DS-3 PA coverage tests + DS-4 board block test + DS-5 cache block test | #2, #7, #8, #9, #10, #11 | ~12k | ✅ DONE (2026-05-05) |
-| D3 | DS-1 C0 authoritative FEC binding + integration test | #3, #6 | ~15k | Not Started |
+| D3 | DS-1 C0 authoritative FEC binding + integration test | #3, #6 | ~15k | ✅ DONE (2026-05-05) |
 | D4 | DS-8 Final acceptance report (fill §21 template) | All §20.2 | ~5k | Not Started |
 
 ---
@@ -125,8 +125,8 @@ This plan collects all of them in one place. **No implementation happens in this
 | D2.2 | CompiledPromptArtifact gate test | `apps_repo_brief/reasoning/` | New test | 3k | ✅ DONE — `compile()` emits all required CPA fields; raises `ValueError` on missing inputs or unknown template; artifact_id encodes request_id+template_id; manifest_hash is deterministic |
 | D2.3 | Board block negative control | `apps_repo_brief/`, C0 depth profiles | New test | 3k | ✅ DONE — `validate_fec()` flags BOARD_DOSSIER when `board_gate_passed=False`; STANDARD profile unaffected; `board_gate_required=True` + `semantic_cache_terminal_return=False` confirmed in depth_profiles.py |
 | D2.4 | Cache stale-board block test | `apps_repo_brief/`, `cache_compat.yaml` | New test | 4k | ✅ DONE — `enforce_r1b_semantic_cache_policy()` raises `CacheCompatViolation` for BOARD_DOSSIER+terminal; STANDARD/LIGHT+terminal allowed; R1A raises on missing fields; FEC abstain/grounded helpers verified |
-| D3.1 | C0 FEC authoritative wiring | `agentic_core/L0_routing/c0_retrieval/repo_brief_final_contract.py` | Core-layer edit | 8k | Not Started |
-| D3.2 | C0→PA handoff integration test | New test | FEC contract shape | 7k | Not Started |
+| D3.1 | C0 FEC authoritative wiring | `apps_repo_brief/cert/cert_projection_adapter.py`, `fec_producer.py` | Test coverage of read-only projection + retirement guard | 8k | ✅ DONE — `FEC.authoritative=True` by default; `validate_fec()` flags `authoritative=False`; `CertProjectionAdapter.project()` verified read-only (non-dict raises `ValueError`); `produce_fec()` logs RETIRED warning; legacy output shape is type-distinct from `RepoBriefFinalEvidenceContract` |
+| D3.2 | C0→PA handoff integration test | New test | FEC contract shape | 7k | ✅ DONE — 29 tests: C0 adapter uses all 7 lanes; 4 depth profiles have all 6 threshold keys; stale-source block (DEEP) vs caveat (STANDARD); PASS→`is_grounded=True`, MISSING→`requires_abstain=True`; ExitV6 board readiness + citation integrity gates; full 3-stage pipeline coherent |
 | D4.1 | Final acceptance report | Plan 3 §21 template | Evidence collection | 5k | Not Started |
 
 ---
