@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_underwriting_ai/schemas/public_trust_receipt.schema.json",
+  "title": "PublicTrustReceipt",
+  "description": "Public-facing trust receipt attached to every FinalEvidenceContract for apps_underwriting_ai. Carries governed metadata about the underwriting decision pass. All applicant data is synthetic. Plan: apps-underwriting-ai-deferred-scope-e8b2f4 D5.1.",
+  "type": "object",
+  "required": [
+    "route_family",
+    "underwriting_route_mode",
+    "evidence_contract_status",
+    "documents_received_count",
+    "documents_missing_count",
+    "contradiction_flags_count",
+    "demo_scorer_version",
+    "demo_policy_hash",
+    "replay_key_prefix",
+    "exit_disposition",
+    "hitl_posture",
+    "generated_rationale_used",
+    "deterministic_rationale_fallback_used",
+    "demo_packet_id",
+    "demo_mode"
+  ],
+  "properties": {
+    "route_family": {
+      "type": "string",
+      "description": "Route family used for this decision (e.g. R3R4_MANAGED_WORKFLOW).",
+      "enum": [
+        "R1A_EXACT_CACHE",
+        "R1B_SEMANTIC_CACHE",
+        "R3_SIMPLE_GROUNDED_READ",
+        "R3R4_MANAGED_WORKFLOW",
+        "R4_SINGLE_ACTION",
+        "R5_FALLBACK"
+      ]
+    },
+    "underwriting_route_mode": {
+      "type": "string",
+      "description": "Mode within the route family (e.g. FULL_DECISION_PACKET).",
+      "enum": [
+        "FULL_DECISION_PACKET",
+        "EVIDENCE_ONLY_REVIEW",
+        "ADMIN_OR_SCHEMA_UTILITY",
+        "EXACT_REPLAY",
+        "DOC_HELP_ONLY",
+        "MISSING_INPUT_SAFE_FALLBACK",
+        "BORDERLINE_HITL_POSTURE"
+      ]
+    },
+    "evidence_contract_status": {
+      "type": "string",
+      "description": "C0 state of the FinalEvidenceContract.",
+      "enum": ["PASS", "WEAK_WITH_CAVEATS", "FAIL", "UNKNOWN"]
+    },
+    "documents_received_count": {
+      "type": "integer",
+      "description": "Total synthetic documents received from the applicant.",
+      "minimum": 0
+    },
+    "documents_missing_count": {
+      "type": "integer",
+      "description": "Count of required document classes absent from the submission.",
+      "minimum": 0
+    },
+    "contradiction_flags_count": {
+      "type": "integer",
+      "description": "Number of contradiction flags raised by the C0 adapter.",
+      "minimum": 0
+    },
+    "demo_scorer_version": {
+      "type": "string",
+      "description": "Version tag of the DeterministicRiskScorer used.",
+      "minLength": 1
+    },
+    "demo_policy_hash": {
+      "type": "string",
+      "description": "Policy hash bound to this run (empty string when not available)."
+    },
+    "replay_key_prefix": {
+      "type": "string",
+      "description": "First 12 chars of the R1A replay key (empty when not a replay)."
+    },
+    "exit_disposition": {
+      "type": "string",
+      "description": "Exit X3 disposition class emitted for this run.",
+      "enum": [
+        "X3A_APPROVE",
+        "X3B_REFER",
+        "X3C_DECLINE",
+        "X3D_INSUFFICIENT",
+        "X3E_SAFE_ABSTAIN",
+        "UNKNOWN"
+      ]
+    },
+    "hitl_posture": {
+      "type": "string",
+      "description": "HITL posture resolved by the L3 adapter.",
+      "enum": ["HITL_REQUIRED", "HITL_ADVISORY", "HITL_NONE", "NONE"]
+    },
+    "generated_rationale_used": {
+      "type": "boolean",
+      "description": "True when the LLM rationale was accepted by the firewall."
+    },
+    "deterministic_rationale_fallback_used": {
+      "type": "boolean",
+      "description": "True when the firewall fell back to the deterministic rationale."
+    },
+    "demo_packet_id": {
+      "type": "string",
+      "description": "Unique ID for this decision packet instance."
+    },
+    "demo_mode": {
+      "type": "boolean",
+      "const": true,
+      "description": "Always true — this app produces synthetic demo packets only."
+    }
+  },
+  "additionalProperties": false
+}

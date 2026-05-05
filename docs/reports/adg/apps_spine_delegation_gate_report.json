@@ -1,13 +1,13 @@
 {
   "gate": "G-APPS-SPINE-DELEGATION",
   "tier": "B",
-  "timestamp": "2026-05-05T11:25:30.389727+00:00",
+  "timestamp": "2026-05-05T12:33:37.776251+00:00",
   "mode": "strict",
   "snapshot": "artifacts\\adg\\adg_indexed_05052026_0722.sqlite",
-  "snapshot_mtime_utc": "2026-05-05T11:23:41.251140+00:00",
+  "snapshot_mtime_utc": "2026-05-05T12:18:01.172566+00:00",
   "packages_scanned": 9,
   "violations": 0,
-  "allowlist_active": 1,
+  "allowlist_active": 0,
   "allowlist_expired": 0,
   "status": "ok",
   "per_package": [
@@ -96,9 +96,9 @@
       "spine_imports": 3,
       "total_imports": 538,
       "is_violation": false,
-      "allowlisted": true,
-      "allowlist_reason": "Known baseline from W3 P3.2 \u2014 0/693 imports into agentic_core spine (apps_underwriting_ai evolved as a standalone mini-runtime before ADR-078 was ratified). Burndown tracked in W5 P5.4 plan row of adg-three-bucket-unified-c4f8e2.",
-      "allowlist_expires": "2026-05-31",
+      "allowlisted": false,
+      "allowlist_reason": "",
+      "allowlist_expires": "",
       "allowlist_expired": false
     }
   ]

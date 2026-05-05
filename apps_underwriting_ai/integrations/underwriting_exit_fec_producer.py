@@ -278,6 +278,25 @@ class UnderwritingExitFecProducer:
         self._x3_disposition = x3
 
         # ------------------------------------------------------------------ #
+        # D4 — OTEL span emission (fail-soft, never raises).
+        # ------------------------------------------------------------------ #
+        try:
+            from apps_underwriting_ai.integrations.observability_adapter import (  # noqa: PLC0415
+                ObservabilityAdapter,
+            )
+
+            ObservabilityAdapter().emit_x3_span(
+                request_id=run_context.get("request_id", exit_id),
+                x3_disposition=x3,
+                exit_mode=EXIT_MODE,
+                hitl_posture=hitl_posture,
+                violations=[],
+            )
+        except Exception:  # noqa: BLE001
+            # guardian: allow-broad-except -- OTEL path must never crash exit logic
+            pass
+
+        # ------------------------------------------------------------------ #
         # Build and return the exit bundle.
         # ------------------------------------------------------------------ #
         return {

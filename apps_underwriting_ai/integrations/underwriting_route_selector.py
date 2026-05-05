@@ -19,6 +19,8 @@ Plan: apps-underwriting-ai-spine-hardening-d7f3b2 P1.2.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass, field
 from typing import Literal
 
@@ -100,6 +102,45 @@ class RouteSelectorOutput:
     pa_required: Literal["rationale_enrichment_enabled", "none"] = "none"
     l3_required: bool = False
     exit_mode: ExitMode = "FAIL_CLOSED"
+
+
+def build_r1a_cache_key(
+    *,
+    request_envelope_hash: str,
+    doc_content_hashes: list[str],
+    policy_hash: str,
+    blueprint_hash: str,
+    scorer_version: str,
+    schema_version: str,
+) -> str:
+    """Build the canonical R1A exact-cache key for apps_underwriting_ai.
+
+    Key = SHA-256 of the canonical JSON serialisation of all 6 components.
+    The serialisation is deterministic (sorted keys, no whitespace). Any
+    change to any component — including document order — yields a distinct
+    digest, guaranteeing a cache miss rather than a stale hit.
+
+    Components (D2.1 specification):
+      1. request_envelope_hash  — SHA-256 of the raw request envelope bytes.
+      2. doc_content_hashes     — sorted list of per-document SHA-256 digests.
+      3. policy_hash            — SHA-256 of the bound policy YAML blob.
+      4. blueprint_hash         — SHA-256 of the bound blueprint YAML blob.
+      5. scorer_version         — version tag of DeterministicRiskScorer.
+      6. schema_version         — FEC / contract schema version string.
+
+    Returns:
+        Lowercase hex SHA-256 digest (64 chars).
+    """
+    payload = {
+        "request_envelope_hash": request_envelope_hash,
+        "doc_content_hashes": sorted(doc_content_hashes),
+        "policy_hash": policy_hash,
+        "blueprint_hash": blueprint_hash,
+        "scorer_version": scorer_version,
+        "schema_version": schema_version,
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 class UnderwritingRouteSelector:

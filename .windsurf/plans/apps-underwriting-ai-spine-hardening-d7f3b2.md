@@ -1,6 +1,8 @@
 ---
 plan_id: apps-underwriting-ai-spine-hardening-d7f3b2
 plan_type: refactor
+status: Completed
+completed: 2026-05-05
 ---
 
 # apps_underwriting_ai — Zero-Loss Spine Hardening & Public Demo Alignment
@@ -63,15 +65,15 @@ Refactor `apps_underwriting_ai` from a standalone imperative underwriting runner
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|-----------------|
-| P0 | P0.1–P0.5 | Entrypoint purity + capability/recipe registry | ~18k | Existing engine code untouched; new integration scaffolds only | ⬜ Not Started | 20 governance tests pass; `__main__.py` imports no engines/C0/PA/L2/providers; capability registry exports present |
-| P1 | P1.1–P1.3 | Routing matrix + `UnderwritingRouteSelector` | ~10k | No new canonical route families; selector is metadata only | ⬜ Not Started | Route decision matrix documented; selector outputs correct `route_family` for 7 demo request types; 10 routing tests pass |
-| P1.5 | P1.5.1–P1.5.4 | Prompt Assembly BOM + real template bodies | ~20k | `CompiledPromptArtifact` contract exists in `agentic_core`; templates are YAML | ⬜ Not Started | `prompt_bom.yaml`, `prompt_registry.yaml`, 5 template YAMLs, `underwriting_pa_compiler.py` created; 17 PA tests pass; zero placeholder text |
-| W1 | W1.1–W1.3 | `__main__.py` pure shim + core-owned route/recipe resolution | ~12k | `agentic_core` runner API exists or stub is created | ⬜ Not Started | `__main__.py` is CLI arg parser + runner call only; capability resolution through `agentic_core`; R5 fail-closed on unavailable capability |
-| W2 | W2.1–W2.3 | C0 submitted-document evidence contract implementation | ~14k | C0 adapter pattern exists in `agentic_core.L0_routing.c0_retrieval` | ⬜ Not Started | `underwriting_c0_adapter.py` complete; `FinalEvidenceContract` emitted; PASS/WEAK/FAIL modes implemented; open-web blocked; 5 C0 tests pass |
-| W3 | W3.1–W3.5 | L3 managed workflow + L2 E1–E5 stage execution | ~22k | `HopPipelineExecutor` and `L2` E-stage lifecycle exist | ⬜ Not Started | `underwriting_l3_workflow_adapter.py` expands 5 stages; L2 E1–E5 receipts emitted; `underwriting_l2_step_adapters.py` complete; 8 L3/L2 tests pass |
-| W4 | W4.1–W4.2 | PA + rationale firewall + L2 compiled prompt path | ~10k | `underwriting_pa_compiler.py` from P1.5 complete | ⬜ Not Started | PA compiler consumes C0 FEC → `CompiledPromptArtifact`; LLM cannot change verdict/reason codes; deterministic fallback wired; 6 LLM firewall tests pass |
-| W5 | W5.1–W5.4 | FEC + Exit v6 + L6/UWG proof | ~12k | Exit v6 and UWG interfaces exist | ⬜ Not Started | FEC producer carries `PublicTrustReceipt`, route_family, evidence coverage, reason_code_bundle; Exit emits exactly one X3; L6 post-run only; UWG-only write path; 10 Exit/state tests pass |
-| W6 | W6.1–W6.4 | Public demo docs, fixtures, acceptance sweep, legacy quarantine | ~14k | Synthetic fixture data acceptable; no real applicant data | ⬜ Not Started | 4 synthetic demo packets; `PublicTrustReceipt` schema; capability scorecard; ASCII route views; DEMO NOTICE in docs; legacy runner quarantined; 65-test acceptance sweep passes |
+| P0 | P0.1–P0.5 | Entrypoint purity + capability/recipe registry | ~18k | Existing engine code untouched; new integration scaffolds only | ✅ DONE | 20 governance tests pass; `__main__.py` imports no engines/C0/PA/L2/providers; capability registry exports present |
+| P1 | P1.1–P1.3 | Routing matrix + `UnderwritingRouteSelector` | ~10k | No new canonical route families; selector is metadata only | ✅ DONE | Route decision matrix documented; selector outputs correct `route_family` for 7 demo request types; 10 routing tests pass |
+| P1.5 | P1.5.1–P1.5.4 | Prompt Assembly BOM + real template bodies | ~20k | `CompiledPromptArtifact` contract exists in `agentic_core`; templates are YAML | ✅ DONE | `prompt_bom.yaml`, `prompt_registry.yaml`, 5 template YAMLs, `underwriting_pa_compiler.py` created; 17 PA tests pass; zero placeholder text |
+| W1 | W1.1–W1.3 | `__main__.py` pure shim + core-owned route/recipe resolution | ~12k | `agentic_core` runner API exists or stub is created | ✅ DONE | `__main__.py` is CLI arg parser + runner call only; capability resolution through `agentic_core`; R5 fail-closed on unavailable capability |
+| W2 | W2.1–W2.3 | C0 submitted-document evidence contract implementation | ~14k | C0 adapter pattern exists in `agentic_core.L0_routing.c0_retrieval` | ✅ DONE | `underwriting_c0_adapter.py` complete; `FinalEvidenceContract` emitted; PASS/WEAK/FAIL modes implemented; open-web blocked; 5 C0 tests pass |
+| W3 | W3.1–W3.5 | L3 managed workflow + L2 E1–E5 stage execution | ~22k | `HopPipelineExecutor` and `L2` E-stage lifecycle exist | ✅ DONE | `underwriting_l3_workflow_adapter.py` expands 5 stages; L2 E1–E5 receipts emitted; `underwriting_l2_step_adapters.py` complete; 8 L3/L2 tests pass |
+| W4 | W4.1–W4.2 | PA + rationale firewall + L2 compiled prompt path | ~10k | `underwriting_pa_compiler.py` from P1.5 complete | ✅ DONE | PA compiler consumes C0 FEC → `CompiledPromptArtifact`; LLM cannot change verdict/reason codes; deterministic fallback wired; 6 LLM firewall tests pass |
+| W5 | W5.1–W5.4 | FEC + Exit v6 + L6/UWG proof | ~12k | Exit v6 and UWG interfaces exist | ✅ DONE | FEC producer carries `PublicTrustReceipt`, route_family, evidence coverage, reason_code_bundle; Exit emits exactly one X3; L6 post-run only; UWG-only write path; 10 Exit/state tests pass |
+| W6 | W6.1–W6.4 | Public demo docs, fixtures, acceptance sweep, legacy quarantine | ~14k | Synthetic fixture data acceptable; no real applicant data | ✅ DONE | 4 synthetic demo packets; `PublicTrustReceipt` schema; capability scorecard; ASCII route views; DEMO NOTICE in docs; legacy runner quarantined; 65-test acceptance sweep passes |
 
 ---
 
@@ -79,37 +81,37 @@ Refactor `apps_underwriting_ai` from a standalone imperative underwriting runner
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|--------------|-------------|-------------|--------|
-| P0.1 | Governance test scaffolds | `tests/governance/test_apps_underwriting_ai_entrypoint_purity.py` +4 new test files | No existing governance tests for entrypoint purity | ~5k | ⬜ |
-| P0.2 | Capability registry | `apps_underwriting_ai/integrations/underwriting_capability_registry.py` | Must mirror `agentic_core` capability resolution protocol | ~4k | ⬜ |
-| P0.3 | Integration scaffold stubs | `underwriting_l2_step_adapters.py`, `underwriting_c0_adapter.py`, `underwriting_l3_workflow_adapter.py`, `underwriting_exit_fec_producer.py` | Stub only — full impl in W2/W3/W4/W5 | ~4k | ⬜ |
-| P0.4 | 20 governance tests | All 20 P0 required tests | Tests must be hard (import inspection + AST boundary) | ~5k | ⬜ |
-| P1.1 | Route decision matrix doc | `apps_underwriting_ai/AGENTIC_SPINE.md` (route matrix section) | Must not invent new canonical route families | ~3k | ⬜ |
-| P1.2 | `UnderwritingRouteSelector` | `apps_underwriting_ai/integrations/` or L0 route declarations | Selector is metadata only — L0 retains authority | ~4k | ⬜ |
-| P1.3 | Routing tests | 10 routing tests in `tests/governance/` | Route selector must not become a new runtime layer | ~3k | ⬜ |
-| P1.5.1 | `prompt_bom.yaml` | `apps_underwriting_ai/prompt_assembly/prompt_bom.yaml` | Must match exact slot schema from spec | ~3k | ⬜ |
-| P1.5.2 | `prompt_registry.yaml` + `underwriting_pa_compiler.py` | `apps_underwriting_ai/prompt_assembly/` | Compiler must emit `CompiledPromptArtifact` with all hash fields | ~6k | ⬜ |
-| P1.5.3 | 5 template YAML bodies | `apps_underwriting_ai/prompt_assembly/templates/*.yaml` | All templates must have real implementation-grade content — zero placeholders | ~7k | ⬜ |
-| P1.5.4 | PA tests (17) | `tests/governance/` PA test cases 21–37 | Hash binding + no-retrieve + no-call-provider invariants | ~4k | ⬜ |
-| W1.1 | `__main__.py` rewrite | `apps_underwriting_ai/__main__.py` | Must delete all engine imports, closures, legacy runner references | ~4k | ⬜ |
-| W1.2 | Core runner integration | `apps_underwriting_ai/integrations/underwriting_capability_registry.py` (finalize) | Fail-closed on missing capability → R5 terminal packet | ~4k | ⬜ |
-| W1.3 | Entrypoint purity tests | Tests 1–11 (entrypoint group) | AST/import inspection boundary | ~4k | ⬜ |
-| W2.1 | C0 adapter | `apps_underwriting_ai/integrations/underwriting_c0_adapter.py` | `SUBMITTED_DOCUMENT_EVIDENCE_ONLY` mode; block open-web; PASS/WEAK/FAIL | ~6k | ⬜ |
-| W2.2 | `FinalEvidenceContract` emission | C0 adapter output contract | Must carry evidence_ids, coverage_map, contradiction_flags, support_score | ~4k | ⬜ |
-| W2.3 | C0 tests (5) | Tests 11–15 (C0 group) | Verify open-web blocked; FEC emitted; evidence IDs preserved | ~4k | ⬜ |
-| W3.1 | L3 workflow adapter | `apps_underwriting_ai/integrations/underwriting_l3_workflow_adapter.py` | Expand → do not execute; 5 stage contracts declared | ~6k | ⬜ |
-| W3.2 | L2 step adapters (5 stages) | `apps_underwriting_ai/integrations/underwriting_l2_step_adapters.py` | E1–E5 receipts; no new retrieval; no L4 write | ~8k | ⬜ |
-| W3.3 | `spine_manifest.yaml` update | `apps_underwriting_ai/spine_manifest.yaml` | Change route to `R3R4_MANAGED_WORKFLOW`; update entry_points | ~2k | ⬜ |
-| W3.4 | L3/L2 tests (8) | Tests 44–49 (L3/L2 group) | L3 expands not executes; feature derivation requires evidence_refs | ~6k | ⬜ |
-| W4.1 | LLM firewall wiring | `apps_underwriting_ai/engines/decision_packet_assembler.py` + PA compiler integration | PA compiler must precede any provider call; fallback deterministic | ~5k | ⬜ |
-| W4.2 | LLM firewall tests (6) | Tests 38–43 (LLM firewall group) | Verdict immutability + reason_code immutability + fallback | ~5k | ⬜ |
-| W5.1 | FEC producer extension | `apps_underwriting_ai/cert/fec_producer.py` | Add `PublicTrustReceipt`, `route_family`, `reason_code_bundle`, evidence coverage | ~4k | ⬜ |
-| W5.2 | Exit v6 integration | `apps_underwriting_ai/integrations/underwriting_exit_fec_producer.py` | Fail-closed on missing FEC/policy_hash/blueprint_hash | ~4k | ⬜ |
-| W5.3 | L6/UWG proof | Docs + test assertions | L6 post-run only; UWG-only write; no direct L4 | ~2k | ⬜ |
-| W5.4 | Exit/state tests (10) | Tests 50–59 (Exit + state group) | UNKNOWN never passes; exactly one X3; L6 cannot mutate | ~4k | ⬜ |
-| W6.1 | `AGENTIC_SPINE.md` full doc | `apps_underwriting_ai/AGENTIC_SPINE.md` | Route matrix, ASCII views, scorecard, demo notice, HITL trigger map | ~6k | ⬜ |
-| W6.2 | Synthetic demo packets (4) | `apps_underwriting_ai/fixtures/` or `docs/` | Approve/Missing/Refer/Decline; clearly synthetic | ~4k | ⬜ |
-| W6.3 | `PublicTrustReceipt` schema | `apps_underwriting_ai/types/underwriting_types.py` + docs | All required fields per spec | ~2k | ⬜ |
-| W6.4 | Acceptance sweep + legacy quarantine | All 65 tests; legacy runner removal/quarantine | Full acceptance report; YES/NO verdict | ~6k | ⬜ |
+| P0.1 | Governance test scaffolds | `tests/governance/test_apps_underwriting_ai_entrypoint_purity.py` +4 new test files | No existing governance tests for entrypoint purity | ~5k | ✅ |
+| P0.2 | Capability registry | `apps_underwriting_ai/integrations/underwriting_capability_registry.py` | Must mirror `agentic_core` capability resolution protocol | ~4k | ✅ |
+| P0.3 | Integration scaffold stubs | `underwriting_l2_step_adapters.py`, `underwriting_c0_adapter.py`, `underwriting_l3_workflow_adapter.py`, `underwriting_exit_fec_producer.py` | Stub only — full impl in W2/W3/W4/W5 | ~4k | ✅ |
+| P0.4 | 20 governance tests | All 20 P0 required tests | Tests must be hard (import inspection + AST boundary) | ~5k | ✅ |
+| P1.1 | Route decision matrix doc | `apps_underwriting_ai/AGENTIC_SPINE.md` (route matrix section) | Must not invent new canonical route families | ~3k | ✅ |
+| P1.2 | `UnderwritingRouteSelector` | `apps_underwriting_ai/integrations/` or L0 route declarations | Selector is metadata only — L0 retains authority | ~4k | ✅ |
+| P1.3 | Routing tests | 10 routing tests in `tests/governance/` | Route selector must not become a new runtime layer | ~3k | ✅ |
+| P1.5.1 | `prompt_bom.yaml` | `apps_underwriting_ai/prompt_assembly/prompt_bom.yaml` | Must match exact slot schema from spec | ~3k | ✅ |
+| P1.5.2 | `prompt_registry.yaml` + `underwriting_pa_compiler.py` | `apps_underwriting_ai/prompt_assembly/` | Compiler must emit `CompiledPromptArtifact` with all hash fields | ~6k | ✅ |
+| P1.5.3 | 5 template YAML bodies | `apps_underwriting_ai/prompt_assembly/templates/*.yaml` | All templates must have real implementation-grade content — zero placeholders | ~7k | ✅ |
+| P1.5.4 | PA tests (17) | `tests/governance/` PA test cases 21–37 | Hash binding + no-retrieve + no-call-provider invariants | ~4k | ✅ |
+| W1.1 | `__main__.py` rewrite | `apps_underwriting_ai/__main__.py` | Must delete all engine imports, closures, legacy runner references | ~4k | ✅ |
+| W1.2 | Core runner integration | `apps_underwriting_ai/integrations/underwriting_capability_registry.py` (finalize) | Fail-closed on missing capability → R5 terminal packet | ~4k | ✅ |
+| W1.3 | Entrypoint purity tests | Tests 1–11 (entrypoint group) | AST/import inspection boundary | ~4k | ✅ |
+| W2.1 | C0 adapter | `apps_underwriting_ai/integrations/underwriting_c0_adapter.py` | `SUBMITTED_DOCUMENT_EVIDENCE_ONLY` mode; block open-web; PASS/WEAK/FAIL | ~6k | ✅ |
+| W2.2 | `FinalEvidenceContract` emission | C0 adapter output contract | Must carry evidence_ids, coverage_map, contradiction_flags, support_score | ~4k | ✅ |
+| W2.3 | C0 tests (5) | Tests 11–15 (C0 group) | Verify open-web blocked; FEC emitted; evidence IDs preserved | ~4k | ✅ |
+| W3.1 | L3 workflow adapter | `apps_underwriting_ai/integrations/underwriting_l3_workflow_adapter.py` | Expand → do not execute; 5 stage contracts declared | ~6k | ✅ |
+| W3.2 | L2 step adapters (5 stages) | `apps_underwriting_ai/integrations/underwriting_l2_step_adapters.py` | E1–E5 receipts; no new retrieval; no L4 write | ~8k | ✅ |
+| W3.3 | `spine_manifest.yaml` update | `apps_underwriting_ai/spine_manifest.yaml` | Change route to `R3R4_MANAGED_WORKFLOW`; update entry_points | ~2k | ✅ |
+| W3.4 | L3/L2 tests (8) | Tests 44–49 (L3/L2 group) | L3 expands not executes; feature derivation requires evidence_refs | ~6k | ✅ |
+| W4.1 | LLM firewall wiring | `apps_underwriting_ai/engines/decision_packet_assembler.py` + PA compiler integration | PA compiler must precede any provider call; fallback deterministic | ~5k | ✅ |
+| W4.2 | LLM firewall tests (6) | Tests 38–43 (LLM firewall group) | Verdict immutability + reason_code immutability + fallback | ~5k | ✅ |
+| W5.1 | FEC producer extension | `apps_underwriting_ai/cert/fec_producer.py` | Add `PublicTrustReceipt`, `route_family`, `reason_code_bundle`, evidence coverage | ~4k | ✅ |
+| W5.2 | Exit v6 integration | `apps_underwriting_ai/integrations/underwriting_exit_fec_producer.py` | Fail-closed on missing FEC/policy_hash/blueprint_hash | ~4k | ✅ |
+| W5.3 | L6/UWG proof | Docs + test assertions | L6 post-run only; UWG-only write; no direct L4 | ~2k | ✅ |
+| W5.4 | Exit/state tests (10) | Tests 50–59 (Exit + state group) | UNKNOWN never passes; exactly one X3; L6 cannot mutate | ~4k | ✅ |
+| W6.1 | `AGENTIC_SPINE.md` full doc | `apps_underwriting_ai/AGENTIC_SPINE.md` | Route matrix, ASCII views, scorecard, demo notice, HITL trigger map | ~6k | ✅ |
+| W6.2 | Synthetic demo packets (4) | `apps_underwriting_ai/fixtures/` or `docs/` | Approve/Missing/Refer/Decline; clearly synthetic | ~4k | ✅ |
+| W6.3 | `PublicTrustReceipt` schema | `apps_underwriting_ai/types/underwriting_types.py` + docs | All required fields per spec | ~2k | ✅ |
+| W6.4 | Acceptance sweep + legacy quarantine | All 65 tests; legacy runner removal/quarantine | Full acceptance report; YES/NO verdict | ~6k | ✅ |
 
 ---
 

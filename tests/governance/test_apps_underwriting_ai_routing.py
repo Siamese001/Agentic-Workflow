@@ -27,6 +27,7 @@ if str(REPO_ROOT) not in sys.path:
 from apps_underwriting_ai.integrations.underwriting_route_selector import (
     RouteSelectorInput,
     UnderwritingRouteSelector,
+    build_r1a_cache_key,
 )
 
 _selector = UnderwritingRouteSelector()
@@ -304,3 +305,73 @@ def test_underwriting_route_selector_is_metadata_only() -> None:
                         f"'{mod}' at line {node.lineno}. "
                         "The selector is metadata-only."
                     )
+
+
+# ---------------------------------------------------------------------------
+# D2.2 — R1A cache key hit-path tests (5 cases)
+# ---------------------------------------------------------------------------
+
+_BASE_KEY_KWARGS: dict = {
+    "request_envelope_hash": "sha256-req-aabbcc",
+    "doc_content_hashes": ["sha256-doc-001", "sha256-doc-002"],
+    "policy_hash": "sha256-policy-standard-v1",
+    "blueprint_hash": "sha256-blueprint-v1",
+    "scorer_version": "deterministic_risk_scorer_v1",
+    "schema_version": "1.1",
+}
+
+
+@pytest.mark.governance
+def test_r1a_cache_key_exact_hit_same_inputs() -> None:
+    """Same inputs always produce the same 64-char hex key (exact-cache hit)."""
+    k1 = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    k2 = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    assert k1 == k2, "Same inputs must yield identical R1A cache key."
+    assert len(k1) == 64, f"Key must be 64 hex chars (SHA-256); got {len(k1)}."
+
+
+@pytest.mark.governance
+def test_r1a_cache_key_policy_drift_produces_miss() -> None:
+    """Changing policy_hash must produce a different key (policy drift → miss)."""
+    k_base = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    drifted = dict(_BASE_KEY_KWARGS, policy_hash="sha256-policy-DRIFTED-v2")
+    k_drift = build_r1a_cache_key(**drifted)
+    assert k_base != k_drift, (
+        "Policy drift must produce a distinct key; cache must not replay stale decision."
+    )
+
+
+@pytest.mark.governance
+def test_r1a_cache_key_doc_drift_produces_miss() -> None:
+    """Changing any document content hash must produce a different key (doc drift → miss)."""
+    k_base = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    drifted = dict(
+        _BASE_KEY_KWARGS,
+        doc_content_hashes=["sha256-doc-001", "sha256-doc-NEWCONTENT"],
+    )
+    k_drift = build_r1a_cache_key(**drifted)
+    assert k_base != k_drift, (
+        "Document content drift must produce a distinct key."
+    )
+
+
+@pytest.mark.governance
+def test_r1a_cache_key_scorer_version_bump_produces_miss() -> None:
+    """Bumping scorer_version must produce a different key (scorer bump → miss)."""
+    k_base = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    drifted = dict(_BASE_KEY_KWARGS, scorer_version="deterministic_risk_scorer_v2")
+    k_drift = build_r1a_cache_key(**drifted)
+    assert k_base != k_drift, (
+        "Scorer version bump must produce a distinct key."
+    )
+
+
+@pytest.mark.governance
+def test_r1a_cache_key_schema_version_bump_produces_miss() -> None:
+    """Bumping schema_version must produce a different key (schema bump → miss)."""
+    k_base = build_r1a_cache_key(**_BASE_KEY_KWARGS)
+    drifted = dict(_BASE_KEY_KWARGS, schema_version="1.2")
+    k_drift = build_r1a_cache_key(**drifted)
+    assert k_base != k_drift, (
+        "Schema version bump must produce a distinct key."
+    )

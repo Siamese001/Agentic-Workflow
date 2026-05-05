@@ -332,6 +332,90 @@ def test_emit_packet_surface_description_extension_preserves_floor(emit):
     assert extension in desc  # extension appended
 
 
+# ------------------------------ UI audit invariant 5: handcrafted detection ------------------------------
+# Plan author-gate-pre-response-guard-d3e8a1 W3.P1 — regression test corpus.
+
+
+def test_invariant5_detects_handcrafted_ag_with_author_gate_word(ui_audit):
+    """ask_user_question + 'Author-Gate' + no AUTHOR_GATE_PACKET → violation."""
+    response = (
+        "This is an Author-Gate decision point.\n"
+        "ask_user_question with some options to choose from."
+    )
+    violations = ui_audit.audit_response(response)
+    assert any(v["invariant"] == "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_detects_handcrafted_ag_with_ag_colon(ui_audit):
+    """ask_user_question + 'AG:' + no packet → violation."""
+    response = "AG: please pick an option.\nask_user_question is called here."
+    violations = ui_audit.audit_response(response)
+    assert any(v["invariant"] == "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_detects_handcrafted_ag_with_decision_point(ui_audit):
+    """ask_user_question + 'decision point' + no packet → violation."""
+    response = "Reached a decision point that requires user input.\nask_user_question"
+    violations = ui_audit.audit_response(response)
+    assert any(v["invariant"] == "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_no_violation_when_packet_present(ui_audit):
+    """ask_user_question + Author-Gate words + AUTHOR_GATE_PACKET → no invariant5 violation."""
+    packet = {"routing": {"rule_applied": "surface_top_2"}, "decision_id": "dec_test"}
+    options = [
+        {"label": "A", "description": "[confidence=0.80] · trade-off: tradeoff text here works"},
+        {"label": "B", "description": "[confidence=0.74] · trade-off: another tradeoff here fine"},
+    ]
+    response = (
+        f"Author-Gate decision.\n\nAUTHOR_GATE_PACKET: {json.dumps(packet)}\n\n"
+        f'ask_user_question("options": {json.dumps(options)})'
+    )
+    violations = ui_audit.audit_response(response)
+    assert all(v["invariant"] != "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_no_violation_when_no_ag_context_words(ui_audit):
+    """ask_user_question without AG context words → no invariant5 violation."""
+    response = "Please choose your favourite colour.\nask_user_question listed below."
+    violations = ui_audit.audit_response(response)
+    assert all(v["invariant"] != "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_no_violation_when_no_ask_user_question(ui_audit):
+    """Author-Gate words without ask_user_question → no violation."""
+    response = "This is an Author-Gate scenario but no tool call was made."
+    violations = ui_audit.audit_response(response)
+    assert all(v["invariant"] != "handcrafted_author_gate_detected" for v in violations)
+
+
+def test_invariant5_matched_words_reported(ui_audit):
+    """Violation record includes matched_context_words list."""
+    response = "Author-Gate decision point.\nask_user_question here."
+    violations = ui_audit.audit_response(response)
+    inv5 = [v for v in violations if v["invariant"] == "handcrafted_author_gate_detected"]
+    assert inv5
+    assert "matched_context_words" in inv5[0]
+    assert isinstance(inv5[0]["matched_context_words"], list)
+    assert len(inv5[0]["matched_context_words"]) >= 1
+
+
+def test_invariant5_severity_is_warn(ui_audit):
+    """Invariant 5 violations carry severity=WARN (advisory only)."""
+    response = "Author-Gate\nask_user_question"
+    violations = ui_audit.audit_response(response)
+    inv5 = [v for v in violations if v["invariant"] == "handcrafted_author_gate_detected"]
+    assert inv5
+    assert inv5[0]["severity"] == "WARN"
+
+
+def test_invariant5_hitl_packet_word_triggers(ui_audit):
+    """Legacy HITL_PACKET word (without canonical packet) triggers detection."""
+    response = "HITL_PACKET scenario — ask_user_question called without proper packet."
+    violations = ui_audit.audit_response(response)
+    assert any(v["invariant"] == "handcrafted_author_gate_detected" for v in violations)
+
+
 # ------------------------------ helpers ------------------------------
 
 
