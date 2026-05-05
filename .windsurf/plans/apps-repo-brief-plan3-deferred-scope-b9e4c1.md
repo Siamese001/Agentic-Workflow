@@ -28,16 +28,16 @@ This plan collects all of them in one place. **No implementation happens in this
 | # | Gate | Source | Status | Notes |
 |---|------|--------|--------|-------|
 | 1 | `apps_repo_brief` aligned to canonical spine | Plan 3 §20.2 | ❌ Not verified | Requires spine scanner + ADG edge proof |
-| 2 | `apps_repo_brief` aligned to Prompt Assembly standard | Plan 3 §20.2 | ❌ Not verified | PA compiler exists (W2/W3) but no runtime coverage matrix |
+| 2 | `apps_repo_brief` aligned to Prompt Assembly standard | Plan 3 §20.2 | ✅ Verified (D2) | BOM declares 7 required + 2 optional slots; synthesis template declares 10+ required inputs; 6 templates have no placeholders |
 | 3 | `apps_repo_brief` aligned to C0 briefing-grade repo retrieval standard | Plan 3 §20.2 | ❌ Not verified | C0 depth profiles defined; authoritative FEC at C0 unverified at runtime |
 | 4 | Zero off-spine bypasses | Plan 3 §20.2 | ✅ Verified (D1) | `__main__.py` blast radius 0; no inbound imports; no off-spine callers |
 | 5 | Zero pre-C0 retrieval/assembly | Plan 3 §20.2 | ✅ Verified (D1) | IngestionEngine removed W3; no L6/write edges from reasoning layer |
 | 6 | Authoritative FEC at C0 | Plan 3 §20.2 | ❌ Not verified | `cert_projection_adapter.py` exists (W4); C0 authoritative FEC wiring unconfirmed |
-| 7 | No template-only full board brief | Plan 3 §20.2 | ❌ Not verified | C0 depth profiles include board gate; runtime block unconfirmed |
-| 8 | No semantic cache stale board return | Plan 3 §20.2 | ❌ Not verified | `cache_compat.yaml` defined; L0 block unconfirmed at runtime |
-| 9 | No ad hoc prompt strings | Plan 3 §20.2 | ❌ Not verified | PA templates exist; static scan not run |
-| 10 | No placeholder templates | Plan 3 §20.2 | ❌ Not verified | 6 templates written in W2/W3; spot-check only |
-| 11 | No provider call without `CompiledPromptArtifact` | Plan 3 §20.2 | ❌ Not verified | `repo_brief_pa_compiler.py` exists; runtime enforcement not gate-tested |
+| 7 | No template-only full board brief | Plan 3 §20.2 | ✅ Verified (D2) | `validate_fec()` raises violation when `board_gate_passed=False`; `board_gate_required=True` in depth_profiles.py |
+| 8 | No semantic cache stale board return | Plan 3 §20.2 | ✅ Verified (D2) | `enforce_r1b_semantic_cache_policy()` raises `CacheCompatViolation` on BOARD_DOSSIER+terminal; `semantic_cache_terminal_return=False` confirmed |
+| 9 | No ad hoc prompt strings | Plan 3 §20.2 | ✅ Verified (D2) | `_render_slots` present; no inline f-string prompt construction; all prompt text flows through slot rendering |
+| 10 | No placeholder templates | Plan 3 §20.2 | ✅ Verified (D2) | Static scan of all 6 template YAMLs: 0 TODO/FIXME/PLACEHOLDER/STUB tokens; all declare `input_contract` or `slot_bodies` |
+| 11 | No provider call without `CompiledPromptArtifact` | Plan 3 §20.2 | ✅ Verified (D2) | `compile()` raises `ValueError` on missing required inputs; manifest_hash is deterministic; artifact_id encodes request + template for traceability |
 | 12 | No L6 current-run mutation | Plan 3 §20.2 | ✅ Verified (D1) | Zero L6 imports in `apps_repo_brief/` — grep + ADG edge scan both confirm |
 | 13 | No durable write outside UWG | Plan 3 §20.2 | ✅ Verified (D1) | All `open()` calls read-only; `json.dump*` are in-memory only; zero file writes |
 | 14 | `apps_eval` green throughout | Plan 3 §20.2 | ✅ Verified | 98 tests pass (W4+W5 suite) |
@@ -107,7 +107,7 @@ This plan collects all of them in one place. **No implementation happens in this
 | Wave | Scope | Gates Closed | Est. Tokens | Status |
 |------|-------|-------------|-------------|--------|
 | D1 | DS-2 Spine scanner + DS-6 UWG scan + DS-7 L6 guard | #1, #4, #5, #12, #13 | ~8k | ✅ DONE (2026-05-05) |
-| D2 | DS-3 PA coverage tests + DS-4 board block test + DS-5 cache block test | #2, #7, #8, #9, #10, #11 | ~12k | Not Started |
+| D2 | DS-3 PA coverage tests + DS-4 board block test + DS-5 cache block test | #2, #7, #8, #9, #10, #11 | ~12k | ✅ DONE (2026-05-05) |
 | D3 | DS-1 C0 authoritative FEC binding + integration test | #3, #6 | ~15k | Not Started |
 | D4 | DS-8 Final acceptance report (fill §21 template) | All §20.2 | ~5k | Not Started |
 
@@ -121,10 +121,10 @@ This plan collects all of them in one place. **No implementation happens in this
 | D1.2 | ADG blast-radius capture | `adg_sqlite` MCP queries | Requires SQLite snapshot | 2k | ✅ DONE — `__main__.py` blast radius 0 direct / 0 2-hop (pure entrypoint, no inbound imports). ADG snapshot `05052026_0623`. |
 | D1.3 | UWG write scan | `apps_repo_brief/**` | grep + ADG writes_to | 1.5k | ✅ DONE — zero durable writes. Two `open()` calls are **read-only** (no `w`/`a` mode). `json.dump*` are in-memory string serialization only. |
 | D1.4 | L6 import guard | `apps_repo_brief/reasoning/` | ADG imports scan | 1.5k | ✅ DONE — zero L6 imports. `grep` for `L6_observability` → no results. `reasoning/__init__.py` ADG node has no L6 outgoing edges. |
-| D2.1 | PA placeholder scan | `apps_repo_brief/prompt_assembly/` | Static scan | 2k | Not Started |
-| D2.2 | CompiledPromptArtifact gate test | `apps_repo_brief/reasoning/` | New test | 3k | Not Started |
-| D2.3 | Board block negative control | `apps_repo_brief/`, C0 depth profiles | New test | 3k | Not Started |
-| D2.4 | Cache stale-board block test | `apps_repo_brief/`, `cache_compat.yaml` | New test | 4k | Not Started |
+| D2.1 | PA placeholder scan | `apps_repo_brief/prompt_assembly/` | Static scan | 2k | ✅ DONE — 0 placeholder tokens in all 6 templates; BOM declares 7 required + 2 optional slots; synthesis template has ≥5 forbidden_behaviors incl. `call_provider_directly` |
+| D2.2 | CompiledPromptArtifact gate test | `apps_repo_brief/reasoning/` | New test | 3k | ✅ DONE — `compile()` emits all required CPA fields; raises `ValueError` on missing inputs or unknown template; artifact_id encodes request_id+template_id; manifest_hash is deterministic |
+| D2.3 | Board block negative control | `apps_repo_brief/`, C0 depth profiles | New test | 3k | ✅ DONE — `validate_fec()` flags BOARD_DOSSIER when `board_gate_passed=False`; STANDARD profile unaffected; `board_gate_required=True` + `semantic_cache_terminal_return=False` confirmed in depth_profiles.py |
+| D2.4 | Cache stale-board block test | `apps_repo_brief/`, `cache_compat.yaml` | New test | 4k | ✅ DONE — `enforce_r1b_semantic_cache_policy()` raises `CacheCompatViolation` for BOARD_DOSSIER+terminal; STANDARD/LIGHT+terminal allowed; R1A raises on missing fields; FEC abstain/grounded helpers verified |
 | D3.1 | C0 FEC authoritative wiring | `agentic_core/L0_routing/c0_retrieval/repo_brief_final_contract.py` | Core-layer edit | 8k | Not Started |
 | D3.2 | C0→PA handoff integration test | New test | FEC contract shape | 7k | Not Started |
 | D4.1 | Final acceptance report | Plan 3 §21 template | Evidence collection | 5k | Not Started |
