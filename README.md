@@ -1,21 +1,21 @@
-# Agentic Workflow — Deterministic AI Control Plane
+# Agentic Workflow — A Deterministic AI Control Plane
 
 > **A governed runtime around the agent — not another agent framework.**
-> Route contracts, verified context, bounded execution, runtime gates, controlled writes, replay, and shadow learning. Built as the reference design for enterprise-grade agentic systems.
+> Route authority, verified context, bounded execution, runtime gates, single-door writes, exact replay, and shadow learning. Built as a reference design for enterprise-grade agentic systems.
 
-**Author:** [Amit Ayer](https://github.com/Siamese001) — SVP-level Agentic Engineer. Platform architecture for governed enterprise AI.
+**Author:** [Amit Ayer](https://github.com/Siamese001) — SVP-level Agentic Engineer · platform architecture for governed enterprise AI.
 
 ---
 
-## Point of View
+## The Thesis
 
-Most of the public discourse around "agents" in 2025–2026 has been about **frameworks, prompts, and demos**. That framing is the reason enterprise AI projects stall the moment they meet a regulated runtime boundary.
+Most public discourse about "agents" is about **frameworks, prompts, and demos**. That framing is the reason enterprise AI projects stall the moment they hit a regulated runtime boundary.
 
-The thesis this repository argues — and demonstrates in code — is the opposite:
+The argument this repo makes — and demonstrates in code — is the opposite:
 
 > **The agent is not the product. The governed runtime around the agent is the product.**
 
-An agent that works in a notebook does not clear a real control boundary. Production AI in regulated environments fails on five predictable edges, every time:
+Production AI in regulated environments fails on five predictable edges, every time:
 
 1. **No route authority** — the model decides what to do next, instead of a typed, contract-bound dispatcher.
 2. **No context guarantees** — retrieval quietly routes and executes, instead of grounding against canonical state.
@@ -23,416 +23,178 @@ An agent that works in a notebook does not clear a real control boundary. Produc
 4. **No write controls** — state mutates through any code path that can reach a database.
 5. **No replay** — incidents cannot be reconstructed, so nothing can be audited, regressed, or learned from safely.
 
-This repository is a working proof that every one of those five failure modes is solvable as a **system engineering problem**, not a prompt-engineering problem. It is the engineering substrate behind the positioning: **AI that behaves like software, not experiments.**
+Every one of those failure modes is a **system engineering problem**, not a prompt-engineering problem. This repository is the engineering substrate behind the positioning: **AI that behaves like software, not experiments.**
 
 ---
 
-## What this repo demonstrates (and why it matters at the SVP-Engineering level)
+## Best-in-Class Design Patterns Implemented
 
-- **Determinism as a system invariant.** The LLM is probabilistic; the system around it is deterministic. Same input, same output, same digest.
-- **Governance on the runtime path.** L5 is a cross-cutting policy plane with veto authority at every stage — not a PDF and not a post-hoc review.
-- **A single door for state mutation.** Every durable write passes through the Universal Write Gateway (UWG). No side doors, no silent mutations, no bypasses.
-- **Full replay.** Every run emits a determinism digest and a replay key. Any past run can be reconstructed exactly — the thing most "agentic" systems cannot do on day one of an incident review.
-- **Shadow learning, never live drift.** The system learns from completed runs and promotes changes through approved paths. It does not mutate behavior mid-flight.
-- **AST Dependency Graph (ADG) as the source of truth for the codebase itself.** ~264K nodes, ~929K edges, SQLite-backed, queryable. Refactoring, blast radius, and hotspot analysis are structural — not guesswork.
+This is the centerpiece. Each pattern below is a load-bearing structural decision in this codebase — named, isolated, and verifiable in source.
 
-These are the controls an enterprise AI platform owner is accountable for. This repo is a reference implementation of that accountability.
+### 1. Layered Control Plane (L0–L7) — Separation of Authority
 
----
+A 7-layer plane in which every layer has **exactly one accountability** and every cross-layer call has a typed contract. There is no "everything talks to everything" mesh — there is a directed, auditable structure.
 
-## Public positioning index
+| Layer | Persona | Single accountability | Authority |
+|-------|---------|------------------------|-----------|
+| L0 | Dispatcher | Route selection (cache → RAG → action → fallback) | Routing only |
+| L1 | Librarian | Bounded LLM reasoning → execution plan | Plan formulation |
+| L2 | Execution | Sandboxed tool / action calls | Sandboxed exec |
+| L3 | Orchestrator | Multi-step coordination of L2 chains | Optional, on demand |
+| L4 | Archivist | Durable state — single-door writes via UWG | Read-broad / write-strict |
+| L5 | Safety Officer | Cross-cutting policy plane | **Veto authority everywhere** |
+| L6 | Observer | Shadow evaluation, telemetry, replay | Read-only — no runtime mutation |
+| L7 | Auditability | Compiled certification + signed proof bundles | Read-only audit surface |
 
-- [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md) — themes this repository argues for publicly
-- [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) — bottom-line positioning for CTO / SVP Engineering readers
-- [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) — plain-English explanation for hiring and leadership audiences
+> Code: `agentic_core/L0_routing/` · `L1_cognition/` · `L2_execution/` · `L3_orchestration/` · `L4_state/` · `L5_safety/` · `L6_observability/` · `L7_auditability/`.
 
-> **Note.** This repository is a **public proof asset and reference design**, not a confidential client implementation. Client-specific work is kept private; what is published here is the architecture and the reasoning behind it.
+### 2. Universal Write Gateway (UWG) — Single-Door State Mutation
 
----
-
-## Start here
-
-| Audience | Start with | Why |
-|----------|------------|-----|
-| Recruiter or hiring manager | [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) | Plain-English explanation of what this repo demonstrates and the roles it supports. |
-| CTO / SVP Engineering | [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Bottom-line positioning, runtime control model, and platform-leadership signal. |
-| AI platform engineer | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) | Technical narrative of the control plane: layers, separation of duties, write model, replay. |
-| Governance / risk / compliance leader | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) + [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Read-broad/write-strict model, UWG single-door commit, replay and audit evidence. |
-| Deep technical reviewer | [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) and the rest of this README | Executive walkthrough plus the full architecture, proof pack, and ADRs. |
-
----
-
-## System Guarantees (What You Actually Get)
-
-```text
-DETERMINISM        → Same input produces the same output
-REPLAYABILITY      → Any execution can be reconstructed exactly
-NO HIDDEN ENTROPY  → No time or randomness drift
-CONTROLLED MUTATION→ No state changes outside governed pathways
-FULL PROVENANCE    → Every decision tied to exact state + policy
-EXECUTION ISOLATION→ All actions occur in sandboxed environments
-GOVERNANCE FIRST   → Nothing executes without policy validation
-LAYERED SCALING    → Clean separation enables safe system growth
-```
-
-These are not features.
-These are **enforced system invariants**.
-
----
-
-## Architecture & Layered Design (L0–L6)
+Every durable write in the system passes through one validated, signed, recorded gateway. No direct DB writes. No silent mutations. No bypass paths. State integrity becomes a **structural** property, not a code-review property.
 
 ```
-User / API Request
-        ↓
-┌─────────────────────────────────────────────────────────────────────┐
-│  L1: Cognition — Librarian                                            │
-│  Bounded LLM reasoning → execution plan                                 │
-└────────────────────────────┬──────────────────────────────────────────┘
-                             ↓
-┌─────────────────────────────────────────────────────────────────────┐
-│  L0: Routing — Dispatcher                                             │
-│  Route authority: cache → RAG → action → fallback                       │
-└────────────┬─────────────────┬─────────────────────────────┬────────────┘
-             ↓                 ↓                             ↓
-    ┌────────────────┐ ┌──────────────┐          ┌──────────────────────┐
-    │ R1: Cache Hit    │ │ R3: Agentic  │          │ R4/R5: Action/       │
-    │ (short-circuit)  │ │ RAG → C0       │          │ Fallback             │
-    └────────┬───────┘ └───────┬──────┘          └──────────┬───────────┘
-             ↓                 ↓                             ↓
-    [RETURN] │          ┌──────────────┐              ┌──────────────────────┐
-             └─────────►│ L4: State    │              │ L3: Orchestrator     │
-                        │ (Archivist)  │              │ (Sec Head) [opt]     │
-                        └───────┬──────┘              └──────────┬───────────┘
-                                │                               ↓
-                        ┌───────┴──────┐              ┌──────────────────────┐
-                        │ C0: Context  │              │ L2: Execution        │
-                        │ Engine       │              │ (Execution Staff)    │
-                        └──────────────┘              └──────────┬───────────┘
-                                                                  ↓
-                        ┌──────────────────────────────────────────────────────┐
-                        │ L5: Governance — Safety Officer (cross-cutting)      │
-                        │ Policy enforcement at all control points               │
-                        └───────────────────────┬───────────────────────────────┘
+ANY STATE CHANGE → UWG (validate · authorize · sign · record) → L4
+```
+
+### 3. Deterministic Replay — Trace + Digest + Replay Key
+
+Every run emits a **determinism digest** and a **replay key**. Any past run reconstructs exactly. Wall clocks are removed; randomness is seeded; model parameters are pinned; execution order is fixed. No "it worked yesterday." Replay is the audit, regression, and incident-review primitive — at the system level, not the model level.
+
+### 4. Programmatic Tool Calling (PTC) — Schema-Enforced Action Surface
+
+Tool usage is **schema-driven and contract-enforced**, not free-text JSON the model invents. A call that doesn't conform to the contract never reaches L2. Hallucinated tool calls are structurally impossible.
+
+### 5. AST Dependency Graph (ADG) — Source-of-Truth for the Codebase Itself
+
+A SQLite-backed dependency graph (~264K nodes / ~929K edges) with **graph-DB semantics over a relational store**: materialized views, semantic edges (`flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite`), and pre-classified P-views (`v_p0_*` … `v_p3_*`). Refactor blast-radius, hotspot ranking, and layer-violation detection are queries — not guesses.
+
+> Code: `tools/adg/` · `agentic_core/adg/` · canonical snapshot at `artifacts/adg/adg_indexed_<ts>.sqlite`.
+
+### 6. Closed-Loop Routers + Intelligence Ledgers
+
+Ten routers across L0–L6 (bandit / r5 / c0 / cascade / shape / reroute / uwg / hitl / promo / regret) each emit a `ROUTER_DECISION:` marker plus an append-only ledger event in the same code path. The ledgers feed back into Wilson-CI promotion gates and Thompson-sampling bandits. **Decisions become evidence become the next decision** — a closed loop, not an open hope.
+
+> Code: `agentic_core/L0_routing/reasoning/namespace_bandit.py` · `agentic_core/L6_observability/promotion_gates.py` · `tools/ledgers/`.
+
+### 7. Author-Gate Decision Pattern — Scored Options with Dominance Rule
+
+Ambiguous decisions are surfaced as **scored options on [0.00–1.00]** with explicit confidence, gap-to-next, and a dominance rule (top ≥ 0.85 *and* gap ≥ 0.12 → surface alone, ⭐ recommended). Decisions are captured to a SQLite ledger and mirrored to Notion. Every Author-Gate surface carries a clickable description with `· trade-off:` text — enforced at emit time, audit time, and CI time.
+
+### 8. Constitutional Rules + Hooks + CI Gates — Three-Tier Enforcement
+
+Discipline is encoded at three layers:
+
+- **Tier 1 — always-on rules** (`.windsurf/rules/*.md`) — prose invariants the agent reads every turn.
+- **Tier 2 — pre/post hooks** (`.windsurf/scripts/*.py`) — deterministic Python that blocks at write / tool-use / response time.
+- **Tier 3 — pre-commit + CI gates** (`ops_scripts/ci/check_*.py`) — fail-closed at commit and pipeline.
+
+Each invariant lives in **one** SSOT and is enforced by **all three** layers, so drift is structurally hard.
+
+### 9. Fort Knox Certification — Two-Arm Signed Runtime Proof
+
+Runtime certification is **compiler-only** (no hand-written claims): `compile_requirement_signoff.py` consumes a JSONL of evidence assertions and emits a Merkle-rooted, signed bundle (SHA-256 + signature). A **canary requirement** (`RTC-REQ-001` for `agentic_core`, `APPS-REQ-001` for apps) plus a **mutation-rejection report** prove the verifier rejects regressions. Doctrine: SLSA L3 / in-toto / Sigstore / Critic-Agent.
+
+> Code: `scripts/compile_requirement_signoff.py` · `scripts/compile_apps_e2e_signoff.py` · `tools/cert/`.
+
+### 10. HOP Pipeline Pattern — Declarative Multi-Stage Orchestration
+
+Multi-stage app workflows are expressed as **typed HOP topologies** (e.g. underwriting's 5-stage `initialize → reconcile → derive → collect → assemble`). A shared `HopPipelineExecutor` walks the topology with replay support; an imperative driver mirrors it 1:1 for direct use. The same shape ships in `apps_lic`, `apps_rg`, `apps_underwriting_ai`.
+
+### 11. Final Evidence Contract (FEC) — Per-Claim Provenance
+
+Every grounded app produces a versioned `final_evidence_contract` (schema_version=1.0) with `producer`, `grounded`, `retrieval_sources`, `template_ids`, `route_id`, `evidence_sufficiency`. The evaluator and HITL-policy router consume it; the Exit pipeline records it. Outputs without provenance never commit.
+
+### 12. Spine Manifest + Boundary Adapters — Static Route Claim per App
+
+Each app ships a `spine_manifest.yaml` declaring the canonical route it serves on the runtime spine. Boundary-leak tests assert the claim. Cross-app imports route through PEP-562 lazy facades in `apps_shared/integrations/adapters/` — `apps_eval` cannot reach into `apps_rg` even by accident.
+
+### 13. Ledger Family — Append-Only Decision Substrate
+
+Thirty-plus append-only ledgers and the Memory MCP knowledge graph give every router, gate, and promotion a durable consult-and-record surface. Schema-versioned, fail-soft writers, weekly Wilson-CI rollups. The substrate that makes pattern #6 (closed-loop routers) actually closed.
+
+### 14. Skill + Rule + Workflow Trinity (Development Harness)
+
+The development harness follows the same separation it imposes on the runtime: **skills** (procedural how-to, on-demand) · **rules** (durable invariants, always-on) · **workflows** (slash commands for repeatable runs). The agent that builds the system is governed by the same discipline as the system it builds.
+
+---
+
+## System Guarantees (Enforced Invariants)
+
+```
+DETERMINISM         · Same input → same output → same digest
+REPLAYABILITY       · Any execution can be reconstructed exactly
+NO HIDDEN ENTROPY   · No wall-clock, no unseeded randomness
+CONTROLLED MUTATION · No state changes outside the UWG
+FULL PROVENANCE     · Every decision tied to exact state + policy hash
+EXECUTION ISOLATION · L2 actions occur in sandboxed environments
+GOVERNANCE FIRST    · Nothing executes without policy validation
+LAYERED SCALING     · Single-accountability layers enable safe growth
+```
+
+These are not features — they are **structural invariants** with hooks, gates, and tests behind each one.
+
+---
+
+## Architecture at a Glance
+
+```
+                          User / API Request
+                                  ↓
+             ┌────────────────────────────────────────┐
+             │ L1 Cognition · Librarian               │   bounded LLM → plan
+             └───────────────────┬────────────────────┘
+                                 ↓
+             ┌────────────────────────────────────────┐
+             │ L0 Routing · Dispatcher                │   route authority
+             │ R1 cache · R3 RAG · R4 action · R5 fallback │
+             └───┬───────────────┬───────────────┬────┘
+                 ↓               ↓               ↓
+          [cache hit]      C0 Context        L2 Execution
+                            (grounding)         │
                                                 ↓
-                        ┌──────────────────────────────────────────────────────┐
-                        │ L6: Observability — Observer (shadow evaluation)     │
-                        │ Replay, telemetry, future-run learning               │
-                        └──────────────────────────────────────────────────────┘
+                                         L3 Orchestrator
+                                         (when complex)
+                                                ↓
+             ┌────────────────────────────────────────┐
+             │ L5 Safety · cross-cutting veto         │   policy plane
+             └───────────────────┬────────────────────┘
+                                 ↓
+             ┌────────────────────────────────────────┐
+             │ Exit Spine · allow / deny / reroute    │
+             │ COMMIT → UWG → L4 (only mutation path) │
+             └───────────────────┬────────────────────┘
+                                 ↓
+             ┌────────────────────────────────────────┐
+             │ L6 Observer · shadow eval, replay, telemetry │
+             │ L7 Auditability · signed proof bundles       │
+             └────────────────────────────────────────┘
 ```
 
-**Primary Runtime Path:** L1 → L0 → [opt L3] → L2 | L0 routing invokes C0 context assembly
-
-**State Mutation Path:** L2 output → [L5 validation] → UWG → L4 (sole write authority)
-
----
-
-## Key Differentiators (What Makes This Different)
-
-### 1. Deterministic Execution (System-Level, Not Model-Level)
-
-Determinism is enforced across:
-
-* orchestration
-* execution
-* state transitions
-
-The LLM is bounded, but **the system is deterministic**.
-
-**Result:** predictable, testable AI behavior.
-
----
-
-### 2. Deterministic Replay Engine
-
-Every execution produces:
-
-* full execution trace
-* determinism digest
-* replay key
-
-```text
-Live Run → Trace → Digest → Replay → Hash Match = Verified
-```
-
-**Result:**
-
-* Exact incident reconstruction
-* CI/CD validation for AI
-* Regression detection
-
----
-
-### 3. Zero Hidden Entropy (Critical Guarantee)
-
-The system eliminates all uncontrolled variability:
-
-* no wall clock (`now()` removed)
-* seeded randomness
-* controlled model parameters
-* fixed execution ordering
-
-**Result:**
-No “it worked yesterday but not today” failures.
-
----
-
-### 4. Controlled Mutation via Universal Write Gateway (UWG)
-
-All state changes must pass through a **single governed interface**.
-
-```text
-ANY STATE CHANGE
-        ↓
-Universal Write Gateway
-        ↓
-Validated + Signed + Recorded
-```
-
-* No direct DB writes
-* No silent mutations
-* No bypass paths
-
-**Result:**
-Total state integrity and auditability.
-
----
-
-### 5. Full Provenance (Policy + State Binding)
-
-Every action is tied to:
-
-* exact system state
-* exact policy version (`policy_hash`)
-* full input/output trace
-
-**Result:**
-Every decision is explainable, reproducible, and attributable.
-
----
-
-### 6. Execution Sandbox (L2 Isolation)
-
-All tool execution occurs in a **sealed environment**:
-
-* no side effects outside sandbox
-* no uncontrolled external calls
-* schema-validated tool usage
-
-**Result:**
-Safe, predictable, and contained execution.
-
----
-
-### 7. Governance as a First-Class System Layer (L5)
-
-Nothing executes without passing:
-
-* pre-execution guardrails
-* mutation boundary checks (C0)
-* post-execution validation
-
-HITL is embedded into flows, not bolted on.
-
-**Result:**
-Enterprise-grade compliance and safety by default.
-
----
-
-### 8. Agentic Dependency Graph (ADG)
-
-A fully queryable system graph representing:
-
-* execution flow
-* state dependencies
-* tool interactions
-* ~264K nodes
-* ~929K edges
-* SQLite-backed for deterministic inspection
-
-**Result:**
-Instant root cause analysis and full system observability.
-
----
-
-### 9. Programmatic Tool Calling (PTC)
-
-Tool usage is:
-
-* schema-driven
-* contract-enforced
-* non-ambiguous
-
-```text
-LLM Intent → Schema Validation → Execution
-```
-
-**Result:**
-Zero hallucinated tool calls.
-
----
-
-### 10. Meta-Learning Without Runtime Instability
-
-System learns via:
-
-* execution traces
-* embeddings
-* pattern detection
-
-But:
-
-* no mid-execution mutation
-* no live drift
-
-**Result:**
-Continuous improvement without breaking active runs.
-
----
-
-### 11. Semantic Cache + Redis L1 Gate
-
-* Redis = fast retrieval layer
-* SQLite (ADG) = canonical truth
-
-**Result:**
-Performance without compromising determinism.
-
----
-
-## System Mental Model
-
-```text
-WHY IT MATTERS
-→ Deterministic AI systems you can trust
-
-HOW IT WORKS
-→ Layered control plane (L0–L6)
-
-WHY IT IS PROVABLE
-→ Replay + digests + controlled state
-```
-
----
-
-## Architecture Deep Dive — L0 to L6
-
-The system operates through **six distinct architectural layers**, each with a single accountability and clear authority boundaries.
-
-### Layer Personas & Responsibilities
-
-| Layer | Persona | Core Function | Authority |
-|-------|---------|---------------|-----------|
-| **L0** | Dispatcher | Route authority — determines execution path (cache, RAG, action, fallback) | Routing decisions only |
-| **L1** | Librarian | Reasoning loop — formulates execution plans and dispatches to routing | Plan formulation |
-| **L2** | Execution Staff | Tool and action execution — interfaces with external systems | Sandboxed execution only |
-| **L3** | Orchestrator | Multi-step coordination — manages complex L2 execution chains | Optional; when complexity requires |
-| **L4** | Archivist | Authoritative state — durable writes via UWG only | Read-broad, write-strict |
-| **L5** | Safety Officer | Cross-cutting policy plane — enforces guardrails across all runtime/exit points | Veto authority everywhere |
-| **L6** | Observer | Shadow evaluation — monitors telemetry for future-run system learning | Read-only, no runtime mutation |
-
-### Primary Runtime Flow
-
-```
-User/API Request
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [1] REQUEST INTAKE                                      │
-│     Ingress validation (optional pre-layer envelope)    │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [2] L1 REASONING (Librarian)                           │
-│     Formulates execution plan                          │
-│     ↓ dispatches to L0                                  │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [3] L0 ROUTING (Dispatcher)                            │
-│     D1: Exact cache hit? → R1A short-circuit            │
-│     D2: Semantic cache valid? → R1B short-circuit       │
-│     D3: Need grounded context? → R3 Agentic RAG → C0    │
-│     D4: Need external action? → R4 Action / R5 Fallback │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ C0 CONTEXT ENGINE (Ref Desk)                             │
-│     Retrieves and grounds only — never routes/executes │
-│     Reads from L4 State / returns evidence to Prompt    │
-│     Assembly → dispatches to [4]                        │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [4] RUNTIME DISPATCH                                   │
-│     Simple execution → direct to L2                   │
-│     Multi-step required → L3 Orchestrator → L2        │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [5] LIVE POST-L2 CONTROL                               │
-│     Live Evaluation Spine: policy, schema, trajectory │
-│     EXIT SPINE: allow / deny / reroute / escalate     │
-│     COMMIT → UWG → L4 (only state mutation path)      │
-└─────────────────────────────────────────────────────────┘
-      ↓
-┌─────────────────────────────────────────────────────────┐
-│ [6] SHADOW EVALUATION + LEARNING                       │
-│     Never current-run mutation                         │
-│     Future-run influence via telemetry, regression      │
-│     testing, and approved rollout paths                 │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Key Control Points
-
-- **L5 Policy Plane** (cross-cutting): Authority over all stages [1]→[6], EXIT, and UWG
-- **UWG (Universal Write Gateway)**: The sole path for any state mutation → L4
-- **HITL Integration**: Embedded at exit spine, not bolted on
-- **Zero Current-Run Learning**: All system learning is shadowed and promoted via approved paths only
+**Primary runtime path:** L1 → L0 → [L3] → L2 → Exit → UWG → L4
+**State mutation path:** L2 output → L5 validation → UWG → L4 (sole write authority)
+**Learning path:** L6 reads ledgers + telemetry → shadow eval → promotion via L6/promo gate (no current-run mutation)
 
 ---
 
 ## Application Portfolio
 
-Eight applications built on the governed control plane. Every app ships the same governance quartet — a **Runbook** (operations), an **SLO** (performance budget), and an **SVP Engineering Review** (architecture certification). Four apps also ship a formal **Threat Model**. This is what "governed app contract" means in practice.
+Eight apps built on the governed control plane. Every app ships the same governance quartet — a **README**, a **Runbook** (operations), an **SLO** (performance budget), and an **SVP Engineering Review** (architecture certification). Three apps also ship a formal **Threat Model**.
 
 | App | What it does | README | Runbook | SLO | SVP Review | Threat Model |
 |---|---|:-:|:-:|:-:|:-:|:-:|
 | [`apps_eval`](apps_eval/) | Evaluation Lab — benchmarks `agentic_core` and app workloads against deterministic scenarios | [→](apps_eval/README.md) | [→](apps_eval/RUNBOOK.md) | [→](apps_eval/SLO.md) | [→](apps_eval/SVP_ENGINEERING_REVIEW.md) | — |
-| [`apps_exec`](apps_exec/) | Executive Brief Generator — persona-targeted briefs from the repo's architecture | [→](apps_exec/README.md) | [→](apps_exec/RUNBOOK.md) | [→](apps_exec/SLO.md) | [→](apps_exec/SVP_ENGINEERING_REVIEW.md) | — |
-| [`apps_lic`](apps_lic/) | LIC campaign engine (governed draft + campaign orchestration) | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
+| [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
+| [`apps_repo_brief`](apps_repo_brief/) | Repo Architecture Brief Generator — depth-profiled briefs from this repo's structure | — | — | — | — | — |
 | [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_rfp`](apps_rfp/) | AI Proposal / RFP Generator — full proposals from a client problem statement | [→](apps_rfp/README.md) | [→](apps_rfp/RUNBOOK.md) | [→](apps_rfp/SLO.md) | [→](apps_rfp/SVP_ENGINEERING_REVIEW.md) | — |
-| [`apps_shared`](apps_shared/) | Shared adapters, guardian registry, and cross-app facades | — | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/proof/THREAT_MODEL.md) |
+| [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | [→](apps_rg/README.md) | [→](apps_rg/RUNBOOK.md) | [→](apps_rg/SLO.md) | [→](apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
+| [`apps_shared`](apps_shared/) | Shared adapters, validators, HOP executor, proof harness — library-only | [→](apps_shared/README.md) | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/validators/proof/THREAT_MODEL.md) |
 
-Consolidated SVP Engineering reviews for the most recent cycle also live under [`docs/reports/`](docs/reports/) — see the per-app subfolders for the latest certification status.
+> `apps_exec` (Executive Brief Generator) was archived 2026-05-05 — see `archives/apps_exec_20260505/` for the snapshot.
 
----
-
-## Enterprise Impact
-
-| Capability              | Outcome                 |
-| ----------------------- | ----------------------- |
-| Deterministic Execution | Predictable AI behavior |
-| Replay Engine           | Audit + CI/CD for AI    |
-| Controlled Mutation     | No silent corruption    |
-| Governance Layer        | Built-in compliance     |
-| ADG Observability       | 10x faster debugging    |
-| Semantic Cache          | Lower cost + latency    |
-| Meta-Learning           | Continuous improvement  |
-
----
-
-## Tech Stack
-
-* Python (core orchestration)
-* SQLite (deterministic state + ADG)
-* Redis (L1 cache + retrieval gate)
-* FAISS (vector retrieval)
-* OpenAI + local LLMs (multi-model routing)
-* Containerized infrastructure
+Consolidated SVP Engineering reviews live under [`docs/reports/`](docs/reports/) — see the per-app subfolders for the latest certification status.
 
 ---
 
@@ -443,16 +205,107 @@ git clone https://github.com/Siamese001/Agentic-Workflow.git
 cd Agentic-Workflow
 
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -e .
 
-pip install -r requirements.txt
+# Optional caching/telemetry stack
+docker compose -f docker-compose.redis.yml up -d
+docker compose -f docker-compose.otel.yml up -d
 
-docker-compose up -d redis
+# Run any app
+python -m apps_eval --all
+python -m apps_research --topic "agentic governance" --mode brief
+python -m apps_rfp --brief "Compliance workflow automation" --industry financial_services
+python -m apps_underwriting_ai --demo
 
-python main.py --workflow sample_agentic_run
-
-python replay.py --run_id <execution_id>
+# Architecture proof pack (S1 + S2 + S3, ~17s, exit 0 = green)
+python ops_scripts/ci/run_architecture_proof.py
 ```
+
+---
+
+## Governed Architecture Proof Pack
+
+Five apps governed. Three formal exceptions. One release gate.
+
+```bash
+python ops_scripts/ci/run_architecture_proof.py
+```
+
+| Suite | Validates |
+|---|---|
+| S1 — Conformance Gate | Registry + imports: CONF01-08 + EXCF01-08 (36 checks) |
+| S2 — Exception Framework | Behavioral E2E across governed apps + eval/uw exception controls |
+| S3 — Regression Check | Evidence governance regression baseline (RC01-12) |
+
+**Reviewer journey:**
+
+1. [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) — executive walkthrough + engineer quickstart
+2. [`docs/architecture/architecture-proof-pack.md`](docs/architecture/architecture-proof-pack.md) — proof command map + gap maps
+3. `python ops_scripts/ci/run_architecture_proof.py` — run the proofs yourself
+4. [`docs/architecture/ROLLOUT_CLOSEOUT.md`](docs/architecture/ROLLOUT_CLOSEOUT.md) — final status + known-gap register
+
+---
+
+## Tech Stack
+
+- **Python** — core orchestration · Pydantic contracts · pytest harness
+- **SQLite** — deterministic state · ADG canonical snapshot · 30+ append-only ledgers
+- **Redis** — L1 retrieval cache · ADG hot projection · coordination fabric
+- **FAISS / ChromaDB** — vector retrieval · semantic search MCP
+- **OpenTelemetry** — runtime ADG ingest · trace correlation · anomaly detection
+- **OpenAI + local LLMs (vLLM on WSL2 GPU)** — multi-model routing
+- **Notion + GitKraken + DeepWiki + Tavily MCP servers** — governance, code review, research surfaces
+- **Containerized** — Docker Compose for Redis + OTel collectors
+
+---
+
+## Public Positioning Index
+
+- [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md) — themes this repository argues for publicly
+- [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) — bottom-line positioning for CTO / SVP Engineering readers
+- [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) — plain-English explanation for hiring and leadership audiences
+
+> **Note.** This repository is a **public proof asset and reference design**, not a confidential client implementation. Client-specific work is kept private; what is published here is the architecture and the reasoning behind it.
+
+---
+
+## Start Here (by Audience)
+
+| Audience | Start with | Why |
+|----------|------------|-----|
+| Recruiter / hiring manager | [`docs/RECRUITER_GUIDE.md`](docs/RECRUITER_GUIDE.md) | Plain-English explanation of what this repo demonstrates and the roles it supports |
+| CTO / SVP Engineering | [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Bottom-line positioning, runtime control model, and platform-leadership signal |
+| AI platform engineer | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) | Technical narrative of the control plane: layers, separation of duties, write model, replay |
+| Governance / risk / compliance | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) + [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Read-broad/write-strict model, UWG single-door commit, replay and audit evidence |
+| Deep technical reviewer | [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) + this README | Executive walkthrough plus the full architecture, proof pack, and ADRs |
+
+---
+
+## Documentation Map
+
+### Architecture & governance
+- **Reviewer Guide:** [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md)
+- **Architecture Proof Pack:** [`docs/architecture/architecture-proof-pack.md`](docs/architecture/architecture-proof-pack.md)
+- **Rollout Closeout:** [`docs/architecture/ROLLOUT_CLOSEOUT.md`](docs/architecture/ROLLOUT_CLOSEOUT.md)
+- **Release Readiness:** [`docs/architecture/RELEASE_READINESS.md`](docs/architecture/RELEASE_READINESS.md)
+- **Governed-App Contract:** [`docs/architecture/governed-app-contract.md`](docs/architecture/governed-app-contract.md)
+- **Architecture ADRs:** [`docs/architecture/adr/`](docs/architecture/adr/)
+- **Standards:** [`docs/STANDARDS.md`](docs/STANDARDS.md)
+
+### Subsystem & tooling
+- **ADG prompt-assembly subsystem:** [`tools/adg/prompt_assembly/README.md`](tools/adg/prompt_assembly/README.md)
+- **Calibration (Wilson-CI weekly reports, ledger binders):** [`tools/calibration/README.md`](tools/calibration/README.md)
+- **Local LLM (vLLM on WSL2 GPU):** [`tools/vllm/README.md`](tools/vllm/README.md)
+- **OpenTelemetry refactor notes:** [`tools/otel/README_REFACTOR.md`](tools/otel/README_REFACTOR.md)
+- **MCP servers & SDK wrappers:** [`infrastructure/sdks_mcps/README.md`](infrastructure/sdks_mcps/README.md)
+- **Reference docs root:** [`docs/reference/README.md`](docs/reference/README.md)
+- **SVP Engineering hub:** [`docs/svp/README.md`](docs/svp/README.md)
+- **Author-Gate reports:** [`docs/reports/author-gate/README.md`](docs/reports/author-gate/README.md)
+- **Calibration reports:** [`docs/reports/calibration/README.md`](docs/reports/calibration/README.md)
+
+### By app
+See the [Application Portfolio](#application-portfolio) table above.
 
 ---
 
@@ -470,58 +323,4 @@ This is not another agent framework. It is a **deterministic AI control plane** 
 
 ---
 
-## Governed Architecture Proof Pack
-
-Five apps governed. Two formal exceptions. One release gate.
-
-```bash
-python ops_scripts/ci/run_architecture_proof.py   # S1 + S2 + S3  (~17s, exit 0 = green)
-```
-
-| Suite | Validates |
-|---|---|
-| S1 — Conformance Gate | Registry + imports: CONF01-08 + EXCF01-08 (36 checks) |
-| S2 — Exception Framework | All 7 apps behavioral: penta E2E + eval/uw exception controls |
-| S3 — Regression Check | Evidence governance regression baseline (RC01-12) |
-
-**Reviewer journey:**
-
-1. `docs/architecture/REVIEWER_GUIDE.md` — executive walkthrough + engineer quickstart
-2. `docs/architecture/architecture-proof-pack.md` — proof command map + gap maps
-3. `python ops_scripts/ci/run_architecture_proof.py` — run the proofs yourself
-4. `docs/architecture/ROLLOUT_CLOSEOUT.md` — final status + known-gap register
-
----
-
-## Documentation
-
-### Architecture & governance
-
-* **Reviewer Guide:** [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) — Start here for architecture review
-* **Architecture Proof Pack:** [`docs/architecture/architecture-proof-pack.md`](docs/architecture/architecture-proof-pack.md) — Proof command map, runtime loop, app registry
-* **Rollout Closeout:** [`docs/architecture/ROLLOUT_CLOSEOUT.md`](docs/architecture/ROLLOUT_CLOSEOUT.md) — Final status, command matrix, known gaps
-* **Release Readiness:** [`docs/architecture/RELEASE_READINESS.md`](docs/architecture/RELEASE_READINESS.md) — Cleanup log, tracked gap register
-* **Governed-App Contract:** [`docs/architecture/governed-app-contract.md`](docs/architecture/governed-app-contract.md) — `GovernedAppRunner` + `FormalExceptionEntry` schema
-* **Full Process Map (v38):** [`docs/reference/_notes/agentic_process_mapping_v38.md`](docs/reference/_notes/agentic_process_mapping_v38.md) — Complete ASCII runtime flow with L0–L6 personas
-* **Architecture ADRs:** [`docs/architecture/adr/`](docs/architecture/adr/) — Architectural decision records
-* **Standards:** [`docs/STANDARDS.md`](docs/STANDARDS.md) — Code and design standards
-
-### Subsystem & tooling docs
-
-* **ADG — prompt-assembly subsystem:** [`tools/adg/prompt_assembly/README.md`](tools/adg/prompt_assembly/README.md)
-* **Calibration (weekly Wilson-CI reports, ledger binders):** [`tools/calibration/README.md`](tools/calibration/README.md)
-* **Local LLM (vLLM on WSL2 GPU):** [`tools/vllm/README.md`](tools/vllm/README.md)
-* **OpenTelemetry refactor notes:** [`tools/otel/README_REFACTOR.md`](tools/otel/README_REFACTOR.md)
-* **MCP servers & SDK wrappers:** [`infrastructure/sdks_mcps/README.md`](infrastructure/sdks_mcps/README.md)
-* **Reference-docs root:** [`docs/reference/README.md`](docs/reference/README.md)
-* **SVP Engineering hub:** [`docs/svp/README.md`](docs/svp/README.md)
-* **Author-Gate reports:** [`docs/reports/author-gate/README.md`](docs/reports/author-gate/README.md)
-* **Calibration reports:** [`docs/reports/calibration/README.md`](docs/reports/calibration/README.md)
-
-### By app
-
-See the [Application Portfolio](#application-portfolio) table above for per-app README / Runbook / SLO / SVP Review / Threat Model.
-
----
-
-*Last updated: April 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*
+*Last updated: May 2026 — maintained by [Amit Ayer](https://github.com/Siamese001).*

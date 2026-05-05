@@ -1,8 +1,8 @@
 # Deferred Scope — BGE-M3 Gap Closure
 **Parent plan**: `bge-m3-gap-closure-c8f3a2` (Completed 2026-05-05)
 **Slug**: `bge-m3-deferred-scope-d9f1e3`
-**Status**: Not Started
-**DO NOT IMPLEMENT** — scope capture only. Each item requires its own explicit implementation request.
+**Status**: In Progress
+**W1 complete** (2026-05-05). W2-W4 blocked on external dependencies.
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Wave | Focus | Priority | Blocker |
 |---|---|---|---|
-| W1 | Git history large-file cleanup | P1 — BLOCKING push | None (manual rebase) |
+| W1 | Git history large-file cleanup | P1 — BLOCKING push | ✅ DONE |
 | W2 | ADR-056 multi-head flip (sparse + ColBERT) | P2 | ADR-056 must reach Accepted |
 | W3 | apps_qna E2 — LLM judges | P3 | Model creds + human-labeled holdout |
 | W4 | apps_qna E3 — Provider dispatch | P4 | Blocked on W3 (E2) |
@@ -21,8 +21,8 @@
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.P1 | Remove model binaries from git history | `git rebase -i` / `git filter-repo`; force-push | HTTP 500 on every push attempt | ~5k | Not Started |
-| W1.P2 | Add models--BAAI--bge-m3/ to .gitignore | `.gitignore` | Prevent re-commit | ~1k | Not Started |
+| W1.P1 | Remove model binaries from git history | `git rebase -i` / `git filter-repo`; force-push | HTTP 500 on every push attempt | ~5k | ✅ Done |
+| W1.P2 | Add models--BAAI--bge-m3/ to .gitignore | `.gitignore` | Prevent re-commit | ~1k | ✅ Done (pre-existing) |
 | W2.P1 | Enable sparse + ColBERT heads in bge_runtime.py | `agentic_core/embeddings/bge_runtime.py` | Flag-gated behind `BGE_MULTI_HEAD=1` | ~15k | Not Started |
 | W2.P2 | Extend PROVENANCE_ENFORCED_COLLECTIONS for multi-head | `agentic_core/embeddings/exceptions.py` | Requires ADR-056 amendment | ~5k | Not Started |
 | W2.P3 | Update populate_apps_qna_index.py for sparse/ColBERT sidecars | `tools/indexing/populate_apps_qna_index.py` | Re-index required after code change | ~10k | Not Started |
