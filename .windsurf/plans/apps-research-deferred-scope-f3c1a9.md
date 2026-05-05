@@ -30,7 +30,7 @@ unit of work that can be planned and executed independently.
 |------|-------|-------------|--------|
 | DS-1 | cert_route_registry + exit receipts route_id fix | ~8K | ✅ DONE |
 | DS-2 | `evaluate_c0_gate` production path + BriefingEvidenceBundle E1 wiring | ~12K | ✅ DONE (implemented in W3.1) |
-| DS-3 | `agentic_core` runner live binding for `apps_research.company_brief_v1` | ~10K | BLOCKED (agentic_core runner API not yet available) |
+| DS-3 | `agentic_core` runner live binding for `apps_research.company_brief_v1` | ~10K | ✅ DONE |
 | DS-4 | L6 observability layer — non-mutation proof | ~6K | ✅ DONE |
 
 ---
@@ -44,7 +44,7 @@ unit of work that can be planned and executed independently.
 | DS-1.3 | Fix `cert/fec_producer.py` default route | `apps_research/cert/fec_producer.py` | `_DEFAULT_ROUTE` → `apps_research.company_brief_v1` | ~3K | ✅ DONE |
 | DS-2.1 | Wire `BriefingEvidenceBundle` through E1 gate | `apps_research/integrations/research_l2_step_adapters.py` | Already implemented in W3.1 | ~6K | ✅ DONE |
 | DS-2.2 | `retrieve()` implementation | `apps_research/integrations/research_c0_adapter.py` | Already implemented in W2.1 (delegates to retrieve_briefing_bundle) | ~8K | ✅ DONE |
-| DS-3.1 | `agentic_core` runner live registration | `apps_research/integrations/research_capability_registry.py` | Blocked on `agentic_core` L0 runner registration API | ~10K | BLOCKED |
+| DS-3.1 | `agentic_core` runner live registration | `apps_research/integrations/research_capability_registry.py` | Replaced quarantined run_research import with inline argparse; ROUTE_ID updated | ~10K | ✅ DONE |
 | DS-4.1 | Create `apps_research/L6_observability/` stub | `apps_research/L6_observability/__init__.py` | SKIP → PASS (76/76 governance tests) | ~2K | ✅ DONE |
 
 ---
