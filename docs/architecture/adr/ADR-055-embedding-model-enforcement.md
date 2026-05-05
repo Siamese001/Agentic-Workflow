@@ -93,11 +93,32 @@ CI green defined as:
 
 Rollback: revert the pre-write check in `SovereignChromaClient` and set `VALIDATE_COLLECTION_STRICT=0` in CI. The exception class and telemetry attributes stay — they are non-breaking additive.
 
+## Surface Map — BGE-M3 and BAAI Models in This Repo
+
+Three distinct BAAI model surfaces exist in the codebase. They share a vendor prefix but
+are **independent concerns** and must not be conflated.
+
+| Surface | Model | Files | Dimension | Status | Governed by |
+|---|---|---|---|---|---|
+| **Dense embedder** | `BAAI/bge-m3` | `agentic_core/embeddings/bge_runtime.py`, `tools/embedders/bge_m3_embedder.py`, `tools/indexing/populate_apps_qna_index.py` | 1024-d | Active (apps_qna index populated 2026-05-05) | **This ADR** (ADR-055) |
+| **Cross-encoder reranker** | `BAAI/bge-reranker-v2-m3` | `agentic_core/knowledge/retrieval/bge_reranker_adapter.py`, `apps_qna/router/reranker.py`, `apps_qna/engines/router/reranker.py` | N/A (scores) | Active (fail-soft passthrough if unavailable) | ADR-046 (Rerank revival) |
+| **Multi-head (dense + sparse + ColBERT)** | `BAAI/bge-m3` (extended output) | `agentic_core/embeddings/bge_runtime.py` (dense head only today) | 1024-d dense; sparse TBD; ColBERT TBD | Proposed — gated on `BGE_MULTI_HEAD=1`; not default | ADR-056 |
+
+**Key invariant**: ADR-055 enforcement (`PROVENANCE_ENFORCED_COLLECTIONS`) applies only to the
+**dense embedder surface**. The cross-encoder reranker does not write to ChromaDB collections
+and is not subject to this ADR. Multi-head enforcement will be added in a future ADR-056 amendment
+when the multi-head path ships.
+
+Added 2026-05-05 per plan `bge-m3-gap-closure-c8f3a2` W2.2.
+
 ## References
 
 - ADR-018 (ChromaDB canonical vector store)
 - ADR-046 (Rerank revival — reranker chain assumes consistent embedding identity)
+- ADR-056 (BGE-M3 multi-head integration — dense + sparse + ColBERT)
 - Plan `chromadb-bge-retrieval-hardening-e9aa09` §2.2 (embedding-path defects)
+- Plan `bge-m3-gap-closure-c8f3a2` W2.2 (surface map addition), W3.1 (hard-fail impl)
 - `agentic_core/embeddings/embedding_factory.py::create_deterministic_cache_key`
+- `agentic_core/embeddings/exceptions.py::EmbeddingProvenanceMismatchError`
 - `agentic_core/L4_state/utils/client/chroma_client.py::SovereignChromaClient`
 - Parent plan: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md`

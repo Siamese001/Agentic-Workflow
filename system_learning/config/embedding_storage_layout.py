@@ -2,6 +2,27 @@
 
 Provides pure Path-join layout builder without filesystem side effects.
 No OS-specific mounting logic; only path construction utilities.
+
+NOTE (bge-m3-gap-closure-c8f3a2 W2.3):
+  ``healing_contexts`` is a SYSTEM_LEARNING surface — NOT part of
+  apps_qna retrieval. It stores runtime healing context embeddings used
+  by the adaptive-learning pipeline (system_learning/adapters/) for
+  cross-session exemplar recall. The seed pack at
+  ``C:/AgenticEmbeddings/seed_packs/healing_contexts/<hash>/`` is NOT
+  the same index as apps_qna_interview_cards. They share the storage
+  root (C:/AgenticEmbeddings) and the BGE-M3 embedder but are fully
+  independent indexes with separate manifests, purposes, and consumers.
+
+  ADR-055 ``PROVENANCE_ENFORCED_COLLECTIONS`` does NOT cover the
+  healing_contexts namespace (it is not a ChromaDB collection; it is a
+  seed-pack flat file). ADR-055 enforcement is scoped to ChromaDB
+  writes in SovereignChromaClient.add_documents.
+
+  FALSE-POSITIVE NOTE: During bge-m3 gap analysis this file was
+  initially flagged as a potential GlobalCacheStrategy concern because
+  HEALING_CONTEXTS_SEED_INDEX_VERSION_HASH is a hardcoded digest.
+  This is intentional — the hash is a content-addressable anchor for
+  the seed pack, not a model version or embedding dim. It is safe.
 """
 
 from __future__ import annotations

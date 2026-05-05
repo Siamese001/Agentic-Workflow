@@ -282,3 +282,112 @@ class TestStatsListDelete:
         client._mock_backend.delete_collection.assert_called_once_with(
             name="never-cached",
         )
+
+
+# ---- W3.1 provenance enforcement -----------------------------------------
+
+
+class TestProvenanceMismatch:
+    """EmbeddingProvenanceMismatchError raised for enforced collections."""
+
+    def _make_client(self, tmp_path: Path, stamped_model: str, stamped_dim: int) -> Any:
+        from agentic_core.L4_state.utils.client import chroma_client as mod
+        from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
+
+        with patch.object(mod.chromadb, "PersistentClient") as mock_pc:
+            mock_backend = MagicMock()
+            mock_pc.return_value = mock_backend
+
+            # Simulate existing collection with stamped metadata
+            existing_col = MagicMock()
+            existing_col.metadata = {
+                "embedding_model": stamped_model,
+                "embedding_dim": stamped_dim,
+            }
+            mock_backend.get_collection.return_value = existing_col
+
+            # get_or_create_collection used by get_collection()
+            new_col = MagicMock()
+            new_col.count.return_value = 0
+            mock_backend.get_or_create_collection.return_value = new_col
+
+            instance = mod.SovereignChromaClient(persist_dir=str(tmp_path / "chroma"))
+            instance._mock_backend = mock_backend  # type: ignore[attr-defined]
+            return instance
+
+    def test_dim_mismatch_raises_for_enforced_collection(self, tmp_path: Path) -> None:
+        """Wrong-dim embeddings into apps_qna_interview_cards → hard fail."""
+        from agentic_core.embeddings.bge_runtime import BGE_MODEL
+        from agentic_core.embeddings.exceptions import EmbeddingProvenanceMismatchError
+
+        client = self._make_client(tmp_path, stamped_model=BGE_MODEL, stamped_dim=1024)
+
+        wrong_dim_embeddings = [[0.0] * 512]  # 512-d instead of 1024-d
+
+        with pytest.raises(EmbeddingProvenanceMismatchError) as exc_info:
+            client.add_documents(
+                collection_name="apps_qna_interview_cards",
+                documents=["test doc"],
+                metadatas=[{"key": "val"}],
+                embeddings=wrong_dim_embeddings,
+            )
+
+        err = exc_info.value
+        assert err.collection_name == "apps_qna_interview_cards"
+        assert err.expected_dim == 1024
+        assert err.actual_dim == 512
+        assert "provenance mismatch" in str(err).lower()
+
+    def test_correct_dim_does_not_raise(self, tmp_path: Path) -> None:
+        """Correct 1024-d embeddings pass through without error."""
+        from agentic_core.embeddings.bge_runtime import BGE_MODEL
+
+        client = self._make_client(tmp_path, stamped_model=BGE_MODEL, stamped_dim=1024)
+
+        correct_embeddings = [[0.1] * 1024]
+
+        # Should not raise — add will proceed to collection.add
+        try:
+            client.add_documents(
+                collection_name="apps_qna_interview_cards",
+                documents=["test doc"],
+                metadatas=[{"key": "val"}],
+                embeddings=correct_embeddings,
+            )
+        except Exception as exc:  # noqa: BLE001
+            # Only provenance errors should cause failures in this test
+            from agentic_core.embeddings.exceptions import EmbeddingProvenanceMismatchError
+            if isinstance(exc, EmbeddingProvenanceMismatchError):
+                pytest.fail(f"Unexpected provenance error: {exc}")
+
+    def test_non_enforced_collection_no_raise(self, tmp_path: Path) -> None:
+        """Dim mismatch on a non-enforced collection does NOT raise."""
+        from agentic_core.L4_state.utils.client import chroma_client as mod
+
+        with patch.object(mod.chromadb, "PersistentClient") as mock_pc:
+            mock_backend = MagicMock()
+            mock_pc.return_value = mock_backend
+
+            existing_col = MagicMock()
+            existing_col.metadata = {"embedding_model": "BAAI/bge-m3", "embedding_dim": 1024}
+            mock_backend.get_collection.return_value = existing_col
+
+            new_col = MagicMock()
+            new_col.count.return_value = 0
+            mock_backend.get_or_create_collection.return_value = new_col
+
+            instance = mod.SovereignChromaClient(persist_dir=str(tmp_path / "chroma"))
+
+            # Wrong dim but collection is NOT in PROVENANCE_ENFORCED_COLLECTIONS
+            wrong_embeddings = [[0.0] * 512]
+            try:
+                instance.add_documents(
+                    collection_name="docs",  # not enforced
+                    documents=["test"],
+                    metadatas=[{"key": "v"}],
+                    embeddings=wrong_embeddings,
+                )
+            except Exception as exc:  # noqa: BLE001
+                from agentic_core.embeddings.exceptions import EmbeddingProvenanceMismatchError
+                if isinstance(exc, EmbeddingProvenanceMismatchError):
+                    pytest.fail(f"Should not raise for non-enforced: {exc}")

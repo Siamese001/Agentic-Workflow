@@ -12,6 +12,10 @@ from typing import Any
 import chromadb
 
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM
+from agentic_core.embeddings.exceptions import (
+    EmbeddingProvenanceMismatchError,
+    PROVENANCE_ENFORCED_COLLECTIONS,
+)
 from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir_str
 from agentic_core.L4_state.utils.chunk_metadata import (
     CHUNK_METADATA_VERSION,
@@ -185,6 +189,35 @@ class SovereignChromaClient:
         else:
             # Default path: generate embeddings from the document texts.
             embeddings = self.embed_texts(documents)
+
+        # W3.1 (bge-m3-gap-closure-c8f3a2): Pre-write provenance enforcement.
+        # For collections in PROVENANCE_ENFORCED_COLLECTIONS, verify that the
+        # caller's embeddings are consistent with the collection's stamped
+        # embedding_model and embedding_dim. Hard-fail on mismatch.
+        if collection_name in PROVENANCE_ENFORCED_COLLECTIONS and embeddings:
+            caller_model = BGE_MODEL
+            caller_dim = BGE_QUERY_DIM
+            # Use actual dim from the first supplied vector when available.
+            if embeddings and len(embeddings[0]) != caller_dim:
+                caller_dim = len(embeddings[0])
+            # Read stamped metadata from the existing collection (if it exists).
+            try:
+                existing = self.client.get_collection(name=collection_name)
+                stamped_meta = existing.metadata or {}
+                stamped_model = stamped_meta.get("embedding_model", BGE_MODEL)
+                stamped_dim = int(stamped_meta.get("embedding_dim", BGE_QUERY_DIM))
+                if caller_model != stamped_model or caller_dim != stamped_dim:
+                    raise EmbeddingProvenanceMismatchError(
+                        collection_name=collection_name,
+                        expected_model=stamped_model,
+                        expected_dim=stamped_dim,
+                        actual_model=caller_model,
+                        actual_dim=caller_dim,
+                    )
+            except EmbeddingProvenanceMismatchError:
+                raise
+            except Exception:  # noqa: BLE001 — collection may not exist yet; skip check
+                pass
 
         # Get collection
         collection = self.get_collection(collection_name)

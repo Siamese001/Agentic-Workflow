@@ -408,6 +408,14 @@ def main():
             "AEH1 apps_* eval-harness parity (advisory)",
             "ops_scripts/ci/check_app_domain_harness_parity.py",
         ),
+        # EPE1 — Embedding provenance enforcement (ADR-055 W3.1).
+        # Verifies EmbeddingProvenanceMismatchError is importable and
+        # SovereignChromaClient references the hard-fail block.
+        # Plan: bge-m3-gap-closure-c8f3a2 W3.1.
+        (
+            "EPE1 embedding provenance enforcement (advisory)",
+            "ops_scripts/ci/check_embedding_provenance_enforcement.py",
+        ),
         # RJC1 — RationaleQualityJudge Spearman calibration gate.
         # Verifies global Spearman >= 0.80 and per-dim >= 0.70 against the
         # holdout dataset.  Advisory by default; flip fail-closed via

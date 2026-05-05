@@ -1,5 +1,14 @@
 """Cross-encoder reranker for apps_qna route ranking (W2.1).
 
+NOTE (bge-m3-gap-closure-c8f3a2 W2.1): TWO reranker files exist in apps_qna:
+  - THIS file (apps_qna/engines/router/reranker.py): engines-layer entry point.
+    Called from apps_qna/engines/router/ paths and DAG-enhancement flows.
+  - apps_qna/router/reranker.py: router-layer entry point. Exports
+    `rerank_candidate_scores` used by `apps_qna/router/semantic_router.py`.
+Both are LIVE. Both delegate to `agentic_core.knowledge.retrieval.bge_reranker_adapter`
+(BAAI/bge-reranker-v2-m3 cross-encoder — distinct from the BGE-M3 dense embedder).
+Neither file is dead code. BGE-M3 surface map: see ADR-055 §Surface Map.
+
 Wave 2 phase 2.1 of ``apps-qna-dag-enhancements-e4c7b2``. The bi-encoder
 path (spine ``classify_section_topic`` / BGE-M3) produces a point estimate
 per route by computing the cosine between a single text embedding and each
