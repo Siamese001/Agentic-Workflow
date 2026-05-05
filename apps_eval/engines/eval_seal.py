@@ -66,34 +66,83 @@ class EvalSealStage:
     def _seal_report(self) -> Path:
         """Seal full markdown report."""
         report_path = self.run_dir / f"eval_report_{self.trace_id}.md"
-        # TODO: Implement report generation (deferred)
-        report_path.write_text("# Eval Report (stub)")
+        # W3.5: Generate actual markdown report
+        lines = [
+            f"# Evaluation Report — {self.trace_id}",
+            "",
+            f"**Terminal Class**: {self._terminal_class_from_results()}",
+            f"**Scenarios Run**: {self.exec_result.scenarios_run}",
+            "",
+            "## Scenario Results",
+            "",
+            "| Scenario | Outcome | Score | Latency (ms) |",
+            "|----------|---------|-------|--------------|",
+        ]
+        for r in self.exec_result.scenario_results:
+            lines.append(
+                f"| {r.scenario_id} | {r.outcome} | {r.score:.2f} | {r.latency_ms:.1f} |"
+            )
+        lines.extend(["", "## Gate Violations", ""])
+        violations = self._collect_gate_violations()
+        if violations:
+            for v in violations:
+                lines.append(f"- {v}")
+        else:
+            lines.append("_No gate violations_")
+        lines.append("")
+        report_path.write_text("\n".join(lines))
         return report_path
 
     def _seal_scorecard(self) -> Path:
         """Seal machine-readable scorecard CSV."""
         scorecard_path = self.run_dir / f"scorecard_{self.trace_id}.csv"
-        # TODO: Implement scorecard CSV generation (deferred)
-        scorecard_path.write_text("scenario_id,dimension,score\n")
+        # W3.5: Generate actual CSV scorecard
+        lines = ["scenario_id,outcome,score,latency_ms,passed,deterministic"]
+        for r in self.exec_result.scenario_results:
+            lines.append(
+                f"{r.scenario_id},{r.outcome},{r.score:.2f},{r.latency_ms:.1f},{r.passed},{r.deterministic}"
+            )
+        scorecard_path.write_text("\n".join(lines))
         return scorecard_path
 
     def _seal_manifest(self) -> None:
         """Seal lightweight JSON manifest."""
         manifest_path = self.run_dir / f"eval_manifest_{self.trace_id}.json"
+        # W3.5: Full manifest with scenario details
         manifest = {
             "trace_id": self.trace_id,
+            "schema_version": "1.0",
             "suite_count": len(self.exec_result.suite_results),
             "scenarios_run": self.exec_result.scenarios_run,
+            "terminal_class": self._terminal_class_from_results(),
+            "all_passed": self._all_passed(),
+            "degraded": self._degraded(),
+            "scenarios": [
+                {
+                    "id": r.scenario_id,
+                    "outcome": r.outcome,
+                    "score": r.score,
+                    "passed": r.passed,
+                }
+                for r in self.exec_result.scenario_results
+            ],
         }
         manifest_path.write_text(json.dumps(manifest, indent=2))
 
     def _seal_run_summary(self) -> None:
         """Seal provenance + gate results."""
         summary_path = self.run_dir / f"run_summary_{self.trace_id}.json"
+        # W3.5: Full run summary with gate violations
+        violations = self._collect_gate_violations()
         summary = {
             "trace_id": self.trace_id,
+            "schema_version": "1.0",
             "terminal_class": self._terminal_class_from_results(),
-            "gate_violations": [],
+            "all_passed": self._all_passed(),
+            "degraded": self._degraded(),
+            "scenarios_run": self.exec_result.scenarios_run,
+            "gate_violations": violations,
+            "violation_count": len(violations),
         }
         summary_path.write_text(json.dumps(summary, indent=2))
 

@@ -977,14 +977,81 @@ class ScenarioRunner:
         return result
 
     def _run_scenario_simple(self, scenario: dict) -> "ScenarioResult":
-        """Simplified scenario runner for L2 E3 stage."""
-        # TODO: Implement full scenario execution (deferred to W3)
-        return ScenarioResult(
-            scenario_id=scenario.get("id", "unknown"),
-            outcome="PASS",
-            passed=True,
-            latency_ms=100.0,
-        )
+        """Execute scenario with timeout — L2 E3 EXEC sealed packet."""
+        from apps_eval.types.eval_types import ScenarioResult
+
+        scenario_id = scenario.get("id", "unknown")
+        suite_id = scenario.get("suite_id", "unknown")
+        timeout_sec = scenario.get("timeout_sec", 30)
+
+        defn = _SCENARIO_DEFINITIONS.get(scenario_id)
+        if defn is None:
+            return ScenarioResult(
+                scenario_id=scenario_id,
+                suite_id=suite_id,
+                outcome="ERROR",
+                passed=False,
+                score=0.0,
+                message=f"Unknown scenario_id: '{scenario_id}'",
+            )
+
+        fn = _SCENARIO_FN_MAP.get(scenario_id)
+        if fn is None:
+            return ScenarioResult(
+                scenario_id=scenario_id,
+                suite_id=suite_id,
+                outcome="ERROR",
+                passed=False,
+                score=0.0,
+                message=f"No implementation for scenario: '{scenario_id}'",
+            )
+
+        # Execute with timeout using concurrent.futures
+        import time
+        import concurrent.futures
+
+        t0 = time.monotonic()
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(fn)
+                outcome, score, message = future.result(timeout=timeout_sec)
+            latency_ms = (time.monotonic() - t0) * 1000
+
+            passed = outcome == "PASS"
+            return ScenarioResult(
+                scenario_id=scenario_id,
+                suite_id=suite_id,
+                outcome=outcome,
+                passed=passed,
+                score=score,
+                latency_ms=latency_ms,
+                message=message,
+                deterministic=defn.get("deterministic", True),
+            )
+        except concurrent.futures.TimeoutError:
+            latency_ms = (time.monotonic() - t0) * 1000
+            return ScenarioResult(
+                scenario_id=scenario_id,
+                suite_id=suite_id,
+                outcome="TIMEOUT",
+                passed=False,
+                score=0.0,
+                latency_ms=latency_ms,
+                message=f"Scenario timed out after {timeout_sec}s",
+                deterministic=defn.get("deterministic", True),
+            )
+        except Exception as exc:
+            latency_ms = (time.monotonic() - t0) * 1000
+            return ScenarioResult(
+                scenario_id=scenario_id,
+                suite_id=suite_id,
+                outcome="ERROR",
+                passed=False,
+                score=0.0,
+                latency_ms=latency_ms,
+                message=f"Exception: {exc}",
+                deterministic=defn.get("deterministic", True),
+            )
 
     @traces_execute(layer="L3_ORCHESTRATION")
     def run_suite(

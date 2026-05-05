@@ -32,6 +32,7 @@ def run_eval_from_cli(
     from apps_eval.engines.eval_prep import EvalPrepStage
     from apps_eval.engines.eval_valid import EvalValidStage
     from apps_eval.engines.scenario_runner import ScenarioRunner
+    from apps_eval.engines.eval_heal import EvalHealStage
     from apps_eval.engines.eval_seal import EvalSealStage
     from apps_eval.integrations.exit_adapter import exit_disposition
 
@@ -85,7 +86,14 @@ def run_eval_from_cli(
     runner = ScenarioRunner(valid_result)
     exec_result = runner.run()
 
-    # L2 E4: HEAL (inline during scenario loop)
+    # L2 E4: HEAL (retry/skip for failed scenarios)
+    healer = EvalHealStage(valid_result)
+    healer.set_runner(runner)
+    heal_result = healer.run(exec_result.scenario_results)
+    # Update exec_result with healed results
+    exec_result.scenario_results = heal_result.healed_results
+    exec_result.judge_degraded = not valid_result.judge_available
+
     # L2 E5: SEAL
     sealer = EvalSealStage(exec_result)
     seal_result = sealer.run()

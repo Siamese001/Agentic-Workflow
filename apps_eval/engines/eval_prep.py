@@ -87,13 +87,49 @@ class EvalPrepStage:
 
     def _load_suite_configs(self) -> list[dict]:
         """Load suite configurations from eval_policies.yaml or registry."""
-        # TODO: Implement YAML loading (deferred)
-        return [{"id": sid, "active": True} for sid in self.suite_ids]
+        import yaml
+
+        config_path = Path(__file__).parents[1] / "config" / "eval_policies.yaml"
+        try:
+            with open(config_path, encoding="utf-8") as f:
+                doc = yaml.safe_load(f) or {}
+        except Exception as exc:
+            logger.warning("Failed to load eval_policies.yaml: %s", exc)
+            doc = {}
+
+        suites = doc.get("suites", {})
+        configs = []
+        for sid in self.suite_ids:
+            suite_def = suites.get(sid, {})
+            if suite_def.get("active", True):
+                configs.append({
+                    "id": sid,
+                    "active": True,
+                    "threshold_profile": suite_def.get("threshold_profile", "default"),
+                    "rubric_ids": suite_def.get("rubric_ids", []),
+                    "timeout_sec": suite_def.get("timeout_sec", 30),
+                })
+        return configs
 
     def _load_scenarios(self, suite_configs: list[dict]) -> list[dict]:
         """Load scenarios from evaluation_prompts.json."""
-        # TODO: Implement JSON loading (deferred)
-        return [{"id": f"scenario_{i}", "suite": s["id"]} for i, s in enumerate(suite_configs)]
+        prompts_path = Path(__file__).parents[1] / "config" / "evaluation_prompts.json"
+        try:
+            with open(prompts_path, encoding="utf-8") as f:
+                doc = json.load(f)
+        except Exception as exc:
+            logger.warning("Failed to load evaluation_prompts.json: %s", exc)
+            doc = {"scenarios": []}
+
+        all_scenarios = doc.get("scenarios", [])
+        # Filter by suite and scenario_filter
+        filtered = []
+        for sc in all_scenarios:
+            suite_match = sc.get("suite_id") in [s["id"] for s in suite_configs]
+            filter_match = not self.scenario_filter or self.scenario_filter.lower() in sc.get("id", "").lower()
+            if suite_match and filter_match:
+                filtered.append(sc)
+        return filtered
 
     def _compute_hashes(self, suite_configs: list[dict], scenarios: list[dict]) -> dict[str, str]:
         """Compute SHA256 hashes for policy, scenarios, thresholds."""
