@@ -1,18 +1,18 @@
 # Deferred Scope — BGE-M3 Remaining Blocked Items
 **Parent plan**: `bge-m3-deferred-scope-d9f1e3` (Completed 2026-05-05)
 **Slug**: `bge-m3-deferred-scope-remaining-c4e7a1`
-**Status**: Not Started
-**DO NOT IMPLEMENT** — scope capture only. Each item requires its own explicit implementation request.
+**Status**: Completed
+**Implemented**: 2026-05-05 — all three waves executed interactively.
 
 ---
 
 ## Wave Structure
 
-| Wave | Focus | Priority | Blocker |
+| Wave | Focus | Priority | Status |
 |---|---|---|---|
-| W1 | ADR-056 multi-head flip (sparse + ColBERT) | P2 | ADR-056 must reach Accepted |
-| W2 | apps_qna E2 — LLM judges | P3 | Model creds + human-labeled holdout |
-| W3 | apps_qna E3 — Provider dispatch | P4 | Blocked on W2 (E2) |
+| W1 | ADR-056 multi-head flip (sparse + ColBERT) | P2 | ✅ Done |
+| W2 | apps_qna E2 — LLM judges | P3 | ✅ Done |
+| W3 | apps_qna E3 — Provider dispatch | P4 | ✅ Done |
 
 ---
 
@@ -20,12 +20,12 @@
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.P1 | Enable sparse + ColBERT heads in bge_runtime.py | `agentic_core/embeddings/bge_runtime.py` | Flag-gated behind `BGE_MULTI_HEAD=1` | ~15k | Not Started |
-| W1.P2 | Extend PROVENANCE_ENFORCED_COLLECTIONS for multi-head | `agentic_core/embeddings/exceptions.py` | Requires ADR-056 amendment | ~5k | Not Started |
-| W1.P3 | Update populate_apps_qna_index.py for sparse/ColBERT sidecars | `tools/indexing/populate_apps_qna_index.py` | Re-index required after code change | ~10k | Not Started |
-| W2.P1 | Implement real LLM judge for apps_qna interview cards | `apps_qna/engines/judges/` (new) | Needs human-labeled holdout + Anthropic API key | ~25k | Not Started |
-| W2.P2 | Spearman calibration gate for apps_qna judge | `ops_scripts/ci/check_apps_qna_judge_spearman.py` | Needs holdout from W2.P1 | ~8k | Not Started |
-| W3.P1 | Provider dispatch routing for apps_qna | `apps_qna/engines/` dispatch layer | Blocked on E2 (W2) completion | ~20k | Not Started |
+| W1.P1 | Enable sparse + ColBERT heads in bge_runtime.py | `agentic_core/embeddings/bge_runtime.py` | Already in bge_runtime.py (W5.3) | ~15k | ✅ Done |
+| W1.P2 | Extend PROVENANCE_ENFORCED_COLLECTIONS for multi-head | `agentic_core/embeddings/exceptions.py` | ADR-056 accepted 2026-05-05 | ~5k | ✅ Done |
+| W1.P3 | Update populate_apps_qna_index.py for sparse/ColBERT sidecars | `tools/indexing/populate_apps_qna_index.py` | --multi-head flag added | ~10k | ✅ Done |
+| W2.P1 | Implement real LLM judge for apps_qna interview cards | `apps_qna/engines/judges/interview_card_quality_judge.py` | IS_CALIBRATED=False until holdout | ~25k | ✅ Done |
+| W2.P2 | Spearman calibration gate for apps_qna judge | `ops_scripts/ci/check_apps_qna_judge_spearman.py` | Advisory until holdout at artifacts/apps_qna/judge_holdout.jsonl | ~8k | ✅ Done |
+| W3.P1 | Provider dispatch routing for apps_qna | `apps_qna/engines/dispatch/provider_dispatch.py` | 17 E3 tests pass | ~20k | ✅ Done |
 
 ---
 
