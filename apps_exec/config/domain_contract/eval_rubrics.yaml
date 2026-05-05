@@ -1,0 +1,52 @@
+# apps_exec Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
+- eval_rubric_id: aer::apps_exec::brief_assembly::v1
+  app_id: apps_exec
+  task_class: brief_assembly
+  version: 1.0.0
+  status: active
+  policy_hash: policy://apps_exec/v1
+  score_dimensions:
+  - dimension_id: exec_signal_density
+    description: Every paragraph carries decision-relevant signal.
+    weight: 0.2
+    grader_type: hybrid
+    min_required_score: 0.6
+    evidence_required: true
+    fail_closed_if_unknown: false
+  - dimension_id: factual_grounding
+    description: Every claim cites upstream research_brief evidence.
+    weight: 0.25
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+  - dimension_id: concision
+    description: <=500 words unless depth=deep.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.8
+    evidence_required: false
+    fail_closed_if_unknown: true
+  - dimension_id: priority_ordering
+    description: Top-3 priorities surface first; tail is demoted.
+    weight: 0.15
+    grader_type: hybrid
+    min_required_score: 0.55
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: no_boilerplate
+    description: No generic filler; every sentence has density.
+    weight: 0.1
+    grader_type: hybrid
+    min_required_score: 0.5
+    evidence_required: false
+    fail_closed_if_unknown: false
+  - dimension_id: decision_clarity
+    description: Recommended action is explicit and traceable.
+    weight: 0.15
+    grader_type: hybrid
+    min_required_score: 0.6
+    evidence_required: true
+    fail_closed_if_unknown: true
+  source_app_config_ref: apps_eval/config/rubrics/
+  created_at: '2026-05-01'
