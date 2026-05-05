@@ -1,9 +1,10 @@
 """RubricOutputMapper — map DecisionPacket → ExitReviewPacket.output.dim_scores.
 
 Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
+Extended: ``.windsurf/plans/apps-underwriting-ai-d3-rationale-judge-f2c8d5.md`` W2.P3.
 
 Producer side of the Fort Knox app-domain contract for apps_underwriting_ai.
-Converts the 5 rubric dimensions declared in
+Converts the 6 rubric dimensions declared in
 ``apps_underwriting_ai/config/domain_contract/eval_rubrics.yaml`` into the
 canonical ``output["dim_scores"]`` + ``output["dim_evidence"]`` shape that
 :class:`agentic_core.L3_orchestration.exit_eval.v6.app_specific_evaluator.AppSpecificEvaluator`
@@ -41,6 +42,10 @@ Mapping contract (per rubric dim):
   ← 1.0 always (DeterministicRiskScorer does not read protected
   attributes — see risk_scorer.py module docstring). Evidence cites the
   scorer module id so downstream auditors can inspect.
+- ``rationale_quality`` (weight 0.05, min 0.50, not fail_closed, llm_as_judge)
+  ← RationaleQualityJudge.grade() deterministic heuristic scorer v2;
+  returns GRADER_UNKNOWN_SENTINEL when rationale is empty (fail-open).
+  Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 W2.P3.
 
 Every dim carries at least one evidence_ref so ``evidence_required: true``
 gates in the rubric pass by construction when scores are real.
@@ -51,6 +56,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from apps_underwriting_ai.engines.judges.rationale_quality_judge import (
+    RationaleQualityJudge,
+)
 from apps_underwriting_ai.engines.risk_scorer import RiskScoreBreakdown
 from apps_underwriting_ai.types.underwriting_types import (
     DecisionPacket,
@@ -158,6 +166,21 @@ def _score_fairness(_decision: DecisionPacket) -> DimOutput:
     )
 
 
+def _score_rationale_quality(decision: DecisionPacket) -> DimOutput:
+    run_context: dict[str, Any] = {
+        "output": {
+            "rationale": decision.rationale,
+            "evidence_refs": list(decision.evidence_refs),
+        }
+    }
+    score, refs = RationaleQualityJudge().grade(dim=None, run_context=run_context)
+    return DimOutput(
+        dimension_id="rationale_quality",
+        score=score,
+        evidence=tuple(refs),
+    )
+
+
 def map_decision_to_dim_scores(
     decision: DecisionPacket,
     breakdown: RiskScoreBreakdown,
@@ -181,6 +204,7 @@ def map_decision_to_dim_scores(
         _score_policy_compliance(decision),
         _score_explainability(decision),
         _score_fairness(decision),
+        _score_rationale_quality(decision),
     ]
     return {
         "dim_scores": {o.dimension_id: o.score for o in outputs},

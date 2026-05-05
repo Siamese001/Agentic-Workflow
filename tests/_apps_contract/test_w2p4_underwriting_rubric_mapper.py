@@ -5,7 +5,7 @@ Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
 Proves:
 
 - ``map_decision_to_dim_scores`` returns the canonical ``output`` shape
-  (``dim_scores`` + ``dim_evidence``) with exactly the 5 rubric dimensions
+  (``dim_scores`` + ``dim_evidence``) with exactly the 6 rubric dimensions
   declared in apps_underwriting_ai eval_rubrics.yaml.
 - A clean-pass DecisionPacket + RiskScoreBreakdown yields a bundle that
   AppSpecificEvaluator can consume and PASS.
@@ -45,6 +45,7 @@ EXPECTED_DIMS = {
     "policy_compliance",
     "explainability",
     "fairness",
+    "rationale_quality",
 }
 
 

@@ -1,0 +1,88 @@
+# apps_underwriting_ai — Rationale Quality Judge Holdout Dataset Schema
+#
+# Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 W1.P1.
+#
+# Each entry in rationale_judge_holdout.yaml MUST conform to this schema.
+# Fields marked required: true must be present for every example.
+# Synthetic examples following the demo fixture packet patterns are acceptable.
+# Real applicant data, PII, and live lender thresholds are FORBIDDEN.
+
+schema_version: "1.0"
+description: >
+  Holdout dataset schema for apps_underwriting_ai rationale quality judge
+  calibration. Used by ops_scripts/ci/check_rationale_judge_calibration.py
+  to measure Spearman correlation between judge scores and human-labeled
+  ground-truth scores.
+
+fields:
+  decision_id:
+    type: string
+    required: true
+    description: >
+      Unique identifier for this holdout example. Use the format
+      "uw-holdout-<dim_id>-<NNN>", e.g. "uw-holdout-explainability-001".
+
+  dim_id:
+    type: string
+    required: true
+    enum:
+      - evidence_sufficiency
+      - feature_derivation_correctness
+      - policy_compliance
+      - explainability
+      - fairness
+    description: >
+      Rubric dimension this example exercises. Must match a dimension_id
+      declared in apps_underwriting_ai/config/domain_contract/eval_rubrics.yaml.
+
+  rationale_text:
+    type: string
+    required: true
+    min_length: 0
+    description: >
+      The rationale text as it would appear in a DecisionPacket.rationale field.
+      Empty string is valid (tests the no-rationale path).
+
+  evidence_refs:
+    type: list[string]
+    required: true
+    description: >
+      List of evidence reference strings as they would appear in
+      DecisionPacket.evidence_refs. Empty list is valid.
+
+  ground_truth_score:
+    type: float
+    required: true
+    min: 0.0
+    max: 1.0
+    description: >
+      Human-assigned quality score for this example. 0.0 = lowest quality,
+      1.0 = highest quality. Assigned by a domain expert reviewing the
+      rationale_text and evidence_refs against the rubric dim_id.
+
+  labeler_id:
+    type: string
+    required: true
+    description: >
+      Identifier for the human labeler who assigned ground_truth_score.
+      For synthetic examples use "synthetic_cascade_v1".
+
+  labeled_at:
+    type: string
+    required: true
+    format: "YYYY-MM-DD"
+    description: >
+      ISO-8601 date when the label was assigned.
+
+  notes:
+    type: string
+    required: false
+    description: >
+      Optional free-text notes explaining the labeling decision.
+
+constraints:
+  - "Minimum 20 examples per dim_id (100 total across all 5 dims)"
+  - "No real applicant names, SSNs, account numbers, or loan amounts"
+  - "No live lender policy thresholds or proprietary scoring coefficients"
+  - "ground_truth_score must be in [0.0, 1.0]"
+  - "dim_id must be one of the 5 rubric dimensions listed above"
