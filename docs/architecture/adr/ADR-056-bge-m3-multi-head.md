@@ -1,7 +1,9 @@
 # ADR-056 — BGE-M3 Multi-Head Integration (Dense + Sparse + ColBERT)
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-04-24
+**Accepted**: 2026-05-05
+**Acceptance rationale**: `bge_embed_multi` already ships in `bge_runtime.py` (W5.3 of parent plan). All three heads are produced in one forward pass at zero extra GPU cost. Implementation proceeds behind `BGE_MULTI_HEAD=1` flag — existing dense-only path is unchanged. Sidecar storage gated behind per-collection opt-in per §4.
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/embeddings/bge_runtime.py`, `agentic_core/embeddings/embedding_factory.py`, `agentic_core/L4_state/utils/memory/bm25_store.py`, `agentic_core/L4_state/utils/client/chroma_client.py`, new `agentic_core/knowledge/retrieval/late_interaction_index.py`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.1

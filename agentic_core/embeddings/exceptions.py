@@ -52,9 +52,15 @@ class EmbeddingProvenanceMismatchError(ValueError):
 # Collections for which a dim/model mismatch raises EmbeddingProvenanceMismatchError
 # (hard-fail) rather than only logging a warning.
 # Extend this set as more app-owned collections become stable.
+# ADR-056: sparse and ColBERT sidecar collections added 2026-05-05.
 PROVENANCE_ENFORCED_COLLECTIONS: frozenset[str] = frozenset(
     {
+        # Dense (original)
         "apps_qna_interview_cards",
+        # ADR-056 — BGE-M3 sparse head sidecar collections
+        "apps_qna_interview_cards_sparse",
+        # ADR-056 — BGE-M3 ColBERT head sidecar collections
+        "apps_qna_interview_cards_colbert",
     }
 )
 

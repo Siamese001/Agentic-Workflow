@@ -5,9 +5,15 @@ ETL pipeline:
 2. Embed all variants using BGE-M3 (1024 dimensions)
 3. Create seed pack (embeddings.f32, row_index.jsonl, seed_manifest.json)
 4. Populate active index (index.json, manifest.json, meta.json)
+5. [ADR-056 / --multi-head] Emit sidecar indexes:
+   - index_sparse.json  — BGE-M3 lexical_weights per card
+   - index_colbert.json — BGE-M3 per-token ColBERT vectors per card
 
 Usage:
-    python tools/indexing/populate_apps_qna_index.py [--force]
+    python tools/indexing/populate_apps_qna_index.py [--force] [--multi-head]
+
+Environment:
+    BGE_MULTI_HEAD=1   equivalent to --multi-head flag
 """
 
 from __future__ import annotations
@@ -16,6 +22,7 @@ import argparse
 import hashlib
 import json
 import logging
+import os
 import struct
 import sys
 from datetime import datetime, timezone
@@ -28,6 +35,8 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.embedders import get_embedder
 from tools.indexing import generate_corpus
+
+_BGE_MULTI_HEAD_ENV: bool = os.environ.get("BGE_MULTI_HEAD", "0").strip() == "1"
 
 if TYPE_CHECKING:
     from tools.indexing.interview_card_corpus import InterviewCard
@@ -163,6 +172,68 @@ def create_seed_pack(
     return seed_pack_dir
 
 
+def populate_sidecar_indexes(
+    corpus: list["InterviewCard"],
+    multi_result: dict,
+) -> None:
+    """Emit sparse and ColBERT sidecar index files per ADR-056.
+
+    Args:
+        corpus: Interview cards (same order as multi_result vectors).
+        multi_result: Output of ``bge_embed_multi`` — keys ``sparse``, ``colbert``.
+    """
+    INDEXES_DIR.mkdir(parents=True, exist_ok=True)
+
+    if "sparse" in multi_result:
+        sparse_index = {
+            "index_type": "sparse",
+            "head": "sparse",
+            "embedding_model": MODEL_NAME,
+            "collection": "apps_qna_interview_cards_sparse",
+            "vectors": [
+                {
+                    "id": card.interview_slug,
+                    "lexical_weights": weights,
+                    "metadata": {
+                        "card_id": card.card_id,
+                        "base_card_type": card.base_card_type,
+                        "archetype": card.archetype,
+                    },
+                }
+                for card, weights in zip(corpus, multi_result["sparse"])
+            ],
+        }
+        sparse_path = INDEXES_DIR / "index_sparse.json"
+        with open(sparse_path, "w", encoding="utf-8") as f:
+            json.dump(sparse_index, f, indent=2)
+        _LOGGER.info("Wrote sparse sidecar index: %s (%d vectors)", sparse_path, len(corpus))
+
+    if "colbert" in multi_result:
+        colbert_index = {
+            "index_type": "colbert",
+            "head": "colbert",
+            "embedding_model": MODEL_NAME,
+            "collection": "apps_qna_interview_cards_colbert",
+            "vectors": [
+                {
+                    "id": card.interview_slug,
+                    "token_vectors": token_vecs,
+                    "token_count": len(token_vecs),
+                    "metadata": {
+                        "card_id": card.card_id,
+                        "base_card_type": card.base_card_type,
+                        "archetype": card.archetype,
+                    },
+                }
+                for card, token_vecs in zip(corpus, multi_result["colbert"])
+            ],
+        }
+        colbert_path = INDEXES_DIR / "index_colbert.json"
+        with open(colbert_path, "w", encoding="utf-8") as f:
+            json.dump(colbert_index, f, indent=2)
+        _LOGGER.info("Wrote ColBERT sidecar index: %s (%d vectors)", colbert_path, len(corpus))
+
+
 def populate_active_index(
     seed_pack_dir: Path,
     corpus: list[InterviewCard],
@@ -250,6 +321,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Skip embedding (useful for testing structure)",
     )
+    parser.add_argument(
+        "--multi-head",
+        action="store_true",
+        default=_BGE_MULTI_HEAD_ENV,
+        help="ADR-056: also emit sparse + ColBERT sidecar indexes (requires FlagEmbedding)",
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(
@@ -276,10 +353,31 @@ def main(argv: list[str] | None = None) -> int:
         # Populate active index
         populate_active_index(seed_pack_dir, corpus, embeddings)
 
+        # ADR-056: emit sparse + ColBERT sidecar indexes when --multi-head / BGE_MULTI_HEAD=1
+        if args.multi_head:
+            _LOGGER.info("Multi-head mode enabled (ADR-056) — embedding sparse + ColBERT heads...")
+            from agentic_core.embeddings.bge_runtime import bge_embed_multi, BGEMultiVecUnavailable
+            texts = [card.question_text for card in corpus]
+            try:
+                multi_result = bge_embed_multi(
+                    texts,
+                    return_dense=False,
+                    return_sparse=True,
+                    return_colbert=True,
+                )
+                populate_sidecar_indexes(corpus, multi_result)
+            except BGEMultiVecUnavailable as exc:
+                _LOGGER.error(
+                    "BGEMultiVecUnavailable — install FlagEmbedding to use --multi-head: %s", exc
+                )
+                return 1
+
         _LOGGER.info("Index population complete!")
         _LOGGER.info(f"  Seed pack: {seed_pack_dir}")
         _LOGGER.info(f"  Active index: {INDEXES_DIR}")
         _LOGGER.info(f"  Vectors: {len(corpus)} (BGE-M3, 1024 dims)")
+        if args.multi_head:
+            _LOGGER.info("  Sidecar indexes: index_sparse.json, index_colbert.json (ADR-056)")
 
         return 0
 
