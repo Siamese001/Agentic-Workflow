@@ -1,6 +1,6 @@
 # Deferred Scope — Post-Plan 4 Closeout
 
-> **Status:** Not Started · **Tier:** T2 · **Slug:** `deferred-scope-post-plan4-closeout-a7d2f1`
+> **Status:** Not Started · **Tier:** T2 · **Slug:** `apps-repo-brief-deferred-scope-closeout-a7d2f1`
 > **Parent:** `apps-repo-brief-plan4-spine-handoff-f2a3c8` (Completed 2026-05-05)
 > **Purpose:** Capture all deferred scope items surfaced during or adjacent to the apps_repo_brief Plan 4 closeout. **No implementation in this document.** Each item has a source plan, priority, and recommended next-plan assignment.
 
@@ -186,4 +186,4 @@ All 5 `llm_client.py` violations are the same import pattern. `agentic_core/runt
 - Non-goals: no implementation — capture and triage only
 - Success: all 8 DS items tracked, owners assigned, expiry dates noted
 
-**PLAN_CREATED:** `.windsurf/plans/deferred-scope-post-plan4-closeout-a7d2f1.md`
+**PLAN_CREATED:** `.windsurf/plans/apps-repo-brief-deferred-scope-closeout-a7d2f1.md`
