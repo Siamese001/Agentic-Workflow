@@ -136,7 +136,7 @@ def test_grade_rich_rationale_returns_float() -> None:
     score, refs = grade(None, ctx)
     assert isinstance(score, float), f"Expected float, got {type(score)}"
     assert 0.0 <= score <= 1.0, f"Score out of range: {score}"
-    assert len(refs) == 5
+    assert len(refs) == 6
 
 
 @pytest.mark.governance

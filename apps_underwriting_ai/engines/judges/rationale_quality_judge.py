@@ -163,6 +163,49 @@ _VIOLATION_EXCEEDS_PATTERN = re.compile(
 
 _WORD_PATTERN = re.compile(r"\b[a-zA-Z]+\b")
 
+# W3: feature_derivation_correctness — numeric formula / ratio signals
+_NUMERIC_VALUE_PATTERN = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:%|percent|ratio|ltv|dti|fico|score|bps|pts?|\$)\b",
+    re.IGNORECASE,
+)
+_FORMULA_TERMS: frozenset[str] = frozenset(
+    {
+        "calculated as",
+        "derived from",
+        "computed",
+        "formula",
+        "equals",
+        "divided by",
+        "multiplied by",
+        "ratio of",
+        "sum of",
+        "total debt",
+        "monthly income",
+        "appraised value",
+        "loan amount",
+        "principal balance",
+        "ltv is",
+        "dti is",
+        "fico is",
+    }
+)
+
+# W3: policy_compliance — extended citation patterns
+_POLICY_CITE_PATTERN = re.compile(
+    r"(?:"
+    r"policy\s+(?:section|article|clause|rule|requirement)\s*[\d\.]+"
+    r"|regulation\s+[a-z]\b"
+    r"|12\s*cfr\b"
+    r"|ecoa\s+(?:section|compliance)"
+    r"|tila\b"
+    r"|hmda\b"
+    r"|fair\s+credit\s+reporting"
+    r"|fair\s+lending"
+    r"|ability\s+to\s+repay"
+    r")",
+    re.IGNORECASE,
+)
+
 
 def _extract_rationale(run_context: Mapping[str, Any]) -> str:
     out = run_context.get("output") if isinstance(run_context, Mapping) else None
@@ -216,6 +259,32 @@ def _score_compliance_terms(text: str) -> float:
     return min(1.0, hits / 2.0)
 
 
+def _score_feature_derivation(text: str) -> float:
+    """Signal for feature_derivation_correctness dim.
+
+    Rewards numeric values with units (LTV%, DTI ratio, FICO score, dollar
+    amounts) and formula/derivation language.  Saturates at 0.80 so an
+    otherwise weak rationale with only numbers doesn't score perfect.
+    """
+    lower = text.lower()
+    numeric_hits = len(_NUMERIC_VALUE_PATTERN.findall(text))
+    formula_hits = sum(1 for term in _FORMULA_TERMS if term in lower)
+    numeric_score = min(0.50, numeric_hits * 0.15)
+    formula_score = min(0.30, formula_hits * 0.15)
+    return min(0.80, numeric_score + formula_score)
+
+
+def _score_extended_policy_citation(text: str) -> float:
+    """Extended policy citation signal for policy_compliance dim.
+
+    Rewards specific regulatory references (12 CFR, Regulation B/Z, ECOA
+    section, TILA, HMDA, ATR) and policy section citations beyond the basic
+    'policy section N' pattern.  Saturates at 0.60.
+    """
+    hits = len(_POLICY_CITE_PATTERN.findall(text))
+    return min(0.60, hits * 0.20)
+
+
 def _score_policy_signal(text: str) -> float:
     """Combined policy-compliance signal on [0, 1].
 
@@ -252,6 +321,7 @@ def _score_policy_signal(text: str) -> float:
 
 
 def _compute_score(text: str, refs: list[str]) -> float:
+    """Baseline composite score — used when no dim-specific signals apply."""
     return (
         0.25 * _score_length(text)
         + 0.20 * _score_evidence_refs(refs)
@@ -259,6 +329,39 @@ def _compute_score(text: str, refs: list[str]) -> float:
         + 0.15 * _score_compliance_terms(text)
         + 0.20 * _score_policy_signal(text)
     )
+
+
+def _compute_score_for_dim(text: str, refs: list[str], dim_id: str) -> float:
+    """Dim-aware composite score that injects dim-specific feature signals.
+
+    For ``feature_derivation_correctness``: replaces the compliance_terms
+    component (weight 0.15) with numeric/formula derivation signal, and
+    replaces policy_signal (weight 0.20) with extended feature derivation
+    signal.  Weights still sum to 1.0.
+
+    For ``policy_compliance``: replaces the evidence_refs component (0.20)
+    with extended regulatory citation score (0.20).  The basic policy_signal
+    component (0.20) is retained.
+
+    All other dims fall through to the baseline ``_compute_score``.
+    """
+    if dim_id == "feature_derivation_correctness":
+        return (
+            0.20 * _score_length(text)
+            + 0.15 * _score_evidence_refs(refs)
+            + 0.20 * _score_explanation_terms(text)
+            + 0.45 * _score_feature_derivation(text)
+        )
+    if dim_id == "policy_compliance":
+        return (
+            0.25 * _score_length(text)
+            + 0.15 * _score_evidence_refs(refs)
+            + 0.15 * _score_explanation_terms(text)
+            + 0.15 * _score_compliance_terms(text)
+            + 0.10 * _score_policy_signal(text)
+            + 0.20 * _score_extended_policy_citation(text)
+        )
+    return _compute_score(text, refs)
 
 
 class RationaleQualityJudge:
@@ -289,13 +392,15 @@ class RationaleQualityJudge:
                 return 0.0, ["rationale_quality::v2::unknown=fail_closed"]
             return GRADER_UNKNOWN_SENTINEL, []
         refs = _extract_evidence_refs(run_context or {})
-        score = max(0.0, min(1.0, _compute_score(text, refs)))
+        dim_id = getattr(dim, "dimension_id", None) or (dim if isinstance(dim, str) else "")
+        score = max(0.0, min(1.0, _compute_score_for_dim(text, refs, dim_id)))
         evidence_refs = [
             f"rationale_quality::v2::length={_score_length(text):.2f}",
             f"rationale_quality::v2::evidence_refs={_score_evidence_refs(refs):.2f}",
             f"rationale_quality::v2::explanation={_score_explanation_terms(text):.2f}",
             f"rationale_quality::v2::compliance={_score_compliance_terms(text):.2f}",
             f"rationale_quality::v2::policy_signal={_score_policy_signal(text):.2f}",
+            f"rationale_quality::v2::dim={dim_id}",
         ]
         return score, evidence_refs
 

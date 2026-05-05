@@ -1,8 +1,9 @@
-template_id: outreach_draft_v1
-version: "1.0"
+template_id: outreach_draft_v2
+version: "2.0"
 owner: apps_lic.prompt_assembly
 purpose: >
-  Generate a governed professional outreach draft from a fresh PreloadedOutreachContextManifest.
+  Generate a governed professional outreach draft with full P2 signal enhancement.
+  Variant v2 prioritizes narrative arc coherence and archetype-calibrated tone.
   The output is a draft or send-ready candidate only. It never sends a message.
 allowed_stage: E3_EXEC
 input_contract:
@@ -28,6 +29,9 @@ input_contract:
     - recipient_trigger_vector
     - proof_mode
     - personalization_mode
+    - narrative_arc_context      # P2 optional
+    - archetype_tone_calibration  # P2 optional
+    - competitive_landscape_context  # P2 optional
 required_slots:
   - S0
   - I0

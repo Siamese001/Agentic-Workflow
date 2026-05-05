@@ -79,3 +79,27 @@
       min_required_score: 0.99
       evidence_required: false
       fail_closed_if_unknown: true
+    # P2 Dimensions (added W1.P2)
+    - dimension_id: narrative_coherence
+      description: "P2a: Arc sections flow logically; recommended_order followed; no arc breaks present."
+      weight: 0.08
+      grader_type: llm_as_judge
+      min_required_score: 0.70
+      evidence_required: true
+      fail_closed_if_unknown: false
+      informational_only: false
+    - dimension_id: tone_register_fit
+      description: "P2b: Vocabulary and formality level match the archetype calibration (if provided)."
+      weight: 0.08
+      grader_type: llm_as_judge
+      min_required_score: 0.75
+      evidence_required: true
+      fail_closed_if_unknown: false
+      informational_only: false
+    - dimension_id: differentiator_grounded
+      description: "P2c: Any competitive differentiator claim is backed by source_refs and uses structured claim format."
+      weight: 0.05
+      grader_type: state_check
+      min_required_score: 1.0
+      evidence_required: true
+      fail_closed_if_unknown: true

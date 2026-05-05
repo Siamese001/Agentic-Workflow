@@ -166,6 +166,10 @@ def _build_cert_receipts(request_id: str, capability: dict) -> dict:
             "route_family": capability.get("route_family", "R3R4_MANAGED_WORKFLOW"),
         },
         "request_id": request_id,
+        # P1.3 / DS-DEFER-4: enables AppSpecificEvaluator retry-on-low for
+        # rationale_quality dim when grader_type=llm_as_judge and raw_score <
+        # min_required_score. See apps-eval-harness-deferred-e4a1b7 W4.
+        "judge_retry_on_low": True,
     }
     return {
         "output": {"dim_scores": {}, "dim_evidence": {}},

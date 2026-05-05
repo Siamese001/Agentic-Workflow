@@ -76,13 +76,46 @@ def _hash_file_content(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:32]
 
 
+def _prompt_jd_interactive() -> str:
+    """Prompt the operator for a job description path via stdin.
+
+    Returns the entered path string (stripped).  Callers must check whether
+    the returned path resolves to an existing file.
+
+    Raises
+    ------
+    SystemExit
+        If stdin is not a TTY (non-interactive context) and no path was
+        supplied via ``--jd``.  Use ``--non-interactive`` to turn this into
+        a hard error instead of an interactive prompt.
+    """
+    import sys as _sys
+
+    if not _sys.stdin.isatty():
+        raise SystemExit(
+            "apps_rg: --jd is required in non-interactive mode "
+            "(stdin is not a TTY). Pass --jd <path> or --non-interactive to "
+            "get a clear error instead of hanging."
+        )
+    return input("Enter path to job-description JSON [apps_rg/scripts/job_description.json]: ").strip()
+
+
 def _build_raw_request(args) -> dict[str, Any]:
     """Build the raw_request envelope from parsed CLI args.
 
     This dict is the contract surface between apps_rg and the R4 pipeline.
     It contains only transport-level data — no executable code.
     """
-    jd_path = Path(getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
+    non_interactive: bool = getattr(args, "non_interactive", False)
+    jd_arg: str = getattr(args, "jd", "") or ""
+    if not jd_arg and not non_interactive:
+        try:
+            jd_arg = _prompt_jd_interactive()
+        except SystemExit:
+            jd_arg = ""
+    elif not jd_arg and non_interactive:
+        pass  # fall through to default path; empty jd_payload is valid
+    jd_path = Path(jd_arg or "apps_rg/scripts/job_description.json")
     brief_path = Path(getattr(args, "manual_brief", "") or "apps_rg/scripts/company_research.json")
     candidate_path = (
         Path(args.candidate) if getattr(args, "candidate", None) else Path("apps_rg/scripts/candidate_profile.yaml")
@@ -95,7 +128,7 @@ def _build_raw_request(args) -> dict[str, Any]:
         except (json.JSONDecodeError, OSError):
             pass
 
-    return {
+    raw = {
         "transport": "api",
         "method": "POST",
         "content_type": "application/json",
@@ -106,7 +139,7 @@ def _build_raw_request(args) -> dict[str, Any]:
         "user_id": "u-apps_rg",
         "target_company": args.target_company or "",
         "target_role": args.target_role or "",
-        "jd_payload": jd_payload,
+        "jd_payload": jd_payload,  # DS-R7: must be dict; consumed by L1_cognition
         "jd_hash": _hash_file_content(jd_path),
         "brief_hash": _hash_file_content(brief_path),
         "resume_hash": _hash_file_content(candidate_path),
@@ -117,6 +150,10 @@ def _build_raw_request(args) -> dict[str, Any]:
         "auto_research_internal": getattr(args, "auto_research_internal", False),
         "auto_research_tavily": getattr(args, "auto_research_tavily", False),
     }
+    assert isinstance(raw["jd_payload"], dict), (
+        f"apps_rg: jd_payload must be a dict, got {type(raw['jd_payload']).__name__}"
+    )
+    return raw
 
 
 # ---------------------------------------------------------------------------
@@ -302,6 +339,12 @@ def main() -> None:
     parser.add_argument("--candidate", default=None, help="Candidate profile path")
     parser.add_argument("--target-level", default=None)
     parser.add_argument("--jd", default=None, help="Job description JSON path")
+    parser.add_argument(
+        "--non-interactive",
+        action="store_true",
+        default=False,
+        help="Disable interactive TTY prompts; error immediately if required inputs are absent",
+    )
     args, _unknown = parser.parse_known_args()
 
     if not args.target_company:

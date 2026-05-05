@@ -21,6 +21,10 @@
     brand_voice: 0.0
     no_fake_personalization: 0.99
     no_sensitive_targeting: 0.99
+  # P2 Dimensions (added W1.P2)
+    narrative_coherence: 0.70
+    tone_register_fit: 0.75
+    differentiator_grounded: 1.0
   # W4.P3 (plan apps-eval-harness-parity-f8d4a2): dims listed here keep
   # min=0.0 deliberately — they remain in the weighted overall score but
   # are NOT gated per-dim. CI gate check_app_domain_harness_parity.py

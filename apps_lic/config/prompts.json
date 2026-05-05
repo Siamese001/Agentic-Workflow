@@ -1,5 +1,11 @@
 {
   "profile_analysis_reasoning": {
     "template": "You are an expert recruiter. Analyze this title: '{title}'.\n\nContext:\n- Keywords found: {keywords}\n- Heuristic Class: {heuristic_class} (Confidence: {heuristic_confidence})\n\nTask:\nDetermine if this title warrants a higher seniority classification.\nValid Archetypes: C_LEVEL, EXECUTIVE, SENIOR_TA, RECRUITER.\n\nReturn JSON: {\"archetype\": \"...\", \"confidence\": 0.0-1.0, \"reasoning\": \"...\"}"
+  },
+  "judge_narrative_coherence": {
+    "template": "You are an expert in message structure and narrative flow.\n\nEvaluate this outreach message for narrative coherence.\n\nMessage:\n{message_body}\n\nExpected Arc Structure:\n{recommended_order}\n\nArc Coherence Score from Engine: {arc_coherence_score}\nArc Breaks Detected: {arc_breaks}\n\nTask:\nScore the message on narrative coherence (0.0-1.0).\n\nScoring Guide:\n- 0.90-1.00: Sections flow logically, recommended order followed, no arc breaks\n- 0.70-0.89: Minor flow issues or slight deviation from recommended order\n- 0.50-0.69: Noticeable arc breaks or poor section ordering\n- 0.00-0.49: Severe structural problems, breaks in narrative flow\n\nReturn JSON: {\"score\": 0.0-1.0, \"confidence\": 0.0-1.0, \"reasoning\": \"...\"}"
+  },
+  "judge_tone_register_fit": {
+    "template": "You are an expert in tone calibration and stylistic matching.\n\nEvaluate this outreach message for tone-register fit to the archetype.\n\nMessage:\n{message_body}\n\nArchetype Calibration:\n- Archetype ID: {archetype_id}\n- Preferred Vocabulary: {vocabulary_preferred}\n- Suppressed Vocabulary: {vocabulary_suppressed}\n- Formality Level: {formality_level}\n\nTask:\nScore the message on tone-register fit (0.0-1.0).\n\nScoring Guide:\n- 0.90-1.00: Vocabulary matches archetype, formality appropriate, no suppressed terms\n- 0.75-0.89: Minor vocabulary mismatches or slightly off formality\n- 0.50-0.74: Noticeable tone-vocabulary conflicts with archetype\n- 0.00-0.49: Severe mismatch, wrong vocabulary register, multiple suppressed terms\n\nReturn JSON: {\"score\": 0.0-1.0, \"confidence\": 0.0-1.0, \"reasoning\": \"...\"}"
   }
 }
