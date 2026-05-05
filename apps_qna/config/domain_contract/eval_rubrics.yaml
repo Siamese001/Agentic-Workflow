@@ -77,3 +77,6 @@
     fail_closed_if_unknown: false
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'
+  # Frozen holdout salt — changing this reassigns all slugs to different partitions.
+  # Any change requires CI alert and human approval (corpus-reassignment risk).
+  holdout_salt: "a3f7e9d2c8b1a6f5d4e3c2b1a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1"
