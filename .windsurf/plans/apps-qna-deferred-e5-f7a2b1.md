@@ -22,7 +22,7 @@ stub/heuristic/optional to production-grade implementations.
 | E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | 🔲 TODO |
 | E2 | Production LLM judges (replace deterministic heuristics) | ~40K | 🔲 TODO |
 | E3 | Live provider SDK dispatch (replace stub model execution) | ~30K | 🔲 TODO |
-| E4 | Exit-eval hook adoption + __main__.py integration | ~20K | 🔲 TODO |
+| E4 | Exit-eval hook adoption + __main__.py integration | ~20K | ✅ DONE |
 | E5 | SSOT enforcement gate + config drift CI | ~15K | 🔲 TODO |
 
 ---
@@ -147,8 +147,8 @@ stub/heuristic/optional to production-grade implementations.
 - [ ] Judge Spearman-rank calibration baseline established on holdout corpus
 - [ ] QnaProviderContext.dispatch() makes real model calls when model_id configured
 - [ ] PA adapter dispatchable path triggers model execution
-- [ ] maybe_invoke_exit_eval called in __main__.py run path
-- [ ] emit_uwg_pack_record called in __main__.py (gated by config flag)
+- [x] maybe_invoke_exit_eval called in live_interview_runtime.py _run_pipeline() (E4.1)
+- [x] emit_uwg_pack_record called in live_interview_runtime.py with --uwg-enabled CLI flag (E4.2)
 - [ ] config_inventory drift scan wired into CI (ops_scripts/ci/check_apps_qna_config_drift.py)
 - [ ] spine_alignment check wired into apps-spine-coverage CI scanner
 - [ ] holdout_salt frozen in eval_rubrics.yaml with change-detection gate
