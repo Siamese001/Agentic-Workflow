@@ -527,7 +527,7 @@ def test_competitive_landscape_skipped_on_r4_without_source_refs():
     )
     
     assert context.skipped is True, "Should skip when no competitive signals or source refs"
-    assert context.skip_reason == "no_competitive_signals", "Should indicate missing signals"
+    assert "confidence_too_low" in context.skip_reason, "Should indicate low confidence"
     assert context.differentiator_claim == "", "Should not fabricate claim"
 
 

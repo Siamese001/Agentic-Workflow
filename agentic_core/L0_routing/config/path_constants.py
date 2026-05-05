@@ -90,7 +90,7 @@ APPS_PACKAGES: Final[list[str]] = [
     "apps_lic",
     "apps_rg",
     "apps_eval",
-    "apps_exec",
+    # apps_exec REMOVED W5 P5.3 — archived to archives/apps_exec_20260505/
     "apps_repo_brief",
     "apps_research",
     "apps_rfp",
@@ -131,8 +131,11 @@ def get_validated_project_root() -> Path:
 AGENTIC_CORE_DIR: Final[str] = "agentic_core"
 INFRASTRUCTURE_DIR: Final[str] = "infrastructure"
 APPS_EVAL_DIR: Final[str] = "apps_eval"
-APPS_EXEC_DIR: Final[str] = "apps_exec"
-APPS_REPO_BRIEF_DIR: Final[str] = "apps_repo_brief"  # W1: additive; replaces APPS_EXEC_DIR in W5
+# W5 P5.3 — DEPRECATED: APPS_EXEC_DIR retired. Package archived to archives/apps_exec_20260505/.
+# Kept for one-release grace period to avoid AttributeError in any cached bytecode.
+# Remove in next cleanup cycle.
+APPS_EXEC_DIR: Final[str] = "apps_exec"  # DEPRECATED W5 P5.3
+APPS_REPO_BRIEF_DIR: Final[str] = "apps_repo_brief"  # Canonical — replaced APPS_EXEC_DIR
 APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RFP_DIR: Final[str] = "apps_rfp"
@@ -515,20 +518,10 @@ APPS_EVAL_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "validators": [],
 }
 
-APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "config": [],
-    "engines": [],
-    "enforcement": [],
-    "reasoning": [],
-    "scripts": [],
-    "tools": [],
-    "types": [],
-    "utils": [],
-    "validators": [],
-}
+# W5 P5.3 — DEPRECATED: APPS_EXEC_SUBFOLDER_MAP retired alongside APPS_EXEC_DIR.
+APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {}  # DEPRECATED W5 P5.3
 
-# W1: additive — APPS_REPO_BRIEF_SUBFOLDER_MAP mirrors APPS_EXEC_SUBFOLDER_MAP.
-# APPS_EXEC_SUBFOLDER_MAP retired in W5 once zero-hard-refs gate passes.
+# W5: APPS_REPO_BRIEF_SUBFOLDER_MAP is now the canonical map (APPS_EXEC retired).
 APPS_REPO_BRIEF_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "cert": [],
     "config": [],
@@ -707,8 +700,7 @@ __all__ = [
     "ALLOWED_DUPLICATE_FILENAMES",
     "APPS_EVAL_DIR",
     "APPS_EVAL_SUBFOLDER_MAP",
-    "APPS_EXEC_DIR",
-    "APPS_EXEC_SUBFOLDER_MAP",
+    # APPS_EXEC_DIR and APPS_EXEC_SUBFOLDER_MAP removed from __all__ W5 P5.3
     "APPS_REPO_BRIEF_DIR",
     "APPS_REPO_BRIEF_SUBFOLDER_MAP",
     "APPS_LIC_DIR",

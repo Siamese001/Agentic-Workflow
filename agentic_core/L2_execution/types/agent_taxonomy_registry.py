@@ -31,6 +31,7 @@ class AgentStatus(Enum):
     SHIM = "shim"
     PLANNED = "planned"
     OBSOLETE = "obsolete"
+    ARCHIVED = "archived"  # W5 P5.4: package moved to archives/
 
 
 @dataclass(frozen=True, slots=True)
@@ -789,72 +790,71 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="Test scenario generation execution agent. WAVE 6: Now L2 contract compliant.",
     ),
     # ============================================
-    # APPS_REPO_BRIEF: Canonical rename of apps_exec (W1 additive dual-entry).
-    # apps_exec entries below are SHIM until W5 zero-hard-refs gate passes.
+    # APPS_REPO_BRIEF: Canonical successor to apps_exec (W5 P5.4 — shim retired).
     # ============================================
     "RepoBriefOrchestrator": AgentClassification(
         file_path="apps_repo_brief/reasoning/__init__.py",
         class_name="ExecOrchestrator",
         current_layer="L3",
         canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.SHIM,
-        is_shim=True,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
         implements_l2_contract=True,
-        notes="W1 shim: re-exports ExecOrchestrator under apps_repo_brief namespace. Full replacement in W3.",
+        notes="W5 P5.4: Canonical apps_repo_brief orchestrator. apps_exec shim archived.",
     ),
-    # APPS_EXEC: Additional Orchestrator Agents
+    # ============================================
+    # APPS_EXEC: ARCHIVED W5 P5.4 — package moved to archives/apps_exec_20260505/
+    # Rows retained for audit trail only (status=ARCHIVED).
+    # ============================================
     "ExecOrchestrator": AgentClassification(
-        file_path="apps_exec/reasoning/ExecOrchestrator.py",
+        file_path="archives/apps_exec_20260505/reasoning/ExecOrchestrator.py",
         class_name="ExecOrchestrator",
         current_layer="L3",
         canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.ACTIVE,
+        status=AgentStatus.ARCHIVED,
         is_shim=False,
-        implements_l2_contract=True,
-        notes="Executive briefing orchestrator agent. L2 contract compliant.",
+        implements_l2_contract=False,
+        notes="ARCHIVED W5 P5.4. Replaced by RepoBriefOrchestrator in apps_repo_brief.",
     ),
     "EnterpriseBriefOrchestrator": AgentClassification(
-        file_path="apps_exec/reasoning/enterprise_brief_orchestrator.py",
+        file_path="archives/apps_exec_20260505/reasoning/enterprise_brief_orchestrator.py",
         class_name="EnterpriseBriefOrchestrator",
         current_layer="L3",
         canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.ACTIVE,
+        status=AgentStatus.ARCHIVED,
         is_shim=False,
-        implements_l2_contract=True,
-        notes="Enterprise brief orchestrator agent. L2 contract compliant.",
+        implements_l2_contract=False,
+        notes="ARCHIVED W5 P5.4.",
     ),
-    # ============================================
-    # APPS_EXEC: EXECUTIVE BRIEFING AGENTS
-    # ============================================
     "BriefAssemblyAgent": AgentClassification(
-        file_path="apps_exec/reasoning/BriefAssemblyAgent.py",
+        file_path="archives/apps_exec_20260505/reasoning/BriefAssemblyAgent.py",
         class_name="BriefAssemblyAgent",
         current_layer="L2",
         canonical_role=CanonicalAgentRole.EXECUTION,
-        status=AgentStatus.ACTIVE,
+        status=AgentStatus.ARCHIVED,
         is_shim=False,
-        implements_l2_contract=True,
-        notes="Executive brief assembly execution agent. WAVE 6: Now L2 contract compliant.",
+        implements_l2_contract=False,
+        notes="ARCHIVED W5 P5.4.",
     ),
     "SourceIngestionAgent": AgentClassification(
-        file_path="apps_exec/reasoning/SourceIngestionAgent.py",
+        file_path="archives/apps_exec_20260505/reasoning/SourceIngestionAgent.py",
         class_name="SourceIngestionAgent",
         current_layer="L2",
         canonical_role=CanonicalAgentRole.EXECUTION,
-        status=AgentStatus.ACTIVE,
+        status=AgentStatus.ARCHIVED,
         is_shim=False,
-        implements_l2_contract=True,
-        notes="Source ingestion execution agent. WAVE 6: Now L2 contract compliant.",
+        implements_l2_contract=False,
+        notes="ARCHIVED W5 P5.4.",
     ),
     "StyleComplianceAgent": AgentClassification(
-        file_path="apps_exec/reasoning/StyleComplianceAgent.py",
+        file_path="archives/apps_exec_20260505/reasoning/StyleComplianceAgent.py",
         class_name="StyleComplianceAgent",
         current_layer="L5",
         canonical_role=CanonicalAgentRole.SAFETY,
-        status=AgentStatus.ACTIVE,
+        status=AgentStatus.ARCHIVED,
         is_shim=False,
-        implements_l2_contract=True,
-        notes="Style compliance safety agent (L5). WAVE 8: Now L2 contract compliant.",
+        implements_l2_contract=False,
+        notes="ARCHIVED W5 P5.4. Style authority moved to L2.E4 repair + Exit gate (W4 P4.3/P4.4).",
     ),
     # ============================================
     # L5 SAFETY AGENTS (Key Agents)

@@ -1,13 +1,12 @@
 """
 Observability Adapter — apps_repo_brief.
 
-Dual-span OTEL emission: emits spans under BOTH the legacy
-apps_exec.* namespace (for continuity during W1-W4 transition) and
-the canonical apps_repo_brief.* namespace.
+Emits spans under the canonical apps_repo_brief.* namespace only.
 
-During W5 the apps_exec.* spans are retired.
+W5 P5.7: Legacy apps_exec.* dual-span emission retired. The W1-W4
+transition window is complete; apps_exec package archived.
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.6
+Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P5.7
 """
 
 from __future__ import annotations
@@ -27,9 +26,8 @@ class RepoBriefObservabilityAdapter:
     """
     OTEL observability adapter for apps_repo_brief.
 
-    Emits spans under apps_repo_brief.* (canonical) and apps_exec.*
-    (legacy compatibility) simultaneously during the W1-W4 transition.
-    The legacy namespace is removed in W5.
+    Emits spans under apps_repo_brief.* (canonical namespace only).
+    W5 P5.7: Legacy apps_exec.* dual-span retired.
     """
 
     def __init__(self, config: dict[str, Any] | None = None) -> None:
@@ -37,25 +35,23 @@ class RepoBriefObservabilityAdapter:
         self._metrics: list[dict[str, Any]] = []
 
     def emit_brief_start(self, request: Any) -> dict[str, Any]:
-        """Emit brief generation start — dual span."""
-        base = {
+        """Emit brief generation start."""
+        canonical = {
+            "event_type": "apps_repo_brief.brief_start",
             "trace_id": getattr(request, "trace_id", None),
             "audience": getattr(request, "audience", None),
             "emphasis_areas": getattr(request, "emphasis_areas", []),
             "dry_run": getattr(request, "dry_run", False),
             "timestamp": _now_iso(),
         }
-        # Canonical span
-        canonical = {**base, "event_type": "apps_repo_brief.brief_start"}
-        # Legacy span — retained through W4 for continuity with existing dashboards
-        legacy = {**base, "event_type": "apps_exec.brief_start", "_legacy": True}
-        self._metrics.extend([canonical, legacy])
-        _log.debug("emit_brief_start: canonical + legacy spans emitted")
+        self._metrics.append(canonical)
+        _log.debug("emit_brief_start: canonical span emitted")
         return canonical
 
     def emit_brief_complete(self, result: Any) -> dict[str, Any]:
-        """Emit brief generation complete — dual span."""
-        base = {
+        """Emit brief generation complete."""
+        canonical = {
+            "event_type": "apps_repo_brief.brief_complete",
             "trace_id": getattr(result, "trace_id", None),
             "audience": getattr(result, "audience", None),
             "status": getattr(result, "status", None),
@@ -63,9 +59,7 @@ class RepoBriefObservabilityAdapter:
             "gate_passed": getattr(result, "passed_gate", None),
             "timestamp": _now_iso(),
         }
-        canonical = {**base, "event_type": "apps_repo_brief.brief_complete"}
-        legacy = {**base, "event_type": "apps_exec.brief_complete", "_legacy": True}
-        self._metrics.extend([canonical, legacy])
+        self._metrics.append(canonical)
         return canonical
 
     def emit_evidence_gate(
@@ -88,17 +82,16 @@ class RepoBriefObservabilityAdapter:
         return event
 
     def get_metrics(self) -> list[dict[str, Any]]:
-        """Return all emitted metrics (canonical + legacy)."""
+        """Return all emitted metrics (canonical apps_repo_brief.* only)."""
         return self._metrics.copy()
 
     def get_canonical_metrics(self) -> list[dict[str, Any]]:
-        """Return only canonical apps_repo_brief.* spans."""
-        return [m for m in self._metrics if not m.get("_legacy")]
+        """Return canonical apps_repo_brief.* spans (alias for get_metrics — no legacy spans exist)."""
+        return self._metrics.copy()
 
 
 # ----------------------------------------------------------------------
-# OTEL coverage — module-load emit (matches apps_exec pattern).
-# Dual span: apps_repo_brief (canonical) + apps_exec (legacy W1-W4).
+# OTEL coverage — module-load emit (canonical only; legacy retired W5 P5.7).
 # ----------------------------------------------------------------------
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E402
     _emit_records_telemetry_event,
@@ -108,9 +101,4 @@ _emit_records_telemetry_event(
     "p4",
     "apps_repo_brief.integrations.observability_adapter",
     "module_loaded",
-)
-_emit_records_telemetry_event(
-    "p4",
-    "apps_exec.integrations.observability_adapter",
-    "module_loaded_legacy_alias",
 )

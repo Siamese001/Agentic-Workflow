@@ -2886,10 +2886,10 @@ def run_exec_pilot_proof() -> bool:
 
     Returns True if all checks pass.
     """
-    from apps_exec.integrations.governed_exec_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_exec lazy import; dual-app proof exercises full E2E governed path
+    from apps_repo_brief.integrations.governed_exec_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_repo_brief lazy import; W5 P5.5: apps_exec archived, canonical package used
         GovernedExecRun,
     )
-    from apps_exec.types.exec_types import ExecBriefRequest
+    from apps_repo_brief.types.exec_types import ExecBriefRequest
     from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
         HybridSearchResult,
     )

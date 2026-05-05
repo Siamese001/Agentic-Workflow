@@ -4,7 +4,7 @@ plan_type: audit
 
 # Author-Gate Canonical Emitter RCA & Procedural Fix
 
-> **Status:** In Progress · **Tier:** T1 · **Slug:** `author-gate-canonical-emitter-rca-c7f9d1`
+> **Status:** Completed · **Tier:** T1 · **Slug:** `author-gate-canonical-emitter-rca-c7f9d1`
 > **Triggered by:** W3 P3.1 + P3.2 Author-Gate invocations missing confidence prefix, tradeoff segment, and dominance star.
 
 ---
@@ -47,7 +47,7 @@ post-hoc — the user saw the degraded UI before the audit ran.
 ### 3.1 Immediate (this session)
 
 - [x] RCA filed (this document)
-- [ ] Re-run P3.1 and P3.2 Author-Gate decisions through the canonical pipeline:
+- [x] Re-run P3.1 and P3.2 Author-Gate decisions through the canonical pipeline:
   1. `skill: refactor-decision-memory` — consult precedent ledger
   2. `skill: author-gate-packet-builder` — build JSON spec, run `emit_packet.py`
   3. `skill: author-gate-ui-renderer` — render recommendation card
@@ -78,8 +78,8 @@ P-band: P3. Assign to: post_cascade_author_gate_ui_audit.py extension.
 
 | Wave | Focus | Status |
 |------|-------|--------|
-| W1 | RCA + plan saved to Notion | In Progress |
-| W2 | Re-run P3.1 + P3.2 via canonical pipeline | Pending |
+| W1 | RCA + plan saved to Notion | Done |
+| W2 | Re-run P3.1 + P3.2 via canonical pipeline | Done |
 
 ---
 
@@ -88,9 +88,9 @@ P-band: P3. Assign to: post_cascade_author_gate_ui_audit.py extension.
 | Phase | Title | Scope | Est. Tokens | Status |
 |-------|-------|-------|-------------|--------|
 | W1.P1 | RCA document | This file | 1k | Done |
-| W1.P2 | Notion plan registration | Notion Plans DB | 0.5k | Pending |
-| W2.P1 | Re-run P3.1 via canonical pipeline | emit_packet.py + ask_user_question | 1k | Pending |
-| W2.P2 | Re-run P3.2 via canonical pipeline | emit_packet.py + ask_user_question | 1k | Pending |
+| W1.P2 | Notion plan registration | Notion Plans DB | 0.5k | Done |
+| W2.P1 | Re-run P3.1 via canonical pipeline | emit_packet.py + ask_user_question | 1k | Done |
+| W2.P2 | Re-run P3.2 via canonical pipeline | emit_packet.py + ask_user_question | 1k | Done |
 
 ---
 

@@ -587,78 +587,24 @@ def _scenario_clean_module() -> tuple[ScenarioOutcome, float, str]:
 
 
 def _scenario_exec_recruiter_brief() -> tuple[ScenarioOutcome, float, str]:
-    try:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        req = ExecBriefRequest(audience="recruiter", source_dirs=[], dry_run=True)
-        import asyncio as _asyncio
-        orch = ExecOrchestrator(dry_run=True)
-        _maybe = orch.run(req)
-        result = _asyncio.run(_maybe) if _asyncio.iscoroutine(_maybe) else _maybe
-        if str(result.status) in ("dry_run", "complete"):
-            return (
-                "PASS",
-                1.0,
-                f"Recruiter brief: status={str(result.status)}",
-            )  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.0, f"Unexpected status: {str(result.status)}"
-    except ImportError as e:  # review: Test exceptions should use proper test assertions
-        return "SKIP", _SKIP_SCORE, f"apps_exec not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:
-        return "FAIL", 0.0, str(exc)
+    # W5 P5.5: apps_exec archived — scenario retired. Use repo_brief variant instead.
+    return "SKIP", _SKIP_SCORE, "apps_exec archived W5 P5.6; use _scenario_repo_brief_recruiter"
 
 
 def _scenario_exec_cto_brief() -> tuple[ScenarioOutcome, float, str]:
-    try:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        req = ExecBriefRequest(audience="cto", source_dirs=[], dry_run=True)
-        import asyncio as _asyncio
-        orch = ExecOrchestrator(dry_run=True)
-        _maybe = orch.run(req)
-        result = _asyncio.run(_maybe) if _asyncio.iscoroutine(_maybe) else _maybe
-        if str(result.status) in ("dry_run", "complete"):
-            return (
-                "PASS",
-                1.0,
-                f"CTO brief: status={str(result.status)}",
-            )  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.0, f"Unexpected status: {str(result.status)}"
-    except ImportError as e:  # review: Test exceptions should use proper test assertions
-        return "SKIP", _SKIP_SCORE, f"apps_exec not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:
-        return "FAIL", 0.0, str(exc)
+    # W5 P5.5: apps_exec archived — scenario retired. Use repo_brief variant instead.
+    return "SKIP", _SKIP_SCORE, "apps_exec archived W5 P5.6; use _scenario_repo_brief_cto"
 
 
 def _scenario_exec_dry_run() -> tuple[ScenarioOutcome, float, str]:
-    try:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
-
-        req = ExecBriefRequest(audience="board", source_dirs=[], dry_run=True)
-        import asyncio as _asyncio
-        orch = ExecOrchestrator(dry_run=True)
-        _maybe = orch.run(req)
-        result = _asyncio.run(_maybe) if _asyncio.iscoroutine(_maybe) else _maybe
-        if str(result.status) == "dry_run" and len(result.artifact_paths) == 0:
-            return (
-                "PASS",
-                1.0,
-                "Dry run: no artifacts emitted",
-            )  # review: Test exceptions should use proper test assertions
-        return "FAIL", 0.0, f"status={str(result.status)} artifacts={result.artifact_paths}"
-    except ImportError as e:  # review: Test exceptions should use proper test assertions
-        return "SKIP", _SKIP_SCORE, f"apps_exec not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:
-        return "FAIL", 0.0, str(exc)
+    # W5 P5.5: apps_exec archived — scenario retired. Use repo_brief variant instead.
+    return "SKIP", _SKIP_SCORE, "apps_exec archived W5 P5.6; use _scenario_repo_brief_dry_run"
 
 
 def _scenario_repo_brief_recruiter() -> tuple[ScenarioOutcome, float, str]:
     try:
         from apps_repo_brief.reasoning import ExecOrchestrator
-        from apps_exec.types.exec_types import ExecBriefRequest
+        from apps_repo_brief.types.exec_types import ExecBriefRequest
 
         import asyncio as _asyncio
 
@@ -677,7 +623,7 @@ def _scenario_repo_brief_recruiter() -> tuple[ScenarioOutcome, float, str]:
 def _scenario_repo_brief_cto() -> tuple[ScenarioOutcome, float, str]:
     try:
         from apps_repo_brief.reasoning import ExecOrchestrator
-        from apps_exec.types.exec_types import ExecBriefRequest
+        from apps_repo_brief.types.exec_types import ExecBriefRequest
 
         import asyncio as _asyncio
 
@@ -696,7 +642,7 @@ def _scenario_repo_brief_cto() -> tuple[ScenarioOutcome, float, str]:
 def _scenario_repo_brief_dry_run() -> tuple[ScenarioOutcome, float, str]:
     try:
         from apps_repo_brief.reasoning import ExecOrchestrator
-        from apps_exec.types.exec_types import BriefStatus, ExecBriefRequest
+        from apps_repo_brief.types.exec_types import BriefStatus, ExecBriefRequest
 
         import asyncio as _asyncio
 
