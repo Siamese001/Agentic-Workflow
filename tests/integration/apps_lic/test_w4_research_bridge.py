@@ -309,11 +309,11 @@ class TestW4ResearchC0AdapterIntegration:
     def test_research_exit_fec_producer_exists(self):
         """Verify apps_research exit FEC producer exists."""
         from apps_research.integrations.research_exit_fec_producer import (
-            assemble_fec,
+            produce_fec,
             ResearchFinalEvidenceContract,
         )
         
-        assert callable(assemble_fec)
+        assert callable(produce_fec)
         assert ResearchFinalEvidenceContract is not None
 
 
