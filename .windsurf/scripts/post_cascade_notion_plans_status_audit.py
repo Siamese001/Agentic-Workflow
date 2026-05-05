@@ -29,11 +29,23 @@ import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 fail_policy = "open"
+
+_NOTION_API = "https://api.notion.com/v1"
+_NOTION_VERSION = "2022-06-28"
+_TIMEOUT = 15.0
+
+# Regex to extract a Slug/title value from an invoke body.
+_SLUG_RE = re.compile(
+    r'["\'](?:Slug|title)["\']\s*:\s*\{[^}]*["\']content["\']\s*:\s*["\']([^"\'\']+)["\']',
+    re.DOTALL,
+)
 
 repo_root = Path(__file__).resolve().parents[2]
 violations_log = (
@@ -101,6 +113,81 @@ def _is_plans_id(candidate: str) -> bool:
     }
 
 
+def _notion_token() -> str:
+    return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY") or ""
+
+
+def _notion_headers() -> dict[str, str]:
+    return {
+        "Authorization": f"Bearer {_notion_token()}",
+        "Content-Type": "application/json",
+        "Notion-Version": _NOTION_VERSION,
+    }
+
+
+def _find_page_id_by_slug(slug: str) -> str:
+    """Query Plans DB for a page with the given slug. Returns page_id or ''."""
+    tok = _notion_token()
+    if not tok:
+        return ""
+    url = f"{_NOTION_API}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
+    body = json.dumps({
+        "filter": {"property": "Slug", "title": {"equals": slug}},
+        "page_size": 1,
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=body, method="POST", headers=_notion_headers())
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        results = data.get("results", [])
+        return results[0]["id"] if results else ""
+    except Exception:  # guardian: allow-broad -- auto-patch non-fatal
+        return ""
+
+
+def _patch_status(page_id: str, canonical_status: str) -> bool:
+    """PATCH a Plans DB page to the canonical status. Returns True on success."""
+    tok = _notion_token()
+    if not tok or not page_id:
+        return False
+    url = f"{_NOTION_API}/pages/{page_id}"
+    body = json.dumps({
+        "properties": {"Status": {"select": {"name": canonical_status}}}
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=body, method="PATCH", headers=_notion_headers())
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+            return resp.status < 300
+    except Exception:  # guardian: allow-broad -- auto-patch non-fatal
+        return False
+
+
+def _auto_patch_violation(violation: dict[str, Any], invoke_body: str) -> dict[str, Any]:
+    """Attempt to self-heal a stale-status violation. Returns patch result metadata."""
+    canonical = violation.get("suggested", "")
+    if not canonical:
+        return {"auto_patch": "skipped", "reason": "no_suggested_canonical"}
+
+    slug_match = _SLUG_RE.search(invoke_body)
+    if not slug_match:
+        return {"auto_patch": "skipped", "reason": "slug_not_found_in_body"}
+
+    slug = slug_match.group(1).strip()
+    page_id = _find_page_id_by_slug(slug)
+    if not page_id:
+        return {"auto_patch": "skipped", "reason": f"page_not_found_for_slug:{slug}"}
+
+    ok = _patch_status(page_id, canonical)
+    if ok:
+        print(
+            f"[notion_plans_status_audit] AUTO-PATCHED slug={slug!r} "
+            f"{violation['offending_value']!r} → {canonical!r} (page_id={page_id})",
+            file=sys.stderr,
+        )
+        return {"auto_patch": "ok", "slug": slug, "page_id": page_id, "canonical": canonical}
+    return {"auto_patch": "failed", "slug": slug, "page_id": page_id}
+
+
 def detect_violations(response_text: str) -> list[dict[str, Any]]:
     """Scan response_text and return Plans-Status violations.
 
@@ -134,19 +221,20 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
             verdict = _decide(PLANS_DB_ID, "Status", value)
             if verdict is None:
                 continue
-            violations.append(
-                {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "severity": "error",
-                    "tool": tool_name,
-                    "invoke_index": invoke_idx,
-                    "offending_value": value,
-                    "suggested": verdict.suggested,
-                    "message": verdict.message,
-                    "rule": "constitutional.md, notion-plans-taxonomy.md",
-                    "plan": "notion-plans-status-enforcement-7a1e2d",
-                }
-            )
+            rec: dict[str, Any] = {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "severity": "error",
+                "tool": tool_name,
+                "invoke_index": invoke_idx,
+                "offending_value": value,
+                "suggested": verdict.suggested,
+                "message": verdict.message,
+                "rule": "constitutional.md, notion-plans-taxonomy.md",
+                "plan": "notion-plans-status-enforcement-7a1e2d",
+            }
+            patch_meta = _auto_patch_violation(rec, body)
+            rec["auto_patch_result"] = patch_meta
+            violations.append(rec)
 
     return violations
 
