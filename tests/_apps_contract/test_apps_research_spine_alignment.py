@@ -74,7 +74,7 @@ class TestRouteRegistryIds:
         data = _load_yaml(_CONFIG / "cert_route_registry.yaml")
         routes = data.get("routes", [])
         assert routes, "cert_route_registry.yaml has no routes"
-        assert routes[0]["route_id"] == "R3_SIMPLE_GROUNDED_READ"
+        assert routes[0]["route_id"] == "apps_research.company_brief_v1"
 
     def test_spine_manifest_route_type_r3(self):
         data = _load_yaml(_APPS_RESEARCH / "spine_manifest.yaml")
@@ -303,7 +303,7 @@ class TestNegativeControlsBaseline:
         """No RouteContract in run_context → FEC route_id falls back to default."""
         from apps_research.cert.fec_producer import produce_fec
         fec = produce_fec({})
-        assert fec["route_id"] == "R3_SIMPLE_GROUNDED_READ"
+        assert fec["route_id"] == "apps_research.company_brief_v1"
 
     def test_neg_r3_no_c0_evidence(self):
         """R3 selected but no retrieval sources → evidence_sufficiency != 'grounded'."""

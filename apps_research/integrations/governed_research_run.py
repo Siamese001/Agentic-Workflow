@@ -305,6 +305,10 @@ class GovernedResearchRun(GovernedAppRunner):
                         fec_context["jd_context"] = jd_context
             except (AttributeError, TypeError, KeyError):
                 pass
+            # Guarantee research_depth_profile is always present — fall back to
+            # the request field when the engine didn't attach _depth_profile.
+            if "research_depth_profile" not in fec_context:
+                fec_context["research_depth_profile"] = getattr(request, "depth_profile", "") or ""
             return {
                 "checkpoints": checkpoints,
                 "terminal_error": record.terminal_error,
