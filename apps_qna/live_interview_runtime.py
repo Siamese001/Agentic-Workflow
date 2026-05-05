@@ -57,7 +57,7 @@ def run_live_interview(argv: list[str]) -> int:
             briefing_path=briefing_path,
             dry_run=dry_run,
         )
-    except Exception:  # guardian: allow-log-and-swallow -- CLI entry point catches all pipeline failures to log and return clean exit code 1
+    except Exception:  # guardian: allow-broad-except -- CLI entry point catches all pipeline failures to log and return clean exit code 1
         _LOGGER.exception("Live interview pipeline failed")
         return 1
 
