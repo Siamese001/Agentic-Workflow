@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sqlite3
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -41,6 +42,9 @@ _BYPASS = os.getenv("RATIONALE_JUDGE_REPORT_BYPASS", "").strip() == "1"
 _HOLDOUT_PATH = REPO_ROOT / "apps_underwriting_ai" / "holdout" / "rationale_judge_holdout.yaml"
 _ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "calibration"
 _REPORTS_DIR = REPO_ROOT / "docs" / "reports" / "eval_harness" / "rationale_judge"
+_LEDGER_PATH = REPO_ROOT / "artifacts" / "ledgers" / "eval_harness_outcome.sqlite"
+_APP_ID = "apps_underwriting_ai"
+_LEDGER_LIMIT = 500
 
 
 def _iso_week(d: date | None = None) -> str:
@@ -74,6 +78,79 @@ def _spearman(x: list[float], y: list[float]) -> float:
     std_rx = (sum((r - mean_rx) ** 2 for r in rx) ** 0.5) or 1e-9
     std_ry = (sum((r - mean_ry) ** 2 for r in ry) ** 0.5) or 1e-9
     return cov / (std_rx * std_ry)
+
+
+def _query_ledger() -> dict[str, Any]:
+    """Read recent apps_underwriting_ai rows from eval_harness_outcome ledger.
+
+    Returns a dict with keys: ``available``, ``sample_size``, ``pass_rate``,
+    ``score_band_counts``, ``weekly_pass_rates`` (last 4 iso-weeks),
+    ``holdout_comparison`` (populated when Spearman data is present).
+    """
+    if not _LEDGER_PATH.exists():
+        return {"available": False, "reason": "ledger_not_found"}
+
+    try:
+        conn = sqlite3.connect(str(_LEDGER_PATH))
+    except sqlite3.Error as exc:
+        return {"available": False, "reason": str(exc)}
+
+    try:
+        rows = conn.execute(
+            """
+            SELECT score_band, score_numeric, ts_utc, prediction_json
+            FROM events
+            WHERE event_kind IN ('app_eval_bound', 'app_eval_unbound')
+              AND repo_area = ?
+            ORDER BY ts_utc DESC
+            LIMIT ?
+            """,
+            (_APP_ID, _LEDGER_LIMIT),
+        ).fetchall()
+    except sqlite3.Error as exc:
+        conn.close()
+        return {"available": False, "reason": str(exc)}
+    finally:
+        conn.close()
+
+    if not rows:
+        return {"available": True, "sample_size": 0, "pass_rate": None,
+                "score_band_counts": {}, "weekly_pass_rates": [],
+                "holdout_comparison": None}
+
+    band_counts: dict[str, int] = {}
+    week_pass: dict[str, list[int]] = {}
+    for band, score_num, ts_utc, pred_raw in rows:
+        band = band or "unknown"
+        band_counts[band] = band_counts.get(band, 0) + 1
+        iso_week = ""
+        if ts_utc:
+            try:
+                d = date.fromisoformat(ts_utc[:10])
+                iso_week = f"{d.isocalendar()[0]}-W{d.isocalendar()[1]:02d}"
+            except ValueError:
+                pass
+        if iso_week:
+            week_pass.setdefault(iso_week, []).append(1 if band == "pass" else 0)
+
+    total = sum(band_counts.values()) or 1
+    pass_rate = band_counts.get("pass", 0) / total
+
+    recent_weeks = sorted(week_pass)[-4:]
+    weekly_pass_rates = [
+        {"week": w, "pass_rate": round(sum(week_pass[w]) / len(week_pass[w]), 4),
+         "n": len(week_pass[w])}
+        for w in recent_weeks
+    ]
+
+    return {
+        "available": True,
+        "sample_size": len(rows),
+        "pass_rate": round(pass_rate, 4),
+        "score_band_counts": band_counts,
+        "weekly_pass_rates": weekly_pass_rates,
+        "holdout_comparison": None,
+    }
 
 
 def _load_holdout() -> list[dict[str, Any]]:
@@ -141,7 +218,12 @@ def _compute_calibration_stats(
     }
 
 
-def _write_markdown(stats: dict[str, Any], week: str, output_path: Path) -> None:
+def _write_markdown(
+    stats: dict[str, Any],
+    ledger: dict[str, Any],
+    week: str,
+    output_path: Path,
+) -> None:
     lines = [
         f"# Rationale Judge Weekly Calibration Report — {week}",
         "",
@@ -149,7 +231,7 @@ def _write_markdown(stats: dict[str, Any], week: str, output_path: Path) -> None
         f"**Holdout**: `apps_underwriting_ai/holdout/rationale_judge_holdout.yaml`  ",
         f"**Judge**: `RationaleQualityJudge v2` (IS_STUB=False, deterministic heuristic)",
         "",
-        "## Global Calibration",
+        "## Global Calibration (Holdout)",
         "",
     ]
 
@@ -164,7 +246,7 @@ def _write_markdown(stats: dict[str, Any], week: str, output_path: Path) -> None
         verdict = "✅ PASS" if global_pass else "❌ FAIL"
         lines += [
             f"| Metric | Value | Threshold | Verdict |",
-            f"|--------|-------|-----------|---------|",
+            f"|--------|-------|-----------|---------|"  ,
             f"| Global Spearman ρ | {global_rho:.3f} | ≥ 0.80 | {verdict} |",
             f"| Unknown rate | {unknown_rate:.1%} | — | — |",
             f"| Holdout examples | {n_total} | 100 | {'✅' if n_total >= 100 else '❌'} |",
@@ -172,23 +254,57 @@ def _write_markdown(stats: dict[str, Any], week: str, output_path: Path) -> None
             "## Per-Dimension Calibration",
             "",
             "| Dim | Spearman ρ | n | Threshold | Verdict |",
-            "|-----|-----------|---|-----------|---------|",
+            "|-----|-----------|---|-----------|---------|"  ,
         ]
         for dim, d in sorted(stats.get("per_dim", {}).items()):
             rho = d["spearman"]
             n = d["n"]
             v = "✅" if d["pass"] else "❌"
             lines.append(f"| {dim} | {rho:.3f} | {n} | ≥ 0.70 | {v} |")
+
+    lines += ["", "## Production Eval-Harness Outcomes (Last 4 Weeks)", ""]
+    if not ledger.get("available"):
+        reason = ledger.get("reason", "unavailable")
+        lines += [f"*Ledger not available: {reason}*", ""]
+    elif ledger.get("sample_size", 0) == 0:
+        lines += ["*No apps_underwriting_ai rows in eval_harness_outcome ledger yet.*", ""]
+    else:
+        pass_rate = ledger.get("pass_rate")
+        sample = ledger.get("sample_size", 0)
+        bands = ledger.get("score_band_counts", {})
         lines += [
-            "",
-            "## Notes",
-            "",
-            "- Calibration is based on the synthetic holdout dataset seeded in W1.",
-            "  Replace with human-labeled examples when available.",
-            "- The deterministic heuristic scorer targets Spearman ≥ 0.80 globally",
-            "  and ≥ 0.70 per-dim as a floor for promotion.",
-            "- Future work: full LLM judge with Spearman ≥ 0.85 (requires human labels).",
+            f"| Metric | Value |",
+            f"|--------|-------|"  ,
+            f"| Total eval rows | {sample} |",
+            f"| Pass rate | {pass_rate:.1%} |",
         ]
+        for band, cnt in sorted(bands.items()):
+            lines.append(f"| Band: {band} | {cnt} |")
+        lines.append("")
+        weekly = ledger.get("weekly_pass_rates", [])
+        if weekly:
+            lines += [
+                "### Pass Rate Trend",
+                "",
+                "| Week | Pass Rate | n |",
+                "|------|-----------|---|"  ,
+            ]
+            for entry in weekly:
+                lines.append(
+                    f"| {entry['week']} | {entry['pass_rate']:.1%} | {entry['n']} |"
+                )
+            lines.append("")
+
+    lines += [
+        "## Notes",
+        "",
+        "- Calibration is based on the synthetic holdout dataset seeded in W1.",
+        "  Replace with human-labeled examples when available (DS-R1).",
+        "- The deterministic heuristic scorer targets Spearman ≥ 0.80 globally",
+        "  and ≥ 0.70 per-dim as a floor for promotion.",
+        "- Future work: full LLM judge with Spearman ≥ 0.85 (DS-R2, requires human labels).",
+        "- `holdout_comparison` will be populated once DS-R2 LLM judge is active.",
+    ]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -206,13 +322,17 @@ def main(week: str | None = None) -> None:
     stats = _compute_calibration_stats(examples)
     stats["week"] = week
 
+    ledger = _query_ledger()
+    stats["ledger"] = ledger
+    stats["holdout_comparison"] = ledger.get("holdout_comparison")
+
     _ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
     json_path = _ARTIFACTS_DIR / f"rationale_judge_{week}.json"
     json_path.write_text(json.dumps(stats, indent=2), encoding="utf-8")
     print(f"JSON report: {json_path}")
 
     md_path = _REPORTS_DIR / f"{week}.md"
-    _write_markdown(stats, week, md_path)
+    _write_markdown(stats, ledger, week, md_path)
     print(f"Markdown report: {md_path}")
 
     if stats.get("status") == "ok":
@@ -226,6 +346,12 @@ def main(week: str | None = None) -> None:
                 f"global_pass={global_pass} per_dim_fails={per_dim_fails}",
                 file=sys.stderr,
             )
+    if ledger.get("available") and ledger.get("sample_size", 0) > 0:
+        print(
+            f"Ledger: {ledger['sample_size']} rows, pass_rate={ledger['pass_rate']:.1%}"
+        )
+    else:
+        print("Ledger: no data (ledger empty or not found — expected pre-production).")
 
 
 if __name__ == "__main__":

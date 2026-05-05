@@ -408,6 +408,25 @@ def main():
             "AEH1 apps_* eval-harness parity (advisory)",
             "ops_scripts/ci/check_app_domain_harness_parity.py",
         ),
+        # RJC1 — RationaleQualityJudge Spearman calibration gate.
+        # Verifies global Spearman >= 0.80 and per-dim >= 0.70 against the
+        # holdout dataset.  Advisory by default; flip fail-closed via
+        # RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1 once the LLM v3 judge (DS-R2)
+        # achieves Spearman >= 0.85.
+        # Plan: apps-underwriting-ai-rationale-judge-deferred-d4e7a2 W4.P4.1.
+        (
+            "RJC1 rationale judge calibration (advisory)",
+            "ops_scripts/ci/check_rationale_judge_calibration.py",
+        ),
+        # RJC2 — RationaleQualityJudge holdout/dev split integrity.
+        # Detects holdout decision_id values that also appear in dev fixtures.
+        # Advisory by default; flip fail-closed via
+        # EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=1.
+        # Plan: apps-underwriting-ai-rationale-judge-deferred-d4e7a2 W3.P3.1.
+        (
+            "RJC2 rationale judge holdout split (advisory)",
+            "ops_scripts/ci/check_eval_holdout_split.py",
+        ),
         # AEH2 — AgentSpec completeness across all apps_* domains.
         # Advisory by default; fail-closed via
         # AGENT_SPEC_COMPLETENESS_FAIL_CLOSED=1.
