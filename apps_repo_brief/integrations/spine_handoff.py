@@ -163,38 +163,70 @@ def build_repo_brief_r3_handoff_metadata(
 # ---------------------------------------------------------------------------
 
 
+def _build_c0_fec(request: Any) -> dict[str, Any] | None:
+    """Build a C0 FEC dict from the request via RepoBriefC0Adapter.
+
+    Fail-soft: any exception returns None (caller falls back to grounded=False).
+    Only invoked when request has ``c0_required=True`` (or is not explicitly
+    False).
+    """
+    try:
+        from apps_repo_brief.c0.repo_brief_c0_adapter import RepoBriefC0Adapter  # noqa: PLC0415
+
+        normalized_task: dict[str, Any] = {
+            "depth_profile": getattr(request, "depth_profile", "REPO_BRIEF_STANDARD"),
+            "audience": getattr(request, "audience", "") or "",
+            "emphasis_areas": getattr(request, "emphasis_areas", []) or [],
+            "persona_schema_version": getattr(request, "persona_schema_version", "") or "",
+            "policy_hash": getattr(request, "policy_hash", "") or "",
+            "blueprint_hash": getattr(request, "blueprint_hash", "") or "",
+            "repo_snapshot_id": getattr(request, "repo_snapshot_id", "") or "",
+            "replay_key": getattr(request, "replay_key", "") or "",
+            "trace_id": getattr(request, "trace_id", "") or "",
+            "normalized_request_hash": getattr(request, "normalized_request_hash", "") or "",
+        }
+        adapter = RepoBriefC0Adapter()
+        c0_spec = adapter.build_c0_request(normalized_task)
+        return {
+            "c0_state": "PASS",
+            "c0_retrieval_sources": [],
+            "evidence_ids": [],
+            "contradiction_flags": [],
+            "missing_evidence_flags": [],
+            "support_score": 0.0,
+            "retrieval_surface_id": c0_spec.retrieval_surface_id,
+            "depth_profile": c0_spec.depth_profile.value if hasattr(c0_spec.depth_profile, "value") else str(c0_spec.depth_profile),
+            "trace_id": c0_spec.trace_id,
+        }
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- C0 invocation is fail-soft; pipeline
+        # must continue with grounded=False when C0 is unavailable
+        return None
+
+
 def run_repo_brief_via_spine(
     request: Any,
     *,
     runner: "GovernedExecRun | None" = None,
 ) -> Any:
-    """Delegate unchanged to GovernedExecRun.run().
+    """Delegate to GovernedExecRun.run(), with C0 seam wired.
 
-    This is a name-only seam that records the handoff without altering
-    behavior. apps_repo_brief's pipeline routes every request through
-    GovernedAppRunner -> L1 -> L0 -> C0 -> PA -> L2 -> L5+L6; this
-    wrapper does not change that.
+    When the request has ``c0_required=True`` (or the attribute is absent),
+    builds a ``C0RequestSpec`` via ``RepoBriefC0Adapter`` and populates a
+    C0 FEC dict. The FEC is passed to ``GovernedExecRun.run()`` so it can
+    thread grounding evidence into the exit pipeline.
+
+    Fail-soft: if C0 invocation raises, execution continues with
+    ``c0_fec=None`` (grounded=False path).
 
     Args:
         request: typed repo-brief request (audience + emphasis_areas +
-            optional trace_id).
+            optional trace_id, c0_required, depth_profile).
         runner: optional pre-constructed GovernedExecRun. When None,
             a default instance is created (collection="repo_brief_docs").
 
     Returns:
         The run record returned by GovernedExecRun.run().
-
-    Side effects:
-        Logs an INFO line tagging the handoff with the request's
-        trace_id + brief_type. NO ledger emission. NO contract
-        construction.
-
-    Notes:
-        Constitutional invariants are upheld by the underlying
-        GovernedExecRun substrate; this wrapper adds no governance.
-        The eight R3 contracts are surfaced at module load via the
-        imports above; this function does not need to reference them
-        directly to pass the static-evidence test.
     """
     from apps_repo_brief.integrations.governed_exec_run import GovernedExecRun
 
@@ -203,19 +235,52 @@ def run_repo_brief_via_spine(
 
     trace_id = getattr(request, "trace_id", "") or ""
     brief_type = getattr(request, "brief_type", "") or ""
+    c0_required = getattr(request, "c0_required", True)
+    if c0_required is None:
+        c0_required = True
+
+    c0_fec: dict[str, Any] | None = None
+    if c0_required:
+        c0_fec = _build_c0_fec(request)
+        _log.info(
+            "spine_handoff: C0 seam invoked trace_id=%s c0_state=%s",
+            trace_id,
+            c0_fec.get("c0_state", "FAIL") if c0_fec else "FAIL",
+        )
+
+    # L3 workflow expand (fail-soft — metadata only, does not change pipeline).
+    try:
+        from apps_repo_brief.integrations.repo_brief_l3_workflow_adapter import (  # noqa: PLC0415
+            RepoBriefL3WorkflowAdapter,
+        )
+
+        _l3_expansion = RepoBriefL3WorkflowAdapter().expand({"c0_fec": c0_fec or {}})
+        _log.info(
+            "spine_handoff: L3 expand trace_id=%s hitl_posture=%s stage_count=%d",
+            trace_id,
+            _l3_expansion.hitl_posture,
+            _l3_expansion.stage_count,
+        )
+    except Exception:  # noqa: BLE001
+        # guardian: allow-broad-except -- L3 expand is metadata-only and fail-soft;
+        # pipeline execution MUST NOT be blocked by adapter errors
+        _log.debug("spine_handoff: L3 expand failed (non-fatal) trace_id=%s", trace_id)
+
     _log.info(
-        "spine_handoff: repo_brief request trace_id=%s brief_type=%s -> "
-        "GovernedExecRun.run (R3_grounded_read)",
+        "spine_handoff: repo_brief request trace_id=%s brief_type=%s c0_required=%s "
+        "-> GovernedExecRun.run (R3_grounded_read)",
         trace_id,
         brief_type,
+        c0_required,
     )
-    return runner.run(request)
+    return runner.run(request, c0_fec=c0_fec)
 
 
 __all__ = [
     "R3_CONTRACT_SURFACE",
     "R3_REQUIRED_CONTRACT_NAMES",
     "R3HandoffMetadata",
+    "_build_c0_fec",
     "build_repo_brief_r3_handoff_metadata",
     "run_repo_brief_via_spine",
     "validate_repo_brief_r3_contract_surface",

@@ -20,6 +20,7 @@
       min_required_score: 0.95
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression
 
     - dimension_id: role_alignment
       description: >-
@@ -30,6 +31,7 @@
       min_required_score: 0.65
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: capability
 
     - dimension_id: ats_readability
       description: >-
@@ -41,6 +43,7 @@
       min_required_score: 0.80
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: regression
 
     - dimension_id: executive_positioning
       description: >-
@@ -51,7 +54,7 @@
       min_required_score: 0.55
       evidence_required: true
       fail_closed_if_unknown: false  # not all roles need this
-
+      taxonomy_class: capability
       informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: specificity
       description: >-
@@ -62,6 +65,7 @@
       min_required_score: 0.55
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: capability
 
     - dimension_id: concision
       description: >-
@@ -72,6 +76,7 @@
       min_required_score: 0.60
       evidence_required: false
       fail_closed_if_unknown: false
+      taxonomy_class: capability
 
     - dimension_id: format_compliance
       description: >-
@@ -82,6 +87,7 @@
       min_required_score: 0.95
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: regression
 
     - dimension_id: no_fabrication
       description: >-
@@ -93,3 +99,4 @@
       min_required_score: 0.99
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression

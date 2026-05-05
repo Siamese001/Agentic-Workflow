@@ -8,6 +8,7 @@ See: infrastructure/sdks_mcps/__init__.py for canonical client creation.
 """
 from __future__ import annotations
 
+# guardian: allow-layer-violation -- sanctioned LLM client shim; apps_research/integrations is the approved cross-layer seam for infra SDK access
 from infrastructure.sdks_mcps import (
     create_openai_client,
     create_openai_sync_client,

@@ -35,6 +35,7 @@ def _register_builtin_recipes() -> dict[str, dict[str, Any]]:
     registry: dict[str, dict[str, Any]] = {}
 
     try:
+        # guardian: allow-layer-violation -- L_RUNTIME resolver must lazy-import L_APP recipe registries; this is the canonical core-owned registration seam by design
         from apps_rg.l2_recipe.registry import get_apps_rg_recipe_metadata
 
         meta = get_apps_rg_recipe_metadata()

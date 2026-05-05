@@ -15,6 +15,7 @@
   - qna::context_recall_judge::v1
   - qna::context_precision_judge::v1
   - qna::answer_relevancy_judge::v1
+  - qna::interview_card_quality_judge::v1
   ensemble_or_consensus_graders:
   - qna::coverage_hybrid::v1
   calibration_refs:

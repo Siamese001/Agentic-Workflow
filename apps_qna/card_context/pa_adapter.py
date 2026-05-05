@@ -41,6 +41,7 @@ class PAAdapterResult:
         dispatch_disposition: String value of the PA.7 disposition.
         reason: Human-readable summary of block reason (empty on PASS).
         error: Non-empty when the adapter raised unexpectedly; fail-closed.
+        model_output: Model response text when dispatch was triggered (empty otherwise).
     """
 
     pipeline: PromptAssemblyPipelineResult | None = None
@@ -48,6 +49,7 @@ class PAAdapterResult:
     dispatch_disposition: str = ""
     reason: str = ""
     error: str = ""
+    model_output: str = ""
 
 
 def run_pa_for_card_context(
@@ -61,6 +63,7 @@ def run_pa_for_card_context(
     run_id: str = "",
     model_context_window: int = 200_000,
     reserved_output_tokens: int = 0,
+    provider_context: Any | None = None,
 ) -> PAAdapterResult:
     """Run PA.0 → PA.7 staged checks on the assembled card context.
 
@@ -83,6 +86,9 @@ def run_pa_for_card_context(
         run_id: Run id.
         model_context_window: Token budget for PA.5.
         reserved_output_tokens: Reserved output tokens for PA.5.
+        provider_context: Optional QnaProviderContext for model dispatch.
+            When provided and dispatchable=True, dispatch() is called with
+            the serialized card context as prompt. Fail-open on dispatch errors.
 
     Returns:
         PAAdapterResult wrapping the full pipeline result.
@@ -165,11 +171,23 @@ def run_pa_for_card_context(
             block = pipeline.dispatch.block_reason
             reason = block.value if block is not None else disposition.value
 
+        model_output = ""
+        if is_pass and provider_context is not None:
+            if hasattr(provider_context, "dispatch") and hasattr(
+                provider_context, "has_model"
+            ):
+                if provider_context.has_model():
+                    import json as _json2  # noqa: PLC0415
+
+                    dispatch_prompt = _json2.dumps(card_context, default=str)
+                    model_output = provider_context.dispatch(dispatch_prompt)
+
         return PAAdapterResult(
             pipeline=pipeline,
             dispatchable=is_pass,
             dispatch_disposition=disposition.value,
             reason=reason,
+            model_output=model_output,
         )
 
     except Exception as exc:  # guardian: allow-broad-exception-catch -- PA adapter wraps an optional check; errors must not block the card build pipeline

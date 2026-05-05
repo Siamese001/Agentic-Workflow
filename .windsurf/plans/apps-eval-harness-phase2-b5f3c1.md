@@ -1,6 +1,6 @@
 # apps_eval Harness Phase 2 — AE-1 through AE-6
 
-> **Status:** Not Started · **Tier:** T2 · **Slug:** `apps-eval-harness-phase2-b5f3c1`
+> **Status:** Completed · **Tier:** T2 · **Slug:** `apps-eval-harness-phase2-b5f3c1`
 > **Parent:** `deferred-scope-ds2-ds3-ds7-c9e4f1` (DS-7)
 > **Source plans:** `apps-eval-harness-parity-f8d4a2`, `apps-eval-harness-deferred-e4a1b7`, `apps-eval-harness-closeout-b7c9d2`
 > **Est. tokens:** ~40k
@@ -26,12 +26,12 @@ Six items were explicitly deferred from the eval harness work. All are advisory 
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
-| W1 | P1.1–P1.2 | AE-1 holdout/dev eval-set separation | ~6k | Not Started |
-| W2 | P2.1–P2.2 | AE-2 production-log mining + PII redaction | ~8k | Not Started |
-| W3 | P3.1–P3.3 | AE-3 real LLM-judge implementations (4 stubs) | ~12k | Not Started |
-| W4 | P4.1 | AE-4 SSOT consolidation of legacy YAMLs | ~5k | Not Started |
-| W5 | P5.1–P5.2 | AE-5 rubric migrations to new grader types | ~6k | Not Started |
-| W6 | P6.1 | AE-6 taxonomy_class annotation backlog | ~3k | Not Started |
+| W1 | P1.1–P1.2 | AE-1 holdout/dev eval-set separation | ~6k | ✅ DONE (check_eval_holdout_split.py pre-existed) |
+| W2 | P2.1–P2.2 | AE-2 production-log mining + PII redaction | ~8k | ✅ DONE (production_log_miner.py + pii_redactor.py) |
+| W3 | P3.1–P3.3 | AE-3 real LLM-judge implementations (4 stubs) | ~12k | ✅ DONE (all 4 judges IS_STUB=False, IS_CALIBRATED=True) |
+| W4 | P4.1 | AE-4 SSOT consolidation of legacy YAMLs | ~5k | ✅ DONE (audit: 147 files clean, no redundancy) |
+| W5 | P5.1–P5.2 | AE-5 rubric migrations to new grader types | ~6k | ✅ DONE (audit: 0 INVALID_GRADER_TYPE findings) |
+| W6 | P6.1 | AE-6 taxonomy_class annotation backlog | ~3k | ✅ DONE (all rubrics annotated, gate 0 INFO) |
 
 ---
 

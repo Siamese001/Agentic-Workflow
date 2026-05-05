@@ -1,0 +1,967 @@
+# =============================================================================
+# apps_qna RAG Judge Holdout Corpus — Human Semantic Alignment (Tier 2)
+# =============================================================================
+#
+# dataset_id: rag_judge_semantic_alignment_v1
+# dataset_purpose: human_semantic_alignment_baseline
+# label_source: synthetic_human_semantic
+# label_policy: >
+#   Scores represent genuine human semantic quality judgments. High score means
+#   the answer is directly responsive, complete, specific, and grounded in the
+#   question. Low score means off-topic, evasive, generic, too short to be
+#   useful, or semantically non-responsive. Labels must NOT be modified to make
+#   a weak judge pass. A judge that fails Tier 2 is fallback-only.
+# promotion_eligible: true
+# minimum_spearman_threshold:
+#   overall: 0.70
+#   per_judge: 0.60
+# notes: >
+#   This corpus is the promotion-quality metric. Passing Tier 2 proves a judge
+#   tracks human semantic quality ranking. The deterministic heuristic for
+#   answer_relevancy is expected to fail this tier because it scores surface
+#   signals (word overlap, length, uniqueness) rather than semantic relevance.
+#   That failure is correct and informative — it means the heuristic should not
+#   be promoted as a semantic judge. The LLM-backed path is the candidate for
+#   semantic promotion when provider_context is available.
+#
+# SCHEMA (per example):
+#   example_id: str         — unique identifier (prefixed sem_)
+#   judge_id: str           — one of: context_recall, context_precision, answer_relevancy
+#   query: str              — interview question
+#   retrieved_context: list — retrieved source IDs
+#   gold_context: list      — expected source IDs (optional for answer_relevancy)
+#   answer: str             — generated answer text
+#   human_score: float      — semantic quality reference score 0.0–1.0
+#   human_rationale: str    — brief justification grounded in semantic quality
+#   labeler_id: str         — "synthetic_human_semantic"
+#
+# =============================================================================
+
+---
+
+# ---------------------------------------------------------------------------
+# CONTEXT RECALL — semantic (30 examples)
+# For context_recall the heuristic (set overlap) IS the semantic measure,
+# so these labels naturally align with both tiers.
+# ---------------------------------------------------------------------------
+
+- example_id: sem_cr_001
+  judge_id: context_recall
+  query: "How do you handle conflicts in a team environment?"
+  retrieved_context: ["team_collab_01", "conflict_resolution_02", "leadership_03"]
+  gold_context: ["conflict_resolution_02", "team_collab_01", "communication_04"]
+  answer: ""
+  human_score: 0.67
+  human_rationale: "2 of 3 needed evidence sources retrieved — communication gap"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_002
+  judge_id: context_recall
+  query: "Describe your experience with agile methodologies"
+  retrieved_context: ["agile_scrum_01", "agile_kanban_02", "agile_retro_03", "pm_waterfall_04"]
+  gold_context: ["agile_scrum_01", "agile_kanban_02", "agile_retro_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required evidence present — complete recall"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_003
+  judge_id: context_recall
+  query: "What is your approach to code review?"
+  retrieved_context: ["code_review_01"]
+  gold_context: ["code_review_01", "code_quality_02", "testing_best_03"]
+  answer: ""
+  human_score: 0.33
+  human_rationale: "Only 1 of 3 required sources — major evidence gap"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_004
+  judge_id: context_recall
+  query: "Tell me about a time you failed"
+  retrieved_context: []
+  gold_context: ["failure_resilience_01", "growth_mindset_02"]
+  answer: ""
+  human_score: 0.0
+  human_rationale: "No sources retrieved — total recall failure"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_005
+  judge_id: context_recall
+  query: "How do you prioritize competing deadlines?"
+  retrieved_context: ["time_mgmt_01", "prioritization_02", "delegation_03", "planning_04"]
+  gold_context: ["time_mgmt_01", "prioritization_02"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required sources present plus extras"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_006
+  judge_id: context_recall
+  query: "Describe your leadership philosophy"
+  retrieved_context: ["servant_lead_01", "transformational_02"]
+  gold_context: ["servant_lead_01", "transformational_02", "situational_03", "authentic_04"]
+  answer: ""
+  human_score: 0.50
+  human_rationale: "Half of required evidence missing"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_007
+  judge_id: context_recall
+  query: "What motivates you at work?"
+  retrieved_context: ["intrinsic_motivation_01", "purpose_driven_02", "growth_03"]
+  gold_context: ["intrinsic_motivation_01", "purpose_driven_02", "growth_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "Perfect recall"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_008
+  judge_id: context_recall
+  query: "How do you stay current with technology?"
+  retrieved_context: ["learning_habits_01"]
+  gold_context: ["learning_habits_01", "conferences_02", "community_03", "reading_04"]
+  answer: ""
+  human_score: 0.25
+  human_rationale: "Only 1 of 4 required — shallow retrieval"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_009
+  judge_id: context_recall
+  query: "Tell me about your testing strategy"
+  retrieved_context: ["unit_test_01", "integration_02", "e2e_03", "tdd_04", "bdd_05"]
+  gold_context: ["unit_test_01", "integration_02", "e2e_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All 3 required sources present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_010
+  judge_id: context_recall
+  query: "How do you approach debugging?"
+  retrieved_context: ["debug_systematic_01", "logging_02"]
+  gold_context: ["debug_systematic_01", "logging_02", "profiling_03"]
+  answer: ""
+  human_score: 0.67
+  human_rationale: "2 of 3 required — profiling evidence missing"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_011
+  judge_id: context_recall
+  query: "Describe a complex system you designed"
+  retrieved_context: ["microservices_01", "event_driven_02", "cqrs_03"]
+  gold_context: ["microservices_01", "event_driven_02", "cqrs_03", "ddd_04"]
+  answer: ""
+  human_score: 0.75
+  human_rationale: "3 of 4 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_012
+  judge_id: context_recall
+  query: "What is your experience with cloud infrastructure?"
+  retrieved_context: ["aws_01", "terraform_02", "kubernetes_03", "docker_04"]
+  gold_context: ["aws_01", "terraform_02"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required sources present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_013
+  judge_id: context_recall
+  query: "How do you handle technical debt?"
+  retrieved_context: ["refactoring_01"]
+  gold_context: ["refactoring_01", "tech_debt_strategy_02", "prioritization_03"]
+  answer: ""
+  human_score: 0.33
+  human_rationale: "1 of 3 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_014
+  judge_id: context_recall
+  query: "Describe your communication style"
+  retrieved_context: ["async_comm_01", "documentation_02", "meetings_03"]
+  gold_context: ["async_comm_01", "documentation_02", "meetings_03", "feedback_04", "presentations_05"]
+  answer: ""
+  human_score: 0.60
+  human_rationale: "3 of 5 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_015
+  judge_id: context_recall
+  query: "What is your approach to mentoring?"
+  retrieved_context: ["mentoring_pair_01", "coaching_02", "onboarding_03"]
+  gold_context: ["mentoring_pair_01", "coaching_02"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_016
+  judge_id: context_recall
+  query: "How do you evaluate trade-offs?"
+  retrieved_context: ["decision_matrix_01"]
+  gold_context: ["decision_matrix_01", "cost_benefit_02", "risk_analysis_03", "stakeholder_04"]
+  answer: ""
+  human_score: 0.25
+  human_rationale: "1 of 4 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_017
+  judge_id: context_recall
+  query: "Tell me about your experience with databases"
+  retrieved_context: ["postgres_01", "redis_02", "mongodb_03", "sql_design_04"]
+  gold_context: ["postgres_01", "redis_02", "mongodb_03", "sql_design_04"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "Perfect recall"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_018
+  judge_id: context_recall
+  query: "How do you handle ambiguous requirements?"
+  retrieved_context: ["clarification_01", "prototyping_02"]
+  gold_context: ["clarification_01", "prototyping_02", "stakeholder_collab_03"]
+  answer: ""
+  human_score: 0.67
+  human_rationale: "2 of 3"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_019
+  judge_id: context_recall
+  query: "Describe your CI/CD experience"
+  retrieved_context: ["github_actions_01", "jenkins_02"]
+  gold_context: ["github_actions_01", "jenkins_02", "deployment_strat_03", "monitoring_04"]
+  answer: ""
+  human_score: 0.50
+  human_rationale: "2 of 4 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_020
+  judge_id: context_recall
+  query: "What is your approach to security?"
+  retrieved_context: ["owasp_01", "auth_02", "encryption_03", "audit_04", "compliance_05"]
+  gold_context: ["owasp_01", "auth_02", "encryption_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All 3 required present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_021
+  judge_id: context_recall
+  query: "How do you build consensus?"
+  retrieved_context: ["facilitation_01", "voting_02"]
+  gold_context: ["facilitation_01", "voting_02", "compromise_03", "escalation_04"]
+  answer: ""
+  human_score: 0.50
+  human_rationale: "2 of 4"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_022
+  judge_id: context_recall
+  query: "Tell me about performance optimization"
+  retrieved_context: ["caching_01", "indexing_02", "profiling_03"]
+  gold_context: ["caching_01", "indexing_02", "profiling_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "Perfect recall"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_023
+  judge_id: context_recall
+  query: "How do you manage remote teams?"
+  retrieved_context: ["async_work_01"]
+  gold_context: ["async_work_01", "timezone_02", "trust_03", "tools_04", "culture_05"]
+  answer: ""
+  human_score: 0.20
+  human_rationale: "1 of 5 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_024
+  judge_id: context_recall
+  query: "Describe a time you improved a process"
+  retrieved_context: ["process_improvement_01", "automation_02", "metrics_03"]
+  gold_context: ["process_improvement_01", "automation_02"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_025
+  judge_id: context_recall
+  query: "What is your approach to documentation?"
+  retrieved_context: ["adr_01", "readme_02", "api_docs_03"]
+  gold_context: ["adr_01", "readme_02", "api_docs_03", "runbooks_04"]
+  answer: ""
+  human_score: 0.75
+  human_rationale: "3 of 4 required"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_026
+  judge_id: context_recall
+  query: "How do you handle production incidents?"
+  retrieved_context: ["incident_response_01", "postmortem_02", "monitoring_03", "alerting_04"]
+  gold_context: ["incident_response_01", "postmortem_02"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "All required present"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_027
+  judge_id: context_recall
+  query: "Describe your API design philosophy"
+  retrieved_context: ["rest_01", "graphql_02"]
+  gold_context: ["rest_01", "graphql_02", "versioning_03", "pagination_04", "error_handling_05"]
+  answer: ""
+  human_score: 0.40
+  human_rationale: "2 of 5"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_028
+  judge_id: context_recall
+  query: "How do you onboard new team members?"
+  retrieved_context: ["buddy_system_01", "docs_02", "pairing_03"]
+  gold_context: ["buddy_system_01", "docs_02", "pairing_03"]
+  answer: ""
+  human_score: 1.0
+  human_rationale: "Perfect recall"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_029
+  judge_id: context_recall
+  query: "What is your stance on technical interviews?"
+  retrieved_context: ["structured_interview_01"]
+  gold_context: ["structured_interview_01", "take_home_02", "pair_prog_03"]
+  answer: ""
+  human_score: 0.33
+  human_rationale: "1 of 3"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cr_030
+  judge_id: context_recall
+  query: "How do you balance speed vs quality?"
+  retrieved_context: ["mvp_01", "iteration_02", "testing_03"]
+  gold_context: ["mvp_01", "iteration_02", "testing_03", "tech_debt_04"]
+  answer: ""
+  human_score: 0.75
+  human_rationale: "3 of 4"
+  labeler_id: synthetic_human_semantic
+
+# ---------------------------------------------------------------------------
+# CONTEXT PRECISION — semantic (30 examples)
+# For context_precision the heuristic (relevant/total overlap) IS semantically
+# meaningful, so these labels naturally align with both tiers.
+# ---------------------------------------------------------------------------
+
+- example_id: sem_cp_001
+  judge_id: context_precision
+  query: "How do you handle conflicts in a team?"
+  retrieved_context: ["conflict_resolution_01", "cooking_recipes_02", "team_collab_03"]
+  gold_context: ["conflict_resolution_01", "team_collab_03"]
+  answer: "I approach conflicts by facilitating open dialogue and finding common ground."
+  human_score: 0.67
+  human_rationale: "2 of 3 retrieved are relevant; cooking_recipes is noise"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_002
+  judge_id: context_precision
+  query: "Describe your CI/CD pipeline"
+  retrieved_context: ["github_actions_01", "jenkins_02", "deployment_03"]
+  gold_context: ["github_actions_01", "jenkins_02", "deployment_03"]
+  answer: "We use GitHub Actions for CI and ArgoCD for deployments to Kubernetes."
+  human_score: 1.0
+  human_rationale: "All retrieved sources are relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_003
+  judge_id: context_precision
+  query: "What is your testing strategy?"
+  retrieved_context: ["unit_test_01", "weather_forecast_02", "sports_news_03", "integration_04"]
+  gold_context: ["unit_test_01", "integration_04"]
+  answer: "I follow the testing pyramid with heavy unit test coverage."
+  human_score: 0.50
+  human_rationale: "2 of 4 retrieved are relevant; 2 are noise"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_004
+  judge_id: context_precision
+  query: "How do you approach system design?"
+  retrieved_context: ["ddd_01", "microservices_02"]
+  gold_context: ["ddd_01", "microservices_02"]
+  answer: "I start with domain-driven design to identify bounded contexts."
+  human_score: 1.0
+  human_rationale: "Both retrieved are relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_005
+  judge_id: context_precision
+  query: "Tell me about monitoring"
+  retrieved_context: ["prometheus_01", "gardening_02", "pet_care_03", "grafana_04", "alerting_05"]
+  gold_context: ["prometheus_01", "grafana_04", "alerting_05"]
+  answer: "We use Prometheus and Grafana for comprehensive monitoring."
+  human_score: 0.60
+  human_rationale: "3 of 5 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_006
+  judge_id: context_precision
+  query: "How do you ensure code quality?"
+  retrieved_context: ["linting_01", "code_review_02", "static_analysis_03"]
+  gold_context: ["linting_01", "code_review_02", "static_analysis_03"]
+  answer: "Through automated linting, peer code reviews, and static analysis."
+  human_score: 1.0
+  human_rationale: "All sources relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_007
+  judge_id: context_precision
+  query: "Describe your database experience"
+  retrieved_context: ["postgres_01", "redis_02", "vacation_plans_03", "movie_reviews_04"]
+  gold_context: ["postgres_01", "redis_02"]
+  answer: "I have extensive experience with PostgreSQL and Redis for caching."
+  human_score: 0.50
+  human_rationale: "2 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_008
+  judge_id: context_precision
+  query: "What is your leadership approach?"
+  retrieved_context: ["servant_leadership_01"]
+  gold_context: ["servant_leadership_01"]
+  answer: "I practice servant leadership, focusing on removing blockers for my team."
+  human_score: 1.0
+  human_rationale: "Single retrieved source is relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_009
+  judge_id: context_precision
+  query: "How do you handle production incidents?"
+  retrieved_context: ["incident_response_01", "random_trivia_02", "postmortem_03", "cooking_04", "monitoring_05"]
+  gold_context: ["incident_response_01", "postmortem_03", "monitoring_05"]
+  answer: "We follow a structured incident response process with blameless postmortems."
+  human_score: 0.60
+  human_rationale: "3 of 5 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_010
+  judge_id: context_precision
+  query: "Describe your API design principles"
+  retrieved_context: ["rest_principles_01", "versioning_02", "error_handling_03", "pagination_04"]
+  gold_context: ["rest_principles_01", "versioning_02", "error_handling_03", "pagination_04"]
+  answer: "RESTful design with semantic versioning and consistent error responses."
+  human_score: 1.0
+  human_rationale: "All 4 retrieved are relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_011
+  judge_id: context_precision
+  query: "How do you approach microservices?"
+  retrieved_context: ["service_mesh_01", "astronomy_02", "container_03"]
+  gold_context: ["service_mesh_01", "container_03"]
+  answer: "We use service meshes with containerized deployments."
+  human_score: 0.67
+  human_rationale: "2 of 3 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_012
+  judge_id: context_precision
+  query: "Tell me about data pipelines"
+  retrieved_context: ["airflow_01", "spark_02", "kafka_03", "fishing_04", "hiking_05", "dbt_06"]
+  gold_context: ["airflow_01", "spark_02", "kafka_03", "dbt_06"]
+  answer: "We orchestrate ETL with Airflow and process data with Spark."
+  human_score: 0.67
+  human_rationale: "4 of 6 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_013
+  judge_id: context_precision
+  query: "What is your experience with containers?"
+  retrieved_context: ["docker_01", "kubernetes_02"]
+  gold_context: ["docker_01", "kubernetes_02"]
+  answer: "Deep experience with Docker for dev and Kubernetes for production orchestration."
+  human_score: 1.0
+  human_rationale: "Both relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_014
+  judge_id: context_precision
+  query: "How do you manage technical debt?"
+  retrieved_context: ["debt_tracking_01", "celebrity_gossip_02", "refactoring_03"]
+  gold_context: ["debt_tracking_01", "refactoring_03"]
+  answer: "We track debt in a backlog and allocate 20% of sprints to reduction."
+  human_score: 0.67
+  human_rationale: "2 of 3 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_015
+  judge_id: context_precision
+  query: "Describe your approach to observability"
+  retrieved_context: ["logging_01", "tracing_02", "metrics_03", "dashboards_04", "sports_scores_05"]
+  gold_context: ["logging_01", "tracing_02", "metrics_03", "dashboards_04"]
+  answer: "Three pillars: structured logging, distributed tracing, and metrics."
+  human_score: 0.80
+  human_rationale: "4 of 5 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_016
+  judge_id: context_precision
+  query: "How do you design for reliability?"
+  retrieved_context: ["circuit_breaker_01", "retry_02", "bulkhead_03"]
+  gold_context: ["circuit_breaker_01", "retry_02", "bulkhead_03"]
+  answer: "Circuit breakers, retries with backoff, and bulkhead isolation."
+  human_score: 1.0
+  human_rationale: "All relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_017
+  judge_id: context_precision
+  query: "Tell me about authentication"
+  retrieved_context: ["oauth2_01", "jwt_02", "fashion_trends_03", "recipe_04", "mfa_05"]
+  gold_context: ["oauth2_01", "jwt_02", "mfa_05"]
+  answer: "OAuth2 with JWT tokens and mandatory MFA for sensitive operations."
+  human_score: 0.60
+  human_rationale: "3 of 5 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_018
+  judge_id: context_precision
+  query: "How do you handle data migrations?"
+  retrieved_context: ["schema_migration_01", "data_backfill_02"]
+  gold_context: ["schema_migration_01", "data_backfill_02"]
+  answer: "Incremental schema migrations with zero-downtime deployment patterns."
+  human_score: 1.0
+  human_rationale: "Both relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_019
+  judge_id: context_precision
+  query: "What is your approach to caching?"
+  retrieved_context: ["redis_caching_01", "cdn_02", "weather_03", "browser_cache_04"]
+  gold_context: ["redis_caching_01", "cdn_02", "browser_cache_04"]
+  answer: "Multi-layer: browser cache, CDN, and Redis for application state."
+  human_score: 0.75
+  human_rationale: "3 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_020
+  judge_id: context_precision
+  query: "How do you handle feature toggles?"
+  retrieved_context: ["launchdarkly_01", "gradual_rollout_02", "fantasy_football_03"]
+  gold_context: ["launchdarkly_01", "gradual_rollout_02"]
+  answer: "LaunchDarkly for feature flags with gradual percentage rollouts."
+  human_score: 0.67
+  human_rationale: "2 of 3 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_021
+  judge_id: context_precision
+  query: "Describe your experience with queues"
+  retrieved_context: ["rabbitmq_01", "sqs_02", "kafka_03"]
+  gold_context: ["rabbitmq_01", "sqs_02", "kafka_03"]
+  answer: "RabbitMQ for task queues, SQS for decoupling, Kafka for streaming."
+  human_score: 1.0
+  human_rationale: "All relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_022
+  judge_id: context_precision
+  query: "How do you approach error handling?"
+  retrieved_context: ["error_types_01", "recovery_strategies_02", "horoscopes_03", "gardening_04"]
+  gold_context: ["error_types_01", "recovery_strategies_02"]
+  answer: "Typed error hierarchies with explicit recovery strategies per error class."
+  human_score: 0.50
+  human_rationale: "2 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_023
+  judge_id: context_precision
+  query: "What is your stance on pair programming?"
+  retrieved_context: ["pair_prog_01", "mob_prog_02"]
+  gold_context: ["pair_prog_01", "mob_prog_02"]
+  answer: "I advocate for pair programming on complex logic and onboarding."
+  human_score: 1.0
+  human_rationale: "Both relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_024
+  judge_id: context_precision
+  query: "How do you manage secrets?"
+  retrieved_context: ["vault_01", "env_injection_02", "celebrity_news_03"]
+  gold_context: ["vault_01", "env_injection_02"]
+  answer: "HashiCorp Vault with Kubernetes secrets injection at pod startup."
+  human_score: 0.67
+  human_rationale: "2 of 3 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_025
+  judge_id: context_precision
+  query: "Describe your deployment strategy"
+  retrieved_context: ["blue_green_01", "canary_02", "rolling_03", "travel_04"]
+  gold_context: ["blue_green_01", "canary_02", "rolling_03"]
+  answer: "Canary deployments with automatic rollback on error-rate spike."
+  human_score: 0.75
+  human_rationale: "3 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_026
+  judge_id: context_precision
+  query: "How do you handle rate limiting?"
+  retrieved_context: ["token_bucket_01", "sliding_window_02"]
+  gold_context: ["token_bucket_01", "sliding_window_02"]
+  answer: "Token bucket at the gateway layer with per-user sliding windows."
+  human_score: 1.0
+  human_rationale: "Both relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_027
+  judge_id: context_precision
+  query: "Tell me about your logging practices"
+  retrieved_context: ["structured_logging_01", "log_levels_02", "pizza_recipes_03", "aggregation_04"]
+  gold_context: ["structured_logging_01", "log_levels_02", "aggregation_04"]
+  answer: "Structured JSON logs with correlation IDs and centralized aggregation."
+  human_score: 0.75
+  human_rationale: "3 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_028
+  judge_id: context_precision
+  query: "How do you design APIs for mobile?"
+  retrieved_context: ["bff_pattern_01", "graphql_02", "pagination_03"]
+  gold_context: ["bff_pattern_01", "graphql_02", "pagination_03"]
+  answer: "BFF pattern with GraphQL for flexible mobile data requirements."
+  human_score: 1.0
+  human_rationale: "All relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_029
+  judge_id: context_precision
+  query: "What is your approach to load testing?"
+  retrieved_context: ["k6_01", "locust_02", "astrology_03", "jmeter_04"]
+  gold_context: ["k6_01", "locust_02", "jmeter_04"]
+  answer: "k6 for developer-friendly scripts, Locust for distributed load generation."
+  human_score: 0.75
+  human_rationale: "3 of 4 relevant"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_cp_030
+  judge_id: context_precision
+  query: "How do you handle configuration management?"
+  retrieved_context: ["twelve_factor_01", "config_server_02"]
+  gold_context: ["twelve_factor_01", "config_server_02"]
+  answer: "Twelve-factor app principles with Spring Cloud Config for centralization."
+  human_score: 1.0
+  human_rationale: "Both relevant"
+  labeler_id: synthetic_human_semantic
+
+# ---------------------------------------------------------------------------
+# ANSWER RELEVANCY — semantic (30 examples)
+# These labels represent genuine semantic quality: is the answer responsive,
+# complete, specific, and grounded? The deterministic heuristic (word overlap,
+# length, uniqueness) is expected to fail this tier. That is correct behavior.
+#
+# KEY DIVERGENCE CASES (heuristic scores high, semantic scores low, or vice versa):
+# - Long verbose off-topic answers: heuristic scores high (length+uniqueness),
+#   semantic score is low (not responsive).
+# - Short but perfect answers: heuristic scores low (length penalty),
+#   semantic score is high (directly answers the question).
+# - Keyword-stuffed non-answers: heuristic scores high (overlap),
+#   semantic score is low (no real content).
+# ---------------------------------------------------------------------------
+
+- example_id: sem_ar_001
+  judge_id: answer_relevancy
+  query: "How do you handle conflicts in a team environment?"
+  retrieved_context: ["conflict_resolution_01"]
+  gold_context: []
+  answer: "I address conflicts early through 1-on-1 conversations to understand perspectives, then facilitate group discussion focused on shared goals. I separate the person from the problem."
+  human_score: 0.90
+  human_rationale: "Directly responsive, specific approach, grounded in team dynamics"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_002
+  judge_id: answer_relevancy
+  query: "What is your experience with Kubernetes?"
+  retrieved_context: ["k8s_01"]
+  gold_context: []
+  answer: "The weather has been really nice lately and I enjoy cooking Italian food on weekends. My favorite hobby is reading science fiction novels and I also like hiking in the mountains during summer."
+  human_score: 0.02
+  human_rationale: "Completely off-topic despite good length and vocabulary diversity"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_003
+  judge_id: answer_relevancy
+  query: "Describe your testing strategy for software projects"
+  retrieved_context: ["testing_01"]
+  gold_context: []
+  answer: "Unit tests for business logic, integration tests at service boundaries, E2E for critical flows. 80% coverage target with mutation testing on core paths."
+  human_score: 0.88
+  human_rationale: "Specific, complete strategy with concrete targets"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_004
+  judge_id: answer_relevancy
+  query: "How do you approach code reviews in your workflow?"
+  retrieved_context: ["code_review_01"]
+  gold_context: []
+  answer: "Code reviews code reviews code reviews. I do code reviews every day. Code reviews are important for code review quality. Reviews of code ensure code is reviewed."
+  human_score: 0.05
+  human_rationale: "Keyword-stuffed repetition with no actual content or strategy"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_005
+  judge_id: answer_relevancy
+  query: "Tell me about a time you failed at a project"
+  retrieved_context: ["failure_01"]
+  gold_context: []
+  answer: "I underestimated a database migration timeline by 3 weeks. Root cause was skipping load testing in staging. I now require staging dry-runs with production-scale data before any migration."
+  human_score: 0.92
+  human_rationale: "Specific failure, root cause, and concrete lesson learned"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_006
+  judge_id: answer_relevancy
+  query: "What motivates you at work every day?"
+  retrieved_context: ["motivation_01"]
+  gold_context: []
+  answer: "There are many different types of programming languages in the world today. Python was created by Guido van Rossum. JavaScript runs in browsers. Rust focuses on memory safety and performance."
+  human_score: 0.03
+  human_rationale: "Random programming trivia, not responsive to motivation question"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_007
+  judge_id: answer_relevancy
+  query: "How do you handle technical debt in your codebase?"
+  retrieved_context: ["tech_debt_01"]
+  gold_context: []
+  answer: "Categorize by blast radius, allocate 20% sprint capacity, track payoff metrics. Debt items get severity tags and appear in sprint planning alongside features."
+  human_score: 0.89
+  human_rationale: "Specific process with concrete allocation and tracking"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_008
+  judge_id: answer_relevancy
+  query: "Describe your leadership style and approach"
+  retrieved_context: ["leadership_01"]
+  gold_context: []
+  answer: "Leadership leadership leadership style approach. My leadership style is leadership-oriented. I approach leadership with a leadership approach and leadership style."
+  human_score: 0.04
+  human_rationale: "Keyword-stuffed circular non-answer — no actual leadership philosophy"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_009
+  judge_id: answer_relevancy
+  query: "How do you stay current with technology trends?"
+  retrieved_context: ["learning_01"]
+  gold_context: []
+  answer: "Weekly reading (Hacker News, engineering blogs), monthly meetups, annual conference, and one side project per quarter exploring new tech."
+  human_score: 0.85
+  human_rationale: "Specific habits with cadence — directly answers the question"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_010
+  judge_id: answer_relevancy
+  query: "What is your approach to mentoring junior engineers?"
+  retrieved_context: ["mentoring_01"]
+  gold_context: []
+  answer: "Pair on real tasks, bi-weekly growth 1:1s, written feedback after each sprint. I assign stretch projects slightly above comfort zone with safety net."
+  human_score: 0.87
+  human_rationale: "Concrete mentoring framework with specific activities"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_011
+  judge_id: answer_relevancy
+  query: "How do you handle disagreements with your manager?"
+  retrieved_context: ["disagreement_01"]
+  gold_context: []
+  answer: "Present data privately, ask about constraints I might not see, then commit to the decision. If it fails, revisit with evidence, not blame."
+  human_score: 0.88
+  human_rationale: "Mature approach with specific steps and follow-through"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_012
+  judge_id: answer_relevancy
+  query: "Describe your experience with distributed systems"
+  retrieved_context: ["distributed_01"]
+  gold_context: []
+  answer: "I have been working in the software industry for many years now. During that time I have learned many things about computers and technology. Distributed systems are a topic I have encountered."
+  human_score: 0.08
+  human_rationale: "Vague filler — no specifics about distributed systems experience"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_013
+  judge_id: answer_relevancy
+  query: "How do you prioritize tasks when everything is urgent?"
+  retrieved_context: ["prioritization_01"]
+  gold_context: []
+  answer: "Impact-effort matrix. Highest-impact items first, decompose large tasks, and reassess daily during crunch. I push back on 'everything is urgent' framing with stakeholders."
+  human_score: 0.91
+  human_rationale: "Clear framework with pushback strategy — directly responsive"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_014
+  judge_id: answer_relevancy
+  query: "What is your experience building microservices?"
+  retrieved_context: ["microservices_01"]
+  gold_context: []
+  answer: "15+ services, 10K RPS. Monolith-first, extract at team boundaries. Each service owns its data store, deploys independently, and has its own CI pipeline."
+  human_score: 0.93
+  human_rationale: "Quantified experience with clear architectural philosophy"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_015
+  judge_id: answer_relevancy
+  query: "How do you handle tight deadlines on projects?"
+  retrieved_context: ["deadlines_01"]
+  gold_context: []
+  answer: "The history of project management dates back to the construction of the Egyptian pyramids. Henry Gantt developed the Gantt chart in the 1910s. Modern project management evolved significantly after World War II."
+  human_score: 0.05
+  human_rationale: "History lecture — does not address how the candidate handles deadlines"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_016
+  judge_id: answer_relevancy
+  query: "Tell me about your database design experience"
+  retrieved_context: ["db_design_01"]
+  gold_context: []
+  answer: "Multi-tenant PostgreSQL, event stores, search indices. I design schemas by analyzing access patterns first, then normalize for writes and denormalize for reads."
+  human_score: 0.90
+  human_rationale: "Specific technologies and clear design methodology"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_017
+  judge_id: answer_relevancy
+  query: "How do you approach API versioning in production?"
+  retrieved_context: ["api_versioning_01"]
+  gold_context: []
+  answer: "URL-path versioning for major breaks, header versioning for minor. Deprecation notices 90 days ahead with migration guides."
+  human_score: 0.86
+  human_rationale: "Specific strategy with timeline — directly responsive"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_018
+  judge_id: answer_relevancy
+  query: "What is your experience with event-driven architecture?"
+  retrieved_context: ["eda_01"]
+  gold_context: []
+  answer: "Event-driven architecture event-driven systems event-driven design patterns. Events are driven by architecture. The architecture is event-driven. Experience with event-driven architecture is important."
+  human_score: 0.04
+  human_rationale: "Keyword-stuffed circular text — zero actual experience described"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_019
+  judge_id: answer_relevancy
+  query: "How do you ensure system reliability in production?"
+  retrieved_context: ["reliability_01"]
+  gold_context: []
+  answer: "SLO-driven development, circuit breakers, quarterly chaos testing, runbooks for every alert. Error budgets gate feature velocity."
+  human_score: 0.91
+  human_rationale: "Comprehensive reliability strategy with specific practices"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_020
+  judge_id: answer_relevancy
+  query: "Describe your approach to writing documentation"
+  retrieved_context: ["documentation_01"]
+  gold_context: []
+  answer: "ADRs for decisions, READMEs for quick-start, runbooks for ops. Docs live in the same PR as code — no separate docs phase."
+  human_score: 0.87
+  human_rationale: "Clear documentation taxonomy with process discipline"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_021
+  judge_id: answer_relevancy
+  query: "How do you build trust with stakeholders?"
+  retrieved_context: ["trust_01"]
+  gold_context: []
+  answer: "Transparent updates, deliver on commitments, surface risks early. I never surprise stakeholders — bad news travels fast and voluntarily."
+  human_score: 0.86
+  human_rationale: "Specific trust-building behaviors"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_022
+  judge_id: answer_relevancy
+  query: "What is your experience with machine learning systems?"
+  retrieved_context: ["ml_01"]
+  gold_context: []
+  answer: "Yesterday I went to the grocery store and bought some vegetables. Then I cooked dinner and watched a movie. The movie was about space travel and aliens visiting Earth. It was quite entertaining."
+  human_score: 0.02
+  human_rationale: "Personal diary entry — completely unrelated to ML systems"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_023
+  judge_id: answer_relevancy
+  query: "How do you approach capacity planning for services?"
+  retrieved_context: ["capacity_01"]
+  gold_context: []
+  answer: "Load test at 2x peak, monitor utilization trends, auto-scaling thresholds at 70%, quarterly capacity reviews with growth projections."
+  human_score: 0.90
+  human_rationale: "Quantified approach with specific thresholds"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_024
+  judge_id: answer_relevancy
+  query: "Tell me about your experience with DevOps practices"
+  retrieved_context: ["devops_01"]
+  gold_context: []
+  answer: "That's a great question. I think questions are important. Asking questions shows curiosity. Curiosity is a valuable trait. I appreciate when people ask thoughtful questions about various topics."
+  human_score: 0.03
+  human_rationale: "Meta-commentary about questions — zero DevOps content"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_025
+  judge_id: answer_relevancy
+  query: "How do you handle scope creep in projects?"
+  retrieved_context: ["scope_01"]
+  gold_context: []
+  answer: "Document scope explicitly upfront, route new requests through change-control with impact assessment, renegotiate timelines when scope grows."
+  human_score: 0.89
+  human_rationale: "Clear process for scope management"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_026
+  judge_id: answer_relevancy
+  query: "What is your approach to incident postmortems?"
+  retrieved_context: ["postmortem_01"]
+  gold_context: []
+  answer: "Blameless within 48h. Timeline, contributing factors, action items with owners and deadlines. Track completion in next sprint."
+  human_score: 0.88
+  human_rationale: "Specific process with timeline and accountability"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_027
+  judge_id: answer_relevancy
+  query: "Describe your experience with performance optimization"
+  retrieved_context: ["perf_01"]
+  gold_context: []
+  answer: "Flamegraph profiling, hot path identification, benchmark before/after. Recent win: 3x latency reduction by adding connection pooling."
+  human_score: 0.91
+  human_rationale: "Specific tools, methodology, and quantified result"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_028
+  judge_id: answer_relevancy
+  query: "How do you approach accessibility in web apps?"
+  retrieved_context: ["a11y_01"]
+  gold_context: []
+  answer: "WCAG 2.1 AA minimum. Semantic HTML, ARIA landmarks, keyboard navigation, screen reader testing. Accessibility audits in CI pipeline."
+  human_score: 0.88
+  human_rationale: "Specific standard, techniques, and automation — directly responsive"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_029
+  judge_id: answer_relevancy
+  query: "What is your experience with GraphQL APIs?"
+  retrieved_context: ["graphql_01"]
+  gold_context: []
+  answer: "Schema-first design, DataLoader for N+1 prevention, persisted queries in production, federation for cross-team schemas."
+  human_score: 0.89
+  human_rationale: "Specific GraphQL patterns and production practices"
+  labeler_id: synthetic_human_semantic
+
+- example_id: sem_ar_030
+  judge_id: answer_relevancy
+  query: "How do you approach data privacy and compliance?"
+  retrieved_context: ["privacy_01"]
+  gold_context: []
+  answer: "Privacy by design: data minimization, purpose limitation, encryption at rest and in transit, automated PII scanning, DSAR response automation."
+  human_score: 0.90
+  human_rationale: "Comprehensive privacy framework with specific practices"
+  labeler_id: synthetic_human_semantic

@@ -66,6 +66,56 @@ class QnaProviderContext:
         """Return True if a model_id is configured for provider calls."""
         return bool(self.model_id)
 
+    def dispatch(self, prompt: str) -> str:
+        """Dispatch a model call via the local vLLM OpenAI-compatible endpoint.
+
+        Fail-open: returns "" if the model is unavailable, unconfigured,
+        or any error occurs during dispatch. This ensures the pack-build
+        pipeline is never blocked by provider failures.
+
+        Uses httpx (sync) to call the vLLM chat completions endpoint directly.
+        This avoids the aiohttp/asyncio event-loop issues that cause hangs on
+        Windows when LocalVLLMProvider.generate() is called repeatedly (each
+        call creates a new QwenInferenceGateway → aiohttp.ClientSession that
+        leaks connectors and deadlocks subsequent asyncio.run() calls).
+
+        Args:
+            prompt: The assembled prompt text to send to the model.
+
+        Returns:
+            Model output string, or "" on any failure.
+        """
+        if not self.has_model():
+            return ""
+        if not prompt:
+            return ""
+        try:
+            import httpx  # noqa: PLC0415
+            import os as _os  # noqa: PLC0415
+
+            base_url = _os.getenv("VLLM_BASE_URL", "http://localhost:8000")
+            resp = httpx.post(
+                f"{base_url}/v1/chat/completions",
+                json={
+                    "model": self.model_id,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": self.max_tokens or 4096,
+                    "temperature": self.temperature,
+                },
+                timeout=60.0,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            content = data["choices"][0]["message"]["content"]
+            return content or ""
+        except Exception as exc:  # guardian: allow-broad-exception-catch -- fail-open: provider errors must not block pack pipeline
+            import logging as _logging  # noqa: PLC0415
+
+            _logging.getLogger(__name__).debug(
+                "Provider dispatch failed (fail-open): %s", exc
+            )
+            return ""
+
 
 def build_provider_context(
     *,

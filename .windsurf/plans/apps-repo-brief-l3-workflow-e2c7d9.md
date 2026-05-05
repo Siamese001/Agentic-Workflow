@@ -1,6 +1,6 @@
 # apps_repo_brief — L3 Managed Workflow Adapter
 
-> **Status:** Not Started · **Tier:** T2 · **Slug:** `apps-repo-brief-l3-workflow-e2c7d9`
+> **Status:** Completed · **Tier:** T2 · **Slug:** `apps-repo-brief-l3-workflow-e2c7d9`
 > **Parent:** `deferred-scope-ds2-ds3-ds7-c9e4f1` (DS-3)
 > **Prerequisite:** `apps-repo-brief-c0-runtime-wiring-f4a8b2` (DS-2 must complete first)
 > **Est. tokens:** ~15k
@@ -34,10 +34,10 @@ After this plan:
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
-| W1 | P1.1–P1.2 | L3 workflow adapter + L2 step adapters | ~6k | Not Started |
-| W2 | P2.1 | Wire `expand()` call into `run_repo_brief_via_spine` | ~3k | Not Started |
-| W3 | P3.1 | Governance tests (10 cases) | ~4k | Not Started |
-| W4 | P4.1 | Static DAG proof annotation in `spine_manifest.yaml` | ~2k | Not Started |
+| W1 | P1.1–P1.2 | L3 workflow adapter + L2 step adapters | ~6k | ✅ DONE |
+| W2 | P2.1 | Wire `expand()` call into `run_repo_brief_via_spine` | ~3k | ✅ DONE |
+| W3 | P3.1 | Governance tests (10 cases) | ~4k | ✅ DONE |
+| W4 | P4.1 | Static DAG proof annotation in `spine_manifest.yaml` | ~2k | ✅ DONE |
 
 ---
 
@@ -45,11 +45,11 @@ After this plan:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | `repo_brief_l3_workflow_adapter.py` | `apps_repo_brief/integrations/` (new file) | Pattern from `underwriting_l3_workflow_adapter.py`; 3 stages not 5 | ~3k | ⬜ |
-| P1.2 | `repo_brief_l2_step_adapters.py` | `apps_repo_brief/integrations/` (new file) | E1 = C0 retrieval bound, E2 = PA evidence validated, E3 = exit sealed | ~3k | ⬜ |
-| P2.1 | Wire `expand()` in `run_repo_brief_via_spine` | `apps_repo_brief/integrations/spine_handoff.py` | Must remain fail-soft; expand result is metadata only, does not change pipeline execution | ~3k | ⬜ |
-| P3.1 | 10 governance tests | `tests/_apps_contract/test_apps_repo_brief_l3_adapter.py` | Must test: expand returns `WorkflowExpansion`, expands-not-executes, HITL posture inject, stage ordering | ~4k | ⬜ |
-| P4.1 | `spine_manifest.yaml` static DAG row | `apps_repo_brief/spine_manifest.yaml` | Add `l3_workflow_adapter` field pointing to new adapter module | ~2k | ⬜ |
+| P1.1 | `repo_brief_l3_workflow_adapter.py` | `apps_repo_brief/integrations/` (new file) | Pattern from `underwriting_l3_workflow_adapter.py`; 3 stages not 5 | ~3k | ✅ |
+| P1.2 | `repo_brief_l2_step_adapters.py` | `apps_repo_brief/integrations/` (new file) | E1 = C0 retrieval bound, E2 = PA evidence validated, E3 = exit sealed | ~3k | ✅ |
+| P2.1 | Wire `expand()` in `run_repo_brief_via_spine` | `apps_repo_brief/integrations/spine_handoff.py` | Must remain fail-soft; expand result is metadata only, does not change pipeline execution | ~3k | ✅ |
+| P3.1 | 10 governance tests | `tests/_apps_contract/test_apps_repo_brief_l3_adapter.py` | Must test: expand returns `WorkflowExpansion`, expands-not-executes, HITL posture inject, stage ordering | ~4k | ✅ |
+| P4.1 | `spine_manifest.yaml` static DAG row | `apps_repo_brief/spine_manifest.yaml` | Add `l3_workflow_adapter` field pointing to new adapter module | ~2k | ✅ |
 
 ---
 

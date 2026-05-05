@@ -1,22 +1,16 @@
-"""apps_qna.engines.judges.context_precision_judge — deterministic RAG context-precision scorer.
+"""apps_qna.engines.judges.context_precision_judge — RAG context-precision scorer.
 
-Plan: ``.windsurf/plans/apps-qna-spine-deferred-e9c5b3.md`` D1.2
+Plan: ``.windsurf/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.2
 
 Scores retrieval signal-to-noise: what fraction of retrieved sources are
-actually relevant (cited in the output answer).
+actually relevant to answering the question.
 
-Scoring model
--------------
-Reads the following output keys (graceful fallback to empty on missing):
+Scoring model (dual-path)
+-------------------------
+**LLM path** (preferred): When ``run_context["provider_context"]`` is present
+and has a configured model, dispatches an LLM judge prompt.
 
-- ``output.retrieval_sources``    — list of all retrieved source IDs
-- ``output.cited_sources``        — list of source IDs cited in the answer
-- ``output.dim_scores.context_precision`` — pre-computed score (takes precedence)
-
-When ``dim_scores.context_precision`` is present and numeric, returns it directly.
-Otherwise computes: min(len(cited ∩ retrieved) / max(len(retrieved), 1), 1.0).
-If ``cited_sources`` is absent, falls back to retrieval-count heuristic:
-≤5 retrieved → 1.0 (tight retrieval implies high precision), >5 → 0.6.
+**Heuristic fallback**: Deterministic overlap or count-based heuristic.
 
 Integration contract
 --------------------
@@ -25,6 +19,8 @@ Integration contract
 
 from __future__ import annotations
 
+import json
+import re
 from typing import Any, Mapping
 
 from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
@@ -33,7 +29,45 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
 
 IS_STUB: bool = False
 IS_CALIBRATED: bool = True
-GRADER_ID: str = "qna::context_precision_judge::v1"
+GRADER_ID: str = "qna::context_precision_judge::v2"
+
+_SCORE_RE = re.compile(r"\b([01]\.\d{1,2})\b|\b(1\.0|0\.0)\b")
+
+_PRECISION_PROMPT_TEMPLATE = """You are a RAG evaluation judge. Score context precision on a scale of 0.0 to 1.0.
+
+Context precision measures: what fraction of the retrieved sources are actually relevant to answering the question (signal-to-noise ratio).
+
+**Question**: {question}
+
+**Retrieved sources**: {retrieved}
+
+**Answer produced**: {answer}
+
+Score 1.0 = all retrieved sources are relevant (no noise).
+Score 0.0 = none of the retrieved sources are relevant.
+
+Respond with ONLY a JSON object: {{"score": <float 0.0-1.0>, "rationale": "<brief reason>"}}
+"""
+
+
+def _parse_llm_score(response: str) -> float | None:
+    """Parse a 0.0-1.0 score from LLM response."""
+    if not response:
+        return None
+    try:
+        data = json.loads(response)
+        if isinstance(data, dict) and "score" in data:
+            val = float(data["score"])
+            if 0.0 <= val <= 1.0:
+                return val
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+    m = _SCORE_RE.search(response)
+    if m:
+        val = float(m.group(1) or m.group(2))
+        if 0.0 <= val <= 1.0:
+            return val
+    return None
 
 
 def _get_output(run_context: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -64,7 +98,7 @@ def _compute_precision(
 
 
 class ContextPrecisionJudge:
-    """Deterministic context-precision judge for apps_qna RAG evaluation."""
+    """LLM-backed context-precision judge with heuristic fallback."""
 
     is_stub: bool = False
     grader_id: str = GRADER_ID
@@ -74,7 +108,7 @@ class ContextPrecisionJudge:
 
         pre = _precomputed_score(output)
         if pre is not None:
-            return pre, [f"context_precision::v1::precomputed={pre:.2f}"]
+            return pre, [f"context_precision::v2::precomputed={pre:.2f}"]
 
         retrieved: list[str] = list(output.get("retrieval_sources") or [])
         cited: list[str] = list(output.get("cited_sources") or [])
@@ -82,11 +116,31 @@ class ContextPrecisionJudge:
         if not retrieved:
             return GRADER_UNKNOWN_SENTINEL, []
 
+        # LLM judge path
+        provider_ctx = (run_context or {}).get("provider_context")
+        if provider_ctx is not None and hasattr(provider_ctx, "dispatch") and hasattr(provider_ctx, "has_model"):
+            if provider_ctx.has_model():
+                question = output.get("question") or output.get("query") or ""
+                answer = output.get("answer") or output.get("response") or ""
+                prompt = _PRECISION_PROMPT_TEMPLATE.format(
+                    question=question,
+                    retrieved=json.dumps(retrieved[:20]),
+                    answer=answer[:500] if answer else "(not provided)",
+                )
+                response = provider_ctx.dispatch(prompt)
+                llm_score = _parse_llm_score(response)
+                if llm_score is not None:
+                    return llm_score, [
+                        f"context_precision::v2::llm_judge={llm_score:.2f}",
+                        f"context_precision::v2::retrieved={len(retrieved)}",
+                    ]
+
+        # Heuristic fallback
         score = _compute_precision(retrieved, cited)
         evidence_refs = [
-            f"context_precision::v1::retrieved={len(retrieved)}",
-            f"context_precision::v1::cited={len(cited)}",
-            f"context_precision::v1::score={score:.2f}",
+            f"context_precision::v2::heuristic={score:.2f}",
+            f"context_precision::v2::retrieved={len(retrieved)}",
+            f"context_precision::v2::cited={len(cited)}",
         ]
         return score, evidence_refs
 

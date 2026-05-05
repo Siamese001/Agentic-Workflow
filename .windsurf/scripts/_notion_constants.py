@@ -11,6 +11,8 @@ Allowlisted as SSOT in `ops_scripts/ci/check_external_service_literal_ssot.py`.
 
 from __future__ import annotations
 
+import re
+
 # Notion API surface
 NOTION_API_VERSION: str = "2025-09-03"
 NOTION_BASE: str = "https://api.notion.com/v1"
@@ -58,6 +60,65 @@ def query_url(data_source_id: str) -> str:
     return f"{NOTION_BASE}/data_sources/{data_source_id}/query"
 
 
+# Matches exactly 32 hex characters (Notion compact ID, no dashes).
+_HEX32_RE = re.compile(r"([0-9a-f]{32})", re.IGNORECASE)
+
+# Notion URL path pattern: slug-<32hex> (prioritised over bare hex match).
+_PATH_ID_RE = re.compile(r"/[^/?#]+-([0-9a-f]{32})(?:[/?#]|$)", re.IGNORECASE)
+
+
+def format_uuid(compact_id: str) -> str:
+    """Format a 32-character compact hex ID into standard 8-4-4-4-12 UUID.
+
+    Mirrors the Notion SDK's ``formatUuid`` in ``helpers.ts``.
+
+    Args:
+        compact_id: 32 hex chars, no dashes.
+
+    Returns:
+        Standard UUID string e.g. ``35727693-f55c-8118-95a8-d62d11d50c25``.
+
+    Raises:
+        ValueError: if ``compact_id`` is not exactly 32 hex characters.
+    """
+    s = compact_id.replace("-", "").lower()
+    if not re.fullmatch(r"[0-9a-f]{32}", s):
+        raise ValueError(f"Not a valid 32-char hex ID: {compact_id!r}")
+    return f"{s[:8]}-{s[8:12]}-{s[12:16]}-{s[16:20]}-{s[20:]}"
+
+
+def extract_page_id(url_or_id: str) -> str | None:
+    """Extract and format a Notion page/database/block ID from any URL or raw ID.
+
+    Mirrors the Notion SDK's ``extractPageId`` / ``extractDatabaseId`` in
+    ``helpers.ts``:
+
+    1. Try slug-path pattern first: ``/slug-name-<32hex>`` (avoids picking up
+       view IDs from query params when the real ID is in the path).
+    2. Fall back to any 32-char hex substring anywhere in the string.
+
+    Args:
+        url_or_id: A Notion URL, a compact 32-char hex string, or an already-
+                   dashed UUID.
+
+    Returns:
+        Standard UUID string, or ``None`` if no 32-hex block found.
+    """
+    if url_or_id is None:
+        return None
+    trimmed = url_or_id.strip()
+
+    path_match = _PATH_ID_RE.search(trimmed)
+    if path_match:
+        return format_uuid(path_match.group(1))
+
+    any_match = _HEX32_RE.search(trimmed.replace("-", ""))
+    if any_match:
+        return format_uuid(any_match.group(1))
+
+    return None
+
+
 __all__ = [
     "NOTION_API_VERSION",
     "NOTION_BASE",
@@ -78,4 +139,6 @@ __all__ = [
     "AP_BURNDOWN_DB_ID",
     "AP_BURNDOWN_DS_ID",
     "query_url",
+    "format_uuid",
+    "extract_page_id",
 ]

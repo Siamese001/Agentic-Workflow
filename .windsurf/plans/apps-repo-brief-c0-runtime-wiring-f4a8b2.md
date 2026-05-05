@@ -1,6 +1,6 @@
 # apps_repo_brief — C0 Runtime Wiring
 
-> **Status:** Not Started · **Tier:** T2 · **Slug:** `apps-repo-brief-c0-runtime-wiring-f4a8b2`
+> **Status:** Completed · **Tier:** T2 · **Slug:** `apps-repo-brief-c0-runtime-wiring-f4a8b2`
 > **Parent:** `deferred-scope-ds2-ds3-ds7-c9e4f1` (DS-2)
 > **Est. tokens:** ~10k
 
@@ -33,9 +33,9 @@ After this plan:
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
-| W1 | P1.1–P1.3 | C0 invocation seam in spine_handoff | ~4k | Not Started |
-| W2 | P2.1–P2.2 | GovernedExecRun FEC threading + fec_producer grounding | ~3k | Not Started |
-| W3 | P3.1 | Governance tests (8 cases) | ~3k | Not Started |
+| W1 | P1.1–P1.3 | C0 invocation seam in spine_handoff | ~4k | ✅ DONE |
+| W2 | P2.1–P2.2 | GovernedExecRun FEC threading + fec_producer grounding | ~3k | ✅ DONE |
+| W3 | P3.1 | Governance tests (8 cases) | ~3k | ✅ DONE |
 
 ---
 
@@ -43,12 +43,12 @@ After this plan:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | `run_c0` import seam in spine_handoff | `apps_repo_brief/integrations/spine_handoff.py` | `run_c0` lives in `agentic_core.L0_routing.c0_retrieval` — must import without circular dep | ~1k | ⬜ |
-| P1.2 | `RepoBriefC0Adapter` call in `run_repo_brief_via_spine` | `apps_repo_brief/integrations/spine_handoff.py` | Must be fail-soft: if C0 unavailable, continue with `grounded=False` | ~2k | ⬜ |
-| P1.3 | `C0RequestSpec` → `RepoBriefFinalEvidenceContract` mapping | `apps_repo_brief/integrations/spine_handoff.py` | Schema mismatch between core `FinalEvidenceContract` and `RepoBriefFinalEvidenceContract` | ~1k | ⬜ |
-| P2.1 | `GovernedExecRun.run()` accepts FEC | `apps_repo_brief/integrations/governed_exec_run.py` | Must not break existing tests | ~1k | ⬜ |
-| P2.2 | `fec_producer.produce_fec()` reads FEC | `apps_repo_brief/cert/fec_producer.py` | Must remain backward-compat when no C0 result passed | ~2k | ⬜ |
-| P3.1 | 8 governance tests | `tests/_apps_contract/test_apps_repo_brief_c0_wiring.py` | Must test stub-safe path (no real C0), grounded path, FEC threading | ~3k | ⬜ |
+| P1.1 | `run_c0` import seam in spine_handoff | `apps_repo_brief/integrations/spine_handoff.py` | `run_c0` lives in `agentic_core.L0_routing.c0_retrieval` — must import without circular dep | ~1k | ✅ |
+| P1.2 | `RepoBriefC0Adapter` call in `run_repo_brief_via_spine` | `apps_repo_brief/integrations/spine_handoff.py` | Must be fail-soft: if C0 unavailable, continue with `grounded=False` | ~2k | ✅ |
+| P1.3 | `C0RequestSpec` → `RepoBriefFinalEvidenceContract` mapping | `apps_repo_brief/integrations/spine_handoff.py` | Schema mismatch between core `FinalEvidenceContract` and `RepoBriefFinalEvidenceContract` | ~1k | ✅ |
+| P2.1 | `GovernedExecRun.run()` accepts FEC | `apps_repo_brief/integrations/governed_exec_run.py` | Must not break existing tests | ~1k | ✅ |
+| P2.2 | `fec_producer.produce_fec()` reads FEC | `apps_repo_brief/cert/fec_producer.py` | Must remain backward-compat when no C0 result passed | ~2k | ✅ |
+| P3.1 | 8 governance tests | `tests/_apps_contract/test_apps_repo_brief_c0_wiring.py` | Must test stub-safe path (no real C0), grounded path, FEC threading | ~3k | ✅ |
 
 ---
 

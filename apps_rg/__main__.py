@@ -94,28 +94,9 @@ def _hash_file_content(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:32]
 
 
-def _prompt_jd_interactive() -> str:
-    """Prompt the operator for a job description path via stdin.
-
-    Returns the entered path string (stripped).  Callers must check whether
-    the returned path resolves to an existing file.
-
-    Raises
-    ------
-    SystemExit
-        If stdin is not a TTY (non-interactive context) and no path was
-        supplied via ``--jd``.  Use ``--non-interactive`` to turn this into
-        a hard error instead of an interactive prompt.
-    """
-    import sys as _sys
-
-    if not _sys.stdin.isatty():
-        raise SystemExit(
-            "apps_rg: --jd is required in non-interactive mode "
-            "(stdin is not a TTY). Pass --jd <path> or --non-interactive to "
-            "get a clear error instead of hanging."
-        )
-    return input("Enter path to job-description JSON [apps_rg/scripts/job_description.json]: ").strip()
+_DEFAULT_JD_PATH = "apps_rg/scripts/job_description.json"
+_DEFAULT_BRIEF_PATH = "apps_rg/scripts/company_research.json"
+_DEFAULT_CANDIDATE_PATH = "apps_rg/scripts/candidate_profile.yaml"
 
 
 def _build_raw_request(args) -> dict[str, Any]:
@@ -124,19 +105,14 @@ def _build_raw_request(args) -> dict[str, Any]:
     This dict is the contract surface between apps_rg and the R4 pipeline.
     It contains only transport-level data — no executable code.
     """
-    non_interactive: bool = getattr(args, "non_interactive", False)
     jd_arg: str = getattr(args, "jd", "") or ""
-    if not jd_arg and not non_interactive:
-        try:
-            jd_arg = _prompt_jd_interactive()
-        except SystemExit:
-            jd_arg = ""
-    elif not jd_arg and non_interactive:
-        pass  # fall through to default path; empty jd_payload is valid
-    jd_path = Path(jd_arg or "apps_rg/scripts/job_description.json")
-    brief_path = Path(getattr(args, "manual_brief", "") or "apps_rg/scripts/company_research.json")
+    jd_path = Path(jd_arg or _DEFAULT_JD_PATH)
+
+    brief_arg: str = getattr(args, "manual_brief", "") or ""
+    brief_path = Path(brief_arg if brief_arg and Path(brief_arg).exists() else _DEFAULT_BRIEF_PATH)
+
     candidate_path = (
-        Path(args.candidate) if getattr(args, "candidate", None) else Path("apps_rg/scripts/candidate_profile.yaml")
+        Path(args.candidate) if getattr(args, "candidate", None) else Path(_DEFAULT_CANDIDATE_PATH)
     )
 
     jd_payload: dict[str, Any] = {}
@@ -149,6 +125,7 @@ def _build_raw_request(args) -> dict[str, Any]:
     raw = {
         "transport": "api",
         "method": "POST",
+        "jd_path_resolved": str(jd_path),
         "content_type": "application/json",
         "source_channel": "apps_rg_cli",
         "declared_schema": "apps_rg_jd_v1",
@@ -209,12 +186,49 @@ def _run_with_args(
         else _runs_dir / f"r4_{raw_request['resume_hash'][:8]}"
     )
 
+    # ── Single source of truth: resolve all paths from raw_request (not args) ──
+    # _build_raw_request may have prompted interactively; args.* is NOT updated.
+    jd_path = Path(raw_request.get("jd_path_resolved") or getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
+    brief_path = Path(raw_request["manual_brief"])
     candidate_path = (
         Path(args.candidate) if getattr(args, "candidate", None)
         else Path("apps_rg/scripts/candidate_profile.yaml")
     )
-    jd_path = Path(getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
-    brief_path = Path(getattr(args, "manual_brief", "") or "apps_rg/scripts/company_research.json")
+
+    # ── L0 prerequisite gate: briefing validation before R4 ──
+    try:
+        from agentic_core.L0_routing.gates.apps_rg_prerequisite_gate import check_apps_rg_prerequisites
+        _prereq = check_apps_rg_prerequisites(
+            target_company=raw_request["target_company"],
+            target_role=raw_request["target_role"],
+            policy_hash=raw_request["policy_hash"],
+            blueprint_hash=raw_request["blueprint_hash"],
+            trace_id=raw_request.get("tenant_id", "default"),
+            briefing_path=brief_path,
+        )
+        if _prereq is not None:
+            from agentic_core.L0_routing.types.routing_artifact_types import L0Route
+            _sel = _prereq.get("selected_route")
+            if _sel == L0Route.R5:
+                _log.error(
+                    "[apps_rg] L0 prerequisite gate: briefing incompatible — %s. "
+                    "Check briefing file at %s.",
+                    _prereq.get("reason_codes"),
+                    brief_path,
+                )
+                sys.exit(1)
+            if _sel == L0Route.R3R4_MANAGED:
+                _log.warning(
+                    "[apps_rg] L0 prerequisite gate: briefing MISSING or STALE for '%s'. "
+                    "Run apps_research first to generate a fresh briefing, "
+                    "then re-run apps_rg with --manual-brief <path>.",
+                    raw_request["target_company"],
+                )
+                sys.exit(1)
+    except ImportError:
+        _log.debug("[apps_rg] L0 prerequisite gate unavailable (fail-open)")
+    except Exception as _gate_err:
+        _log.warning("[apps_rg] L0 prerequisite gate failed (fail-soft): %s", _gate_err)
 
     # ── W1 / GAP-1: R1A exact-cache pre-flight ──
     r1a_key = compute_r1a_key(
@@ -389,18 +403,28 @@ def main() -> None:
     parser.add_argument("--candidate", default=None, help="Candidate profile path")
     parser.add_argument("--target-level", default=None)
     parser.add_argument("--jd", default=None, help="Job description JSON path")
-    parser.add_argument(
-        "--non-interactive",
-        action="store_true",
-        default=False,
-        help="Disable interactive TTY prompts; error immediately if required inputs are absent",
-    )
     args, _unknown = parser.parse_known_args()
 
+    # ── Resolve company/role from script defaults when not supplied on CLI ──
     if not args.target_company:
-        parser.error("--target-company is required")
+        try:
+            _brief = json.loads(Path(_DEFAULT_BRIEF_PATH).read_text(encoding="utf-8"))
+            args.target_company = _brief.get("company", "") or ""
+        except (OSError, json.JSONDecodeError):
+            pass
     if not args.target_role:
-        parser.error("--target-role is required")
+        try:
+            _jd = json.loads(Path(_DEFAULT_JD_PATH).read_text(encoding="utf-8"))
+            args.target_role = (
+                _jd.get("role_title") or _jd.get("title") or _jd.get("job_title") or ""
+            )
+        except (OSError, json.JSONDecodeError):
+            pass
+
+    if not args.target_company:
+        parser.error("--target-company is required (and could not be read from apps_rg/scripts/company_research.json)")
+    if not args.target_role:
+        parser.error("--target-role is required (and could not be read from apps_rg/scripts/job_description.json)")
 
     _run_with_args(args)
 

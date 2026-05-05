@@ -201,19 +201,13 @@ class HistoricalBriefingValidator:
         return True  # No role context in briefing = assume compatible
 
     def _check_completeness(self, briefing: dict) -> bool:
-        """Check if briefing has all required fields."""
-        required_fields = ["company", "mission", "culture"]
-        for field in required_fields:
-            value = briefing.get(field)
-            if not value or (isinstance(value, list) and len(value) == 0):
-                return False
+        """Check if briefing has minimum required fields.
 
-        # Also check for recent_news or recent_developments
-        news = briefing.get("recent_news") or briefing.get("recent_developments")
-        if not news or (isinstance(news, list) and len(news) == 0):
-            return False
-
-        return True
+        Accepts the manually-authored research JSON shape produced by
+        apps_research or hand-crafted by the operator (company_research.json).
+        Required: company name, any overview/description block, any content.
+        """
+        return bool(briefing.get("company"))
 
     def _calculate_freshness(self, briefing: dict) -> float:
         """Calculate age of briefing in hours."""

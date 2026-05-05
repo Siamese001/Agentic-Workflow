@@ -13,6 +13,8 @@
   llm_judge_graders:
     - "lic::response_likelihood_judge::v1"
     - "lic::brand_voice_judge::v1"
+    - "lic::narrative_coherence_judge::v1"
+    - "lic::tone_register_fit_judge::v1"
   ensemble_or_consensus_graders:
     - "lic::audience_fit_hybrid_v1"
     - "lic::offer_clarity_hybrid_v1"

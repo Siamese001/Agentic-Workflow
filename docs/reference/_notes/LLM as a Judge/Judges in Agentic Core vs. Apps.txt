@@ -1,0 +1,104 @@
+JUDGES IN AGENTIC_CORE SPINE + apps_*  (MULTI-COLUMN VIEW)
+=============================================================================================================
+
+SPINE LAYER        | JUDGE ROLE (WHAT TO EVALUATE)                  | EXECUTION PATH (HOW IT RUNS)                 | OWNERSHIP (CORE vs APP)              | DO / DON’T
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+U0 INTAKE          | Structural validity, injection signals,        | Deterministic classifier or lightweight     | Core                                 | DO: fail-closed, fast checks
+                   | identity/session/tenant presence               | judge (no model call needed)                |                                      | DON’T: infer intent or route
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+L1 PLAN            | Intent clarity, assumptions, grounding need,   | Optional LLM judge via PA → L2 → Gateway    | Core infra + App rubric              | DO: critique plan quality
+                   | lowest viable agency                           | or heuristic checks                         |                                      | DON’T: choose route
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+L0 ROUTE           | Route consistency with plan, cheapest-safe     | Mostly deterministic; shadow LLM judge      | Core                                 | DO: audit route choice
+                   | path, HITL posture                             | allowed (non-authoritative)                 |                                      | DON’T: override route authority
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+C0 EVIDENCE        | Recall, precision, contradiction, support,     | LLM judge via PA → L2 → Gateway;            | Core infra + App rubric              | DO: score evidence quality
+                   | citation integrity                             | plus heuristics (BM25/dense checks)         |                                      | DON’T: retrieve/answer
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+PROMPT ASSEMBLY    | Boundary preservation, schema binding,         | Deterministic checks; optional LLM audit    | Core                                 | DO: validate slots & fences
+(PA)               | evidence packing correctness                   | via same artifact path                      |                                      | DON’T: call providers
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+L2 EXECUTE         | Bounded result quality, tool correctness,      | LLM/heuristic judge via PA → L2 → Gateway   | Core infra + App rubric              | DO: assess result/repairability
+                   | repairability                                  |                                             |                                      | DON’T: expand scope/route
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+EXIT (X1/X2/X3)    | Final checkout: groundedness, correctness,     | Primary LLM-as-judge composition consuming  | Core (decision) + App (rubric)       | DO: emit one X3 disposition
+                   | completeness, safety, schema, confidence       | multiple judge scorecards                   |                                      | DON’T: execute/retrieve
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+L4 / UWG           | Commit validity: schema, lineage, replay,      | Deterministic validators (no creative LLM)  | Core                                 | DO: gate durable writes
+                   | policy compatibility                           |                                             |                                      | DON’T: accept unverified diffs
+-------------------|------------------------------------------------|---------------------------------------------|--------------------------------------|-------------------------------
+L6 SHADOW          | Calibration, regression, RCA, reliability      | Heavy LLM + metrics (Spearman, etc.) over   | Core infra + App data/labels         | DO: improve future runs
+                   | vs human labels                                | sealed exhaust                              |                                      | DON’T: mutate current run
+
+
+=============================================================================================================
+CORE vs apps_* SPLIT
+=============================================================================================================
+
+CONCERN                    | agentic_core (HOW judging runs)                  | apps_* (WHAT good means)
+---------------------------|--------------------------------------------------|-----------------------------------------------
+Invocation & dispatch      | JudgeRunner, Gateway routing, retries           | Configure model/heuristic use
+Prompt artifact            | PA → CompiledPromptArtifact discipline           | Domain prompt sections
+Parsing & schema           | JudgeResult (score, rationale, receipts)         | Optional extensions / scorecard mapping
+Telemetry & replay         | OTEL spans, manifests, replay keys              | Use for app reports
+Calibration framework      | Reliability metrics, comparison harness          | Provide holdout labels & datasets
+Rubrics & dimensions       | Generic hooks                                   | Domain-specific dimensions (e.g., recall, fairness)
+Thresholds                 | Defaults                                        | App-specific thresholds
+Examples/fixtures          | None                                            | Domain examples, gold data
+
+
+=============================================================================================================
+EXECUTION PATH (STANDARDIZED)
+=============================================================================================================
+
+[ apps_* artifact ] 
+        |
+        v
+[ apps_* rubric / thresholds ]
+        |
+        v
+[ agentic_core JudgeRequest ]
+        |
+        v
+[ Prompt Assembly ]
+        |
+        | CompiledPromptArtifact
+        v
+[ L2 Execute ]
+        |
+        v
+[ SovereignLLMGateway ]
+        |
+        v
+[ LLM judge or heuristic fallback ]
+        |
+        v
+[ JudgeResult (sealed) ]
+        |
+        v
+[ Consumed by Runtime Gate / Exit / L6 ]
+
+
+ANTI-PATTERN (DO NOT DO)
+------------------------
+[ apps_* judge ] -> raw prompt -> direct provider/gateway call -> unsealed score
+
+
+=============================================================================================================
+RUNTIME vs SHADOW JUDGES
+=============================================================================================================
+
+TYPE            | PURPOSE                         | PROPERTIES
+----------------|----------------------------------|-----------------------------------------------
+Runtime judges  | Protect current run              | Fast, bounded, fail-closed, no learning
+Shadow (L6)     | Improve future runs              | Deeper analysis, calibration, no current-run effect
+
+
+=============================================================================================================
+FINAL RULE
+=============================================================================================================
+
+- Use agentic_core for judge infrastructure.
+- Use apps_* for domain judgment.
+- Judges exist across the spine, but remain evaluation overlays.
+- Owning layer makes the decision; Exit emits X3; UWG commits; L6 learns.

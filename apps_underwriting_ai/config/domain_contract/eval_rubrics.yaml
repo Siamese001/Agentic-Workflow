@@ -13,6 +13,7 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: feature_derivation_correctness
     description: Derived features match expected computation.
     weight: 0.2
@@ -20,6 +21,7 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: policy_compliance
     description: Decision respects underwriting policy.
     weight: 0.25
@@ -27,6 +29,7 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: explainability
     description: Decision carries an evidence-cited explanation.
     weight: 0.15
@@ -34,6 +37,7 @@
     min_required_score: 0.7
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: capability
   - dimension_id: fairness
     description: No protected-attribute-based signal in decision.
     weight: 0.15
@@ -41,6 +45,7 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   # apps-underwriting-ai-d3-rationale-judge-f2c8d5 W2.P3 — promoted from stub.
   # RationaleQualityJudge v2 (IS_STUB=False, deterministic heuristic, Spearman≥0.80).
   # weight=0.05 keeps the original five weighted dims at their original proportions.
@@ -52,6 +57,7 @@
     min_required_score: 0.50
     evidence_required: false
     fail_closed_if_unknown: true
+    taxonomy_class: capability
   # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 - RAG metric dims with
   # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
   # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall
@@ -65,6 +71,7 @@
     min_required_score: 0.85
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: tracked_metric
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -72,6 +79,7 @@
     min_required_score: 0.70
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: tracked_metric
   - dimension_id: answer_relevancy
     description: Answer relevancy to the task intent.
     weight: 0.0
@@ -79,5 +87,6 @@
     min_required_score: 0.80
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: tracked_metric
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'

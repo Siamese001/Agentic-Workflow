@@ -33,6 +33,7 @@ claimed_routes:
     c0_required: true
     pa_required: true
     l3_required: false
+    l3_workflow_adapter: apps_repo_brief.integrations.repo_brief_l3_workflow_adapter.RepoBriefL3WorkflowAdapter
     source_collection: repo_brief_docs
     notes:
       - "C0 is mandatory — this is NOT template-only. SIMPLE ≠ ungrounded."

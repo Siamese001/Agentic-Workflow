@@ -60,10 +60,37 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _load_cert_route_entry() -> dict | None:
+    """Return the first route entry from apps_eval's cert_route_registry.yaml.
+
+    Fail-soft: any parse or IO error returns None, which makes
+    ``maybe_invoke_exit_eval`` a no-op. Never raises.
+    """
+    try:
+        import yaml  # noqa: PLC0415
+        from pathlib import Path  # noqa: PLC0415
+
+        registry_path = Path(__file__).resolve().parent / "config" / "cert_route_registry.yaml"
+        doc = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 -- cert-path adoption must be fail-soft
+        # guardian: allow-broad-except -- cert-path adoption must be fail-soft;
+        # any registry-load failure leaves the hook as a no-op and the cert
+        # bundle continues unaffected
+        return None
+    routes = doc.get("routes") if isinstance(doc, dict) else None
+    if not routes or not isinstance(routes, list):
+        return None
+    return routes[0] if routes else None
+
+
 def _run_eval(args: argparse.Namespace) -> int:
     """Delegate to L1→L0→L2→Exit pipeline."""
     from apps_eval.integrations.eval_ingress import run_eval_from_cli
-    return run_eval_from_cli(
+    from apps_shared.cert import maybe_invoke_exit_eval
+    from apps_eval.cert import produce_fec  # noqa: F401 -- side-effect: FEC available
+
+    cert_route_entry = _load_cert_route_entry()
+    exit_code = run_eval_from_cli(
         suites_str=args.suites,
         scenario_filter=args.filter,
         baseline_mode=args.baseline_mode,
@@ -71,6 +98,20 @@ def _run_eval(args: argparse.Namespace) -> int:
         deterministic_only=args.deterministic_only,
         cache_strategy=args.cache_strategy,
     )
+    _run_ctx: dict = {
+        "route_id": "apps_eval.evaluation_v1",
+        "route_contract": {"route_id": "apps_eval.evaluation_v1"},
+    }
+    _receipts: dict = {
+        "output": {},
+        "route_contract": _run_ctx["route_contract"],
+        "evidence_bundle": {},
+        "final_evidence_contract": produce_fec(_run_ctx),
+        "state_diff": {},
+        "compiled_prompt_artifact": {},
+    }
+    maybe_invoke_exit_eval(_receipts, cert_route_entry)
+    return exit_code
 
 
 def main(argv: Sequence[str] | None = None) -> int:

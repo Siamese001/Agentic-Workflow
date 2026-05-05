@@ -1,6 +1,6 @@
 # apps_repo_brief Deferred Scope Closeout — Implementation
 
-> **Status:** In Progress · **Tier:** T2 · **Slug:** `apps-repo-brief-closeout-impl-b3e7a2`
+> **Status:** Completed · **Tier:** T2 · **Slug:** `apps-repo-brief-closeout-impl-b3e7a2`
 > **Source plan:** `apps-repo-brief-deferred-scope-closeout-a7d2f1` (deferred scope registry)
 > **Purpose:** Implement DS-1 through DS-6 from the deferred scope registry, one wave at a time.
 
@@ -17,10 +17,10 @@ This plan implements 4 of them (DS-1, DS-4, DS-5, DS-6). DS-8 is already complet
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|-------------|--------|-----------------|
-| W1 | W1.1–W1.2 | DS-4: `apps_underwriting_ai` plan doc + Notion status sync | ~1k | ⬜ Not Started | Plan wave table all ✅ DONE; Notion page Completed |
-| W2 | W2.1–W2.3 | DS-5: 7 P0 ADG layer violations remediation | ~8k | ⬜ Not Started | Zero P0 violations in ADG; all 7 files fixed |
-| W3 | W3.1–W3.3 | DS-6: `apps_underwriting_ai` spine allowlist burndown | ~6k | ⬜ Not Started | Allowlist entry removed; spine delegation gate passes |
-| W4 | W4.1–W4.3 | DS-1: `apps_repo_brief` FEC producer live wiring + tests | ~6k | ⬜ Not Started | FEC producer not retired; `__main__.py` cert hook; 7 tests pass |
+| W1 | W1.1–W1.2 | DS-4: `apps_underwriting_ai` plan doc + Notion status sync | ~1k | ✅ DONE | Plan wave table all ✅ DONE; Notion page Completed |
+| W2 | W2.1–W2.3 | DS-5: 7 P0 ADG layer violations remediation | ~8k | ✅ DONE | Zero P0 violations in ADG; all 7 files fixed |
+| W3 | W3.1–W3.3 | DS-6: `apps_underwriting_ai` spine allowlist burndown | ~6k | ✅ DONE | Allowlist entry removed; spine delegation gate passes |
+| W4 | W4.1–W4.3 | DS-1: `apps_repo_brief` FEC producer live wiring + tests | ~6k | ✅ DONE | FEC producer not retired; `__main__.py` cert hook; 7 tests pass |
 
 ---
 
@@ -28,17 +28,17 @@ This plan implements 4 of them (DS-1, DS-4, DS-5, DS-6). DS-8 is already complet
 
 | Phase ID | Title | Scope (files) | Est. Tokens | Status |
 |----------|-------|--------------|-------------|--------|
-| W1.1 | Update underwriting plan doc wave table | `.windsurf/plans/apps-underwriting-ai-spine-hardening-d7f3b2.md` | ~500 | ⬜ |
-| W1.2 | Patch Notion page to Completed | Notion API call | ~500 | ⬜ |
-| W2.1 | Fix `apps_rg_prerequisite_gate.py` P0 violation (L0→L_APP) | `agentic_core/L0_routing/gates/apps_rg_prerequisite_gate.py` | ~1k | ⬜ |
-| W2.2 | Fix `l2_recipe_resolver.py` P0 violation (agentic_core→L_APP) | `agentic_core/runtime/l2_recipe_resolver.py` | ~1k | ⬜ |
-| W2.3 | Fix 5 `llm_client.py` P0 violations (apps_*→L_INFRA) | 5 × `apps_*/integrations/llm_client.py` | ~4k | ⬜ |
-| W3.1 | Audit `apps_underwriting_ai` spine imports into `agentic_core` | `apps_underwriting_ai/` | ~2k | ⬜ |
-| W3.2 | Wire any missing spine imports + update manifest | `apps_underwriting_ai/spine_manifest.yaml`, integrations | ~3k | ⬜ |
-| W3.3 | Remove allowlist entry | `config/apps_spine_delegation_allowlist.yaml` | ~500 | ⬜ |
-| W4.1 | Restore `apps_repo_brief` FEC producer (remove RETIRED) | `apps_repo_brief/cert/fec_producer.py` | ~2k | ⬜ |
-| W4.2 | Wire cert hook in `apps_repo_brief/__main__.py` | `apps_repo_brief/__main__.py` | ~2k | ⬜ |
-| W4.3 | 7 FEC producer tests | `tests/_apps_contract/test_apps_repo_brief_fec_producer.py` | ~2k | ⬜ |
+| W1.1 | Update underwriting plan doc wave table | `.windsurf/plans/apps-underwriting-ai-spine-hardening-d7f3b2.md` | ~500 | ✅ |
+| W1.2 | Patch Notion page to Completed | Notion API call | ~500 | ✅ |
+| W2.1 | Fix `apps_rg_prerequisite_gate.py` P0 violation (L0→L_APP) | `agentic_core/L0_routing/gates/apps_rg_prerequisite_gate.py` | ~1k | ✅ |
+| W2.2 | Fix `l2_recipe_resolver.py` P0 violation (agentic_core→L_APP) | `agentic_core/runtime/l2_recipe_resolver.py` | ~1k | ✅ |
+| W2.3 | Fix 5 `llm_client.py` P0 violations (apps_*→L_INFRA) | 5 × `apps_*/integrations/llm_client.py` | ~4k | ✅ |
+| W3.1 | Audit `apps_underwriting_ai` spine imports into `agentic_core` | `apps_underwriting_ai/` | ~2k | ✅ |
+| W3.2 | Wire any missing spine imports + update manifest | `apps_underwriting_ai/spine_manifest.yaml`, integrations | ~3k | ✅ |
+| W3.3 | Remove allowlist entry | `config/apps_spine_delegation_allowlist.yaml` | ~500 | ✅ |
+| W4.1 | Restore `apps_repo_brief` FEC producer (remove RETIRED) | `apps_repo_brief/cert/fec_producer.py` | ~2k | ✅ |
+| W4.2 | Wire cert hook in `apps_repo_brief/__main__.py` | `apps_repo_brief/__main__.py` | ~2k | ✅ |
+| W4.3 | 7 FEC producer tests | `tests/_apps_contract/test_apps_repo_brief_fec_producer.py` | ~2k | ✅ |
 
 ---
 

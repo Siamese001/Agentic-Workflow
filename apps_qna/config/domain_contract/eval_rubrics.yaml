@@ -13,6 +13,7 @@
     min_required_score: 0.9
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: factual_grounding
     description: Answers cite KB source_ids.
     weight: 0.25
@@ -20,6 +21,7 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: de_duplication
     description: No duplicate cards within a pack.
     weight: 0.1
@@ -27,6 +29,7 @@
     min_required_score: 0.98
     evidence_required: false
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: coverage
     description: Pack covers the declared pathology_taxonomy for the route.
     weight: 0.15
@@ -34,6 +37,7 @@
     min_required_score: 0.7
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: capability
   - dimension_id: freshness
     description: Sources within freshness window.
     weight: 0.1
@@ -41,6 +45,7 @@
     min_required_score: 0.8
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: no_paste_of_forbidden_content
     description: No forbidden content patterns (PII, secrets).
     weight: 0.15
@@ -48,6 +53,7 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 — RAG metric dims with
   # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
   # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall
@@ -61,6 +67,7 @@
     min_required_score: 0.85
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -68,6 +75,7 @@
     min_required_score: 0.70
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   - dimension_id: answer_relevancy
     description: Answer relevancy to the interview question intent.
     weight: 0.0
@@ -75,6 +83,7 @@
     min_required_score: 0.80
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   # W2 / bge-m3-deferred-scope-remaining-c4e7a1 — real LLM judge (Anthropic).
   # IS_CALIBRATED=False until Spearman >= 0.80 on holdout verified.
   # weight=0.0 and fail_closed_if_unknown=false until calibration passes.
@@ -85,6 +94,7 @@
     min_required_score: 0.75
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
     judge_module: apps_qna.engines.judges.interview_card_quality_judge
     calibration_status: uncalibrated
     calibration_target_spearman: 0.80

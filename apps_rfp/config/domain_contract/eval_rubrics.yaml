@@ -13,6 +13,7 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: factual_grounding
     description: Claims cite company KB or past wins.
     weight: 0.2
@@ -20,6 +21,7 @@
     min_required_score: 0.95
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: compliance_with_rfp_constraints
     description: Page limits, format, required sections per RFP.
     weight: 0.15
@@ -27,6 +29,7 @@
     min_required_score: 0.95
     evidence_required: false
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: competitive_positioning
     description: Clear differentiation vs common competitors.
     weight: 0.1
@@ -34,6 +37,7 @@
     min_required_score: 0.55
     evidence_required: false
     fail_closed_if_unknown: true
+    taxonomy_class: capability
   - dimension_id: win_theme_alignment
     description: Response aligns with identified win themes.
     weight: 0.1
@@ -41,6 +45,7 @@
     min_required_score: 0.55
     evidence_required: false
     fail_closed_if_unknown: false
+    taxonomy_class: capability
     informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
   - dimension_id: no_fabricated_credentials
     description: Every claimed capability/cert is in company KB.
@@ -49,6 +54,7 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   - dimension_id: pricing_integrity
     description: No unauthorized pricing commitments.
     weight: 0.1
@@ -56,6 +62,7 @@
     min_required_score: 0.99
     evidence_required: true
     fail_closed_if_unknown: true
+    taxonomy_class: regression
   # W3.P5 / apps-eval-harness-closeout-b7c9d2 W1.P1 - RAG metric dims with
   # OpenAI canonical baselines (context_recall 0.85, context_precision 0.70,
   # answer_relevancy 0.80). weight=0.0 keeps the existing weighted overall
@@ -69,6 +76,7 @@
     min_required_score: 0.85
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -76,6 +84,7 @@
     min_required_score: 0.70
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   - dimension_id: answer_relevancy
     description: Answer relevancy to the task intent.
     weight: 0.0
@@ -83,5 +92,6 @@
     min_required_score: 0.80
     evidence_required: true
     fail_closed_if_unknown: false
+    taxonomy_class: tracked_metric
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'

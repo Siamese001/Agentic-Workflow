@@ -1,27 +1,16 @@
-"""apps_qna.engines.judges.answer_relevancy_judge — deterministic answer-relevancy scorer.
+"""apps_qna.engines.judges.answer_relevancy_judge — RAG answer-relevancy scorer.
 
-Plan: ``.windsurf/plans/apps-qna-spine-deferred-e9c5b3.md`` D1.2
+Plan: ``.windsurf/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.3
 
 Scores how well the generated answer addresses the interview question intent.
 
-Scoring model
--------------
-Reads the following output keys (graceful fallback to empty on missing):
+Scoring model (dual-path)
+-------------------------
+**LLM path** (preferred): When ``run_context["provider_context"]`` is present
+and has a configured model, dispatches an LLM judge prompt.
 
-- ``output.answer``          — generated answer text
-- ``output.question``        — interview question text
-- ``output.dim_scores.answer_relevancy`` — pre-computed score (takes precedence)
-
-When ``dim_scores.answer_relevancy`` is present and numeric, returns it directly.
-Otherwise applies a deterministic heuristic combining:
-
-1. **Token overlap** — Jaccard similarity of question vs answer word sets.
-   Weighted 0.40.
-2. **Answer length adequacy** — 20–500 chars → 1.0; outside → penalized.
-   Weighted 0.30.
-3. **Non-repetition** — fraction of unique words in answer. Weighted 0.30.
-
-When answer or question is empty, returns ``GRADER_UNKNOWN_SENTINEL``.
+**Heuristic fallback**: Deterministic multi-signal heuristic (overlap, length,
+uniqueness).
 
 Integration contract
 --------------------
@@ -30,6 +19,7 @@ Integration contract
 
 from __future__ import annotations
 
+import json
 import re
 from typing import Any, Mapping
 
@@ -39,7 +29,43 @@ from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
 
 IS_STUB: bool = False
 IS_CALIBRATED: bool = True
-GRADER_ID: str = "qna::answer_relevancy_judge::v1"
+GRADER_ID: str = "qna::answer_relevancy_judge::v2"
+
+_SCORE_RE = re.compile(r"\b([01]\.\d{1,2})\b|\b(1\.0|0\.0)\b")
+
+_RELEVANCY_PROMPT_TEMPLATE = """You are a RAG evaluation judge. Score answer relevancy on a scale of 0.0 to 1.0.
+
+Answer relevancy measures: how well the generated answer directly addresses the interview question. Penalize off-topic, evasive, or overly generic answers.
+
+**Question**: {question}
+
+**Answer**: {answer}
+
+Score 1.0 = answer directly and completely addresses the question.
+Score 0.0 = answer is completely off-topic or non-responsive.
+
+Respond with ONLY a JSON object: {{"score": <float 0.0-1.0>, "rationale": "<brief reason>"}}
+"""
+
+
+def _parse_llm_score(response: str) -> float | None:
+    """Parse a 0.0-1.0 score from LLM response."""
+    if not response:
+        return None
+    try:
+        data = json.loads(response)
+        if isinstance(data, dict) and "score" in data:
+            val = float(data["score"])
+            if 0.0 <= val <= 1.0:
+                return val
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+    m = _SCORE_RE.search(response)
+    if m:
+        val = float(m.group(1) or m.group(2))
+        if 0.0 <= val <= 1.0:
+            return val
+    return None
 
 _WORD_RE = re.compile(r"\b[a-zA-Z0-9]+\b")
 _STOP_WORDS: frozenset[str] = frozenset(
@@ -90,7 +116,7 @@ def _score_uniqueness(answer: str) -> float:
 
 
 class AnswerRelevancyJudge:
-    """Deterministic answer-relevancy judge for apps_qna RAG evaluation."""
+    """LLM-backed answer-relevancy judge with heuristic fallback."""
 
     is_stub: bool = False
     grader_id: str = GRADER_ID
@@ -100,7 +126,7 @@ class AnswerRelevancyJudge:
 
         pre = _precomputed_score(output)
         if pre is not None:
-            return pre, [f"answer_relevancy::v1::precomputed={pre:.2f}"]
+            return pre, [f"answer_relevancy::v2::precomputed={pre:.2f}"]
 
         answer: str = output.get("answer") or output.get("response") or ""
         question: str = output.get("question") or output.get("query") or ""
@@ -108,6 +134,22 @@ class AnswerRelevancyJudge:
         if not answer or not question:
             return GRADER_UNKNOWN_SENTINEL, []
 
+        # LLM judge path
+        provider_ctx = (run_context or {}).get("provider_context")
+        if provider_ctx is not None and hasattr(provider_ctx, "dispatch") and hasattr(provider_ctx, "has_model"):
+            if provider_ctx.has_model():
+                prompt = _RELEVANCY_PROMPT_TEMPLATE.format(
+                    question=question[:500],
+                    answer=answer[:1000],
+                )
+                response = provider_ctx.dispatch(prompt)
+                llm_score = _parse_llm_score(response)
+                if llm_score is not None:
+                    return llm_score, [
+                        f"answer_relevancy::v2::llm_judge={llm_score:.2f}",
+                    ]
+
+        # Heuristic fallback
         q_words = _tokenize(question)
         a_words = _tokenize(answer)
 
@@ -117,9 +159,9 @@ class AnswerRelevancyJudge:
 
         score = max(0.0, min(1.0, 0.40 * overlap + 0.30 * length + 0.30 * uniqueness))
         evidence_refs = [
-            f"answer_relevancy::v1::overlap={overlap:.2f}",
-            f"answer_relevancy::v1::length={length:.2f}",
-            f"answer_relevancy::v1::uniqueness={uniqueness:.2f}",
+            f"answer_relevancy::v2::heuristic_overlap={overlap:.2f}",
+            f"answer_relevancy::v2::heuristic_length={length:.2f}",
+            f"answer_relevancy::v2::heuristic_uniqueness={uniqueness:.2f}",
         ]
         return score, evidence_refs
 

@@ -14,6 +14,7 @@
       min_required_score: 0.55
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: capability
     - dimension_id: personalization_integrity
       description: "Every personalization claim traces to verified recipient evidence (no fake 'I noticed you...' without source)."
       weight: 0.20
@@ -21,6 +22,7 @@
       min_required_score: 0.95
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression
     - dimension_id: offer_clarity
       description: "Value proposition + call_to_action are concrete, actionable, and unambiguous."
       weight: 0.10
@@ -28,6 +30,7 @@
       min_required_score: 0.60
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: capability
     - dimension_id: response_likelihood
       description: "Predicted likelihood of a positive recipient action given prior similar outreach (calibrated against historical reply data)."
       weight: 0.10
@@ -35,6 +38,7 @@
       min_required_score: 0.45
       evidence_required: false
       fail_closed_if_unknown: false
+      taxonomy_class: capability
       informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: brevity_and_channel_fit
       description: "Length, paragraph count, and structure match the channel's expected norms (email != InMail != chat != sms)."
@@ -43,6 +47,7 @@
       min_required_score: 0.85
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: regression
     - dimension_id: compliance
       description: "Outreach respects regional rules (CAN-SPAM, GDPR, opt-out language); consent_artifact verified; no prohibited content."
       weight: 0.15
@@ -50,6 +55,7 @@
       min_required_score: 0.95
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression
     - dimension_id: sequence_coherence
       description: "If part of a multi-touch sequence, the message references prior context coherently and does not repeat or contradict."
       weight: 0.05
@@ -57,6 +63,7 @@
       min_required_score: 0.50
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: capability
     - dimension_id: brand_voice
       description: "Tone, lexicon, and style match the sender's voice_profile (or default tenant voice if not provided)."
       weight: 0.05
@@ -64,6 +71,7 @@
       min_required_score: 0.50
       evidence_required: false
       fail_closed_if_unknown: false
+      taxonomy_class: capability
       informational_only: true  # ADR-082: tracked-only pending judge implementation (W4 policy resolution dec_19dedd3f565173b7f)
     - dimension_id: no_fake_personalization
       description: "Hard guardrail: any claim of recipient detail (\"I saw\", \"I noticed\", \"congrats on\") must be backed by an evidence_id."
@@ -72,6 +80,7 @@
       min_required_score: 0.99
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression
     - dimension_id: no_sensitive_targeting
       description: "Hard guardrail: no language targeting protected attributes (gender, race, age, religion, disability, etc.)."
       weight: 0.05
@@ -79,6 +88,7 @@
       min_required_score: 0.99
       evidence_required: false
       fail_closed_if_unknown: true
+      taxonomy_class: regression
     # P2 Dimensions (added W1.P2)
     - dimension_id: narrative_coherence
       description: "P2a: Arc sections flow logically; recommended_order followed; no arc breaks present."
@@ -87,6 +97,7 @@
       min_required_score: 0.70
       evidence_required: true
       fail_closed_if_unknown: false
+      taxonomy_class: capability
       informational_only: false
     - dimension_id: tone_register_fit
       description: "P2b: Vocabulary and formality level match the archetype calibration (if provided)."
@@ -95,6 +106,7 @@
       min_required_score: 0.75
       evidence_required: true
       fail_closed_if_unknown: false
+      taxonomy_class: capability
       informational_only: false
     - dimension_id: differentiator_grounded
       description: "P2c: Any competitive differentiator claim is backed by source_refs and uses structured claim format."
@@ -103,3 +115,4 @@
       min_required_score: 1.0
       evidence_required: true
       fail_closed_if_unknown: true
+      taxonomy_class: regression
