@@ -31,8 +31,12 @@ Left over from migrations; live in the schema but must never be selected:
 |---|---|---|
 | `🟡Draft` (red) | `f5abd2a2-03bc-4951-9e38-ae9e1343909c` | `Not Started` |
 | `🔵Completed` (pink) | `6da99522-3194-4aa3-aac4-44296b4048b7` | `Completed` |
+| `Draft` (red, id `79d24503-da3e-4d22-a0fb-13a0c6d36d11`) | stale schema option | `Not Started` |
+| `Live` (any) | stale schema option | `In Progress` |
 
-Incident precedent (2026-05-03): four per-app FEC producer plans posted with `🟡Draft`; caught and patched to `Draft`. Enforcement now lives in plan `notion-plans-status-enforcement-7a1e2d` (helper + post-cascade audit + CI drift gate NP2).
+> ⛔ **For NEW plans, ALWAYS use `Not Started`.** `Draft` is a stale red option that still exists in the Notion schema — Notion will silently accept it without error. It MUST NOT be used.
+
+Incident precedent (2026-05-03): four per-app FEC producer plans posted with `🟡Draft`; patched to `Not Started`. Incident (2026-05-05): deferred E5 plan posted with `Draft`; patched to `Not Started`. Enforcement: plan `notion-plans-status-enforcement-7a1e2d` (helper `_notion_plans_status_check.py` + post-cascade audit + CI drift gate NP2).
 
 ### Display mnemonic (for humans only)
 
