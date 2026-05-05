@@ -1,0 +1,122 @@
+"""Evaluation ingress runner — L1→L0→L2→Exit pipeline.
+
+Implements the R4_SINGLE_ACTION deterministic execution path for apps_eval.
+"""
+
+from __future__ import annotations
+
+import logging
+import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from apps_eval.engines.base_eval_engine import EvalResult
+
+logger = logging.getLogger(__name__)
+
+
+def run_eval_from_cli(
+    suites_str: str,
+    scenario_filter: str = "",
+    baseline_mode: bool = False,
+    out_dir: str = "artifacts/apps_eval/runs",
+    deterministic_only: bool = False,
+    cache_strategy: str = "exact",
+) -> int:
+    """Run evaluation from CLI args.
+
+    L1: Plan → L0: Route → L2: Execute → Exit: Disposition
+    """
+    from apps_eval.engines.eval_prep import EvalPrepStage
+    from apps_eval.engines.eval_valid import EvalValidStage
+    from apps_eval.engines.scenario_runner import ScenarioRunner
+    from apps_eval.engines.eval_seal import EvalSealStage
+    from apps_eval.integrations.exit_adapter import exit_disposition
+
+    suite_ids = [s.strip() for s in suites_str.split(",") if s.strip()]
+    if not suite_ids:
+        logger.error("No suites specified")
+        return exit_disposition(
+            terminal_class="FAILURE",
+            x3_code="X3E_SAFE_ABSTAIN",
+            reason="no_suites",
+        )
+
+    # L1 + L2 E1: PREP
+    prep = EvalPrepStage(
+        suite_ids=suite_ids,
+        scenario_filter=scenario_filter,
+        baseline_mode=baseline_mode,
+        out_dir=out_dir,
+        deterministic_only=deterministic_only,
+        cache_strategy=cache_strategy,
+    )
+    prep_result = prep.run()
+    if not prep_result.ok:
+        return exit_disposition(
+            terminal_class="FAILURE",
+            x3_code="X3E_SAFE_ABSTAIN",
+            reason=prep_result.failure_reason or "prep_failed",
+        )
+
+    # L0: Route decision (R1A exact cache, R1B semantic cache, R4_SINGLE_ACTION)
+    route_result = _check_cache_or_route(prep_result)
+    if route_result.cache_hit:
+        # X3D_ALLOW_FINISH with cached scorecard
+        return exit_disposition(
+            terminal_class="SUCCESS",
+            x3_code="X3D_ALLOW_FINISH",
+            scorecard_ref=route_result.scorecard_ref,
+        )
+
+    # L2 E2: VALID
+    valid = EvalValidStage(prep_result)
+    valid_result = valid.run()
+    if not valid_result.ok:
+        return exit_disposition(
+            terminal_class="FAILURE",
+            x3_code="X3E_SAFE_ABSTAIN",
+            reason=valid_result.failure_reason or "validation_failed",
+        )
+
+    # L2 E3: EXEC (scenario loop)
+    runner = ScenarioRunner(valid_result)
+    exec_result = runner.run()
+
+    # L2 E4: HEAL (inline during scenario loop)
+    # L2 E5: SEAL
+    sealer = EvalSealStage(exec_result)
+    seal_result = sealer.run()
+
+    # Exit: X3 disposition based on execution results
+    if seal_result.all_scenarios_passed:
+        return exit_disposition(
+            terminal_class="SUCCESS",
+            x3_code="X3D_ALLOW_FINISH",
+            scorecard_path=seal_result.scorecard_path,
+        )
+    elif seal_result.degraded:
+        return exit_disposition(
+            terminal_class="DEGRADED_SUCCESS",
+            x3_code="X3D_ALLOW_FINISH",
+            scorecard_path=seal_result.scorecard_path,
+        )
+    else:
+        return exit_disposition(
+            terminal_class="FAILURE",
+            x3_code="X3A_DENY_REROUTE",
+            scorecard_path=seal_result.scorecard_path,
+        )
+
+
+def _check_cache_or_route(prep_result) -> "RouteResult":
+    """L0 routing: check R1A exact, R1B semantic, default to R4_SINGLE_ACTION."""
+    # TODO: Implement cache lookup (deferred to W3)
+    return RouteResult(cache_hit=False, scorecard_ref=None)
+
+
+class RouteResult:
+    def __init__(self, cache_hit: bool, scorecard_ref: str | None):
+        self.cache_hit = cache_hit
+        self.scorecard_ref = scorecard_ref
