@@ -297,11 +297,23 @@ None — all waves complete.
 
 See final SR_SUMMARY output in response.
 
+## ADG_HOTSPOT_REPORT
+
+| Rank | File | Layer | Fan-in | Archetype | Surface | Impact |
+|------|------|-------|--------|-----------|---------|--------|
+| 1 | apps_lic/integrations/lic_l2_recipe_registry.py | L_APP | 4 | ORCHESTRATOR | Execution Surface | medium |
+| 2 | apps_lic/integrations/lic_l2_step_adapters.py | L_APP | 3 | STATE_NODE | State Surface | medium |
+| 3 | apps_lic/engines/generation_engine.py | L_APP | 2 | CENTRAL_DEPENDENCY | Execution Surface | medium |
+| 4 | apps_lic/engines/HOP6ValidationAgent.py | L_APP | 2 | SAFETY_GATEKEEPER | Security Surface | medium |
+
+## ADG_GRAPH_LAYER_EVIDENCE
+
 Graph-layer primitives consulted during plan authoring:
 
 - `mv_hotspot_centrality` — ranked apps_lic modules by degree_centrality to identify orchestration hotspots
 - `mv_graph_reverse_dependency_hotspots` — confirmed lic_l2_recipe_registry.py as central dependency
 - `mv_dependency_cone_risk` — assessed blast radius of recipe registration changes
+- `mv_authority_boundary_breaches` — confirmed L_APP_core_bypass violations for vllm_health_probe imports
 - Semantic edge `flows_to`: managed workflow dispatcher → apps_research bridge
 - Semantic edge `controls_flow`: recipe registry → step adapters
 - P-view `v_p1_not_on_spine`: verified managed path adapters are on the execution spine

@@ -351,7 +351,9 @@ def main():
     # ==================================================================
     print("\n[ASSURANCE-P1 GATE PLANE]")
     assurance_gates = [
-        ("§27 windsurf config schema purity", "ops_scripts/ci/check_windsurf_config_schema.py"),
+        # NOTE: check_windsurf_config_schema.py is canonical in wiring_gates (§26 label).
+        # Removed from assurance_gates 2026-05-05 to eliminate true CI-plane duplication.
+        # See: ops_scripts/ci/run_contract_gates.py wiring_gates entry "§26 Windsurf config schema purity".
         ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
         ("W3 replay determinism proof", "ops_scripts/ci/check_replay_proof.py"),
         ("W4 requirements ↔ ADG crosswalk", "ops_scripts/ci/check_requirements_adg_crosswalk.py"),
@@ -479,6 +481,59 @@ def main():
         (
             "AR1 apps_research FEC v1.1 wiring (advisory)",
             "ops_scripts/ci/check_apps_research_fec_v11.py",
+        ),
+        # -- Promoted from manual stage 2026-05-05 (hardening dedup pass) -------
+        # These gates were `stages: [manual]` in .pre-commit-config.yaml.
+        # They are stable (0 violations at promotion date), safety-critical,
+        # and cheap enough to run in CI. Pre-commit manual stage is retained
+        # for on-demand local runs; CI is now the authoritative sweep.
+        #
+        # OT1 — OTEL coverage locked at 100% on 2026-04-30 (W-OTEL-1..3 done).
+        # Every engines/integrations/outputs module must emit ≥1 OTEL signal.
+        # Fail-closed: APPS_OTEL_COVERAGE_FAIL_CLOSED=1.
+        (
+            "OT1 apps_* OTEL coverage (locked 100%)",
+            "ops_scripts/ci/check_apps_otel_coverage.py",
+        ),
+        # OT2 — Required spans manifest. Every @traces_execute method in
+        # config/observability/required_spans.yaml must carry the decorator.
+        # Locked at 24/24 (100%) on 2026-04-30. Fail-closed: REQUIRED_SPANS_FAIL_CLOSED=1.
+        (
+            "OT2 required spans manifest (100%)",
+            "ops_scripts/ci/check_required_spans_coverage.py",
+        ),
+        # SP1 — apps_shared purity: no domain-app imports from apps_shared/.
+        # ADG SQLite query; 0 violations; lock boundary at zero.
+        # Fail-closed: APPS_SHARED_PURITY_FAIL_CLOSED=1.
+        (
+            "SP1 apps_shared purity (no domain-app imports)",
+            "ops_scripts/ci/check_apps_shared_purity.py",
+        ),
+        # SP2 — PII in telemetry sinks. Blocks PII-shaped variable names from
+        # leaking through OTEL/logging emit sites. 0 violations (3 explicit
+        # waivers for env-var-name-only logs). Fail-closed: PII_TELEMETRY_FAIL_CLOSED=1.
+        (
+            "SP2 PII in telemetry sinks",
+            "ops_scripts/ci/check_pii_in_telemetry.py",
+        ),
+        # -- Cascade violation log freshness backstops (2026-05-05) ---------------
+        # Windsurf post_cascade_* hooks write persistent violation logs. These
+        # gates ensure CI surfaces stale unresolved violations — same pattern
+        # as check_ask_user_question_packet_freshness.py. Advisory by default.
+        #
+        # ADG-first violations: post_cascade_adg_audit.py writes
+        # artifacts/windsurf/adg_first_violations.jsonl.
+        # Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.
+        (
+            "CF1 ADG-first violations freshness (advisory)",
+            "ops_scripts/ci/check_adg_first_violations_freshness.py",
+        ),
+        # MCP serialization violations: post_cascade_mcp_serialization_audit.py
+        # writes artifacts/windsurf/mcp_serialization_violations.jsonl.
+        # Bypass: MCP_SERIAL_VIOLATIONS_FRESHNESS_BYPASS=1.
+        (
+            "CF2 MCP serialization violations freshness (advisory)",
+            "ops_scripts/ci/check_mcp_serialization_violations_freshness.py",
         ),
     ]
     for label, script in assurance_gates:

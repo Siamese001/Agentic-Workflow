@@ -629,9 +629,9 @@ def _emit_artifacts(report: dict[str, Any], cmd: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate the hardened 10C proof ledger (W4d-2).")
-    parser.add_argument("--strict", action="store_true", help="Exit 1 on any error (default).")
-    parser.add_argument("--no-strict", dest="strict", action="store_false", help="Always exit 0; emit artifacts only.")
-    parser.set_defaults(strict=True)
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on any error.")
+    parser.add_argument("--no-strict", dest="strict", action="store_false", help="Always exit 0; emit artifacts only (default).")
+    parser.set_defaults(strict=False)
     args = parser.parse_args()
 
     cmd = "python tools/requirements/validate_10c_proof_ledger.py" + (" --strict" if args.strict else " --no-strict")

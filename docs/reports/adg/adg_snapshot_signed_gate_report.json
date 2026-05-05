@@ -1,9 +1,9 @@
 {
   "gate": "G-ADG-SNAPSHOT-SIGNED",
   "tier": "B",
-  "timestamp": "2026-05-01T00:57:28.316074+00:00",
-  "snapshot": "artifacts\\adg\\adg_indexed_04302026_2050.sqlite",
-  "envelope_path": "artifacts\\adg\\adg_indexed_04302026_2050.sqlite.intoto.jsonl",
+  "timestamp": "2026-05-05T09:48:57.809635+00:00",
+  "snapshot": "artifacts\\adg\\adg_indexed_05052026_0523.sqlite",
+  "envelope_path": "artifacts\\adg\\adg_indexed_05052026_0523.sqlite.intoto.jsonl",
   "public_key_path": "artifacts\\adg\\keys\\ed25519_ff20fefbbf6a6425.pub",
   "verified": true,
   "file_sha256_match": true,
