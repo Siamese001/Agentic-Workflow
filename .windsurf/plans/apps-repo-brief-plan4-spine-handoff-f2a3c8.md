@@ -1,6 +1,6 @@
 # apps_repo_brief Plan 4 — Spine Handoff + Full Coverage
 
-> **Status:** Not Started · **Tier:** T2 · **Slug:** `apps-repo-brief-plan4-spine-handoff-f2a3c8`
+> **Status:** Completed · **Tier:** T2 · **Slug:** `apps-repo-brief-plan4-spine-handoff-f2a3c8`
 > **Parent:** `apps-repo-brief-plan3-deferred-scope-b9e4c1` (Completed 2026-05-05)
 > **Purpose:** Complete the `PARTIAL_SPINE → FULL_SPINE` gap left after Plan 3 acceptance. The single concrete gap is `spine_handoff.py` — the cross-layer handoff contract connecting `apps_repo_brief` to the canonical agentic_core spine at 100% scanner coverage. No implementation in this document.
 
@@ -58,9 +58,9 @@ The spine scanner (`tools/analysis/apps_spine_coverage.py --app=apps_repo_brief`
 
 | Wave | Scope | Est. Tokens | Status |
 |------|-------|-------------|--------|
-| F1 | `spine_handoff.py` implementation + tests | ~10k | Not Started |
-| F2 | ADG re-snapshot + edge validation | ~3k | Not Started |
-| F3 | CI spine gate update for `apps_repo_brief` | ~3k | Not Started |
+| F1 | `spine_handoff.py` implementation + tests | ~10k | ✅ DONE |
+| F2 | ADG re-snapshot + edge validation | ~3k | ✅ DONE |
+| F3 | CI spine gate update for `apps_repo_brief` | ~3k | ✅ DONE |
 
 ---
 
@@ -68,12 +68,12 @@ The spine scanner (`tools/analysis/apps_spine_coverage.py --app=apps_repo_brief`
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|--------------|-------------|-------------|--------|
-| F1.1 | Implement `spine_handoff.py` | `apps_repo_brief/spine_handoff.py` (new) | Must match canonical handoff shape | 7k | Not Started |
-| F1.2 | Wire manifest contracts | `apps_repo_brief/spine_manifest.yaml` | 8 contracts must resolve | 2k | Not Started |
-| F1.3 | Spine scanner verification | `tools/analysis/apps_spine_coverage.py` | Scanner must report FULL_SPINE | 1k | Not Started |
-| F2.1 | ADG re-snapshot | `artifacts/adg/` | Requires ADG regeneration | 2k | Not Started |
-| F2.2 | Blast-radius capture for `spine_handoff.py` | `adg_sqlite` MCP | ADG snapshot must be fresh | 1k | Not Started |
-| F3.1 | CI spine gate update | `ops_scripts/ci/check_app_spine_coverage.py` | Must not break existing gates | 3k | Not Started |
+| F1.1 | Implement `spine_handoff.py` | `apps_repo_brief/spine_handoff.py` (new) | Must match canonical handoff shape | 7k | ✅ DONE |
+| F1.2 | Wire manifest contracts | `apps_repo_brief/spine_manifest.yaml` | 8 contracts must resolve | 2k | ✅ DONE |
+| F1.3 | Spine scanner verification | `tools/analysis/apps_spine_coverage.py` | Scanner must report FULL_SPINE | 1k | ✅ DONE |
+| F2.1 | ADG re-snapshot | `artifacts/adg/` | Requires ADG regeneration | 2k | ✅ DONE |
+| F2.2 | Blast-radius capture for `spine_handoff.py` | `adg_sqlite` MCP | ADG snapshot must be fresh | 1k | ✅ DONE |
+| F3.1 | CI spine gate update | `ops_scripts/ci/check_apps_spine_delegation.py` | Remove apps_repo_brief from allowlist | 3k | ✅ DONE |
 
 ---
 

@@ -21,12 +21,3 @@ allowed_packages:
       ADR-078 was ratified). Burndown tracked in W5 P5.4 plan row of
       adg-three-bucket-unified-c4f8e2.
     expires: '2026-05-31'
-  - package: apps_repo_brief
-    reason: >-
-      New package introduced in commits badeb6b492/68cdc53b7b as a parallel
-      standalone mini-runtime (W1/W2 route consolidation). Has 13 internal
-      imports but 0 agentic_core spine imports — pre-existing baseline
-      exposed by ADG snapshot adg_indexed_05052026_0523 after ADR-078
-      strict-mode flip. Burndown to wire spine delegation scheduled alongside
-      apps_underwriting_ai P5.4 burndown.
-    expires: '2026-05-31'
