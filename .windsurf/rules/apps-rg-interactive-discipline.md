@@ -1,27 +1,27 @@
 ---
-trigger: model_decision
-description: Apply when about to invoke `python -m apps_rg`, when the user mentions running apps_rg, or when discussing apps_rg target-company / target-role / JD / briefing inputs. Enforces Cascade behavioral discipline that complements the in-app interactive wizard and cross-company contamination guard.
+trigger: always_on
+description: Apply when invoking `python -m apps_rg` or discussing target-company/role/JD/briefing. Enforces Cascade discipline complementing the in-app wizard and cross-company guard.
 ---
 
-# apps_rg Interactive Discipline — Cascade Must Not Auto-Fill the 3 Mandatory Inputs
+# apps_rg Interactive Discipline — Cascade Must Not Auto-Fill Mandatory Inputs
 
-> ⛔ When the user invokes `python -m apps_rg` (or asks Cascade to run it), Cascade MUST NOT pre-fill `--target-company`, `--target-role`, `--jd`, or `--manual-brief` from inferred context. The in-app interactive wizard owns those decisions.
+> ⛔ Cascade MUST NOT pre-fill `--target-company`, `--target-role`, `--jd`, or `--manual-brief` from inferred context. The in-app wizard owns these decisions.
 
-Sibling to `scope-containment.md` (no gold-plating, no scope expansion). That rule says "don't widen scope"; this one says "don't substitute Cascade's pattern-match for an explicit user decision on which company to target".
+Sibling to `scope-containment.md`. This rule prevents Cascade from substituting pattern-matches for explicit user decisions on target company.
 
 ## Why this rule exists
 
-`apps_rg` produces a generated resume. Three inputs determine which company / role / framing the resume targets:
+`apps_rg` generates resumes. Three inputs determine the target:
 
-1. **Company** — `--target-company` (e.g. "Brown & Brown")
-2. **JD** — `--target-role` + `--jd` (title + full description)
-3. **Briefing** — `--manual-brief` path or `--auto-research-tavily` to delegate to apps_research
+| Input | Flag | Example |
+|---|---|---|
+| Company | `--target-company` | "Brown & Brown" |
+| JD | `--target-role` + `--jd` | Title + full description |
+| Briefing | `--manual-brief` or `--auto-research-tavily` | Path or research delegation |
 
-If Cascade auto-fills any of these from prior turns, scrollback filenames, or `apps_rg/scripts/` artifacts, the result can be a resume targeting the *wrong company* — a cross-company contamination defect. The repo's history of 60+ stale `generated_resume_*.json` files in `apps_rg/scripts/` shows this has occurred repeatedly.
+Auto-filling from prior turns, filenames, or `apps_rg/scripts/` artifacts risks targeting the *wrong company* — a cross-company contamination defect. The repo history of 60+ stale `generated_resume_*.json` files demonstrates this risk.
 
-The in-app fix: `apps_rg/__main__.py::main()` now runs `_interactive_wizard(args)` when stdin is a TTY and any mandatory input is missing. The wizard prompts the user explicitly for each of the 3 items and writes them to dedicated `_interactive_*.json` files (which the cross-company contamination guard then validates).
-
-This rule is the **behavioral complement**: prevent Cascade from circumventing the wizard by pre-filling the flags before the wizard ever runs.
+The in-app fix: `_interactive_wizard(args)` prompts for the 3 items when stdin is a TTY, writing to `_interactive_*.json` files (validated by the contamination guard). This rule is the behavioral complement: prevent pre-filling flags before the wizard runs.
 
 ## Hard rules
 
@@ -35,63 +35,58 @@ When the user types `python -m apps_rg` (or "run apps_rg", "generate a resume wi
 
 ### 2. Cascade MAY surface available context
 
-Before/after running the command, Cascade MAY observe what files exist in `apps_rg/scripts/` (e.g. "the wizard will prompt; if helpful, `jd_brown_brown_svp_it_strategy.json` and `job_description_brownandbrown.json` are on disk"). This is informational — it does NOT pre-fill flags.
+Cascade MAY list files in `apps_rg/scripts/` as informational context (e.g. "wizard will prompt; `jd_brown_brown_*.json` available"). This does NOT pre-fill flags.
 
-### 3. Explicit in-turn authorization is the only override
+### 3. Explicit in-turn authorization only
 
-Cascade MAY auto-fill the flags ONLY when the user, in the SAME turn, explicitly names ALL of company + role. Examples:
+Cascade MAY auto-fill ONLY when the user, in the SAME turn, names company + role:
 
-- ✅ "Run apps_rg for Brown & Brown SVP IT Strategy" → Cascade MAY add `--target-company "Brown & Brown" --target-role "SVP IT Strategy"`. The JD and briefing still go through the wizard unless the user names a specific file path.
-- ❌ "Run apps_rg" (no company/role) → Cascade MUST NOT infer from prior turn or file listings.
-- ❌ "Run apps_rg again" → Cascade MUST NOT reuse target-company from prior session memory.
+| User says | Cascade MAY |
+|---|---|
+| "Run apps_rg for Brown & Brown SVP IT Strategy" | Add `--target-company "Brown & Brown" --target-role "SVP IT Strategy"`. JD/briefing via wizard unless user names file path. |
+| "Run apps_rg" (no company/role) | ❌ MUST NOT infer from prior turns |
+| "Run apps_rg again" | ❌ MUST NOT reuse from session memory |
 
-### 4. Stale-file scan is forbidden as a flag source
+### 4. Stale-file scan forbidden as flag source
 
-Cascade MUST NOT scan `apps_rg/scripts/` for `jd_*.json`, `company_research*.json`, or any other artifact and use a discovered filename as a `--jd` or `--manual-brief` value without explicit user authorization. The wizard's `@path/to/file` syntax is the user-facing path for this.
+Cascade MUST NOT scan `apps_rg/scripts/` for `jd_*.json`, `company_research*.json`, etc. to auto-fill `--jd` or `--manual-brief`. Use wizard's `@path/to/file` syntax only.
 
-### 5. Non-TTY contexts (CI, piped, automation) are different
+### 5. Non-TTY contexts differ
 
-When apps_rg runs non-interactively (CI scripts, batch runs), the wizard does NOT fire — `parser.error()` hard-fails on missing flags. In those contexts, the operator scripting the run MUST supply the flags explicitly. This rule does not apply to scripted automation; it applies to Cascade-mediated interactive sessions.
+In CI/batch runs, the wizard does NOT fire — `parser.error()` hard-fails on missing flags. Operators MUST supply flags explicitly. This rule applies to Cascade-mediated interactive sessions only.
 
 ## Forbidden patterns
 
-- ❌ `python -m apps_rg --target-company "<inferred from filename>" --target-role "<inferred from filename>"` when the user did not name the company/role in the current turn.
-- ❌ Reading `apps_rg/scripts/jd_<x>.json` to extract a title and using it as `--target-role`.
-- ❌ Reading `apps_rg/scripts/company_research.json` and using its `company` field as `--target-company`.
-- ❌ Reusing a `target-company` value from prior conversation context.
-- ❌ "Helpfully" running apps_rg with the most recent JD file's company while the user is still framing what they want.
+| Pattern | Status |
+|---|---|
+| Auto-fill `--target-company`/`--target-role` from filename when user didn't name them | ❌ |
+| Read `jd_*.json` to extract title for `--target-role` | ❌ |
+| Read `company_research.json` `company` field for `--target-company` | ❌ |
+| Reuse `target-company` from prior conversation context | ❌ |
+| "Helpfully" run with most recent JD while user still framing intent | ❌ |
 
 ## Defense-in-depth layers
 
-| Layer | Mechanism | Where |
-|---|---|---|
-| 1. Code-side wizard | TTY-only `_interactive_wizard()` prompts for the 3 inputs | `apps_rg/__main__.py` |
-| 2. Cross-company guard | `_assert_artifact_matches_company()` raises if JD/briefing company ≠ `--target-company` | `apps_rg/__main__.py` |
-| 3. Test guard | `tests/_apps_contract/test_apps_rg_cross_company_contamination_guard.py` | tests/ |
-| 4. **Cascade behavioral rule** | This file — Cascade does not pre-fill the 3 flags | `.windsurf/rules/` |
+| Layer | Mechanism | Location |
+|:---:|:---|:---|
+| 1 | TTY-only `_interactive_wizard()` prompts for 3 inputs | `apps_rg/__main__.py` |
+| 2 | `_assert_artifact_matches_company()` raises on mismatch | `apps_rg/__main__.py` |
+| 3 | Cross-company contamination tests | `tests/_apps_contract/` |
+| 4 | **This rule** — Cascade does not pre-fill flags | `.windsurf/rules/` |
 
-Layers 1–3 are runtime/test enforcement. This rule is the pre-emptive layer: stop the wrong command from being constructed in the first place.
+Layers 1–3 are runtime/test enforcement. This rule is the pre-emptive layer.
 
 ## Sibling apps
 
-When `apps_underwriting_ai`, `apps_qna`, `apps_rfp`, `apps_research`, `apps_lic`, `apps_exec` adopt similar wizard patterns for their target/scope inputs, extend the rule scope to cover them. Today (2026-05-06) the rule scope is `apps_rg` only because only `apps_rg` has the wizard.
+Extend rule scope when sibling apps adopt wizard patterns for target/scope inputs. Current scope: `apps_rg` only (only app with wizard as of 2026-05-06).
 
-## Empirical incident — why this rule was written (2026-05-06)
+## Empirical incident (2026-05-06)
 
-User typed `python -m apps_rg`. Cascade auto-filled `--target-company "Brown & Brown" --target-role "SVP IT Strategy" --jd apps_rg/scripts/jd_brown_brown_svp_it_strategy.json` based on:
-
-- A JD file committed earlier in the same session
-- Brown & Brown context from prior C0 brief synthesis testing
-
-The cross-company contamination guard caught the mismatch (the auto-loaded `apps_rg/scripts/company_research.json` was Blend360-targeted, not Brown & Brown). Hard-fail prevented contamination, but only because the stale brief was for a different company. If both stale files had matched the same wrong prior company, the resume would have shipped silently.
-
-User RCA: "this is not working — always mandatory interactive to prompt three items — can mention what it loaded but cannot auto run". Wizard added in `apps_rg/__main__.py` (commit `d613a5c18a`); this rule is the behavioral complement.
+User: `python -m apps_rg`. Cascade auto-filled flags from prior session JD + Brown & Brown context. Cross-company guard caught mismatch (stale brief was Blend360-targeted). User RCA: "always mandatory interactive — mention what loaded but cannot auto run". Wizard added (`d613a5c18a`); this rule is the behavioral complement.
 
 ## References
 
-- Constitutional §6 (Author-Gate for ambiguous decisions)
-- Constitutional §18 (no hidden scope expansion)
-- `scope-containment.md` (sibling — no gold-plating, no scope creep)
-- `apps_rg/__main__.py::_interactive_wizard` (the prompt this rule defers to)
-- `apps_rg/__main__.py::_assert_artifact_matches_company` (the runtime guard)
+- Constitutional §6, §18
+- `scope-containment.md` (sibling)
+- `apps_rg/__main__.py` — `_interactive_wizard`, `_assert_artifact_matches_company`
 - `tests/_apps_contract/test_apps_rg_cross_company_contamination_guard.py`
