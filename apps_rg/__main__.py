@@ -94,8 +94,16 @@ def _hash_file_content(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:32]
 
 
-_DEFAULT_JD_PATH = "apps_rg/scripts/job_description.json"
-_DEFAULT_BRIEF_PATH = "apps_rg/scripts/company_research.json"
+# Wizard-managed defaults — populated by _interactive_wizard() when stdin is
+# a TTY and --target-company / --jd / --manual-brief are not supplied. Prior
+# hand-authored defaults (job_description.json, company_research.json) were
+# deleted 2026-05-06 (W1 plan apps-rg-vllm-followup-blocked-c4e8b2) because
+# they encoded a single target company (Blend360) that silently contaminated
+# subsequent runs targeting different companies. The cross-company guard at
+# main() still fires when --target-company is missing; the wizard now owns
+# the input paths.
+_DEFAULT_JD_PATH = "apps_rg/scripts/_interactive_jd.json"
+_DEFAULT_BRIEF_PATH = "apps_rg/scripts/_interactive_brief.json"
 _DEFAULT_CANDIDATE_PATH = "apps_rg/scripts/candidate_profile.yaml"
 
 
@@ -241,7 +249,7 @@ def _run_with_args(
     # point so that target_company / target_role / jd / manual_brief are
     # populated from prompts when not supplied on CLI. Non-TTY runs require
     # explicit flags (parser.error() in main()).
-    jd_path = Path(raw_request.get("jd_path_resolved") or getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
+    jd_path = Path(raw_request.get("jd_path_resolved") or getattr(args, "jd", "") or _DEFAULT_JD_PATH)
     brief_path = Path(raw_request["manual_brief"])
     candidate_path = (
         Path(args.candidate) if getattr(args, "candidate", None)
@@ -474,10 +482,10 @@ def main() -> None:
         _interactive_wizard(args)
 
     # ── --target-company and --target-role MUST be supplied explicitly. ──
-    # Auto-deriving from the hand-authored default JSONs (whoever last filled
-    # apps_rg/scripts/company_research.json / job_description.json) is a
-    # cross-company contamination risk: every prior-resume artifact in this
-    # repo would silently re-target the previous company. Hardened intentionally.
+    # Auto-deriving from any default JSON file (now apps_rg/scripts/_interactive_*.json,
+    # populated by the wizard) is a cross-company contamination risk: a prior
+    # wizard session would silently re-target the previous company. Hardened
+    # intentionally — the wizard re-prompts every TTY run to reset target.
     if not args.target_company:
         parser.error(
             "--target-company is required. Pass it explicitly; apps_rg refuses to "

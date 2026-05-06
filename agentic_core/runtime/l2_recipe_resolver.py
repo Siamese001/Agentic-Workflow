@@ -113,7 +113,7 @@ def resolve_l2_recipe(
             "app_name": app_name,
             "target_company": raw_request.get("target_company", ""),
             "target_role": raw_request.get("target_role", ""),
-            "manual_brief": raw_request.get("manual_brief", "apps_rg/scripts/company_research.json"),
+            "manual_brief": raw_request.get("manual_brief", "apps_rg/scripts/_interactive_brief.json"),
             "research_via": raw_request.get("research_via"),
             "auto_research_internal": raw_request.get("auto_research_internal", False),
             "auto_research_tavily": raw_request.get("auto_research_tavily", False),

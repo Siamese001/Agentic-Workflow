@@ -1,7 +1,7 @@
 """CompanyBrief Pydantic types for apps_rg narrative pipeline.
 
 Mirrors apps_rg/schemas/company_research.schema.json. Produced by:
-- User upload at apps_rg/scripts/company_research.json
+- User upload at apps_rg/scripts/_interactive_brief.json (wizard-managed) or via --manual-brief flag
 - apps_research --mode company
 - Cross-app facade in apps_shared/adapters/research_facade.py
 - Tavily supplement (fills null/stale fields only; never produces from scratch)

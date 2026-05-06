@@ -1,7 +1,8 @@
 """HOP-0.6-COMPANY-RESEARCH — 4-mode CompanyBrief loader.
 
 Mode priority (per locked decision D1):
-  1. Manual upload at apps_rg/scripts/company_research.json (highest priority)
+  1. Manual upload at apps_rg/scripts/_interactive_brief.json (highest priority,
+     written by the apps_rg interactive wizard or supplied via --manual-brief)
   2. Cross-app generation via apps_research (when --research-via apps_research)
   3. Internal CompanyBriefEngine invocation (when --auto-research-internal)
   4. Tavily supplement only (fills null + stale fields, never produces from scratch)
@@ -28,7 +29,11 @@ from apps_rg.types.company_research import (
 
 _log = logging.getLogger(__name__)
 
-_DEFAULT_MANUAL_PATH = Path("apps_rg/scripts/company_research.json")
+# Wizard-managed default — prior hand-authored apps_rg/scripts/company_research.json
+# was deleted 2026-05-06 (W1 plan apps-rg-vllm-followup-blocked-c4e8b2). Wizard
+# (apps_rg/__main__.py::_interactive_wizard) writes here when user supplies
+# briefing inline; --manual-brief flag overrides.
+_DEFAULT_MANUAL_PATH = Path("apps_rg/scripts/_interactive_brief.json")
 
 
 @dataclass(frozen=True)
@@ -84,7 +89,8 @@ def load_company_brief(opts: CompanyResearchLoadOptions) -> CompanyBrief:
         f"No company brief could be produced for {opts.target_company!r}. "
         "Per locked decision D2: fail loudly. "
         "Pass --research-via apps_research or --auto-research-internal, "
-        "or supply a manual brief at apps_rg/scripts/company_research.json."
+        "or supply a manual brief at apps_rg/scripts/_interactive_brief.json "
+        "(the apps_rg interactive wizard writes there when run on a TTY)."
     )
 
 

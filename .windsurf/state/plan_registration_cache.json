@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-06T09:40:16Z",
-  "fetched_at_epoch": 1778060416.6128552,
+  "fetched_at": "2026-05-06T11:26:23Z",
+  "fetched_at_epoch": 1778066783.6518183,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -753,8 +753,8 @@
       "has_ai_summary": true
     },
     "adg-deferred-investigations-b5d9f2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814d-9b22-d610719e4452",
+      "status": "Retired",
+      "page_id": "35827693-f55c-818f-b1e2-ca21f83d6ddf",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -783,8 +783,8 @@
       "has_ai_summary": true
     },
     "adg-fail-aggregating-gate-chain-9d4e1f": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-815d-8420-cd218a5bf1cf",
+      "status": "Not Started",
+      "page_id": "35827693-f55c-814c-820e-d6380af84e0c",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -879,8 +879,8 @@
       "has_ai_summary": true
     },
     "adg-repair-orchestrator-enhancement-02c1fc": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-819a-af88-c2e06326bf43",
+      "status": "Not Started",
+      "page_id": "35827693-f55c-8109-82b8-ce6297fac16c",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1532,17 +1532,71 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-rg-interactive-wizard-a3e7c1": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-810f-a8fb-ff13ff62ef00",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "repo-wide-deduplication-c5d2a8": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-8114-9803-f822907c3434",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "repo-dedup-deferred-followup-d5e2a9": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-8118-a6ca-f02767e84de5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-qna-judge-calibration-deferred-d4e8f2": {
       "status": "Completed",
       "page_id": "35827693-f55c-8140-9e7a-f1b63ebe4fd6",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-rg-vllm-deferred-followup-f7d3a9": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-819a-a954-fe9db53fd119",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-vllm-followup-blocked-c4e8b2": {
+      "status": "Not Started",
+      "page_id": "35827693-f55c-819c-a7c2-d57947ca4f0a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-config-ssot-audit-c7e4a2": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-81a8-a75c-c97f7709e00b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "github-workflows-consolidation-c4f7a9": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35827693-f55c-81b2-a7e9-f48fdf731cd9",
       "exists_on_disk": true,
       "has_ai_summary": true
+    },
+    "adg-mcp-reopen-hardening-e8f9a0": {
+      "status": "Not Started",
+      "page_id": "35827693-f55c-81b6-b223-cd2c0db41db3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-enforcement-hardening-p1-p8-7e9c4a": {
+      "status": "Archived",
+      "page_id": "35827693-f55c-81de-9cf2-e8f9fdbedf48",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "adg-config-ssot-deferred-d7e3a1": {
+      "status": "Not Started",
+      "page_id": "35827693-f55c-81e6-803c-fa5a5d9ccc82",
+      "exists_on_disk": true,
+      "has_ai_summary": false
     }
   }
 }

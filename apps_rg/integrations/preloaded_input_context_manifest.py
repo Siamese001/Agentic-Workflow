@@ -18,8 +18,8 @@ From the R4 entrypoint (or any L2 step that needs the context record)::
     )
 
     manifest = build_preloaded_input_context_manifest(
-        jd_path=Path("apps_rg/scripts/job_description.json"),
-        brief_path=Path("apps_rg/scripts/company_research.json"),
+        jd_path=Path("apps_rg/scripts/_interactive_jd.json"),
+        brief_path=Path("apps_rg/scripts/_interactive_brief.json"),
         master_resume_path=Path("apps_shared/data/master_resume.json"),
         run_id=run_id,
         policy_hash=policy_hash,

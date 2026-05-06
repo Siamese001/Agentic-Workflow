@@ -322,7 +322,7 @@ class NarrativePassStep:
             "--target-company", target_company,
             "--input-resume", str(input_resume),
             "--out-dir", str(run_dir),
-            "--manual-brief", context.get("manual_brief", "apps_rg/scripts/company_research.json"),
+            "--manual-brief", context.get("manual_brief", "apps_rg/scripts/_interactive_brief.json"),
         ]
         if context.get("research_via"):
             cmd.extend(["--research-via", context["research_via"]])

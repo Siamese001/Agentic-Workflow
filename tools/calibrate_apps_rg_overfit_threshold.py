@@ -45,7 +45,17 @@ def main() -> int:
         return 1
     gen = json.loads(gen_files[-1].read_text(encoding="utf-8"))
     print(f"resume_file={gen_files[-1].name}")
-    jd = json.loads((REPO / "apps_rg/scripts/job_description.json").read_text(encoding="utf-8"))
+    # Reads the wizard-managed JD (apps_rg/scripts/_interactive_jd.json) written
+    # by apps_rg's interactive wizard. Prior hand-authored job_description.json
+    # was deleted 2026-05-06 (W1 plan apps-rg-vllm-followup-blocked-c4e8b2).
+    jd_path = REPO / "apps_rg/scripts/_interactive_jd.json"
+    if not jd_path.exists():
+        print(
+            f"[calibrate] ERROR: {jd_path} missing. Run apps_rg interactively "
+            "first (TTY) or supply a JD JSON at this path before calibrating."
+        )
+        return 1
+    jd = json.loads(jd_path.read_text(encoding="utf-8"))
     print(f"jd_title={jd['title']}, jd_company={jd['company']}")
     print()
 

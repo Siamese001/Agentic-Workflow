@@ -64,10 +64,10 @@ def main() -> int:
     parser.add_argument("--auto-research-internal", action="store_true")
     parser.add_argument("--auto-research-tavily", action="store_true")
     parser.add_argument(
-        "--manual-brief", default="apps_rg/scripts/company_research.json"
+        "--manual-brief", default="apps_rg/scripts/_interactive_brief.json"
     )
     parser.add_argument(
-        "--jd", default="apps_rg/scripts/job_description.json", help="Path to JD JSON"
+        "--jd", default="apps_rg/scripts/_interactive_jd.json", help="Path to JD JSON (default: wizard-managed)"
     )
     parser.add_argument(
         "--master-resume",
