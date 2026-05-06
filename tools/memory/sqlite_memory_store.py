@@ -91,6 +91,11 @@ from tools.memory.memory_decay import (
 
 _DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
+# Schema SSOT: canonical schema lives in .windsurf/schemas/
+_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".windsurf" / "schemas"
+_SCHEMA_FILE = _SCHEMA_DIR / "knowledge_graph.schema.sql"
+_MIGRATIONS_FILE = _SCHEMA_DIR / "knowledge_graph_migrations.sql"
+
 ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
     {
         "ArchitectureLayer",
@@ -103,7 +108,15 @@ ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
     }
 )
 
-_SCHEMA = """
+def _load_schema() -> str:
+    """Load canonical schema from .windsurf/schemas/knowledge_graph.schema.sql
+    
+    Falls back to embedded schema if file not found (backward compatibility).
+    """
+    if _SCHEMA_FILE.exists():
+        return _SCHEMA_FILE.read_text(encoding="utf-8")
+    # Fallback: embedded schema (for bootstrap or when file missing)
+    return """
 CREATE TABLE IF NOT EXISTS entities (
     name        TEXT PRIMARY KEY,
     entity_type TEXT NOT NULL DEFAULT 'general',
@@ -131,7 +144,16 @@ CREATE INDEX IF NOT EXISTS idx_obs_entity ON observations (entity_name);
 CREATE INDEX IF NOT EXISTS idx_rel_from   ON relations (from_entity);
 CREATE INDEX IF NOT EXISTS idx_rel_to     ON relations (to_entity);
 CREATE INDEX IF NOT EXISTS idx_ent_type   ON entities (entity_type);
+
+-- Schema version tracking (enables migration system)
+CREATE TABLE IF NOT EXISTS _schema_version (
+    version     TEXT PRIMARY KEY,
+    applied_at  REAL NOT NULL,
+    description TEXT NOT NULL
+);
 """
+
+_SCHEMA = _load_schema()
 
 # Additive columns added by _migrate_decay_columns() — old DBs upgrade in place,
 # new DBs get them via the same path. Existing rows default to confidence=1.0
@@ -185,6 +207,47 @@ class SqliteMemoryStore:
         with self.connection() as conn:
             conn.executescript(_SCHEMA)
             self._migrate_decay_columns(conn)
+            self._ensure_schema_version(conn)
+
+    def _ensure_schema_version(self, conn) -> None:
+        """Ensure schema version is recorded. Idempotent."""
+        # Ensure _schema_version table exists (may not be in older files)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS _schema_version (
+                version     TEXT PRIMARY KEY,
+                applied_at  REAL NOT NULL,
+                description TEXT NOT NULL
+            )
+        """)
+        # Record base schema version if not present
+        conn.execute("""
+            INSERT OR IGNORE INTO _schema_version (version, applied_at, description)
+            VALUES ('1.0.0', ?, 'Initial schema with entities, observations, relations')
+        """, (time.time(),))
+
+    def get_schema_version(self) -> dict[str, Any]:
+        """Return current schema version info from database."""
+        with self.connection() as conn:
+            # Check if _schema_version table exists
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='_schema_version'"
+            ).fetchone()
+            if row is None:
+                return {"version": "unknown", "applied_at": None, "description": "pre-versioning schema"}
+            
+            versions = conn.execute(
+                "SELECT version, applied_at, description FROM _schema_version ORDER BY applied_at"
+            ).fetchall()
+            if not versions:
+                return {"version": "unknown", "applied_at": None, "description": "no version recorded"}
+            
+            latest = versions[-1]
+            return {
+                "version": latest["version"],
+                "applied_at": latest["applied_at"],
+                "description": latest["description"],
+                "all_versions": [{"version": v["version"], "applied_at": v["applied_at"]} for v in versions]
+            }
 
     @staticmethod
     def _migrate_decay_columns(conn: sqlite3.Connection) -> None:
