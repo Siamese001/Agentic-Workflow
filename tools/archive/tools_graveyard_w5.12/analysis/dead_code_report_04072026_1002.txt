@@ -1,4 +1,0 @@
-# ADG Dead Code Report — Fresh Snapshot 04072026_1002
-Generated: 2026-04-07
-
-This report uses the latest ADG snapshot after v15 renaming to identify dead imports and zero-fan-in modules.

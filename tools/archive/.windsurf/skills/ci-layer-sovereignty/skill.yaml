@@ -1,8 +1,0 @@
-name: ci-layer-sovereignty
-description: Enforces layer sovereignty import checking
-version: 1.0.0
-parameters:
-  file:
-    type: string
-    description: File to check for layer sovereignty violations
-entrypoint: main.py
