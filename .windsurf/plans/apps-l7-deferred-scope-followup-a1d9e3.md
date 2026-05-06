@@ -2,7 +2,7 @@
 
 **Slug**: `apps-l7-deferred-scope-followup-a1d9e3`
 **Tier**: T3
-**Status**: Draft
+**Status**: Completed (W1 done, W2-W4 split to follow-up)
 **Created**: 2026-05-06
 **Authors**: Cascade
 **Parent**: `apps-l7-coverage-spine-wide-c5e8d2` (W1-W3 completed 2026-05-06)
@@ -90,10 +90,10 @@ Decision required: wire with L7 emit OR retire/archive. ADR needed.
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |---|---|---|---|---|
-| W1 | P1.1-P1.4 | apps_eval spine retrofit | ~10k | Draft |
-| W2 | P2.1-P2.4 | apps_repo_brief spine retrofit | ~8k | Draft |
-| W3 | P3.1-P3.3 | Fort Knox extension for apps_* | ~6k | Draft |
-| W4 | P4.1 | Legacy entrypoints disposition ADR | ~4k | Draft |
+| W1 | P1.1-P1.4 | apps_eval spine retrofit | ~10k | **✅ COMPLETED** |
+| W2 | P2.1-P2.4 | apps_repo_brief spine retrofit | ~8k | Deferred to follow-up |
+| W3 | P3.1-P3.3 | Fort Knox extension for apps_* | ~6k | Deferred to follow-up |
+| W4 | P4.1 | Legacy entrypoints disposition ADR | ~4k | Deferred to follow-up |
 
 ## 6. Success Criteria
 
@@ -116,6 +116,17 @@ Decision required: wire with L7 emit OR retire/archive. ADR needed.
 - `tools/cert/emit_l7_plane_evidence.py` — Fort Knox binder
 - `tools/certification/generate_100pct_runtime_proof.py` — proof generator
 
-## 9. Implementation Notice
+## 9. Completion Summary
 
-This plan is NOT to be implemented until explicitly authorized. It captures deferred scope from the completed parent plan for future prioritization.
+**W1 COMPLETED 2026-05-06:**
+- Modified `apps_eval/__main__.py` to use `governed_run` context manager
+- Added EmissionConfig with SINGLE_STEP execution form
+- Added `_ensure_route_registry()` helper for governed_run compatibility
+- Created regression test `test_governed_run_integration.py`
+- Git commit: `8865c87c56`
+
+**Remaining W2-W4 captured in:** `.windsurf/plans/apps-l7-w2-w4-followup-a2e8f4.md`
+
+## 10. Implementation Notice
+
+W1 implemented per user authorization. W2-W4 deferred to follow-up plan per "one wave at a time" instruction.
