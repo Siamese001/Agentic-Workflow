@@ -1,7 +1,7 @@
 # ADG Config SSOT Audit & Remediation
 
 **Slug:** `adg-config-ssot-audit-c7e4a2`
-**Status:** Not Started
+**Status:** Completed
 **Authored:** 2026-05-06
 **Tier:** T3 (cross-layer, multi-file, config-discipline)
 **Pattern source:** Qwen vLLM Windows/WSL2 SSOT incident (memory `01483ea2-59a4-41a3-8d6e-7132995f3029`) — stale systemd unit shadowed canonical Docker container; same failure class found across ADG.
@@ -25,12 +25,12 @@ See §6 wave structure. Each remediation item lists its own scope. No file outsi
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|-------------|--------|------------------|
-| W1 | S-01, S-09 | Snapshot resolver consolidation + sentinel resilience | ~12k | Not Started | All CI gates use `path_resolver.latest_sqlite`; sentinel test added |
-| W2 | S-02, S-03 | Hardcoded path purge + wrong-repo diag deletion | ~6k | Not Started | Zero hardcoded `adg_indexed_<ts>` outside `tools/archive/`; `p2_triage2.py` deleted or fixed |
-| W3 | S-04, S-08 | `ADG_REDIS_URL` SSOT module + MCP env consistency | ~8k | Not Started | One module owns the default; `mcp_config.json` adg_sqlite ↔ memory verified equal by gate |
-| W4 | S-05, S-06 | Dead MCP server file deletion + generator shim decision | ~5k | Not Started | 4 deprecated MCP server files archived; generator-shim status decided |
-| W5 | S-07, S-10 | Numbered query files + cache file consolidation | ~7k | Not Started | `adg_align_query[1-7].py` triaged; `scan_result_cache.json` location resolved |
-| W6 | S-11 | Archive grep-noise reduction | ~3k | Not Started | `.codeiumignore` excludes archived ADG backups; greps stop surfacing them |
+| W1 | S-01, S-09 | Snapshot resolver consolidation + sentinel resilience | ~12k | ✅ DONE | All CI gates use `path_resolver.latest_sqlite`; sentinel test added |
+| W2 | S-02, S-03 | Hardcoded path purge + wrong-repo diag deletion | ~6k | ✅ DONE | Zero hardcoded `adg_indexed_<ts>` outside `tools/archive/`; `p2_triage2.py` deleted |
+| W3 | S-04, S-08 | `ADG_REDIS_URL` SSOT module + MCP env consistency | ~8k | ✅ DONE | All hardcoded defaults removed; MCP consistency gate created and passing |
+| W4 | S-05, S-06 | Dead MCP server file deletion + generator shim decision | ~5k | ✅ DONE | 5 deprecated files deleted (4 MCP servers + 1 generator shim) |
+| W5 | S-07, S-10 | Numbered query files + cache file consolidation | ~7k | ✅ DONE | 6 numbered query files deleted; scan_cache canonical path established |
+| W6 | S-11 | Archive grep-noise reduction | ~3k | ✅ DONE | `.codeiumignore` excludes ADG backup archives; grep noise reduced |
 
 ## §5 Phase-Level Summary
 

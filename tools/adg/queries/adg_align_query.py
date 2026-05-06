@@ -16,7 +16,7 @@ from tools.adg.shared_modules.path_resolver import latest_sqlite
 def open_db() -> sqlite3.Connection:
     db_path = latest_sqlite()
     if db_path is None:
-        raise FileNotFoundError("No ADG SQLite file found. Run: python tools/generate_full_adg.py")
+        raise FileNotFoundError("No ADG SQLite file found. Run: python tools/generate/generate_full_adg.py")
     conn = sqlite3.connect(str(db_path), timeout=5.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA query_only = ON")

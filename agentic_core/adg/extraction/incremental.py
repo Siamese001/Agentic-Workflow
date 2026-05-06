@@ -24,7 +24,7 @@ Usage::
     result = incremental_scan(
         repo_root=Path("."),
         changed_files=["agentic_core/L2_execution/foo.py"],
-        cache_path=Path("artifacts/adg/scan_result_cache.json"),
+        cache_path=Path("artifacts/adg/cache/scan_result_cache.json"),
         full_snapshot_path=Path("artifacts/adg/adg_full_latest.json"),
     )
 """
@@ -376,7 +376,7 @@ def incremental_scan(
         git diff against base_ref.
     cache_path:
         Path to the scan cache JSON. Defaults to
-        ``artifacts/adg/scan_result_cache.json``.
+        ``artifacts/adg/cache/scan_result_cache.json`` (canonical per S-10).
     full_snapshot_path:
         Path to the latest full NormalizedGraph JSON for the reverse-import
         index. If None, performs a full scan instead.
@@ -397,7 +397,7 @@ def incremental_scan(
 
     # Resolve defaults
     if cache_path is None:
-        cache_path = repo_root / "artifacts" / "adg" / "scan_result_cache.json"
+        cache_path = repo_root / "artifacts" / "adg" / "cache" / "scan_result_cache.json"
 
     # Step 1: determine changed files
     if changed_files is None:

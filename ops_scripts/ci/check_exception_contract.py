@@ -340,7 +340,7 @@ def main() -> int:
     if sqlite_path is None or not sqlite_path.is_file():
         print(
             "[check_exception_contract] SKIP: no ADG sqlite snapshot found — "
-            "gate will run after `python tools/generate_full_adg.py`."
+            "gate will run after `python tools/generate/generate_full_adg.py`."
         )
         return 0
 
@@ -361,7 +361,7 @@ def main() -> int:
             print(
                 "[check_exception_contract] SKIP: snapshot lacks `edges` table "
                 f"({sqlite_path.name}); error: {exc}. "
-                "Re-run after `python tools/generate_full_adg.py` completes."
+                "Re-run after `python tools/generate/generate_full_adg.py` in the canonical ADG generator path."
             )
             return 0
         if "symbol" not in edge_cols:
@@ -369,7 +369,7 @@ def main() -> int:
                 "[check_exception_contract] SKIP: snapshot `edges` table has no "
                 f"`symbol` column ({sqlite_path.name}; cols={sorted(edge_cols)}). "
                 "Likely a stub/sentinel snapshot or an in-flight pipeline write — "
-                "re-run after `python tools/generate_full_adg.py` completes."
+                "re-run after `python tools/generate/generate_full_adg.py` in the canonical ADG generator path."
             )
             return 0
 

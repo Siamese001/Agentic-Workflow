@@ -162,10 +162,10 @@ _emit_stores_embedding("p4", "cache_loader", "embedding_store")
 _emit_updates_meta_learning_state("p4", "cache_loader", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "cache_loader", "exec_snapshot_link")
 
-# Configuration conf"{ADG_ARTIFACTS_DIR}/scan_result_cache.json"e.json"e.json"
+# Configuration: canonical cache path per S-10
 
 logger = logging.getLogger(__name__)
-_CACHE_PATH = Path(f"{ADG_ARTIFACTS_DIR}/scan_result_cache.json")
+_CACHE_PATH = Path(f"{ADG_ARTIFACTS_DIR}/cache/scan_result_cache.json")
 
 
 def _get_commit_sha() -> str:

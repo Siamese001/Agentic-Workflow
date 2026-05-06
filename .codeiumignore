@@ -22,6 +22,10 @@ archives/
 **/_deleted/
 **/_oneoff/
 **/_oneshot/
+# S-11: ADG backup archives that accumulate grep noise (per adg-config-ssot-audit-c7e4a2)
+**/adg_root_oneshots_*/
+**/adg_backups/
+**/tools_graveyard_*/
 
 # --- Generated reports (humans read these; Cascade should not index them) ----
 reports/

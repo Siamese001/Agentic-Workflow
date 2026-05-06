@@ -178,7 +178,7 @@ def _read_handoff_witness_tiers(conn: sqlite3.Connection) -> list[ViewResult]:
         raise RuntimeError(
             "mv_handoff_witness_tiers not found in this ADG SQLite.\n"
             "Re-run ADG generation to materialize Phase A tables:\n"
-            "  python tools/generate_full_adg.py"
+            "  python tools/generate/generate_full_adg.py"
         ) from exc
 
     by_view: dict[str, list[WitnessRow]] = {}
@@ -316,7 +316,7 @@ def _read_cross_cutting_witness_tiers(
         raise RuntimeError(
             "mv_cross_cutting_witness_tiers not found in this ADG SQLite.\n"
             "Re-run ADG generation to materialize Phase A tables:\n"
-            "  python tools/generate_full_adg.py"
+            "  python tools/generate/generate_full_adg.py"
         ) from exc
 
     return [
@@ -407,7 +407,7 @@ def main() -> int:
     else:
         snapshots = sorted(glob.glob(f"{ADG_ARTIFACTS_DIR}/adg_indexed_*.sqlite"))
         if not snapshots:
-            print("[ERROR] No ADG SQLite found. Run: python tools/generate_full_adg.py")
+            print("[ERROR] No ADG SQLite found. Run: python tools/generate/generate_full_adg.py")
             return 1
         db_path = Path(snapshots[-1])
 

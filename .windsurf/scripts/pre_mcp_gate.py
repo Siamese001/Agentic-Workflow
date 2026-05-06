@@ -427,12 +427,12 @@ def _has_adg_sqlite(repo_root: Path) -> bool:
 
 def _auto_generate_adg(repo_root: Path) -> bool:
     """
-    Invoke ``python tools/generate_full_adg.py`` synchronously to bootstrap the
+    Invoke ``python tools/generate/generate_full_adg.py`` synchronously to bootstrap the
     ADG SQLite when none exists.  Returns True on success, False on failure.
 
     Constitutional §3.2: shell=False.  §14: timeout= is mandatory.
     """
-    script = repo_root / "tools" / "generate_full_adg.py"
+    script = repo_root / "tools" / "generate" / "generate_full_adg.py"
     try:
         result = subprocess.run(
             [sys.executable, str(script)],
@@ -709,7 +709,7 @@ def check_adg_gate(repo_root: Path, tool_name: str = "") -> int:
         if not _auto_generate_adg(repo_root):
             return _exit_block(
                 "ADG SQLite is missing and auto-generation failed. "
-                "Run 'python tools/generate_full_adg.py' manually to bootstrap ADG.",
+                "Run 'python tools/generate/generate_full_adg.py' manually to bootstrap ADG.",
             )
 
     needs_write = tool_name in adg_write_tools
@@ -731,7 +731,7 @@ def check_adg_gate(repo_root: Path, tool_name: str = "") -> int:
         minutes = int(age // 60)
         print(
             f"[pre_mcp_gate] INFO: ADG snapshot is {minutes} min old — "
-            "refresh when convenient: python tools/generate_full_adg.py",
+            "refresh when convenient: python tools/generate/generate_full_adg.py",
             file=sys.stderr,
         )
 
@@ -844,7 +844,7 @@ def check_redis_gate(repo_root: Path) -> int:
         if not _auto_generate_adg(repo_root):
             return _exit_block(
                 f"Redis unavailable ({redis_error}) AND ADG SQLite missing "
-                "(auto-generation failed). Run 'python tools/generate_full_adg.py' manually.",
+                "(auto-generation failed). Run 'python tools/generate/generate_full_adg.py' manually.",
             )
 
     # Check SQLite accessibility (read-only probe)
