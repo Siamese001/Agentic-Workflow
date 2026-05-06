@@ -63,10 +63,13 @@ honour `APPS_RESEARCH_REQUIRE_QWEN=1` and raise `QwenUnavailableError` with an
 A prior topology ran vLLM natively in WSL2 Ubuntu under a systemd-user
 service. That path is **deprecated** for `Agentic-Workflow-FRESH`. The launcher
 scripts (`start_vllm_server_32b.sh`, `check_vllm.sh`, `vllm.service`) were
-moved to `archives/wsl2_vllm_legacy_2026-05-06/` with a README. The WSL2-side
-`~/.vllm_env` venv (~9.7 GB) and `/home/amita/.config/systemd/user/vllm.service`
-were removed. The model weights at `~/models/Qwen2.5-32B-Instruct-AWQ` (~20 GB)
-were preserved as a cheap-to-keep fallback artifact.
+removed from the repo at commit `c4970b6ddb` and briefly held in a local-only
+gitignored `archives/` folder; the local archive was deleted 2026-05-06 (W5
+of plan apps-rg-vllm-deferred-followup-f7d3a9) since the topology details
+captured here are sufficient retrieval. The WSL2-side `~/.vllm_env` venv
+(~9.7 GB) and `/home/amita/.config/systemd/user/vllm.service` were removed.
+The model weights at `~/models/Qwen2.5-32B-Instruct-AWQ` (~20 GB) were
+preserved as a cheap-to-keep fallback artifact.
 
 Do not start the WSL2 unit: port 8000 is owned by Docker; the unit will
 restart-loop with port-bind failures.
