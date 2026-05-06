@@ -301,32 +301,146 @@ class CompanyBriefEngine(BaseResearchEngine):
         """
         prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
 
+        # Strict mode: fail loud with categorized diagnostic when the operator
+        # explicitly required Qwen (APPS_RESEARCH_REQUIRE_QWEN=1). Distinguishes
+        # Docker Desktop down vs vLLM container down vs model not loaded so the
+        # error message is actionable. Cloud/stub fallbacks are intentionally
+        # bypassed in strict mode.
+        try:
+            from agentic_core.L2_execution.healers.qwen_strict_diagnostic import (  # noqa: PLC0415
+                require_qwen_or_raise,
+                strict_mode_enabled,
+            )
+            if strict_mode_enabled():
+                require_qwen_or_raise()
+        except ImportError:
+            pass
+
         qwen_payload = self._qwen_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
         if qwen_payload is not None:
             return qwen_payload
 
+        gemini_payload = self._gemini_synthesize(prompt=prompt, topic=topic, jd_facets=jd_facets)
+        if gemini_payload is not None:
+            return gemini_payload
+
+        return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
+
+    def _gemini_synthesize(
+        self,
+        *,
+        prompt: str,
+        topic: str,
+        jd_facets: List[str],
+    ) -> Dict[str, Any] | None:
+        """Synthesize via Google Gemini 3.1 Pro Preview (cloud cascade tier 2).
+
+        Mirrors :meth:`_qwen_synthesize`. Reads `GOOGLE_API_KEY` and
+        `GEMINI_PRO_MODEL` (default ``gemini-3.1-pro-preview``) from the
+        environment. Returns the parsed synthesis dict on success, ``None``
+        when any guard rejects (SDK absent, key missing, API exception,
+        empty response, parse failure). The ``None`` return signals
+        :meth:`_synthesize` to fall through to the deterministic stub.
+
+        Per `.env.example` doctrine, ``GEMINI_PRO_MODEL`` is the
+        synthesis-quality / structural-novel-failure escalation tier;
+        ``GEMINI_MODEL`` (flash) is for cheap healing and is intentionally
+        NOT used here.
+        """
+        import os  # noqa: PLC0415 — local import keeps module cold-load cheap
+
         try:
-            from agentic_core.runtime.llm.sovereign_llm_gateway import (  # type: ignore
-                SovereignLLMGateway,
-            )
+            from google import genai  # noqa: PLC0415
         except ImportError:
-            return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
+            self.logger.info("[CompanyBriefEngine] google-genai SDK not installed; skipping Gemini fallback")
+            return None
 
-        try:
-            gateway = SovereignLLMGateway()
-        except Exception as exc:  # guardian: allow-broad-exception -- LLM gateway init heterogeneous; fail-soft to stub keeps pipeline usable offline
-            self.logger.warning(
-                "[CompanyBriefEngine] LLM gateway unavailable (%s); using stub synthesis", exc
+        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            self.logger.info("[CompanyBriefEngine] GOOGLE_API_KEY/GEMINI_API_KEY not set; skipping Gemini fallback")
+            return None
+
+        # Try Pro first (synthesis-quality tier) then Flash (cheap-fast). Free-tier
+        # Google AI Studio accounts have limit:0 for Pro models so the cascade
+        # resolves to Flash; paid-tier accounts hit Pro and never reach Flash.
+        # Order matches `.env.example` doctrine: GEMINI_PRO_MODEL is the
+        # synthesis-quality tier; GEMINI_MODEL (flash) is the cheap fallback.
+        candidates: list[str] = []
+        pro_model = os.environ.get("GEMINI_PRO_MODEL", "gemini-3.1-pro-preview").strip()
+        flash_model = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview").strip()
+        if pro_model:
+            candidates.append(pro_model)
+        if flash_model and flash_model != pro_model:
+            candidates.append(flash_model)
+        if not candidates:
+            return None
+
+        client = genai.Client(api_key=api_key)
+        last_error: Exception | None = None
+        for model_name in candidates:
+            started = time.time()
+            try:
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=(
+                        "You are a research analyst producing structured company briefs. "
+                        "Always answer with strict JSON matching the schema in the user prompt.\n\n"
+                        + prompt
+                    ),
+                    config={
+                        "temperature": 0.2,
+                        "max_output_tokens": 2000,
+                    },
+                )
+            except Exception as exc:  # guardian: allow-broad-exception -- google-genai raises heterogeneous (APIError/Connection/Timeout/InvalidArgument); fail-soft preserves stub fallback
+                last_error = exc
+                self.logger.info(
+                    "[CompanyBriefEngine] gemini model=%s failed (%s); trying next candidate",
+                    model_name,
+                    type(exc).__name__,
+                )
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_exception",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
+            if not text:
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_empty_response",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            parsed = self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
+            if parsed.get("tagline", "").endswith("stub synthesis — research unavailable)"):
+                _emit_company_brief_marker(
+                    accepted=False,
+                    model_used=model_name,
+                    fallback_reason="gemini_parse_failure",
+                    latency_ms=(time.time() - started) * 1000.0,
+                )
+                continue
+
+            _emit_company_brief_marker(
+                accepted=True,
+                model_used=model_name,
+                fallback_reason="none",
+                latency_ms=(time.time() - started) * 1000.0,
             )
-            return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
+            return parsed
 
-        try:
-            resp = gateway.generate(prompt=prompt, max_tokens=2000, temperature=0.2)
-            text = resp.text if hasattr(resp, "text") else str(resp)
-            return self._parse_synthesis(text, topic=topic, jd_facets=jd_facets)
-        except Exception as exc:  # guardian: allow-broad-exception -- LLM call paths raise heterogeneous (timeout/HTTP/parse); fail-soft to stub
-            self.logger.warning("[CompanyBriefEngine] LLM synthesis failed: %s", exc)
-            return self._stub_synthesis(topic=topic, jd_facets=jd_facets)
+        if last_error is not None:
+            self.logger.info(
+                "[CompanyBriefEngine] all Gemini candidates exhausted (last error: %s); falling back to stub",
+                last_error,
+            )
+        return None
 
     def _qwen_synthesize(
         self,
@@ -548,39 +662,56 @@ class CompanyBriefEngine(BaseResearchEngine):
         """Run research using coverage-family fan-out from query_decomposer.
 
         Delegates family selection + query generation to
-        ``decompose_coverage_families()``. Degrades gracefully when Tavily
-        is unavailable — returns empty blobs per family so the pipeline
-        remains green in offline test environments.
+        ``decompose_coverage_families()``. Uses
+        ``apps_research.integrations.tavily_retrieval.retrieve`` (the
+        canonical Tavily adapter) for the actual searches. Degrades
+        gracefully when ``TAVILY_API_KEY`` is unset or the SDK is missing
+        — returns empty blobs per family so offline test environments
+        stay green.
         """
         plans = decompose_coverage_families(topic, depth_profile, jd_context or None)
         findings: Dict[str, str] = {p.family: "" for p in plans}
 
         try:
-            from tools.retrieval.tavily_client import TavilySearchClient  # type: ignore
+            from apps_research.integrations.tavily_retrieval import retrieve
         except ImportError:
             self.logger.info(
-                "[CompanyBriefEngine] Tavily unavailable; returning stub findings"
+                "[CompanyBriefEngine] tavily_retrieval module unavailable; returning stub findings"
             )
             return findings
 
         profile_cfg = _DEPTH_PROFILES.get(depth_profile, _DEPTH_PROFILES["COMPANY_BRIEF_STANDARD"])
         max_queries = profile_cfg["max_queries"]
 
-        try:
-            client = TavilySearchClient()
-        except Exception as exc:  # guardian: allow-broad-exception -- Tavily init raises heterogeneous errors; fail-soft preserves pipeline
-            self.logger.warning("[CompanyBriefEngine] Tavily init failed: %s", exc)
-            return findings
-
         for plan in plans[:max_queries]:
             try:
-                resp = client.search(query=plan.query, max_results=5)
-                snippets = [r.get("content", "") for r in (resp or {}).get("results", [])]
-                findings[plan.family] = "\n".join(snippets)[:4000]
-            except Exception as exc:  # guardian: allow-broad-exception -- per-family Tavily HTTP errors; fail-soft preserves partial brief
+                docs = retrieve(plan.query, top_k=5)
+            except RuntimeError as exc:
+                # TAVILY_API_KEY missing or SDK absent — first failure aborts
+                # the whole loop because every retrieve() call would fail
+                # the same way; preserves any blobs already collected.
                 self.logger.warning(
-                    "[CompanyBriefEngine] Tavily query failed (family=%s): %s", plan.family, exc
+                    "[CompanyBriefEngine] Tavily unavailable (%s); aborting fan-out", exc
                 )
+                break
+            except Exception as exc:  # guardian: allow-broad-exception -- per-family Tavily HTTP errors heterogeneous; fail-soft preserves partial brief
+                self.logger.warning(
+                    "[CompanyBriefEngine] Tavily query failed (family=%s): %s",
+                    plan.family,
+                    exc,
+                )
+                continue
+            snippets: list[str] = []
+            for d in docs:
+                if not (d.snippet or "").strip():
+                    continue
+                snippets.append(f"{d.title}: {d.snippet}")
+                if d.url:
+                    # URL on its own line so _build_c0_bundle's
+                    # startswith("http") extractor picks it up for
+                    # source_portfolio_summary.source_urls.
+                    snippets.append(d.url)
+            findings[plan.family] = "\n".join(snippets)[:4000]
         return findings
 
     def _build_c0_bundle(

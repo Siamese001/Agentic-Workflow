@@ -1,8 +1,52 @@
 # Qwen/vLLM Runtime Topology
 
 > Canonical reference for the supported Qwen inference path in this repo.
-> Last updated after legacy worker cleanup (Apr 2026).
+> Last updated 2026-05-06 (Docker canonical-runtime declaration).
 > Related: `docs/architecture/hardening_addendum.md`, `agentic_core/L2_execution/types/local_first_disposition.py`
+
+---
+
+## 0. Canonical Runtime — Docker Desktop (added 2026-05-06)
+
+For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
+**Docker Desktop**, NOT under WSL2 systemd-user.
+
+| Field | Value |
+|---|---|
+| Container | `local-qwen-vllm` |
+| Image | `vllm/vllm-openai:latest` |
+| Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) |
+| Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
+| Port mapping | `0.0.0.0:8000->8000/tcp` |
+| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 8192 --gpu-memory-utilization 0.88 --host 0.0.0.0 --port 8000` |
+
+### Lifecycle
+
+- Start: `docker start local-qwen-vllm`
+- Stop: `docker stop local-qwen-vllm`
+- Health: `curl http://localhost:8000/v1/models` should return JSON with `Qwen/Qwen2.5-32B-Instruct-AWQ` in `data[0].id`
+
+### Strict-mode preflight
+
+`agentic_core/L2_execution/healers/qwen_strict_diagnostic.py` provides
+categorized failure modes — `docker_desktop_down`, `docker_cli_missing`,
+`vllm_container_down`, `qwen_model_not_loaded`, `ok`. Engines that synthesize
+via Qwen (e.g. `apps_research.engines.company_brief_engine.CompanyBriefEngine`)
+honour `APPS_RESEARCH_REQUIRE_QWEN=1` and raise `QwenUnavailableError` with an
+`action_hint` instead of silently falling through to stub.
+
+### Legacy WSL2 path (DEPRECATED, archived 2026-05-06)
+
+A prior topology ran vLLM natively in WSL2 Ubuntu under a systemd-user
+service. That path is **deprecated** for `Agentic-Workflow-FRESH`. The launcher
+scripts (`start_vllm_server_32b.sh`, `check_vllm.sh`, `vllm.service`) were
+moved to `archives/wsl2_vllm_legacy_2026-05-06/` with a README. The WSL2-side
+`~/.vllm_env` venv (~9.7 GB) and `/home/amita/.config/systemd/user/vllm.service`
+were removed. The model weights at `~/models/Qwen2.5-32B-Instruct-AWQ` (~20 GB)
+were preserved as a cheap-to-keep fallback artifact.
+
+Do not start the WSL2 unit: port 8000 is owned by Docker; the unit will
+restart-loop with port-bind failures.
 
 ---
 

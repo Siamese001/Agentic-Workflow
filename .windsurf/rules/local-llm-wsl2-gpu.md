@@ -40,39 +40,61 @@ description: Apply when advising on local LLM model size, quantization, VRAM bud
 - ✅ When `nvidia-smi` (run from WSL or Windows) shows X MiB used, treat that as the floor; remainder is available to vLLM.
 - ✅ For model-size selection on this rig: 32B is the **canonical production choice** (fits at `gpu_memory_utilization=0.92`, `max_model_len=16384`), 72B is out.
 
-## Stack location (canonical — Stack A)
+## Stack location (canonical — Stack B, Docker container, since 2026-05-06)
 
-**All model weights live on the WSL2 ext4 VHDX, NOT on Windows `C:\`.**
+The canonical runtime for `Agentic-Workflow-FRESH` is the **Docker Desktop
+container `local-qwen-vllm`** (image `vllm/vllm-openai:latest`), not a WSL2
+native systemd-user service. WSL2 still hosts the CUDA passthrough layer that
+Docker uses for `--gpus all`; the framing in §"Memory framing rules" above
+remains correct — only the "where does the vLLM process physically run"
+question flipped.
 
-```
-/home/amita/                       # WSL2 Ubuntu-24.04 user home, /dev/sdd ext4
-├── models/Qwen2.5-32B-Instruct-AWQ/    # ✅ canonical model dir (~19 GB, 5 safetensors shards)
-├── .vllm_env/                          # ✅ Python venv with vllm 0.16.0
-└── .config/systemd/user/vllm.service   # ✅ user-mode systemd unit (calls Stack A launcher)
-```
+| Field | Value |
+|---|---|
+| Container | `local-qwen-vllm` |
+| Image | `vllm/vllm-openai:latest` |
+| Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL`) |
+| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 8192 --gpu-memory-utilization 0.88 --host 0.0.0.0 --port 8000` |
+| Lifecycle | `docker start local-qwen-vllm` / `docker stop local-qwen-vllm` |
+| Health | `curl http://localhost:8000/v1/models` |
 
-**Repo-side launcher** (Windows-side `C:\Git\Agentic-Workflow\tools\vllm\`, accessed via `/mnt/c`):
-- `start_vllm_server_32b.sh` — canonical launcher (gpu_util 0.92, max_model_len 16384, AWQ)
-- `vllm.service` — systemd unit (deployed to `~/.config/systemd/user/`)
-- `check_vllm.sh` — health probe
+Strict-mode preflight: `agentic_core/L2_execution/healers/qwen_strict_diagnostic.py`
+emits `docker_desktop_down` / `docker_cli_missing` / `vllm_container_down` /
+`qwen_model_not_loaded` / `ok`. Engines that synthesize via Qwen honour
+`APPS_RESEARCH_REQUIRE_QWEN=1` and raise `QwenUnavailableError` with
+`action_hint` instead of falling through to stub.
 
-Active runtime flags (Stack A):
-```
---model /home/amita/models/Qwen2.5-32B-Instruct-AWQ
---served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ
---host 0.0.0.0 --port 8000
---quantization awq --dtype float16
---gpu-memory-utilization 0.92
---max-model-len 16384
---max-num-seqs 24
---disable-log-requests
-```
+Topology doc: `docs/architecture/qwen-vllm-topology.md` §0.
 
-> **Never put model weights on `/mnt/c/...`** — Windows NTFS access through 9P over the WSL relay is ~10× slower than native ext4 and breaks fastpath mmap. The 9.4 GB AWQ model loads in ~30 s from ext4 VHDX vs minutes from `/mnt/c`.
+## Stack A — DEPRECATED (WSL2 native systemd-user, 2026-04-24 → 2026-05-06)
+
+A prior topology ran vLLM natively in WSL2 Ubuntu-24.04 under a systemd-user
+service. **DEPRECATED 2026-05-06.** Do NOT start the unit — port 8000 is owned
+by Docker; the WSL service will restart-loop with port-bind failures.
+
+What was preserved (cheap-to-keep fallback):
+- `~/models/Qwen2.5-32B-Instruct-AWQ/` (~20 GB, 5 safetensors shards on WSL2 ext4)
+
+What was removed 2026-05-06 (per Author-Gate B medium-wipe decision):
+- `~/.vllm_env/` (~9.7 GB — recreate with `pip install vllm`)
+- `/home/amita/.config/systemd/user/vllm.service`
+
+What was archived (repo-side):
+- `tools/vllm/start_vllm_server_32b.sh` → `archives/wsl2_vllm_legacy_2026-05-06/`
+- `tools/vllm/check_vllm.sh` → same archive
+- `tools/vllm/vllm.service` → same archive
+
+> **VHDX placement framing still applies**: if a future Docker volume binds
+> the model dir from WSL2, keep the model on ext4 VHDX, not on `/mnt/c/...`
+> (NTFS via 9P is ~10× slower). The `local-qwen-vllm` container has its
+> own copy via the image so this is currently moot.
 
 ## Retired stack (deleted 2026-04-24)
 
-`~/llm-stack/` — Docker compose attempt with `vllm/vllm-openai:v0.11.0`, separate hf-cache. Retired in favor of Stack A. Caused config-drift confusion. Do not resurrect without retiring Stack A first.
+`~/llm-stack/` — earlier Docker compose attempt with `vllm/vllm-openai:v0.11.0`,
+separate hf-cache. Retired in favor of Stack A in April 2026. Stack A was
+itself superseded by the current Docker container Stack B in May 2026. Do not
+resurrect either retired stack without first retiring Stack B.
 
 ## Known operational quirks (don't re-discover these)
 
