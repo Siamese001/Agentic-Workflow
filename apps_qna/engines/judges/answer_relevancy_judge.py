@@ -134,8 +134,16 @@ class AnswerRelevancyJudge:
         if not answer or not question:
             return GRADER_UNKNOWN_SENTINEL, []
 
-        # LLM judge path
+        # LLM judge path — use injected context or auto-build from env
         provider_ctx = (run_context or {}).get("provider_context")
+        if provider_ctx is None:
+            try:
+                from apps_qna.integrations.provider_adapter import (  # noqa: PLC0415
+                    build_judge_provider_context_from_env,
+                )
+                provider_ctx = build_judge_provider_context_from_env()
+            except Exception:
+                provider_ctx = None
         if provider_ctx is not None and hasattr(provider_ctx, "dispatch") and hasattr(provider_ctx, "has_model"):
             if provider_ctx.has_model():
                 prompt = _RELEVANCY_PROMPT_TEMPLATE.format(

@@ -99,17 +99,67 @@ _DEFAULT_BRIEF_PATH = "apps_rg/scripts/company_research.json"
 _DEFAULT_CANDIDATE_PATH = "apps_rg/scripts/candidate_profile.yaml"
 
 
+def _assert_artifact_matches_company(
+    path: Path, target_company: str, artifact_kind: str
+) -> None:
+    """Fail loud if a JD/briefing artifact references a different company.
+
+    Prevents silent cross-company contamination from hand-authored default
+    files tied to a previous target_company. The L0 prerequisite gate also
+    catches mismatched briefings via ``_check_scope_match``, but this guard
+    fires earlier at intake with an artifact-specific error message.
+
+    No-op when the file is missing (the L0 gate's job) or carries no
+    ``company`` field (e.g. master candidate profile).
+    """
+    if not path.exists() or not target_company:
+        return
+    try:
+        text = path.read_text(encoding="utf-8")
+        if path.suffix.lower() == ".json":
+            data = json.loads(text)
+        elif path.suffix.lower() in (".yaml", ".yml"):
+            import yaml  # local import — yaml is optional for json-only paths
+
+            data = yaml.safe_load(text)
+        else:
+            return
+    except (OSError, json.JSONDecodeError, ValueError):
+        return
+    if not isinstance(data, dict):
+        return
+    file_company = str(data.get("company") or "").strip()
+    if not file_company:
+        return  # Artifact has no company assertion — nothing to contradict
+    if file_company.lower() != target_company.strip().lower():
+        raise SystemExit(
+            f"FATAL: {artifact_kind} at {path} declares company={file_company!r} "
+            f"but --target-company={target_company!r}. Refusing to proceed with a "
+            f"cross-company contaminated artifact. Supply a {artifact_kind} matching "
+            f"{target_company!r}, or omit --{artifact_kind.replace('_', '-')} to let "
+            f"the L0 prerequisite gate route to apps_research."
+        )
+
+
 def _build_raw_request(args) -> dict[str, Any]:
     """Build the raw_request envelope from parsed CLI args.
 
     This dict is the contract surface between apps_rg and the R4 pipeline.
     It contains only transport-level data — no executable code.
     """
+    target_company = (args.target_company or "").strip()
+
     jd_arg: str = getattr(args, "jd", "") or ""
     jd_path = Path(jd_arg or _DEFAULT_JD_PATH)
+    _assert_artifact_matches_company(jd_path, target_company, "jd")
 
+    # Brief path: pass through user-supplied path unchanged. NEVER silently
+    # substitute a different company's briefing file. If user gave a path that
+    # does not exist, the L0 prerequisite gate will see MISSING and route to
+    # apps_research — that is the correct behavior, not a fallback.
     brief_arg: str = getattr(args, "manual_brief", "") or ""
-    brief_path = Path(brief_arg if brief_arg and Path(brief_arg).exists() else _DEFAULT_BRIEF_PATH)
+    brief_path = Path(brief_arg or _DEFAULT_BRIEF_PATH)
+    _assert_artifact_matches_company(brief_path, target_company, "manual_brief")
 
     candidate_path = (
         Path(args.candidate) if getattr(args, "candidate", None) else Path(_DEFAULT_CANDIDATE_PATH)
@@ -399,32 +449,29 @@ def main() -> None:
     parser.add_argument("--research-via", default=None, choices=["apps_research"])
     parser.add_argument("--auto-research-internal", action="store_true")
     parser.add_argument("--auto-research-tavily", action="store_true")
-    parser.add_argument("--manual-brief", default="apps_rg/scripts/company_research.json")
+    parser.add_argument("--manual-brief", default=None, help="Path to company briefing JSON. Must match --target-company; never falls back to a different company's file.")
     parser.add_argument("--candidate", default=None, help="Candidate profile path")
     parser.add_argument("--target-level", default=None)
     parser.add_argument("--jd", default=None, help="Job description JSON path")
     args, _unknown = parser.parse_known_args()
 
-    # ── Resolve company/role from script defaults when not supplied on CLI ──
+    # ── --target-company and --target-role MUST be supplied explicitly. ──
+    # Auto-deriving from the hand-authored default JSONs (whoever last filled
+    # apps_rg/scripts/company_research.json / job_description.json) is a
+    # cross-company contamination risk: every prior-resume artifact in this
+    # repo would silently re-target the previous company. Hardened intentionally.
     if not args.target_company:
-        try:
-            _brief = json.loads(Path(_DEFAULT_BRIEF_PATH).read_text(encoding="utf-8"))
-            args.target_company = _brief.get("company", "") or ""
-        except (OSError, json.JSONDecodeError):
-            pass
+        parser.error(
+            "--target-company is required. Pass it explicitly; apps_rg refuses to "
+            "infer it from a hand-authored default file (would risk silently using "
+            "a prior company's research as the target)."
+        )
     if not args.target_role:
-        try:
-            _jd = json.loads(Path(_DEFAULT_JD_PATH).read_text(encoding="utf-8"))
-            args.target_role = (
-                _jd.get("role_title") or _jd.get("title") or _jd.get("job_title") or ""
-            )
-        except (OSError, json.JSONDecodeError):
-            pass
-
-    if not args.target_company:
-        parser.error("--target-company is required (and could not be read from apps_rg/scripts/company_research.json)")
-    if not args.target_role:
-        parser.error("--target-role is required (and could not be read from apps_rg/scripts/job_description.json)")
+        parser.error(
+            "--target-role is required. Pass it explicitly; apps_rg refuses to "
+            "infer it from a hand-authored default JD file (would risk silently "
+            "reusing a prior role's framing)."
+        )
 
     _run_with_args(args)
 

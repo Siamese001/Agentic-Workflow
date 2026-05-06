@@ -98,6 +98,8 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_recall_judge::v2
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -106,6 +108,8 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_precision_judge::v2
   - dimension_id: answer_relevancy
     description: Answer relevancy to the task intent.
     weight: 0.0
@@ -114,5 +118,7 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::answer_relevancy_judge::v2
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'

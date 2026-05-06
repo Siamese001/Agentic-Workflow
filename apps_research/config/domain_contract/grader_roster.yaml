@@ -14,6 +14,9 @@
   llm_judge_graders:
   - research::coverage_depth_judge::v1
   - research::citation_quality_judge::v1
+  - qna::context_recall_judge::v2
+  - qna::context_precision_judge::v2
+  - qna::answer_relevancy_judge::v2
   ensemble_or_consensus_graders:
   - research::source_quality_hybrid::v1
   - research::balance_hybrid::v1

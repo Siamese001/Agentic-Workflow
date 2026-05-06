@@ -67,17 +67,21 @@ class QnaProviderContext:
         return bool(self.model_id)
 
     def dispatch(self, prompt: str) -> str:
-        """Dispatch a model call via the local vLLM OpenAI-compatible endpoint.
+        """Dispatch a model call to the configured provider.
 
         Fail-open: returns "" if the model is unavailable, unconfigured,
         or any error occurs during dispatch. This ensures the pack-build
         pipeline is never blocked by provider failures.
 
-        Uses httpx (sync) to call the vLLM chat completions endpoint directly.
-        This avoids the aiohttp/asyncio event-loop issues that cause hangs on
-        Windows when LocalVLLMProvider.generate() is called repeatedly (each
-        call creates a new QwenInferenceGateway → aiohttp.ClientSession that
-        leaks connectors and deadlocks subsequent asyncio.run() calls).
+        Provider routing (resolved from ``model_id`` prefix or ``extra["provider"]``):
+          - ``anthropic:*`` or ``claude-*``  → Anthropic Messages API
+          - ``openai:*`` or ``gpt-*`` or ``o1-*`` or ``o3-*`` → OpenAI Chat API
+          - ``gemini-*``                     → Google Generative AI
+          - anything else                   → vLLM OpenAI-compatible endpoint
+            (``VLLM_BASE_URL`` env, default http://localhost:8000)
+
+        Uses httpx (sync) for vLLM to avoid the aiohttp/asyncio event-loop
+        issues on Windows (ProactorEventLoop hang on repeated asyncio.run()).
 
         Args:
             prompt: The assembled prompt text to send to the model.
@@ -89,18 +93,65 @@ class QnaProviderContext:
             return ""
         if not prompt:
             return ""
+        import logging as _logging  # noqa: PLC0415
+        import os as _os  # noqa: PLC0415
+        _log = _logging.getLogger(__name__)
         try:
-            import httpx  # noqa: PLC0415
-            import os as _os  # noqa: PLC0415
+            provider = self.extra.get("provider", "")
+            model = self.model_id
+            max_tok = self.max_tokens or 4096
+            temp = self.temperature
 
+            # Anthropic
+            if provider == "anthropic" or model.startswith("claude-"):
+                import anthropic as _anthropic  # type: ignore[import-not-found]  # noqa: PLC0415
+                api_key = _os.getenv("ANTHROPIC_API_KEY", "").strip()
+                if not api_key:
+                    return ""
+                client = _anthropic.Anthropic(api_key=api_key)
+                msg = client.messages.create(
+                    model=model,
+                    max_tokens=max_tok,
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                return msg.content[0].text if msg.content else ""
+
+            # OpenAI
+            if provider == "openai" or model.startswith(("gpt-", "o1-", "o3-")):
+                import openai as _openai  # type: ignore[import-not-found]  # noqa: PLC0415
+                api_key = _os.getenv("OPENAI_API_KEY", "").strip()
+                if not api_key:
+                    return ""
+                client = _openai.OpenAI(api_key=api_key)
+                resp = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=max_tok,
+                    temperature=temp,
+                )
+                return resp.choices[0].message.content or ""
+
+            # Gemini
+            if provider == "gemini" or model.startswith("gemini-"):
+                import google.generativeai as _genai  # type: ignore[import-not-found]  # noqa: PLC0415
+                api_key = _os.getenv("GOOGLE_API_KEY", "").strip()
+                if not api_key:
+                    return ""
+                _genai.configure(api_key=api_key)
+                gmodel = _genai.GenerativeModel(model)
+                response = gmodel.generate_content(prompt)
+                return response.text if hasattr(response, "text") else ""
+
+            # vLLM / OpenAI-compatible (default)
+            import httpx  # noqa: PLC0415
             base_url = _os.getenv("VLLM_BASE_URL", "http://localhost:8000")
             resp = httpx.post(
                 f"{base_url}/v1/chat/completions",
                 json={
-                    "model": self.model_id,
+                    "model": model,
                     "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": self.max_tokens or 4096,
-                    "temperature": self.temperature,
+                    "max_tokens": max_tok,
+                    "temperature": temp,
                 },
                 timeout=60.0,
             )
@@ -109,11 +160,7 @@ class QnaProviderContext:
             content = data["choices"][0]["message"]["content"]
             return content or ""
         except Exception as exc:  # guardian: allow-broad-exception-catch -- fail-open: provider errors must not block pack pipeline
-            import logging as _logging  # noqa: PLC0415
-
-            _logging.getLogger(__name__).debug(
-                "Provider dispatch failed (fail-open): %s", exc
-            )
+            _log.debug("Provider dispatch failed (fail-open): %s", exc)
             return ""
 
 
@@ -171,6 +218,80 @@ def build_provider_context(
     )
 
 
+_JUDGE_PROVIDER_VAR = "JUDGE_PROVIDER"
+_VLLM_MODEL_VAR = "VLLM_MODEL_NAME"
+_ANTHROPIC_MODEL_VAR = "ANTHROPIC_MODEL"
+_GEMINI_PRO_MODEL_VAR = "GEMINI_PRO_MODEL"
+_OPENAI_MODEL_VAR = "OPENAI_MODEL"
+
+_DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6"
+_DEFAULT_GEMINI_MODEL = "gemini-3.1-pro-preview"
+_DEFAULT_OPENAI_MODEL = "gpt-5.4-mini"
+_DEFAULT_VLLM_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
+
+
+def build_judge_provider_context_from_env() -> QnaProviderContext | None:
+    """Build a QnaProviderContext for judge dispatch from environment variables.
+
+    Provider resolution order (first available wins):
+      1. ``JUDGE_PROVIDER`` explicit override: anthropic | openai | gemini | qwen | vllm
+      2. ``ANTHROPIC_API_KEY`` set → anthropic (``ANTHROPIC_MODEL`` or default)
+      3. ``OPENAI_API_KEY`` set → openai (``OPENAI_MODEL`` or default)
+      4. ``GOOGLE_API_KEY`` set → gemini (``GEMINI_PRO_MODEL`` or default)
+      5. vLLM endpoint reachable at ``VLLM_BASE_URL`` → qwen (``VLLM_MODEL_NAME`` or default)
+
+    Returns:
+        A configured ``QnaProviderContext`` ready for ``dispatch()``, or ``None``
+        if no provider credentials are available.
+    """
+    import os as _os  # noqa: PLC0415
+
+    override = _os.getenv(_JUDGE_PROVIDER_VAR, "").strip().lower()
+    anthropic_key = _os.getenv("ANTHROPIC_API_KEY", "").strip()
+    openai_key = _os.getenv("OPENAI_API_KEY", "").strip()
+    google_key = _os.getenv("GOOGLE_API_KEY", "").strip()
+    vllm_base = _os.getenv("VLLM_BASE_URL", "http://localhost:8000").rstrip("/")
+
+    def _make(model_id: str, provider: str) -> QnaProviderContext:
+        return QnaProviderContext(
+            model_id=model_id,
+            max_tokens=512,
+            temperature=0.0,
+            extra={"provider": provider},
+        )
+
+    if override in ("anthropic",) and anthropic_key:
+        model = _os.getenv(_ANTHROPIC_MODEL_VAR, "").strip() or _DEFAULT_ANTHROPIC_MODEL
+        return _make(model, "anthropic")
+
+    if override in ("openai",) and openai_key:
+        model = _os.getenv(_OPENAI_MODEL_VAR, "").strip() or _DEFAULT_OPENAI_MODEL
+        return _make(model, "openai")
+
+    if override in ("gemini", "google") and google_key:
+        model = _os.getenv(_GEMINI_PRO_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_MODEL
+        return _make(model, "gemini")
+
+    if override in ("qwen", "vllm"):
+        model = _os.getenv(_VLLM_MODEL_VAR, "").strip() or _DEFAULT_VLLM_MODEL
+        return _make(model, "vllm")
+
+    if not override:
+        if anthropic_key:
+            model = _os.getenv(_ANTHROPIC_MODEL_VAR, "").strip() or _DEFAULT_ANTHROPIC_MODEL
+            return _make(model, "anthropic")
+        if openai_key:
+            model = _os.getenv(_OPENAI_MODEL_VAR, "").strip() or _DEFAULT_OPENAI_MODEL
+            return _make(model, "openai")
+        if google_key:
+            model = _os.getenv(_GEMINI_PRO_MODEL_VAR, "").strip() or _DEFAULT_GEMINI_MODEL
+            return _make(model, "gemini")
+        vllm_model = _os.getenv(_VLLM_MODEL_VAR, "").strip() or _DEFAULT_VLLM_MODEL
+        return _make(vllm_model, "vllm")
+
+    return None
+
+
 def get_timestamp(ctx: QnaProviderContext | None = None) -> str:
     """Return current ISO-8601 timestamp via context clock or stdlib.
 
@@ -193,5 +314,6 @@ def get_timestamp(ctx: QnaProviderContext | None = None) -> str:
 __all__ = [
     "QnaProviderContext",
     "build_provider_context",
+    "build_judge_provider_context_from_env",
     "get_timestamp",
 ]

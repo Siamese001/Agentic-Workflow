@@ -98,9 +98,19 @@ def _build_run_context(
     return ctx
 
 
+def _no_model_provider_context() -> Any:
+    """Return a QnaProviderContext with no model_id — forces heuristic fallback."""
+    from apps_qna.integrations.provider_adapter import QnaProviderContext
+    return QnaProviderContext(model_id="", max_tokens=0, temperature=0.0)
+
+
 def _run_judge(judge_id: str, example: dict[str, Any]) -> float | None:
-    """Run the correct judge in heuristic-fallback mode, return score or None."""
-    run_context = _build_run_context(example)
+    """Run the correct judge in heuristic-fallback mode, return score or None.
+
+    Injects a no-model provider_context to prevent env-based LLM auto-build
+    from activating during heuristic sanity / semantic-fallback tests.
+    """
+    run_context = _build_run_context(example, provider_context=_no_model_provider_context())
 
     if judge_id == "context_recall":
         from apps_qna.engines.judges.context_recall_judge import grade
@@ -127,11 +137,17 @@ def _run_judge_llm(
     """Run a judge with LLM-backed provider_context injected."""
     run_context = _build_run_context(example, provider_context=provider_context)
 
-    if judge_id == "answer_relevancy":
+    if judge_id == "context_recall":
+        from apps_qna.engines.judges.context_recall_judge import ContextRecallJudge
+        score, evidence = ContextRecallJudge().grade(None, run_context)
+    elif judge_id == "context_precision":
+        from apps_qna.engines.judges.context_precision_judge import ContextPrecisionJudge
+        score, evidence = ContextPrecisionJudge().grade(None, run_context)
+    elif judge_id == "answer_relevancy":
         from apps_qna.engines.judges.answer_relevancy_judge import AnswerRelevancyJudge
         score, evidence = AnswerRelevancyJudge().grade(None, run_context)
     else:
-        return _run_judge(judge_id, example)
+        return None
 
     if isinstance(score, (int, float)) and not math.isnan(score):
         # Verify LLM path was actually used (not heuristic fallback)
@@ -142,16 +158,45 @@ def _run_judge_llm(
     return None
 
 
-def _check_vllm_available() -> bool:
-    """Check if local vLLM endpoint is reachable via httpx."""
-    try:
-        import httpx
+def _check_llm_provider_available() -> tuple[bool, str]:
+    """Check if any LLM provider is available via env creds or vLLM endpoint.
 
+    Returns:
+        (available, description) — description names the provider found.
+    """
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+    openai_key = os.getenv("OPENAI_API_KEY", "").strip()
+    google_key = os.getenv("GOOGLE_API_KEY", "").strip()
+    judge_override = os.getenv("JUDGE_PROVIDER", "").strip().lower()
+
+    if judge_override == "anthropic" and anthropic_key:
+        return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
+    if judge_override == "openai" and openai_key:
+        return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
+    if judge_override in ("gemini", "google") and google_key:
+        return True, f"gemini ({os.getenv('GEMINI_PRO_MODEL', 'gemini-3.1-pro-preview')})"
+    if judge_override in ("qwen", "vllm"):
+        return True, f"vllm ({os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
+
+    if not judge_override:
+        if anthropic_key:
+            return True, f"anthropic ({os.getenv('ANTHROPIC_MODEL', 'claude-sonnet-4-6')})"
+        if openai_key:
+            return True, f"openai ({os.getenv('OPENAI_MODEL', 'gpt-5.4-mini')})"
+        if google_key:
+            return True, f"gemini ({os.getenv('GEMINI_PRO_MODEL', 'gemini-3.1-pro-preview')})"
+
+    # Fall back: check vLLM endpoint reachability
+    try:
+        import httpx as _httpx
         base_url = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
-        resp = httpx.get(f"{base_url}/v1/models", timeout=5.0)
-        return resp.status_code == 200
+        resp = _httpx.get(f"{base_url}/v1/models", timeout=5.0)
+        if resp.status_code == 200:
+            return True, f"vllm ({os.getenv('VLLM_MODEL_NAME', 'Qwen/Qwen2.5-32B-Instruct-AWQ')})"
     except Exception:
-        return False
+        pass
+
+    return False, "no provider available"
 
 
 # ---------------------------------------------------------------------------
@@ -447,72 +492,109 @@ class TestTier2SemanticSpearman:
             f"If labels were gamed, fix the labels."
         )
 
-    def test_semantic_answer_relevancy_llm_path(self, semantic_corpus: list):
-        """LLM-backed answer_relevancy is the semantic promotion candidate.
-
-        Requires provider_context/model availability.  When no model is
-        available, this test is skipped with an explicit reason — it does
-        NOT pass silently.
-        """
-        if not _check_vllm_available():
-            pytest.skip(
-                "LLM-backed answer_relevancy judge requires a live vLLM "
-                "endpoint.  Set VLLM_MODEL_NAME and ensure the vLLM server "
-                "is running.  The deterministic heuristic is fallback-only "
-                "and is explicitly tested as such in "
-                "test_semantic_answer_relevancy_heuristic_is_fallback_only."
-            )
-
-        from apps_qna.integrations.provider_adapter import QnaProviderContext
-
-        model_id = os.getenv("VLLM_MODEL_NAME", "Qwen/Qwen2.5-32B-Instruct-AWQ")
-        provider_ctx = QnaProviderContext(
-            model_id=model_id,
-            max_tokens=256,
-            temperature=0.0,
-        )
-
-        ar_examples = [ex for ex in semantic_corpus if ex["judge_id"] == "answer_relevancy"]
-        assert len(ar_examples) >= TIER2_MIN_PER_JUDGE, (
-            f"Need >= {TIER2_MIN_PER_JUDGE} answer_relevancy examples, got {len(ar_examples)}"
+    def _run_llm_judge_calibration(
+        self,
+        judge_id: str,
+        corpus: list,
+        provider_ctx: Any,
+        min_per_judge: int,
+        threshold: float,
+    ) -> None:
+        """Shared helper: run LLM-backed calibration for a single judge_id."""
+        examples = [ex for ex in corpus if ex["judge_id"] == judge_id]
+        assert len(examples) >= min_per_judge, (
+            f"Need >= {min_per_judge} {judge_id} examples, got {len(examples)}"
         )
 
         auto_scores: list[float] = []
         human_scores: list[float] = []
         llm_failures: list[str] = []
 
-        for ex in ar_examples:
-            score = _run_judge_llm("answer_relevancy", ex, provider_ctx)
+        for ex in examples:
+            score = _run_judge_llm(judge_id, ex, provider_ctx)
             if score is None:
                 llm_failures.append(ex["example_id"])
                 continue
             auto_scores.append(score)
             human_scores.append(float(ex["human_score"]))
 
-        # Allow up to 20% LLM failures (network issues, timeout, etc.)
-        max_failures = max(1, len(ar_examples) // 5)
+        max_failures = max(1, len(examples) // 5)
         if len(llm_failures) > max_failures:
             pytest.fail(
-                f"Too many LLM judge failures ({len(llm_failures)}/{len(ar_examples)}): "
-                f"{llm_failures[:5]}..."
+                f"Too many LLM judge failures for {judge_id} "
+                f"({len(llm_failures)}/{len(examples)}): {llm_failures[:5]}..."
             )
 
-        if len(auto_scores) < TIER2_MIN_PER_JUDGE:
+        if len(auto_scores) < min_per_judge:
             pytest.skip(
-                f"Too few successful LLM scores ({len(auto_scores)}) after "
-                f"{len(llm_failures)} failures — cannot compute reliable Spearman."
+                f"{judge_id}: too few successful LLM scores ({len(auto_scores)}) "
+                f"after {len(llm_failures)} failures."
             )
 
         corr, _ = spearmanr(auto_scores, human_scores)
         print(
-            f"\n  answer_relevancy (LLM-backed): "
-            f"spearman={corr:.4f}, n={len(auto_scores)}, "
-            f"failures={len(llm_failures)}"
+            f"\n  {judge_id} (LLM-backed): "
+            f"spearman={corr:.4f}, n={len(auto_scores)}, failures={len(llm_failures)}"
+        )
+        assert corr >= threshold, (
+            f"LLM-backed {judge_id} Spearman FAILED: {corr:.4f} < {threshold}"
         )
 
-        assert corr >= TIER2_PER_JUDGE_SPEARMAN, (
-            f"LLM-backed answer_relevancy Spearman FAILED: "
-            f"{corr:.4f} < {TIER2_PER_JUDGE_SPEARMAN}"
+    def test_semantic_context_recall_llm_path(self, semantic_corpus: list):
+        """LLM-backed context_recall is the semantic promotion candidate."""
+        available, desc = _check_llm_provider_available()
+        if not available:
+            pytest.skip(
+                "LLM-backed context_recall judge requires provider creds in env. "
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+            )
+        from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env
+        provider_ctx = build_judge_provider_context_from_env()
+        assert provider_ctx is not None, f"No provider context built despite {desc}"
+        print(f"\n  provider: {desc}")
+        self._run_llm_judge_calibration(
+            "context_recall", semantic_corpus, provider_ctx,
+            TIER2_MIN_PER_JUDGE, TIER2_PER_JUDGE_SPEARMAN,
+        )
+
+    def test_semantic_context_precision_llm_path(self, semantic_corpus: list):
+        """LLM-backed context_precision is the semantic promotion candidate."""
+        available, desc = _check_llm_provider_available()
+        if not available:
+            pytest.skip(
+                "LLM-backed context_precision judge requires provider creds in env. "
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+            )
+        from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env
+        provider_ctx = build_judge_provider_context_from_env()
+        assert provider_ctx is not None, f"No provider context built despite {desc}"
+        print(f"\n  provider: {desc}")
+        self._run_llm_judge_calibration(
+            "context_precision", semantic_corpus, provider_ctx,
+            TIER2_MIN_PER_JUDGE, TIER2_PER_JUDGE_SPEARMAN,
+        )
+
+    def test_semantic_answer_relevancy_llm_path(self, semantic_corpus: list):
+        """LLM-backed answer_relevancy is the semantic promotion candidate.
+
+        Requires any LLM provider creds in env (ANTHROPIC_API_KEY, OPENAI_API_KEY,
+        GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm with reachable endpoint).
+        When no provider is available, skips explicitly — does NOT pass silently.
+        """
+        available, desc = _check_llm_provider_available()
+        if not available:
+            pytest.skip(
+                "LLM-backed answer_relevancy judge requires provider creds in env. "
+                "Set ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, or JUDGE_PROVIDER=vllm."
+            )
+
+        from apps_qna.integrations.provider_adapter import build_judge_provider_context_from_env
+        provider_ctx = build_judge_provider_context_from_env()
+        assert provider_ctx is not None, f"No provider context built despite {desc}"
+        print(f"\n  provider: {desc}")
+        self._run_llm_judge_calibration(
+            "answer_relevancy", semantic_corpus, provider_ctx,
+            TIER2_MIN_PER_JUDGE, TIER2_PER_JUDGE_SPEARMAN,
         )
 
     def test_tier2_summary(self, semantic_corpus: list):

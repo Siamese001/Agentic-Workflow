@@ -68,6 +68,8 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_recall_judge::v2
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -76,6 +78,8 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_precision_judge::v2
   - dimension_id: answer_relevancy
     description: Answer relevancy to the interview question intent.
     weight: 0.0
@@ -84,6 +88,8 @@
     evidence_required: true
     fail_closed_if_unknown: false
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::answer_relevancy_judge::v2
   # W2 / bge-m3-deferred-scope-remaining-c4e7a1 — real LLM judge (Anthropic).
   # IS_CALIBRATED=False until Spearman >= 0.80 on holdout verified.
   # weight=0.0 and fail_closed_if_unknown=false until calibration passes.

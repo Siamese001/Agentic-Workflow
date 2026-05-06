@@ -418,21 +418,21 @@ def main():
         ),
         # RJC1 — RationaleQualityJudge Spearman calibration gate.
         # Verifies global Spearman >= 0.80 and per-dim >= 0.70 against the
-        # holdout dataset.  Advisory by default; flip fail-closed via
-        # RATIONALE_JUDGE_CALIB_FAIL_CLOSED=1 once the LLM v3 judge (DS-R2)
-        # achieves Spearman >= 0.85.
+        # holdout dataset.  FAIL-CLOSED (DS-R5 flip 2026-05-06): heuristic v2
+        # judge confirmed at global Spearman=0.812 >= 0.80.  Override via
+        # RATIONALE_JUDGE_CALIB_FAIL_CLOSED=0 to revert to advisory.
         # Plan: apps-underwriting-ai-rationale-judge-deferred-d4e7a2 W4.P4.1.
         (
-            "RJC1 rationale judge calibration (advisory)",
+            "RJC1 rationale judge calibration (fail-closed)",
             "ops_scripts/ci/check_rationale_judge_calibration.py",
         ),
         # RJC2 — RationaleQualityJudge holdout/dev split integrity.
         # Detects holdout decision_id values that also appear in dev fixtures.
-        # Advisory by default; flip fail-closed via
-        # EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=1.
+        # FAIL-CLOSED (DS-R3 flip 2026-05-06): no dev-fixture overlap confirmed.
+        # Override via EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=0 to revert to advisory.
         # Plan: apps-underwriting-ai-rationale-judge-deferred-d4e7a2 W3.P3.1.
         (
-            "RJC2 rationale judge holdout split (advisory)",
+            "RJC2 rationale judge holdout split (fail-closed)",
             "ops_scripts/ci/check_eval_holdout_split.py",
         ),
         # AEH2 — AgentSpec completeness across all apps_* domains.
