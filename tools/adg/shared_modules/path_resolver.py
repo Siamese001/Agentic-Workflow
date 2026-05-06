@@ -5,6 +5,11 @@ Usage:
 
     adg_dir = get_adg_dir()  # Path to artifacts/adg
     sqlite_path = latest_sqlite()  # Most recent adg_indexed_*.sqlite file
+
+Related Tools:
+    - ADG Generator: tools/generate/generate_full_adg.py (canonical)
+    - Legacy shim: tools/adg/generate_full_adg.py (deprecated, redirects to canonical)
+    - Redis Ingest: tools/adg/adg_redis_ingest.py
 """
 
 from __future__ import annotations

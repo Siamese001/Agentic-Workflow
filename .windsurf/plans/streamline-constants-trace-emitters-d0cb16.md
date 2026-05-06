@@ -82,7 +82,7 @@ python tools/cleanup_trace_emitters.py --layer L0_routing --dry-run --output art
 python tools/cleanup_trace_emitters.py --layer L0_routing --batch-size 50 --checkpoint every-batch
 
 # Verify after each batch
-python tools/adg/generate_full_adg.py --quick
+python tools/generate/generate_full_adg.py --quick
 pytest tests/unit/agentic_core/L0_routing/ -x --tb=short
 ```
 
@@ -245,7 +245,7 @@ pytest tests/unit/agentic_core/L0_routing/meta_control/ -x
 **Commands**:
 ```bash
 # Full ADG generation
-python tools/adg/generate_full_adg.py --output artifacts/adg/adg_indexed_$(date +%Y%m%d_%H%M).sqlite
+python tools/generate/generate_full_adg.py --output artifacts/adg/adg_indexed_$(date +%Y%m%d_%H%M).sqlite
 
 # Redis hot cache refresh
 python tools/adg/adg_redis_ingest.py --force
@@ -320,7 +320,7 @@ python tools/adg/verify_adg_consistency.py
 python tools/cleanup_trace_emitters.py --all-layers --batch-size 50
 python tools/migrate_to_canonical_constants.py --all-scopes
 python tools/cleanup_shim_emitters.py --all-shims
-python tools/adg/generate_full_adg.py
+python tools/generate/generate_full_adg.py
 python tools/adg/adg_redis_ingest.py --force
 pytest tests/ -x --tb=short
 ```

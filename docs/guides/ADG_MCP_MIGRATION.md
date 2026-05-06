@@ -208,7 +208,7 @@ ls artifacts/adg/adg_indexed_*.sqlite
 
 **Fix**: Regenerate ADG if missing:
 ```bash
-python tools/adg/generate_full_adg.py
+python tools/generate/generate_full_adg.py
 ```
 
 ### Issue: Redis not connecting
