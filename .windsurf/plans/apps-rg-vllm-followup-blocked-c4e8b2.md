@@ -1,7 +1,7 @@
 # Deferred-Scope Followup — apps_rg + vLLM Items Not Closed in f7d3a9
 
 **Slug**: `apps-rg-vllm-followup-blocked-c4e8b2`
-**Status**: Not Started
+**Status**: In Progress (W1 complete 2026-05-06; W2/W3/W4 still pending)
 **Tier**: T2 (cross-cutting)
 **Parent**: `apps-rg-vllm-followup-f7d3a9` (Completed 2026-05-06; W4 skipped per user; W2 partial; W6 blocked)
 
@@ -13,8 +13,8 @@ Capture the items from parent plan that were **not implemented** in 2026-05-06 s
 
 | Wave | Focus | Why deferred | Unblock condition |
 |---|---|---|---|
-| W1 | apps_rg default-path refactor + delete `company_research.json` (Blend360) + `job_description.json` (stub) | Files referenced by 13+ code paths (apps_rg/__main__.py `_DEFAULT_*_PATH` constants, `integrations/company_research_loader.py`, `preloaded_input_context_manifest.py`, `l2_recipe/steps.py`, `types/company_research.py`, etc.). Out-of-scope for cleanup wave. | Refactor `_DEFAULT_JD_PATH` / `_DEFAULT_BRIEF_PATH` to point at wizard-managed `_interactive_*.json` (or remove the constants entirely now that wizard owns paths); update all 13 referencing files; then delete the two stale defaults. |
-| W2 | apps_research synthesis cascade — OpenAI + Anthropic tiers | Skipped per user direction 2026-05-06: "keep apps_research to Gemini". | User authorizes adding cloud cascade tiers beyond Gemini. |
+| W1 | apps_rg default-path refactor + delete `company_research.json` (Blend360) + `job_description.json` (stub) | ✅ DONE 2026-05-06 (commit `16b027f62d`). `_DEFAULT_JD_PATH` / `_DEFAULT_BRIEF_PATH` redirected to wizard-managed `_interactive_*.json`; all 10 referencing files updated (`apps_rg/__main__.py`, `apps_rg/integrations/company_research_loader.py`, `apps_rg/integrations/preloaded_input_context_manifest.py`, `apps_rg/l2_recipe/steps.py`, `agentic_core/runtime/l2_recipe_resolver.py`, `apps_rg/scripts/narrative_pass.py`, `ops_scripts/apps_rg/narrative_pass.py`, `apps_rg/types/company_research.py`, `tools/calibrate_apps_rg_overfit_threshold.py`, `artifacts/_jd_extract_smoke.py`). Both stale files deleted. 14/14 wizard tests still pass; non-TTY hard-fail preserved. | (closed) |
+| W2 | apps_research synthesis cascade — OpenAI + Anthropic tiers | ⏭ SKIPPED again 2026-05-06 — user reaffirmed "apps_research only Gemini". | User authorizes adding cloud cascade tiers beyond Gemini. |
 | W3 | Always-on promotion of `apps-rg-interactive-discipline.md` (model_decision → always_on) | §33 always-on token-budget gate FAIL on 2026-05-06: 51,793 / 51,200 bytes (593 bytes over). Promotion would worsen the overage. | Trim some always-on rule (candidates: `scope-containment.md` 8425b, `mcp-serialization.md` 5031b, `adg-canonical-invariants.md` 5073b); re-run `python ops_scripts/ci/check_always_on_token_budget.py`; when PASS with headroom ≥ 3500 bytes, flip frontmatter trigger. |
 | W4 | Sibling-app interactive wizards (apps_lic, apps_underwriting_ai, etc. when applicable) | None of the 6 sibling apps surveyed in 2026-05-06 W1 have the same "3 mandatory target inputs + cross-target contamination risk" pattern as apps_rg. apps_lic has 9 optional args (all empty defaults), apps_underwriting_ai uses `--request <file>` or `--demo`, apps_qna/apps_research/apps_rfp use receipts emitter pattern. Force-fitting a wizard would be unused code. | A sibling app grows new mandatory target inputs with cross-target contamination risk. At that point: import `apps_shared.cli.interactive_wizard.run_wizard()`, mirror apps_rg pattern, extend rule scope. |
 
