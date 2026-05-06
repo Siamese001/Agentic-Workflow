@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from pathlib import Path
 from typing import Sequence
 
 logger = logging.getLogger(__name__)
@@ -84,20 +85,50 @@ def _load_cert_route_entry() -> dict | None:
 
 
 def _run_eval(args: argparse.Namespace) -> int:
-    """Delegate to L1→L0→L2→Exit pipeline."""
+    """Delegate to L1→L0→L2→Exit pipeline within governed_run context."""
     from apps_eval.integrations.eval_ingress import run_eval_from_cli
     from apps_shared.cert import maybe_invoke_exit_eval
     from apps_eval.cert import produce_fec  # noqa: F401 -- side-effect: FEC available
+    from apps_shared.spine_emission import EmissionConfig, governed_run
 
-    cert_route_entry = _load_cert_route_entry()
-    exit_code = run_eval_from_cli(
-        suites_str=args.suites,
-        scenario_filter=args.filter,
-        baseline_mode=args.baseline_mode,
-        out_dir=args.out_dir,
-        deterministic_only=args.deterministic_only,
-        cache_strategy=args.cache_strategy,
+    # Build EmissionConfig for apps_eval
+    out_dir = Path(args.out_dir)
+    registry_path = Path(__file__).resolve().parent / "config" / "route_registry.yaml"
+    
+    # Create minimal route registry if not exists (for governed_run compatibility)
+    if not registry_path.exists():
+        _ensure_route_registry(registry_path)
+
+    cfg = EmissionConfig(
+        app_name="apps_eval",
+        entrypoint_command=f"python -m apps_eval --suites {args.suites}",
+        runs_root=out_dir,
+        route_registry_path=registry_path,
+        l3_dag_path=None,
+        plan_steps=[],
+        plan_rationale=f"Eval run for suites: {args.suites}",
+        expects_c0_grounding=False,
+        expects_prompt_assembly=False,
+        expects_static_dag=False,
+        expected_execution_form="SINGLE_STEP",
+        expected_l3_path="BYPASSED",
     )
+
+    exit_code = 1
+    with governed_run(cfg, cli_args=sys.argv[1:]) as gr:
+        with gr.span("L2_execute"):
+            exit_code = run_eval_from_cli(
+                suites_str=args.suites,
+                scenario_filter=args.filter,
+                baseline_mode=args.baseline_mode,
+                out_dir=args.out_dir,
+                deterministic_only=args.deterministic_only,
+                cache_strategy=args.cache_strategy,
+            )
+        gr.set_subprocess_exit_code(exit_code)
+
+    # Post-run cert hook (outside governed_run context)
+    cert_route_entry = _load_cert_route_entry()
     _run_ctx: dict = {
         "route_id": "apps_eval.evaluation_v1",
         "route_contract": {"route_id": "apps_eval.evaluation_v1"},
@@ -112,6 +143,25 @@ def _run_eval(args: argparse.Namespace) -> int:
     }
     maybe_invoke_exit_eval(_receipts, cert_route_entry)
     return exit_code
+
+
+def _ensure_route_registry(path: Path) -> None:
+    """Create minimal route registry for governed_run compatibility."""
+    import yaml  # noqa: PLC0415
+    path.parent.mkdir(parents=True, exist_ok=True)
+    registry = {
+        "routes": [
+            {
+                "route_id": "apps_eval.evaluation_v1",
+                "route_family": "EVAL_FAMILY",
+                "enabled": True,
+                "execution_form": "SINGLE_STEP",
+                "expects_c0_grounding": False,
+                "expects_prompt_assembly": False,
+            }
+        ]
+    }
+    path.write_text(yaml.dump(registry), encoding="utf-8")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
