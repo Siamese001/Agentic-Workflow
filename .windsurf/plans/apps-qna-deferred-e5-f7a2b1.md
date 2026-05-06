@@ -20,7 +20,7 @@ stub/heuristic/optional to production-grade implementations.
 | Wave | Focus | Est. Tokens | Status | Reference |
 |------|-------|-------------|--------|-----------|
 | E1 | Real C0 vector-store retrieval (replace stub fetcher) | ~35K | ✅ DONE | bge-m3-gap-closure-c8f3a2 W1 |
-| E2 | Production LLM judges (replace deterministic heuristics) | ~40K | ✅ DONE | Dual-path LLM+heuristic fallback in all 3 judges |
+| E2 | Production LLM judges (replace deterministic heuristics) | ~40K | ✅ DONE | Dual-path LLM+heuristic fallback in all 3 judges; env auto-build via build_judge_provider_context_from_env() (2026-05-06) |
 | E3 | Live provider SDK dispatch (replace stub model execution) | ~30K | ✅ DONE | QnaProviderContext.dispatch() + PA adapter wiring |
 | E4 | Exit-eval hook adoption + __main__.py integration | ~20K | ✅ DONE | |
 | E5 | SSOT enforcement gate + config drift CI | ~15K | ✅ DONE | see `apps-qna-remaining-e1e2e3e5-54b6c7` |
@@ -50,24 +50,19 @@ stub/heuristic/optional to production-grade implementations.
 
 ### E2: Production LLM Judges (~40K)
 
-**E2.1: context_recall_judge.py — replace heuristic with LLM call**
-- Current: `IS_STUB = False, IS_CALIBRATED = True` but scoring is deterministic heuristic:
-  `min(len(retrieved ∩ required) / max(len(required), 1), 1.0)` with length-adequacy fallback.
-  File: `apps_qna/engines/judges/context_recall_judge.py`
-- Needed: Replace heuristic with an LLM judge call (e.g. GPT-4 / Claude) that evaluates
-  whether retrieved context contains the necessary evidence to answer the question.
-  Should use `QnaProviderContext` from `apps_qna/integrations/provider_adapter.py`.
-- Impact: Real quality scores; enables calibrated holdout evaluation.
+**E2.1: context_recall_judge.py — replace heuristic with LLM call** ✅ DONE (2026-05-06)
+- Dual-path: LLM preferred (via `provider_context.dispatch()`), heuristic fallback.
+- Auto-builds `QnaProviderContext` from env when no context injected
+  (`build_judge_provider_context_from_env()` — reads `JUDGE_PROVIDER`, `ANTHROPIC_API_KEY`,
+  `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `VLLM_MODEL_NAME`/`VLLM_BASE_URL`).
+- Evidence tag: `context_recall::v2::llm_judge=<score>`.
 
-**E2.2: context_precision_judge.py — replace heuristic with LLM call**
-- Current: Deterministic overlap-score heuristic between retrieved and required sources.
-  File: `apps_qna/engines/judges/context_precision_judge.py`
-- Needed: LLM judge evaluating precision — are the retrieved sources relevant and not noisy?
+**E2.2: context_precision_judge.py — replace heuristic with LLM call** ✅ DONE (2026-05-06)
+- Same dual-path pattern as E2.1. Evidence tag: `context_precision::v2::llm_judge=<score>`.
 
-**E2.3: answer_relevancy_judge.py — replace heuristic with LLM call**
-- Current: Keyword-overlap heuristic between card answer text and query.
-  File: `apps_qna/engines/judges/answer_relevancy_judge.py`
-- Needed: LLM judge evaluating whether the answer is responsive to the question posed.
+**E2.3: answer_relevancy_judge.py — replace heuristic with LLM call** ✅ DONE (2026-05-06)
+- Same env auto-build wired in; LLM path was already functional, now also activates
+  without explicit injection. Evidence tag: `answer_relevancy::v2::llm_judge=<score>`.
 
 **E2.4: Judge calibration against holdout corpus** ✅ DONE (two-tier calibration)
 - Status: Two-tier Spearman-rank calibration implemented.
