@@ -1,5 +1,5 @@
 ---
-plan_id: apps-lic-wizard-scope-capture-f8d3e1
+plan_id: apps-wizard-lic-scope-capture-f8d3e1
 plan_type: tracker
 ---
 
@@ -153,4 +153,4 @@ plan_type: tracker
 - Status: `Not Started` (option id `503df59f-85d4-4ac0-baae-e457d0354b6f`, gray)
 - AI Summary: Scope capture for apps_lic interactive wizard — 8 deferred phases, 3 gaps identified, activation blocked on user design decision
 - Exists On Disk: true
-- Plan File Path: `.windsurf/plans/apps-lic-wizard-scope-capture-f8d3e1.md`
+- Plan File Path: `.windsurf/plans/apps-wizard-lic-scope-capture-f8d3e1.md`
