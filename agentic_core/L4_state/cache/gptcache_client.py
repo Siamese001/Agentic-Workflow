@@ -14,6 +14,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.contracts.vector_cache_layout import (
+    VECTOR_CACHE_LAYOUT,
+    VectorCacheLayout,
+)
 from agentic_core.L4_state.utils.client.chroma_client import chromadb_module as chromadb
 from tqdm import tqdm
 
@@ -35,22 +39,35 @@ class NativePersistentCacheClient:
 
     def __init__(
         self,
-        cache_dir: str = "artifacts/gptcache",
+        cache_dir: str | None = None,
         similarity_threshold: float = 0.95,
         max_entries: int = 10000,
         embedding_provider: str = "chromadb-default",
         embedding_model: str = "BAAI/bge-m3",
+        layout: VectorCacheLayout | None = None,
     ):
         """Initialize native persistent cache client.
 
         Args:
-            cache_dir: Directory for cache storage
+            cache_dir: Directory for cache storage (deprecated, use layout instead)
             similarity_threshold: Similarity threshold for cache hits (default 0.95)
             max_entries: Maximum cache entries (LRU eviction)
             embedding_provider: Provider for embeddings (chromadb-default)
             embedding_model: Model name for embeddings (ChromaDB default)
+            layout: VectorCacheLayout instance (recommended over cache_dir)
         """
-        self.cache_dir = Path(cache_dir)
+        # Use layout if provided, otherwise fall back to cache_dir or canonical default
+        if layout is not None:
+            self._layout = layout
+            self.cache_dir = layout.base_dir
+        elif cache_dir is not None:
+            # Legacy path support
+            self._layout = VectorCacheLayout(base_dir=Path(cache_dir))
+            self.cache_dir = Path(cache_dir)
+        else:
+            # Use canonical default
+            self._layout = VECTOR_CACHE_LAYOUT
+            self.cache_dir = VECTOR_CACHE_LAYOUT.base_dir
         self.similarity_threshold = similarity_threshold
         self.max_entries = max_entries
         self.embedding_provider = embedding_provider
