@@ -38,7 +38,17 @@ from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_VERSION = "v1"
-REDIS_URL = os.getenv("ADG_REDIS_URL", "redis://localhost:6379/0")
+
+# SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-03
+REDIS_URL = os.getenv("ADG_REDIS_URL")
+if not REDIS_URL:
+    print(
+        "ERROR: ADG_REDIS_URL environment variable is required but not set. "
+        "Set it to your Redis URL (e.g., redis://localhost:6379/0)",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 BATCH_SIZE = 5000  # nodes/edges per Redis pipeline flush
 PROGRESS_INTERVAL = 10000  # print progress every N items
 

@@ -88,10 +88,10 @@ REQUIRED_SPAN_FIELDS = (
 
 
 def _latest_snapshot() -> Path | None:
-    if not ARTIFACT_DIR.exists():
-        return None
-    snaps = sorted(ARTIFACT_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 def _load_evidence(refs_json: str | None) -> dict[str, Any] | list[Any]:

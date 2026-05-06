@@ -21,7 +21,7 @@
       "disabled": false,
       "env": {
         "ADG_DIR": "${env:AGENTIC_REPO_ROOT}/artifacts/adg",
-        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "ADG_REDIS_URL": "${env:ADG_REDIS_URL}",
         "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}"
       }
     },
@@ -48,7 +48,7 @@
       ],
       "disabled": false,
       "env": {
-        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "ADG_REDIS_URL": "${env:ADG_REDIS_URL}",
         "MEMORY_DB": "${env:AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
         "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}"
       }

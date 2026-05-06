@@ -123,47 +123,14 @@ def _is_allowlisted(rel_path: str) -> bool:
     return False
 
 
-def _has_nodes_table(p: Path) -> bool:
-    """Return True iff the SQLite file has a 'nodes' table.
-
-    Stub/sentinel snapshots (`adg_indexed_99999999_9999.sqlite`) and in-flight
-    pipeline snapshots can be present in `artifacts/adg/` without the `nodes`
-    table. Picking such a stub by mtime would cause G1 to fail with
-    `OperationalError: no such table: nodes`. This helper rejects them.
-    """
-    try:
-        db_uri = f"file:{p.as_posix()}?mode=ro&immutable=1"
-        conn = sqlite3.connect(db_uri, uri=True, timeout=2)
-        try:
-            row = conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
-            ).fetchone()
-            return row is not None
-        finally:
-            conn.close()
-    except sqlite3.Error:
-        return False
-
-
 def _find_latest_sqlite() -> Path | None:
     """Find latest adg_indexed_*.sqlite in artifacts/adg/ that has a `nodes` table.
 
-    Skips stub/sentinel snapshots (small files lacking the schema) so the
-    gate runs against a real ADG. Falls back to None if no real snapshot
-    exists yet.
+    Delegates to canonical resolver for sentinel filtering.
     """
-    adg_dir = ROOT / "artifacts" / "adg"
-    if not adg_dir.is_dir():
-        return None
-    candidates = [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.is_file()]
-    if not candidates:
-        return None
-    # Sort by (mtime, name) descending; pick the first one with a real schema
-    candidates.sort(key=lambda p: (p.stat().st_mtime_ns, p.name), reverse=True)
-    for p in candidates:
-        if _has_nodes_table(p):
-            return p
-    return None
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite(require_nodes_table=True)
 
 
 def _get_executor_bearing_files() -> list[tuple[str, set[str]]]:

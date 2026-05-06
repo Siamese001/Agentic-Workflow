@@ -24,7 +24,6 @@ __adg_consumer_mode__ = "inventory"
 
 
 import argparse
-import glob
 import json
 import os
 import sqlite3
@@ -64,15 +63,19 @@ CATEGORY_SEVERITY: dict[str, str] = {
 def latest_canonical_snapshot() -> Path:
     """Return the canonical ADG snapshot to query overlay_violations from.
 
-    Tries the freshest `adg_indexed_*.sqlite` first; falls back to a `.tmp`
-    snapshot if no atomic-rename completion exists yet (Windows quirk).
+    Delegates to path_resolver.latest_sqlite for primary resolution;
+    falls back to a `.tmp` snapshot if no atomic-rename completion exists
+    yet (Windows quirk).
     """
-    candidates = sorted(
-        glob.glob(str(REPO / "artifacts/adg/adg_indexed_*.sqlite")),
-        key=os.path.getmtime,
-    )
-    if candidates:
-        return Path(candidates[-1])
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    snap = latest_sqlite()
+    if snap is not None:
+        return snap
+
+    # Fallback: look for .tmp files (Windows atomic rename quirk)
+    import glob  # noqa: PLC0415
+
     tmps = sorted(
         glob.glob(str(REPO / "artifacts/adg/adg_indexed_*.sqlite.tmp")),
         key=os.path.getmtime,

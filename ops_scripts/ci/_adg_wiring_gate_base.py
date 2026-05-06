@@ -26,7 +26,6 @@ append-only). Waivers: config/wiring_gate_waivers.yaml.
 
 from __future__ import annotations
 
-import glob
 import json
 import os
 import sqlite3
@@ -83,32 +82,15 @@ class GateResult:
 # ---------------------------------------------------------------------------
 
 
-def _has_nodes_table(p: Path) -> bool:
-    """Return True iff the SQLite file has a `nodes` base table.
-
-    Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
-    pipeline outputs) can be present in artifacts/adg/ without the nodes
-    table. Picking such a stub by mtime would crash every wiring-CI gate
-    with `sqlite3.OperationalError: no such table: nodes`. This helper
-    rejects them. Mirrors the fix in executor_theater_gate.py.
-    """
-    try:
-        import sqlite3 as _sq
-        with _sq.connect(str(p)) as conn:
-            row = conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
-            ).fetchone()
-            return row is not None
-    except Exception:
-        return False
-
-
 def latest_snapshot() -> Path:
     """Return the most-recently modified adg_indexed_*.sqlite that has a
     `nodes` base table (skips stub/sentinel snapshots).
 
     Honors ``ADG_SNAPSHOT`` env override unconditionally — operators who
     explicitly point at a stub for testing get what they ask for.
+
+    Delegates to ``tools.adg.shared_modules.path_resolver.latest_sqlite``
+    for canonical snapshot resolution (sentinel filtering by timestamp format).
     """
     override = os.environ.get("ADG_SNAPSHOT", "").strip()
     if override:
@@ -116,20 +98,20 @@ def latest_snapshot() -> Path:
         if not p.exists():
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
-    pattern = str(ADG_DIR / "adg_indexed_*.sqlite")
-    matches = sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True)
-    if not matches:
+
+    # Delegate to canonical resolver with nodes-table validation
+    try:
+        from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+        snap = latest_sqlite(require_nodes_table=True)
+    except Exception:  # noqa: BLE001
+        snap = None
+
+    if snap is None:
         raise FileNotFoundError(
             f"no adg_indexed_*.sqlite under {ADG_DIR}; regenerate via `python tools/generate_full_adg.py`",
         )
-    # Pick the newest candidate that has a real schema; skip stubs.
-    for m in matches:
-        if _has_nodes_table(Path(m)):
-            return Path(m)
-    # All candidates are stubs — return the newest so the gate produces a
-    # deterministic FAIL with a useful schema error rather than crashing
-    # silently.
-    return Path(matches[0])
+    return snap
 
 
 def _load_waivers() -> dict[str, Any]:

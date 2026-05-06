@@ -164,11 +164,13 @@ class ADGGateBase(ABC):
         self._snapshot_id: str = ""
 
     def _find_latest_sqlite(self) -> Path:
-        """Find the latest ADG SQLite file."""
-        files = [p for p in ADG_DIR.glob("adg_indexed_*.sqlite") if p.is_file()]
-        if not files:
+        """Find the latest ADG SQLite file via canonical resolver."""
+        from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+        snap = latest_sqlite()
+        if snap is None:
             raise RuntimeError("No ADG SQLite file found in artifacts/adg/")
-        return max(files, key=lambda p: (p.stat().st_mtime_ns, p.name))
+        return snap
 
     def _connect(self) -> None:
         """Establish SQLite connection."""

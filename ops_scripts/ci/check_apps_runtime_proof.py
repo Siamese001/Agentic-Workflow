@@ -31,8 +31,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _latest_adg_snapshot() -> Path | None:
-    snaps = sorted((REPO_ROOT / "artifacts" / "adg").glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 def main(argv: list[str] | None = None) -> int:

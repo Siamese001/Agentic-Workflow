@@ -2,6 +2,7 @@
 
 import json
 import logging
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 import redis
@@ -21,8 +22,19 @@ class RedisCache:
     _available: bool = False
     _cache_version: str = "v1"  # Bump on schema changes
 
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
-        self._redis_url = redis_url
+    def __init__(self, redis_url: str | None = None):
+        """Initialize RedisCache with explicit URL or ADG_REDIS_URL env var.
+
+        SSOT: No localhost default per S-03. Must provide redis_url or set
+        ADG_REDIS_URL environment variable.
+        """
+        resolved_url = redis_url or os.getenv("ADG_REDIS_URL")
+        if not resolved_url:
+            raise RuntimeError(
+                "RedisCache requires redis_url parameter or ADG_REDIS_URL env var. "
+                "No localhost default per ADG config SSOT (S-03)."
+            )
+        self._redis_url = resolved_url
         self._attempt_connect()
 
     def _attempt_connect(self) -> None:

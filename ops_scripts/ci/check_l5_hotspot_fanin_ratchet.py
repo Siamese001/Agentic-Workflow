@@ -52,8 +52,10 @@ DEFAULT_RATCHET: dict[str, int] = {
 
 
 def find_latest_snapshot() -> Path | None:
-    candidates = sorted((REPO_ROOT / "artifacts" / "adg").glob("adg_indexed_*.sqlite"))
-    return candidates[-1] if candidates else None
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 def load_ratchet() -> dict[str, int]:

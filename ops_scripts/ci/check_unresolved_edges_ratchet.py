@@ -21,7 +21,6 @@ from __future__ import annotations
 # Ratchet over RISK_SIGNAL_ONLY edges — this is a hygiene signal, not a verdict.
 __adg_consumer_mode__ = "risk"
 
-import glob
 import json
 import os
 import sqlite3
@@ -39,18 +38,21 @@ BASELINE_FILE = BASELINE_DIR / "unresolved_edges_ratchet.json"
 
 
 def latest_snapshot() -> Path:
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
     override = os.environ.get("ADG_SNAPSHOT", "").strip()
     if override:
         p = Path(override).expanduser().resolve()
         if not p.exists():
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
-    matches = sorted(glob.glob(str(ADG_DIR / "adg_indexed_*.sqlite")), key=os.path.getmtime)
-    if not matches:
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    snap = latest_sqlite()
+    if snap is None:
         raise FileNotFoundError(
             f"no adg_indexed_*.sqlite under {ADG_DIR}; regenerate via `python tools/generate_full_adg.py`"
         )
-    return Path(matches[-1])
+    return snap
 
 
 def _count_unresolved(snap: Path) -> int:

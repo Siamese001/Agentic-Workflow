@@ -36,7 +36,6 @@ __adg_consumer_mode__ = "inventory"
 
 
 import ast
-import glob
 import json
 import os
 import sqlite3
@@ -61,23 +60,10 @@ SEMANTIC_EDGE_TYPES = (
 
 
 def _latest_snapshot() -> Path | None:
-    candidates = sorted(
-        (Path(p) for p in glob.glob(str(ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite"))),
-        key=lambda p: (p.stat().st_size, p.stat().st_mtime),
-        reverse=True,
-    )
-    for c in candidates:
-        if c.stat().st_size < 1_000_000:
-            continue
-        try:
-            uri = f"file:{c.as_posix()}?mode=ro&immutable=1"
-            con = sqlite3.connect(uri, uri=True)
-            con.execute("SELECT 1 FROM nodes LIMIT 1")
-            con.close()
-            return c
-        except sqlite3.DatabaseError:
-            continue
-    return None
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite(require_nodes_table=True)
 
 
 def _fan_in_from_sqlite(snapshot: Path) -> dict[str, int]:

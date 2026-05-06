@@ -39,11 +39,15 @@ class ADGService:
         status = self._sqlite.get_status()
         self._adg_snapshot_id = status["timestamp"]
 
-        # Redis URL resolution: env var (ADG_REDIS_URL) → explicit arg → localhost default
-        # Use `or` so an empty-string env var falls through to the localhost default.
-        if redis_url is None:
-            redis_url = os.getenv("ADG_REDIS_URL") or "redis://localhost:6379/0"
-        self._redis_url = redis_url
+        # SSOT: Redis URL resolution - env var (ADG_REDIS_URL) → explicit arg
+        # No localhost default per S-03; caller must provide or env must be set.
+        resolved_url = redis_url or os.getenv("ADG_REDIS_URL")
+        if not resolved_url:
+            raise RuntimeError(
+                "ADGService requires redis_url parameter or ADG_REDIS_URL env var. "
+                "No localhost default per ADG config SSOT (S-03)."
+            )
+        self._redis_url = resolved_url
         self._redis = None
         self._connect_redis()
 

@@ -98,7 +98,7 @@ DEFAULT_TIMEOUT_S = 60
 
 
 def resolve_snapshot(cli_path: Path | None) -> Path | None:
-    """--snapshot wins; else $ADG_SNAPSHOT; else newest in artifacts/adg/."""
+    """--snapshot wins; else $ADG_SNAPSHOT; else canonical latest resolver."""
     if cli_path:
         return cli_path.expanduser().resolve()
     env = os.environ.get("ADG_SNAPSHOT", "").strip()
@@ -106,10 +106,9 @@ def resolve_snapshot(cli_path: Path | None) -> Path | None:
         p = Path(env).expanduser().resolve()
         if p.exists():
             return p
-    if not ARTIFACT_DIR.exists():
-        return None
-    snaps = sorted(ARTIFACT_DIR.glob("adg_indexed_*.sqlite"))
-    return snaps[-1] if snaps else None
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 # ---------------------------------------------------------------------------

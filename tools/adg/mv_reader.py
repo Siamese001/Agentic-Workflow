@@ -17,7 +17,14 @@ logger = logging.getLogger(__name__)
 
 CACHE_VERSION = "v1"
 REDIS_TIMEOUT_MS = 75
-REDIS_URL_DEFAULT = os.getenv("ADG_REDIS_URL", "redis://localhost:6379/0")
+
+# SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-03
+_REDIS_URL: str | None = os.getenv("ADG_REDIS_URL")
+if not _REDIS_URL:
+    raise RuntimeError(
+        "ADG_REDIS_URL environment variable is required but not set. "
+        "Set it to your Redis URL (e.g., redis://localhost:6379/0)"
+    )
 
 
 def _redis_key(snapshot_id: str, base: str) -> str:
@@ -31,8 +38,9 @@ class MVRedisReader:
     responsible for SQLite fallback.
     """
 
-    def __init__(self, redis_url: str = REDIS_URL_DEFAULT, client: Any | None = None):
-        self._redis_url = redis_url
+    def __init__(self, redis_url: str | None = None, client: Any | None = None):
+        # Use provided URL, env var, or module-level default (already validated)
+        self._redis_url = redis_url or _REDIS_URL
         self._client: Any | None = client
         self._available = client is not None
         if client is None:

@@ -92,12 +92,10 @@ PROD_MODULE_GLOBS = (
 
 
 def _latest_sqlite() -> Path | None:
-    if not ADG_DIR.is_dir():
-        return None
-    candidates = [p for p in ADG_DIR.glob("adg_indexed_*.sqlite") if p.is_file()]
-    if not candidates:
-        return None
-    return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 def _load_allowlist() -> set[str]:

@@ -36,8 +36,32 @@ def get_adg_dir() -> Path:
     return get_repo_root() / "artifacts" / "adg"
 
 
-def latest_sqlite() -> Path | None:
+def _has_nodes_table(path: Path) -> bool:
+    """Return True iff the SQLite file has a `nodes` base table.
+
+    Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
+    pipeline outputs) can be present in artifacts/adg/ without the nodes
+    table. Picking such a stub by mtime would crash consumers with
+    `sqlite3.OperationalError: no such table: nodes`.
+    """
+    import sqlite3 as _sq  # noqa: PLC0415
+
+    try:
+        with _sq.connect(str(path)) as conn:
+            row = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+            ).fetchone()
+            return row is not None
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def latest_sqlite(require_nodes_table: bool = False) -> Path | None:
     """Return the most recent adg_indexed_*.sqlite file in ADG_DIR.
+
+    Args:
+        require_nodes_table: If True, skip files without a `nodes` table
+            (filters out stub/sentinel snapshots even further).
 
     Returns None if no SQLite files found.
     """
@@ -61,7 +85,16 @@ def latest_sqlite() -> Path | None:
     if not valid_files:
         return None
 
-    return max(valid_files, key=lambda p: p.stat().st_mtime)
+    # Sort by mtime descending for selection
+    sorted_files = sorted(valid_files, key=lambda p: p.stat().st_mtime, reverse=True)
+
+    if require_nodes_table:
+        for candidate in sorted_files:
+            if _has_nodes_table(candidate):
+                return candidate
+        return None
+
+    return sorted_files[0]
 
 
 def get_reports_dir() -> Path:

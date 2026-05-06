@@ -32,7 +32,15 @@ if str(ROOT) not in sys.path:
 
 from tools.adg.mv_projection import is_mv_hot, project_all  # noqa: E402
 
-REDIS_URL = os.getenv("ADG_REDIS_URL", "redis://localhost:6379/0")
+# SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-03
+REDIS_URL = os.getenv("ADG_REDIS_URL")
+if not REDIS_URL:
+    print(
+        "ERROR: ADG_REDIS_URL environment variable is required but not set. "
+        "Set it to your Redis URL (e.g., redis://localhost:6379/0)",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 
 def _find_latest_sqlite(adg_dir: Path) -> Path:

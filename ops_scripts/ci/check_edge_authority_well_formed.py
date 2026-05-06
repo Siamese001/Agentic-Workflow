@@ -30,7 +30,6 @@ from __future__ import annotations
 # §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "proof"
 
-import glob
 import json
 import os
 import sqlite3
@@ -50,18 +49,21 @@ LOG_FILE = LOG_DIR / "edge_authority_violations.jsonl"
 
 
 def latest_snapshot() -> Path:
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
     override = os.environ.get("ADG_SNAPSHOT", "").strip()
     if override:
         p = Path(override).expanduser().resolve()
         if not p.exists():
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
-    matches = sorted(glob.glob(str(ADG_DIR / "adg_indexed_*.sqlite")), key=os.path.getmtime)
-    if not matches:
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    snap = latest_sqlite()
+    if snap is None:
         raise FileNotFoundError(
             f"no adg_indexed_*.sqlite under {ADG_DIR}; regenerate via `python tools/generate_full_adg.py`"
         )
-    return Path(matches[-1])
+    return snap
 
 
 def main() -> int:

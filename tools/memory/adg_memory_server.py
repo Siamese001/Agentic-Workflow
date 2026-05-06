@@ -126,7 +126,14 @@ def _register_lifecycle_traces_once() -> None:
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_DB = _REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 _DB_PATH: Path = Path(os.environ.get("MEMORY_DB", str(_DEFAULT_DB)))
-_ADG_REDIS_URL: str = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
+
+# SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-04
+_ADG_REDIS_URL: str | None = os.environ.get("ADG_REDIS_URL")
+if not _ADG_REDIS_URL:
+    raise RuntimeError(
+        "ADG_REDIS_URL environment variable is required but not set. "
+        "Set it to your Redis URL (e.g., redis://localhost:6379/0) before starting the memory server."
+    )
 
 _PROTECTED_TYPES = (
     "ArchitectureLayer",

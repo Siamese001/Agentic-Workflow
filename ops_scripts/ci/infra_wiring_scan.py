@@ -151,10 +151,10 @@ AGENTIC_CORE_INFRA_SUBDIRS = {
 
 
 def _find_latest_adg_sqlite(adg_dir: Path) -> Path | None:
-    candidates = [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.is_file()]
-    if not candidates:
-        return None
-    return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
+    """Return the latest ADG SQLite snapshot via canonical resolver."""
+    from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
+
+    return latest_sqlite()
 
 
 def scan_file(file_path: Path) -> list[tuple[int, str]] | None:
