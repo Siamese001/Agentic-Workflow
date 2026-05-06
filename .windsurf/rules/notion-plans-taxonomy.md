@@ -78,9 +78,40 @@ For any **dashboard / top-N / "what's the current state of the backlog"** questi
 
 Use `API-query-data-source` on Wave/Phase Convergence only when you need a specific filter/sort not in the snapshot (e.g., all rows linked to a specific `Plan` relation).
 
+## Status Canonical Enforcement (NP2)
+
+**Gate**: `ops_scripts/ci/check_notion_plans_status_canonical.py`  
+**Hook**: `pre_mcp_gate.py` validates `API-post-page`/`API-patch-page` payloads  
+**Audit**: `post_cascade_notion_status_audit.py` logs violations to `artifacts/windsurf/notion_status_violations.jsonl`
+
+### Pre-MCP Validation
+
+Before any Notion write, validate `Status.select.name` is in canonical set:
+
+```python
+CANONICAL_STATUSES = {
+    "In Progress", "Not Started", "Deprioritized", "Waiting",
+    "Completed", "Retired", "Archived"
+}
+
+if payload.get("Status", {}).get("select", {}).get("name") not in CANONICAL_STATUSES:
+    raise ValueError(f"Status must be canonical. Got: {status}")
+```
+
+### Fail-Closed Mode
+
+`NOTION_PLANS_STATUS_FAIL_CLOSED=1` → exit 1 on any stale status detection
+
+### Incident History
+
+- 2026-05-03: Four per-app FEC plans posted with `🟡Draft` → patched to `Not Started`
+- 2026-05-05: Deferred E5 plan posted with `Draft` → patched to `Not Started`  
+- 2026-05-06: repo-dedup-deferred-followup plan posted with `Draft` → patched to `Not Started`
+
 ## References
 
 - AGENTS.md Notion Workspace Map (auto-gen MCP/Notion registry table)
 - `.windsurf/rules/plan-location.md` (Plans file system SSOT)
 - `.windsurf/skills/notion/SKILL.md` (procedural Notion guidance)
 - Plan `token-burn-followup-f8c2d1` §12.1 (this extraction)
+- Gate: `ops_scripts/ci/check_notion_plans_status_canonical.py`
