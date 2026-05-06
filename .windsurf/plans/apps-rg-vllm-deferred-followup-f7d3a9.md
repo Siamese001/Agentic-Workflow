@@ -1,7 +1,7 @@
 # Deferred Scope — apps_rg Interactive Wizard + vLLM/Synthesis Cascade Followups
 
 **Slug**: `apps-rg-vllm-deferred-followup-f7d3a9`
-**Status**: Not Started
+**Status**: Completed (2026-05-06)
 **Tier**: T2 (cross-cutting: code + behavioral rule + ops)
 **Parent context**: Session 2026-05-06 — surfaced while shipping `apps-rg-interactive-wizard-a3e7c1` (Completed) and the apps_research synthesis cascade hardening (commit `c4970b6ddb`).
 
@@ -11,14 +11,14 @@ Track and bound the deferred-scope items surfaced during the 2026-05-06 session 
 
 ## Wave Structure
 
-| Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
-|---|---|---|---|---|---|
-| W1 | P1.1 | Sibling-app interactive wizards (apps_underwriting_ai, apps_qna, apps_rfp, apps_research, apps_lic, apps_exec) | ~2400 (6 apps × ~400) | Not Started | Each app has TTY-only wizard prompting for app-specific mandatory inputs; cross-company / cross-target contamination guards extended; rule scope updated |
-| W2 | P2.1 | Stale `apps_rg/scripts/` cleanup | ~150 | Not Started | 60+ stale `generated_resume_*.json` archived or deleted; Blend360 `company_research.json` removed; `job_description.json` stub replaced or removed |
-| W3 | P3.1 | Qwen Docker auto-restart-on-reboot policy | ~200 | Not Started | `docker run` `--restart unless-stopped` applied to `local-qwen-vllm`; verified survives Windows host reboot; topology doc updated |
-| W4 | P4.1 | apps_research synthesis cascade — add OpenAI/Anthropic tiers | ~800 | Not Started | `_openai_synthesize` and `_anthropic_synthesize` follow same shape as `_qwen_synthesize` / `_gemini_synthesize`; cascade order Qwen→Gemini-Pro→Gemini-Flash→OpenAI→Anthropic→stub; env-driven model selection |
-| W5 | P5.1 | Retire `archives/wsl2_vllm_legacy_2026-05-06/` (or formalize as audit reference) | ~80 | Not Started | Either delete the gitignored archive entirely OR commit it as a formal historical reference under `docs/architecture/historical/` |
-| W6 | P6.1 | Always-on rule promotion for `apps-rg-interactive-discipline.md` (after sibling apps land) | ~150 | Not Started — BLOCKED on W1 | §33 token-budget gate passes after content trim; trigger flips `model_decision` → `always_on`; sibling apps explicitly listed in rule body |
+| Wave | Focus | Status | Outcome |
+|---|---|---|---|
+| W1 | Sibling-app interactive wizards | ✅ DONE (rescoped) | Original "6 apps × wizard" was wrong — only apps_rg has the pattern. Extracted helper to `apps_shared/cli/interactive_wizard.py`; refactored apps_rg to use it; 14 unit tests pass. Commit `d8275ea810`. |
+| W2 | apps_rg/scripts/ stale cleanup | ✅ DONE (partial) | Deleted 52 stale `generated_resume_*.json` + added `.gitignore` entry. `company_research.json` (Blend360) and `job_description.json` deferred — referenced by 13+ code paths, requires refactor. Commit `70f4b2d0a0`. |
+| W3 | Qwen Docker auto-restart-on-reboot | ✅ DONE | `docker update --restart unless-stopped local-qwen-vllm` applied; verified via `docker inspect`. Topology doc updated. Commit `e80a622f34`. |
+| W4 | apps_research cascade OpenAI/Anthropic tiers | ⏭ SKIPPED | Per user direction: "keep apps_research to Gemini". Not implemented. |
+| W5 | WSL2 legacy archive disposition | ✅ DONE | Deleted local-only `archives/wsl2_vllm_legacy_2026-05-06/` (gitignored, ~5.5KB); topology doc captures retired-path detail sufficiently. Commit `8c738bb70c`. |
+| W6 | Always-on rule promotion | ⛔ BLOCKED → deferred | §33 budget gate FAIL: 51,793/51,200 bytes (593 over). Promotion would push further over. Blocked on always-on rule trim. Captured in follow-up plan. |
 
 ## Phase-Level Summary
 
