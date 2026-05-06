@@ -49,10 +49,17 @@ REQS_PATH = REPO_ROOT / "certification" / "requirements_source.json"
 # The chains that the L7 plane covers. `mw_latest` is structural-only by
 # design but still emits the L7 envelope for its chain-kind. W4 added
 # uwg_commit_latest, r3_latest, r4_latest, mw_real_latest.
+# W3: Added apps_* chains for L7 spine retrofit (apps_eval, apps_repo_brief)
 CERTIFIED_CHAINS = [
     "latest", "mw_latest", "r1a_latest", "r5_latest", "uwg_block_latest",
     # W4 plan fortknox-100pct-static-runtime-gap-9a3d4f:
     "uwg_commit_latest", "r3_latest", "r4_latest", "mw_real_latest",
+]
+
+# W3: Apps with governed_run L7 emit (populated by build_all_apps_evidence)
+APPS_L7_CHAINS = [
+    "apps_eval",
+    "apps_repo_brief",
 ]
 
 GENERATED_BY = "tools/cert/emit_l7_plane_evidence.py"
@@ -127,15 +134,40 @@ def collect_chain_artifacts(chain_dir: Path) -> dict:
     return out
 
 
+def _collect_apps_chain_artifacts(app_name: str) -> dict:
+    """Collect L7 artifacts from apps_* governed_run output directories.
+    
+    Looks in artifacts/<app>/runs/<latest_timestamp>/ for L7 artifacts.
+    Returns empty dict if no runs found.
+    """
+    runs_root = REPO_ROOT / "artifacts" / app_name / "runs"
+    if not runs_root.is_dir():
+        return {"_missing": True}
+    
+    # Find the latest run directory (timestamp-named)
+    run_dirs = [d for d in runs_root.iterdir() if d.is_dir() and d.name[0].isdigit()]
+    if not run_dirs:
+        return {"_missing": True}
+    
+    latest_run = sorted(run_dirs)[-1]
+    return collect_chain_artifacts(latest_run)
+
+
 def build_all_chain_evidence() -> dict:
-    """Gather L7 artifact hashes across all 5 chains. Missing chain = empty dict."""
+    """Gather L7 artifact hashes across all chains including apps_*."""
     ev = {}
+    # Certified chains (agentic_core routes)
     for name in CERTIFIED_CHAINS:
         chain_dir = CHAINS_DIR / name
         if chain_dir.is_dir():
             ev[name] = collect_chain_artifacts(chain_dir)
         else:
             ev[name] = {"_missing": True}
+    
+    # W3: Apps with governed_run L7 emit
+    for app_name in APPS_L7_CHAINS:
+        ev[app_name] = _collect_apps_chain_artifacts(app_name)
+    
     return ev
 
 
