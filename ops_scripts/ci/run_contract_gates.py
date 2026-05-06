@@ -665,6 +665,12 @@ def main():
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
         ("AG-WIRE Author-Gate hook wiring invariant (advisory)", "ops_scripts/ci/check_ag_hook_wiring.py"),
+        # WG1 — ADG wiring gap detector (4 modes: registry-gaps,
+        # instantiation-orphans, port-adapter-gaps, dead-imports).
+        # Advisory by default (--gate flag not passed); activates blocking via
+        # ADG_WIRING_GAP_GATE=1 env var, which adds --gate to the invocation.
+        # Plan: adg-distilled-followups-c8e4a1 W2 / P3-P4.
+        ("WG1 ADG wiring gap check (advisory)", "tools/adg/adg_wiring_gap_check.py"),
     ]
     for label, script in wiring_gates:
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)

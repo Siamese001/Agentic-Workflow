@@ -1,7 +1,7 @@
 # ADG Distilled Follow-ups — Gate Aggregation + Wiring Gap Detection
 
 **Slug:** `adg-distilled-followups-c8e4a1`
-**Status:** In Progress (W1 complete; W2 not started)
+**Status:** Completed (W1 + W2 done 2026-05-06)
 **Authored:** 2026-05-06
 **Tier:** T2 (cross-file, additive tooling, no production code mutation)
 **Supersedes:** `adg-enforcement-hardening-p1-p8-7e9c4a`, `adg-mcp-reopen-hardening-e8f9a0`, `adg-fail-aggregating-gate-chain-9d4e1f`, `adg-repair-orchestrator-enhancement-02c1fc` (all archived 2026-05-06 with pointer to this plan)
@@ -31,7 +31,7 @@ These are the only two follow-ups worth scoping. Everything else from the predec
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---:|---|---|---|
 | W1 | P1, P2 | Fail-aggregating gate chain in `generate_full_adg.py` + consolidated report | ~6,000 | `_fail_closed_gate` + `record_or_exit` infrastructure already exists | ✅ DONE (verified 2026-05-07 — all violation paths already route through `record_or_exit`; drain + summary table already in `main()`) | Single run surfaces ALL gate violations; final summary table prints regardless of individual gate outcomes |
-| W2 | P3, P4 | New detection tool `tools/adg/adg_wiring_gap_check.py` + tests | ~5,000 | ADG SQLite snapshot exposes `instantiates`, `imports`, `dead_import`, `unresolved` edge kinds | Not Started | 4 detection modes (registry-gaps, instantiation-orphans, port-adapter-gaps, dead-imports); `--gate` flag exits non-zero on critical findings |
+| W2 | P3, P4 | New detection tool `tools/adg/adg_wiring_gap_check.py` + tests | ~5,000 | ADG SQLite snapshot exposes `instantiates`, `imports`, `dead_import`, `unresolved` edge kinds | ✅ DONE — `tools/adg/adg_wiring_gap_check.py` (4 modes, `--gate`/`ADG_WIRING_GAP_GATE=1`), 21 tests, registered as WG1 in `run_contract_gates.py` | 4 detection modes (registry-gaps, instantiation-orphans, port-adapter-gaps, dead-imports); `--gate` flag exits non-zero on critical findings |
 
 ---
 
@@ -41,8 +41,8 @@ These are the only two follow-ups worth scoping. Everything else from the predec
 |---|---|---|---:|---|---|
 | P1 | Wire defer infrastructure into all 13 gate violation paths in `generate_full_adg.py` | `tools/generate_full_adg.py`, `tools/generate/validation/gates.py` | Defer currently only triggers on infrastructure exceptions, not on `if violations > 0:` paths. Need to route the latter through `record_or_exit` too. | 3,500 | ✅ DONE — all violation paths verified to call `record_or_exit`; 3 remaining `sys.exit` calls are intentional integrity-boundary hard-fails (documented in gate comments) |
 | P2 | Final aggregated summary table at end of `generate_full_adg.py main()` | `tools/generate_full_adg.py` (drain block ~line 1747) | Need to consolidate per-gate violation counts + top-N offenders into one printed table; preserve existing per-gate logs | 2,500 | ✅ DONE — drain block at lines 1976-1995 prints inline summary + calls `format_summary_table()` rendering full markdown table |
-| P3 | New `tools/adg/adg_wiring_gap_check.py` with 4 detection modes | `tools/adg/adg_wiring_gap_check.py` (new), `tests/unit/tools/adg/test_adg_wiring_gap_check.py` (new) | Same archetypal shape as existing `adg_fanin_isolation_check.py`; queries `nodes`/`edges` directly; no MV dependency | 3,000 | Not Started |
-| P4 | `--gate` mode + CI registration | Above file + `ops_scripts/ci/run_contract_gates.py` registration | Decide which findings are "critical" (exit 1) vs advisory (WARN). Initial recommendation: unresolved imports = critical; dead imports / orphan instantiations = WARN | 2,000 | Not Started |
+| P3 | New `tools/adg/adg_wiring_gap_check.py` with 4 detection modes | `tools/adg/adg_wiring_gap_check.py` (new), `tests/unit/tools/adg/test_adg_wiring_gap_check.py` (new) | Same archetypal shape as existing `adg_fanin_isolation_check.py`; queries `nodes`/`edges` directly; no MV dependency | 3,000 | ✅ DONE — 4 modes implemented; CRITICAL severity on dead-imports; WARN on orphans/adapter-gaps/registry-gaps; schema-guard for stub snapshots |
+| P4 | `--gate` mode + CI registration | Above file + `ops_scripts/ci/run_contract_gates.py` registration | Decide which findings are "critical" (exit 1) vs advisory (WARN). Initial recommendation: unresolved imports = critical; dead imports / orphan instantiations = WARN | 2,000 | ✅ DONE — `--gate` flag + `ADG_WIRING_GAP_GATE=1` env var; registered as WG1 advisory entry in `wiring_gates` list |
 
 ---
 
