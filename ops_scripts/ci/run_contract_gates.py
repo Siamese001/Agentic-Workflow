@@ -197,6 +197,21 @@ def main():
         sys.exit(1)
     print("✅ Severity<->band SSOT gate passed")
 
+    # Gate: ADG exclusion-list sync (was config-sync-gates.yml — folded 2026-05-06)
+    # Verifies tools/generate/check_exclusion_sync.py — ensures ADG exclusion
+    # lists stay in sync across config sources. Sole unique check from the
+    # retired config-sync-gates.yml workflow.
+    print("🔍 Running ADG exclusion-sync gate...")
+    returncode, stdout, stderr = run_cmd(
+        [sys.executable, str(_script("tools/generate/check_exclusion_sync.py"))],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ ADG exclusion-sync gate passed")
+
     # Gate: Repository structure policy (config/structure_blueprint/structure_policy.yaml)
     print("🔍 Running structure policy gate...")
     returncode, stdout, stderr = run_cmd(

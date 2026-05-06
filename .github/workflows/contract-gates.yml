@@ -1,0 +1,92 @@
+name: contract-gates
+
+# Consolidated contract-gate runner — folds 6 previously-separate workflows
+# into one job to eliminate cold-start tax on a solo main-only repo.
+#
+# Folded (deleted) workflows (2026-05-06):
+#   - all-requirements-gate.yml         → Run master all-requirements gate
+#   - all-requirements-merkle-root.yml  → Run Merkle root attestation
+#   - subprocess-timeout-gate.yml       → Run subprocess+terminal scan
+#   - pytest-config-ssot.yml            → Run pytest config SSOT validation
+#   - infra_wiring_check.yml            → Run infra wiring scan + compliance
+#   - config-sync-gates.yml             → Run config-sync gates (7 checks)
+#
+# All 11 tier-shim workflows (tier0..6 enforcement + tier0..6 runtime-proof
+# + tier-gate-hardening) are subsumed by the master all-requirements gate
+# below (per scripts/verify_all_requirements_gates.py:53-67) and have also
+# been deleted.
+#
+# Static-only: does NOT execute replay machinery, OTEL exporters, proof
+# harnesses, or the full pytest suite. Does NOT claim real replay execution,
+# real OTEL emission, full production runtime proof, or full architecture
+# proof.
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract-gates:
+    name: "Consolidated contract gates"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest + pyyaml (targeted-tests harness + config gates)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pyyaml
+
+      # ── Subprocess Timeout / Terminal Cleanup (was subprocess-timeout-gate.yml)
+      # Mirrors T7h pre-commit hook server-side to close the --no-verify
+      # bypass loophole. Constitutional §11 + §14.
+      - name: §11 + §14 — terminal cleanup / subprocess timeout
+        run: python ops_scripts/ci/check_terminal_cleanup.py --verbose
+
+      # ── Pytest Config SSOT (was pytest-config-ssot.yml)
+      - name: Validate pytest config SSOT
+        run: python ops_scripts/ci/_validate_pytest_config.py --strict
+
+      # ── Infra Wiring (was infra_wiring_check.yml)
+      - name: Infrastructure wiring scan
+        run: python ops_scripts/ci/infra_wiring_scan.py
+      - name: Infra compliance score must be 100
+        run: |
+          python -c "import json; data=json.load(open('artifacts/infra_wiring_scorecard.json')); assert data['compliance_score'] == 100, f'Compliance score {data[\"compliance_score\"]}% < 100%'"
+
+      # ── Config Sync Gates (was config-sync-gates.yml — 7 checks)
+      - name: MCP sync integrity
+        run: python ops_scripts/ci/check_mcp_sync_integrity.py
+      - name: AGENTS.md MCP coverage
+        run: python ops_scripts/ci/check_agents_mcp_coverage.py
+      - name: ADG exclusion sync
+        run: python tools/generate/check_exclusion_sync.py
+      - name: Severity-band SSOT
+        run: python ops_scripts/ci/check_severity_band_ssot.py
+      - name: Graph-layer evidence (refactoring plans)
+        run: python ops_scripts/ci/check_graph_layer_evidence.py
+      - name: Structure policy
+        run: python ops_scripts/ci/check_structure_policy.py
+
+      # ── All-Requirements Master Gate (was all-requirements-gate.yml)
+      # Aggregates every Tier 0-6 metadata enforcement gate, every Tier 0-6
+      # runtime/static proof gate, and the cross-tier fail-closed hardening
+      # gate. Subsumes all 11 retired tier-shim workflows.
+      - name: All requirements gate (Tier 0-6 + hardening + coverage)
+        run: python scripts/verify_all_requirements_gates.py
+
+      # ── Merkle-Root Attestation (was all-requirements-merkle-root.yml)
+      # Builds deterministic SHA-256 Merkle tree over the 150-row Step 1
+      # requirement evidence graph and verifies the root by recomputing it
+      # from the written leaves. Must run AFTER the all-requirements gate.
+      - name: All-requirements Merkle root attestation
+        run: python scripts/verify_all_requirements_merkle_root.py
