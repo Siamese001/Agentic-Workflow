@@ -237,7 +237,10 @@ def _run_with_args(
     )
 
     # ── Single source of truth: resolve all paths from raw_request (not args) ──
-    # _build_raw_request may have prompted interactively; args.* is NOT updated.
+    # The interactive wizard (TTY only, in main()) mutates args.* before this
+    # point so that target_company / target_role / jd / manual_brief are
+    # populated from prompts when not supplied on CLI. Non-TTY runs require
+    # explicit flags (parser.error() in main()).
     jd_path = Path(raw_request.get("jd_path_resolved") or getattr(args, "jd", "") or "apps_rg/scripts/job_description.json")
     brief_path = Path(raw_request["manual_brief"])
     candidate_path = (
@@ -455,6 +458,21 @@ def main() -> None:
     parser.add_argument("--jd", default=None, help="Job description JSON path")
     args, _unknown = parser.parse_known_args()
 
+    # ── Interactive wizard (TTY only) ────────────────────────────────────
+    # When stdin is attached to a TTY and any of the 3 mandatory inputs
+    # (company, JD title+description, briefing document) is missing, run a
+    # guided prompt instead of hard-failing. Non-TTY (CI/pipe) keeps the
+    # strict parser.error path below to preserve scripted-run contracts.
+    #
+    # The wizard writes JD and briefing to dedicated _interactive_*.json
+    # files (NOT the hand-authored default files) so the cross-company
+    # contamination guard still validates them with the freshly-typed
+    # company name, never with a stale prior-company artifact.
+    if sys.stdin.isatty() and (
+        not args.target_company or not args.target_role or not args.jd
+    ):
+        _interactive_wizard(args)
+
     # ── --target-company and --target-role MUST be supplied explicitly. ──
     # Auto-deriving from the hand-authored default JSONs (whoever last filled
     # apps_rg/scripts/company_research.json / job_description.json) is a
@@ -474,6 +492,175 @@ def main() -> None:
         )
 
     _run_with_args(args)
+
+
+# ---------------------------------------------------------------------------
+# Interactive wizard — TTY-only prompt for the 3 mandatory inputs
+# ---------------------------------------------------------------------------
+
+
+_WIZARD_JD_PATH = Path("apps_rg/scripts/_interactive_jd.json")
+_WIZARD_BRIEF_PATH = Path("apps_rg/scripts/_interactive_brief.json")
+
+
+def _read_multiline_or_file(prompt_label: str) -> tuple[str, str | None]:
+    """Read input that may be (a) multiline pasted text terminated by 'END',
+    or (b) ``@/abs/or/rel/path`` to load file content.
+
+    Returns ``(text, source_marker)`` where ``source_marker`` is the file
+    path when loaded from disk, else ``None``. Empty input returns
+    ``("", None)``.
+    """
+    print(f"  Paste {prompt_label} (or '@path/to/file' to load, type 'END' on its own line to finish):")
+    first = input("  > ").strip()
+    if not first:
+        return "", None
+    if first.startswith("@"):
+        path = first[1:].strip()
+        try:
+            return Path(path).read_text(encoding="utf-8"), path
+        except OSError as exc:
+            print(f"    [warn] could not read {path}: {exc}")
+            return "", None
+    if first == "END":
+        return "", None
+    lines = [first]
+    while True:
+        try:
+            line = input("  > ")
+        except EOFError:
+            break
+        if line.strip() == "END":
+            break
+        lines.append(line)
+    return "\n".join(lines), None
+
+
+def _interactive_wizard(args: Any) -> None:
+    """Prompt the user for the 3 mandatory inputs and mutate ``args`` in place.
+
+    The 3 items:
+      1. **Company** — target company string
+      2. **JD** — job title + full description (paste multiline, '@file' load)
+      3. **Briefing** — company briefing document (paste, '@file', or 'auto'
+         to delegate retrieval to apps_research / Tavily)
+
+    Side effects:
+      - Writes ``apps_rg/scripts/_interactive_jd.json``
+      - Writes ``apps_rg/scripts/_interactive_brief.json`` (unless 'auto')
+      - Sets ``args.target_company``, ``args.target_role``, ``args.jd``,
+        ``args.manual_brief`` and/or ``args.auto_research_tavily``.
+    """
+    print()
+    print("=" * 70)
+    print("apps_rg interactive setup — 3 mandatory inputs")
+    print("=" * 70)
+    print(
+        "Cascade discipline: this prompt fires because target_company / "
+        "target_role / jd were not supplied on the command line. apps_rg "
+        "refuses to auto-infer them from stale default files in "
+        "apps_rg/scripts/ to prevent cross-company contamination."
+    )
+    print()
+
+    # --- 1. Company ----------------------------------------------------
+    while not args.target_company:
+        company = input("[1/3] Target company (e.g. 'Brown & Brown'): ").strip()
+        if company:
+            args.target_company = company
+    print(f"      → company = {args.target_company!r}")
+    print()
+
+    # --- 2. JD title + description -------------------------------------
+    print("[2/3] Job description")
+    title = ""
+    while not title:
+        title = (args.target_role or "").strip() or input("  Job title: ").strip()
+    args.target_role = title
+
+    description, source = _read_multiline_or_file("the full job description")
+    if not description.strip():
+        print("    [warn] empty JD description; using title-only stub")
+        description = f"(no description provided — title only: {title})"
+
+    jd_payload = {
+        "title": title,
+        "description": description,
+        "requirements": [],
+        "preferred": [],
+        "_source": source or "interactive_paste",
+        "company": args.target_company,
+    }
+    _WIZARD_JD_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _WIZARD_JD_PATH.write_text(json.dumps(jd_payload, indent=2), encoding="utf-8")
+    args.jd = str(_WIZARD_JD_PATH)
+    print(f"      → wrote JD to {args.jd}")
+    print()
+
+    # --- 3. Briefing document ------------------------------------------
+    print("[3/3] Company briefing document")
+    print("      Options:")
+    print("        - 'auto'              → delegate to apps_research (Tavily)")
+    print("        - '@path/to/file.json' → load existing brief from disk")
+    print("        - paste multiline JSON or text, terminate with 'END'")
+    choice = input("  > ").strip()
+
+    if choice.lower() == "auto":
+        args.auto_research_tavily = True
+        args.manual_brief = None
+        print("      → auto-research-tavily ENABLED; apps_research will produce briefing")
+    elif choice.startswith("@"):
+        path = choice[1:].strip()
+        if not Path(path).exists():
+            print(f"      [warn] {path} not found; falling back to auto-research")
+            args.auto_research_tavily = True
+            args.manual_brief = None
+        else:
+            args.manual_brief = path
+            print(f"      → manual_brief = {path}")
+    else:
+        # Treat as start of multiline paste; read until 'END'
+        lines = [choice] if choice else []
+        while True:
+            try:
+                line = input("  > ")
+            except EOFError:
+                break
+            if line.strip() == "END":
+                break
+            lines.append(line)
+        text = "\n".join(lines).strip()
+        if not text:
+            print("      [warn] empty briefing; falling back to auto-research")
+            args.auto_research_tavily = True
+            args.manual_brief = None
+        else:
+            # Try parse as JSON; if not, wrap as plain-text briefing dict
+            try:
+                brief_payload = json.loads(text)
+                if isinstance(brief_payload, dict) and "company" not in brief_payload:
+                    brief_payload["company"] = args.target_company
+            except json.JSONDecodeError:
+                brief_payload = {
+                    "company": args.target_company,
+                    "_source": "interactive_paste_freeform",
+                    "freeform_text": text,
+                }
+            _WIZARD_BRIEF_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _WIZARD_BRIEF_PATH.write_text(
+                json.dumps(brief_payload, indent=2), encoding="utf-8"
+            )
+            args.manual_brief = str(_WIZARD_BRIEF_PATH)
+            print(f"      → wrote briefing to {args.manual_brief}")
+    print()
+    print("=" * 70)
+    print(f"Ready: company={args.target_company!r} role={args.target_role!r}")
+    print(f"       jd={args.jd}")
+    print(
+        f"       brief={'auto-research-tavily' if args.auto_research_tavily else args.manual_brief}"
+    )
+    print("=" * 70)
+    print()
 
 
 if __name__ == "__main__":
