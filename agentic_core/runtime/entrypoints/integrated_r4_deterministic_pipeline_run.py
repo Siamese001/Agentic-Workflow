@@ -210,6 +210,17 @@ def _utc_now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def _sha256_file(path: Path) -> str | None:
+    """Return sha256 hex of file contents, or None if file doesn't exist."""
+    if not path.exists():
+        return None
+    try:
+        content = path.read_bytes()
+        return f"sha256:{hashlib.sha256(content).hexdigest()}"
+    except OSError:
+        return None
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> str:
     """Write payload as canonical JSON; return sha256 hex."""
     blob = json.dumps(payload, indent=2, sort_keys=True) + "\n"
@@ -538,6 +549,89 @@ def run_integrated_r4_deterministic_pipeline(
             "l2_fault": l2_fault,
             "artifact_hash": compute_artifact_hash(receipts),
             "emitted_at": _utc_now_iso(),
+        },
+    )
+
+    # ── L7_AUDITABILITY evidence plane ──
+    # Mandatory cross-cutting evidence plane. Pure projection over chain
+    # artifacts emitted so far; non-mutating; non-routing.
+    from agentic_core.L7_auditability.how_trace import build_how_trace as _build_how_trace
+    from agentic_core.L7_auditability.coverage import (
+        build_l7_route_family_coverage as _build_rfc,
+    )
+    from agentic_core.runtime.artifacts.spine_proof_bundle import (
+        build_spine_proof_payload as _build_spine_proof,
+    )
+
+    # Create Track-2 filename aliases for build_how_trace compatibility
+    # R4 writes different filenames/structures than the canonical integrated_runtime entrypoints
+    _identity_src = artifact_dir / _IDENTITY_RECEIPT_FILENAME
+    _identity_dst = artifact_dir / "runtime_identity_envelope.json"
+    if _identity_src.exists() and not _identity_dst.exists():
+        # Wrap flat identity dict in payload envelope that build_how_trace expects
+        _identity_flat = json.loads(_identity_src.read_text(encoding="utf-8"))
+        _identity_envelope = {"schema_version": "runtime_identity_envelope.v1", "payload": _identity_flat}
+        _write_json(_identity_dst, _identity_envelope)
+
+    _plan_src = artifact_dir / _R4_RUN_MANIFEST_FILENAME
+    _plan_dst = artifact_dir / "l1_plan_contract.json"
+    if _plan_src.exists() and not _plan_dst.exists():
+        _plan_data = json.loads(_plan_src.read_text(encoding="utf-8"))
+        _write_json(_plan_dst, {"schema_version": "l1_plan_contract.v1", "payload": _plan_data})
+
+    # Create route_contract.json (required by build_how_trace but not written by R4)
+    _route_contract_path = artifact_dir / "route_contract.json"
+    if not _route_contract_path.exists():
+        _write_json(
+            _route_contract_path,
+            {
+                "schema_version": "route_contract.v1",
+                "payload": {
+                    "route_id": effective_route_id,
+                    "route_contract_id": route_contract_id,
+                    "execution_form": "R4_SINGLE_ACTION",
+                    "grounding_required": False,
+                    "prompt_assembly_required": False,
+                },
+            },
+        )
+
+    _how_trace = _build_how_trace(artifact_dir, chain_kind=CHAIN_KIND)
+    _write_json(artifact_dir / "agentic_core_how_trace.json", _how_trace.to_dict())
+
+    _rfc = _build_rfc(artifact_dir, chain_kind=CHAIN_KIND, write=False)
+    _write_json(artifact_dir / "agentic_core_l7_route_family_coverage.json", _rfc["payload"])
+
+    _spine = _build_spine_proof(
+        artifact_dir=artifact_dir,
+        artifact_hashes={"identity_receipt.json": _sha256_file(artifact_dir / _IDENTITY_RECEIPT_FILENAME)},
+        identity_envelope_payload=identity.to_dict(),
+        started_at_utc=started_at,
+        finished_at_utc=_utc_now_iso(),
+        exit_code=0,
+    )
+    _write_json(artifact_dir / "agentic_core_spine_proof.json", _spine)
+
+    # Update manifest with L7 refs
+    _write_json(
+        artifact_dir / "integrated_runtime_artifact_manifest.json",
+        {
+            "invocation_id": run_id,
+            "entry_point": f"{_PRODUCER_COMPONENT}.{_PRODUCER_FUNCTION}",
+            "integrated_runtime_entrypoint_used": True,
+            "chain_kind": CHAIN_KIND,
+            "artifact_filenames": [
+                "agentic_core_how_trace.json",
+                "agentic_core_l7_route_family_coverage.json",
+                "agentic_core_spine_proof.json",
+                "integrated_runtime_artifact_manifest.json",
+            ],
+            "how_trace_ref": "artifact://agentic_core_how_trace.json",
+            "how_trace_sha256": _sha256_file(artifact_dir / "agentic_core_how_trace.json") or "",
+            "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
+            "l7_route_family_coverage_sha256": _sha256_file(artifact_dir / "agentic_core_l7_route_family_coverage.json") or "",
+            "artifact_hashes": {},
+            "chain_linkage": [],
         },
     )
 

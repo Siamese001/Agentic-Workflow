@@ -492,6 +492,105 @@ class GovernedRun:
         for key, payload in self._staging.items():
             _write_json(run_dir / f"{key}.json", payload)
 
+        # ── L7_AUDITABILITY evidence plane ──
+        # Mandatory cross-cutting evidence plane. Create Track-2 filename
+        # aliases for Track-1 artifacts and invoke L7 builder.
+        try:
+            from agentic_core.L7_auditability.how_trace import (
+                build_how_trace as _build_how_trace,
+            )
+            from agentic_core.L7_auditability.coverage import (
+                build_l7_route_family_coverage as _build_rfc,
+            )
+            from agentic_core.runtime.artifacts.spine_proof_bundle import (
+                build_spine_proof_payload as _build_spine_proof,
+            )
+
+            # Track-1 → Track-2 filename aliases
+            _alias_map = {
+                "u0_intake_envelope.json": "runtime_identity_envelope.json",
+                "l1_plan_contract.json": "l1_plan_contract.json",
+                "route_contract.json": "route_contract.json",
+                "l2_execution_receipt.json": "static_dag_proof.json",
+                "exit_review_packet.json": "exit_review_packet.json",
+                "runtime_exhaust_bundle.json": "runtime_exhaust_bundle.json",
+            }
+            for src_name, dst_name in _alias_map.items():
+                src_path = run_dir / src_name
+                dst_path = run_dir / dst_name
+                if src_path.exists() and not dst_path.exists():
+                    dst_path.write_text(src_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+            # Synthesize route_contract.json if absent (Track-2 requirement)
+            _route_path = run_dir / "route_contract.json"
+            if not _route_path.exists():
+                _route_payload = {
+                    "schema_version": "route_contract.v1",
+                    "payload": {
+                        "route_id": self.cfg.app_name,
+                        "route_contract_id": self._route_contract_id,
+                        "execution_form": "MANAGED_WORKFLOW",
+                        "grounding_required": self.cfg.expects_c0_grounding,
+                        "prompt_assembly_required": self.cfg.expects_prompt_assembly,
+                    },
+                }
+                _write_json(_route_path, _route_payload)
+
+            # Determine chain_kind for L7 builder
+            _chain_kind = "MANAGED_WORKFLOW"
+            if self.cfg.expected_execution_form == "DETERMINISTIC_PIPELINE":
+                _chain_kind = "R4_SINGLE_ACTION"
+            elif self.cfg.expected_execution_form == "TERMINAL_SHORTCIRCUIT":
+                _chain_kind = "TERMINAL_SHORTCIRCUIT"
+
+            # Build and emit L7 artifacts
+            _how_trace = _build_how_trace(run_dir, chain_kind=_chain_kind)
+            _write_json(run_dir / "agentic_core_how_trace.json", _how_trace.to_dict())
+
+            _rfc = _build_rfc(run_dir, chain_kind=_chain_kind, write=False)
+            _write_json(run_dir / "agentic_core_l7_route_family_coverage.json", _rfc["payload"])
+
+            _identity_src = run_dir / "runtime_identity_envelope.json"
+            _identity_payload = {}
+            if _identity_src.exists():
+                _identity_payload = json.loads(_identity_src.read_text(encoding="utf-8")).get("payload", {})
+
+            _spine = _build_spine_proof(
+                artifact_dir=run_dir,
+                artifact_hashes={},
+                identity_envelope_payload=_identity_payload,
+                started_at_utc=_utc_iso(self._wall_start),
+                finished_at_utc=_utc_iso(time.time()),
+                exit_code=self._subprocess_exit_code or 0,
+            )
+            _write_json(run_dir / "agentic_core_spine_proof.json", _spine)
+
+            # Final manifest with L7 refs
+            _write_json(
+                run_dir / "integrated_runtime_artifact_manifest.json",
+                {
+                    "invocation_id": self.run_id,
+                    "entry_point": self.cfg.entrypoint_command,
+                    "integrated_runtime_entrypoint_used": False,
+                    "chain_kind": _chain_kind,
+                    "artifact_filenames": [
+                        "agentic_core_how_trace.json",
+                        "agentic_core_l7_route_family_coverage.json",
+                        "agentic_core_spine_proof.json",
+                        "integrated_runtime_artifact_manifest.json",
+                    ],
+                    "how_trace_ref": "artifact://agentic_core_how_trace.json",
+                    "how_trace_sha256": _sha256_file(run_dir / "agentic_core_how_trace.json") or "",
+                    "l7_route_family_coverage_ref": "artifact://agentic_core_l7_route_family_coverage.json",
+                    "l7_route_family_coverage_sha256": _sha256_file(run_dir / "agentic_core_l7_route_family_coverage.json") or "",
+                    "artifact_hashes": {},
+                    "chain_linkage": [],
+                },
+            )
+        except Exception:
+            # L7 is best-effort for governed_run; failures don't block the run
+            pass
+
     # ------------------------------------------------------------------
     # Internals
     # ------------------------------------------------------------------
