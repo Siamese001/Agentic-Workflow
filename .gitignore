@@ -157,3 +157,6 @@ keys/release_signer/*.pem
 # Large ML model binaries — never commit (added 2026-05-05, W6 of apps-rg-l0-cache-deferred-scope-b8e2f4)
 models--BAAI--bge-m3/
 .locks/
+
+# apps_rg run outputs — should not accumulate in scripts/ (W2 cleanup 2026-05-06)
+apps_rg/scripts/generated_resume_*.json
