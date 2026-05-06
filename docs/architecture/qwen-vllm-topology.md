@@ -19,12 +19,35 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
 | Port mapping | `0.0.0.0:8000->8000/tcp` |
 | Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 8192 --gpu-memory-utilization 0.88 --host 0.0.0.0 --port 8000` |
+| Restart policy | `unless-stopped` (set 2026-05-06 W3 of plan apps-rg-vllm-deferred-followup-f7d3a9) |
 
 ### Lifecycle
 
 - Start: `docker start local-qwen-vllm`
 - Stop: `docker stop local-qwen-vllm`
 - Health: `curl http://localhost:8000/v1/models` should return JSON with `Qwen/Qwen2.5-32B-Instruct-AWQ` in `data[0].id`
+
+### Auto-restart on host reboot (added 2026-05-06)
+
+Restart policy is `unless-stopped`. This means:
+
+- After a Windows host reboot, when Docker Desktop comes back up, the
+  container starts automatically — no manual `docker start local-qwen-vllm`
+  needed.
+- A user-initiated `docker stop local-qwen-vllm` is honored: a stopped
+  container stays stopped across reboot until explicitly started again.
+- A container crash (OOM, kernel kill, model-load failure) triggers
+  Docker's restart loop with exponential backoff.
+
+**Verify**: `docker inspect local-qwen-vllm --format '{{.HostConfig.RestartPolicy.Name}}'` → `unless-stopped`.
+
+**Change policy** (e.g. to disable auto-restart while debugging):
+
+    docker update --restart no local-qwen-vllm
+
+**Restore default**:
+
+    docker update --restart unless-stopped local-qwen-vllm
 
 ### Strict-mode preflight
 
