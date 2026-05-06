@@ -1,146 +1,129 @@
 # ADG Config SSOT — Uber-Deferred Implementation Backlog
 
 **Slug:** `adg-config-ssot-uber-deferred-e8f2a3`
-**Status:** Not Started
+**Status:** Completed
 **Parent Plan:** `adg-config-ssot-deferred-d7e3a1` (COMPLETED 2026-05-06)
 **Tier:** T3 (cross-layer, config-discipline)
 **Created:** 2026-05-06
+**Started:** 2026-05-06
+**Completed:** 2026-05-06
 
-## Purpose
+## Wave Structure
 
-Consolidated implementation backlog for the 5 deferred items analyzed in parent plan `adg-config-ssot-deferred-d7e3a1`. **This plan is intentionally NOT implemented** — it serves as a triage-ready backlog for future activation when operational needs require.
+| Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
+|------|-----------|-------|-------------|--------|------------------|
+| W1 | P1 | D-01: Memory MCP schema SSOT | ~4k | ✅ DONE | Schema extracted, version table added, CI gate passing |
+| W2 | P2 | D-03: ADG generator path consolidation | ~2k | ✅ DONE | Docs updated, shim created, no broken refs |
+| W3 | P3 | D-04: Vector DB cache layout SSOT | ~4k | ✅ DONE | VECTOR_CACHE_LAYOUT constant, unified structure |
+| W4 | P4 | D-02: Redis Sentinel migration | ~6k | ⏸️ DEFERRED | Will activate when HA needed |
+| W5 | P5 | D-05: OTel runtime ADG convergence | ~6k | ⏸️ DEFERRED | Will activate when format convergence needed |
 
-## Deferred Items Backlog
+## Phase-Level Summary
 
-### D-01 — Memory MCP knowledge_graph Schema SSOT
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|----------|-------|---------------|-------------|-------------|--------|
+| P1 | Memory MCP schema extraction | tools/memory/, .windsurf/schemas/ | Inline schema, no versioning | ~4k | ✅ DONE |
+| P2 | ADG generator path consolidation | docs/, tools/adg/, tools/generate/ | Path drift, stale docs | ~2k | ✅ DONE |
+| P3 | Vector DB cache layout | agentic_core/L4_state/cache/ | Dual backends, no SSOT | ~4k | ✅ DONE |
+| P4 | Redis Sentinel migration | tools/adg/cache/, docker-compose.redis.yml | Single-node prod, test-only Sentinel | ~6k | ⏸️ DEFERRED |
+| P5 | OTel runtime ADG convergence | system_learning/runtime_adg/ | Format divergence | ~6k | ⏸️ DEFERRED |
 
-**Gap:** Schema hardcoded in `tools/memory/sqlite_memory_store.py` (inline `_SCHEMA` string); no `.windsurf/schemas/knowledge_graph.schema.sql` file.
+## Completed Waves
 
-**SSOT Violation:** Constitutional §31 (SSOT folder routing) — schemas should live in `.windsurf/schemas/`.
+### W1 — D-01: Memory MCP knowledge_graph Schema SSOT ✅
 
-**Activation Trigger:**
-- Memory MCP schema needs versioning for migration
-- Multiple schema consumers need shared definition
-- Schema corruption incident occurs
+**Commit:** `e3c453f168`
 
-**Implementation Sketch:**
-1. Extract `_SCHEMA` to `.windsurf/schemas/knowledge_graph.schema.sql`
-2. Add schema version table with migration tracking
-3. Update `sqlite_memory_store.py` to load schema from file
-4. Add CI gate ensuring schema file matches Python constant
+**Deliverables:**
+- `.windsurf/schemas/knowledge_graph.schema.sql` - Canonical schema
+- `.windsurf/schemas/knowledge_graph_migrations.sql` - Migrations
+- `tools/memory/sqlite_memory_store.py` - Updated to load from file
+- `ops_scripts/ci/check_memory_schema_sync.py` - CI gate
+- `tests/unit/tools/memory/test_schema_versioning.py` - 9 tests
 
-**Estimated Effort:** ~4k tokens
-**Dependencies:** Memory MCP stability review
+**Gap G-01:** ✅ RESOLVED
 
----
+### W2 — D-03: ADG Generator Path Consolidation ✅
 
-### D-02 — Redis Cluster Topology / Sentinel Migration
+**Commit:** `4bd811b6ac`
 
-**Gap:** Production uses single-node Redis; Sentinel config exists only in `docker-compose.redis.yml` test profile.
+**Deliverables:**
+- Updated docs with correct paths
+- `tools/adg/generate_full_adg.py` compatibility shim
+- Updated `tools/adg/shared_modules/path_resolver.py` docstring
 
-**SSOT Violation:** `ADG_REDIS_URL` assumes single-node; no cluster-aware connection handling.
+**Gap G-03:** ✅ RESOLVED
 
-**Activation Trigger:**
-- Production Redis failover required
-- Cache availability becomes critical path
-- Sentinel monitoring needed for HA
+### W3 — D-04: Vector DB Cache Layout SSOT ✅
 
-**Implementation Sketch:**
-1. Add Sentinel connection fallback to `tools/adg/cache/redis_cache.py`
-2. Support `REDIS_SENTINEL_HOSTS` env var (comma-separated)
-3. Implement master discovery via Sentinel
-4. Update `docker-compose.redis.yml` to production-grade topology
-5. Add CI test for Sentinel failover scenario
+**Commit:** `f196e5cf2f`
 
-**Estimated Effort:** ~6k tokens
-**Dependencies:** Redis operational readiness, Docker Desktop cluster testing
+**Deliverables:**
+- `agentic_core/L4_state/contracts/vector_cache_layout.py`
+- `agentic_core/L4_state/cache/gptcache_client.py` updated
+- `tests/unit/L4_state/cache/test_vector_cache_layout.py` - 14 tests
 
----
+**Gap G-04:** ✅ RESOLVED
 
-### D-03 — ADG Generator Path Consolidation
+## Deferred to Future Activation
 
-**Gap:** ADG generator moved from `tools/adg/` to `tools/generate/`; documentation may reference old paths.
+### W4 — D-02: Redis Sentinel Migration ⏸️
 
-**SSOT Violation:** Path drift without migration guide or compatibility shim.
+**Activation Trigger:** Production Redis failover required
 
-**Activation Trigger:**
-- User confusion about correct ADG tool location
-- Import errors from stale documentation
-- CI scripts reference deprecated paths
+**Remaining Work:**
+- Add Sentinel connection to `tools/adg/cache/redis_cache.py`
+- Support `REDIS_SENTINEL_HOSTS` env var
+- Update `docker-compose.redis.yml` for production
 
-**Implementation Sketch:**
-1. Audit all docs for deprecated `tools/adg/generate_full_adg.py` references
-2. Update references to `tools/generate/generate_full_adg.py`
-3. Add compatibility shim at old path (redirect + deprecation warning)
-4. Update `tools/adg/shared_modules/path_resolver.py` docstring
+**Gap G-02:** ⏸️ DEFERRED
 
-**Estimated Effort:** ~2k tokens
-**Dependencies:** ADG schema graduation plan completion
+### W5 — D-05: OTel Runtime ADG Convergence ⏸️
 
----
+**Activation Trigger:** Runtime ADG needs to query static ADG
 
-### D-04 — Vector DB Cache Layout SSOT
+**Remaining Work:**
+- Document runtime ADG path resolution strategy
+- Consider SQLite adapter for convergence
+- Update OTel span ingestion
 
-**Gap:** `gptcache_client.py` implements dual backends (SQLite + Chroma) with no unified cache layout schema.
+**Gap G-05:** ⏸️ DEFERRED
 
-**SSOT Violation:** Cache paths scattered; no `VECTOR_CACHE_LAYOUT` constant.
+## Gap Register
 
-**Activation Trigger:**
-- Cache corruption or invalidation needs
-- Cache directory structure confusion
-- Multiple vector cache consumers need shared layout
+| Gap ID | Description | P-Band | Status |
+|--------|-------------|--------|--------|
+| G-01 | Memory MCP schema hardcoded in Python | P2 | ✅ RESOLVED |
+| G-02 | Redis Sentinel only in test compose | P3 | ⏸️ DEFERRED |
+| G-03 | ADG generator relocated to tools/generate/ | P3 | ✅ RESOLVED |
+| G-04 | Vector cache uses dual SQLite+Chroma | P3 | ✅ RESOLVED |
+| G-05 | Runtime ADG uses different serialization | P3 | ⏸️ DEFERRED |
 
-**Implementation Sketch:**
-1. Define `VECTOR_CACHE_LAYOUT` SSOT in `agentic_core/L4_state/contracts/` or `.windsurf/schemas/`
-2. Unify SQLite + Chroma cache directory structure
-3. Add cache layout validation to `NativePersistentCacheClient`
-4. Document cache invalidation procedures
+## Success Criteria
 
-**Estimated Effort:** ~4k tokens
-**Dependencies:** Vector DB config audit (separate from ADG)
+- [x] W1.P1: Schema extracted, versioned, CI gate passing
+- [x] W2.P2: Docs updated, shim working
+- [x] W3.P3: Cache layout SSOT established
+- [ ] W4.P4: Sentinel support (DEFERRED)
+- [ ] W5.P5: Runtime ADG strategy (DEFERRED)
+- [x] 3 of 5 D-items resolved
+- [x] Plan marked Completed in Notion
+- [x] All changes committed to GitHub
 
----
+## Summary
 
-### D-05 — OTel Runtime ADG Path Resolution Convergence
+**3 of 5 deferred items implemented** (60% completion):
+- D-01, D-03, D-04 are ✅ RESOLVED
+- D-02, D-05 remain ⏸️ DEFERRED for future activation
 
-**Gap:** Runtime ADG uses custom binary serialization (RS/GS separators) in `system_learning/runtime_adg/store.py`; diverges from static ADG SQLite format.
-
-**SSOT Violation:** Constitutional §23 acknowledges distinction, but no unified path resolution strategy.
-
-**Activation Trigger:**
-- Runtime ADG needs to query static ADG
-- Unified observability dashboard required
-- Storage format consolidation needed
-
-**Implementation Sketch:**
-1. Document runtime ADG path resolution strategy
-2. Consider runtime ADG SQLite adapter (convergence with static)
-3. Add cross-format query bridge if needed
-4. Update OTel span ingestion to write to both formats
-
-**Estimated Effort:** ~6k tokens
-**Dependencies:** OTel runtime ADG review (may affect architecture)
-
-## Activation Matrix
-
-| Item | Blocker Risk | Effort | Dependencies | Recommended Activation Order |
-|------|--------------|--------|--------------|------------------------------|
-| D-01 | Low | 4k | None | 1 (isolated) |
-| D-03 | Low | 2k | None | 2 (quick win) |
-| D-04 | Medium | 4k | Vector audit | 3 |
-| D-02 | High | 6k | Ops coordination | 4 (when HA needed) |
-| D-05 | Medium | 6k | OTel review | 5 (architectural) |
-
-## Success Criteria (When Activated)
-
-- [ ] Selected D-item implemented per its sketch
-- [ ] CI gates pass (including new gates if added)
-- [ ] Parent plan Gap Register updated with "RESOLVED"
-- [ ] Notion status updated (this plan → In Progress → Completed)
-- [ ] Git commit with traceable message
+**Total Deliverables:**
+- 7 new files created
+- 4 files modified
+- 3 commits
+- 23+ new tests
 
 ## References
 
 - Analysis Plan: `.windsurf/plans/adg-config-ssot-deferred-d7e3a1.md`
 - Grandparent Plan: `.windsurf/plans/adg-config-ssot-audit-c7e4a2.md`
-- Constitutional: §22 (graph-layer), §31 (SSOT folder routing), §23 (static vs runtime ADG)
+- Constitutional: §22, §31, §23
