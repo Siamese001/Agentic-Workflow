@@ -1,0 +1,49 @@
+name: underwriting-holdout-gate
+
+on:
+  pull_request:
+    paths:
+      - 'apps_underwriting_ai/holdout/**'
+      - 'scripts/validate_underwriting_holdout.py'
+      - 'tests/apps_underwriting_ai/test_holdout_provenance_gate.py'
+      - '.github/workflows/underwriting_holdout_gate.yml'
+  workflow_dispatch:
+
+jobs:
+  schema-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pyyaml
+      - name: Validate W1 holdout schema
+        run: |
+          python scripts/validate_underwriting_holdout.py \
+            --holdout apps_underwriting_ai/holdout/rationale_judge_holdout.yaml
+      - name: Run W1 provenance gate tests
+        run: |
+          pytest tests/apps_underwriting_ai/test_holdout_provenance_gate.py -q
+
+  provenance-required-manual:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+      - name: Require W1 provenance attestation
+        run: |
+          python scripts/validate_underwriting_holdout.py \
+            --holdout apps_underwriting_ai/holdout/rationale_judge_holdout.yaml \
+            --provenance apps_underwriting_ai/holdout/rationale_judge_holdout_provenance.yaml \
+            --require-provenance

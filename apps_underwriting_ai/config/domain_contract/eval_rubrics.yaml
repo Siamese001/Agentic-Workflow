@@ -46,10 +46,11 @@
     evidence_required: true
     fail_closed_if_unknown: true
     taxonomy_class: regression
-  # apps-underwriting-ai-d3-rationale-judge-f2c8d5 W2.P3 — promoted from stub.
-  # RationaleQualityJudge v2 (IS_STUB=False, deterministic heuristic, Spearman≥0.80).
+  # apps-underwriting-ai-rationale-judge-deferred-d4e7a2 W2.P3 — promoted to v3 LLM-as-judge.
+  # RationaleQualityJudge v3 (IS_STUB=False, LLM primary + v2 deterministic fallback, Spearman≥0.85).
+  # W1_COMPLETE: VERIFIED_ANALYST_ATTESTED by Amit Ayer 2026-05-06.
   # weight=0.05 keeps the original five weighted dims at their original proportions.
-  # DS-R8: fail_closed_if_unknown: true — DS-R2 LLM judge is done; strict mode active.
+  # fail_closed_if_unknown: true — strict mode active.
   - dimension_id: rationale_quality
     description: Rationale text quality — length, evidence refs, explanation terms, policy signal.
     weight: 0.05
@@ -72,6 +73,8 @@
     evidence_required: true
     fail_closed_if_unknown: true
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_recall_judge::v2
   - dimension_id: context_precision
     description: RAG retrieval precision (signal-to-noise in retrieved chunks).
     weight: 0.0
@@ -80,6 +83,8 @@
     evidence_required: true
     fail_closed_if_unknown: true
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::context_precision_judge::v2
   - dimension_id: answer_relevancy
     description: Answer relevancy to the task intent.
     weight: 0.0
@@ -88,5 +93,7 @@
     evidence_required: true
     fail_closed_if_unknown: true
     taxonomy_class: tracked_metric
+    grader_roster:
+      - qna::answer_relevancy_judge::v2
   source_app_config_ref: apps_eval/config/rubrics/
   created_at: '2026-05-01'

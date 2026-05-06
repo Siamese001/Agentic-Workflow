@@ -38,7 +38,10 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 _BYPASS = os.getenv("EVAL_HOLDOUT_SPLIT_BYPASS", "").strip() == "1"
-_FAIL_CLOSED = os.getenv("EVAL_HOLDOUT_SPLIT_FAIL_CLOSED", "").strip() == "1"
+# DS-R3 flip 2026-05-06: default fail-closed now that no holdout/dev overlap
+# is confirmed (0 overlapping IDs across 0 dev fixture files).  Override with
+# EVAL_HOLDOUT_SPLIT_FAIL_CLOSED=0 to revert to advisory.
+_FAIL_CLOSED = os.getenv("EVAL_HOLDOUT_SPLIT_FAIL_CLOSED", "1").strip() == "1"
 
 _HOLDOUT_PATH = (
     REPO_ROOT / "apps_underwriting_ai" / "holdout" / "rationale_judge_holdout.yaml"

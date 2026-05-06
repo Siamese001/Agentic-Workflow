@@ -33,7 +33,7 @@ excluded from this register.
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P1.1–P1.2 | Real LLM judge end-to-end in CI (Anthropic + Google) | ~20k | `ANTHROPIC_API_KEY` + `GOOGLE_API_KEY` configured as GitHub repo secrets | Not Started | `judge-calibration.yml` runs real API calls; AnthropicJudge + GoogleJudge return float scores; Spearman logged |
+| W1 | P1.1–P1.2 | Real LLM judge end-to-end in CI (Anthropic + Google) | ~20k | `ANTHROPIC_API_KEY` + `GOOGLE_API_KEY` already configured in CI secrets and local `.env` | Not Started | `judge-calibration.yml` runs real API calls; AnthropicJudge + GoogleJudge return float scores; Spearman logged |
 | W2 | P2.1 | DS-R4 scoping + implementation | ~12k | DS-R4 requirements defined and agreed | Not Started | DS-R4 acceptance tests pass |
 | W3 | P3.1–P3.2 | Per-dim Spearman ≥ 0.80 for all 5 dims | ~15k | Additional human-labeled examples available OR holdout expanded with synthetic diversity | Not Started | Per-dim rho ≥ 0.80 for `feature_derivation_correctness` (currently 0.740) and `policy_compliance` (currently 0.750) |
 | W4 | P4.1–P4.2 | Production-log mining + holdout expansion | ~20k | PII-redaction pipeline available; compliance review complete | Not Started | ≥10 real examples per dim in holdout; holdout distribution matches production |
@@ -45,8 +45,8 @@ excluded from this register.
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | AnthropicJudge real invocation in CI | `agentic_core/L3_orchestration/exit_eval/judges/anthropic_judge.py`, `.github/workflows/judge-calibration.yml` | Requires `ANTHROPIC_API_KEY` GitHub secret; adapter implemented but never called in CI real-run | ~8k | Not Started |
-| P1.2 | GoogleJudge real invocation in CI | `agentic_core/L3_orchestration/exit_eval/judges/google_judge.py`, `.github/workflows/judge-calibration.yml` | Requires `GOOGLE_API_KEY` GitHub secret; `GEMINI_API_KEY` deprecated alias wired but untested at CI level | ~6k | Not Started |
+| P1.1 | AnthropicJudge real invocation in CI | `agentic_core/L3_orchestration/exit_eval/judges/anthropic_judge.py`, `.github/workflows/judge-calibration.yml` | `ANTHROPIC_API_KEY` already configured; adapter implemented but never called in CI real-run | ~8k | Not Started |
+| P1.2 | GoogleJudge real invocation in CI | `agentic_core/L3_orchestration/exit_eval/judges/google_judge.py`, `.github/workflows/judge-calibration.yml` | `GOOGLE_API_KEY` already configured; `GEMINI_API_KEY` deprecated alias wired but untested at CI level | ~6k | Not Started |
 | P2.1 | DS-R4 requirements scoping + implementation | TBD — DS-R4 has no acceptance criteria yet | DS-R4 was listed in requirements set but never scoped; must define before scheduling | ~12k | Not Started |
 | P3.1 | Per-dim Spearman: `feature_derivation_correctness` ≥ 0.80 | `apps_underwriting_ai/holdout/rationale_judge_holdout.yaml`, `apps_underwriting_ai/engines/judges/rationale_quality_judge.py` | Current rho=0.740; gap=−0.060; 20-example subset has high sampling variance; heuristic signal covers formula/numeric terms but misses structured feature-key enumeration patterns | ~8k | Not Started |
 | P3.2 | Per-dim Spearman: `policy_compliance` ≥ 0.80 | `apps_underwriting_ai/holdout/rationale_judge_holdout.yaml`, `apps_underwriting_ai/engines/judges/rationale_quality_judge.py` | Current rho=0.750; gap=−0.050; extended citation patterns (12 CFR, Reg B, ECOA, TILA, HMDA, ATR) added in W3 but holdout examples don't exercise full discriminating range | ~7k | Not Started |
@@ -65,14 +65,11 @@ excluded from this register.
 dry-run / fake-judge mode in CI. Real API calls to Anthropic and Google
 Gemini have not been validated in the GitHub Actions environment.
 
-**Blockers:**
-- `ANTHROPIC_API_KEY` not configured in GitHub repo secrets
-- `GOOGLE_API_KEY` not configured in GitHub repo secrets
+**Status:** Keys already configured in CI secrets and local `.env`.
 
-**Action required:**
-1. Configure both secrets in GitHub → Settings → Secrets and Variables → Actions
-2. Verify `judge-calibration.yml` `real-judge-run` job triggers correctly
-3. Confirm Spearman rho is logged per-dim in CI output
+**Remaining action:**
+1. Verify `judge-calibration.yml` `real-judge-run` job triggers correctly end-to-end
+2. Confirm Spearman rho is logged per-dim in CI output
 
 ---
 

@@ -11,7 +11,10 @@
   - underwriting_ai::policy_compliance_grader::v1
   - underwriting_ai::fairness_grader::v1
   llm_judge_graders:
-  - uw::rationale_quality_judge::v2
+  - uw::rationale_quality_judge::v3
+  - qna::context_recall_judge::v2
+  - qna::context_precision_judge::v2
+  - qna::answer_relevancy_judge::v2
   ensemble_or_consensus_graders:
   - underwriting_ai::explainability_hybrid::v1
   calibration_refs:
