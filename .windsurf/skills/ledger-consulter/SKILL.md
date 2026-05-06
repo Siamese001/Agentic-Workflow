@@ -44,7 +44,7 @@ Every per-ledger consulting skill MUST:
 - They add at most 500 tokens of precedent text to the prompt context. Top-3 matches only.
 - If `verdict.fts_available == False`, fall back to LIKE search and note reduced confidence.
 
-## Per-Ledger Skills
+## Per-Ledger Skills (24 Total)
 
 | Ledger | Skill | Auto-invoke trigger (indicative) |
 |---|---|---|
@@ -58,6 +58,20 @@ Every per-ledger consulting skill MUST:
 | `progress_eta` | `ledger-consulter-progress-eta` | ProgressReporter init with new operation |
 | `memory_recall` | `ledger-consulter-memory-recall` | Session start (weighting recall list) |
 | `test_selection` | `ledger-consulter-test-selection` | `/adg-test-triage-gate` invocation |
+| `apps_qna_pack_lifecycle` | `ledger-consulter-apps-qna-pack-lifecycle` | apps_qna pack build / lint / route decisions |
+| `eval_harness_outcome` | `ledger-consulter-eval-harness-outcome` | AppSpecificEvaluator run completion |
+| `router_l0_agentic` | `ledger-consulter-router-l0-agentic` | AgenticRouter dispatch logic changes |
+| `router_l0_bandit` | `ledger-consulter-router-l0-bandit` | NamespaceBandit policy / admissibility changes |
+| `router_l0_ensemble` | `ledger-consulter-router-l0-ensemble` | EnsembleRouter weights / MetaLearner changes |
+| `router_l0_path` | `ledger-consulter-router-l0-path` | PathRouter abstain threshold / A/B/C/D rules |
+| `router_l1_c0` | `ledger-consulter-router-l1-c0` | RetrievalRouter intent / SLO / downgrade changes |
+| `router_l2_cascade` | `ledger-consulter-router-l2-cascade` | HealingRouter tier / provider selection |
+| `router_l3_reroute` | `ledger-consulter-router-l3-reroute` | RerouteCeiling threshold / max_reroutes |
+| `router_l3_sovereign_mcp` | `ledger-consulter-router-l3-sovereign-mcp` | SovereignMcpRouter key_id / dispatch logic |
+| `router_l4_uwg` | `ledger-consulter-router-l4-uwg` | DurableWriteGateway commit policy changes |
+| `router_l5_hitl` | `ledger-consulter-router-l5-hitl` | HITLApprovalGate verdict handling / escalation |
+| `router_l6_promo` | `ledger-consulter-router-l6-promo` | PromotionGate min_n_each_arm / z / Wilson CI |
+| `router_l6_regret` | `ledger-consulter-router-l6-regret` | RegretLedger record / top-offender attribution |
 
 ## References
 
