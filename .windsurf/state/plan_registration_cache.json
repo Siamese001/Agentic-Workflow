@@ -1,815 +1,23 @@
 {
-  "fetched_at": "2026-05-03T23:47:24Z",
-  "fetched_at_epoch": 1777852044.0790017,
+  "fetched_at": "2026-05-06T09:40:16Z",
+  "fetched_at_epoch": 1778060416.6128552,
   "plans": {
-    "apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4": {
+    "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
-      "page_id": "35527693-f55c-81a7-bc48-eb60afb2e72c",
+      "page_id": "34b27693-f55c-8102-8b77-dd12fa2e9551",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "apps-core-contract-rectification-a8f3c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8158-b6b5-d78b6295ba55",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "agentic-core-signoff-hardening-b8e2c4": {
-      "status": "In Progress",
-      "page_id": "35527693-f55c-81cc-ac57-ccb31fb8b099",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "runtime-adg-tier1-5-span-naming-a31bcf": {
-      "status": "Not Started",
-      "page_id": "35527693-f55c-81c9-b810-dfd28dafc6e5",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "three-bucket-and-apps-spine-closeout-a4f8c2": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-8158-95ad-d11142db1e84",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "qwen-rollout-followup-burndown-d2a4f8": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81d8-ba30-e3ccce8ebf6a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "three-bucket-wa6-strict-flip-e22a51": {
-      "status": "Waiting",
-      "page_id": "35527693-f55c-81ce-a121-e9c986cd820c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "author-gate-four-req-enforcement-c4d2a8": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f7-b2dd-ce6c44fa0d62",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81d4-aa94-f58ec5c54bcf",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "chromadb-retrieval-remaining-gaps-b4e7c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81a9-9d13-ec3303013d46",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-deferred-activation-w8-a7f4d9": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-816e-9156-ffb06bb41ff0",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-r1b-semantic-cache-hardening-c8d4a2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-811c-8d18-c6c8ad9e44f5",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "backlog-linkage-followup-c2e9f3": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f4-ae89-e265f1e419f2",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-runtime-cert-hardening-a3f8c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81ad-92cc-d2cc1737b517",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-fortknox-evidence-repackage-30f5ab": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-812e-bdd6-fdbda5e3f39e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "unlinked-backlog-orphan": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f0-be31-dad3f36fa674",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "windsurf-maintenance-2026-q2-0f3564": {
+    "llm-as-judge-hardening-anthropic-e7b1a4": {
       "status": "Retired",
-      "page_id": "35527693-f55c-817b-8995-f30a75fabdbc",
+      "page_id": "34b27693-f55c-8102-aa30-e6a6c07eddc6",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "shadow-learning-bestpractice-gap-7b3e4c": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8157-9a2b-ee49c72eb092",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "runtime-adg-tier3-broader-adoption-8f2d1c": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8184-840b-d127739cef40",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "runtime-adg-tier2h-tier3-c4d8e2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8141-bda6-eb06f7472781",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "repo-tech-debt-wave1-b3c8d1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81b8-bc7b-fdbdf829e8a1",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "prompt-assembly-best-practices-gap-b4e1c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81c3-9676-fc1edd615b61",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "phase-b-blocker-burndown-a8c4f1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81d5-a4cb-ca42a854d1fa",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "notion-schema-refactor-cleanup-9f2e4a": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8111-90c2-f1e2c3e2c90d",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "notion-backlog-schema-refactor-7c3d9e": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-819d-82af-ca3b3fdc31a1",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "next-step-gate-ci-workflow-8733a6": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814c-b676-c0f50b2555d2",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "mcp-skill-installation-2ee0d2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-819e-8826-cf6f9eadd802",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "mcp-serial-defense-l2l5-7d4f1a": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81e0-85ad-d33aac3461ea",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "l6-gravity-hybrid-7c4e2a": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814b-9f5a-d5646cba6f3a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "l5-v4-g04-identity-propagation-0b9d22": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-817a-819f-d51e74e23f34",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "judge-base-and-four-judges-c5e1f3": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8185-a9c1-cbd89b9ef571",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "gap-closure-test-impl-b77a11": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8188-8ee0-cf8b89463b92",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "fortknox-certification-discipline-fb2a9e": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8114-a821-f17712d34209",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "deferred-scope-closeout-2026-05-02-e4f8a1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8156-9d08-feee0b68ef78",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "decision-router-policy-tables-b3a4d2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-812d-8749-db4d6f184717",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "chromadb-bge-retrieval-hardening-e9aa09": {
+    "adg-mcp-reopen-hardening": {
       "status": "Retired",
-      "page_id": "35527693-f55c-81f2-93db-e8a189a63ec0",
+      "page_id": "34b27693-f55c-8109-9ed2-cd594d0b3785",
       "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "c0-context-engine-wiring-fix-9e42a1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8100-8c02-d7c7bb6237e6",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "c0-context-assembly-best-practices-b7c3a1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81e5-afad-df9b86f29938",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "author-gate-meta-learning-hardening-a8f2b1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8120-8ac0-c1ca17f37157",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-prior-art-gap-closure-3e3d5b": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8156-add5-d373b62030a9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-write-sovereignty-cleanup-8bf0da": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-816c-9954-fc37dce889bb",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-wiring-ci-dispatcher-hardening-b2f4a1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8128-b035-f09ee991f478",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-truth-expansion-r5w1-a8f3c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81b4-a3e1-fd4cce0d5066",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-tree-sitter-parser-exploration-b1c517": {
-      "status": "Retired",
-      "page_id": "35527693-f55c-8160-bb83-df81c1a5afb1",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-three-graph-harness-e57cc7": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f9-bb49-f79f4a0e147a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-repair-orchestrator-enhancement-02c1fc": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-819a-af88-c2e06326bf43",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-fail-aggregating-gate-chain-9d4e1f": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-815d-8420-cd218a5bf1cf",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-cascading-ratchet-defer-exit-a41828": {
-      "status": "Retired",
-      "page_id": "35527693-f55c-81e2-ba55-f00ee869e85b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-architectural-p0-violations-cleanup-bced9c": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81fb-85bb-dab6f675f1f0",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "author-gate-ssot-consolidation-b7c3e1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8135-a4b2-e7a9b1c9b756",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-dom-real-evidence-enhancement-c7f4d8": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-813c-8ec6-fa6328317402",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-dom-runtime-evidence-real-b4c9e2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81fe-9cd8-ce8a5269987d",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "backlog-plan-linkage-enforcement-a4b2f1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-818a-be17-d5b6d973d7c9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-dom-runtime-harness-followup-f2a7b3": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8131-91b6-c3d71b29f0ff",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "dom007-fec-producers-followup-e9f3c1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81ef-8731-f7fa47702826",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-activation-pathways-d6f9b3": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f6-9697-df6481574d02",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-exec-research-exit-hook-adoption-a8d3c5": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8117-8e49-c298d0ac96b3",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "legacy-yaml-deletion-audit-c8e3a4": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8193-a4ab-f74479dd2704",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "holdout-corpus-authoring-b5d2f6": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81f8-be14-ceea48ececb1",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "judge-spearman-calibration-a7e4c9": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-811d-b9b7-df894d5757aa",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-terminal-3c9f81": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81e7-9937-fab910635902",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-deferred-investigations-b5d9f2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814d-9b22-d610719e4452",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "plan-notion-registration-enforcement-c8f3a1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8115-af98-de7070a7b6e8",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-runtime-domain-enforcement-a7e9d4": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8188-8cc2-db4d69806b3c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8122-943b-ee0ab408793b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-exec-c0-fec-producer-wiring-c2e8a5": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81e6-91d5-c1a167962194",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rfp-c0-fec-producer-wiring-b9d4f1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8102-b707-f8c3c98e1696",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-research-c0-fec-producer-wiring-e7a2c3": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-810d-8f01-e28a13751f26",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-final-8f3e21": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81da-9c0b-d92de38cc961",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-qna-c0-fec-producer-wiring-d4f1e8": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81c5-a1cf-ed223137f5ef",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "p1p2-burndown-followup-a2e4c7": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8114-bb01-ff382b261afb",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-residual-a2d9c7": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8143-ac72-f871f3e7ab93",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-closeout-b7c9d2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8113-9026-fde94d84f318",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-deferred-e4a1b7": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8145-a526-d84e99ef6a6e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "p1p2-burndown-current-3f9a8e": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8104-891d-fcd92b9f267b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "author-gate-ui-conformance-b4d1e2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-811d-a067-e305d643c95b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "ag-queue-drain-b7e4c1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8109-a512-e95007b9dfd9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "author-gate-hardening-a3b8f2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81c4-b527-df74119fa596",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "audit-uncovered-gates-and-remediation-627368": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8170-9b23-dffb676e8668",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "notion-wave-deferral-a3f5c2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-815e-b6d0-ddcd4158dd9e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-eval-harness-parity-f8d4a2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81c5-a048-f486b5064436",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-facet-coverage-calibration-b7d3f2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814b-ace3-e40f54e1eecd",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "apps-rg-jd-facet-extraction-f3c8e1": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-814a-bfa9-d77924185354",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "apps-rg-headline-gate-tuning-d8b4a2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81bb-ad68-dd850cc0c6fe",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "apps-qna-dag-enhancements-e4c7b2": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8187-89b3-eac53541c38f",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-research-blend-baseline-c74787": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-81a3-ab5e-cb5f368e44bb",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-rg-research-consolidation-ad5894": {
-      "status": "Completed",
-      "page_id": "35527693-f55c-8139-8491-d539eb4fe733",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "apps-shared-stub-audit-7dfe16": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-813b-a193-dc43bca7c6ee",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-underwriting-feature-complete-aa79a7": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-819b-8a03-d1d06eddd6d5",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-underwriting-ai-activation-e8a3c5": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81b1-8ab3-d4bb6a51f44e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-completeness-followups-287d2a": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8134-81ad-fd373a3ed284",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "token-burn-followup-f8c2d1": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81c0-8758-ec6e18b42f8f",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "agentic-core-eval-control-audit-backlog-closeout-e7f2a8": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8141-9779-d58e671b5324",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "session-burndown-2026-05-02-c8f3a4": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-819e-8288-e63921848b91",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-completeness-remediation-907fac": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8124-8f32-f2920acd5a2a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "agentic-core-eval-implementation-d4e9c2": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8154-bace-eea76b54c546",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "windsurf-token-burn-augmentation-b7a3f1": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8107-80d8-c832fb46f3e2",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "agentic-core-eval-control-audit-per-module-followup-c8e3f1": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-810c-b9d3-c72a8635be1d",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "d-bucket-burndown-roadmap-f8a3c2": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81ee-b714-dd8eb5ac25bb",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "d-bucket-burndown-e4f2c9": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81e2-b2f5-c8e194d32b0c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-fort-knox-parity-c5d9a3": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8174-9aa8-f9f6aacdc13b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "backlog-keep-triage-d2e4f1": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8144-ae3c-ef1d0b5324d2",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "agentic-core-eval-control-audit-b7d4a2": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81a6-8bdf-dae05c67a98e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps_* Eval/Generation Pattern Rollout — Qwen-32B vLLM Backend": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81cd-916c-dda8d0fe9804",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "wire-sqlite-decision-ledger-e8f3a2": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-810f-9b7c-e8e2cf7579a5",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "fortknox-100pct-static-runtime-gap-9a3d4f": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8181-b22d-d88055d254c9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "runtime-cert-100-percent-completion-e3f1a2": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8194-84cb-e34c42bf0f27",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-dag-coverage-audit-7c3f2a": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-817d-9b89-fd017c929c36",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-folder-taxonomy-unification-b7d4e1": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81b5-936e-f4c7729ee2af",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-hop-substrate-four-apps-b4a2c9": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81a4-b3be-f713ed8b741b",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-e2e-auditability-harness-7c2a91": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-8140-97d8-ece4dd24cf1c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "dormant-facade-cleanup-b2d4f7": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-818f-b3fa-c08c58fcca9f",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-portfolio-integrated-evaluation-7d3a91": {
-      "status": "Completed",
-      "page_id": "35427693-f55c-81c4-a870-f5ed4fe5bcef",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "llm-containment-hooks-rules-c7a91b": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-81c1-8f7f-d51979ceb51c",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-ci-gate-hardening-deferred-b4e3c9": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81f3-beeb-c8e9eaa0006e",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-ci-spine-delegation-gate-438b16": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-81ad-a704-f4edeb931640",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "three-bucket-otel-view-5db409": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-8192-a614-edd251e6c204",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "three-bucket-gap-remediation-069806": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-8194-8b5b-eea7f133b9a9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-three-bucket-authority-model-7e2a91": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-81db-812d-f4eff0b1dd96",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-cross-app-precursors-c94c71": {
-      "status": "Completed",
-      "page_id": "35327693-f55c-8192-a1f8-c85c9baccf30",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-three-bucket-unified-c4f8e2": {
-      "status": "Completed",
-      "page_id": "35227693-f55c-814e-9fc3-dc29e4298be9",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "adg-audit-pipeline-integration-7f2c93": {
-      "status": "Completed",
-      "page_id": "35227693-f55c-818a-b839-d63a3e1538e6",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "test-coverage-hotspots-8f2a1c": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-81e8-b17d-c2af7aaa9f3f",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "agent-deprecation-migration-d7a3f2": {
-      "status": "Retired",
-      "page_id": "34c27693-f55c-8121-96ea-fa5a5d16c4f0",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "l2-execute-v2-agent-conformance-c8e4f1": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-81a7-a107-c1da0fcee715",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "redis-mv-projections-9262a6": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-81bb-9169-ecf6a0f4542d",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "qwen-adoption-waves-a7f3c2": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-8171-b009-d3f9b90a1243",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "notion-backlog-human-scoring-e7a941": {
-      "status": "Retired",
-      "page_id": "34c27693-f55c-818c-a47d-d1975054e704",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "notion-backlog-residual-cleanup-c3d8f2": {
-      "status": "Retired",
-      "page_id": "34c27693-f55c-810d-ae71-d0b5b8c7ddb8",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "post-wave10-roadmap-a1e7f2": {
-      "status": "Retired",
-      "page_id": "34c27693-f55c-8158-9232-e716d09a0f41",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "l0-routing-calibration-gap-audit-b3c9d4": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-81fc-b504-f1d8d6eb1e90",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "exit-eval-spine-code-fb2c19": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-8151-bd12-d59a0be33072",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "exit-eval-spine-gap-ce683b": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-8150-bd9f-d37b39388480",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "exit-eval-spine-deferred-closeout-d5e8b3": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-8181-be49-d8223301e709",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "exit-eval-spine-shadow-wiring-a9c124": {
-      "status": "Completed",
-      "page_id": "34c27693-f55c-81d7-9752-cbf01b5cffc2",
-      "exists_on_disk": false,
       "has_ai_summary": true
     },
     "wave-e-adg-card-projection-2df148": {
@@ -818,9 +26,45 @@
       "exists_on_disk": false,
       "has_ai_summary": true
     },
-    "test-folder-strategy-adg-redo-95893f": {
+    "runtime-hitl-exit-control-c4e7b3": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-81ad-909b-c67efed6f8d5",
+      "page_id": "34b27693-f55c-8121-86e7-fb8f6aa6bd34",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "sc1-audit-to-enforce-promotion-b4e9d7": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-812b-ba73-c87bc03d42bd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "prompt-assembly-few-shot-exemplars-9c4e2b": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-812c-b072-c957f2c2acc6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "hybrid-search-adg-seed-rerank-c58e21": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-812e-872e-eaa15958eaa1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "otel-runtime-adg-ingest-7a3f12": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8131-8d76-d29d5354f90b",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "judge-surface-harmonization-b9d3a7": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8131-927c-f7edf5a21405",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-wiring-ci-hardening-7a5d84": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8147-a149-eb3556949df0",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
@@ -830,10 +74,16 @@
       "exists_on_disk": false,
       "has_ai_summary": true
     },
-    "terminal-cleanup-burndown-a7f2d1": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81d7-b10d-ec3f76d06fbd",
+    "repo-adg-graph-collection-retire-d9f483": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8154-acc3-c946b613e930",
       "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "llm-judge-hardening-followups-f2c8e1": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8161-8ca4-e263d3051b27",
+      "exists_on_disk": true,
       "has_ai_summary": true
     },
     "streamline-constants-territories-d0cb16": {
@@ -848,10 +98,34 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "ssot-consolidation-cleanup-b7f3a1": {
+    "prompt-assembly-reception-hardening-9c4e2b": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-81e2-a805-e43d8d3909e5",
+      "page_id": "34b27693-f55c-8167-9560-f3745cc748a3",
       "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "config-drift-reconciliation-6e83dd": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8167-b067-c673479f9a21",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "antipattern-reclassify-e5a569": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-816c-8da5-d071b8ccf9dd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "llm-judge-hardening-b5e319": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-816f-b2ec-ff5553ac1f00",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "fact-vec-gap-remediation-bf6908": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8172-b140-dd38986b24c5",
+      "exists_on_disk": false,
       "has_ai_summary": true
     },
     "scorer-otel-autosource-layer-b-c5e4d1": {
@@ -860,15 +134,57 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "sc1-audit-to-enforce-promotion-b4e9d7": {
+    "anthropic-alignment-followups": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-812b-ba73-c87bc03d42bd",
+      "page_id": "34b27693-f55c-817c-9142-e7f392738d9e",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "cache-r1ab-residuals-8c4e2a": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-8186-9279-e2b026d2e2f4",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "moe-agentic-architecture-d4e9a2": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-8190-8705-e9e6d1a0d57a",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "runtime-hitl-exit-control-c4e7b3": {
+    "hybrid-search-adg-seed-impl": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-8121-86e7-fb8f6aa6bd34",
+      "page_id": "34b27693-f55c-819f-9f10-d6d52711244b",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "p2-antipattern-burndown-ae0549": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81a1-8253-fd9e6dfaf293",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "p2-burndown-wave-9e4c17": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81a1-9d86-ec5632d8eb9d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p1-antipattern-burndown-8a3f2b": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81a5-8612-f39ae8c41728",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "p1-p4-enforcement-hardening-8a3f2b": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81ab-9dd2-e59a4b4bafde",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "test-folder-strategy-adg-redo-95893f": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-81ad-909b-c67efed6f8d5",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
@@ -878,15 +194,15 @@
       "exists_on_disk": false,
       "has_ai_summary": true
     },
-    "repo-adg-graph-collection-retire-d9f483": {
+    "adg-gap-remediation-wave-plan-ae5b42": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-8154-acc3-c946b613e930",
-      "exists_on_disk": false,
+      "page_id": "34b27693-f55c-81af-b169-ca6b28c81132",
+      "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "query-progress-bar-backlog": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81cd-9e93-f776c7c072e6",
+    "five-tier-governance-model-a3f7c2": {
+      "status": "Retired",
+      "page_id": "34b27693-f55c-81b9-89b4-cc0bde7e1354",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
@@ -902,111 +218,15 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "prompt-assembly-reception-hardening-9c4e2b": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8167-9560-f3745cc748a3",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "prompt-assembly-few-shot-exemplars-9c4e2b": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-812c-b072-c957f2c2acc6",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "p2-burndown-wave-9e4c17": {
+    "query-progress-bar-backlog": {
       "status": "Completed",
-      "page_id": "34b27693-f55c-81a1-9d86-ec5632d8eb9d",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "p2-antipattern-burndown-ae0549": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81a1-8253-fd9e6dfaf293",
+      "page_id": "34b27693-f55c-81cd-9e93-f776c7c072e6",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
-    "p1-p4-enforcement-hardening-8a3f2b": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81ab-9dd2-e59a4b4bafde",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "p1-antipattern-burndown-8a3f2b": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81a5-8612-f39ae8c41728",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "otel-runtime-adg-ingest-7a3f12": {
+    "adg-coverage-hardening-phase0-e6b295": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-8131-8d76-d29d5354f90b",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "moe-agentic-architecture-d4e9a2": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8190-8705-e9e6d1a0d57a",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "llm-judge-hardening-followups-f2c8e1": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8161-8ca4-e263d3051b27",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "llm-judge-hardening-b5e319": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-816f-b2ec-ff5553ac1f00",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "llm-as-judge-hardening-anthropic-e7b1a4": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8102-aa30-e6a6c07eddc6",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "l0-prompt-retrieval-deferred-triage-d3e8f1": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-81ef-9399-e2098ff11def",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "judge-surface-harmonization-b9d3a7": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8131-927c-f7edf5a21405",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "hybrid-search-adg-seed-rerank-c58e21": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-812e-872e-eaa15958eaa1",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "hybrid-search-adg-seed-impl": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-819f-9f10-d6d52711244b",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "harness-enforcement-rename-a8f21c": {
-      "status": "Completed",
-      "page_id": "34b27693-f55c-8102-8b77-dd12fa2e9551",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "five-tier-governance-model-a3f7c2": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-81b9-89b4-cc0bde7e1354",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "fact-vec-gap-remediation-bf6908": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8172-b140-dd38986b24c5",
+      "page_id": "34b27693-f55c-81ce-9d12-ce9705a5ed0b",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
@@ -1016,27 +236,33 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "terminal-cleanup-burndown-a7f2d1": {
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81d7-b10d-ec3f76d06fbd",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
     "config-refactoring-remove-core-a3b2c1": {
       "status": "Retired",
       "page_id": "34b27693-f55c-81d8-b77b-f22fba1b7abd",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "config-drift-reconciliation-6e83dd": {
+    "ssot-consolidation-cleanup-b7f3a1": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-8167-b067-c673479f9a21",
+      "page_id": "34b27693-f55c-81e2-a805-e43d8d3909e5",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "cache-r1ab-residuals-8c4e2a": {
+    "l0-prompt-retrieval-deferred-triage-d3e8f1": {
       "status": "Completed",
-      "page_id": "34b27693-f55c-8186-9279-e2b026d2e2f4",
+      "page_id": "34b27693-f55c-81ef-9399-e2098ff11def",
       "exists_on_disk": false,
       "has_ai_summary": true
     },
-    "antipattern-reclassify-e5a569": {
+    "adg-ci-gate-hardening-deferred-b4e3c9": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-816c-8da5-d071b8ccf9dd",
+      "page_id": "35327693-f55c-81c7-b6da-d75ac8b8d394",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1046,34 +272,1276 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "anthropic-alignment-followups": {
+    "notion-backlog-residual-cleanup-c3d8f2": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-817c-9142-e7f392738d9e",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "adg-wiring-ci-hardening-7a5d84": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8147-a149-eb3556949df0",
-      "exists_on_disk": false,
-      "has_ai_summary": true
-    },
-    "adg-mcp-reopen-hardening": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-8109-9ed2-cd594d0b3785",
+      "page_id": "34c27693-f55c-810d-ae71-d0b5b8c7ddb8",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "adg-gap-remediation-wave-plan-ae5b42": {
+    "agent-deprecation-migration-d7a3f2": {
       "status": "Retired",
-      "page_id": "34b27693-f55c-81af-b169-ca6b28c81132",
+      "page_id": "34c27693-f55c-8121-96ea-fa5a5d16c4f0",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "exit-eval-spine-gap-ce683b": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-8150-bd9f-d37b39388480",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "adg-coverage-hardening-phase0-e6b295": {
-      "status": "Retired",
-      "page_id": "34b27693-f55c-81ce-9d12-ce9705a5ed0b",
+    "exit-eval-spine-code-fb2c19": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-8151-bd12-d59a0be33072",
       "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "post-wave10-roadmap-a1e7f2": {
+      "status": "Retired",
+      "page_id": "34c27693-f55c-8158-9232-e716d09a0f41",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "qwen-adoption-waves-a7f3c2": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-8171-b009-d3f9b90a1243",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "exit-eval-spine-deferred-closeout-d5e8b3": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-8181-be49-d8223301e709",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "notion-backlog-human-scoring-e7a941": {
+      "status": "Retired",
+      "page_id": "34c27693-f55c-818c-a47d-d1975054e704",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l2-execute-v2-agent-conformance-c8e4f1": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-81a7-a107-c1da0fcee715",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "redis-mv-projections-9262a6": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-81bb-9169-ecf6a0f4542d",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "exit-eval-spine-shadow-wiring-a9c124": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-81d7-9752-cbf01b5cffc2",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "test-coverage-hotspots-8f2a1c": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-81e8-b17d-c2af7aaa9f3f",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "l0-routing-calibration-gap-audit-b3c9d4": {
+      "status": "Completed",
+      "page_id": "34c27693-f55c-81fc-b504-f1d8d6eb1e90",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-three-bucket-unified-c4f8e2": {
+      "status": "Completed",
+      "page_id": "35227693-f55c-814e-9fc3-dc29e4298be9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-audit-pipeline-integration-7f2c93": {
+      "status": "Completed",
+      "page_id": "35227693-f55c-818a-b839-d63a3e1538e6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "three-bucket-and-apps-spine-closeout-a4f8c2": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-8158-95ad-d11142db1e84",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-cross-app-precursors-c94c71": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-8192-a1f8-c85c9baccf30",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "three-bucket-otel-view-5db409": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-8192-a614-edd251e6c204",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "three-bucket-gap-remediation-069806": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-8194-8b5b-eea7f133b9a9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-ci-spine-delegation-gate-438b16": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-81ad-a704-f4edeb931640",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "llm-containment-hooks-rules-c7a91b": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-81c1-8f7f-d51979ceb51c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-three-bucket-authority-model-7e2a91": {
+      "status": "Completed",
+      "page_id": "35327693-f55c-81db-812d-f4eff0b1dd96",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "windsurf-token-burn-augmentation-b7a3f1": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8107-80d8-c832fb46f3e2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-eval-control-audit-per-module-followup-c8e3f1": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-810c-b9d3-c72a8635be1d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "wire-sqlite-decision-ledger-e8f3a2": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-810f-9b7c-e8e2cf7579a5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-completeness-remediation-907fac": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8124-8f32-f2920acd5a2a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-completeness-followups-287d2a": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8134-81ad-fd373a3ed284",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-shared-stub-audit-7dfe16": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-813b-a193-dc43bca7c6ee",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-e2e-auditability-harness-7c2a91": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8140-97d8-ece4dd24cf1c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-eval-control-audit-backlog-closeout-e7f2a8": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8141-9779-d58e671b5324",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "backlog-keep-triage-d2e4f1": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8144-ae3c-ef1d0b5324d2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-eval-implementation-d4e9c2": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8154-bace-eea76b54c546",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-fort-knox-parity-c5d9a3": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8174-9aa8-f9f6aacdc13b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-dag-coverage-audit-7c3f2a": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-817d-9b89-fd017c929c36",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "fortknox-100pct-static-runtime-gap-9a3d4f": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8181-b22d-d88055d254c9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "dormant-facade-cleanup-b2d4f7": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-818f-b3fa-c08c58fcca9f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-cert-100-percent-completion-e3f1a2": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-8194-84cb-e34c42bf0f27",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-feature-complete-aa79a7": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-819b-8a03-d1d06eddd6d5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "session-burndown-2026-05-02-c8f3a4": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-819e-8288-e63921848b91",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-hop-substrate-four-apps-b4a2c9": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81a4-b3be-f713ed8b741b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-eval-control-audit-b7d4a2": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81a6-8bdf-dae05c67a98e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-activation-e8a3c5": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81b1-8ab3-d4bb6a51f44e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-folder-taxonomy-unification-b7d4e1": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81b5-936e-f4c7729ee2af",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "token-burn-followup-f8c2d1": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81c0-8758-ec6e18b42f8f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-portfolio-integrated-evaluation-7d3a91": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81c4-a870-f5ed4fe5bcef",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps_* Eval/Generation Pattern Rollout — Qwen-32B vLLM Backend": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81cd-916c-dda8d0fe9804",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "qwen-rollout-followup-burndown-d2a4f8": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81d8-ba30-e3ccce8ebf6a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "d-bucket-burndown-e4f2c9": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81e2-b2f5-c8e194d32b0c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "d-bucket-burndown-roadmap-f8a3c2": {
+      "status": "Completed",
+      "page_id": "35427693-f55c-81ee-b714-dd8eb5ac25bb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c0-context-engine-wiring-fix-9e42a1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8100-8c02-d7c7bb6237e6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rfp-c0-fec-producer-wiring-b9d4f1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8102-b707-f8c3c98e1696",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p1p2-burndown-current-3f9a8e": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8104-891d-fcd92b9f267b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ag-queue-drain-b7e4c1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8109-a512-e95007b9dfd9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-c0-fec-producer-wiring-e7a2c3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-810d-8f01-e28a13751f26",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-schema-refactor-cleanup-9f2e4a": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8111-90c2-f1e2c3e2c90d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-closeout-b7c9d2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8113-9026-fde94d84f318",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "fortknox-certification-discipline-fb2a9e": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8114-a821-f17712d34209",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p1p2-burndown-followup-a2e4c7": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8114-bb01-ff382b261afb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "plan-notion-registration-enforcement-c8f3a1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8115-af98-de7070a7b6e8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-exec-research-exit-hook-adoption-a8d3c5": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8117-8e49-c298d0ac96b3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-r1b-semantic-cache-hardening-c8d4a2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-811c-8d18-c6c8ad9e44f5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-ui-conformance-b4d1e2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-811d-a067-e305d643c95b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "judge-spearman-calibration-a7e4c9": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-811d-b9b7-df894d5757aa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-meta-learning-hardening-a8f2b1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8120-8ac0-c1ca17f37157",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8122-943b-ee0ab408793b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-hop4a-authority-and-judging-c3d7e1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8128-a915-cddfdf97d9e3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-wiring-ci-dispatcher-hardening-b2f4a1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8128-b035-f09ee991f478",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "decision-router-policy-tables-b3a4d2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-812d-8749-db4d6f184717",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-fortknox-evidence-repackage-30f5ab": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-812e-bdd6-fdbda5e3f39e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-dom-runtime-harness-followup-f2a7b3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8131-91b6-c3d71b29f0ff",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-ssot-consolidation-b7c3e1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8135-a4b2-e7a9b1c9b756",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-research-consolidation-ad5894": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8139-8491-d539eb4fe733",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "apps-dom-real-evidence-enhancement-c7f4d8": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-813c-8ec6-fa6328317402",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-adg-tier2h-tier3-c4d8e2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8141-bda6-eb06f7472781",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-residual-a2d9c7": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8143-ac72-f871f3e7ab93",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-deferred-e4a1b7": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8145-a526-d84e99ef6a6e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-jd-facet-extraction-f3c8e1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-814a-bfa9-d77924185354",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "l6-gravity-hybrid-7c4e2a": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-814b-9f5a-d5646cba6f3a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-facet-coverage-calibration-b7d3f2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-814b-ace3-e40f54e1eecd",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "next-step-gate-ci-workflow-8733a6": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-814c-b676-c0f50b2555d2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-deferred-investigations-b5d9f2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-814d-9b22-d610719e4452",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "deferred-scope-closeout-2026-05-02-e4f8a1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8156-9d08-feee0b68ef78",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-prior-art-gap-closure-3e3d5b": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8156-add5-d373b62030a9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "shadow-learning-bestpractice-gap-7b3e4c": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8157-9a2b-ee49c72eb092",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-core-contract-rectification-a8f3c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8158-b6b5-d78b6295ba55",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-fail-aggregating-gate-chain-9d4e1f": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-815d-8420-cd218a5bf1cf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "otel-collector-cert-receipt-b4d2e6": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8134-b573-ed5dfb23a307",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-wave-deferral-a3f5c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-815e-b6d0-ddcd4158dd9e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-tree-sitter-parser-exploration-b1c517": {
+      "status": "Retired",
+      "page_id": "35527693-f55c-8160-bb83-df81c1a5afb1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-write-sovereignty-cleanup-8bf0da": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-816c-9954-fc37dce889bb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-deferred-activation-w8-a7f4d9": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-816e-9156-ffb06bb41ff0",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "audit-uncovered-gates-and-remediation-627368": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8170-9b23-dffb676e8668",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l5-v4-g04-identity-propagation-0b9d22": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-817a-819f-d51e74e23f34",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "windsurf-maintenance-2026-q2-0f3564": {
+      "status": "Retired",
+      "page_id": "35527693-f55c-817b-8995-f30a75fabdbc",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-adg-tier3-broader-adoption-8f2d1c": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8184-840b-d127739cef40",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "judge-base-and-four-judges-c5e1f3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8185-a9c1-cbd89b9ef571",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-dag-enhancements-e4c7b2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8187-89b3-eac53541c38f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-runtime-domain-enforcement-a7e9d4": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8188-8cc2-db4d69806b3c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "gap-closure-test-impl-b77a11": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8188-8ee0-cf8b89463b92",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "backlog-plan-linkage-enforcement-a4b2f1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-818a-be17-d5b6d973d7c9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "legacy-yaml-deletion-audit-c8e3a4": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-8193-a4ab-f74479dd2704",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-repair-orchestrator-enhancement-02c1fc": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-819a-af88-c2e06326bf43",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-backlog-schema-refactor-7c3d9e": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-819d-82af-ca3b3fdc31a1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "mcp-skill-installation-2ee0d2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-819e-8826-cf6f9eadd802",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-blend-baseline-c74787": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81a3-ab5e-cb5f368e44bb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l7-route-family-closure-d3e8f1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81a4-ab9c-dd3f94f46785",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81a7-bc48-eb60afb2e72c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "chromadb-retrieval-remaining-gaps-b4e7c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81a9-9d13-ec3303013d46",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-runtime-cert-hardening-a3f8c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81ad-92cc-d2cc1737b517",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-truth-expansion-r5w1-a8f3c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81b4-a3e1-fd4cce0d5066",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "repo-tech-debt-wave1-b3c8d1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81b8-bc7b-fdbdf829e8a1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-headline-gate-tuning-d8b4a2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81bb-ad68-dd850cc0c6fe",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "prompt-assembly-best-practices-gap-b4e1c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81c3-9676-fc1edd615b61",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-hardening-a3b8f2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81c4-b527-df74119fa596",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-parity-f8d4a2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81c5-a048-f486b5064436",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-c0-fec-producer-wiring-d4f1e8": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81c5-a1cf-ed223137f5ef",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-adg-tier1-5-span-naming-a31bcf": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81c9-b810-dfd28dafc6e5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-signoff-hardening-b8e2c4": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81cc-ac57-ccb31fb8b099",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "three-bucket-wa6-strict-flip-e22a51": {
+      "status": "Waiting",
+      "page_id": "35527693-f55c-81ce-a121-e9c986cd820c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81d4-aa94-f58ec5c54bcf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "phase-b-blocker-burndown-a8c4f1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81d5-a4cb-ca42a854d1fa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-final-8f3e21": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81da-9c0b-d92de38cc961",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "mcp-serial-defense-l2l5-7d4f1a": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81e0-85ad-d33aac3461ea",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-cascading-ratchet-defer-exit-a41828": {
+      "status": "Retired",
+      "page_id": "35527693-f55c-81e2-ba55-f00ee869e85b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c0-context-assembly-best-practices-b7c3a1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81e5-afad-df9b86f29938",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-exec-c0-fec-producer-wiring-c2e8a5": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81e6-91d5-c1a167962194",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-terminal-3c9f81": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81e7-9937-fab910635902",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "dom007-fec-producers-followup-e9f3c1": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81ef-8731-f7fa47702826",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "unlinked-backlog-orphan": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f0-be31-dad3f36fa674",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "chromadb-bge-retrieval-hardening-e9aa09": {
+      "status": "Retired",
+      "page_id": "35527693-f55c-81f2-93db-e8a189a63ec0",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "backlog-linkage-followup-c2e9f3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f4-ae89-e265f1e419f2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-core-standalone-harnesses-f2c7a9": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f5-a8d0-e39e570726aa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-activation-pathways-d6f9b3": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f6-9697-df6481574d02",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-four-req-enforcement-c4d2a8": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f7-b2dd-ce6c44fa0d62",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "holdout-corpus-authoring-b5d2f6": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f8-be14-ceea48ececb1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-three-graph-harness-e57cc7": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81f9-bb49-f79f4a0e147a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-architectural-p0-violations-cleanup-bced9c": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81fb-85bb-dab6f675f1f0",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-dom-runtime-evidence-real-b4c9e2": {
+      "status": "Completed",
+      "page_id": "35527693-f55c-81fe-9cd8-ce8a5269987d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-deferred-scope-2-f3a9c1": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8101-a385-c5655a21ad2c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-entrypoint-purity-recipe-registry-d4f1a8": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8124-ad8a-c4fa8db85609",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-test-coverage-remediation-f5a9c2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8126-b262-cc26c9241b3f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-pa-bom-compiled-artifact-final-b8e2d1": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-812f-8250-eb568326ba2a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-gate-deferred-scope-b8f5e1": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8130-b5c1-cc2da7f07a2d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-deferred-scope-followup-d3f9b2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8133-b1e8-f5c89e271eb9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-deferred-scope-f3c1a9": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8148-8a36-d7f137ce1f7b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-spine-alignment-c0-briefing-2f8a4b": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-814c-a42a-e94af5d22a06",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-spine-deferred-followup-9c3e1a": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8172-8c65-c00b5c92f34f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-signal-enhancements-p2p3-f4b8d1": {
+      "status": "Retired",
+      "page_id": "35627693-f55c-814f-b63f-cf1acf616945",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-gate-remediation-p2-p3-a7e4d9": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8163-b252-f29b5b06e703",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-grounded-spine-refactor-v2-d7e3a1": {
+      "status": "Retired",
+      "page_id": "35627693-f55c-8169-bc80-fd9cd5a2590c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-spine-alignment-a7f4c2": {
+      "status": "Retired",
+      "page_id": "35627693-f55c-8182-866f-fc910485b8ff",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-calibration-holdout-e8f1c4": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-818c-846f-cc0e8bd38597",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-spine-deferred-followup-d4e7b2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-818d-9d13-dd772ea36730",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-pa-deferred-runtime-wiring-b3e9f4": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-818e-8939-d786dc4a401d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-gate-remediation-p0-p3-f8d3c2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8190-8c07-e180c4af41c1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-canonical-wireup-c8a4f2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-8197-ba4d-fb424eccd502",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-pa-hardening-same-grain-a4f7c2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-819a-ac5d-c65e654b3f86",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-plan3-zero-loss-overwrite": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-819e-8687-cf7157ee51cd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-grounded-spine-refactor-f5a2c9": {
+      "status": "Retired",
+      "page_id": "35627693-f55c-819f-a817-f7be00bc1d6a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-deferred-scope-b7e3d2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81a8-bcc5-e8b43444b14d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-holdout-realtraffic-followup-b2d9f3": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81ae-9178-e8f21fde0daa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-spine-alignment-d4e8f2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81af-b48e-f843c10a7cd7",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-deferred-scope-followon-d4e1b9": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81b3-9c3f-f3e5c8aeae21",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps_rg_agentic_spine_refactor_plan": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81b7-b473-d1da9f052cf7",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-gate-100pct-burndown-c9f3d1": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81b9-a7a2-c68b318b458e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "otel-collector-infra-hardening-a6f3b2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81bf-bbb8-debaddb57376",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-bandit-arrow2-closure-d7c4e9": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81c2-b6b2-f6fdf683a773",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-spine-integration-e9c5b3": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81cc-8355-e77861dd0f7e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-canonical-spine-wireup-e7c2a5": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81e5-bc65-dadc1a03d0c3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l2-recipe-adapter-final-core-bound-d9f4a2": {
+      "status": "Completed",
+      "page_id": "35627693-f55c-81ee-a0cb-cd245f57f398",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "underwriting-judge-deferred-scope-d9b2a4": {
+      "status": "Archived",
+      "page_id": "35727693-f55c-81d0-a62e-da81eb606e06",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-deferred-e5-f7a2b1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8110-8027-e728d89038fc",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-pre-response-guard-d3e8a1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8110-9d6f-cea4206f8a94",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-spine-deferred-p2p3-b7c2a1": {
+      "status": "Retired",
+      "page_id": "35727693-f55c-8118-95a8-d62d11d50c25",
+      "exists_on_disk": false,
+      "has_ai_summary": false
+    },
+    "bge-m3-deferred-scope-remaining-c4e7a1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8123-8ad6-e5d5d6ed3b09",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-spine-hardening-d7f3b2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8130-860b-c4230416ab18",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-closeout-impl-b3e7a2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-813c-9540-f2a9cf6216ca",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-plan3-deferred-scope-b9e4c1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8141-848a-f039f0206e61",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-p2p3-deferred-scope-collection": {
+      "status": "Retired",
+      "page_id": "35727693-f55c-8145-94cc-d87b27537889",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l0-cache-deferred-scope-b8e2f4": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81f3-8143-cf31d7e31b51",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-deferred-scope-closeout-a7d2f1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8154-a71f-da2df2bcf5eb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-rationale-judge-deferred-d4e7a2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8155-b5ec-cd6b20963a4a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "deferred-scope-ds2-ds3-ds7-c9e4f1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-815f-81ad-f7a134109bbc",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-d3-rationale-judge-f2c8d5": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8192-937e-f3fe58f8a915",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-agentic-spine-hardening-9d4f2e": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-816e-926f-ec55921e333a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-spine-deferred-e9c5b3": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8177-b103-f5d236c220c3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-remaining-e1e2e3e5-54b6c7": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8179-b25b-cd49e5b19e14",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-deferred-scope-e8b2f4": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-817c-b786-ea6ebe24289c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-e1-index-populate-d4366e": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8193-90ac-c519bb8e1c71",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-l3-workflow-e2c7d9": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8196-a8a2-cb70ced9bced",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-cache-followon-deferred-c7d3a1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8198-8725-ccee33765e40",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-repo-brief-c0-runtime-wiring-f4a8b2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-819b-9157-ce7c4a3440b1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-deferred-scope-followup-8c3e2a": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-819b-a0dc-fc1ec13ae94a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-pipeline-hardening-d7e3f9": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-819f-a38b-f6da45b62da7",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l0-wiring-gap-remediation-f3c9d1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81a4-af1d-cf7fb424274a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-p2p3-deferred-scope-activation": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81a5-b05a-cdbf88797375",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-deferred-scope-b8c1d4": {
+      "status": "In Progress",
+      "page_id": "35727693-f55c-81a8-b81e-e83cdc412290",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-p2p3-deferred-scope-execution": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81a9-be6a-f8fffbf989d4",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "bge-m3-gap-closure-c8f3a2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81bd-8b49-d2e90e13abaa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "underwriting-judge-remaining-deferred-b3c1f9": {
+      "status": "Retired",
+      "page_id": "35727693-f55c-81bc-a2e1-f2c0b501a004",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-hardening-dedup-a8c4f1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81ca-a79e-c9583adcb326",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-plan4-spine-handoff-f2a3c8": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81cd-a975-e5840d3500d5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-signal-enhancements-p2p3-spine-aligned": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81cf-8d8e-f0e0b88c84f9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-production-migration-d4d5-a1b2c3": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81da-b9bf-e1799d9b9470",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-qna-deferred-e1e3e5-3d3708": {
+      "status": "Retired",
+      "page_id": "35727693-f55c-81db-a277-f9d93b7af000",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "bge-m3-deferred-scope-d9f1e3": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81de-a956-d16375655a6d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-infra-prerequisites-unblock-p2p3": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81e5-b930-fbde92aad535",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-eval-harness-phase2-b5f3c1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81ed-9d71-e1ead3735804",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-canonical-emitter-rca-c7f9d1": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81fd-803c-d0055ab65040",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-p3-multi-touch-resurfacing-readiness": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81ff-ab29-df287dc5945a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-judge-calibration-deferred-d4e8f2": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-8140-9e7a-f1b63ebe4fd6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "github-workflows-consolidation-c4f7a9": {
+      "status": "In Progress",
+      "page_id": "35827693-f55c-81b2-a7e9-f48fdf731cd9",
+      "exists_on_disk": true,
       "has_ai_summary": true
     }
   }

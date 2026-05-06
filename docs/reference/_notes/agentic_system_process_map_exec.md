@@ -4,7 +4,8 @@
  [!] SIMPLEST VIABLE PATTERN: deterministic workflow first -> single agent -> multi-agent only
  [i] AGENT CORE = model + tools + instructions + guardrails + evals
  [!] CHEAT RULE: L2 proposes -> Exit clears -> UWG commits -> L4 stores
- [!] CONTROL SPLIT: Runtime Gates decide live proceed/stop | Exit emits one X3 | L5 certifies evidence
+ [!] CONTROL SPLIT: Runtime Gates decide live proceed/stop | Exit emits one X3 | L5 certifies authority
+ [!]                | L7 taps every stage (cross-cutting, parallel) and seals bundle post-run (non-blocking)
 
  ----------------------------------------------------------------------------------------------------------------------
  MODEL ARCHITECTURE & SIGNAL LEGEND
@@ -21,12 +22,24 @@
    ► Emits scorecard / critique / judge evidence
    ► Primary placement: 05 Exit | Light use: 00C, L2 | Post-run: 06 L6
    ► Does NOT route, execute, approve by itself, or write to L4
+
+ [00E] AUDIT PRIMITIVES (OTEL spans, evidence assertions, hash-chain, signer)
+   ► Produces 🟣 audit_trace (spans → merkle root → signature)
+   ► Tap: every stage, parallel | Seal: stage 07 L7, post-run
+   ► Does NOT route, judge, approve, write L4, or gate runtime
  ----------------------------------------------------------------------------------------------------------------------
 ========================================================================================================================
 
 [ L5 POLICY PLANE ] ────────────────────────────────────────────────────────────────────────────────────────────────────
  │ Certifies: authority | policy | registry | origin trust | capability | sandbox | egress | HITL | replay/audit
  │ Does NOT: route | retrieve | execute | emit final runtime disposition | write L4
+ ▼
+
+[ L7 AUDITABILITY PLANE ] ◄── CROSS-CUTTING (taps every stage in parallel; seal is stage 07) ─────────────────────
+ │ Tap (live):  spans at U0 | L1 | L0 | C0 | PA | L2 | Exit | UWG | L4-commit | L6   — parallel, non-blocking
+ │ Seal (post): tap stream → evidence_assertions.jsonl → *.json + *.sha256 + *.merkle.json + *.signature.json
+ │ Trust:       DEVELOPMENT_PROOF → INTEGRITY_PROOF → SIGNED_OFF | compiler is sole status authority | canary required
+ │ Does NOT:    route | retrieve | execute | judge | approve | write L4 | gate runtime | emit X3 | rescue run
  ▼
 
 [ 00C RUNTIME GATES ] ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -165,6 +178,20 @@
 │ - Sends promotion request to UWG                                                                                     │
 │ - No current-run rescue                                                                                              │
 │ - No direct L4 write                                                                                                 │
+└───────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+        │ [span tree + RCA + X3 + UWG commit log]
+        ▼
+┌───────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 7. L7 SEAL (compile bundle)                                                              [00E] 🟣 audit_trace          │
+│                                                                                                                      │
+│ - Closes tap stream (live since U0); compiles → hashes → signs                                                       │
+│ - Inputs:  tap stream + L6 RCA + Exit X3 + UWG commit log                                                            │
+│ - Outputs: evidence_assertions.jsonl → *.json + *.sha256 + *.merkle.json + *.signature.json                          │
+│ - ★ Hostile verifier: compiler is sole status authority; prose "certified" claims invalid without bundle             │
+│ - ★ Mutation-rejection canary required per bundle                                                                    │
+│ - Trust ladder: DEVELOPMENT_PROOF → INTEGRITY_PROOF → SIGNED_OFF                                                      │
+│ - No rescue / No L4 write / No reroute · Failure → bundle DEGRADED, runtime already done                              │
+│ - L7 ≠ L5 (authority to act, pre/intra-run) · L7 ≠ L6 (learns from exhaust, proposes future runs)                    │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ========================================================================================================================
@@ -179,6 +206,7 @@ L4 READ HOTSPOTS:
 - L2: tool/model/connector/sandbox registry snapshots
 - Exit: policy thresholds, grader profiles, proposed mutation metadata
 - L6: completed-run exhaust, eval records, traces
+- L7: prior bundles for diff/regression, signer key registry, mutation canary registry
 
 L5 CERT HOTSPOTS:
 - U0: origin labels / boundary triage
@@ -190,4 +218,16 @@ L5 CERT HOTSPOTS:
 - Exit: safe-to-leave / HITL / egress / replay / audit
 - UWG: policy-replay-audit match before commit
 - L6: governance regression after runtime only
+- L7: signer identity / bundle-schema authority / trust-level transitions
+
+L7 AUDIT TAP POINTS:
+- U0:   request envelope hash, origin label
+- L1:   plan contract hash, intent vector fingerprint
+- L0:   RouteContract id, gate verdicts
+- C0:   evidence contract hash, ACL decisions, citation set
+- PA:   compiled prompt artifact hash, slot ordering
+- L2:   tool-call args/results, heal attempts, proposed_state_diff
+- Exit: judge scorecard, X1/X2/X3 verdicts, HITL escalations
+- UWG:  commit-request → commit-result with policy-replay-audit match
+- L6:   RCA, drift signals, promotion requests
 ========================================================================================================================
