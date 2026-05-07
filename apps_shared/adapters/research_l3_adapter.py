@@ -228,8 +228,47 @@ def invoke_company_research(
     )
 
 
+def fetch_company_brief(
+    *,
+    company: str,
+    job_title: str = "",
+    depth: str = "standard",
+    request_id: str = "",
+    run_id: str = "",
+    trace_id: str = "",
+    artifact_dir: Optional[Path] = None,
+) -> ResearchStepResult:
+    """Unified company brief fetch for apps_lic and apps_rg.
+
+    Single entry point replacing both AppsResearchBridge.fetch() (apps_lic)
+    and direct CompanyBriefEngine invocation (apps_rg). Uses the same
+    spine-enveloped invoke_company_research underneath.
+
+    Args:
+        company: Target company name.
+        job_title: Optional role for context (used by apps_lic).
+        depth: Research depth.
+        request_id: Caller's request ID.
+        run_id: Caller's run ID.
+        trace_id: Caller's trace ID.
+        artifact_dir: Optional directory for receipts.
+
+    Returns:
+        ResearchStepResult — always. Never raises.
+    """
+    return invoke_company_research(
+        company=company,
+        depth=depth,
+        run_id=run_id or f"fetch-{uuid.uuid4().hex[:8]}",
+        request_id=request_id,
+        trace_root=trace_id,
+        artifact_dir=artifact_dir,
+    )
+
+
 __all__ = [
     "ADAPTER_ID",
     "ResearchStepResult",
+    "fetch_company_brief",
     "invoke_company_research",
 ]

@@ -38,8 +38,8 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-------------|-------|-------------|-------------|--------|------------------|
 | W1 | 1.1-1.3 | Spine & C0 wiring, FEC producer | ~8K | ADG healthy, C0 collection exists | ✅ DONE | Manifest + __main__.py skeleton, cert wired |
-| W2 | 2.1-2.4 | Pattern scanner engine, ADG queries | ~10K | ADG MVs available | 🔲 TODO | Pattern extraction from plans/rules/core |
-| W3 | 3.1-3.3 | Delta computation, hardening rule generator | ~8K | Pattern schema defined | 🔲 TODO | Delta report + rule emission working |
+| W2 | 2.1-2.4 | Pattern scanner engine, ADG queries | ~10K | ADG MVs available | ✅ DONE | Pattern extraction from plans/rules/core |
+| W3 | 3.1-3.3 | Delta computation, hardening rule generator | ~8K | Pattern schema defined | ✅ DONE | Delta report + rule emission working |
 | W4 | 4.1-4.3 | GitHub README sync, CLI interface | ~6K | GitHub token available | 🔲 TODO | Auto-PR on pattern drift detected |
 | W5 | 5.1-5.2 | Observability, L6 evaluation wireup | ~5K | OTEL healthy | 🔲 TODO | Exit v6 integration, eval harness registered |
 
@@ -64,13 +64,13 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 | 1.1 | Spine manifest + route claim | spine_manifest.yaml | Route type selection | ~2K | ✅ DONE |
 | 1.2 | __main__.py entrypoint + FEC | __main__.py, cert/ | Cert wiring pattern | ~3K | ✅ DONE |
 | 1.3 | C0 retrieval profile | config/domain_contract/ | Collection definition | ~3K | ✅ DONE |
-| 2.1 | ADG pattern scanner base | engines/pattern_scanner.py | ADG MCP integration | ~3K | 🔲 TODO |
-| 2.2 | Plan file pattern extractor | engines/plan_pattern_engine.py | YAML frontmatter parse | ~3K | 🔲 TODO |
-| 2.3 | Rule pattern extractor | engines/rule_pattern_engine.py | Markdown rule parsing | ~2K | 🔲 TODO |
-| 2.4 | Core layer pattern detector | engines/core_pattern_engine.py | Layer violation queries | ~2K | 🔲 TODO |
-| 3.1 | Pattern schema definition | types/architect_types.py | Schema versioning | ~2K | 🔲 TODO |
-| 3.2 | Delta computation engine | engines/delta_engine.py | Diff against current | ~3K | 🔲 TODO |
-| 3.3 | Hardening rule generator | engines/rule_generator.py | Rule emission format | ~3K | 🔲 TODO |
+| 2.1 | ADG pattern scanner base | engines/pattern_scanner.py | ADG MCP integration | ~3K | ✅ DONE |
+| 2.2 | Plan file pattern extractor | engines/plan_pattern_engine.py | YAML frontmatter parse | ~3K | ✅ DONE |
+| 2.3 | Rule pattern extractor | engines/rule_pattern_engine.py | Markdown rule parsing | ~2K | ✅ DONE |
+| 2.4 | Core layer pattern detector | engines/core_pattern_engine.py | Layer violation queries | ~2K | ✅ DONE |
+| 3.1 | Pattern schema definition | types/architect_types.py | Schema versioning | ~2K | ✅ DONE |
+| 3.2 | Delta computation engine | engines/delta_engine.py | Diff against current | ~3K | ✅ DONE |
+| 3.3 | Hardening rule generator | engines/rule_generator.py | Rule emission format | ~3K | ✅ DONE |
 | 4.1 | README template system | templates/readme_template.md | Section modularity | ~2K | 🔲 TODO |
 | 4.2 | GitHub API integration | integrations/github_sync.py | PR creation | ~2K | 🔲 TODO |
 | 4.3 | CLI interface | cli/architect_cli.py | argparse, dry-run | ~2K | 🔲 TODO |

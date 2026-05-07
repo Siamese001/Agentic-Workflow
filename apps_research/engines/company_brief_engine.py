@@ -112,6 +112,9 @@ class CompanyBriefEngine(BaseResearchEngine):
     ]
 
     def execute(self, input_data: Any) -> Dict[str, Any]:
+        _t0 = time.perf_counter()
+        _sub_stages: list[dict[str, Any]] = []
+
         topic: str = self._extract(input_data, "topic")
         if not topic or not isinstance(topic, str):
             raise ValueError("CompanyBriefEngine requires non-empty 'topic' (company name)")
@@ -119,29 +122,64 @@ class CompanyBriefEngine(BaseResearchEngine):
         raw_depth = str(self._extract(input_data, "depth", default="standard"))
         depth_profile = _resolve_depth_profile(raw_depth)
 
-        # W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — C0 path.
-        # When a canonical depth profile is passed (or resolved from an alias),
-        # use _run_research_adaptive + _build_c0_bundle + _evaluate_c0_pa_gate.
+        # --- Sub-stage: intake ---
+        _t_intake = time.perf_counter()
         jd_context: Dict[str, Any] = self._resolve_jd_context(input_data)
+        _sub_stages.append({
+            "sub_stage_id": "research.intake",
+            "sub_stage_name": "Intake + JD Resolution",
+            "status": "PASS",
+            "duration_ms": round((time.perf_counter() - _t_intake) * 1000, 3),
+            "meta": {"topic": topic, "depth": depth_profile},
+        })
 
+        # --- Sub-stage: research ---
+        _t_research = time.perf_counter()
         if _v2_enabled():
             research_findings = self._run_research_v2(topic=topic, depth=raw_depth)
         else:
             research_findings = self._run_research_adaptive(
                 topic=topic, depth_profile=depth_profile, jd_context=jd_context
             )
+        _sub_stages.append({
+            "sub_stage_id": "research.fetch",
+            "sub_stage_name": "Evidence Retrieval",
+            "status": "PASS",
+            "duration_ms": round((time.perf_counter() - _t_research) * 1000, 3),
+            "meta": {"v2": _v2_enabled()},
+        })
 
+        # --- Sub-stage: JD facets ---
+        _t_jd = time.perf_counter()
         jd_anchor: Optional[Path] = None
         raw_anchor = self._extract(input_data, "jd_anchor", default=None)
         if raw_anchor:
             jd_anchor = Path(raw_anchor) if not isinstance(raw_anchor, Path) else raw_anchor
         jd_facets = self._load_jd_facets(jd_anchor)
+        _sub_stages.append({
+            "sub_stage_id": "research.jd_facets",
+            "sub_stage_name": "JD Facet Extraction",
+            "status": "PASS",
+            "duration_ms": round((time.perf_counter() - _t_jd) * 1000, 3),
+            "meta": {"facets_count": len(jd_facets)},
+        })
 
+        # --- Sub-stage: synthesize ---
+        _t_synth = time.perf_counter()
         profile_cfg = _DEPTH_PROFILES[depth_profile]
         synthesized = self._synthesize(
             topic=topic, findings=research_findings, jd_facets=jd_facets, depth=depth_profile
         )
+        _sub_stages.append({
+            "sub_stage_id": "research.synthesize",
+            "sub_stage_name": "LLM Synthesis",
+            "status": "PASS",
+            "duration_ms": round((time.perf_counter() - _t_synth) * 1000, 3),
+            "meta": {"facets": len(synthesized)},
+        })
 
+        # --- Sub-stage: C0 bundle + gate ---
+        _t_c0 = time.perf_counter()
         c0_bundle = self._build_c0_bundle(
             topic=topic,
             depth_profile=depth_profile,
@@ -156,16 +194,34 @@ class CompanyBriefEngine(BaseResearchEngine):
         c0_bundle["synthesis_guidance"]["gate_verdict"] = gate_verdict
         c0_bundle["synthesis_guidance"]["gate_caveat"] = gate_caveat
         c0_bundle["synthesis_guidance"]["degraded_packet_reason"] = degraded_reason
+        _sub_stages.append({
+            "sub_stage_id": "research.c0_gate",
+            "sub_stage_name": "C0 Bundle + Gate Evaluation",
+            "status": "PASS" if gate_verdict == "PASS" else "FAIL",
+            "duration_ms": round((time.perf_counter() - _t_c0) * 1000, 3),
+            "meta": {"gate_verdict": gate_verdict},
+        })
 
+        # --- Sub-stage: assemble ---
+        _t_assemble = time.perf_counter()
         brief = self._assemble_brief(topic=topic, synthesis=synthesized)
         brief["_c0_bundle"] = c0_bundle
         brief["_depth_profile"] = depth_profile
         brief["_gate_verdict"] = gate_verdict
+        brief["_sub_stages"] = _sub_stages
+        _sub_stages.append({
+            "sub_stage_id": "research.assemble",
+            "sub_stage_name": "Brief Assembly",
+            "status": "PASS",
+            "duration_ms": round((time.perf_counter() - _t_assemble) * 1000, 3),
+            "meta": {},
+        })
 
         self.record_pass(
             f"CompanyBrief assembled for {topic} [{depth_profile}] gate={gate_verdict}",
             data={"facets_synthesized": len(synthesized), "depth_profile": depth_profile,
-                  "gate_verdict": gate_verdict, "jd_present": bool(jd_context)},
+                  "gate_verdict": gate_verdict, "jd_present": bool(jd_context),
+                  "total_ms": round((time.perf_counter() - _t0) * 1000, 1)},
         )
         return brief
 
