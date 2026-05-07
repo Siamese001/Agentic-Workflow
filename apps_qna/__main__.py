@@ -9,10 +9,14 @@ Three modes:
   pack-build dry-run in ``apps_shared.spine_emission.governed_run`` for the
   apps_e2e harness.
 
-- **Product mode** (default): runs the CardPackBuilder CLI as before
-  (build / lint / self-eval / route / init / feedback subcommands).
+- **Product build mode** (``build`` subcommand or default): wraps the real
+  CardPackBuilder.build() in ``governed_run`` with full spine receipts.
+
+- **Auxiliary mode** (lint / route / init / feedback / self-eval): runs
+  the CardPackBuilder CLI as before without spine envelope.
 
 Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.1
+     .windsurf/plans/p2-apps-qna-product-spine-b3e8d2.md
 """
 
 from __future__ import annotations
@@ -31,29 +35,30 @@ def _is_live_interview_mode() -> bool:
     return "--interview" in sys.argv
 
 
+def _is_product_build_mode() -> bool:
+    """True when the subcommand is 'build' or default (no subcommand)."""
+    for arg in sys.argv[1:]:
+        if arg.startswith("-"):
+            continue
+        return arg in ("build",)
+    return True  # default = build
+
+
 def _run_live_interview(argv: list[str]) -> int:
     from apps_qna.live_interview_runtime import run_live_interview
 
     return run_live_interview(argv)
 
 
-def _run_live_cert(argv: list[str]) -> int:
-    """Wrap apps_qna's deterministic pack-build path in spine emission.
-
-    Emits the strict-required receipts (SINGLE_STEP / BYPASSED with prompt
-    assembly) under ``artifacts/apps_qna/runs/<ts>/``. The pack-build work
-    itself is a no-op dry-run here \u2014 the cert surface proves that the
-    app-level runtime contract (route selection, plan shape, exit discipline,
-    OTEL trace) is honored, not the card-pack output quality (which is
-    ledger-backed per constitutional \u00a729).
-    """
+def _build_emission_config():
+    """Shared EmissionConfig for apps_qna product + cert modes."""
     from pathlib import Path
 
-    from apps_shared.spine_emission import EmissionConfig, governed_run
+    from apps_shared.spine_emission import EmissionConfig
     from apps_shared.spine_emission.contracts import L1PlanStep
 
     repo_root = Path(__file__).resolve().parents[1]
-    cfg = EmissionConfig(
+    return EmissionConfig(
         app_name="apps_qna",
         entrypoint_command="python -m apps_qna",
         runs_root=repo_root / "artifacts" / "apps_qna" / "runs",
@@ -68,8 +73,8 @@ def _run_live_cert(argv: list[str]) -> int:
         ],
         plan_rationale=(
             "apps_qna is a deterministic single-step pack builder. The plan is "
-            "hard-coded by route selection: intake \u2192 validate \u2192 assemble \u2192 render "
-            "\u2192 seal. No C0 grounding (templates are deterministic, not retrieval-"
+            "hard-coded by route selection: intake → validate → assemble → render "
+            "→ seal. No C0 grounding (templates are deterministic, not retrieval-"
             "backed); prompt assembly is template-driven."
         ),
         expects_c0_grounding=False,
@@ -80,14 +85,44 @@ def _run_live_cert(argv: list[str]) -> int:
         selected_capability="apps_qna.card_pack_build_v1",
         repo_root=repo_root,
     )
-    # W2.P3 adoption (plan apps-eval-harness-deferred-e4a1b7 W1.P1):
-    # read the cert-route entry's invoke_exit_eval flag and, if true,
-    # invoke the v6 Exit pipeline against the sealed SINGLE_STEP receipts
-    # so the app-specific rubric executes. Fail-soft — Exit disposition
-    # is additional evidence, not a gate on the cert bundle itself.
+
+
+def _run_product_build(argv: list[str]) -> int:
+    """Run the real CardPackBuilder.build() inside governed_run spine envelope."""
+    from apps_shared.spine_emission import governed_run
+
+    cfg = _build_emission_config()
+
+    with governed_run(cfg, cli_args=argv) as gr:
+        with gr.span("prompt_assembly"):
+            gr.mark_stage("prompt_assembly", "ok")
+        with gr.span("L2_execute"):
+            from apps_qna.scripts.run_qna import main as run_main
+
+            _exit_code = run_main(argv)
+            if _exit_code == 0:
+                gr.mark_stage("L2_execute", "ok")
+            else:
+                gr.mark_stage("L2_execute", "fail")
+    return 0
+
+
+def _run_live_cert(argv: list[str]) -> int:
+    """Wrap apps_qna's deterministic pack-build path in spine emission.
+
+    Emits the strict-required receipts (SINGLE_STEP / BYPASSED with prompt
+    assembly) under ``artifacts/apps_qna/runs/<ts>/``. The pack-build work
+    itself is a no-op dry-run here — the cert surface proves that the
+    app-level runtime contract (route selection, plan shape, exit discipline,
+    OTEL trace) is honored, not the card-pack output quality (which is
+    ledger-backed per constitutional §29).
+    """
+    from apps_shared.spine_emission import governed_run
     from apps_shared.cert import maybe_invoke_exit_eval
     from apps_shared.cert.fec_producer import resolve_fec
     import apps_qna.cert  # noqa: F401 — import side-effect: registers FEC producer
+
+    cfg = _build_emission_config()
     cert_route_entry = _load_cert_route_entry(cfg.route_registry_path)
 
     with governed_run(cfg, cli_args=argv) as gr:
@@ -153,6 +188,8 @@ def main() -> int:
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
+    if _is_product_build_mode():
+        return _run_product_build(list(sys.argv[1:]))
     from apps_qna.scripts.run_qna import main as run_main
 
     return int(run_main())
