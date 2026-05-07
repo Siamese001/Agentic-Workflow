@@ -57,6 +57,7 @@ def _get_registry() -> dict[str, dict[str, Any]]:
 def resolve_l2_recipe(
     app_name: str,
     raw_request: dict[str, Any],
+    artifact_dir: Any = None,
 ) -> Callable[[], Any]:
     """Resolve a registered L2 recipe into a composite zero-arg callable.
 
@@ -66,6 +67,14 @@ def resolve_l2_recipe(
         The app identifier (e.g. ``"apps_rg"``).
     raw_request:
         The raw request dict — used to populate step context.
+    artifact_dir:
+        Optional per-run artifact directory (set by the R4 entrypoint).
+        When provided, it is injected into the L2 context as
+        ``context["artifact_dir"]`` so step adapters (e.g. apps_rg's
+        ``GenerateResumeStep``) can write narrative outputs into the
+        same dir the spine writes its receipts.  This unifies spine
+        and narrative artifacts in a single per-run dir — see
+        ``.windsurf/plans/apps-rg-spine-narrative-unification-d8e4a1.md``.
 
     Returns
     -------
@@ -121,6 +130,7 @@ def resolve_l2_recipe(
             "jd_data": jd_data,
             "master_resume_data": master_resume_data,
             "flow_route": flow_route,
+            "artifact_dir": artifact_dir,
         }
         results: list[dict[str, Any]] = []
         for step_cls in step_classes:

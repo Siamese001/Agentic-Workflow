@@ -121,20 +121,31 @@ class GenerateResumeStep:
 
         artifact_dict = _PAGuard.check(context, self.STEP_ID)
 
-        _log.info("[L2 step] %s: starting generate_resume (prompt_id=%s)",
-                  self.STEP_ID, artifact_dict.get("prompt_id", "?"))
-        asyncio.run(_generate())
+        # 2026-05-07 — unify spine + narrative into one dir.  Read
+        # ``artifact_dir`` from context (set by the R4 entrypoint) and pass
+        # it through to ``generate_resume.main`` so the legacy timestamp dir
+        # is bypassed.  Falls back to the legacy mtime-discovery shim when
+        # ``artifact_dir`` is absent (e.g. test harnesses that bypass R4).
+        artifact_dir = context.get("artifact_dir")
+        out_dir: Path | None = Path(artifact_dir) if artifact_dir else None
 
-        runs_root = Path("artifacts/apps_rg/runs")
-        run_dir = None
-        if runs_root.exists():
-            candidates = sorted(
-                (p for p in runs_root.iterdir() if p.is_dir()),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True,
-            )
-            if candidates:
-                run_dir = str(candidates[0])
+        _log.info("[L2 step] %s: starting generate_resume (prompt_id=%s, out_dir=%s)",
+                  self.STEP_ID, artifact_dict.get("prompt_id", "?"), out_dir)
+        asyncio.run(_generate(out_dir=out_dir))
+
+        if out_dir is not None:
+            run_dir = str(out_dir)
+        else:
+            runs_root = Path("artifacts/apps_rg/runs")
+            run_dir = None
+            if runs_root.exists():
+                candidates = sorted(
+                    (p for p in runs_root.iterdir() if p.is_dir()),
+                    key=lambda p: p.stat().st_mtime,
+                    reverse=True,
+                )
+                if candidates:
+                    run_dir = str(candidates[0])
 
         _log.info("[L2 step] %s: complete, run_dir=%s", self.STEP_ID, run_dir)
         return {

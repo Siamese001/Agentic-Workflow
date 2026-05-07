@@ -19,12 +19,9 @@ CACHE_VERSION = "v1"
 REDIS_TIMEOUT_MS = 75
 
 # SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-03
+# NOTE: validation is deferred to MVRedisReader.__init__ so importing this module
+# during pytest collection does not raise RuntimeError and crash the collector.
 _REDIS_URL: str | None = os.getenv("ADG_REDIS_URL")
-if not _REDIS_URL:
-    raise RuntimeError(
-        "ADG_REDIS_URL environment variable is required but not set. "
-        "Set it to your Redis URL (e.g., redis://localhost:6379/0)"
-    )
 
 
 def _redis_key(snapshot_id: str, base: str) -> str:

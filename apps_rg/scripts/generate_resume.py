@@ -185,7 +185,15 @@ def load_data_file(filename: str) -> dict:
         return json.load(f)
 
 
-async def main():
+async def main(out_dir: Path | None = None):
+    """Run resume generation.
+
+    Args:
+        out_dir: Optional override for the output directory. When provided
+            (e.g. by the L2 step adapter passing the spine's ``artifact_dir``),
+            outputs land here instead of the legacy ``runs/<timestamp>/`` path.
+            This unifies spine and narrative artifacts in a single per-run dir.
+    """
     Logger.info("🎯 RESUME GENERATION STARTED...")
     # Install OTEL lifecycle bridge so adg.* DEBUG emissions are buffered as
     # spans and flushed to the runtime ADG store at end-of-run. This closes
@@ -276,10 +284,18 @@ async def main():
         # P4.2 — outputs go under artifacts/apps_rg/runs/<timestamp>/ instead
         # of cluttering apps_rg/scripts/. A `latest.json` mirror points to
         # the most recent run for downstream tools (e.g. DOCX exporter).
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        runs_dir = (
-            Path(__file__).resolve().parents[2] / "artifacts" / "apps_rg" / "runs" / ts
-        )
+        # 2026-05-07: when ``out_dir`` is supplied (e.g. by the L2 step adapter
+        # passing the spine's ``artifact_dir``), use it directly. This unifies
+        # spine and narrative artifacts in a single per-run dir and lets the
+        # spine seal terminal_ret_packet/exit_review_packet/exhaust receipts
+        # alongside the narrative output.
+        if out_dir is not None:
+            runs_dir = Path(out_dir)
+        else:
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            runs_dir = (
+                Path(__file__).resolve().parents[2] / "artifacts" / "apps_rg" / "runs" / ts
+            )
         runs_dir.mkdir(parents=True, exist_ok=True)
         output_path = runs_dir / "generated_resume.json"
         with open(output_path, "w", encoding="utf-8") as f:

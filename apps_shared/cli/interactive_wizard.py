@@ -225,45 +225,78 @@ def run_wizard(
 
     # Interactive TTY path: always prompt directly when stdin is a real terminal.
     if sys.stdin.isatty() and not _force_file:
-        if header:
-            print("=" * 70)
-            print(header)
-            print("=" * 70)
-            print()
-        results: dict[str, dict[str, str | None] | str] = {}
-        for idx, field in enumerate(fields, start=1):
-            label = f"[{idx}/{len(fields)}]"
-            if field.kind == "string":
-                results[field.name] = _prompt_string(field, label)
-            elif field.kind == "multiline_or_file":
-                results[field.name] = _prompt_multiline_or_file(field, label)
-            elif field.kind == "multiline_or_file_or_auto":
-                results[field.name] = _prompt_multiline_or_file_or_auto(field, label)
-        if footer_hint:
-            print(footer_hint)
-        return results
+        try:
+            if header:
+                print("=" * 70)
+                print(header)
+                print("=" * 70)
+                print()
+            results: dict[str, dict[str, str | None] | str] = {}
+            for idx, field in enumerate(fields, start=1):
+                label = f"[{idx}/{len(fields)}]"
+                if field.kind == "string":
+                    results[field.name] = _prompt_string(field, label)
+                elif field.kind == "multiline_or_file":
+                    results[field.name] = _prompt_multiline_or_file(field, label)
+                elif field.kind == "multiline_or_file_or_auto":
+                    results[field.name] = _prompt_multiline_or_file_or_auto(field, label)
+            if footer_hint:
+                print(footer_hint)
+            return results
+        except EOFError:
+            print("\n[wizard] stdin closed unexpectedly — falling back to file-based input flow")
 
     # Non-TTY fallback: file-based template workflow.
     # Check if the user already filled in the template from a previous run.
     file_input = _load_wizard_input_from_file()
     if file_input is not None:
-        # Validate and convert file input to expected shapes
-        file_results: dict[str, dict[str, str | None] | str] = {}
-        for field in fields:
-            val = file_input.get(field.name)
+        # Validate that required fields are actually filled before accepting.
+        # A stale/unfilled template (all required strings blank, all required
+        # multiline blocks empty) must NOT be silently returned — that would
+        # produce empty target_company / target_role and crash downstream.
+        def _field_filled(field: WizardField, val: object) -> bool:
             if field.kind == "string":
-                file_results[field.name] = str(val) if val else ""
-            elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
-                if isinstance(val, dict):
-                    file_results[field.name] = val
-                else:
-                    file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
-        # Clear the file after reading to prevent stale reuse
+                return isinstance(val, str) and val.strip() != ""
+            if field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
+                if not isinstance(val, dict):
+                    return False
+                if val.get("mode") == "auto":
+                    return True
+                if val.get("source"):
+                    return True
+                text = val.get("text")
+                return isinstance(text, str) and text.strip() != ""
+            return True
+
+        all_required_filled = all(
+            _field_filled(field, file_input.get(field.name))
+            for field in fields
+            if field.required
+        )
+        if all_required_filled:
+            # Validate and convert file input to expected shapes
+            file_results: dict[str, dict[str, str | None] | str] = {}
+            for field in fields:
+                val = file_input.get(field.name)
+                if field.kind == "string":
+                    file_results[field.name] = str(val) if val else ""
+                elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
+                    if isinstance(val, dict):
+                        file_results[field.name] = val
+                    else:
+                        file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
+            # Clear the file after reading to prevent stale reuse
+            try:
+                _WIZARD_INPUT_PATH.unlink()
+            except OSError:
+                pass
+            return file_results
+        # Stale/unfilled template — discard and fall through to write+poll.
         try:
             _WIZARD_INPUT_PATH.unlink()
         except OSError:
             pass
-        return file_results
+        print(f"[wizard] discarded stale/unfilled {_WIZARD_INPUT_PATH} — re-templating")
 
     # No TTY and no pre-filled file — write template and poll for user input.
     _write_wizard_template(fields, header)

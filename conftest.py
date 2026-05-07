@@ -226,4 +226,6 @@ _collect_ignore_archived: list[str] = [  # kept for historical reference only
     "tests/runtime/test_l6_observability_recorder_wireup.py",
     "tests/unit/tools/ingestion/test_adg_node_resolver.py",
     "tests/unit/tools/ingestion/test_ingest_code_contextualization.py",
+    # _prompt_jd_interactive extracted to apps_shared/cli in d8275ea810; stale import
+    "tests/unit/apps_rg/test_ds_r7_jd_interactive.py",
 ]
