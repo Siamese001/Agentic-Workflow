@@ -1,0 +1,21 @@
+# apps_architect Fort Knox app-domain contract — threshold profiles
+# Plan: apps-architect-pattern-hardening-d7e4f9 W5.P2.
+- threshold_profile_id: atp::apps_architect::pattern_scan::v1
+  app_id: apps_architect
+  task_class: pattern_scan
+  version: 1.0.0
+  status: active
+  overall_pass_threshold: 0.75
+  risk_tier: standard
+  route_id: apps_architect.pattern_scan_v1
+  unknown_policy: fail_closed
+  abstain_policy: hard
+  hitl_policy: none
+  policy_hash: policy://apps_architect/v1
+  dimension_minimums:
+    pattern_extraction_accuracy: 0.90
+    delta_precision: 0.95
+    rule_usefulness: 0.60
+    sync_success_rate: 0.95
+  source_app_config_ref: apps_architect/config/
+  created_at: '2026-05-07'

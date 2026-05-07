@@ -1,0 +1,19 @@
+# apps_architect Fort Knox app-domain contract — grader roster
+# Plan: apps-architect-pattern-hardening-d7e4f9 W5.P2.
+- grader_roster_id: agr::apps_architect::pattern_scan::v1
+  app_id: apps_architect
+  task_class: pattern_scan
+  version: 1.0.0
+  status: active
+  fallback_behavior: fail_closed
+  deterministic_graders:
+  - architect::pattern_extraction_accuracy_grader::v1
+  - architect::delta_precision_grader::v1
+  - architect::sync_success_rate_grader::v1
+  llm_judge_graders:
+  - architect::rule_usefulness_judge::v1
+  ensemble_or_consensus_graders: []
+  calibration_refs:
+  - calibration://apps_architect/judges/2026-05-initial
+  source_app_config_ref: apps_architect/config/
+  created_at: '2026-05-07'

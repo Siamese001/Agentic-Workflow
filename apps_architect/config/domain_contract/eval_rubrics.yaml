@@ -1,0 +1,43 @@
+# apps_architect Fort Knox app-domain contract — eval rubrics
+# Plan: apps-architect-pattern-hardening-d7e4f9 W5.P2.
+- eval_rubric_id: aer::apps_architect::pattern_scan::v1
+  app_id: apps_architect
+  task_class: pattern_scan
+  version: 1.0.0
+  status: active
+  policy_hash: policy://apps_architect/v1
+  score_dimensions:
+  - dimension_id: pattern_extraction_accuracy
+    description: Patterns extracted match canonical methodology definitions.
+    weight: 0.35
+    grader_type: deterministic
+    min_required_score: 0.90
+    evidence_required: true
+    fail_closed_if_unknown: true
+    taxonomy_class: capability
+  - dimension_id: delta_precision
+    description: Delta false positive rate below 5% threshold.
+    weight: 0.30
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+    taxonomy_class: regression
+  - dimension_id: rule_usefulness
+    description: Generated hardening rules are actionable and referenced.
+    weight: 0.20
+    grader_type: llm_as_judge
+    min_required_score: 0.60
+    evidence_required: true
+    fail_closed_if_unknown: false
+    taxonomy_class: capability
+  - dimension_id: sync_success_rate
+    description: README sync operations succeed without error.
+    weight: 0.15
+    grader_type: deterministic
+    min_required_score: 0.95
+    evidence_required: true
+    fail_closed_if_unknown: true
+    taxonomy_class: regression
+  source_app_config_ref: apps_architect/config/
+  created_at: '2026-05-07'

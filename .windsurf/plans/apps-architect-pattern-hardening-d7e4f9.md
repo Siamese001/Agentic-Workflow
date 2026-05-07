@@ -40,8 +40,8 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 | W1 | 1.1-1.3 | Spine & C0 wiring, FEC producer | ~8K | ADG healthy, C0 collection exists | ✅ DONE | Manifest + __main__.py skeleton, cert wired |
 | W2 | 2.1-2.4 | Pattern scanner engine, ADG queries | ~10K | ADG MVs available | ✅ DONE | Pattern extraction from plans/rules/core |
 | W3 | 3.1-3.3 | Delta computation, hardening rule generator | ~8K | Pattern schema defined | ✅ DONE | Delta report + rule emission working |
-| W4 | 4.1-4.3 | GitHub README sync, CLI interface | ~6K | GitHub token available | 🔲 TODO | Auto-PR on pattern drift detected |
-| W5 | 5.1-5.2 | Observability, L6 evaluation wireup | ~5K | OTEL healthy | 🔲 TODO | Exit v6 integration, eval harness registered |
+| W4 | 4.1-4.3 | GitHub README sync, CLI interface | ~6K | GitHub token available | ✅ DONE | Auto-PR on pattern drift detected |
+| W5 | 5.1-5.2 | Observability, L6 evaluation wireup | ~5K | OTEL healthy | ✅ DONE | Exit v6 integration, eval harness registered |
 
 **Total: ~37K tokens across 5 waves**
 
@@ -71,11 +71,11 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 | 3.1 | Pattern schema definition | types/architect_types.py | Schema versioning | ~2K | ✅ DONE |
 | 3.2 | Delta computation engine | engines/delta_engine.py | Diff against current | ~3K | ✅ DONE |
 | 3.3 | Hardening rule generator | engines/rule_generator.py | Rule emission format | ~3K | ✅ DONE |
-| 4.1 | README template system | templates/readme_template.md | Section modularity | ~2K | 🔲 TODO |
-| 4.2 | GitHub API integration | integrations/github_sync.py | PR creation | ~2K | 🔲 TODO |
-| 4.3 | CLI interface | cli/architect_cli.py | argparse, dry-run | ~2K | 🔲 TODO |
-| 5.1 | OTEL observability | L6_observability/ | Span emission | ~2K | 🔲 TODO |
-| 5.2 | Exit v6 + eval harness | Exit wiring, rubrics | Cert route registry | ~3K | 🔲 TODO |
+| 4.1 | README template system | templates/readme_template.md | Section modularity | ~2K | ✅ DONE |
+| 4.2 | GitHub API integration | integrations/github_sync.py | PR creation | ~2K | ✅ DONE |
+| 4.3 | CLI interface | cli/architect_cli.py | argparse, dry-run | ~2K | ✅ DONE |
+| 5.1 | OTEL observability | L6_observability/ | Span emission | ~2K | ✅ DONE |
+| 5.2 | Exit v6 + eval harness | Exit wiring, rubrics | Cert route registry | ~3K | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 

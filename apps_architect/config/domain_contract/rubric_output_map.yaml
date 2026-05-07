@@ -1,0 +1,59 @@
+# apps_architect rubric output map — declarative L2-receipt -> dim_scores extractor.
+#
+# Plan: apps-architect-pattern-hardening-d7e4f9 W5.P2.
+# Consumed by apps_shared.cert.rubric_output_mapper.map_l2_receipt_to_dim_scores
+# inside apps_architect/__main__.py::_run_live_cert after governed_run seals.
+#
+# Sibling to:
+#   - apps_architect/config/domain_contract/eval_rubrics.yaml (4 rubric dims)
+#   - apps_architect/config/cert_route_registry.yaml (declares this file's path)
+#   - apps_architect/config/domain_contract/grader_roster.yaml (judges)
+#   - apps_architect/cert/fec_producer.py (FEC producer, wired in __main__)
+
+mapper_id: apps_architect.pattern_scan.v1
+app_id: apps_architect
+rubric_id: "aer::apps_architect::pattern_scan::v1"
+version: "1.0.0"
+status: active
+
+dimensions:
+  - dimension_id: pattern_extraction_accuracy
+    score:
+      type: jsonpath
+      path: $.output.pattern_extraction_accuracy.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.pattern_coverage"
+      - jsonpath: $.output.pattern_extraction_accuracy.extracted_count
+        prefix: "extracted:"
+      - jsonpath: $.output.pattern_extraction_accuracy.expected_count
+        prefix: "expected:"
+
+  - dimension_id: delta_precision
+    score:
+      type: jsonpath
+      path: $.output.delta_precision.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.false_positive_rate"
+      - jsonpath: $.output.delta_precision.false_positive_count
+        prefix: "fp:"
+      - jsonpath: $.output.delta_precision.total_delta_entries
+        prefix: "total:"
+
+  - dimension_id: sync_success_rate
+    score:
+      type: jsonpath
+      path: $.output.sync_success_rate.score
+      default: 0.0
+      clamp: [0.0, 1.0]
+    evidence:
+      - literal: "grader=deterministic.sync_attempt"
+      - jsonpath: $.output.sync_success_rate.sync_attempts
+        prefix: "attempts:"
+      - jsonpath: $.output.sync_success_rate.sync_failures
+        prefix: "failures:"
+
+  # rule_usefulness (llm_as_judge) — resolved by registered grader
