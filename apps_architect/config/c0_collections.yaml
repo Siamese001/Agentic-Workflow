@@ -1,0 +1,56 @@
+# apps_architect C0 collection scope definition
+#
+# Plan: apps-architect-deferred-scope-b8e3f1 DW1 DS-2.
+# Defines exact C0 collections for pattern document retrieval.
+# Consumed by C0 context engine when apps_architect runs in grounded mode.
+
+collections:
+  plans_recent:
+    description: "Plan markdown files from the last N days"
+    source_root: ".windsurf/plans/"
+    glob: "*.md"
+    max_files: 200
+    sort_by: "mtime"
+    freshness_days: 30
+    extract:
+      - wave_structure
+      - adg_evidence
+      - fec_wiring
+      - exit_v6
+
+  rules_active:
+    description: "Active rule markdown files"
+    source_root: ".windsurf/rules/"
+    glob: "*.md"
+    max_files: 100
+    sort_by: "name"
+    extract:
+      - trigger_type
+      - hook_references
+      - mcp_usage
+      - skill_references
+
+  core_layer_contracts:
+    description: "ADG-derived layer contracts from agentic_core"
+    source: "adg_snapshot"
+    layers:
+      - L0
+      - L1
+      - L2
+      - L3
+      - L4
+      - L5
+      - L6
+    extract:
+      - layer_separation
+      - composition
+      - violation_hotspots
+
+  adg_snapshots:
+    description: "Recent ADG SQLite snapshots"
+    source_root: "artifacts/adg/"
+    glob: "adg_indexed_*.sqlite"
+    max_files: 5
+    sort_by: "mtime"
+
+schema_version: "1.0"

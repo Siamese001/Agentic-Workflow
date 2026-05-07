@@ -3,18 +3,19 @@
 Plan: ``.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md`` W4.P2.
 
 Flow: detect drift → create branch → commit README → open PR.
-Uses GitHub REST API with token from GITHUB_TOKEN env var.
+Uses GitHub REST API with token resolved via CredentialManager.
 """
 
 from __future__ import annotations
 
 import logging
-import os
 import urllib.request
 import json as _json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from apps_architect.config.credential_manager import CredentialManager
 
 _log = logging.getLogger(__name__)
 
@@ -49,9 +50,9 @@ def _github_request(
         return {"error": str(exc)}
 
 
-def _get_repo_info(token: str | None = None) -> tuple[str, str] | None:
-    """Derive owner/repo from git remote or GITHUB_REPOSITORY env."""
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
+def _get_repo_info(creds: CredentialManager) -> tuple[str, str] | None:
+    """Derive owner/repo from GITHUB_REPOSITORY env var."""
+    repo = creds.get("GITHUB_REPOSITORY", "")
     if "/" in repo:
         owner, _, name = repo.partition("/")
         return owner, name
@@ -61,12 +62,17 @@ def _get_repo_info(token: str | None = None) -> tuple[str, str] | None:
 class GitHubSync:
     """Syncs README changes to GitHub via PR."""
 
-    def __init__(self, token: str | None = None) -> None:
-        self._token = token or os.environ.get("GITHUB_TOKEN", "")
+    def __init__(self, token: str | None = None, creds: CredentialManager | None = None) -> None:
+        self._creds = creds or CredentialManager()
+        self._token = token or self._creds.get("GITHUB_TOKEN")
 
     @property
     def configured(self) -> bool:
         return bool(self._token)
+
+    @property
+    def token_masked(self) -> str:
+        return self._creds.mask("GITHUB_TOKEN")
 
     def create_pr(
         self,
@@ -77,7 +83,7 @@ class GitHubSync:
         if not self._token:
             return {"error": "GITHUB_TOKEN not set", "dry_run": dry_run}
 
-        repo = _get_repo_info(self._token)
+        repo = _get_repo_info(self._creds)
         if not repo:
             return {"error": "Cannot determine repo; set GITHUB_REPOSITORY", "dry_run": dry_run}
 
