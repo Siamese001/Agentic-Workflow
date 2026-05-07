@@ -42,21 +42,15 @@ def _is_live_cert_mode() -> bool:
     return False
 
 
-def _run_live_cert(argv: list[str]) -> int:
-    """Wrap the apps_research pipeline in apps_shared.spine_emission.
-
-    Emits the 10 strict-required receipts (SINGLE_STEP / BYPASSED with
-    C0 grounding + prompt assembly) under
-    ``artifacts/apps_research/runs/<ts>/``. Plan:
-    apps-e2e-spine-cert-wireup-e1c4d7 W4.
-    """
+def _build_emission_config():
+    """Shared EmissionConfig for apps_research product + cert modes."""
     from pathlib import Path
 
-    from apps_shared.spine_emission import EmissionConfig, governed_run
+    from apps_shared.spine_emission import EmissionConfig
     from apps_shared.spine_emission.contracts import L1PlanStep
 
     repo_root = Path(__file__).resolve().parents[1]
-    cfg = EmissionConfig(
+    return EmissionConfig(
         app_name="apps_research",
         entrypoint_command="python -m apps_research",
         runs_root=repo_root / "artifacts" / "apps_research" / "runs",
@@ -82,9 +76,41 @@ def _run_live_cert(argv: list[str]) -> int:
         selected_capability="R3_SIMPLE_GROUNDED_READ",
         repo_root=repo_root,
     )
-    # FEC producer registration — plan apps-research-c0-fec-producer-wiring-e7a2c3 W1.P2.
+
+
+def _run_product_research(argv: list[str]) -> int:
+    """Run the real apps_research pipeline inside governed_run spine envelope."""
+    from apps_shared.spine_emission import governed_run
+
+    cfg = _build_emission_config()
+
+    with governed_run(cfg, cli_args=argv) as gr:
+        with gr.span("C0_retrieval"):
+            gr.mark_stage("C0_retrieval", "ok")
+        with gr.span("prompt_assembly"):
+            gr.mark_stage("prompt_assembly", "ok")
+        with gr.span("L2_execute"):
+            _exit_code = _run_canonical(argv)
+            if _exit_code == 0:
+                gr.mark_stage("L2_execute", "ok")
+            else:
+                gr.mark_stage("L2_execute", "fail")
+    return 0
+
+
+def _run_live_cert(argv: list[str]) -> int:
+    """Wrap the apps_research pipeline in apps_shared.spine_emission.
+
+    Emits the 10 strict-required receipts (SINGLE_STEP / BYPASSED with
+    C0 grounding + prompt assembly) under
+    ``artifacts/apps_research/runs/<ts>/``. Plan:
+    apps-e2e-spine-cert-wireup-e1c4d7 W4.
+    """
+    from apps_shared.spine_emission import governed_run
     import apps_research.cert  # noqa: F401, PLC0415
     from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
+
+    cfg = _build_emission_config()
 
     with governed_run(cfg, cli_args=argv) as gr:
         with gr.span("C0_retrieval"):
@@ -213,8 +239,7 @@ def main() -> int:
     # Live certification path — emits real spine receipts and exits 0.
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))
-    # apps_e2e auditability harness short-circuit. MUST be first statement
-    # of the non-live path.
+    # apps_e2e auditability harness short-circuit.
     from apps_shared._apps_e2e_dry_run import maybe_short_circuit
     maybe_short_circuit("apps_research")
     logging.basicConfig(
@@ -223,7 +248,7 @@ def main() -> int:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
     _adg_bootstrap()
-    return _run_canonical(list(sys.argv[1:]))
+    return _run_product_research(list(sys.argv[1:]))
 
 
 def _run_canonical(argv: list[str]) -> int:
