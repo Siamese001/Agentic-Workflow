@@ -27,6 +27,16 @@ Every one of those failure modes is a **system engineering problem**, not a prom
 
 ---
 
+## What this is *not*
+
+- Not an agent framework. Not another CrewAI / LangGraph / AutoGen wrapper.
+- Not a model fine-tune. Not a prompt library.
+- Not a finished product. It is a **public reference design** for what governed enterprise agentic AI looks like when it has to clear an enterprise control boundary — written so that an SVP Engineering, a CISO, or a Head of Platform can reason about it without trusting screenshots.
+
+The argument the repository makes — and the argument my career makes — is the same one: AI moves into production by becoming **system engineering**, not by becoming a bigger model.
+
+---
+
 ## Best-in-Class Design Patterns Implemented
 
 This is the centerpiece. Each pattern below is a load-bearing structural decision in this codebase — named, isolated, and verifiable in source.
@@ -176,6 +186,23 @@ These are not features — they are **structural invariants** with hooks, gates,
 
 ---
 
+## How This Repository Is Governed
+
+This repository is itself an example of the discipline it argues for. It is governed at four control planes, with each plane catching a different class of failure:
+
+| Control plane | What it catches | SSOT |
+|---|---|---|
+| **AI-time discipline** — Windsurf rules, hooks, skills, workflows | Scope drift, unauthorized edits, missing plan registration, MCP misuse, deferred scope going unrecorded | `.windsurf/` |
+| **Commit-time hygiene** — pre-commit + focused gates | Lint, syntax, plan/report SSOT routing, schema validity | `.pre-commit-config.yaml`, `ops_scripts/ci/check_*.py` |
+| **Repo-wide governance** — ADG CI graph + ratchets | Layer violations, write-sovereignty bypasses, dead imports, anti-pattern regressions, exception-handling drift, registry/policy drift | `tools/generate/generate_full_adg.py`, `artifacts/adg/` |
+| **Runtime evidence** — tests, coverage, OTel-derived witness | Behavioral correctness, replay determinism, runtime trace attestation | `tests/`, `tools/cert/`, `certification/` |
+
+Each plane is **independent of the others**. A test cannot replace a graph gate; a hook cannot replace a test; CI cannot replace AI-time discipline. The layered model is deliberate: **autonomous coding inside an SDLC requires more than one kind of evidence**, because no single evidence kind is honest about all of the failure modes that AI assistance introduces.
+
+For a deeper walk-through of the governance model and the SQL queries a reviewer can run against the ADG snapshot, see [`docs/SVP_ENGINEERING_GOVERNANCE_README.md`](docs/SVP_ENGINEERING_GOVERNANCE_README.md).
+
+---
+
 ## Application Portfolio
 
 Eight apps built on the governed control plane. Every app ships the same governance quartet — a **README**, a **Runbook** (operations), an **SLO** (performance budget), and an **SVP Engineering Review** (architecture certification). Three apps also ship a formal **Threat Model**.
@@ -279,6 +306,7 @@ python ops_scripts/ci/run_architecture_proof.py
 | AI platform engineer | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) | Technical narrative of the control plane: layers, separation of duties, write model, replay |
 | Governance / risk / compliance | [`docs/RUNTIME_CONTROL_PLANE.md`](docs/RUNTIME_CONTROL_PLANE.md) + [`docs/EXECUTIVE_OVERVIEW.md`](docs/EXECUTIVE_OVERVIEW.md) | Read-broad/write-strict model, UWG single-door commit, replay and audit evidence |
 | Deep technical reviewer | [`docs/architecture/REVIEWER_GUIDE.md`](docs/architecture/REVIEWER_GUIDE.md) + this README | Executive walkthrough plus the full architecture, proof pack, and ADRs |
+| CTO / SVP Engineering — governance lens | [`docs/SVP_ENGINEERING_GOVERNANCE_README.md`](docs/SVP_ENGINEERING_GOVERNANCE_README.md) | Why this repo treats AI-time discipline, commit hygiene, ADG CI, and runtime evidence as four independent control planes |
 
 ---
 
@@ -306,6 +334,22 @@ python ops_scripts/ci/run_architecture_proof.py
 
 ### By app
 See the [Application Portfolio](#application-portfolio) table above.
+
+---
+
+## The Public Engineering Arguments
+
+This repository is the evidence behind a small set of public arguments:
+
+1. **The agent is not the product.** The governed runtime around it is. Models are interchangeable; the runtime is the moat.
+2. **Tests prove behavior; the graph proves governability.** Most repos try to make tests carry both jobs. They cannot.
+3. **Lowest viable agency.** Give the agent the smallest amount of autonomy that still solves the problem; prove it; expand only with evidence.
+4. **Decisions are scored, not voted.** Author-Gate scoring (`[0.00–1.00]`, confidence, gap-to-next, dominance rule) replaces "the model picked one".
+5. **Known debt is ratcheted, not normalized.** P0/P1/P2/P3 ratchets fail builds when known debt classes worsen.
+6. **Certification is compiler-only.** No human writes `SIGNED_OFF`. Evidence compiles into a signed Merkle bundle, or it does not exist.
+7. **Runtime governance ≠ static AI policy.** Policy documents do not survive contact with a live agent; runtime gates do.
+
+See [`docs/THOUGHT_LEADERSHIP_INDEX.md`](docs/THOUGHT_LEADERSHIP_INDEX.md) for the long-form series.
 
 ---
 
