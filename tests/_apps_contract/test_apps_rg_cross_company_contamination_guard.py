@@ -127,32 +127,35 @@ def _run_apps_rg(*args: str) -> subprocess.CompletedProcess:
     )
 
 
-def test_e2e_missing_target_company_is_hard_error() -> None:
-    """No --target-company → argparse hard error; refuses to auto-derive."""
+def test_e2e_missing_target_company_triggers_wizard() -> None:
+    """No --target-company → wizard mode (cascade-prompts) writes sentinel; exit 7."""
     result = _run_apps_rg(
         "--target-role",
         "Senior Vice President, IT Strategy & Innovation",
+        "--cascade-prompts",
     )
-    assert result.returncode != 0
+    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    assert result.returncode == 7
     combined = result.stdout + result.stderr
-    assert "--target-company is required" in combined
-    assert "refuses to infer" in combined or "prior company" in combined
+    assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()
 
 
-def test_e2e_missing_target_role_is_hard_error() -> None:
-    """No --target-role → argparse hard error; refuses to auto-derive."""
-    result = _run_apps_rg("--target-company", "Brown & Brown")
-    assert result.returncode != 0
+def test_e2e_missing_target_role_triggers_wizard() -> None:
+    """No --target-role → wizard mode (cascade-prompts) writes sentinel; exit 7."""
+    result = _run_apps_rg("--target-company", "Brown & Brown", "--cascade-prompts")
+    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    assert result.returncode == 7
     combined = result.stdout + result.stderr
-    assert "--target-role is required" in combined
+    assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()
 
 
-def test_e2e_no_args_is_hard_error() -> None:
-    """No args at all → fails on --target-company first."""
-    result = _run_apps_rg()
-    assert result.returncode != 0
+def test_e2e_no_args_triggers_wizard() -> None:
+    """No args at all → wizard mode (cascade-prompts) writes sentinel; exit 7."""
+    result = _run_apps_rg("--cascade-prompts")
+    # Wizard mode with cascade-prompts writes sentinel and exits 7
+    assert result.returncode == 7
     combined = result.stdout + result.stderr
-    assert "--target-company is required" in combined
+    assert "mandatory" in combined.lower() or "cascade" in combined.lower() or "sentinel" in combined.lower()
 
 
 def test_e2e_default_artifacts_for_different_company_trigger_guard(

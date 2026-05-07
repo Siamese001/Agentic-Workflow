@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-06T10:41:13.551692+00:00",
+  "timestamp": "2026-05-07T12:15:22.564264+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 382,
+    "total_tests": 383,
     "passed_tests": 0,
-    "failed_tests": 184,
+    "failed_tests": 185,
     "skipped_tests": 198,
     "exit_status": 1,
     "failed_by_category": {
@@ -197,6 +197,7 @@
         "tests/unit/tools/adg/prompt_assembly/test_c0_bridge_adapter.py",
         "tests/unit/tools/adg/prompt_assembly/test_c0_dispatcher.py",
         "tests/unit/tools/adg/test_backfill_edge_authority_nulls.py",
+        "tests/unit/tools/adg/test_mv_mcp_handlers.py",
         "tests/unit/tools/archive/test_archive_old_adg_sqlite_guard.py",
         "tests/unit/tools/eval/test_ragbench_runner.py",
         "tests/unit/tools/eval/test_ragbench_runner_edge.py",

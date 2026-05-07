@@ -180,6 +180,20 @@ def _build_raw_request(args) -> dict[str, Any]:
         except (json.JSONDecodeError, OSError):
             pass
 
+    # Load master resume data (YAML or JSON) — required by L2 hop_4_generate_resume
+    master_resume_data: dict[str, Any] = {}
+    if candidate_path.exists():
+        try:
+            content = candidate_path.read_text(encoding="utf-8")
+            if candidate_path.suffix.lower() in (".yaml", ".yml"):
+                import yaml  # noqa: PLC0415
+
+                master_resume_data = yaml.safe_load(content) or {}
+            else:
+                master_resume_data = json.loads(content)
+        except Exception:  # noqa: S110,PLC0415,guardian: allow-broad-exception -- fail-soft load
+            pass
+
     raw = {
         "transport": "api",
         "method": "POST",
@@ -196,6 +210,7 @@ def _build_raw_request(args) -> dict[str, Any]:
         "jd_hash": _hash_file_content(jd_path),
         "brief_hash": _hash_file_content(brief_path),
         "resume_hash": _hash_file_content(candidate_path),
+        "master_resume_data": json.dumps(master_resume_data) if master_resume_data else "",  # L2 hop_4_generate_resume requires string
         "policy_hash": _get_current_policy_hash(),
         "blueprint_hash": _get_current_blueprint_hash(),
         "manual_brief": str(brief_path),
@@ -464,21 +479,41 @@ def main() -> None:
     parser.add_argument("--candidate", default=None, help="Candidate profile path")
     parser.add_argument("--target-level", default=None)
     parser.add_argument("--jd", default=None, help="Job description JSON path")
+    parser.add_argument(
+        "--cascade-prompts",
+        action="store_true",
+        help=(
+            "Cascade-orchestrated mode. When mandatory inputs are missing, "
+            "writes a sentinel JSON describing what's needed to "
+            ".windsurf/state/apps_rg_pending.json and exits with code 7. "
+            "Cascade then asks the user via ask_user_question and re-invokes "
+            "apps_rg with all flags. Bypasses the input()-based wizard which "
+            "cannot work under run_command (no chat→stdin bridge)."
+        ),
+    )
     args, _unknown = parser.parse_known_args()
 
-    # ── Interactive wizard (TTY only) ────────────────────────────────────
-    # When stdin is attached to a TTY and any of the 3 mandatory inputs
-    # (company, JD title+description, briefing document) is missing, run a
-    # guided prompt instead of hard-failing. Non-TTY (CI/pipe) keeps the
-    # strict parser.error path below to preserve scripted-run contracts.
+    # ── Cascade-orchestrated mode: emit sentinel + exit 7 if missing ──────
+    # When invoked by Cascade with --cascade-prompts, we replace the input()
+    # wizard with a file-based handshake. Cascade reads the sentinel, asks
+    # the user via ask_user_question (the same channel as Author-Gate),
+    # then re-invokes apps_rg with full flags.
+    if args.cascade_prompts:
+        if _emit_cascade_sentinel_if_needed(args):
+            sys.exit(7)
+        # All inputs present — skip the wizard entirely.
+
+    # ── Interactive wizard (ALWAYS when mandatory inputs missing) ─────────
+    # Hardened 2026-05-06: Wizard fires regardless of TTY status.
+    # In TTY (terminal): Interactive prompts via input()
+    # In non-TTY (IDE): File-based template workflow — writes template,
+    #                   user fills it, re-runs, wizard auto-reads it.
     #
     # The wizard writes JD and briefing to dedicated _interactive_*.json
-    # files (NOT the hand-authored default files) so the cross-company
-    # contamination guard still validates them with the freshly-typed
+    # files (NOT hand-authored default files) so the cross-company
+    # contamination guard validates them with the freshly-typed
     # company name, never with a stale prior-company artifact.
-    if sys.stdin.isatty() and (
-        not args.target_company or not args.target_role or not args.jd
-    ):
+    elif not args.target_company or not args.target_role or not args.jd:
         _interactive_wizard(args)
 
     # ── --target-company and --target-role MUST be supplied explicitly. ──
@@ -509,6 +544,164 @@ def main() -> None:
 
 _WIZARD_JD_PATH = Path("apps_rg/scripts/_interactive_jd.json")
 _WIZARD_BRIEF_PATH = Path("apps_rg/scripts/_interactive_brief.json")
+
+_CASCADE_SENTINEL_PATH = Path(".windsurf/state/apps_rg_pending.json")
+_CASCADE_SENTINEL_SCHEMA_VERSION = "1.0"
+_CASCADE_SENTINEL_EXIT_CODE = 7
+
+
+def _emit_cascade_sentinel_if_needed(args: Any) -> bool:
+    """Emit a sentinel JSON describing missing inputs for Cascade to fill.
+
+    Returns True when the sentinel was written and the caller should exit
+    with code 7. Returns False when all mandatory inputs are present and
+    apps_rg can proceed.
+
+    Cascade-orchestrated handshake (Path B, ADR-pending 2026-05-06):
+
+      1. User asks Cascade to run apps_rg.
+      2. Cascade invokes ``python -m apps_rg --cascade-prompts``.
+      3. apps_rg detects missing fields, writes this sentinel to
+         ``.windsurf/state/apps_rg_pending.json``, exits 7.
+      4. Cascade reads the sentinel, drives ``ask_user_question`` for each
+         missing field (the same channel Author-Gate prompts use), then
+         re-invokes apps_rg with the full flag set.
+
+    The sentinel describes:
+      - which fields are missing
+      - example values
+      - the CLI flag each maps to
+      - available local files for ``--jd`` (so Cascade can offer choices)
+      - the next-invocation template
+    """
+    missing: list[str] = []
+    if not args.target_company:
+        missing.append("target_company")
+    if not args.target_role:
+        missing.append("target_role")
+    if not args.jd:
+        missing.append("jd")
+    if not (args.manual_brief or args.auto_research_tavily or args.auto_research_internal):
+        missing.append("briefing")
+
+    if not missing:
+        return False
+
+    # Enumerate available JD files in apps_rg/scripts/ so Cascade can offer
+    # them as ask_user_question choices instead of free-form typing.
+    jd_dir = Path("apps_rg/scripts")
+    available_jd_files: list[str] = []
+    if jd_dir.is_dir():
+        for p in sorted(jd_dir.iterdir()):
+            name = p.name
+            if not p.is_file() or not name.endswith(".json"):
+                continue
+            # Surface user-facing JD/job_description/jd_* files; skip wizard
+            # scratch files (_interactive_*) and templates (*.example.json).
+            if name.startswith("_") or name.endswith(".example.json"):
+                continue
+            if name.startswith(("jd_", "job_description")):
+                available_jd_files.append(str(p).replace("\\", "/"))
+
+    sentinel = {
+        "schema_version": _CASCADE_SENTINEL_SCHEMA_VERSION,
+        "status": "pending_inputs",
+        "exit_code": _CASCADE_SENTINEL_EXIT_CODE,
+        "missing_fields": missing,
+        "field_specs": {
+            "target_company": {
+                "label": "Target company",
+                "example": "Brown & Brown",
+                "type": "string",
+                "cli_flag": "--target-company",
+                "required": True,
+            },
+            "target_role": {
+                "label": "Target role / job title",
+                "example": "SVP IT Strategy",
+                "type": "string",
+                "cli_flag": "--target-role",
+                "required": True,
+            },
+            "jd": {
+                "label": "Job description source",
+                "type": "file_path",
+                "cli_flag": "--jd",
+                "required": True,
+                "available_files": available_jd_files,
+                "note": (
+                    "Pass a path to a JD JSON. Choose from available_files "
+                    "or supply a custom path."
+                ),
+            },
+            "briefing": {
+                "label": "Company briefing source",
+                "type": "choice",
+                "required": True,
+                "choices": [
+                    {
+                        "id": "auto_research_tavily",
+                        "label": "Auto-research via Tavily (web)",
+                        "cli_flag": "--auto-research-tavily",
+                        "cli_value": None,
+                    },
+                    {
+                        "id": "auto_research_internal",
+                        "label": "Auto-research via apps_research (internal)",
+                        "cli_flag": "--auto-research-internal",
+                        "cli_value": None,
+                    },
+                    {
+                        "id": "manual_brief",
+                        "label": "Path to existing brief JSON",
+                        "cli_flag": "--manual-brief",
+                        "cli_value": "<path-to-brief.json>",
+                    },
+                ],
+            },
+        },
+        "next_invocation_template": (
+            "python -m apps_rg "
+            "--target-company \"<TARGET_COMPANY>\" "
+            "--target-role \"<TARGET_ROLE>\" "
+            "--jd <JD_PATH> "
+            "[--auto-research-tavily | --auto-research-internal | "
+            "--manual-brief <BRIEF_PATH>]"
+        ),
+        "discipline_note": (
+            "apps-rg-interactive-discipline.md: Cascade MUST collect each "
+            "value via ask_user_question — never auto-fill from prior turns, "
+            "session memory, or scanned files. Each field is the user's "
+            "explicit decision."
+        ),
+        "current_args": {
+            "target_company": args.target_company,
+            "target_role": args.target_role,
+            "jd": args.jd,
+            "manual_brief": args.manual_brief,
+            "auto_research_tavily": bool(args.auto_research_tavily),
+            "auto_research_internal": bool(args.auto_research_internal),
+        },
+    }
+
+    _CASCADE_SENTINEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _CASCADE_SENTINEL_PATH.write_text(
+        json.dumps(sentinel, indent=2), encoding="utf-8"
+    )
+    print(
+        f"[cascade-prompts] sentinel written to {_CASCADE_SENTINEL_PATH}",
+        file=sys.stderr,
+    )
+    print(
+        f"[cascade-prompts] missing fields: {', '.join(missing)}",
+        file=sys.stderr,
+    )
+    print(
+        f"[cascade-prompts] exiting with code {_CASCADE_SENTINEL_EXIT_CODE} "
+        "for Cascade handshake.",
+        file=sys.stderr,
+    )
+    return True
 
 
 def _interactive_wizard(args: Any) -> None:

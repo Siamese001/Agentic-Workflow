@@ -144,9 +144,13 @@ class TestArtifactNegativeControl:
 
         import apps_rg.__main__ as rg_main
 
+        # Mock the L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
              mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _raising_pipeline), \
-             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer"]):
+             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cascade-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
+             mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
             # main() should propagate the exception or exit non-zero
             with pytest.raises((SystemExit, RuntimeError)):
@@ -168,9 +172,13 @@ class TestArtifactNegativeControl:
 
         import apps_rg.__main__ as rg_main
 
+        # Mock the L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
              mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _raising_pipeline), \
-             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer"]):
+             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cascade-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
+             mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
             with pytest.raises((SystemExit, RuntimeError)):
                 rg_main.main()
@@ -187,9 +195,13 @@ class TestArtifactNegativeControl:
 
         import apps_rg.__main__ as rg_main
 
+        # Mock the L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
              mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _raising_pipeline), \
-             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer"]):
+             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cascade-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
+             mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
             with pytest.raises((SystemExit, RuntimeError)):
                 rg_main.main()
@@ -210,10 +222,14 @@ class TestArtifactNegativeControl:
 
         import apps_rg.__main__ as rg_main
 
+        # Mock the L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with mock.patch.object(rg_main, "_RUNNER_AVAILABLE", True), \
              mock.patch.object(rg_main, "run_integrated_r4_deterministic_pipeline", _faulting_pipeline), \
              mock.patch.object(rg_main, "R4IntegratedRunResult", _FakeR4Result), \
-             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer"]):
+             mock.patch("sys.argv", ["apps_rg", "--target-company", "TestCo", "--target-role", "Engineer", "--cascade-prompts", "--jd", "apps_rg/scripts/job_description.json", "--manual-brief", "apps_rg/scripts/company_research.json"]), \
+             mock.patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
 
             with pytest.raises(SystemExit) as exc_info:
                 rg_main.main()

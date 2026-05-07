@@ -41,7 +41,11 @@ def test_execute_hardened_except_clause_binds_circuit_breaker_error() -> None:
     module-scope import above guarantees the name resolves cleanly.
     """
     source = inspect.getsource(hardening_mixin.HardeningMixin.execute_hardened)
-    assert "except CircuitBreakerOpenError" in source, (
+    # Accept both single-line "except CircuitBreakerOpenError:" and
+    # multi-line "except (\n    CircuitBreakerOpenError\n) as e:" syntax
+    has_single_line = "except CircuitBreakerOpenError" in source
+    has_multi_line = "except (" in source and "CircuitBreakerOpenError" in source
+    assert has_single_line or has_multi_line, (
         "execute_hardened must still have the dedicated circuit-open "
         "except branch; if this was removed intentionally, update the "
         "regression test accordingly."

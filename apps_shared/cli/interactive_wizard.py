@@ -3,15 +3,16 @@
 Extracted from apps_rg/__main__.py 2026-05-06 (W1 of plan
 apps-rg-vllm-deferred-followup-f7d3a9). Apps that have mandatory target
 inputs which would risk silent cross-target contamination if auto-filled
-can use this helper to prompt the user when stdin is a TTY.
+can use this helper to prompt the user.
 
-When stdin is NOT a TTY (CI, pipe, automation), callers should retain
-their hard-fail path — this helper does NOT replace argparse validation,
-it supplements it for interactive sessions.
+**HARDENED 2026-05-06**: Wizard now ALWAYS fires when mandatory inputs are
+missing — no TTY restriction. In non-TTY environments (IDE, CI), it uses
+a file-based input mechanism: writes a template, user fills it, wizard
+reads it back automatically.
 
 Pattern (sibling rule: ``.windsurf/rules/apps-rg-interactive-discipline.md``):
   1. Parse argparse args
-  2. If sys.stdin.isatty() AND any required field missing → run_wizard()
+  2. If any required field missing → run_wizard() (ALWAYS, not just TTY)
   3. After wizard, run argparse error-checks anyway (for defense in depth)
 
 Usage::
@@ -37,7 +38,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 WizardKind = Literal[
     "string",
@@ -162,6 +163,39 @@ def _prompt_multiline_or_file_or_auto(
     return {"mode": "paste", "text": text, "source": None}
 
 
+_WIZARD_INPUT_PATH = Path("apps_rg/scripts/_wizard_input.json")
+
+
+def _load_wizard_input_from_file() -> dict[str, Any] | None:
+    """Load wizard inputs from the file-based fallback.
+
+    Returns None if file doesn't exist or is invalid.
+    """
+    if not _WIZARD_INPUT_PATH.exists():
+        return None
+    try:
+        import json
+        data = json.loads(_WIZARD_INPUT_PATH.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return data
+    except (json.JSONDecodeError, OSError):
+        pass
+    return None
+
+
+def _write_wizard_template(fields: list[WizardField], header: str) -> None:
+    """Write a template JSON file for the user to fill in."""
+    import json
+    template: dict[str, Any] = {"_comment": header, "_instructions": "Fill in all fields, then save and re-run the command"}
+    for field in fields:
+        if field.kind == "string":
+            template[field.name] = ""
+        elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
+            template[field.name] = {"text": "", "source": None, "mode": "paste"}
+    _WIZARD_INPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _WIZARD_INPUT_PATH.write_text(json.dumps(template, indent=2), encoding="utf-8")
+
+
 def run_wizard(
     fields: list[WizardField],
     *,
@@ -177,45 +211,107 @@ def run_wizard(
       - ``multiline_or_file_or_auto`` → ``{"mode": "auto"|"file"|"paste",
         "text": str, "source": str | None}``
 
+    **HARDENED**: Now works in both TTY and non-TTY environments:
+      - TTY (terminal): Interactive prompts via input()
+      - Non-TTY (IDE): Writes template file, waits for user to fill it,
+        then reads it back automatically on next run.
+
     Caller is responsible for translating the returned dict into argparse
-    namespace updates / file writes / etc. This helper does NOT touch
-    sys.argv or write any files — it only collects user input.
-
-    Raises
-    ------
-    RuntimeError
-        If invoked when ``sys.stdin.isatty()`` is False. Callers must
-        gate the invocation themselves; this error is a defense-in-depth
-        guard.
+    namespace updates / file writes / etc.
     """
-    if not sys.stdin.isatty():
-        raise RuntimeError(
-            "run_wizard requires a TTY; caller must gate on sys.stdin.isatty()"
+    # Force file-based flow when env var is set (Cascade run panel etc. fake a TTY).
+    import os as _os
+    _force_file = _os.environ.get("WIZARD_FILE_MODE") == "1"
+
+    # Interactive TTY path: always prompt directly when stdin is a real terminal.
+    if sys.stdin.isatty() and not _force_file:
+        if header:
+            print("=" * 70)
+            print(header)
+            print("=" * 70)
+            print()
+        results: dict[str, dict[str, str | None] | str] = {}
+        for idx, field in enumerate(fields, start=1):
+            label = f"[{idx}/{len(fields)}]"
+            if field.kind == "string":
+                results[field.name] = _prompt_string(field, label)
+            elif field.kind == "multiline_or_file":
+                results[field.name] = _prompt_multiline_or_file(field, label)
+            elif field.kind == "multiline_or_file_or_auto":
+                results[field.name] = _prompt_multiline_or_file_or_auto(field, label)
+        if footer_hint:
+            print(footer_hint)
+        return results
+
+    # Non-TTY fallback: file-based template workflow.
+    # Check if the user already filled in the template from a previous run.
+    file_input = _load_wizard_input_from_file()
+    if file_input is not None:
+        # Validate and convert file input to expected shapes
+        file_results: dict[str, dict[str, str | None] | str] = {}
+        for field in fields:
+            val = file_input.get(field.name)
+            if field.kind == "string":
+                file_results[field.name] = str(val) if val else ""
+            elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
+                if isinstance(val, dict):
+                    file_results[field.name] = val
+                else:
+                    file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
+        # Clear the file after reading to prevent stale reuse
+        try:
+            _WIZARD_INPUT_PATH.unlink()
+        except OSError:
+            pass
+        return file_results
+
+    # No TTY and no pre-filled file — write template and poll for user input.
+    _write_wizard_template(fields, header)
+    print("=" * 70)
+    print(header)
+    print("=" * 70)
+    print()
+    print("WIZARD INPUT REQUIRED")
+    print()
+    print(f"Template written to: {_WIZARD_INPUT_PATH}")
+    print()
+    print("  1. Open that file in your editor")
+    print("  2. Fill in ALL fields")
+    print("  3. Save it")
+    print()
+    print("Waiting for you to fill the file... (Ctrl+C to abort)")
+
+    import time
+    while True:
+        time.sleep(1)
+        data = _load_wizard_input_from_file()
+        if data is None:
+            continue
+        # Check that at least one mandatory field is non-empty
+        filled = any(
+            (isinstance(v, str) and v.strip()) or
+            (isinstance(v, dict) and (v.get("text") or v.get("source") or v.get("mode") not in (None, "paste")))
+            for k, v in data.items()
+            if not k.startswith("_")
         )
+        if filled:
+            print("  → inputs detected, continuing...")
+            break
 
-    print()
-    print("=" * 70)
-    if header:
-        print(header)
-        print("=" * 70)
-
-    results: dict[str, dict[str, str | None] | str] = {}
-    total = len(fields)
-    for i, field in enumerate(fields, start=1):
-        idx = f"[{i}/{total}]"
+    # Now load and return the filled values.
+    file_results: dict[str, dict[str, str | None] | str] = {}
+    assert data is not None
+    for field in fields:
+        val = data.get(field.name)
         if field.kind == "string":
-            results[field.name] = _prompt_string(field, idx)
-        elif field.kind == "multiline_or_file":
-            results[field.name] = _prompt_multiline_or_file(field, idx)
-        elif field.kind == "multiline_or_file_or_auto":
-            results[field.name] = _prompt_multiline_or_file_or_auto(field, idx)
-        else:  # pragma: no cover — kind is Literal; mypy/runtime guard
-            raise ValueError(f"unknown WizardField kind: {field.kind!r}")
-        print()
-
-    print("=" * 70)
-    if footer_hint:
-        print(footer_hint)
-        print("=" * 70)
-    print()
-    return results
+            file_results[field.name] = str(val) if val else ""
+        elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
+            if isinstance(val, dict):
+                file_results[field.name] = val
+            else:
+                file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
+    try:
+        _WIZARD_INPUT_PATH.unlink()
+    except OSError:
+        pass
+    return file_results

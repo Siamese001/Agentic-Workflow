@@ -98,16 +98,19 @@ class TestR1ACacheAdapter:
         result = check_r1a_cache("somekey", runs_dir=tmp_path)
         assert result is None
 
-    def test_stamp_r1a_cache_writes_key_file(self, tmp_path):
+    def test_stamp_r1a_cache_writes_stamp_file(self, tmp_path):
         from apps_rg.cache.r1a_adapter import stamp_r1a_cache
+        import json
 
         run_dir = tmp_path / "run_003"
         run_dir.mkdir()
         stamp_r1a_cache("testkey", str(run_dir))
 
-        key_file = run_dir / "r1a_key.txt"
-        assert key_file.exists()
-        assert key_file.read_text(encoding="utf-8") == "testkey"
+        # New format writes r1a_stamp.json instead of r1a_key.txt
+        stamp_file = run_dir / "r1a_stamp.json"
+        assert stamp_file.exists()
+        stamp_data = json.loads(stamp_file.read_text(encoding="utf-8"))
+        assert stamp_data["key"] == "testkey"
 
 
 # ---------------------------------------------------------------------------
@@ -134,8 +137,9 @@ class TestMainR1AWiring:
     def test_r1a_cache_hit_exits_without_running_pipeline(self, tmp_path, monkeypatch):
         """When R1A returns a hit, pipeline is never called and sys.exit(0) fires."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: str(tmp_path))
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: str(tmp_path))
         pipeline_called = []
 
         def fake_pipeline(**kwargs):
@@ -144,17 +148,22 @@ class TestMainR1AWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         args = self._make_args(tmp_path)
-        with pytest.raises(SystemExit) as exc_info:
-            m._run_with_args(args, runs_dir=tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit) as exc_info:
+                m._run_with_args(args, runs_dir=tmp_path)
         assert exc_info.value.code == 0
         assert not pipeline_called
 
     def test_r1a_cache_miss_runs_pipeline(self, tmp_path, monkeypatch):
         """When R1A misses, pipeline is called."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
         pipeline_called = []
 
@@ -164,22 +173,27 @@ class TestMainR1AWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         args = self._make_args(tmp_path)
-        with pytest.raises(SystemExit) as exc_info:
-            m._run_with_args(args, runs_dir=tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit) as exc_info:
+                m._run_with_args(args, runs_dir=tmp_path)
         assert exc_info.value.code == 0
         assert pipeline_called
 
     def test_r1a_stamp_called_on_clean_run(self, tmp_path, monkeypatch):
         """After a clean pipeline run, stamp_r1a_cache is called."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
 
-        def fake_stamp(key, run_dir):
+        def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
         monkeypatch.setattr(m, "stamp_r1a_cache", fake_stamp)
@@ -189,22 +203,27 @@ class TestMainR1AWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         args = self._make_args(tmp_path)
-        with pytest.raises(SystemExit):
-            m._run_with_args(args, runs_dir=tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit):
+                m._run_with_args(args, runs_dir=tmp_path)
 
         assert len(stamped_keys) == 1
 
     def test_r1a_stamp_skipped_on_fault(self, tmp_path, monkeypatch):
         """When pipeline returns a fault, stamp is NOT called."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
 
-        def fake_stamp(key, run_dir):
+        def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
         monkeypatch.setattr(m, "stamp_r1a_cache", fake_stamp)
@@ -214,22 +233,27 @@ class TestMainR1AWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         args = self._make_args(tmp_path)
-        with pytest.raises(SystemExit) as exc_info:
-            m._run_with_args(args, runs_dir=tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit) as exc_info:
+                m._run_with_args(args, runs_dir=tmp_path)
         assert exc_info.value.code == 1  # fault → exit 1
         assert not stamped_keys
 
     def test_r1a_stamp_skipped_on_terminal_r5(self, tmp_path, monkeypatch):
         """When pipeline returns terminal_r5=True, stamp is NOT called."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         stamped_keys = []
 
-        def fake_stamp(key, run_dir):
+        def fake_stamp(key, run_dir, **kwargs):
             stamped_keys.append(key)
 
         monkeypatch.setattr(m, "stamp_r1a_cache", fake_stamp)
@@ -239,9 +263,13 @@ class TestMainR1AWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         args = self._make_args(tmp_path)
-        with pytest.raises(SystemExit):
-            m._run_with_args(args, runs_dir=tmp_path)
+        with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+            with pytest.raises(SystemExit):
+                m._run_with_args(args, runs_dir=tmp_path)
         assert not stamped_keys
 
 
@@ -262,11 +290,10 @@ class TestMainR1BWiring:
         args.tenant_id = "default"
         return args
 
-    def test_r1b_not_called_when_env_flag_off(self, tmp_path, monkeypatch):
+    def test_r1b_disabled_by_default(self, tmp_path, monkeypatch):
+        """When SEMANTIC_CACHE_D2_ENABLED is unset or 0, R1B is never called."""
         from apps_rg import __main__ as m
-
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
-        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir: None)
+        from unittest.mock import patch
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "0")
 
         r1b_called = []
@@ -275,22 +302,27 @@ class TestMainR1BWiring:
             r1b_called.append(True)
             return None
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", fake_check_r1b):
             def fake_pipeline(**kwargs):
                 return _fake_r4_result()
 
             monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
             args = self._make_args(tmp_path)
-            with pytest.raises(SystemExit):
-                m._run_with_args(args, runs_dir=tmp_path)
+            with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+                with pytest.raises(SystemExit):
+                    m._run_with_args(args, runs_dir=tmp_path)
 
         assert not r1b_called
 
     def test_r1b_hit_exits_without_running_pipeline(self, tmp_path, monkeypatch):
         """When R1B returns a hit and env flag is on, pipeline is never called."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         pipeline_called = []
@@ -301,19 +333,24 @@ class TestMainR1BWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value={"cached": True}):
             args = self._make_args(tmp_path)
-            with pytest.raises(SystemExit) as exc_info:
-                m._run_with_args(args, runs_dir=tmp_path)
+            with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+                with pytest.raises(SystemExit) as exc_info:
+                    m._run_with_args(args, runs_dir=tmp_path)
             assert exc_info.value.code == 0
             assert not pipeline_called
 
     def test_r1b_miss_runs_pipeline(self, tmp_path, monkeypatch):
         """When R1B misses, pipeline still runs."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
-        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         pipeline_called = []
@@ -324,19 +361,24 @@ class TestMainR1BWiring:
 
         monkeypatch.setattr(m, "run_integrated_r4_deterministic_pipeline", fake_pipeline)
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value=None):
             args = self._make_args(tmp_path)
-            with pytest.raises(SystemExit):
-                m._run_with_args(args, runs_dir=tmp_path)
+            with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+                with pytest.raises(SystemExit):
+                    m._run_with_args(args, runs_dir=tmp_path)
 
         assert pipeline_called
 
     def test_r1b_store_called_on_clean_run_with_chunks(self, tmp_path, monkeypatch):
         """R1B store is called after a clean run when output chunks are available."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
-        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         artifact_dir = tmp_path / "r4_abc"
@@ -355,20 +397,25 @@ class TestMainR1BWiring:
         mock_adapter = MagicMock()
         mock_adapter.store_intent_and_output.return_value = None
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value=None):
             with patch("apps_rg.cache.r1b_adapter.AppsRgR1BCacheAdapter", return_value=mock_adapter):
                 args = self._make_args(tmp_path)
-                with pytest.raises(SystemExit):
-                    m._run_with_args(args, runs_dir=tmp_path, artifact_dir_override=artifact_dir)
+                with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+                    with pytest.raises(SystemExit):
+                        m._run_with_args(args, runs_dir=tmp_path, artifact_dir_override=artifact_dir)
 
         assert mock_adapter.store_intent_and_output.called
 
     def test_r1b_store_skipped_when_no_chunks(self, tmp_path, monkeypatch):
         """R1B store is NOT called when generated_resume.json is absent."""
         from apps_rg import __main__ as m
+        from unittest.mock import patch
 
-        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir: None)
-        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir: None)
+        monkeypatch.setattr(m, "check_r1a_cache", lambda key, runs_dir, **kwargs: None)
+        monkeypatch.setattr(m, "stamp_r1a_cache", lambda key, run_dir, **kwargs: None)
         monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
 
         def fake_pipeline(**kwargs):
@@ -378,11 +425,15 @@ class TestMainR1BWiring:
 
         mock_adapter = MagicMock()
 
+        # Mock L0 prerequisite gate to pass through
+        _mock_prereq_result = {"selected_route": "R1", "reason_codes": [], "briefing_status": "valid"}
+
         with patch("apps_rg.cache.r1b_adapter.check_r1b_for_apps_rg", return_value=None):
             with patch("apps_rg.cache.r1b_adapter.AppsRgR1BCacheAdapter", return_value=mock_adapter):
                 args = self._make_args(tmp_path)
-                with pytest.raises(SystemExit):
-                    m._run_with_args(args, runs_dir=tmp_path)
+                with patch("agentic_core.L0_routing.gates.apps_rg_prerequisite_gate.check_apps_rg_prerequisites", return_value=_mock_prereq_result):
+                    with pytest.raises(SystemExit):
+                        m._run_with_args(args, runs_dir=tmp_path)
 
         assert not mock_adapter.store_intent_and_output.called
 

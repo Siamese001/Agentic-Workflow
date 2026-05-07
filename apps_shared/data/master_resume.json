@@ -15,7 +15,7 @@
     {
       "company": "Unify Consulting",
       "location": "Boca Raton, FL",
-      "title": "SVP Engineering, Chief Agentic AI Officer",
+      "title": "SVP Engineering, Agentic AI Platforms",
       "dates": {"start": "February 2023", "end": "Present"},
       "context": "Led the platform roadmap, core systems architecture, and commercialization of a production-grade generative AI Solution Accelerator within a consulting firm, serving Fortune 500 financial institutions and converting bespoke client delivery into reusable IP deployed across enterprise lines of business.",
       "bullet_pool": [
@@ -46,8 +46,8 @@
         },
         {
           "label": "Platform Commercialization and Engineering Leadership",
-          "text": "Productized core agentic AI primitives into reusable platform services, generating $15M in IP-led revenue and shifting the organization from bespoke engagements to scalable platform economics tied to repeatable production adoption; expanded gross margins by 20%; and scaled the ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
-          "tags": ["productization", "metric-15M-revenue", "metric-20pct-margin", "metric-8-to-28-team", "leadership"]
+          "text": "Productized core agentic AI primitives into reusable platform services, generating $22M in IP-led revenue and shifting the organization from bespoke engagements to scalable platform economics tied to repeatable production adoption; expanded gross margins by 20%; and scaled the ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+          "tags": ["productization", "metric-22M-revenue", "metric-20pct-margin", "metric-8-to-28-team", "leadership"]
         }
       ]
     },

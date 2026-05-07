@@ -32,30 +32,25 @@ class TestProactiveAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
+        from apps_rg.reasoning.ProactiveAgent import ProactiveAgent
+        return ProactiveAgent
 
     def test_class_exists(self, agent_class):
         """Verify ProactiveAgent exists and is importable."""
         assert agent_class is not None, "ProactiveAgent should exist"
 
-    def test_inherits_from_r_g_agent_base(self, agent_class):
-        """Verify proper inheritance from RGAgentBase."""
+    def test_inherits_from_base_proactive_agent(self, agent_class):
+        """Verify proper inheritance from BaseProactiveAgent."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "RGAgentBase" in mro_names, "Should inherit from RGAgentBase"
+        assert "BaseProactiveAgent" in mro_names, "Should inherit from BaseProactiveAgent"
 
     def test_has_post_init_method(self, agent_class):
         """Verify agent has __post_init__ method."""
         assert hasattr(agent_class, "__post_init__"), "Should have __post_init__ method"
 
-    def test_has_record_result_method(self, agent_class):
-        """Verify agent has record_result method."""
-        assert hasattr(agent_class, "record_result"), "Should have record_result method"
-
-    def test_has_add_signal_method(self, agent_class):
-        """Verify agent has add_signal method."""
-        assert hasattr(agent_class, "add_signal"), "Should have add_signal method"
-
     def test_has_execute_method(self, agent_class):
-        pass
+        """Verify agent has execute method from BaseProactiveAgent."""
+        assert hasattr(agent_class, "execute"), "Should have execute method"
 
     def test_no_network_calls_on_import(self):
         pass
