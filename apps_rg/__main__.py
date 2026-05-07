@@ -373,7 +373,7 @@ def _run_with_args(
         sys.exit(0)
 
     # ── W2 / GAP-2: R1B semantic-cache pre-flight (gated by env flag) ──
-    if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
+    if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1") == "1":
         try:
             from apps_rg.cache.r1b_adapter import check_r1b_for_apps_rg
 
@@ -436,7 +436,7 @@ def _run_with_args(
             _log.warning("[apps_rg] R1A stamp failed (fail-soft): %s", _stamp_err)
 
     # ── W4 / GAP-5: R1B post-run store (only on clean execution, gated by env flag) ──
-    if not result.fault and not result.terminal_r5 and os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
+    if not result.fault and not result.terminal_r5 and os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1") == "1":
         try:
             from apps_rg.cache.r1b_adapter import AppsRgR1BCacheAdapter
 

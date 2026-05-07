@@ -707,14 +707,12 @@ class SemanticCacheManager:
         """Initialize Native L2 cache client for persistent Layer 2 storage.
 
         Gated by the ``SEMANTIC_CACHE_D2_ENABLED`` environment variable.
-        Default is ``"0"`` (disabled) so production is fail-closed unless
-        the flag is explicitly set to ``"1"``.  Non-production environments
-        opt-in by exporting ``SEMANTIC_CACHE_D2_ENABLED=1``.
+        Default is ``"1"`` (enabled). Set ``SEMANTIC_CACHE_D2_ENABLED=0`` to disable.
 
         Returns:
             Exception if initialization failed or flag is off, None if successful
         """
-        if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") != "1":
+        if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1") != "1":
             Logger.info(
                 "[HiveMind] Native L2 cache disabled "
                 "(SEMANTIC_CACHE_D2_ENABLED != '1'). Set SEMANTIC_CACHE_D2_ENABLED=1 to enable."
