@@ -56,7 +56,7 @@ These were declared out of scope for the parent plan and remain unaddressed:
 |----------|------|-----------|
 | P1 | GAP-7: Enable D2 by default or add auto-enable logic | ✅ DONE — `6c0bf44` |
 | P2 | GAP-5: Wire apps_qna product mode into spine | ✅ DONE — `2c99705` |
-| P3 | GAP-6: Add spine envelope inside apps_research | Needed for full audit trail |
+| P3 | GAP-6: Add spine envelope inside apps_research | ✅ DONE — `984534a` |
 | P4 | Out-of-scope items | Lower urgency, architectural decisions needed |
 
 ---
