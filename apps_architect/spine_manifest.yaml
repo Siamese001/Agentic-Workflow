@@ -1,0 +1,43 @@
+# apps_architect spine manifest
+#
+# Declares R3_grounded_read route with mandatory C0 retrieval over
+# pattern collections (.windsurf/plans/, agentic_core/, .windsurf/rules/).
+#
+# Format: docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+#         §"Route-Shape Taxonomy for apps_*"
+# Pattern: mirrors apps_research (canonical R3_grounded_read reference).
+# Scanner: tools.analysis.apps_spine_coverage.ROUTE_TYPE_CONTRACT_REQUIREMENTS
+
+schema_version: 1
+app: apps_architect
+
+claimed_routes:
+  - type: R3_grounded_read
+    description: >-
+      Pattern collection and delta analysis over recent methodology.
+      Scans .windsurf/plans/, agentic_core/, and .windsurf/rules/
+      via C0 retrieval to extract canonical patterns, computes drift
+      from current repo state, and emits hardening rules. Output is
+      a sealed pattern-collection artifact carrying grounded citations
+      and delta recommendations. No durable side effect on real-world
+      systems; no CommitRequest in scope.
+    c0_required: true
+    pa_required: true
+    source_collection: architect_pattern_docs
+    notes:
+      - "C0 mandatory — patterns are grounded in actual recent plans/rules"
+      - "No CommitRequest expected — output is documentation + recommendations"
+      - "No build_time_compiler semantics — requests run on demand"
+      - "No formal exception — uses standard GovernedAppRunner substrate"
+
+# References:
+# - apps_research/spine_manifest.yaml  (canonical R3_grounded_read reference)
+# - apps_repo_brief/spine_manifest.yaml  (R3_grounded_read route declaration)
+# - apps_shared/integrations/governed_app_runner.py  (shared substrate)
+# - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
+# - tools/analysis/apps_spine_coverage.py
+
+# Disclaimer (constitutional honesty):
+# This manifest declares STATIC contract-surfacing evidence. It does NOT
+# certify runtime path exercises every contract on every call — that
+# requires OTel-trace ingest, out of scope for static-surfacing migration.

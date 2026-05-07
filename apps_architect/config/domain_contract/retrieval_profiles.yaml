@@ -1,0 +1,24 @@
+# apps_architect Fort Knox app-domain contract — retrieval profile
+- retrieval_profile_id: arp::apps_architect::pattern_scan::v1
+  app_id: apps_architect
+  task_class: pattern_scan
+  version: 1.0.0
+  status: active
+  freshness_class: bounded
+  source_lineage_required: true
+  policy_hash: policy://apps_architect/v1
+  allowed_sources:
+  - plans_recent
+  - rules_active
+  - core_layer_contracts
+  - adg_snapshots
+  prohibited_sources:
+  - open_web_scrape_realtime
+  - data_broker_inferred
+  - pii_data_lake_raw
+  required_evidence_for:
+  - every pattern claim in output
+  acl_requirements:
+  - tenant_scoped
+  source_app_config_ref: apps_architect/config/
+  created_at: '2026-05-07'

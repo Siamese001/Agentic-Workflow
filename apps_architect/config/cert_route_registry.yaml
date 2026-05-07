@@ -1,0 +1,33 @@
+# apps_architect L0 cert-facing route registry.
+#
+# apps_architect's PRODUCT routing lives in route_registry.yaml. This file
+# is a SIBLING dedicated to the apps_e2e certification harness:
+# apps_architect is a SINGLE_STEP R3_SIMPLE_GROUNDED_READ app producing pattern
+# collections and hardening rules, with C0 grounding over plans/rules/core
+# collections and adaptive prompt assembly. The cert entrypoint wraps the
+# deterministic pipeline in apps_shared.spine_emission.governed_run; this route
+# additionally invokes the v6 Exit pipeline so the apps_architect rubric executes.
+#
+# Plan: apps-architect-pattern-hardening-d7e4f9 W1.P2.
+
+app_name: apps_architect
+schema_version: "apps_architect.cert_route_registry/v1"
+
+routes:
+  - route_id: apps_architect.pattern_scan_v1
+    execution_form: SINGLE_STEP
+    l3_required: false
+    invoke_exit_eval: true
+    rubric_output_map_path: apps_architect/config/domain_contract/rubric_output_map.yaml
+    selected_capability: apps_architect.pattern_scan_v1
+    description: >-
+      Direct R3_SIMPLE_GROUNDED_READ pipeline: U0 Intake -> L1 Plan ->
+      L0 Route Decision -> C0 Context Engine (plans/rules/core collections) ->
+      PA Prompt Assembly -> L2 Execute -> FEC Producer -> Exit v6 -> L6.
+      Grounded by retrieved pattern documents via apps_architect.cert.fec_producer.
+    bypass_reason_when_invoked: SINGLE_STEP_ROUTE
+    route_reason: >-
+      L0 selects R3_SIMPLE_GROUNDED_READ because apps_architect is a
+      single-step grounded read path: no L3, no durable writes, no
+      CommitRequest. Pattern extraction is deterministic over C0-retrieved
+      collections.

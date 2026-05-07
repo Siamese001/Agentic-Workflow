@@ -1,0 +1,29 @@
+# apps_architect Fort Knox app-domain contract — input contract
+input_contract_id: aic::apps_architect::pattern_scan::v1
+app_id: apps_architect
+task_class: pattern_scan
+version: 1.0.0
+status: active
+missing_input_behavior: fail_closed
+ambiguity_behavior: escalate
+required_inputs:
+- scan_depth_days
+- tenant_id
+- run_id
+optional_inputs:
+- focus_collections
+- exclusion_patterns
+forbidden_inputs:
+- scraped_proprietary_internal_docs
+- paywalled_content_unauthorized
+input_normalization_rules:
+- trim_whitespace_in_string_fields
+data_boundary_rules:
+- all PII fields must carry tenant_id-scoped ACL
+origin_trust_requirements:
+- 'primary_input: trust_label in {verified_kb,user_attested}'
+validation_rules:
+- scan_depth_days > 0
+- tenant_id non-empty
+source_app_config_ref: apps_architect/config/
+created_at: '2026-05-07'
