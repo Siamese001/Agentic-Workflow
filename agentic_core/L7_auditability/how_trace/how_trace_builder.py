@@ -23,6 +23,7 @@ from agentic_core.L7_auditability.contracts.how_trace import (
     RUNTIME_SUBJECT,
     HowTrace,
     HowTraceStage,
+    SubStageRecord,
     compute_how_trace_digest,
 )
 
@@ -62,6 +63,27 @@ def _file_sha256(path: Path) -> str:
 
 def _ref(filename: str) -> str:
     return f"artifact://{filename}"
+
+
+def _sub_stages_from(
+    payload: Mapping[str, Any], key: str = "sub_stages"
+) -> tuple[SubStageRecord, ...]:
+    """Extract sub-stage records from a payload dict, returning typed tuple."""
+    raw = payload.get(key)
+    if not isinstance(raw, list):
+        return ()
+    result: list[SubStageRecord] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        result.append(SubStageRecord(
+            sub_stage_id=str(item.get("sub_stage_id", "")),
+            sub_stage_name=str(item.get("sub_stage_name", "")),
+            status=str(item.get("status", "UNKNOWN")),  # type: ignore[arg-type]
+            duration_ms=float(item.get("duration_ms", 0.0)),
+            meta=dict(item.get("meta") or {}),
+        ))
+    return tuple(result)
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +195,13 @@ def build_how_trace(
     spine = _read_envelope(artifact_dir / "agentic_core_spine_proof.json")
     uwg_blocked = _read_envelope(artifact_dir / "uwg_blocked_commit_receipt.json")
     uwg_commit = _read_envelope(artifact_dir / "uwg_commit_receipt.json")
+    _run_report_path = artifact_dir / "run_report.json"
+    run_report: Mapping[str, Any] | None = None
+    if _run_report_path.exists():
+        try:
+            run_report = json.loads(_run_report_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            run_report = None
 
     if identity is None or route is None:
         raise ValueError(
@@ -316,6 +345,7 @@ def build_how_trace(
     # ------------------------------------------------------------------
     if grounding_required:
         if c0_evidence is not None:
+            _c0_p = _payload(c0_evidence)
             stages.append(HowTraceStage(
                 **base("C0_CONTEXT", "C0 — Grounding / Final Evidence"),
                 status="RAN",
@@ -329,6 +359,7 @@ def build_how_trace(
                     {"assertion": "no_l4_write", "result": "PASS"},
                 ),
                 hash_bound=bool(_hash(c0_evidence)),
+                sub_stages=_sub_stages_from(_c0_p, "c0_sub_stages"),
             ))
         else:
             gap = "C0_grounding_required_but_no_evidence"
@@ -348,6 +379,7 @@ def build_how_trace(
             str(_payload(c0_bypass).get("bypass_reason"))
             if c0_bypass is not None else ""
         ) or "GROUNDING_NOT_REQUIRED"
+        _c0_bypass_p = _payload(c0_bypass) if c0_bypass is not None else {}
         stages.append(HowTraceStage(
             **base("C0_CONTEXT", "C0 — Grounding / Final Evidence"),
             status="BYPASSED",
@@ -363,6 +395,7 @@ def build_how_trace(
                 {"assertion": "no_retrieval_performed", "result": "PASS"},
             ),
             hash_bound=bool(_hash(c0_bypass)),
+            sub_stages=_sub_stages_from(_c0_bypass_p, "c0_sub_stages"),
         ))
 
     # ------------------------------------------------------------------
@@ -588,6 +621,7 @@ def build_how_trace(
                         {"assertion": "no_l4_write_from_l2", "result": "PASS"},
                     ),
                     hash_bound=bool(_hash(terminal)),
+                    sub_stages=_sub_stages_from(tp, "l2_sub_stages"),
                 ))
         else:
             gap = "R1B_L2_terminal_ret_packet_missing"
@@ -607,6 +641,7 @@ def build_how_trace(
     # EXIT_X3
     # ------------------------------------------------------------------
     if exit_review is not None and x3 is not None:
+        _exit_p = _payload(exit_review)
         stages.append(HowTraceStage(
             **base("EXIT_X3", "Exit — Review Packet & X3 Disposition"),
             status="RAN",
@@ -626,6 +661,7 @@ def build_how_trace(
                 {"assertion": "unknown_never_pass", "result": "PASS"},
             ),
             hash_bound=bool(_hash(exit_review)) and bool(_hash(x3)),
+            sub_stages=_sub_stages_from(_exit_p, "x1_sub_stages"),
         ))
     else:
         gap = "EXIT_X3_packet_or_disposition_missing"
@@ -752,6 +788,44 @@ def build_how_trace(
         and not any(g.startswith(("U0_", "L1_PLAN_", "MW_", "R1B_", "EXIT_", "L6_")) for g in blocking_gaps)
     )
 
+    # ------------------------------------------------------------------
+    # app_recipe_execution — project run_report.json into a readable
+    # summary so readers see what the L2 recipe actually did, not just
+    # the spine's BYPASSED assertion on the orchestration shell.
+    # Present for R4 runs (and any other chain that writes run_report.json);
+    # empty dict for chains that don't.
+    # ------------------------------------------------------------------
+    app_recipe_exec: dict[str, Any] = {}
+    if run_report is not None:
+        rr = run_report  # run_report.json has no envelope wrapper; it IS the payload
+        app_recipe_exec = {
+            "subject": "apps_rg",
+            "note": (
+                "The agentic spine L2_EXECUTE stage is BYPASSED because R4 uses no "
+                "runtime orchestration shell. The apps_rg L2 recipe (static DAG of "
+                "GenerateResumeStep HOPs) ran inside the L2 callable and is reported here."
+            ),
+            "recipe_executed": True,
+            "status": rr.get("status", ""),
+            "final_quality_score": rr.get("final_quality_score"),
+            "ats_valid": rr.get("ats_valid"),
+            "checkpoints": rr.get("checkpoints", []),
+            "retry_iterations": rr.get("retry_iterations"),
+            "overfit_score": (
+                rr.get("overfit_report", {}).get("score")
+                if isinstance(rr.get("overfit_report"), dict) else None
+            ),
+            "gate_failures": (
+                rr.get("narrative", {}).get("gate_failures", [])
+                if isinstance(rr.get("narrative"), dict) else []
+            ),
+            "degraded_sections": (
+                rr.get("narrative", {}).get("degraded_sections", [])
+                if isinstance(rr.get("narrative"), dict) else []
+            ),
+            "run_report_ref": "artifact://run_report.json",
+        }
+
     payload: dict[str, Any] = {
         "schema_version": HOW_TRACE_SCHEMA_VERSION,
         "runtime_subject": RUNTIME_SUBJECT,
@@ -777,6 +851,7 @@ def build_how_trace(
         "verifier_results_ref": "",
         "success": success,
         "blocking_gaps": blocking_gaps,
+        "app_recipe_execution": app_recipe_exec,
     }
     deterministic_digest = compute_how_trace_digest(payload)
 
@@ -806,6 +881,7 @@ def build_how_trace(
         success=success,
         blocking_gaps=tuple(blocking_gaps),
         verifier_results_ref="",
+        app_recipe_execution=app_recipe_exec,
     )
 
 

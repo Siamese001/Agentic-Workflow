@@ -571,6 +571,70 @@ def run_all_x1_gates(packet: ExitReviewPacket) -> list[GateVerdict]:
     return [GATE_EVALUATORS[g](packet) for g in X1_DISPATCH_ORDER]
 
 
+X1_GATE_NAMES: dict[str, str] = {
+    "X1A": "Policy Manifest + Threshold + Grader Roster",
+    "X1B": "Task Completion + Format + Instruction-Follow",
+    "X1C": "Sandbox + Mutation + Side-Effect + Egress",
+    "X1D": "Groundedness + Faithfulness + Citation + Support",
+    "X1E": "Process / Tool / Retry / Handoff",
+    "X1F": "Latency / Cost / Token Budget",
+    "X1G": "Consistency Modifier (pass^k)",
+    "X1H": "Replay & Determinism Integrity",
+    "X1I": "OTEL Span Completeness",
+    "X1J": "Write Eligibility (UWG Pre-Commit)",
+}
+
+
+def run_all_x1_gates_with_sub_stages(
+    packet: ExitReviewPacket,
+) -> tuple[list[GateVerdict], list[Any]]:
+    """Run all X1 gates with sub-stage timing and return verdicts + SubStageRecords.
+
+    Returns (verdicts, sub_stage_records) where sub_stage_records is a list
+    of SubStageRecord-compatible dicts ready for HowTraceStage.sub_stages.
+    """
+    import time as _time
+
+    verdicts: list[GateVerdict] = []
+    sub_stages: list[dict[str, Any]] = []
+
+    for gate_id in X1_DISPATCH_ORDER:
+        t0 = _time.perf_counter()
+        verdict = GATE_EVALUATORS[gate_id](packet)
+        elapsed_ms = (_time.perf_counter() - t0) * 1000.0
+
+        verdicts.append(verdict)
+
+        sub_stages.append({
+            "sub_stage_id": gate_id,
+            "sub_stage_name": X1_GATE_NAMES.get(gate_id, gate_id),
+            "status": _gate_result_to_sub_status(verdict.result),
+            "duration_ms": round(elapsed_ms, 3),
+            "meta": {
+                "score": verdict.score,
+                "threshold": verdict.threshold,
+                "confidence": verdict.confidence,
+                "reason_codes": verdict.reason_codes,
+                "severity": verdict.severity,
+            },
+        })
+
+    return verdicts, sub_stages
+
+
+def _gate_result_to_sub_status(result: Any) -> str:
+    """Map GateResult enum to SubStageStatus string."""
+    mapping = {
+        "PASS": "PASS",
+        "FAIL": "FAIL",
+        "WARN": "WARN",
+        "UNKNOWN": "UNKNOWN",
+        "NOT_APPLICABLE": "NOT_APPLICABLE",
+    }
+    result_str = str(result.value) if hasattr(result, "value") else str(result)
+    return mapping.get(result_str, "UNKNOWN")
+
+
 __all__ = [
     "GATE_EVALUATORS",
     "X1_DISPATCH_ORDER",
@@ -585,4 +649,6 @@ __all__ = [
     "eval_x1i",
     "eval_x1j",
     "run_all_x1_gates",
+    "run_all_x1_gates_with_sub_stages",
+    "X1_GATE_NAMES",
 ]

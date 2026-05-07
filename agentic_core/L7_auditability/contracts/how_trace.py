@@ -25,7 +25,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Final, Literal, Mapping
 
-HOW_TRACE_SCHEMA_VERSION: Final[str] = "1.0"
+HOW_TRACE_SCHEMA_VERSION: Final[str] = "1.1"
 RUNTIME_SUBJECT: Final[str] = "agentic_core"
 EVIDENCE_PLANE: Final[str] = "L7_AUDITABILITY"
 EVIDENCE_PLANE_MODE: Final[str] = "cross_cutting_non_mutating"
@@ -68,6 +68,39 @@ ALLOWED_STAGE_STATUSES: Final[frozenset[str]] = frozenset(
     ("RAN", "BYPASSED", "STRUCTURAL_ONLY", "NOT_APPLICABLE", "FAILED")
 )
 
+SubStageStatus = Literal[
+    "PASS",
+    "FAIL",
+    "WARN",
+    "UNKNOWN",
+    "NOT_APPLICABLE",
+    "BYPASSED",
+]
+
+
+@dataclass(frozen=True)
+class SubStageRecord:
+    """One sub-stage record inside a HowTraceStage.
+
+    Captures fine-grained execution detail: which sub-gate/step ran,
+    its outcome, timing, and optional metadata (score, threshold, etc.).
+    """
+
+    sub_stage_id: str
+    sub_stage_name: str
+    status: SubStageStatus
+    duration_ms: float = 0.0
+    meta: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "sub_stage_id": self.sub_stage_id,
+            "sub_stage_name": self.sub_stage_name,
+            "status": self.status,
+            "duration_ms": self.duration_ms,
+            "meta": self.meta,
+        }
+
 
 @dataclass(frozen=True)
 class HowTraceStage:
@@ -99,6 +132,7 @@ class HowTraceStage:
     blocking_gaps: tuple[str, ...] = ()
     bypass_reason: str = ""
     structural_only_reason: str = ""
+    sub_stages: tuple[SubStageRecord, ...] = ()
 
     def __post_init__(self) -> None:  # noqa: D401
         if self.stage_id not in ALLOWED_STAGE_IDS:
@@ -160,6 +194,7 @@ class HowTraceStage:
             ],
             "hash_bound": self.hash_bound,
             "blocking_gaps": list(self.blocking_gaps),
+            "sub_stages": [s.to_dict() for s in self.sub_stages],
         }
 
 
@@ -198,6 +233,7 @@ class HowTrace:
     success: bool
     blocking_gaps: tuple[str, ...] = ()
     verifier_results_ref: str = ""
+    app_recipe_execution: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:  # noqa: D401
         if self.schema_version != HOW_TRACE_SCHEMA_VERSION:
@@ -269,6 +305,7 @@ class HowTrace:
             "deterministic_digest": self.deterministic_digest,
             "success": self.success,
             "blocking_gaps": list(self.blocking_gaps),
+            "app_recipe_execution": self.app_recipe_execution,
         }
 
 
@@ -290,5 +327,7 @@ __all__ = [
     "RUNTIME_SUBJECT",
     "StageId",
     "StageStatus",
+    "SubStageRecord",
+    "SubStageStatus",
     "compute_how_trace_digest",
 ]

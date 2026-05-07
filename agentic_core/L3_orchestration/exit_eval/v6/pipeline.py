@@ -58,7 +58,9 @@ from agentic_core.L3_orchestration.exit_eval.v6.uwg import (
     UwgReceipt,
     process_commit_request,
 )
-from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
+from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import (
+    run_all_x1_gates_with_sub_stages,
+)
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import (
     AggregateDecision,
     aggregate_decision,
@@ -107,6 +109,7 @@ class ExitEvalResult:
     exhaust_manifest: RuntimeExhaustManifest | None = None
     runtime_boundary_closed: bool = False
     return_payload_failures: list[str] = field(default_factory=list)
+    x1_sub_stages: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _preflight_deny_packet(
@@ -192,8 +195,8 @@ class ExitEvalPipeline:
         v6_otel.record_span(v6_otel.SPAN_INPUT_PRESERVE_AUTHORITY_LABELS, review)
         v6_otel.record_span(v6_otel.SPAN_INPUT_NORMALIZE_REVIEW_PACKET, review)
 
-        # 4. X1 verdicts — record one span per gate
-        verdicts = run_all_x1_gates(review)
+        # 4. X1 verdicts — record one span per gate, capture sub-stage timing
+        verdicts, x1_sub_stages = run_all_x1_gates_with_sub_stages(review)
         for verdict in verdicts:
             span_name = _X1_SPAN_FOR_GATE.get(verdict.gate_id)
             if span_name is None:
@@ -332,6 +335,7 @@ class ExitEvalPipeline:
             decision=decision,
             packet=review,
             rationale=decision.rationale,
+            x1_sub_stages=x1_sub_stages,
         )
 
         # 7. UWG handoff for COMMIT_REQUEST

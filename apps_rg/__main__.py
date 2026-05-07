@@ -294,13 +294,54 @@ def _run_with_args(
                 )
                 sys.exit(1)
             if _sel == L0Route.R3R4_MANAGED:
-                _log.warning(
+                _log.info(
                     "[apps_rg] L0 prerequisite gate: briefing MISSING or STALE for '%s'. "
-                    "Run apps_research first to generate a fresh briefing, "
-                    "then re-run apps_rg with --manual-brief <path>.",
+                    "Entering L3 orchestration to run apps_research first.",
                     raw_request["target_company"],
                 )
-                sys.exit(1)
+                try:
+                    from apps_shared.adapters.research_l3_adapter import (
+                        invoke_company_research,
+                    )
+                    _research_result = invoke_company_research(
+                        company=raw_request["target_company"],
+                        jd_path=jd_path if jd_path.exists() else None,
+                        depth=getattr(args, "research_depth", "standard"),
+                        run_id=raw_request.get("run_id", ""),
+                        request_id=raw_request.get("request_id", ""),
+                        trace_root=raw_request.get("trace_root", ""),
+                        artifact_dir=_runs_dir,
+                    )
+                    if _research_result.success and _research_result.artifact_path:
+                        _log.info(
+                            "[apps_rg] apps_research completed successfully. "
+                            "Briefing at %s. Proceeding to R4 pipeline.",
+                            _research_result.artifact_path,
+                        )
+                        brief_path = Path(_research_result.artifact_path)
+                        raw_request["manual_brief"] = str(brief_path)
+                        raw_request["brief_hash"] = ""
+                        raw_request["_research_sub_stages"] = _research_result.sub_stages
+                    else:
+                        _log.error(
+                            "[apps_rg] apps_research failed: %s. "
+                            "Cannot proceed without briefing.",
+                            _research_result.error_reason,
+                        )
+                        sys.exit(1)
+                except ImportError:
+                    _log.warning(
+                        "[apps_rg] research_l3_adapter unavailable — "
+                        "briefing required but cannot auto-generate. "
+                        "Run apps_research manually, then re-run apps_rg "
+                        "with --manual-brief <path>.",
+                    )
+                    sys.exit(1)
+                except Exception as _l3_err:
+                    _log.error(
+                        "[apps_rg] L3 orchestration failed: %s", _l3_err
+                    )
+                    sys.exit(1)
     except ImportError:
         _log.debug("[apps_rg] L0 prerequisite gate unavailable (fail-open)")
     except Exception as _gate_err:
