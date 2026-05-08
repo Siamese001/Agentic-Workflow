@@ -3,7 +3,7 @@
 **Slug**: `apps-rg-l7-route-family-cert-fix-b8f3a1`
 **Tier**: T2 (3 files, single concern, single layer L7_auditability + runtime/entrypoints)
 **Created**: 2026-05-08
-**Status**: Live
+**Status**: Completed
 
 PLAN_CREATED: slug=apps-rg-l7-route-family-cert-fix-b8f3a1 path=.windsurf/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md
 
@@ -22,17 +22,17 @@ The mandatory L7 Route Family Coverage Matrix shows `0/9 CERTIFIED` after a succ
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|------------:|-------------|--------|------------------|
-| W1   | P1.1, P1.2 | Patch the 3 route_contract emission sites to include `request_id` + `trace_root` in payload | ~6k | Cascade may run R1A cache bypass to verify | 🟡 Pending | All 3 sites emit `payload.request_id` + `payload.trace_root` |
-| W2   | P2.1, P2.2 | Run apps_rg with R1A cache bypass; verify fresh L7 matrix shows R4_SINGLE_ACTION CERTIFIED | ~4k | apps_rg is invocable end-to-end | 🟡 Pending | Console L7 table shows `1/9 CERTIFIED` and R4_SINGLE_ACTION row marks `✅ CERTIFIED ✅ REAL_RUNTIME` |
+| W1   | P1.1, P1.2 | Patch the 3 route_contract emission sites to include `request_id` + `trace_root` in payload | ~6k | Cascade may run R1A cache bypass to verify | ✅ DONE | All 3 sites emit `payload.request_id` + `payload.trace_root` |
+| W2   | P2.1, P2.2 | Run apps_rg with R1A cache bypass; verify fresh L7 matrix shows R4_SINGLE_ACTION CERTIFIED | ~4k | apps_rg is invocable end-to-end | ✅ DONE | Console L7 table shows `1/9 CERTIFIED` and R4_SINGLE_ACTION row marks `✅ CERTIFIED ✅ REAL_RUNTIME` |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|------------:|--------|
-| P1.1 | Patch agentic_core R4 entrypoints | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py`, `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | request_id + trace_root must already be in scope at emission point | ~3k | 🟡 Pending |
-| P1.2 | Patch apps_shared spine_emission context | `apps_shared/spine_emission/context.py` | Same payload addition for cross-app emit surface | ~2k | 🟡 Pending |
-| P2.1 | Force fresh apps_rg run (cache bypass) | Delete `artifacts/apps_rg/runs/r4_72afb54f/` OR change input fingerprint | R1A is sticky; need clean-slate for verification | ~1k | 🟡 Pending |
-| P2.2 | Verify L7 matrix output | Read `agentic_core_l7_route_family_coverage.json` + console formatter | Must see R4_SINGLE_ACTION row CERTIFIED + `summary.certified=1` | ~3k | 🟡 Pending |
+| P1.1 | Patch agentic_core R4 entrypoints | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py`, `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | request_id + trace_root must already be in scope at emission point | ~3k | ✅ DONE |
+| P1.2 | Patch apps_shared spine_emission context | `apps_shared/spine_emission/context.py` | Same payload addition for cross-app emit surface | ~2k | ✅ DONE |
+| P2.1 | Force fresh apps_rg run (cache bypass) | Delete `artifacts/apps_rg/runs/r4_72afb54f/` OR change input fingerprint | R1A is sticky; need clean-slate for verification | ~1k | ✅ DONE |
+| P2.2 | Verify L7 matrix output | Read `agentic_core_l7_route_family_coverage.json` + console formatter | Must see R4_SINGLE_ACTION row CERTIFIED + `summary.certified=1` | ~3k | ✅ DONE |
 
 ## ADG_HOTSPOT_REPORT
 
