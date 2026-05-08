@@ -1,0 +1,28 @@
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+2026-05-07 21:03:29,044 [WARNING] agentic_core.embeddings.embedding_factory: EmbeddingFactory: EMBEDDING_ENABLED=false - embeddings disabled (fail-closed)
+2026-05-07 21:03:29,044 [INFO] agentic_core.L0_routing.composition_root: composition_root: evidence resolver wired (fail-closed default)
+2026-05-07 21:03:29,152 [INFO] apps_rg.cache.r1a_adapter: [R1A] Exact cache hit: r4_72afb54f
+2026-05-07 21:03:29,152 [INFO] apps_rg: [apps_rg] R1A exact cache hit ΓÇö returning cached run at artifacts\apps_rg\runs\r4_72afb54f

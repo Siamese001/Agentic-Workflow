@@ -1,0 +1,1349 @@
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+2026-05-08 04:52:36,248 [WARNING] agentic_core.embeddings.embedding_factory: EmbeddingFactory: EMBEDDING_ENABLED=false - embeddings disabled (fail-closed)
+2026-05-08 04:52:36,250 [INFO] agentic_core.L0_routing.composition_root: composition_root: evidence resolver wired (fail-closed default)
+2026-05-08 04:52:36,360 [INFO] agentic_core.L0_routing.gates.apps_rg_prerequisite_gate: apps_rg prerequisite: routing to apps_research first (reason=missing, company=Brown & Brown)
+2026-05-08 04:52:36,360 [INFO] apps_rg: [apps_rg] L0 prerequisite gate: briefing MISSING or STALE for 'Brown & Brown'. Entering L3 orchestration to run apps_research first.
+2026-05-08 04:52:38,231 [INFO] apps_research.tavily_retrieval: [tavily] sub_query='Brown & Brown company overview founding history core business' returned 5 docs
+2026-05-08 04:52:39,994 [INFO] apps_research.tavily_retrieval: [tavily] sub_query='Brown & Brown job openings roles hiring engineering' returned 5 docs
+2026-05-08 04:52:41,698 [INFO] apps_research.tavily_retrieval: [tavily] sub_query='Brown & Brown executive team CEO CTO leadership board' returned 5 docs
+2026-05-08 04:52:44,048 [INFO] apps_research.tavily_retrieval: [tavily] sub_query='Brown & Brown news 2024 2025 announcements funding acquisition' returned 5 docs
+2026-05-08 04:52:45,907 [INFO] apps_research.tavily_retrieval: [tavily] sub_query='Brown & Brown competitors alternatives market positioning' returned 5 docs
+2026-05-08 04:53:14,158 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:14,163 [INFO] CompanyBriefEngine: PASS [CompanyBriefEngine]: CompanyBrief assembled for Brown & Brown [COMPANY_BRIEF_STANDARD] gate=FAIL
+2026-05-08 04:53:14,164 [INFO] apps_rg: [apps_rg] apps_research completed successfully. Briefing at artifacts\apps_rg\runs\research_research\company_research.json. Proceeding to R4 pipeline.
+2026-05-08 04:53:14,170 [WARNING] apps_rg: [apps_rg] R1B recall failed (fail-soft): name 'Path' is not defined
+2026-05-08 04:53:14,268 [INFO] apps_rg.prompt_assembly.compiler: [pa_compiler] Compiled artifact: template_id=tailor_existing_v1, prompt_id=apps_rg.tailor_existing_v1, status=PA_L2_HANDOFF_READY
+2026-05-08 04:53:14,268 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_4_generate_resume: starting generate_resume (prompt_id=apps_rg.tailor_existing_v1, out_dir=artifacts\apps_rg\runs\r4_72afb54f)
+2026-05-08 04:53:14,269 [INFO] RESUME_GENERATOR: ≡ƒÄ» RESUME GENERATION STARTED...
+2026-05-08 04:53:14,274 [DEBUG] adg.anti_bypass_observation: req_evidence root_trace_id=auto layer=L6_OBSERVABILITY edge_kind=anti_bypass_observation op=apps_rg.scripts.generate_resume.main req_ids=REQ-L6-OBS-ANTI-BYPASS-001
+2026-05-08 04:53:14,274 [DEBUG] adg.outcome_trajectory: req_evidence root_trace_id=auto layer=L6_OBSERVABILITY edge_kind=outcome_trajectory op=apps_rg.scripts.generate_resume.main req_ids=REQ-L6-OUTCOME-TRAJECTORY-001
+2026-05-08 04:53:14,274 [DEBUG] adg.proposal_admission: req_evidence root_trace_id=auto layer=L6_OBSERVABILITY edge_kind=proposal_admission op=apps_rg.scripts.generate_resume.main req_ids=REQ-L6-PROPOSAL-ADMISSION-001
+2026-05-08 04:53:14,274 [DEBUG] adg.memory_promotion: req_evidence root_trace_id=auto layer=L6_OBSERVABILITY edge_kind=memory_promotion op=apps_rg.scripts.generate_resume.main req_ids=REQ-L6-MEMORY-PROMOTION-IFACE-001
+2026-05-08 04:53:14,274 [DEBUG] adg.route_contract_telemetry: req_evidence root_trace_id=auto layer=L0_ROUTING edge_kind=route_contract_telemetry op=apps_rg.scripts.generate_resume.main req_ids=REQ-L0-ROUTECONTRACT-TELEMETRY-001
+2026-05-08 04:53:14,274 [DEBUG] adg.audit_replay_consistency: req_evidence root_trace_id=auto layer=L4_STATE edge_kind=audit_replay_consistency op=apps_rg.scripts.generate_resume.main req_ids=REQ-UWG-AUDIT-REPLAY-CONSISTENCY-001
+2026-05-08 04:53:14,275 [INFO] RESUME_GENERATOR: Loading canonical master_resume: C:\Git\Agentic-Workflow-FRESH\apps_shared\data\master_resume.json
+2026-05-08 04:53:14,281 [INFO] apps_rg.prompt_assembly.compiler: [pa_compiler] Compiled artifact: template_id=strategic_tailor_v1, prompt_id=apps_rg.strategic_tailor_v1, status=PA_L2_HANDOFF_READY
+2026-05-08 04:53:14,281 [INFO] apps_rg.prompt_assembly.provider_request: [provider_request] Built request: prompt_id=apps_rg.strategic_tailor_v1, artifact_id=76a7aa6c823f4dd6
+2026-05-08 04:53:14,281 [INFO] RESUME_GENERATOR: ≡ƒôï PA artifact compiled: prompt_id=apps_rg.strategic_tailor_v1, artifact_hash=efa56a445247f848
+2026-05-08 04:53:14,281 [INFO] RESUME_GENERATOR: ΓÜí Processing your resume against the job description...
+2026-05-08 04:53:14,281 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=agent_spec_config layer=p0_governance
+2026-05-08 04:53:14,281 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p0 policy_key=agent_spec_config layer=policy_binding
+2026-05-08 04:53:14,281 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=agent_spec_config layer=state_snapshot
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_1
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_2
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_3
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_4
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_5
+2026-05-08 04:53:14,281 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_spec_config source=p4obs metric=metric_6
+2026-05-08 04:53:14,281 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=agent_spec_config source=p4obs incident=incident
+2026-05-08 04:53:14,281 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=agent_spec_config source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,281 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=agent_spec_config source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,281 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=agent_spec_config source=p4obs state=mon_state
+2026-05-08 04:53:14,281 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=agent_spec_config source=p4obs alert=alert
+2026-05-08 04:53:14,281 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=agent_spec_config source=p4obs trace=trace_link
+2026-05-08 04:53:14,281 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=agent_spec_config source=p3lm pattern=pattern
+2026-05-08 04:53:14,281 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=agent_spec_config source=p3lm event=learning_event
+2026-05-08 04:53:14,281 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=agent_spec_config source=p3lm snap=snapshot
+2026-05-08 04:53:14,281 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=agent_spec_config source=p3lm feed=meta_feed
+2026-05-08 04:53:14,281 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=agent_spec_config source=p3lm strategy=routing
+2026-05-08 04:53:14,281 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=agent_spec_config source=p3lm policy=policy
+2026-05-08 04:53:14,281 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=agent_spec_config source=p3lm state=state
+2026-05-08 04:53:14,281 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_spec_config layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,281 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_spec_config layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,281 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_spec_config layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,281 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_spec_config layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,281 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_spec_config layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,281 [DEBUG] adg.reads_env: reads_env root_trace_id=agent_spec_config source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,281 [DEBUG] adg.reads_env: reads_env root_trace_id=agent_spec_config source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,281 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=agent_spec_config source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,281 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=agent_spec_config source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,281 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=agent_spec_config context=context_pull
+2026-05-08 04:53:14,281 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=agent_spec_config context=context_pull_2
+2026-05-08 04:53:14,281 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=agent_spec_config uwg=uwg_term
+2026-05-08 04:53:14,281 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=agent_spec_config uwg=uwg_term_2
+2026-05-08 04:53:14,281 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=agent_spec_config governor=write_through
+2026-05-08 04:53:14,281 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=agent_spec_config governor=write_through_2
+2026-05-08 04:53:14,281 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=agent_spec_config layer=safety_validation
+2026-05-08 04:53:14,281 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=agent_spec_config target=eval_call
+2026-05-08 04:53:14,281 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=agent_spec_config proposal=routing_commit
+2026-05-08 04:53:14,281 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=agent_spec_config layer=human_escalation
+2026-05-08 04:53:14,281 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=agent_spec_config layer=route_through
+2026-05-08 04:53:14,281 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=agent_spec_config registry_key=agent_registry
+2026-05-08 04:53:14,281 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=agent_spec_config capability=capability
+2026-05-08 04:53:14,281 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> agent_spec_config
+2026-05-08 04:53:14,281 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=agent_spec_config callee=sub_agent
+2026-05-08 04:53:14,281 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=agent_spec_config target_agent=target_agent
+2026-05-08 04:53:14,281 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=agent_spec_config layer=policy_check
+2026-05-08 04:53:14,281 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=agent_spec_config layer=runtime_state
+2026-05-08 04:53:14,281 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=agent_spec_config layer=boundary_check
+2026-05-08 04:53:14,281 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=agent_spec_config model_id=transcript
+2026-05-08 04:53:14,281 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=agent_spec_config
+2026-05-08 04:53:14,281 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=agent_spec_config threshold=confidence_gate
+2026-05-08 04:53:14,281 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,281 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=agent_spec_config capability=execution_auth
+2026-05-08 04:53:14,281 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=agent_spec_config capability=capability_check
+2026-05-08 04:53:14,281 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=agent_spec_config capability=capability_route
+2026-05-08 04:53:14,281 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=agent_spec_config target=uwg_write
+2026-05-08 04:53:14,281 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=agent_spec_config target=direct_write_block
+2026-05-08 04:53:14,281 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=agent_spec_config caller=tool_invocation
+2026-05-08 04:53:14,281 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=agent_spec_config caller=exec_output
+2026-05-08 04:53:14,281 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=agent_spec_config agent=agent_dispatch
+2026-05-08 04:53:14,281 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=agent_spec_config agents=agent_coordination
+2026-05-08 04:53:14,281 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=agent_spec_config lineage=workflow_lineage
+2026-05-08 04:53:14,281 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=agent_spec_config outcome=healing_outcome
+2026-05-08 04:53:14,281 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=agent_spec_config failure=failure_escalation
+2026-05-08 04:53:14,281 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=agent_spec_config workflow_id=workflow_orchestration
+2026-05-08 04:53:14,283 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=agent_spec_config layer=healing_dispatch
+2026-05-08 04:53:14,283 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=agent_spec_config target=evaluation_signal
+2026-05-08 04:53:14,283 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=agent_spec_config event=telemetry_event
+2026-05-08 04:53:14,283 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=agent_spec_config metric=eval_metric
+2026-05-08 04:53:14,283 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=agent_spec_config embedding=embedding_store
+2026-05-08 04:53:14,283 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=agent_spec_config state=meta_learning
+2026-05-08 04:53:14,283 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=agent_spec_config snapshot=exec_snapshot_link
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_1
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_2
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_3
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_4
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_5
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_6
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_7
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_8
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_9
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_10
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_11
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_12
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_13
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_14
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_15
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_16
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_17
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_18
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_19
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_20
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_21
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_22
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_23
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_24
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_25
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_26
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_27
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_28
+2026-05-08 04:53:14,283 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_29
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_30
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_31
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_32
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_33
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_34
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_35
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_36
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_37
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_38
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_39
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_40
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_41
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_42
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_43
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_44
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_45
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_46
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_47
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_48
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_49
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_50
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_51
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_52
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_53
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_54
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_55
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_56
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_57
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_58
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_59
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_60
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_61
+2026-05-08 04:53:14,284 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=agent_spec_config governor=urg_read_62
+2026-05-08 04:53:14,289 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=reasoning_toggles_config layer=p0_governance
+2026-05-08 04:53:14,289 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p0 policy_key=reasoning_toggles_config layer=policy_binding
+2026-05-08 04:53:14,289 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=reasoning_toggles_config layer=state_snapshot
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_1
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_2
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_3
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_4
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_5
+2026-05-08 04:53:14,289 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=reasoning_toggles_config source=p4obs metric=metric_6
+2026-05-08 04:53:14,289 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=reasoning_toggles_config source=p4obs incident=incident
+2026-05-08 04:53:14,289 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=reasoning_toggles_config source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,289 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=reasoning_toggles_config source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,289 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=reasoning_toggles_config source=p4obs state=mon_state
+2026-05-08 04:53:14,289 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=reasoning_toggles_config source=p4obs alert=alert
+2026-05-08 04:53:14,289 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=reasoning_toggles_config source=p4obs trace=trace_link
+2026-05-08 04:53:14,289 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=reasoning_toggles_config source=p3lm pattern=pattern
+2026-05-08 04:53:14,289 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=reasoning_toggles_config source=p3lm event=learning_event
+2026-05-08 04:53:14,289 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=reasoning_toggles_config source=p3lm snap=snapshot
+2026-05-08 04:53:14,289 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=reasoning_toggles_config source=p3lm feed=meta_feed
+2026-05-08 04:53:14,289 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=reasoning_toggles_config source=p3lm strategy=routing
+2026-05-08 04:53:14,289 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=reasoning_toggles_config source=p3lm policy=policy
+2026-05-08 04:53:14,289 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=reasoning_toggles_config source=p3lm state=state
+2026-05-08 04:53:14,289 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=reasoning_toggles_config layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,289 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=reasoning_toggles_config layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,289 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=reasoning_toggles_config layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,289 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=reasoning_toggles_config layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,289 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=reasoning_toggles_config layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,289 [DEBUG] adg.reads_env: reads_env root_trace_id=reasoning_toggles_config source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,289 [DEBUG] adg.reads_env: reads_env root_trace_id=reasoning_toggles_config source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,289 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=reasoning_toggles_config source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,289 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=reasoning_toggles_config source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,289 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=reasoning_toggles_config context=context_pull
+2026-05-08 04:53:14,289 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=reasoning_toggles_config context=context_pull_2
+2026-05-08 04:53:14,289 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=reasoning_toggles_config uwg=uwg_term
+2026-05-08 04:53:14,289 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=reasoning_toggles_config uwg=uwg_term_2
+2026-05-08 04:53:14,289 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=reasoning_toggles_config governor=write_through
+2026-05-08 04:53:14,289 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=reasoning_toggles_config governor=write_through_2
+2026-05-08 04:53:14,289 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=reasoning_toggles_config layer=safety_validation
+2026-05-08 04:53:14,289 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=reasoning_toggles_config target=eval_call
+2026-05-08 04:53:14,289 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=reasoning_toggles_config proposal=routing_commit
+2026-05-08 04:53:14,289 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=reasoning_toggles_config layer=human_escalation
+2026-05-08 04:53:14,289 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=reasoning_toggles_config layer=route_through
+2026-05-08 04:53:14,289 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=reasoning_toggles_config registry_key=agent_registry
+2026-05-08 04:53:14,289 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=reasoning_toggles_config capability=capability
+2026-05-08 04:53:14,289 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> reasoning_toggles_config
+2026-05-08 04:53:14,289 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=reasoning_toggles_config callee=sub_agent
+2026-05-08 04:53:14,289 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=reasoning_toggles_config target_agent=target_agent
+2026-05-08 04:53:14,289 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=reasoning_toggles_config layer=policy_check
+2026-05-08 04:53:14,289 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=reasoning_toggles_config layer=runtime_state
+2026-05-08 04:53:14,289 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=reasoning_toggles_config layer=boundary_check
+2026-05-08 04:53:14,289 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=reasoning_toggles_config model_id=transcript
+2026-05-08 04:53:14,289 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=reasoning_toggles_config
+2026-05-08 04:53:14,289 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=reasoning_toggles_config threshold=confidence_gate
+2026-05-08 04:53:14,289 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,289 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=reasoning_toggles_config capability=execution_auth
+2026-05-08 04:53:14,289 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=reasoning_toggles_config capability=capability_check
+2026-05-08 04:53:14,289 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=reasoning_toggles_config capability=capability_route
+2026-05-08 04:53:14,289 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=reasoning_toggles_config target=uwg_write
+2026-05-08 04:53:14,289 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=reasoning_toggles_config target=direct_write_block
+2026-05-08 04:53:14,289 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=reasoning_toggles_config caller=tool_invocation
+2026-05-08 04:53:14,289 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=reasoning_toggles_config caller=exec_output
+2026-05-08 04:53:14,289 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=reasoning_toggles_config agent=agent_dispatch
+2026-05-08 04:53:14,289 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=reasoning_toggles_config agents=agent_coordination
+2026-05-08 04:53:14,289 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=reasoning_toggles_config lineage=workflow_lineage
+2026-05-08 04:53:14,289 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=reasoning_toggles_config outcome=healing_outcome
+2026-05-08 04:53:14,289 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=reasoning_toggles_config failure=failure_escalation
+2026-05-08 04:53:14,289 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=reasoning_toggles_config workflow_id=workflow_orchestration
+2026-05-08 04:53:14,289 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=reasoning_toggles_config layer=healing_dispatch
+2026-05-08 04:53:14,289 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=reasoning_toggles_config target=evaluation_signal
+2026-05-08 04:53:14,289 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=reasoning_toggles_config event=telemetry_event
+2026-05-08 04:53:14,289 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=reasoning_toggles_config metric=eval_metric
+2026-05-08 04:53:14,289 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=reasoning_toggles_config embedding=embedding_store
+2026-05-08 04:53:14,289 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=reasoning_toggles_config state=meta_learning
+2026-05-08 04:53:14,289 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=reasoning_toggles_config snapshot=exec_snapshot_link
+2026-05-08 04:53:14,292 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=PromptTemplate layer=p0_governance
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_1
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_2
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_3
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_4
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_5
+2026-05-08 04:53:14,292 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=PromptTemplate source=p4obs metric=metric_6
+2026-05-08 04:53:14,292 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=PromptTemplate source=p4obs incident=incident
+2026-05-08 04:53:14,292 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=PromptTemplate source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,292 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=PromptTemplate source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,292 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=PromptTemplate source=p4obs state=mon_state
+2026-05-08 04:53:14,292 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=PromptTemplate source=p4obs alert=alert
+2026-05-08 04:53:14,292 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=PromptTemplate source=p4obs trace=trace_link
+2026-05-08 04:53:14,292 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=PromptTemplate source=p3lm pattern=pattern
+2026-05-08 04:53:14,292 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=PromptTemplate source=p3lm event=learning_event
+2026-05-08 04:53:14,292 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=PromptTemplate source=p3lm snap=snapshot
+2026-05-08 04:53:14,292 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=PromptTemplate source=p3lm feed=meta_feed
+2026-05-08 04:53:14,292 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=PromptTemplate source=p3lm strategy=routing
+2026-05-08 04:53:14,292 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=PromptTemplate source=p3lm policy=policy
+2026-05-08 04:53:14,292 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=PromptTemplate source=p3lm state=state
+2026-05-08 04:53:14,292 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=PromptTemplate layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,292 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=PromptTemplate layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,292 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=PromptTemplate layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,292 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=PromptTemplate layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,292 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=PromptTemplate layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,292 [DEBUG] adg.reads_env: reads_env root_trace_id=PromptTemplate source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,292 [DEBUG] adg.reads_env: reads_env root_trace_id=PromptTemplate source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,292 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=PromptTemplate source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,292 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=PromptTemplate source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,292 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=PromptTemplate context=context_pull
+2026-05-08 04:53:14,292 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=PromptTemplate context=context_pull_2
+2026-05-08 04:53:14,292 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=PromptTemplate uwg=uwg_term
+2026-05-08 04:53:14,292 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=PromptTemplate uwg=uwg_term_2
+2026-05-08 04:53:14,292 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=PromptTemplate governor=write_through
+2026-05-08 04:53:14,292 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=PromptTemplate governor=write_through_2
+2026-05-08 04:53:14,292 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=PromptTemplate layer=safety_validation
+2026-05-08 04:53:14,292 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=PromptTemplate target=eval_call
+2026-05-08 04:53:14,292 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=PromptTemplate proposal=routing_commit
+2026-05-08 04:53:14,292 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=PromptTemplate layer=human_escalation
+2026-05-08 04:53:14,293 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=PromptTemplate layer=route_through
+2026-05-08 04:53:14,293 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=PromptTemplate registry_key=agent_registry
+2026-05-08 04:53:14,293 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=PromptTemplate capability=capability
+2026-05-08 04:53:14,293 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> PromptTemplate
+2026-05-08 04:53:14,293 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=PromptTemplate callee=sub_agent
+2026-05-08 04:53:14,293 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=PromptTemplate target_agent=target_agent
+2026-05-08 04:53:14,293 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=PromptTemplate layer=policy_check
+2026-05-08 04:53:14,293 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=PromptTemplate layer=runtime_state
+2026-05-08 04:53:14,293 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=PromptTemplate layer=boundary_check
+2026-05-08 04:53:14,293 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=PromptTemplate model_id=transcript
+2026-05-08 04:53:14,293 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=PromptTemplate
+2026-05-08 04:53:14,293 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=PromptTemplate threshold=confidence_gate
+2026-05-08 04:53:14,293 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,293 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=PromptTemplate capability=execution_auth
+2026-05-08 04:53:14,293 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=PromptTemplate capability=capability_check
+2026-05-08 04:53:14,293 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=PromptTemplate capability=capability_route
+2026-05-08 04:53:14,293 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=PromptTemplate target=uwg_write
+2026-05-08 04:53:14,293 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=PromptTemplate target=direct_write_block
+2026-05-08 04:53:14,293 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=PromptTemplate caller=tool_invocation
+2026-05-08 04:53:14,293 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=PromptTemplate caller=exec_output
+2026-05-08 04:53:14,293 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=PromptTemplate agent=agent_dispatch
+2026-05-08 04:53:14,293 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=PromptTemplate agents=agent_coordination
+2026-05-08 04:53:14,293 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=PromptTemplate lineage=workflow_lineage
+2026-05-08 04:53:14,293 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=PromptTemplate outcome=healing_outcome
+2026-05-08 04:53:14,293 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=PromptTemplate failure=failure_escalation
+2026-05-08 04:53:14,293 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=PromptTemplate workflow_id=workflow_orchestration
+2026-05-08 04:53:14,293 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=PromptTemplate layer=healing_dispatch
+2026-05-08 04:53:14,293 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=PromptTemplate target=evaluation_signal
+2026-05-08 04:53:14,293 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=PromptTemplate event=telemetry_event
+2026-05-08 04:53:14,293 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=PromptTemplate metric=eval_metric
+2026-05-08 04:53:14,293 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=PromptTemplate embedding=embedding_store
+2026-05-08 04:53:14,293 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=PromptTemplate state=meta_learning
+2026-05-08 04:53:14,293 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=PromptTemplate snapshot=exec_snapshot_link
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=25666552-fbf2-4b7c-86d2-24d1cad7f857 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=fbca8a80-44bf-4e83-bcac-492d679e0af8 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=72c32de2-4853-447b-bb35-ca0a20d0eed4 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=6fde245d-df50-4954-b107-b88195f40009 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=0eef070f-611e-4a37-97db-d8c9c75d769a layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=5e1c78cf-087a-43e2-b182-56e311543c46 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=f11530c3-58bf-45bc-9618-2849412bf497 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=cb81feeb-490c-4bed-85ad-8c9215c5054a layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=45c20286-97d1-4da5-bed5-be206cce4ddd layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=6f375dc0-8a97-4d11-b9a0-1dba9dd4eac9 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=5f0a32ea-bdd4-4710-a61d-54fe6c54dff3 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=bf786e49-e8d2-4150-9d4a-f6bf46870672 layer=L3_ORCHESTRATION op=PromptTemplate.validate_placeholders
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=c74344dd888644e99ea7b2058572fc8b layer=L3_ORCHESTRATION op=ResumeOrchestratorEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=c74344dd888644e99ea7b2058572fc8b source=ResumeOrchestratorEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=09907f4b-197e-490e-8000-edf2b9a10b39 layer=L3_ORCHESTRATION op=ResumeOrchestratorEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=d2d174088c024f06a133fa32dfc3e094 layer=L3_ORCHESTRATION op=RoleArchetypeClassifier.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=d2d174088c024f06a133fa32dfc3e094 source=RoleArchetypeClassifier.execute event=execute_complete
+2026-05-08 04:53:14,294 [INFO] RoleArchetypeClassifier: PASS [RoleArchetypeClassifier]: Archetype: strategic_advisory (strategy_key=executive) top_scores=[('strategic_advisory', 7.0), ('technical_leadership', 2.0), ('sales_engineering', 1.0)]
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=64b302d69bf64bebbfef238653f1a4a8 layer=L3_ORCHESTRATION op=ClerkExtractionEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=64b302d69bf64bebbfef238653f1a4a8 source=ClerkExtractionEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=0f267160-dac6-4876-a699-e9fa824b40aa layer=L3_ORCHESTRATION op=ClerkExtractionEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=525ecbab-feca-4d6a-a4dd-239d8411c6bf layer=L3_ORCHESTRATION op=HallucinationDetector.check_batch
+2026-05-08 04:53:14,294 [INFO] ClerkExtractionEngine: PASS [ClerkExtractionEngine]: HOP-1 Extraction Complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=332c79b6d9fd499e97fe32527f26a520 layer=L3_ORCHESTRATION op=DataEnrichmentEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=332c79b6d9fd499e97fe32527f26a520 source=DataEnrichmentEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=3cb15163-c33c-410d-96e7-b4a02b36e6f2 layer=L3_ORCHESTRATION op=DataEnrichmentEngine.execute
+2026-05-08 04:53:14,294 [INFO] DataEnrichmentEngine: PASS [DataEnrichmentEngine]: HOP-2 Enrichment Complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=b3090b53336c4696ba2f60d148a85e36 layer=L3_ORCHESTRATION op=JobPatternMatcher.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=b3090b53336c4696ba2f60d148a85e36 source=JobPatternMatcher.execute event=execute_complete
+2026-05-08 04:53:14,294 [INFO] JobPatternMatcher: PASS [JobPatternMatcher]: JD facets: level=6 soft=5 industry=1 tech=4 resp=11
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=f6efee2916be41d191004f7fc92bdb8f layer=L3_ORCHESTRATION op=JobAlignmentScorer.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=f6efee2916be41d191004f7fc92bdb8f source=JobAlignmentScorer.execute event=execute_complete
+2026-05-08 04:53:14,294 [INFO] JobAlignmentScorer: PASS [JobAlignmentScorer]: Aligned bullets across 5 roles; facet vocab=118
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=5dc023aa19074961b62df5fb9f454dd6 layer=L3_ORCHESTRATION op=GapClosureEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=5dc023aa19074961b62df5fb9f454dd6 source=GapClosureEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=a90a4be16bf245169b4dadabdc3be687 layer=L3_ORCHESTRATION op=ContentOptimizerEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=a90a4be16bf245169b4dadabdc3be687 source=ContentOptimizerEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=9dc99000-350d-4420-a843-6b7da8d10304 layer=L3_ORCHESTRATION op=ContentOptimizerEngine.execute
+2026-05-08 04:53:14,294 [INFO] ContentOptimizerEngine: PASS [ContentOptimizerEngine]: Content optimization complete ΓÇö kept 13 bullets across 5 sections
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=aea81fa65de04fad9e947118bf0fc470 layer=L3_ORCHESTRATION op=BulletDiversityGate.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=aea81fa65de04fad9e947118bf0fc470 source=BulletDiversityGate.execute event=execute_complete
+2026-05-08 04:53:14,294 [INFO] BulletDiversityGate: PASS [BulletDiversityGate]: Diversity gate PASSED ΓÇö 5 sections, avg themes=6.0
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=4f97fff4abe943b193b390f5330aac48 layer=L3_ORCHESTRATION op=SectionRankerEngine.execute
+2026-05-08 04:53:14,294 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=4f97fff4abe943b193b390f5330aac48 source=SectionRankerEngine.execute event=execute_complete
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=857dd46a-32e4-4c43-81f6-767031d9e628 layer=L3_ORCHESTRATION op=SectionRankerEngine.execute
+2026-05-08 04:53:14,294 [INFO] SectionRankerEngine: PASS [SectionRankerEngine]: Sections ranked for executive
+2026-05-08 04:53:14,294 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=037171b5-c0b3-4524-bfbb-d184239b7df6 layer=L0_ROUTING op=CoreIntegrityVerifier.verify_core_integrity
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=6858b9fc-c8ce-4716-87e4-ef9554864fd1 layer=L3_ORCHESTRATION op=AuditTrailMixin.log_sovereign_event
+2026-05-08 04:53:14,300 [INFO] SovereignBlackBox: {"timestamp":"2026-05-08T08:53:14.300188+00:00","agent_id":"UnknownSovereign","domain":"apps_rg","session":"Field(<dataclasses._MISSING_TYPE object at 0x000001B26190FE60>)","action":"BOOT","details":{"status":"initialized","mode":"hardened","integrity_verified":true},"integrity_status":"VERIFIED"}
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_1
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_2
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_3
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_4
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_5
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=agent_registry source=p4obs metric=metric_6
+2026-05-08 04:53:14,300 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=agent_registry source=p4obs incident=incident
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=agent_registry source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=agent_registry source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,300 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=agent_registry source=p4obs state=mon_state
+2026-05-08 04:53:14,300 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=agent_registry source=p4obs alert=alert
+2026-05-08 04:53:14,300 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=agent_registry source=p4obs trace=trace_link
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=agent_registry source=p3lm pattern=pattern
+2026-05-08 04:53:14,300 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=agent_registry source=p3lm event=learning_event
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=agent_registry source=p3lm snap=snapshot
+2026-05-08 04:53:14,300 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=agent_registry source=p3lm feed=meta_feed
+2026-05-08 04:53:14,300 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=agent_registry source=p3lm strategy=routing
+2026-05-08 04:53:14,300 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=agent_registry source=p3lm policy=policy
+2026-05-08 04:53:14,300 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=agent_registry source=p3lm state=state
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_registry layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_registry layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_registry layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_registry layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=agent_registry layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_env: reads_env root_trace_id=agent_registry source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_env: reads_env root_trace_id=agent_registry source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=agent_registry source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=agent_registry source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=p0 layer=evidence op=agent_registry
+2026-05-08 04:53:14,300 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=agent_registry layer=p0_governance
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p0 policy_key=agent_registry layer=policy_binding
+2026-05-08 04:53:14,300 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=agent_registry layer=state_snapshot
+2026-05-08 04:53:14,300 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=agent_registry context=context_pull
+2026-05-08 04:53:14,300 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=agent_registry context=context_pull_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=agent_registry uwg=uwg_term
+2026-05-08 04:53:14,300 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=agent_registry uwg=uwg_term_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=agent_registry governor=write_through
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=agent_registry governor=write_through_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=agent_registry layer=safety_validation
+2026-05-08 04:53:14,300 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=agent_registry target=eval_call
+2026-05-08 04:53:14,300 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=agent_registry proposal=routing_commit
+2026-05-08 04:53:14,300 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=agent_registry layer=human_escalation
+2026-05-08 04:53:14,300 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=agent_registry layer=route_through
+2026-05-08 04:53:14,300 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=agent_registry registry_key=agent_registry
+2026-05-08 04:53:14,300 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=agent_registry capability=capability
+2026-05-08 04:53:14,300 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> agent_registry
+2026-05-08 04:53:14,300 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=agent_registry callee=sub_agent
+2026-05-08 04:53:14,300 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=agent_registry target_agent=target_agent
+2026-05-08 04:53:14,300 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=agent_registry layer=policy_check
+2026-05-08 04:53:14,300 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=agent_registry layer=runtime_state
+2026-05-08 04:53:14,300 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=agent_registry layer=boundary_check
+2026-05-08 04:53:14,300 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=agent_registry model_id=transcript
+2026-05-08 04:53:14,300 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=agent_registry
+2026-05-08 04:53:14,300 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=agent_registry threshold=confidence_gate
+2026-05-08 04:53:14,300 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,300 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=agent_registry capability=execution_auth
+2026-05-08 04:53:14,300 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=agent_registry capability=capability_check
+2026-05-08 04:53:14,300 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=agent_registry capability=capability_route
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=agent_registry target=uwg_write
+2026-05-08 04:53:14,300 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=agent_registry target=direct_write_block
+2026-05-08 04:53:14,300 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=agent_registry caller=tool_invocation
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=agent_registry caller=exec_output
+2026-05-08 04:53:14,300 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=agent_registry agent=agent_dispatch
+2026-05-08 04:53:14,300 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=agent_registry agents=agent_coordination
+2026-05-08 04:53:14,300 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=agent_registry lineage=workflow_lineage
+2026-05-08 04:53:14,300 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=agent_registry outcome=healing_outcome
+2026-05-08 04:53:14,300 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=agent_registry failure=failure_escalation
+2026-05-08 04:53:14,300 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=agent_registry workflow_id=workflow_orchestration
+2026-05-08 04:53:14,300 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=agent_registry layer=healing_dispatch
+2026-05-08 04:53:14,300 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=agent_registry target=evaluation_signal
+2026-05-08 04:53:14,300 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=agent_registry event=telemetry_event
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=agent_registry metric=eval_metric
+2026-05-08 04:53:14,300 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=agent_registry embedding=embedding_store
+2026-05-08 04:53:14,300 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=agent_registry state=meta_learning
+2026-05-08 04:53:14,300 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=agent_registry snapshot=exec_snapshot_link
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_1
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_2
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_3
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_4
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_5
+2026-05-08 04:53:14,300 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=infra_error_types source=p4obs metric=metric_6
+2026-05-08 04:53:14,300 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=infra_error_types source=p4obs incident=incident
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=infra_error_types source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=infra_error_types source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,300 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=infra_error_types source=p4obs state=mon_state
+2026-05-08 04:53:14,300 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=infra_error_types source=p4obs alert=alert
+2026-05-08 04:53:14,300 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=infra_error_types source=p4obs trace=trace_link
+2026-05-08 04:53:14,300 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=infra_error_types source=p3lm pattern=pattern
+2026-05-08 04:53:14,300 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=infra_error_types source=p3lm event=learning_event
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=infra_error_types source=p3lm snap=snapshot
+2026-05-08 04:53:14,300 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=infra_error_types source=p3lm feed=meta_feed
+2026-05-08 04:53:14,300 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=infra_error_types source=p3lm strategy=routing
+2026-05-08 04:53:14,300 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=infra_error_types source=p3lm policy=policy
+2026-05-08 04:53:14,300 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=infra_error_types source=p3lm state=state
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=infra_error_types layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=infra_error_types layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=infra_error_types layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=infra_error_types layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,300 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=infra_error_types layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_env: reads_env root_trace_id=infra_error_types source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_env: reads_env root_trace_id=infra_error_types source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=infra_error_types source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=infra_error_types source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,300 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p1 healer_key=infra_error_types layer=L2
+2026-05-08 04:53:14,300 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=infra_error_types layer=L2
+2026-05-08 04:53:14,300 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=infra_error_types registry_key=agent_registry
+2026-05-08 04:53:14,300 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=infra_error_types capability=capability
+2026-05-08 04:53:14,300 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> infra_error_types
+2026-05-08 04:53:14,300 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=infra_error_types callee=sub_agent
+2026-05-08 04:53:14,300 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=infra_error_types target_agent=target_agent
+2026-05-08 04:53:14,300 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=infra_error_types layer=policy_check
+2026-05-08 04:53:14,300 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=infra_error_types layer=runtime_state
+2026-05-08 04:53:14,300 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=infra_error_types layer=boundary_check
+2026-05-08 04:53:14,300 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=infra_error_types model_id=transcript
+2026-05-08 04:53:14,300 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=infra_error_types
+2026-05-08 04:53:14,300 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=infra_error_types threshold=confidence_gate
+2026-05-08 04:53:14,300 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=infra_error_types layer=L2
+2026-05-08 04:53:14,300 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p1 policy_key=infra_error_types layer=L2
+2026-05-08 04:53:14,300 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=infra_error_types context=context_pull
+2026-05-08 04:53:14,300 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=infra_error_types context=context_pull_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=infra_error_types uwg=uwg_term
+2026-05-08 04:53:14,300 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=infra_error_types uwg=uwg_term_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=infra_error_types governor=write_through
+2026-05-08 04:53:14,300 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=infra_error_types governor=write_through_secondary
+2026-05-08 04:53:14,300 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=infra_error_types layer=safety_validation
+2026-05-08 04:53:14,302 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=infra_error_types target=eval_call
+2026-05-08 04:53:14,302 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=infra_error_types proposal=routing_commit
+2026-05-08 04:53:14,302 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,302 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=p0 layer=evidence op=infra_error_types
+2026-05-08 04:53:14,302 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=infra_error_types layer=p0_governance
+2026-05-08 04:53:14,302 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=infra_error_types layer=state_snapshot
+2026-05-08 04:53:14,302 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=infra_error_types capability=execution_auth
+2026-05-08 04:53:14,302 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=infra_error_types capability=capability_check
+2026-05-08 04:53:14,302 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=infra_error_types capability=capability_route
+2026-05-08 04:53:14,302 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=infra_error_types target=uwg_write
+2026-05-08 04:53:14,302 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=infra_error_types target=direct_write_block
+2026-05-08 04:53:14,302 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=infra_error_types caller=tool_invocation
+2026-05-08 04:53:14,302 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=infra_error_types caller=exec_output
+2026-05-08 04:53:14,302 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=infra_error_types agent=agent_dispatch
+2026-05-08 04:53:14,302 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=infra_error_types agents=agent_coordination
+2026-05-08 04:53:14,302 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=infra_error_types lineage=workflow_lineage
+2026-05-08 04:53:14,302 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=infra_error_types outcome=healing_outcome
+2026-05-08 04:53:14,302 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=infra_error_types failure=failure_escalation
+2026-05-08 04:53:14,302 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=infra_error_types workflow_id=workflow_orchestration
+2026-05-08 04:53:14,302 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=infra_error_types layer=healing_dispatch
+2026-05-08 04:53:14,302 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=infra_error_types target=evaluation_signal
+2026-05-08 04:53:14,302 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=infra_error_types event=telemetry_event
+2026-05-08 04:53:14,302 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=infra_error_types metric=eval_metric
+2026-05-08 04:53:14,302 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=infra_error_types embedding=embedding_store
+2026-05-08 04:53:14,302 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=infra_error_types state=meta_learning
+2026-05-08 04:53:14,302 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=infra_error_types snapshot=exec_snapshot_link
+2026-05-08 04:53:14,302 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=5ce31802-e578-410e-adeb-da39b3f287b0 state_key=_get_redis_sovereign_agent layer=state_snapshot
+2026-05-08 04:53:14,302 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=9a0bf2e1-1136-426f-ad73-71f10141330f hash=dbc6f70e8762 sig=p0_trace order=0
+2026-05-08 04:53:14,302 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=ee6ee2a7-b03c-43fd-b212-844010371102 guardrail=_get_redis_sovereign_agent layer=p0_governance
+2026-05-08 04:53:14,303 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p1 healer_key=RedisSovereignAgent layer=L2
+2026-05-08 04:53:14,303 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=RedisSovereignAgent layer=L2
+2026-05-08 04:53:14,303 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=RedisSovereignAgent registry_key=agent_registry
+2026-05-08 04:53:14,303 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=RedisSovereignAgent capability=capability
+2026-05-08 04:53:14,303 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> RedisSovereignAgent
+2026-05-08 04:53:14,303 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=RedisSovereignAgent callee=sub_agent
+2026-05-08 04:53:14,303 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=RedisSovereignAgent target_agent=target_agent
+2026-05-08 04:53:14,303 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=RedisSovereignAgent layer=policy_check
+2026-05-08 04:53:14,303 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=RedisSovereignAgent layer=runtime_state
+2026-05-08 04:53:14,303 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=RedisSovereignAgent layer=boundary_check
+2026-05-08 04:53:14,303 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=RedisSovereignAgent model_id=transcript
+2026-05-08 04:53:14,303 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=RedisSovereignAgent
+2026-05-08 04:53:14,303 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=RedisSovereignAgent threshold=confidence_gate
+2026-05-08 04:53:14,303 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=RedisSovereignAgent layer=L2
+2026-05-08 04:53:14,303 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p1 policy_key=RedisSovereignAgent layer=L2
+2026-05-08 04:53:14,303 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=RedisSovereignAgent layer=p0_governance
+2026-05-08 04:53:14,303 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=RedisSovereignAgent capability=execution_auth
+2026-05-08 04:53:14,303 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=RedisSovereignAgent capability=capability_check
+2026-05-08 04:53:14,303 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=RedisSovereignAgent capability=capability_route
+2026-05-08 04:53:14,303 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=RedisSovereignAgent target=uwg_write
+2026-05-08 04:53:14,303 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=RedisSovereignAgent target=direct_write_block
+2026-05-08 04:53:14,303 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=RedisSovereignAgent caller=tool_invocation
+2026-05-08 04:53:14,303 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=RedisSovereignAgent caller=exec_output
+2026-05-08 04:53:14,303 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=RedisSovereignAgent agent=agent_dispatch
+2026-05-08 04:53:14,303 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=RedisSovereignAgent agents=agent_coordination
+2026-05-08 04:53:14,303 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=RedisSovereignAgent lineage=workflow_lineage
+2026-05-08 04:53:14,303 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=RedisSovereignAgent outcome=healing_outcome
+2026-05-08 04:53:14,303 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=RedisSovereignAgent failure=failure_escalation
+2026-05-08 04:53:14,303 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=RedisSovereignAgent workflow_id=workflow_orchestration
+2026-05-08 04:53:14,303 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=RedisSovereignAgent layer=healing_dispatch
+2026-05-08 04:53:14,303 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=RedisSovereignAgent target=evaluation_signal
+2026-05-08 04:53:14,303 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=RedisSovereignAgent event=telemetry_event
+2026-05-08 04:53:14,303 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=RedisSovereignAgent metric=eval_metric
+2026-05-08 04:53:14,303 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=RedisSovereignAgent embedding=embedding_store
+2026-05-08 04:53:14,303 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=RedisSovereignAgent state=meta_learning
+2026-05-08 04:53:14,303 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=RedisSovereignAgent snapshot=exec_snapshot_link
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_1
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_2
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_3
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_4
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_5
+2026-05-08 04:53:14,304 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=RedisSovereignAgent source=p4obs metric=metric_6
+2026-05-08 04:53:14,304 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=RedisSovereignAgent source=p4obs incident=incident
+2026-05-08 04:53:14,304 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=RedisSovereignAgent source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,304 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=RedisSovereignAgent source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,304 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=RedisSovereignAgent source=p4obs state=mon_state
+2026-05-08 04:53:14,304 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=RedisSovereignAgent source=p4obs alert=alert
+2026-05-08 04:53:14,304 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=RedisSovereignAgent source=p4obs trace=trace_link
+2026-05-08 04:53:14,304 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=RedisSovereignAgent source=p3lm pattern=pattern
+2026-05-08 04:53:14,304 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=RedisSovereignAgent source=p3lm event=learning_event
+2026-05-08 04:53:14,304 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=RedisSovereignAgent source=p3lm snap=snapshot
+2026-05-08 04:53:14,304 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=RedisSovereignAgent source=p3lm feed=meta_feed
+2026-05-08 04:53:14,304 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=RedisSovereignAgent source=p3lm strategy=routing
+2026-05-08 04:53:14,304 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=RedisSovereignAgent source=p3lm policy=policy
+2026-05-08 04:53:14,304 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=RedisSovereignAgent source=p3lm state=state
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=RedisSovereignAgent layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=RedisSovereignAgent layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=RedisSovereignAgent layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=RedisSovereignAgent layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=RedisSovereignAgent layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,304 [DEBUG] adg.reads_env: reads_env root_trace_id=RedisSovereignAgent source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,304 [DEBUG] adg.reads_env: reads_env root_trace_id=RedisSovereignAgent source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,304 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=RedisSovereignAgent source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,304 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=RedisSovereignAgent source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,304 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=RedisSovereignAgent context=context_pull
+2026-05-08 04:53:14,304 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=RedisSovereignAgent context=context_pull_2
+2026-05-08 04:53:14,304 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=RedisSovereignAgent uwg=uwg_term
+2026-05-08 04:53:14,304 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=RedisSovereignAgent uwg=uwg_term_2
+2026-05-08 04:53:14,304 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=RedisSovereignAgent governor=write_through
+2026-05-08 04:53:14,304 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=RedisSovereignAgent governor=write_through_2
+2026-05-08 04:53:14,304 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=RedisSovereignAgent layer=safety_validation
+2026-05-08 04:53:14,304 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=RedisSovereignAgent target=eval_call
+2026-05-08 04:53:14,304 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=RedisSovereignAgent proposal=routing_commit
+2026-05-08 04:53:14,304 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=249a018c-2e4f-48e9-9fbe-547e8088c487 layer=L0_ROUTING op=CoreIntegrityVerifier.verify_core_integrity
+2026-05-08 04:53:14,306 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=e4fb3f8c-59fa-4ee4-a1d0-7fc720a8f61a layer=L3_ORCHESTRATION op=AuditTrailMixin.log_sovereign_event
+2026-05-08 04:53:14,306 [INFO] SovereignBlackBox: {"timestamp":"2026-05-08T08:53:14.306345+00:00","agent_id":"RedisSovereignAgent","domain":"unknown","session":"Field(<dataclasses._MISSING_TYPE object at 0x000001B26190FE60>)","action":"BOOT","details":{"status":"initialized","mode":"hardened","integrity_verified":true},"integrity_status":"VERIFIED"}
+2026-05-08 04:53:14,325 [INFO] agentic_core.L1_cognition.reasoning.meta_client: [MetaLearningClient] Redis connection established
+2026-05-08 04:53:14,325 [INFO] agentic_core.L1_cognition.reasoning.meta_client: [MetaLearningClient] In-memory vector store initialized
+2026-05-08 04:53:14,325 [INFO] agentic_core.L1_cognition.reasoning.meta_client: [MetaLearningClient] Initialized with domain isolation
+2026-05-08 04:53:14,325 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=8cf53c42-162b-420d-ae57-bf4d4ef26cdb layer=L3_ORCHESTRATION op=ConfigMixin.config
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_1
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_2
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_3
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_4
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_5
+2026-05-08 04:53:14,326 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=behavioral_index source=p4obs metric=metric_6
+2026-05-08 04:53:14,326 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=behavioral_index source=p4obs incident=incident
+2026-05-08 04:53:14,326 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=behavioral_index source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,326 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=behavioral_index source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,326 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=behavioral_index source=p4obs state=mon_state
+2026-05-08 04:53:14,326 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=behavioral_index source=p4obs alert=alert
+2026-05-08 04:53:14,326 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=behavioral_index source=p4obs trace=trace_link
+2026-05-08 04:53:14,326 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=behavioral_index source=p3lm pattern=pattern
+2026-05-08 04:53:14,326 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=behavioral_index source=p3lm event=learning_event
+2026-05-08 04:53:14,326 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=behavioral_index source=p3lm snap=snapshot
+2026-05-08 04:53:14,326 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=behavioral_index source=p3lm feed=meta_feed
+2026-05-08 04:53:14,326 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=behavioral_index source=p3lm strategy=routing
+2026-05-08 04:53:14,326 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=behavioral_index source=p3lm policy=policy
+2026-05-08 04:53:14,326 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=behavioral_index source=p3lm state=state
+2026-05-08 04:53:14,326 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=behavioral_index layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,326 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=behavioral_index layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,326 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=behavioral_index layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,326 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=behavioral_index layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,326 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=behavioral_index layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,326 [DEBUG] adg.reads_env: reads_env root_trace_id=behavioral_index source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,326 [DEBUG] adg.reads_env: reads_env root_trace_id=behavioral_index source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,326 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=behavioral_index source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,326 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=behavioral_index source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,326 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=behavioral_index layer=p0_governance
+2026-05-08 04:53:14,326 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p0 policy_key=behavioral_index layer=policy_binding
+2026-05-08 04:53:14,326 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=behavioral_index layer=state_snapshot
+2026-05-08 04:53:14,326 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=behavioral_index context=context_pull
+2026-05-08 04:53:14,326 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=behavioral_index context=context_pull_secondary
+2026-05-08 04:53:14,326 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=behavioral_index uwg=uwg_term
+2026-05-08 04:53:14,326 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=behavioral_index uwg=uwg_term_secondary
+2026-05-08 04:53:14,326 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=behavioral_index governor=write_through
+2026-05-08 04:53:14,326 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=behavioral_index governor=write_through_secondary
+2026-05-08 04:53:14,326 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=behavioral_index layer=safety_validation
+2026-05-08 04:53:14,326 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=behavioral_index target=eval_call
+2026-05-08 04:53:14,326 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=behavioral_index proposal=routing_commit
+2026-05-08 04:53:14,326 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=behavioral_index layer=human_escalation
+2026-05-08 04:53:14,326 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=behavioral_index layer=route_through
+2026-05-08 04:53:14,326 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=behavioral_index registry_key=agent_registry
+2026-05-08 04:53:14,326 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=behavioral_index capability=capability
+2026-05-08 04:53:14,326 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> behavioral_index
+2026-05-08 04:53:14,326 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=behavioral_index callee=sub_agent
+2026-05-08 04:53:14,326 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=behavioral_index target_agent=target_agent
+2026-05-08 04:53:14,326 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=behavioral_index layer=policy_check
+2026-05-08 04:53:14,326 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=behavioral_index layer=runtime_state
+2026-05-08 04:53:14,326 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=behavioral_index layer=boundary_check
+2026-05-08 04:53:14,327 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=behavioral_index model_id=transcript
+2026-05-08 04:53:14,327 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=behavioral_index
+2026-05-08 04:53:14,327 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=behavioral_index threshold=confidence_gate
+2026-05-08 04:53:14,327 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,327 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=behavioral_index capability=execution_auth
+2026-05-08 04:53:14,327 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=behavioral_index capability=capability_check
+2026-05-08 04:53:14,327 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=behavioral_index capability=capability_route
+2026-05-08 04:53:14,327 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=behavioral_index target=uwg_write
+2026-05-08 04:53:14,327 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=behavioral_index target=direct_write_block
+2026-05-08 04:53:14,327 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=behavioral_index caller=tool_invocation
+2026-05-08 04:53:14,327 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=behavioral_index caller=exec_output
+2026-05-08 04:53:14,327 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=behavioral_index agent=agent_dispatch
+2026-05-08 04:53:14,327 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=behavioral_index agents=agent_coordination
+2026-05-08 04:53:14,327 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=behavioral_index lineage=workflow_lineage
+2026-05-08 04:53:14,327 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=behavioral_index outcome=healing_outcome
+2026-05-08 04:53:14,327 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=behavioral_index failure=failure_escalation
+2026-05-08 04:53:14,327 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=behavioral_index workflow_id=workflow_orchestration
+2026-05-08 04:53:14,327 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=behavioral_index layer=healing_dispatch
+2026-05-08 04:53:14,327 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=behavioral_index target=evaluation_signal
+2026-05-08 04:53:14,327 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=behavioral_index event=telemetry_event
+2026-05-08 04:53:14,327 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=behavioral_index metric=eval_metric
+2026-05-08 04:53:14,327 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=behavioral_index embedding=embedding_store
+2026-05-08 04:53:14,327 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=behavioral_index state=meta_learning
+2026-05-08 04:53:14,327 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=behavioral_index snapshot=exec_snapshot_link
+2026-05-08 04:53:14,327 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_1
+2026-05-08 04:53:14,327 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_2
+2026-05-08 04:53:14,327 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_3
+2026-05-08 04:53:14,327 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_4
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_5
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_6
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_7
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_8
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_9
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_10
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_11
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_12
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_13
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_14
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_15
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_16
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_17
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_18
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_19
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_20
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_21
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_22
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_23
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_24
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_25
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_26
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_27
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_28
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_29
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_30
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_31
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_32
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_33
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_34
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_35
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_36
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_37
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_38
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_39
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_40
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_41
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_42
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_43
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_44
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_45
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_46
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_47
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_48
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_49
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_50
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_51
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_52
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_53
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_54
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_55
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_56
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_57
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_58
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_59
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_60
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_61
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_62
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_63
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_64
+2026-05-08 04:53:14,328 [DEBUG] adg.reads_through: reads_through root_trace_id=l4 target=behavioral_index governor=urg_read_65
+2026-05-08 04:53:14,329 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=263544f0-d2c9-4596-836e-8e5b07d3e8f4 layer=L3_ORCHESTRATION op=BehavioralIndex.profile_for:apps_rg/reasoning/ContentQualityAgent.py
+2026-05-08 04:53:14,331 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=5a0cd2eb-63f3-46ea-a6e4-88acf7fcb5a3 layer=L3_ORCHESTRATION op=ContentQualityAgent.execute
+2026-05-08 04:53:14,331 [INFO] agentic_core.base_agents.SovereignBaseAgent: [SovereignAgent] Analyzing content quality using logic nodes...
+
+Processing:   0%|          | 0/9 [00:00<?, ?item/s]
+Processing: 100%|ΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûê| 9/9 [00:00<00:00, 2891.74item/s]
+2026-05-08 04:53:14,334 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=ea3cb1ee-f822-485e-9b4b-d17a8a8e83c0 layer=L3_ORCHESTRATION op=SkillExtractorNode.analyze_skills
+2026-05-08 04:53:14,334 [INFO] apps_rg.types.skill_extractor_node_types: Analyzing skills from job description and candidate profile
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Extracted 16 skills from job description
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Extracted 0 skills from candidate profile
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Skill gap analysis: CRITICAL severity (1.00)
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Skill matching: 0.0% match
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Generated 6 recommendations
+2026-05-08 04:53:14,335 [INFO] apps_rg.types.skill_extractor_node_types: Skill analysis complete: 0.0% match
+2026-05-08 04:53:14,335 [INFO] agentic_core.base_agents.SovereignBaseAgent: PASS [ContentQualityAgent]: Content quality validated using logic nodes
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=04b57cef739a427b82ef75d203798864 layer=L3_ORCHESTRATION op=ATSCompatibilityEngine.execute
+2026-05-08 04:53:14,335 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=04b57cef739a427b82ef75d203798864 source=ATSCompatibilityEngine.execute event=execute_complete
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=a9092aa2-31be-4136-8cfe-eafc5fe81f46 layer=L3_ORCHESTRATION op=ATSCompatibilityEngine.execute
+2026-05-08 04:53:14,335 [INFO] ATSCompatibilityEngine: PASS [ATSCompatibilityEngine]: ATS Check Passed
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=bdc2e5b9c4144928ba29e0b00f195565 layer=L3_ORCHESTRATION op=VerbatimProvenanceGate.execute
+2026-05-08 04:53:14,335 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=bdc2e5b9c4144928ba29e0b00f195565 source=VerbatimProvenanceGate.execute event=execute_complete
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=bb3179772dfd4d2187ded76c96caad78 layer=L3_ORCHESTRATION op=BaseRGEngine.record_fail
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=552e284e-8133-4399-98c2-3b3ac7b0676c layer=L3_ORCHESTRATION op=BaseRGEngine.record_fail
+2026-05-08 04:53:14,335 [WARNING] VerbatimProvenanceGate: FAIL [VerbatimProvenanceGate]: Master resume has no bullets to verify against
+2026-05-08 04:53:14,335 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=bb3179772dfd4d2187ded76c96caad78 source=BaseRGEngine.record_fail event=execute_complete
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_1
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_2
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_3
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_4
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_5
+2026-05-08 04:53:14,335 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=__init__ source=p4obs metric=metric_6
+2026-05-08 04:53:14,335 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=__init__ source=p4obs incident=incident
+2026-05-08 04:53:14,335 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=__init__ source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,335 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=__init__ source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,335 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=__init__ source=p4obs state=mon_state
+2026-05-08 04:53:14,335 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=__init__ source=p4obs alert=alert
+2026-05-08 04:53:14,335 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=__init__ source=p4obs trace=trace_link
+2026-05-08 04:53:14,335 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=__init__ source=p3lm pattern=pattern
+2026-05-08 04:53:14,335 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=__init__ source=p3lm event=learning_event
+2026-05-08 04:53:14,335 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=__init__ source=p3lm snap=snapshot
+2026-05-08 04:53:14,335 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=__init__ source=p3lm feed=meta_feed
+2026-05-08 04:53:14,335 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=__init__ source=p3lm strategy=routing
+2026-05-08 04:53:14,335 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=__init__ source=p3lm policy=policy
+2026-05-08 04:53:14,335 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=__init__ source=p3lm state=state
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=__init__ layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=__init__ layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=__init__ layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=__init__ layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=__init__ layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,335 [DEBUG] adg.reads_env: reads_env root_trace_id=__init__ source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,335 [DEBUG] adg.reads_env: reads_env root_trace_id=__init__ source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,335 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=__init__ source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,335 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=__init__ source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,335 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p1 healer_key=__init__ layer=L5
+2026-05-08 04:53:14,335 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=__init__ layer=L5
+2026-05-08 04:53:14,335 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=__init__ registry_key=agent_registry
+2026-05-08 04:53:14,335 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=__init__ capability=capability
+2026-05-08 04:53:14,335 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> __init__
+2026-05-08 04:53:14,335 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=__init__ callee=sub_agent
+2026-05-08 04:53:14,335 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=__init__ target_agent=target_agent
+2026-05-08 04:53:14,335 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=__init__ layer=policy_check
+2026-05-08 04:53:14,335 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=__init__ layer=runtime_state
+2026-05-08 04:53:14,335 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=__init__ layer=boundary_check
+2026-05-08 04:53:14,335 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=__init__ model_id=transcript
+2026-05-08 04:53:14,335 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=__init__
+2026-05-08 04:53:14,335 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=__init__ threshold=confidence_gate
+2026-05-08 04:53:14,335 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=__init__ layer=L5
+2026-05-08 04:53:14,335 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p1 policy_key=__init__ layer=L5
+2026-05-08 04:53:14,335 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=__init__ layer=state_snapshot
+2026-05-08 04:53:14,335 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,335 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=__init__ layer=p0_governance
+2026-05-08 04:53:14,335 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=p0 layer=evidence op=__init__
+2026-05-08 04:53:14,335 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=__init__ capability=execution_auth
+2026-05-08 04:53:14,335 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=__init__ capability=capability_check
+2026-05-08 04:53:14,335 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=__init__ capability=capability_route
+2026-05-08 04:53:14,335 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=__init__ target=uwg_write
+2026-05-08 04:53:14,335 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=__init__ target=direct_write_block
+2026-05-08 04:53:14,335 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=__init__ caller=tool_invocation
+2026-05-08 04:53:14,335 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=__init__ caller=exec_output
+2026-05-08 04:53:14,335 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=__init__ agent=agent_dispatch
+2026-05-08 04:53:14,335 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=__init__ agents=agent_coordination
+2026-05-08 04:53:14,335 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=__init__ lineage=workflow_lineage
+2026-05-08 04:53:14,335 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=__init__ outcome=healing_outcome
+2026-05-08 04:53:14,335 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=__init__ failure=failure_escalation
+2026-05-08 04:53:14,335 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=__init__ workflow_id=workflow_orchestration
+2026-05-08 04:53:14,335 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=__init__ layer=healing_dispatch
+2026-05-08 04:53:14,335 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=__init__ target=evaluation_signal
+2026-05-08 04:53:14,335 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=__init__ event=telemetry_event
+2026-05-08 04:53:14,335 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=__init__ metric=eval_metric
+2026-05-08 04:53:14,335 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=__init__ embedding=embedding_store
+2026-05-08 04:53:14,335 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=__init__ state=meta_learning
+2026-05-08 04:53:14,335 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=__init__ snapshot=exec_snapshot_link
+2026-05-08 04:53:14,337 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=__init__ context=context_pull
+2026-05-08 04:53:14,337 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=__init__ context=context_pull_secondary
+2026-05-08 04:53:14,337 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=__init__ uwg=uwg_term
+2026-05-08 04:53:14,337 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=__init__ uwg=uwg_term_secondary
+2026-05-08 04:53:14,337 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=__init__ governor=write_through
+2026-05-08 04:53:14,337 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=__init__ governor=write_through_secondary
+2026-05-08 04:53:14,337 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=__init__ layer=safety_validation
+2026-05-08 04:53:14,337 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=__init__ target=eval_call
+2026-05-08 04:53:14,337 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=__init__ proposal=routing_commit
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: --------------------------------------------------
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: ≡ƒÅü GENERATION COMPLETE in 0.07s
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: STATUS: HUMAN_REVIEW
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: QUALITY SCORE: 1.0
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: ATS COMPATIBLE: True
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: --------------------------------------------------
+2026-05-08 04:53:14,348 [INFO] RESUME_GENERATOR: ≡ƒÆ╛ Saving generated resume...
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR: Γ£à Resume saved to: artifacts\apps_rg\runs\r4_72afb54f\generated_resume.json
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR: ≡ƒôè Run report:    artifacts\apps_rg\runs\r4_72afb54f\run_report.json
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR: --------------------------------------------------
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR: ≡ƒôï RESUME PREVIEW:
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   schema_version: master_resume_v2.16
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   owner: ['name', 'headline', 'contact']
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   executive_summary: Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments. Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed. Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs. Generated $22M in productized AI revenue, expanded gross margins by 20%, reclaimed $14M in operating capacity, and reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure. Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   professional_experience: 5 items
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   education: 2 items
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   certifications_and_credentials: 4 items
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   engineering_and_platform_competencies: 8 items
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   _provenance: ['source_pdf', 'extracted_at', 'method', 'supersedes']
+2026-05-08 04:53:14,350 [INFO] RESUME_GENERATOR:   experience: 5 items
+
+OTEL ingest:   0%|          | 0/1 [00:00<?, ?chunk/s]
+
+Processing:   0%|          | 0/784 [00:00<?, ?item/s][A
+Processing: 100%|ΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûê| 784/784 [00:00<?, ?item/s]
+
+
+Processing:   0%|          | 0/784 [00:00<?, ?item/s][A
+Processing: 100%|ΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûêΓûê| 784/784 [00:00<00:00, 780335.63item/s]
+2026-05-08 04:53:14,365 [INFO] tools.mcp.mcp_deferred_loader: DEFERRED_LOAD_OK: runtime-adg-store loaded successfully
+2026-05-08 04:53:14,365 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=5a2fa92f-a1ff-4956-b523-46f6823db3a3 layer=L3_ORCHESTRATION op=FileBackedVersionStore.commit_change_package
+2026-05-08 04:53:14,371 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=e25fab39-8619-4d3a-919c-5a3099574522 layer=L3_ORCHESTRATION op=SystemLearningMemoryBridge.get_instance
+2026-05-08 04:53:14,377 [DEBUG] adg.applies_guardrail: applies_guardrail root_trace_id=p0 guardrail=mcp_client layer=p0_governance
+2026-05-08 04:53:14,377 [DEBUG] adg.reads_policy_state: reads_policy_state root_trace_id=p0 policy_key=mcp_client layer=policy_binding
+2026-05-08 04:53:14,377 [DEBUG] adg.snapshots_state: snapshots_state root_trace_id=p0 state_key=mcp_client layer=state_snapshot
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_1
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_2
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_3
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_4
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_5
+2026-05-08 04:53:14,377 [DEBUG] adg.emits_metric_event: emits_metric_event root_trace_id=mcp_client source=p4obs metric=metric_6
+2026-05-08 04:53:14,377 [DEBUG] adg.records_incident_event: records_incident_event root_trace_id=mcp_client source=p4obs incident=incident
+2026-05-08 04:53:14,377 [DEBUG] adg.captures_runtime_anomaly: captures_runtime_anomaly root_trace_id=mcp_client source=p4obs anomaly=anomaly
+2026-05-08 04:53:14,377 [DEBUG] adg.writes_observability_log: writes_observability_log root_trace_id=mcp_client source=p4obs log_entry=obs_log
+2026-05-08 04:53:14,377 [DEBUG] adg.updates_monitoring_state: updates_monitoring_state root_trace_id=mcp_client source=p4obs state=mon_state
+2026-05-08 04:53:14,377 [DEBUG] adg.triggers_alert: triggers_alert root_trace_id=mcp_client source=p4obs alert=alert
+2026-05-08 04:53:14,377 [DEBUG] adg.links_incident_trace: links_incident_trace root_trace_id=mcp_client source=p4obs trace=trace_link
+2026-05-08 04:53:14,377 [DEBUG] adg.captures_pattern: captures_pattern root_trace_id=mcp_client source=p3lm pattern=pattern
+2026-05-08 04:53:14,377 [DEBUG] adg.records_learning_event: records_learning_event root_trace_id=mcp_client source=p3lm event=learning_event
+2026-05-08 04:53:14,377 [DEBUG] adg.writes_learning_snapshot: writes_learning_snapshot root_trace_id=mcp_client source=p3lm snap=snapshot
+2026-05-08 04:53:14,377 [DEBUG] adg.feeds_meta_learning: feeds_meta_learning root_trace_id=mcp_client source=p3lm feed=meta_feed
+2026-05-08 04:53:14,377 [DEBUG] adg.updates_routing_strategy: updates_routing_strategy root_trace_id=mcp_client source=p3lm strategy=routing
+2026-05-08 04:53:14,377 [DEBUG] adg.improves_agent_policy: improves_agent_policy root_trace_id=mcp_client source=p3lm policy=policy
+2026-05-08 04:53:14,377 [DEBUG] adg.stores_learning_state: stores_learning_state root_trace_id=mcp_client source=p3lm state=state
+2026-05-08 04:53:14,377 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=mcp_client layer=L0_ROUTING op=p2_trace_1
+2026-05-08 04:53:14,377 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=mcp_client layer=L1_REASONING op=p2_trace_2
+2026-05-08 04:53:14,377 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=mcp_client layer=L2_EXECUTION op=p2_trace_3
+2026-05-08 04:53:14,377 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=mcp_client layer=L3_ORCHESTRATION op=p2_trace_4
+2026-05-08 04:53:14,377 [DEBUG] adg.records_execution_trace: records_execution_trace root_trace_id=mcp_client layer=L4_STATE op=p2_trace_5
+2026-05-08 04:53:14,377 [DEBUG] adg.reads_env: reads_env root_trace_id=mcp_client source=env_read env_key=p2_env_1
+2026-05-08 04:53:14,377 [DEBUG] adg.reads_env: reads_env root_trace_id=mcp_client source=env_read env_key=p2_env_2
+2026-05-08 04:53:14,377 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=mcp_client source=runtime_state state_key=p2_rt_1
+2026-05-08 04:53:14,377 [DEBUG] adg.reads_runtime_state: reads_runtime_state root_trace_id=mcp_client source=runtime_state state_key=p2_rt_2
+2026-05-08 04:53:14,377 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=mcp_client context=context_pull
+2026-05-08 04:53:14,377 [DEBUG] adg.pulls_context: pulls_context root_trace_id=p1 source=mcp_client context=context_pull_2
+2026-05-08 04:53:14,377 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=mcp_client uwg=uwg_term
+2026-05-08 04:53:14,377 [DEBUG] adg.execution_terminates_at_uwg: execution_terminates_at_uwg root_trace_id=p1 source=mcp_client uwg=uwg_term_2
+2026-05-08 04:53:14,377 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=mcp_client governor=write_through
+2026-05-08 04:53:14,377 [DEBUG] adg.writes_through: writes_through root_trace_id=p1 target=mcp_client governor=write_through_2
+2026-05-08 04:53:14,377 [DEBUG] adg.validated_by_safety_plane: validated_by_safety_plane root_trace_id=p1 validator=mcp_client layer=safety_validation
+2026-05-08 04:53:14,377 [DEBUG] adg.invokes_eval: invokes_eval root_trace_id=p1 source=mcp_client target=eval_call
+2026-05-08 04:53:14,377 [DEBUG] adg.proposal_commits_routing: proposal_commits_routing root_trace_id=p1 source=mcp_client proposal=routing_commit
+2026-05-08 04:53:14,377 [DEBUG] adg.escalates_to_human: escalates_to_human root_trace_id=p1 reason=mcp_client layer=human_escalation
+2026-05-08 04:53:14,377 [DEBUG] adg.routes_through: routes_through root_trace_id=p1 route_key=mcp_client layer=route_through
+2026-05-08 04:53:14,377 [DEBUG] adg.checks_agent_registry: checks_agent_registry root_trace_id=p1 checker=mcp_client registry_key=agent_registry
+2026-05-08 04:53:14,377 [DEBUG] adg.validates_agent_capability: validates_agent_capability root_trace_id=p1 validator=mcp_client capability=capability
+2026-05-08 04:53:14,377 [DEBUG] adg.dispatches_execution_plan: [TRACE] dispatches_execution_plan: p1 -> mcp_client
+2026-05-08 04:53:14,377 [DEBUG] adg.agent_executes_agent: agent_executes_agent root_trace_id=p1 caller=mcp_client callee=sub_agent
+2026-05-08 04:53:14,377 [DEBUG] adg.routes_to_agent: routes_to_agent root_trace_id=p1 caller=mcp_client target_agent=target_agent
+2026-05-08 04:53:14,377 [DEBUG] adg.verifies_policy: verifies_policy root_trace_id=p1 policy=mcp_client layer=policy_check
+2026-05-08 04:53:14,377 [DEBUG] adg.observes_runtime_state: observes_runtime_state root_trace_id=p1 state_key=mcp_client layer=runtime_state
+2026-05-08 04:53:14,377 [DEBUG] adg.verifies_boundary: verifies_boundary root_trace_id=p1 boundary=mcp_client layer=boundary_check
+2026-05-08 04:53:14,377 [DEBUG] adg.transcripts_response: transcripts_response root_trace_id=p1 transcript_id=mcp_client model_id=transcript
+2026-05-08 04:53:14,377 [DEBUG] adg.hard_fails_untranscripted: hard_fails_untranscripted root_trace_id=p1 reason=mcp_client
+2026-05-08 04:53:14,377 [DEBUG] adg.gated_by_confidence: gated_by_confidence root_trace_id=p1 scorer=mcp_client threshold=confidence_gate
+2026-05-08 04:53:14,377 [DEBUG] adg.signs_execution_trace: signs_execution_trace root_trace_id=p0 hash=p0hash sig=p0_trace order=0
+2026-05-08 04:53:14,377 [DEBUG] adg.authorize_and_execute: authorize_and_execute root_trace_id=p2 authorizer=mcp_client capability=execution_auth
+2026-05-08 04:53:14,377 [DEBUG] adg.validates_capability: validates_capability root_trace_id=p2 validator=mcp_client capability=capability_check
+2026-05-08 04:53:14,377 [DEBUG] adg.routes_to_capability: routes_to_capability root_trace_id=p2 router=mcp_client capability=capability_route
+2026-05-08 04:53:14,377 [DEBUG] adg.writes_via_uwg: writes_via_uwg root_trace_id=p2 writer=mcp_client target=uwg_write
+2026-05-08 04:53:14,377 [DEBUG] adg.blocks_direct_write: blocks_direct_write root_trace_id=p2 blocker=mcp_client target=direct_write_block
+2026-05-08 04:53:14,377 [DEBUG] adg.records_tool_invocation: records_tool_invocation root_trace_id=p2 tool=mcp_client caller=tool_invocation
+2026-05-08 04:53:14,377 [DEBUG] adg.captures_execution_output: captures_execution_output root_trace_id=p2 output_key=mcp_client caller=exec_output
+2026-05-08 04:53:14,377 [DEBUG] adg.dispatches_agent: dispatches_agent root_trace_id=p3 dispatcher=mcp_client agent=agent_dispatch
+2026-05-08 04:53:14,377 [DEBUG] adg.coordinates_agents: coordinates_agents root_trace_id=p3 coordinator=mcp_client agents=agent_coordination
+2026-05-08 04:53:14,377 [DEBUG] adg.records_workflow_lineage: records_workflow_lineage root_trace_id=p3 workflow=mcp_client lineage=workflow_lineage
+2026-05-08 04:53:14,377 [DEBUG] adg.records_healing_outcome: records_healing_outcome root_trace_id=p3 healer=mcp_client outcome=healing_outcome
+2026-05-08 04:53:14,377 [DEBUG] adg.escalates_failure: escalates_failure root_trace_id=p3 escalator=mcp_client failure=failure_escalation
+2026-05-08 04:53:14,377 [DEBUG] adg.orchestrates_workflow: orchestrates_workflow root_trace_id=p3 orchestrator=mcp_client workflow_id=workflow_orchestration
+2026-05-08 04:53:14,377 [DEBUG] adg.dispatches_healing_run: dispatches_healing_run root_trace_id=p3 healer_key=mcp_client layer=healing_dispatch
+2026-05-08 04:53:14,377 [DEBUG] adg.invokes_evaluation: invokes_evaluation root_trace_id=p3 evaluator=mcp_client target=evaluation_signal
+2026-05-08 04:53:14,377 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=mcp_client event=telemetry_event
+2026-05-08 04:53:14,377 [DEBUG] adg.captures_evaluation_metric: captures_evaluation_metric root_trace_id=p4 source=mcp_client metric=eval_metric
+2026-05-08 04:53:14,377 [DEBUG] adg.stores_embedding: stores_embedding root_trace_id=p4 source=mcp_client embedding=embedding_store
+2026-05-08 04:53:14,377 [DEBUG] adg.updates_meta_learning_state: updates_meta_learning_state root_trace_id=p4 source=mcp_client state=meta_learning
+2026-05-08 04:53:14,377 [DEBUG] adg.links_execution_to_snapshot: links_execution_to_snapshot root_trace_id=p4 source=mcp_client snapshot=exec_snapshot_link
+2026-05-08 04:53:14,381 [INFO] agentic_core.L4_state.enforcement.graph_memory_bridge: [GraphMemoryBridge] Initialized (SQLite fallback mode) db=artifacts\memory\knowledge_graph.sqlite
+2026-05-08 04:53:14,387 [INFO] tools.otel.otel_services_ingest: otel_ingest_success
+
+                                                     
+2026-05-08 04:53:14,394 [INFO] RESUME_GENERATOR: --------------------------------------------------
+2026-05-08 04:53:14,394 [INFO] RESUME_GENERATOR: ≡ƒôí OTEL bridge: buffered=784 spans, ingested=784, success=True
+2026-05-08 04:53:14,396 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_4_generate_resume: complete, run_dir=artifacts\apps_rg\runs\r4_72afb54f
+2026-05-08 04:53:14,396 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_5_narrative_pass: starting narrative pass
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+2026-05-08 04:53:19,132 [INFO] apps_rg.narrative_pass: [HOP-2.6] Extracted 5 mirror terms
+2026-05-08 04:53:21,723 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:23,872 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:25,688 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:26,823 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:28,556 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:29,685 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:33,029 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:35,510 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:39,603 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:41,802 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:46,782 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:49,517 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:55,058 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:53:57,326 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:01,795 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:03,376 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:07,125 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:09,465 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:11,775 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:13,612 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:15,275 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:15,880 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:16,729 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:18,638 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:20,425 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:22,145 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:23,333 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:24,460 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:25,475 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:26,642 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:28,964 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:32,380 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:35,456 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:39,184 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:42,232 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:44,460 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:46,210 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:50,831 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:54,193 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:54:58,059 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:00,852 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:02,965 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:04,562 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:06,467 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:09,222 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:10,834 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:13,964 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:16,244 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:19,071 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:20,602 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:22,085 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:24,628 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:26,274 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:28,874 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:33,162 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:35,485 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:36,683 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:38,284 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:42,203 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:44,827 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:46,175 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:47,533 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:48,715 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:49,903 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:51,016 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:52,098 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:53,335 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:56,170 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:55:57,839 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:00,152 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:01,561 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:02,653 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:04,369 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:06,650 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:08,121 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:09,382 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:10,636 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:11,435 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:12,642 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:14,449 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:15,684 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:17,887 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:19,750 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:20,926 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:21,786 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:22,983 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:24,584 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:27,192 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:28,385 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:29,812 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:31,445 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:32,644 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:33,948 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:37,931 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:40,502 [INFO] httpx: HTTP Request: POST http://localhost:8000/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-08 04:56:40,511 [INFO] apps_rg.narrative_pass: [narrative_pass] role tradersense not found in resume ΓÇö skipping
+2026-05-08 04:56:40,511 [INFO] apps_rg.narrative_pass: [narrative_pass] role ey not found in resume ΓÇö skipping
+2026-05-08 04:56:40,512 [INFO] apps_rg.integrations.ats_coverage: [ats_coverage] headline modified to include target title: Senior Vice President, IT Strategy & Innovation
+2026-05-08 04:56:40,512 [INFO] apps_rg.narrative_pass: [narrative_pass] ATS hardening: title_modified=True organic_coverage=1.00 missing=[]
+2026-05-08 04:56:40,515 [INFO] apps_rg.narrative_pass: [narrative_pass] Complete. Outputs in artifacts\apps_rg\runs\r4_72afb54f
+2026-05-08 04:56:41,634 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_5_narrative_pass: exit_code=0
+2026-05-08 04:56:41,635 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_6_docx_export: starting DOCX export
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+
+Processing: 0item [00:00, ?item/s]
+Processing: 0item [00:00, ?item/s]
+Wrote artifacts\apps_rg\runs\r4_72afb54f\Amit_Ayer_Resume.docx  (31,274 bytes)
+2026-05-08 04:56:48,113 [INFO] apps_rg.l2_recipe.steps: [L2 step] hop_6_docx_export: exit_code=0
+2026-05-08 04:56:48,130 [INFO] apps_rg: [apps_rg] R4 pipeline complete: run_id=648cb008-2a27-4de6-a689-3b5f16c15338 x3=X3A terminal_r5=False fault=(none)
+2026-05-08 04:56:48,219 [INFO] sentence_transformers.SentenceTransformer: Load pretrained SentenceTransformer: bge-m3-v1
+2026-05-08 04:56:48,493 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/sentence-transformers/bge-m3-v1/resolve/main/modules.json "HTTP/1.1 404 Not Found"
+2026-05-08 04:56:48,493 [WARNING] sentence_transformers.SentenceTransformer: No sentence-transformers model found with name sentence-transformers/bge-m3-v1. Creating a new one with mean pooling.
+2026-05-08 04:56:48,610 [INFO] httpx: HTTP Request: HEAD https://huggingface.co/sentence-transformers/bge-m3-v1/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-08 04:56:48,610 [WARNING] agentic_core.L4_state.cache.gptcache_client: L2_CACHE: SentenceTransformerEmbeddingFunction unavailable (sentence-transformers/bge-m3-v1 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`) ΓÇö using ChromaDB default EF
+2026-05-08 04:56:48,614 [INFO] agentic_core.L4_state.cache.gptcache_client: Native L2 cache initialized at artifacts\gptcache with SQLite + ChromaDB (built-in embeddings)
+2026-05-08 04:56:48,614 [INFO] agentic_core.L4_state.utils.memory.semantic_cache_manager: [HiveMind] Native L2 cache initialized at artifacts/gptcache/
+2026-05-08 04:56:48,614 [INFO] agentic_core.L4_state.utils.memory.semantic_cache_manager: [HiveMind] Connected to Working Memory (Redis)
+2026-05-08 04:56:48,614 [INFO] agentic_core.L4_state.utils.memory.semantic_cache_manager: [HiveMind] Connected to Long-Term Memory (Native L2: SQLite+ChromaDB)
+2026-05-08 04:56:48,614 [INFO] agentic_core.L4_state.utils.memory.semantic_cache_manager: [HiveMind] Config: strict_mode=False, sampling_rate=1.0, promotion_threshold=0.8
+
+L1 warmup: 0row [00:00, ?row/s]
+L1 warmup: 0row [00:00, ?row/s]
+2026-05-08 04:56:48,615 [INFO] agentic_core.L4_state.utils.memory.semantic_cache_manager: [HiveMind] L1 warmup from L2 completed: 0 keys hydrated
+2026-05-08 04:56:48,615 [WARNING] apps_rg.cache.r1b_adapter: Failed to store R1B cache entry: 'SemanticCacheManager' object has no attribute 'store'
+2026-05-08 04:56:48,616 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=apps_rg.outputs.resume_renderer event=module_loaded
+2026-05-08 04:56:48,616 [DEBUG] adg.records_telemetry_event: records_telemetry_event root_trace_id=p4 source=apps_rg.outputs.section_renderer event=module_loaded
+ΓòöΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòù
+Γòæ   AGENTIC SPINE ΓÇö WHAT HAPPENED                                                             Γòæ
+Γòæ   Run: r4_42e772c8-868  ┬╖  Brown & Brown / Senior Vice President, IT Strategy & Innovation   Γòæ
+ΓòÜΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓò¥
+
+LEGEND:  Γ£à correct  ΓÜá∩╕Å partial  Γ¥î broken  ≡ƒÜ½ not triggered  ΓÅ¡ bypassed
+
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé U0 ΓÇö VALIDATED REQUEST INTAKE                                                                  Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  U0.1  schema_validation              Γ£à JSON shape valid
+  U0.2  sanitize / normalize           Γ£à payload normalized
+  U0.3  request_id assignment          Γ£à req-01570139fc1f...
+  U0.4  trace_root assignment          Γ£à trace-3d2d3f8116...
+  U0.5  permitted_next_layer stamp     Γ£à "L1"
+  U0.6  validated_request.json seal    Γ£à hash-bound
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L1 ΓÇö REASONING / PLAN CONTRACT                                                                 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L1.1  bridge: VR ΓåÆ PlanContract      Γ£à deterministic field map
+  L1.2  task_spec derivation           Γ£à "intake.<shape>"
+  L1.3  query_spec selection           Γ£à "internal_action"
+  L1.4  grounding_required flag        Γ£à false (manual brief)
+  L1.5  cognition (LLM reasoning)      ΓÜá∩╕Å NOT INVOKED ΓÇö R4 hard-codes bridge; no LLM planning
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L0 ΓÇö ROUTE GATES                                                                               Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L0.1  D1 exact cache lookup          Γ£à MISS (sha256 not seen)
+  L0.2  D2 semantic cache lookup       Γ£à MISS (no near-match)
+         L0.2a  embed request          Γ£à BGE-M3 1024-dim computed
+         L0.2b  Chroma kNN search      Γ£à no candidate over threshold
+         L0.2c  hybrid Jaccard (G1)    ≡ƒÜ½ N/A no candidate to fuse
+         L0.2d  evidence resolve (G2)  ≡ƒÜ½ N/A no candidate
+  L0.3  VetoOrchestrator invoke        ≡ƒÜ½ N/A no candidate to veto
+  L0.4  intent_embedding_classifier    ≡ƒÜ½ not used in R4 (registry lookup)
+  L0.5  route_contract emit            Γ£à R4_SINGLE_ACTION
+  L0.6  cache writeback (post-run)     Γ¥î NOT WIRED ΓÇö vector discarded; D2 always misses next time
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L5 ΓÇö SAFETY & GOVERNANCE                                                                       Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L5.a  GuardrailGate per boundary     Γ£à ALLOW silently at U0,L1,L0,L2,exit,L4
+  L5.b  HitlGate (destructive ops)     ≡ƒÜ½ not triggered
+  L5.c  HITLEscalationActivator        ≡ƒÜ½ not triggered
+  L5.d  policy_action_contract         Γ£à ALLOW outcome at each call
+  L5.e  capability_token check         Γ£à valid scope per HOP
+  L5.f  MUST_BYPASS_FLOWS check        Γ£à none of D4/HITL/UWG/AUDIT/REPLAY
+  L5.g  live-signal bypass (G3)        Γ£à no mutation/status markers
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé C0 ΓÇö GROUNDING / RETRIEVAL                                                                     Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  C0    Query Normalization            ΓÅ¡ BYPASSED
+  C0    Embedding Lookup               ΓÅ¡ BYPASSED
+  C0    D1 Exact Cache Probe           ΓÅ¡ BYPASSED
+  C0    D2 Semantic Cache Probe        ΓÅ¡ BYPASSED
+  C0    Retrieval Augmentation         ΓÅ¡ BYPASSED
+  C0    Grounding Context Assembly     ΓÅ¡ BYPASSED
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé PROMPT ASSEMBLY                                                                                Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  PA.1  spine PA invoke                ΓÅ¡ bypassed (HOPs own prompts)
+  PA.2  prompt_hash registration       Γ¥î HOP prompt hashes not registered with spine
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L3 ΓÇö ORCHESTRATION                                                                             Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L3.1  runtime orchestration          ΓÅ¡ bypassed (R4 = static DAG)
+  L3.2  l3_bypass_receipt.json         Γ£à sealed
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L2 ΓÇö EXECUTION SHELL                                                                           Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L2    Prep: Plan Decomposition       Γ£à PASS
+  L2    Valid: Pre-Execution Contract Check Γ£à PASS
+  L2    Exec: Tool Dispatch            Γ£à PASS
+  L2    Heal: Retry / Recovery         ΓÜá∩╕Å BYPASSED
+  L2    Seal: Output Assembly          Γ£à PASS
+  L2.3  tool / step dispatch           Γ£à apps_rg DAG executed:
+         HOP-0.5-ARCHETYPE             Γ£à
+         HOP-1                         Γ£à
+         HOP-2                         Γ£à
+         HOP-2.5-JD-FACETS             Γ£à
+         HOP-2.7-JD-ALIGN              Γ£à
+         HOP-3-K9                      Γ£à
+         HOP-4-OPT                     Γ£à
+         HOP-4.5-DIVERSITY             Γ£à
+         HOP-4-RANK                    Γ£à
+         HOP-5-ATS                     Γ£à
+  L2.4  output capture                 Γ£à resume JSON + DOCX written; run_report.json sealed
+  L2.5  side-effect / write record     Γ£à no L4 write proposed
+  L2.6  terminal_ret_packet seal       Γ£à l2_recipe_executed=true
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé EXIT EVAL ΓÇö PREFLIGHT                                                                          Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  ┬º5.0  required-receipts check        Γ£à all 12 spine receipts present
+  ┬º5.1  N3 identity binding            Γ£à run/request/trace coherent
+  ┬º5.1  N2/N5 normalize ΓåÆ packet       Γ£à ExitReviewPacket assembled
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé EXIT EVAL ΓÇö X1 GATES (10 gates)                                                                Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+    X1A  Policy / threshold / roster   Γ£à PASS (code, binary)
+    X1B  Task completion / format      Γ£à PASS (code, binary)
+    X1C  Sandbox / mutation / egress   Γ£à PASS (code, binary)
+    X1D  Groundedness / citation       Γ£à PASS (code, binary)
+    X1E  Process / tool / retry        Γ£à PASS (code, binary)
+    X1F  Adversarial / injection       Γ£à PASS (code, binary)
+    X1G  Consistency (pass^k)          Γ£à PASS (code, binary)
+    X1H  Replay & determinism          Γ£à PASS (code, binary)
+    X1I  Observability complete        Γ£à PASS (code, binary)
+    X1J  Write eligibility / UWG       Γ£à PASS (code, binary)
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé EXIT EVAL ΓÇö APP-SPECIFIC EVAL                                                                  Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  APP.1  rubric_ref binding            Γ¥î UNBOUND (no rubric_ref on route_contract)
+  APP.2  threshold_profile binding     Γ¥î UNBOUND
+  APP.3  per-dimension scoring         Γ¥î skipped (unbound)
+  APP.4  abstain protocol              ≡ƒÜ½ N/A (no graders ran)
+  APP.5  HITL policy resolve           ≡ƒÜ½ N/A ΓåÆ hitl_policy="none"
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé EXIT EVAL ΓÇö X2 AGGREGATE MATRIX                                                                Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  X2.1  hard_fail accumulator          Γ£à 0 hard fails
+  X2.2  escalate_codes accumulator     Γ£à 0 escalation codes
+  X2.3  abstain_codes accumulator      Γ£à 0 abstain codes
+  X2.4  app_specific HITL routing      ≡ƒÜ½ unbound ΓåÆ no routing
+  X2.5  commit_path determination      Γ£à NO (terminal_class=answer_only)
+  X2.6  break-glass invariant          Γ£à X1A,X1C never bypassed
+  X2.7  aggregate decision             Γ£à ALLOW (answer_only_clear)
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé EXIT EVAL ΓÇö X3 DISPOSITION                                                                     Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  X3A  DENY                            ≡ƒÜ½ not selected
+  X3B  ESCALATE (HITL)                 ≡ƒÜ½ not selected
+  X3C  COMMIT_REQUEST (UWG)            ≡ƒÜ½ not selected
+  X3D  ALLOW                           Γ£à SELECTED
+  X3E  SAFE_ABSTAIN                    ≡ƒÜ½ not selected
+  X3.seal exit_review_packet.json      Γ£à
+  X3.seal x3_disposition_receipt       Γ£à
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L4 ΓÇö UWG DURABLE WRITE GATEWAY                                                                 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L4.1  X3C trigger check              ≡ƒÜ½ not X3C ΓåÆ L4 not invoked
+  L4.2  HitlGate destructive prompt    ≡ƒÜ½ N/A
+  L4.3  UWG write commit               ≡ƒÜ½ N/A
+  L4.4  state_diff seal                ≡ƒÜ½ N/A (state_diff=Γêà)
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L6 ΓÇö RUNTIME EXHAUST + LEARNING                                                                Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L6.1  exhaust manifest seal          Γ£à runtime_exhaust_bundle.json
+  L6.2  trace snapshot seal            Γ£à runtime_trace_snapshot.json
+  L6.3  synthetic-trace check          Γ£à false
+  L6.4  eval_harness_outcome row       ΓÜá∩╕Å written as app_eval_unbound
+  L6.5  cache calibration counters     Γ£à D1/D2 miss incremented
+  L6.6  L6/promo Wilson rollup         ΓÜá∩╕Å no live data this cycle
+  L6.7  L6/regret by_layer signal      ΓÜá∩╕Å empty ΓÇö no tracked_metrics
+  L6.8  runtime_mode                   Γ¥î "fixture" ΓÇö all metric keys absent
+  L6.9  L6 ΓåÆ L0 feedback loop          Γ¥î never fired (no metrics)
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L7 ΓÇö HOWTRACE                                                                                  Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+  L7.1  build_how_trace                Γ£à all stages projected
+  L7.2  app_recipe_execution merge     Γ£à apps_rg HOPs visible
+  L7.3  blocking_gaps detection        Γ£à 0 structural gaps
+  L7.4  quality_warnings list          Γ¥î field doesn't exist ΓÇö silent quality gaps
+  L7.5  deterministic_digest seal      Γ£à sha256:cc733756c4c25eb60fd97d5da3e1e2f9d3b96e0e7c609d319f86e301350987dc
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé L7 ΓÇö ROUTE FAMILY COVERAGE MATRIX (MANDATORY)                                                  Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+    Certified                          Γ£à 1/9
+
+  Route Family                       Exercised    Certification      Proof Class      Verifier
+  ---------------------------------- ------------ ------------------ ---------------- --------------------
+  R1A_EXACT_CACHE                    ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  R1B_SEMANTIC_CACHE                 ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  R3_GROUNDED_READ                   ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  R4_SINGLE_ACTION                   Γ£à            Γ£à CERTIFIED        Γ¥î REAL_RUNTIME   Γ£à
+  R5_FALLBACK                        ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  MANAGED_WORKFLOW_STRUCTURAL        ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  MANAGED_WORKFLOW_REAL_EXECUTION    ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  UWG_COMMIT_PATH                    ≡ƒÜ½            Γ¥î NOT_CERTIFIED    Γ¥î MISSING        Γ£à
+  UWG_BLOCK_PATH                     ≡ƒÜ½            Γ¥î NOT_CERTIFIED    ΓÜá∩╕Å FIXTURE_ONLY   Γ£à
+
+ΓöéΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöé
+
+GAP SUMMARY:
+
+  #1  Cache writeback unwired in R4          ΓåÆ L0.6
+  #2  AppSpecificEvaluator unbound           ΓåÆ APP.1ΓÇôAPP.5, X2.4, L6.4, L6.7
+  #3  runtime_mode=fixture                   ΓåÆ L6.6ΓÇôL6.9
+  #4  L1 reasoning unused                    ΓåÆ L1.5
+
+  Minor: PA.2 (prompt_hash registration), L7.4 (quality_warnings list)
+

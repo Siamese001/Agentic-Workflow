@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-06T11:26:23Z",
-  "fetched_at_epoch": 1778066783.6518183,
+  "fetched_at": "2026-05-08T08:47:21Z",
+  "fetched_at_epoch": 1778230041.1538868,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -783,9 +783,9 @@
       "has_ai_summary": true
     },
     "adg-fail-aggregating-gate-chain-9d4e1f": {
-      "status": "Not Started",
+      "status": "Archived",
       "page_id": "35827693-f55c-814c-820e-d6380af84e0c",
-      "exists_on_disk": true,
+      "exists_on_disk": false,
       "has_ai_summary": true
     },
     "otel-collector-cert-receipt-b4d2e6": {
@@ -879,9 +879,9 @@
       "has_ai_summary": true
     },
     "adg-repair-orchestrator-enhancement-02c1fc": {
-      "status": "Not Started",
+      "status": "Archived",
       "page_id": "35827693-f55c-8109-82b8-ce6297fac16c",
-      "exists_on_disk": true,
+      "exists_on_disk": false,
       "has_ai_summary": true
     },
     "notion-backlog-schema-refactor-7c3d9e": {
@@ -1532,6 +1532,18 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-l7-deferred-scope-followup-a1d9e3": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-800e-a675-e0575850923e",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "adg-config-ssot-uber-deferred-e8f2a3": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-810d-bfad-f2a1829bd681",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-interactive-wizard-a3e7c1": {
       "status": "Completed",
       "page_id": "35827693-f55c-810f-a8fb-ff13ff62ef00",
@@ -1550,9 +1562,33 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "adg-distilled-followups-c8e4a1": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-8121-b70e-f468f322aa5e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-qna-judge-calibration-deferred-d4e8f2": {
       "status": "Completed",
       "page_id": "35827693-f55c-8140-9e7a-f1b63ebe4fd6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-config-ssot-redis-otel-deferred-f7a3d2": {
+      "status": "Deferred",
+      "page_id": "35827693-f55c-814f-99d1-cc1834276ab7",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l7-auditability-wireup-b3c7e1": {
+      "status": "Retired",
+      "page_id": "35827693-f55c-8157-9a45-cde9bbb81c98",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-l7-coverage-spine-wide-c5e8d2": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-8169-9850-f5cdf6067f48",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1563,7 +1599,7 @@
       "has_ai_summary": true
     },
     "apps-rg-vllm-followup-blocked-c4e8b2": {
-      "status": "Not Started",
+      "status": "In Progress",
       "page_id": "35827693-f55c-819c-a7c2-d57947ca4f0a",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1581,8 +1617,14 @@
       "has_ai_summary": true
     },
     "adg-mcp-reopen-hardening-e8f9a0": {
-      "status": "Not Started",
+      "status": "Archived",
       "page_id": "35827693-f55c-81b6-b223-cd2c0db41db3",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "apps-architect-pattern-hardening-d7e4f9": {
+      "status": "Completed",
+      "page_id": "35827693-f55c-81d6-8bc1-de6e12a2093a",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1593,10 +1635,94 @@
       "has_ai_summary": true
     },
     "adg-config-ssot-deferred-d7e3a1": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "35827693-f55c-81e6-803c-fa5a5d9ccc82",
       "exists_on_disk": true,
-      "has_ai_summary": false
+      "has_ai_summary": true
+    },
+    "final-closeout-may7-h9c3e8": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-812f-bf2b-e79e7e40729e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "deferred-scope-spine-refinement-5e3d1b": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-8139-9100-f76000b18af8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p4-out-of-scope-backlog-d5f0a4": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-814b-b682-e0894fde0864",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-architect-deferred-scope-2-c9d4e2": {
+      "status": "Not Started",
+      "page_id": "35927693-f55c-8156-8501-c621efbd057b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "final-deferred-scope-may7-g7a2c6": {
+      "status": "Not Started",
+      "page_id": "35927693-f55c-816e-9a11-c5fc37adb5da",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "consolidated-deferred-scope-may7-e6f1b5": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-817b-911f-d72f62352f46",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-test-surface-consolidation-11acd9": {
+      "status": "Deferred",
+      "page_id": "35927693-f55c-817d-af56-d08ccd2d9b13",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-architect-deferred-scope-b8e3f1": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-8198-bae1-d988280668e8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "agentic-spine-diagram-refinement-a3f7c2": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-81b5-855c-d3501561d8cd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p3-apps-research-spine-envelope-c4e9f3": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-81b8-ac1e-e1e28684eff2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p2-apps-qna-product-spine-b3e8d2": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-81bf-95eb-fc756bddf8b1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p1-d2-default-enable-b7e3f9": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-81c2-a945-cb546293c6bc",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "p4-implementation-f6a1c7": {
+      "status": "Completed",
+      "page_id": "35927693-f55c-81ff-b792-e118d56ae2fe",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l7-route-family-cert-fix-b8f3a1": {
+      "status": "In Progress",
+      "page_id": "35a27693-f55c-8127-ba92-d6f26c042981",
+      "exists_on_disk": true,
+      "has_ai_summary": true
     }
   }
 }
