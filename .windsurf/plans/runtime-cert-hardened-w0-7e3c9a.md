@@ -1,7 +1,7 @@
 # Runtime Certification Hardened Matrix — W0 Implementation Plan
 
 - Plan slug: `runtime-cert-hardened-w0-7e3c9a`
-- Status: In Progress (W0 executing 2026-04-30)
+- Status: Completed (W0-W4 all waves done 2026-05-08)
 - Tier: T3
 - Author-Gate decision: 2026-04-30 (refactor_scope) — selected `all_20_W0_rows_W0_depth_only`
 - Source of truth: `docs/reference/runtime_certification_requirements_100_percent_hardened.csv` (86 rows)
@@ -11,11 +11,11 @@
 
 | Wave  | Phase IDs | Focus                                                    | Est. Tokens | Assumptions                                                                                         | Status        | Success Criteria |
 |-------|-----------|----------------------------------------------------------|------------:|-----------------------------------------------------------------------------------------------------|---------------|------------------|
-| W0    | W0.1–W0.6 | Certification source-of-truth + fail-closed CI matrix    | ~30k        | Source CSV at `docs/reference/runtime_certification_requirements_100_percent_hardened.csv` is bound | In Progress   | All 20 W0 rows enforced; 5 verifiers fail-closed; CI workflow valid; 25 tests pass |
-| W1    | (deferred) | Semantic cache + cache state closeout                   | ~50k        | W0 fail-closed proven                                                                               | Deferred      | Per implementation prompt §61-86 |
-| W2    | (deferred) | Integrated runtime entrypoint                            | ~25k        | W1 done                                                                                             | Deferred      | Per prompt §87-99 |
-| W3    | (deferred) | Real OTel collector + replay                             | ~40k        | W2 done                                                                                             | Deferred      | Per prompt §100-116 |
-| W4    | (deferred) | Reports, Merkle, final certification language gate       | ~25k        | W3 done                                                                                             | Deferred      | Per prompt §117-138 |
+| W0    | W0.1–W0.6 | Certification source-of-truth + fail-closed CI matrix    | ~30k        | Source CSV at `docs/reference/runtime_certification_requirements_100_percent_hardened.csv` is bound | ✅ DONE       | All 20 W0 rows enforced; 5 verifiers fail-closed; CI workflow valid; 25 tests pass |
+| W1    | W1.1-W1.2j | Semantic cache + cache state closeout                   | ~50k        | W0 fail-closed proven                                                                               | ✅ DONE       | 10 probes, 5 tests, ADR generator implemented |
+| W2b   | W2b.1-W2b.7 | Live provider acceptance + safe reuse                 | ~25k        | W1 done                                                                                             | ✅ DONE       | 7 steps, readiness + rubric + safe reuse probes |
+| W3    | W3.1-W3.4  | OTel collector + replay verifier                         | ~40k        | W2 done                                                                                             | ✅ DONE       | 2 probes, 2 test files, RTC-REQ-113/114 complete |
+| W4    | W4         | G-1/G-29 runtime gates structural validation             | ~25k        | W3 done                                                                                             | ✅ DONE       | test_runtime_gates_g01_g29.py complete |
 
 ## Phase-Level Summary (W0 only)
 
