@@ -1,24 +1,27 @@
 """C0.0 advisory grounding analysis + C0.1 retrieval plan builder.
 
-W2 c0-policy-rectification-f7b2a9: L1 preflight is now advisory only.
-L0 is the authority that freezes C0 policy into RouteContract.c0_policy.
+W2 c0-policy-rectification-f7b2a9: Deprecated preflight() removed.
+- analyze_grounding_advisory: L1 advisory-only function
+- build_retrieval_plan: L1 retrieval planning (for use by L0/C0)
+
+C0 runtime decisions now use RouteContract.c0_policy frozen by L0.
+L0 is the authority; L1 provides only advisory signals.
 
 Spec: ``docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md``
 """
 
 from __future__ import annotations
 
-import warnings
-
 from agentic_core.L1_cognition.c0_context.types import (
     BOUND_PARAMS,
     L1C0Advisory,
     RETRIEVAL_MODES,
     SOURCE_CLASSES,
+    SupportTarget,
+    # W2: Removed preflight, but build_retrieval_plan still needs these
     C0PreflightStatus,
     RetrievalPlan,
     RouteContractView,
-    SupportTarget,
 )
 
 # Minimum tokens required to run at least one bounded retrieval pass.
@@ -104,48 +107,6 @@ def analyze_grounding_advisory(
     )
 
 
-def preflight(route: RouteContractView) -> C0PreflightStatus:
-    """DEPRECATED: Use analyze_grounding_advisory for L1 advisory.
-
-    C0.0 runtime eligibility checks have moved to L0/C0. L0 now freezes
-    C0 policy into RouteContract.c0_policy; C0 preflight reads that.
-
-    This function is kept temporarily for backward compatibility but
-    will be removed. It no longer makes authoritative decisions.
-
-    W2 c0-policy-rectification-f7b2a9.
-    """
-    warnings.warn(
-        "preflight() is deprecated. "
-        "Use analyze_grounding_advisory() for L1 advisory. "
-        "C0 runtime decisions now use RouteContract.c0_policy.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    # W2: Delegate to new advisory function, then map to legacy C0PreflightStatus.
-    # This is a compatibility shim; real C0 decisions now come from L0 policy.
-    advisory = analyze_grounding_advisory(
-        task_spec=route.route_id,  # Minimal shim - task not available here
-        query_spec="",
-        support_expectation=route.support_target.value,
-    )
-
-    # W2: Do NOT whitelist route IDs here. L0 policy construction decides.
-    # This is advisory-only; the real decision is in RouteContract.c0_policy.
-    allowed = (route.allowed_sources & SOURCE_CLASSES) - route.disallowed_sources
-
-    # W2: Return advisory status (not authoritative eligibility).
-    # C0.0 in L0/C0 now uses RouteContract.c0_policy for runtime decisions.
-    return C0PreflightStatus(
-        eligible=advisory.grounding_required,  # Advisory only
-        blocked_reason="" if advisory.grounding_required else "advisory:grounding_not_required",
-        allowed_source_classes=allowed if advisory.grounding_required else frozenset(),
-        evidence_standard="advisory",
-        budget_floor_tokens=MIN_BUDGET_FLOOR_TOKENS if advisory.grounding_required else 0,
-    )
-
-
 def build_retrieval_plan(
     route: RouteContractView,
     preflight_status: C0PreflightStatus,
@@ -210,7 +171,7 @@ def build_retrieval_plan(
 
 __all__ = [
     "MIN_BUDGET_FLOOR_TOKENS",
-    "analyze_grounding_advisory",  # W2: new advisory-only function
+    "analyze_grounding_advisory",  # W2: L1 advisory-only (replaces deprecated preflight)
     "build_retrieval_plan",
-    "preflight",  # W2: deprecated, kept for backward compatibility
+    # W2: "preflight" removed - use analyze_grounding_advisory instead
 ]

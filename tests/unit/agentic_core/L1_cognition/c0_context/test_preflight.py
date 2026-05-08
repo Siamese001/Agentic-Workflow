@@ -1,4 +1,8 @@
-"""Tests for C0.0 preflight + C0.1 retrieval plan builder."""
+"""Tests for C0.0 advisory grounding analysis + C0.1 retrieval plan builder.
+
+W2 c0-policy-rectification-f7b2a9: Deprecated preflight() removed.
+Tests now cover analyze_grounding_advisory (L1 advisory-only function).
+"""
 
 from __future__ import annotations
 
@@ -6,14 +10,62 @@ import pytest
 
 from agentic_core.L1_cognition.c0_context.preflight import (
     MIN_BUDGET_FLOOR_TOKENS,
+    analyze_grounding_advisory,
     build_retrieval_plan,
-    preflight,
 )
 from agentic_core.L1_cognition.c0_context.types import (
     BOUND_PARAMS,
+    C0PreflightStatus,
+    RetrievalPlan,
     RouteContractView,
     SupportTarget,
 )
+
+
+# =============================================================================
+# W2: analyze_grounding_advisory tests (replaces deprecated preflight)
+# =============================================================================
+
+
+def test_analyze_grounding_advisory_requires_grounding() -> None:
+    """Advisory recommends grounding for grounded routes."""
+    advisory = analyze_grounding_advisory(
+        task_spec="Summarize codebase",
+        query_spec="Code structure",
+        support_expectation="SOURCE_SUMMARY",
+    )
+    assert advisory.grounding_required is True
+    assert advisory.support_target == SupportTarget.SOURCE_SUMMARY
+    assert "REQUIRES_GROUNDING" in advisory.grounding_reason_codes
+
+
+def test_analyze_grounding_advisory_not_required() -> None:
+    """Advisory may recommend no grounding for simple tasks."""
+    advisory = analyze_grounding_advisory(
+        task_spec="Hello world example",
+        query_spec="Simple greeting",
+        support_expectation="NONE",
+    )
+    # With support_expectation=NONE, grounding may not be required
+    assert advisory.confidence >= 0.0
+    assert advisory.confidence <= 1.0
+
+
+def test_analyze_grounding_advisory_with_task_spec() -> None:
+    """Advisory uses task_spec to determine grounding need."""
+    # Complex task should require grounding
+    advisory = analyze_grounding_advisory(
+        task_spec="Analyze multi-module codebase for dependencies",
+        query_spec="Dependency analysis",
+        support_expectation="SOURCE_SUMMARY",
+    )
+    assert advisory.grounding_required is True
+    assert advisory.confidence >= 0.7  # High confidence for complex task
+
+
+# =============================================================================
+# build_retrieval_plan tests (retained, uses C0PreflightStatus from types)
+# =============================================================================
 
 
 def _route(**overrides) -> RouteContractView:
@@ -44,20 +96,66 @@ def _route(**overrides) -> RouteContractView:
     return RouteContractView(**base)
 
 
-# ---------- PREFLIGHT ----------
+def _make_preflight_status(
+    *,
+    eligible: bool = True,
+    blocked_reason: str = "",
+    allowed_source_classes: frozenset[str] | None = None,
+) -> C0PreflightStatus:
+    """Helper to create C0PreflightStatus for testing."""
+    return C0PreflightStatus(
+        eligible=eligible,
+        blocked_reason=blocked_reason,
+        allowed_source_classes=allowed_source_classes or frozenset({"docs", "code"}),
+        evidence_standard="standard" if eligible else "none",
+        budget_floor_tokens=MIN_BUDGET_FLOOR_TOKENS if eligible else 0,
+    )
 
 
-def test_preflight_eligible_default() -> None:
-    s = preflight(_route())
-    assert s.eligible is True
-    assert s.allowed_source_classes == frozenset({"docs", "code"})
-    assert s.budget_floor_tokens == MIN_BUDGET_FLOOR_TOKENS
+def test_build_retrieval_plan_eligible() -> None:
+    """Retrieval plan built for eligible preflight status."""
+    route = _route()
+    status = _make_preflight_status(eligible=True)
+
+    plan = build_retrieval_plan(route, status)
+
+    assert isinstance(plan, RetrievalPlan)
+    assert plan.route_id == route.route_id
+    assert plan.max_k == route.max_k
+    assert plan.max_hops == route.max_hops
 
 
-def test_preflight_blocked_when_grounding_not_required() -> None:
-    s = preflight(_route(grounding_required=False))
-    assert s.eligible is False
-    assert s.blocked_reason == "grounding_not_required"
+def test_build_retrieval_plan_ineligible() -> None:
+    """Retrieval plan still built but with empty sources when ineligible."""
+    route = _route()
+    status = _make_preflight_status(eligible=False, blocked_reason="test_block")
+
+    plan = build_retrieval_plan(route, status)
+
+    assert isinstance(plan, RetrievalPlan)
+    # When ineligible, allowed_source_classes should be empty
+    assert len(plan.allowed_source_classes) == 0
+
+
+def test_build_retrieval_plan_respects_max_k() -> None:
+    """Retrieval plan respects route's max_k parameter."""
+    route = _route(max_k=5)
+    status = _make_preflight_status()
+
+    plan = build_retrieval_plan(route, status)
+
+    assert plan.max_k == 5
+
+
+def test_build_retrieval_plan_cache_policy() -> None:
+    """Retrieval plan includes cache policy."""
+    route = _route()
+    status = _make_preflight_status()
+
+    plan = build_retrieval_plan(route, status, cache_policy="WRITE_BACK")
+
+    assert plan.cache_policy == "WRITE_BACK"
+
 
 
 def test_preflight_blocked_when_route_disallows() -> None:
