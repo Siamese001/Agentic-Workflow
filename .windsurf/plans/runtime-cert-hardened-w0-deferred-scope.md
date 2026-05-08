@@ -2,7 +2,7 @@
 
 - Plan slug: `runtime-cert-hardened-w0-deferred-scope`
 - Parent plan: `runtime-cert-hardened-w0-7e3c9a` (W0-W4 COMPLETE)
-- Status: Not Started (deferred from parent plan completion)
+- Status: W5 Complete, W6-W8 Remaining (deferred scope)
 - Tier: T3
 - Created: 2026-05-08
 
@@ -14,8 +14,8 @@ This plan captures all deferred scope from the completion of `runtime-cert-harde
 
 | Wave | Phase IDs | Focus | Est. Tokens | Blocking On | Status | Success Criteria |
 |------|-----------|-------|------------:|-------------|--------|------------------|
-| W5 | (deferred) | Merkle root finalization + artifact chain | ~15k | W4 G-1/G-29 proven | Not Started | Per prompt §117-120 |
-| W6 | (deferred) | Certification reports + closeout docs | ~15k | W5 done | Not Started | Per prompt §121-125 |
+| W5 | W5.1-W5.4 | Merkle root finalization + artifact chain | ~15k | W4 G-1/G-29 proven | ✅ DONE | Per prompt §117-120 |
+| W6 | W6.1-W6.4 | Certification reports + closeout docs | ~15k | W5 done | Pending | Per prompt §121-125 |
 | W7 | (deferred) | Final certification language gate | ~15k | W6 done | Not Started | Per prompt §126-130 |
 | W8 | (deferred) | Full 100% hardened certification stamp | ~15k | W7 done | Not Started | Per prompt §131-138 |
 
@@ -27,11 +27,16 @@ This plan captures all deferred scope from the completion of `runtime-cert-harde
 - RTC-REQ-123: Artifact payload hash recomputation (DONE in W0 - extend)
 - RTC-REQ-124: All artifacts indexed in merkle tree
 
-**Deliverables:**
-- `scripts/verify_merkle_root.py` — verify tree depth and completeness
-- `scripts/verify_merkle_consistency.py` — verify no duplicate/hollow nodes
-- `tests/runtime/test_merkle_finalization.py` — merkle tree validation tests
-- Evidence artifacts: `merkle_tree.json`, `merkle_root.txt`
+**Deliverables:** ✅ ALL DELIVERED
+- `ops_scripts/ci/verify_merkle_root.py` — verify tree depth and completeness ✅
+- `ops_scripts/ci/verify_merkle_consistency.py` — verify no duplicate/hollow nodes ✅
+- `tests/runtime/test_merkle_finalization.py` — merkle tree validation tests ✅
+- Evidence artifacts: `merkle_tree.json`, `merkle_root.txt` ✅
+
+**Requirements Met:**
+- RTC-REQ-031: Merkle root non-empty and complete ✅
+- RTC-REQ-122: Merkle tree depth ≥ 3 ✅
+- RTC-REQ-124: All artifacts indexed, no duplicates/hollow nodes ✅
 
 **Deferred Reason:** Requires W0-W4 evidence artifacts to be stable before merkle tree can be finalized.
 
