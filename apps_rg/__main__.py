@@ -370,6 +370,15 @@ def _run_with_args(
             r1a_span.set_attribute("cache.key_prefix", r1a_key[:16])
     if cached_run_dir is not None:
         _log.info("[apps_rg] R1A exact cache hit — returning cached run at %s", cached_run_dir)
+        # Rebuild L7 route-family coverage from the cached artifact directory
+        # so stale evidence (emitted before the contract-shape fix) is refreshed.
+        try:
+            from agentic_core.L7_auditability.coverage import (
+                build_l7_route_family_coverage as _build_rfc,
+            )
+            _build_rfc(Path(cached_run_dir), chain_kind="R4_SINGLE_ACTION", write=True)
+        except Exception as _l7_err:  # guardian: allow-broad-exception -- L7 refresh is fail-soft on cache hit path
+            _log.warning("[apps_rg] L7 coverage refresh on cache hit failed (fail-soft): %s", _l7_err)
         sys.exit(0)
 
     # ── W2 / GAP-2: R1B semantic-cache pre-flight (gated by env flag) ──
@@ -491,12 +500,37 @@ def _run_with_args(
         _log.error("[apps_rg] Pipeline fault: %s", result.fault)
         sys.exit(1)
 
+    _print_run_summary_hint(artifact_dir)
     sys.exit(0)
 
 
 # ---------------------------------------------------------------------------
 # Mandatory spine trace output
 # ---------------------------------------------------------------------------
+
+
+def _print_run_summary_hint(artifact_dir: Path) -> None:
+    """Print a user-friendly pointer to the run summary renderer.
+
+    Emitted at the end of every successful pipeline execution so that
+    users running apps_rg from a terminal (outside Cascade) know exactly
+    how to view the detailed runtime evidence summary.  Fail-soft.
+    """
+    try:
+        print(
+            "\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "  Run complete.  To view the detailed runtime evidence summary:\n"
+            "\n"
+            f"    python tools/apps_rg/render_run_summary.py {artifact_dir}\n"
+            "\n"
+            "  The summary includes: run identity · L2 substages · narrative\n"
+            "  verdicts · gate failures · L7 certification · output artifacts.\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+            file=sys.stdout,
+        )
+    except Exception as _exc:  # guardian: allow-broad-exception -- hint is cosmetic; never abort
+        _log.debug("[apps_rg] run summary hint skipped: %s", _exc)
 
 
 def _emit_spine_trace(artifact_dir: Path) -> None:
