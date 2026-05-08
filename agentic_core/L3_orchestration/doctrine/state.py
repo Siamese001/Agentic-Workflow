@@ -4,8 +4,12 @@ step contract emission, and step result ingest.
 Implements 03.7 §PHASE 2-4:
 
 - ``select_next_ready_node(ledger, blueprint, context_bus) -> NodeReadinessDecision``
-- ``emit_step_contract(decision, ledger, context_bus) -> L3StepContract``
+- ``emit_step_contract(decision, ledger, context_bus, *, c0_policy) -> L3StepContract``
 - ``ingest_step_result(step_result, ledger) -> HandoffMergeReceipt``
+
+W1 c0-policy-rectification-deferred-f7b2a9:
+    ``emit_step_contract`` now accepts ``c0_policy`` to propagate parent
+    workflow C0 policy into step contracts for step-level inheritance.
 
 All functions are pure; they return new objects but never mutate inputs.
 """
@@ -24,6 +28,7 @@ from .contracts_l3_6 import (
     WorkflowNodeType,
 )
 from .contracts_l3_7 import (
+    C0Policy,  # W1: Step-level C0 policy inheritance
     HandoffMergeReceipt,
     L3ContextBus,
     L3StateLedger,
@@ -193,11 +198,17 @@ def emit_step_contract(
     parent_route_id: str,
     route_digest: str,
     snapshot_id: str,
+    c0_policy: C0Policy | None = None,  # W1: Step-level C0 policy (inheritance)
 ) -> L3StepContract:
     """03.7 §PHASE 3 emit_step_contract.
 
     Emits exactly one bounded step contract for the ``decision.node_id``.
     Caller MUST verify ``decision.ready`` is True.
+
+    W1 c0-policy-rectification-deferred-f7b2a9:
+        The ``c0_policy`` parameter allows the caller to pass the parent
+        workflow's C0 policy (from RouteContract). This policy is stored in
+        the step contract for later resolution (step may override or inherit).
     """
     if not isinstance(decision, NodeReadinessDecision):
         raise L3DoctrineContractError(
@@ -274,6 +285,7 @@ def emit_step_contract(
         ),
         step_contract_hash=contract_hash,
         no_durable_commit_authority=True,
+        c0_policy=c0_policy,  # W1: Pass parent workflow C0 policy for inheritance
     )
 
 

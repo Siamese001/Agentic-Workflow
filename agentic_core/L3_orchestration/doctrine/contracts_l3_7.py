@@ -1,11 +1,15 @@
 """03.7 L3 State Ledger, Context Bus, and Step Contract.
 
+W1 c0-policy-rectification-deferred-f7b2a9: L3StepContract now carries optional
+``c0_policy`` for step-level C0 policy inheritance. Steps may declare their own
+policy or inherit from parent workflow RouteContract.
+
 Realizes:
 
 - ``L3StateLedger``        — 03.7 PHASE 1 §1
 - ``NodeReadinessDecision``— 03.7 PHASE 1 §2
 - ``L3ContextBus``         — 03.7 PHASE 1 §3
-- ``L3StepContract``       — 03.7 PHASE 1 §4
+- ``L3StepContract``       — 03.7 PHASE 1 §4 (with c0_policy field)
 - ``StepResultIngest``     — 03.7 PHASE 1 §5
 - ``HandoffMergeReceipt``  — 03.7 §PHASE 4 RESULT MERGE output
 """
@@ -14,6 +18,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+
+from agentic_core.L0_routing.c0_retrieval.route_contract import C0Policy
 
 from . import L3DoctrineContractError
 from .contracts_l3_6 import WorkflowNodeType
@@ -52,6 +58,38 @@ def _need_pos_int(value: object, name: str) -> None:
 def _need_bool(value: object, name: str) -> None:
     if not isinstance(value, bool):
         raise L3DoctrineContractError(f"{name} must be bool")
+
+
+def resolve_step_c0_policy(
+    step_contract: L3StepContract,
+    parent_c0_policy: C0Policy | None,
+) -> C0Policy | None:
+    """W1: Resolve effective C0 policy for a step with inheritance.
+
+    Step-level policy overrides parent workflow policy:
+    - If step_contract.c0_policy is set → use step policy (explicit override)
+    - If step_contract.c0_policy is None → inherit from parent
+    - If neither has policy → return None (caller must handle default)
+
+    Args:
+        step_contract: The L3 step contract (may have c0_policy field)
+        parent_c0_policy: The parent workflow's C0 policy (from RouteContract)
+
+    Returns:
+        Effective C0Policy for the step (may be None)
+
+    Raises:
+        L3DoctrineContractError: If step_contract is not L3StepContract type
+    """
+    if not isinstance(step_contract, L3StepContract):
+        raise L3DoctrineContractError(
+            f"resolve_step_c0_policy expects L3StepContract, got {type(step_contract).__name__}"
+        )
+    # Step-level override takes precedence
+    if step_contract.c0_policy is not None:
+        return step_contract.c0_policy
+    # Fall back to parent workflow policy
+    return parent_c0_policy
 
 
 # ---------------------------------------------------------------------------
@@ -279,6 +317,10 @@ class L3StepContract:
 
     Single bounded current step. Replayable (graph_hash + replay_key + policy_hash).
     No durable commit authority.
+
+    W1 c0-policy-rectification-deferred-f7b2a9: Added ``c0_policy`` field for step-level
+    C0 policy control. Steps may declare their own policy (override) or inherit from
+    parent workflow. When ``c0_policy=None``, the step defers to parent workflow policy.
     """
 
     step_contract_id: str
@@ -305,6 +347,8 @@ class L3StepContract:
     expected_receipts: tuple[str, ...]
     step_contract_hash: str
     no_durable_commit_authority: bool = True
+    # W1 c0-policy-rectification-deferred-f7b2a9: Step-level C0 policy inheritance
+    c0_policy: C0Policy | None = None
 
     def __post_init__(self) -> None:
         for name in (
@@ -345,6 +389,9 @@ class L3StepContract:
             raise L3DoctrineContractError(
                 "L3StepContract.no_durable_commit_authority must be True (L3 never commits durable state)",
             )
+        # W1: c0_policy is optional but must be C0Policy if present
+        if self.c0_policy is not None and not isinstance(self.c0_policy, C0Policy):
+            raise L3DoctrineContractError("L3StepContract.c0_policy must be C0Policy or None")
 
 
 @dataclass(frozen=True)
@@ -478,4 +525,5 @@ __all__ = [
     "StepInputs",
     "StepResultIngest",
     "StepResultStatus",
+    "resolve_step_c0_policy",  # W1: C0 policy inheritance helper
 ]
