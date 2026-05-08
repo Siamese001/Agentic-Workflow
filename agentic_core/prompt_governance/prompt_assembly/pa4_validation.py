@@ -38,11 +38,14 @@ GOVERNANCE (2):
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from .input_contracts import UpstreamInputBundle
 from .pa1_bom_resolver import PromptBOMResolved
 from .pa2_slot_composition import AuthorityStack, detect_authority_violations
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.emitter import SpanEmitter
 
 
 @dataclass(frozen=True)
@@ -322,14 +325,26 @@ def validate_pa4(
     stack: AuthorityStack,
     support_threshold: float = 0.6,
     citation_required: bool | None = None,
+    emitter: SpanEmitter | None = None,  # W2: OTEL span emitter
 ) -> PA4ValidationReport:
     """Run all 17 checks. ``citation_required`` defaults to whether the
-    governance citation_mode is 'required'."""
+    governance citation_mode is 'required'.
+
+    W2 c0-policy-rectification-phase2-a3f7e2:
+        Added OTEL span emission for C0 policy provenance when emitter
+        is provided. Captures bundle.route.c0_policy fields.
+    """
     cit_req = (
         citation_required
         if citation_required is not None
         else (bundle.governance.citation_mode or "").lower() == "required"
     )
+    # W2: Extract C0 policy from bundle.route for OTEL span
+    c0_policy = getattr(bundle.route, "c0_policy", None)
+    c0_mode = str(c0_policy.get("c0_mode", "NOT_SET")) if c0_policy else "NOT_SET"
+    evidence_required = bool(c0_policy.get("evidence_contract_required", False)) if c0_policy else False
+    c0_policy_source = str(c0_policy.get("decision_source", "UNKNOWN")) if c0_policy else "UNKNOWN"
+
     checks: list[ValidationCheckResult] = [
         _ctx_evidence_status_consistent(bundle),
         _ctx_unresolved_gaps(bundle),
@@ -349,11 +364,58 @@ def validate_pa4(
         _gov_tool_posture(bundle, bom),
         _gov_capability_token(bom),
     ]
-    return PA4ValidationReport.from_checks(checks)
+    report = PA4ValidationReport.from_checks(checks)
+
+    # W2: Emit OTEL span with C0 policy provenance
+    _emit_pa4_span_if_present(
+        emitter=emitter,
+        report=report,
+        c0_mode=c0_mode,
+        evidence_required=evidence_required,
+        c0_policy_source=c0_policy_source,
+    )
+
+    return report
+
+
+# W2: OTEL span helper for PA4 validation
+def _emit_pa4_span_if_present(
+    emitter: SpanEmitter | None,
+    report: PA4ValidationReport,
+    c0_mode: str,
+    evidence_required: bool,
+    c0_policy_source: str,
+) -> None:
+    """Emit PA.4 validation span with C0 policy provenance fields.
+
+    W2 c0-policy-rectification-phase2-a3f7e2: OTEL observability for C0 policy.
+    """
+    if emitter is None:
+        return
+
+    # Count failed checks
+    failed_count = sum(1 for c in report.checks if not c.passed)
+
+    span_attrs = {
+        "c0_mode": c0_mode,
+        "evidence_required": evidence_required,
+        "c0_policy_source": c0_policy_source,
+        "pa4_total_checks": len(report.checks),
+        "pa4_failed_checks": failed_count,
+        "pa4_passed": report.passed,
+    }
+
+    with emitter.span(
+        "pa.4.validation",
+        reason_codes=["pa4_validation_complete"],
+        **span_attrs,
+    ):
+        pass  # Span emitted immediately for observability
 
 
 __all__ = [
     "PA4ValidationReport",
     "ValidationCheckResult",
     "validate_pa4",
+    "_emit_pa4_span_if_present",  # W2: Exposed for testing
 ]

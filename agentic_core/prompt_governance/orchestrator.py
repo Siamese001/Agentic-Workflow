@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from agentic_core.L0_routing.c0_retrieval.final_contract import FinalEvidenceContract
 from agentic_core.L0_routing.c0_retrieval.route_contract import (
@@ -171,8 +171,13 @@ def assemble_prompt(
     model_context_window: int = 200_000,
     reserved_output_tokens: int = 4096,
     raise_on_block: bool = False,
+    emitter: SpanEmitter | None = None,  # W3: OTEL span emitter for C0 policy
 ) -> CompiledPromptEnvelope:
     """Build a CompiledPromptEnvelope from a sealed C0 contract + L0/L1 inputs.
+
+    W3 c0-policy-rectification-phase2-a3f7e2:
+        Added emitter parameter for C0 policy provenance OTEL spans.
+        Passes emitter to PA.0 boundary_check for observability.
 
     Args:
         final_contract: Sealed C0 contract. MUST be the dispatcher's
@@ -194,6 +199,7 @@ def assemble_prompt(
         PromptAssemblyOrchestratorError: When ``raise_on_block`` is True
             and the PA pipeline blocked.
     """
+    # PA.0 — boundary check (W3: pass emitter for C0 policy OTEL spans)
     if secret_key is None:
         env_key = os.environ.get(_DEFAULT_SECRET_ENV, "")
         secret_key = env_key.encode("utf-8") if env_key else _FALLBACK_SECRET
@@ -300,6 +306,13 @@ def assemble_prompt(
     ]
 
     pa_result = run_prompt_assembly_pipeline(
+        boundary=boundary_check(
+            route_contract=route_dict,
+            plan_contract=plan_dict,
+            evidence_contract=evidence_dict,
+            execution_metadata=execution_metadata,
+            emitter=emitter,  # W3: Pass emitter for C0 policy OTEL spans
+        ),
         plan_contract=plan_dict,
         route_contract=route_dict,
         evidence_contract=evidence_dict,
