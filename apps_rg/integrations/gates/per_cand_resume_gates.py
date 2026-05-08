@@ -64,14 +64,25 @@ def _count_quantified_outcomes(text: str) -> int:
     return len(matches)
 
 
-def length_parity_strict_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
-    """W5: Word count within ±15% of base section length.
-    
+def length_parity_strict_gate(
+    artifact: Any,
+    context: dict[str, Any],
+    *,
+    tolerance: float = 0.15,
+    tolerance_below: float | None = None,
+    tolerance_above: float | None = None,
+) -> GateVerdict:
+    """W5: Word count within tolerance of base section length.
+
     Ensures generated text maintains similar length to source material,
     preventing both over-expansion and excessive compression.
+
+    W1 update: Supports asymmetric tolerance (e.g., -10%/+25% for exec_summary).
+    Backward compatible: if tolerance_below/tolerance_above not provided,
+    uses symmetric tolerance parameter (default ±15%).
     """
     gate_id = "length_parity_strict"
-    
+
     text = _extract_text(artifact)
     if not text:
         return GateVerdict(
@@ -80,7 +91,7 @@ def length_parity_strict_gate(artifact: Any, context: dict[str, Any]) -> GateVer
             reason="No text available for length check",
             reason_codes=("missing_text",),
         )
-    
+
     # Get reference length from context (base section or seed)
     reference_word_count = context.get("reference_word_count")
     if reference_word_count is None:
@@ -88,7 +99,7 @@ def length_parity_strict_gate(artifact: Any, context: dict[str, Any]) -> GateVer
         seed_text = context.get("seed_text", "")
         if seed_text:
             reference_word_count = _count_words(seed_text)
-    
+
     if reference_word_count is None or reference_word_count == 0:
         return GateVerdict(
             gate_id=gate_id,
@@ -96,36 +107,42 @@ def length_parity_strict_gate(artifact: Any, context: dict[str, Any]) -> GateVer
             reason="No reference length available for parity check",
             reason_codes=("missing_reference",),
         )
-    
+
     actual_word_count = _count_words(text)
-    tolerance = 0.15  # ±15%
-    
-    # Use round() to avoid floating point truncation issues (e.g., int(100*1.15)=114)
-    min_words = round(reference_word_count * (1 - tolerance))
-    max_words = round(reference_word_count * (1 + tolerance))
-    
+
+    # W1: Support asymmetric tolerance (exec_summary: -10%/+25%)
+    tb = tolerance_below if tolerance_below is not None else tolerance
+    ta = tolerance_above if tolerance_above is not None else tolerance
+
+    # Use round() to avoid floating point truncation issues
+    min_words = round(reference_word_count * (1 - tb))
+    max_words = round(reference_word_count * (1 + ta))
+
     if min_words <= actual_word_count <= max_words:
+        tolerance_str = f"-{tb*100:.0f}%/+{ta*100:.0f}%" if (tb != ta) else f"±{tolerance*100:.0f}%"
         return GateVerdict(
             gate_id=gate_id,
             result=Result.PASS,
-            reason=f"Length parity: {actual_word_count} words (ref: {reference_word_count}, ±15%)",
+            reason=f"Length parity: {actual_word_count} words (ref: {reference_word_count}, {tolerance_str})",
             reason_codes=("length_within_tolerance", f"words:{actual_word_count}"),
             evidence_refs=(
                 f"reference:{reference_word_count}",
                 f"actual:{actual_word_count}",
                 f"range:[{min_words},{max_words}]",
+                f"tolerance_below:{tb}",
+                f"tolerance_above:{ta}",
             ),
         )
-    
+
     _log.warning(
         "[W5] Length parity fail: %d words (expected %d-%d)",
         actual_word_count, min_words, max_words
     )
-    
+
     return GateVerdict(
         gate_id=gate_id,
         result=Result.FAIL,
-        reason=f"Length outside ±15% tolerance: {actual_word_count} words (ref: {reference_word_count})",
+        reason=f"Length outside tolerance: {actual_word_count} words (ref: {reference_word_count}, range: [{min_words},{max_words}])",
         reason_codes=(
             "length_outside_tolerance",
             f"words:{actual_word_count}",
@@ -136,6 +153,8 @@ def length_parity_strict_gate(artifact: Any, context: dict[str, Any]) -> GateVer
             f"actual:{actual_word_count}",
             f"min:{min_words}",
             f"max:{max_words}",
+            f"tolerance_below:{tb}",
+            f"tolerance_above:{ta}",
         ),
     )
 
@@ -344,11 +363,11 @@ def sentence_max_length_gate(artifact: Any, context: dict[str, Any]) -> GateVerd
 
 def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
     """W5: Sentence 1 must contain archetype string.
-    
+
     Ensures executive summary immediately establishes candidate archetype.
     """
     gate_id = "archetype_lead"
-    
+
     text = _extract_text(artifact)
     if not text:
         return GateVerdict(
@@ -357,7 +376,7 @@ def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
             reason="No text available for archetype check",
             reason_codes=("missing_text",),
         )
-    
+
     archetype = context.get("archetype")
     if not archetype:
         return GateVerdict(
@@ -366,7 +385,7 @@ def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
             reason="archetype not provided in context",
             reason_codes=("missing_archetype",),
         )
-    
+
     sentences = _split_sentences(text)
     if not sentences:
         return GateVerdict(
@@ -375,14 +394,14 @@ def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
             reason="No sentences found in text",
             reason_codes=("no_sentences",),
         )
-    
+
     first_sentence = sentences[0].lower()
     archetype_lower = archetype.lower()
-    
+
     # Check for archetype or synonyms
     archetype_parts = archetype_lower.split()
     found = any(part in first_sentence for part in archetype_parts if len(part) > 3)
-    
+
     if found:
         return GateVerdict(
             gate_id=gate_id,
@@ -390,7 +409,7 @@ def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
             reason=f"Archetype '{archetype}' found in opening sentence",
             reason_codes=("archetype_present", f"archetype:{archetype}"),
         )
-    
+
     return GateVerdict(
         gate_id=gate_id,
         result=Result.FAIL,
@@ -404,6 +423,143 @@ def archetype_lead_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
             f"expected:{archetype}",
             f"actual:{first_sentence[:50]}",
         ),
+    )
+
+
+# W1: New gates for exec_summary structural and provenance validation
+
+
+def structural_slot_coverage_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
+    """W1: Exec summary must contain 4 required structural slots.
+
+    Required slots:
+    - archetype: opening establishes candidate archetype
+    - quantified_outcomes: at least one numeric claim (%, $, scale)
+    - engagement_model: consulting/operating mode description
+    - value_thesis: business value proposition
+
+    Uses keyword heuristics to detect slot presence.
+    """
+    gate_id = "structural_slot_coverage"
+
+    text = _extract_text(artifact)
+    if not text:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.UNKNOWN,
+            reason="No text available for structural slot check",
+            reason_codes=("missing_text",),
+        )
+
+    text_lower = text.lower()
+    sentences = _split_sentences(text)
+
+    # Detect slots using keyword heuristics
+    slots = {
+        "archetype": False,
+        "quantified_outcomes": False,
+        "engagement_model": False,
+        "value_thesis": False,
+    }
+
+    # Slot 1: archetype - first sentence should contain role/archetype keywords
+    # Archetype is checked separately by archetype_lead_gate; we'll use a lighter check here
+    archetype_keywords = ["leader", "executive", "svp", "vp", "director", "head", "chief", "officer", "president"]
+    if sentences:
+        first_lower = sentences[0].lower()
+        if any(kw in first_lower for kw in archetype_keywords):
+            slots["archetype"] = True
+
+    # Slot 2: quantified_outcomes - numeric patterns (% $ M B K numbers)
+    if _count_quantified_outcomes(text) >= 1:
+        slots["quantified_outcomes"] = True
+
+    # Slot 3: engagement_model - consulting/operating model keywords
+    engagement_keywords = [
+        "consulting", "advisory", "engagement", "partnership", "operating", "delivery",
+        "model", "approach", "method", "framework", "practice", "methodology"
+    ]
+    if any(kw in text_lower for kw in engagement_keywords):
+        slots["engagement_model"] = True
+
+    # Slot 4: value_thesis - business value keywords
+    value_keywords = [
+        "value", "growth", "revenue", "profit", "savings", "efficiency", "roi",
+        "return", "impact", "outcome", "result", "transformation", "scale"
+    ]
+    if any(kw in text_lower for kw in value_keywords):
+        slots["value_thesis"] = True
+
+    missing = [s for s, present in slots.items() if not present]
+
+    if not missing:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.PASS,
+            reason=f"All 4 structural slots present: {', '.join(slots.keys())}",
+            reason_codes=("structural_complete", f"slots:{len(slots)}"),
+            evidence_refs=tuple(f"slot:{s}=present" for s in slots.keys()),
+        )
+
+    return GateVerdict(
+        gate_id=gate_id,
+        result=Result.FAIL,
+        reason=f"Missing structural slots: {', '.join(missing)}",
+        reason_codes=("structural_incomplete", f"missing:{','.join(missing)}"),
+        evidence_refs=tuple(f"slot:{s}={'present' if present else 'missing'}" for s, present in slots.items()),
+    )
+
+
+def unsupported_appended_claim_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
+    """W1: Repaired candidates must have provenance for appended content.
+
+    When a candidate is repaired via deterministic expansion (appending a
+    marquee outcome), the appended sentence must have provenance refs.
+    Prevents padding with unsupported claims.
+    """
+    gate_id = "unsupported_appended_claim"
+
+    # If no repair was applied, gate passes silently
+    repair_applied = context.get("repair_applied", False)
+    if not repair_applied:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.PASS,
+            reason="No repair applied — no appended claim to validate",
+            reason_codes=("no_repair",),
+        )
+
+    # Repair was applied — check for provenance
+    appended_refs = context.get("appended_sentence_source_refs", [])
+    if not appended_refs:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.FAIL,
+            reason="Repair applied but no provenance refs for appended content",
+            reason_codes=("missing_provenance", "appended_claim_unsupported"),
+            evidence_refs=("repair_applied:true", "provenance_refs:empty"),
+        )
+
+    # Validate that refs point to allowed sources
+    allowed_sources = {"marquee_outcomes", "master_bullets", "validated_facts"}
+    source_types = {ref.split(":")[0] for ref in appended_refs if ":" in ref}
+    invalid_sources = source_types - allowed_sources
+
+    if invalid_sources:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.FAIL,
+            reason=f"Appended claim has invalid source types: {', '.join(invalid_sources)}",
+            reason_codes=("invalid_provenance", f"invalid:{','.join(invalid_sources)}"),
+            evidence_refs=tuple(f"ref:{r}" for r in appended_refs[:5]),
+        )
+
+    return GateVerdict(
+        gate_id=gate_id,
+        result=Result.PASS,
+        reason=f"Appended claim has valid provenance ({len(appended_refs)} refs)",
+        reason_codes=("provenance_valid", f"refs:{len(appended_refs)}"),
+        evidence_refs=tuple(f"ref:{r}" for r in appended_refs[:5]),
     )
 
 
@@ -459,6 +615,85 @@ def per_cand_quality_composite_gate(artifact: Any, context: dict[str, Any]) -> G
     )
 
 
+def first_person_lead_ban_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
+    """W4: Ban first-person leading verbs in exec_summary.
+
+    Recruiters expect 3rd-person executive voice.
+    Rejects candidates starting with "I have", "I am", "I specialize", etc.
+
+    Args:
+        artifact: The generated text artifact
+        context: Gate context (may contain 'banned_leads' override)
+
+    Returns:
+        GateVerdict: PASS if no first-person lead, FAIL if found
+    """
+    gate_id = "first_person_lead_ban"
+
+    text = _extract_text(artifact)
+    if not text:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.UNKNOWN,
+            reason="No text available for first-person check",
+            reason_codes=("missing_text",),
+        )
+
+    # Get first sentence
+    sentences = _split_sentences(text)
+    if not sentences:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.PASS,
+            reason="No sentences to check",
+            reason_codes=("no_sentences",),
+        )
+
+    first_sentence = sentences[0].strip()
+    first_lower = first_sentence.lower()
+
+    # Default banned first-person leads (can be overridden via context)
+    banned_leads = context.get(
+        "banned_first_person_leads",
+        [
+            "i have ",
+            "i am ",
+            "i'm ",
+            "i specialize",
+            "i bring ",
+            "i offer ",
+            "i deliver ",
+            "i lead ",
+            "i managed ",
+            "i worked ",
+            "my experience",
+            "my background",
+            "my expertise",
+        ],
+    )
+
+    for banned in banned_leads:
+        if banned.lower() in first_lower:
+            return GateVerdict(
+                gate_id=gate_id,
+                result=Result.FAIL,
+                reason=f"First sentence uses first-person lead: '{banned.strip()}'",
+                reason_codes=(
+                    "first_person_lead",
+                    f"lead:{banned.strip()}",
+                    "voice:expect_3rd_person",
+                ),
+                evidence_refs=(f"first_sentence:{first_sentence[:60]}",),
+            )
+
+    return GateVerdict(
+        gate_id=gate_id,
+        result=Result.PASS,
+        reason="First sentence uses 3rd-person executive voice",
+        reason_codes=("third_person_voice", "executive_tone"),
+    )
+
+
 __all__ = [
     "length_parity_strict_gate",
     "quantified_outcome_count_gate",
@@ -466,5 +701,8 @@ __all__ = [
     "forbidden_filler_strict_gate",
     "sentence_max_length_gate",
     "archetype_lead_gate",
+    "structural_slot_coverage_gate",  # W1
+    "unsupported_appended_claim_gate",  # W1
+    "first_person_lead_ban_gate",  # W4
     "per_cand_quality_composite_gate",
 ]

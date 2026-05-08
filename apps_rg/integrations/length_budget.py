@@ -21,6 +21,8 @@ class LengthBudget:
     min_words: int
     max_words: int
     target_sentences: Optional[int] = None
+    tolerance_below: Optional[float] = None  # W1: asymmetric tolerance support
+    tolerance_above: Optional[float] = None  # W1: asymmetric tolerance support
 
     def fits(self, text: str) -> bool:
         n = count_words(text)
@@ -40,6 +42,9 @@ class LengthBudget:
             "min": self.min_words,
             "max": self.max_words,
             "fits": self.fits(text),
+            # W1: expose asymmetric tolerance in diagnostics
+            "tolerance_below": self.tolerance_below,
+            "tolerance_above": self.tolerance_above,
         }
 
 
@@ -75,7 +80,25 @@ def budget_for_section(
     target_words: int,
     target_sentences: Optional[int] = None,
     tolerance: float = DEFAULT_TOLERANCE,
+    tolerance_below: Optional[float] = None,
+    tolerance_above: Optional[float] = None,
 ) -> LengthBudget:
+    # W1: Support asymmetric tolerance (exec_summary: -10%/+25%)
+    if tolerance_below is not None or tolerance_above is not None:
+        tb = tolerance_below if tolerance_below is not None else tolerance
+        ta = tolerance_above if tolerance_above is not None else tolerance
+        min_delta = max(1, int(round(target_words * tb)))
+        max_delta = max(1, int(round(target_words * ta)))
+        return LengthBudget(
+            label=label,
+            target_words=target_words,
+            min_words=max(1, target_words - min_delta),
+            max_words=target_words + max_delta,
+            target_sentences=target_sentences,
+            tolerance_below=tb,
+            tolerance_above=ta,
+        )
+    # Legacy symmetric path
     delta = max(1, int(round(target_words * tolerance)))
     return LengthBudget(
         label=label,

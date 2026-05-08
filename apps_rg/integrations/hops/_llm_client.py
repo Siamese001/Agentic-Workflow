@@ -51,6 +51,9 @@ def make_generator(
     timeout_s: float = 60.0,
     temperature: float = 0.75,
     max_tokens: int = 600,
+    min_tokens: int | None = None,  # W3 P3.1: vLLM hard floor
+    repetition_penalty: float | None = None,  # W3 P3.1: suppress tail repetition
+    presence_penalty: float | None = None,  # W3 P3.1: suppress tail repetition
 ) -> Optional[Callable[..., str]]:
     """Return a generator callable, or None if no provider is wired.
 
@@ -67,9 +70,17 @@ def make_generator(
 
     This per-call override lets the ensemble runner sweep a temperature
     ladder across the 3 candidates without instantiating 3 generators.
+
+    W3 P3.1: Added min_tokens, repetition_penalty, presence_penalty for
+    vLLM decoding-layer hard floor on critical hops.
     """
     qwen_gen = _make_qwen_generator(
-        timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens
+        timeout_s=timeout_s,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        min_tokens=min_tokens,
+        repetition_penalty=repetition_penalty,
+        presence_penalty=presence_penalty,
     )
     if qwen_gen is not None:
         return qwen_gen
@@ -83,7 +94,15 @@ def make_generator(
     return None
 
 
-def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: int):
+def _make_qwen_generator(
+    *,
+    timeout_s: float,
+    temperature: float,
+    max_tokens: int,
+    min_tokens: int | None = None,  # W3 P3.1: vLLM min_tokens floor
+    repetition_penalty: float | None = None,  # W3 P3.1: suppress tail repetition
+    presence_penalty: float | None = None,  # W3 P3.1: suppress tail repetition
+):
     """Return a Qwen-local generator callable, or None when unavailable.
 
     Wave 5 P5.1. Preflight via :func:`is_qwen_available`; lazy-import
@@ -92,6 +111,9 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
     cloud generators. The closure captures a single ``openai.OpenAI``
     client (not async — the ensemble runner is sync); reuses the
     connection pool across the 3+ candidate sweep.
+
+    W3 P3.1: Added min_tokens, repetition_penalty, presence_penalty for
+    vLLM decoding-layer hard floor on critical hops (exec_summary).
     """
     try:
         from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
@@ -138,6 +160,14 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
         _log.info("[narrative_llm] qwen client init failed: %s", exc)
         return None
     default_temp = temperature
+    # W3 P3.1: vLLM-specific sampling params for hard floor
+    vllm_extra: dict[str, int | float] = {}
+    if min_tokens is not None:
+        vllm_extra["min_tokens"] = min_tokens
+    if repetition_penalty is not None:
+        vllm_extra["repetition_penalty"] = repetition_penalty
+    if presence_penalty is not None:
+        vllm_extra["presence_penalty"] = presence_penalty
 
     def _gen(label: str, prompt: str, *, temperature: float | None = None) -> str:
         temp = float(temperature) if temperature is not None else default_temp
@@ -149,9 +179,10 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
             token_budget=max_tokens,
         )
         try:
-            resp = client.chat.completions.create(
-                model=QWEN_LOCAL_MODEL_ID,
-                messages=[
+            # W3 P3.1: Merge vLLM-specific params if present
+            call_kwargs: dict[str, int | float | str | list] = {
+                "model": QWEN_LOCAL_MODEL_ID,
+                "messages": [
                     {
                         "role": "system",
                         "content": (
@@ -162,9 +193,11 @@ def _make_qwen_generator(*, timeout_s: float, temperature: float, max_tokens: in
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=temp,
-                max_tokens=max_tokens,
-            )
+                "temperature": temp,
+                "max_tokens": max_tokens,
+            }
+            call_kwargs.update(vllm_extra)  # Add min_tokens, repetition_penalty, etc.
+            resp = client.chat.completions.create(**call_kwargs)
             text = (resp.choices[0].message.content or "") if resp.choices else ""
             _emit_narrative_generator_marker(
                 accepted=bool(text.strip()),

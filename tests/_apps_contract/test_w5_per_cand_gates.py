@@ -98,9 +98,9 @@ class TestLengthParityStrictGate:
         """Gate passes when within ±15%."""
         artifact = MockArtifact(text="word " * 100)  # 100 words
         context = {"reference_word_count": 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
-        
+
         assert verdict.gate_id == "length_parity_strict"
         assert verdict.result == Result.PASS
         assert "length_within_tolerance" in verdict.reason_codes
@@ -109,7 +109,7 @@ class TestLengthParityStrictGate:
         """Gate passes at -15% boundary (85 words for 100 ref)."""
         artifact = MockArtifact(text="word " * 85)
         context = {"reference_word_count": 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
         assert verdict.result == Result.PASS
 
@@ -119,7 +119,7 @@ class TestLengthParityStrictGate:
         words = ["word"] * 115
         artifact = MockArtifact(text=" ".join(words))
         context = {"reference_word_count": 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
         assert verdict.result == Result.PASS
 
@@ -127,7 +127,7 @@ class TestLengthParityStrictGate:
         """Gate fails when < -15%."""
         artifact = MockArtifact(text="word " * 80)  # 20% below 100
         context = {"reference_word_count": 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
         assert verdict.result == Result.FAIL
         assert "length_outside_tolerance" in verdict.reason_codes
@@ -136,7 +136,7 @@ class TestLengthParityStrictGate:
         """Gate fails when > +15%."""
         artifact = MockArtifact(text="word " * 120)  # 20% above 100
         context = {"reference_word_count": 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
         assert verdict.result == Result.FAIL
 
@@ -144,9 +144,63 @@ class TestLengthParityStrictGate:
         """Uses seed_text if reference_word_count not provided."""
         artifact = MockArtifact(text="word " * 100)
         context = {"seed_text": "word " * 100}
-        
+
         verdict = length_parity_strict_gate(artifact, context)
         assert verdict.result == Result.PASS
+
+    # W1: Asymmetric tolerance tests
+
+    def test_asymmetric_tolerance_passes_at_lower_bound(self) -> None:
+        """W1: Asymmetric -10% tolerance passes at 110 words for 122 target."""
+        artifact = MockArtifact(text="word " * 110)
+        context = {"reference_word_count": 122}
+
+        verdict = length_parity_strict_gate(
+            artifact, context, tolerance_below=0.10, tolerance_above=0.25
+        )
+
+        assert verdict.result == Result.PASS
+        assert "tolerance_below:0.1" in verdict.evidence_refs
+        assert "tolerance_above:0.25" in verdict.evidence_refs
+
+    def test_asymmetric_tolerance_passes_at_upper_bound(self) -> None:
+        """W1: Asymmetric +25% tolerance passes at 152 words for 122 target.
+
+        Note: round(122 * 1.25) = round(152.5) = 152 in Python (banker's rounding).
+        """
+        words = ["word"] * 152
+        artifact = MockArtifact(text=" ".join(words))
+        context = {"reference_word_count": 122}
+
+        verdict = length_parity_strict_gate(
+            artifact, context, tolerance_below=0.10, tolerance_above=0.25
+        )
+
+        assert verdict.result == Result.PASS
+
+    def test_asymmetric_tolerance_fails_above_upper_bound(self) -> None:
+        """W1: 153 words fails asymmetric +25% tolerance for 122 target."""
+        artifact = MockArtifact(text="word " * 153)
+        context = {"reference_word_count": 122}
+
+        verdict = length_parity_strict_gate(
+            artifact, context, tolerance_below=0.10, tolerance_above=0.25
+        )
+
+        assert verdict.result == Result.FAIL
+        assert "length_outside_tolerance" in verdict.reason_codes
+
+    def test_asymmetric_tolerance_fails_below_lower_bound(self) -> None:
+        """W1: 109 words fails asymmetric -10% tolerance for 122 target."""
+        artifact = MockArtifact(text="word " * 109)
+        context = {"reference_word_count": 122}
+
+        verdict = length_parity_strict_gate(
+            artifact, context, tolerance_below=0.10, tolerance_above=0.25
+        )
+
+        assert verdict.result == Result.FAIL
+        assert "length_outside_tolerance" in verdict.reason_codes
 
 
 class TestQuantifiedOutcomeCountGate:

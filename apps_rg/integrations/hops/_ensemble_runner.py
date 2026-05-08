@@ -72,6 +72,16 @@ class Candidate:
     generator: str = "stub"
     temperature: Optional[float] = None
     verdict: Optional[JudgeVerdict] = None
+    # W1: Extended telemetry fields for repair tracking
+    original_word_count: Optional[int] = None
+    repaired_word_count: Optional[int] = None
+    repair_applied: bool = False
+    repair_reason_code: Optional[str] = None
+    appended_sentence_source_refs: List[str] = field(default_factory=list)
+    structural_slot_coverage_status: Optional[str] = None
+    quantified_outcome_count: Optional[int] = None
+    post_repair_pass: Optional[bool] = None
+    final_length_band: Optional[str] = None  # "under", "within", "over"
 
     def to_dict(self) -> dict:
         return {
@@ -81,6 +91,17 @@ class Candidate:
             "generator": self.generator,
             "temperature": self.temperature,
             "verdict": self.verdict.to_dict() if self.verdict else None,
+            # W1: Extended telemetry
+            "original_word_count": self.original_word_count,
+            "repaired_word_count": self.repaired_word_count,
+            "repair_applied": self.repair_applied,
+            "repair_reason_code": self.repair_reason_code,
+            "appended_sentence_source_refs": self.appended_sentence_source_refs,
+            "structural_slot_coverage_status": self.structural_slot_coverage_status,
+            "quantified_outcome_count": self.quantified_outcome_count,
+            "post_repair_pass": self.post_repair_pass,
+            "final_length_band": self.final_length_band,
+            "gate_version": "W1",  # Tag for telemetry versioning
         }
 
 

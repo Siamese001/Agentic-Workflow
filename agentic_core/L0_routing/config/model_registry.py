@@ -259,10 +259,107 @@ def get_model_for_tier(tier: str) -> str:
     return mapping[tier]
 
 
+# ============================================================================
+# W3 P3.2: Critical-hop generator routing override
+# ============================================================================
+
+# Map of hop_id -> preferred generator tier when that hop needs special handling.
+# Used by exec_summary_ensemble to route critical hops to higher-capability models.
+# Format: hop_id -> (primary_tier, fallback_tier)
+CRITICAL_HOP_ROUTING: Final[dict[str, tuple[str, str]]] = {
+    # exec_summary: critical hop with length-parity requirements
+    # Route to Anthropic Claude when available, fall back to Qwen with min_tokens
+    "hop_4b_exec_summary": (TIER_GEMINI_PRO, TIER_QWEN_LOCAL),
+}
+"""Critical-hop routing overrides.
+
+Maps hop IDs to (primary_tier, fallback_tier) tuples.
+Used by the narrative pipeline to route high-stakes hops to
+higher-capability models when available.
+"""
+
+# vLLM hard floor parameters for specific hops
+# Format: hop_id -> SamplingParams kwargs
+VLLM_HARD_FLOOR_PARAMS: Final[dict[str, dict[str, int | float]]] = {
+    "hop_4b_exec_summary": {
+        # W3 P3.1: min_tokens=140 ≈ 165 tokens for 122-word target
+        # Forces continuation past EOS until floor reached
+        "min_tokens": 140,
+        # W3 P3.1: repetition_penalty=1.15 to suppress tail repetition
+        "repetition_penalty": 1.15,
+        # W3 P3.1: presence_penalty=0.4 to suppress tail repetition
+        "presence_penalty": 0.4,
+    },
+}
+"""vLLM-specific sampling parameters for critical hops.
+
+Maps hop IDs to kwargs for vLLM SamplingParams.
+Used when routing to local Qwen vLLM for critical hops.
+"""
+
+
+def get_critical_hop_generator(
+    hop_id: str,
+    *,
+    prefer_cloud: bool = True,
+) -> dict[str, str | int | float | None]:
+    """W3 P3.2: Return generator configuration for a critical hop.
+
+    Args:
+        hop_id: The hop identifier (e.g., "hop_4b_exec_summary").
+        prefer_cloud: If True, prefer cloud models (Gemini Pro / Anthropic).
+            If False, use local Qwen with hard floor.
+
+    Returns:
+        Dict with keys:
+        - model_tier: The selected tier
+        - model_id: The model identifier
+        - min_tokens: vLLM min_tokens (if applicable)
+        - repetition_penalty: vLLM repetition_penalty (if applicable)
+        - presence_penalty: vLLM presence_penalty (if applicable)
+        - fallback_tier: The fallback tier if primary unavailable
+    """
+    if hop_id not in CRITICAL_HOP_ROUTING:
+        # Not a critical hop — return default Qwen config
+        return {
+            "model_tier": TIER_QWEN_LOCAL,
+            "model_id": QWEN_LOCAL_MODEL_ID,
+            "min_tokens": None,
+            "repetition_penalty": None,
+            "presence_penalty": None,
+            "fallback_tier": TIER_GEMINI_FLASH,
+        }
+
+    primary_tier, fallback_tier = CRITICAL_HOP_ROUTING[hop_id]
+    vllm_params = VLLM_HARD_FLOOR_PARAMS.get(hop_id, {})
+
+    if prefer_cloud:
+        # Try cloud model first
+        return {
+            "model_tier": primary_tier,
+            "model_id": get_model_for_tier(primary_tier),
+            "min_tokens": None,  # Cloud models don't use min_tokens
+            "repetition_penalty": None,
+            "presence_penalty": None,
+            "fallback_tier": fallback_tier,
+        }
+
+    # Use local Qwen with vLLM hard floor
+    return {
+        "model_tier": TIER_QWEN_LOCAL,
+        "model_id": QWEN_LOCAL_MODEL_ID,
+        "min_tokens": vllm_params.get("min_tokens"),
+        "repetition_penalty": vllm_params.get("repetition_penalty"),
+        "presence_penalty": vllm_params.get("presence_penalty"),
+        "fallback_tier": primary_tier,  # Fall back to cloud if Qwen unavailable
+    }
+
+
 __all__ = [
     "ALL_TIERS",
     "ANTHROPIC_MODEL_ID",
     "CONSENSUS_JURORS",
+    "CRITICAL_HOP_ROUTING",
     "DETERMINISTIC_MODEL_SENTINEL",
     "EMBEDDING_MODEL_ID",
     "GEMINI_FLASH_MODEL_ID",
@@ -277,5 +374,7 @@ __all__ = [
     "TIER_HITL",
     "TIER_QWEN_LOCAL",
     "VLLM_BASE_URL",
+    "VLLM_HARD_FLOOR_PARAMS",
+    "get_critical_hop_generator",
     "get_model_for_tier",
 ]
