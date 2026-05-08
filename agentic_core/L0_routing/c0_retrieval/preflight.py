@@ -194,13 +194,31 @@ def run_preflight(
     W12 live wire-up: when ``emitter`` is provided, wraps the entire
     preflight check in a ``c0.0.preflight`` proof-OTEL span carrying the
     incoming ``route_id``. Default ``None`` keeps the historical behavior.
+
+    W4 c0-policy-rectification-deferred-f7b2a9:
+        OTEL span includes C0 policy provenance fields:
+        - l1_grounding_required: L1 advisory signal
+        - route_c0_mode: Frozen C0 mode from RouteContract
+        - evidence_contract_required: Whether evidence required
+        - c0_policy_decision_source: Who decided (L0_ROUTE_TOPOLOGY, etc.)
     """
     if emitter is None:
         return _run_preflight_impl(route, plan)
+
+    # W4: Extract C0 policy fields for OTEL span
+    c0_policy = route.c0_policy
+    span_attrs = {
+        "l1_grounding_required": bool(plan.grounding_required),
+        "route_c0_mode": c0_policy.c0_mode if c0_policy else "NOT_SET",
+        "evidence_contract_required": c0_policy.evidence_contract_required if c0_policy else False,
+        "c0_policy_decision_source": c0_policy.decision_source if c0_policy else "UNKNOWN",
+    }
+
     with emitter.span(
         "c0.0.preflight",
         reason_codes=["preflight_started"],
         route_id=route.route_id,
+        **span_attrs,  # W4: C0 policy provenance fields
     ):
         return _run_preflight_impl(route, plan)
 

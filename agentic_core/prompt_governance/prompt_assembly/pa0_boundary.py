@@ -24,8 +24,11 @@ deterministic :class:`BoundaryCheckResult`.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Mapping
+from enum import Enum, auto
+from typing import Any, Mapping, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.prove_requirements.emitter import SpanEmitter, Mapping
 
 
 class BoundaryStatus(str, Enum):
@@ -92,12 +95,13 @@ def _is_present(value: Any) -> bool:
 
 
 def boundary_check(
+    route_contract: dict[str, Any] | None,
+    plan_contract: dict[str, Any] | None,
+    evidence_contract: dict[str, Any] | None,
+    execution_metadata: dict[str, Any] | None,
     *,
-    plan_contract: Mapping[str, Any] | None,
-    route_contract: Mapping[str, Any] | None,
-    evidence_contract: Mapping[str, Any] | None,
-    governance: Mapping[str, Any] | None = None,
-    execution_metadata: Mapping[str, Any] | None = None,
+    governance: dict[str, Any] | None = None,
+    emitter: SpanEmitter | None = None,  # W4: OTEL span emitter
 ) -> BoundaryCheckResult:
     """Run PA.0 boundary checks.
 
@@ -129,10 +133,38 @@ def boundary_check(
     Returns
     -------
     BoundaryCheckResult
+        PASS if all checks succeed, otherwise FAIL with specific reason.
+
+    W4 c0-policy-rectification-deferred-f7b2a9:
+        When ``emitter`` is provided, emits a ``pa.0.boundary_check`` span
+        with C0 policy provenance fields for observability:
+        - c0_mode: The frozen C0 mode from RouteContract
+        - evidence_required: Whether evidence contract was required
+        - evidence_present: Whether evidence/bypass receipt was found
+        - c0_policy_source: Who decided the C0 policy
+
+    W5 c0-policy-rectification-f7b2a9:
     """
     notes: list[str] = []
 
-    # CHECK 0.1 — plan present?
+    # W4: Extract C0 policy for OTEL span
+    c0_policy = (route_contract or {}).get("c0_policy") if route_contract else None
+    c0_mode = str(c0_policy.get("c0_mode", "NOT_SET")) if c0_policy else "NOT_SET"
+    evidence_required = bool(c0_policy.get("evidence_contract_required", False)) if c0_policy else False
+    c0_policy_source = str(c0_policy.get("decision_source", "UNKNOWN")) if c0_policy else "UNKNOWN"
+
+    # CHECK 0.1 — valid route_contract present.
+    if not _is_present(route_contract):
+        result = BoundaryCheckResult(
+            status=BoundaryStatus.FAIL,
+            fail_reason=BoundaryFailReason.MISSING_ROUTE_CONTRACT,
+            notes=("check_0_1_failed: route_contract missing",),
+        )
+        _emit_pa_span_if_present(emitter, result, c0_mode, evidence_required, False, c0_policy_source)
+        return result
+    notes.append("check_0_2_pass")
+
+    # CHECK 0.2 — plan present?
     if not _is_present(plan_contract) or not plan_contract.get("plan_id"):  # type: ignore[union-attr]
         return BoundaryCheckResult(
             status=BoundaryStatus.FAIL,
@@ -140,15 +172,6 @@ def boundary_check(
             notes=tuple(notes + ["check_0_1_failed: no L1 plan_id"]),
         )
     notes.append("check_0_1_pass")
-
-    # CHECK 0.2 — route present?
-    if not _is_present(route_contract) or not route_contract.get("route_id"):  # type: ignore[union-attr]
-        return BoundaryCheckResult(
-            status=BoundaryStatus.FAIL,
-            fail_reason=BoundaryFailReason.MISSING_ROUTE_CONTRACT,
-            notes=tuple(notes + ["check_0_2_failed: no L0 route_id"]),
-        )
-    notes.append("check_0_2_pass")
 
     # CHECK 0.3 — terminal route? PA is not needed.
     execution_form = (route_contract or {}).get("execution_form", "")
@@ -163,7 +186,6 @@ def boundary_check(
 
     # W5 c0-policy-rectification-f7b2a9: CHECK 0.4 uses frozen RouteContract.c0_policy
     # L0 is the authority; PA must obey the frozen policy, not recompute from L1.
-    c0_policy = (route_contract or {}).get("c0_policy")
     if c0_policy is not None:
         evidence_contract_required = bool(c0_policy.get("evidence_contract_required", False))
         c0_mode = str(c0_policy.get("c0_mode", "NOT_REQUIRED"))
@@ -182,11 +204,13 @@ def boundary_check(
             )
         evidence_status = str((evidence_contract or {}).get("status", "")).upper()
         if evidence_status == "BLOCKED":
-            return BoundaryCheckResult(
+            result = BoundaryCheckResult(
                 status=BoundaryStatus.FAIL,
                 fail_reason=BoundaryFailReason.GROUNDING_REQUIRED_NO_EVIDENCE,
                 notes=tuple(notes + ["check_0_4_failed: evidence status=BLOCKED"]),
             )
+            _emit_pa_span_if_present(emitter, result, c0_mode, evidence_required, True, c0_policy_source)
+            return result
         # W5: Validate evidence came from C0, not a bypass receipt
         c0_status = str((evidence_contract or {}).get("c0_status", "")).upper()
         if c0_status == "BYPASS":
@@ -259,12 +283,56 @@ def boundary_check(
         )
     notes.append("check_0_7_pass")
 
-    return BoundaryCheckResult(
+    # W4: Build final result with OTEL span emission
+    final_result = BoundaryCheckResult(
         status=BoundaryStatus.PASS,
         fail_reason=None,
         eligible_for_prompt_assembly=True,
         notes=tuple(notes),
     )
+    _emit_pa_span_if_present(
+        emitter,
+        final_result,
+        c0_mode,
+        evidence_required,
+        bool(evidence_contract),
+        c0_policy_source,
+    )
+    return final_result
+
+
+# W4: OTEL span helper for PA boundary
+def _emit_pa_span_if_present(
+    emitter: SpanEmitter | None,
+    result: BoundaryCheckResult,
+    c0_mode: str,
+    evidence_required: bool,
+    evidence_present: bool,
+    c0_policy_source: str,
+) -> None:
+    """Emit PA.0 boundary check span with C0 policy provenance fields.
+
+    W4 c0-policy-rectification-deferred-f7b2a9: OTEL observability for C0 policy.
+    """
+    if emitter is None:
+        return
+
+    span_attrs = {
+        "c0_mode": c0_mode,
+        "evidence_required": evidence_required,
+        "evidence_present": evidence_present,
+        "c0_policy_source": c0_policy_source,
+        "boundary_status": result.status.value,
+    }
+    if result.fail_reason:
+        span_attrs["fail_reason"] = result.fail_reason.value
+
+    with emitter.span(
+        "pa.0.boundary_check",
+        reason_codes=["boundary_check_complete"],
+        **span_attrs,
+    ):
+        pass  # Span emitted immediately for observability
 
 
 __all__ = [
@@ -272,4 +340,5 @@ __all__ = [
     "BoundaryFailReason",
     "BoundaryStatus",
     "boundary_check",
+    "_emit_pa_span_if_present",  # W4: Exposed for testing
 ]
