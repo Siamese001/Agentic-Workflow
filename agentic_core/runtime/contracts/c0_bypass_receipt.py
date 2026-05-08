@@ -22,11 +22,19 @@ from typing import Any, Mapping
 
 C0_BYPASS_RECEIPT_SCHEMA_VERSION = "1.0"
 
+# W4 c0-policy-rectification-f7b2a9: Extended with typed bypass reasons from C0Policy.
+# LEGACY reasons kept for backward compatibility during transition.
 ALLOWED_C0_BYPASS_REASONS: frozenset[str] = frozenset({
+    # Legacy reasons (deprecated)
     "GROUNDING_NOT_REQUIRED",
     "TERMINAL_SHORTCIRCUIT_NO_RETRIEVAL",
     "CACHE_REUSE_PRIOR_EVIDENCE",
     "FALLBACK_NO_RETRIEVAL",
+    # W4: Typed bypass reasons (preferred)
+    "BYPASS_PRELOADED_CONTEXT",
+    "BYPASS_CACHE_RETURN",
+    "BYPASS_FALLBACK",
+    "NOT_REQUIRED",
 })
 
 _DIGEST_STABLE_FIELDS: tuple[str, ...] = (

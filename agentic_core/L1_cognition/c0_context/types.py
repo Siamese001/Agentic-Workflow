@@ -254,6 +254,32 @@ FAILURE_MODES: Final[tuple[str, ...]] = (
 
 
 @dataclass(frozen=True)
+class L1C0Advisory:
+    """W2 c0-policy-rectification-f7b2a9 — L1 advisory grounding analysis.
+
+    L1 may declare semantic grounding need, but L0 is the authority that
+    freezes the C0 policy into RouteContract.c0_policy. This dataclass
+    represents L1's advisory opinion only; it does not authorize C0 runtime.
+    """
+
+    # Advisory signal from L1 reasoning
+    grounding_required: bool
+    """L1 opinion: does the task require grounded evidence?"""
+
+    support_expectation: str = ""
+    """What kind of support L1 expects (e.g., 'policy_clause', 'source_summary')."""
+
+    support_target: SupportTarget = SupportTarget.SOURCE_SUMMARY
+    """Target type for evidence retrieval."""
+
+    grounding_reason_codes: tuple[str, ...] = ()
+    """Why L1 believes grounding is/isn't required (traceability)."""
+
+    confidence: float = 0.85
+    """L1 confidence in the grounding assessment [0.0, 1.0]."""
+
+
+@dataclass(frozen=True)
 class RouteContractView:
     """The subset of L0 RouteContract fields C0 needs."""
 
@@ -385,6 +411,7 @@ class FinalEvidenceContract:
 __all__ = [
     "BOUND_PARAMS",
     "C0PreflightStatus",
+    "L1C0Advisory",
     "ContradictionFlag",
     "ContradictionType",
     "DISALLOWED_REFINEMENTS",

@@ -1,11 +1,17 @@
 """PA.0 Boundary Check — confirms the component is doing assembly only.
 
+W5 c0-policy-rectification-f7b2a9: C0 policy enforcement now uses frozen
+RouteContract.c0_policy. L0 is the authority; PA must obey, not recompute.
+
 Implements all seven boundary checks from the spec:
 
     CHECK 0.1: Has L1 produced a plan?
     CHECK 0.2: Has L0 produced a RouteContract?
     CHECK 0.3: Is this route terminal [RET]?
-    CHECK 0.4: Is grounding required?
+    CHECK 0.4: Is C0 evidence required per RouteContract.c0_policy?
+            - If evidence_contract_required=True → require FinalEvidenceContract
+            - If c0_mode is bypass → require C0BypassReceipt
+            - Fail closed on missing contracts
     CHECK 0.5: Are durable writes requested?
     CHECK 0.6: Is HITL required before execution?
     CHECK 0.7: Are policy hashes consistent?
@@ -105,9 +111,14 @@ def boundary_check(
         → CHECK 0.2 fails. ``execution_form`` of ``"TERMINAL_SHORTCIRCUIT"``
         triggers SKIP (CHECK 0.3).
     evidence_contract
-        C0 evidence contract dict-like. CHECK 0.4 inspects this when the plan
-        sets ``grounding_required=True``. A missing or status=BLOCKED contract
-        with grounding required is a FAIL.
+        C0 evidence contract dict-like (FinalEvidenceContract) OR C0BypassReceipt
+        dict-like. CHECK 0.4 inspects RouteContract.c0_policy to determine
+        which is required:
+        - If ``c0_policy.evidence_contract_required=True``: must be present
+          and valid (not BYPASS status)
+        - If ``c0_policy.c0_mode`` is a bypass mode: must have
+          ``c0_bypass_reason`` field
+        A missing contract when required is a FAIL.
     governance
         Optional governance artifact dict. Inspected for
         ``hitl_required`` / ``allowed_tool_posture`` / ``durable_write_allowed``.
@@ -150,23 +161,55 @@ def boundary_check(
         )
     notes.append("check_0_3_pass")
 
-    # CHECK 0.4 — grounding required → evidence must be present.
-    grounding_required = bool((plan_contract or {}).get("grounding_required", False))
-    if grounding_required:
+    # W5 c0-policy-rectification-f7b2a9: CHECK 0.4 uses frozen RouteContract.c0_policy
+    # L0 is the authority; PA must obey the frozen policy, not recompute from L1.
+    c0_policy = (route_contract or {}).get("c0_policy")
+    if c0_policy is not None:
+        evidence_contract_required = bool(c0_policy.get("evidence_contract_required", False))
+        c0_mode = str(c0_policy.get("c0_mode", "NOT_REQUIRED"))
+    else:
+        # Fallback: derive from legacy grounding_required (backward compatibility)
+        evidence_contract_required = bool((plan_contract or {}).get("grounding_required", False))
+        c0_mode = "RETRIEVE_REQUIRED" if evidence_contract_required else "NOT_REQUIRED"
+
+    if evidence_contract_required:
+        # W5: Must have FinalEvidenceContract (not bypass receipt)
         if not _is_present(evidence_contract):
             return BoundaryCheckResult(
                 status=BoundaryStatus.FAIL,
                 fail_reason=BoundaryFailReason.GROUNDING_REQUIRED_NO_EVIDENCE,
-                notes=tuple(notes + ["check_0_4_failed: grounding required, no C0"]),
+                notes=tuple(notes + ["check_0_4_failed: c0_policy.evidence_contract_required=True, no evidence"]),
             )
         evidence_status = str((evidence_contract or {}).get("status", "")).upper()
         if evidence_status == "BLOCKED":
             return BoundaryCheckResult(
                 status=BoundaryStatus.FAIL,
                 fail_reason=BoundaryFailReason.GROUNDING_REQUIRED_NO_EVIDENCE,
-                notes=tuple(notes + ["check_0_4_failed: C0 status=BLOCKED"]),
+                notes=tuple(notes + ["check_0_4_failed: evidence status=BLOCKED"]),
             )
-    notes.append("check_0_4_pass")
+        # W5: Validate evidence came from C0, not a bypass receipt
+        c0_status = str((evidence_contract or {}).get("c0_status", "")).upper()
+        if c0_status == "BYPASS":
+            return BoundaryCheckResult(
+                status=BoundaryStatus.FAIL,
+                fail_reason=BoundaryFailReason.GROUNDING_REQUIRED_NO_EVIDENCE,
+                notes=tuple(notes + ["check_0_4_failed: evidence required but got bypass receipt"]),
+            )
+    else:
+        # W5: Bypass mode must have explicit C0BypassReceipt
+        bypass_modes = ("BYPASS_PRELOADED_CONTEXT", "BYPASS_CACHE_RETURN", "BYPASS_FALLBACK", "NOT_REQUIRED")
+        if c0_mode in bypass_modes:
+            # Check if bypass receipt is present
+            bypass_receipt = (evidence_contract or {}).get("c0_bypass_reason", "")
+            if not bypass_receipt:
+                # W5: Allow missing bypass receipt for NOT_REQUIRED with advisory only
+                if c0_mode != "NOT_REQUIRED":
+                    return BoundaryCheckResult(
+                        status=BoundaryStatus.FAIL,
+                        fail_reason=BoundaryFailReason.GROUNDING_REQUIRED_NO_EVIDENCE,
+                        notes=tuple(notes + [f"check_0_4_failed: c0_mode={c0_mode} but no bypass receipt"]),
+                    )
+    notes.append(f"check_0_4_pass: c0_mode={c0_mode}, evidence_required={evidence_contract_required}")
 
     # CHECK 0.5 — durable writes requested?
     write_requested = bool((plan_contract or {}).get("write_requested", False))

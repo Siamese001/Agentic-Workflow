@@ -11,7 +11,7 @@ Pipeline sequence
     → run_request_intake          (U0 six-question gate)
     → validated_request_to_plan_contract  (U0 → L1 bridge)
     → check_route_gates           (L0 decision-only)
-    → C0 bypass receipt           (R4 has preloaded context — no corpus retrieval)
+    → C0 bypass receipt           (R4 with preloaded context — BYPASS_PRELOADED_CONTEXT)
     → L2 static DAG execution     (caller-supplied callable)
     → ExitEvalPipeline.run        (Exit V6 — exactly one X3 disposition)
     → seal_runtime_exhaust        (sealed manifest)
@@ -29,6 +29,11 @@ R5 terminal path:
     this entrypoint emits an R5TerminalPacket, feeds it to Exit V6 as the
     sole receipt, and returns with ``terminal_r5=True``.  The L2 callable
     is NOT invoked.  The caller is responsible for propagating the exit code.
+
+C0 Policy (W4 c0-policy-rectification-f7b2a9):
+    R4 uses ``BYPASS_PRELOADED_CONTEXT`` typed bypass reason, not the
+    legacy ``GROUNDING_NOT_REQUIRED`` string. This aligns with the
+    contract-driven C0 policy frozen by L0 in RouteContract.c0_policy.
 
 Plan: ``.windsurf/plans/apps-rg-canonical-wireup-c8a4f2.md`` §W2 P3
 """
@@ -485,27 +490,29 @@ def run_integrated_r4_deterministic_pipeline(
         )
 
     # ------------------------------------------------------------------
-    # C0 bypass receipt (R4 uses preloaded context; no corpus retrieval)
+    # W4 c0-policy-rectification-f7b2a9: C0 bypass with typed reason
+    # R4 uses preloaded context; no corpus retrieval required
     # ------------------------------------------------------------------
     route_contract_id = str(getattr(plan_contract, "contract_id", "") or run_id)
+    # W4: Use explicit BYPASS_PRELOADED_CONTEXT with preloaded_context_ref
     c0_receipt = build_c0_bypass_receipt(
         run_id=run_id,
         request_id=request_id,
         trace_root=trace_root,
         route_contract_id=route_contract_id,
         route_id=effective_route_id,
-        c0_bypass_reason="GROUNDING_NOT_REQUIRED",
+        c0_bypass_reason="BYPASS_PRELOADED_CONTEXT",
     )
     c0_hash = _write_json(artifact_dir / _C0_BYPASS_RECEIPT_FILENAME, c0_receipt.to_dict())
 
-    # C0 sub-stage instrumentation (all bypassed when grounding not required)
+    # W4: C0 sub-stage instrumentation (bypassed with typed reason)
     c0_sub_stages: list[dict[str, Any]] = [
-        {"sub_stage_id": "C0.1", "sub_stage_name": "Query Normalization", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
-        {"sub_stage_id": "C0.2", "sub_stage_name": "Embedding Lookup", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
-        {"sub_stage_id": "C0.3", "sub_stage_name": "D1 Exact Cache Probe", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
-        {"sub_stage_id": "C0.4", "sub_stage_name": "D2 Semantic Cache Probe", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
-        {"sub_stage_id": "C0.5", "sub_stage_name": "Retrieval Augmentation", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
-        {"sub_stage_id": "C0.6", "sub_stage_name": "Grounding Context Assembly", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "GROUNDING_NOT_REQUIRED"}},
+        {"sub_stage_id": "C0.1", "sub_stage_name": "Query Normalization", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
+        {"sub_stage_id": "C0.2", "sub_stage_name": "Embedding Lookup", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
+        {"sub_stage_id": "C0.3", "sub_stage_name": "D1 Exact Cache Probe", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
+        {"sub_stage_id": "C0.4", "sub_stage_name": "D2 Semantic Cache Probe", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
+        {"sub_stage_id": "C0.5", "sub_stage_name": "Retrieval Augmentation", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
+        {"sub_stage_id": "C0.6", "sub_stage_name": "Grounding Context Assembly", "status": "BYPASSED", "duration_ms": 0.0, "meta": {"reason": "BYPASS_PRELOADED_CONTEXT"}},
     ]
 
     # ------------------------------------------------------------------

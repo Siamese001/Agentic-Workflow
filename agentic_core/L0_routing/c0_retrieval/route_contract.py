@@ -8,9 +8,58 @@ Both are immutable inputs into C0 — C0 never mutates either.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Mapping
+from typing import Literal, Mapping
 
 from .verdicts import FreshnessClass, SourceClass, SupportTarget
+
+
+# ----- C0 Policy (W1 c0-policy-rectification-f7b2a9) -----
+
+C0Mode = Literal[
+    "RETRIEVE_REQUIRED",
+    "BYPASS_PRELOADED_CONTEXT",
+    "BYPASS_CACHE_RETURN",
+    "BYPASS_FALLBACK",
+    "NOT_REQUIRED",
+]
+"""Canonical C0 execution modes. Frozen at L0 policy construction time."""
+
+C0DecisionSource = Literal[
+    "L1_PLAN_DERIVED",
+    "L0_ROUTE_TOPOLOGY",
+    "CACHE_TERMINAL",
+    "FALLBACK_TERMINAL",
+    "PRELOADED_CONTEXT",
+]
+"""Traceable source of C0 policy decision for observability."""
+
+
+@dataclass(frozen=True)
+class C0Policy:
+    """Frozen C0 policy — authoritative decision frozen at L0.
+
+    This dataclass represents the single source of truth for C0 behavior.
+    Downstream layers (C0, PA, L2) MUST NOT recompute or override.
+    """
+
+    grounding_required: bool
+    c0_mode: C0Mode
+    decision_source: C0DecisionSource
+    evidence_contract_required: bool
+    bypass_reason: str | None = None
+    preloaded_context_ref: str | None = None
+    support_target: str | None = None
+
+    def __post_init__(self) -> None:
+        # Validate consistency: if evidence required, cannot be bypass mode
+        if self.evidence_contract_required and self.c0_mode != "RETRIEVE_REQUIRED":
+            raise ValueError(
+                f"evidence_contract_required=True incompatible with c0_mode={self.c0_mode}"
+            )
+        # Validate bypass reason present when mode is bypass
+        bypass_modes = ("BYPASS_PRELOADED_CONTEXT", "BYPASS_CACHE_RETURN", "BYPASS_FALLBACK")
+        if self.c0_mode in bypass_modes and not self.bypass_reason:
+            raise ValueError(f"c0_mode={self.c0_mode} requires bypass_reason")
 
 
 @dataclass(frozen=True)
@@ -91,6 +140,10 @@ class RouteContract:
     orchestration_profile_ref: str = ""
     app_contract_l4_record_refs: tuple[str, ...] = ()
 
+    # ----- C0 Policy (W1 c0-policy-rectification-f7b2a9) -----
+    # Frozen C0 policy set by L0. Downstream layers (C0, PA) MUST NOT override.
+    c0_policy: C0Policy | None = None
+
     def __post_init__(self) -> None:
         if self.max_k <= 0:
             raise ValueError("max_k must be positive")
@@ -114,3 +167,12 @@ class RouteContract:
 
     def allows_data_class(self, dc: str) -> bool:
         return dc in self.allowed_data_classes
+
+
+__all__ = [
+    "C0DecisionSource",
+    "C0Mode",
+    "C0Policy",
+    "L1PlanContract",
+    "RouteContract",
+]

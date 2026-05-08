@@ -24,7 +24,11 @@ than silently substituting a default that could mask a routing bug.
 """
 from __future__ import annotations
 
-from agentic_core.L0_routing.c0_retrieval.route_contract import RouteContract
+from agentic_core.L0_routing.c0_retrieval.preflight import build_c0_policy
+from agentic_core.L0_routing.c0_retrieval.route_contract import (
+    L1PlanContract,
+    RouteContract,
+)
 from agentic_core.L0_routing.c0_retrieval.verdicts import (
     FreshnessClass as C0FreshnessClass,
 )
@@ -98,6 +102,7 @@ def v15_to_route_contract(
     route_replay_key: str = "",
     policy_hash: str = "",
     blueprint_hash: str = "",
+    l1_plan: L1PlanContract | None = None,
 ) -> RouteContract:
     """Map a V15RouteContract into the C0 RouteContract shape.
 
@@ -110,10 +115,13 @@ def v15_to_route_contract(
         route_replay_key, policy_hash, blueprint_hash: Replay/audit hooks.
             V15 stamps these on its signatures/digest path; we forward them
             so C0's replay metadata stays consistent.
+        l1_plan: Optional L1 plan contract for C0 policy construction.
+            If provided, L0 freezes C0 policy using L1 advisory signals.
 
     Returns:
         A frozen :class:`RouteContract` ready to feed into the C0 dispatcher.
         ``hmac_sig`` is forwarded from ``v15.signatures.hmac_sig``.
+        ``c0_policy`` is frozen based on route topology and L1 advisory.
 
     Raises:
         V15ToC0AdapterError: If a non-default-mappable field is missing.
@@ -145,8 +153,17 @@ def v15_to_route_contract(
     fallback_policy = _CACHE_TO_FALLBACK.get(v15.cache_policy, "caveat")
     grounding_required = v15.support_target != SupportTargetV15.NONE
 
+    # W3 c0-policy-rectification-f7b2a9: Build minimal L1PlanContract if not provided.
+    if l1_plan is None:
+        l1_plan = L1PlanContract(
+            task_spec="",
+            query_spec="",
+            grounding_required=grounding_required,
+            user_task_text="",
+        )
+
     slo = v15.slo
-    return RouteContract(
+    route = RouteContract(
         route_id=str(v15.route_id.value),
         grounding_required=grounding_required,
         execution_form=c0_exec,
@@ -182,6 +199,14 @@ def v15_to_route_contract(
         },
         hmac_sig=v15.signatures.hmac_sig,
     )
+
+    # W3: Freeze C0 policy into RouteContract (L0 authority).
+    route = RouteContract(
+        **{k: v for k, v in route.__dict__.items() if k != "c0_policy"},
+        c0_policy=build_c0_policy(route, l1_plan),
+    )
+
+    return route
 
 
 def route_id_for_v15(route: RouteIdV15) -> str:
