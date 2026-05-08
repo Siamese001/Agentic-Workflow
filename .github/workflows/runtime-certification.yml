@@ -82,23 +82,27 @@ jobs:
 
       # ── RTC-REQ-001 + RTC-REQ-030 + RTC-REQ-033 + RTC-REQ-124 (matrix universe)
       - name: W0.1 verify_runtime_certification_matrix
-        run: python scripts/verify_runtime_certification_matrix.py
+        run: python ops_scripts/ci/verify_runtime_certification_matrix.py
 
       # ── RTC-REQ-002 + RTC-REQ-003 + RTC-REQ-006 + RTC-REQ-110 (schema)
       - name: W0.2 verify_runtime_certification_matrix_schema
-        run: python scripts/verify_runtime_certification_matrix_schema.py
+        run: python ops_scripts/ci/verify_runtime_certification_matrix_schema.py
 
       # ── RTC-REQ-004 + RTC-REQ-005 + RTC-REQ-111 + RTC-REQ-127 + RTC-REQ-034 (acceptance)
       - name: W0.3 verify_runtime_certification_acceptance
-        run: python scripts/verify_runtime_certification_acceptance.py
+        run: python ops_scripts/ci/verify_runtime_certification_acceptance.py
 
       # ── RTC-REQ-032 (source divergence)
       - name: W0.4 verify_source_divergence
-        run: python scripts/verify_source_divergence.py
+        run: python ops_scripts/ci/verify_source_divergence.py
 
       # ── RTC-REQ-123 (payload hash recomputation)
       - name: W0.5 verify_artifact_payload_hashes
-        run: python scripts/verify_artifact_payload_hashes.py
+        run: python ops_scripts/ci/verify_artifact_payload_hashes.py
+
+      # ── RTC-REQ-030 + RTC-REQ-033 (merkle root)
+      - name: W0.6 verify_all_requirements_merkle_root
+        run: python scripts/verify_all_requirements_merkle_root.py
 
       # ── W0 closure #3: language-discipline audit
       # Forbids "runtime certified", "100% complete", "semantic cache certified",
