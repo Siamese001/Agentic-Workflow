@@ -184,7 +184,7 @@ Monitoring for C0 policy enforcement in production.
 | W2 | Remove deprecated preflight() | L1 preflight, tests | ~2k | **Completed** |
 | W3 | Audit additional entrypoints | R4-like entrypoints | ~2k | **Completed** |
 | W4 | OTEL observability | C0 pipeline, PA boundary | ~3k | **Completed** |
-| W5 | Migration strategy + docs | Ops docs, deprecation timeline | ~2k | Not Started |
+| W5 | Migration strategy + docs | Ops docs, deprecation timeline | ~2k | **Completed** |
 
 ---
 
