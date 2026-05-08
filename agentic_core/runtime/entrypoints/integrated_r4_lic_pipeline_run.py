@@ -503,6 +503,8 @@ def run_integrated_r4_lic_pipeline(
         _write_json(_plan_dst, {"schema_version": "l1_plan_contract.v1", "payload": _plan_data})
 
     # Create route_contract.json (required by build_how_trace but not written by R4)
+    # request_id + trace_root MUST be present at payload level — the L7 route-family
+    # coverage classifier (_route_contract_emitted) requires them to certify R4.
     _route_contract_path = artifact_dir / "route_contract.json"
     if not _route_contract_path.exists():
         _write_json(
@@ -512,6 +514,8 @@ def run_integrated_r4_lic_pipeline(
                 "payload": {
                     "route_id": ROUTE_ID,
                     "route_contract_id": run_id,
+                    "request_id": request_id,
+                    "trace_root": trace_root,
                     "execution_form": "R4_SINGLE_ACTION",
                     "grounding_required": False,
                     "prompt_assembly_required": False,

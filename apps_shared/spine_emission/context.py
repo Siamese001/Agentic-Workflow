@@ -522,6 +522,9 @@ class GovernedRun:
                     dst_path.write_text(src_path.read_text(encoding="utf-8"), encoding="utf-8")
 
             # Synthesize route_contract.json if absent (Track-2 requirement)
+            # request_id + trace_root MUST be present at payload level — the L7
+            # route-family coverage classifier (_route_contract_emitted) requires
+            # them to certify the exercised family.
             _route_path = run_dir / "route_contract.json"
             if not _route_path.exists():
                 _route_payload = {
@@ -529,6 +532,8 @@ class GovernedRun:
                     "payload": {
                         "route_id": self.cfg.app_name,
                         "route_contract_id": self._route_contract_id,
+                        "request_id": self.request_id,
+                        "trace_root": self.trace_root,
                         "execution_form": "MANAGED_WORKFLOW",
                         "grounding_required": self.cfg.expects_c0_grounding,
                         "prompt_assembly_required": self.cfg.expects_prompt_assembly,

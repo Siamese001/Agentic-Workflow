@@ -484,11 +484,35 @@ def _run_with_args(
         except Exception as _store_err:  # guardian: allow-broad-exception -- R1B store is fail-soft; run already succeeded
             _log.warning("[apps_rg] R1B store failed (fail-soft): %s", _store_err)
 
+    # ── Mandatory spine trace output (L7 projection) ──
+    _emit_spine_trace(artifact_dir)
+
     if result.fault:
         _log.error("[apps_rg] Pipeline fault: %s", result.fault)
         sys.exit(1)
 
     sys.exit(0)
+
+
+# ---------------------------------------------------------------------------
+# Mandatory spine trace output
+# ---------------------------------------------------------------------------
+
+
+def _emit_spine_trace(artifact_dir: Path) -> None:
+    """Emit the mandatory WHAT HAPPENED spine trace table to stdout.
+
+    Reads the L7 HowTrace and supporting artifacts from *artifact_dir*
+    and prints a formatted table.  Fail-soft: a missing or malformed
+    HowTrace logs a warning but never aborts the run.
+    """
+    try:
+        from apps_rg.outputs.spine_trace_formatter import format_spine_trace
+
+        trace_text = format_spine_trace(artifact_dir)
+        print(trace_text, file=sys.stdout)
+    except Exception as _exc:  # guardian: allow-broad-exception -- trace is fail-soft; run already succeeded
+        _log.warning("[apps_rg] spine trace emission failed (fail-soft): %s", _exc)
 
 
 # ---------------------------------------------------------------------------
