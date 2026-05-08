@@ -889,13 +889,14 @@ def run_integrated_safe_reuse(
     )
     _emit("l3_bypass_receipt.json", _l3_bypass.to_dict())
 
+    # W3: C0 bypass with typed reason (semantic cache hit)
     _c0_bypass = build_c0_bypass_receipt(
         run_id=vr.request_id,
         request_id=vr.request_id,
         trace_root=vr.trace_root,
         route_contract_id=R1B_ROUTE_ID,
         route_id=R1B_ROUTE_ID,
-        c0_bypass_reason="CACHE_REUSE_PRIOR_EVIDENCE",
+        c0_bypass_reason="BYPASS_CACHE_RETURN",  # W3: typed bypass for cache reuse
     )
     _emit("c0_bypass_receipt.json", _c0_bypass.to_dict())
 

@@ -12,7 +12,7 @@ Pipeline sequence
     → run_request_intake           (U0 six-question gate)
     → validated_request_to_plan_contract  (U0 → L1 bridge)
     → check_route_gates            (L0 decision-only)
-    → C0 bypass receipt            (R4 has preloaded context — no corpus retrieval)
+    → C0 bypass receipt           (R4 with preloaded context — BYPASS_PRELOADED_CONTEXT)
     → L2 static DAG execution      (caller-supplied callable; defined in apps_lic_static_dag.yaml)
     → ExitEvalPipeline.run         (Exit V6 — exactly one X3 disposition)
     → seal_runtime_exhaust         (sealed manifest)
@@ -30,6 +30,12 @@ R5 terminal path:
     this entrypoint emits an R5TerminalPacket, feeds it to Exit V6 as the
     sole receipt, and returns with ``terminal_r5=True``.  The L2 callable
     is NOT invoked.  The caller is responsible for propagating the exit code.
+
+C0 Policy (W3 c0-policy-rectification-deferred-f7b2a9):
+    R4 uses ``BYPASS_PRELOADED_CONTEXT`` typed bypass reason, not legacy
+    hardcoded strings. This aligns with contract-driven C0 policy frozen
+    by L0 in RouteContract.c0_policy. L1 provides advisory signals only;
+    L0 is the authority.
 
 Relationship to apps_rg entrypoint:
     ``integrated_r4_deterministic_pipeline_run`` owns the apps_rg identity
@@ -364,12 +370,13 @@ def run_integrated_r4_lic_pipeline(
         )
 
     # ------------------------------------------------------------------
-    # C0 bypass receipt — R4 has preloaded context; no corpus retrieval
+    # W3: C0 bypass receipt — R4 with preloaded context (typed bypass reason)
     # ------------------------------------------------------------------
     c0_bypass = build_c0_bypass_receipt(
         run_id=run_id,
         route_id=ROUTE_ID,
-        reason="R4_SINGLE_ACTION_preloaded_manifest",
+        c0_bypass_reason="BYPASS_PRELOADED_CONTEXT",
+        preloaded_context_ref=ROUTE_ID,  # R4 manifest provides preloaded context
     )
 
     # ------------------------------------------------------------------
