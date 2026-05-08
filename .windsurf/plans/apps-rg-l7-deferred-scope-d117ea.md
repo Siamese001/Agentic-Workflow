@@ -1,6 +1,7 @@
 ---
 plan_id: apps-rg-l7-deferred-scope-d117ea
 plan_type: tracker
+status: Completed
 ---
 
 # Plan: apps_rg L7 Route Family — Deferred Scope Items
@@ -34,7 +35,7 @@ Tracks two deferred items from completed plan `apps-rg-l7-route-family-cert-fix-
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|------------:|-------------|--------|------------------|
 | W1 | P1.1 | Refresh L7 evidence on R1A cache hit | ~8k | R1A replay path is deterministic and observable | ✅ DONE | Cache-hit runs re-emit `agentic_core_l7_route_family_coverage.json` with fresh timestamps |
-| W2 | P2.1 | Promote L7 verifier to fail-closed | ~4k | CI environment supports env-var gating | 🔲 TODO | `verify_agentic_core_l7_route_family_coverage.py` exits non-zero when exercised family is NOT_CERTIFIED |
+| W2 | P2.1 | Promote L7 verifier to fail-closed | ~4k | CI environment supports env-var gating | ✅ DONE | `verify_agentic_core_l7_route_family_coverage.py` exits non-zero when exercised family is NOT_CERTIFIED |
 
 **Total: ~12k tokens across 2 waves**
 
@@ -45,7 +46,7 @@ Tracks two deferred items from completed plan `apps-rg-l7-route-family-cert-fix-
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|------------:|--------|
 | P1.1 | L7 evidence refresh on R1A cache hit | `apps_rg/__main__.py` (cache-hit path) | Stale evidence from pre-patch runs permanently shows NOT_CERTIFIED | ~8k | ✅ DONE |
-| P2.1 | L7 verifier fail-closed promotion | `scripts/verify_agentic_core_l7_route_family_coverage.py` | Advisory mode masks regressions | ~4k | 🔲 TODO |
+| P2.1 | L7 verifier fail-closed promotion | `ops_scripts/ci/verify_agentic_core_l7_route_family_coverage.py` | Advisory mode masks regressions | ~4k | ✅ DONE |
 
 ---
 

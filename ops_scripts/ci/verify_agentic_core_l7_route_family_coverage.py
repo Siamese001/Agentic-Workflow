@@ -332,6 +332,24 @@ def main(argv: list[str]) -> int:
             "spine_proof missing l7_route_family_coverage_status",
         )
 
+    # 8. Exercised-family certification gate (fail-closed when enabled).
+    # When L7_RFC_EXERCISED_FAIL_CLOSED=1, the exercised family MUST be
+    # CERTIFIED — otherwise the verifier fails. Advisory by default.
+    import os as _os
+    _exercised_family = (cur.get("route_family_exercised") or "").strip()
+    if _exercised_family:
+        _exercised_row = next(
+            (r for r in families if r.get("route_family") == _exercised_family), None
+        )
+        if _exercised_row and _exercised_row.get("certification_status") != "CERTIFIED":
+            _msg = (
+                f"{_exercised_family}: exercised family is "
+                f"{_exercised_row.get('certification_status')!r}, not CERTIFIED"
+            )
+            if _os.environ.get("L7_RFC_EXERCISED_FAIL_CLOSED", "0") == "1":
+                return fail("RFC_EXERCISED_NOT_CERTIFIED", _msg)
+            print(f"ADVISORY: RFC_EXERCISED_NOT_CERTIFIED — {_msg}")
+
     summary = pay.get("summary", {}) or {}
     return passed(
         f"L7 route-family coverage matrix valid (chain_kind={kind}, "
