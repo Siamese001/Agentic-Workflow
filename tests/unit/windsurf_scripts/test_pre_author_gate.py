@@ -287,6 +287,139 @@ class TestTierBypass:
 
 
 # =============================================================================
+# W2. Windows Path Coverage Tests
+# =============================================================================
+
+class TestWindowsPathCoverage:
+    """Comprehensive Windows vs POSIX path matching tests (W2)."""
+
+    # Standard Windows backslash paths
+    def test_windows_backslash_rules_path(self):
+        """Windows backslash path matches rules pattern."""
+        assert _is_sensitive_path(".windsurf\\rules\\ssot-folder-enforcement.md") is True
+
+    def test_windows_backslash_schemas_path(self):
+        """Windows backslash path matches schemas pattern."""
+        assert _is_sensitive_path(".windsurf\\schemas\\author_gate_triggers.yaml") is True
+
+    def test_windows_backslash_pre_author_gate(self):
+        """Windows backslash path matches pre_author_gate.py."""
+        assert _is_sensitive_path(".windsurf\\scripts\\pre_author_gate.py") is True
+
+    def test_windows_backslash_l5_safety(self):
+        """Windows backslash path matches L5_safety."""
+        assert _is_sensitive_path("agentic_core\\L5_safety\\guard.py") is True
+
+    def test_windows_backslash_adr(self):
+        """Windows backslash path matches ADR directory."""
+        assert _is_sensitive_path("docs\\architecture\\adr\\ADR-001.md") is True
+
+    def test_windows_backslash_ci_gates(self):
+        """Windows backslash path matches CI gates."""
+        assert _is_sensitive_path("ops_scripts\\ci\\check_foo.py") is True
+
+    # Mixed separator paths (edge case)
+    def test_mixed_separator_rules_path(self):
+        """Mixed / and \\ separators still match."""
+        assert _is_sensitive_path(".windsurf/rules\\test.md") is True
+        assert _is_sensitive_path(".windsurf\\rules/test.md") is True
+
+    def test_mixed_separator_nested(self):
+        """Mixed separators in deeply nested path."""
+        assert _is_sensitive_path("agentic_core\\L5_safety/nested/guard.py") is True
+
+    # POSIX forward slash paths (baseline)
+    def test_posix_forward_slash_rules(self):
+        """POSIX forward slash paths still work."""
+        assert _is_sensitive_path(".windsurf/rules/test.md") is True
+
+    def test_posix_forward_slash_schemas(self):
+        """POSIX forward slash schemas paths work."""
+        assert _is_sensitive_path(".windsurf/schemas/author_gate_triggers.yaml") is True
+
+    # Non-sensitive Windows paths (should NOT match)
+    def test_windows_backslash_non_sensitive(self):
+        """Windows backslash non-sensitive paths return False."""
+        assert _is_sensitive_path("tests\\unit\\test_foo.py") is False
+        assert _is_sensitive_path("agentic_core\\L3_orchestration\\pipeline.py") is False
+        assert _is_sensitive_path("apps_qna\\cache\\r1a.py") is False
+
+    # Edge cases
+    def test_empty_path(self):
+        """Empty path returns False."""
+        assert _is_sensitive_path("") is False
+
+    def test_single_backslash(self):
+        """Single backslash-only path handled gracefully."""
+        assert _is_sensitive_path("\\") is False
+
+    def test_trailing_backslash(self):
+        """Trailing backslash in sensitive directory."""
+        assert _is_sensitive_path(".windsurf\\rules\\") is True
+
+    def test_trailing_slash(self):
+        """Trailing slash in sensitive directory."""
+        assert _is_sensitive_path(".windsurf/rules/") is True
+
+    def test_case_sensitivity(self):
+        """Case-sensitive matching (paths are case-sensitive on POSIX)."""
+        # Uppercase should NOT match lowercase patterns
+        assert _is_sensitive_path(".WINDSURF/rules/test.md") is False
+        assert _is_sensitive_path(".windsurf/RULES/test.md") is False
+
+    def test_partial_match_rejection(self):
+        """Partial directory names don't match."""
+        assert _is_sensitive_path(".windsurf/rules-backup/test.md") is False
+        assert _is_sensitive_path("my.windsurf/rules/test.md") is False
+        assert _is_sensitive_path(".windsurfx/rules/test.md") is False
+
+    def test_deeply_nested_sensitive(self):
+        """Deeply nested paths within sensitive directories match."""
+        assert _is_sensitive_path(".windsurf\\rules\\very\\deep\\nested\\file.md") is True
+        assert _is_sensitive_path("agentic_core\\L5_safety\\sub\\module\\guard.py") is True
+
+    def test_relative_path_prefix(self):
+        """Relative path prefixes still match if containing sensitive pattern."""
+        # W2: Paths containing sensitive patterns ARE sensitive regardless of ./ or ../ prefix
+        assert _is_sensitive_path("./.windsurf/rules/test.md") is True  # Contains .windsurf/rules/
+        assert _is_sensitive_path("../.windsurf/rules/test.md") is True  # Contains .windsurf/rules/
+        # But paths that don't actually contain the pattern still don't match
+        assert _is_sensitive_path("./foo/bar/test.md") is False
+        assert _is_sensitive_path("../foo/bar/test.md") is False
+
+    def test_absolute_windows_path(self):
+        """Absolute Windows paths with drive letters."""
+        # Should match based on the path suffix
+        assert _is_sensitive_path("C:\\Git\\Agentic-Workflow\\.windsurf\\rules\\test.md") is True
+        assert _is_sensitive_path("D:\\projects\\agentic_core\\L5_safety\\guard.py") is True
+
+    # Pattern-specific edge cases
+    def test_apps_rg_config_pattern(self):
+        """apps_rg/config/ pattern matches correctly."""
+        assert _is_sensitive_path("apps_rg\\config\\specs.yaml") is True
+        assert _is_sensitive_path("apps_rg/config/agent_spec_config.py") is True
+        # Should NOT match similar but different paths
+        assert _is_sensitive_path("apps_rg\\config_backup\\file.yaml") is False
+        assert _is_sensitive_path("other_apps_rg\\config\\file.yaml") is False
+
+    def test_l4_state_pattern(self):
+        """agentic_core/L4_state/ pattern matches correctly."""
+        assert _is_sensitive_path("agentic_core\\L4_state\\cache.py") is True
+        assert _is_sensitive_path("agentic_core/L4_state/persistence.py") is True
+
+    def test_docs_governance_patterns(self):
+        """Docs governance patterns match correctly."""
+        assert _is_sensitive_path("docs\\reference\\00A_L5_Governance_Safety\\safety.md") is True
+        assert _is_sensitive_path("docs/reference/00B_L4_State_Archive_and_UWG/uwg.md") is True
+        assert _is_sensitive_path("docs\\reference\\00C_Runtime_Gates_Current_Run_Mesh\\gates.md") is True
+
+    def test_certification_config_pattern(self):
+        """config/certification/ pattern matches correctly."""
+        assert _is_sensitive_path("config\\certification\\rubric.yaml") is True
+        assert _is_sensitive_path("config/certification/requirements.json") is True
+
+
+# =============================================================================
 # D. Blast Radius Tests
 # =============================================================================
 

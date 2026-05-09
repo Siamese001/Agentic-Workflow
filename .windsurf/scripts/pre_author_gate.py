@@ -435,11 +435,30 @@ SENSITIVE_PATH_PATTERNS = [
 
 
 def _is_sensitive_path(file_path: str) -> bool:
-    """Check if file_path matches any sensitive governance pattern."""
+    """Check if file_path matches any sensitive governance pattern.
+
+    W2: Handles Windows backslashes, mixed separators, and absolute paths.
+    """
     normalized = file_path.replace("\\", "/")
     for pattern in SENSITIVE_PATH_PATTERNS:
+        # Check for exact match, prefix match, or pattern match
         if normalized.startswith(pattern) or fnmatch.fnmatch(normalized, pattern):
             return True
+        # W2: Handle absolute Windows paths (e.g., C:/path/.windsurf/rules/...)
+        # Check if pattern appears anywhere in the path (for drive-letter paths)
+        if "/" + pattern in normalized or normalized.endswith("/" + pattern.rstrip("/")):
+            return True
+        # Also check pattern without trailing slash
+        pattern_no_slash = pattern.rstrip("/")
+        if pattern_no_slash in normalized:
+            # Ensure it's a path segment match, not a substring
+            # e.g., ".windsurf/rules" should match "/path/.windsurf/rules/file"
+            # but not "/path/x.windsurf/rules" (partial match)
+            idx = normalized.find(pattern_no_slash)
+            if idx > 0:
+                # Check that the character before the match is a path separator
+                if normalized[idx - 1] == "/":
+                    return True
     return False
 
 
