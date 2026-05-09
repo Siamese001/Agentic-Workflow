@@ -44,6 +44,8 @@ evaluate_trigger = pre_author_gate.evaluate_trigger
 emit_author_gate_required = pre_author_gate.emit_author_gate_required
 has_active_decision = pre_author_gate.has_active_decision
 check_bypass = pre_author_gate.check_bypass
+_adg_query_with_retry = pre_author_gate._adg_query_with_retry
+_ADG_MAX_RETRIES = pre_author_gate._ADG_MAX_RETRIES
 
 
 # =============================================================================
@@ -612,6 +614,150 @@ class TestReceipts:
         assert "DEGRADED_FALLBACK:" in captured.err
         assert "reason=adg_unavailable" in captured.err
         assert "file=test.py" in captured.err
+
+
+# =============================================================================
+# I. ADG Retry Tests (W1)
+# =============================================================================
+
+class TestADGRetry:
+    """Tests for ADG query timeout and retry (W1)."""
+
+    def test_adg_query_with_retry_success_first_attempt(self):
+        """Query succeeds on first attempt - no retries needed."""
+        def success_func():
+            return "result"
+        
+        success, result, retries = _adg_query_with_retry(success_func)
+        
+        assert success is True
+        assert result == "result"
+        assert retries == 0
+
+    def test_adg_query_with_retry_eventual_success(self):
+        """Query succeeds after some failures - retry works."""
+        call_count = 0
+        
+        def eventual_success():
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise Exception("database is locked")
+            return "result"
+        
+        with patch.object(pre_author_gate, "append_violation") as mock_violation:
+            success, result, retries = _adg_query_with_retry(
+                eventual_success,
+                retry_delay_base=0.01  # Fast for tests
+            )
+            
+            assert success is True
+            assert result == "result"
+            assert retries == 2
+            # Should have logged 2 retry attempts + 1 success event
+            assert mock_violation.call_count == 3
+
+    def test_adg_query_with_retry_all_failures(self):
+        """Query fails all retries - returns failure."""
+        def always_fails():
+            raise Exception("database is locked")
+        
+        with patch.object(pre_author_gate, "append_violation") as mock_violation:
+            success, exc, retries = _adg_query_with_retry(
+                always_fails,
+                max_retries=3,
+                retry_delay_base=0.01  # Fast for tests
+            )
+            
+            assert success is False
+            assert "database is locked" in str(exc)
+            assert retries == 3
+
+    def test_adg_query_logs_sqlite_busy_error_type(self):
+        """Retry logs correctly identify sqlite busy errors."""
+        def sqlite_busy_error():
+            raise Exception("database is locked")
+        
+        with patch.object(pre_author_gate, "append_violation") as mock_violation:
+            _adg_query_with_retry(
+                sqlite_busy_error,
+                max_retries=2,
+                retry_delay_base=0.01
+            )
+            
+            # Check that error_type was logged as sqlite_busy
+            calls = mock_violation.call_args_list
+            for call in calls:
+                args = call[0][0]
+                assert args.get("error_type") == "sqlite_busy"
+
+    def test_adg_query_logs_timeout_error_type(self):
+        """Retry logs correctly identify timeout errors."""
+        def timeout_error():
+            raise Exception("query timeout")
+        
+        with patch.object(pre_author_gate, "append_violation") as mock_violation:
+            _adg_query_with_retry(
+                timeout_error,
+                max_retries=2,
+                retry_delay_base=0.01
+            )
+            
+            # Check that error_type was logged as timeout
+            calls = mock_violation.call_args_list
+            for call in calls:
+                args = call[0][0]
+                assert args.get("error_type") == "timeout"
+
+    def test_adg_query_logs_retry_success(self):
+        """Successful retry logs success event."""
+        call_count = 0
+        
+        def succeeds_on_second():
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise Exception("busy")
+            return "success"
+        
+        with patch.object(pre_author_gate, "append_violation") as mock_violation:
+            _adg_query_with_retry(
+                succeeds_on_second,
+                retry_delay_base=0.01
+            )
+            
+            # Should have logged retry attempt and success
+            calls = mock_violation.call_args_list
+            assert len(calls) == 2
+            # First call is retry_attempt
+            assert calls[0][0][0].get("severity") == "adg_retry_attempt"
+            # Second call is retry_success
+            assert calls[1][0][0].get("severity") == "adg_retry_success"
+
+    def test_adg_retry_uses_exponential_backoff(self):
+        """Retry delays use exponential backoff."""
+        delays = []
+        original_sleep = pre_author_gate.time.sleep
+        
+        def capture_delay(seconds):
+            delays.append(seconds)
+        
+        def always_fails():
+            raise Exception("busy")
+        
+        with patch.object(pre_author_gate.time, "sleep", capture_delay):
+            _adg_query_with_retry(
+                always_fails,
+                max_retries=4,
+                retry_delay_base=0.1
+            )
+        
+        # Should have 3 delays (not 4, since last attempt doesn't delay)
+        assert len(delays) == 3
+        # Exponential: 0.1, 0.2, 0.4
+        assert abs(delays[0] - 0.1) < 0.01
+        assert abs(delays[1] - 0.2) < 0.01
+        assert abs(delays[2] - 0.4) < 0.01
 
 
 if __name__ == "__main__":

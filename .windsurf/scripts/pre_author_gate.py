@@ -62,6 +62,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 TRIGGERS_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_triggers.yaml"
 ADG_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "adg"
 
+# W1: ADG query timeout and retry configuration
+_ADG_QUERY_TIMEOUT = 5.0  # seconds
+_ADG_MAX_RETRIES = 3
+_ADG_RETRY_DELAY_BASE = 0.1  # seconds, exponential backoff
+
 # Import ADG backend if available (fail-soft if tools/ not in path)
 try:
     sys.path.insert(0, str(REPO_ROOT))
@@ -461,9 +466,65 @@ def _get_adg_backend() -> Any:
         return None
 
 
+def _adg_query_with_retry(
+    query_func,
+    *args,
+    max_retries: int = _ADG_MAX_RETRIES,
+    retry_delay_base: float = _ADG_RETRY_DELAY_BASE
+):
+    """Execute ADG query with retry and exponential backoff.
+
+    Logs retry events to violations for audit trail.
+    Returns (success, result, retry_count).
+    """
+    last_exc = None
+    for attempt in range(max_retries):
+        try:
+            result = query_func(*args)
+            if attempt > 0:
+                # Log successful retry
+                append_violation(
+                    {
+                        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "severity": "adg_retry_success",
+                        "attempt": attempt + 1,
+                        "query": query_func.__name__,
+                        "message": f"ADG query succeeded after {attempt} retries",
+                    }
+                )
+            return True, result, attempt
+        except Exception as exc:
+            last_exc = exc
+            is_sqlite_busy = "database is locked" in str(exc).lower() or "busy" in str(exc).lower()
+            is_timeout = "timeout" in str(exc).lower()
+
+            if attempt < max_retries - 1:
+                delay = retry_delay_base * (2 ** attempt)
+                # Log retry attempt
+                append_violation(
+                    {
+                        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        "severity": "adg_retry_attempt",
+                        "attempt": attempt + 1,
+                        "max_retries": max_retries,
+                        "delay": delay,
+                        "query": query_func.__name__,
+                        "error": str(exc)[:100],
+                        "error_type": "sqlite_busy" if is_sqlite_busy else ("timeout" if is_timeout else "other"),
+                    }
+                )
+                # Exponential backoff
+                import time
+                time.sleep(delay)
+
+    # All retries exhausted
+    return False, last_exc, max_retries
+
+
 def _get_adg_fan_in(file_path: str) -> tuple[int | None, str, str]:
     """Query ADG for fan-in (blast radius) of a file.
 
+    W1: Implements explicit timeout and retry with exponential backoff.
     Returns:
         (fan_in_value, artifact_source, status)
         - fan_in_value: int if available, None if not
@@ -488,20 +549,29 @@ def _get_adg_fan_in(file_path: str) -> tuple[int | None, str, str]:
     # or ADG::Module::agentic_core::L3_orchestration::pipeline
     normalized = file_path.replace("\\", "/")
 
-    # Try direct lookup first
-    try:
+    # Helper to set timeout on connection
+    def _set_timeout(conn):
+        if conn:
+            conn.execute(f"PRAGMA busy_timeout = {_ADG_QUERY_TIMEOUT * 1000}")
+
+    # Try direct lookup first with retry
+    def _try_blast_radius():
         result = backend.get_blast_radius(normalized, hops=1)
         if result and result.get("blast_radius_direct", 0) > 0:
             source = getattr(backend, '_proj_path', None)
             source_str = str(source) if source else "unknown"
             return result["blast_radius_direct"], source_str, status
-    except Exception:
-        pass
+        return None
 
-    # Try as module-style path with proj_centrality direct query
-    try:
+    success, result, retries = _adg_query_with_retry(_try_blast_radius)
+    if success and result is not None:
+        return result
+
+    # Try as module-style path with proj_centrality direct query with retry
+    def _try_centrality_query():
         conn = getattr(backend, '_conn', None)
         if conn:
+            _set_timeout(conn)
             # Query by resolved_path via proj_nodes join
             cursor = conn.execute(
                 """SELECT c.blast_radius_direct, c.fan_in
@@ -517,8 +587,15 @@ def _get_adg_fan_in(file_path: str) -> tuple[int | None, str, str]:
                 source_str = str(source) if source else "unknown"
                 fan_in = row["blast_radius_direct"] or row["fan_in"] or 0
                 return fan_in, source_str, status
-    except Exception:
-        pass
+        return None
+
+    success, result, retries = _adg_query_with_retry(_try_centrality_query)
+    if success and result is not None:
+        return result
+
+    # Log final failure if retries exhausted
+    if retries >= _ADG_MAX_RETRIES:
+        _log_degraded_fallback(f"adg_retries_exhausted_{retries}", file_path)
 
     return None, getattr(backend, '_proj_path', "unavailable"), "node_not_found"
 
@@ -526,6 +603,7 @@ def _get_adg_fan_in(file_path: str) -> tuple[int | None, str, str]:
 def _get_layers_from_adg(files: list[str]) -> tuple[set[str], str, str]:
     """Query ADG for layer metadata of changed files.
 
+    W1: Implements explicit timeout and retry with exponential backoff.
     Returns:
         (layers_set, source, status)
         - layers_set: set of layer strings (e.g., {'L3', 'L5'})
@@ -539,10 +617,17 @@ def _get_layers_from_adg(files: list[str]) -> tuple[set[str], str, str]:
     status = "stale" if backend.is_stale() else "ok"
     layers: set[str] = set()
 
-    try:
+    def _set_timeout(conn):
+        if conn:
+            conn.execute(f"PRAGMA busy_timeout = {_ADG_QUERY_TIMEOUT * 1000}")
+
+    def _try_layer_queries():
         conn = getattr(backend, '_conn', None)
         if not conn:
-            return set(), "unavailable", "unavailable"
+            return None  # Signal unavailable
+
+        _set_timeout(conn)
+        result_layers: set[str] = set()
 
         for file_path in files:
             normalized = file_path.replace("\\", "/")
@@ -552,13 +637,23 @@ def _get_layers_from_adg(files: list[str]) -> tuple[set[str], str, str]:
             )
             row = cursor.fetchone()
             if row and row["layer"]:
-                layers.add(row["layer"])
+                result_layers.add(row["layer"])
 
-        if layers:
-            return layers, "adg", status
-        return set(), "adg", "no_data"
-    except Exception:
-        return set(), "unavailable", "unavailable"
+        return result_layers if result_layers else None  # None signals no_data
+
+    success, result, retries = _adg_query_with_retry(_try_layer_queries)
+
+    if success:
+        if result is not None:
+            return result, "adg", status
+        else:
+            return set(), "adg", "no_data"
+
+    # Log final failure if retries exhausted
+    if retries >= _ADG_MAX_RETRIES:
+        _log_degraded_fallback(f"adg_layer_retries_exhausted_{retries}", str(files[:3]))
+
+    return set(), "unavailable", "unavailable"
 
 
 def _log_blast_radius_receipt(
