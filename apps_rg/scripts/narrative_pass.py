@@ -53,6 +53,13 @@ from apps_rg.integrations.hops._role_bullet_runner import (
 from apps_rg.types.company_research import CompanyBrief, CompanyBriefMissingError
 from apps_rg.types.run_report import NarrativeRunReport, SectionVerdict
 
+# W1 P0: RuntimeGateEngine integration for write-boundary enforcement
+from apps_rg.integrations.gates.narrative_integration import (
+    evaluate_and_admit,
+    WriteBlockedError,
+    sealed_failure_packet,
+)
+
 _log = logging.getLogger("apps_rg.narrative_pass")
 
 
@@ -153,6 +160,27 @@ def main() -> int:
             report=report,
             target_role=args.target_role or "",
         )
+    except WriteBlockedError as exc:
+        # W1 P0: RuntimeGateEngine blocked write — do NOT emit partial resume
+        _log.error("[narrative_pass] Write blocked by RuntimeGateEngine: %s", exc)
+        report.gate_failures.append({
+            "reason": "write_blocked_by_gate",
+            "section_id": exc.section_id,
+            "detail": exc.receipt.reason,
+            "reason_codes": list(exc.receipt.reason_codes),
+        })
+        # Emit sealed failure packet instead of partial resume
+        failure_packet = sealed_failure_packet(
+            section_id=exc.section_id,
+            receipt=exc.receipt,
+            context={"out_dir": str(out_dir)},
+        )
+        (out_dir / "narrative" / "failure_packet.json").parent.mkdir(parents=True, exist_ok=True)
+        (out_dir / "narrative" / "failure_packet.json").write_text(
+            json.dumps(failure_packet, indent=2), encoding="utf-8"
+        )
+        _write_outputs(out_dir, resume_data, report)  # Write outputs with gate failure recorded
+        return 5
     except NarrativeQualityError as exc:
         _log.error("[narrative_pass] CRITICAL-tier failure: %s", exc)
         report.gate_failures.append({"reason": "critical_section_aborted", "detail": str(exc)})
@@ -223,6 +251,8 @@ def _run_narrative_pipeline(
     #   per-run. HOP-4A output is preserved as a candidate artifact in the
     #   run_dir under headline_candidate.json. AG-RG-014 will reconcile
     #   HOP-4A authority over executive_summary against HOP-4B.
+    #
+    # W1 P0: RuntimeGateEngine integration — write admission required
     head_res = generate_headline(
         company=company,
         archetype=archetype,
@@ -235,6 +265,13 @@ def _run_narrative_pipeline(
         target_role=target_role,
         archive_dir=archive_dir,
     )
+    # W1 P0: Gate admission before write
+    head_accepted = evaluate_and_admit(
+        section_id="headline",
+        candidate=head_res.winner,
+        context={"per_cand_results": {"headline_accepted": head_res.accepted}},
+        fail_if_rejected=fail_critical_on_unaccepted,
+    )
     # AG-RG-013 option C: do NOT overwrite resume_data["headline"] — preserve
     # the static brand line.
     #
@@ -243,8 +280,8 @@ def _run_narrative_pipeline(
     # and JSON output prefer over the static "headline" when present. This
     # gives clean per-run role-tailoring while preserving the static brand
     # line for non-targeted outputs.
-    if head_res.winner.text:
-        resume_data["targeted_headline"] = head_res.winner.text
+    if head_accepted.text:
+        resume_data["targeted_headline"] = head_accepted.text
     if archive_dir is not None:
         try:
             archive_dir.mkdir(parents=True, exist_ok=True)
@@ -268,6 +305,7 @@ def _run_narrative_pipeline(
     _abort_if_critical(head_res, fail_critical_on_unaccepted)
 
     # HOP-4B Exec Summary.
+    # W1 P0: RuntimeGateEngine integration — write admission required
     years_of_experience = _compute_years_of_experience(_index_roles(resume_data))
     exec_res = generate_exec_summary(
         company=company,
@@ -281,11 +319,19 @@ def _run_narrative_pipeline(
         seed_text=str(resume_data.get("executive_summary") or ""),
         archive_dir=archive_dir,
     )
-    resume_data["executive_summary"] = exec_res.winner.text
+    # W1 P0: Gate admission before write — this is the exec_summary RCA fix
+    exec_accepted = evaluate_and_admit(
+        section_id="executive_summary",
+        candidate=exec_res.winner,
+        context={"per_cand_results": {"exec_summary_accepted": exec_res.accepted}},
+        fail_if_rejected=fail_critical_on_unaccepted,
+    )
+    resume_data["executive_summary"] = exec_accepted.text
     report.add_verdict(_verdict_from(exec_res.section_id, "critical", exec_res))
     _abort_if_critical(exec_res, fail_critical_on_unaccepted)
 
     # HOP-4C Competencies.
+    # W1 P0: RuntimeGateEngine integration — write admission required
     comp_res = generate_competencies(
         company=company,
         jd_facets=jd_facets,
@@ -294,8 +340,15 @@ def _run_narrative_pipeline(
         seed_text="\n".join(_existing_competencies(resume_data)),
         archive_dir=archive_dir,
     )
+    # W1 P0: Gate admission before write
+    comp_accepted = evaluate_and_admit(
+        section_id="competencies",
+        candidate=comp_res.winner,
+        context={"per_cand_results": {"competencies_accepted": comp_res.accepted}},
+        fail_if_rejected=fail_critical_on_unaccepted,
+    )
     resume_data["competencies"] = [
-        line.strip(" -•") for line in comp_res.winner.text.splitlines() if line.strip()
+        line.strip(" -•") for line in comp_accepted.text.splitlines() if line.strip()
     ][:6]
     report.add_verdict(_verdict_from(comp_res.section_id, "critical", comp_res))
     _abort_if_critical(comp_res, fail_critical_on_unaccepted)

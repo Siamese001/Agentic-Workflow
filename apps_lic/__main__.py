@@ -21,6 +21,7 @@ Hard invariants:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -28,6 +29,11 @@ from typing import Any
 
 # Import cert package for FEC producer side-effect registration
 import apps_lic.cert  # noqa: F401
+
+# Wizard-managed defaults — populated by _interactive_wizard() when mandatory
+# inputs are not supplied. Files are written to apps_lic/scripts/ to prevent
+# cross-contamination with other apps.
+_DEFAULT_BRIEF_PATH = "apps_lic/scripts/_interactive_brief.json"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -207,6 +213,10 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         "--artifact-dir", type=str, default="",
         help="Directory for run artifacts"
     )
+    parser.add_argument(
+        "--manual-brief", type=str, default="",
+        help="Path to pre-generated company/recipient briefing JSON. When provided, skips R3R4 managed workflow."
+    )
     return parser.parse_args(argv)
 
 
@@ -221,6 +231,7 @@ def _build_raw_request(args: argparse.Namespace) -> dict[str, Any]:
         "policy_hash": args.policy_hash,
         "blueprint_hash": args.blueprint_hash,
         "request_id": args.request_id,
+        "manual_brief": args.manual_brief,
         "source_channel": "apps_lic_cli",
         "declared_schema": "apps_lic_outreach_v1",
         "transport": "cli",
@@ -268,14 +279,124 @@ def _emit_r5_terminal_via_exit(
     sys.exit(exit_code)
 
 
+def _interactive_wizard(args: Any) -> None:
+    """Prompt the user for mandatory inputs and mutate ``args`` in place.
+
+    The 3 items:
+      1. **Recipient** — recipient class, channel, outreach mode
+      2. **Briefing** — company/recipient briefing (paste, '@file', or 'auto'
+         to delegate retrieval to apps_research)
+
+    Side effects:
+      - Writes ``apps_lic/scripts/_interactive_brief.json`` (unless 'auto')
+      - Sets ``args.recipient_class``, ``args.channel``, ``args.outreach_mode``,
+        ``args.manual_brief`` and/or ``args.auto_research``.
+
+    Implementation: delegates to ``apps_shared.cli.interactive_wizard.run_wizard``
+    for the prompt mechanics; this function owns the apps_lic-specific
+    translation from collected values to args / temp files.
+    """
+    from apps_shared.cli.interactive_wizard import WizardField, run_wizard  # noqa: PLC0415
+
+    fields: list[WizardField] = []
+    if not args.recipient_class:
+        fields.append(WizardField(
+            "recipient_class",
+            "Recipient class (executive, hiring_manager, recruiter, etc.)",
+            kind="string"
+        ))
+    if not args.channel:
+        fields.append(WizardField(
+            "channel",
+            "Outreach channel (linkedin, email, text)",
+            kind="string"
+        ))
+    if not args.outreach_mode:
+        fields.append(WizardField(
+            "outreach_mode",
+            "Outreach mode (cold, warm, referral, followup)",
+            kind="string"
+        ))
+    fields.append(
+        WizardField(
+            "briefing",
+            "Company/recipient briefing document",
+            kind="multiline_or_file_or_auto",
+            choices_help=(
+                "auto delegates to apps_research; @path loads an "
+                "existing JSON brief; paste pure JSON or freeform text"
+            ),
+        )
+    )
+
+    header = (
+        "apps_lic interactive setup — mandatory inputs\n"
+        "======================================================================\n"
+        "Cascade discipline: this prompt fires because recipient_class / "
+        "channel / outreach_mode / briefing were not supplied on the command line. "
+        "apps_lic refuses to auto-infer them to prevent cross-contamination."
+    )
+
+    values = run_wizard(
+        fields,
+        header=header,
+        input_path=Path("apps_lic/scripts/_wizard_input.json"),
+    )
+
+    # --- translate values into args + temp files ---------------------------
+    if "recipient_class" in values:
+        args.recipient_class = values["recipient_class"]  # type: ignore[assignment]
+    if "channel" in values:
+        args.channel = values["channel"]  # type: ignore[assignment]
+    if "outreach_mode" in values:
+        args.outreach_mode = values["outreach_mode"]  # type: ignore[assignment]
+
+    brief = values["briefing"]
+    assert isinstance(brief, dict)
+    mode = brief.get("mode")
+    if mode == "auto":
+        # Enable managed workflow (R3R4) to run apps_research
+        args.manual_brief = ""
+        print("      → auto-research ENABLED; apps_research will produce briefing")
+    elif mode == "file":
+        args.manual_brief = brief.get("source")
+        print(f"      → manual_brief = {args.manual_brief}")
+    elif mode == "paste":
+        text = brief.get("text") or ""
+        try:
+            brief_payload = json.loads(text)
+        except json.JSONDecodeError:
+            brief_payload = {
+                "_source": "interactive_paste_freeform",
+                "freeform_text": text,
+            }
+        _WIZARD_BRIEF_PATH = Path("apps_lic/scripts/_interactive_brief.json")
+        _WIZARD_BRIEF_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _WIZARD_BRIEF_PATH.write_text(
+            json.dumps(brief_payload, indent=2), encoding="utf-8"
+        )
+        args.manual_brief = str(_WIZARD_BRIEF_PATH)
+        print(f"      → wrote briefing to {args.manual_brief}")
+
+    print(f"Ready: recipient_class={args.recipient_class!r} channel={args.channel!r}")
+    print(f"       outreach_mode={args.outreach_mode!r}")
+    print(f"       brief={'auto-research' if mode == 'auto' else args.manual_brief}")
+    print()
+
+
 def main() -> int:
     """Main entrypoint — pure shim to canonical R4 runner."""
     # Live certification path
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))
-    
+
     # Standard path: parse args, build request, run through canonical pipeline
     args = _parse_args(sys.argv[1:])
+
+    # Interactive wizard: fire when mandatory inputs missing
+    if not args.recipient_class or not args.channel or not args.outreach_mode or not args.manual_brief:
+        _interactive_wizard(args)
+
     raw_request = _build_raw_request(args)
     
     # Run through canonical R4 pipeline — core resolves L2 recipe internally

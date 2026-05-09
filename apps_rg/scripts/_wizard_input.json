@@ -1,16 +1,5 @@
 {
-  "_comment": "apps_rg interactive setup \u2014 3 mandatory inputs\n======================================================================\nCascade discipline: this prompt fires because target_company / target_role / jd were not supplied on the command line. apps_rg refuses to auto-infer them from stale default files in apps_rg/scripts/ to prevent cross-company contamination.",
+  "_comment": "",
   "_instructions": "Fill in all fields, then save and re-run the command",
-  "company": "",
-  "role": "",
-  "description": {
-    "text": "",
-    "source": null,
-    "mode": "paste"
-  },
-  "briefing": {
-    "text": "",
-    "source": null,
-    "mode": "paste"
-  }
+  "x": ""
 }

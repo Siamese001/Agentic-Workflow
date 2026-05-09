@@ -1,0 +1,69 @@
+---
+trigger: model_decision
+description: Apply when Cascade has just invoked apps_rg (e.g. `python -m apps_rg ...`, `python -m apps_rg.scripts.narrative_pass ...`, or any subprocess that produces a directory under `artifacts/apps_rg/runs/`). Mandates rendering an inline run summary in chat after every successful or failed apps_rg run so the user sees steps, sub-steps, gate verdicts, and certification status without opening JSON files.
+---
+
+# apps_rg Post-Run Summary — Mandatory Inline Display
+
+> ⛔ After every Cascade-orchestrated apps_rg run, Cascade MUST invoke `tools/apps_rg/render_run_summary.py` and surface its markdown output inline in the same response (or the immediately-following response if length forces a split).
+
+Sibling to `apps-rg-interactive-discipline.md`. This rule operationalizes the user's directive (2026-05-08): runtime evidence already exists in JSON form across `run_report.json`, `terminal_ret_packet.json`, `runtime_identity_envelope.json`, `agentic_core_l7_route_family_coverage.json`, etc., but the user can't see it without opening files manually. The renderer is the canonical surface.
+
+## When this rule fires
+
+Any of:
+
+1. Cascade invoked `python -m apps_rg ...` (with or without `--cascade-prompts`).
+2. Cascade invoked `python -m apps_rg.scripts.narrative_pass ...` directly.
+3. A new directory appeared under `artifacts/apps_rg/runs/` during the current turn or the immediately-prior turn.
+4. The user asks "what happened in that apps_rg run" / "show me the run summary" / "how did the resume generation go".
+
+## The Protocol
+
+1. **Locate the run directory.**
+   - If `--out-dir` was passed explicitly to the subprocess, use that.
+   - Otherwise call `python tools/apps_rg/render_run_summary.py` with no arguments — the script auto-selects the most recently modified directory under `artifacts/apps_rg/runs/`.
+2. **Invoke the renderer.**
+   ```
+   python tools/apps_rg/render_run_summary.py [<run_dir>]
+   ```
+3. **Surface the full markdown output inline.** Do NOT summarize, paraphrase, or truncate. The renderer's output is already chat-sized (≤6KB typical) and self-titled. Paste it verbatim under a heading like `## apps_rg Runtime Evidence` if combining with other content; otherwise the renderer's own `# apps_rg Run Summary — <run_id>` heading is sufficient.
+4. **Add prose ONLY around** — never inside — the rendered table block. Acceptable additions:
+   - One-line lead ("Pipeline completed; full evidence below.").
+   - Decision call-outs that reference rows in the table (e.g. "Note row `hop_4b_exec_summary` failed `length_parity` — RCA candidate.").
+   - Next-step recommendations triggered by the data.
+
+## Forbidden
+
+- ❌ Reporting "the pipeline succeeded" or "exit 0" without rendering the summary table.
+- ❌ Hand-summarizing the JSON instead of invoking the renderer (content drift, hallucination risk).
+- ❌ Truncating the L7 certification table to "saving space" — the user explicitly wants substep-level detail.
+- ❌ Skipping the renderer when the run failed/aborted — failure runs are MORE valuable for evidence display, not less.
+- ❌ Substituting a screenshot or descriptive prose for the markdown tables.
+
+## Bypass
+
+`APPS_RG_SUMMARY_BYPASS=1` env var — emits a `WARNING: post-run summary suppressed` line and continues. Use only for scripted batch runs where output volume matters or when the user explicitly says "no summary".
+
+## Failure Modes
+
+| Mode | Cascade response |
+|---|---|
+| Render script crashes | Print stderr, then fall back to listing the run dir contents (`list_dir`) so the user sees something. |
+| No run dir found | State explicitly: "No `artifacts/apps_rg/runs/<id>/` produced this turn — apps_rg may have failed before manifest emission." Show last 30 lines of subprocess stderr. |
+| Run dir exists but JSON evidence files missing | The renderer handles this gracefully (renders `_not found_` placeholders). Surface as-is. |
+| Multi-run turn (rare) | Render summary for each run dir produced, in chronological order. |
+
+## Why mandatory
+
+The runtime evidence layer exists precisely so operators can verify pipeline behavior without trusting Cascade's prose. Rendering it inline:
+
+- Anchors Cascade's claims to verifiable artifacts (e.g. "all gates passed" must be backed by a green `Per-Section Narrative Verdicts` table).
+- Surfaces silent failures the prose might miss (e.g. `provenance.valid=false`, `Overfit escalate=true`, `R4_SINGLE_ACTION` not exercised).
+- Gives the user the substep-level detail (`E1..E5`, HOP checkpoints, per-section verdicts) without forcing manual JSON spelunking.
+
+## References
+
+- `tools/apps_rg/render_run_summary.py` — the renderer (this rule's required tool).
+- Sibling rules: `apps-rg-interactive-discipline.md`.
+- Plan context: 2026-05-08 RCA chain on exec_summary `length_parity` failure exposed how easily silent gate failures can ship.

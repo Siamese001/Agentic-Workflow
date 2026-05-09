@@ -163,19 +163,19 @@ def _prompt_multiline_or_file_or_auto(
     return {"mode": "paste", "text": text, "source": None}
 
 
-_WIZARD_INPUT_PATH = Path("apps_rg/scripts/_wizard_input.json")
+_DEFAULT_WIZARD_INPUT_PATH = Path("apps_rg/scripts/_wizard_input.json")
 
 
-def _load_wizard_input_from_file() -> dict[str, Any] | None:
+def _load_wizard_input_from_file(input_path: Path) -> dict[str, Any] | None:
     """Load wizard inputs from the file-based fallback.
 
     Returns None if file doesn't exist or is invalid.
     """
-    if not _WIZARD_INPUT_PATH.exists():
+    if not input_path.exists():
         return None
     try:
         import json
-        data = json.loads(_WIZARD_INPUT_PATH.read_text(encoding="utf-8"))
+        data = json.loads(input_path.read_text(encoding="utf-8"))
         if isinstance(data, dict):
             return data
     except (json.JSONDecodeError, OSError):
@@ -183,7 +183,7 @@ def _load_wizard_input_from_file() -> dict[str, Any] | None:
     return None
 
 
-def _write_wizard_template(fields: list[WizardField], header: str) -> None:
+def _write_wizard_template(fields: list[WizardField], header: str, input_path: Path) -> None:
     """Write a template JSON file for the user to fill in."""
     import json
     template: dict[str, Any] = {"_comment": header, "_instructions": "Fill in all fields, then save and re-run the command"}
@@ -192,8 +192,8 @@ def _write_wizard_template(fields: list[WizardField], header: str) -> None:
             template[field.name] = ""
         elif field.kind in ("multiline_or_file", "multiline_or_file_or_auto"):
             template[field.name] = {"text": "", "source": None, "mode": "paste"}
-    _WIZARD_INPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    _WIZARD_INPUT_PATH.write_text(json.dumps(template, indent=2), encoding="utf-8")
+    input_path.parent.mkdir(parents=True, exist_ok=True)
+    input_path.write_text(json.dumps(template, indent=2), encoding="utf-8")
 
 
 def run_wizard(
@@ -201,6 +201,7 @@ def run_wizard(
     *,
     header: str = "",
     footer_hint: str = "",
+    input_path: Path | str | None = None,
 ) -> dict[str, dict[str, str | None] | str]:
     """Run an interactive wizard for the given fields.
 
@@ -219,6 +220,9 @@ def run_wizard(
     Caller is responsible for translating the returned dict into argparse
     namespace updates / file writes / etc.
     """
+    # Resolve per-app input path (defaults to apps_rg legacy path for back-compat).
+    _input_path = Path(input_path) if input_path else _DEFAULT_WIZARD_INPUT_PATH
+
     # Force file-based flow when env var is set (Cascade run panel etc. fake a TTY).
     import os as _os
     _force_file = _os.environ.get("WIZARD_FILE_MODE") == "1"
@@ -248,7 +252,7 @@ def run_wizard(
 
     # Non-TTY fallback: file-based template workflow.
     # Check if the user already filled in the template from a previous run.
-    file_input = _load_wizard_input_from_file()
+    file_input = _load_wizard_input_from_file(_input_path)
     if file_input is not None:
         # Validate that required fields are actually filled before accepting.
         # A stale/unfilled template (all required strings blank, all required
@@ -287,26 +291,26 @@ def run_wizard(
                         file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
             # Clear the file after reading to prevent stale reuse
             try:
-                _WIZARD_INPUT_PATH.unlink()
+                _input_path.unlink()
             except OSError:
                 pass
             return file_results
         # Stale/unfilled template — discard and fall through to write+poll.
         try:
-            _WIZARD_INPUT_PATH.unlink()
+            _input_path.unlink()
         except OSError:
             pass
-        print(f"[wizard] discarded stale/unfilled {_WIZARD_INPUT_PATH} — re-templating")
+        print(f"[wizard] discarded stale/unfilled {_input_path} — re-templating")
 
     # No TTY and no pre-filled file — write template and poll for user input.
-    _write_wizard_template(fields, header)
+    _write_wizard_template(fields, header, _input_path)
     print("=" * 70)
     print(header)
     print("=" * 70)
     print()
     print("WIZARD INPUT REQUIRED")
     print()
-    print(f"Template written to: {_WIZARD_INPUT_PATH}")
+    print(f"Template written to: {_input_path}")
     print()
     print("  1. Open that file in your editor")
     print("  2. Fill in ALL fields")
@@ -317,7 +321,7 @@ def run_wizard(
     import time
     while True:
         time.sleep(1)
-        data = _load_wizard_input_from_file()
+        data = _load_wizard_input_from_file(_input_path)
         if data is None:
             continue
         # Check that at least one mandatory field is non-empty
@@ -344,7 +348,7 @@ def run_wizard(
             else:
                 file_results[field.name] = {"text": str(val) if val else "", "source": None, "mode": "paste"}
     try:
-        _WIZARD_INPUT_PATH.unlink()
+        _input_path.unlink()
     except OSError:
         pass
     return file_results

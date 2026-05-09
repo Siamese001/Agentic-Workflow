@@ -88,11 +88,22 @@ apps_rg is the only app where **rendering with explicit gaps is preferable to re
 ## Architecture Rigor
 
 ### Layer Alignment
-- **L0 Routing:** AgenticRouter R3_grounded_read dispatch
-- **L1 Cognition:** profile_planner, message_planner; query_planner.decompose_query consumer
-- **L2 Execution:** HardenedanthropicexecutorStrategy
-- **L3 Orchestration:** 52 specialist engines coordinated under reasoning/
-- **L4 State:** Resume run summaries with provenance
+
+> Updated 2026-05-09 to remove pre-spine-hardening drift (plan `apps-rg-spine-hardening-7e3b9c` W2). The canonical ownership invariants live in `AGENTIC_SPINE.md > Canonical Spine Ownership Invariants`; this section summarizes apps_rg's binding to that contract.
+
+- **U0 Intake:** request envelope validation; CLI-arg / wizard input stamped as user intent (not authority); `_assert_artifact_matches_company` cross-company contamination guard.
+- **L1 Cognition:** `apps_rg/L1_cognition/jd_planner.py` — pure deterministic JDPlan extraction (seniority_band, role_family, ATS keywords, max_pages); **no LLM, no network, no prompt construction**.
+- **L0 Routing:** `RouteContract` only — emits R3_grounded_read disposition; cache decision (R1A exact / R1B semantic / R5 briefing prerequisite); `grounding_required=false`. **L0 does NOT own prompt assembly.**
+- **C0 Context Engine:** N/A — apps_rg loads JD + master résumé + company brief from disk (no C0 retrieval).
+- **PA Prompt Assembly:** `apps_rg/prompt_assembly/compiler.py` (NEW — governed L2 templates) + `apps_rg/utils/anthropic_rag_entrypoint.py` (LEGACY — `PromptEnvelope` bridge for narrative/R3 surface). Both are PA-owned. Slot model S0/D0/I0/E0/C0/M0/U0/H0/R0 with airlocks (see `PROMPT_BOUNDARY_CONTRACT.md`).
+- **Runtime Gates + L5 Evidence:** Runtime Gates emit live `GateVerdict` records; L5 emits governance certification evidence (authority / policy / origin-trust / registry / sandbox / egress / replay-audit). `UNKNOWN` is never `PASS`. L5 does NOT permit / block / escalate the run.
+- **L2 Execution:** `apps_rg/l2_recipe/steps.py` step adapters (`GenerateResumeStep`, `FactCheckStep`, `ClaimOmissionStep`, `BulletDiversityRepairStep`, `DocxManifestStep`, `NarrativePassStep`, `DocxExportStep`) gated by `_PAGuard.check()` — no model call without `PA_L2_HANDOFF_READY` compiled artifact. Active provider surface: `apps_rg/integrations/llm_client.py` (sanctioned `infrastructure.sdks_mcps` shim). The 52 specialist engines under `engines/` execute **inside L2 E3 HOPs** — they are deterministic in-process callables, not L3 orchestration nodes.
+- **L3 Orchestration:** **BYPASSED** for apps_rg (per `spine_manifest.yaml`). The 52 specialist engines are L2-internal HOP stages, NOT an L3 DAG. apps_rg's `claimed_routes` is `R3_grounded_read`, not `R3R4_managed_workflow`. L3 owns managed-workflow step contracts only when L0 selects them.
+- **Exit:** consumes sealed packets and emits exactly one X3 disposition (`X3A_DENY_REROUTE` / `X3C_COMMIT_REQUEST_TO_UWG` / `X3D_ALLOW_FINISH` / `X3E_SAFE_ABSTAIN_CLARIFY`). HOPs never emit X3 directly.
+- **UWG / L4:** only durable write path. apps_rg uses it solely for optional cache commit via `X3C_COMMIT_REQUEST_TO_UWG`; no direct L4 writes.
+- **L6 Shadow Evaluation:** observes completed-run exhaust only; calibrates / detects drift / drafts proposals; cannot rescue the current run.
+
+> **Removed pre-spine-hardening drift:** previous snapshot of this section listed `HardenedanthropicexecutorStrategy` as "L2 Execution" and "52 specialist engines coordinated under reasoning/" as "L3 Orchestration". Both were wrong: the four `Hardened*ExecutorStrategy.py` files have **zero module fan-in per W1 ADG audit** (`docs/reports/apps_rg/spine_boundary_findings_20260509_055000.md` §4B) — they are dormant scaffold, not the active executor surface. The 52 engines are L2-internal HOP stages, not an L3 DAG.
 
 ### Key Design Principles
 

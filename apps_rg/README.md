@@ -46,21 +46,31 @@ Candidate Profile + Target Role
 
 ```
 apps_rg/
-├── L1_cognition/              # message_planner, profile_planner, jd_planner
+├── L1_cognition/              # jd_planner (pure deterministic; no LLM)
 ├── config/                    # agent_spec_config, hop_pipeline, domain_contract YAMLs
-├── engines/                   # 52 specialist engines (achievement_prioritizer, ats_coverage_engine, ...)
-│                              # plus hop_*.py HOP-substrate adapters
-├── enforcement/               # HardenedAnthropicExecutorStrategy
+├── prompt_assembly/           # PA — compiler.py (NEW), rg_pa_compiler.py (legacy re-export),
+│                              #      slot_mapper, contracts, provider_request, pa_local
+├── l2_recipe/                 # L2 step adapters with _PAGuard (no model call without PA_L2_HANDOFF_READY)
+├── engines/                   # 52 specialist engines (in-process L2 HOP stages, NOT L3)
 ├── cache/                     # R1A exact / R1B semantic / chunk commit
 ├── chunking/                  # resume_chunker
 ├── cert/                      # FEC producer + cert init
-├── integrations/              # anti_overfitting, ats_coverage, hop adapters
-├── reasoning/                 # Orchestrators
-├── utils/                     # anthropic_rag_entrypoint
-├── __main__.py
+├── integrations/              # llm_client (sanctioned infra shim — ACTIVE provider surface),
+│                              #   anti_overfitting, ats_coverage, hops/ (narrative pipeline)
+├── reasoning/                 # RgResumeOrchestrator
+├── scripts/                   # generate_resume.py (consumes PA artifact via artifact_to_provider_request)
+├── utils/                     # anthropic_rag_entrypoint (legacy PA bridge — consumes PromptEnvelope)
+├── enforcement/               # ⚠️ DORMANT scaffold — zero module fan-in per W1 ADG audit
+├── reasoning/Hardened*.py     # ⚠️ DORMANT scaffold — zero module fan-in
+├── validators/enforcement/    # ⚠️ DORMANT scaffold — duplicate of enforcement/
+├── __main__.py                # transport shim — delegates to agentic_core integrated R4 runner
 ├── bootstrap_runtime.py       # ADG bootstrap (graceful degrade if unavailable)
-└── spine_manifest.yaml        # static spine-route claim (R3_grounded_read)
+└── spine_manifest.yaml        # static spine-route claim (R3_grounded_read) + dual-PA topology
 ```
+
+> **PA topology:** apps_rg has a **dual PA topology** — the apps_rg-local PA compiler in `prompt_assembly/` for governed L2 templates AND the legacy `utils/anthropic_rag_entrypoint.py` `PromptEnvelope` bridge for the narrative / R3 surface. Both are PA-owned. See `AGENTIC_SPINE.md > Dual PA Topology` and `PROMPT_BOUNDARY_CONTRACT.md`. **L0 does not own prompt assembly.**
+
+> **Dormant scaffold callout:** `enforcement/Hardened*.py`, `reasoning/Hardened*.py`, `validators/enforcement/Hardened*.py`, `engines/hardened_gemini_executor.py` have zero module fan-in per W1 ADG audit (`docs/reports/apps_rg/spine_boundary_findings_20260509_055000.md` §4B). They are not part of the active runtime path. Cleanup tracked separately as `NEXT_STEP:` in plan `apps-rg-spine-hardening-7e3b9c`.
 
 ## Route Contract
 

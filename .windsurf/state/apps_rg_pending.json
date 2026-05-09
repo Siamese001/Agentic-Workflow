@@ -30,6 +30,7 @@
       "required": true,
       "available_files": [
         "apps_rg/scripts/jd_brown_brown_svp_it_strategy.json",
+        "apps_rg/scripts/jd_brown_brown_svp_it_strategy_20260507.json",
         "apps_rg/scripts/job_description.json",
         "apps_rg/scripts/job_description_brownandbrown.json"
       ],

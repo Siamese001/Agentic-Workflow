@@ -95,12 +95,18 @@ apps_rg produces résumés as artifacts. Rollback affects only future generation
 
 ## Key Files
 
+- `__main__.py` — transport shim; delegates to `agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run`
+- `l2_recipe/steps.py` — L2 step adapters with `_PAGuard` (no model call without `PA_L2_HANDOFF_READY` artifact)
+- `prompt_assembly/compiler.py` — apps_rg local PA compiler (governed L2 templates)
+- `utils/anthropic_rag_entrypoint.py` — legacy PA bridge consuming `PromptEnvelope` (narrative / R3 surface)
+- `integrations/llm_client.py` — sanctioned `infrastructure.sdks_mcps` shim (active provider surface)
 - `engines/achievement_prioritizer_engine.py` — claim-ranking
 - `engines/ats_coverage_engine.py` — keyword coverage check
 - `integrations/anti_overfitting.py` — evidence-density gate
 - `integrations/ats_coverage.py` — coverage gate
-- `enforcement/HardenedanthropicexecutorStrategy.py` — provider hardening
 - `bootstrap_runtime.py` — ADG bootstrap
+
+> **Dormant scaffold (not the active provider surface):** `enforcement/HardenedanthropicexecutorStrategy.py`, `reasoning/HardenedopenaiexecutorStrategy.py`, `validators/enforcement/HardenedanthropicexecutorStrategy.py`, `engines/hardened_gemini_executor.py` have **zero module fan-in** per W1 ADG audit (`docs/reports/apps_rg/spine_boundary_findings_20260509_055000.md` §4B). Do not investigate provider issues here — investigate in `integrations/llm_client.py` and the canonical L2 step adapters above. Cleanup tracked separately as `NEXT_STEP:` in plan `apps-rg-spine-hardening-7e3b9c`.
 
 ## Escalation Contacts
 
