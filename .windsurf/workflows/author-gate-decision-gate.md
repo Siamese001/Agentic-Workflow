@@ -38,22 +38,50 @@ Ask: Are there 2+ valid approaches with different trade-offs and unclear user pr
 
 For each approach (2-4 options, never more): **What** (concrete action), **Impact** (files, scope, risk), **Trade-offs** (pros/cons), **Effort** (complexity).
 
-### Step 3 — Present Options (STOP HERE)
+### Step 3 — Present Options via Canonical Author-Gate Pipeline (STOP HERE)
 
-**REQUIRED**: Use the `ask_user_question` tool — do NOT present options as prose or blockquotes. Per `author-gate-enforcement.md`: *"Surface 1–N options via `ask_user_question` — ALL analysis INSIDE description field, never in chat prose."*
+**REQUIRED**: Use the canonical Author-Gate pipeline — do NOT present options as prose or blockquotes. Per `author-gate-enforcement.md`: *"Surface 1–N options via canonical Author-Gate emitter — ALL analysis INSIDE description field, never in chat prose."*
 
-Minimal shape for each option:
-- `label`: concise option title (e.g. `Option A — <approach>`)
-- `description`: impact, trade-offs, risk — everything the user needs to decide, inside this field
+For governance-class decisions (refactoring scope, architecture choice, anti-pattern introduction, dependency adds), use the canonical pipeline:
 
-Set `allowMultiple: false`. Include the Author-Gate header packet in the `question` field:
+```python
+from .windsurf.skills.author_gate_packet_builder import emit_packet
+
+# Build and emit AUTHOR_GATE_PACKET (canonical path)
+packet = emit_packet.build_author_gate_packet(
+    decision_type="<type>",
+    question="<decision question>",
+    options=[
+        {
+            "id": "A",
+            "label": "Option A — <approach>",
+            "description": "<impact, trade-offs, risk>",
+            "confidence": 0.85,
+            "tradeoff": "<what is traded off>",
+        },
+        {
+            "id": "B", 
+            "label": "Option B — <approach>",
+            "description": "<impact, trade-offs, risk>",
+            "confidence": 0.72,
+            "tradeoff": "<what is traded off>",
+        },
+    ],
+    recommended_id="A",  # ⭐ marks this option
+)
+
+# Emit AUTHOR_GATE_PACKET (canonical path only)
+print("AUTHOR_GATE_PACKET: " + json.dumps(packet))
+
+# Present to user via ask_user_question
+ask_user_question(
+    question=packet["question"],  # Includes confidence prefix [confidence=X.XX]
+    options=packet["options"],     # Includes ⭐ on recommended, trade-off segment
+    allowMultiple=False,
+)
 ```
-Recommended: <option title>
-Why it wins: <one sentence, case-specific>
-What you are optimizing for: <actual goal>
-What is being traded off: <precise cost>
-Candidates evaluated: N | Surfaced: M | Suppressed (low confidence): X | Suppressed (non-distinct): Y
-```
+
+**Authority boundary**: AUTHOR_GATE_PACKET is reserved for canonical AG pipeline only. For non-governance branch resolution, use `tools.decisions.build_enriched_choice_question()` (emits ASK_USER_QUESTION_PACKET).
 
 **CRITICAL**: STOP after the tool call. Do NOT proceed with any option until the user responds.
 
@@ -90,4 +118,6 @@ Execute ONLY the chosen option.
 ### Reference
 
 - Rule: `.windsurf/rules/author-gate-enforcement.md`
-- Related: `/antipattern-author-gate`, `/adg-repair-loop`
+- Canonical pipeline: `.windsurf/skills/author-gate-packet-builder/emit_packet.py` (AUTHOR_GATE_PACKET)
+- Enriched choices (non-governance): `tools.decisions.enriched_choice_builder` (ASK_USER_QUESTION_PACKET)
+- Related workflows: `/antipattern-author-gate`, `/adg-repair-loop`

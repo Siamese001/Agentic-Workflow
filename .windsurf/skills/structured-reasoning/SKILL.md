@@ -138,16 +138,40 @@ BRANCH POINT — Step N:
   Selecting after evidence pull.
 ```
 
-Never collapse a branch before evidence is gathered. If the branch cannot be resolved by evidence, invoke Author-Gate:
+Never collapse a branch before evidence is gathered. If the branch cannot be resolved by evidence, invoke the enriched choice builder:
 
 ```python
+from tools.decisions.enriched_choice_builder import build_enriched_choice_question
+
+# Build enriched question with UI invariants (confidence prefix, star, trade-off)
+payload = build_enriched_choice_question(
+    question="Step N has two valid approaches — which should I use?",
+    options=[
+        {
+            "id": "A",
+            "label": "Plan A — <approach>",
+            "description": "<what it does>",
+            "tradeoff": "Pros: X · Cons: Y",
+        },
+        {
+            "id": "B",
+            "label": "Plan B — <approach>",
+            "description": "<what it does>",
+            "tradeoff": "Pros: X · Cons: Y",
+        },
+    ],
+    recommended_id="A",  # optional
+    telemetry_context={"step": "N", "branch_reason": "evidence_inconclusive"},
+)
+
+# Emit the telemetry packet (REQUIRED)
+print("ASK_USER_QUESTION_PACKET: " + json.dumps(payload["telemetry_packet"]))
+
+# Present to user
 ask_user_question(
-  question="Step N has two valid approaches — which should I use?",
-  options=[
-    {"label": "Plan A", "description": "<what it does> — Pros: X — Cons: Y"},
-    {"label": "Plan B", "description": "<what it does> — Pros: X — Cons: Y"}
-  ],
-  allowMultiple=False
+    question=payload["question"],
+    options=payload["options"],
+    allowMultiple=False,
 )
 ```
 

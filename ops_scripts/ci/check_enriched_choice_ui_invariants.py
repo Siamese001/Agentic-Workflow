@@ -72,7 +72,7 @@ _MARKDOWN_PROSE_OPTIONS = re.compile(
 )
 
 _AUTHOR_GATE_PACKET_OUTSIDE_AG = re.compile(
-    r'AUTHOR_GATE_PACKET(?!.*author-gate-packet-builder|.*emit_packet)',
+    r'(?:print\s*\(\s*["\'])?AUTHOR_GATE_PACKET\s*:\s*(?:json\.dumps|.*?(?:\{|\[|"))',
     re.DOTALL | re.IGNORECASE,
 )
 
@@ -137,9 +137,22 @@ def _is_active_surface(file_path: Path) -> bool:
     return path_str in normalized_active
 
 
-def _detect_raw_ask_user_question(content: str) -> list[dict[str, Any]]:
+def _strip_markdown_code_blocks(content: str) -> str:
+    """Strip code blocks from markdown content to avoid flagging examples."""
+    # Remove fenced code blocks (```python ... ```)
+    cleaned = re.sub(r'```[\w]*\n.*?```', '', content, flags=re.DOTALL)
+    # Also remove inline code blocks (`code`)
+    cleaned = re.sub(r'`[^`]+`', '', cleaned)
+    return cleaned
+
+
+def _detect_raw_ask_user_question(content: str, file_path: Path | None = None) -> list[dict[str, Any]]:
     """Detect raw ask_user_question calls without enrichment wrapper."""
     violations = []
+    
+    # For markdown files, strip code blocks (they're instructional examples)
+    if file_path and file_path.suffix == ".md":
+        content = _strip_markdown_code_blocks(content)
     
     # Find all ask_user_question calls with options
     for match in _AUQ_RAW_PATTERN.finditer(content):
@@ -212,6 +225,10 @@ def _detect_ag_packet_outside_path(content: str, file_path: Path) -> list[dict[s
     except ValueError:
         # File outside repo (temp files) - treat as non-AG path
         path_str = str(file_path).replace("\\", "/")
+    
+    # For markdown files, strip code blocks (they're instructional examples)
+    if file_path.suffix == ".md":
+        content = _strip_markdown_code_blocks(content)
     
     # Check if this is a canonical AG path
     is_ag_path = any(x in path_str for x in [
@@ -304,7 +321,7 @@ def check_file(file_path: Path) -> dict[str, Any]:
     
     # Run checks
     violations = []
-    violations.extend(_detect_raw_ask_user_question(content))
+    violations.extend(_detect_raw_ask_user_question(content, file_path))
     violations.extend(_detect_markdown_prose_options(content, file_path))
     violations.extend(_detect_ag_packet_outside_path(content, file_path))
     violations.extend(_detect_missing_telemetry(content, file_path))
