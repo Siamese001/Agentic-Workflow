@@ -40,6 +40,27 @@ from pathlib import Path
 from tqdm import tqdm  # noqa: E402  (§16 progress-bar compliance for pipeline loops)
 
 
+# W3: SQLite WAL mode helper for concurrent read resilience
+def _enable_wal_mode(conn) -> None:
+    """Enable WAL mode on SQLite connection for concurrent read/write safety.
+
+    WAL mode allows readers to continue operating while writers are active,
+    preventing SQLITE_BUSY errors during concurrent ADG generation and reads.
+    """
+    conn.execute("PRAGMA journal_mode = WAL")
+
+
+def _sqlite_connect_with_wal(sqlite_path: Path) -> Any:
+    """Connect to SQLite and enable WAL mode.
+
+    Returns a connection with WAL mode enabled for concurrent access safety.
+    """
+    import sqlite3 as _sqlite3
+    conn = _sqlite3.connect(str(sqlite_path))
+    _enable_wal_mode(conn)
+    return conn
+
+
 def _discover_repo_root(start: Path) -> Path:
     """Best-effort repository root discovery for direct script and package execution."""
     for candidate in (start, *start.parents):
@@ -241,7 +262,7 @@ def _build_structural_outputs_report(
     )
 
     dest = adg_artifacts_dir / f"adg_structural_outputs_{ts}.json"
-    conn = _sqlite3.connect(str(sqlite_path))
+    conn = _sqlite_connect_with_wal(sqlite_path)
     try:
         payload = {
             "sqlite_used": sqlite_path.name,
@@ -281,7 +302,7 @@ def _build_refactor_accelerator_report(
     dest = adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json"
     churn = _ra_git_churn(90)
     lint: dict[str, int] = {}  # skip ruff — keeps P7 fast
-    conn = _sqlite3.connect(str(sqlite_path))
+    conn = _sqlite_connect_with_wal(sqlite_path)
     try:
         candidates = _ra_fetch_candidates(conn, None, 20, churn, lint)
         _ra_add_blast_radius(conn, candidates)
@@ -1023,7 +1044,7 @@ def generate_full_adg(
             SQL_CREATE_SSOT_DECISION_RECORDS,
         )
 
-        _con = _phase2_sqlite3.connect(paths.sqlite)
+        _con = _sqlite_connect_with_wal(paths.sqlite)
         try:
             _con.executescript(SQL_AUTHORITY_BACKFILL + ";")
             _con.executescript(SQL_TRIPLET_BACKFILL + ";")
