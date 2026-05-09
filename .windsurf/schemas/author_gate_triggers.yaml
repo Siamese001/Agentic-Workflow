@@ -14,15 +14,14 @@
 
 version: 1
 preset: balanced                # balanced | strict | lenient
-enforcement: shadow             # shadow | block — shadow = warn only, no exit 2
+enforcement: block              # shadow | block — block = exit 2 with AUTHOR_GATE_REQUIRED; shadow = warn only
 defaults:
   # Session denial escalation (mirrors Anthropic Auto Mode deny-and-continue)
   max_consecutive_denials: 3
   max_total_denials_per_session: 20
-  # Shadow-mode rollout: run for N days in warn mode, review violations JSONL,
-  # then switch `enforcement: block` once false-positive rate < 5%.
-  shadow_launch_date: "2026-04-21"
-  shadow_min_days: 7
+  # Degraded mode: allow ADG-missing/stale queries to fall back to path heuristics
+  # without failing closed. Set to false for strict enforcement (recommended).
+  allow_degraded_mode: false
 
 # ---------------------------------------------------------------------
 # TRIGGERS (evaluated in order; first match wins; all recorded in packet)

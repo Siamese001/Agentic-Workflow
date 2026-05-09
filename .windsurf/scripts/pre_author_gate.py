@@ -60,6 +60,15 @@ except ImportError:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TRIGGERS_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_triggers.yaml"
+ADG_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "adg"
+
+# Import ADG backend if available (fail-soft if tools/ not in path)
+try:
+    sys.path.insert(0, str(REPO_ROOT))
+    from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+    _ADG_BACKEND_AVAILABLE = True
+except ImportError:
+    _ADG_BACKEND_AVAILABLE = False
 LEDGER_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
 SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
@@ -402,8 +411,202 @@ def _regex_none(lines: list[str], patterns: list[str]) -> bool:
     return True
 
 
+# Sensitive governance paths that force Tier-3 classification regardless of file count
+# These paths CANNOT bypass Author-Gate via Tier-2 single-file edit exemption
+SENSITIVE_PATH_PATTERNS = [
+    ".windsurf/rules/",
+    ".windsurf/schemas/",
+    ".windsurf/scripts/pre_author_gate.py",
+    "apps_rg/config/",
+    "agentic_core/L5_safety/",
+    "agentic_core/L4_state/",
+    "docs/reference/00A_L5_Governance_Safety/",
+    "docs/reference/00B_L4_State_Archive_and_UWG/",
+    "docs/reference/00C_Runtime_Gates_Current_Run_Mesh/",
+    "docs/architecture/adr/",  # ADR / governance surfaces
+    "config/certification/",   # Certification config
+    "ops_scripts/ci/",         # CI gates (authoritative enforcement)
+]
+
+
+def _is_sensitive_path(file_path: str) -> bool:
+    """Check if file_path matches any sensitive governance pattern."""
+    normalized = file_path.replace("\\", "/")
+    for pattern in SENSITIVE_PATH_PATTERNS:
+        if normalized.startswith(pattern) or fnmatch.fnmatch(normalized, pattern):
+            return True
+    return False
+
+
+# ===================================================================== #
+# ADG Query Helpers (W3/W4)                                             #
+# =====================================================================
+
+
+# Module-level cache for ADG backend (initialized once per process)
+_adg_backend_instance: Any = None
+
+
+def _get_adg_backend() -> Any:
+    """Return cached GraphProjectionBackend instance or None if unavailable."""
+    global _adg_backend_instance
+    if _adg_backend_instance is not None:
+        return _adg_backend_instance
+    if not _ADG_BACKEND_AVAILABLE:
+        return None
+    try:
+        _adg_backend_instance = GraphProjectionBackend()
+        return _adg_backend_instance
+    except Exception:
+        return None
+
+
+def _get_adg_fan_in(file_path: str) -> tuple[int | None, str, str]:
+    """Query ADG for fan-in (blast radius) of a file.
+
+    Returns:
+        (fan_in_value, artifact_source, status)
+        - fan_in_value: int if available, None if not
+        - artifact_source: path to ADG artifact used, or "unavailable"
+        - status: "ok", "stale", "unavailable", "node_not_found"
+    """
+    backend = _get_adg_backend()
+    if backend is None:
+        return None, "unavailable", "unavailable"
+
+    if not backend.is_available():
+        return None, "unavailable", "unavailable"
+
+    if backend.is_stale():
+        # Still query but mark as stale
+        status = "stale"
+    else:
+        status = "ok"
+
+    # Convert file path to adg_name format (module path)
+    # ADG nodes use formats like: agentic_core/L3_orchestration/pipeline.py
+    # or ADG::Module::agentic_core::L3_orchestration::pipeline
+    normalized = file_path.replace("\\", "/")
+
+    # Try direct lookup first
+    try:
+        result = backend.get_blast_radius(normalized, hops=1)
+        if result and result.get("blast_radius_direct", 0) > 0:
+            source = getattr(backend, '_proj_path', None)
+            source_str = str(source) if source else "unknown"
+            return result["blast_radius_direct"], source_str, status
+    except Exception:
+        pass
+
+    # Try as module-style path with proj_centrality direct query
+    try:
+        conn = getattr(backend, '_conn', None)
+        if conn:
+            # Query by resolved_path via proj_nodes join
+            cursor = conn.execute(
+                """SELECT c.blast_radius_direct, c.fan_in
+                   FROM proj_centrality c
+                   JOIN proj_nodes n ON c.adg_name = n.adg_name
+                   WHERE n.resolved_path = ? OR n.resolved_path LIKE ?
+                   LIMIT 1""",
+                (normalized, f"%{normalized}%")
+            )
+            row = cursor.fetchone()
+            if row:
+                source = getattr(backend, '_proj_path', None)
+                source_str = str(source) if source else "unknown"
+                fan_in = row["blast_radius_direct"] or row["fan_in"] or 0
+                return fan_in, source_str, status
+    except Exception:
+        pass
+
+    return None, getattr(backend, '_proj_path', "unavailable"), "node_not_found"
+
+
+def _get_layers_from_adg(files: list[str]) -> tuple[set[str], str, str]:
+    """Query ADG for layer metadata of changed files.
+
+    Returns:
+        (layers_set, source, status)
+        - layers_set: set of layer strings (e.g., {'L3', 'L5'})
+        - source: "adg" or "unavailable"
+        - status: "ok", "stale", "unavailable", "no_data"
+    """
+    backend = _get_adg_backend()
+    if backend is None or not backend.is_available():
+        return set(), "unavailable", "unavailable"
+
+    status = "stale" if backend.is_stale() else "ok"
+    layers: set[str] = set()
+
+    try:
+        conn = getattr(backend, '_conn', None)
+        if not conn:
+            return set(), "unavailable", "unavailable"
+
+        for file_path in files:
+            normalized = file_path.replace("\\", "/")
+            cursor = conn.execute(
+                "SELECT layer FROM proj_nodes WHERE resolved_path = ? OR resolved_path LIKE ?",
+                (normalized, f"%{normalized}%")
+            )
+            row = cursor.fetchone()
+            if row and row["layer"]:
+                layers.add(row["layer"])
+
+        if layers:
+            return layers, "adg", status
+        return set(), "adg", "no_data"
+    except Exception:
+        return set(), "unavailable", "unavailable"
+
+
+def _log_blast_radius_receipt(
+    file_path: str,
+    fan_in: int,
+    threshold: int,
+    adg_artifact: str,
+    trigger_id: str
+) -> None:
+    """Emit structured receipt for blast-radius trigger."""
+    print(
+        f"BLAST_RADIUS_TRIGGER: file={file_path} "
+        f"fan_in={fan_in} threshold={threshold} "
+        f"adg_artifact={adg_artifact} trigger_id={trigger_id}",
+        file=sys.stderr,
+    )
+
+
+def _log_layer_crossing_receipt(
+    layers: set[str],
+    files: list[str],
+    detection_source: str,
+    trigger_id: str
+) -> None:
+    """Emit structured receipt for layer-crossing trigger."""
+    print(
+        f"LAYER_CROSSING_TRIGGER: layers_span={','.join(sorted(layers))} "
+        f"files_count={len(files)} detection_source={detection_source} "
+        f"trigger_id={trigger_id}",
+        file=sys.stderr,
+    )
+
+
+def _log_degraded_fallback(reason: str, file_path: str = "") -> None:
+    """Emit structured receipt for ADG degraded fallback."""
+    prefix = f"DEGRADED_FALLBACK: reason={reason}"
+    if file_path:
+        prefix += f" file={file_path}"
+    print(prefix, file=sys.stderr)
+
+
 def check_tier(cfg: dict[str, Any], snap: ChangeSnapshot) -> str:
     """Return 'tier_1', 'tier_2', or 'tier_3'. Tier 1/2 → skip gate."""
+    # W2: Sensitive path override — governance files must ALWAYS undergo trigger evaluation
+    all_files = snap.changed_files + snap.deleted_files
+    if any(_is_sensitive_path(f) for f in all_files):
+        return "tier_3"
+
     tiers = cfg.get("tiers", {})
 
     # Tier 1 — safe allowlist: we only see write events here so Tier 1 rarely fires
@@ -429,7 +632,7 @@ def check_tier(cfg: dict[str, Any], snap: ChangeSnapshot) -> str:
     return "tier_3"
 
 
-def _layers_in_changed_files(files: list[str]) -> set[str]:
+def _layers_from_path_heuristic(files: list[str]) -> set[str]:
     """Infer layer from path prefix — cheap heuristic without ADG call."""
     layers: set[str] = set()
     for f in files:
@@ -447,8 +650,28 @@ def _layers_in_changed_files(files: list[str]) -> set[str]:
     return layers
 
 
-def evaluate_trigger(trg: dict[str, Any], snap: ChangeSnapshot) -> bool:
+def _get_layers_with_fallback(files: list[str]) -> tuple[set[str], str, str]:
+    """Get layers for files using ADG first, path heuristic fallback.
+
+    Returns:
+        (layers_set, source, status)
+        - layers_set: set of layer strings
+        - source: "adg" or "path_fallback"
+        - status: "ok", "stale", "unavailable" (for ADG), "path_only" (for fallback)
+    """
+    # Try ADG first
+    adg_layers, source, status = _get_layers_from_adg(files)
+    if adg_layers and source == "adg":
+        return adg_layers, "adg", status
+
+    # Path fallback
+    path_layers = _layers_from_path_heuristic(files)
+    return path_layers, "path_fallback", "path_only"
+
+
+def evaluate_trigger(trg: dict[str, Any], snap: ChangeSnapshot, cfg: dict[str, Any] | None = None) -> bool:
     feats = trg.get("features", {})
+    cfg = cfg or {}  # Ensure cfg is a dict
 
     if "files_changed_min" in feats and snap.files_changed < feats["files_changed_min"]:
         return False
@@ -457,13 +680,50 @@ def evaluate_trigger(trg: dict[str, Any], snap: ChangeSnapshot) -> bool:
         return False
 
     if feats.get("layer_crossing") is True:
-        layers = _layers_in_changed_files(snap.changed_files + snap.deleted_files)
+        layers, source, status = _get_layers_with_fallback(snap.changed_files + snap.deleted_files)
         if len(layers) < 2:
             return False
+        # W4: Log layer crossing receipt for ADG-backed detection
+        if status in ("ok", "stale"):
+            _log_layer_crossing_receipt(layers, snap.changed_files + snap.deleted_files, source, trg.get("id", "unknown"))
     elif feats.get("layer_crossing") is False and "files_changed_min" in feats:
-        layers = _layers_in_changed_files(snap.changed_files + snap.deleted_files)
+        layers, source, status = _get_layers_with_fallback(snap.changed_files + snap.deleted_files)
         if len(layers) >= 2:
             return False  # this rule is for single-layer large changes
+
+    # W3: blast_radius_fan_in_min — ADG-backed fan-in check
+    if "blast_radius_fan_in_min" in feats:
+        threshold = feats["blast_radius_fan_in_min"]
+        all_files = snap.changed_files + snap.deleted_files
+        allow_degraded = cfg.get("defaults", {}).get("allow_degraded_mode", False)
+
+        max_fan_in = 0
+        max_file = ""
+        adg_source = "unavailable"
+        adg_status = "unavailable"
+
+        for file_path in all_files:
+            fan_in, source, status = _get_adg_fan_in(file_path)
+            if fan_in is not None and fan_in > max_fan_in:
+                max_fan_in = fan_in
+                max_file = file_path
+                adg_source = source
+                adg_status = status
+
+        if max_fan_in >= threshold:
+            # Trigger fired — log receipt
+            _log_blast_radius_receipt(max_file, max_fan_in, threshold, adg_source, trg.get("id", "HITL-1.3"))
+            return True
+
+        # Not triggered — check if we should fail closed
+        if max_fan_in == 0 and adg_status in ("unavailable", "node_not_found"):
+            if not allow_degraded:
+                # Fail closed: missing ADG data means we can't verify it's safe
+                _log_degraded_fallback(f"adg_{adg_status}", max_file)
+                return True  # Trigger to be safe
+            else:
+                _log_degraded_fallback(f"adg_{adg_status}_allowed", max_file)
+                # Fall through to other checks
 
     if "path_globs_any" in feats:
         all_paths = snap.changed_files + snap.deleted_files
@@ -666,10 +926,31 @@ def main() -> int:
 
     bypass_reason = check_bypass(cfg, snap)
     if bypass_reason:
-        if args.verbose:
-            print(f"[pre_author_gate] bypass fired: {bypass_reason}", file=sys.stderr)
-        reset_consecutive_on_pass(session)
-        return 0
+        # W5: Sensitive governance paths cannot be bypassed unless explicitly allowed
+        all_files = snap.changed_files + snap.deleted_files
+        if any(_is_sensitive_path(f) for f in all_files):
+            # Check if sensitive bypass is explicitly allowed in config
+            allow_sensitive_bypass = cfg.get("defaults", {}).get("allow_sensitive_bypass", False)
+            if not allow_sensitive_bypass:
+                if args.verbose:
+                    print(
+                        f"[pre_author_gate] bypass '{bypass_reason}' blocked: sensitive governance file",
+                        file=sys.stderr,
+                    )
+                # Continue to trigger evaluation (don't return 0)
+            else:
+                if args.verbose:
+                    print(
+                        f"[pre_author_gate] bypass fired (sensitive-allowed): {bypass_reason}",
+                        file=sys.stderr,
+                    )
+                reset_consecutive_on_pass(session)
+                return 0
+        else:
+            if args.verbose:
+                print(f"[pre_author_gate] bypass fired: {bypass_reason}", file=sys.stderr)
+            reset_consecutive_on_pass(session)
+            return 0
 
     fingerprint = snap.fingerprint()
     if has_active_decision(fingerprint):
@@ -683,7 +964,7 @@ def main() -> int:
 
     matched: list[dict[str, Any]] = []
     for trg in cfg.get("triggers", []):
-        if evaluate_trigger(trg, snap):
+        if evaluate_trigger(trg, snap, cfg):
             matched.append(trg)
 
     if not matched:
@@ -718,7 +999,7 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    enforcement = str(cfg.get("enforcement", "shadow")).lower()
+    enforcement = str(cfg.get("enforcement", "block")).lower()
     if enforcement == "shadow":
         # Record the would-block event without exiting 2; hook chain proceeds.
         fingerprint = snap.fingerprint()
