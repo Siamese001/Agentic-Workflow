@@ -893,5 +893,290 @@ class TestADGRetry:
         assert abs(delays[2] - 0.4) < 0.01
 
 
+# =============================================================================
+# W4. Mock ADG Backend and Test Isolation
+# =============================================================================
+
+class MockADGBackend:
+    """Deterministic mock ADG backend for test isolation (W4).
+
+    Supports all ADG states: fresh, stale, missing, busy, error.
+    Replaces real ADG artifact dependencies in tests.
+    """
+
+    def __init__(
+        self,
+        state: str = "fresh",
+        fan_in_data: dict[str, int] | None = None,
+        layer_data: dict[str, str] | None = None,
+        blast_radius_data: dict[str, dict] | None = None,
+    ):
+        """Initialize mock backend with configurable state.
+
+        Args:
+            state: "fresh", "stale", "missing", "busy", "error"
+            fan_in_data: Map of file paths to fan_in values
+            layer_data: Map of file paths to layer strings
+            blast_radius_data: Map of file paths to blast radius dicts
+        """
+        self.state = state
+        self.fan_in_data = fan_in_data or {}
+        self.layer_data = layer_data or {}
+        self.blast_radius_data = blast_radius_data or {}
+        self._call_count = 0
+
+    def is_available(self) -> bool:
+        """Check if backend is available."""
+        return self.state not in ("missing",)
+
+    def is_stale(self) -> bool:
+        """Check if backend data is stale."""
+        return self.state == "stale"
+
+    def get_blast_radius(self, file_path: str, hops: int = 1) -> dict | None:
+        """Get blast radius for a file."""
+        self._call_count += 1
+
+        if self.state == "busy":
+            raise Exception("database is locked")
+        if self.state == "error":
+            raise Exception("ADG query failed")
+
+        normalized = file_path.replace("\\", "/")
+        return self.blast_radius_data.get(normalized, {"blast_radius_direct": 0})
+
+    def get_fan_in(self, file_path: str) -> int | None:
+        """Get fan_in for a file."""
+        self._call_count += 1
+
+        if self.state == "busy":
+            raise Exception("database is locked")
+        if self.state == "error":
+            raise Exception("ADG query failed")
+
+        normalized = file_path.replace("\\", "/")
+        return self.fan_in_data.get(normalized)
+
+    def get_layer(self, file_path: str) -> str | None:
+        """Get layer for a file."""
+        self._call_count += 1
+
+        if self.state == "busy":
+            raise Exception("database is locked")
+        if self.state == "error":
+            raise Exception("ADG query failed")
+
+        normalized = file_path.replace("\\", "/")
+        return self.layer_data.get(normalized)
+
+    def get_call_count(self) -> int:
+        """Get number of calls made to this backend."""
+        return self._call_count
+
+
+class TestMockADGBackend:
+    """Tests for MockADGBackend determinism and state coverage (W4)."""
+
+    def test_mock_backend_fresh_state(self):
+        """Fresh state returns data normally."""
+        backend = MockADGBackend(
+            state="fresh",
+            fan_in_data={"agentic_core/L3/pipeline.py": 15},
+            layer_data={"agentic_core/L3/pipeline.py": "L3"},
+        )
+
+        assert backend.is_available() is True
+        assert backend.is_stale() is False
+        assert backend.get_fan_in("agentic_core/L3/pipeline.py") == 15
+        assert backend.get_layer("agentic_core/L3/pipeline.py") == "L3"
+
+    def test_mock_backend_stale_state(self):
+        """Stale state is available but marked stale."""
+        backend = MockADGBackend(
+            state="stale",
+            fan_in_data={"agentic_core/L3/pipeline.py": 10},
+        )
+
+        assert backend.is_available() is True
+        assert backend.is_stale() is True
+        assert backend.get_fan_in("agentic_core/L3/pipeline.py") == 10
+
+    def test_mock_backend_missing_state(self):
+        """Missing state is not available."""
+        backend = MockADGBackend(state="missing")
+
+        assert backend.is_available() is False
+        assert backend.is_stale() is False
+
+    def test_mock_backend_busy_state(self):
+        """Busy state raises sqlite busy exception."""
+        backend = MockADGBackend(state="busy")
+
+        with pytest.raises(Exception) as exc_info:
+            backend.get_fan_in("any/path.py")
+
+        assert "database is locked" in str(exc_info.value)
+
+    def test_mock_backend_error_state(self):
+        """Error state raises generic exception."""
+        backend = MockADGBackend(state="error")
+
+        with pytest.raises(Exception) as exc_info:
+            backend.get_layer("any/path.py")
+
+        assert "ADG query failed" in str(exc_info.value)
+
+    def test_mock_backend_windows_path_normalization(self):
+        """Windows paths are normalized to forward slashes."""
+        backend = MockADGBackend(
+            state="fresh",
+            fan_in_data={"agentic_core/L3/pipeline.py": 20},
+        )
+
+        # Windows backslash path should match
+        assert backend.get_fan_in("agentic_core\\L3\\pipeline.py") == 20
+
+    def test_mock_backend_call_counting(self):
+        """Backend tracks call counts for verification."""
+        backend = MockADGBackend(
+            state="fresh",
+            fan_in_data={"file1.py": 5, "file2.py": 10},
+        )
+
+        backend.get_fan_in("file1.py")
+        backend.get_fan_in("file2.py")
+        backend.get_blast_radius("file1.py")
+
+        assert backend.get_call_count() == 3
+
+    def test_mock_backend_default_empty_data(self):
+        """Default empty data returns zeros/None."""
+        backend = MockADGBackend(state="fresh")
+
+        assert backend.get_blast_radius("unknown.py") == {"blast_radius_direct": 0}
+        assert backend.get_fan_in("unknown.py") is None
+        assert backend.get_layer("unknown.py") is None
+
+
+class TestADGIntegrationWithMock:
+    """Integration tests using MockADGBackend for deterministic behavior (W4)."""
+
+    def test_fan_in_trigger_with_mock_backend(self, mock_triggers_config):
+        """Blast radius trigger works with mock backend data."""
+        backend = MockADGBackend(
+            state="fresh",
+            fan_in_data={"agentic_core/L3/pipeline.py": 15},  # Above threshold of 10
+        )
+
+        with patch.object(pre_author_gate, "_get_adg_backend", return_value=backend):
+            with patch.object(pre_author_gate, "_adg_query_with_retry", side_effect=lambda f, *a, **k: (True, f(*a, **k), 0)):
+                snap = ChangeSnapshot(
+                    changed_files=["agentic_core/L3/pipeline.py"],
+                    deleted_files=[],
+                    added_lines_by_file={},
+                )
+
+                # Find blast radius trigger
+                blast_trigger = None
+                for t in mock_triggers_config["triggers"]:
+                    if t["id"] == "HITL-1.3":
+                        blast_trigger = t
+                        break
+
+                result = evaluate_trigger(blast_trigger, snap, mock_triggers_config)
+                assert result is True  # fan_in=15 >= threshold=10
+
+    def test_layer_crossing_with_mock_backend(self, mock_triggers_config):
+        """Layer crossing detection works with mock backend data."""
+        backend = MockADGBackend(
+            state="fresh",
+            layer_data={
+                "agentic_core/L0/router.py": "L0",
+                "agentic_core/L3/pipeline.py": "L3",
+            },
+        )
+
+        with patch.object(pre_author_gate, "_get_adg_backend", return_value=backend):
+            with patch.object(pre_author_gate, "_adg_query_with_retry", side_effect=lambda f, *a, **k: (True, f(*a, **k), 0)):
+                snap = ChangeSnapshot(
+                    changed_files=["agentic_core/L0/router.py", "agentic_core/L3/pipeline.py"],
+                    deleted_files=[],
+                    added_lines_by_file={},
+                )
+
+                # Find layer crossing trigger
+                layer_trigger = None
+                for t in mock_triggers_config["triggers"]:
+                    if t.get("features", {}).get("layer_crossing") is True:
+                        layer_trigger = t
+                        break
+
+                if layer_trigger:
+                    result = evaluate_trigger(layer_trigger, snap, mock_triggers_config)
+                    assert result is True  # L0 + L3 = cross-layer
+
+    def test_adg_busy_fallback_with_mock(self, mock_triggers_config):
+        """When ADG is busy, retry logic handles it gracefully."""
+        backend = MockADGBackend(state="busy")
+
+        with patch.object(pre_author_gate, "_get_adg_backend", return_value=backend):
+            with patch.object(pre_author_gate, "append_violation"):
+                # The retry logic should handle busy errors
+                # and eventually fail closed with degraded fallback
+                success, exc, retries = _adg_query_with_retry(
+                    lambda: backend.get_fan_in("any.py"),
+                    max_retries=2,
+                    retry_delay_base=0.01
+                )
+                assert success is False
+                assert retries == 2
+
+    def test_adg_missing_uses_path_fallback(self, mock_triggers_config):
+        """When ADG is missing, path heuristic fallback works."""
+        backend = MockADGBackend(state="missing")
+
+        with patch.object(pre_author_gate, "_get_adg_backend", return_value=backend):
+            snap = ChangeSnapshot(
+                changed_files=["agentic_core/L0/router.py", "agentic_core/L3/pipeline.py"],
+                deleted_files=[],
+                added_lines_by_file={},
+            )
+
+            # Should fall back to path heuristic
+            layers, source, status = pre_author_gate._get_layers_with_fallback(
+                snap.changed_files + snap.deleted_files
+            )
+
+            # Path fallback should detect layers from paths
+            assert "L0" in layers or "L3" in layers or source == "path_fallback"
+
+
+@pytest.mark.parametrize("adg_state", ["fresh", "stale", "missing", "busy", "error"])
+def test_author_gate_handles_all_adg_states(adg_state, mock_triggers_config):
+    """Parametrized test: Author-Gate handles all ADG states gracefully (W4).
+
+    This test verifies that regardless of ADG state, Author-Gate:
+    1. Does not crash
+    2. Returns a valid tier classification
+    3. Either triggers or passes deterministically
+    """
+    backend = MockADGBackend(
+        state=adg_state,
+        fan_in_data={"agentic_core/L3/pipeline.py": 15},
+        layer_data={"agentic_core/L3/pipeline.py": "L3"},
+    )
+
+    with patch.object(pre_author_gate, "_get_adg_backend", return_value=backend if adg_state != "missing" else None):
+        snap = ChangeSnapshot(
+            changed_files=["agentic_core/L3/pipeline.py"],
+            deleted_files=[],
+            added_lines_by_file={"agentic_core/L3/pipeline.py": ["# change"]},
+        )
+
+        # Should not raise
+        tier = check_tier(mock_triggers_config, snap)
+        assert tier in ("tier_1", "tier_2", "tier_3")
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
