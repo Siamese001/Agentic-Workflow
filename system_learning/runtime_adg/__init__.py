@@ -46,3 +46,7 @@ __all__ = [
     "attributes_to_json",
     "create_runtime_adg_snapshot",
 ]
+
+
+__layer__ = "L6"
+__l6_chapter__ = "06.1"

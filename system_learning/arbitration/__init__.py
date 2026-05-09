@@ -10,3 +10,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+
+
+__layer__ = "L6"
+__l6_chapter__ = "06.5"

@@ -512,6 +512,21 @@ def main():
             "PR1 Plan–Notion Registration (advisory)",
             "ops_scripts/ci/check_plan_registration_freshness.py",
         ),
+        # L6-OBS — L6 observer-law (system_learning/ MUST NOT import writers
+        # from L0..L5 runtime layers). Advisory; flip fail-closed via
+        # L6_OBSERVER_LAW_FAIL_CLOSED=1 once baseline is clean.
+        # Plan: l6-doctrinal-alignment-noninvasive-b9d3f5 W4.
+        (
+            "L6-OBS L6 observer-law (advisory)",
+            "ops_scripts/ci/check_l6_observer_law.py",
+        ),
+        # L6-TAG — L6 ADG layer-tag consistency (every system_learning/*.py
+        # MUST resolve to layer=L6 in latest ADG snapshot). Advisory;
+        # SKIPs when snapshot missing or stale. Plan: same W5.
+        (
+            "L6-TAG L6 layer-tag consistency (advisory)",
+            "ops_scripts/ci/check_l6_layer_tag_consistency.py",
+        ),
         # APPS-DOM runtime harness fixture freshness. Fails when
         # artifacts/apps_otel_traces or sibling harness fixture dirs contain
         # a fixture older than APPS_DOM_FIXTURE_FRESHNESS_HOURS (default 168h).
@@ -592,11 +607,13 @@ def main():
             "RG-W8 apps_rg runtime gate hardening (206 tests)",
             "ops_scripts/ci/check_apps_rg_runtime_gate_hardening.py",
         ),
-        # PA-RG1 — apps_rg PA boundary anti-bypass scanner. Advisory by default;
-        # flip fail-closed via APPS_RG_PA_BOUNDARY_FAIL_CLOSED=1. Bypass via
-        # APPS_RG_PA_BOUNDARY_BYPASS=1 (logged). Plan: apps-rg-spine-hardening-7e3b9c W6.
+        # PA-RG1 — apps_rg + agentic_core/prompt_governance PA boundary anti-bypass scanner.
+        # Baseline (ADR-083 D3, W4 2026-05-09): ERROR=0 after allowlisting HardenedanthropicexecutorStrategy
+        # (both copies) and CONDITIONAL_V1_BASELINE for hops/_llm_client.py.
+        # Flip fail-closed: APPS_RG_PA_BOUNDARY_FAIL_CLOSED=1. Bypass: APPS_RG_PA_BOUNDARY_BYPASS=1.
+        # Plans: apps-rg-spine-hardening-7e3b9c W6 + apps-rg-spine-hardening-deferred-wave-2f8b1d W4.
         (
-            "PA-RG1 apps_rg PA boundary anti-bypass (advisory)",
+            "PA-RG1 apps_rg PA boundary anti-bypass (advisory — baseline clean 2026-05-09)",
             "ops_scripts/ci/check_apps_rg_pa_boundary.py",
         ),
     ]
