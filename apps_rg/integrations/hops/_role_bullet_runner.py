@@ -1,27 +1,38 @@
-"""Shared per-bullet runner for role-level HOPs (Unify, IBM, TraderSense, EY).
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Per-bullet flow:
-  1. Pool-first: try `bullet_pool` variants; pick the highest-scoring that
-     passes hard gates with composite >= 0.85.
-  2. Otherwise run Ensemble+Judge (3 candidates) using critical-tier path,
-     OR Judge-only single-candidate path for medium-tier.
-  3. On unaccepted result: critical-tier raises NarrativeQualityError;
-     medium-tier returns a degraded flag for the orchestrator to log.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime hop runners (def generate_* / def run_*).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (W4/W5).
+Original: apps_rg/integrations/hops/_role_bullet_runner.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Contains run_role_bullets method (runtime hop runner)
+
+Importing this module raises RuntimeError immediately.
+Core L2/L3 owns all runtime execution. apps_rg is ingress-only.
 """
 
-from __future__ import annotations
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.hops._role_bullet_runner is QUARANTINED. "
+    "apps_rg may NOT contain runtime hop runners. "
+    "Core L2/L3 owns execution. apps_rg is ingress-only. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
 
-import logging
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Iterable, List, Optional, Sequence
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/integrations/hops/_role_bullet_runner.py.ORIGINAL
 
-from apps_eval.engines.narrative_judge_scorer import JudgeVerdict, NarrativeJudgeScorer
-from apps_rg.integrations.hops._ensemble_runner import EnsembleResult, run_ensemble
-from apps_rg.integrations.length_budget import LengthBudget, budget_from_text
-from apps_rg.integrations.pool_first_selector import pool_first_select
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""Shared per-bullet runner - ORIGINAL (QUARANTINED)"""
+# from __future__ import annotations
+# import logging
+# from dataclasses import dataclass, field
+# from pathlib import Path
+# from typing import Iterable, List, Optional, Sequence
+# from apps_eval.engines.narrative_judge_scorer import JudgeVerdict, NarrativeJudgeScorer
+# from apps_rg.integrations.hops._ensemble_runner import EnsembleResult, run_ensemble
+# from apps_rg.integrations.length_budget import LengthBudget, budget_from_text
+# from apps_rg.integrations.pool_first_selector import pool_first_select
 
 _log = logging.getLogger(__name__)
 

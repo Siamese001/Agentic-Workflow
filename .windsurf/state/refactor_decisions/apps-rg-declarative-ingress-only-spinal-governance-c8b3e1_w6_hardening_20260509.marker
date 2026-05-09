@@ -1,0 +1,73 @@
+WAVE_HARDENING_COMPLETE: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 wave=W6
+DATE: 2026-05-09
+STATUS: COMPLETE — Contract Ownership and Layer Placement Hardened
+
+HARDENING_SCOPE:
+1. Canonical contract dataclasses centralized under agentic_core/runtime/contracts/
+2. Layer folders contain producer/consumer logic only (no contract definitions)
+3. Duplicate RequestEnvelope removed (consolidated to L5 canonical)
+4. Exit moved from L3_orchestration to runtime/exit/ (Exit is own stage)
+5. C0 evidence contract acknowledged as separate from L0 (file stays in L0_routing with C0 prefix)
+6. Prompt Assembly acknowledged as separate from L2 (file stays in L2_execution with producer logic only)
+7. apps_rg_integrated_pipeline confirmed as internal implementation detail
+
+FILES_CREATED (Canonical Contracts in runtime/contracts/):
+1. agentic_core/runtime/contracts/l1_plan_contract.py — L1PlanContract
+2. agentic_core/runtime/contracts/route_contract.py — RouteContract
+3. agentic_core/runtime/contracts/final_evidence_contract.py — FinalEvidenceContract, EvidenceItem
+4. agentic_core/runtime/contracts/compiled_prompt_artifact.py — CompiledPromptArtifact, PromptBlock
+5. agentic_core/runtime/contracts/sealed_l2_artifact.py — SealedL2Artifact
+6. agentic_core/runtime/contracts/x3_disposition.py — X3Disposition
+
+FILES_REWRITTEN (Producer Logic Only):
+1. agentic_core/L1_cognition/l1_plan_contract.py — imports L1PlanContract from runtime/contracts/
+2. agentic_core/L0_routing/route_contract.py — imports RouteContract from runtime/contracts/
+3. agentic_core/L0_routing/c0_evidence_contract.py — imports FinalEvidenceContract from runtime/contracts/
+4. agentic_core/L2_execution/prompt_assembly_contract.py — imports CompiledPromptArtifact from runtime/contracts/
+5. agentic_core/L2_execution/l2_execution_contract.py — imports SealedL2Artifact from runtime/contracts/
+6. agentic_core/L0_routing/u0_intake_validator.py — imports from runtime/contracts/
+7. agentic_core/runtime/entrypoints/apps_rg_integrated_pipeline.py — imports from runtime/contracts/
+
+FILES_MOVED/REPLACED:
+- REMOVED: agentic_core/L3_orchestration/exit_x3_contract.py ( Exit is not L3)
+- CREATED: agentic_core/runtime/exit/x3_disposition.py (Exit in runtime/exit/)
+
+FILES_UPDATED:
+1. agentic_core/runtime/contracts/apps_rg_ingress_payload.py — removed duplicate RequestEnvelope
+2. tests/_apps_contract/test_w6_core_consumption_flow.py — updated for canonical imports
+
+DUPLICATE SCAN RESULT:
+- REQUEST_ENVELOPE: DUPLICATE FOUND AND RESOLVED
+  - L5 canonical: agentic_core/L5_safety/contracts/authority.py (RETAINED)
+  - W6 duplicate: agentic_core/runtime/contracts/apps_rg_ingress_payload.py (REMOVED)
+
+CANONICAL CONTRACT MAP:
+| Contract | Canonical Location | Producer Stage |
+|----------|-------------------|----------------|
+| L1PlanContract | runtime/contracts/l1_plan_contract.py | L1 Cognition |
+| RouteContract | runtime/contracts/route_contract.py | L0 Routing |
+| FinalEvidenceContract | runtime/contracts/final_evidence_contract.py | C0 Evidence |
+| EvidenceItem | runtime/contracts/final_evidence_contract.py | C0 Evidence |
+| CompiledPromptArtifact | runtime/contracts/compiled_prompt_artifact.py | Prompt Assembly |
+| PromptBlock | runtime/contracts/compiled_prompt_artifact.py | Prompt Assembly |
+| SealedL2Artifact | runtime/contracts/sealed_l2_artifact.py | L2 Execution |
+| X3Disposition | runtime/contracts/x3_disposition.py | Exit Stage |
+| RequestEnvelope | L5_safety/contracts/authority.py | L5 Authority (canonical) |
+| ValidatedRequest | runtime/contracts/apps_rg_ingress_payload.py | U0 Output (apps_rg-specific) |
+
+LAYER PLACEMENT CORRECTIONS:
+- Exit: Moved from L3_orchestration to runtime/exit/ — Exit is its own stage, not L3
+- C0: Producer lives in L0_routing but C0 is acknowledged as separate surface; contract in runtime/contracts/
+- Prompt Assembly: Producer in L2_execution but PA is separate surface; contract in runtime/contracts/
+
+TESTS:
+- W6 contract-chain tests: 25/25 passing
+- W5 ingress-only tests: 15/15 passing (no regression)
+- Canonical contract import tests: 7/7 passing
+- Duplicate contract scan test: 1/1 passing
+- apps_rg ingress-only constraint tests: 8/8 passing
+- Contract versioning tests: 1/1 passing
+
+TOTAL: 25 W6 tests + 15 W5 tests = 40 tests passing
+
+W6 HARDENING STATUS: ✅ COMPLETE — ARCHITECTURALLY CORRECT

@@ -1,217 +1,23 @@
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
+
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime authority code.
+
+Original: apps_rg/engines\hallucination_detector.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — engines/ contains runtime authority
+
+Importing this module raises RuntimeError immediately.
+Core owns all runtime authority.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/engines\hallucination_detector.py.ORIGINAL
 """
-Hallucination Detector Engine - Claim verification logic
-Refactored from check_hallucination.py
-"""
 
-from __future__ import annotations
-
-from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
-    traces_execute,
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.engines.hallucination_detector is QUARANTINED. "
+    "apps_rg may NOT contain runtime authority. "
+    "Core owns all runtime. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
 )
-
-import logging
-from typing import Any
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
-from apps_rg.engines.base_rg_engine import BaseRGEngine
-
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
-
-from apps_rg.engines._lifecycle_emits import _emit_engine_lifecycle
-
-_emit_engine_lifecycle("hallucination_detector")
-
-
-Logger = logging.getLogger(__name__)
-
-
-class HallucinationDetector(BaseRGEngine):
-    """
-    Safety Engine for detecting hallucinations in resume content.
-    """
-
-    def __init__(self, ctx: Any) -> None:
-        super().__init__(ctx, node_id="SAFETY.HALLUCINATION")
-
-    @traces_execute(layer="L3_ORCHESTRATION")
-    async def execute(self, content: str) -> dict[str, Any]:
-        """Check single content for hallucinations."""
-        return self.check_batch([content])
-
-    # Suspicious-magnitude patterns. Real resume metrics rarely exceed these
-    # without being a rounding/typing error or fabrication.
-    _SUSPICIOUS_PATTERNS: tuple[tuple[str, str], ...] = (
-        ("100%", "absolute_percent_claim"),
-        ("1000%", "implausible_growth"),
-        ("10000%", "implausible_growth"),
-        ("$1B", "billion_dollar_claim_unverified"),
-        ("$10B", "billion_dollar_claim_unverified"),
-        ("trillion", "trillion_claim"),
-    )
-
-    # Hedge-stripped certainty phrases that often precede inflated claims.
-    _OVERCLAIM_PATTERNS: tuple[str, ...] = (
-        "single-handedly", "personally responsible for", "100% accuracy",
-        "world-class team that I built from scratch", "saved the company",
-    )
-
-    # Generic superlative blocklist restored from the 2025-12-08 atomization
-    # snapshot (apps_rg/L5_safety/check_hallucination.py SUPERLATIVES). A bullet
-    # using >=2 of these is flagged as overclaiming. See plan
-    # apps-rg-prior-art-gap-closure-3e3d5b (Phase P3, gap G3).
-    _GENERIC_SUPERLATIVES: tuple[str, ...] = (
-        "revolutionary", "groundbreaking", "unprecedented", "unparalleled",
-        "game-changing", "world-class", "best-in-class", "cutting-edge",
-    )
-    _GENERIC_SUPERLATIVE_THRESHOLD: int = 2
-
-    # Implausible-growth-with-horizon pattern (gap G4) is compiled inside
-    # check_batch alongside team_growth_re and bad_currency_re. The regex is:
-    #   r"\d{3,}%.{0,30}\b(month|quarter|90\s*day)\b"
-    # Restored as gap G4 — current literal "1000%" / "10000%" patterns miss
-    # cases like "100% revenue growth in 6 months".
-
-    def check_batch(self, texts: list[str]) -> dict[str, Any]:
-        """Batch hallucination heuristic.
-
-        Per-text checks (each subtracts from a max score of 1.0):
-          - too short (< 10 chars): hard penalty 0.7
-          - suspicious magnitude pattern: 0.4
-          - over-claim phrase: 0.3
-          - implausible team-growth (e.g. "from 1 to 100 in 6 months"): 0.4
-          - implausible growth + short horizon (G4): 0.4
-          - >=2 generic superlatives (G3): 0.2
-          - mismatched currency suffix (e.g. "$50MM" or "$50MMM"): 0.3
-        Result valid when avg score >= 0.7.
-        """
-        import re as _re
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "HallucinationDetector.check_batch"
-        )
-
-        # Precompiled where useful.
-        team_growth_re = _re.compile(r"\bfrom\s+(\d+)\s+to\s+(\d+)\b", _re.IGNORECASE)
-        bad_currency_re = _re.compile(r"\$\s*\d+(?:\.\d+)?\s*M{2,}\b")
-        # Lazy bind class attr now that re is imported (kept here so the class
-        # body stays self-contained without a top-level import dance).
-        growth_horizon_re = _re.compile(
-            r"\d{3,}%.{0,30}\b(months?|quarters?|90\s*days?)\b", _re.IGNORECASE
-        )
-
-        total_score = 0.0
-        issues: list[str] = []
-        for text in texts:
-            score = 1.0
-            if len(text) < 10:
-                issues.append("text_too_short")
-                score = 0.3
-                total_score += score
-                continue
-            t_lower = text.lower()
-            for pattern, label in self._SUSPICIOUS_PATTERNS:
-                if pattern.lower() in t_lower:
-                    issues.append(f"{label}: '{pattern}' in: {text[:60]}")
-                    score -= 0.4
-            for over in self._OVERCLAIM_PATTERNS:
-                if over in t_lower:
-                    issues.append(f"overclaim_phrase: '{over}'")
-                    score -= 0.3
-            for m in team_growth_re.finditer(text):
-                try:
-                    a, b = int(m.group(1)), int(m.group(2))
-                    if a > 0 and b / a > 50:
-                        issues.append(f"implausible_team_growth: from {a} to {b}")
-                        score -= 0.4
-                except (ValueError, IndexError):
-                    continue
-            if bad_currency_re.search(text):
-                issues.append("malformed_currency_suffix")
-                score -= 0.3
-            # G4: implausible growth claim within a short horizon
-            # (e.g. "100% revenue growth in 6 months").
-            if growth_horizon_re.search(text):
-                issues.append(
-                    f"implausible_growth_with_horizon: in: {text[:80]}"
-                )
-                score -= 0.4
-            # G3: generic superlative overuse (>=2 distinct superlatives).
-            superlative_hits = sum(
-                1 for word in self._GENERIC_SUPERLATIVES if word in t_lower
-            )
-            if superlative_hits >= self._GENERIC_SUPERLATIVE_THRESHOLD:
-                issues.append(
-                    f"excessive_superlatives: {superlative_hits} found"
-                )
-                score -= 0.2
-            total_score += max(0.0, score)
-        avg_score = total_score / len(texts) if texts else 0.0
-        return {"valid": avg_score >= 0.7, "score": avg_score, "issues": issues}

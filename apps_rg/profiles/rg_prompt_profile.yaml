@@ -1,0 +1,64 @@
+# rg_prompt_profile.yaml
+# Apps RG Prompt Profile — Style & Content Constraints
+# AG-RGGOV-6: Static style constraints only
+# AG-RGGOV-6d: Power verbs are advisory style preference
+#
+# Purpose: Declarative style guidance for Prompt Assembly (core L1/L2)
+
+profile_metadata:
+  profile_id: rg_prompt_v1
+  profile_type: style_constraints
+  domain: resume_generation
+  advisory_only: true  # AG-RGGOV-6d: All style guidance is advisory
+
+style_constraints:
+  # Forbidden phrases to avoid (advisory: prefer alternatives)
+  forbidden_phrases:
+    - "responsible for"
+    - "duties included"
+    - "helped with"
+    - "assisted with"
+    - "worked on"
+  
+  # Preferred phrasing guidance
+  preferred_patterns:
+    passive: "Responsible for managing team"
+    active: "Led team of 12 engineers"
+
+content_constraints:
+  # AG-RGGOV-6a: Advisory duplicate similarity target
+  duplicate_similarity_target: 0.85
+  advisory_semantics: true
+  description: Target for content deduplication (core may approximate)
+
+vocabulary:
+  # AG-RGGOV-6d: Power verbs are ADVISORY — style preference only
+  # Not hard constraint. Core may suggest alternatives when appropriate.
+  style_preference: true
+  
+  power_verbs:
+    - achieved
+    - delivered
+    - led
+    - drove
+    - established
+    - transformed
+    - accelerated
+    - optimized
+    - pioneered
+    - spearheaded
+    - architected
+    - engineered
+    - orchestrated
+    - scaled
+    - secured
+
+  usage_guidance: >
+    These verbs are preferred for describing achievements.
+    Selection should be context-appropriate. Not all bullets
+    require power verbs; substance matters over style.
+
+# NO prompt assembly logic:
+# - No prompt templates (core Prompt Assembly owns)
+# - No slot mapping (core owns)
+# - No conditional prompt logic (core owns)

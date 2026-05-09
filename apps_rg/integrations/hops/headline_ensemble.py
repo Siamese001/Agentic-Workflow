@@ -1,18 +1,34 @@
-"""HOP-4A-HEADLINE — Ensemble+Judge generation for the resume headline.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Locked specs (D9): 10-14 word headline, 3 prompt variations, aggressive
-filler-intensifier filter. Critical-tier — failure aborts pipeline.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime hop runners (def generate_*).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P4.1).
+Original: apps_rg/integrations/hops/headline_ensemble.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Contains generate_* methods (runtime hop runners)
+
+Importing this module raises RuntimeError immediately.
+Core L2/L3 owns all runtime execution. apps_rg is ingress-only.
 """
 
-from __future__ import annotations
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.hops.headline_ensemble is QUARANTINED. "
+    "apps_rg may NOT contain runtime hop runners. "
+    "Core L2/L3 owns execution. apps_rg is ingress-only. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
 
-from pathlib import Path
-from typing import Iterable, Optional
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/integrations/hops/headline_ensemble.py.ORIGINAL
 
-from apps_rg.integrations.hops._ensemble_runner import EnsembleResult, run_ensemble
-from apps_rg.integrations.length_budget import budget_for_section
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""HOP-4A-HEADLINE — ORIGINAL (QUARANTINED)"""
+# from __future__ import annotations
+# from pathlib import Path
+# from typing import Iterable, Optional
+# from apps_rg.integrations.hops._ensemble_runner import EnsembleResult, run_ensemble
+# from apps_rg.integrations.length_budget import budget_for_section
 
 SECTION_ID = "hop_4a_headline"
 TIER = "critical"

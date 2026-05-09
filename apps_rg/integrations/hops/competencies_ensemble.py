@@ -1,12 +1,29 @@
-"""HOP-4C-COMPETENCIES — Ensemble+Judge at the SET level.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Locked spec (D6 + Author-Gate W4.3 tentative): 3 generators each propose all
-6 categories; judge picks best set. Set-level scoring rewards coherent
-6 categories with no overlap, JD+company language coverage, and category-name
-mirroring of company terminology.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime hop runners (def generate_*).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P4.3).
+Original: apps_rg/integrations/hops/competencies_ensemble.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Contains generate_* methods (runtime hop runners)
+
+Importing this module raises RuntimeError immediately.
+Core L2/L3 owns all runtime execution. apps_rg is ingress-only.
 """
+
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.hops.competencies_ensemble is QUARANTINED. "
+    "apps_rg may NOT contain runtime hop runners. "
+    "Core L2/L3 owns execution. apps_rg is ingress-only. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
+
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/integrations/hops/competencies_ensemble.py.ORIGINAL
+
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""HOP-4C-COMPETENCIES — ORIGINAL (QUARANTINED)"""
 
 from __future__ import annotations
 

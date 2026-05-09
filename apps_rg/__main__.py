@@ -1,927 +1,252 @@
-"""Canonical entrypoint for apps_rg — pure transport shim.
+"""apps_rg — Declarative Ingress-Only Entry Point (AG-RGGOV-1)
 
-Usage:
-    python -m apps_rg --target-company <company> --target-role <role>
+W5-compliant ingress-only __main__.py.
 
-Delegates immediately to ``agentic_core.runtime.entrypoints
-.integrated_r4_deterministic_pipeline_run`` with ``app_name="apps_rg"``.
+Responsible ONLY for:
+1. CLI/wizard input collection
+2. Building AppsRgIngressPayload
+3. Building RequestEnvelope  
+4. Submitting to AppIngressRunner
+5. Presenting Exit-approved output
 
-apps_rg MUST NOT:
-  - resolve L2 recipe
-  - construct or pass l2_callable
-  - run HOPs, narrative pass, DOCX export
-  - call models or build prompts
-  - commit cache or write L4
-  - call Exit or emit X3
-
-All domain execution is owned by agentic_core via registered L2 step
-adapters in ``apps_rg.l2_recipe.steps``.
-
-If the agentic_core runner is unavailable, apps_rg **fails closed** (exit 1).
+NO runtime authority: no planning, routing, orchestration, execution,
+provider calls, judging, disposition, or state writes.
 """
 
 from __future__ import annotations
 
-import hashlib
+import argparse
 import json
-import logging
-import os
 import sys
 from pathlib import Path
 from typing import Any
 
-from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
-from apps_rg.utils.intent_builder import build_intent_from_request
-
-try:
-    from opentelemetry import trace as _otel_trace
-
-    _tracer = _otel_trace.get_tracer("apps_rg.cache")
-    _OTEL_AVAILABLE = True
-except ImportError:
-    _OTEL_AVAILABLE = False
-    _tracer = None  # type: ignore[assignment]
-
-
-def _span(name: str):
-    """Context manager: OTEL span when available, else no-op."""
-    if _OTEL_AVAILABLE and _tracer is not None:
-        return _tracer.start_as_current_span(name)
-    import contextlib
-    return contextlib.nullcontext()
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
+from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
+    AppsRgIngressPayload,
+    RequestEnvelope,
 )
-_log = logging.getLogger("apps_rg")
 
 
-# ---------------------------------------------------------------------------
-# Fail-closed import of the R4 deterministic pipeline runner
-# ---------------------------------------------------------------------------
-try:
-    from agentic_core.runtime.entrypoints.integrated_r4_deterministic_pipeline_run import (
-        run_integrated_r4_deterministic_pipeline,
-        R4IntegratedRunResult,
-    )
-
-    _RUNNER_AVAILABLE = True
-except ImportError as _import_err:
-    _RUNNER_AVAILABLE = False
-    _RUNNER_IMPORT_ERROR = _import_err
-
-
-# ---------------------------------------------------------------------------
-# Helpers — transport-level only, no domain logic
-# ---------------------------------------------------------------------------
-
-
-def _get_current_policy_hash() -> str:
-    return os.environ.get("APPS_RG_POLICY_HASH", "policy_v1")
-
-
-def _get_current_blueprint_hash() -> str:
-    return os.environ.get("APPS_RG_BLUEPRINT_HASH", "blueprint_v1")
-
-
-def _hash_file_content(path: Path) -> str:
-    """SHA-256 of file content, first 32 hex chars."""
-    if not path.exists():
-        return "none"
-    return hashlib.sha256(path.read_bytes()).hexdigest()[:32]
-
-
-# Wizard-managed defaults — populated by _interactive_wizard() when stdin is
-# a TTY and --target-company / --jd / --manual-brief are not supplied. Prior
-# hand-authored defaults (job_description.json, company_research.json) were
-# deleted 2026-05-06 (W1 plan apps-rg-vllm-followup-blocked-c4e8b2) because
-# they encoded a single target company (Blend360) that silently contaminated
-# subsequent runs targeting different companies. The cross-company guard at
-# main() still fires when --target-company is missing; the wizard now owns
-# the input paths.
-_DEFAULT_JD_PATH = "apps_rg/scripts/_interactive_jd.json"
-_DEFAULT_BRIEF_PATH = "apps_rg/scripts/_interactive_brief.json"
-_DEFAULT_CANDIDATE_PATH = "apps_rg/scripts/candidate_profile.yaml"
-
-
-def _assert_artifact_matches_company(
-    path: Path, target_company: str, artifact_kind: str
-) -> None:
-    """Fail loud if a JD/briefing artifact references a different company.
-
-    Prevents silent cross-company contamination from hand-authored default
-    files tied to a previous target_company. The L0 prerequisite gate also
-    catches mismatched briefings via ``_check_scope_match``, but this guard
-    fires earlier at intake with an artifact-specific error message.
-
-    No-op when the file is missing (the L0 gate's job) or carries no
-    ``company`` field (e.g. master candidate profile).
-    """
-    if not path.exists() or not target_company:
-        return
-    try:
-        text = path.read_text(encoding="utf-8")
-        if path.suffix.lower() == ".json":
-            data = json.loads(text)
-        elif path.suffix.lower() in (".yaml", ".yml"):
-            import yaml  # local import — yaml is optional for json-only paths
-
-            data = yaml.safe_load(text)
-        else:
-            return
-    except (OSError, json.JSONDecodeError, ValueError):
-        return
-    if not isinstance(data, dict):
-        return
-    file_company = str(data.get("company") or "").strip()
-    if not file_company:
-        return  # Artifact has no company assertion — nothing to contradict
-    if file_company.lower() != target_company.strip().lower():
-        raise SystemExit(
-            f"FATAL: {artifact_kind} at {path} declares company={file_company!r} "
-            f"but --target-company={target_company!r}. Refusing to proceed with a "
-            f"cross-company contaminated artifact. Supply a {artifact_kind} matching "
-            f"{target_company!r}, or omit --{artifact_kind.replace('_', '-')} to let "
-            f"the L0 prerequisite gate route to apps_research."
-        )
-
-
-def _build_raw_request(args) -> dict[str, Any]:
-    """Build the raw_request envelope from parsed CLI args.
-
-    This dict is the contract surface between apps_rg and the R4 pipeline.
-    It contains only transport-level data — no executable code.
-    """
-    target_company = (args.target_company or "").strip()
-
-    jd_arg: str = getattr(args, "jd", "") or ""
-    jd_path = Path(jd_arg or _DEFAULT_JD_PATH)
-    _assert_artifact_matches_company(jd_path, target_company, "jd")
-
-    # Brief path: pass through user-supplied path unchanged. NEVER silently
-    # substitute a different company's briefing file. If user gave a path that
-    # does not exist, the L0 prerequisite gate will see MISSING and route to
-    # apps_research — that is the correct behavior, not a fallback.
-    brief_arg: str = getattr(args, "manual_brief", "") or ""
-    brief_path = Path(brief_arg or _DEFAULT_BRIEF_PATH)
-    _assert_artifact_matches_company(brief_path, target_company, "manual_brief")
-
-    candidate_path = (
-        Path(args.candidate) if getattr(args, "candidate", None) else Path(_DEFAULT_CANDIDATE_PATH)
-    )
-
-    jd_payload: dict[str, Any] = {}
-    if jd_path.exists():
-        try:
-            jd_payload = json.loads(jd_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            pass
-
-    # Load master resume data (YAML or JSON) — required by L2 hop_4_generate_resume
-    master_resume_data: dict[str, Any] = {}
-    if candidate_path.exists():
-        try:
-            content = candidate_path.read_text(encoding="utf-8")
-            if candidate_path.suffix.lower() in (".yaml", ".yml"):
-                import yaml  # noqa: PLC0415
-
-                master_resume_data = yaml.safe_load(content) or {}
-            else:
-                master_resume_data = json.loads(content)
-        except Exception:  # noqa: S110,PLC0415,guardian: allow-broad-exception -- fail-soft load
-            pass
-
-    raw = {
-        "transport": "api",
-        "method": "POST",
-        "jd_path_resolved": str(jd_path),
-        "content_type": "application/json",
-        "source_channel": "apps_rg_cli",
-        "declared_schema": "apps_rg_jd_v1",
-        "body_text": json.dumps(jd_payload) if jd_payload else "{}",
-        "tenant_id": getattr(args, "tenant_id", "default"),
-        "user_id": "u-apps_rg",
-        "target_company": args.target_company or "",
-        "target_role": args.target_role or "",
-        "jd_payload": jd_payload,  # DS-R7: must be dict; consumed by L1_cognition
-        "jd_hash": _hash_file_content(jd_path),
-        "brief_hash": _hash_file_content(brief_path),
-        "resume_hash": _hash_file_content(candidate_path),
-        "master_resume_data": json.dumps(master_resume_data) if master_resume_data else "",  # L2 hop_4_generate_resume requires string
-        "policy_hash": _get_current_policy_hash(),
-        "blueprint_hash": _get_current_blueprint_hash(),
-        "manual_brief": str(brief_path),
-        "research_via": getattr(args, "research_via", None),
-        "auto_research_internal": getattr(args, "auto_research_internal", False),
-        "auto_research_tavily": getattr(args, "auto_research_tavily", False),
-    }
-    assert isinstance(raw["jd_payload"], dict), (
-        f"apps_rg: jd_payload must be a dict, got {type(raw['jd_payload']).__name__}"
-    )
-    return raw
-
-
-# ---------------------------------------------------------------------------
-# Core pipeline logic — extracted for testability
-# ---------------------------------------------------------------------------
-
-
-def _run_with_args(
-    args: Any,
-    runs_dir: Path | None = None,
-    artifact_dir_override: Path | None = None,
-) -> None:
-    """Execute the full L0-wired pipeline given parsed CLI args.
-
-    Extracted from ``main()`` so tests can inject args directly without
-    going through argparse or subprocess.  Calls ``sys.exit`` on all paths.
-
-    Parameters
-    ----------
-    args:
-        Namespace-like object with target_company, target_role, candidate,
-        jd, manual_brief, target_level, tenant_id, etc.
-    runs_dir:
-        Override the directory scanned for R1A cache entries.
-        Defaults to ``artifacts/apps_rg/runs``.
-    artifact_dir_override:
-        Override the per-run artifact directory (used by tests to pre-seed
-        ``generated_resume.json`` for R1B store testing).
-    """
-    raw_request = _build_raw_request(args)
-    _runs_dir = runs_dir if runs_dir is not None else Path("artifacts/apps_rg/runs")
-    artifact_dir = (
-        artifact_dir_override
-        if artifact_dir_override is not None
-        else _runs_dir / f"r4_{raw_request['resume_hash'][:8]}"
-    )
-
-    # ── Single source of truth: resolve all paths from raw_request (not args) ──
-    # The interactive wizard (TTY only, in main()) mutates args.* before this
-    # point so that target_company / target_role / jd / manual_brief are
-    # populated from prompts when not supplied on CLI. Non-TTY runs require
-    # explicit flags (parser.error() in main()).
-    jd_path = Path(raw_request.get("jd_path_resolved") or getattr(args, "jd", "") or _DEFAULT_JD_PATH)
-    brief_path = Path(raw_request["manual_brief"])
-    candidate_path = (
-        Path(args.candidate) if getattr(args, "candidate", None)
-        else Path("apps_rg/scripts/candidate_profile.yaml")
-    )
-
-    # ── L0 prerequisite gate: briefing validation before R4 ──
-    try:
-        from agentic_core.L0_routing.gates.apps_rg_prerequisite_gate import check_apps_rg_prerequisites
-        _prereq = check_apps_rg_prerequisites(
-            target_company=raw_request["target_company"],
-            target_role=raw_request["target_role"],
-            policy_hash=raw_request["policy_hash"],
-            blueprint_hash=raw_request["blueprint_hash"],
-            trace_id=raw_request.get("tenant_id", "default"),
-            briefing_path=brief_path,
-        )
-        if _prereq is not None:
-            from agentic_core.L0_routing.types.routing_artifact_types import L0Route
-            _sel = _prereq.get("selected_route")
-            if _sel == L0Route.R5:
-                _log.error(
-                    "[apps_rg] L0 prerequisite gate: briefing incompatible — %s. "
-                    "Check briefing file at %s.",
-                    _prereq.get("reason_codes"),
-                    brief_path,
-                )
-                sys.exit(1)
-            if _sel == L0Route.R3R4_MANAGED:
-                _log.info(
-                    "[apps_rg] L0 prerequisite gate: briefing MISSING or STALE for '%s'. "
-                    "Entering L3 orchestration to run apps_research first.",
-                    raw_request["target_company"],
-                )
-                try:
-                    from apps_shared.adapters.research_l3_adapter import (
-                        invoke_company_research,
-                    )
-                    _research_result = invoke_company_research(
-                        company=raw_request["target_company"],
-                        jd_path=jd_path if jd_path.exists() else None,
-                        depth=getattr(args, "research_depth", "standard"),
-                        run_id=raw_request.get("run_id", ""),
-                        request_id=raw_request.get("request_id", ""),
-                        trace_root=raw_request.get("trace_root", ""),
-                        artifact_dir=_runs_dir,
-                    )
-                    if _research_result.success and _research_result.artifact_path:
-                        _log.info(
-                            "[apps_rg] apps_research completed successfully. "
-                            "Briefing at %s. Proceeding to R4 pipeline.",
-                            _research_result.artifact_path,
-                        )
-                        brief_path = Path(_research_result.artifact_path)
-                        raw_request["manual_brief"] = str(brief_path)
-                        raw_request["brief_hash"] = ""
-                        raw_request["_research_sub_stages"] = _research_result.sub_stages
-                    else:
-                        _log.error(
-                            "[apps_rg] apps_research failed: %s. "
-                            "Cannot proceed without briefing.",
-                            _research_result.error_reason,
-                        )
-                        sys.exit(1)
-                except ImportError:
-                    _log.warning(
-                        "[apps_rg] research_l3_adapter unavailable — "
-                        "briefing required but cannot auto-generate. "
-                        "Run apps_research manually, then re-run apps_rg "
-                        "with --manual-brief <path>.",
-                    )
-                    sys.exit(1)
-                except Exception as _l3_err:
-                    _log.error(
-                        "[apps_rg] L3 orchestration failed: %s", _l3_err
-                    )
-                    sys.exit(1)
-    except ImportError:
-        _log.debug("[apps_rg] L0 prerequisite gate unavailable (fail-open)")
-    except Exception as _gate_err:
-        _log.warning("[apps_rg] L0 prerequisite gate failed (fail-soft): %s", _gate_err)
-
-    # ── W1 / GAP-1: R1A exact-cache pre-flight ──
-    r1a_key = compute_r1a_key(
-        source_resume_hash=raw_request["resume_hash"],
-        target_company=raw_request["target_company"],
-        target_role=raw_request["target_role"],
-        jd_hash=raw_request["jd_hash"],
-        briefing_hash=raw_request["brief_hash"],
-        policy_hash=raw_request["policy_hash"],
-        blueprint_hash=raw_request["blueprint_hash"],
-    )
-    with _span("apps_rg.cache.r1a.check") as r1a_span:
-        cached_run_dir = check_r1a_cache(
-            r1a_key,
-            runs_dir=_runs_dir,
-            policy_hash=raw_request["policy_hash"],
-            blueprint_hash=raw_request["blueprint_hash"],
-        )
-        if _OTEL_AVAILABLE and r1a_span is not None:
-            r1a_span.set_attribute("cache.layer", "r1a")
-            r1a_span.set_attribute("cache.result", "hit" if cached_run_dir else "miss")
-            r1a_span.set_attribute("cache.key_prefix", r1a_key[:16])
-    if cached_run_dir is not None:
-        _log.info("[apps_rg] R1A exact cache hit — returning cached run at %s", cached_run_dir)
-        # Rebuild L7 route-family coverage from the cached artifact directory
-        # so stale evidence (emitted before the contract-shape fix) is refreshed.
-        try:
-            from agentic_core.L7_auditability.coverage import (
-                build_l7_route_family_coverage as _build_rfc,
-            )
-            _build_rfc(Path(cached_run_dir), chain_kind="R4_SINGLE_ACTION", write=True)
-        except Exception as _l7_err:  # guardian: allow-broad-exception -- L7 refresh is fail-soft on cache hit path
-            _log.warning("[apps_rg] L7 coverage refresh on cache hit failed (fail-soft): %s", _l7_err)
-        sys.exit(0)
-
-    # ── W2 / GAP-2: R1B semantic-cache pre-flight (gated by env flag) ──
-    if os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1") == "1":
-        try:
-            from apps_rg.cache.r1b_adapter import check_r1b_for_apps_rg
-
-            with _span("apps_rg.cache.r1b.check") as r1b_span:
-                r1b_hit = check_r1b_for_apps_rg(
-                    candidate_profile_path=str(candidate_path),
-                    target_company=args.target_company,
-                    target_role=args.target_role,
-                    policy_hash=raw_request["policy_hash"],
-                    blueprint_hash=raw_request["blueprint_hash"],
-                    jd_path=jd_path,
-                    briefing_path=brief_path,
-                    tenant_id=raw_request.get("tenant_id", "default"),
-                )
-                if _OTEL_AVAILABLE and r1b_span is not None:
-                    r1b_span.set_attribute("cache.layer", "r1b")
-                    r1b_span.set_attribute("cache.result", "hit" if r1b_hit else "miss")
-                    if r1b_hit is not None:
-                        _sim = r1b_hit.get("_cache_similarity_score")
-                        if _sim is not None:
-                            r1b_span.set_attribute("cache.similarity_score", _sim)
-            if r1b_hit is not None:
-                _log.info("[apps_rg] R1B semantic cache hit — returning cached result")
-                sys.exit(0)
-        except Exception as _r1b_err:  # guardian: allow-broad-exception -- R1B recall is fail-soft; a miss is always safe
-            _log.warning("[apps_rg] R1B recall failed (fail-soft): %s", _r1b_err)
-
-    # ── Delegate to agentic_core R4 pipeline (core resolves L2 recipe) ──
-    result: R4IntegratedRunResult = run_integrated_r4_deterministic_pipeline(
-        app_name="apps_rg",
-        raw_request=raw_request,
-        artifact_dir=artifact_dir,
-        policy_hash=raw_request["policy_hash"],
-        blueprint_hash=raw_request["blueprint_hash"],
-    )
-
-    _log.info(
-        "[apps_rg] R4 pipeline complete: run_id=%s x3=%s terminal_r5=%s fault=%s",
-        result.run_id,
-        result.x3_disposition,
-        result.terminal_r5,
-        result.fault or "(none)",
-    )
-
-    # ── W4 / GAP-4: R1A post-run stamp (only on clean execution) ──
-    if not result.fault and not result.terminal_r5:
-        try:
-            with _span("apps_rg.cache.r1a.stamp") as r1a_stamp_span:
-                stamp_r1a_cache(
-                    r1a_key,
-                    str(artifact_dir),
-                    policy_hash=raw_request["policy_hash"],
-                    blueprint_hash=raw_request["blueprint_hash"],
-                )
-                if _OTEL_AVAILABLE and r1a_stamp_span is not None:
-                    r1a_stamp_span.set_attribute("cache.layer", "r1a")
-                    r1a_stamp_span.set_attribute("cache.operation", "stamp")
-            _log.debug("[apps_rg] R1A cache stamped for key=%s", r1a_key[:16])
-        except Exception as _stamp_err:  # guardian: allow-broad-exception -- cache stamp is fail-soft; run already succeeded
-            _log.warning("[apps_rg] R1A stamp failed (fail-soft): %s", _stamp_err)
-
-    # ── W4 / GAP-5: R1B post-run store (only on clean execution, gated by env flag) ──
-    if not result.fault and not result.terminal_r5 and os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "1") == "1":
-        try:
-            from apps_rg.cache.r1b_adapter import AppsRgR1BCacheAdapter
-
-            intent = build_intent_from_request(
-                candidate_profile_path=candidate_path,
-                target_company=args.target_company,
-                target_role=args.target_role,
-                target_level=getattr(args, "target_level", None),
-                policy_hash=raw_request["policy_hash"],
-                blueprint_hash=raw_request["blueprint_hash"],
-                jd_path=jd_path,
-                briefing_path=brief_path,
-                tenant_id=raw_request.get("tenant_id", "default"),
-                request_id=result.run_id,
-            )
-            generated_resume_path = artifact_dir / "generated_resume.json"
-            output_chunks: list[dict] = []
-            if generated_resume_path.exists():
-                try:
-                    resume_data = json.loads(generated_resume_path.read_text(encoding="utf-8"))
-                    output_chunks = resume_data if isinstance(resume_data, list) else [resume_data]
-                except (json.JSONDecodeError, OSError):
-                    pass
-            if output_chunks:
-                adapter = AppsRgR1BCacheAdapter(
-                    tenant_id=raw_request.get("tenant_id", "default")
-                )
-                with _span("apps_rg.cache.r1b.store") as r1b_store_span:
-                    adapter.store_intent_and_output(
-                        intent=intent,
-                        output_chunks=output_chunks,
-                        run_context={
-                            "run_id": result.run_id,
-                            "exit_disposition": result.x3_disposition,
-                            "uwg_commit_receipt": result.run_id,
-                            "policy_hash": raw_request["policy_hash"],
-                            "blueprint_hash": raw_request["blueprint_hash"],
-                        },
-                    )
-                    if _OTEL_AVAILABLE and r1b_store_span is not None:
-                        r1b_store_span.set_attribute("cache.layer", "r1b")
-                        r1b_store_span.set_attribute("cache.operation", "store")
-                        r1b_store_span.set_attribute("cache.chunks_stored", len(output_chunks))
-                _log.debug("[apps_rg] R1B semantic cache stored %d chunks", len(output_chunks))
-        except Exception as _store_err:  # guardian: allow-broad-exception -- R1B store is fail-soft; run already succeeded
-            _log.warning("[apps_rg] R1B store failed (fail-soft): %s", _store_err)
-
-    # ── Mandatory spine trace output (L7 projection) ──
-    _emit_spine_trace(artifact_dir)
-
-    if result.fault:
-        _log.error("[apps_rg] Pipeline fault: %s", result.fault)
-        sys.exit(1)
-
-    _print_run_summary_hint(artifact_dir)
-    sys.exit(0)
-
-
-# ---------------------------------------------------------------------------
-# Mandatory spine trace output
-# ---------------------------------------------------------------------------
-
-
-def _print_run_summary_hint(artifact_dir: Path) -> None:
-    """Print a user-friendly pointer to the run summary renderer.
-
-    Emitted at the end of every successful pipeline execution so that
-    users running apps_rg from a terminal (outside Cascade) know exactly
-    how to view the detailed runtime evidence summary.  Fail-soft.
-    """
-    try:
-        print(
-            "\n"
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            "  Run complete.  To view the detailed runtime evidence summary:\n"
-            "\n"
-            f"    python tools/apps_rg/render_run_summary.py {artifact_dir}\n"
-            "\n"
-            "  The summary includes: run identity · L2 substages · narrative\n"
-            "  verdicts · gate failures · L7 certification · output artifacts.\n"
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-            file=sys.stdout,
-        )
-    except Exception as _exc:  # guardian: allow-broad-exception -- hint is cosmetic; never abort
-        _log.debug("[apps_rg] run summary hint skipped: %s", _exc)
-
-
-def _emit_spine_trace(artifact_dir: Path) -> None:
-    """Emit the mandatory WHAT HAPPENED spine trace table to stdout.
-
-    Reads the L7 HowTrace and supporting artifacts from *artifact_dir*
-    and prints a formatted table.  Fail-soft: a missing or malformed
-    HowTrace logs a warning but never aborts the run.
-    """
-    try:
-        from apps_rg.outputs.spine_trace_formatter import format_spine_trace
-
-        trace_text = format_spine_trace(artifact_dir)
-        print(trace_text, file=sys.stdout)
-    except Exception as _exc:  # guardian: allow-broad-exception -- trace is fail-soft; run already succeeded
-        _log.warning("[apps_rg] spine trace emission failed (fail-soft): %s", _exc)
-
-
-# ---------------------------------------------------------------------------
-# Main entrypoint — pure shim
-# ---------------------------------------------------------------------------
-
-
-def main() -> None:
-    """Parse transport args → delegate to agentic_core R4 pipeline."""
-
-    # ── Fail-closed guard ──
-    if not _RUNNER_AVAILABLE:
-        print(
-            f"FATAL: agentic_core runner unavailable — apps_rg fails closed.\n"
-            f"  ImportError: {_RUNNER_IMPORT_ERROR}",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    import argparse
-
-    parser = argparse.ArgumentParser(prog="apps_rg", add_help=True)
-    parser.add_argument("--target-company", default=None, help="Target company")
-    parser.add_argument("--target-role", default=None, help="Target role title")
-    parser.add_argument("--research-via", default=None, choices=["apps_research"])
-    parser.add_argument("--auto-research-internal", action="store_true")
-    parser.add_argument("--auto-research-tavily", action="store_true")
-    parser.add_argument("--manual-brief", default=None, help="Path to company briefing JSON. Must match --target-company; never falls back to a different company's file.")
-    parser.add_argument("--candidate", default=None, help="Candidate profile path")
-    parser.add_argument("--target-level", default=None)
-    parser.add_argument("--jd", default=None, help="Job description JSON path")
-    parser.add_argument(
-        "--cascade-prompts",
-        action="store_true",
-        help=(
-            "Cascade-orchestrated mode. When mandatory inputs are missing, "
-            "writes a sentinel JSON describing what's needed to "
-            ".windsurf/state/apps_rg_pending.json and exits with code 7. "
-            "Cascade then asks the user via ask_user_question and re-invokes "
-            "apps_rg with all flags. Bypasses the input()-based wizard which "
-            "cannot work under run_command (no chat→stdin bridge)."
-        ),
-    )
-    args, _unknown = parser.parse_known_args()
-
-    # ── Cascade-orchestrated mode: emit sentinel + exit 7 if missing ──────
-    # When invoked by Cascade with --cascade-prompts, we replace the input()
-    # wizard with a file-based handshake. Cascade reads the sentinel, asks
-    # the user via ask_user_question (the same channel as Author-Gate),
-    # then re-invokes apps_rg with full flags.
-    if args.cascade_prompts:
-        if _emit_cascade_sentinel_if_needed(args):
-            sys.exit(7)
-        # All inputs present — skip the wizard entirely.
-
-    # ── Interactive wizard (ALWAYS when mandatory inputs missing) ─────────
-    # Hardened 2026-05-06: Wizard fires regardless of TTY status.
-    # In TTY (terminal): Interactive prompts via input()
-    # In non-TTY (IDE): File-based template workflow — writes template,
-    #                   user fills it, re-runs, wizard auto-reads it.
-    #
-    # The wizard writes JD and briefing to dedicated _interactive_*.json
-    # files (NOT hand-authored default files) so the cross-company
-    # contamination guard validates them with the freshly-typed
-    # company name, never with a stale prior-company artifact.
-    elif not args.target_company or not args.target_role or not args.jd:
-        _interactive_wizard(args)
-
-    # ── --target-company and --target-role MUST be supplied explicitly. ──
-    # Auto-deriving from any default JSON file (now apps_rg/scripts/_interactive_*.json,
-    # populated by the wizard) is a cross-company contamination risk: a prior
-    # wizard session would silently re-target the previous company. Hardened
-    # intentionally — the wizard re-prompts every TTY run to reset target.
-    if not args.target_company:
-        parser.error(
-            "--target-company is required. Pass it explicitly; apps_rg refuses to "
-            "infer it from a hand-authored default file (would risk silently using "
-            "a prior company's research as the target)."
-        )
-    if not args.target_role:
-        parser.error(
-            "--target-role is required. Pass it explicitly; apps_rg refuses to "
-            "infer it from a hand-authored default JD file (would risk silently "
-            "reusing a prior role's framing)."
-        )
-
-    _run_with_args(args)
-
-
-# ---------------------------------------------------------------------------
-# Interactive wizard — TTY-only prompt for the 3 mandatory inputs
-# ---------------------------------------------------------------------------
-
-
-_WIZARD_JD_PATH = Path("apps_rg/scripts/_interactive_jd.json")
-_WIZARD_BRIEF_PATH = Path("apps_rg/scripts/_interactive_brief.json")
-
-_CASCADE_SENTINEL_PATH = Path(".windsurf/state/apps_rg_pending.json")
-_CASCADE_SENTINEL_SCHEMA_VERSION = "1.0"
-_CASCADE_SENTINEL_EXIT_CODE = 7
-
-
-def _emit_cascade_sentinel_if_needed(args: Any) -> bool:
-    """Emit a sentinel JSON describing missing inputs for Cascade to fill.
-
-    Returns True when the sentinel was written and the caller should exit
-    with code 7. Returns False when all mandatory inputs are present and
-    apps_rg can proceed.
-
-    Cascade-orchestrated handshake (Path B, ADR-pending 2026-05-06):
-
-      1. User asks Cascade to run apps_rg.
-      2. Cascade invokes ``python -m apps_rg --cascade-prompts``.
-      3. apps_rg detects missing fields, writes this sentinel to
-         ``.windsurf/state/apps_rg_pending.json``, exits 7.
-      4. Cascade reads the sentinel, drives ``ask_user_question`` for each
-         missing field (the same channel Author-Gate prompts use), then
-         re-invokes apps_rg with the full flag set.
-
-    The sentinel describes:
-      - which fields are missing
-      - example values
-      - the CLI flag each maps to
-      - available local files for ``--jd`` (so Cascade can offer choices)
-      - the next-invocation template
-    """
-    missing: list[str] = []
-    if not args.target_company:
-        missing.append("target_company")
-    if not args.target_role:
-        missing.append("target_role")
-    if not args.jd:
-        missing.append("jd")
-    if not (args.manual_brief or args.auto_research_tavily or args.auto_research_internal):
-        missing.append("briefing")
-
-    if not missing:
-        return False
-
-    # Enumerate available JD files in apps_rg/scripts/ so Cascade can offer
-    # them as ask_user_question choices instead of free-form typing.
-    jd_dir = Path("apps_rg/scripts")
-    available_jd_files: list[str] = []
-    if jd_dir.is_dir():
-        for p in sorted(jd_dir.iterdir()):
-            name = p.name
-            if not p.is_file() or not name.endswith(".json"):
-                continue
-            # Surface user-facing JD/job_description/jd_* files; skip wizard
-            # scratch files (_interactive_*) and templates (*.example.json).
-            if name.startswith("_") or name.endswith(".example.json"):
-                continue
-            if name.startswith(("jd_", "job_description")):
-                available_jd_files.append(str(p).replace("\\", "/"))
-
-    sentinel = {
-        "schema_version": _CASCADE_SENTINEL_SCHEMA_VERSION,
-        "status": "pending_inputs",
-        "exit_code": _CASCADE_SENTINEL_EXIT_CODE,
-        "missing_fields": missing,
-        "field_specs": {
-            "target_company": {
-                "label": "Target company",
-                "example": "Brown & Brown",
-                "type": "string",
-                "cli_flag": "--target-company",
-                "required": True,
-            },
-            "target_role": {
-                "label": "Target role / job title",
-                "example": "SVP IT Strategy",
-                "type": "string",
-                "cli_flag": "--target-role",
-                "required": True,
-            },
-            "jd": {
-                "label": "Job description source",
-                "type": "file_path",
-                "cli_flag": "--jd",
-                "required": True,
-                "available_files": available_jd_files,
-                "note": (
-                    "Pass a path to a JD JSON. Choose from available_files "
-                    "or supply a custom path."
-                ),
-            },
-            "briefing": {
-                "label": "Company briefing source",
-                "type": "choice",
-                "required": True,
-                "choices": [
-                    {
-                        "id": "auto_research_tavily",
-                        "label": "Auto-research via Tavily (web)",
-                        "cli_flag": "--auto-research-tavily",
-                        "cli_value": None,
-                    },
-                    {
-                        "id": "auto_research_internal",
-                        "label": "Auto-research via apps_research (internal)",
-                        "cli_flag": "--auto-research-internal",
-                        "cli_value": None,
-                    },
-                    {
-                        "id": "manual_brief",
-                        "label": "Path to existing brief JSON",
-                        "cli_flag": "--manual-brief",
-                        "cli_value": "<path-to-brief.json>",
-                    },
-                ],
-            },
-        },
-        "next_invocation_template": (
-            "python -m apps_rg "
-            "--target-company \"<TARGET_COMPANY>\" "
-            "--target-role \"<TARGET_ROLE>\" "
-            "--jd <JD_PATH> "
-            "[--auto-research-tavily | --auto-research-internal | "
-            "--manual-brief <BRIEF_PATH>]"
-        ),
-        "discipline_note": (
-            "apps-rg-interactive-discipline.md: Cascade MUST collect each "
-            "value via ask_user_question — never auto-fill from prior turns, "
-            "session memory, or scanned files. Each field is the user's "
-            "explicit decision."
-        ),
-        "current_args": {
-            "target_company": args.target_company,
-            "target_role": args.target_role,
-            "jd": args.jd,
-            "manual_brief": args.manual_brief,
-            "auto_research_tavily": bool(args.auto_research_tavily),
-            "auto_research_internal": bool(args.auto_research_internal),
-        },
-    }
-
-    _CASCADE_SENTINEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    _CASCADE_SENTINEL_PATH.write_text(
-        json.dumps(sentinel, indent=2), encoding="utf-8"
-    )
-    print(
-        f"[cascade-prompts] sentinel written to {_CASCADE_SENTINEL_PATH}",
-        file=sys.stderr,
-    )
-    print(
-        f"[cascade-prompts] missing fields: {', '.join(missing)}",
-        file=sys.stderr,
-    )
-    print(
-        f"[cascade-prompts] exiting with code {_CASCADE_SENTINEL_EXIT_CODE} "
-        "for Cascade handshake.",
-        file=sys.stderr,
-    )
-    return True
-
-
-def _interactive_wizard(args: Any) -> None:
-    """Prompt the user for the 3 mandatory inputs and mutate ``args`` in place.
-
-    The 3 items:
-      1. **Company** — target company string
-      2. **JD** — job title + full description (paste multiline, '@file' load)
-      3. **Briefing** — company briefing document (paste, '@file', or 'auto'
-         to delegate retrieval to apps_research / Tavily)
-
-    Side effects:
-      - Writes ``apps_rg/scripts/_interactive_jd.json``
-      - Writes ``apps_rg/scripts/_interactive_brief.json`` (unless 'auto')
-      - Sets ``args.target_company``, ``args.target_role``, ``args.jd``,
-        ``args.manual_brief`` and/or ``args.auto_research_tavily``.
-
-    Implementation: delegates to ``apps_shared.cli.interactive_wizard.run_wizard``
-    for the prompt mechanics; this function owns the apps_rg-specific
-    translation from collected values to args / temp files.
-    """
-    from apps_shared.cli.interactive_wizard import WizardField, run_wizard  # noqa: PLC0415
-
-    fields: list[WizardField] = []
-    if not args.target_company:
-        fields.append(WizardField("company", "Target company (e.g. 'Brown & Brown')", kind="string"))
-    if not args.target_role:
-        fields.append(WizardField("role", "Job title", kind="string"))
-    fields.append(
-        WizardField(
-            "description",
-            "Job description (full text)",
-            kind="multiline_or_file",
-        )
-    )
-    fields.append(
-        WizardField(
-            "briefing",
-            "Company briefing document",
-            kind="multiline_or_file_or_auto",
-            choices_help=(
-                "auto delegates to apps_research/Tavily; @path loads an "
-                "existing JSON brief; paste pure JSON or freeform text"
-            ),
-        )
-    )
-
-    header = (
-        "apps_rg interactive setup — 3 mandatory inputs\n"
-        "======================================================================\n"
-        "Cascade discipline: this prompt fires because target_company / "
-        "target_role / jd were not supplied on the command line. apps_rg "
-        "refuses to auto-infer them from stale default files in "
-        "apps_rg/scripts/ to prevent cross-company contamination."
-    )
-
-    values = run_wizard(fields, header=header)
-
-    # --- translate values into args + temp files ---------------------------
-    if "company" in values:
-        args.target_company = values["company"]  # type: ignore[assignment]
-    if "role" in values:
-        args.target_role = values["role"]  # type: ignore[assignment]
-
-    desc_payload = values["description"]
-    assert isinstance(desc_payload, dict)  # for type narrowing
-    description = desc_payload.get("text") or ""
-    source = desc_payload.get("source")
-    if not description.strip():
-        print("    [warn] empty JD description; using title-only stub")
-        description = f"(no description provided — title only: {args.target_role})"
-
-    jd_payload = {
-        "title": args.target_role,
-        "description": description,
-        "requirements": [],
-        "preferred": [],
-        "_source": source or "interactive_paste",
-        "company": args.target_company,
-    }
-    _WIZARD_JD_PATH.parent.mkdir(parents=True, exist_ok=True)
-    _WIZARD_JD_PATH.write_text(json.dumps(jd_payload, indent=2), encoding="utf-8")
-    args.jd = str(_WIZARD_JD_PATH)
-    print(f"      → wrote JD to {args.jd}")
-
-    brief = values["briefing"]
-    assert isinstance(brief, dict)
-    mode = brief.get("mode")
-    if mode == "auto":
-        args.auto_research_tavily = True
-        args.manual_brief = None
-        print("      → auto-research-tavily ENABLED; apps_research will produce briefing")
-    elif mode == "file":
-        args.manual_brief = brief.get("source")
-        print(f"      → manual_brief = {args.manual_brief}")
-    elif mode == "paste":
-        text = brief.get("text") or ""
-        try:
-            brief_payload = json.loads(text)
-            if isinstance(brief_payload, dict) and "company" not in brief_payload:
-                brief_payload["company"] = args.target_company
-        except json.JSONDecodeError:
-            brief_payload = {
-                "company": args.target_company,
-                "_source": "interactive_paste_freeform",
-                "freeform_text": text,
-            }
-        _WIZARD_BRIEF_PATH.parent.mkdir(parents=True, exist_ok=True)
-        _WIZARD_BRIEF_PATH.write_text(
-            json.dumps(brief_payload, indent=2), encoding="utf-8"
-        )
-        args.manual_brief = str(_WIZARD_BRIEF_PATH)
-        print(f"      → wrote briefing to {args.manual_brief}")
-
-    print(f"Ready: company={args.target_company!r} role={args.target_role!r}")
-    print(f"       jd={args.jd}")
-    print(
-        f"       brief={'auto-research-tavily' if args.auto_research_tavily else args.manual_brief}"
-    )
+def _interactive_wizard() -> dict[str, Any]:
+    """Launch interactive wizard to collect inputs from user."""
+    print("=" * 60)
+    print("Resume Generation Wizard")
+    print("=" * 60)
     print()
+
+    inputs: dict[str, Any] = {}
+
+    # Target context
+    print("Step 1: Target Context")
+    print("-" * 30)
+    inputs["target_company"] = input("Target company: ").strip() or None
+    inputs["target_role"] = input("Target role: ").strip() or None
+    inputs["target_level"] = input("Target level (e.g., SENIOR, STAFF): ").strip() or None
+    print()
+
+    # Source resume
+    print("Step 2: Source Resume")
+    print("-" * 30)
+    use_file = input("Use resume file? (y/n): ").strip().lower() == "y"
+    if use_file:
+        inputs["source_resume_ref"] = input("Resume file path: ").strip() or None
+    else:
+        print("Paste resume text (Ctrl+D or empty line to finish):")
+        lines = []
+        while True:
+            try:
+                line = input()
+                if line.strip() == "":
+                    break
+                lines.append(line)
+            except EOFError:
+                break
+        inputs["source_resume_text"] = "\n".join(lines) if lines else None
+    print()
+
+    # Job description
+    print("Step 3: Job Description")
+    print("-" * 30)
+    use_jd_file = input("Use JD file? (y/n): ").strip().lower() == "y"
+    if use_jd_file:
+        inputs["job_description_ref"] = input("JD file path: ").strip() or None
+    else:
+        print("Paste JD text (Ctrl+D or empty line to finish):")
+        lines = []
+        while True:
+            try:
+                line = input()
+                if line.strip() == "":
+                    break
+                lines.append(line)
+            except EOFError:
+                break
+        inputs["job_description_text"] = "\n".join(lines) if lines else None
+    print()
+
+    # Research briefing
+    print("Step 4: Research Briefing (Optional)")
+    print("-" * 30)
+    use_brief = input("Use pre-built research briefing? (y/n): ").strip().lower() == "y"
+    if use_brief:
+        inputs["manual_brief_path"] = input("Briefing file path: ").strip() or None
+    else:
+        auto_research = input("Auto-generate research? (y/n): ").strip().lower() == "y"
+        if auto_research:
+            inputs["auto_research_internal"] = True
+            inputs["research_via"] = "apps_research"
+    print()
+
+    print("=" * 60)
+    print("Wizard complete. Building ingress payload...")
+    print("=" * 60)
+
+    return inputs
+
+
+def main() -> int:
+    """Main entry point — ingress-only, no runtime authority."""
+    parser = argparse.ArgumentParser(
+        description="Generate tailored resume via declarative ingress"
+    )
+    parser.add_argument(
+        "--target-company",
+        type=str,
+        help="Target company name",
+    )
+    parser.add_argument(
+        "--target-role",
+        type=str,
+        help="Target role title",
+    )
+    parser.add_argument(
+        "--target-level",
+        type=str,
+        help="Target seniority level",
+    )
+    parser.add_argument(
+        "--source-resume",
+        type=str,
+        help="Path to source resume file",
+    )
+    parser.add_argument(
+        "--source-resume-text",
+        type=str,
+        help="Inline source resume text",
+    )
+    parser.add_argument(
+        "--jd",
+        type=str,
+        help="Path to job description JSON file",
+    )
+    parser.add_argument(
+        "--jd-text",
+        type=str,
+        help="Inline job description text",
+    )
+    parser.add_argument(
+        "--manual-brief",
+        type=str,
+        help="Path to pre-built research briefing JSON",
+    )
+    parser.add_argument(
+        "--auto-research-internal",
+        action="store_true",
+        help="Delegate research to apps_research (internal)",
+    )
+    parser.add_argument(
+        "--auto-research-tavily",
+        action="store_true",
+        help="Delegate research to Tavily web search",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default="artifacts/apps_rg/runs",
+        help="Output directory for generated artifacts",
+    )
+    parser.add_argument(
+        "--idempotency-key",
+        type=str,
+        help="Idempotency key for request deduplication",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate inputs without executing",
+    )
+    parser.add_argument(
+        "--wizard",
+        action="store_true",
+        help="Launch interactive wizard for input collection",
+    )
+    args = parser.parse_args()
+
+    # Launch wizard if requested or if no args provided
+    if args.wizard or (not args.target_company and not args.target_role and not args.source_resume):
+        wizard_inputs = _interactive_wizard()
+    else:
+        wizard_inputs = {}
+
+    # Build ingress payload (declarative only)
+    ingress_payload = {
+        "app_id": "apps_rg",
+        "task_class": "resume_generation",
+        "target_company": args.target_company or wizard_inputs.get("target_company"),
+        "target_role": args.target_role or wizard_inputs.get("target_role"),
+        "target_level": args.target_level or wizard_inputs.get("target_level"),
+        "source_resume_ref": args.source_resume or wizard_inputs.get("source_resume_ref"),
+        "source_resume_text": args.source_resume_text or wizard_inputs.get("source_resume_text"),
+        "job_description_ref": args.jd or wizard_inputs.get("job_description_ref"),
+        "job_description_text": args.jd_text or wizard_inputs.get("job_description_text"),
+        "manual_brief_path": args.manual_brief or wizard_inputs.get("manual_brief_path"),
+        "auto_research_internal": args.auto_research_internal or wizard_inputs.get("auto_research_internal", False),
+        "auto_research_tavily": args.auto_research_tavily,
+        "research_via": args.research_via or wizard_inputs.get("research_via"),
+        "output_directory": args.output,
+        "idempotency_key": args.idempotency_key,
+    }
+
+    # Validate minimum inputs
+    if not (ingress_payload["target_company"] or ingress_payload["target_role"]):
+        if not (ingress_payload["source_resume_ref"] or ingress_payload["source_resume_text"]):
+            print("ERROR: At least one of (target_company, target_role) or resume source required.", file=sys.stderr)
+            return 1
+
+    if args.dry_run:
+        print("DRY RUN: Ingress payload validated successfully.")
+        print(json.dumps(ingress_payload, indent=2))
+        return 0
+
+    # Submit to AppIngressRunner (core runtime entry)
+    try:
+        from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+    except ImportError:
+        raise RuntimeError(
+            "AppIngressRunner not available. Runtime not initialized. "
+            "Core runtime must be initialized before apps_rg can submit ingress payloads."
+        )
+
+    runner = AppIngressRunner()
+
+    try:
+        result = runner.run(ingress_payload)
+    except Exception as e:
+        print(f"ERROR: Runtime execution failed: {e}", file=sys.stderr)
+        return 3
+
+    # Present output
+    print("=" * 60)
+    print("Resume Generation Complete")
+    print("=" * 60)
+    print(f"Output location: {result.get('output_path', 'N/A')}")
+    print(f"Exit status: {result.get('exit_status', 'UNKNOWN')}")
+
+    if result.get("exit_status") != "SUCCESS":
+        return 4
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

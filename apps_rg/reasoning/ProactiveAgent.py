@@ -1,25 +1,23 @@
-"""ProactiveAgent — RG domain proactive task agent.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Originally from: CapabilityMonitorAgent.py (Surgical Extraction 2026-01-06)
-Refactored: 2026-03-11 (P2-B) — now subclasses BaseProactiveAgent.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime authority code.
+
+Original: apps_rg/reasoning\ProactiveAgent.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — reasoning/ contains runtime authority
+
+Importing this module raises RuntimeError immediately.
+Core owns all runtime authority.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/reasoning\ProactiveAgent.py.ORIGINAL
 """
 
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
-
-
-@dataclass
-class ProactiveAgent(BaseProactiveAgent):
-    """Agent that proactively identifies and executes RG resume tasks.
-
-    Inherits execute() skeleton from BaseProactiveAgent.
-    scheduler/handoff/monitor must be injected externally before execute().
-    """
-
-    def __post_init__(self) -> None:
-        """Initialize proactive agent."""
-        super().__post_init__()
-        self.name = "ProactiveAgent"
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.reasoning.ProactiveAgent is QUARANTINED. "
+    "apps_rg may NOT contain runtime authority. "
+    "Core owns all runtime. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)

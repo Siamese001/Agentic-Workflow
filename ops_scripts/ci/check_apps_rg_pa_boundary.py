@@ -60,6 +60,10 @@ ALLOWLIST_FILES = {
     # apps_qna sanctioned shim — re-exports from infrastructure/sdks_mcps;
     # NOT a bypass; re-exports are not direct constructions. W5 P5.1.
     "apps_qna/integrations/llm_client.py",
+    # apps_research sanctioned shim — re-exports from infrastructure/sdks_mcps. W5 P5.2.
+    "apps_research/integrations/llm_client.py",
+    # apps_underwriting_ai sanctioned shim — re-exports from infrastructure/sdks_mcps. W5 P5.3.
+    "apps_underwriting_ai/integrations/llm_client.py",
 }
 
 # Files SANCTIONED in agentic_core/prompt_governance (canonical PA pipeline constructs
@@ -88,6 +92,16 @@ CONDITIONAL_V1_BASELINE = {
     "apps_qna/integrations/intent_classifier.py",
     "apps_qna/engines/judges/interview_card_quality_judge.py",
     "apps_qna/integrations/provider_adapter.py",
+    # apps_research W5 P5.2 — imports via sanctioned llm_client shim (lazy, env-gated).
+    # Vllm/OpenAI-compatible path; same NEXT_STEP-1 remediation path.
+    # Baselined 2026-05-09.
+    "apps_research/engines/company_brief_engine.py",
+    # apps_underwriting_ai W5 P5.3 — lazy-import, env-gated, fail-soft; verdict fixed
+    # deterministically BEFORE any LLM call (regulated-domain compliance floor).
+    # Baselined 2026-05-09.
+    "apps_underwriting_ai/engines/decision_packet_assembler.py",
+    "apps_underwriting_ai/services/frontier_rationale_judge.py",
+    "apps_underwriting_ai/engines/judges/rationale_quality_judge.py",
 }
 
 # Provider client constructors (high-confidence)
@@ -240,6 +254,26 @@ def _iter_apps_qna_files() -> Iterator[Path]:
         yield path
 
 
+def _iter_apps_research_files() -> Iterator[Path]:
+    """Iterate apps_research PA surface. W5 P5.2."""
+    for path in (REPO_ROOT / "apps_research").rglob("*.py"):
+        rel = path.relative_to(REPO_ROOT)
+        parts = rel.parts
+        if "__pycache__" in parts or "tests" in parts or "_archive" in parts:
+            continue
+        yield path
+
+
+def _iter_apps_underwriting_files() -> Iterator[Path]:
+    """Iterate apps_underwriting_ai PA surface. W5 P5.3."""
+    for path in (REPO_ROOT / "apps_underwriting_ai").rglob("*.py"):
+        rel = path.relative_to(REPO_ROOT)
+        parts = rel.parts
+        if "__pycache__" in parts or "tests" in parts or "_archive" in parts:
+            continue
+        yield path
+
+
 def _iter_agentic_core_pa_files() -> Iterator[Path]:
     """Iterate agentic_core PA surface: prompt_governance/ + assembly_stage.py.
 
@@ -304,6 +338,16 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Skip apps_qna/ scan.",
     )
+    parser.add_argument(
+        "--no-apps-research",
+        action="store_true",
+        help="Skip apps_research/ scan.",
+    )
+    parser.add_argument(
+        "--no-apps-underwriting",
+        action="store_true",
+        help="Skip apps_underwriting_ai/ scan.",
+    )
     args = parser.parse_args(argv)
 
     if os.environ.get("APPS_RG_PA_BOUNDARY_BYPASS") == "1":
@@ -327,12 +371,20 @@ def main(argv: list[str] | None = None) -> int:
             file_count += 1
             all_findings.extend(_scan_file(path))
     else:
-        # Full scan: apps_rg + apps_qna + agentic_core PA surface
+        # Full scan: apps_rg + apps_qna + apps_research + agentic_core PA surface
         for path in _iter_apps_rg_files():
             file_count += 1
             all_findings.extend(_scan_file(path))
         if not args.no_apps_qna:
             for path in _iter_apps_qna_files():
+                file_count += 1
+                all_findings.extend(_scan_file(path))
+        if not args.no_apps_research:
+            for path in _iter_apps_research_files():
+                file_count += 1
+                all_findings.extend(_scan_file(path))
+        if not args.no_apps_underwriting:
+            for path in _iter_apps_underwriting_files():
                 file_count += 1
                 all_findings.extend(_scan_file(path))
         if not args.no_agentic_core:

@@ -1,28 +1,39 @@
-"""Ensemble+Judge runtime — shared across critical-tier HOPs (4A-4E).
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Pattern (locked decision D7):
-  3 generators (parallel)  →  Judge picks best AND verifies absolute threshold.
-  All candidates archived to <run_dir>/narrative/candidates/<section>_*.json.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime hop runners (def run_ensemble).
 
-When no LLM gateway is available (offline/test), a deterministic stub
-generator produces 3 lightly-perturbed variants of the seed text so the
-pipeline stays end-to-end runnable.
+Original: apps_rg/integrations/hops/_ensemble_runner.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Contains run_ensemble method (runtime hop runner)
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (W4).
+Importing this module raises RuntimeError immediately.
+Core L2/L3 owns all runtime execution. apps_rg is ingress-only.
 """
 
-from __future__ import annotations
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.hops._ensemble_runner is QUARANTINED. "
+    "apps_rg may NOT contain runtime hop runners. "
+    "Core L2/L3 owns execution. apps_rg is ingress-only. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
 
-import json
-import logging
-import re
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Callable, Iterable, List, Optional, Sequence
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/integrations/hops/_ensemble_runner.py.ORIGINAL
 
-from apps_eval.engines.narrative_judge_scorer import JudgeVerdict, NarrativeJudgeScorer
-from apps_rg.integrations.length_budget import LengthBudget
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""Ensemble+Judge runtime — ORIGINAL (QUARANTINED)"""
+# from __future__ import annotations
+# import json
+# import logging
+# import re
+# from dataclasses import dataclass, field
+# from datetime import datetime, timezone
+# from pathlib import Path
+# from typing import Any, Callable, Iterable, List, Optional, Sequence
+# from apps_eval.engines.narrative_judge_scorer import JudgeVerdict, NarrativeJudgeScorer
+# from apps_rg.integrations.length_budget import LengthBudget
 
 
 # Cross-cutting meta-prompt detector — any LLM response that looks like a

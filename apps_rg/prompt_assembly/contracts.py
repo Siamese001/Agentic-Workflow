@@ -1,16 +1,34 @@
-"""PA contract types for apps_rg prompt assembly.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Defines the data structures for the apps_rg Prompt Assembly pipeline:
-  PromptBOM → slot mapping → CompiledPromptArtifact → provider request.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT emit core runtime contracts or perform prompt assembly.
 
-These are app-local PA-compatible contracts.  If agentic_core exposes a
-canonical ``CompiledPromptArtifact`` base, this module's artifact is
-wire-compatible with it (same required fields).
+Original: apps_rg/prompt_assembly/contracts.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Emits CompiledPromptArtifact (core contract authority)
+
+Importing this module raises RuntimeError immediately.
+Core L1 Prompt Assembly owns all contract emission. apps_rg is ingress-only.
 """
 
-from __future__ import annotations
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.prompt_assembly.contracts is QUARANTINED. "
+    "apps_rg may NOT emit CompiledPromptArtifact or other core contracts. "
+    "Core L1 Prompt Assembly owns contract emission. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
 
-import enum
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/prompt_assembly/contracts.py.ORIGINAL
+
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""PA contract types — ORIGINAL (QUARANTINED)
+"""
+# from __future__ import annotations
+
+# Original imports (QUARANTINED):
+# import enum
 from dataclasses import dataclass, field
 from typing import Any, Optional
 

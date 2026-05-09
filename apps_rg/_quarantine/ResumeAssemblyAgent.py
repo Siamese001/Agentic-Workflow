@@ -1,19 +1,19 @@
-"""ResumeAssemblyAgent - QUARANTINED
+"""ResumeAssemblyAgent - Provides resume assembly capabilities using prompt governance and markdown templates.
 
-This module has been quarantined as part of W4 governance enforcement.
-Reason: Runtime authority violation (generate_* methods with lifecycle trace emissions).
+This agent handles:
+- YAML-based prompt governance for resume assembly (via PromptLoader)
+- Markdown template loading for skills sections, executive summaries, and networking requests
+- Simple template substitution with explicit error handling
 
-See: .windsurf/plans/author-gate-enforcement-deferred-scope-complete-d7f5e3.md
+Domain: resume
+Methods:
+- assemble_resume(payload: dict) -> str
+- generate_skills_section(payload: dict) -> str
+- generate_executive_summary(payload: dict) -> str
+- generate_networking_request(payload: dict) -> str
 """
 
 from __future__ import annotations
-
-# W4 QUARANTINE: RuntimeError on import prevents accidental usage
-raise RuntimeError(
-    "ResumeAssemblyAgent is quarantined. "
-    "Runtime authority violations detected. "
-    "Use agentic_core.runtime.AppIngressRunner for resume assembly."
-)
 
 from pathlib import Path
 from typing import Any

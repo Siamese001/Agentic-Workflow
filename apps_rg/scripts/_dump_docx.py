@@ -1,18 +1,23 @@
-"""Extract text from a .docx by parsing its XML directly (no python-docx)."""
-import sys, zipfile, re, xml.etree.ElementTree as ET
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-path = sys.argv[1]
-ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime authority code.
 
-with zipfile.ZipFile(path) as z:
-    with z.open("word/document.xml") as f:
-        tree = ET.parse(f)
+Original: apps_rg/scripts\_dump_docx.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — scripts/ contains runtime authority
 
-root = tree.getroot()
-out_lines = []
-for para in root.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"):
-    texts = [t.text or "" for t in para.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t")]
-    line = "".join(texts).strip()
-    if line:
-        out_lines.append(line)
-print("\n".join(out_lines))
+Importing this module raises RuntimeError immediately.
+Core owns all runtime authority.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/scripts\_dump_docx.py.ORIGINAL
+"""
+
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.scripts._dump_docx is QUARANTINED. "
+    "apps_rg may NOT contain runtime authority. "
+    "Core owns all runtime. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)

@@ -1,6 +1,6 @@
 # L6 Alignment — Deferred Scope
 
-> **Status: Not Started.** Captures the deferred items surfaced by the parent plan `l6-doctrinal-alignment-noninvasive-b9d3f5` (Completed) plus the parked invasive sibling `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deprioritized). DO NOT IMPLEMENT — this plan is a backlog SSOT.
+> **Status: In Progress.** Execution plan converting deferred items from the parent plan `l6-doctrinal-alignment-noninvasive-b9d3f5` (Completed) and the parked invasive sibling `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deprioritized) into actionable waves.
 
 ## 1. Origin
 
@@ -65,15 +65,15 @@ The two new test files (`tests/unit/ops_scripts/ci/test_check_l6_*.py`) match ot
 
 **Estimated effort:** 30 minutes (audit only).
 
-## 3. Wave Structure (when promoted)
+## 3. Wave Structure
 
-| Wave | Item | Focus | Est. Tokens | Status | Success Criteria |
-|---|---|---|---|---|---|
-| W1 | D2 | Update ADG layer-resolver to honor `__layer__` markers | ~10k | Not Started | L6-TAG gate reports 100% coverage; promoted to fail-closed |
-| W2 | D1 | Resolve `system_learning/ports/` observer-law findings | ~6k | Not Started | L6-OBS gate reports zero findings; promoted to fail-closed |
-| W3 | D3 | Doc folder rename + index updates | ~3k | Not Started | All cross-links resolve; index references LAYER.md + alignment status |
-| W4 | D5 | CI gate test layout audit | ~1k | Not Started | Tests in canonical location; gates registered correctly |
-| W5 | D4 | (Optional) Promote invasive rename `a8c4e2` to In Progress | ~30k+ | Blocked on W1 + W2 | All 4 waves of `a8c4e2` ship; shim removal CI gate live |
+| Wave | Item | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|---|---|---|---|---|---|---|
+| W1 | D2 | Update ADG layer-resolver to honor `__layer__` markers | ~10k | ADG ingester allows per-file override; indexer perf acceptable | Not Started | L6-TAG gate reports 100% coverage; promoted to fail-closed |
+| W2 | D1 | Resolve `system_learning/ports/` observer-law findings | ~6k | Chapter 06.7 promotion-path exception documented or refactor is non-breaking | Not Started | L6-OBS gate reports zero findings; promoted to fail-closed |
+| W3 | D3 | Doc folder rename + index updates | ~3k | No downstream links outside `docs/reference/` | Not Started | All cross-links resolve; index references LAYER.md + alignment status |
+| W4 | D5 | CI gate test layout audit | ~1k | Gates already registered via `run_contract_gates.py` | Not Started | Tests in canonical location; gates registered correctly |
+| W5 | D4 | (Optional) Promote invasive rename `a8c4e2` to In Progress | ~30k+ | W1 + W2 complete; gates fail-closed | Blocked on W1 + W2 | All 4 waves of `a8c4e2` ship; shim removal CI gate live |
 
 ## 4. Phase-Level Summary
 
@@ -108,4 +108,5 @@ The two new test files (`tests/unit/ops_scripts/ci/test_check_l6_*.py`) match ot
 
 **Plan slug:** `l6-alignment-deferred-scope-c5e8a7`
 **Authored:** 2026-05-09
-**Implementation status:** **Not Started — backlog SSOT.** Promote individual waves as bandwidth allows.
+**Promoted:** 2026-05-09
+**Implementation status:** **In Progress.** Execute W1 → W2 → W3 → W4 in sequence. W5 gated on W1 + W2 completion.

@@ -1,39 +1,23 @@
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
+
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime authority code.
+
+Original: apps_rg/validators\hallucination_detector_validator.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — validators/ contains runtime authority
+
+Importing this module raises RuntimeError immediately.
+Core owns all runtime authority.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/validators\hallucination_detector_validator.py.ORIGINAL
 """
-Hallucination checking module for apps_rg.
 
-Provides basic hallucination detection for resume generation.
-"""
-
-from typing import Any
-
-
-class HallucinationDetector:
-    """Stub implementation of hallucination detector."""
-
-    def __init__(self, config: dict[str, Any] = None):
-        self.config = config or {}
-
-    def check(self, text: str, context: dict[str, Any] = None) -> dict[str, Any]:
-        """
-        Check text for potential hallucinations.
-
-        Args:
-            text: Text to check
-            context: Additional context for checking
-
-        Returns:
-            Dictionary with check results
-        """
-        return {"is_hallucination": False, "confidence": 0.95, "issues": []}
-
-    def validate_resume_content(self, resume_data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Validate resume content for hallucinations.
-
-        Args:
-            resume_data: Resume data to validate
-
-        Returns:
-            Validation results
-        """
-        return {"valid": True, "warnings": [], "score": 0.95}
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.validators.hallucination_detector_validator is QUARANTINED. "
+    "apps_rg may NOT contain runtime authority. "
+    "Core owns all runtime. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)

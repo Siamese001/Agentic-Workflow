@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-09T10:45:22Z",
-  "fetched_at_epoch": 1778323522.8792229,
+  "fetched_at": "2026-05-09T12:22:54Z",
+  "fetched_at_epoch": 1778329374.7736366,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -1785,8 +1785,62 @@
       "has_ai_summary": true
     },
     "apps-rg-spine-hardening-7e3b9c": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35b27693-f55c-810d-bd4c-f5e328cd97c8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l6-doctrinal-alignment-noninvasive-b9d3f5": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8116-8401-ef3555b0add2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-spinal-execution-refactor-4a7f2c": {
+      "status": "Retired",
+      "page_id": "35b27693-f55c-8127-9545-f39a895bc9a9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l6-folder-rename-doctrinal-alignment-a8c4e2": {
+      "status": "Enhancement",
+      "page_id": "35b27693-f55c-814a-8a34-e513bd92307f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-qna-pa-spine-hardening-498d20": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8173-8efe-f58384a5f20b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-pa-spine-w5-remaining-7e820f": {
+      "status": "Waiting",
+      "page_id": "35b27693-f55c-8179-b1eb-e89114897cde",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-spine-hardening-deferred-d4e7a3": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-817c-9ab5-f4ba2f539863",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l6-alignment-deferred-scope-c5e8a7": {
+      "status": "In Progress",
+      "page_id": "35b27693-f55c-8189-8827-c3dec80f05fa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-declarative-ingress-only-spinal-governance-c8b3e1": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-81b8-b86f-e7a3230e9d66",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-spine-hardening-deferred-wave-2f8b1d": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-81fc-a675-d5014ce58b97",
       "exists_on_disk": true,
       "has_ai_summary": true
     }

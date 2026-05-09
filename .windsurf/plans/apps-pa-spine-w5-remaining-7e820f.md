@@ -1,17 +1,46 @@
 # apps_* PA Spine Hardening — W5 Remaining (5 Apps)
 
 **Slug:** `apps-pa-spine-w5-remaining-7e820f`
-**Status:** Not Started
+**Status:** ⛔ **ARCHIVED / DO NOT IMPLEMENT** (2026-05-09)
+**Reason:** Predates declarative-ingress-only governance; may reintroduce app-local runtime authority
 **Tier:** T3
 **Parent plan:** `apps-rg-spine-hardening-deferred-wave-2f8b1d` W5 P5.2–P5.6
 **Pattern source:** `apps-qna-pa-spine-hardening-498d20` (completed pattern-setter)
 **Authored:** 2026-05-09
+**Paused:** 2026-05-09
 
-> Deferred scope from W5 of apps-rg-spine-hardening-deferred-wave-2f8b1d.
-> Apply the PA spine hardening pattern (validated on apps_qna) to the 5 remaining
-> sibling apps. Each app gets its own child plan slug following the established pattern.
+> ⛔ **PAUSED — REBASE REQUIRED**
 >
-> **DO NOT IMPLEMENT** — planning/decomposition only until explicitly activated.
+> This plan hardens app-local PA / airlock surfaces across `apps_*`. That may reinforce
+> app-owned runtime authority and conflicts with the stricter governance direction that
+> `apps_*` must not own runtime-stage behavior.
+>
+> No further implementation should proceed until this plan is explicitly rebased and
+> re-approved.
+>
+> **Existing findings (W1 audit inventory) are retained as evidence only.**
+
+---
+
+## Pause Inventory — Evidence Retained, No Further Implementation
+
+### P5.2 apps_research (partially executed — STOP HERE)
+- W1 audit: DONE — `llm_client.py` SANCTIONED, `company_brief_engine.py` CONDITIONAL_V1
+- W2 scanner: DONE — allowlist + baseline entries added, `_iter_apps_research_files()` wired
+- W3 airlocks: DONE — `apps_research/airlocks/` created (`_otel_spans.py`, `research_query.py`, `__init__.py`)
+- W4 tests: DONE — `test_apps_research_pa_spine.py` (11 tests)
+- **Disposition:** Evidence retained. Airlock files committed. Rebase may require rollback of W3 airlock files if governance direction prohibits app-owned runtime gates.
+
+### P5.3 apps_underwriting_ai (partially executed — STOP HERE)
+- W1 audit: DONE — `llm_client.py` SANCTIONED; 3 CONDITIONAL_V1 files (decision_packet_assembler, frontier_rationale_judge, rationale_quality_judge)
+- W2 scanner: DONE — allowlist + baseline entries added, `_iter_apps_underwriting_files()` wired
+- W3 airlocks: PARTIAL — `apps_underwriting_ai/airlocks/_otel_spans.py` created only; gate functions NOT created
+- W4 tests: NOT STARTED
+- **Disposition:** W3 partial. Stop before creating gate functions. Rebase decision needed.
+
+### P5.4 apps_lic — NOT STARTED
+### P5.5 apps_rfp — NOT STARTED
+### P5.6 apps_exec — NOT STARTED
 
 ---
 

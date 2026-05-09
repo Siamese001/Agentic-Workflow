@@ -1,68 +1,23 @@
-"""LLM client adapter shim — sanctioned infra import wrapper for apps_rg.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-This module provides a thin adapter layer that re-exports from the sanctioned
-infrastructure.sdks_mcps location, allowing apps_rg to use LLM clients
-without triggering P0 infra wiring violations.
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain LLM client integrations or provider calls.
 
-See: infrastructure/sdks_mcps/__init__.py for canonical client creation.
+Original: apps_rg/integrations/llm_client.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Direct LLM client (provider authority)
+
+Importing this module raises RuntimeError immediately.
+Core L2 Execution owns all provider calls through SovereignLLMGateway.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/integrations/llm_client.py.ORIGINAL
 """
-from __future__ import annotations
 
-# guardian: allow-layer-violation -- sanctioned LLM client shim; apps_rg/integrations is the approved cross-layer seam for infra SDK access
-from infrastructure.sdks_mcps import (
-    create_openai_client,
-    create_openai_sync_client,
-    OpenAIClient,
-    OpenAIConfig,
-    create_anthropic_client,
-    AnthropicClient,
-    AnthropicConfig,
-    create_vertex_client,
-    VertexClient,
-    VertexConfig,
-    create_gemini_model,
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.llm_client is QUARANTINED. "
+    "apps_rg may NOT make provider calls. "
+    "Core L2 Execution owns provider calls. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
 )
-
-# Re-export openai module components through sanctioned path
-try:
-    import openai as _openai
-    OpenAI = _openai.OpenAI
-    AsyncOpenAI = _openai.AsyncOpenAI
-except ImportError:
-    OpenAI = None  # type: ignore[misc,assignment]
-    AsyncOpenAI = None  # type: ignore[misc,assignment]
-
-# Re-export anthropic module components through sanctioned path
-try:
-    import anthropic as _anthropic
-    Anthropic = _anthropic.Anthropic
-    AsyncAnthropic = _anthropic.AsyncAnthropic
-except ImportError:
-    Anthropic = None  # type: ignore[misc,assignment]
-    AsyncAnthropic = None  # type: ignore[misc,assignment]
-
-# Re-export google/generativeai components through sanctioned path
-try:
-    import google.generativeai as _genai
-    GenerativeModel = _genai.GenerativeModel
-except ImportError:
-    GenerativeModel = None  # type: ignore[misc,assignment]
-
-__all__ = [
-    "create_openai_client",
-    "create_openai_sync_client",
-    "OpenAI",
-    "AsyncOpenAI",
-    "OpenAIClient",
-    "OpenAIConfig",
-    "create_anthropic_client",
-    "Anthropic",
-    "AsyncAnthropic",
-    "AnthropicClient",
-    "AnthropicConfig",
-    "create_vertex_client",
-    "VertexClient",
-    "VertexConfig",
-    "create_gemini_model",
-    "GenerativeModel",
-]

@@ -1,16 +1,23 @@
-from apps_rg.types.SovereignContext import SovereignContext
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-__all__ = ["SovereignContext"]
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime authority code.
 
+Original: apps_rg/engines\sovereign_context.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — engines/ contains runtime authority
 
-# ----------------------------------------------------------------------
-# OTEL coverage — module-load emit per check_apps_otel_coverage.py.
-# Phase A of W-OTEL waves: structural wiring at import time.
-# Phase B (per-method spans on execute() paths) is tracked separately.
-# Pattern matches lifecycle_trace_contract.py and apps_research/engines.
-# ----------------------------------------------------------------------
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E402
-    _emit_records_telemetry_event,
+Importing this module raises RuntimeError immediately.
+Core owns all runtime authority.
+
+Original code archived to:
+archives/apps_rg/quarantine_w4_20260509/engines\sovereign_context.py.ORIGINAL
+"""
+
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.engines.sovereign_context is QUARANTINED. "
+    "apps_rg may NOT contain runtime authority. "
+    "Core owns all runtime. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
 )
-
-_emit_records_telemetry_event("p4", 'apps_rg.engines.sovereign_context', "module_loaded")

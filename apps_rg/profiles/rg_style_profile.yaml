@@ -1,0 +1,82 @@
+# rg_style_profile.yaml
+# Apps RG Style Profile — Voice, Tone, and Brand Guidelines
+# AG-RGGOV-6: Static stylistic guidelines only
+# AG-RGGOV-6d: Power verbs and voice guidance are advisory
+#
+# Purpose: Declarative style guide for resume voice and tone
+
+profile_metadata:
+  profile_id: rg_style_v1
+  profile_type: style_guide
+  domain: resume_generation
+  advisory_only: true  # AG-RGGOV-6: All style guidance is advisory
+
+voice_and_tone:
+  # High-level stylistic targets (declarative preferences)
+  professional: true
+  achievement_oriented: true
+  metric_driven: true
+  concise: true
+  
+  tone_guidance: >
+    Professional yet energetic. Emphasize outcomes over
+    responsibilities. Lead with impact, support with scope.
+
+vocabulary:
+  # AG-RGGOV-6d: Power verbs are ADVISORY style preference only
+  style_preference: true
+  
+  power_verbs:
+    - achieved
+    - delivered
+    - led
+    - drove
+    - established
+    - transformed
+    - accelerated
+    - optimized
+    - pioneered
+    - spearheaded
+    - architected
+    - engineered
+    - orchestrated
+    - scaled
+    - secured
+  
+  verb_guidance: >
+    Prefer action verbs when describing achievements.
+    Not every bullet requires a power verb; substance
+    and accuracy matter more than style. Core may
+    suggest alternatives when contextually appropriate.
+
+avoid:
+  # Phrases to avoid (advisory: prefer alternatives)
+  passive_phrases:
+    - "responsible for"
+    - "duties included"
+    - "helped with"
+    - "assisted with"
+    - "worked on"
+    - "participated in"
+  
+  weak_descriptors:
+    - "some"
+    - "various"
+    - "several"
+    - "many"
+  
+  alternatives_guidance: >
+    When encountering forbidden phrases, reframe to
+    lead with the outcome or action, not the responsibility.
+
+structure_preferences:
+  # Structural style guidance (advisory)
+  bullet_format: "[Verb] + [Scope] + [Outcome/Metric]"
+  lead_with_impact: true
+  quantify_where_possible: true
+  chronological_order: true
+
+# NO runtime style enforcement:
+# - No style validation functions (core implements if needed)
+# - No automatic rewriting rules (core Prompt Assembly owns)
+# - No mandatory verb replacement (advisory only)

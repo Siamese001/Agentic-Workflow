@@ -1,30 +1,40 @@
-"""Compat shim: apps_lic.engines.* / apps_rg.engines.* → reasoning (renamed in 2026-Q1 refactor).
+"""
+Compat shim: apps_lic.engines.* → reasoning (renamed in 2026-Q1 refactor).
 
-Old paths (apps_lic.engines.* and apps_rg.engines.*) were moved to
-apps_lic.reasoning.* and apps_rg.reasoning.* respectively.
+AG-RGGOV-9: REMOVED all apps_rg imports. Core aliases must NOT point to
+apps_rg runtime engines, orchestrators, planners, hops, or executors.
 
-Remove this shim after next major version.
+apps_rg is now declarative-ingress-only. If core needs apps_rg data,
+it references declarative profiles at apps_rg/profiles/*.yaml.
+
+All apps_rg runtime imports have been QUARANTINED per AG-RGGOV-8 and AG-RGGOV-9.
+
+REMOVED imports (QUARANTINED):
+- REMOVED: BrandComplianceAgent, CampaignPlannerAgent, ContentStrategyAgent
+- REMOVED: ContentQualityAgent, RgHealingOrchestrator, RgReflectionAgent
+- REMOVED: RgResumeOrchestrator, ResumeAssemblyAgent, ResumeEnhancementOrchestrator
+- REMOVED: All apps_rg/integrations/hops/*, All apps_rg/prompt_assembly/*
+- REMOVED: All apps_rg/cert/*, All apps_rg/enforcement/*, All apps_rg/validators/*
+
+See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19
 """
 
+# AG-RGGOV-9: apps_lic imports preserved (different app, out of scope)
 from apps_lic.reasoning.CampaignBalanceAgent import (
     CampaignBalanceAgent as LicCampaignBalanceAgent,  # noqa: F401
 )
 from apps_lic.reasoning.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
 from apps_lic.reasoning.Hop1ProfileAnalysisAgent import Hop1ProfileAnalysisAgent  # noqa: F401
 from apps_lic.reasoning.Hop2ResearchAgent import Hop2ResearchAgent  # noqa: F401
-from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent  # noqa: F401
-from apps_rg.reasoning.CampaignPlannerAgent import CampaignPlannerAgent  # noqa: F401
-from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
-
 from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
 from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator  # noqa: F401
 from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
-from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent  # noqa: F401
-from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator  # noqa: F401
-from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent  # noqa: F401
-from apps_rg.reasoning.RgResumeOrchestrator import RgResumeOrchestrator  # noqa: F401
+
+# AG-RGGOV-9: All apps_rg imports REMOVED
+# No apps_rg symbols may be exported from core aliases
 
 __all__ = [
+    # apps_lic exports preserved
     "LicCampaignBalanceAgent",
     "DeliverabilityAgent",
     "GovernanceShieldAgent",
@@ -32,11 +42,5 @@ __all__ = [
     "Hop2ResearchAgent",
     "LicHealingOrchestrator",
     "LicReflectionAgent",
-    "BrandComplianceAgent",
-    "CampaignPlannerAgent",
-    "ContentQualityAgent",
-    "ContentStrategyAgent",
-    "RgHealingOrchestrator",
-    "RgReflectionAgent",
-    "RgResumeOrchestrator",
+    # AG-RGGOV-9: All apps_rg exports REMOVED
 ]

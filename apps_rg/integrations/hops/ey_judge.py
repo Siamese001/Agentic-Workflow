@@ -1,17 +1,33 @@
-"""HOP-4G-EY — Judge-only with pool-first fallback.
+"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
 
-Medium-tier. Mirrors TraderSense pattern with role-specific framing
-(regulatory advisory, model validation).
+This file is QUARANTINED per the declarative ingress-only governance model.
+apps_rg may NOT contain runtime hop runners (def generate_*).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P5.3).
+Original: apps_rg/integrations/hops/ey_judge.py
+Quarantined: 2026-05-09
+Reason: AG-RGGOV-W4-SCOPE — Contains generate_* methods (runtime hop runners)
+
+Importing this module raises RuntimeError immediately.
+Core L2/L3 owns all runtime execution. apps_rg is ingress-only.
 """
 
-from __future__ import annotations
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.integrations.hops.ey_judge is QUARANTINED. "
+    "apps_rg may NOT contain runtime hop runners. "
+    "Core L2/L3 owns execution. apps_rg is ingress-only. "
+    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+)
 
-from pathlib import Path
-from typing import Iterable, List, Optional, Sequence
+# Original code archived to:
+# archives/apps_rg/quarantine_w4_20260509/integrations/hops/ey_judge.py.ORIGINAL
 
-from apps_rg.integrations.hops._role_bullet_runner import BulletResult, run_role_bullets
+# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+"""HOP-4G-EY — ORIGINAL (QUARANTINED)"""
+# from __future__ import annotations
+# from pathlib import Path
+# from typing import Iterable, List, Optional, Sequence
+# from apps_rg.integrations.hops._role_bullet_runner import BulletResult, run_role_bullets
 
 SECTION_ID = "hop_4g_ey"
 TIER = "medium"

@@ -1,0 +1,39 @@
+# rg_planning_profile.yaml
+# Apps RG Planning Profile — Declarative Constraints Only
+# AG-RGGOV-6: All fields are static constraints, no runtime behavior
+# AG-RGGOV-6d: Advisory style preferences only
+#
+# Purpose: Declarative guidance for L1 Cognition (Resume Planning)
+# Note: This profile is advisory. Core may adjust based on context.
+
+profile_metadata:
+  profile_id: rg_planning_v1
+  profile_type: planning_constraints
+  domain: resume_generation
+  advisory_only: true  # AG-RGGOV-6: All constraints are advisory
+
+planning_constraints:
+  # Output structure guidance (advisory)
+  max_sections: 7
+  required_sections:
+    - executive_summary
+    - quality_metrics
+    - validation_results
+    - recommendations
+  
+  # Planning scope (declarative description, not runtime directive)
+  supported_content_types:
+    - professional_summary
+    - work_experience
+    - skills_inventory
+    - education_credentials
+    - certifications
+    - achievements_metrics
+
+# NO runtime configuration:
+# - No route_id (runtime routing decision)
+# - No execution_form (runtime execution mode)
+# - No model/provider authority (core owns LLM selection)
+# - No workflow DAG (core L3 owns orchestration)
+# - No L2 work order (core L2 owns execution)
+# - No Exit disposition (core Exit owns finalization)
