@@ -781,10 +781,19 @@ class CommitRequest:
     state_diff_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     gate_verdict_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     l5_certification_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    l5_certification_ref: str = ""  # W3 singular alias matching chain-wide convention
     hitl_reclearance_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     affected_state_surfaces: Tuple[str, ...] = field(default_factory=_empty_tuple)
     expected_read_surface_refreshes: Tuple[str, ...] = field(default_factory=_empty_tuple)
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"CommitRequest: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(frozen=True)
@@ -874,6 +883,15 @@ class UWGCommitReceipt:
     state_diff_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     affected_state_surfaces: Tuple[str, ...] = field(default_factory=_empty_tuple)
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"UWGCommitReceipt: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(frozen=True)

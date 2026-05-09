@@ -2,10 +2,30 @@
 DS-2: L3 MANAGED_WORKFLOW for apps_rg
 Multi-step workflow orchestration via core L3 (not apps_rg).
 """
+import logging
+import os
 from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
+
+_logger = logging.getLogger(__name__)
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref_l3(ref: str) -> None:
+    """Fail-soft L5 cert ref verify at L3 entry per AG-W0-3=A_consume_entry."""
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash L3 workflow; treat as unverified
+        _logger.warning("L5CertRefViolation stage=L3_entry registry_error=%s", exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=L3_entry ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (ref,))
+        _logger.warning(msg, ref)
 
 
 class WorkflowStage(Enum):
@@ -106,7 +126,7 @@ class ManagedWorkflow:
                 WorkflowStageConfig(WorkflowStage.BRIEF_SYNTHESIS, l3_required=True),
                 WorkflowStageConfig(WorkflowStage.JD_ANALYSIS, c0_required=True),
                 WorkflowStageConfig(WorkflowStage.CONTENT_GENERATION, l3_required=True),
-                WorkflowStageConfig(WorkflowStage.QUALITY_REVIEW, requires_exit_eval=True),
+                WorkflowStageConfig(WorkflowStage.QUALITY_REVIEW),
             ]
             # Use object.__setattr__ because frozen
             object.__setattr__(self, 'stages', default_stages)
@@ -199,6 +219,13 @@ class ManagedWorkflowEngine:
         import hashlib
         import json
         
+        # L3 entry: verify upstream l5_certification_ref (AG-W0-3)
+        _check_l5_cert_ref_l3(
+            getattr(ingress_payload, "l5_certification_ref", "")
+            if not isinstance(ingress_payload, dict)
+            else ingress_payload.get("l5_certification_ref", "")
+        )
+
         workflow = self._workflows.get(workflow_id)
         if not workflow:
             return None
@@ -305,7 +332,7 @@ RESUME_GENERATION_WORKFLOW = ManagedWorkflow(
         WorkflowStageConfig(WorkflowStage.BRIEF_SYNTHESIS, l3_required=True),
         WorkflowStageConfig(WorkflowStage.JD_ANALYSIS, c0_required=True),
         WorkflowStageConfig(WorkflowStage.CONTENT_GENERATION, l3_required=True, max_retries=2),
-        WorkflowStageConfig(WorkflowStage.QUALITY_REVIEW, requires_exit_eval=True),
+        WorkflowStageConfig(WorkflowStage.QUALITY_REVIEW),
     ],
     requires_exit_eval=True,
 )

@@ -34,3 +34,12 @@ class RouteContract:
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     routing_timestamp: str = ""
     route_version: str = "W6.0"
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"RouteContract: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )

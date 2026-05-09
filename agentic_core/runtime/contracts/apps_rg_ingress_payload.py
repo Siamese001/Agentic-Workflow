@@ -72,6 +72,26 @@ class AppsRgIngressPayload:
 
 
 @dataclass(frozen=True, slots=True)
+class RequestEnvelope:
+    """Canonical request envelope wrapping AppsRgIngressPayload for runtime entry.
+
+    Per plan apps-rg-runtime-wiring-completion-d4e8a1 §5 (re-opens c8b3e1).
+    Adds the dataclass that c8b3e1 plan §13 line 717 referenced as
+    "Duplicate RequestEnvelope removed (L5 canonical retained)" — this is
+    the apps_rg ingress envelope shape that AppIngressRunner.run() consumes.
+
+    Carries the ingress payload + identity/trace metadata so U0 ingress
+    validator can stamp a receipt without mutating the frozen payload.
+    """
+
+    payload: AppsRgIngressPayload
+    request_id: str = ""
+    run_id: str = ""
+    trace_id: str = ""
+    submitted_at: str = ""  # ISO-8601 timestamp
+
+
+@dataclass(frozen=True, slots=True)
 class ValidatedRequest:
     """U0 output after validating AppsRgIngressPayload.
 
@@ -86,3 +106,12 @@ class ValidatedRequest:
     payload_digest: str
     authority_validation_receipt: "AuthorityValidationReceipt"
     trace_id: str
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"ValidatedRequest: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )

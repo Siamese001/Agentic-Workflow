@@ -99,6 +99,15 @@ class RuntimeExhaustBundle:
     ingest_quality_score: float
     newest_span_age_seconds: float
     bundle_id: str
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"RuntimeExhaustBundle: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 class RuntimeExhaustCollector:

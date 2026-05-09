@@ -639,6 +639,15 @@ def main():
             "PA-RG1 apps_rg PA boundary anti-bypass (advisory — baseline clean 2026-05-09)",
             "ops_scripts/ci/check_apps_rg_pa_boundary.py",
         ),
+        # L5CR1 — emit-contract l5_certification_ref field presence scan.
+        # AST-based; checks all 18 (file, class) pairs from plan §7.
+        # Advisory by default; fail-closed via L5_CERT_REF_GATE_FAIL_CLOSED=1.
+        # Bypass: L5_CERT_REF_GATE_BYPASS=1.
+        # Plan: l5-cert-ref-emit-chain-threading-c4e7f1 W4 / P4.2.
+        (
+            "L5CR1 emit-contract l5_certification_ref field scan (advisory)",
+            "ops_scripts/ci/check_l5_cert_ref_on_emit_contracts.py",
+        ),
     ]
 
     for label, script in assurance_gates:

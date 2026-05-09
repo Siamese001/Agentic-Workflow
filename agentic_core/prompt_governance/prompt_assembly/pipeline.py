@@ -19,8 +19,29 @@ code mapped to a :class:`DispatchDisposition`.
 
 from __future__ import annotations
 
+import logging
+import os
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
+
+_logger = logging.getLogger(__name__)
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref_pa(ref: str) -> None:
+    """Fail-soft L5 cert ref verify at PA entry per AG-W0-3=A_consume_entry."""
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash PA pipeline; treat as unverified
+        _logger.warning("L5CertRefViolation stage=PA_entry registry_error=%s", exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=PA_entry ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (ref,))
+        _logger.warning(msg, ref)
+
 
 from .assembly_statuses import (
     PAStatus,
@@ -140,6 +161,11 @@ def run_prompt_assembly_pipeline(
     block-class outcome the pipeline short-circuits and emits a
     :class:`PromptAssemblyBlocked` event before returning.
     """
+    # PA entry: verify upstream (route/plan) l5_certification_ref (AG-W0-3)
+    _check_l5_cert_ref_pa(
+        str((route_contract or {}).get("l5_certification_ref", ""))
+    )
+
     buf = EventBuffer()
     plan = plan_contract or {}
     route = route_contract or {}

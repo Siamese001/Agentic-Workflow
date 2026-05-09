@@ -1686,4 +1686,6 @@ def get_contract(name: str) -> type[L5OutputBase]:
     return CONTRACT_REGISTRY[name]
 
 
-__all__ = ["CONTRACT_REGISTRY", "ALL_OUTPUT_NAMES", "get_contract"]
+from .verify import verify_certification_ref  # re-exported; canonical impl lives in verify.py (AG-W0-4)
+
+__all__ = ["CONTRACT_REGISTRY", "ALL_OUTPUT_NAMES", "get_contract", "verify_certification_ref"]

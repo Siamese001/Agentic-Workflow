@@ -18,7 +18,28 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import os
 from datetime import datetime, timezone
+
+_logger = logging.getLogger(__name__)
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref_l2(ref: str) -> None:
+    """Fail-soft L5 cert ref verify at L2 entry per AG-W0-3=A_consume_entry."""
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash L2 executor; treat as unverified
+        _logger.warning("L5CertRefViolation stage=L2_entry registry_error=%s", exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=L2_entry ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (ref,))
+        _logger.warning(msg, ref)
+
 
 from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
@@ -45,6 +66,9 @@ class L2Executor:
         Returns:
             SealedL2Artifact with execution results
         """
+        # L2 entry: verify upstream (prompt artifact) l5_certification_ref (AG-W0-3)
+        _check_l5_cert_ref_l2(getattr(prompt_artifact, "l5_certification_ref", ""))
+
         start_time = datetime.now(timezone.utc)
 
         # Simulated execution through SovereignLLMGateway
@@ -86,6 +110,7 @@ class L2Executor:
             prompt_artifact_digest=prompt_artifact.compilation_hash,
             contract_version="W6.0",
             compilation_hash=compilation_hash,
+            l5_certification_ref=getattr(prompt_artifact, "l5_certification_ref", ""),
         )
 
     def _call_sovereign_gateway(self, prompt_artifact: CompiledPromptArtifact) -> str:

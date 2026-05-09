@@ -349,6 +349,7 @@ class L3StepContract:
     no_durable_commit_authority: bool = True
     # W1 c0-policy-rectification-deferred-f7b2a9: Step-level C0 policy inheritance
     c0_policy: C0Policy | None = None
+    l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
         for name in (

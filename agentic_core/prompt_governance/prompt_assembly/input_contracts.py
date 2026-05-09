@@ -39,6 +39,7 @@ class L1PlanContract:
     risk_hint: str = ""
     policy_hash: str = ""
     write_requested: bool = False
+    l5_certification_ref: str = ""
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,7 @@ class L0RouteContract:
     hmac_sig: str = ""
     required_slots: tuple[str, ...] = ()
     policy_hash: str = ""
+    l5_certification_ref: str = ""
 
 
 @dataclass(frozen=True)

@@ -181,6 +181,15 @@ class X3DenyPacket:
     replan_hint: str = ""
     l6_failure_packet: dict[str, Any] = field(default_factory=dict)
     trace_root: str = ""
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3DenyPacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(slots=True)
@@ -193,6 +202,15 @@ class X3EscalatePacket:
     h1_freeze_state: dict[str, Any] = field(default_factory=dict)
     review_packet_contents: dict[str, Any] = field(default_factory=dict)
     trace_root: str = ""
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3EscalatePacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(slots=True)
@@ -223,6 +241,15 @@ class X3CommitRequestPacket:
     pass_k_consistency_receipt: dict[str, Any] = field(default_factory=dict)
     replay_determinism_digest: str = ""
     trace_evidence_seal: str = ""
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3CommitRequestPacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(slots=True)
@@ -236,6 +263,15 @@ class X3AllowPacket:
     commit_receipt_id: str = ""
     trace_root: str = ""
     runtime_exhaust_manifest: dict[str, Any] = field(default_factory=dict)
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3AllowPacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(slots=True)
@@ -248,6 +284,15 @@ class X3SafeAbstainPacket:
     safe_alternative: str = ""
     failed_support_target: str = ""
     trace_root: str = ""
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3SafeAbstainPacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 @dataclass(slots=True)
@@ -284,6 +329,15 @@ class X3BreakGlassAllowPacket:
     post_mortem_due_at_ms: int = 0  # 24h after grant
     final_response: str = ""
     trace_root: str = ""
+    l5_certification_ref: str = ""
+
+    def __post_init__(self) -> None:
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"X3BreakGlassAllowPacket: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
+                "(AG-W0-5=fail_closed)"
+            )
 
 
 __all__ = [
