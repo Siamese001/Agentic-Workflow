@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import dataclasses
 
+import pytest
+
 
 # ---------------------------------------------------------------------------
 # CommitRequest — plural + singular both present
@@ -22,23 +24,24 @@ def test_commit_request_has_singular_l5_cert_ref_field():
     assert "l5_certification_refs" in names  # existing plural must be preserved
 
 
-def test_commit_request_l5_cert_ref_defaults_empty():
+def test_commit_request_l5_cert_ref_empty_raises():
     from agentic_core.L4_state.contracts.records import CommitRequest
-    cr = CommitRequest(
-        commit_request_id="cr1",
-        cleared_exit_review_packet_ref="ep1",
-        request_id="r1",
-        run_id="u1",
-        trace_root="tr1",
-        tenant_id="t1",
-        policy_hash="ph1",
-        blueprint_hash="bh1",
-        route_contract_ref="rc1",
-        replay_key="rk1",
-        rollback_plan_ref="rp1",
-        blast_radius="br1",
-    )
-    assert cr.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        CommitRequest(
+            commit_request_id="cr1",
+            cleared_exit_review_packet_ref="ep1",
+            request_id="r1",
+            run_id="u1",
+            trace_root="tr1",
+            tenant_id="t1",
+            policy_hash="ph1",
+            blueprint_hash="bh1",
+            route_contract_ref="rc1",
+            replay_key="rk1",
+            rollback_plan_ref="rp1",
+            blast_radius="br1",
+            l5_certification_ref="",
+        )
 
 
 def test_commit_request_l5_cert_ref_roundtrip():
@@ -76,6 +79,7 @@ def test_commit_request_plural_still_defaults_empty_tuple():
         replay_key="rk3",
         rollback_plan_ref="rp3",
         blast_radius="br3",
+        l5_certification_ref="cert-plural-test",  # singular required; plural is backward-compat
     )
     assert cr.l5_certification_refs == ()
 
@@ -89,20 +93,21 @@ def test_uwg_commit_receipt_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(UWGCommitReceipt)}
 
 
-def test_uwg_commit_receipt_l5_cert_ref_defaults_empty():
+def test_uwg_commit_receipt_l5_cert_ref_empty_raises():
     from agentic_core.L4_state.contracts.records import UWGCommitReceipt
-    r = UWGCommitReceipt(
-        commit_receipt_id="rcpt1",
-        commit_request_ref="cr1",
-        write_lock_receipt_ref="wl1",
-        uwg_validation_receipt_ref="vr1",
-        snapshot_before="sb1",
-        snapshot_after="sa1",
-        read_surface_refresh_plan_ref="rsr1",
-        audit_append_receipt_ref="aar1",
-        committed_at="2026-01-01T00:00:00",
-    )
-    assert r.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        UWGCommitReceipt(
+            commit_receipt_id="rcpt1",
+            commit_request_ref="cr1",
+            write_lock_receipt_ref="wl1",
+            uwg_validation_receipt_ref="vr1",
+            snapshot_before="sb1",
+            snapshot_after="sa1",
+            read_surface_refresh_plan_ref="rsr1",
+            audit_append_receipt_ref="aar1",
+            committed_at="2026-01-01T00:00:00",
+            l5_certification_ref="",
+        )
 
 
 def test_uwg_commit_receipt_l5_cert_ref_roundtrip():
@@ -131,19 +136,20 @@ def test_runtime_trace_exhaust_bundle_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(RuntimeExhaustBundle)}
 
 
-def test_runtime_trace_exhaust_bundle_l5_cert_ref_defaults_empty():
+def test_runtime_trace_exhaust_bundle_l5_cert_ref_empty_raises():
     from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import RuntimeExhaustBundle
-    b = RuntimeExhaustBundle(
-        raw_evidence_refs=(),
-        lineage_manifest={},
-        stage_map={},
-        artifact_inventory=(),
-        gap_report=(),
-        ingest_quality_score=1.0,
-        newest_span_age_seconds=0.0,
-        bundle_id="b1",
-    )
-    assert b.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        RuntimeExhaustBundle(
+            raw_evidence_refs=(),
+            lineage_manifest={},
+            stage_map={},
+            artifact_inventory=(),
+            gap_report=(),
+            ingest_quality_score=1.0,
+            newest_span_age_seconds=0.0,
+            bundle_id="b1",
+            l5_certification_ref="",
+        )
 
 
 def test_runtime_trace_exhaust_bundle_l5_cert_ref_roundtrip():
@@ -171,19 +177,20 @@ def test_shadow_eval_exhaust_bundle_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(RuntimeExhaustBundle)}
 
 
-def test_shadow_eval_exhaust_bundle_l5_cert_ref_defaults_empty():
+def test_shadow_eval_exhaust_bundle_l5_cert_ref_empty_raises():
     from agentic_core.L6_observability.shadow_eval.contracts import RuntimeExhaustBundle
-    b = RuntimeExhaustBundle(
-        runtime_exhaust_bundle_id="sb1",
-        request_id="r1",
-        run_id="u1",
-        session_id="s1",
-        tenant_id="t1",
-        trace_root="tr1",
-        completed_at="2026-01-01T00:00:00",
-        runtime_boundary_crossed=False,
-    )
-    assert b.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        RuntimeExhaustBundle(
+            runtime_exhaust_bundle_id="sb1",
+            request_id="r1",
+            run_id="u1",
+            session_id="s1",
+            tenant_id="t1",
+            trace_root="tr1",
+            completed_at="2026-01-01T00:00:00",
+            runtime_boundary_crossed=False,
+            l5_certification_ref="",
+        )
 
 
 def test_shadow_eval_exhaust_bundle_l5_cert_ref_roundtrip():

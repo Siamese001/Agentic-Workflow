@@ -29,10 +29,10 @@ def test_compiled_prompt_artifact_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(CompiledPromptArtifact)}
 
 
-def test_compiled_prompt_artifact_l5_cert_ref_defaults_empty():
+def test_compiled_prompt_artifact_l5_cert_ref_empty_raises():
     from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
-    a = CompiledPromptArtifact(request_id="r", run_id="u", app_id="a", trace_id="t")
-    assert a.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        CompiledPromptArtifact(request_id="r", run_id="u", app_id="a", trace_id="t")
 
 
 def test_compiled_prompt_artifact_l5_cert_ref_roundtrip():
@@ -94,11 +94,11 @@ def test_sealed_l2_artifact_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(SealedL2Artifact)}
 
 
-def test_sealed_l2_artifact_l5_cert_ref_defaults_empty():
+def test_sealed_l2_artifact_l5_cert_ref_empty_raises():
     from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
-    a = SealedL2Artifact(request_id="r", run_id="u", app_id="a", trace_id="t",
-                          execution_status="completed")
-    assert a.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        SealedL2Artifact(request_id="r", run_id="u", app_id="a", trace_id="t",
+                         execution_status="completed")
 
 
 def test_sealed_l2_artifact_l5_cert_ref_roundtrip():
@@ -117,9 +117,10 @@ def test_x3_deny_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3DenyPacket)}
 
 
-def test_x3_deny_packet_l5_cert_ref_defaults_empty():
+def test_x3_deny_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3DenyPacket
-    assert X3DenyPacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3DenyPacket()
 
 
 def test_x3_escalate_packet_has_l5_cert_ref_field():
@@ -127,9 +128,10 @@ def test_x3_escalate_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3EscalatePacket)}
 
 
-def test_x3_escalate_packet_l5_cert_ref_defaults_empty():
+def test_x3_escalate_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3EscalatePacket
-    assert X3EscalatePacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3EscalatePacket()
 
 
 def test_x3_commit_request_packet_has_l5_cert_ref_field():
@@ -137,9 +139,10 @@ def test_x3_commit_request_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3CommitRequestPacket)}
 
 
-def test_x3_commit_request_packet_l5_cert_ref_defaults_empty():
+def test_x3_commit_request_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3CommitRequestPacket
-    assert X3CommitRequestPacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3CommitRequestPacket()
 
 
 def test_x3_allow_packet_has_l5_cert_ref_field():
@@ -147,9 +150,10 @@ def test_x3_allow_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3AllowPacket)}
 
 
-def test_x3_allow_packet_l5_cert_ref_defaults_empty():
+def test_x3_allow_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3AllowPacket
-    assert X3AllowPacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3AllowPacket()
 
 
 def test_x3_safe_abstain_packet_has_l5_cert_ref_field():
@@ -157,9 +161,10 @@ def test_x3_safe_abstain_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3SafeAbstainPacket)}
 
 
-def test_x3_safe_abstain_packet_l5_cert_ref_defaults_empty():
+def test_x3_safe_abstain_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3SafeAbstainPacket
-    assert X3SafeAbstainPacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3SafeAbstainPacket()
 
 
 def test_x3_break_glass_allow_packet_has_l5_cert_ref_field():
@@ -167,9 +172,10 @@ def test_x3_break_glass_allow_packet_has_l5_cert_ref_field():
     assert "l5_certification_ref" in {f.name for f in dataclasses.fields(X3BreakGlassAllowPacket)}
 
 
-def test_x3_break_glass_allow_packet_l5_cert_ref_defaults_empty():
+def test_x3_break_glass_allow_packet_l5_cert_ref_empty_raises():
     from agentic_core.L3_orchestration.exit_eval.v6.types import X3BreakGlassAllowPacket
-    assert X3BreakGlassAllowPacket().l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        X3BreakGlassAllowPacket()
 
 
 # ---------------------------------------------------------------------------
@@ -262,7 +268,8 @@ def test_l2_executor_propagates_cert_ref():
     receipt = AuthorityValidationReceipt(validation_timestamp="2026-01-01T00:00:00")
     vr = ValidatedRequest(request_id="r1", run_id="u1", app_id="apps_rg",
                            task_class="resume_generation", payload_digest="pd1",
-                           authority_validation_receipt=receipt, trace_id="tr1")
+                           authority_validation_receipt=receipt, trace_id="tr1",
+                           l5_certification_ref="cert-prop-001")
     pa = CompiledPromptArtifact(request_id="r1", run_id="u1", app_id="apps_rg",
                                   trace_id="tr1", l5_certification_ref="cert-prop-001")
     result = L2Executor().execute(vr, pa)

@@ -19,6 +19,8 @@ import os
 from dataclasses import fields
 from unittest.mock import patch
 
+import pytest
+
 
 # ---------------------------------------------------------------------------
 # P1.1 — ValidatedRequest field presence
@@ -32,21 +34,21 @@ def test_validated_request_has_l5_cert_ref_field():
     assert "l5_certification_ref" in names
 
 
-def test_validated_request_l5_cert_ref_defaults_empty():
+def test_validated_request_l5_cert_ref_empty_raises():
     from agentic_core.L0_routing.u0_intake_validator import AuthorityValidationReceipt
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 
     receipt = AuthorityValidationReceipt(validation_timestamp="2026-01-01T00:00:00+00:00")
-    vr = ValidatedRequest(
-        request_id="req1",
-        run_id="run1",
-        app_id="apps_rg",
-        task_class="resume_generation",
-        payload_digest="abc",
-        authority_validation_receipt=receipt,
-        trace_id="tid1",
-    )
-    assert vr.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        ValidatedRequest(
+            request_id="req1",
+            run_id="run1",
+            app_id="apps_rg",
+            task_class="resume_generation",
+            payload_digest="abc",
+            authority_validation_receipt=receipt,
+            trace_id="tid1",
+        )
 
 
 def test_validated_request_l5_cert_ref_roundtrip():
@@ -79,11 +81,11 @@ def test_l1_plan_contract_runtime_has_l5_cert_ref_field():
     assert "l5_certification_ref" in names
 
 
-def test_l1_plan_contract_runtime_l5_cert_ref_defaults_empty():
+def test_l1_plan_contract_runtime_l5_cert_ref_empty_raises():
     from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 
-    contract = L1PlanContract(request_id="r", run_id="ru", app_id="a", trace_id="t")
-    assert contract.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        L1PlanContract(request_id="r", run_id="ru", app_id="a", trace_id="t")
 
 
 # ---------------------------------------------------------------------------
@@ -117,21 +119,21 @@ def test_route_contract_runtime_has_l5_cert_ref_field():
     assert "l5_certification_ref" in names
 
 
-def test_route_contract_runtime_l5_cert_ref_defaults_empty():
+def test_route_contract_runtime_l5_cert_ref_empty_raises():
     from agentic_core.runtime.contracts.route_contract import RouteContract
 
-    rc = RouteContract(
-        request_id="r",
-        run_id="ru",
-        app_id="a",
-        trace_id="t",
-        route_id="R3",
-        l3_required=False,
-        grounding_required=False,
-        model_generation_required=False,
-        write_authority_present=False,
-    )
-    assert rc.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        RouteContract(
+            request_id="r",
+            run_id="ru",
+            app_id="a",
+            trace_id="t",
+            route_id="R3",
+            l3_required=False,
+            grounding_required=False,
+            model_generation_required=False,
+            write_authority_present=False,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -165,11 +167,11 @@ def test_final_evidence_contract_has_l5_cert_ref_field():
     assert "l5_certification_ref" in names
 
 
-def test_final_evidence_contract_l5_cert_ref_defaults_empty():
+def test_final_evidence_contract_l5_cert_ref_empty_raises():
     from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
 
-    fec = FinalEvidenceContract(request_id="r", run_id="ru", app_id="a", trace_id="t")
-    assert fec.l5_certification_ref == ""
+    with pytest.raises(ValueError, match="l5_certification_ref"):
+        FinalEvidenceContract(request_id="r", run_id="ru", app_id="a", trace_id="t")
 
 
 # ---------------------------------------------------------------------------
