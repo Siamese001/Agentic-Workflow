@@ -246,9 +246,22 @@ The following remain **permanently non-activated** (governance violations):
 
 **Captured Deferred Scope:** 6 major items (DS-1 through DS-6)
 **Parent Plan Status:** COMPLETED (W9 DONE)
-**This Plan Status:** DEFERRED / DO NOT IMPLEMENT
+**This Plan Status:** PARTIALLY IMPLEMENTED (DS-1, DS-5, DS-6 DONE; DS-2, DS-3, DS-4 pending)
 
-**Reactivation Protocol:**
+## §6. Implementation Status Update (2026-05-09)
+
+| Item | Status | Commit | Notes |
+|------|--------|--------|-------|
+| DS-1: Gemini SDK Wiring | ✅ **IMPLEMENTED** | `6705d000e0` | Full provider + gateway contract |
+| DS-2: L3 MANAGED_WORKFLOW | ⏳ **FRAMEWORK** | `7a2dc47060` | Engine defined, needs UWG route |
+| DS-3: UWG Promotion | ⏳ **FRAMEWORK** | `7a2dc47060` | T7s.4 gate + L4 store ready |
+| DS-4: Sibling Apps | 📋 **PILOT PLAN** | `7a2dc47060` | apps_research pilot defined |
+| DS-5: CI Scanners | ✅ **IMPLEMENTED** | `6705d000e0` | 4 new scanners operational |
+| DS-6: OTEL Extensions | ✅ **IMPLEMENTED** | `6705d000e0` | Span contracts ready |
+
+**W8 Gates:** VERIFIED PASS (51/51 tests, 5/5 original scanners, 4/4 new scanners)
+
+**Reactivation Protocol (for remaining items):**
 1. User explicitly names deferred item to activate
 2. Verify parent plan W8 gates still PASS
 3. AG-10 decision packet with score ≥0.85, gap ≥0.12
