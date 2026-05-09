@@ -67,6 +67,47 @@ In-house MCP — no upstream vendor. The canonical static dependency graph for t
 4. `adg_edge_fanin(relation_type='imports')` for top files → impact = violations × (1 + log10(1 + fan_in))
 5. Drive scope from rank, not arbitrary file choice
 
+**Branch resolution when ADG evidence is inconclusive:**
+
+When ADG MCP returns ambiguous results (e.g., multiple hotspot candidates with similar centrality), use the enriched choice builder for the branch decision:
+
+```python
+from tools.decisions.enriched_choice_builder import build_enriched_choice_question
+
+# ADG returned multiple candidates — ask which to prioritize
+payload = build_enriched_choice_question(
+    question="ADG shows multiple hotspot candidates. Which should I refactor first?",
+    options=[
+        {
+            "id": "A",
+            "label": f"{candidate_a['name']} — higher fan-in ({candidate_a['fan_in']})",
+            "description": f"Centrality: {candidate_a['centrality']:.2f}, Violations: {candidate_a['violations']}",
+            "tradeoff": "Higher impact but more complex blast radius",
+        },
+        {
+            "id": "B",
+            "label": f"{candidate_b['name']} — lower centrality but safer",
+            "description": f"Centrality: {candidate_b['centrality']:.2f}, Violations: {candidate_b['violations']}",
+            "tradeoff": "Lower risk but less structural impact",
+        },
+    ],
+    recommended_id="A" if candidate_a['centrality'] > candidate_b['centrality'] else None,
+    telemetry_context={"adg_analysis": "hotspot_selection", "candidates": [candidate_a['id'], candidate_b['id']]},
+)
+
+# Emit telemetry (REQUIRED for enriched choices)
+print("ASK_USER_QUESTION_PACKET: " + json.dumps(payload["telemetry_packet"]))
+
+# Present to user
+ask_user_question(
+    question=payload["question"],
+    options=payload["options"],
+    allowMultiple=False,
+)
+```
+
+**Classification:** ENRICHED_CHOICE (ADG-driven branch resolution, not governance).
+
 **Blast radius (precomputed, fast):**
 1. `adg_find_node(name='X')` → ID
 2. `adg_blast_radius(node_id=ID, hops=2)` — returns `blast_radius_direct`, `blast_radius_2hop`, `reachability_rows`. Backed by the graph projection MV; warm-cache p99 <50ms.
