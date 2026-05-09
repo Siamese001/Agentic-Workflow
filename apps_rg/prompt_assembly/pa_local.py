@@ -23,6 +23,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
+from apps_rg.prompt_assembly._pa_boundary import (
+    PABoundaryStatus,
+    make_pa_boundary_receipt,
+)
+
 _log = logging.getLogger(__name__)
 
 
@@ -31,6 +36,7 @@ class PromptBOM:
     """Bill of Materials for a single LLM invocation.
 
     Captures the minimum provenance needed to replay or audit the call.
+    W3.P1: adds pa_boundary_receipt for PA boundary lineage.
     """
 
     hop_name: str
@@ -40,6 +46,7 @@ class PromptBOM:
     token_budget: int
     replay_key: str = field(default_factory=lambda: uuid.uuid4().hex[:16])
     timestamp: float = field(default_factory=time.time)
+    pa_boundary_receipt: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize to JSON-safe dict."""
@@ -54,6 +61,9 @@ def capture_prompt_bom(
     prompt_template: str = "",
     token_budget: int = 0,
     run_dir: Optional[Path] = None,
+    # W3.P1: optional identity fields for receipt
+    request_id: str = "",
+    trace_id: str = "",
 ) -> PromptBOM:
     """Capture a PromptBOM for an LLM invocation and optionally write to disk.
 
@@ -64,11 +74,46 @@ def capture_prompt_bom(
         prompt_template: The prompt template text (hashed, not stored).
         token_budget: Max tokens budgeted for this call.
         run_dir: If provided, writes the BOM to {run_dir}/prompt_bom/{hop_name}.json.
+        request_id: Optional request ID for PA boundary receipt (W3.P1).
+        trace_id: Optional trace ID for PA boundary receipt (W3.P1).
 
     Returns:
-        The captured PromptBOM.
+        The captured PromptBOM with pa_boundary_receipt populated.
     """
     template_hash = hashlib.sha256(prompt_template.encode()).hexdigest()[:16]
+
+    # W3.P1: Emit PA boundary receipt for BOM capture (lineage evidence).
+    # This path captures minimum provenance for narrative-pipeline instrumentation.
+    # Many fields are NOT_BOUND because the narrative pipeline does not use
+    # the full canonical PA compiler path.
+    pa_receipt = make_pa_boundary_receipt(
+        request_id=request_id or "NOT_BOUND",
+        run_id="NOT_BOUND",  # BOM capture: run_id not available
+        trace_id=trace_id or "NOT_BOUND",
+        route_id="NOT_BOUND",  # BOM capture: route_id not available
+        policy_hash="NOT_BOUND",  # BOM capture: no policy hash
+        blueprint_hash="NOT_BOUND",  # BOM capture: no blueprint hash
+        prompt_hash=template_hash,  # available: template hash
+        compiled_artifact_hash="NOT_BOUND",  # BOM capture: no compiled artifact
+        bom_hash="NOT_BOUND",  # BOM capture: this IS the BOM
+        registry_hash="NOT_BOUND",  # BOM capture: no registry
+        template_hash=template_hash,  # available
+        source_refs={
+            "hop_name": hop_name,
+            "model": model,
+            "provider_lane": provider_lane,
+        },
+        lineage_refs={
+            "pa_local_consumer": "apps_rg.prompt_assembly.pa_local.capture_prompt_bom",
+            "narrative_pipeline": "true",
+        },
+        status=PABoundaryStatus.PA_BOM_RESOLVED,
+        reason_codes=["BOM_CAPTURE", "NARRATIVE_PIPELINE_INSTRUMENTATION"],
+        unavailable_fields=[
+            "run_id", "route_id", "policy_hash", "blueprint_hash",
+            "compiled_artifact_hash", "bom_hash", "registry_hash",
+        ],
+    )
 
     bom = PromptBOM(
         hop_name=hop_name,
@@ -76,10 +121,17 @@ def capture_prompt_bom(
         provider_lane=provider_lane,
         prompt_template_hash=template_hash,
         token_budget=token_budget,
+        pa_boundary_receipt=pa_receipt.to_dict(),
     )
 
     if run_dir is not None:
         _write_bom(bom, run_dir)
+
+    _log.debug(
+        "[pa_local] BOM captured for %s with receipt_digest=%s",
+        hop_name,
+        pa_receipt.deterministic_digest,
+    )
 
     return bom
 

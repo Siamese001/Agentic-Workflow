@@ -579,19 +579,29 @@ def main():
             "CF1 ADG-first violations freshness (advisory)",
             "ops_scripts/ci/check_adg_first_violations_freshness.py",
         ),
-        # MCP serialization violations: post_cascade_mcp_serialization_audit.py
-        # writes artifacts/windsurf/mcp_serialization_violations.jsonl.
-        # Bypass: MCP_SERIAL_VIOLATIONS_FRESHNESS_BYPASS=1.
+        # CF2 MCP serialization violations freshness (advisory)
         (
             "CF2 MCP serialization violations freshness (advisory)",
             "ops_scripts/ci/check_mcp_serialization_violations_freshness.py",
         ),
+        # RG-W8 — apps_rg runtime gate hardening wave completion.
+        # Validates all W0-W7 gates implemented, exported, tested.
+        # 206 tests across 8 waves; zero tolerance for missing gates.
+        # Plan: apps-rg-runtime-gate-catalog-c4d7e1.md W8.
+        (
+            "RG-W8 apps_rg runtime gate hardening (206 tests)",
+            "ops_scripts/ci/check_apps_rg_runtime_gate_hardening.py",
+        ),
+        # PA-RG1 — apps_rg PA boundary anti-bypass scanner. Advisory by default;
+        # flip fail-closed via APPS_RG_PA_BOUNDARY_FAIL_CLOSED=1. Bypass via
+        # APPS_RG_PA_BOUNDARY_BYPASS=1 (logged). Plan: apps-rg-spine-hardening-7e3b9c W6.
+        (
+            "PA-RG1 apps_rg PA boundary anti-bypass (advisory)",
+            "ops_scripts/ci/check_apps_rg_pa_boundary.py",
+        ),
     ]
+
     for label, script in assurance_gates:
-        if not (ROOT / script).is_file():
-            # Optional gate not yet shipped — skip without blocking.
-            print(f"⚠️  {label}: script missing ({script}) — skipped")
-            continue
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
         if returncode != 0:
             print(f"❌ {label} failed (exit={returncode})")

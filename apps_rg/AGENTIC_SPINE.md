@@ -4,6 +4,64 @@
 > Preloaded context (JD + master resume + company brief from disk) — **no C0 vector retrieval, no live research**.
 > Output is a sealed résumé draft (JSON + narrative enrichment + DOCX export) reviewed by the candidate out-of-band.
 
+## Canonical Spine Ownership Invariants
+
+> Authoritative for `apps_rg`. The diagrams and HOP tables below describe the deterministic execution recipe; this section names the immutable boundary contract. If the diagrams disagree, this section wins.
+
+| Layer | Owns | Does NOT own |
+|---|---|---|
+| **U0 INTAKE** | request envelope validation; `request_id` / `session` / `tenant` / `trace_id` stamping; labeling raw user content as user intent (not authority) | reasoning, routing, retrieval, assembly, execution |
+| **L1 PLAN** | task_spec / query_spec / ambiguity register / route hints; `L1PlanContract` emission; planning priors | provider-ready prompts, prompt artifacts, model calls |
+| **L0 ROUTE** | exactly one `RouteContract`; cache / fallback / grounded read / action / managed-workflow decision; `grounding_required`, `execution_form`, risk/HITL posture, provider/model eligibility hints, route reason codes | provider-ready prompts, `PromptBOM`, `PromptEnvelope`, `CompiledPromptArtifact`, raw provider payloads |
+| **C0 CONTEXT ENGINE** *(grounded routes only)* | retrieves, shapes, and verifies evidence; `FinalEvidenceContract`; retrieved content remains data-only | answering; assembling prompts; promoting retrieved text to instruction |
+| **PA PROMPT ASSEMBLY** | `PromptBOM`, `PromptEnvelope`, `CompiledPromptArtifact`; slot order; slot authority map; slot lineage map; token budget + deterministic trimming; provider-aware rendering; response schema binding; `prompt_hash` / `compiled_artifact_hash`; prompt boundary receipts; injection neutralization receipts | routing, planning, retrieval, execution |
+| **RUNTIME GATES + L5 EVIDENCE** | L5 emits **certification evidence** (authority / policy / origin-trust / registry / sandbox / egress / replay-audit). Runtime Gates emit **live `GateVerdict` records**. `UNKNOWN` is never `PASS`. | the runtime "permit / block / escalate" disposition (that is Exit's job, not L5's) |
+| **L2 EXECUTE** | consumes the signed compiled artifact (or approved bounded work packet); executes one bounded model/tool/script/PTC attempt; same-authority local heal; sealed artifact emission | constructing prompts before receiving a compiled artifact; widening route/tool/model/policy/capability/sandbox |
+| **L3 ORCHESTRATION** *(MANAGED_WORKFLOW only — BYPASSED for apps_rg)* | bounded step contracts, checkpoints, branch/join state, retry policy | tool/model/script execution; healing execution failures; output approval; L4 writes |
+| **EXIT** | normalizes sealed artifact / terminal return packet; evaluates outcome / safety / evidence / replay / observability / write-eligibility; emits **exactly one X3 disposition**; may emit `CommitRequest` (does not write L4) | mutating durable state |
+| **UWG / L4** *(only when durable write cleared)* | the sole durable write path | being bypassed by direct writers |
+| **L6 SHADOW EVALUATION** | observes completed-run exhaust; evaluates / calibrates / detects drift / drafts proposals | rescuing the current run; writing L4 directly |
+
+**Spine summary:** L1 plans · L0 routes · C0 retrieves evidence · PA composes and defends prompt artifacts · Runtime Gates emit live `GateVerdict` records · L5 emits governance certification evidence · L2 executes signed compiled artifacts · L3 orchestrates managed-workflow step contracts only when L0 selects them · Exit emits exactly one X3 · UWG alone writes durable state · L6 learns only after the run.
+
+## Two Prompt-Injection Concepts (definitive)
+
+These are **related but not the same**. apps_rg honors both.
+
+### Instructional prompt injection (governed composition)
+
+The governed insertion of: goal · success criteria · task mode · scope · efficiency constraints · evidence binding · reasoning controls · safety rails · output schema · error format · minimality rules.
+
+**Authority:** PA Prompt Assembly (apps_rg local PA + agentic_core mixin corpus consumed only after PA compile). Worker-side instructional mixins are consumed only through the compiled artifact or an approved bounded work packet.
+
+### Prompt injection defense (boundary protection)
+
+Detection / fencing / neutralization / quarantine / rejection of untrusted content trying to override: system instructions · developer instructions · policy · route · tool selection · provider/model · schema · output format · sandbox/capability scope · write authority · HITL requirements.
+
+**Authority:** PA airlock layer + `agentic_core/prompt_governance/security/`.
+
+> **Required language:** *Instructional injection is a governed composition pattern. Prompt injection defense is a boundary protection pattern. They are related but not the same.*
+
+See `apps_rg/PROMPT_BOUNDARY_CONTRACT.md` for the slot authority map, evidence airlocks, and receipt contract.
+
+## Dual PA Topology
+
+apps_rg has a **dual PA topology**. The governed apps_rg PA compiler owns `AppsRgCompiledPromptArtifact` generation for L2 recipe templates. The legacy `anthropic_rag_entrypoint` bridge consumes agentic_core `PromptEnvelope` for the narrative / R3 contract surface. **Both are PA-owned prompt assembly surfaces. This dual topology does not grant L0 prompt assembly authority.**
+
+| Surface | Path | Used for |
+|---|---|---|
+| **NEW PA (apps_rg-local)** | `apps_rg/prompt_assembly/compiler.py:compile_prompt(AppsRgPromptRequest) → AppsRgCompiledPromptArtifact` | governed L2 recipe templates (`hop_4_generate_resume`, `fact_check_generated_resume`, `omit_unsupported_resume_claims`, `repair_bullet_diversity`, `hop_6_docx_export`) — see `spine_manifest.yaml: compiled_artifact_required_for` |
+| **LEGACY PA bridge (agentic_core PromptEnvelope)** | `apps_rg/utils/anthropic_rag_entrypoint.py:build_anthropic_rag_payload(PromptEnvelope) → AnthropicRagPayload` (re-exported as `apps_rg/prompt_assembly/rg_pa_compiler.py`) | original load-bearing R3 contract surface (per `spine_manifest.yaml:51, 82-85`); narrative-pipeline ensemble + judges via `apps_rg/integrations/hops/_llm_client.py` (PA-instrumented through `apps_rg.prompt_assembly.pa_local.capture_prompt_bom`) |
+
+**Invariants for both surfaces:**
+
+1. PA owns slot composition, slot authority order, schema binding, and the boundary airlock — neither route, planner, retriever, nor executor may forge a provider-ready prompt.
+2. PA compiles **before** L2 consumes. The current `apps_rg/l2_recipe/steps.py::_PAGuard` enforces this fail-closed (no model call without `PA_L2_HANDOFF_READY` artifact). PA invocation may live inside an L2 step adapter for ergonomic reasons; the compile-before-execute contract is preserved by the guard.
+3. Worker-side instructional mixins (framing / context / reasoning-control / tooling / safety / output) are consumed only after PA compile — they cannot create new authority, bypass PA, or inject retrieved/user/tool/human/model text as instructions.
+4. Output schema is bound through R0 (PA-owned) — prose schema instructions are not a substitute when structured schema binding exists.
+
+> **Removed false mental model:** earlier doc snapshots implied "L0 owns prompt assembly" or "L0 emits CompiledPromptArtifact". That is incorrect. L0 emits a `RouteContract` only. PA assembles. L2 executes. The dual-PA topology above is a PA-internal property, not an L0 property.
+
 ```
 USER (CLI: python -m apps_rg --target-company <co> --jd <path> ...)
  │
@@ -122,7 +180,8 @@ L0 ROUTE DECISION
 | **Execution Form** | `DETERMINISTIC_PIPELINE` (multi-HOP, no async/resume) |
 | **L3 DAG Path** | `BYPASSED` (no orchestration graph — HOPs run within L2 E3) |
 | **C0 Grounding** | `False` (JD, master resume, company brief are preloaded from disk) |
-| **Prompt Assembly** | `CANONICAL_PA` (PromptBOM → CompiledPromptArtifact → governed model call; see `prompt_assembly/compiler.py`) |
+| **Prompt Assembly** | `CANONICAL_PA` — **dual-PA topology** (see "Dual PA Topology" section above): NEW `apps_rg/prompt_assembly/compiler.py` for governed L2 templates + LEGACY `apps_rg/utils/anthropic_rag_entrypoint.py` (`PromptEnvelope`-based) for narrative/R3 contract surface. Both surfaces are PA-owned. L0 does NOT own prompt assembly. |
+| **PA→L2 Timing** | PA compiles **before** L2 consumes (sequential). `_PAGuard` (`apps_rg/l2_recipe/steps.py:27-104`) enforces fail-closed: no model call without `PA_L2_HANDOFF_READY` artifact. |
 | **Runtime Authority** | `FILESYSTEM_SANDBOX_WRITE` + `MODEL_EGRESS` (governed provider lane) |
 | **HITL Posture** | `False` (no runtime HITL; no X3B emission; résumé review is out-of-band) |
 | **Optional Cache Commit** | Via Exit → CommitRequest → UWG → L4 only (never direct L4 write) |

@@ -26,6 +26,11 @@ import uuid
 from pathlib import Path
 from typing import Any, Optional
 
+from apps_rg.prompt_assembly._pa_boundary import (
+    PABoundaryStatus,
+    make_pa_boundary_receipt,
+)
+
 _log = logging.getLogger(__name__)
 
 _PA_ROOT = Path(__file__).resolve().parent
@@ -312,11 +317,36 @@ def compile_prompt(
         # 22. Mark ready
         artifact.compile_status = PACompileStatus.PA_L2_HANDOFF_READY.value
 
+        # 23. Emit PA boundary receipt (W3.P1)
+        pa_receipt = make_pa_boundary_receipt(
+            request_id=artifact.request_id,
+            run_id=artifact.run_id,
+            trace_id=artifact.trace_id,
+            route_id=artifact.route_id or "NOT_BOUND",
+            policy_hash=artifact.policy_hash or "NOT_BOUND",
+            blueprint_hash=artifact.blueprint_hash or "NOT_BOUND",
+            prompt_hash=artifact.prompt_hash or "NOT_BOUND",
+            compiled_artifact_hash=artifact.artifact_hash or "NOT_BOUND",
+            bom_hash=artifact.prompt_bom_hash or "NOT_BOUND",
+            registry_hash=artifact.prompt_registry_hash or "NOT_BOUND",
+            template_hash=artifact.prompt_template_hash or "NOT_BOUND",
+            source_refs=artifact.source_refs or {},
+            lineage_refs={
+                "template_id": artifact.template_id or "NOT_BOUND",
+                "prompt_id": artifact.prompt_id or "NOT_BOUND",
+                "slot_validation_receipt": artifact.slot_validation_receipt or "NOT_BOUND",
+            },
+            status=PABoundaryStatus.PA_L2_HANDOFF_READY,
+            reason_codes=["COMPILE_OK", "PA_L2_HANDOFF_READY"],
+        )
+        artifact.pa_boundary_receipt = pa_receipt.to_dict()
+
         _log.info(
-            "[pa_compiler] Compiled artifact: template_id=%s, prompt_id=%s, status=%s",
+            "[pa_compiler] Compiled artifact: template_id=%s, prompt_id=%s, status=%s, receipt_digest=%s",
             artifact.template_id,
             artifact.prompt_id,
             artifact.compile_status,
+            pa_receipt.deterministic_digest,
         )
         return artifact
 

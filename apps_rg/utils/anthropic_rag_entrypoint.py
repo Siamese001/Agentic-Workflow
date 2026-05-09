@@ -34,7 +34,8 @@ Non-goals
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import hashlib
+from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.knowledge.retrieval.anthropic_cache_control import (
@@ -46,6 +47,12 @@ from agentic_core.knowledge.retrieval.anthropic_prompt_renderer import (
     render_anthropic_prompt,
 )
 from agentic_core.knowledge.retrieval.prompt_envelope import PromptEnvelope
+
+# W3.P1: PA boundary helper for legacy bridge
+from apps_rg.prompt_assembly._pa_boundary import (
+    PABoundaryStatus,
+    make_pa_boundary_receipt,
+)
 
 
 class AbstainRecommendedError(RuntimeError):
@@ -70,12 +77,15 @@ class AnthropicRagPayload:
             was below the cacheable-size threshold.
         cache_boundary_hint: Byte offset of the static prefix boundary within
             the user turn text. ``-1`` when no cacheable prefix exists.
+        pa_boundary_receipt: PA boundary receipt (W3.P1). Legacy path marks
+            unavailable fields as NOT_BOUND with reason code.
     """
 
     payload: dict[str, Any]
     document_block_count: int
     cache_marker_count: int
     cache_boundary_hint: int
+    pa_boundary_receipt: dict[str, Any] = field(default_factory=dict)
 
 
 def build_anthropic_rag_payload(
@@ -136,11 +146,44 @@ def build_anthropic_rag_payload(
         cache_prefix=use_cache,
     )
 
+    # W3.P1: Emit PA boundary receipt for LEGACY PA bridge.
+    # This path consumes PromptEnvelope (not AppsRgPromptRequest) and
+    # produces AnthropicRagPayload (not AppsRgCompiledPromptArtifact).
+    # Unavailable fields are explicitly marked NOT_BOUND.
+    pa_receipt = make_pa_boundary_receipt(
+        request_id=getattr(envelope, "envelope_id", "NOT_BOUND"),
+        run_id="NOT_BOUND",  # legacy path: not provided by PromptEnvelope
+        trace_id="NOT_BOUND",  # legacy path: not provided by PromptEnvelope
+        route_id=getattr(envelope, "route_id", "NOT_BOUND"),
+        policy_hash="NOT_BOUND",  # legacy path: no policy hash available
+        blueprint_hash="NOT_BOUND",  # legacy path: no blueprint hash available
+        prompt_hash=hashlib.sha256(rendered.text.encode()).hexdigest()[:16] if rendered.text else "NOT_BOUND",
+        compiled_artifact_hash="NOT_BOUND",  # legacy path: produces AnthropicRagPayload, not AppsRgCompiledPromptArtifact
+        bom_hash="NOT_BOUND",  # legacy path: no BOM hash available
+        registry_hash="NOT_BOUND",  # legacy path: no registry hash available
+        template_hash="NOT_BOUND",  # legacy path: template hash not tracked
+        source_refs={
+            "envelope_id": getattr(envelope, "envelope_id", "NOT_BOUND"),
+            "chunk_count": str(len(getattr(envelope, "verified_chunks", []))),
+        },
+        lineage_refs={
+            "prompt_envelope_consumer": "apps_rg.utils.anthropic_rag_entrypoint",
+            "cache_control": str(use_cache),
+        },
+        status=PABoundaryStatus.PA_RENDERED,
+        reason_codes=["LEGACY_PA_BRIDGE", "PROMPT_ENVELOPE_CONSUMED"],
+        unavailable_fields=[
+            "run_id", "trace_id", "policy_hash", "blueprint_hash",
+            "compiled_artifact_hash", "bom_hash", "registry_hash", "template_hash",
+        ],
+    )
+
     return AnthropicRagPayload(
         payload=payload,
         document_block_count=rendered.document_block_count,
         cache_marker_count=count_cache_markers(payload),
         cache_boundary_hint=rendered.cache_boundary_hint,
+        pa_boundary_receipt=pa_receipt.to_dict(),
     )
 
 

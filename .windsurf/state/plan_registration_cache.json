@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-08T08:47:21Z",
-  "fetched_at_epoch": 1778230041.1538868,
+  "fetched_at": "2026-05-09T10:45:22Z",
+  "fetched_at_epoch": 1778323522.8792229,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -1718,9 +1718,75 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "runtime-cert-hardened-w0-deferred-scope": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-8110-a779-d86bf3d2d09d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-runtime-gate-catalog-c4d7e1": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-8121-89b6-caafe1a8a0fe",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c0-policy-rectification-phase2-deferred-a3f7e2": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-8122-8260-dae3876d4c9b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-l7-route-family-cert-fix-b8f3a1": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35a27693-f55c-8127-ba92-d6f26c042981",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-length-parity-remediation-a3c8e1": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-8136-84d8-cb828e17db75",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c0-policy-rectification-deferred-f7b2a9": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-81a6-88d2-fc63d0d64fd1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-runtime-gate-deferred-a9f8b2": {
+      "status": "Deferred",
+      "page_id": "35a27693-f55c-81a9-89a2-d4cc97eb8b45",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-deferred-scope-f8d2a3": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-81aa-9137-e916f9b97cdc",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "c0-policy-rectification-f7b2a9": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-81b3-aaeb-cf61b7661395",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-cert-hardened-w0-7e3c9a": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-81bd-ada5-ef400995fcfd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l7-deferred-scope-d117ea": {
+      "status": "Completed",
+      "page_id": "35a27693-f55c-81e2-bca5-daf6a33e38f8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-spine-hardening-7e3b9c": {
+      "status": "In Progress",
+      "page_id": "35b27693-f55c-810d-bd4c-f5e328cd97c8",
       "exists_on_disk": true,
       "has_ai_summary": true
     }
