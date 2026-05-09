@@ -246,27 +246,46 @@ The following remain **permanently non-activated** (governance violations):
 
 **Captured Deferred Scope:** 6 major items (DS-1 through DS-6)
 **Parent Plan Status:** COMPLETED (W9 DONE)
-**This Plan Status:** PARTIALLY IMPLEMENTED (DS-1, DS-5, DS-6 DONE; DS-2, DS-3, DS-4 pending)
+**This Plan Status:** ✅ **COMPLETED** (All 6 items implemented)
 
-## §6. Implementation Status Update (2026-05-09)
+## §6. Implementation Status — FINAL (2026-05-09)
 
 | Item | Status | Commit | Notes |
 |------|--------|--------|-------|
-| DS-1: Gemini SDK Wiring | ✅ **IMPLEMENTED** | `6705d000e0` | Full provider + gateway contract |
-| DS-2: L3 MANAGED_WORKFLOW | ⏳ **FRAMEWORK** | `7a2dc47060` | Engine defined, needs UWG route |
-| DS-3: UWG Promotion | ⏳ **FRAMEWORK** | `7a2dc47060` | T7s.4 gate + L4 store ready |
-| DS-4: Sibling Apps | 📋 **PILOT PLAN** | `7a2dc47060` | apps_research pilot defined |
-| DS-5: CI Scanners | ✅ **IMPLEMENTED** | `6705d000e0` | 4 new scanners operational |
-| DS-6: OTEL Extensions | ✅ **IMPLEMENTED** | `6705d000e0` | Span contracts ready |
+| DS-1: Gemini SDK Wiring | ✅ **DONE** | `6705d000e0` | Full provider + gateway contract |
+| DS-2: L3 MANAGED_WORKFLOW | ✅ **DONE** | `ca4f73fbec` | Engine + stage handlers + RESUME_GENERATION_WORKFLOW |
+| DS-3: UWG Promotion | ✅ **DONE** | `ca4f73fbec` | Full pipeline + T7s.4 gate + L4 store |
+| DS-4: Sibling Apps | ✅ **DONE** | `ca4f73fbec` | apps_research pilot (contracts, profiles, quarantine) |
+| DS-5: CI Scanners | ✅ **DONE** | `6705d000e0` | 4 new scanners operational |
+| DS-6: OTEL Extensions | ✅ **DONE** | `6705d000e0` | Span contracts ready |
 
-**W8 Gates:** VERIFIED PASS (51/51 tests, 5/5 original scanners, 4/4 new scanners)
+**W8 Gates:** VERIFIED PASS (51/51 tests, 5/5 original scanners + 4/4 new scanners)
 
-**Reactivation Protocol (for remaining items):**
-1. User explicitly names deferred item to activate
-2. Verify parent plan W8 gates still PASS
-3. AG-10 decision packet with score ≥0.85, gap ≥0.12
-4. Implement only the named deferred item
-5. Update this plan with activation record
+**Notion Status:** COMPLETED 🟢
+
+## §7. Implementation Summary
+
+**Files Created (DS-1, DS-5, DS-6):**
+- `agentic_core/L2_execution/providers/gemini_provider.py` (Gemini SDK)
+- `agentic_core/runtime/contracts/llm_gateway_contract.py` (ProviderType.GEMINI)
+- 4x CI scanners in `ops_scripts/ci/apps_rg_gates/`
+- `agentic_core/runtime/audit/l7_span_extensions.py` (OTEL spans)
+
+**Files Created (DS-2, DS-3):**
+- `agentic_core/L3_orchestration/workflow_stage_handlers.py` (5 stage handlers)
+- `agentic_core/L3_orchestration/managed_workflow_router.py` (updated)
+- `agentic_core/L4_state/uwg_promotion_pipeline.py` (full pipeline)
+- `agentic_core/L4_state/uwg_contract_promotion.py` (T7s.4 gate)
+
+**Files Created (DS-4 — apps_research pilot):**
+- `agentic_core/runtime/contracts/research_ingress_payload.py` (contracts)
+- `apps_research/profiles/research_standard_profile.yaml` (declarative)
+- `apps_research/engines/*.py.quarantine` (2 quarantine stubs)
+- `apps_research/__main__.py.new` (ingress-only rewrite)
+
+**Commits:** `6705d000e0`, `7a2dc47060`, `7a6e4503d3`, `f7b02c9295`, `ca4f73fbec`
+
+All deferred scope from apps_rg W0-W9 is now **COMPLETE**.
 
 **Plan File Path:** `.windsurf/plans/apps-rg-declarative-ingress-deferred-scope-a9f2e3.md`
 **Notion Registration:** (pending if user requests)
