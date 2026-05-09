@@ -31,18 +31,62 @@ print(f'Total violations: {len(report.all_violations)}')
 " <file1> <file2> ...
 ```
 
-### Step 2 — STOP and prompt the user
+### Step 2 — STOP and emit AUTHOR_GATE_PACKET via canonical pipeline
 
-**Before writing any code**, present this prompt to the user:
+**Before writing any code**, use the canonical Author-Gate pipeline:
 
-> This change will introduce N new `<category>` instance(s) in `<file>`.
-> **Options:**
-> A) Narrow the exception type to `(ImportError, AttributeError, OSError)` — no guardian comment needed
-> B) Add `# guardian: allow-<category>` on the preceding line — counted in ratchet but exempt from blocking
-> C) Restructure to avoid the pattern entirely
-> D) Proceed as-is and accept the ratchet increase
->
-> Which approach?
+```python
+from .windsurf.skills.author_gate_packet_builder import emit_packet
+
+# Build AUTHOR_GATE_PACKET for anti-pattern introduction decision
+packet = emit_packet.build_author_gate_packet(
+    decision_type="anti_pattern_introduction",
+    question=f"This change will introduce {n} new {category} instance(s) in {file}. Which approach?",
+    options=[
+        {
+            "id": "A",
+            "label": "Narrow exception type — specific exceptions only",
+            "description": "Use (ImportError, AttributeError, OSError) instead of broad Exception",
+            "tradeoff": "Requires understanding error types; no guardian comment needed",
+            "confidence": 0.88,
+        },
+        {
+            "id": "B",
+            "label": "Add guardian exemption — explicit allow with justification",
+            "description": "Add # guardian: allow-<category> on preceding line",
+            "tradeoff": "Counted in ratchet but exempt from blocking; requires specific justification",
+            "confidence": 0.75,
+        },
+        {
+            "id": "C",
+            "label": "Restructure — avoid the pattern entirely",
+            "description": "Refactor code to eliminate the anti-pattern",
+            "tradeoff": "May require significant restructuring; ask for guidance if scope unclear",
+            "confidence": 0.82,
+        },
+        {
+            "id": "D",
+            "label": "Proceed as-is — accept ratchet increase",
+            "description": "Accept the anti-pattern into the ratchet baseline",
+            "tradeoff": "Technical debt increases; requires ADG_BURNDOWN_INIT after explicit confirmation",
+            "confidence": 0.65,
+        },
+    ],
+    recommended_id="A",  # ⭐ Narrow exception is preferred
+)
+
+# Emit AUTHOR_GATE_PACKET (canonical path only)
+print("AUTHOR_GATE_PACKET: " + json.dumps(packet))
+
+# Present to user via ask_user_question
+ask_user_question(
+    question=packet["question"],
+    options=packet["options"],
+    allowMultiple=False,
+)
+```
+
+**Authority boundary**: AUTHOR_GATE_PACKET reserved for governance-class decisions (anti-pattern introduction). This workflow is AUTHOR_GATE classification per hardened plan review #4.
 
 Do NOT proceed with the edit until the user selects an option.
 
