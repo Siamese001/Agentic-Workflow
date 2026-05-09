@@ -17,8 +17,8 @@ Exits:
     1 = unresolved violations within staleness window (fail-closed mode only)
     2 = unreadable log / IO error
 
-Default mode: advisory (exits 0 even with violations, prints warning).
-Fail-closed: ``AG_PIPELINE_FAIL_CLOSED=1`` exits 1 on unresolved violations.
+Default mode: fail-closed (exits 1 on unresolved violations).
+Advisory override: ``AG_PIPELINE_ADVISORY=1`` exits 0 even with violations.
 Bypass: ``AG_PIPELINE_FRESHNESS_BYPASS=1`` emits a warning and returns 0.
 Window override: ``AG_PIPELINE_STALENESS_DAYS`` (int, default 7).
 """
@@ -112,7 +112,7 @@ def main() -> int:
     if not unresolved:
         return 0
 
-    fail_closed = os.environ.get("AG_PIPELINE_FAIL_CLOSED") == "1"
+    advisory = os.environ.get("AG_PIPELINE_ADVISORY") == "1"
 
     print(
         f"[{GATE_NAME}] {len(unresolved)} unresolved pipeline-completion "
@@ -128,15 +128,15 @@ def main() -> int:
         file=sys.stderr,
     )
 
-    if fail_closed:
-        return 1
+    if advisory:
+        print(
+            f"[{GATE_NAME}] advisory mode — not blocking. Unset AG_PIPELINE_ADVISORY to enforce.",
+            file=sys.stderr,
+        )
+        return 0
 
-    # Advisory mode — warn but don't block.
-    print(
-        f"[{GATE_NAME}] advisory mode — not blocking. Set AG_PIPELINE_FAIL_CLOSED=1 to block.",
-        file=sys.stderr,
-    )
-    return 0
+    # Fail-closed (default).
+    return 1
 
 
 if __name__ == "__main__":

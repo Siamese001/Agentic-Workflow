@@ -319,7 +319,7 @@ def main():
     # (plan author-gate-ui-renderer-hardening-a7f3c2 W3.P3.2).
     # Watches artifacts/windsurf/author_gate_pipeline_violations.jsonl
     # produced by post_cascade_author_gate_pipeline_audit.py.
-    # Advisory by default; AG_PIPELINE_FAIL_CLOSED=1 activates blocking.
+    # Fail-closed by default; AG_PIPELINE_ADVISORY=1 downgrades to warning-only.
     # Bypass: AG_PIPELINE_FRESHNESS_BYPASS=1.
     returncode, stdout, stderr = run_cmd(
         [

@@ -545,12 +545,11 @@ def main() -> int:
         for err in errors:
             print(f"[emit_packet] WARN: {err}", file=sys.stderr)
 
-    # Emit the packet. Two markers for compatibility:
-    #   AUTHOR_GATE_PACKET: — canonical (per W4 didactic template)
-    #   HITL_PACKET:        — legacy alias for post_cascade_author_gate_capture.py scanner
+    # Emit the packet. Canonical marker only — HITL_PACKET alias retired
+    # per DS-4 of plan author-gate-pipeline-hardening-deferred-b3e1d7.
+    # Scanners still detect HITL_PACKET for backward compat with older logs.
     body = json.dumps(packet, indent=2)
     sys.stdout.write("AUTHOR_GATE_PACKET: " + body + "\n")
-    sys.stdout.write("HITL_PACKET: " + body + "\n")
 
     # W3.P3.1 — emit a ROUTER_DECISION marker so the Author-Gate participates
     # in the closed-loop router family (constitutional §29). `layer=author_gate`

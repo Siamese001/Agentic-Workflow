@@ -39,7 +39,7 @@ When facing an author-gate decision point:
    | Packet → Ask | `AUTHOR_GATE_PACKET:` present ⇒ `ask_user_question` present | `post_cascade_author_gate_pipeline_audit.py` → `artifacts/windsurf/author_gate_pipeline_violations.jsonl` |
    | Ask → Packet | `ask_user_question` in AG context ⇒ `AUTHOR_GATE_PACKET:` present | `post_cascade_ask_user_question_packet_audit.py` → `artifacts/windsurf/ask_user_question_packet_violations.jsonl` |
 
-   Pure detection logic: `.windsurf/scripts/_author_gate_pipeline_check.py` (`decide()` function). CI freshness: `ops_scripts/ci/check_author_gate_pipeline_freshness.py` (AGP1, advisory; `AG_PIPELINE_FAIL_CLOSED=1` for blocking). Bypass: `AG_PIPELINE_AUDIT_BYPASS=1`.
+   Pure detection logic: `.windsurf/scripts/_author_gate_pipeline_check.py` (`decide()` function). CI freshness: `ops_scripts/ci/check_author_gate_pipeline_freshness.py` (AGP1, fail-closed by default; `AG_PIPELINE_ADVISORY=1` for warning-only). Bypass: `AG_PIPELINE_AUDIT_BYPASS=1`.
 
    **Forbidden**: emitting `AUTHOR_GATE_PACKET:` then ending the response without `ask_user_question`; emitting the packet in one response and deferring `ask_user_question` to a follow-up response; relying on the user to manually trigger the question after seeing the packet.
 

@@ -140,8 +140,8 @@ class TestMain:
         monkeypatch.setenv("AG_PIPELINE_FRESHNESS_BYPASS", "1")
         assert main() == 0
 
-    def test_advisory_mode_with_violations(self, tmp_path, monkeypatch):
-        """Default advisory mode — warns but exits 0."""
+    def test_default_fail_closed_with_violations(self, tmp_path, monkeypatch):
+        """Default fail-closed mode — exits 1 on unresolved violations."""
         log = tmp_path / "pipeline.jsonl"
         log.write_text(
             json.dumps(_violation_row(0)) + "\n", encoding="utf-8",
@@ -149,25 +149,25 @@ class TestMain:
         monkeypatch.setattr(
             "check_author_gate_pipeline_freshness.VIOLATIONS_LOG", log,
         )
-        monkeypatch.delenv("AG_PIPELINE_FAIL_CLOSED", raising=False)
-        monkeypatch.delenv("AG_PIPELINE_FRESHNESS_BYPASS", raising=False)
-        assert main() == 0
-
-    def test_fail_closed_with_violations(self, tmp_path, monkeypatch):
-        """Fail-closed mode — exits 1 on unresolved violations."""
-        log = tmp_path / "pipeline.jsonl"
-        log.write_text(
-            json.dumps(_violation_row(0)) + "\n", encoding="utf-8",
-        )
-        monkeypatch.setattr(
-            "check_author_gate_pipeline_freshness.VIOLATIONS_LOG", log,
-        )
-        monkeypatch.setenv("AG_PIPELINE_FAIL_CLOSED", "1")
+        monkeypatch.delenv("AG_PIPELINE_ADVISORY", raising=False)
         monkeypatch.delenv("AG_PIPELINE_FRESHNESS_BYPASS", raising=False)
         assert main() == 1
 
-    def test_fail_closed_no_violations(self, tmp_path, monkeypatch):
-        """Fail-closed mode but only bypass rows → 0."""
+    def test_advisory_override_with_violations(self, tmp_path, monkeypatch):
+        """Advisory override — warns but exits 0."""
+        log = tmp_path / "pipeline.jsonl"
+        log.write_text(
+            json.dumps(_violation_row(0)) + "\n", encoding="utf-8",
+        )
+        monkeypatch.setattr(
+            "check_author_gate_pipeline_freshness.VIOLATIONS_LOG", log,
+        )
+        monkeypatch.setenv("AG_PIPELINE_ADVISORY", "1")
+        monkeypatch.delenv("AG_PIPELINE_FRESHNESS_BYPASS", raising=False)
+        assert main() == 0
+
+    def test_default_no_violations(self, tmp_path, monkeypatch):
+        """Default mode but only bypass rows → 0."""
         log = tmp_path / "pipeline.jsonl"
         log.write_text(
             json.dumps({"reason": "bypass", "ts": _ts(0)}) + "\n",
@@ -176,5 +176,5 @@ class TestMain:
         monkeypatch.setattr(
             "check_author_gate_pipeline_freshness.VIOLATIONS_LOG", log,
         )
-        monkeypatch.setenv("AG_PIPELINE_FAIL_CLOSED", "1")
+        monkeypatch.delenv("AG_PIPELINE_ADVISORY", raising=False)
         assert main() == 0

@@ -93,6 +93,15 @@ def main() -> int:
         row: dict[str, Any] = asdict(violation)
         row["ts"] = ts
         _append(row)
+        # DS-3: Emit AG_QUEUE_PENDING marker to stderr so the pre-user-prompt
+        # hook can surface it.  This integrates pipeline-completion violations
+        # into the queue-drain flow (constitutional §35).
+        ids_str = ", ".join(violation.packet_ids) if violation.packet_ids else "unknown"
+        print(
+            f"AG_QUEUE_PENDING: pipeline_violation packet_ids=[{ids_str}] "
+            f"— packet emitted without ask_user_question",
+            file=sys.stderr,
+        )
 
     # Advisory: always exit 0 regardless of findings.
     return 0
