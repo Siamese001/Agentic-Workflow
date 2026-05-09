@@ -154,23 +154,30 @@ def _detect_raw_ask_user_question(content: str, file_path: Path | None = None) -
     if file_path and file_path.suffix == ".md":
         content = _strip_markdown_code_blocks(content)
     
+    # Check for enriched wrapper or AG pipeline anywhere in file
+    has_enriched_anywhere = _AUQ_ENRICHED_PATTERN.search(content) is not None
+    has_ag_pipeline_anywhere = _AG_PIPELINE_PATTERN.search(content) is not None
+    
     # Find all ask_user_question calls with options
     for match in _AUQ_RAW_PATTERN.finditer(content):
-        # Check if preceded by build_enriched_choice_question in context
-        # Look back up to 500 chars
-        start_pos = max(0, match.start() - 500)
-        context = content[start_pos:match.start()]
+        # Check context around this specific call
+        # Look back up to 1000 chars (more context for builder calls)
+        start_pos = max(0, match.start() - 1000)
+        context_before = content[start_pos:match.start()]
         
-        # Check if AG pipeline is present
-        has_ag_pipeline = _AG_PIPELINE_PATTERN.search(context) is not None
-        has_enriched_wrapper = _AUQ_ENRICHED_PATTERN.search(context) is not None
+        # Check if AG pipeline or enriched wrapper in nearby context
+        has_ag_pipeline = _AG_PIPELINE_PATTERN.search(context_before) is not None
+        has_enriched_wrapper = _AUQ_ENRICHED_PATTERN.search(context_before) is not None
         
-        if not has_ag_pipeline and not has_enriched_wrapper:
+        # Also check if enriched wrapper appears anywhere in file (import at top)
+        if not has_ag_pipeline and not has_enriched_wrapper and not has_enriched_anywhere:
             # Raw ask_user_question detected
             line_num = content[:match.start()].count("\n") + 1
+            last_newline = content.rfind("\n", 0, match.start())
+            column = match.start() - last_newline if last_newline >= 0 else match.start()
             violations.append({
                 "line": line_num,
-                "column": match.start() - content.rfind("\n", 0, match.start()),
+                "column": column,
                 "pattern": "raw_ask_user_question",
                 "severity": "critical",
                 "message": "Raw ask_user_question without enriched wrapper or AG pipeline",
