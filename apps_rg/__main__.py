@@ -23,7 +23,6 @@ from typing import Any
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     AppsRgIngressPayload,
-    RequestEnvelope,
 )
 
 
@@ -39,9 +38,14 @@ def _interactive_wizard() -> dict[str, Any]:
     # Target context
     print("Step 1: Target Context")
     print("-" * 30)
-    inputs["target_company"] = input("Target company: ").strip() or None
-    inputs["target_role"] = input("Target role: ").strip() or None
-    inputs["target_level"] = input("Target level (e.g., SENIOR, STAFF): ").strip() or None
+    try:
+        inputs["target_company"] = input("Target company: ").strip() or None
+        inputs["target_role"] = input("Target role: ").strip() or None
+        inputs["target_level"] = input("Target level (e.g., SENIOR, STAFF): ").strip() or None
+    except EOFError:
+        print("\nERROR: Interactive input not available. Run with CLI flags:", file=sys.stderr)
+        print("  python -m apps_rg --target-company 'Company' --target-role 'Role' --source-resume 'path/to/resume.md'", file=sys.stderr)
+        sys.exit(2)
     print()
 
     # Source resume
@@ -183,7 +187,14 @@ def main() -> int:
     args = parser.parse_args()
 
     # Launch wizard if requested or if no args provided
-    if args.wizard or (not args.target_company and not args.target_role and not args.source_resume):
+    needs_wizard = args.wizard or (not args.target_company and not args.target_role and not args.source_resume)
+    if needs_wizard:
+        if not sys.stdin.isatty():
+            print("ERROR: Interactive wizard requires a terminal (TTY).", file=sys.stderr)
+            print("Run with CLI flags instead:", file=sys.stderr)
+            print("  python -m apps_rg --target-company 'Company' --target-role 'Role' --source-resume 'path/to/resume.md'", file=sys.stderr)
+            print("Or use --wizard flag in an interactive terminal.", file=sys.stderr)
+            return 2
         wizard_inputs = _interactive_wizard()
     else:
         wizard_inputs = {}

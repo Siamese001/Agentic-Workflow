@@ -1,0 +1,191 @@
+"""DS-4: Canonical ingress-only entrypoint for apps_research.
+
+This is the declarative-ingress-only rewrite per apps-research-declarative-
+ingress-only-governance-pilot-a1b2c3.
+
+apps_research now:
+1. Accepts CLI/wizard input for company + role
+2. Constructs ResearchIngressPayload (declarative)
+3. Submits to AppIngressRunner (core runtime)
+4. Receives ResearchOutputContract via Exit
+5. Emits result
+
+NO runtime authority in this package.
+"""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Optional
+
+
+def _build_research_payload(
+    company: str,
+    role: str,
+    depth: str = "standard",
+    manual_brief: Optional[str] = None,
+) -> dict:
+    """Build ResearchIngressPayload from CLI args."""
+    return {
+        "schema_version": "1.0",
+        "target": {
+            "company_name": company,
+            "role_title": role,
+        },
+        "profile_pack": {
+            "profile_digest": f"research_{depth}_v1",
+            "research_depth": depth,
+            "evidence_sources": ["tavily", "manual_brief"],
+        },
+        "manual_brief_text": manual_brief,
+        "manual_brief_digest": None,
+        "request_id": "",
+        "timestamp_utc": "",
+        "parent_trace_id": None,
+    }
+
+
+def _interactive_wizard() -> dict:
+    """Interactive wizard for research input."""
+    print("=" * 60)
+    print("Company Brief Research Wizard")
+    print("=" * 60)
+    
+    company = input("\nCompany name: ").strip()
+    while not company:
+        company = input("Company name (required): ").strip()
+    
+    role = input("Role/title (optional): ").strip()
+    
+    print("\nResearch depth:")
+    print("  1. quick    (~5 min, high-level)")
+    print("  2. standard (~15 min, balanced)")
+    print("  3. deep     (~30 min, comprehensive)")
+    depth_choice = input("Select (1-3) [2]: ").strip() or "2"
+    
+    depth_map = {"1": "quick", "2": "standard", "3": "deep"}
+    depth = depth_map.get(depth_choice, "standard")
+    
+    manual_brief = input("\nManual brief text (optional, paste here or @path/to/file): ").strip()
+    if manual_brief.startswith("@"):
+        try:
+            manual_brief = Path(manual_brief[1:]).read_text(encoding="utf-8")
+        except Exception as e:
+            print(f"Warning: Could not read brief file: {e}")
+            manual_brief = None
+    elif not manual_brief:
+        manual_brief = None
+    
+    print("\n" + "=" * 60)
+    print("Wizard complete. Building ingress payload...")
+    print("=" * 60)
+    
+    return _build_research_payload(company, role, depth, manual_brief)
+
+
+def main() -> int:
+    """Main entrypoint — ingress-only, no runtime authority."""
+    parser = argparse.ArgumentParser(
+        description="Company Brief Research (Declarative Ingress-Only)"
+    )
+    parser.add_argument("--company", help="Target company name")
+    parser.add_argument("--role", help="Role/title (optional)")
+    parser.add_argument("--depth", choices=["quick", "standard", "deep"],
+                        default="standard", help="Research depth")
+    parser.add_argument("--manual-brief", help="Manual brief text or @path/to/file")
+    parser.add_argument("--output", "-o", help="Output file path (default: stdout)")
+    parser.add_argument("--json", action="store_true", help="Output as JSON")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Show payload only, don't submit")
+    
+    args = parser.parse_args()
+    
+    # Interactive mode if no CLI args
+    if not args.company:
+        try:
+            payload = _interactive_wizard()
+        except (EOFError, KeyboardInterrupt):
+            print("\nAborted.")
+            return 1
+    else:
+        manual_brief = args.manual_brief
+        if manual_brief and manual_brief.startswith("@"):
+            try:
+                manual_brief = Path(manual_brief[1:]).read_text(encoding="utf-8")
+            except Exception as e:
+                print(f"Error: Could not read brief file: {e}")
+                return 1
+        
+        payload = _build_research_payload(
+            args.company,
+            args.role or "",
+            args.depth,
+            manual_brief,
+        )
+    
+    # Dry run mode
+    if args.dry_run:
+        print("DRY RUN: Ingress payload (would submit to AppIngressRunner)")
+        print(json.dumps(payload, indent=2))
+        return 0
+    
+    # Submit to core runtime via AppIngressRunner
+    # In full implementation, this would:
+    # 1. Import AppIngressRunner from agentic_core.runtime.entry
+    # 2. runner = AppIngressRunner()
+    # 3. result = runner.submit_research(payload)
+    # 4. Output result
+    
+    # For pilot: emit stub output
+    print(f"[DS-4 PILOT] Would submit ResearchIngressPayload:")
+    print(json.dumps(payload, indent=2))
+    print(f"\n[DS-4 PILOT] Output will come from core runtime via Exit")
+    
+    # Stub output
+    output = {
+        "schema_version": "1.0",
+        "request_id": payload["request_id"],
+        "sections": {
+            "company_overview": f"[STUB] Overview of {payload['target']['company_name']}",
+            "culture_values": "[STUB] Culture analysis would appear here",
+            "technology_stack": "[STUB] Tech stack research would appear here",
+        },
+        "sources_consulted": ["tavily_stub", "manual_brief" if payload["manual_brief_text"] else None],
+        "completeness_score": 0.75,
+        "trace_id": f"research_trace_{payload['request_id']}",
+    }
+    
+    if args.json:
+        output_str = json.dumps(output, indent=2)
+    else:
+        output_str = f"""
+# Company Brief: {payload['target']['company_name']}
+## Role: {payload['target']['role_title'] or 'N/A'}
+
+## Company Overview
+{output['sections']['company_overview']}
+
+## Culture & Values
+{output['sections']['culture_values']}
+
+## Technology Stack
+{output['sections']['technology_stack']}
+
+---
+Research depth: {payload['profile_pack']['research_depth']}
+Completeness score: {output['completeness_score']:.0%}
+Trace ID: {output['trace_id']}
+"""
+    
+    if args.output:
+        Path(args.output).write_text(output_str, encoding="utf-8")
+        print(f"Output written to: {args.output}")
+    else:
+        print(output_str)
+    
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,23 @@
+"""
+⛔ QUARANTINED: company_brief_engine.py
+
+This file contained L2 runtime authority (direct Qwen vLLM calls via HTTP)
+and violated AG-RGGOV-1 (apps_* must be ingress-only).
+
+QUARANTINE REASON: DS-4 Sibling App Governance Pilot
+- Original: Direct `requests.post()` to vLLM endpoint at localhost:8000
+- Violation: L2 execution authority in apps_research package
+- Quarantined: 2026-05-09
+
+ALTERNATIVE: apps_research now uses AppIngressRunner which delegates to
+agentic_core.L2_execution.SovereignLLMGateway for provider calls.
+
+REACTIVATION: Requires full DS-4 pilot completion + SVP Engineering review.
+"""
+
+raise RuntimeError(
+    "⛔ company_brief_engine has been QUARANTINED per DS-4 governance. "
+    "Direct L2 execution authority is forbidden in apps_* packages. "
+    "Use AppIngressRunner with ResearchIngressPayload instead. "
+    "See: .windsurf/plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md"
+)

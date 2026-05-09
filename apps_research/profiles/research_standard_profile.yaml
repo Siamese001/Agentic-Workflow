@@ -1,0 +1,66 @@
+# research_standard_profile.yaml
+# Apps Research Standard Profile — Declarative Constraints Only
+# DS-4: Pilot implementation for declarative-ingress-only governance
+
+schema_version: "1.0"
+
+profile_metadata:
+  profile_id: research_standard_v1
+  profile_type: research_constraints
+  domain: company_research
+  advisory_only: true
+  pilot_plan: apps-research-declarative-ingress-only-governance-pilot-a1b2c3
+
+# Research depth constraints (advisory)
+research_depth:
+  default: standard
+  allowed_values:
+    - quick      # ~5 min, high-level
+    - standard   # ~15 min, balanced  ← default
+    - deep       # ~30 min, comprehensive
+
+# Evidence source priorities (advisory)
+evidence_sources:
+  priority_order:
+    - tavily           # Primary: web search + AI
+    - manual_brief     # Secondary: user-provided
+    - company_website  # Tertiary: official source
+  minimum_sources: 1
+  maximum_sources: 3
+
+# Output section requirements (advisory)
+output_sections:
+  required:
+    - company_overview
+    - culture_values
+  optional:
+    - technology_stack
+    - leadership_team
+    - recent_news
+    - competitive_position
+    - financial_highlights
+  default_sections:
+    - company_overview
+    - culture_values
+    - technology_stack
+    - leadership_team
+
+# Quality thresholds (advisory)
+quality_constraints:
+  min_completeness_score: 0.70  # 0.0 - 1.0
+  min_freshness_score: 0.60     # Recency weight
+  max_age_days: 365             # Reject sources older than this
+
+# Evidence sufficiency (advisory)
+evidence_sufficiency:
+  min_documents: 3
+  preferred_documents: 5
+  max_documents: 10
+
+# AG-RGGOV-1 Compliance Declaration
+runtime_authority: none  # This profile declares NO runtime authority
+implemented_by: agentic_core  # Runtime implementation in core only
+
+# DS-4 Pilot Notes
+# This profile is part of the apps_research governance pilot.
+# Full implementation requires DS-4 activation (see parent deferred scope plan).

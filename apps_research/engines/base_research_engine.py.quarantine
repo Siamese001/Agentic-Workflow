@@ -1,0 +1,24 @@
+"""
+⛔ QUARANTINED: base_research_engine.py
+
+This file contained L1-L2 hybrid runtime authority (research flow orchestration)
+and violated AG-RGGOV-1 (apps_* must be ingress-only).
+
+QUARANTINE REASON: DS-4 Sibling App Governance Pilot
+- Original: Orchestrated research flow with direct provider calls
+- Violation: L2 orchestration authority in apps_research package
+- Quarantined: 2026-05-09
+
+ALTERNATIVE: Research flow is now orchestrated by core L3 via ManagedWorkflowEngine
+(see: agentic_core/L3_orchestration/managed_workflow_router.py).
+apps_research submits ResearchIngressPayload and receives output.
+
+REACTIVATION: Requires full DS-4 pilot completion + SVP Engineering review.
+"""
+
+raise RuntimeError(
+    "⛔ base_research_engine has been QUARANTINED per DS-4 governance. "
+    "L2 orchestration authority is forbidden in apps_* packages. "
+    "Use AppIngressRunner with ResearchIngressPayload instead. "
+    "See: .windsurf/plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md"
+)

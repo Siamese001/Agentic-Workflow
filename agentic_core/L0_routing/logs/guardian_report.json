@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-09T22:50:08.463934+00:00",
+  "timestamp": "2026-05-09T23:03:57.113028+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 431,
+    "total_tests": 430,
     "passed_tests": 0,
-    "failed_tests": 231,
+    "failed_tests": 230,
     "skipped_tests": 200,
     "exit_status": 1,
     "failed_by_category": {
@@ -44,7 +44,6 @@
         "tests/_apps_contract/test_w5_per_cand_gates.py",
         "tests/_apps_contract/test_w6_post_narr_gates.py",
         "tests/_apps_contract/test_w7_pre_export_gates.py",
-        "tests/_apps_contract/test_w8_ci_gates_and_mutation_guards.py",
         "tests/apps_eval/engines/test_narrative_judge_scorer.py",
         "tests/apps_research/engines/test_company_brief_engine.py",
         "tests/apps_rg/integrations/hops/test_ensemble_runner.py",

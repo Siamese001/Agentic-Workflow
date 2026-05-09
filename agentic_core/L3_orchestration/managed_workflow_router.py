@@ -173,6 +173,10 @@ class ManagedWorkflowEngine:
         self._workflows: Dict[str, ManagedWorkflow] = {}
         self._executions: Dict[str, WorkflowExecution] = {}
         self._stage_handlers: Dict[WorkflowStage, Callable] = {}
+        
+        # Register default stage handlers
+        from .workflow_stage_handlers import STAGE_HANDLERS
+        self._stage_handlers.update(STAGE_HANDLERS)
     
     def register_workflow(self, workflow: ManagedWorkflow):
         """Register a workflow definition."""
