@@ -6,6 +6,8 @@
 # Purpose: Declarative guidance for L1 Cognition (Resume Planning)
 # Note: This profile is advisory. Core may adjust based on context.
 
+schema_version: "1.0"
+
 profile_metadata:
   profile_id: rg_planning_v1
   profile_type: planning_constraints

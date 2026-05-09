@@ -5,6 +5,8 @@
 # Purpose: Declare what this profile package claims to support
 # Core validates against actual capability registry
 
+schema_version: "1.0"
+
 profile_metadata:
   profile_id: rg_capability_v1
   profile_type: capability_declaration

@@ -5,6 +5,8 @@
 #
 # Purpose: Declarative style guidance for Prompt Assembly (core L1/L2)
 
+schema_version: "1.0"
+
 profile_metadata:
   profile_id: rg_prompt_v1
   profile_type: style_constraints

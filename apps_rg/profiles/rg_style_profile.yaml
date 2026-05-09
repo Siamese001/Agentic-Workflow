@@ -5,6 +5,8 @@
 #
 # Purpose: Declarative style guide for resume voice and tone
 
+schema_version: "1.0"
+
 profile_metadata:
   profile_id: rg_style_v1
   profile_type: style_guide

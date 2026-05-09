@@ -7,6 +7,8 @@
 #
 # Purpose: Declarative evidence rules for C0 Retrieval and validation
 
+schema_version: "1.0"
+
 profile_metadata:
   profile_id: rg_evidence_v1
   profile_type: evidence_rules
