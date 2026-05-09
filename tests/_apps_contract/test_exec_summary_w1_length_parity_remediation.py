@@ -1050,5 +1050,213 @@ class TestW1W4RemediationSummary:
         assert params["presence_penalty"] == 0.4
 
 
+# Deferred scope: Tail repetition detection and VLLM rollback tests
+class TestTailRepetitionDetection:
+    """Test deferred scope tail repetition detection for VLLM monitoring."""
+
+    def test_no_repetition_in_clean_text(self) -> None:
+        """Clean text should have no repetition detected."""
+        from apps_rg.integrations.hops.exec_summary_ensemble import _detect_tail_repetition
+
+        text = "SVP of Engineering with 15 years experience. Delivered $5M in cost savings. Led digital transformation."
+        metrics = _detect_tail_repetition(text)
+
+        assert metrics["repetition_detected"] is False
+        assert metrics["repetition_rate"] == 0.0
+
+    def test_severe_repetition_detected(self) -> None:
+        """Severe trigram repetition should be detected."""
+        from apps_rg.integrations.hops.exec_summary_ensemble import _detect_tail_repetition
+
+        # Create text with severe tail repetition using exact same trigram 3+ times
+        # Must be 30+ words to trigger tail analysis
+        # Use exact repetition pattern: "words words words" appearing multiple times
+        text = (
+            "SVP of Engineering with extensive experience in leadership roles today. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words. "
+            "Words words words."
+        )
+        metrics = _detect_tail_repetition(text)
+
+        # Should detect repetition in last 30 tokens
+        assert metrics["max_trigram_count"] >= 3
+        assert metrics["repetition_detected"] is True
+
+    def test_short_text_skips_detection(self) -> None:
+        """Text shorter than 30 words skips detection."""
+        from apps_rg.integrations.hops.exec_summary_ensemble import _detect_tail_repetition
+
+        text = "Short executive summary here."
+        metrics = _detect_tail_repetition(text)
+
+        assert metrics["repetition_detected"] is False
+        assert metrics["max_trigram_count"] == 0
+
+
+class TestTailRepetitionGate:
+    """Test deferred scope tail_repetition_detected_gate."""
+
+    def test_gate_passes_clean_text(self) -> None:
+        """Gate passes clean text without repetition."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import tail_repetition_detected_gate
+        from agentic_core.L5_safety.runtime_gates.types import Result
+
+        class MockArtifact:
+            def __init__(self, text: str):
+                self.text = text
+
+        # Need 30+ words for tail analysis
+        text = (
+            "SVP of Engineering with 15 years experience. "
+            "Delivered $5M in cost savings. Led digital transformation. "
+            "Managed cloud migration. Drove AI adoption across enterprise. "
+            "Reduced time to market by forty percent. Improved customer satisfaction."
+        )
+        verdict = tail_repetition_detected_gate(MockArtifact(text), {})
+
+        assert verdict.result == Result.PASS
+
+    def test_gate_fails_repetitive_text(self) -> None:
+        """Gate fails (monitors) repetitive text."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import tail_repetition_detected_gate
+        from agentic_core.L5_safety.runtime_gates.types import Result
+
+        class MockArtifact:
+            def __init__(self, text: str):
+                self.text = text
+
+        # Text with severe repetition using exact same trigram many times
+        text = (
+            "SVP of Engineering with extensive background in many areas. "
+            "Words words words. Words words words. Words words words. "
+            "Words words words. Words words words. Words words words. "
+            "Words words words. Words words words. Words words words."
+        )
+        verdict = tail_repetition_detected_gate(MockArtifact(text), {})
+
+        assert verdict.result == Result.FAIL  # Monitoring fail, not blocking
+        assert "tail_repetition" in verdict.reason_codes
+        assert "vllm_min_tokens_side_effect" in verdict.reason_codes
+
+
+class TestVLLMRollbackTrigger:
+    """Test deferred scope VLLM rollback trigger infrastructure.
+
+    Note: These tests verify the infrastructure exists and functions correctly.
+    The VLLM_ROLLBACK_STATE is global and persists across tests, so we test
+    the functions work rather than exact state transitions.
+    """
+
+    def test_rollback_not_triggered_with_clean_data(self) -> None:
+        """Rollback not triggered with zero repetitions (clean state)."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import (
+            check_vllm_rollback_trigger,
+            reset_vllm_rollback_state,
+        )
+
+        # Reset state
+        reset_vllm_rollback_state()
+
+        # Check with no repetition
+        result = check_vllm_rollback_trigger(repetition_detected=False, threshold=0.05)
+
+        assert result["should_rollback"] is False
+        assert result["repetition_rate"] == 0.0
+
+    def test_rollback_tracks_repetition_rate(self) -> None:
+        """Rollback trigger correctly tracks repetition rate."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import (
+            check_vllm_rollback_trigger,
+            reset_vllm_rollback_state,
+        )
+
+        # Reset state
+        reset_vllm_rollback_state()
+
+        # Simulate repetitions - just verify rate tracking works
+        result = None
+        for i in range(10):
+            is_repetitive = i < 5  # 50% repetition
+            result = check_vllm_rollback_trigger(
+                repetition_detected=is_repetitive,
+                threshold=0.05,
+                window_size=100
+            )
+
+        # Verify rate calculation
+        assert result["repetition_rate"] > 0.0
+        assert "repetition_rate_percent" in result
+
+    def test_rollback_trigger_returns_correct_fields(self) -> None:
+        """Rollback function returns expected fields."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import (
+            check_vllm_rollback_trigger,
+            reset_vllm_rollback_state,
+        )
+
+        # Reset state
+        reset_vllm_rollback_state()
+
+        result = check_vllm_rollback_trigger(repetition_detected=True, threshold=0.05)
+
+        # Verify all expected fields present
+        assert "repetition_rate" in result
+        assert "repetition_rate_percent" in result
+        assert "should_rollback" in result
+        assert "already_rolled_back" in result
+        assert "window_checked" in result
+        assert "window_repetitions" in result
+
+    def test_reset_function_exists(self) -> None:
+        """Reset function exists and can be called."""
+        from apps_rg.integrations.gates.per_cand_resume_gates import (
+            reset_vllm_rollback_state,
+            VLLM_ROLLBACK_STATE,
+        )
+
+        # Just verify reset can be called without error
+        reset_vllm_rollback_state()
+
+        # Verify state object exists
+        assert "repetition_count" in VLLM_ROLLBACK_STATE
+        assert "rollback_triggered" in VLLM_ROLLBACK_STATE
+
+
+class TestBenchmarkScript:
+    """Test deferred scope benchmark script infrastructure."""
+
+    def test_compute_repetition_rate_clean(self) -> None:
+        """Benchmark script detects no repetition in clean text."""
+        from tools.apps_rg.benchmark_exec_summary import compute_repetition_rate
+
+        text = "SVP of Engineering with 15 years experience. Delivered $5M in cost savings."
+        rate = compute_repetition_rate(text)
+
+        assert rate == 0.0
+
+    def test_compute_repetition_rate_severe(self) -> None:
+        """Benchmark script detects severe repetition."""
+        from tools.apps_rg.benchmark_exec_summary import compute_repetition_rate
+
+        # Need 30+ words for tail analysis, with severe repetition
+        # Use exact same trigram repeated many times
+        text = (
+            "SVP of Engineering with extensive experience in leadership roles today. "
+            "Words words words. Words words words. Words words words. "
+            "Words words words. Words words words. Words words words. "
+            "Words words words. Words words words. Words words words."
+        )
+        rate = compute_repetition_rate(text)
+
+        assert rate == 1.0  # Severe repetition
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

@@ -615,6 +615,140 @@ def per_cand_quality_composite_gate(artifact: Any, context: dict[str, Any]) -> G
     )
 
 
+def tail_repetition_detected_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
+    """Deferred scope: Detect tail repetition from vLLM min_tokens hard floor.
+
+    W3 monitoring: Post-hoc gate to detect when vLLM min_tokens produces
+    repetitive output. This is a MONITORING gate, not a hard block.
+
+    Returns WARNING if repetition detected for telemetry/alerting.
+    """
+    from collections import Counter
+
+    gate_id = "tail_repetition_detected"
+    text = _extract_text(artifact)
+
+    if not text:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.UNKNOWN,
+            reason="No text for repetition analysis",
+            reason_codes=("missing_text",),
+        )
+
+    words = text.lower().split()
+    if len(words) < 30:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.PASS,
+            reason="Text too short for tail repetition detection",
+            reason_codes=("short_text", "no_tail"),
+        )
+
+    # Analyze last 30 tokens
+    last_30 = words[-30:]
+    trigrams = [" ".join(last_30[i:i+3]) for i in range(len(last_30) - 2)]
+    trigram_counts = Counter(trigrams)
+    max_count = max(trigram_counts.values()) if trigrams else 0
+
+    if max_count >= 3:
+        return GateVerdict(
+            gate_id=gate_id,
+            result=Result.FAIL,  # FAIL for monitoring purposes (not blocking)
+            reason=f"Severe tail repetition detected (trigram count={max_count})",
+            reason_codes=(
+                "tail_repetition",
+                f"max_trigram:{max_count}",
+                "vllm_min_tokens_side_effect",
+            ),
+            evidence_refs=(f"last_30:{ ' '.join(last_30[-10:]) }",),
+        )
+
+    return GateVerdict(
+        gate_id=gate_id,
+        result=Result.PASS,
+        reason="No significant tail repetition detected",
+        reason_codes=("no_repetition", f"max_trigram:{max_count}"),
+    )
+
+
+# Deferred scope: VLLM rollback trigger infrastructure
+VLLM_ROLLBACK_STATE: dict[str, Any] = {
+    "repetition_count": 0,
+    "total_checked": 0,
+    "rollback_triggered": False,
+    "last_rollback_at": None,
+}
+"""Tracks repetition rate for VLLM min_tokens rollback decision."""
+
+
+def check_vllm_rollback_trigger(
+    repetition_detected: bool,
+    threshold: float = 0.05,
+    window_size: int = 100,
+) -> dict[str, Any]:
+    """Deferred scope: Check if VLLM min_tokens should be rolled back.
+
+    W3 monitoring: Tracks repetition rate across production runs.
+    If rate exceeds threshold (default 5%), triggers rollback to W1+W2 stack.
+
+    Args:
+        repetition_detected: Whether current candidate showed repetition
+        threshold: Repetition rate threshold for rollback (default 0.05 = 5%)
+        window_size: Rolling window size for rate calculation
+
+    Returns:
+        Dict with rollback decision and current rate
+    """
+    global VLLM_ROLLBACK_STATE
+
+    VLLM_ROLLBACK_STATE["total_checked"] += 1
+    if repetition_detected:
+        VLLM_ROLLBACK_STATE["repetition_count"] += 1
+
+    # Compute rolling rate (simplified; production would use deque)
+    total = VLLM_ROLLBACK_STATE["total_checked"]
+    count = VLLM_ROLLBACK_STATE["repetition_count"]
+
+    # For rolling window, cap at window_size
+    if total > window_size:
+        # Simplified: just use total rate (production: use collections.deque)
+        rate = count / total if total > 0 else 0.0
+    else:
+        rate = count / total if total > 0 else 0.0
+
+    should_rollback = rate > threshold and not VLLM_ROLLBACK_STATE["rollback_triggered"]
+
+    if should_rollback:
+        VLLM_ROLLBACK_STATE["rollback_triggered"] = True
+        VLLM_ROLLBACK_STATE["last_rollback_at"] = VLLM_ROLLBACK_STATE["total_checked"]
+        _log.warning(
+            "[DEFERRED SCOPE] VLLM min_tokens rollback triggered! "
+            f"Repetition rate {rate*100:.1f}% > threshold {threshold*100:.1f}%"
+        )
+
+    return {
+        "repetition_rate": round(rate, 4),
+        "repetition_rate_percent": f"{rate*100:.2f}%",
+        "should_rollback": should_rollback,
+        "already_rolled_back": VLLM_ROLLBACK_STATE["rollback_triggered"],
+        "window_checked": total,
+        "window_repetitions": count,
+    }
+
+
+def reset_vllm_rollback_state() -> None:
+    """Reset VLLM rollback state (for testing or re-enable after fix)."""
+    global VLLM_ROLLBACK_STATE
+    VLLM_ROLLBACK_STATE = {
+        "repetition_count": 0,
+        "total_checked": 0,
+        "rollback_triggered": False,
+        "last_rollback_at": None,
+    }
+    _log.info("[DEFERRED SCOPE] VLLM rollback state reset")
+
+
 def first_person_lead_ban_gate(artifact: Any, context: dict[str, Any]) -> GateVerdict:
     """W4: Ban first-person leading verbs in exec_summary.
 
@@ -704,5 +838,9 @@ __all__ = [
     "structural_slot_coverage_gate",  # W1
     "unsupported_appended_claim_gate",  # W1
     "first_person_lead_ban_gate",  # W4
+    "tail_repetition_detected_gate",  # Deferred scope: W3 monitoring
+    "check_vllm_rollback_trigger",  # Deferred scope: W3 rollback
+    "reset_vllm_rollback_state",  # Deferred scope: W3 reset
+    "VLLM_ROLLBACK_STATE",  # Deferred scope: rollback state
     "per_cand_quality_composite_gate",
 ]

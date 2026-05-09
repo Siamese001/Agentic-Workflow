@@ -319,6 +319,27 @@ def _generate_candidates_with_repair(
     if archive_dir:
         _archive_candidates_with_repair_telemetry(candidates, archive_dir, section_id)
 
+    # Deferred scope: Check VLLM rollback trigger based on repetition rate
+    # This monitors production health and can disable min_tokens if needed
+    for cand in candidates:
+        if cand.text:
+            from apps_rg.integrations.gates.per_cand_resume_gates import (
+                check_vllm_rollback_trigger,
+                _detect_tail_repetition,
+            )
+            rep_metrics = _detect_tail_repetition(cand.text)
+            rollback_info = check_vllm_rollback_trigger(
+                repetition_detected=rep_metrics["repetition_detected"],
+                threshold=0.05,  # 5% threshold per deferred scope
+            )
+            if rollback_info["should_rollback"]:
+                _log.warning(
+                    "[DEFERRED SCOPE] VLLM min_tokens rollback triggered! "
+                    f"Rate: {rollback_info['repetition_rate_percent']}"
+                )
+                # TODO: Disable min_tokens in VLLM_HARD_FLOOR_PARAMS
+                # This requires runtime config update capability
+
     return candidates
 
 
@@ -676,15 +697,56 @@ def _parse_exec_summary_xml(text: str) -> str:
     return cleaned.strip()
 
 
+def _detect_tail_repetition(text: str) -> dict[str, Any]:
+    """Deferred scope: Detect tail repetition in generated text.
+
+    W3 monitoring: Detects when vLLM min_tokens produces repetitive output.
+    Returns dict with repetition metrics for scorecard telemetry.
+
+    Heuristic: Trigram appears ≥3 times in last 30 tokens = severe repetition.
+    """
+    from collections import Counter
+
+    words = text.lower().split()
+    if len(words) < 30:
+        return {"repetition_detected": False, "repetition_rate": 0.0, "max_trigram_count": 0}
+
+    last_30 = words[-30:]
+
+    # Trigram analysis
+    trigrams = [" ".join(last_30[i:i+3]) for i in range(len(last_30) - 2)]
+    trigram_counts = Counter(trigrams)
+    max_trigram = max(trigram_counts.values()) if trigrams else 0
+
+    # Severity scoring
+    if max_trigram >= 3:
+        rate = 1.0  # Severe repetition
+    elif max_trigram == 2:
+        rate = 0.5  # Moderate repetition
+    else:
+        # Check bigrams for mild repetition
+        bigrams = [" ".join(last_30[i:i+2]) for i in range(len(last_30) - 1)]
+        bigram_counts = Counter(bigrams)
+        repeated_bigrams = sum(1 for c in bigram_counts.values() if c >= 2)
+        rate = min(repeated_bigrams / 5.0, 0.3)
+
+    return {
+        "repetition_detected": rate >= 0.5,
+        "repetition_rate": round(rate, 3),
+        "max_trigram_count": max_trigram,
+        "threshold": 0.05,  # 5% threshold for monitoring
+    }
+
+
 def _archive_candidates_with_repair_telemetry(
     candidates: list[Candidate],
     archive_dir: Path,
     section_id: str,
 ) -> None:
-    """Archive candidates with W1 extended repair telemetry.
+    """Archive candidates with W1 extended repair telemetry + W3 repetition monitoring.
 
     Writes per-candidate JSON with original/repaired counts, repair flags,
-    provenance refs, and gate version.
+    provenance refs, gate version, and tail repetition metrics (deferred scope).
     """
     import json
     from pathlib import Path
@@ -693,6 +755,9 @@ def _archive_candidates_with_repair_telemetry(
     archive_dir.mkdir(parents=True, exist_ok=True)
 
     for cand in candidates:
+        # W3: Tail repetition detection (deferred scope monitoring)
+        repetition_metrics = _detect_tail_repetition(cand.text)
+
         scorecard = {
             "candidate_id": cand.candidate_id,
             "prompt_variant": cand.prompt_variant,
@@ -706,7 +771,11 @@ def _archive_candidates_with_repair_telemetry(
             "quantified_outcome_count": cand.quantified_outcome_count,
             "post_repair_pass": cand.post_repair_pass,
             "final_length_band": cand.final_length_band,
-            "gate_version": "W1",  # W1 hardened gate stack
+            "gate_version": "W1-W3",  # W1-W3 hardened gate stack
+            # W3 deferred scope: Repetition monitoring
+            "repetition_detected": repetition_metrics["repetition_detected"],
+            "repetition_rate": repetition_metrics["repetition_rate"],
+            "repetition_max_trigram": repetition_metrics["max_trigram_count"],
         }
 
         if cand.verdict:
