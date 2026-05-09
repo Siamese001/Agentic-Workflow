@@ -315,6 +315,29 @@ def main():
         sys.exit(1)
     print("✅ Author-gate ask_user_question packet freshness validated")
 
+    # Gate: AGP1 — Author-Gate pipeline completion freshness
+    # (plan author-gate-ui-renderer-hardening-a7f3c2 W3.P3.2).
+    # Watches artifacts/windsurf/author_gate_pipeline_violations.jsonl
+    # produced by post_cascade_author_gate_pipeline_audit.py.
+    # Advisory by default; AG_PIPELINE_FAIL_CLOSED=1 activates blocking.
+    # Bypass: AG_PIPELINE_FRESHNESS_BYPASS=1.
+    returncode, stdout, stderr = run_cmd(
+        [
+            sys.executable,
+            str(
+                _script(
+                    "ops_scripts/ci/check_author_gate_pipeline_freshness.py"
+                )
+            ),
+        ],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ AGP1 Author-Gate pipeline completion freshness check failed")
+        print(stdout or stderr)
+        sys.exit(1)
+    print("✅ AGP1 Author-Gate pipeline completion freshness validated")
+
     # Gate: Author-Gate v2/W4 completeness (plan 1f4c8a W5) — advisory by
     # default; emits warnings without blocking. Set AUTHOR_GATE_V2_STRICT=1
     # to fail closed once the ledger is clean for one full 7-day window.

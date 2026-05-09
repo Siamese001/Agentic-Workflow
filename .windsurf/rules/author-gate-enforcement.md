@@ -29,6 +29,20 @@ When facing an author-gate decision point:
    | 4 | **Dominance star** | `⭐` prefix appears on **exactly one** option iff `routing.rule_applied == "dominance_fires"`, **zero** options otherwise | `post_cascade_author_gate_ui_audit.py` invariants 2 + 3 |
 
    Failure modes log to `artifacts/windsurf/author_gate_ui_violations.jsonl` (UI invariants 1–4) and `artifacts/windsurf/ask_user_question_packet_violations.jsonl` (vacuum-closure). CI freshness gates: `ops_scripts/ci/author_gate/check_ui_conformance.py` and `ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py`.
+
+   **Pipeline Completion Invariant** (plan `author-gate-ui-renderer-hardening-a7f3c2`):
+
+   > ⛔ Every `AUTHOR_GATE_PACKET:` (or legacy `HITL_PACKET:`) emitted in a response **MUST** be followed by an `ask_user_question` tool invocation **in the same response**. A packet without a same-response `ask_user_question` is a critical violation.
+
+   | Direction | Invariant | Enforced by |
+   |---|---|---|
+   | Packet → Ask | `AUTHOR_GATE_PACKET:` present ⇒ `ask_user_question` present | `post_cascade_author_gate_pipeline_audit.py` → `artifacts/windsurf/author_gate_pipeline_violations.jsonl` |
+   | Ask → Packet | `ask_user_question` in AG context ⇒ `AUTHOR_GATE_PACKET:` present | `post_cascade_ask_user_question_packet_audit.py` → `artifacts/windsurf/ask_user_question_packet_violations.jsonl` |
+
+   Pure detection logic: `.windsurf/scripts/_author_gate_pipeline_check.py` (`decide()` function). CI freshness: `ops_scripts/ci/check_author_gate_pipeline_freshness.py` (AGP1, advisory; `AG_PIPELINE_FAIL_CLOSED=1` for blocking). Bypass: `AG_PIPELINE_AUDIT_BYPASS=1`.
+
+   **Forbidden**: emitting `AUTHOR_GATE_PACKET:` then ending the response without `ask_user_question`; emitting the packet in one response and deferring `ask_user_question` to a follow-up response; relying on the user to manually trigger the question after seeing the packet.
+
 8. **Wait** for explicit user selection
 9. **Execute** chosen option; emit `DECISION_CAPTURED:` marker (refactor-class only) as **first plain-text line** of the response
 

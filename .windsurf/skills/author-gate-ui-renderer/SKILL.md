@@ -17,6 +17,10 @@ Galileo, dev.to, and codeongrass independently identify reviewer attention as th
 
 Immediately after `author-gate-packet-builder` emits its `AUTHOR_GATE_PACKET:` block, and immediately before `ask_user_question`. Do NOT invoke for T0/T1 edits or for packets where routing fired `dominance_fires` AND precedent verdict is `strong` (proceed without asking per `author-gate-enforcement.md`).
 
+> ⛔ **Pipeline Completion Invariant**: `AUTHOR_GATE_PACKET:` → render card → `ask_user_question` MUST all occur **in the same Cascade response**. Emitting the packet without a same-response `ask_user_question` is a critical violation logged by `post_cascade_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
+
+**Forbidden**: emitting `AUTHOR_GATE_PACKET:` then ending the response without `ask_user_question`; splitting packet and question across responses; relying on the user to prompt for the question after seeing the card.
+
 ## Card Shape (fill in from packet)
 
 ```

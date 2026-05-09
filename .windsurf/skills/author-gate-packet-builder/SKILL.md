@@ -33,6 +33,8 @@ Invoke BEFORE `ask_user_question` whenever the decision matches any §AG-1 class
 
 Do NOT invoke for T0/T1 edits, pure lints, or formatting-only changes.
 
+> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Cascade response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_cascade_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
+
 ## Files
 
 - `packet_template.md` — fill-in template with AG-10 fields + didactic slots

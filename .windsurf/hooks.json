@@ -168,6 +168,11 @@
         "show_output": true
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_author_gate_pipeline_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_adg_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
