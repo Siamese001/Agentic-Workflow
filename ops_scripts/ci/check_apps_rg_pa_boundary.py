@@ -1,14 +1,18 @@
 """apps_rg PA boundary anti-bypass scanner — W6 of plan apps-rg-spine-hardening-7e3b9c.
 
-AST-based scanner that detects PA boundary bypass patterns in apps_rg:
+AST-based scanner that detects PA boundary bypass patterns in apps_rg and the shared
+agentic_core/prompt_governance/ surface (expanded per ADR-083 D4):
 
 - VIOLATION_DIRECT_PROVIDER_CALL_BYPASS — direct anthropic.Anthropic / openai.OpenAI / vllm
-  client construction outside `apps_rg/integrations/llm_client.py` (sanctioned shim) or
-  `apps_rg/utils/anthropic_rag_entrypoint.py` (LEGACY PA bridge).
+  client construction outside the sanctioned allowlist.
 - VIOLATION_PROVIDER_READY_PROMPT_OUTSIDE_PA — provider message arrays
-  (list of {"role":..., "content":...} dicts) constructed outside `apps_rg/prompt_assembly/`.
+  (list of {"role":..., "content":...} dicts) constructed outside `apps_rg/prompt_assembly/`
+  or `agentic_core/prompt_governance/prompt_assembly/`.
 - VIOLATION_RAW_STRING_LLM_CALL — calls to .messages.create / .chat.completions.create
   with a hardcoded prompt string literal (not a CompiledPromptArtifact).
+
+CONDITIONAL_V1 baseline: sites in CONDITIONAL_V1_BASELINE are known direct-SDK callers
+with PA-BOM receipts; they are reported as WARN (not ERROR) until NEXT_STEP-1 completes.
 
 Posture:
 - Advisory by default (exit 0 with warnings).
@@ -19,7 +23,7 @@ Output:
 - Stdout: human-readable findings table.
 - artifacts/windsurf/apps_rg_pa_boundary_violations.jsonl — durable audit log.
 
-Per constitutional §22 + adg-graph-layer-enforcement.md.
+Per constitutional §22 + ADR-083 + adg-graph-layer-enforcement.md.
 """
 
 from __future__ import annotations
@@ -36,15 +40,54 @@ from typing import Iterator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_RG = REPO_ROOT / "apps_rg"
+APPS_QNA = REPO_ROOT / "apps_qna"
+PROMPT_GOVERNANCE = REPO_ROOT / "agentic_core" / "prompt_governance"
+ASSEMBLY_STAGE = REPO_ROOT / "agentic_core" / "L0_routing" / "reasoning" / "assembly_stage.py"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "apps_rg_pa_boundary_violations.jsonl"
 
-# Files that are SANCTIONED to construct provider clients / messages
+# Files SANCTIONED to construct provider clients / messages in apps_rg
 ALLOWLIST_FILES = {
     "apps_rg/integrations/llm_client.py",
     "apps_rg/utils/anthropic_rag_entrypoint.py",
     "apps_rg/prompt_assembly/compiler.py",
     "apps_rg/prompt_assembly/provider_request.py",
     "apps_rg/prompt_assembly/pa_local.py",
+    # Hardened executor — circuit-breaker + retry wrapper; direct SDK call
+    # is the sanctioned low-level path for this resilience middleware.
+    # Pillar 8 (Tool Ecosystem Resilience). ADR-083 D2.
+    "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py",
+    "apps_rg/validators/enforcement/HardenedanthropicexecutorStrategy.py",
+    # apps_qna sanctioned shim — re-exports from infrastructure/sdks_mcps;
+    # NOT a bypass; re-exports are not direct constructions. W5 P5.1.
+    "apps_qna/integrations/llm_client.py",
+}
+
+# Files SANCTIONED in agentic_core/prompt_governance (canonical PA pipeline constructs
+# provider message arrays legitimately inside pa6_provider_rendering.py)
+ALLOWLIST_AGENTIC_CORE = {
+    "agentic_core/prompt_governance/prompt_assembly/pa6_provider_rendering.py",
+    "agentic_core/prompt_governance/prompt_assembly/pa0_boundary.py",
+    "agentic_core/prompt_governance/core/prompt_assembler.py",
+    "agentic_core/prompt_governance/core/sovereign_prompt_renderer.py",
+}
+
+# CONDITIONAL_V1 baseline — known direct-SDK callers with PA-BOM receipts present.
+# Reported as WARN (not ERROR) until NEXT_STEP-1 (SovereignLLMGateway wiring) completes.
+# ADR-083 D3: ratified 2026-05-09.
+#
+# Note: hops/_llm_client.py V2/V3 findings (provider message arrays + raw-string calls)
+# are also baselined here because they co-locate with the baselined V1 sites and
+# share the same NEXT_STEP-1 remediation path. All findings from this file are WARN
+# until SovereignLLMGateway wiring is complete.
+CONDITIONAL_V1_BASELINE = {
+    "apps_rg/integrations/hops/_llm_client.py",
+    # apps_qna W5 P5.1 — lazy-import, env-gated, fail-soft SDK callers;
+    # same NEXT_STEP-1 (SovereignLLMGateway wiring) remediation path.
+    # Baselined 2026-05-09.
+    "apps_qna/engines/dispatch/provider_dispatch.py",
+    "apps_qna/integrations/intent_classifier.py",
+    "apps_qna/engines/judges/interview_card_quality_judge.py",
+    "apps_qna/integrations/provider_adapter.py",
 }
 
 # Provider client constructors (high-confidence)
@@ -78,7 +121,12 @@ class Finding:
 
 def _is_allowlisted(rel_path: str) -> bool:
     rel_norm = rel_path.replace("\\", "/")
-    return rel_norm in ALLOWLIST_FILES
+    return rel_norm in ALLOWLIST_FILES or rel_norm in ALLOWLIST_AGENTIC_CORE
+
+
+def _is_conditional_v1(rel_path: str) -> bool:
+    """Return True if this file is in the CONDITIONAL_V1 baseline (WARN not ERROR)."""
+    return rel_path.replace("\\", "/") in CONDITIONAL_V1_BASELINE
 
 
 def _scan_file(path: Path) -> list[Finding]:
@@ -102,13 +150,18 @@ def _scan_file(path: Path) -> list[Finding]:
             elif isinstance(node.func, ast.Attribute):
                 ctor_name = node.func.attr
             if ctor_name in PROVIDER_CLIENTS and not allowlisted:
+                conditional = _is_conditional_v1(rel)
                 findings.append(Finding(
-                    severity="ERROR",
-                    code="VIOLATION_DIRECT_PROVIDER_CALL_BYPASS",
+                    severity="WARN" if conditional else "ERROR",
+                    code="CONDITIONAL_V1_BASELINED" if conditional else "VIOLATION_DIRECT_PROVIDER_CALL_BYPASS",
                     file=rel,
                     line=node.lineno,
-                    message=f"Direct {ctor_name} client constructed outside sanctioned shim",
-                    extra={"constructor": ctor_name},
+                    message=(
+                        f"Direct {ctor_name} client — CONDITIONAL_V1 (PA-BOM receipt present; NEXT_STEP-1 pending)"
+                        if conditional else
+                        f"Direct {ctor_name} client constructed outside sanctioned shim"
+                    ),
+                    extra={"constructor": ctor_name, "conditional_v1": conditional},
                 ))
 
         # V3: raw-string LLM call — .messages.create(model=..., messages=[{"role": "user", "content": "literal"}])
@@ -127,13 +180,18 @@ def _scan_file(path: Path) -> list[Finding]:
                                         and isinstance(v.value, str)
                                         and len(v.value) > 40
                                     ):
+                                        conditional_v3 = _is_conditional_v1(rel)
                                         findings.append(Finding(
-                                            severity="ERROR",
-                                            code="VIOLATION_RAW_STRING_LLM_CALL",
+                                            severity="WARN" if conditional_v3 else "ERROR",
+                                            code="CONDITIONAL_V1_BASELINED" if conditional_v3 else "VIOLATION_RAW_STRING_LLM_CALL",
                                             file=rel,
                                             line=node.lineno,
-                                            message=f".{node.func.attr}() called with hardcoded message content string",
-                                            extra={"method": node.func.attr},
+                                            message=(
+                                                f".{node.func.attr}() — CONDITIONAL_V1 (raw-string call; NEXT_STEP-1 pending)"
+                                                if conditional_v3 else
+                                                f".{node.func.attr}() called with hardcoded message content string"
+                                            ),
+                                            extra={"method": node.func.attr, "conditional_v1": conditional_v3},
                                         ))
                                         break
 
@@ -147,7 +205,7 @@ def _scan_file(path: Path) -> list[Finding]:
                     if not ({"role", "content"} <= keys):
                         all_have_role_content = False
                         break
-                if all_have_role_content and "/prompt_assembly/" not in rel:
+                if all_have_role_content and "/prompt_assembly/" not in rel and "prompt_governance/prompt_assembly" not in rel:
                     findings.append(Finding(
                         severity="WARN",
                         code="VIOLATION_PROVIDER_READY_PROMPT_OUTSIDE_PA",
@@ -165,12 +223,37 @@ def _scan_file(path: Path) -> list[Finding]:
 
 def _iter_apps_rg_files() -> Iterator[Path]:
     for path in APPS_RG.rglob("*.py"):
-        # Skip tests and __pycache__
         rel = path.relative_to(REPO_ROOT)
         parts = rel.parts
         if "__pycache__" in parts or "tests" in parts or "_archive" in parts:
             continue
         yield path
+
+
+def _iter_apps_qna_files() -> Iterator[Path]:
+    """Iterate apps_qna PA surface. W5 P5.1."""
+    for path in APPS_QNA.rglob("*.py"):
+        rel = path.relative_to(REPO_ROOT)
+        parts = rel.parts
+        if "__pycache__" in parts or "tests" in parts or "_archive" in parts:
+            continue
+        yield path
+
+
+def _iter_agentic_core_pa_files() -> Iterator[Path]:
+    """Iterate agentic_core PA surface: prompt_governance/ + assembly_stage.py.
+
+    ADR-083 D4: expanded scanner scope.
+    """
+    if PROMPT_GOVERNANCE.exists():
+        for path in PROMPT_GOVERNANCE.rglob("*.py"):
+            rel = path.relative_to(REPO_ROOT)
+            parts = rel.parts
+            if "__pycache__" in parts or "tests" in parts:
+                continue
+            yield path
+    if ASSEMBLY_STAGE.exists():
+        yield ASSEMBLY_STAGE
 
 
 def _emit_violations_log(findings: list[Finding], bypassed: bool) -> None:
@@ -206,6 +289,21 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="suppress per-finding output")
     parser.add_argument("--json", action="store_true", help="emit JSON output")
+    parser.add_argument(
+        "--scan-dir",
+        default=None,
+        help="Limit scan to a specific directory (relative to repo root). Omit to scan all surfaces.",
+    )
+    parser.add_argument(
+        "--no-agentic-core",
+        action="store_true",
+        help="Skip agentic_core/prompt_governance/ scan (apps_rg only).",
+    )
+    parser.add_argument(
+        "--no-apps-qna",
+        action="store_true",
+        help="Skip apps_qna/ scan.",
+    )
     args = parser.parse_args(argv)
 
     if os.environ.get("APPS_RG_PA_BOUNDARY_BYPASS") == "1":
@@ -217,17 +315,41 @@ def main(argv: list[str] | None = None) -> int:
 
     all_findings: list[Finding] = []
     file_count = 0
-    for path in _iter_apps_rg_files():
-        file_count += 1
-        all_findings.extend(_scan_file(path))
+
+    if args.scan_dir:
+        # Targeted scan of a specific directory
+        target = REPO_ROOT / args.scan_dir
+        for path in target.rglob("*.py") if target.is_dir() else [target]:
+            rel = path.relative_to(REPO_ROOT)
+            parts = rel.parts
+            if "__pycache__" in parts or "tests" in parts or "_archive" in parts:
+                continue
+            file_count += 1
+            all_findings.extend(_scan_file(path))
+    else:
+        # Full scan: apps_rg + apps_qna + agentic_core PA surface
+        for path in _iter_apps_rg_files():
+            file_count += 1
+            all_findings.extend(_scan_file(path))
+        if not args.no_apps_qna:
+            for path in _iter_apps_qna_files():
+                file_count += 1
+                all_findings.extend(_scan_file(path))
+        if not args.no_agentic_core:
+            for path in _iter_agentic_core_pa_files():
+                file_count += 1
+                all_findings.extend(_scan_file(path))
 
     error_count = sum(1 for f in all_findings if f.severity == "ERROR")
     warn_count = sum(1 for f in all_findings if f.severity == "WARN")
+
+    conditional_count = sum(1 for f in all_findings if f.code == "CONDITIONAL_V1_BASELINED")
 
     if args.json:
         print(json.dumps({
             "scanner": "check_apps_rg_pa_boundary",
             "files_scanned": file_count,
+            "conditional_v1_baselined": conditional_count,
             "findings": [
                 {"severity": f.severity, "code": f.code, "file": f.file, "line": f.line, "message": f.message}
                 for f in all_findings
@@ -235,10 +357,12 @@ def main(argv: list[str] | None = None) -> int:
         }, indent=2))
     else:
         print(f"[apps_rg-pa-boundary] scanned {file_count} files")
-        print(f"[apps_rg-pa-boundary] ERROR={error_count} WARN={warn_count}")
+        print(f"[apps_rg-pa-boundary] ERROR={error_count} WARN={warn_count} (CONDITIONAL_V1_BASELINED={conditional_count})")
         if not args.quiet:
             for f in all_findings:
                 print(f"  {f.severity:5s} {f.code:50s} {f.file}:{f.line}  {f.message}")
+        if conditional_count:
+            print(f"[apps_rg-pa-boundary] {conditional_count} CONDITIONAL_V1 site(s) baselined — ADR-083 D3; NEXT_STEP-1 tracks SovereignLLMGateway wiring")
         if fail_closed:
             print("[apps_rg-pa-boundary] mode=fail-closed (APPS_RG_PA_BOUNDARY_FAIL_CLOSED=1)")
         else:
