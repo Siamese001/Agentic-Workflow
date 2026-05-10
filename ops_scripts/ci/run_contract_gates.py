@@ -598,6 +598,16 @@ def main():
             "NP10 Notion Plans Waiting-For completeness (advisory)",
             "ops_scripts/ci/check_notion_plans_waiting_for.py",
         ),
+        # NP11 -- Backlog Items DB Waiting-status rows must have non-blank
+        # Waiting For (DS-3 parity with NP10). Advisory by default;
+        # fail-closed via NOTION_BACKLOG_WAITING_FOR_FAIL_CLOSED=1.
+        # Bypass: NOTION_BACKLOG_WAITING_FOR_BYPASS=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plans-taxonomy.md > Field Requirements.
+        (
+            "NP11 Notion Backlog Waiting-For completeness (advisory)",
+            "ops_scripts/ci/check_notion_backlog_waiting_for.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.
@@ -768,6 +778,24 @@ def main():
         (
             "W6ECE1 emit-contract enrichment 9-concern gate (advisory)",
             "ops_scripts/ci/check_w6_emit_contract_enrichment.py",
+        ),
+        # MCP-SCHEMA — mcp_config.json structural validation.
+        # Verifies required servers present, valid keys per constitutional §27,
+        # and proper server configuration (command/args for local, url for remote).
+        # Advisory by default; fail-closed via MCP_CONFIG_SCHEMA_FAIL_CLOSED=1.
+        # Bypass: MCP_CONFIG_SCHEMA_BYPASS=1.
+        (
+            "MCP-SCHEMA mcp_config.json validation (advisory)",
+            "ops_scripts/ci/check_mcp_config_schema.py",
+        ),
+        # DEFER — Deferred scope marker compliance (CI mode).
+        # Scans all .windsurf/plans/*.md for prose indicating deferred work
+        # without DEFERRED_SCOPE: marker. Baseline: 12 violations (advisory).
+        # Advisory by default; fail-closed via DEFERRED_SCOPE_GATE_FAIL_CLOSED=1.
+        # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
+        (
+            "DEFER Deferred scope marker compliance (advisory baseline)",
+            "ops_scripts/ci/check_deferred_scope_markers.py",
         ),
     ]
 
