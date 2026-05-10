@@ -612,6 +612,134 @@ class GovernedAppRunner:
                 _hitl_exc,
             )
 
+        # Phase 7 — Semantic cache writeback + C0 chunk writeback.
+        # Runs only when the run completed successfully (no mandatory-phase error
+        # and grounded retrieval succeeded).  Both paths are fail-soft: a writeback
+        # failure must never break a run that already produced a valid result.
+        _sc_writeback_ok = False
+        _c0_writeback_ok = False
+        _writeback_error = ""
+        _output_text = ""
+        if not l2_error and not l5_error and grounded and bundle is not None:
+            # ---- 7a: semantic cache writeback (intent vector → Redis L1 + vector DB) --------
+            # Two-path writeback:
+            #   Path 1 — learn() → Redis L1 (hot/ephemeral, 24h TTL)
+            #   Path 2 — VectorRetrievalService.add_documents() → {app}_intent ChromaDB
+            #             collection (durable; survives Redis flush / restart)
+            # Both paths are fail-soft; writeback failure must never break the run.
+            try:
+                from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
+                    SemanticCacheManager,
+                )
+
+                _sc = SemanticCacheManager.get_instance()
+                if hasattr(bundle, "ranked_chunks") and bundle.ranked_chunks:
+                    _output_text = " ".join(
+                        str(getattr(c, "text", "") or getattr(c, "content", ""))
+                        for c in bundle.ranked_chunks
+                    )[:8192]
+                _sc.learn(
+                    context=query[:4096],
+                    namespace=self.APP_NAME,
+                    result={"output": _output_text, "app": self.APP_NAME, "run_id": run_id},
+                    tenant_id="",
+                )
+                _sc_writeback_ok = True
+                _log.debug("[GovernedAppRunner] semantic cache learn() committed app=%s", self.APP_NAME)
+            except Exception as _sc_err:  # guardian: allow-broad-exception -- semantic cache writeback is observability-only; must never break the run
+                _writeback_error = f"sc:{_sc_err}"
+                _log.debug(
+                    "[GovernedAppRunner] semantic cache learn() skipped app=%s: %s",
+                    self.APP_NAME,
+                    _sc_err,
+                )
+
+            # ---- 7a-bis: intent vector durable writeback → {app}_intent ChromaDB ------
+            # Persists the query/intent text so semantic recall survives Redis TTL expiry.
+            try:
+                from tools.retrieval.vector_service import VectorRetrievalService  # noqa: PLC0415
+
+                _iv_vrs = VectorRetrievalService()
+                _intent_coll = f"{self.APP_NAME}_intent"
+                _intent_doc = query[:4096]
+                if _intent_doc.strip():
+                    _iv_vrs.add_documents(
+                        collection_name=_intent_coll,
+                        documents=[_intent_doc],
+                        metadatas=[
+                            {
+                                "app": self.APP_NAME,
+                                "run_id": run_id,
+                                "output_preview": _output_text[:256],
+                            }
+                        ],
+                    )
+                    _log.debug(
+                        "[GovernedAppRunner] intent vector persisted → %s (run_id=%s)",
+                        _intent_coll,
+                        run_id,
+                    )
+            except Exception as _iv_err:  # guardian: allow-broad-exception -- intent vector writeback is best-effort; ChromaDB may be absent in CI
+                _writeback_error = (_writeback_error + f" iv:{_iv_err}").strip()
+                _log.debug(
+                    "[GovernedAppRunner] intent vector writeback skipped app=%s: %s",
+                    self.APP_NAME,
+                    _iv_err,
+                )
+
+            # ---- 7b: C0 chunk writeback (fact chunks → ChromaDB collection) -----
+            try:
+                from tools.retrieval.vector_service import VectorRetrievalService  # noqa: PLC0415
+
+                _vrs = VectorRetrievalService()
+                _collection_name = f"{self.APP_NAME}_c0"
+                # Ensure collection exists (idempotent — create_collection raises
+                # VectorConflictError when the collection already exists, so we
+                # catch-and-continue on conflict).
+                try:
+                    _vrs.create_collection(_collection_name)
+                except Exception:  # guardian: allow-broad-exception -- collection may already exist; conflict is not an error
+                    pass
+                _chunk_docs: list[str] = []
+                _chunk_metas: list[dict] = []
+                if hasattr(bundle, "ranked_chunks") and bundle.ranked_chunks:
+                    for _ch in bundle.ranked_chunks[:16]:
+                        _text = str(getattr(_ch, "text", "") or getattr(_ch, "content", ""))
+                        if _text.strip():
+                            _chunk_docs.append(_text[:2048])
+                            _chunk_metas.append(
+                                {
+                                    "app": self.APP_NAME,
+                                    "run_id": run_id,
+                                    "query": query[:256],
+                                    "collection_src": self._collection,
+                                }
+                            )
+                if _chunk_docs:
+                    _vrs.add_documents(
+                        collection_name=_collection_name,
+                        documents=_chunk_docs,
+                        metadatas=_chunk_metas,
+                    )
+                    _c0_writeback_ok = True
+                    _log.debug(
+                        "[GovernedAppRunner] C0 chunk writeback: %d chunks → %s",
+                        len(_chunk_docs),
+                        _collection_name,
+                    )
+                else:
+                    _log.debug(
+                        "[GovernedAppRunner] C0 chunk writeback skipped (no ranked chunks) app=%s",
+                        self.APP_NAME,
+                    )
+            except Exception as _c0w_err:  # guardian: allow-broad-exception -- C0 chunk writeback is best-effort; ChromaDB may be unavailable in test environments
+                _writeback_error = (_writeback_error + f" c0:{_c0w_err}").strip()
+                _log.debug(
+                    "[GovernedAppRunner] C0 chunk writeback skipped app=%s: %s",
+                    self.APP_NAME,
+                    _c0w_err,
+                )
+
         # W2.2: STRICT_GOVERNANCE — promote L2/L5/L6 from best-effort to mandatory.
         # Aggregate ``error`` is rebuilt from the first failed mandatory phase.
         # When strict mode is enabled, also raise GovernanceContractViolation so

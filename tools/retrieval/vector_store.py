@@ -136,7 +136,7 @@ class ChromaVectorStore:
         client = self.ensure_client()
         try:
             return client.get_collection(name)
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, Exception) as exc:
             if _is_not_found_error(exc):
                 raise VectorNotFoundError(f"Collection {name!r} not found") from exc
             raise
@@ -145,7 +145,7 @@ class ChromaVectorStore:
         client = self.ensure_client()
         try:
             client.get_collection(name)
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError, Exception) as exc:
             if not _is_not_found_error(exc):
                 raise
         else:

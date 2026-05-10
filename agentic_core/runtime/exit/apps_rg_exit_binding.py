@@ -151,6 +151,93 @@ def exit_finalize_apps_rg(
 
     artifact_path = _write_artifact(sealed, prompt, repo_root, timestamp_iso)
 
+    # Semantic cache writeback — two-path:
+    #   Path 1: learn() → Redis L1 (hot, 24h TTL)
+    #   Path 2: VectorRetrievalService.add_documents() → apps_rg_intent ChromaDB (durable)
+    # Both are fail-soft: writeback failure must never block the exit path.
+    _sc_intent = sealed.generated_content[:256] if sealed.generated_content else sealed.run_id
+    _sc_output = sealed.generated_content[:8192] if sealed.generated_content else ""
+
+    # Path 1 — Redis L1 (ephemeral hot cache)
+    try:
+        from agentic_core.L4_state.utils.memory.semantic_cache_manager import (  # noqa: PLC0415
+            SemanticCacheManager,
+        )
+
+        _sc = SemanticCacheManager.get_instance()
+        _sc.learn(
+            context=_sc_intent,
+            namespace="apps_rg",
+            result={
+                "output": _sc_output,
+                "app": "apps_rg",
+                "run_id": sealed.run_id,
+                "artifact_path": str(artifact_path),
+            },
+            tenant_id=sealed.tenant_id or "",
+        )
+    except Exception:  # guardian: allow-broad-exception -- semantic cache writeback is best-effort; infrastructure may be absent in test environments
+        pass
+
+    # Path 2 — apps_rg_intent ChromaDB collection (durable, survives Redis TTL)
+    try:
+        from tools.retrieval.vector_service import VectorRetrievalService  # noqa: PLC0415
+
+        _iv_vrs = VectorRetrievalService()
+        if _sc_intent.strip():
+            _iv_vrs.add_documents(
+                collection_name="apps_rg_intent",
+                documents=[_sc_intent],
+                metadatas=[
+                    {
+                        "app": "apps_rg",
+                        "run_id": sealed.run_id,
+                        "tenant_id": sealed.tenant_id or "",
+                        "output_preview": _sc_output[:256],
+                        "artifact_path": str(artifact_path),
+                    }
+                ],
+            )
+    except Exception:  # guardian: allow-broad-exception -- intent vector writeback is best-effort; ChromaDB may be absent
+        pass
+
+    # C0 output chunk writeback — write generated content chunks to apps_rg_c0
+    # ChromaDB collection so future C0 retrieval can leverage prior outputs.
+    # Fail-soft: never block exit on vector DB unavailability.
+    try:
+        from tools.retrieval.vector_service import VectorRetrievalService  # noqa: PLC0415
+
+        _content = sealed.generated_content or ""
+        if _content.strip():
+            _vrs = VectorRetrievalService()
+            _coll = "apps_rg_c0"
+            try:
+                _vrs.create_collection(_coll)
+            except Exception:  # guardian: allow-broad-exception -- collection may already exist
+                pass
+            # Split content into ~1024-char chunks for embedding granularity.
+            _chunk_size = 1024
+            _chunks = [_content[i : i + _chunk_size] for i in range(0, len(_content), _chunk_size)]
+            _chunks = [c for c in _chunks if c.strip()][:16]
+            if _chunks:
+                _metas = [
+                    {
+                        "app": "apps_rg",
+                        "run_id": sealed.run_id,
+                        "tenant_id": sealed.tenant_id or "",
+                        "chunk_index": idx,
+                        "total_chunks": len(_chunks),
+                    }
+                    for idx, _ in enumerate(_chunks)
+                ]
+                _vrs.add_documents(
+                    collection_name=_coll,
+                    documents=_chunks,
+                    metadatas=_metas,
+                )
+    except Exception:  # guardian: allow-broad-exception -- C0 chunk writeback is best-effort; ChromaDB may be absent
+        pass
+
     # Final output for chat surface — small summary, not the full resume body.
     final_output = {
         "stage": "EXIT_SUCCESS",

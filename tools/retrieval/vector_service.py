@@ -167,7 +167,11 @@ class VectorRetrievalService:
         if not documents:
             raise VectorValidationError("documents must be non-empty")
 
-        collection = self.store.get_collection(collection_name)
+        try:
+            collection = self.store.get_collection(collection_name)
+        except VectorNotFoundError:
+            self.store.create_collection(collection_name)
+            collection = self.store.get_collection(collection_name)
 
         t0 = time.time()
         embeddings = self.embedder.encode(documents, batch_size=min(len(documents), MAX_EMBEDDING_BATCH_SIZE))
