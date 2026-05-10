@@ -337,6 +337,21 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
     ),
     LedgerSpec(
+        name="ask_user_question",
+        purpose=(
+            "Enriched ask_user_question decisions — recommendation vs selection tracking, "
+            "confidence calibration, and UI invariant compliance for the shadow learning loop."
+        ),
+        schema_file="ask_user_question_ledger.schema.sql",
+        writer_hook="tools/ledgers/ask_user_question_ledger.py",
+        consulting_skill=".windsurf/skills/ledger-consulter-ask-user-question/SKILL.md",
+        wave="W1.5",
+        sunset_criterion=(
+            "recommendation acceptance rate stable ≥80% for 90 consecutive days "
+            "AND confidence calibration drift under 5% for 2 consecutive quarters"
+        ),
+    ),
+    LedgerSpec(
         name="apps_qna_pack_lifecycle",
         purpose=(
             "apps_qna pack build / lint / self-eval / route-select / paste-set "

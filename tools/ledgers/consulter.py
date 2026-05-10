@@ -28,6 +28,7 @@ from __future__ import annotations
 import sqlite3
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from tools.ledgers.schema_registry import get
@@ -206,3 +207,155 @@ class LedgerConsulter:
             return "suggestive"
         # Band is neutral/unknown — grade by volume
         return "suggestive" if len(matches) >= 3 else "suggestive"
+
+
+@dataclass
+class AskUserQuestionVerdict:
+    """Precedent verdict specialized for ask_user_question decisions."""
+
+    strength: str  # "strong" | "suggestive" | "none"
+    matches: list[dict[str, Any]] = field(default_factory=list)
+    total_rows_examined: int = 0
+    acceptance_rate: float = 0.0  # selected_index == recommended_index ratio
+    override_rate: float = 0.0  # 1 - acceptance_rate
+    avg_confidence: float = 0.0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "strength": self.strength,
+            "match_count": len(self.matches),
+            "total_rows_examined": self.total_rows_examined,
+            "acceptance_rate": round(self.acceptance_rate, 4),
+            "override_rate": round(self.override_rate, 4),
+            "avg_confidence": round(self.avg_confidence, 4),
+            "matches": self.matches,
+        }
+
+
+class AskUserQuestionConsulter:
+    """Read-only precedent lookup for ask_user_question decisions.
+
+    Queries the ask_user_question_decisions table in the refactor_decision
+    ledger (legacy location) for precedent. Returns acceptance rates and
+    recommendation-vs-selection patterns.
+
+    Unlike the generic LedgerConsulter (which targets the events table in
+    artifacts/ledgers/<name>.sqlite), this consulter works directly with
+    the ask_user_question_decisions table schema.
+    """
+
+    def __init__(self, db_path: Path | None = None) -> None:
+        if db_path is None:
+            from tools.ledgers.ask_user_question_ledger import LEDGER_PATH
+            self.db_path = LEDGER_PATH
+        else:
+            self.db_path = db_path
+
+    def lookup(
+        self,
+        *,
+        context: str = "",
+        limit: int = 10,
+    ) -> AskUserQuestionVerdict:
+        """Query ask_user_question decisions for precedent.
+
+        Args:
+            context: Filter by telemetry context (e.g., "import-cycle").
+            limit: Max rows to return.
+
+        Returns:
+            AskUserQuestionVerdict with acceptance rate and match data.
+        """
+        limit = max(1, min(limit, 50))
+        verdict = AskUserQuestionVerdict(strength="none")
+
+        if not self.db_path.exists():
+            return verdict
+
+        try:
+            conn = sqlite3.connect(str(self.db_path), timeout=5)
+            conn.row_factory = sqlite3.Row
+            try:
+                rows = self._query(conn, context, limit)
+                verdict.matches = [dict(r) for r in rows]
+                verdict.total_rows_examined = self._count(conn, context)
+                verdict.acceptance_rate = self._calc_acceptance(verdict.matches)
+                verdict.override_rate = 1.0 - verdict.acceptance_rate
+                verdict.avg_confidence = self._calc_avg_confidence(verdict.matches)
+                verdict.strength = self._grade_auq(verdict)
+            finally:
+                conn.close()
+        except sqlite3.Error as exc:
+            print(
+                f"[ledger.consulter.auq] lookup failed: {exc}",
+                file=sys.stderr,
+            )
+        return verdict
+
+    @staticmethod
+    def _query(
+        conn: sqlite3.Connection,
+        context: str,
+        limit: int,
+    ) -> list[sqlite3.Row]:
+        if context:
+            return list(conn.execute(
+                """SELECT * FROM ask_user_question_decisions
+                   WHERE context = ?
+                   ORDER BY created_at DESC LIMIT ?""",
+                (context, limit),
+            ))
+        return list(conn.execute(
+            """SELECT * FROM ask_user_question_decisions
+               ORDER BY created_at DESC LIMIT ?""",
+            (limit,),
+        ))
+
+    @staticmethod
+    def _count(conn: sqlite3.Connection, context: str) -> int:
+        if context:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM ask_user_question_decisions WHERE context = ?",
+                (context,),
+            ).fetchone()
+        else:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM ask_user_question_decisions",
+            ).fetchone()
+        return int(row[0]) if row else 0
+
+    @staticmethod
+    def _calc_acceptance(matches: list[dict[str, Any]]) -> float:
+        """Calculate acceptance rate: how often selected == recommended."""
+        with_both = [
+            m for m in matches
+            if m.get("selected_index") is not None
+            and m.get("recommended_index") is not None
+        ]
+        if not with_both:
+            return 0.0
+        aligned = sum(
+            1 for m in with_both
+            if m["selected_index"] == m["recommended_index"]
+        )
+        return aligned / len(with_both)
+
+    @staticmethod
+    def _calc_avg_confidence(matches: list[dict[str, Any]]) -> float:
+        scores = [
+            m["confidence_score"]
+            for m in matches
+            if m.get("confidence_score") is not None
+        ]
+        return sum(scores) / len(scores) if scores else 0.0
+
+    @staticmethod
+    def _grade_auq(verdict: AskUserQuestionVerdict) -> str:
+        """Grade based on volume and acceptance patterns."""
+        if not verdict.matches:
+            return "none"
+        if verdict.total_rows_examined >= 5 and verdict.acceptance_rate >= 0.7:
+            return "strong"
+        if verdict.total_rows_examined >= 2:
+            return "suggestive"
+        return "suggestive" if verdict.matches else "none"
