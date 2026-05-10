@@ -23,8 +23,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.runtime.contracts.final_evidence_contract import (
-    EvidenceContractStatus,
     FinalEvidenceContract,
+    STATUS_UNKNOWN,
+    STATUS_NOT_APPLICABLE,
+    SUPPORT_STATUS_EMPTY,
+    SUPPORT_STATUS_BLOCKED,
+    SUPPORT_STATUS_CONFLICTED,
 )
 from agentic_core.runtime.contracts.x1_checkout_result import (
     X1EvaluatorType,
@@ -54,13 +58,11 @@ def _extract_fec_status(fec: FinalEvidenceContract | dict[str, Any] | None) -> s
     if fec is None:
         return "EMPTY"
     if isinstance(fec, dict):
-        return str(fec.get("c0_status", "UNKNOWN")).upper()
+        return str(fec.get("c0_status", STATUS_UNKNOWN)).upper()
     # It's a dataclass instance
     status = getattr(fec, "c0_status", None)
     if status is None:
-        return "UNKNOWN"
-    if isinstance(status, EvidenceContractStatus):
-        return status.name
+        return STATUS_UNKNOWN
     return str(status).upper()
 
 

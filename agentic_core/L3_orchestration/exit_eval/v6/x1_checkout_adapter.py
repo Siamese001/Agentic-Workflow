@@ -139,76 +139,46 @@ def build_x1_checkout_result(
             )
         return gate_verdict_to_x1_item(v)
 
-    # Build base X1CheckoutResult with all 10 slots
-    result = X1CheckoutResult(
-        request_id=packet.request_id,
-        run_id=packet.run_id,
-        trace_root=packet.trace_root,
-        x1a_todays_rules=_get_x1_item("X1A"),
-        x1b_answered_it=_get_x1_item("X1B"),
-        x1c_safe_to_leave=_get_x1_item("X1C"),
-        x1d_answer_good=_get_x1_item("X1D"),
-        x1e_trajectory_ok=_get_x1_item("X1E"),
-        x1f_story_adds_up=_get_x1_item("X1F"),
-        x1g_replay_eligible=_get_x1_item("X1G"),
-        x1h_observable=_get_x1_item("X1H"),
-        x1i_consistent_across_runs=_get_x1_item("X1I"),
-        x1j_write_eligibility=_get_x1_item("X1J"),
-    )
+    # Build all X1Items
+    x1a = _get_x1_item("X1A")
+    x1b = _get_x1_item("X1B")
+    x1c = _get_x1_item("X1C")
+    x1d = _get_x1_item("X1D")
+    x1e = _get_x1_item("X1E")
+    x1f = _get_x1_item("X1F")
+    x1g = _get_x1_item("X1G")
+    x1h = _get_x1_item("X1H")
+    x1i = _get_x1_item("X1I")
+    x1j = _get_x1_item("X1J")
 
     # Forward refs from packet for AG-4 invariant checking
     # X1G: replay_manifest_ref from replay_key
-    if packet.replay_key:
-        result = X1CheckoutResult(
-            **{
-                **result.__dict__,
-                "replay_manifest_ref": packet.replay_key,
-            }
-        )
+    replay_manifest_ref = packet.replay_key if packet.replay_key else ""
 
     # X1H: otel_span_refs from packet.otel_spans
     otel_refs: list[str] = []
     if packet.otel_spans:
-        # Extract span ids if present
         spans = packet.otel_spans.get("spans", {})
         if isinstance(spans, dict):
             otel_refs = list(spans.keys())
-        # Also include trace refs
         if packet.trace_root:
             otel_refs.append(f"trace:{packet.trace_root}")
-    if otel_refs:
-        result = X1CheckoutResult(
-            **{
-                **result.__dict__,
-                "otel_span_refs": tuple(otel_refs),
-            }
-        )
 
     # X1D: evidence_refs from packet
     evidence_refs: list[str] = []
     if packet.final_evidence_contract:
         fec = packet.final_evidence_contract
         if isinstance(fec, dict):
-            # Evidence items refs
             items = fec.get("evidence_items", [])
             for i, item in enumerate(items):
                 if isinstance(item, dict) and item.get("source"):
                     evidence_refs.append(f"evidence:{i}:{item['source']}")
-            # Compilation hash as evidence ref
             if fec.get("compilation_hash"):
                 evidence_refs.append(f"fec:{fec['compilation_hash']}")
     if packet.evidence_bundle:
         eb = packet.evidence_bundle
         if isinstance(eb, dict) and eb.get("bundle_id"):
             evidence_refs.append(f"bundle:{eb['bundle_id']}")
-
-    if evidence_refs:
-        result = X1CheckoutResult(
-            **{
-                **result.__dict__,
-                "evidence_refs": tuple(evidence_refs),
-            }
-        )
 
     # X1D: intent_ref from route_contract
     intent_ref = ""
@@ -219,13 +189,6 @@ def build_x1_checkout_result(
                 intent_ref = f"intent:{hash(rc['intent_text']) & 0xFFFFFF:06x}"
             elif rc.get("user_query"):
                 intent_ref = f"intent:{hash(rc['user_query']) & 0xFFFFFF:06x}"
-    if intent_ref:
-        result = X1CheckoutResult(
-            **{
-                **result.__dict__,
-                "intent_ref": intent_ref,
-            }
-        )
 
     # X1D: output_ref from packet.output
     output_ref = ""
@@ -235,15 +198,28 @@ def build_x1_checkout_result(
             output_ref = f"output:{out['output_id']}"
         elif packet.run_id:
             output_ref = f"output:{packet.run_id}"
-    if output_ref:
-        result = X1CheckoutResult(
-            **{
-                **result.__dict__,
-                "output_ref": output_ref,
-            }
-        )
 
-    return result
+    # Build final X1CheckoutResult with all fields
+    return X1CheckoutResult(
+        request_id=packet.request_id,
+        run_id=packet.run_id,
+        trace_root=packet.trace_root,
+        x1a_todays_rules=x1a,
+        x1b_answered_it=x1b,
+        x1c_safe_to_leave=x1c,
+        x1d_answer_good=x1d,
+        x1e_trajectory_ok=x1e,
+        x1f_story_adds_up=x1f,
+        x1g_replay_eligible=x1g,
+        x1h_observable=x1h,
+        x1i_consistent_across_runs=x1i,
+        x1j_write_eligibility=x1j,
+        replay_manifest_ref=replay_manifest_ref,
+        otel_span_refs=tuple(otel_refs),
+        evidence_refs=tuple(evidence_refs),
+        intent_ref=intent_ref,
+        output_ref=output_ref,
+    )
 
 
 def x1_checkout_to_gate_verdicts(checkout: X1CheckoutResult) -> list[GateVerdict]:
