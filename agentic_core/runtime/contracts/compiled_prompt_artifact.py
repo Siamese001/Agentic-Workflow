@@ -51,7 +51,20 @@ class CompiledPromptArtifact:
 
     # Provenance
     evidence_digest: str = ""  # References FinalEvidenceContract.compilation_hash
-    compilation_hash: str = ""  # Digest of this artifact
+    compilation_hash: str = ""  # Digest of this artifact (== prompt_hash)
+
+    # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449): prompt-envelope
+    # provenance — slot lineage, per-component hashes, and replay manifest.
+    # Defaults are empty so non-apps_rg PA producers are unaffected.
+    #   - slot_lineage_map: per-block lineage (e.g. {"system": "PA-authored",
+    #     "user": "USER_INTENT|EVIDENCE", "evidence": "C0:fec.compilation_hash"})
+    #   - component_hash_map: per-component sha256 (style_profile, evidence,
+    #     l1_plan, app_payload, route)
+    #   - replay_manifest_ref: pointer to the replay key + snapshot tuple that
+    #     reproduces this prompt deterministically
+    slot_lineage_map: Mapping[str, str] = field(default_factory=dict)
+    component_hash_map: Mapping[str, str] = field(default_factory=dict)
+    replay_manifest_ref: str = ""
 
     # Identity extension
     tenant_id: str = ""  # W1: threaded from FinalEvidenceContract.tenant_id (D6)

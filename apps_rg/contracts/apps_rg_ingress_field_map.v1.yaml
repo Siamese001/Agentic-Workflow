@@ -1,0 +1,316 @@
+# apps_rg ingress contract v1 — field map SSOT
+#
+# This file is the SSOT mapping between every JSON Pointer in
+# apps_rg_ingress_contract_v1 and its downstream consumer/status.
+#
+# Status taxonomy (exactly one per pointer):
+#   MAPPED    — reflected verbatim into a downstream contract
+#   DERIVED   — consumed but transformed (normalization, hashing, parsing)
+#   REJECTED  — explicitly forbidden in v1 ingress (currently unused at
+#               this layer; runtime-authority rejections are handled by
+#               AppsRgRuntimeAuthorityPolicy.FORBIDDEN_PAYLOAD_FIELDS)
+#   DEFERRED  — recognized in v1 schema but not yet wired to a downstream
+#               consumer; MUST carry an explicit `reason` linking to the
+#               plan or AG decision that will wire it
+#
+# CORE RULE: a field may be deferred. A field may not disappear.
+#
+# The U0 reflection adapter:
+#   1. Enumerates JSON Pointers from the input payload
+#   2. Looks up each pointer in `mappings` below
+#   3. Pointers without a `mappings` entry → SILENTLY_DROPPED → fail closed
+#   4. `mappings` entries with status outside the taxonomy → UNKNOWN_MAPPING → fail closed
+#
+# Plan: .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md (W1.P1.3)
+
+version: v1
+contract_module: apps_rg.contracts.apps_rg_ingress_contract_v1
+schema_path: apps_rg/contracts/apps_rg_ingress_contract.v1.schema.json
+
+policy:
+  fail_on_silently_dropped: true
+  fail_on_unknown_mapping: true
+  fail_on_unknown_pointer: true
+  permitted_statuses:
+    - MAPPED
+    - DERIVED
+    - REJECTED
+    - DEFERRED
+
+# Pattern (prefix) mappings for open-vocabulary object trees. The U0 adapter
+# checks pattern_mappings AFTER exact `mappings` and AFTER `section_aggregations`,
+# treating any pointer that begins with the listed prefix as covered by the
+# given status + reason. This keeps the field-map maintainable for sub-objects
+# whose keys vary per request (e.g. /jd_payload/jd_signals/<dynamic>,
+# /profile_manifest/profile_refs/<profile_name>).
+#
+# A prefix mapping does NOT short-circuit specific pointer entries above —
+# any pointer with an exact `mappings:` row uses that row's status. Only
+# pointers without an exact entry fall through to pattern matching.
+pattern_mappings:
+  /jd_payload/jd_signals/:
+    status: DEFERRED
+    target: future L1 jd_planner restoration (gap category #2)
+    reason: "Open-vocabulary signal map; jd_planner consumes per-key when restored. Each key under /jd_payload/jd_signals/ inherits this entry"
+  /profile_manifest/profile_refs/:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.profile_manifest.profile_refs.<key>
+    reason: "Open-vocabulary profile-name → digest map; preserved verbatim under app_payload"
+  /output_requirements/formats/:
+    status: DEFERRED
+    target: future Wave 5 output callback registry per-format dispatch (AG-14.a)
+    reason: "Each /output_requirements/formats/<index> element handled by the registry at W5"
+
+# Object-level pointers (a section as a whole). The reflection adapter
+# walks LEAF pointers; section-level entries below are reference-only and
+# may also satisfy the pointer-coverage check when set to status=DERIVED.
+section_aggregations:
+  /transport: { status: DERIVED, target: "ValidatedRequest.{request_id,run_id,trace_id,tenant_id}", reason: "Identity quad split across ValidatedRequest fields" }
+  /identity: { status: DEFERRED, target: "future L5 actor-bound authorization", reason: "Phase D AG-13 HITL registry will consume actor for RELEASE_APPROVAL trigger" }
+  /replay: { status: DERIVED, target: "ValidatedRequest.replay_key", reason: "replay_key consumed; idempotency_key folded into replay_key derivation" }
+  /jd_payload: { status: DERIVED, target: "ValidatedRequest.app_payload.jd_payload", reason: "jd_hash promoted to ValidatedRequest; full payload preserved under app_payload" }
+  /resume_payload: { status: DERIVED, target: "ValidatedRequest.app_payload.resume_payload", reason: "resume_hash promoted; full payload under app_payload" }
+  /target: { status: DERIVED, target: "ValidatedRequest.{target_level,app_payload.target}", reason: "level promoted to ValidatedRequest.target_level for L0 routing; company/role under app_payload" }
+  /profile_manifest: { status: DERIVED, target: "ValidatedRequest.app_payload.profile_manifest", reason: "Manifest preserved verbatim; digest verified at U0" }
+  /quality_thresholds: { status: DEFERRED, target: "future Wave 2 ExitReviewPacket builder + X1D groundedness gate", reason: "Per Author-Gate AG-7.c + AG-8.c W1 (G09/G21/G22) — thresholds consumed when ExitReviewPacket builder lands" }
+  /output_requirements: { status: DEFERRED, target: "future Wave 5 enrichment via apps_rg-owned Exit-stage callbacks (AG-14.a)", reason: "DOCX/RunReport callbacks register against output_requirements at W5" }
+  /provenance_requirements: { status: DEFERRED, target: "future Wave 2 verbatim_provenance_gate via gate registry (AG-9.b)", reason: "per-bullet provenance enforcement lands in W2 with apps_rg gate registry" }
+
+mappings:
+  # -------------------------------------------------------------------
+  # Top-level scalars
+  # -------------------------------------------------------------------
+  /apps_rg_contract_version:
+    status: DERIVED
+    target: AppsRgU0ReflectionReceipt.contract_version
+    reason: U0 stamps the receipt with the validated contract version
+
+  /generation_mode:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.generation_mode
+    reason: Author-Gate AG-3.a — explicit user choice flows through to PA template selection
+
+  /capability_requirements:
+    status: DEFERRED
+    target: future Wave 1 model_registry → provider/model resolution (AG-4.b + AG-6.c)
+    reason: Wave 1 multi-provider plan will wire L0 model_registry to consume capability_requirements
+
+  /payload_digest:
+    status: DERIVED
+    target: AppsRgU0ReflectionReceipt.input_payload_digest
+    reason: U0 verifies digest matches recomputed hash and stamps receipt
+
+  # -------------------------------------------------------------------
+  # /transport
+  # -------------------------------------------------------------------
+  /transport/app_id:
+    status: DERIVED
+    target: ValidatedRequest.app_id (must equal "apps_rg")
+    reason: U0 enforces app_id constancy
+
+  /transport/task_class:
+    status: MAPPED
+    target: ValidatedRequest.task_class
+    reason: Verbatim copy — apps_rg always emits "resume_generation"
+
+  /transport/request_id:
+    status: MAPPED
+    target: ValidatedRequest.request_id
+    reason: Verbatim copy
+
+  /transport/run_id:
+    status: MAPPED
+    target: ValidatedRequest.run_id
+    reason: Verbatim copy
+
+  /transport/trace_id:
+    status: MAPPED
+    target: ValidatedRequest.trace_id
+    reason: Verbatim copy
+
+  /transport/submitted_at:
+    status: DERIVED
+    target: AppsRgU0ReflectionReceipt.timestamp_iso
+    reason: Validated as ISO-8601; receipt timestamp tracks U0-emit time, not submitted_at
+
+  /transport/tenant_id:
+    status: MAPPED
+    target: ValidatedRequest.tenant_id
+    reason: Verbatim copy (must equal app_id at this layer)
+
+  # -------------------------------------------------------------------
+  # /identity
+  # -------------------------------------------------------------------
+  /identity/actor_id:
+    status: DEFERRED
+    target: future L5 actor-bound authorization (AG-13.b HITL registry)
+    reason: HITL RELEASE_APPROVAL trigger consumes actor_id at W4
+
+  /identity/actor_role:
+    status: DEFERRED
+    target: future L5 actor-bound authorization (AG-13.b)
+    reason: HITL trigger policy consults actor_role at W4
+
+  # -------------------------------------------------------------------
+  # /replay
+  # -------------------------------------------------------------------
+  /replay/replay_key:
+    status: MAPPED
+    target: ValidatedRequest.replay_key
+    reason: Verbatim copy; X1G replay-eligibility gate consumes (AG-7.c W2)
+
+  /replay/idempotency_key:
+    status: DERIVED
+    target: ValidatedRequest.replay_key (folded)
+    reason: Folded into replay_key derivation; not separately stored
+
+  # -------------------------------------------------------------------
+  # /jd_payload
+  # -------------------------------------------------------------------
+  /jd_payload/jd_hash:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.jd_payload.jd_hash
+    reason: REQUIRED — used by L0 cache (R1A/R1B) and X1D groundedness gate
+
+  /jd_payload/jd_text:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.jd_payload.jd_text
+    reason: Used by L1 jd_planner and PA template chaining (AG-11.a)
+
+  /jd_payload/jd_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.jd_payload.jd_ref
+    reason: Optional source path preserved for audit replay
+
+  /jd_payload/jd_signals:
+    status: DEFERRED
+    target: future L1 jd_planner (when restored from OLD apps_rg/L1_cognition/jd_planner.py)
+    reason: jd_planner restoration is gap-analysis category #2; not yet wired
+
+  # -------------------------------------------------------------------
+  # /resume_payload
+  # -------------------------------------------------------------------
+  /resume_payload/resume_hash:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.resume_hash
+    reason: Used by L0 cache and provenance threading
+
+  /resume_payload/source_resume_text:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.source_resume_text
+    reason: Source-of-truth content for C0 grounding (today's hallucination defect class)
+
+  /resume_payload/source_resume_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.source_resume_ref
+    reason: Path preserved for audit replay
+
+  # -------------------------------------------------------------------
+  # /target
+  # -------------------------------------------------------------------
+  /target/company:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.target.company
+    reason: Cross-company contamination guard consumes (existing test)
+
+  /target/role:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.target.role
+    reason: Used by L1 plan + PA template selection
+
+  /target/level:
+    status: MAPPED
+    target: ValidatedRequest.target_level
+    reason: Promoted to ValidatedRequest for L0 variant routing (DS-3)
+
+  # -------------------------------------------------------------------
+  # /profile_manifest — POLICY REFS (all required by U0)
+  # -------------------------------------------------------------------
+  /profile_manifest/manifest_digest:
+    status: DERIVED
+    target: AppsRgU0ReflectionReceipt.field_map_version + manifest verification
+    reason: U0 verifies digest is well-formed; downstream layers compare against loaded manifest
+
+  /profile_manifest/profile_refs:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.profile_manifest.profile_refs
+    reason: Per Author-Gate AG-1.d — manifest-bundled profile refs preserved verbatim
+
+  /profile_manifest/prompt_registry_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.profile_manifest.prompt_registry_ref
+    reason: PA template chaining (AG-11.a) consumes from manifest
+
+  /profile_manifest/hitl_policy_ref:
+    status: DEFERRED
+    target: future Wave 4 HITL registry (AG-13.b)
+    reason: hitl_registry will resolve apps_rg's hitl_policy_ref to runtime triggers at W4
+
+  /profile_manifest/l0_policy_ref:
+    status: DEFERRED
+    target: future Wave 1 L0 binding (consumes apps_rg routing hints)
+    reason: L0 binding will read l0_policy_ref to honor apps_rg domain hints (capability+route)
+
+  /profile_manifest/agent_spec_ref:
+    status: DEFERRED
+    target: future Wave 2 X1B "Answered It" gate (AG-7.c)
+    reason: agent_spec disallowed_tasks enforcement lands with ExitReviewPacket builder
+
+  /profile_manifest/thresholds_ref:
+    status: DEFERRED
+    target: future Wave 2 quality thresholds wiring (AG-8.c W1 G22)
+    reason: G22 output_quality consumes thresholds at W2
+
+  # -------------------------------------------------------------------
+  # /quality_thresholds — declarative quality intent
+  # -------------------------------------------------------------------
+  /quality_thresholds/min_quality:
+    status: DEFERRED
+    target: future Wave 2 G22 output_quality gate
+    reason: Per AG-8.c W1 phasing — G22 wired in Wave 2 of safety mesh restoration
+
+  /quality_thresholds/min_ats:
+    status: DEFERRED
+    target: future Wave 2 ATS validator (AG-9.b apps gate registry)
+    reason: ats_validator runs as registered apps_rg gate at W2
+
+  /quality_thresholds/word_min:
+    status: DEFERRED
+    target: future Wave 2 word-bound validator
+    reason: word-bound validation runs as registered apps_rg gate at W2
+
+  /quality_thresholds/word_max:
+    status: DEFERRED
+    target: future Wave 2 word-bound validator
+    reason: word-bound validation runs as registered apps_rg gate at W2
+
+  # -------------------------------------------------------------------
+  # /output_requirements — output format intent
+  # -------------------------------------------------------------------
+  /output_requirements/formats:
+    status: DEFERRED
+    target: future Wave 5 output callback registry (AG-14.a)
+    reason: DOCX/RunReport callbacks register against output formats at W5
+
+  /output_requirements/provenance_required:
+    status: DEFERRED
+    target: future Wave 2 verbatim_provenance_gate (AG-9.b)
+    reason: gate registry invokes provenance gate when this flag set; W2
+
+  /output_requirements/fact_checked_required:
+    status: DEFERRED
+    target: future Wave 2 fact_check_engine via gate registry (AG-9.b)
+    reason: fact_check_engine restoration is gap category #61; W2
+
+  # -------------------------------------------------------------------
+  # /provenance_requirements — per-bullet provenance contract
+  # -------------------------------------------------------------------
+  /provenance_requirements/per_bullet_required:
+    status: DEFERRED
+    target: future Wave 2 verbatim_provenance_gate per-bullet enforcement
+    reason: Per AG-9.b registered gate consumes this flag at W2
+
+  /provenance_requirements/source_quote_required:
+    status: DEFERRED
+    target: future Wave 5 RunReport provenance manifest emitter (AG-14.a)
+    reason: source-quote evidence threaded through Exit-stage callback at W5

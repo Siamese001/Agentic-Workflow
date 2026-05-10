@@ -38,6 +38,9 @@ from _notion_constants import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
 )
 
+sys.path.insert(0, str(REPO_ROOT))
+from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
+
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
@@ -201,6 +204,7 @@ def main() -> int:
 
     drift_items: list[dict] = []
     skipped = 0
+    no_ground_truth_skipped = 0
 
     for page in pages:
         slug = _extract_slug(page)
@@ -222,8 +226,10 @@ def main() -> int:
 
         # RCA Cause A: when on-disk has no ground-truth status declaration,
         # SKIP — never overwrite Notion based on an inferred default.
+        # Tracked separately from file-missing skips so CI drift count
+        # reflects only true (known-disk ≠ notion) divergences.
         if disk_status is None:
-            skipped += 1
+            no_ground_truth_skipped += 1
             continue
 
         if notion_status != disk_status:
@@ -247,6 +253,11 @@ def main() -> int:
 
     if skipped:
         print(f"\n  ({skipped} skipped — no on-disk file)")
+    if no_ground_truth_skipped:
+        print(
+            f"  ({no_ground_truth_skipped} skipped — on-disk file present but no "
+            "ground-truth status; excluded from drift count per RCA Cause A fix)"
+        )
 
     if not drift_items:
         print("\n✓ No drift detected. Notion and on-disk are in sync.")
@@ -269,6 +280,12 @@ def main() -> int:
         try:
             _req("PATCH", patch_url, payload)
             print(f"  ✓ {item['slug']}: {item['notion_status']} → {item['disk_status']}")
+            log_plans_db_write(  # DS-1
+                event="patch_status",
+                slug=item["slug"],
+                writer="backfill_historical_plan_statuses",
+                detail=f"status→{item['disk_status']}",
+            )
             patched += 1
             time.sleep(THROTTLE_S)
         except urllib.error.HTTPError as e:

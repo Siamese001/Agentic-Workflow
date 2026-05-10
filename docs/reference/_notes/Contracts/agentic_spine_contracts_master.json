@@ -1,0 +1,2273 @@
+{
+  "metadata": {
+    "title": "AGENTIC SPINE CONTRACTS - STANDALONE SPECIFICATION",
+    "subtitle": "ZERO-LOSS HANDOFF CONTRACT MAP",
+    "version": "1.0-json",
+    "created_for": "Agentic AI project",
+    "purpose": "Defines the required contract packets between every governed handoff in the agentic spine.",
+    "core_rule": [
+      "No stage receives loose objects.",
+      "No stage receives untyped blobs.",
+      "No stage receives authority by implication.",
+      "Every stage receives a signed, replayable, policy-bound contract."
+    ],
+    "cheat_rule": "L2 proposes -> Exit clears -> UWG commits -> L4 stores",
+    "control_split": [
+      "L5 certifies evidence.",
+      "00C Runtime Gates decide current-run proceed / stop.",
+      "Exit emits exactly one X3 disposition.",
+      "UWG admits durable writes.",
+      "L4 stores durable state.",
+      "L6 learns only after the current-run boundary.",
+      "99 proves the chain ran."
+    ]
+  },
+  "contract_law": {
+    "every_handoff_contract_requires_base_contract_envelope": [
+      "contract_type",
+      "contract_version",
+      "producer_stage",
+      "consumer_stage",
+      "request_id",
+      "run_id",
+      "trace_root",
+      "parent_contract_ref",
+      "contract_id",
+      "contract_digest",
+      "created_at",
+      "policy_hash",
+      "blueprint_hash",
+      "registry_digest_set",
+      "l5_governance_context_digest",
+      "runtime_gate_refs",
+      "receipt_refs",
+      "replay_key",
+      "idempotency_key",
+      "terminality",
+      "schema_ref",
+      "validation_status",
+      "validation_errors",
+      "authority_scope",
+      "data_boundary_labels",
+      "origin_trust_manifest_ref",
+      "audit_manifest_ref"
+    ],
+    "base_contract_field_meanings": {
+      "contract_type": "Canonical contract name, for example ValidatedRequest, L1PlanContract, RouteContract.",
+      "contract_version": "Version of the schema used to validate the contract.",
+      "producer_stage": "Stage that produced the contract.",
+      "consumer_stage": "Stage authorized to consume the contract.",
+      "request_id": "Stable request identifier from U0.",
+      "run_id": "Stable run identifier for this execution.",
+      "trace_root": "Root telemetry trace for reconstructability.",
+      "parent_contract_ref": "Pointer to the immediate upstream contract.",
+      "contract_id": "Unique identifier for this contract instance.",
+      "contract_digest": "Hash of canonicalized contract payload.",
+      "created_at": "Timestamp of contract creation.",
+      "policy_hash": "Active policy bundle hash.",
+      "blueprint_hash": "Active architecture or route blueprint hash.",
+      "registry_digest_set": "Digest set for tools, providers, models, connectors, routes, agents, capabilities, and sandboxes.",
+      "l5_governance_context_digest": "Digest proving all L5 child certifiers are certifying the same governed object.",
+      "runtime_gate_refs": "References to 00C GateVerdict receipts already produced for this packet.",
+      "receipt_refs": "Replayable receipts proving validation, decision, execution, or sealing events.",
+      "replay_key": "Key required to reconstruct this handoff.",
+      "idempotency_key": "Key used to prevent duplicate or conflicting work.",
+      "terminality": "Terminal status: NON_TERMINAL, TERMINAL_SHORTCIRCUIT, TERMINAL_REJECTION, TERMINAL_EXIT, TERMINAL_COMMIT, TERMINAL_BLOCKED.",
+      "schema_ref": "Canonical schema identifier.",
+      "validation_status": "PASS, FAIL, UNKNOWN, or NOT_APPLICABLE.",
+      "validation_errors": "Explicit errors if validation_status is not PASS.",
+      "authority_scope": "What this packet is authorized to do.",
+      "data_boundary_labels": "Authority and trust labels for user text, retrieved text, tool output, model output, human input, policy, registry, and prior state.",
+      "origin_trust_manifest_ref": "Pointer to origin trust classification.",
+      "audit_manifest_ref": "Pointer to audit bundle for this packet."
+    },
+    "unknown_is_never_pass": "Any contract with validation_status = UNKNOWN must not be treated as executable, routable, committable, or releasable.",
+    "not_applicable_requires_reason": {
+      "required_fields": [
+        "not_applicable_reason",
+        "deciding_stage",
+        "policy_ref"
+      ]
+    },
+    "l5_not_certified_is_evidence_not_live_outcome": {
+      "if": "L5 child certifier digests mismatch",
+      "emit": "L5_NOT_CERTIFIED",
+      "then": [
+        "00C Runtime Gates decide live proceed / stop.",
+        "Exit decides final X3 consequence.",
+        "L5 does not emit GateVerdict.",
+        "L5 does not emit X3.",
+        "L5 does not commit durable state."
+      ]
+    },
+    "no_contract_may_widen_authority": [
+      "A downstream contract may narrow authority.",
+      "A downstream contract may preserve authority.",
+      "A downstream contract may request re-certification.",
+      "A downstream contract must not silently widen authority."
+    ],
+    "contract_validation_fail_closed": [
+      "Missing required field -> FAIL.",
+      "Missing policy hash -> FAIL.",
+      "Missing blueprint hash -> FAIL.",
+      "Missing registry digest when tools, providers, routes, sandboxes, or capabilities are used -> FAIL.",
+      "Missing replay key -> FAIL unless terminal rejection.",
+      "Missing L5 governance context digest -> FAIL unless pre-L5 structural rejection.",
+      "Missing origin labels -> FAIL.",
+      "Missing audit refs after runtime begins -> FAIL."
+    ]
+  },
+  "transition_matrix": [
+    {
+      "from": "Raw Request",
+      "to": "U0",
+      "contract": "raw inbound envelope"
+    },
+    {
+      "from": "U0",
+      "to": "L1",
+      "contract": "ValidatedRequest"
+    },
+    {
+      "from": "U0",
+      "to": "terminal rejection",
+      "contract": "RejectedRequest"
+    },
+    {
+      "from": "L1",
+      "to": "L0",
+      "contract": "L1PlanContract"
+    },
+    {
+      "from": "L0",
+      "to": "Exit",
+      "contract": "RETTerminalPacket for R1A exact cache, R1B semantic cache, or R5 fallback"
+    },
+    {
+      "from": "L0",
+      "to": "C0",
+      "contract": "RouteContract with grounding_required = true"
+    },
+    {
+      "from": "L0",
+      "to": "L2",
+      "contract": "RouteContract with execution_form = SINGLE_STEP"
+    },
+    {
+      "from": "L0",
+      "to": "L3",
+      "contract": "RouteContract with execution_form = MANAGED_WORKFLOW"
+    },
+    {
+      "from": "C0",
+      "to": "Prompt Assembly",
+      "contract": "FinalEvidenceContract"
+    },
+    {
+      "from": "Prompt Assembly",
+      "to": "L2",
+      "contract": "PromptEnvelope / CompiledPromptArtifact"
+    },
+    {
+      "from": "L3",
+      "to": "L2",
+      "contract": "L3ToL2StepContract"
+    },
+    {
+      "from": "L2",
+      "to": "L3",
+      "contract": "SealedL2Artifact for workflow step merge"
+    },
+    {
+      "from": "L2",
+      "to": "Exit",
+      "contract": "SealedL2Artifact for single-step execution"
+    },
+    {
+      "from": "L3",
+      "to": "Exit",
+      "contract": "SealedWorkflowPackage"
+    },
+    {
+      "from": "HITL",
+      "to": "Exit",
+      "contract": "ReClearedHITLPacket"
+    },
+    {
+      "from": "Exit",
+      "to": "UWG",
+      "contract": "CommitRequest only when X3C COMMIT_REQUEST_TO_UWG"
+    },
+    {
+      "from": "Exit",
+      "to": "User",
+      "contract": "FinalResponsePacket only when X3D ALLOW / FINISH or X3E SAFE_ABSTAIN or bounded denial"
+    },
+    {
+      "from": "Exit",
+      "to": "Runtime Exhaust",
+      "contract": "RuntimeExhaustBundle"
+    },
+    {
+      "from": "UWG",
+      "to": "L4",
+      "contract": "StateCommitReceipt or BlockedWriteReceipt"
+    },
+    {
+      "from": "RuntimeExhaustBundle",
+      "to": "L6",
+      "contract": "CompletedRunEvalInput"
+    },
+    {
+      "from": "L6",
+      "to": "UWG",
+      "contract": "FutureRunPromotionRequest only after gauntlet approval"
+    }
+  ],
+  "contracts": [
+    {
+      "contract_name": "ValidatedRequest",
+      "producer": "U0 Request Intake",
+      "consumers": [
+        "L1 Reasoning + Plan Generation"
+      ],
+      "purpose": "Proves the inbound request is structurally valid, attributable, bounded, quota-safe, labeled, traceable, and safe to interpret.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "raw_request_ref",
+        "normalized_payload",
+        "original_payload_digest",
+        "request_digest",
+        "channel",
+        "transport_metadata",
+        "caller_identity",
+        "tenant_id",
+        "session_id",
+        "quota_snapshot",
+        "auth_baseline",
+        "origin_label_seed",
+        "data_boundary_labels",
+        "malformed_schema_check",
+        "duplicate_request_check",
+        "size_check",
+        "injection_triage_status",
+        "request_timestamp",
+        "allowed_next_stage = L1",
+        "rejected_request_ref when partially rejected content exists"
+      ],
+      "validation_rules": [
+        "request_id must exist.",
+        "run_id must exist.",
+        "trace_root must exist.",
+        "caller_identity must be bound or explicitly anonymous under policy.",
+        "tenant_id must be present when tenant isolation applies.",
+        "normalized_payload must preserve lineage to raw_request_ref.",
+        "user text must be labeled as intent, not authority.",
+        "injection triage must not promote user text into policy, registry, route, tool, model, or write authority."
+      ],
+      "may_contain": [
+        "user_goal_text",
+        "attachments_manifest",
+        "upload_refs",
+        "locale",
+        "accessibility_preferences",
+        "client_context",
+        "request_priority"
+      ],
+      "must_not_contain": [
+        "route decision",
+        "final evidence",
+        "prompt assembly",
+        "tool call",
+        "model call",
+        "durable state mutation",
+        "final answer",
+        "L6 learning proposal"
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "RejectedRequest",
+          "required_fields": [
+            "BaseContractEnvelope",
+            "rejection_reason",
+            "rejected_at_stage = U0",
+            "safe_user_message",
+            "audit_manifest_ref",
+            "trace_root",
+            "policy_hash when available",
+            "validation_errors"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "L1PlanContract",
+      "producer": "L1 Reasoning + Plan Generation",
+      "consumers": [
+        "L0 Route Decision"
+      ],
+      "purpose": "Captures interpreted intent, constraints, ambiguity, support expectations, and advisory plan without giving L1 route authority.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "validated_request_ref",
+        "user_intent_summary",
+        "task_spec",
+        "query_spec",
+        "constraints",
+        "assumptions",
+        "ambiguity_register",
+        "missing_inputs",
+        "planning_prior_refs",
+        "policy_ref_set",
+        "route_hints",
+        "grounding_required_hint",
+        "action_required_hint",
+        "side_effect_hint",
+        "hitl_hint",
+        "uwg_hint",
+        "support_expectation",
+        "output_expectation",
+        "risk_hint",
+        "lowest_viable_agency_assessment",
+        "plan_steps_advisory",
+        "plan_digest",
+        "non_authority_assertion"
+      ],
+      "validation_rules": [
+        "Must consume exactly one ValidatedRequest.",
+        "Must preserve request_id, run_id, trace_root.",
+        "Must not select final route.",
+        "Must not retrieve final evidence.",
+        "Must not execute.",
+        "Must not approve egress.",
+        "Must not write L4.",
+        "Must distinguish user intent from authority.",
+        "Must mark unresolved ambiguity explicitly.",
+        "Must mark grounding need as hint only.",
+        "Must mark action need as hint only."
+      ],
+      "rules": {
+        "allowed_l4_read_usage": [
+          "Planning priors only.",
+          "Approved examples only.",
+          "Approved rules only.",
+          "No final evidence retrieval."
+        ]
+      },
+      "runtime_gate_refs_expected": [
+        "intent_clarity",
+        "authority_separation",
+        "planning_budget",
+        "L4_planning_prior_read_eligibility"
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "L1PlanRejected",
+          "required_fields": [
+            "failed_substep",
+            "validation_errors",
+            "ambiguity_blocker",
+            "safe_user_message",
+            "audit_manifest_ref"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "RouteContract",
+      "producer": "L0 Route Decision",
+      "consumers": [
+        "Exit",
+        "C0",
+        "L2",
+        "L3"
+      ],
+      "purpose": "Selects exactly one deterministic route and execution form.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "l1_plan_contract_ref",
+        "route_id",
+        "route_family",
+        "execution_form",
+        "selected_route_reason",
+        "deterministic_route_order_ref",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "route_manifest_hash",
+        "route_digest",
+        "hmac_sig",
+        "cache_eligibility",
+        "grounding_required",
+        "action_required",
+        "side_effect_class",
+        "hitl_posture",
+        "risk_tier",
+        "capability_ceiling",
+        "sandbox_requirement",
+        "provider_model_requirement",
+        "connector_requirement",
+        "network_requirement",
+        "filesystem_requirement",
+        "write_scope",
+        "replay_key",
+        "route_replay_receipt",
+        "allowed_next_stage",
+        "terminal_short_circuit_flag"
+      ],
+      "allowed_values": {
+        "route_family": [
+          "R1A_EXACT_CACHE",
+          "R1B_SEMANTIC_CACHE",
+          "R5_FALLBACK",
+          "R3_SIMPLE_GROUNDED_READ",
+          "R4_SINGLE_ACTION",
+          "R3R4_MANAGED_WORKFLOW"
+        ],
+        "execution_form": [
+          "TERMINAL_SHORTCIRCUIT",
+          "SINGLE_STEP",
+          "MANAGED_WORKFLOW"
+        ]
+      },
+      "validation_rules": [
+        "Must consume exactly one L1PlanContract.",
+        "Must emit exactly one route.",
+        "Must use deterministic route order.",
+        "Cheapest safe route wins.",
+        "Must not execute.",
+        "Must not retrieve.",
+        "Must not assemble prompts.",
+        "Must not call tools.",
+        "Must not call models.",
+        "Must not write L4.",
+        "Must not approve output.",
+        "Must not learn."
+      ],
+      "branch_rules": {
+        "R1A_EXACT_CACHE": [
+          "execution_form = TERMINAL_SHORTCIRCUIT",
+          "next_stage = Exit",
+          "emits RETTerminalPacket"
+        ],
+        "R1B_SEMANTIC_CACHE": [
+          "execution_form = TERMINAL_SHORTCIRCUIT",
+          "next_stage = Exit",
+          "emits RETTerminalPacket",
+          "requires cache_embedding_compatibility evidence"
+        ],
+        "R5_FALLBACK": [
+          "execution_form = TERMINAL_SHORTCIRCUIT",
+          "next_stage = Exit",
+          "emits RETTerminalPacket"
+        ],
+        "R3_SIMPLE_GROUNDED_READ": [
+          "grounding_required = true",
+          "next_stage = C0"
+        ],
+        "R4_SINGLE_ACTION": [
+          "execution_form = SINGLE_STEP",
+          "next_stage = L2",
+          "C0/PA required only when action arguments require grounding or model packet"
+        ],
+        "R3R4_MANAGED_WORKFLOW": [
+          "execution_form = MANAGED_WORKFLOW",
+          "next_stage = L3"
+        ]
+      },
+      "runtime_gate_refs_expected": [
+        "route_authority",
+        "route_determinism",
+        "cache_compatibility",
+        "risk_hitl_posture"
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "RouteRejected",
+          "required_fields": [
+            "failed_route_candidate",
+            "decisive_reason",
+            "route_policy_violation",
+            "safe_user_message",
+            "audit_manifest_ref"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "RETTerminalPacket",
+      "producer": "L0 Route Decision",
+      "consumers": [
+        "Exit Evaluation + Control"
+      ],
+      "purpose": "Carries cache or fallback short-circuit output directly to Exit without C0, PA, L3, or L2.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "route_contract_ref",
+        "ret_type",
+        "ret_payload",
+        "cache_key when cache path",
+        "cache_record_ref when cache path",
+        "cache_record_digest when cache path",
+        "semantic_similarity_score when semantic cache path",
+        "semantic_cache_threshold_profile when semantic cache path",
+        "cache_embedding_ref when semantic cache path",
+        "request_intent_embedding_ref when semantic cache path",
+        "fallback_reason when fallback path",
+        "terminal_class",
+        "support_status",
+        "replay_key",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "ret_type": [
+          "EXACT_CACHE_HIT",
+          "SEMANTIC_CACHE_HIT",
+          "FALLBACK_ABSTAIN",
+          "FALLBACK_STATIC_RESPONSE",
+          "FALLBACK_SAFE_RESPONSE"
+        ]
+      },
+      "validation_rules": [
+        "Must point to RouteContract.",
+        "Must be terminal_short_circuit_flag = true.",
+        "Must go to Exit.",
+        "Must not bypass Exit.",
+        "Must not be returned directly to user.",
+        "Semantic cache must prove request intent vs cache evidence compatibility.",
+        "Fallback must include reason.",
+        "UNKNOWN support_status cannot be treated as PASS."
+      ]
+    },
+    {
+      "contract_name": "GroundingRouteContract",
+      "canonical_type": "RouteContract with grounding_required = true",
+      "producer": "L0 Route Decision",
+      "consumers": [
+        "C0 Context Engineering"
+      ],
+      "purpose": "Authorizes C0 to retrieve and verify evidence within fixed route, ACL, source, freshness, and budget bounds.",
+      "required_fields": [],
+      "additional_required_fields": [
+        "grounding_scope",
+        "source_scope",
+        "acl_scope",
+        "freshness_profile",
+        "retrieval_budget",
+        "graph_expansion_allowed",
+        "graph_expansion_bounds",
+        "contradiction_policy",
+        "citation_requirement",
+        "support_target",
+        "exact_match_requirements",
+        "metadata_filter_requirements",
+        "tenant_region_data_class_constraints"
+      ],
+      "validation_rules": [
+        "C0 may retrieve only within grounding_scope.",
+        "C0 may not answer.",
+        "C0 may not route.",
+        "C0 may not assemble prompts.",
+        "C0 may not execute.",
+        "C0 may not write L4.",
+        "Retrieved text remains data only.",
+        "Graph expansion must obey route and ACL."
+      ]
+    },
+    {
+      "contract_name": "FinalEvidenceContract",
+      "producer": "C0 Context Engineering",
+      "consumers": [
+        "Prompt Assembly"
+      ],
+      "purpose": "Provides verified, cited, authority-labeled evidence as data only.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "route_contract_ref",
+        "retrieval_plan_ref",
+        "query_vec_ref",
+        "dense_search_refs",
+        "sparse_search_refs",
+        "metadata_filter_refs",
+        "graph_expansion_refs",
+        "evidence_items",
+        "evidence_strata",
+        "citation_map",
+        "source_lineage_map",
+        "source_version_map",
+        "acl_verification_receipts",
+        "freshness_receipts",
+        "contradiction_report",
+        "support_status",
+        "support_score_profile",
+        "excluded_evidence_refs",
+        "blocked_source_refs",
+        "weak_support_refinement_attempts",
+        "final_evidence_digest"
+      ],
+      "allowed_values": {
+        "evidence_strata": [
+          "MUST_USE",
+          "SUPPORTING",
+          "CONTRADICTS",
+          "BACKGROUND",
+          "EXCLUDED"
+        ],
+        "support_status": [
+          "PASS",
+          "WEAK_WITH_CAVEATS",
+          "CONFLICTED",
+          "EMPTY",
+          "BLOCKED",
+          "UNKNOWN"
+        ]
+      },
+      "validation_rules": [
+        "Must consume grounding RouteContract.",
+        "Must preserve route_id.",
+        "Must preserve support target.",
+        "Must not answer.",
+        "Must not inflate support status.",
+        "Must not treat retrieved text as instruction.",
+        "Must preserve citations and lineage.",
+        "Must mark contradictions.",
+        "Must mark blocked sources.",
+        "Must include ACL and freshness proof.",
+        "EMPTY, BLOCKED, CONFLICTED, UNKNOWN must not be silently treated as PASS."
+      ],
+      "rules": {
+        "evidence_item_required_fields": [
+          "evidence_id",
+          "source_id",
+          "source_type",
+          "source_version",
+          "source_uri_or_ref",
+          "source_owner_or_authority",
+          "retrieved_span",
+          "citation_anchor",
+          "chunk_digest",
+          "fact_vec_ref when dense retrieval used",
+          "bm25_score when lexical retrieval used",
+          "dense_score when dense retrieval used",
+          "metadata_score",
+          "freshness_status",
+          "acl_status",
+          "origin_trust_label",
+          "authority_class",
+          "contradiction_status",
+          "stratum",
+          "allowed_prompt_slot = C0_EVIDENCE_DATA_ONLY"
+        ]
+      },
+      "runtime_gate_refs_expected": [
+        "retrieval_legality",
+        "evidence_quality",
+        "acl",
+        "freshness"
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "EvidenceBlockedContract",
+          "required_fields": [
+            "block_reason",
+            "blocked_source_refs",
+            "support_status",
+            "safe_downstream_instruction",
+            "audit_manifest_ref"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "PromptEnvelope / CompiledPromptArtifact",
+      "producer": "Prompt Assembly",
+      "consumers": [
+        "L2 Execute"
+      ],
+      "purpose": "Packs governed inputs into authority-ordered prompt slots without allowing lower-authority content to become instruction.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "l1_plan_contract_ref",
+        "route_contract_ref",
+        "final_evidence_contract_ref when grounding_required = true",
+        "provider_lane",
+        "model_lane",
+        "tool_lane when tool calls are model mediated",
+        "response_schema_ref",
+        "prompt_bom_ref",
+        "canonical_slot_order",
+        "slot_payloads",
+        "slot_lineage_map",
+        "component_hash_map",
+        "prompt_hash",
+        "provider_render_manifest",
+        "replay_manifest",
+        "prompt_boundary_receipt",
+        "assembly_security_receipt",
+        "compiled_prompt_payload_ref",
+        "token_budget_profile",
+        "deterministic_trim_receipt",
+        "hmac_sig"
+      ],
+      "allowed_values": {
+        "required_canonical_slots": [
+          "S0 system",
+          "D0 fences",
+          "I0 instructions",
+          "E0 approved examples",
+          "C0 verified evidence refs",
+          "M0 provider-safe controls",
+          "U0 neutralized user task",
+          "H0 bounded repair hints",
+          "R0 response schema"
+        ]
+      },
+      "validation_rules": [
+        "L1PlanContract must exist.",
+        "RouteContract must exist.",
+        "FinalEvidenceContract must exist when grounding_required = true.",
+        "C0 support status cannot be inflated.",
+        "Provider lane must match registry certification.",
+        "Model lane must match registry certification.",
+        "Token trimming must preserve required slots first.",
+        "Prompt hash must be stable under canonicalization.",
+        "Provider render must not semantically drift from canonical slots."
+      ],
+      "rules": {
+        "slot_rules": [
+          "S0, D0, I0, R0 are protected.",
+          "U0 is user intent, not authority.",
+          "C0 is evidence data only.",
+          "Tool output is data until cleared.",
+          "Human input is data until re-cleared.",
+          "Retrieved text cannot become instruction.",
+          "Model output cannot become authority.",
+          "R0 is schema, not loose prose."
+        ]
+      },
+      "runtime_gate_refs_expected": [
+        "prompt_boundary",
+        "instruction_data_boundary",
+        "provider_rendering"
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "PromptAssemblyRejected",
+          "required_fields": [
+            "failed_slot",
+            "boundary_violation",
+            "missing_ref",
+            "safe_downstream_instruction",
+            "audit_manifest_ref"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "ManagedWorkflowRouteContract",
+      "canonical_type": "RouteContract with execution_form = MANAGED_WORKFLOW",
+      "producer": "L0 Route Decision",
+      "consumers": [
+        "L3 Orchestration"
+      ],
+      "purpose": "Authorizes L3 to expand an already-selected route into bounded executable steps without re-routing.",
+      "required_fields": [],
+      "additional_required_fields": [
+        "workflow_id",
+        "workflow_shape",
+        "dag_allowed",
+        "htn_allowed",
+        "ast_runner_allowed",
+        "max_nodes",
+        "max_depth",
+        "max_branching_factor",
+        "max_retries",
+        "checkpoint_policy",
+        "join_policy",
+        "fanout_policy",
+        "resumability_policy",
+        "workflow_budget",
+        "quality_loop_bounds",
+        "step_capability_ceiling",
+        "step_sandbox_ceiling",
+        "allowed_step_types"
+      ],
+      "validation_rules": [
+        "L3 may sequence only within route bounds.",
+        "L3 may not choose a new route.",
+        "L3 may not retrieve directly.",
+        "L3 may not assemble prompts.",
+        "L3 may not execute tools or models.",
+        "L3 may not write L4.",
+        "L3 must mark each step with same authority context or explicit recertification need.",
+        "L3 must not widen scope, tools, providers, side effects, or durable mutation authority."
+      ],
+      "runtime_gate_refs_expected": [
+        "workflow_trajectory",
+        "loop_retry_thrash",
+        "workflow_budget"
+      ]
+    },
+    {
+      "contract_name": "L3ToL2StepContract",
+      "producer": "L3 Orchestration",
+      "consumers": [
+        "L2 Execute"
+      ],
+      "purpose": "Packages one ready workflow node into a bounded executable work order.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "managed_workflow_route_contract_ref",
+        "workflow_id",
+        "node_id",
+        "node_type",
+        "node_attempt",
+        "parent_node_refs",
+        "dependency_refs",
+        "branch_join_state",
+        "checkpoint_ref",
+        "workflow_ledger_ref",
+        "step_input_refs",
+        "carried_evidence_refs",
+        "carried_prompt_refs when model execution required",
+        "capability_token",
+        "sandbox_envelope",
+        "side_effect_class",
+        "allowed_execution_lane",
+        "ptc_capable",
+        "ptc_allowed",
+        "tool_allowlist",
+        "model_allowlist",
+        "provider_allowlist",
+        "filesystem_scope",
+        "network_scope",
+        "credential_scope",
+        "budget",
+        "retry_policy",
+        "heal_policy_ref",
+        "exit_condition",
+        "replay_key",
+        "step_handoff_receipt"
+      ],
+      "allowed_values": {
+        "allowed_execution_lane": [
+          "READ_ANALYSIS",
+          "MODEL",
+          "TOOL",
+          "ACTION",
+          "ARTIFACT",
+          "OPTIONAL_PTC_SANDBOX"
+        ]
+      },
+      "validation_rules": [
+        "Must consume ManagedWorkflowRouteContract.",
+        "Must package exactly one ready node.",
+        "Must not execute.",
+        "Must not call PTC.",
+        "Must not widen route authority.",
+        "Must not add tools outside allowlist.",
+        "Must not add providers outside allowlist.",
+        "Must not add credentials outside scope.",
+        "Must not authorize direct L4 writes.",
+        "PTC-capable does not mean PTC-executed.",
+        "PTC execution, when allowed, happens only inside L2 E3."
+      ],
+      "failure_contracts": [
+        {
+          "contract_name": "L3StepBlocked",
+          "required_fields": [
+            "node_id",
+            "blocker_reason",
+            "dependency_status",
+            "safe_workflow_state",
+            "audit_manifest_ref"
+          ]
+        }
+      ]
+    },
+    {
+      "contract_name": "L2ExecutionPacket",
+      "producer": "L0, L3, or Prompt Assembly",
+      "consumers": [
+        "L2 Execute"
+      ],
+      "purpose": "Normalizes entry into L2 from single-step route, managed workflow step, or compiled prompt artifact.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "entry_shape",
+        "route_contract_ref",
+        "l3_step_contract_ref when managed workflow",
+        "prompt_envelope_ref when model execution required",
+        "final_evidence_contract_ref when grounded model execution required",
+        "execution_lane",
+        "capability_token",
+        "sandbox_envelope",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "provider_lane",
+        "model_lane",
+        "tool_lane",
+        "side_effect_class",
+        "allowed_args_schema_ref",
+        "input_payload_ref",
+        "input_payload_digest",
+        "output_schema_ref",
+        "proposed_state_diff_allowed",
+        "direct_l4_write_allowed = false",
+        "budget",
+        "retry_policy",
+        "heal_policy_ref",
+        "replay_key",
+        "attempt_seed",
+        "snapshot_manifest",
+        "idempotency_key"
+      ],
+      "allowed_values": {
+        "entry_shape": [
+          "SINGLE_STEP_FROM_L0",
+          "MANAGED_WORKFLOW_STEP_FROM_L3",
+          "MODEL_PACKET_FROM_PA",
+          "ACTION_PACKET_FROM_ROUTE",
+          "TOOL_PACKET_FROM_ROUTE"
+        ]
+      },
+      "validation_rules": [
+        "L2 receives authority. L2 cannot create authority.",
+        "L2 must freeze execution room before execution.",
+        "L2 must validate work order before execution.",
+        "L2 may execute exactly one bounded packet.",
+        "L2 may emit proposed_state_diff only.",
+        "L2 must not commit durable state.",
+        "L2 must not choose route.",
+        "L2 must not expand workflow.",
+        "L2 must not retrieve opportunistically.",
+        "L2 must not ask humans directly.",
+        "L2 must not approve egress.",
+        "L2 must not learn."
+      ],
+      "runtime_gate_refs_expected": [
+        "tool_model_registry",
+        "args",
+        "tool_retrieved_output_trust",
+        "sandbox",
+        "retry",
+        "budget"
+      ]
+    },
+    {
+      "contract_name": "FrozenExecutionContext",
+      "producer": "L2 E1 Prep",
+      "consumers": [
+        "L2 E2 Valid"
+      ],
+      "purpose": "Freezes the execution room before validation and execution.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "l2_execution_packet_ref",
+        "route_id",
+        "step_id when workflow",
+        "capability_token",
+        "sandbox_envelope",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "provider_lane",
+        "model_lane",
+        "filesystem_scope",
+        "network_scope",
+        "secrets_scope",
+        "credential_scope",
+        "locale",
+        "budget",
+        "replay_key",
+        "attempt_seed",
+        "snapshot_manifest",
+        "idempotency_key",
+        "direct_l4_write_assertion = false",
+        "frozen_at"
+      ],
+      "validation_rules": [
+        "No execution before this contract exists.",
+        "No dynamic provider substitution after freeze.",
+        "No dynamic tool substitution after freeze.",
+        "No broad credential expansion after freeze.",
+        "No ambient tools.",
+        "No direct L4 write path."
+      ]
+    },
+    {
+      "contract_name": "ExecutionValidationReceipt",
+      "producer": "L2 E2 Valid",
+      "consumers": [
+        "L2 E3 Exec",
+        "Exit as sealed rejection"
+      ],
+      "purpose": "Validates the frozen work order before execution.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "frozen_execution_context_ref",
+        "signature_chain_status",
+        "capability_scope_status",
+        "sandbox_scope_status",
+        "schema_status",
+        "side_effect_status",
+        "budget_status",
+        "safety_status",
+        "route_match_status",
+        "acl_status",
+        "provider_registry_status",
+        "tool_registry_status",
+        "model_registry_status",
+        "connector_registry_status",
+        "executability_status",
+        "validation_verdict",
+        "decisive_reason",
+        "blocked_before_execution"
+      ],
+      "allowed_values": {
+        "validation_verdict": [
+          "PASS_EXECUTE",
+          "FAIL_CLOSED_REJECT",
+          "NEEDS_HITL",
+          "ROUTE_MISMATCH",
+          "POLICY_BLOCK",
+          "AUTHORITY_MISSING",
+          "SANDBOX_GAP",
+          "REGISTRY_STALE",
+          "ACL_BLOCKED"
+        ]
+      },
+      "validation_rules": [
+        "Anything other than PASS_EXECUTE prevents E3 execution.",
+        "Missing authority fails before execution.",
+        "Stale policy fails before execution.",
+        "Blocked ACL fails before execution.",
+        "Sandbox gap fails before execution.",
+        "Route mismatch fails before execution.",
+        "HITL need fails before autonomous execution."
+      ]
+    },
+    {
+      "contract_name": "AttemptReceipt",
+      "producer": "L2 E3 Exec",
+      "consumers": [
+        "L2 E4 Heal",
+        "L2 E5 Seal"
+      ],
+      "purpose": "Captures exactly one bounded execution attempt.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "execution_validation_receipt_ref",
+        "attempt_id",
+        "attempt_seed",
+        "trace_id",
+        "span_id",
+        "execution_lane",
+        "invocation_manifest",
+        "input_payload_digest",
+        "output_payload_ref",
+        "raw_result_ref",
+        "return_code",
+        "latency",
+        "token_count",
+        "cost",
+        "compute",
+        "memory",
+        "stdout_ref",
+        "stderr_ref",
+        "error_ref",
+        "proposed_state_diff_ref when produced",
+        "telemetry_refs",
+        "terminal_class_candidate",
+        "result_classification"
+      ],
+      "allowed_values": {
+        "result_classification": [
+          "SUCCESS",
+          "DEGRADED_SUCCESS",
+          "SOFT_REPAIRABLE",
+          "FAIL_TERMINAL",
+          "NEEDS_HELP",
+          "REJECTED"
+        ]
+      },
+      "rules": {
+        "ptc_required_fields_when_execution_lane_optional_ptc_sandbox": [
+          "ptc_receipt_ref",
+          "ptc_tool_sequence_manifest",
+          "ptc_cross_tool_coordination_receipts",
+          "ptc_budget_receipt",
+          "ptc_denied_ambient_tool_refs",
+          "ptc_replay_log_ref"
+        ],
+        "ptc_rules": [
+          "PTC is an E3 execution mode, not a separate spine stage.",
+          "PTC uses the same capability_token, sandbox_envelope, policy_hash, blueprint_hash, replay_key, and budget.",
+          "PTC denies ambient tools.",
+          "PTC denies hidden parameters.",
+          "PTC denies unapproved retrieval.",
+          "PTC denies authority expansion.",
+          "PTC denies direct L4 writes."
+        ]
+      }
+    },
+    {
+      "contract_name": "HealReceipt",
+      "producer": "L2 E4 Heal",
+      "consumers": [
+        "L2 E3 retry",
+        "L2 E5 Seal"
+      ],
+      "purpose": "Governs same-authority repair only.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "attempt_receipt_ref",
+        "failure_localization",
+        "heal_repository_ref",
+        "selected_heal_function",
+        "repair_type",
+        "repair_budget",
+        "oscillation_guard_status",
+        "same_authority_assertion",
+        "same_route_assertion",
+        "same_policy_assertion",
+        "same_blueprint_assertion",
+        "same_sandbox_assertion",
+        "same_capability_assertion",
+        "same_replay_key_assertion",
+        "repair_result",
+        "retry_authorized",
+        "terminal_after_heal"
+      ],
+      "allowed_values": {
+        "repair_type": [
+          "JSON_SCHEMA_REPAIR",
+          "OUTPUT_REFORMAT",
+          "TRANSIENT_RETRY",
+          "CHECKPOINT_RESUME",
+          "DETERMINISTIC_TRIM",
+          "NO_REPAIR_ALLOWED"
+        ]
+      },
+      "validation_rules": [
+        "Heal may not widen authority.",
+        "Heal may not change route.",
+        "Heal may not change policy.",
+        "Heal may not change blueprint.",
+        "Heal may not change sandbox.",
+        "Heal may not expand capability.",
+        "Heal may not silently call humans.",
+        "Heal may not commit durable state."
+      ],
+      "rules": {
+        "disallowed_repairs": [
+          "Missing authority",
+          "Blocked ACL",
+          "Policy conflict",
+          "Route mismatch",
+          "Stale policy",
+          "Stale registry",
+          "Sandbox gap",
+          "HITL need",
+          "Capability expansion",
+          "Provider substitution",
+          "Tool substitution",
+          "Direct write bypass"
+        ]
+      }
+    },
+    {
+      "contract_name": "SealedL2Artifact",
+      "producer": "L2 E5 Seal",
+      "consumers": [
+        "Exit",
+        "L3 when managed workflow continues"
+      ],
+      "purpose": "Packages one bounded execution result with evidence, traces, counters, replay refs, and inert mutation candidate.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "l2_execution_packet_ref",
+        "frozen_execution_context_ref",
+        "execution_validation_receipt_ref",
+        "attempt_receipt_refs",
+        "heal_receipt_refs",
+        "seal_receipt",
+        "payload_ref",
+        "payload_digest",
+        "structured_output_ref",
+        "output_schema_status",
+        "evidence_refs",
+        "prompt_refs",
+        "tool_call_refs",
+        "model_call_refs",
+        "provider_receipts",
+        "telemetry_refs",
+        "otel_span_refs",
+        "cost_counters",
+        "budget_counters",
+        "errors",
+        "terminal_class",
+        "decisive_reason",
+        "proposed_state_diff_ref when produced",
+        "proposed_state_diff_digest when produced",
+        "mutation_candidate_inert = true",
+        "durable_commit_occurred = false",
+        "replay_manifest",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "terminal_class": [
+          "SUCCESS",
+          "DEGRADED_SUCCESS",
+          "FAIL_TERMINAL",
+          "NEEDS_HITL",
+          "REJECTED",
+          "BLOCKED",
+          "ABSTAIN_CANDIDATE"
+        ]
+      },
+      "validation_rules": [
+        "Must prove no durable commit occurred.",
+        "Must prove proposed_state_diff is inert.",
+        "Must include traces.",
+        "Must include replay refs.",
+        "Must include policy and registry refs.",
+        "Must include terminal class.",
+        "Must include decisive reason.",
+        "Must go to Exit unless L3 needs it for workflow merge.",
+        "Must not be returned directly to user without Exit."
+      ]
+    },
+    {
+      "contract_name": "SealedWorkflowPackage",
+      "producer": "L3 Orchestration",
+      "consumers": [
+        "Exit"
+      ],
+      "purpose": "Packages completed managed workflow outputs and sealed step artifacts.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "managed_workflow_route_contract_ref",
+        "workflow_id",
+        "workflow_ledger_ref",
+        "checkpoint_refs",
+        "branch_join_state_final",
+        "sealed_l2_artifact_refs",
+        "merged_payload_ref",
+        "merged_payload_digest",
+        "unresolved_node_refs",
+        "skipped_node_refs",
+        "failed_node_refs",
+        "retry_summary",
+        "quality_loop_summary",
+        "workflow_budget_summary",
+        "dependency_graph_ref",
+        "evidence_refs",
+        "prompt_refs",
+        "telemetry_refs",
+        "proposed_state_diff_refs",
+        "terminal_class",
+        "decisive_reason",
+        "replay_manifest",
+        "audit_manifest_ref"
+      ],
+      "validation_rules": [
+        "All included step artifacts must be sealed.",
+        "Workflow merge must not create new authority.",
+        "Workflow merge must not invent evidence.",
+        "Workflow merge must not mutate durable state.",
+        "Proposed state diffs remain inert.",
+        "Exit owns final disposition."
+      ]
+    },
+    {
+      "contract_name": "HITLFreezePacket / HumanReviewEvidencePacket / HumanModificationDiff / ReClearedHITLPacket / ResumeAuthorityReceipt",
+      "producer": "HITL process with L5 re-clearance",
+      "consumers": [
+        "Exit"
+      ],
+      "purpose": "Freezes risky work, treats human input as data, captures any modification, and re-clears resume authority.",
+      "required_fields": [],
+      "validation_rules": [
+        "Human input remains data until re-cleared.",
+        "Human modification cannot widen authority.",
+        "Human modification cannot widen policy.",
+        "Human modification cannot widen registry scope.",
+        "Human modification cannot widen provider lane.",
+        "Human modification cannot create durable write authority.",
+        "Resume requires L5 re-clearance evidence.",
+        "Exit still owns X3."
+      ],
+      "rules": {
+        "HITLFreezePacket_required_fields": [
+          "BaseContractEnvelope",
+          "frozen_source_contract_ref",
+          "freeze_reason",
+          "risk_tier",
+          "human_review_scope",
+          "allowed_human_actions",
+          "disallowed_human_actions",
+          "frozen_payload_ref",
+          "frozen_payload_digest",
+          "replay_key",
+          "audit_manifest_ref"
+        ],
+        "HumanReviewEvidencePacket_required_fields": [
+          "reviewer_identity",
+          "reviewer_role",
+          "review_timestamp",
+          "reviewed_payload_ref",
+          "review_scope",
+          "decision",
+          "comments_ref",
+          "evidence_refs",
+          "conflict_notes",
+          "data_boundary_label = HUMAN_INPUT_DATA_ONLY"
+        ],
+        "HumanModificationDiff_required_fields": [
+          "original_payload_ref",
+          "modified_payload_ref",
+          "diff_ref",
+          "diff_digest",
+          "changed_fields",
+          "authority_impact_assessment",
+          "policy_impact_assessment",
+          "registry_impact_assessment",
+          "scope_impact_assessment",
+          "provider_lane_impact_assessment",
+          "write_authority_impact_assessment"
+        ],
+        "ResumeAuthorityReceipt_required_fields": [
+          "l5_reclearance_status",
+          "l5_governance_context_digest",
+          "reclearance_policy_hash",
+          "reclearance_blueprint_hash",
+          "reclearance_registry_digest_set",
+          "resume_allowed",
+          "resume_bounds",
+          "decisive_reason"
+        ],
+        "ReClearedHITLPacket_required_fields": [
+          "BaseContractEnvelope",
+          "hitl_freeze_packet_ref",
+          "human_review_evidence_packet_ref",
+          "human_modification_diff_ref when modified",
+          "resume_authority_receipt_ref",
+          "reentry_stage",
+          "reentry_bounds",
+          "replay_key",
+          "audit_manifest_ref"
+        ]
+      }
+    },
+    {
+      "contract_name": "ExitReviewPacket",
+      "producer": "Exit 5.1 Input Normalization",
+      "consumers": [
+        "Exit X1 Checks"
+      ],
+      "purpose": "Normalizes all terminal inputs into one checkout packet.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "source_type",
+        "source_contract_ref",
+        "run_id",
+        "request_id",
+        "trace_root",
+        "route_contract_ref",
+        "route_id",
+        "execution_form",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "replay_key",
+        "terminal_class",
+        "capability_token_ref when execution used capability",
+        "sandbox_envelope_ref when execution used sandbox",
+        "evidence_refs",
+        "final_evidence_contract_ref when grounded",
+        "prompt_assembly_status when model path",
+        "compiled_prompt_artifact_ref when model path",
+        "exec_trace_refs",
+        "tool_call_refs",
+        "model_call_refs",
+        "provider_receipts",
+        "proposed_state_diff_ref when mutation candidate exists",
+        "otel_span_refs",
+        "anomaly_flags",
+        "hitl_packet_ref when present",
+        "l5_certification_refs",
+        "runtime_gate_refs",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "source_type": [
+          "RET_EXACT_CACHE",
+          "RET_SEMANTIC_CACHE",
+          "RET_FALLBACK",
+          "SEALED_L2_ARTIFACT",
+          "SEALED_WORKFLOW_PACKAGE",
+          "RECLEARED_HITL_PACKET"
+        ]
+      },
+      "validation_rules": [
+        "Missing required authority -> fail checkout.",
+        "Missing replay -> fail checkout.",
+        "Missing route -> fail checkout.",
+        "Missing terminal class -> fail checkout.",
+        "Missing sandbox when sandbox was required -> fail checkout.",
+        "Missing capability when capability was required -> fail checkout.",
+        "Missing evidence when grounded path -> fail checkout.",
+        "Missing prompt artifact when model path -> fail checkout.",
+        "Missing OTEL span refs after runtime began -> fail checkout.",
+        "Missing proposed_state_diff details when mutation requested -> fail checkout."
+      ]
+    },
+    {
+      "contract_name": "X1CheckoutResult",
+      "producer": "Exit X1 Checks",
+      "consumers": [
+        "Exit X2 Aggregation"
+      ],
+      "purpose": "Records X1A through X1J checkout verdicts.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "exit_review_packet_ref",
+        "x1a_todays_rules",
+        "x1b_answered_it",
+        "x1c_safe_to_leave",
+        "x1d_answer_good",
+        "x1e_trajectory_ok",
+        "x1f_story_adds_up",
+        "x1g_replay_eligible",
+        "x1h_observable",
+        "x1i_consistent_across_runs",
+        "x1j_write_eligibility",
+        "x1_overall_floor",
+        "decisive_failures",
+        "unknown_fields",
+        "not_applicable_fields",
+        "grader_profile_refs",
+        "threshold_profile_ref",
+        "judge_refs when LLM or external judges used",
+        "deterministic_check_refs",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "x1_item_required_fields": [
+          "verdict",
+          "confidence",
+          "evidence_refs",
+          "evaluator_type",
+          "decisive_reason",
+          "policy_ref",
+          "threshold_ref",
+          "unknown_reason when UNKNOWN",
+          "not_applicable_reason when NOT_APPLICABLE"
+        ],
+        "verdict": [
+          "PASS",
+          "FAIL",
+          "WARN",
+          "UNKNOWN",
+          "NOT_APPLICABLE"
+        ]
+      },
+      "validation_rules": [
+        "UNKNOWN is never PASS.",
+        "NOT_APPLICABLE requires reason.",
+        "X1J applies when proposed_state_diff exists.",
+        "X1D requires evidence comparison when grounded.",
+        "X1H requires OTEL completeness.",
+        "X1G requires replay manifest integrity."
+      ]
+    },
+    {
+      "contract_name": "X2AggregationResult",
+      "producer": "Exit X2 Aggregation",
+      "consumers": [
+        "Exit X3 Disposition"
+      ],
+      "purpose": "Aggregates X1A-X1J into one disposition recommendation.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "x1_checkout_result_ref",
+        "policy_weight_profile",
+        "threshold_profile",
+        "aggregate_severity",
+        "blocker_set",
+        "warning_set",
+        "unknown_set",
+        "write_candidate_status",
+        "hitl_candidate_status",
+        "reroute_candidate_status",
+        "abstain_candidate_status",
+        "allow_candidate_status",
+        "disposition_recommendation",
+        "aggregation_receipt",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "aggregate_severity": [
+          "NONE",
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL",
+          "BLOCKING"
+        ],
+        "disposition_recommendation": [
+          "DENY_REROUTE",
+          "ESCALATE_HITL",
+          "COMMIT_REQUEST_TO_UWG",
+          "ALLOW_FINISH",
+          "SAFE_ABSTAIN"
+        ]
+      },
+      "validation_rules": [
+        "Must consume exactly one X1CheckoutResult.",
+        "Must not emit final X3 yet.",
+        "Must not mutate state.",
+        "Must not call tools.",
+        "Must not call models except approved evaluator path.",
+        "Must treat UNKNOWN as not PASS.",
+        "Must preserve all decisive failures."
+      ]
+    },
+    {
+      "contract_name": "ExitDispositionReceipt",
+      "producer": "Exit X3 Disposition",
+      "consumers": [
+        "User return path",
+        "UWG when X3C",
+        "RuntimeExhaustBundle builder",
+        "L6 after runtime boundary"
+      ],
+      "purpose": "Emits exactly one final current-run disposition.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "exit_review_packet_ref",
+        "x1_checkout_result_ref",
+        "x2_aggregation_result_ref",
+        "x3_disposition",
+        "x3_reason",
+        "user_visible_response_ref when applicable",
+        "commit_request_ref when X3C",
+        "hitl_freeze_packet_ref when X3B",
+        "reroute_packet_ref when X3A reroute",
+        "abstain_response_ref when X3E",
+        "deny_response_ref when X3A deny",
+        "runtime_exhaust_ref",
+        "replay_manifest",
+        "audit_manifest_ref",
+        "no_silent_fallback_assertion",
+        "no_two_faced_exit_assertion",
+        "no_l6_current_run_rescue_assertion"
+      ],
+      "allowed_values": {
+        "x3_disposition": [
+          "X3A_DENY_REROUTE",
+          "X3B_ESCALATE_HITL",
+          "X3C_COMMIT_REQUEST_TO_UWG",
+          "X3D_ALLOW_FINISH",
+          "X3E_SAFE_ABSTAIN"
+        ]
+      },
+      "validation_rules": [
+        "Exactly one X3 must be emitted.",
+        "No silent fallback.",
+        "No two-faced exit.",
+        "No L6 rescue of current run.",
+        "X3C requires CommitRequest.",
+        "X3D requires safe user-visible response.",
+        "X3E requires bounded safe abstain.",
+        "X3B requires HITL freeze packet.",
+        "X3A requires denial or reroute packet.",
+        "Exit must not write L4.",
+        "Exit must not execute.",
+        "Exit must not retrieve.",
+        "Exit must not assemble prompts."
+      ],
+      "runtime_gate_refs_expected": [
+        "output_schema",
+        "quality",
+        "leakage",
+        "replay",
+        "exit_eligibility",
+        "write_sovereignty"
+      ]
+    },
+    {
+      "contract_name": "CommitRequest",
+      "producer": "Exit",
+      "consumers": [
+        "UWG Universal Write Gate"
+      ],
+      "purpose": "Requests durable mutation after Exit clears X3C.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "exit_disposition_receipt_ref",
+        "x3_disposition = X3C_COMMIT_REQUEST_TO_UWG",
+        "proposed_state_diff_ref",
+        "proposed_state_diff_digest",
+        "target_l4_namespace",
+        "target_state_object",
+        "write_scope",
+        "mutation_type",
+        "schema_ref",
+        "authority_scope",
+        "capability_token_ref",
+        "sandbox_envelope_ref",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "replay_key",
+        "idempotency_key",
+        "preconditions",
+        "rollback_plan_ref",
+        "audit_manifest_ref",
+        "commit_candidate_status"
+      ],
+      "allowed_values": {
+        "mutation_type": [
+          "CREATE",
+          "UPDATE",
+          "DELETE",
+          "APPEND",
+          "UPSERT",
+          "INDEX_REFRESH",
+          "CACHE_WRITE",
+          "MEMORY_WRITE",
+          "POLICY_PROMOTION",
+          "REGISTRY_PROMOTION",
+          "PROMPT_PROMOTION",
+          "RUBRIC_PROMOTION"
+        ]
+      },
+      "validation_rules": [
+        "Must be produced only by Exit.",
+        "Must be tied to X3C.",
+        "Must not come directly from L2.",
+        "Must not come directly from L3.",
+        "Must not come directly from L6 without future-run promotion path.",
+        "Must include proposed_state_diff.",
+        "Must include write scope.",
+        "Must include replay.",
+        "Must include rollback plan when mutation is reversible.",
+        "Must not widen authority beyond capability token.",
+        "Must not bypass UWG."
+      ]
+    },
+    {
+      "contract_name": "StateDiffValidationResult",
+      "producer": "UWG",
+      "consumers": [
+        "UWG Commit or Block"
+      ],
+      "purpose": "Validates the proposed durable mutation before L4 write.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "commit_request_ref",
+        "state_diff_ref",
+        "state_diff_digest",
+        "schema_validation_status",
+        "policy_validation_status",
+        "authority_validation_status",
+        "replay_validation_status",
+        "audit_validation_status",
+        "lock_status",
+        "conflict_status",
+        "rollback_status",
+        "read_surface_impact",
+        "write_admission_verdict",
+        "decisive_reason"
+      ],
+      "allowed_values": {
+        "write_admission_verdict": [
+          "ADMIT_COMMIT",
+          "BLOCK_COMMIT",
+          "NEEDS_HITL",
+          "SCHEMA_FAIL",
+          "POLICY_FAIL",
+          "AUTHORITY_FAIL",
+          "REPLAY_FAIL",
+          "AUDIT_FAIL",
+          "LOCK_FAIL",
+          "CONFLICT_FAIL"
+        ]
+      },
+      "validation_rules": [
+        "Anything other than ADMIT_COMMIT blocks durable write.",
+        "UWG may commit durable state only after this validates.",
+        "UWG must not execute tools.",
+        "UWG must not route.",
+        "UWG must not retrieve.",
+        "UWG must not approve final answer.",
+        "UWG must not learn."
+      ]
+    },
+    {
+      "contract_name": "StateCommitReceipt / BlockedWriteReceipt",
+      "producer": "UWG",
+      "consumers": [
+        "L4 Archive"
+      ],
+      "purpose": "Records atomic durable commit or blocked write result.",
+      "required_fields": [],
+      "validation_rules": [
+        "L4 accepts durable mutation only through UWG.",
+        "Direct write attempts from L2, L3, Exit, L6, C0, PA, or tools must fail.",
+        "Every commit must be auditable.",
+        "Every blocked write must be auditable.",
+        "Every read surface refresh must be traceable to committed state."
+      ],
+      "rules": {
+        "StateCommitReceipt_required_fields": [
+          "BaseContractEnvelope",
+          "commit_request_ref",
+          "state_diff_validation_result_ref",
+          "target_l4_namespace",
+          "target_state_object",
+          "previous_state_ref",
+          "new_state_ref",
+          "commit_id",
+          "commit_digest",
+          "write_lock_ref",
+          "atomicity_receipt",
+          "rollback_ref",
+          "read_surface_refresh_receipt",
+          "audit_append_receipt",
+          "committed_at"
+        ],
+        "BlockedWriteReceipt_required_fields": [
+          "BaseContractEnvelope",
+          "commit_request_ref",
+          "state_diff_validation_result_ref",
+          "block_reason",
+          "failed_validation_fields",
+          "no_mutation_assertion",
+          "audit_append_receipt",
+          "blocked_at"
+        ]
+      }
+    },
+    {
+      "contract_name": "RuntimeExhaustBundle",
+      "producer": "Exit after current-run boundary",
+      "consumers": [
+        "L6 Shadow Evaluation + System Learning"
+      ],
+      "purpose": "Packages completed-run evidence for post-runtime evaluation and future-run learning.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "exit_disposition_receipt_ref",
+        "current_run_boundary_receipt",
+        "stage_map",
+        "contract_inventory",
+        "artifact_inventory",
+        "trace_refs",
+        "otel_span_refs",
+        "evidence_refs",
+        "prompt_refs",
+        "tool_call_refs",
+        "model_call_refs",
+        "provider_receipts",
+        "l5_certification_refs",
+        "runtime_gate_refs",
+        "x1_checkout_result_ref",
+        "x2_aggregation_result_ref",
+        "x3_disposition",
+        "uwg_receipts when commit path used",
+        "l4_commit_refs when commit occurred",
+        "anomaly_flags",
+        "replay_manifest",
+        "audit_manifest_ref",
+        "no_l6_current_run_mutation_assertion"
+      ],
+      "validation_rules": [
+        "Must be created only after current-run boundary.",
+        "Must include ExitDispositionReceipt.",
+        "Must include all stage receipts available.",
+        "Must preserve failed, blocked, and unknown results.",
+        "Must not rewrite current-run outcome.",
+        "Must not allow L6 to rescue current run."
+      ]
+    },
+    {
+      "contract_name": "CompletedEvalRecord",
+      "producer": "L6 Shadow Evaluation",
+      "consumers": [
+        "L6 RCA / Proposal Drafting"
+      ],
+      "purpose": "Evaluates completed run quality, trajectory, governance, drift, and evaluator reliability.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "runtime_exhaust_bundle_ref",
+        "observer_law_receipt",
+        "eval_readiness_receipt",
+        "outcome_quality_eval",
+        "trajectory_eval",
+        "governance_eval",
+        "replay_eval",
+        "audit_eval",
+        "evaluator_drift_eval",
+        "judge_reliability_signals",
+        "human_calibration_refs",
+        "eval_record_seal",
+        "current_run_mutation_assertion = false"
+      ],
+      "validation_rules": [
+        "L6 may evaluate only completed runs.",
+        "L6 may not mutate current run.",
+        "L6 may not emit X3.",
+        "L6 may not directly write L4.",
+        "L6 may not silently patch prompts, policy, memory, cache, or registry."
+      ]
+    },
+    {
+      "contract_name": "FutureRunPromotionRequest",
+      "producer": "L6 after gauntlet approval",
+      "consumers": [
+        "UWG"
+      ],
+      "purpose": "Requests durable promotion of future-run learning after replay, regression, and safety proof.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "completed_eval_record_ref",
+        "rca_packet_ref",
+        "proposal_packet_ref",
+        "proposal_type",
+        "target_l4_namespace",
+        "proposed_change_ref",
+        "proposed_change_digest",
+        "replay_proof_ref",
+        "regression_proof_ref",
+        "safety_proof_ref",
+        "calibration_proof_ref when evaluator or judge changes",
+        "gauntlet_receipt",
+        "activation_policy",
+        "future_run_activation_receipt_candidate",
+        "rollback_plan_ref",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "proposal_type": [
+          "PROMPT_CHANGE",
+          "RUBRIC_CHANGE",
+          "POLICY_CHANGE",
+          "CACHE_CHANGE",
+          "MEMORY_CHANGE",
+          "INDEX_CHANGE",
+          "ROUTE_CHANGE",
+          "REGISTRY_CHANGE",
+          "EVALUATOR_CHANGE",
+          "JUDGE_CHANGE",
+          "DOCUMENTATION_CHANGE"
+        ]
+      },
+      "validation_rules": [
+        "Promotion request must be inert until UWG admits it.",
+        "Activation only at future run_start.",
+        "No current-run mutation.",
+        "No direct L4 write.",
+        "No silent policy or prompt patch.",
+        "Judge or evaluator changes require calibration proof."
+      ]
+    },
+    {
+      "contract_name": "L5CertificationPacket",
+      "producer": "L5 Policy + Governance Certification Plane",
+      "consumers": [
+        "00C Runtime Gates",
+        "Exit",
+        "UWG",
+        "99 Proof Auditor",
+        "L6 after runtime boundary"
+      ],
+      "purpose": "Certifies that the governed object is bound to the correct authority, policy, registry, origin labels, capability, sandbox, egress, HITL state, replay envelope, and audit chain.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "certified_object_ref",
+        "certified_object_digest",
+        "l5_governance_context_digest",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "principal_chain",
+        "capability_token_ref",
+        "sandbox_envelope_ref",
+        "origin_trust_manifest_ref",
+        "egress_certification_receipt_ref when provider/tool/connector/network used",
+        "hitl_reclearance_receipt_ref when HITL modified or resumed work",
+        "replay_envelope_ref",
+        "audit_manifest_ref",
+        "static_governance_refs",
+        "runtime_binding_refs",
+        "child_certifier_results",
+        "digest_equality_result",
+        "certification_status",
+        "decisive_reason"
+      ],
+      "allowed_values": {
+        "required_child_certifier_results": [
+          "00A.1 Safety Enforcement",
+          "00A.2 Authority Context + Registry Binding",
+          "00A.3 Origin Trust + Content Boundary",
+          "00A.4 HITL Reclearance when applicable",
+          "00A.5 Egress + Provider Governance when applicable",
+          "00A.6 Replay / Audit / Certification Evidence",
+          "00A.7 Static Governance + Structure Drift",
+          "00A.7a Governance Context Invariant",
+          "00A.8 Runtime Certification Binding",
+          "00A.8a Cross-Child Certification Tests"
+        ],
+        "certification_status": [
+          "L5_CERTIFIED",
+          "L5_NOT_CERTIFIED",
+          "L5_PARTIAL",
+          "L5_NOT_APPLICABLE"
+        ]
+      },
+      "validation_rules": [
+        "All L5 child certifiers must certify the same governed object through the same L5GovernanceContext digest.",
+        "Digest mismatch emits L5_NOT_CERTIFIED.",
+        "L5_NOT_CERTIFIED is evidence, not final runtime disposition.",
+        "00C Gates decide live proceed / stop.",
+        "Exit decides X3.",
+        "UWG decides durable commit.",
+        "L5 must not emit GateVerdict.",
+        "L5 must not emit X3.",
+        "L5 must not write L4.",
+        "L5 must not learn into current run."
+      ]
+    },
+    {
+      "contract_name": "GateVerdict",
+      "producer": "00C Runtime Gates",
+      "consumers": [
+        "Current spine stage",
+        "Exit",
+        "99 Proof Auditor",
+        "L6 after runtime boundary"
+      ],
+      "purpose": "Decides whether the current live packet, route, retrieval packet, prompt packet, workflow step, execution call, output, escalation, or write proposal may proceed right now.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "gate_id",
+        "gate_family",
+        "governed_packet_ref",
+        "governed_packet_digest",
+        "l5_certification_refs",
+        "policy_ref",
+        "threshold_ref",
+        "verdict",
+        "severity",
+        "confidence",
+        "decisive_reason",
+        "evidence_refs",
+        "remediation_hint",
+        "retry_allowed",
+        "hitl_required",
+        "reroute_required",
+        "stop_required",
+        "not_applicable_reason when NOT_APPLICABLE",
+        "unknown_reason when UNKNOWN",
+        "audit_manifest_ref"
+      ],
+      "allowed_values": {
+        "verdict": [
+          "PASS",
+          "FAIL",
+          "WARN",
+          "BLOCK",
+          "ESCALATE",
+          "UNKNOWN",
+          "NOT_APPLICABLE"
+        ]
+      },
+      "validation_rules": [
+        "UNKNOWN is never PASS.",
+        "NOT_APPLICABLE requires reason.",
+        "GateVerdict is current-run proceed / stop evidence.",
+        "GateVerdict is not X3.",
+        "GateVerdict is not durable write approval.",
+        "GateVerdict does not certify L5 evidence.",
+        "GateVerdict does not write L4."
+      ]
+    },
+    {
+      "contract_name": "RuntimeProofBundle",
+      "producer": "99 Proof Auditor",
+      "consumers": [
+        "CI",
+        "audit",
+        "governance review",
+        "L6"
+      ],
+      "purpose": "Proves the governed chain actually ran and did not bypass required control points.",
+      "required_fields": [
+        "BaseContractEnvelope",
+        "run_id",
+        "request_id",
+        "trace_root",
+        "stage_sequence",
+        "contract_chain_refs",
+        "contract_chain_hash",
+        "l5_certification_result_ref",
+        "l5_governance_context_digest",
+        "policy_hash",
+        "blueprint_hash",
+        "registry_digest_set",
+        "origin_trust_manifest_ref",
+        "capability_token_ref",
+        "sandbox_envelope_ref",
+        "egress_certification_receipt_refs",
+        "hitl_reclearance_receipt_refs",
+        "replay_envelope_ref",
+        "audit_manifest_ref",
+        "otel_span_refs",
+        "runtime_gate_refs",
+        "exit_disposition_receipt_ref",
+        "uwg_receipts when commit path used",
+        "l4_commit_refs when commit occurred",
+        "no_bypass_assertions",
+        "negative_control_results",
+        "reconstruction_report_ref",
+        "replay_report_ref",
+        "proof_verdict",
+        "decisive_reason"
+      ],
+      "allowed_values": {
+        "proof_verdict": [
+          "PASS",
+          "FAIL",
+          "INCOMPLETE"
+        ]
+      },
+      "validation_rules": [
+        "Proof bundle must prove contracts, not just final output.",
+        "Proof bundle must include OTEL spans for critical runtime stages.",
+        "Proof bundle must include negative controls.",
+        "Proof bundle must prove L5 did not emit GateVerdict, X3, or durable commit.",
+        "Proof bundle must prove every durable mutation entered through UWG."
+      ],
+      "rules": {
+        "required_no_bypass_assertions": [
+          "no_direct_L2_to_L4_write",
+          "no_direct_L3_to_L4_write",
+          "no_direct_Exit_to_L4_write",
+          "no_direct_L6_to_L4_write",
+          "no_direct_tool_to_L4_write",
+          "no_direct_provider_sdk_bypass",
+          "no_silent_model_substitution",
+          "no_silent_tool_substitution",
+          "no_silent_provider_fallback",
+          "no_prompt_boundary_bypass",
+          "no_retrieved_text_as_instruction",
+          "no_human_input_as_authority_without_reclearance",
+          "no_L5_GateVerdict",
+          "no_L5_X3",
+          "no_L5_durable_commit",
+          "no_L6_current_run_rescue"
+        ],
+        "required_negative_controls": [
+          "digest_mismatch_emits_L5_NOT_CERTIFIED",
+          "UNKNOWN_gate_not_PASS",
+          "NOT_APPLICABLE_requires_reason",
+          "missing_replay_fails",
+          "missing_policy_hash_fails",
+          "missing_registry_digest_fails_when_registry_object_used",
+          "missing_sandbox_fails_when_sandbox_required",
+          "missing_capability_fails_when_capability_required",
+          "direct_write_bypass_fails",
+          "prompt_boundary_violation_fails",
+          "semantic_cache_without_compatibility_fails",
+          "hitl_resume_without_reclearance_fails"
+        ]
+      }
+    }
+  ],
+  "minimum_contract_chain_by_route": {
+    "R1A Exact Cache": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "RETTerminalPacket",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "R1B Semantic Cache": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "RETTerminalPacket with semantic compatibility proof",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "R5 Fallback": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "RETTerminalPacket with fallback reason",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "R3 Simple Grounded Read": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope / CompiledPromptArtifact",
+      "L2ExecutionPacket",
+      "FrozenExecutionContext",
+      "ExecutionValidationReceipt",
+      "AttemptReceipt",
+      "optional HealReceipt",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "R4 Single Action": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "optional FinalEvidenceContract if action args require grounding",
+      "optional PromptEnvelope if model path required",
+      "L2ExecutionPacket",
+      "FrozenExecutionContext",
+      "ExecutionValidationReceipt",
+      "AttemptReceipt",
+      "optional HealReceipt",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "optional CommitRequest if durable mutation requested",
+      "optional StateDiffValidationResult",
+      "optional StateCommitReceipt or BlockedWriteReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "R3/R4 Managed Workflow": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "ManagedWorkflowRouteContract",
+      "L3ToL2StepContract",
+      "L2ExecutionPacket",
+      "FrozenExecutionContext",
+      "ExecutionValidationReceipt",
+      "AttemptReceipt",
+      "optional HealReceipt",
+      "SealedL2Artifact",
+      "L3 merge",
+      "repeat L3ToL2StepContract as needed",
+      "SealedWorkflowPackage",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt",
+      "optional CommitRequest if durable mutation requested",
+      "optional StateDiffValidationResult",
+      "optional StateCommitReceipt or BlockedWriteReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "HITL path": [
+      "Any risky current-run packet",
+      "HITLFreezePacket",
+      "HumanReviewEvidencePacket",
+      "optional HumanModificationDiff",
+      "ResumeAuthorityReceipt",
+      "ReClearedHITLPacket",
+      "ExitReviewPacket",
+      "X1CheckoutResult",
+      "X2AggregationResult",
+      "ExitDispositionReceipt"
+    ],
+    "L6 future learning path": [
+      "RuntimeExhaustBundle",
+      "CompletedEvalRecord",
+      "RCAPacket",
+      "ProposalPacket",
+      "FutureRunPromotionRequest",
+      "UWG",
+      "StateDiffValidationResult",
+      "StateCommitReceipt or BlockedWriteReceipt",
+      "L4"
+    ]
+  },
+  "global_rejection_conditions": [
+    "contract_type missing",
+    "contract_version missing",
+    "producer_stage missing",
+    "consumer_stage missing",
+    "request_id missing",
+    "run_id missing",
+    "trace_root missing",
+    "policy_hash missing after U0 structural phase",
+    "blueprint_hash missing when route, workflow, prompt, execution, exit, or write is involved",
+    "registry_digest_set missing when registry-bound object is involved",
+    "l5_governance_context_digest missing when L5-certifiable object is involved",
+    "origin labels missing",
+    "replay_key missing after runtime begins",
+    "audit_manifest_ref missing after runtime begins",
+    "contract_digest mismatch",
+    "parent_contract_ref missing",
+    "authority_scope missing",
+    "downstream authority wider than upstream without re-certification",
+    "UNKNOWN treated as PASS",
+    "NOT_APPLICABLE lacks reason",
+    "tool/provider/model substitution occurs without registry re-certification",
+    "human input modifies work without HITL re-clearance",
+    "retrieved text becomes instruction",
+    "model output becomes authority",
+    "proposed_state_diff is treated as durable commit before UWG",
+    "L6 attempts current-run rescue",
+    "direct L4 write path is detected"
+  ],
+  "end_state_invariants": {
+    "every_run": "must end with exactly one ExitDispositionReceipt",
+    "every_exit_disposition_receipt": "must contain exactly one X3",
+    "every_durable_write_must_have": [
+      "ExitDispositionReceipt with X3C",
+      "CommitRequest",
+      "StateDiffValidationResult",
+      "StateCommitReceipt"
+    ],
+    "every_blocked_durable_write_must_have": [
+      "ExitDispositionReceipt with X3C",
+      "CommitRequest",
+      "StateDiffValidationResult",
+      "BlockedWriteReceipt"
+    ],
+    "every_completed_runtime_must_produce": "RuntimeExhaustBundle",
+    "every_l6_learning_action": "future-run only",
+    "every_l5_certification_chain_must_prove": [
+      "Same governed object.",
+      "Same L5GovernanceContext digest across children.",
+      "No L5 GateVerdict.",
+      "No L5 X3.",
+      "No L5 durable commit."
+    ],
+    "every_99_proof_bundle_must_prove": [
+      "Contract chain exists.",
+      "Runtime traces exist.",
+      "No bypass occurred.",
+      "Negative controls fail closed.",
+      "Replay is reconstructable.",
+      "Same input can prove same route and same exit where determinism is required."
+    ]
+  }
+}

@@ -62,8 +62,14 @@ PROP_SUMMARY = "Summary"
 PROP_AI_SUMMARY = "AI Summary "
 
 # Wave-log lines are appended to the Summary rich_text. Marker shape:
-#   "[Wave-Log <iso-ts>] W{N} ✅ DONE"
+#   "[Wave-Log <iso-ts>] W{N} DONE"
+# When a marker carries note="...", the line is suffixed with " — {note}".
 WAVE_LOG_PREFIX = "[Wave-Log "
+
+# Cap on free-form ``note=`` content. Keeps the Summary column "succinct" so
+# operators see one high-signal line per wave instead of paragraphs. Notes
+# longer than this are truncated with an ellipsis.
+MAX_NOTE_CHARS = 240
 
 # ---------------------------------------------------------------------------
 # Marker parser
@@ -89,17 +95,50 @@ _PLAN_COMPLETE_RE = re.compile(
     re.MULTILINE,
 )
 
+# Key/value parser. Values may be:
+#   - double-quoted ("like this") to allow spaces / punctuation
+#   - single-quoted ('like this')
+#   - a bareword (no whitespace)
+# This lets ``note="4 files, +12 tests"`` carry signal into Summary while
+# bareword keys (plan=foo-abc123 wave=3) keep working unchanged.
 _KV_RE = re.compile(
-    r"\b(?P<key>plan|wave|phase|reason)="
-    r"(?P<val>\S+)"
+    r"\b(?P<key>plan|wave|phase|reason|note)="
+    r"(?:"
+    r'"(?P<qval>[^"]*)"'
+    r"|"
+    r"'(?P<sqval>[^']*)'"
+    r"|"
+    r"(?P<bval>\S+)"
+    r")"
 )
 
 
 def _parse_kv(body: str) -> dict[str, str]:
     out: dict[str, str] = {}
     for m in _KV_RE.finditer(body):
-        out[m.group("key")] = m.group("val").strip()
+        val = m.group("qval")
+        if val is None:
+            val = m.group("sqval")
+        if val is None:
+            val = m.group("bval") or ""
+        out[m.group("key")] = val.strip()
     return out
+
+
+def _sanitize_note(raw: str | None) -> str | None:
+    """Trim, collapse whitespace, and cap at MAX_NOTE_CHARS.
+
+    Returns None for empty / whitespace-only input. Newlines are flattened
+    so a single Summary append never spans multiple log lines.
+    """
+    if not raw:
+        return None
+    flat = re.sub(r"\s+", " ", raw).strip()
+    if not flat:
+        return None
+    if len(flat) > MAX_NOTE_CHARS:
+        flat = flat[: MAX_NOTE_CHARS - 1].rstrip() + "\u2026"
+    return flat
 
 
 @dataclass(frozen=True)
@@ -111,6 +150,9 @@ class WaveLifecycleMarker:
     wave: int | None = None
     phase: str | None = None
     reason: str | None = None
+    # Free-form one-liner suffixed onto the Summary append ("— {note}").
+    # Sanitized: whitespace-collapsed, capped at MAX_NOTE_CHARS. Optional.
+    note: str | None = None
 
 
 def parse_wave_lifecycle_markers(text: str) -> list[WaveLifecycleMarker]:
@@ -148,6 +190,7 @@ def parse_wave_lifecycle_markers(text: str) -> list[WaveLifecycleMarker]:
                     wave=wave_val,
                     phase=fields.get("phase"),
                     reason=fields.get("reason"),
+                    note=_sanitize_note(fields.get("note")),
                 )
             )
     return out
@@ -258,6 +301,14 @@ def patch_for_marker(
     else:
         reason_parts.append(f"unknown_kind:{marker.kind}")
 
+    # Suffix the optional high-signal note onto the log line. Sanitized at
+    # parse time; we re-sanitize here for callers that built a marker by hand.
+    if summary_append is not None:
+        note = _sanitize_note(marker.note)
+        if note:
+            summary_append = f"{summary_append} \u2014 {note}"
+            reason_parts.append("note_present")
+
     return NotionPatchSpec(
         slug=marker.slug,
         properties=props,
@@ -309,6 +360,7 @@ __all__ = [
     "PROP_SUMMARY",
     "PROP_AI_SUMMARY",
     "WAVE_LOG_PREFIX",
+    "MAX_NOTE_CHARS",
     "SLUG_RE",
     "WaveLifecycleMarker",
     "NotionPatchSpec",

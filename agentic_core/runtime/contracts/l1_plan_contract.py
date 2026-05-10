@@ -6,7 +6,7 @@ Canonical dataclass for L1 planning output.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
 
@@ -40,6 +40,22 @@ class L1PlanContract:
 
     # W2: target level for L0 variant routing (DS-3 executive vs default)
     target_level: str = ""  # "SENIOR" | "STAFF" | "EXECUTIVE" | ""
+
+    # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449): app_payload-derived
+    # projections. L1 reads ValidatedRequest.app_payload, builds these mappings,
+    # and downstream stages (L0, PA, Exit) consume them WITHOUT reading the
+    # legacy AppsRgIngressPayload. All five default to empty mapping so the
+    # additions are non-breaking for non-apps_rg L1 producers.
+    #   - task_spec: generation_mode + capability_requirements
+    #   - query_spec: identity hashes (jd_hash, resume_hash) + target tuple
+    #   - support_expectation: thresholds + provenance/fact-check booleans
+    #   - output_expectation: formats + provenance_required + fact_checked_required
+    #   - policy_refs: manifest_digest + 5 ref strings (prompt/hitl/l0/spec/thresholds)
+    task_spec: Mapping[str, Any] = field(default_factory=dict)
+    query_spec: Mapping[str, Any] = field(default_factory=dict)
+    support_expectation: Mapping[str, Any] = field(default_factory=dict)
+    output_expectation: Mapping[str, Any] = field(default_factory=dict)
+    policy_refs: Mapping[str, str] = field(default_factory=dict)
 
     # Receipt
     planning_timestamp: str = ""

@@ -13,10 +13,18 @@ tags emitted, so this hook does NOT trip §25 serialization or
 
 Marker grammar (one per line)::
 
-    WAVE_START: plan=<slug-6hex> wave=<N>
-    WAVE_COMPLETE: plan=<slug-6hex> wave=<N>
-    PHASE_COMPLETE: plan=<slug-6hex> phase=<id>
-    PLAN_COMPLETE: plan=<slug-6hex>
+    WAVE_START: plan=<slug-6hex> wave=<N> [note="<short high-signal one-liner>"]
+    WAVE_COMPLETE: plan=<slug-6hex> wave=<N> [note="..."]
+    PHASE_COMPLETE: plan=<slug-6hex> phase=<id> [note="..."]
+    PLAN_COMPLETE: plan=<slug-6hex> [note="..."]
+
+The optional ``note="..."`` field carries a succinct (~240-char cap)
+one-liner appended to the Notion Summary column, e.g.::
+
+    WAVE_COMPLETE: plan=foo-abc123 wave=3 note="4 files, +12 tests, scope=summary-signal"
+
+renders as ``[Wave-Log <ts>] W3 DONE — 4 files, +12 tests, scope=summary-signal``
+on the Plans DB row's Summary. Without ``note=`` the line stays terse.
 
 Markers MUST start at the beginning of a line (regex anchor ``^``) so
 quoted prose mentions are excluded.

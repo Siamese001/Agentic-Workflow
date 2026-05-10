@@ -35,6 +35,9 @@ sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 
+sys.path.insert(0, str(REPO_ROOT))
+from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
+
 try:
     from tqdm import tqdm
 except ImportError:  # pragma: no cover
@@ -146,6 +149,12 @@ def main() -> int:
         success, err = _patch_page(page_id, props, token)
         if success:
             ok += 1
+            log_plans_db_write(  # DS-1
+                event="patch_status",
+                slug=row.get("page_id", page_id),
+                writer="apply_plan_derived_status",
+                detail=f"status→{plan_status}",
+            )
         else:
             fail += 1
             msg = f"FAIL {page_id}: {err}"

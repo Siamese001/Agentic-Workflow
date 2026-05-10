@@ -313,6 +313,35 @@ def main() -> int:
     if args.dry_run:
         print("DRY RUN: Ingress payload validated successfully.")
         print(json.dumps(ingress_payload, indent=2))
+        # apps-rg-u0-reflection-live-wiring-105147 W6.P6.1: dry-run proves
+        # the live U0 path emits the reflection receipt before L1. We
+        # build the envelope and run u0_validate_apps_rg, then surface the
+        # receipt's pass_status + digests so the operator sees the harness
+        # is on the live path. No L1+ stage runs.
+        try:
+            from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_parse
+            from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+            envelope = apps_rg_parse(ingress_payload)
+            if envelope is None:
+                print("DRY RUN: U0 harness — envelope build skipped (parse returned None).")
+                return 0
+            validated = u0_validate_apps_rg(envelope)
+            receipt = validated.reflection_receipt
+            print()
+            print("DRY RUN: U0 reflection harness on live path — verdict:")
+            print(f"  pass_status:              {receipt.pass_status}")
+            print(f"  pointers_total:           {receipt.pointers_total}")
+            print(f"  pointers_mapped:          {receipt.pointers_mapped}")
+            print(f"  pointers_derived:         {receipt.pointers_derived}")
+            print(f"  pointers_deferred:        {receipt.pointers_deferred}")
+            print(f"  silently_dropped:         {receipt.silently_dropped}")
+            print(f"  unknown_mappings:         {receipt.unknown_mappings}")
+            print(f"  input_payload_digest:     {receipt.input_payload_digest[:16]}...")
+            print(f"  validated_request_digest: {receipt.validated_request_digest[:16]}...")
+            print(f"  audit_refs:               {validated.audit_refs}")
+        except Exception as e:  # guardian: allow-broad -- dry-run smoke surface; surface message + non-zero exit
+            print(f"DRY RUN: U0 harness FAILED: {type(e).__name__}: {e}", file=sys.stderr)
+            return 1
         return 0
 
     # Submit to AppIngressRunner (core runtime entry).

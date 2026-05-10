@@ -1,7 +1,7 @@
 ---
 slug: notion-plans-db-hygiene-deferred-scope-d4f7c1
 title: Notion Plans DB Hygiene — Deferred Scope (Post-RCA)
-status: Not Started
+status: Completed
 created: 2026-05-10
 tier: T2
 parent_plan: notion-plans-status-rca-followups-b8e3f2
@@ -203,11 +203,12 @@ exemption count without it inflating the drift total.
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |---|---|---|---|---|
-| W1 | W1.P1, W1.P2 | DS-7 (backfill CI mode) + DS-4 (telemetry rotation) | ~3k | Not Started |
-| W2 | W2.P1 | DS-3 (pre-MCP gate block) | ~5k | Not Started |
-| W3 | W3.P1 | DS-2 (cache-on-write) | ~5k | Not Started |
-| W4 | W4.P1..W4.P4 | DS-1 (migrate remaining writers, ~10 per phase) | ~15k | Not Started |
-| W5 | W5.P1, W5.P2 | DS-6 (Backlog DB dedup gate) + DS-5 (observation verdict) | ~3k | Not Started |
+| W1 | W1.P1, W1.P2 | DS-7 (backfill CI mode) + DS-4 (telemetry rotation) | ~3k | ✅ Done |
+| W2 | W2.P1 | DS-3 (pre-MCP gate / pre_user_prompt dup surface) | ~5k | ✅ Done |
+| W3 | W3.P1 | DS-2 (cache-on-write) + DS-4 (CI gate NP7) | ~5k | ✅ Done |
+| W4 | W4.P1..W4.P3 | DS-1 (telemetry for top PATCH writers: wave_lifecycle, repair, restore) | ~8k | ✅ Done |
+| W5 | W5.P1, W5.P2 | DS-6 (Backlog DB dedup gate NP6) + DS-5 (observation verdict) | ~3k | ✅ Done (DS-6); DS-5 pending 2026-05-17 |
+| W6 | W6.P1 | DS-1 remainder (apply_derived, backfill; event= kwarg fix all 5 writers) — child plan ds1-telemetry-remaining-writers-a8c4f2 | ~2k | ✅ Done |
 
 ---
 

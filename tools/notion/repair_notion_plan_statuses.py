@@ -40,6 +40,9 @@ from _notion_constants import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
 )
 
+sys.path.insert(0, str(REPO_ROOT))
+from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
+
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 TIMEOUT = 30.0
 
@@ -204,6 +207,12 @@ def main() -> None:
         try:
             _req("PATCH", patch_url, payload)
             print(f"  ✓ {r['slug']} → {r['correct_status']}")
+            log_plans_db_write(  # DS-1
+                event="patch_status",
+                slug=r["slug"],
+                writer="repair_notion_plan_statuses",
+                detail=f"status→{r['correct_status']}",
+            )
             patched += 1
             time.sleep(0.35)
         except urllib.error.HTTPError as e:

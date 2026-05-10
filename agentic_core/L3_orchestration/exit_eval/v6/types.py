@@ -165,6 +165,72 @@ class ExitReviewPacket:
     app_specific_eval: dict[str, Any] = field(default_factory=dict)
     tenant_id: str = ""  # W1: identity quad extension (D6)
 
+    # ====================================================================
+    # AG-4 W4: opaque-ref carrier fields (additive, default-empty).
+    #
+    # Pre-AG-4 ExitReviewPacket carries dict-embedded payloads
+    # (``route_contract`` / ``evidence_bundle`` / ``hitl_packet`` / etc.).
+    # The AG-4 invariant requires *opaque refs* alongside the dict embeds
+    # so X1 gates can verify chain-of-custody without re-serialising the
+    # full payload.  All fields default-empty so existing tests don't see
+    # any shape change.
+    #
+    # Plan: ag4-evidence-contract-carrier-repair-d2f9a3
+    # ====================================================================
+
+    #: Pointer to the source contract record (e.g. Sealed L2 artifact id,
+    #: cache packet id, fallback packet id).  Empty when the source is
+    #: only carried as a dict embed.
+    source_contract_ref: str = ""
+    #: Pointer to the upstream RouteContract record (separate from the
+    #: dict embed so X1 gates can verify identity without re-hashing).
+    route_contract_ref: str = ""
+    #: Execution form used: ``SINGLE_STEP`` | ``L3_MANAGED`` |
+    #: ``CACHE_HIT`` | ``ABSTAIN`` | … (mirrors RouteContract.execution_form
+    #: for fast Exit-side dispatch).
+    execution_form: str = ""
+    #: Set of registry digests in force at the time the run was authorised
+    #: (rubric / threshold-profile / grader-roster / retrieval-profile /
+    #: prompt-profile / route-profile / capability-profile / output-schema).
+    registry_digest_set: tuple[str, ...] = field(default_factory=tuple)
+    #: Terminal-evidence refs (one per ``EvidenceItem`` consumed by the
+    #: terminal source).  Distinct from the ``evidence_bundle`` dict embed
+    #: (which carries content); this is just opaque ids.
+    evidence_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Pointer to the FinalEvidenceContract record (when the route was
+    #: ``grounded``).  Empty for cache-hit / abstain / non-grounded forms.
+    final_evidence_contract_ref: str = ""
+    #: Pointer to the CompiledPromptArtifact record (when the route was
+    #: model-path).  Empty for cache-hit / abstain forms.
+    compiled_prompt_artifact_ref: str = ""
+    #: Refs to per-step exec-trace receipts.
+    exec_trace_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to tool-call receipts (one per outbound tool/MCP invocation).
+    tool_call_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to model-call receipts (one per LLM invocation).
+    model_call_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Provider receipts (one per provider lane invocation; e.g. vLLM,
+    #: OpenAI, Anthropic).
+    provider_receipts: tuple[str, ...] = field(default_factory=tuple)
+    #: Pointer to the proposed_state_diff record (when the run produced
+    #: a UWG commit candidate).  Empty for read-only forms.
+    proposed_state_diff_ref: str = ""
+    #: Refs to OTEL spans covering the entire run from entry through Exit.
+    #: Distinct from ``otel_spans`` dict embed (which carries the spans
+    #: themselves); this is a flat ref list for fast traversal.
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Pointer to the HITL packet ref (when re-cleared HITL was a prior).
+    #: Empty when no HITL prior applies.
+    hitl_packet_ref: str = ""
+    #: Refs to L5 certification rows (one per certifying authority that
+    #: signed off on this run's identity / capability / safety).
+    l5_certification_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to runtime-gate verdicts (UWG, capability, sandbox, network).
+    runtime_gate_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Pointer to the audit manifest covering this run (single root that
+    #: covers all of the above refs).  Empty when audit is not yet sealed.
+    audit_manifest_ref: str = ""
+
 
 # ---- X3 disposition packets (required-output shapes from spec §X3) ----
 

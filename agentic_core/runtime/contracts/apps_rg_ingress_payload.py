@@ -127,6 +127,20 @@ class ValidatedRequest:
     replay_key: str = ""
     snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
+    # apps-rg-u0-reflection-harness-79d032 W2.P2.1: full apps_rg domain payload
+    # preserved verbatim from the validated ingress contract. Default empty so
+    # this field is additive — existing call sites that construct
+    # ValidatedRequest without it continue to work unchanged. The U0 reflection
+    # adapter is the only producer that populates this with the validated
+    # AppsRgIngressContractV1 dump.
+    app_payload: Mapping[str, Any] = field(default_factory=dict)
+    # apps-rg-u0-reflection-live-wiring-105147 W1.P1.3: reflection receipt
+    # produced by ``apps_rg_u0_adapt`` when the harness is on the live path.
+    # Typed as ``Any`` to avoid a circular import (the receipt lives under
+    # ``agentic_core.runtime.u0`` which imports from this module). The
+    # concrete type is ``AppsRgU0ReflectionReceipt``. Default ``None`` keeps
+    # the field additive — pre-harness call sites are unaffected.
+    reflection_receipt: Any = None
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

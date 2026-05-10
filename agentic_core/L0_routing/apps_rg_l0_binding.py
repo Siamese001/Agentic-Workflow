@@ -1,28 +1,30 @@
 """L0 routing binding for the apps_rg `resume_generation` task class.
 
-Per plan apps-rg-runtime-wiring-completion-d4e8a1 §6 W3.P3.
+Per plan apps-rg-runtime-wiring-completion-d4e8a1 §6 W3.P3 (initial)
++   plan apps-rg-app-payload-consumption-wiring-b3a449 W3 (AG-2 — consumes
+   L1PlanContract app_payload-derived projections to drive route_family +
+   cache_eligibility + action_required).
 
 L0 is the THIRD stage of the U0 -> L1 -> L0 -> [C0] -> [PA] -> L2 -> Exit
-pipeline. Its job is to consume the L1 plan, read the apps_rg declarative
-route profile (route_profiles.yaml), and emit a typed RouteContract that
-downstream C0/PA/L2 stages consume.
+pipeline. Its job is to consume the L1 plan + its five app_payload-derived
+projections, read the apps_rg declarative route profile
+(route_profiles.yaml), and emit a typed RouteContract that downstream
+C0/PA/L2 stages consume.
 
-Routing decision for task_class='resume_generation':
-- route_id = "rg.resume_generation.default" (single-step path)
-- l3_required = False (managed-workflow / L3 DAG path deferred per
-  plan §3 non-goal: SINGLE_STEP only this iteration)
-- Pass-through of L1 flags: grounding_required, model_generation_required,
-  write_authority_present
+AG-2 consumption surface — L0 reads from L1PlanContract:
+    - support_expectation.fact_checked_required → grounded route family
+    - support_expectation.provenance_required   → grounded route family
+    - task_spec.generation_mode                 → route_family taxonomy
+    - target_level                              → route_id variant
 
-The route profile YAML lists three allowed_route_ids (default / executive /
-short_form). Variant selection (e.g. executive for senior+ levels) is a
-future optimization and would consume target_level from the original
-payload — that requires either a profile-aware L1 plan or passing the
-envelope alongside. Out of scope for W3.P3.
+L0 produces on RouteContract:
+    - route_family: e.g. "evidence_grounded_generation"
+    - execution_form: "single_step" today; "managed_workflow" future
+    - cache_eligibility: per-tier booleans (R1A/R1B/R3/R4)
+    - action_required: True only when generation_mode demands state mutation
+      (resume_generation never does — write_authority_present=False)
 
 W4 P4.2: L3 opt-in via environment variable APPS_RG_L3_OPT_IN=1.
-When set, l3_required=True in RouteContract (binding only; full L3 DAG
-implementation is deferred to future plan).
 """
 from __future__ import annotations
 
@@ -35,10 +37,68 @@ from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
 
 
-APPS_RG_L0_CERT_REF: str = "l0-apps-rg-resume-generation-w3p3"
+APPS_RG_L0_CERT_REF: str = "l0-apps-rg-resume-generation-app-payload-b3a449"
 APPS_RG_DEFAULT_ROUTE_ID: str = "rg.resume_generation.default"
 APPS_RG_EXECUTIVE_ROUTE_ID: str = "rg.resume_generation.executive"
 _ROUTE_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/route_profiles.yaml"
+
+# AG-2: route_family taxonomy keyed by generation_mode + grounded flag.
+# This is the high-level decision; route_id carries the variant detail.
+_ROUTE_FAMILY_EVIDENCE_GROUNDED: str = "evidence_grounded_generation"
+_ROUTE_FAMILY_UNGROUNDED: str = "ungrounded_generation"
+_ROUTE_FAMILY_VALIDATION: str = "validation_only"
+
+_VALIDATION_MODES: frozenset[str] = frozenset({
+    "healing_fact_check",
+    "healing_unsupported_claim",
+})
+
+
+def _derive_route_family(l1_plan: L1PlanContract) -> str:
+    """Pick the route family from L1PlanContract projections.
+
+    Reads task_spec.generation_mode + grounding_required (already derived
+    from app_payload by L1).
+    """
+
+    generation_mode = str(l1_plan.task_spec.get("generation_mode", ""))
+    if generation_mode in _VALIDATION_MODES:
+        return _ROUTE_FAMILY_VALIDATION
+    if l1_plan.grounding_required:
+        return _ROUTE_FAMILY_EVIDENCE_GROUNDED
+    return _ROUTE_FAMILY_UNGROUNDED
+
+
+def _derive_cache_eligibility(l1_plan: L1PlanContract) -> dict[str, bool]:
+    """Compute per-cache-tier eligibility from L1 projections.
+
+    AG-2 spec rule: R1B semantic cache eligibility is only marked when
+    semantic compatibility evidence can later be proven. For
+    resume_generation today: R1A exact-key cache always eligible (the
+    payload digest is canonical); R1B semantic deferred (no proof path
+    yet); R3 grounded cache eligible iff grounding_required; R4 action
+    cache never (no state mutation).
+    """
+
+    fact_check_required = bool(
+        l1_plan.support_expectation.get("fact_checked_required", False)
+    )
+    return {
+        # exact-key cache — keyed on input payload digest, always safe
+        "r1a_exact": True,
+        # semantic cache — needs an embedding compat proof; out of scope (AG-2 hard law)
+        "r1b_semantic": False,
+        # grounded cache — eligible only when L1 demands grounding AND fact-check
+        "r3_grounded": bool(l1_plan.grounding_required) and fact_check_required,
+        # action cache — apps_rg never mutates state in this scope
+        "r4_action": False,
+    }
+
+
+def _derive_action_required(l1_plan: L1PlanContract) -> bool:
+    """Action-required follows write_authority_present, which apps_rg never sets."""
+
+    return bool(l1_plan.write_authority_present)
 
 
 def _read_route_profile_digest(repo_root: Path) -> str:
@@ -117,6 +177,12 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     # W4 P4.2: L3 opt-in via env var (binding only; full DAG deferred)
     l3_opt_in = os.environ.get("APPS_RG_L3_OPT_IN", "") in ("1", "true", "yes")
 
+    # AG-2: derive app_payload-aware routing fields from L1 projections.
+    route_family = _derive_route_family(l1_plan)
+    cache_eligibility = _derive_cache_eligibility(l1_plan)
+    action_required = _derive_action_required(l1_plan)
+    execution_form = "managed_workflow" if l3_opt_in else "single_step"
+
     return RouteContract(
         request_id=l1_plan.request_id,
         run_id=l1_plan.run_id,
@@ -136,9 +202,20 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         allowed_tools=(),
         allowed_networks=("localhost:8000",),
         allowed_file_roots=("artifacts/apps_rg/",),
-        reason_codes=_build_reason_codes(l1_plan),
+        # AG-2 — surface app_payload-derived routing semantics explicitly.
+        route_family=route_family,
+        execution_form=execution_form,
+        cache_eligibility=cache_eligibility,
+        action_required=action_required,
+        # AG-2: thread replay_key forward.
+        replay_key=l1_plan.replay_key,
+        reason_codes=_build_reason_codes(l1_plan) + (
+            f"route_family={route_family}",
+            f"cache_eligibility={cache_eligibility}",
+            f"action_required={action_required}",
+        ),
         routing_timestamp=datetime.now(timezone.utc).isoformat(),
-        schema_version="W3.P3",
+        schema_version="AG-2.b3a449",
         l5_certification_ref=APPS_RG_L0_CERT_REF,
     )
 

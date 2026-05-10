@@ -63,6 +63,7 @@ from tools.notion._wave_lifecycle_helpers import (  # noqa: E402
     parse_wave_lifecycle_markers,
     patch_for_marker,
 )
+from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
 
 LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_notion.jsonl"
 
@@ -314,6 +315,14 @@ def apply_spec(
             "reason": spec.reason,
         }
     )
+    if ok:
+        # DS-1: unified Plans-DB write telemetry
+        log_plans_db_write(
+            event="patch_status",
+            slug=spec.slug,
+            writer="wave_lifecycle_writer",
+            detail=f"props={list(payload_props.keys())} reason={spec.reason}",
+        )
     return ok, msg
 
 
@@ -408,6 +417,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--wave", type=int, help="Wave number (for wave_*)")
     parser.add_argument("--phase", help="Phase id (for phase_complete)")
     parser.add_argument("--reason", help="Optional reason annotation")
+    parser.add_argument(
+        "--note",
+        help=(
+            "Optional high-signal one-liner appended to the Summary log line "
+            "(e.g. '4 files, +12 tests, scope=summary-signal'). Capped at "
+            "~240 chars; whitespace collapsed to a single line."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--emit-from-stdin",
@@ -439,6 +456,7 @@ def main(argv: list[str] | None = None) -> int:
         wave=args.wave,
         phase=args.phase,
         reason=args.reason,
+        note=args.note,
     )
 
     token = _token() if not args.dry_run else None

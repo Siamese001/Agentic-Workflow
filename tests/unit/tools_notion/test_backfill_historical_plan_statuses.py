@@ -169,3 +169,70 @@ def test_main_skips_rows_without_disk_status(mod, tmp_path, monkeypatch, capsys)
     assert "plan-b-bbbbbb" not in out or "SKIP" in out or "skipped" in out.lower()
     # Exactly one drift item (plan-a only)
     assert "1 drift items found" in out
+
+
+# -------------------------------------------------------------------
+# DS-7: CI mode — no-ground-truth rows excluded from drift count
+# -------------------------------------------------------------------
+
+
+def test_ci_mode_no_ground_truth_not_counted_as_drift(
+    mod, tmp_path, monkeypatch, capsys
+):
+    """DS-7: plan with on-disk file but no frontmatter status must NOT inflate
+    CI drift count. It should appear in the no_ground_truth_skipped counter,
+    NOT in drift_items, so --ci does NOT exit 2 when only such rows exist."""
+    plan_no_status = tmp_path / "plan-c-cccccc.md"
+    plan_no_status.write_text("# Plan C\n\nNo status field here.\n", encoding="utf-8")
+
+    fake_pages = [
+        {
+            "id": "page-c",
+            "properties": {
+                "Slug": {"title": [{"plain_text": "plan-c-cccccc"}]},
+                "Status": {"select": {"name": "In Progress"}},
+                "Plan File Path": {
+                    "rich_text": [{"plain_text": str(plan_no_status)}]
+                },
+            },
+        },
+    ]
+
+    monkeypatch.setattr(mod, "_query_all_plans", lambda: fake_pages)
+    monkeypatch.setattr(sys, "argv", ["backfill_historical_plan_statuses.py", "--ci"])
+
+    rc = mod.main()
+    out = capsys.readouterr().out
+    # No true drift — exit 0
+    assert rc == 0, f"Expected exit 0 (no drift), got {rc}. Output:\n{out}"
+    # The row appears in the no-ground-truth counter, not drift
+    assert "0 drift items" in out or "No drift" in out
+    assert "ground-truth" in out.lower() or "no_ground_truth" in out.lower() or "ground truth" in out.lower()
+
+
+def test_ci_mode_exits_2_only_for_true_drift(mod, tmp_path, monkeypatch, capsys):
+    """DS-7: --ci must still exit 2 when there is genuine drift (on-disk has
+    an explicit status that differs from Notion)."""
+    plan_with_status = tmp_path / "plan-d-dddddd.md"
+    plan_with_status.write_text(
+        "---\nstatus: Completed\n---\n# Plan D\n", encoding="utf-8"
+    )
+
+    fake_pages = [
+        {
+            "id": "page-d",
+            "properties": {
+                "Slug": {"title": [{"plain_text": "plan-d-dddddd"}]},
+                "Status": {"select": {"name": "Not Started"}},
+                "Plan File Path": {
+                    "rich_text": [{"plain_text": str(plan_with_status)}]
+                },
+            },
+        },
+    ]
+
+    monkeypatch.setattr(mod, "_query_all_plans", lambda: fake_pages)
+    monkeypatch.setattr(sys, "argv", ["backfill_historical_plan_statuses.py", "--ci"])
+
+    rc = mod.main()
+    assert rc == 2, f"Expected exit 2 (true drift detected), got {rc}"

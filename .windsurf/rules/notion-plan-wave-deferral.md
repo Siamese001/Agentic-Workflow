@@ -33,6 +33,27 @@ The sanctioned chain is:
 | `wave_execution_state.py complete` | Direct HTTP | Status → `Completed`; Summary append `[Wave-Log <ts>] PLAN COMPLETE` |
 | `WAVE_START:` / `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers in Cascade response | `post_cascade_wave_lifecycle_capture.py` hook → direct HTTP | Same as above, decided per marker |
 
+### High-signal Summary appends (added 2026-05-10)
+
+> ⛔ Every `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` marker Cascade emits SHOULD carry an optional `note="<succinct one-liner>"` field. Without it the Notion Summary column degrades to a wall of `[Wave-Log <ts>] W{N} DONE` lines with zero scope information.
+
+Marker grammar with note:
+
+```
+WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="<files>, <tests>, <scope>"
+PHASE_COMPLETE: plan=<slug-6hex> phase=<id> note="<one-liner>"
+PLAN_COMPLETE: plan=<slug-6hex> note="<final outcome>"
+```
+
+The note is whitespace-collapsed and capped at ~240 chars (`MAX_NOTE_CHARS` in `tools/notion/_wave_lifecycle_helpers.py`). Quotes (`"..."` or `'...'`) are required when the note contains spaces. Good shape:
+
+- ✅ `note="4 files, +12 tests, summary-signal upgrade"`
+- ✅ `note="9/9 phases green; ledger-binder hot path"`
+- ❌ `note=stuff` (single bareword — works but signals nothing)
+- ❌ `note="see plan §3 for details"` (forces operator to context-switch)
+
+`WAVE_START:` MAY include `note=` but typically doesn't — start lines are noise unless something noteworthy gates the wave.
+
 **Failure mode**: fail-soft. Any HTTP error logs to `artifacts/windsurf/wave_lifecycle_notion.jsonl` and exits 0. Wave-state on disk is the source of truth; Notion sync is best-effort.
 
 **Backstop**: CI gate `NP4 Notion Plans wave freshness` (`ops_scripts/ci/check_plan_notion_wave_freshness.py`) detects on-disk-vs-Notion skew >7d on active plans.

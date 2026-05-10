@@ -536,6 +536,32 @@ def main():
             "NP4 Notion Plans wave freshness (advisory)",
             "ops_scripts/ci/check_plan_notion_wave_freshness.py",
         ),
+        # NP5 -- Plans DB duplicate-slug dedup gate. Uses local cache snapshot
+        # (offline safe) or --live mode against the Notion API. Fails when any
+        # slug has ≥2 active rows. Advisory by default; fail-closed via
+        # NOTION_PLANS_DUP_BYPASS=1 to bypass.
+        # Plan: notion-plans-status-rca-followups-b8e3f2 (W1.P2d).
+        (
+            "NP5 Notion Plans no duplicate slugs (advisory)",
+            "ops_scripts/ci/check_notion_plans_no_duplicates.py",
+        ),
+        # NP6 -- Backlog Items DB duplicate-title dedup gate (DS-6).
+        # Advisory by default; fail-closed via BACKLOG_DUP_FAIL_CLOSED=1.
+        # Bypass: BACKLOG_DUP_BYPASS=1. Skips when token absent (offline CI).
+        # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-6.
+        (
+            "NP6 Notion Backlog no duplicate titles (advisory)",
+            "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
+        ),
+        # NP7 -- Plans-DB write telemetry log size gate (DS-4).
+        # Fails when artifacts/windsurf/plans_db_writes.jsonl exceeds 10 MB
+        # without rotation. Advisory by default; fail-closed via
+        # NOTION_TELEMETRY_LOG_SIZE_FAIL_CLOSED=1.
+        # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-4.
+        (
+            "NP7 Notion telemetry log size (advisory)",
+            "ops_scripts/ci/check_notion_telemetry_log_size.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.

@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-10T10:30:52.164210+00:00",
+  "timestamp": "2026-05-10T17:29:57.290150+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 439,
+    "total_tests": 437,
     "passed_tests": 0,
-    "failed_tests": 238,
+    "failed_tests": 236,
     "skipped_tests": 201,
     "exit_status": 1,
     "failed_by_category": {
@@ -141,8 +141,6 @@
         "tests/unit/agentic_core/L4_state/utils/memory/test_semantic_cache_manager.py",
         "tests/unit/agentic_core/L5_safety/adapters/test_human_approval_adapter.py",
         "tests/unit/agentic_core/L5_safety/enforcement/test_capability_token_rotation.py",
-        "tests/unit/agentic_core/L5_safety/enforcement/test_ingress_envelope_check.py",
-        "tests/unit/agentic_core/L5_safety/enforcement/test_ingress_spec_output_contract.py",
         "tests/unit/agentic_core/L5_safety/eval_spine/judge_backends/test_judge_backends.py",
         "tests/unit/agentic_core/L5_safety/eval_spine/test_composites.py",
         "tests/unit/agentic_core/L5_safety/eval_spine/test_enforcement_bridge.py",

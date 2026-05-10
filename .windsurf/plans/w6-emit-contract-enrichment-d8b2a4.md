@@ -2,7 +2,7 @@
 
 **Slug:** `w6-emit-contract-enrichment-d8b2a4`
 **Tier:** T3 (architectural — cross-layer contract enrichment touching every layer U0 → L1 → L0 → C0 → PA → L3 → L2 → Exit → UWG → L6)
-**Status:** Completed — W0–W9 all done (2026-05-10)
+**Status:** In Progress — W0 done; W1–W9 Not Started
 **Created:** 2026-05-09
 **Updated:** 2026-05-10 01:13 UTC-04 — W0 Author-Gate complete; all 12 decisions resolved
 **Authoring mode:** plan only — no code changes in this session

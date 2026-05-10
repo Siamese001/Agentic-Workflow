@@ -43,6 +43,7 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
+from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
 
 try:
     from tqdm import tqdm
@@ -295,6 +296,12 @@ def _execute_patches(
         success, err = _patch_page(row["page_id"], props, token)
         if success:
             ok += 1
+            log_plans_db_write(  # DS-1
+                event="patch_status",
+                slug=row["slug"],
+                writer="restore_plan_statuses_from_cache",
+                detail=f"status→{row['cache_status']}",
+            )
         else:
             fail += 1
             failures.append({

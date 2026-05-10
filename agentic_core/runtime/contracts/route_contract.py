@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +42,24 @@ class RouteContract:
     allowed_models: tuple[str, ...] = field(default_factory=tuple)
     allowed_networks: tuple[str, ...] = field(default_factory=tuple)
     allowed_file_roots: tuple[str, ...] = field(default_factory=tuple)
+
+    # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449): app_payload-derived
+    # routing semantics. L0 reads L1PlanContract projections (task_spec /
+    # support_expectation / output_expectation) and surfaces the routing
+    # decisions explicitly so downstream consumers (PA, Exit, audit) don't
+    # re-derive them. Defaults are conservative empty so non-apps_rg routers
+    # are unaffected.
+    #   - route_family: high-level taxonomy (e.g. "evidence_grounded_generation",
+    #     "ungrounded_generation", "validation_only"); orthogonal to route_id
+    #     which carries variant detail.
+    #   - execution_form: "single_step" | "multi_turn" | "managed_workflow"
+    #   - cache_eligibility: per-cache booleans — r1a_exact, r1b_semantic,
+    #     r3_grounded, r4_action; default-False marks the conservative path.
+    #   - action_required: route involves state mutation / R4 action path.
+    route_family: str = ""
+    execution_form: str = ""
+    cache_eligibility: Mapping[str, bool] = field(default_factory=dict)
+    action_required: bool = False
 
     # Routing metadata
     reason_codes: tuple[str, ...] = field(default_factory=tuple)

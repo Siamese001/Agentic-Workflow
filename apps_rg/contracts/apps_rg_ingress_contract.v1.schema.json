@@ -1,0 +1,453 @@
+{
+  "$defs": {
+    "GenerationMode": {
+      "description": "The 8 generation modes apps_rg may request.\n\nResolved per Author-Gate AG-3 (explicit user choice). The U0 adapter\nrejects any value outside this enum \u2014 see\n``apps_rg_u0_adapter.UnknownGenerationModeError``.",
+      "enum": [
+        "strategic_tailor",
+        "tailor_existing",
+        "generate_scratch",
+        "enhance_current",
+        "healing_fact_check",
+        "healing_unsupported_claim",
+        "repair"
+      ],
+      "title": "GenerationMode",
+      "type": "string"
+    },
+    "IdentitySection": {
+      "additionalProperties": false,
+      "description": "Actor / authorization metadata.",
+      "properties": {
+        "actor_id": {
+          "minLength": 1,
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_role": {
+          "minLength": 1,
+          "title": "Actor Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_role"
+      ],
+      "title": "IdentitySection",
+      "type": "object"
+    },
+    "JdPayloadSection": {
+      "additionalProperties": false,
+      "description": "Job description payload \u2014 REQUIRED to carry jd_hash.",
+      "properties": {
+        "jd_hash": {
+          "description": "SHA-256 over canonical JD text. Required, never empty.",
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Jd Hash",
+          "type": "string"
+        },
+        "jd_ref": {
+          "default": "",
+          "description": "Optional path/URL to source JD artifact.",
+          "title": "Jd Ref",
+          "type": "string"
+        },
+        "jd_signals": {
+          "additionalProperties": true,
+          "description": "Pre-extracted signals (seniority, role-type, etc.).",
+          "title": "Jd Signals",
+          "type": "object"
+        },
+        "jd_text": {
+          "description": "Inline JD text used to compute jd_hash.",
+          "minLength": 1,
+          "title": "Jd Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "jd_hash",
+        "jd_text"
+      ],
+      "title": "JdPayloadSection",
+      "type": "object"
+    },
+    "OutputRequirementsSection": {
+      "additionalProperties": false,
+      "description": "Output formats + provenance flags.",
+      "properties": {
+        "fact_checked_required": {
+          "description": "If true, fact-check gate must run.",
+          "title": "Fact Checked Required",
+          "type": "boolean"
+        },
+        "formats": {
+          "description": "Required output formats \u2014 e.g. ('json', 'docx').",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Formats",
+          "type": "array"
+        },
+        "provenance_required": {
+          "description": "If true, every bullet must carry provenance.",
+          "title": "Provenance Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "formats",
+        "provenance_required",
+        "fact_checked_required"
+      ],
+      "title": "OutputRequirementsSection",
+      "type": "object"
+    },
+    "ProfileManifestSection": {
+      "additionalProperties": false,
+      "description": "Digest-bound declarative profile references \u2014 POLICY REFS.\n\nEvery field below is a \"policy ref\" required by the U0 adapter. Missing\nany of these raises ``MissingPolicyRefsError``.",
+      "properties": {
+        "agent_spec_ref": {
+          "description": "Ref to apps_rg agent spec v1.",
+          "minLength": 1,
+          "title": "Agent Spec Ref",
+          "type": "string"
+        },
+        "hitl_policy_ref": {
+          "description": "Ref to HITL trigger policy (apps_rg owned).",
+          "minLength": 1,
+          "title": "Hitl Policy Ref",
+          "type": "string"
+        },
+        "l0_policy_ref": {
+          "description": "Ref to L0 routing policy (apps_rg domain hints).",
+          "minLength": 1,
+          "title": "L0 Policy Ref",
+          "type": "string"
+        },
+        "manifest_digest": {
+          "description": "SHA-256 over canonical profile manifest content.",
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Digest",
+          "type": "string"
+        },
+        "profile_refs": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Map of profile-name \u2192 digest.",
+          "title": "Profile Refs",
+          "type": "object"
+        },
+        "prompt_registry_ref": {
+          "description": "Ref to prompt template registry (apps_rg owned).",
+          "minLength": 1,
+          "title": "Prompt Registry Ref",
+          "type": "string"
+        },
+        "thresholds_ref": {
+          "description": "Ref to apps_rg quality thresholds.",
+          "minLength": 1,
+          "title": "Thresholds Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "manifest_digest",
+        "prompt_registry_ref",
+        "hitl_policy_ref",
+        "l0_policy_ref",
+        "agent_spec_ref",
+        "thresholds_ref"
+      ],
+      "title": "ProfileManifestSection",
+      "type": "object"
+    },
+    "ProvenanceRequirementsSection": {
+      "additionalProperties": false,
+      "description": "Per-bullet provenance contract.",
+      "properties": {
+        "per_bullet_required": {
+          "title": "Per Bullet Required",
+          "type": "boolean"
+        },
+        "source_quote_required": {
+          "title": "Source Quote Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "per_bullet_required",
+        "source_quote_required"
+      ],
+      "title": "ProvenanceRequirementsSection",
+      "type": "object"
+    },
+    "QualityThresholdsSection": {
+      "additionalProperties": false,
+      "description": "Quality intent \u2014 declarative thresholds.",
+      "properties": {
+        "min_ats": {
+          "description": "Floor ATS compatibility (e.g. 70).",
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Min Ats",
+          "type": "integer"
+        },
+        "min_quality": {
+          "description": "Floor quality score (e.g. 0.75).",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Min Quality",
+          "type": "number"
+        },
+        "word_max": {
+          "description": "Ceiling word count.",
+          "minimum": 0,
+          "title": "Word Max",
+          "type": "integer"
+        },
+        "word_min": {
+          "description": "Floor word count.",
+          "minimum": 0,
+          "title": "Word Min",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min_quality",
+        "min_ats",
+        "word_min",
+        "word_max"
+      ],
+      "title": "QualityThresholdsSection",
+      "type": "object"
+    },
+    "ReplaySection": {
+      "additionalProperties": false,
+      "description": "Idempotency + replay determinism.",
+      "properties": {
+        "idempotency_key": {
+          "minLength": 1,
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "replay_key": {
+          "description": "Deterministic replay key \u2014 required, never empty.",
+          "minLength": 1,
+          "title": "Replay Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "replay_key",
+        "idempotency_key"
+      ],
+      "title": "ReplaySection",
+      "type": "object"
+    },
+    "ResumePayloadSection": {
+      "additionalProperties": false,
+      "description": "Source resume payload \u2014 at least one of text or ref required (validated above).",
+      "properties": {
+        "resume_hash": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Resume Hash",
+          "type": "string"
+        },
+        "source_resume_ref": {
+          "default": "",
+          "description": "Path to source resume file. Empty allowed if source_resume_text provided.",
+          "title": "Source Resume Ref",
+          "type": "string"
+        },
+        "source_resume_text": {
+          "default": "",
+          "description": "Inline resume text. Empty allowed if source_resume_ref provided.",
+          "title": "Source Resume Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resume_hash"
+      ],
+      "title": "ResumePayloadSection",
+      "type": "object"
+    },
+    "TargetSection": {
+      "additionalProperties": false,
+      "description": "Target company / role / level.",
+      "properties": {
+        "company": {
+          "minLength": 1,
+          "title": "Company",
+          "type": "string"
+        },
+        "level": {
+          "description": "One of 'JUNIOR'|'MID'|'SENIOR'|'STAFF'|'EXECUTIVE'|... (apps_rg-defined enum).",
+          "minLength": 1,
+          "title": "Level",
+          "type": "string"
+        },
+        "role": {
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "role",
+        "level"
+      ],
+      "title": "TargetSection",
+      "type": "object"
+    },
+    "TransportSection": {
+      "additionalProperties": false,
+      "description": "Identity-quad + trace metadata.",
+      "properties": {
+        "app_id": {
+          "description": "MUST be 'apps_rg'.",
+          "minLength": 1,
+          "title": "App Id",
+          "type": "string"
+        },
+        "request_id": {
+          "description": "Unique request id (ULID/UUID).",
+          "minLength": 1,
+          "title": "Request Id",
+          "type": "string"
+        },
+        "run_id": {
+          "description": "Run id linking ingress \u2192 exit.",
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "submitted_at": {
+          "description": "ISO-8601 submission timestamp.",
+          "minLength": 1,
+          "title": "Submitted At",
+          "type": "string"
+        },
+        "task_class": {
+          "description": "Canonical task class \u2014 'resume_generation' for apps_rg.",
+          "minLength": 1,
+          "title": "Task Class",
+          "type": "string"
+        },
+        "tenant_id": {
+          "description": "Tenant id (= app_id at this layer).",
+          "minLength": 1,
+          "title": "Tenant Id",
+          "type": "string"
+        },
+        "trace_id": {
+          "description": "OTEL trace id.",
+          "minLength": 1,
+          "title": "Trace Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "task_class",
+        "request_id",
+        "run_id",
+        "trace_id",
+        "submitted_at",
+        "tenant_id"
+      ],
+      "title": "TransportSection",
+      "type": "object"
+    }
+  },
+  "$id": "https://windsurf.agentic-workflow/apps_rg_ingress_contract.v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The canonical apps_rg JSON ingress payload, version 1.\n\nAll sub-sections are required. Optional fields have explicit defaults\ndocumented in the section model. Unknown fields at the top level are\nrejected by Pydantic (``extra='forbid'``), and the U0 reflection adapter\nadditionally verifies that every JSON Pointer in the input has a matching\nfield-map entry \u2014 catching any field that validates but is silently\ndropped.\n\nCapability-requirement clause (Author-Gate AG-4.b): apps_rg declares\nsemantic needs (``capability_requirements``); core L0's model_registry\nmaps requirements \u2192 provider/model. apps_rg NEVER names a provider here.",
+  "properties": {
+    "apps_rg_contract_version": {
+      "description": "MUST equal 'v1'. Different versions require a different module.",
+      "minLength": 1,
+      "title": "Apps Rg Contract Version",
+      "type": "string"
+    },
+    "capability_requirements": {
+      "description": "Per Author-Gate AG-4.b: semantic capability needs (e.g. 'needs_strong_narrative', 'needs_long_context'). apps_rg MAY NOT name a provider; core L0 maps requirements \u2192 provider.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Capability Requirements",
+      "type": "array"
+    },
+    "generation_mode": {
+      "$ref": "#/$defs/GenerationMode",
+      "description": "One of the GenerationMode enum values. Unknown values fail closed."
+    },
+    "identity": {
+      "$ref": "#/$defs/IdentitySection"
+    },
+    "jd_payload": {
+      "$ref": "#/$defs/JdPayloadSection"
+    },
+    "output_requirements": {
+      "$ref": "#/$defs/OutputRequirementsSection"
+    },
+    "payload_digest": {
+      "description": "SHA-256 over canonical JSON of all sibling fields except payload_digest itself.",
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Digest",
+      "type": "string"
+    },
+    "profile_manifest": {
+      "$ref": "#/$defs/ProfileManifestSection"
+    },
+    "provenance_requirements": {
+      "$ref": "#/$defs/ProvenanceRequirementsSection"
+    },
+    "quality_thresholds": {
+      "$ref": "#/$defs/QualityThresholdsSection"
+    },
+    "replay": {
+      "$ref": "#/$defs/ReplaySection"
+    },
+    "resume_payload": {
+      "$ref": "#/$defs/ResumePayloadSection"
+    },
+    "target": {
+      "$ref": "#/$defs/TargetSection"
+    },
+    "transport": {
+      "$ref": "#/$defs/TransportSection"
+    }
+  },
+  "required": [
+    "apps_rg_contract_version",
+    "transport",
+    "identity",
+    "replay",
+    "jd_payload",
+    "resume_payload",
+    "target",
+    "generation_mode",
+    "profile_manifest",
+    "quality_thresholds",
+    "output_requirements",
+    "provenance_requirements",
+    "payload_digest"
+  ],
+  "title": "AppsRgIngressContractV1",
+  "type": "object",
+  "x-contract-version": "v1"
+}

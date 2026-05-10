@@ -260,7 +260,10 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     fec = None
     if route.grounding_required:
         try:
-            fec = c0_retrieve_apps_rg(route, envelope.payload)
+            # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449 W4.P4.3):
+            # pass validated_request — C0 reads jd/resume content from
+            # validated_request.app_payload, NOT from envelope.payload.
+            fec = c0_retrieve_apps_rg(route, validated_request)
             _emit_stage_span("C0_retrieve", envelope.trace_id, "OK")
         except (TypeError, ValueError, OSError) as c0_err:
             _emit_stage_span("C0_retrieve", envelope.trace_id, "ERROR")
@@ -298,7 +301,10 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 l5_certification_ref="c0-apps-rg-no-grounding-required",
             )
         try:
-            prompt_artifact = pa_compose_apps_rg(route, l1_plan, fec, envelope.payload)
+            # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449 W4.P4.3):
+            # pass validated_request — PA reads target / output / provenance
+            # directives from validated_request.app_payload via L1 projections.
+            prompt_artifact = pa_compose_apps_rg(route, l1_plan, fec, validated_request)
             _emit_stage_span("PA_compose", envelope.trace_id, "OK")
         except (TypeError, ValueError) as pa_err:
             _emit_stage_span("PA_compose", envelope.trace_id, "ERROR")

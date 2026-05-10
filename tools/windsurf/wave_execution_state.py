@@ -115,7 +115,7 @@ def _check_plan_registration(plan: str) -> int:
     return 2
 
 
-def _notion_sync(plan: str, kind: str, wave: int | None = None) -> None:
+def _notion_sync(plan: str, kind: str, wave: int | None = None, note: str | None = None) -> None:
     """Best-effort direct-HTTP Notion sync. Never raises; never blocks.
 
     Synthesizes a single ``WaveLifecycleMarker`` and runs it through
@@ -152,7 +152,7 @@ def _notion_sync(plan: str, kind: str, wave: int | None = None) -> None:
         print(f"[wave-exec] Notion sync import failed: {exc!r}", file=sys.stderr)
         return
 
-    marker = WaveLifecycleMarker(kind=kind, slug=plan, wave=wave)
+    marker = WaveLifecycleMarker(kind=kind, slug=plan, wave=wave, note=note)
     token = os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
     current_status: str | None = None
     try:
@@ -177,7 +177,7 @@ def _notion_sync(plan: str, kind: str, wave: int | None = None) -> None:
     )
 
 
-def _cmd_start(plan: str) -> int:
+def _cmd_start(plan: str, note: str | None = None) -> int:
     rc = _check_plan_registration(plan)
     if rc != 0:
         return rc
@@ -196,15 +196,15 @@ def _cmd_start(plan: str) -> int:
     except (OSError, ValueError):
         pass
     print(f"[wave-exec] START plan={plan} state={path}")
-    _notion_sync(plan, "wave_start", wave=1)
+    _notion_sync(plan, "wave_start", wave=1, note=note)
     return 0
 
 
-def _cmd_complete(plan: str) -> int:
+def _cmd_complete(plan: str, note: str | None = None) -> int:
     state = wes.is_active()
     if state is None:
         print(f"[wave-exec] COMPLETE plan={plan} (no active state to clear)")
-        _notion_sync(plan, "plan_complete")
+        _notion_sync(plan, "plan_complete", note=note)
         return 0
     if state.get("plan") != plan:
         print(
@@ -214,16 +214,18 @@ def _cmd_complete(plan: str) -> int:
         )
     removed = wes.clear()
     print(f"[wave-exec] COMPLETE plan={plan} removed={removed}")
-    _notion_sync(plan, "plan_complete")
+    _notion_sync(plan, "plan_complete", note=note)
     return 0
 
 
-def _cmd_wave_progress(plan: str, wave: int) -> int:
+def _cmd_wave_progress(plan: str, wave: int, note: str | None = None) -> int:
     """Log wave completion progress without changing wave-state.
 
     Used between waves to surface progress in Notion. Does NOT clear active
     state (use ``complete`` for that). Writes a ``[Wave-Log <ts>] W{N} DONE``
-    line to the plan's Summary property.
+    line to the plan's Summary property. When ``--note`` is supplied the
+    line is suffixed with ``— {note}`` (capped at ~240 chars) so the Notion
+    Summary column carries scope info per wave instead of bare timestamps.
     """
     state = wes.is_active()
     if state is None:
@@ -238,7 +240,7 @@ def _cmd_wave_progress(plan: str, wave: int) -> int:
             file=sys.stderr,
         )
     print(f"[wave-exec] WAVE_PROGRESS plan={plan} wave={wave}")
-    _notion_sync(plan, "wave_complete", wave=wave)
+    _notion_sync(plan, "wave_complete", wave=wave, note=note)
     return 0
 
 
@@ -255,11 +257,19 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
+    _NOTE_HELP = (
+        "Optional high-signal one-liner appended to the Notion Summary log line "
+        "(e.g. '4 files, +12 tests, scope=summary-signal'). Capped at ~240 chars; "
+        "whitespace collapsed."
+    )
+
     p_start = sub.add_parser("start", help="Mark a multi-wave plan as in-progress")
     p_start.add_argument("--plan", required=True, help="Plan slug (e.g., 'my-plan-abc123')")
+    p_start.add_argument("--note", help=_NOTE_HELP)
 
     p_complete = sub.add_parser("complete", help="Clear the active multi-wave plan")
     p_complete.add_argument("--plan", required=True, help="Plan slug being completed")
+    p_complete.add_argument("--note", help=_NOTE_HELP)
 
     p_progress = sub.add_parser(
         "wave-progress",
@@ -267,17 +277,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_progress.add_argument("--plan", required=True, help="Plan slug")
     p_progress.add_argument("--wave", type=int, required=True, help="Wave number just completed")
+    p_progress.add_argument("--note", help=_NOTE_HELP)
 
     sub.add_parser("status", help="Show active plan state (JSON)")
 
     args = parser.parse_args(argv)
 
     if args.command == "start":
-        return _cmd_start(args.plan)
+        return _cmd_start(args.plan, note=getattr(args, "note", None))
     if args.command == "complete":
-        return _cmd_complete(args.plan)
+        return _cmd_complete(args.plan, note=getattr(args, "note", None))
     if args.command == "wave-progress":
-        return _cmd_wave_progress(args.plan, args.wave)
+        return _cmd_wave_progress(args.plan, args.wave, note=getattr(args, "note", None))
     if args.command == "status":
         return _cmd_status()
     parser.error(f"unknown command: {args.command}")

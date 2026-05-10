@@ -65,6 +65,12 @@ LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "plans_db_writes.jsonl"
 # HTTP knobs (mirrors wave_lifecycle_writer.py).
 DEFAULT_TIMEOUT_S = 15.0
 
+# Telemetry log rotation threshold (DS-4).
+LOG_ROTATION_BYTES = 10 * 1024 * 1024  # 10 MB
+
+# Cache path — mirrors _plan_registration.CACHE_PATH (DS-2).
+_CACHE_PATH = REPO_ROOT / ".windsurf" / "state" / "plan_registration_cache.json"
+
 
 # ---------------------------------------------------------------------------
 # Types
@@ -88,6 +94,21 @@ class RegistrationResult:
 # ---------------------------------------------------------------------------
 
 
+def _rotate_if_large(path: Path, max_bytes: int = LOG_ROTATION_BYTES) -> None:
+    """Rotate ``path`` to ``path.1`` when it exceeds ``max_bytes``.
+
+    Never raises — rotation failure is silently swallowed to keep telemetry
+    writes non-blocking.  DS-4 (notion-plans-db-hygiene-deferred-scope-d4f7c1).
+    """
+    try:
+        if path.exists() and path.stat().st_size >= max_bytes:
+            rotated = path.with_suffix(path.suffix + ".1")
+            # Overwrite any previous rotation (keep only 1 backup).
+            path.replace(rotated)
+    except OSError:
+        pass
+
+
 def _log(event: dict[str, Any]) -> None:
     event = {
         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -95,6 +116,7 @@ def _log(event: dict[str, Any]) -> None:
     }
     try:
         LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _rotate_if_large(LOG_PATH)
         with LOG_PATH.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(event, ensure_ascii=False) + "\n")
     except OSError:
@@ -216,6 +238,54 @@ def find_active_plan_pages(
     ]
 
 
+def _update_cache_entry(
+    slug: str,
+    page_id: str,
+    status: str,
+    cache_path: Path = _CACHE_PATH,
+) -> None:
+    """Patch the local plan registration cache with a newly created row.
+
+    Uses atomic tmp→replace to avoid partial writes under concurrent access.
+    Never raises — cache write failures are silently swallowed.
+
+    DS-2 (notion-plans-db-hygiene-deferred-scope-d4f7c1): cache-on-write
+    discipline ensures the dedup guard and the dup-surface hook see the new
+    row immediately, without waiting for the next full cache refresh cycle.
+    """
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        if cache_path.exists():
+            try:
+                data: dict[str, Any] = json.loads(
+                    cache_path.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError):
+                data = {}
+        else:
+            data = {}
+
+        if not isinstance(data, dict):
+            data = {}
+        if "plans" not in data or not isinstance(data["plans"], dict):
+            data["plans"] = {}
+        if "fetched_at" not in data:
+            from datetime import datetime, timezone
+            data["fetched_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            data["fetched_at_epoch"] = datetime.now(timezone.utc).timestamp()
+
+        data["plans"][slug] = {
+            "page_id": page_id,
+            "status": status,
+        }
+
+        tmp = cache_path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.replace(cache_path)
+    except OSError:
+        pass
+
+
 def register_plan_idempotent(
     slug: str,
     properties: dict[str, Any],
@@ -323,6 +393,14 @@ def register_plan_idempotent(
         "writer": writer,
         "page_id": page_id,
     })
+    # DS-2: update cache immediately on successful POST so dedup guards
+    # see the new row without waiting for the next full refresh cycle.
+    _created_status = (
+        (properties.get("Status") or {})
+        .get("select", {})
+        .get("name", "Not Started")
+    )
+    _update_cache_entry(slug, page_id, _created_status)
     return RegistrationResult(
         page_id=page_id,
         action="created",
@@ -337,4 +415,8 @@ __all__ = [
     "register_plan_idempotent",
     "log_plans_db_write",
     "LOG_PATH",
+    "LOG_ROTATION_BYTES",
+    "_rotate_if_large",
+    "_update_cache_entry",
+    "_CACHE_PATH",
 ]

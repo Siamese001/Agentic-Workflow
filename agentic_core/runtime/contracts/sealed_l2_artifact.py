@@ -76,6 +76,30 @@ class SealedL2Artifact:
     is_future_run_only: bool = False
     l5_certification_ref: str = ""
 
+    # ====================================================================
+    # AG-4 W7: opaque-ref carrier fields preserved through L2 seal.
+    # All additive with safe defaults so pre-AG-4 callers compile unchanged.
+    # Plan: ag4-evidence-contract-carrier-repair-d2f9a3
+    # ====================================================================
+
+    #: Refs to evidence rows L2 consumed (forwarded from PA's
+    #: ``component_hash_map`` so Exit can verify provenance without
+    #: re-reading the FEC).
+    evidence_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to PA prompt rows the seal covers (compiled prompt + slot
+    #: lineage + replay manifest pointer).
+    prompt_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to tool-call receipts produced during L2 execution.
+    tool_call_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Refs to model-call receipts produced during L2 execution.
+    model_call_refs: tuple[str, ...] = field(default_factory=tuple)
+    #: Provider receipts (vLLM / OpenAI / Anthropic / …).
+    provider_receipts: tuple[str, ...] = field(default_factory=tuple)
+    #: Pointer to the replay manifest record (per-run determinism receipts).
+    replay_manifest: str = ""
+    #: Pointer to the audit manifest record covering this seal.
+    audit_manifest_ref: str = ""
+
     # Provenance
 
     def __post_init__(self) -> None:

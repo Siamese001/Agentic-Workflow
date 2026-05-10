@@ -1,0 +1,76 @@
+{
+  "apps_rg_contract_version": "v1",
+  "capability_requirements": [
+    "needs_strong_narrative",
+    "needs_long_context"
+  ],
+  "generation_mode": "strategic_tailor",
+  "identity": {
+    "actor_id": "user:amit.ayer",
+    "actor_role": "candidate"
+  },
+  "jd_payload": {
+    "jd_hash": "d23813412daefae270b46405ff2f2152879b69a5c1efd7db5816e819f78d7b16",
+    "jd_ref": "ops_scripts/apps_rg/jd_acme_svp_ai.json",
+    "jd_signals": {
+      "min_years_experience": 12,
+      "role_type": "leadership_ic_blend",
+      "seniority": "EXECUTIVE"
+    },
+    "jd_text": "Senior Director of AI Engineering at Acme Corp; lead applied research org; 12+ yrs."
+  },
+  "output_requirements": {
+    "fact_checked_required": true,
+    "formats": [
+      "json",
+      "docx"
+    ],
+    "provenance_required": true
+  },
+  "payload_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "profile_manifest": {
+    "agent_spec_ref": "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml",
+    "hitl_policy_ref": "apps_rg/config/hitl_trigger_policy.yaml",
+    "l0_policy_ref": "apps_rg/config/l0_policy.yaml",
+    "manifest_digest": "6a145ced49631ba8875cd082a05a912e5fe7601994e4a0708553a20c1b7a6a29",
+    "profile_refs": {
+      "rg_planning_profile": "sha256:placeholder_planning",
+      "rg_thresholds": "sha256:placeholder_thresholds"
+    },
+    "prompt_registry_ref": "",
+    "thresholds_ref": "apps_rg/config/rg_thresholds.yaml"
+  },
+  "provenance_requirements": {
+    "per_bullet_required": true,
+    "source_quote_required": true
+  },
+  "quality_thresholds": {
+    "min_ats": 70,
+    "min_quality": 0.75,
+    "word_max": 1200,
+    "word_min": 400
+  },
+  "replay": {
+    "idempotency_key": "idem_01HZ7QZQZQZQZQZQZQZQZQZQZQ",
+    "replay_key": "replay_01HZ7QZQZQZQZQZQZQZQZQZQZQ"
+  },
+  "resume_payload": {
+    "resume_hash": "3ab879e02a8ac13b5248911206f24ced0cec4558dada4d81635b4b0735c1219a",
+    "source_resume_ref": "ops_scripts/apps_rg/AmitAyer_resume_master.json",
+    "source_resume_text": "Amit Ayer \u2014 Senior AI Engineering Leader. Education: ... Experience: ..."
+  },
+  "target": {
+    "company": "Acme Corp",
+    "level": "EXECUTIVE",
+    "role": "Senior Director of AI Engineering"
+  },
+  "transport": {
+    "app_id": "apps_rg",
+    "request_id": "req_01HZ7QZQZQZQZQZQZQZQZQZQZQ",
+    "run_id": "run_01HZ7QZQZQZQZQZQZQZQZQZQZQ",
+    "submitted_at": "2026-05-10T12:00:00+00:00",
+    "task_class": "resume_generation",
+    "tenant_id": "apps_rg",
+    "trace_id": "trace_01HZ7QZQZQZQZQZQZQZQZQZQZQ"
+  }
+}
