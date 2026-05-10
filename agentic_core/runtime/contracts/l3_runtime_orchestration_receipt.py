@@ -109,6 +109,8 @@ class L3RuntimeOrchestrationReceipt:
     # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
     otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
+    signature: str = ""
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

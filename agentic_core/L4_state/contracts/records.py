@@ -788,6 +788,8 @@ class CommitRequest:
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     # W4: observability linkage (concern #9, D12=default-empty tuple)
     otel_span_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
+    signature: str = ""
     # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
     sandbox_required: bool = False
     egress_policy_ref: str = ""

@@ -40,7 +40,7 @@ class X3Disposition:
 
     # Metadata
     exit_timestamp: str = ""
-    disposition_version: str = "W6.0"
+    schema_version: str = "W6.0"  # W5 P5.1: renamed from disposition_version (D8)
 
     # Chain provenance
     sealed_l2_digest: str = ""  # References SealedL2Artifact.compilation_hash
@@ -48,3 +48,5 @@ class X3Disposition:
     # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
     otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
+    signature: str = ""

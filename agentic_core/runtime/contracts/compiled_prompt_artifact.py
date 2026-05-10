@@ -42,7 +42,7 @@ class CompiledPromptArtifact:
 
     # Assembly metadata
     assembly_timestamp: str = ""
-    assembly_version: str = "W6.0"
+    schema_version: str = "W6.0"  # W5 P5.1: renamed from assembly_version (D8)
 
     # Model routing
     target_model: str = ""  # e.g., "Qwen/Qwen2.5-32B-Instruct-AWQ"
@@ -69,6 +69,8 @@ class CompiledPromptArtifact:
     # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
     otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
+    signature: str = ""
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
