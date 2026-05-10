@@ -136,16 +136,20 @@ def _build_system_preamble(forbidden: list[str], power: list[str]) -> str:
     return "\n".join(parts)
 
 
-def _build_user_instruction(
+def _build_u0_task_block(
     validated_request: ValidatedRequest,
-    fec: FinalEvidenceContract,
     l1_plan: L1PlanContract,
 ) -> str:
-    """Compose the user instruction with placeholders substituted.
+    """Build the U0_NEUTRALIZED_USER_TASK portion of the user turn.
 
-    AG-2: reads target / output / provenance directives from
-    ``validated_request.app_payload`` — never from a legacy
-    AppsRgIngressPayload.
+    W4/PAB-003: U0 task (target + output format + L1 plan directives) is now
+    a SEPARATE text segment from C0 evidence. PA assembles both into the user
+    PromptBlock but their slot origins are distinct:
+      - U0_NEUTRALIZED_USER_TASK  → this function
+      - C0_VERIFIED_EVIDENCE_DATA → _build_c0_evidence_block()
+
+    No raw evidence is included here. No instruction authority is embedded
+    in the evidence block.
     """
     app_payload = validated_request.app_payload
     target = app_payload.get("target", {})
@@ -153,9 +157,6 @@ def _build_user_instruction(
     target_role = str(target.get("role") or "the target role")
     target_level = str(target.get("level") or "unspecified")
 
-    # AG-2: output + provenance directives flow from app_payload via L1
-    # output_expectation/support_expectation projections, so PA does not
-    # have to know app_payload's nested layout.
     output_exp = l1_plan.output_expectation
     support_exp = l1_plan.support_expectation
     formats = output_exp.get("formats", ("json",)) or ("json",)
@@ -164,21 +165,7 @@ def _build_user_instruction(
     per_bullet_required = bool(support_exp.get("per_bullet_required", False))
     source_quote_required = bool(support_exp.get("source_quote_required", False))
 
-    # vLLM serving at --max-model-len 8192 tokens (~24K chars for evidence
-    # after system prompt + response reservation). The model itself supports
-    # 32K natively; increase --max-model-len when VRAM allows.
-    inlined: list[str] = []
-    budget_remaining = 20000
-    for item in fec.evidence_items:
-        if budget_remaining <= 0:
-            break
-        chunk_header = f"\n--- {item.source} ({item.content_type}) ---\n"
-        chunk_body = item.content[:budget_remaining]
-        inlined.append(chunk_header + chunk_body)
-        budget_remaining -= len(chunk_body)
-
-    # AG-2 directives — emitted only when app_payload demands them. These
-    # appear verbatim in the user instruction so behavior is observable.
+    # AG-2 provenance directives — emitted only when app_payload demands them.
     directives: list[str] = []
     if fact_check_required:
         directives.append("Every factual claim MUST be fact-checked against the supplied source materials.")
@@ -196,15 +183,58 @@ def _build_user_instruction(
         f"\n"
         f"Task plan from L1: {', '.join(l1_plan.task_plan)}\n"
         f"\n"
-        f"Source materials (consume verbatim — do not invent facts):\n"
-        f"{''.join(inlined) if inlined else '[no evidence supplied]'}\n"
-        f"\n"
         f"AG-2 provenance directives:\n{directives_block}\n"
         f"\n"
         f"Produce output in formats: {formats_str}. Default to a JSON resume "
         f"document with sections: executive_summary, experience, skills, "
         f"education, certifications. Output JSON only — no markdown, no prose preamble."
     )
+
+
+def _build_c0_evidence_block(fec: FinalEvidenceContract) -> str:
+    """Build the C0_VERIFIED_EVIDENCE_DATA portion of the user turn.
+
+    W4/PAB-003: Evidence is assembled SEPARATELY from the user task so the
+    slot_lineage_map can record its origin as C0_VERIFIED_EVIDENCE_DATA, not
+    USER_INTENT. The content is verbatim from FinalEvidenceContract — PA does
+    not modify or interpret it.
+
+    vLLM serving at --max-model-len 8192 tokens (~24K chars for evidence after
+    system prompt + response reservation).
+    """
+    inlined: list[str] = []
+    budget_remaining = 20000
+    for item in fec.evidence_items:
+        if budget_remaining <= 0:
+            break
+        chunk_header = f"\n--- {item.source} ({item.content_type}) ---\n"
+        chunk_body = item.content[:budget_remaining]
+        inlined.append(chunk_header + chunk_body)
+        budget_remaining -= len(chunk_body)
+    return (
+        f"Source materials (consume verbatim — do not invent facts):\n"
+        f"{''.join(inlined) if inlined else '[no evidence supplied]'}"
+    )
+
+
+def _build_user_instruction(
+    validated_request: ValidatedRequest,
+    fec: FinalEvidenceContract,
+    l1_plan: L1PlanContract,
+) -> str:
+    """Assemble the final user PromptBlock content from U0 task + C0 evidence.
+
+    W4/PAB-003: Delegates to two distinct builders so slot origins remain
+    separable in slot_lineage_map:
+      block[0] = system  → S0_SYSTEM (I0_INSTRUCTIONS inline via style profile)
+      block[1] = user    → U0_NEUTRALIZED_USER_TASK + C0_VERIFIED_EVIDENCE_DATA
+
+    The two segments are concatenated here. slot_lineage_map records each
+    segment's origin independently.
+    """
+    u0_task = _build_u0_task_block(validated_request, l1_plan)
+    c0_evidence = _build_c0_evidence_block(fec)
+    return u0_task + "\n\n" + c0_evidence
 
 
 def _component_hash(content: Any) -> str:
@@ -269,6 +299,11 @@ def pa_compose_apps_rg(
     forbidden, power = _extract_style_directives(style_text)
 
     system_preamble = _build_system_preamble(forbidden, power)
+    # W4/PAB-003: build U0 and C0 segments separately so slot_lineage_map
+    # can record their distinct origins. Both are combined into user_instruction
+    # for the PromptBlock, but the component hashes cover each independently.
+    u0_task_segment = _build_u0_task_block(validated_request, l1_plan)
+    c0_evidence_segment = _build_c0_evidence_block(fec)
     user_instruction = _build_user_instruction(validated_request, fec, l1_plan)
 
     blocks: tuple[PromptBlock, ...] = (
@@ -289,21 +324,44 @@ def pa_compose_apps_rg(
                 f"has origin={blk.origin!r} — must be USER_INTENT (D7)"
             )
 
-    # AG-2 — slot_lineage_map: per-block lineage with the C0 evidence digest
-    # threaded through so a prompt-replay tool can prove which evidence
-    # contributed.
+    # W4: slot_lineage_map now separately records all four canonical slot origins.
+    # PAB-003 fix: U0_NEUTRALIZED_USER_TASK and C0_VERIFIED_EVIDENCE_DATA are
+    # distinct entries — they are no longer collapsed into a single "USER_INTENT+EVIDENCE".
+    #
+    # Cross-ref: allowed_models in this artifact comes from RouteContract
+    # (set by L0 binding apps_rg_l0_binding.py:201). PA's APPS_RG_TARGET_MODEL
+    # is a separate declaration for the target model field — both must name
+    # Qwen/Qwen2.5-32B-Instruct-AWQ. If they diverge, the compilation_hash
+    # will differ between runs and L2 must reject the artifact.
     slot_lineage_map: dict[str, str] = {
-        "system_block_0": "PA-authored:rg_prompt_profile.yaml",
-        "user_block_1": f"USER_INTENT+EVIDENCE:fec={fec.compilation_hash[:16]}",
-        "evidence": f"C0:fec.compilation_hash={fec.compilation_hash[:16]}",
+        # S0_SYSTEM / I0_INSTRUCTIONS — PA assembles from rg_prompt_profile.yaml
+        "system_block_0__slot": "S0_SYSTEM+I0_INSTRUCTIONS",
+        "system_block_0__origin": "PA-authored:apps_rg/profiles/rg_prompt_profile.yaml",
+        # U0_NEUTRALIZED_USER_TASK — target + L1 plan directives from ValidatedRequest
+        "user_block_1__u0_task__slot": "U0_NEUTRALIZED_USER_TASK",
+        "user_block_1__u0_task__origin": "ValidatedRequest.app_payload+L1PlanContract",
+        # C0_VERIFIED_EVIDENCE_DATA — verbatim evidence from FinalEvidenceContract
+        "user_block_1__c0_evidence__slot": "C0_VERIFIED_EVIDENCE_DATA",
+        "user_block_1__c0_evidence__origin": f"C0:FinalEvidenceContract.compilation_hash={fec.compilation_hash[:16]}",
+        # R0_RESPONSE_SCHEMA — output format directive embedded in U0 task block
+        "user_block_1__r0_schema__slot": "R0_RESPONSE_SCHEMA",
+        "user_block_1__r0_schema__origin": "PA-authored:output_expectation.formats+sections",
     }
 
-    # AG-2 — component_hash_map: per-component sha256 fingerprint. Together
-    # with replay_manifest_ref this is the prompt-envelope's replay-bind
-    # surface — given the same fingerprints + key, prompt is reproducible.
+    # W4: component_hash_map expanded to cover all runtime-used prompt components
+    # explicitly keyed to their slot origin. Hashes cover actual content so
+    # prompt_hash changes whenever meaningful S0/I0/U0/C0/R0 content changes.
     component_hash_map: dict[str, str] = {
-        "style_profile": _component_hash({"forbidden": forbidden, "power": power}),
-        "evidence": fec.compilation_hash,
+        # S0_SYSTEM + I0_INSTRUCTIONS — style profile drives both
+        "style_profile__s0_i0": _component_hash({"forbidden": forbidden, "power": power}),
+        # C0_VERIFIED_EVIDENCE_DATA — FEC compilation_hash is the canonical fingerprint
+        "evidence__c0": fec.compilation_hash,
+        # U0_NEUTRALIZED_USER_TASK — target + task plan from L1 projections
+        "u0_task_segment": _component_hash(u0_task_segment),
+        # C0 evidence segment as rendered (may differ from fec.compilation_hash
+        # if evidence budget truncation applied)
+        "c0_evidence_segment": _component_hash(c0_evidence_segment),
+        # L1 plan projections driving U0 task + output directives
         "l1_plan": _component_hash({
             "task_spec": dict(l1_plan.task_spec),
             "query_spec": dict(l1_plan.query_spec),
@@ -311,7 +369,13 @@ def pa_compose_apps_rg(
             "output_expectation": dict(l1_plan.output_expectation),
             "policy_refs": dict(l1_plan.policy_refs),
         }),
+        # R0_RESPONSE_SCHEMA — output format + section list from output_expectation
+        "r0_schema": _component_hash(dict(l1_plan.output_expectation)),
+        # app_payload — full payload for replay-bind completeness
         "app_payload": _component_hash(dict(validated_request.app_payload)),
+        # route — allowed_models here comes from L0 binding (apps_rg_l0_binding.py:201).
+        # PA target model (APPS_RG_TARGET_MODEL) is a separate field on the artifact.
+        # Both must match Qwen/Qwen2.5-32B-Instruct-AWQ; divergence = hash mismatch.
         "route": _component_hash({
             "route_id": route.route_id,
             "route_family": route.route_family,
@@ -321,11 +385,11 @@ def pa_compose_apps_rg(
         }),
     }
 
-    # Compilation hash (== prompt_hash) binds prompt content for L2 provenance
-    # + reuse caching. Now also covers the AG-2 prompt-envelope fields so
-    # determinism applies to the full envelope, not just the blocks.
+    # W4: compilation_hash covers actual block CONTENT (not just length) so
+    # prompt_hash changes whenever any meaningful S0/I0/U0/C0/R0 content changes.
+    # This fixes the prior implementation that hashed only len(content).
     canonical = json.dumps(
-        [{"role": b.role, "len": len(b.content), "idx": b.block_index} for b in blocks]
+        [{"role": b.role, "content_hash": hashlib.sha256(b.content.encode("utf-8")).hexdigest(), "idx": b.block_index} for b in blocks]
         + [{"model": APPS_RG_TARGET_MODEL, "provider": APPS_RG_TARGET_PROVIDER}]
         + [{"slot_lineage_map": slot_lineage_map, "component_hash_map": component_hash_map}],
         sort_keys=True,
@@ -381,4 +445,9 @@ __all__ = [
     "APPS_RG_TARGET_MODEL",
     "APPS_RG_TARGET_PROVIDER",
     "pa_compose_apps_rg",
+    "_build_u0_task_block",
+    "_build_c0_evidence_block",
+    "_build_user_instruction",
+    "_build_system_preamble",
+    "_component_hash",
 ]

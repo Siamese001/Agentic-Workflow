@@ -206,3 +206,251 @@ class TestHooksJsonRegistration:
                 break
         else:
             pytest.fail("hook entry not found")
+
+
+# ---------------------------------------------------------------------------
+# Hardened: raw plain-text stdin (non-JSON) must still work
+# ---------------------------------------------------------------------------
+
+
+class TestMainRawTextStdin:
+    def test_plain_text_stdin_treated_as_response_text(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """When stdin is not valid JSON, the raw text is treated as response_text."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        raw = "WAVE_COMPLETE: plan=demo-plan-abc123 wave=1\n"
+        fake_stdin(raw)
+
+        captured: dict = {}
+
+        def fake_emit(text, *, dry_run=False):
+            captured["text"] = text
+            return [("demo-plan-abc123", True, "ok")]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module.sys.stdin, "isatty", return_value=False
+        ):
+            rc = hook_module.main()
+
+        assert rc == 0
+        assert "WAVE_COMPLETE" in captured.get("text", "")
+
+    def test_empty_raw_stdin_returns_zero(self, hook_module, monkeypatch, fake_stdin):
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        fake_stdin("   \n\n  ")
+        with patch.object(hook_module.sys.stdin, "isatty", return_value=False):
+            rc = hook_module.main()
+        assert rc == 0
+
+    def test_stdin_truncated_at_max_bytes(self, hook_module, monkeypatch, fake_stdin):
+        """Responses larger than MAX_RESPONSE_BYTES are truncated, not crashed."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        # Build a huge payload that exceeds MAX_RESPONSE_BYTES
+        huge_text = "x" * (hook_module.MAX_RESPONSE_BYTES + 500)
+        fake_stdin(huge_text)
+
+        def fake_emit(text, *, dry_run=False):
+            return []
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module.sys.stdin, "isatty", return_value=False
+        ):
+            rc = hook_module.main()
+        # Must complete without crash
+        assert rc == 0
+
+
+# ---------------------------------------------------------------------------
+# Hardened: multiple slugs in a single response
+# ---------------------------------------------------------------------------
+
+
+class TestMainMultipleSlugs:
+    def test_two_slugs_both_processed(self, hook_module, monkeypatch, fake_stdin):
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        payload = json.dumps(
+            {
+                "response_text": (
+                    "WAVE_COMPLETE: plan=alpha-plan-abc123 wave=1\n"
+                    "PLAN_COMPLETE: plan=beta-plan-def456\n"
+                )
+            }
+        )
+        fake_stdin(payload)
+
+        seen_slugs: list[str] = []
+
+        def fake_emit(text, *, dry_run=False):
+            seen_slugs.append("alpha-plan-abc123")
+            seen_slugs.append("beta-plan-def456")
+            return [
+                ("alpha-plan-abc123", True, "ok"),
+                ("beta-plan-def456", True, "ok"),
+            ]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module.sys.stdin, "isatty", return_value=False
+        ):
+            rc = hook_module.main()
+
+        assert rc == 0
+        assert "alpha-plan-abc123" in seen_slugs
+        assert "beta-plan-def456" in seen_slugs
+
+    def test_partial_failure_among_slugs_still_zero(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """If one slug succeeds and another fails, hook must still return 0 (fail-soft)."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        payload = json.dumps(
+            {
+                "response_text": (
+                    "WAVE_COMPLETE: plan=alpha-plan-abc123 wave=1\n"
+                    "WAVE_COMPLETE: plan=beta-plan-def456 wave=2\n"
+                )
+            }
+        )
+        fake_stdin(payload)
+
+        def fake_emit(text, *, dry_run=False):
+            return [
+                ("alpha-plan-abc123", True, "ok"),
+                ("beta-plan-def456", False, "lookup_failed"),
+            ]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module.sys.stdin, "isatty", return_value=False
+        ):
+            rc = hook_module.main()
+        assert rc == 0
+
+
+# ---------------------------------------------------------------------------
+# Hardened: _update_plan_files integration
+# ---------------------------------------------------------------------------
+
+
+class TestUpdatePlanFilesIntegration:
+    def test_update_plan_files_bypass_skips_updater(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """WAVE_TABLE_UPDATE_BYPASS=1 must prevent the updater from being called."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        monkeypatch.setenv("WAVE_TABLE_UPDATE_BYPASS", "1")
+        payload = json.dumps(
+            {"response_text": "WAVE_COMPLETE: plan=demo-plan-abc123 wave=3\n"}
+        )
+        fake_stdin(payload)
+
+        updater_called: dict = {"called": False}
+
+        def fake_update(repo_root, slug, wave, kind):
+            updater_called["called"] = True
+            return True, "ok"
+
+        fake_updater = type(
+            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(fake_update)}
+        )
+
+        def fake_emit(text, *, dry_run=False):
+            return [("demo-plan-abc123", True, "ok")]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module, "_load_updater", return_value=fake_updater
+        ), patch.object(hook_module.sys.stdin, "isatty", return_value=False):
+            rc = hook_module.main()
+
+        assert rc == 0
+        assert not updater_called["called"], "updater must be bypassed"
+
+    def test_update_plan_files_updater_import_failure_is_silent(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """If _load_updater returns None, _update_plan_files must not crash."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        monkeypatch.delenv("WAVE_TABLE_UPDATE_BYPASS", raising=False)
+        payload = json.dumps(
+            {"response_text": "WAVE_COMPLETE: plan=demo-plan-abc123 wave=1\n"}
+        )
+        fake_stdin(payload)
+
+        def fake_emit(text, *, dry_run=False):
+            return [("demo-plan-abc123", True, "ok")]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module, "_load_updater", return_value=None
+        ), patch.object(hook_module.sys.stdin, "isatty", return_value=False):
+            rc = hook_module.main()
+        assert rc == 0
+
+    def test_update_plan_files_updater_exception_is_silent(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """An exception inside update_wave_in_plan must be swallowed (fail-open)."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        monkeypatch.delenv("WAVE_TABLE_UPDATE_BYPASS", raising=False)
+        payload = json.dumps(
+            {"response_text": "WAVE_COMPLETE: plan=demo-plan-abc123 wave=1\n"}
+        )
+        fake_stdin(payload)
+
+        def boom(repo_root, slug, wave, kind):
+            raise RuntimeError("disk full")
+
+        fake_updater = type(
+            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(boom)}
+        )
+
+        def fake_emit(text, *, dry_run=False):
+            return [("demo-plan-abc123", True, "ok")]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module, "_load_updater", return_value=fake_updater
+        ), patch.object(hook_module.sys.stdin, "isatty", return_value=False):
+            rc = hook_module.main()
+        assert rc == 0
+
+    def test_phase_complete_marker_skipped_by_updater(
+        self, hook_module, monkeypatch, fake_stdin
+    ):
+        """phase_complete markers are no-ops for the wave table updater."""
+        monkeypatch.delenv("WAVE_LIFECYCLE_CAPTURE_BYPASS", raising=False)
+        monkeypatch.delenv("WAVE_TABLE_UPDATE_BYPASS", raising=False)
+        payload = json.dumps(
+            {"response_text": "PHASE_COMPLETE: plan=demo-plan-abc123 phase=P2.1\n"}
+        )
+        fake_stdin(payload)
+
+        update_calls: list = []
+
+        def track_update(repo_root, slug, wave, kind):
+            update_calls.append(kind)
+            return True, "ok"
+
+        fake_updater = type(
+            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(track_update)}
+        )
+
+        def fake_emit(text, *, dry_run=False):
+            return [("demo-plan-abc123", True, "ok")]
+
+        fake_writer = type("FakeWriter", (), {"emit_from_markers": staticmethod(fake_emit)})
+
+        with patch.object(hook_module, "_load_writer", return_value=fake_writer), patch.object(
+            hook_module, "_load_updater", return_value=fake_updater
+        ), patch.object(hook_module.sys.stdin, "isatty", return_value=False):
+            rc = hook_module.main()
+
+        assert rc == 0
+        assert "phase_complete" not in update_calls

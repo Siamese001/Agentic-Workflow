@@ -60,12 +60,19 @@ if str(_SCRIPTS_DIR) not in sys.path:
 try:
     from _notion_plans_status_check import decide as _decide  # type: ignore
     from _notion_plans_status_check import decide_waiting_for as _decide_waiting_for  # type: ignore
-    from _notion_plans_status_check import PLANS_DB_ID, PLANS_DATA_SOURCE_ID  # type: ignore
+    from _notion_plans_status_check import decide_waiting_for_quality as _decide_waiting_for_quality  # type: ignore
+    from _notion_plans_status_check import (  # type: ignore
+        PLANS_DB_ID, PLANS_DATA_SOURCE_ID,
+        BACKLOG_DB_ID, BACKLOG_DATA_SOURCE_ID,
+    )
 except ImportError:  # fail-open: missing helper must never wedge a turn
     _decide = None  # type: ignore[assignment]
     _decide_waiting_for = None  # type: ignore[assignment]
+    _decide_waiting_for_quality = None  # type: ignore[assignment]
     PLANS_DB_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
     PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+    BACKLOG_DB_ID = "aa8d2507-101e-4384-81d9-60ea3fe33876"
+    BACKLOG_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 
 
 # ---------------------------------------------------------------------------
@@ -106,6 +113,12 @@ _DB_ID_RE = re.compile(
     r'["\'](?:database_id|data_source_id)["\']\s*:\s*["\']([0-9a-fA-F\-]+)["\']'
 )
 
+# Match a page_id parameter inside an API-patch-page invoke body.
+_PAGE_ID_RE = re.compile(
+    r'<parameter\s+name="page_id">\s*([0-9a-fA-F\-]{32,36})\s*</parameter>',
+    re.IGNORECASE,
+)
+
 # Match the text content of a "Waiting For" rich_text property write.
 # Covers shapes like:
 #   "Waiting For": {"rich_text": [{"text": {"content": "some text"}}]}
@@ -119,10 +132,16 @@ _WAITING_FOR_RE = re.compile(
 
 
 def _is_plans_id(candidate: str) -> bool:
+    """Return True when candidate targets either the Plans DB or Backlog Items DB.
+
+    Both surfaces enforce the Waiting→non-blank-Waiting-For rule (DS-3).
+    """
     norm = candidate.replace("-", "").lower()
     return norm in {
         PLANS_DB_ID.replace("-", "").lower(),
         PLANS_DATA_SOURCE_ID.replace("-", "").lower(),
+        BACKLOG_DB_ID.replace("-", "").lower(),
+        BACKLOG_DATA_SOURCE_ID.replace("-", "").lower(),
     }
 
 
@@ -172,6 +191,48 @@ def _patch_status(page_id: str, canonical_status: str) -> bool:
         with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
             return resp.status < 300
     except Exception:  # guardian: allow-broad -- auto-patch non-fatal
+        return False
+
+
+def _append_waiting_reminder_block(page_id: str) -> bool:
+    """Append a ⚠️ reminder paragraph to the Notion page body (DS-5).
+
+    Belt-and-braces for human editors working directly in Notion: adds a
+    visible callout asking them to populate 'Waiting For'.
+
+    Returns True when the PATCH succeeded; False otherwise.  Always fail-soft.
+    """
+    tok = _notion_token()
+    if not tok or not page_id:
+        return False
+    url = f"{_NOTION_API}/blocks/{page_id}/children"
+    body = json.dumps({
+        "children": [
+            {
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": (
+                                    "⚠️ This plan is Waiting. Please populate the "
+                                    "'Waiting For' property above with the specific "
+                                    "blocker before leaving this page."
+                                )
+                            },
+                            "annotations": {"bold": True, "color": "orange"},
+                        }
+                    ]
+                },
+            }
+        ]
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=body, method="PATCH", headers=_notion_headers())
+    try:
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:
+            return resp.status < 300
+    except Exception:  # guardian: allow-broad -- reminder append non-fatal
         return False
 
 
@@ -249,32 +310,82 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
             rec["auto_patch_result"] = patch_meta
             violations.append(rec)
 
-        # Waiting-For completeness check (NP10).
+        # Waiting-For completeness check (NP10 + DS-3 Backlog parity).
         # If this invoke writes Status=Waiting, verify Waiting For is also
         # populated in the same body.  Absent property = blank.
+        # DS-1: include an advisory remediation hint so the author knows
+        # exactly what action to take.
         if _decide_waiting_for is not None:
             for status_match in _STATUS_SELECT_RE.finditer(body):
                 status_value = status_match.group(1)
                 if status_value != "Waiting":
                     continue
+                # Identify which surface this invoke targets.
+                db_id_for_check = PLANS_DB_ID
+                for cid in candidate_ids:
+                    norm = cid.replace("-", "").lower()
+                    if norm in {
+                        BACKLOG_DB_ID.replace("-", "").lower(),
+                        BACKLOG_DATA_SOURCE_ID.replace("-", "").lower(),
+                    }:
+                        db_id_for_check = BACKLOG_DB_ID
+                        break
                 # Extract Waiting For text from the same invoke body (may be absent).
                 wf_match = _WAITING_FOR_RE.search(body)
                 wf_text = wf_match.group(1).strip() if wf_match else ""
-                wf_verdict = _decide_waiting_for(PLANS_DB_ID, status_value, wf_text or None)
-                if wf_verdict is None:
-                    continue
-                violations.append({
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "severity": "error",
-                    "violation_type": "WAITING_EMPTY_WAITING_FOR",
-                    "tool": tool_name,
-                    "invoke_index": invoke_idx,
-                    "offending_value": "Waiting",
-                    "waiting_for_found": wf_text,
-                    "message": wf_verdict.message,
-                    "rule": "notion-plans-taxonomy.md > Field Requirements (NP10)",
-                    "plan": "notion-plans-status-enforcement-7a1e2d",
-                })
+                wf_verdict = _decide_waiting_for(db_id_for_check, status_value, wf_text or None)
+                if wf_verdict is not None:
+                    violation_rec: dict[str, Any] = {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "severity": "error",
+                        "violation_type": "WAITING_EMPTY_WAITING_FOR",
+                        "tool": tool_name,
+                        "invoke_index": invoke_idx,
+                        "offending_value": "Waiting",
+                        "waiting_for_found": wf_text,
+                        "message": wf_verdict.message,
+                        "rule": "notion-plans-taxonomy.md > Field Requirements (NP10)",
+                        "plan": "notion-plans-status-enforcement-7a1e2d",
+                        # DS-1: advisory remediation hint
+                        "remediation_hint": (
+                            "Re-issue the write with a populated 'Waiting For' "
+                            "property describing the specific blocker (person, "
+                            "system, decision, or time-bound trigger). "
+                            "Example: \"Waiting For\": {\"rich_text\": "
+                            "[{\"text\": {\"content\": \"<blocker description>\"}}]}"
+                        ),
+                    }
+                    # DS-5: for patch-page writes we know the page_id; append
+                    # a reminder block so the Notion page itself signals the
+                    # missing field to human editors.
+                    if tool_name == "API-patch-page":
+                        page_id_match = _PAGE_ID_RE.search(body)
+                        if page_id_match:
+                            reminder_ok = _append_waiting_reminder_block(page_id_match.group(1))
+                            violation_rec["reminder_block_appended"] = reminder_ok
+                    violations.append(violation_rec)
+                    continue  # blank already reported; skip quality check
+                # DS-2: also check for weak placeholder strings.
+                if _decide_waiting_for_quality is not None:
+                    quality_verdict = _decide_waiting_for_quality(
+                        db_id_for_check, status_value, wf_text or None
+                    )
+                    if quality_verdict is not None:
+                        violations.append({
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "severity": "warn",
+                            "violation_type": "WAITING_WEAK_WAITING_FOR",
+                            "tool": tool_name,
+                            "invoke_index": invoke_idx,
+                            "offending_value": wf_text,
+                            "message": quality_verdict.message,
+                            "rule": "notion-plans-taxonomy.md > Field Requirements (NP10/DS-2)",
+                            "plan": "notion-np10-deferred-scope-c8f1a4",
+                            "remediation_hint": (
+                                f"Replace placeholder 'Waiting For' value {wf_text!r} "
+                                "with a concrete description of the specific blocker."
+                            ),
+                        })
 
     return violations
 

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import ast
 import copy
+import importlib.util as _importlib_util
 import inspect
 import typing
 from pathlib import Path
@@ -507,15 +508,90 @@ def test_full_dispatch_succeeds_with_ag2_wiring() -> None:
 # 8. Hard-law negative coverage — no ChromaDB, no embeddings
 # ---------------------------------------------------------------------------
 
+# Load the AST helper from the gate so tests and gate share identical logic.
+_gate_module_path = str(REPO_ROOT / "ops_scripts" / "ci" / "check_apps_rg_app_payload_consumption.py")
+_spec = _importlib_util.spec_from_file_location(
+    "check_apps_rg_app_payload_consumption", _gate_module_path
+)
+_gate_mod = _importlib_util.module_from_spec(_spec)  # type: ignore[arg-type]
+_spec.loader.exec_module(_gate_mod)  # type: ignore[union-attr]
+_ast_chromadb_violations = _gate_mod._ast_chromadb_violations
 
-def test_no_chromadb_or_embedding_imports_in_ag2_wiring() -> None:
-    """AG-2 hard law: no ChromaDB mutation, no embedding generation in
-    this scope. Verify the four wired binding files don't import either."""
 
-    forbidden_substrings = ("chromadb", "ChromaDB", "sentence_transformers", "embed_text")
-    for binding_file in _BINDING_FILES_NO_LEGACY_IMPORT:
-        text = binding_file.read_text(encoding="utf-8")
-        for forbidden in forbidden_substrings:
-            assert forbidden not in text, (
-                f"AG-2 hard law violation: {binding_file.name} mentions {forbidden!r}"
-            )
+@pytest.mark.parametrize("binding_file", _BINDING_FILES_NO_LEGACY_IMPORT, ids=lambda p: p.name)
+def test_no_chromadb_or_embedding_imports_in_ag2_wiring(binding_file: Path) -> None:
+    """AG-2 hard law: no ChromaDB mutation, no embedding generation.
+
+    Uses AST-aware detection (same helper as the CI gate) so that
+    explanatory comments such as ``# no ChromaDB collection`` do NOT
+    trigger a false positive.
+    """
+    source = binding_file.read_text(encoding="utf-8")
+    violations = _ast_chromadb_violations(source, binding_file.name)
+    assert not violations, (
+        f"AG-2 hard law violation in {binding_file.name}: {violations}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 8b. AST helper regression tests — verifying pass/fail behaviour
+# ---------------------------------------------------------------------------
+
+
+def test_ast_helper_passes_comment_saying_no_chromadb() -> None:
+    """A comment '# no ChromaDB collection' must NOT trigger a violation."""
+    source = (
+        "def foo():\n"
+        "    # no ChromaDB collection\n"
+        "    return 42\n"
+    )
+    assert _ast_chromadb_violations(source, "<test>") == []
+
+
+def test_ast_helper_passes_docstring_saying_no_chromadb() -> None:
+    """A docstring 'No ChromaDB used here' must NOT trigger a violation."""
+    source = (
+        'def foo():\n'
+        '    """No ChromaDB used here."""\n'
+        '    return 42\n'
+    )
+    assert _ast_chromadb_violations(source, "<test>") == []
+
+
+def test_ast_helper_fails_on_import_chromadb() -> None:
+    """``import chromadb`` must be detected."""
+    source = "import chromadb\n"
+    violations = _ast_chromadb_violations(source, "<test>")
+    assert any("import chromadb" in v for v in violations), violations
+
+
+def test_ast_helper_fails_on_from_chromadb_import() -> None:
+    """``from chromadb import PersistentClient`` must be detected."""
+    source = "from chromadb import PersistentClient\n"
+    violations = _ast_chromadb_violations(source, "<test>")
+    assert any("PersistentClient" in v or "chromadb" in v for v in violations), violations
+
+
+def test_ast_helper_fails_on_chromadb_attribute_usage() -> None:
+    """``chromadb.PersistentClient(...)`` must be detected (Name node)."""
+    source = "import chromadb\nclient = chromadb.PersistentClient(path='/tmp')\n"
+    violations = _ast_chromadb_violations(source, "<test>")
+    assert violations, f"Expected violations, got none for chromadb.PersistentClient usage"
+
+
+def test_ast_helper_fails_on_importlib_dynamic_import() -> None:
+    """``importlib.import_module('chromadb')`` must be detected."""
+    source = "import importlib\nmod = importlib.import_module('chromadb')\n"
+    violations = _ast_chromadb_violations(source, "<test>")
+    assert any("import_module" in v for v in violations), violations
+
+
+def test_ast_helper_passes_for_actual_c0_binding() -> None:
+    """The real apps_rg_c0_binding.py (which has explanatory ChromaDB comments)
+    must pass the AST-aware gate — confirming the false positive is fixed."""
+    c0_file = REPO_ROOT / "agentic_core" / "runtime" / "c0" / "apps_rg_c0_binding.py"
+    source = c0_file.read_text(encoding="utf-8")
+    violations = _ast_chromadb_violations(source, c0_file.name)
+    assert violations == [], (
+        f"apps_rg_c0_binding.py should pass AST gate but got: {violations}"
+    )

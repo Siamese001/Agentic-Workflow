@@ -489,7 +489,11 @@ def eval_x1i(packet: ExitReviewPacket) -> GateVerdict:
 def eval_x1j(packet: ExitReviewPacket) -> GateVerdict:
     sd = packet.state_diff or {}
     if not sd or packet.terminal_class in {"answer_only", "abstain", ""}:
-        return _verdict("X1J", GateResult.NOT_APPLICABLE)
+        return _verdict(
+            "X1J",
+            GateResult.NOT_APPLICABLE,
+            reason_codes=["NO_STATE_DIFF_OR_ANSWER_ONLY_PATH"],
+        )
     reasons: list[str] = []
     if not packet.write_intent_class:
         reasons.append("WRITE_SCOPE_AMBIGUOUS")

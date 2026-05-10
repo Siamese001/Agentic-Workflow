@@ -56,54 +56,73 @@ def _is_fail_closed() -> bool:
     return os.environ.get("NOTION_PLANS_WAITING_FOR_FAIL_CLOSED", "").strip() == "1"
 
 
-def _query_waiting_plans(token: str) -> list[dict[str, Any]]:
-    """Fetch all Plans DB rows with Status=Waiting."""
-    url = f"{_NOTION_BASE}/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
-    payload = {
-        "filter": {
-            "property": "Status",
-            "select": {"equals": "Waiting"},
-        },
-        "page_size": 100,
+def _make_headers(token: str) -> dict[str, str]:
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Notion-Version": _NOTION_API_VERSION,
     }
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=body,
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Notion-Version": _NOTION_API_VERSION,
-        },
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=_NOTION_TIMEOUT_S) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError):
-        return []
 
-    results = data.get("results", [])
+
+def _query_waiting_plans(token: str) -> list[dict[str, Any]]:
+    """Fetch ALL Plans DB rows with Status=Waiting using cursor pagination.
+
+    Notion's query API returns at most 100 results per call. This function
+    follows has_more + next_cursor until the full result set is retrieved
+    (DS-7: pagination support).
+    """
+    url = f"{_NOTION_BASE}/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
     plans: list[dict[str, Any]] = []
-    for row in results:
-        props = row.get("properties", {})
+    cursor: str | None = None
 
-        slug_prop = props.get("Slug", {})
-        slug = ""
-        if slug_prop.get("title"):
-            slug = slug_prop["title"][0].get("text", {}).get("content", "")
+    while True:
+        payload: dict[str, Any] = {
+            "filter": {
+                "property": "Status",
+                "select": {"equals": "Waiting"},
+            },
+            "page_size": 100,
+        }
+        if cursor:
+            payload["start_cursor"] = cursor
 
-        waiting_for_prop = props.get("Waiting For", {})
-        waiting_for_text = ""
-        if waiting_for_prop.get("rich_text"):
-            for rt in waiting_for_prop["rich_text"]:
-                waiting_for_text += rt.get("text", {}).get("content", "")
+        body = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=body,
+            method="POST",
+            headers=_make_headers(token),
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=_NOTION_TIMEOUT_S) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError):
+            break
 
-        plans.append({
-            "id": row.get("id", ""),
-            "slug": slug or "<no-slug>",
-            "waiting_for": waiting_for_text.strip() or None,
-        })
+        for row in data.get("results", []):
+            props = row.get("properties", {})
+
+            slug_prop = props.get("Slug", {})
+            slug = ""
+            if slug_prop.get("title"):
+                slug = slug_prop["title"][0].get("text", {}).get("content", "")
+
+            waiting_for_prop = props.get("Waiting For", {})
+            waiting_for_text = ""
+            if waiting_for_prop.get("rich_text"):
+                for rt in waiting_for_prop["rich_text"]:
+                    waiting_for_text += rt.get("text", {}).get("content", "")
+
+            plans.append({
+                "id": row.get("id", ""),
+                "slug": slug or "<no-slug>",
+                "waiting_for": waiting_for_text.strip() or None,
+            })
+
+        if data.get("has_more") and data.get("next_cursor"):
+            cursor = data["next_cursor"]
+        else:
+            break
 
     return plans
 

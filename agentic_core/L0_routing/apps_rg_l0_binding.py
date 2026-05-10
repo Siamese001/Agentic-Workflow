@@ -196,6 +196,12 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         model_generation_required=l1_plan.model_generation_required,
         write_authority_present=l1_plan.write_authority_present,
         # W2 P2.1: capability/sandbox/egress — apps_rg is read-only, single vllm model (D11=default-empty)
+        # W4 cross-ref: allowed_models here is the L0 ROUTE allowlist — it gates which
+        # models L2 may dispatch to. PA's APPS_RG_TARGET_MODEL (apps_rg_pa_binding.py) is
+        # the GENERATION TARGET declaration on the compiled artifact. Both must name the
+        # same model. Intentionally kept as two separate declarations: L0 owns the
+        # routing policy; PA owns the artifact target field. See W4 slot_lineage_map
+        # component_hash_map["route"] comment for divergence detection.
         sandbox_required=False,
         egress_policy_ref="egress-policy:vllm-only",
         allowed_models=("Qwen/Qwen2.5-32B-Instruct-AWQ",),

@@ -919,6 +919,14 @@ def main():
         # RCA: 2026-05-10 notion-test-hardening-deferred-scope-a7b4c9.
         # Bypass: DEFERRED_PLAN_GUARD_BYPASS=1.
         ("AG-DEFER Deferred-scope plan guard marker parity (advisory)", "ops_scripts/ci/check_deferred_plan_guard_markers.py"),
+        # NP-GUARD — Notion plan lifecycle Completed guard presence check.
+        # Validates that wave_execution_state.py and _wave_lifecycle_helpers.py
+        # contain the belt-and-suspenders guards preventing a Completed plan from
+        # being flipped back to In Progress by a spurious wave_start marker.
+        # Advisory by default; fail-closed via NP_LIFECYCLE_GUARD_FAIL_CLOSED=1.
+        # Bypass: NP_LIFECYCLE_GUARD_BYPASS=1.
+        # Plan: notion-plan-status-hardening-e5f3a1 (W3.P1).
+        ("NP-GUARD Notion plan lifecycle Completed guard (advisory)", "ops_scripts/ci/check_notion_plan_lifecycle_guard.py"),
         # WG1 — ADG wiring gap detector (4 modes: registry-gaps,
         # instantiation-orphans, port-adapter-gaps, dead-imports).
         # Advisory by default (--gate flag not passed); activates blocking via

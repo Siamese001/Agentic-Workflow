@@ -31,7 +31,7 @@ STATUS_WAITING = "Waiting"
 STATUS_COMPLETED = "Completed"
 STATUS_RETIRED = "Retired"
 STATUS_ARCHIVED = "Archived"
-STATUS_DEFERRED = "Deferred"
+STATUS_LOWER_PRIORITY = "Lower Priority"
 
 CANONICAL_STATUSES: frozenset[str] = frozenset(
     {
@@ -41,7 +41,7 @@ CANONICAL_STATUSES: frozenset[str] = frozenset(
         STATUS_COMPLETED,
         STATUS_RETIRED,
         STATUS_ARCHIVED,
-        STATUS_DEFERRED,
+        STATUS_LOWER_PRIORITY,
     }
 )
 
@@ -274,6 +274,17 @@ def patch_for_marker(
             reason_parts.append(f"status_flip:{current_status}->{STATUS_IN_PROGRESS}")
         elif current_status == STATUS_IN_PROGRESS:
             reason_parts.append("status_already_in_progress")
+        elif current_status == STATUS_COMPLETED:
+            # Guard: never flip a Completed plan back to In Progress.
+            # plan notion-plan-status-hardening-e5f3a1 (W2.P1).
+            reason_parts.append("status_completed_guard:noop")
+            # Return immediately — no summary append either (no log noise on completed plans).
+            return NotionPatchSpec(
+                slug=marker.slug,
+                properties={},
+                summary_append=None,
+                reason=";".join(reason_parts),
+            )
         else:
             reason_parts.append(f"status_locked:{current_status}")
         summary_append = f"{WAVE_LOG_PREFIX}{ts}] {wave_str} START"
@@ -353,7 +364,7 @@ __all__ = [
     "STATUS_COMPLETED",
     "STATUS_RETIRED",
     "STATUS_ARCHIVED",
-    "STATUS_DEFERRED",
+    "STATUS_LOWER_PRIORITY",
     "CANONICAL_STATUSES",
     "PROP_SLUG",
     "PROP_STATUS",

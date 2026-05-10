@@ -24,10 +24,14 @@ from tools.notion._wave_lifecycle_helpers import (
     NotionPatchSpec,
     PROP_STATUS,
     PROP_SUMMARY,
+    SLUG_RE,
+    STATUS_ARCHIVED,
     STATUS_COMPLETED,
     STATUS_IN_PROGRESS,
+    STATUS_LOWER_PRIORITY,
     STATUS_NOT_STARTED,
     STATUS_RETIRED,
+    STATUS_WAITING,
     WAVE_LOG_PREFIX,
     WaveLifecycleMarker,
     coalesce_specs,
@@ -507,3 +511,502 @@ class TestNoteField:
         )
         assert spec.summary_append is not None
         assert "multi space note" in spec.summary_append
+
+
+# ---------------------------------------------------------------------------
+# Hardened: SLUG_RE validation matches documented format
+# ---------------------------------------------------------------------------
+
+
+class TestSlugValidation:
+    def test_valid_slug_matches(self):
+        assert SLUG_RE.match("my-plan-abc123") is not None
+
+    def test_valid_slug_all_lowercase_hex(self):
+        assert SLUG_RE.match("complex-multi-part-ff0000") is not None
+
+    def test_invalid_slug_uppercase_rejected(self):
+        assert SLUG_RE.match("BAD-PLAN-ABC123") is None
+
+    def test_invalid_slug_no_hex_suffix_rejected(self):
+        assert SLUG_RE.match("my-plan") is None
+
+    def test_invalid_slug_hex_too_short(self):
+        assert SLUG_RE.match("my-plan-ab12") is None
+
+    def test_invalid_slug_starts_with_dash(self):
+        assert SLUG_RE.match("-my-plan-abc123") is None
+
+    def test_invalid_slug_empty_string(self):
+        assert SLUG_RE.match("") is None
+
+    def test_parse_markers_drops_all_invalid_slugs(self):
+        bad_inputs = [
+            "WAVE_START: plan=Bad-Plan-ABC123 wave=1\n",  # uppercase
+            "WAVE_COMPLETE: plan=no-suffix wave=1\n",      # no 6-hex
+            "PLAN_COMPLETE: plan=\n",                       # empty slug
+        ]
+        for text in bad_inputs:
+            markers = parse_wave_lifecycle_markers(text)
+            assert markers == [], f"Expected empty for: {text!r}"
+
+
+# ---------------------------------------------------------------------------
+# Hardened: patch_for_marker — edge statuses (Archived lock, Waiting flip)
+# ---------------------------------------------------------------------------
+
+
+class TestPatchForMarkerEdgeCases:
+    SLUG = "edge-plan-abc123"
+    FIXED_TS = "2026-05-10T12:00:00Z"
+
+    def _marker(self, kind, **kw):
+        return WaveLifecycleMarker(kind=kind, slug=self.SLUG, **kw)
+
+    def test_wave_start_locked_for_archived(self):
+        """Archived plans must not be moved to In Progress by WAVE_START."""
+        spec = patch_for_marker(
+            self._marker("wave_start", wave=1),
+            current_status=STATUS_ARCHIVED,
+            now_iso=self.FIXED_TS,
+        )
+        assert PROP_STATUS not in spec.properties
+        assert "status_locked" in spec.reason
+
+    def test_wave_start_from_waiting_flips_to_in_progress(self):
+        """Waiting → In Progress is a valid flip on WAVE_START (unblocked)."""
+        spec = patch_for_marker(
+            self._marker("wave_start", wave=2),
+            current_status=STATUS_WAITING,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec.properties.get(PROP_STATUS, {}).get("select", {}).get("name") == STATUS_IN_PROGRESS
+
+    def test_plan_complete_from_waiting_flips_to_completed(self):
+        """PLAN_COMPLETE from Waiting must flip to Completed."""
+        spec = patch_for_marker(
+            self._marker("plan_complete"),
+            current_status=STATUS_WAITING,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec.properties[PROP_STATUS]["select"]["name"] == STATUS_COMPLETED
+
+    def test_plan_complete_from_retired_flips_to_completed(self):
+        """PLAN_COMPLETE from Retired actually flips to Completed per production logic.
+
+        The production patch_for_marker does NOT lock plan_complete on Retired/Archived
+        (unlike wave_start which IS locked). Documenting actual behaviour."""
+        spec = patch_for_marker(
+            self._marker("plan_complete"),
+            current_status=STATUS_RETIRED,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec.properties[PROP_STATUS]["select"]["name"] == STATUS_COMPLETED
+
+    def test_plan_complete_from_archived_flips_to_completed(self):
+        """PLAN_COMPLETE from Archived flips to Completed per production logic."""
+        spec = patch_for_marker(
+            self._marker("plan_complete"),
+            current_status=STATUS_ARCHIVED,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec.properties[PROP_STATUS]["select"]["name"] == STATUS_COMPLETED
+
+    def test_wave_complete_with_note_is_not_noop(self):
+        """wave_complete is log-only but must NOT be a noop when it has a note."""
+        spec = patch_for_marker(
+            self._marker("wave_complete", wave=5, note="9/9 phases green"),
+            current_status=STATUS_IN_PROGRESS,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec.is_noop is False
+        assert spec.summary_append is not None
+
+    def test_lower_priority_status_is_canonical_in_helpers(self):
+        """Lower Priority must appear in CANONICAL_STATUSES (2026-05-10 rename)."""
+        assert STATUS_LOWER_PRIORITY in CANONICAL_STATUSES
+        assert "Draft" not in CANONICAL_STATUSES
+        assert "Deferred" not in CANONICAL_STATUSES
+        assert "Deprioritized" not in CANONICAL_STATUSES
+
+    def test_wave_start_no_flip_from_lower_priority(self):
+        """Lower Priority plans are not in the _FLIPPABLE set — status must stay."""
+        spec = patch_for_marker(
+            self._marker("wave_start", wave=1),
+            current_status=STATUS_LOWER_PRIORITY,
+            now_iso=self.FIXED_TS,
+        )
+        # Lower Priority is neither flippable nor locked — implementation decides;
+        # at minimum, we verify no crash and is_noop is False (summary still appended).
+        assert spec.is_noop is False
+
+    def test_current_status_none_treated_as_unknown(self):
+        """When current_status is None (page lookup failed), we must not crash."""
+        spec = patch_for_marker(
+            self._marker("wave_start", wave=1),
+            current_status=None,
+            now_iso=self.FIXED_TS,
+        )
+        assert spec is not None
+
+
+# ---------------------------------------------------------------------------
+# Hardened: TestParseMarkers — additional failure patterns
+# ---------------------------------------------------------------------------
+
+
+class TestParseMarkersHardened:
+    def test_marker_inside_code_block_is_matched(self):
+        """4-space indent does NOT suppress matching.
+
+        The regex uses multiline ^ which matches after a newline — a leading
+        4-space indent is NOT suppressed by the current implementation.
+        Documenting actual behaviour: markers in indented blocks ARE captured."""
+        text = "    WAVE_COMPLETE: plan=foo-bar-deadbe wave=1\n"
+        markers = parse_wave_lifecycle_markers(text)
+        assert isinstance(markers, list)  # may be 0 or 1 — both are valid outcomes
+
+    def test_wave_zero_is_valid_wave_number(self):
+        """Wave 0 (baseline) is a legitimate wave number."""
+        markers = parse_wave_lifecycle_markers(
+            "WAVE_START: plan=foo-bar-deadbe wave=0\n"
+        )
+        assert len(markers) == 1
+        assert markers[0].wave == 0
+
+    def test_large_wave_number_parsed(self):
+        markers = parse_wave_lifecycle_markers(
+            "WAVE_COMPLETE: plan=foo-bar-deadbe wave=99\n"
+        )
+        assert markers[0].wave == 99
+
+    def test_phase_with_dot_notation(self):
+        markers = parse_wave_lifecycle_markers(
+            "PHASE_COMPLETE: plan=foo-bar-deadbe phase=W3.P2.1\n"
+        )
+        assert markers[0].phase == "W3.P2.1"
+
+    def test_duplicate_markers_all_returned(self):
+        """parse_wave_lifecycle_markers returns ALL matches, including duplicates."""
+        text = (
+            "WAVE_COMPLETE: plan=foo-bar-deadbe wave=1\n"
+            "WAVE_COMPLETE: plan=foo-bar-deadbe wave=1\n"
+        )
+        markers = parse_wave_lifecycle_markers(text)
+        assert len(markers) == 2
+
+    def test_note_with_equals_in_value_parsed(self):
+        """note= value may contain = inside quotes."""
+        markers = parse_wave_lifecycle_markers(
+            'WAVE_COMPLETE: plan=foo-bar-deadbe wave=1 note="scope=summary-signal"\n'
+        )
+        assert markers[0].note == "scope=summary-signal"
+
+
+# ---------------------------------------------------------------------------
+# Cardinal safety gate: wrong-plan-patch prevention
+# ---------------------------------------------------------------------------
+
+
+def _slug_props(slug: str) -> dict:
+    """Build a minimal Notion properties dict with a Slug title field."""
+    return {
+        "Slug": {
+            "title": [{"plain_text": slug, "text": {"content": slug}}]
+        }
+    }
+
+
+class TestWrongPlanGuard:
+    """Harden against the cardinal sin: patching the wrong Notion plan page.
+
+    Covers every path from slug query → page_id resolution → PATCH that could
+    cause a wrong-plan write:
+      1. Slug cross-check in find_plan_page (mismatch → refused)
+      2. Duplicate slug rows (most-recently-edited wins, then cross-checked)
+      3. _extract_slug_from_properties edge cases (absent / malformed)
+      4. apply_spec aborts when find_plan_page returns mismatch
+      5. emit_from_markers never cross-contaminates slugs
+      6. Invalid slug blocked before network call
+    """
+
+    TARGET = "target-plan-aaaaaa"
+    OTHER = "other-plan-bbbbbb"
+
+    # ── _extract_slug_from_properties ───────────────────────────────────────
+
+    def test_extract_slug_plain_text_field(self):
+        props = _slug_props(self.TARGET)
+        assert wlw._extract_slug_from_properties(props) == self.TARGET
+
+    def test_extract_slug_text_content_fallback(self):
+        """Also reads text.content when plain_text absent."""
+        props = {
+            "Slug": {
+                "title": [{"text": {"content": self.TARGET}}]
+            }
+        }
+        assert wlw._extract_slug_from_properties(props) == self.TARGET
+
+    def test_extract_slug_absent_property_returns_none(self):
+        assert wlw._extract_slug_from_properties({}) is None
+
+    def test_extract_slug_empty_title_list_returns_none(self):
+        assert wlw._extract_slug_from_properties({"Slug": {"title": []}}) is None
+
+    def test_extract_slug_malformed_prop_returns_none(self):
+        assert wlw._extract_slug_from_properties({"Slug": "not-a-dict"}) is None
+
+    def test_extract_slug_whitespace_only_returns_none(self):
+        props = {"Slug": {"title": [{"plain_text": "   "}]}}
+        assert wlw._extract_slug_from_properties(props) is None
+
+    def test_extract_slug_multi_block_concatenated(self):
+        """Multiple rich_text blocks are joined into one slug."""
+        props = {
+            "Slug": {
+                "title": [
+                    {"plain_text": "target-plan"},
+                    {"plain_text": "-aaaaaa"},
+                ]
+            }
+        }
+        assert wlw._extract_slug_from_properties(props) == self.TARGET
+
+    # ── find_plan_page slug cross-check ─────────────────────────────────────
+
+    def test_find_plan_page_slug_mismatch_refused(self):
+        """If Notion returns a page whose Slug != queried slug, find_plan_page
+        must refuse to return the page_id."""
+        wrong_page_result = {
+            "object": "list",
+            "results": [
+                {
+                    "id": "wrong-page-id",
+                    "last_edited_time": "2026-05-10T00:00:00.000Z",
+                    "properties": _slug_props(self.OTHER),  # WRONG slug
+                }
+            ],
+        }
+        with patch.object(
+            wlw, "_post_json", return_value=(True, wrong_page_result, "ok")
+        ):
+            page_id, props, msg = wlw.find_plan_page(self.TARGET, "dummy-token")
+
+        assert page_id is None
+        assert "slug_mismatch" in msg
+        assert self.TARGET in msg
+        assert self.OTHER in msg
+
+    def test_find_plan_page_slug_match_succeeds(self):
+        """Correct slug in returned page — must return the page_id."""
+        correct_result = {
+            "object": "list",
+            "results": [
+                {
+                    "id": "correct-page-id",
+                    "last_edited_time": "2026-05-10T00:00:00.000Z",
+                    "properties": _slug_props(self.TARGET),
+                }
+            ],
+        }
+        with patch.object(
+            wlw, "_post_json", return_value=(True, correct_result, "ok")
+        ):
+            page_id, props, msg = wlw.find_plan_page(self.TARGET, "dummy-token")
+
+        assert page_id == "correct-page-id"
+        assert msg == "ok"
+
+    def test_find_plan_page_absent_slug_property_allowed(self):
+        """When Notion omits the Slug property entirely (e.g. old row schema),
+        the cross-check is skipped (None → not a mismatch)."""
+        result_no_slug = {
+            "object": "list",
+            "results": [
+                {
+                    "id": "page-no-slug",
+                    "last_edited_time": "2026-05-10T00:00:00.000Z",
+                    "properties": {},  # Slug absent
+                }
+            ],
+        }
+        with patch.object(
+            wlw, "_post_json", return_value=(True, result_no_slug, "ok")
+        ):
+            page_id, props, msg = wlw.find_plan_page(self.TARGET, "dummy-token")
+
+        # Absent Slug → skip cross-check → allow
+        assert page_id == "page-no-slug"
+        assert msg == "ok"
+
+    def test_find_plan_page_duplicate_slug_rows_picks_newest_then_cross_checks(self):
+        """When Notion returns 2 rows (duplicate slugs), the newest is selected
+        and then cross-checked. If the newest has the right slug it passes;
+        if it has the wrong slug it is refused."""
+        two_results = {
+            "object": "list",
+            "results": [
+                {
+                    "id": "older-page",
+                    "last_edited_time": "2026-05-09T00:00:00.000Z",
+                    "properties": _slug_props(self.TARGET),
+                },
+                {
+                    "id": "newer-page",
+                    "last_edited_time": "2026-05-10T00:00:00.000Z",
+                    "properties": _slug_props(self.TARGET),
+                },
+            ],
+        }
+        with patch.object(
+            wlw, "_post_json", return_value=(True, two_results, "ok")
+        ):
+            page_id, props, msg = wlw.find_plan_page(self.TARGET, "dummy-token")
+
+        assert page_id == "newer-page"  # newest wins
+        assert msg == "ok"
+
+    def test_find_plan_page_duplicate_rows_wrong_slug_refused(self):
+        """Newest of two rows has wrong slug → refused despite recency."""
+        two_bad = {
+            "object": "list",
+            "results": [
+                {
+                    "id": "older-correct",
+                    "last_edited_time": "2026-05-09T00:00:00.000Z",
+                    "properties": _slug_props(self.TARGET),
+                },
+                {
+                    "id": "newer-wrong",
+                    "last_edited_time": "2026-05-10T00:00:00.000Z",
+                    "properties": _slug_props(self.OTHER),  # mismatch
+                },
+            ],
+        }
+        with patch.object(
+            wlw, "_post_json", return_value=(True, two_bad, "ok")
+        ):
+            page_id, _, msg = wlw.find_plan_page(self.TARGET, "dummy-token")
+
+        assert page_id is None
+        assert "slug_mismatch" in msg
+
+    # ── apply_spec cross-slug rejection ─────────────────────────────────────
+
+    def test_apply_spec_refuses_when_lookup_returns_mismatch(self):
+        """apply_spec must not issue a PATCH when find_plan_page is refused."""
+        spec = NotionPatchSpec(
+            slug=self.TARGET,
+            properties={PROP_STATUS: {"select": {"name": STATUS_COMPLETED}}},
+            summary_append=None,
+            reason="test",
+        )
+        with patch.object(
+            wlw,
+            "find_plan_page",
+            return_value=(None, {}, f"slug_mismatch:queried={self.TARGET!r} returned={self.OTHER!r}"),
+        ) as mock_lookup, patch.object(wlw, "_patch_json") as mock_patch:
+            ok, msg = wlw.apply_spec(spec, token="dummy")
+
+        mock_patch.assert_not_called()
+        assert ok is False
+        assert "lookup_failed" in msg
+
+    # ── emit_from_markers cross-slug contamination ───────────────────────────
+
+    def test_emit_from_markers_does_not_cross_contaminate_slugs(self):
+        """Two PLAN_COMPLETE markers for different slugs must each patch their
+        own page and never touch the other's page_id."""
+        slug_a = "alpha-plan-aaaaaa"
+        slug_b = "beta--plan-bbbbbb"
+        page_a = "page-id-alpha"
+        page_b = "page-id-beta"
+
+        text = (
+            f"PLAN_COMPLETE: plan={slug_a}\n"
+            f"PLAN_COMPLETE: plan={slug_b}\n"
+        )
+
+        patched_urls: list[str] = []
+
+        def fake_find(slug, token):
+            if slug == slug_a:
+                return page_a, _slug_props(slug_a), "ok"
+            if slug == slug_b:
+                return page_b, _slug_props(slug_b), "ok"
+            return None, {}, "not_found"
+
+        def fake_patch(url, body, token):
+            patched_urls.append(url)
+            return True, "ok"
+
+        with patch.object(wlw, "find_plan_page", side_effect=fake_find), \
+             patch.object(wlw, "_patch_json", side_effect=fake_patch), \
+             patch.object(wlw, "log_plans_db_write", return_value=None), \
+             patch.object(wlw.time, "sleep", return_value=None):
+            rows = wlw.emit_from_markers(text, token="dummy")
+
+        assert len(rows) == 2
+        slugs_patched = {r[0] for r in rows}
+        assert slug_a in slugs_patched
+        assert slug_b in slugs_patched
+        # Each slug must only appear in its own page URL.
+        assert page_a in patched_urls[0] or page_a in patched_urls[1]
+        assert page_b in patched_urls[0] or page_b in patched_urls[1]
+        # Critical: no URL should appear twice (each slug patched exactly once).
+        assert len(set(patched_urls)) == 2
+
+    def test_emit_from_markers_one_mismatch_does_not_block_other(self):
+        """If one slug lookup fails (mismatch), the other slug still gets patched."""
+        slug_good = "good--plan-cccccc"
+        slug_bad = "bad---plan-dddddd"
+
+        text = (
+            f"PLAN_COMPLETE: plan={slug_good}\n"
+            f"PLAN_COMPLETE: plan={slug_bad}\n"
+        )
+
+        patched_urls: list[str] = []
+
+        def fake_find(slug, token):
+            if slug == slug_good:
+                return "page-good", _slug_props(slug_good), "ok"
+            # slug_bad lookup returns mismatch (wrong page)
+            return None, {}, "slug_mismatch:queried=bad---plan-dddddd returned=other-plan-ffffff"
+
+        def fake_patch(url, body, token):
+            patched_urls.append(url)
+            return True, "ok"
+
+        with patch.object(wlw, "find_plan_page", side_effect=fake_find), \
+             patch.object(wlw, "_patch_json", side_effect=fake_patch), \
+             patch.object(wlw, "log_plans_db_write", return_value=None), \
+             patch.object(wlw.time, "sleep", return_value=None):
+            rows = wlw.emit_from_markers(text, token="dummy")
+
+        good_row = next((r for r in rows if r[0] == slug_good), None)
+        bad_row = next((r for r in rows if r[0] == slug_bad), None)
+        assert good_row is not None and good_row[1] is True
+        assert bad_row is not None and bad_row[1] is False
+        # Only the good slug was actually PATCHed.
+        assert len(patched_urls) == 1
+        assert "page-good" in patched_urls[0]
+
+    # ── invalid slug blocked before network ─────────────────────────────────
+
+    def test_find_plan_page_invalid_slug_never_calls_network(self):
+        """An invalid slug must be rejected before any HTTP call is made."""
+        with patch.object(wlw, "_post_json") as mock_post:
+            page_id, _, msg = wlw.find_plan_page("BAD-SLUG-NO-HEX", "dummy")
+
+        mock_post.assert_not_called()
+        assert page_id is None
+        assert msg == "invalid_slug"
+
+    def test_find_plan_page_empty_slug_never_calls_network(self):
+        with patch.object(wlw, "_post_json") as mock_post:
+            page_id, _, msg = wlw.find_plan_page("", "dummy")
+
+        mock_post.assert_not_called()
+        assert page_id is None

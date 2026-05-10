@@ -276,20 +276,105 @@ def check_live_path_consumption(rec: CheckRecorder) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Hard-law gates — no ChromaDB / embedding imports in bindings
+# Hard-law gates — no ChromaDB / embedding imports or usages in bindings
 # ---------------------------------------------------------------------------
+
+#: Top-level module names whose import or runtime usage is forbidden.
+#: Raw-string matching is intentionally NOT used here: the AST parser
+#: strips comments and isolates only executable nodes, so explanatory
+#: comments such as "# no ChromaDB collection" do NOT trigger this gate.
+_FORBIDDEN_MODULES = frozenset({"chromadb", "sentence_transformers"})
+
+#: Attribute / function names that indicate embedding-generation usage.
+_FORBIDDEN_SYMBOLS = frozenset({"embed_text", "embed", "get_embeddings"})
+
+
+def _ast_chromadb_violations(source: str, filename: str) -> list[str]:
+    """Return violation strings for any ChromaDB / embedding AST nodes.
+
+    Checks (all AST-level — comments are invisible):
+    1. ``import chromadb`` / ``import sentence_transformers``
+    2. ``from chromadb import ...`` / ``from sentence_transformers import ...``
+    3. Any ``Name`` node whose id is a forbidden module root
+       (e.g. bare ``chromadb`` usage after ``import chromadb as chromadb``).
+    4. ``importlib.import_module("chromadb")`` dynamic import pattern.
+    5. Forbidden symbol names (``embed_text``, ``embed``, ``get_embeddings``)
+       used as ``Name`` or ``Attribute`` nodes in non-docstring positions.
+    """
+    try:
+        tree = ast.parse(source, filename=filename)
+    except SyntaxError as exc:
+        return [f"SyntaxError: {exc}"]
+
+    violations: list[str] = []
+
+    for node in ast.walk(tree):
+        # 1 & 2 — import statements
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                root = alias.name.split(".")[0]
+                if root in _FORBIDDEN_MODULES:
+                    violations.append(
+                        f"line {node.lineno}: import {alias.name}"
+                    )
+        elif isinstance(node, ast.ImportFrom):
+            mod_root = (node.module or "").split(".")[0]
+            if mod_root in _FORBIDDEN_MODULES:
+                names = ", ".join(a.name for a in node.names)
+                violations.append(
+                    f"line {node.lineno}: from {node.module} import {names}"
+                )
+
+        # 3 — bare Name referencing a forbidden module (after import-as)
+        elif isinstance(node, ast.Name):
+            if node.id in _FORBIDDEN_MODULES:
+                violations.append(
+                    f"line {node.lineno}: Name reference '{node.id}'"
+                )
+            if node.id in _FORBIDDEN_SYMBOLS:
+                violations.append(
+                    f"line {node.lineno}: symbol '{node.id}'"
+                )
+
+        # 4 — importlib.import_module("chromadb") dynamic import
+        elif isinstance(node, ast.Call):
+            func = node.func
+            is_import_module = (
+                isinstance(func, ast.Attribute)
+                and func.attr == "import_module"
+            ) or (
+                isinstance(func, ast.Name)
+                and func.id == "import_module"
+            )
+            if is_import_module and node.args:
+                first_arg = node.args[0]
+                if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+                    root = first_arg.value.split(".")[0]
+                    if root in _FORBIDDEN_MODULES:
+                        violations.append(
+                            f"line {node.lineno}: importlib.import_module({first_arg.value!r})"
+                        )
+
+        # 5 — Attribute node whose attr is a forbidden symbol
+        elif isinstance(node, ast.Attribute):
+            if node.attr in _FORBIDDEN_SYMBOLS:
+                violations.append(
+                    f"line {node.lineno}: attribute '.{node.attr}'"
+                )
+
+    return violations
 
 
 def check_no_chromadb_or_embeddings(rec: CheckRecorder) -> None:
-    forbidden = ("chromadb", "ChromaDB", "sentence_transformers", "embed_text")
+    """AST-aware gate: fail on actual imports/usage, not on comments."""
     for binding_file in _BINDING_FILES:
-        text = binding_file.read_text(encoding="utf-8")
-        for token in forbidden:
-            rec.assert_(
-                f"{binding_file.name}_no_{token}",
-                token not in text,
-                f"contains {token!r}",
-            )
+        source = binding_file.read_text(encoding="utf-8")
+        violations = _ast_chromadb_violations(source, binding_file.name)
+        rec.assert_(
+            f"{binding_file.name}_no_ChromaDB_or_embeddings",
+            not violations,
+            "; ".join(violations),
+        )
 
 
 # ---------------------------------------------------------------------------

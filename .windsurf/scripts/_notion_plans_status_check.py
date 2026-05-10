@@ -53,6 +53,24 @@ _PLANS_IDS: frozenset[str] = frozenset({
     PLANS_DATA_SOURCE_ID.replace("-", "").lower(),
 })
 
+# ---------------------------------------------------------------------------
+# Backlog Items DB identifiers (DS-3 — parity surface).
+# ---------------------------------------------------------------------------
+
+# Backlog Items database id (API-post-page parent.database_id writes).
+BACKLOG_DB_ID: str = "aa8d2507-101e-4384-81d9-60ea3fe33876"
+
+# Backlog Items data-source id (API-query-data-source reads; also appears
+# in some write payloads).
+BACKLOG_DATA_SOURCE_ID: str = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+
+_BACKLOG_IDS: frozenset[str] = frozenset({
+    BACKLOG_DB_ID.lower(),
+    BACKLOG_DB_ID.replace("-", "").lower(),
+    BACKLOG_DATA_SOURCE_ID.lower(),
+    BACKLOG_DATA_SOURCE_ID.replace("-", "").lower(),
+})
+
 # Canonical Plans Status option names. Exact match required (case-sensitive).
 # Renamed 2026-05-03: "Live" → "In Progress", "Draft" → "Not Started" (same
 # Notion option IDs, display names changed in the Notion UI).
@@ -118,6 +136,23 @@ def _is_plans_surface(db_id: str) -> bool:
         return False
     # Compare both dashed and un-dashed forms.
     return norm in _PLANS_IDS or norm.replace("-", "") in _PLANS_IDS
+
+
+def _is_backlog_surface(db_id: str) -> bool:
+    """Return True when db_id targets the Backlog Items DB (DS-3)."""
+    norm = _normalize_id(db_id)
+    if not norm:
+        return False
+    return norm in _BACKLOG_IDS or norm.replace("-", "") in _BACKLOG_IDS
+
+
+def _is_waiting_enforced_surface(db_id: str) -> bool:
+    """Return True when db_id is either the Plans DB or the Backlog Items DB.
+
+    Both surfaces share the same Status taxonomy and the same Waiting→
+    non-blank-Waiting-For invariant (DS-3).
+    """
+    return _is_plans_surface(db_id) or _is_backlog_surface(db_id)
 
 
 def decide(
@@ -206,13 +241,13 @@ def decide_waiting_for(
                             (empty string / None = blank).
 
     Returns a WaitingForViolation when:
-      - db_id targets the Plans surface, AND
+      - db_id targets the Plans surface OR the Backlog Items surface (DS-3), AND
       - status_value is "Waiting" (canonical), AND
       - waiting_for_value is blank (None, empty string, or whitespace-only).
-    Returns None in all other cases (pass-through for non-Plans writes, non-
+    Returns None in all other cases (pass-through for non-enforced writes, non-
     Waiting statuses, or properly populated Waiting For).
     """
-    if not _is_plans_surface(db_id or ""):
+    if not _is_waiting_enforced_surface(db_id or ""):
         return None
     if (status_value or "").strip() != "Waiting":
         return None
@@ -230,5 +265,56 @@ def decide_waiting_for(
     return WaitingForViolation(
         db_id=_normalize_id(db_id),
         waiting_for_value=wf,
+        message=msg,
+    )
+
+
+# ---------------------------------------------------------------------------
+# "Waiting For" quality enforcement (DS-2).
+# ---------------------------------------------------------------------------
+
+_WEAK_WAITING_FOR: frozenset[str] = frozenset({
+    "tbd", "unknown", "n/a", "?", "pending", "todo", "none",
+    "placeholder", "fill in", "fill-in", "to be determined",
+    "to be confirmed", "tbc",
+})
+
+
+def decide_waiting_for_quality(
+    db_id: str | None,
+    status_value: str | None,
+    waiting_for_value: str | None,
+) -> WaitingForViolation | None:
+    """Return a WaitingForViolation when a Plans-DB Waiting row has a weak
+    placeholder Waiting For value (e.g. 'TBD', 'unknown', 'N/A').
+
+    This check is a sibling of ``decide_waiting_for``:
+    - ``decide_waiting_for``         → fires on *blank/absent* Waiting For.
+    - ``decide_waiting_for_quality`` → fires on *placeholder* Waiting For.
+
+    Does NOT re-fire on blank values (returns None if the parent check would
+    already fire, to avoid duplicate violations).
+
+    Covers both the Plans DB and the Backlog Items DB (DS-3).
+    """
+    if decide_waiting_for(db_id, status_value, waiting_for_value) is not None:
+        return None  # already caught as blank; don't double-report
+    if not _is_waiting_enforced_surface(db_id or ""):
+        return None
+    if (status_value or "").strip() != "Waiting":
+        return None
+    wf = (waiting_for_value or "").strip().lower()
+    if wf not in _WEAK_WAITING_FOR:
+        return None
+    msg = (
+        f"Plans-DB 'Waiting For' value {(waiting_for_value or '').strip()!r} is a "
+        "known placeholder string — it does not name a specific blocker, person, "
+        "system, decision, or time-bound trigger. "
+        "Replace it with a concrete description of what this plan is waiting on. "
+        "See .windsurf/rules/notion-plans-taxonomy.md > Field Requirements."
+    )
+    return WaitingForViolation(
+        db_id=_normalize_id(db_id),
+        waiting_for_value=(waiting_for_value or "").strip(),
         message=msg,
     )

@@ -247,16 +247,33 @@ def _fetch_waiting_plans(token: str) -> list[dict[str, Any]]:
             "slug": slug,
             "status": STATUS_WAITING,
             "waiting_for": waiting_for_text.strip() or None,
+            "last_edited_time": row.get("last_edited_time"),
         })
 
     return plans
 
 
+# Age threshold (days) after which a blank-Waiting-For ERROR escalates to CRITICAL.
+_WAITING_FOR_CRITICAL_AGE_DAYS: int = 14
+
+
+def _age_days(last_edited_time: str | None) -> int | None:
+    """Return the age in whole days of a Notion last_edited_time ISO string."""
+    if not last_edited_time:
+        return None
+    try:
+        ts = datetime.fromisoformat(last_edited_time.replace("Z", "+00:00"))
+        return (datetime.now(timezone.utc) - ts).days
+    except (ValueError, TypeError):
+        return None
+
+
 def _check_waiting_for_completeness(token: str | None) -> list[dict[str, Any]]:
     """Check all 'Waiting' plans have a non-blank Waiting For field.
 
-    Returns list of violations (severity=ERROR) for each Waiting plan
-    whose Waiting For property is blank or missing.
+    Returns violations for each Waiting plan whose Waiting For is blank:
+    - severity=ERROR  when the plan was edited within _WAITING_FOR_CRITICAL_AGE_DAYS
+    - severity=CRITICAL when it has been stale for more than that threshold (DS-4)
     """
     violations = []
 
@@ -270,17 +287,25 @@ def _check_waiting_for_completeness(token: str | None) -> list[dict[str, Any]]:
         if waiting_for:
             continue
         slug = plan.get("slug", "<unknown>")
+        age = _age_days(plan.get("last_edited_time"))
+        if age is not None and age >= _WAITING_FOR_CRITICAL_AGE_DAYS:
+            severity = "CRITICAL"
+            age_note = f" (stale for {age}d — escalated from ERROR)"
+        else:
+            severity = "ERROR"
+            age_note = f" (age: {age}d)" if age is not None else ""
         violations.append({
-            "severity": "ERROR",
+            "severity": severity,
             "violation_type": "WAITING_EMPTY_WAITING_FOR",
             "plan_slug": slug,
             "plan_id": plan.get("id"),
             "current_status": STATUS_WAITING,
             "waiting_for": None,
+            "age_days": age,
             "recommendation": (
                 f"Populate 'Waiting For' for plan '{slug}' with the specific "
                 "blocker, person, system, decision, or time-bound trigger. "
-                "A blank Waiting For defeats the purpose of the Waiting status."
+                f"A blank Waiting For defeats the purpose of the Waiting status.{age_note}"
             ),
         })
 

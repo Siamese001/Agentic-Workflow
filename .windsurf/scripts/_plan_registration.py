@@ -252,7 +252,8 @@ def write_cache(plans: dict[str, dict[str, Any]]) -> None:
 # Statuses that satisfy "registered" for the purpose of wave execution.
 # Retired/Archived mean the plan is not actively tracked; a wave-start on
 # such a plan should still block to force the operator to flip status first.
-ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started", "Deferred", "Waiting", "Completed"})
+# Canonical per notion-plans-taxonomy.md §Status Criteria and Transition Rules.
+ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started", "Lower Priority", "Waiting", "Completed"})
 
 
 def check_registration(slug: str, cache: dict[str, Any] | None = None) -> RegistrationStatus:

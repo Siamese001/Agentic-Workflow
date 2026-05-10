@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-10T13:56:46Z",
-  "fetched_at_epoch": 1778421406.0309124,
+  "fetched_at": "2026-05-10T18:23:19Z",
+  "fetched_at_epoch": 1778437399.6413732,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -261,8 +261,8 @@
       "has_ai_summary": true
     },
     "adg-ci-gate-hardening-deferred-b4e3c9": {
-      "status": "Retired",
-      "page_id": "35327693-f55c-81c7-b6da-d75ac8b8d394",
+      "status": "Completed",
+      "page_id": "34b27693-f55c-81f3-beeb-c8e9eaa0006e",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -483,7 +483,7 @@
       "has_ai_summary": true
     },
     "dormant-facade-cleanup-b2d4f7": {
-      "status": "Deferred",
+      "status": "Archived",
       "page_id": "35427693-f55c-818f-b3fa-c08c58fcca9f",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -753,8 +753,8 @@
       "has_ai_summary": true
     },
     "adg-deferred-investigations-b5d9f2": {
-      "status": "Retired",
-      "page_id": "35827693-f55c-818f-b1e2-ca21f83d6ddf",
+      "status": "Completed",
+      "page_id": "35527693-f55c-814d-9b22-d610719e4452",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -783,9 +783,9 @@
       "has_ai_summary": true
     },
     "adg-fail-aggregating-gate-chain-9d4e1f": {
-      "status": "Archived",
-      "page_id": "35827693-f55c-814c-820e-d6380af84e0c",
-      "exists_on_disk": false,
+      "status": "Completed",
+      "page_id": "35527693-f55c-815d-8420-cd218a5bf1cf",
+      "exists_on_disk": true,
       "has_ai_summary": true
     },
     "notion-wave-deferral-a3f5c2": {
@@ -873,9 +873,9 @@
       "has_ai_summary": true
     },
     "adg-repair-orchestrator-enhancement-02c1fc": {
-      "status": "Archived",
-      "page_id": "35827693-f55c-8109-82b8-ce6297fac16c",
-      "exists_on_disk": false,
+      "status": "Completed",
+      "page_id": "35527693-f55c-819a-af88-c2e06326bf43",
+      "exists_on_disk": true,
       "has_ai_summary": true
     },
     "notion-backlog-schema-refactor-7c3d9e": {
@@ -939,7 +939,7 @@
       "has_ai_summary": true
     },
     "prompt-assembly-best-practices-gap-b4e1c2": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35527693-f55c-81c3-9676-fc1edd615b61",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1047,7 +1047,7 @@
       "has_ai_summary": true
     },
     "backlog-linkage-followup-c2e9f3": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35527693-f55c-81f4-ae89-e265f1e419f2",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1077,7 +1077,7 @@
       "has_ai_summary": true
     },
     "adg-three-graph-harness-e57cc7": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35527693-f55c-81f9-bb49-f79f4a0e147a",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1293,8 +1293,8 @@
       "has_ai_summary": true
     },
     "underwriting-judge-deferred-scope-d9b2a4": {
-      "status": "Archived",
-      "page_id": "35727693-f55c-81d0-a62e-da81eb606e06",
+      "status": "Completed",
+      "page_id": "35727693-f55c-8103-89e0-f1365aab3afb",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1346,12 +1346,6 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "apps-rg-l0-cache-deferred-scope-b8e2f4": {
-      "status": "Completed",
-      "page_id": "35727693-f55c-81f3-8143-cf31d7e31b51",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
     "apps-repo-brief-deferred-scope-closeout-a7d2f1": {
       "status": "Completed",
       "page_id": "35727693-f55c-8154-a71f-da2df2bcf5eb",
@@ -1367,12 +1361,6 @@
     "deferred-scope-ds2-ds3-ds7-c9e4f1": {
       "status": "Completed",
       "page_id": "35727693-f55c-815f-81ad-f7a134109bbc",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
-    "apps-underwriting-ai-d3-rationale-judge-f2c8d5": {
-      "status": "Completed",
-      "page_id": "35727693-f55c-8192-937e-f3fe58f8a915",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1397,6 +1385,12 @@
     "apps-underwriting-ai-deferred-scope-e8b2f4": {
       "status": "Completed",
       "page_id": "35727693-f55c-817c-b786-ea6ebe24289c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-underwriting-ai-d3-rationale-judge-f2c8d5": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-8184-b82b-c7016fe097ef",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1460,15 +1454,15 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
-    "bge-m3-gap-closure-c8f3a2": {
-      "status": "Completed",
-      "page_id": "35727693-f55c-81bd-8b49-d2e90e13abaa",
-      "exists_on_disk": true,
-      "has_ai_summary": true
-    },
     "underwriting-judge-remaining-deferred-b3c1f9": {
       "status": "Retired",
       "page_id": "35727693-f55c-81bc-a2e1-f2c0b501a004",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "bge-m3-gap-closure-c8f3a2": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81bd-8b49-d2e90e13abaa",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1517,6 +1511,12 @@
     "apps-eval-harness-phase2-b5f3c1": {
       "status": "Completed",
       "page_id": "35727693-f55c-81ed-9d71-e1ead3735804",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-l0-cache-deferred-scope-b8e2f4": {
+      "status": "Completed",
+      "page_id": "35727693-f55c-81f3-8143-cf31d7e31b51",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1575,7 +1575,7 @@
       "has_ai_summary": true
     },
     "adg-config-ssot-redis-otel-deferred-f7a3d2": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35827693-f55c-814f-99d1-cc1834276ab7",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1599,7 +1599,7 @@
       "has_ai_summary": true
     },
     "apps-rg-vllm-followup-blocked-c4e8b2": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35827693-f55c-819c-a7c2-d57947ca4f0a",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1629,7 +1629,7 @@
       "has_ai_summary": true
     },
     "adg-enforcement-hardening-p1-p8-7e9c4a": {
-      "status": "In Progress",
+      "status": "Retired",
       "page_id": "35827693-f55c-81de-9cf2-e8f9fdbedf48",
       "exists_on_disk": false,
       "has_ai_summary": true
@@ -1659,7 +1659,7 @@
       "has_ai_summary": true
     },
     "apps-architect-deferred-scope-2-c9d4e2": {
-      "status": "Deferred",
+      "status": "Archived",
       "page_id": "35927693-f55c-8156-8501-c621efbd057b",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1755,7 +1755,7 @@
       "has_ai_summary": true
     },
     "apps-rg-runtime-gate-deferred-a9f8b2": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35a27693-f55c-81a9-89a2-d4cc97eb8b45",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1785,13 +1785,13 @@
       "has_ai_summary": true
     },
     "w6-emit-contract-enrichment-d8b2a4": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35b27693-f55c-8106-84f4-e118db132178",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "l5-cert-ref-deferred-scope-f3a1b8": {
-      "status": "In Progress",
+      "status": "Deferred",
       "page_id": "35b27693-f55c-810c-a40f-e7cde42b0da2",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1911,7 +1911,7 @@
       "has_ai_summary": true
     },
     "l6-alignment-deferred-scope-c5e8a7": {
-      "status": "In Progress",
+      "status": "Deferred",
       "page_id": "35b27693-f55c-8189-8827-c3dec80f05fa",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1952,6 +1952,12 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "notion-plan-identity-deferred-scope-a3b7e2": {
+      "status": "In Progress",
+      "page_id": "35c27693-f55c-8105-acc7-c121fe6860e4",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
     "runtime-cert-e1-fail-closed-ci-gate-c71f3d": {
       "status": "Completed",
       "page_id": "35c27693-f55c-810b-bd0c-c076c6a3fd31",
@@ -1959,7 +1965,7 @@
       "has_ai_summary": true
     },
     "runtime-cert-e-ci-gate-e7b3f1": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35c27693-f55c-810e-8fc8-e0ac2db108bd",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1970,8 +1976,38 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-lic-ag8-golden-template-adoption-f3c2e1": {
+      "status": "Not Started",
+      "page_id": "35c27693-f55c-8124-95fc-d7f75fb0562c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-plans-db-hygiene-deferred-scope-d4f7c1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-812b-b762-e3b51214a40f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "acceptance-gates-master-tracking-b5c3e1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-812f-a7bc-f14e3735e0e2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "wave-status-completion-enforcement-d4f8e2": {
+      "status": "Not Started",
+      "page_id": "35c27693-f55c-8132-9dcd-f30331211f89",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-plans-new-status-enforcement-c9f2a3": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-813a-81ba-e96ea25ebb13",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-pipeline-deferred-e9f2a4": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35c27693-f55c-813f-88bb-d308281ad131",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1991,6 +2027,12 @@
     "apps-test-surface-consolidation-11acd9-v2": {
       "status": "Completed",
       "page_id": "35c27693-f55c-8176-85b2-e63adce9b1bf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ds1-telemetry-remaining-writers-a8c4f2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8177-85dd-d4a2c872e6c6",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -2025,15 +2067,21 @@
       "has_ai_summary": true
     },
     "author-gate-ask-ui-consolidated-a1e3f7": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "35c27693-f55c-81a4-93a9-f485347bedcb",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "apps-qna-l4-chromadb-init-p0-a7e4c3": {
-      "status": "Not Started",
+      "status": "Archived",
       "page_id": "35c27693-f55c-81e4-8330-d97855e1a694",
       "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-plan-identity-verification-enforcement-f2a9c1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-81f1-baf1-fb859d6fd066",
+      "exists_on_disk": false,
       "has_ai_summary": true
     },
     "apps-embedding-gap-analysis-8f7d2e": {
@@ -2049,7 +2097,7 @@
       "has_ai_summary": true
     },
     "notion-plans-status-rca-followups-b8e3f2": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "35c27693-f55c-81fc-a04e-e55edf35acff",
       "exists_on_disk": true,
       "has_ai_summary": true

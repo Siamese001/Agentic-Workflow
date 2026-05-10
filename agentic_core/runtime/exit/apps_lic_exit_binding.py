@@ -1,4 +1,4 @@
-"""apps_lic Exit Binding — AG-8 W7
+"""apps_lic Exit Binding — AG-8 W7 / AG-8-FU2
 
 Exit path for the apps_lic outreach-message pipeline.
 
@@ -8,8 +8,13 @@ Consumes a SealedL2Artifact produced by L2 and wires it through:
     -> run_all_x1_gates() -> X1A..X1J GateVerdict list
     -> build_x1_checkout_result() -> X1CheckoutResult
     -> aggregate_decision() -> AggregateDecision (X2)
-    -> build_x3_packet() -> X3* packet
-    -> X3Disposition (carrier returned to caller)
+    -> build_x3_packet() -> X3* packet  [shared path, AG-8-FU2]
+    -> _x3_packet_to_disposition() bridge -> X3Disposition
+
+AG-8-FU2: apps_lic now uses the shared build_x3_packet path.
+  - l5_certification_ref is threaded via ExitReviewPacket.l5_certification_refs[0].
+  - The X3*Packet -> X3Disposition bridge is purely deterministic.
+  - The old local X3Disposition construction is removed.
 
 Hard laws (constitutional — enforced by test_w7_apps_lic_exit_x1_x3.py):
   - Consumes SealedL2Artifact only; never re-retrieves from C0/R1B.
@@ -26,6 +31,7 @@ Hard laws (constitutional — enforced by test_w7_apps_lic_exit_x1_x3.py):
   - proposed_state_diff is inert ({}); X1J is NOT_APPLICABLE.
 
 Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md W7
+AG-8-FU2: shared build_x3_packet path adoption.
 """
 
 from __future__ import annotations
@@ -37,12 +43,18 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     ExitReviewPacket,
     SourceType,
     V6Disposition,
+    X3AllowPacket,
+    X3CommitRequestPacket,
+    X3DenyPacket,
+    X3EscalatePacket,
+    X3SafeAbstainPacket,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
     build_x1_checkout_result,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import aggregate_decision
+from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_packet
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
@@ -154,6 +166,83 @@ def _build_exit_review_packet(l2: SealedL2Artifact) -> ExitReviewPacket:
         evidence_bundle={},
         app_specific_eval={},
         hitl_packet={},
+        l5_certification_refs=(_CERT_REF,),
+    )
+
+
+def _x3_packet_to_disposition(
+    x3_pkt: Any,
+    l2: SealedL2Artifact,
+    gate_verdict_refs: tuple[str, ...],
+    now_ts: str,
+) -> X3Disposition:
+    """Bridge an X3*Packet returned by build_x3_packet into an X3Disposition.
+
+    AG-8-FU2: deterministic field mapping; no new logic.
+    cert_ref is taken from x3_pkt.l5_certification_ref (already threaded
+    by the shared builder via _extract_cert_ref).
+    """
+    disp = x3_pkt.disposition
+    is_allow = disp in {V6Disposition.ALLOW, V6Disposition.COMMIT_REQUEST}
+
+    if disp is V6Disposition.ALLOW:
+        exit_status = "success"
+    elif disp is V6Disposition.COMMIT_REQUEST:
+        exit_status = "success"
+    elif disp is V6Disposition.ESCALATE:
+        exit_status = "escalated"
+    elif disp is V6Disposition.SAFE_ABSTAIN:
+        exit_status = "abstain"
+    else:
+        exit_status = "failure"
+
+    final_output: dict[str, Any] = {"disposition": disp.value}
+    if isinstance(x3_pkt, X3DenyPacket):
+        final_output["reason_codes"] = list(x3_pkt.reason_codes)
+        final_output["rationale"] = x3_pkt.user_safe_message
+    elif isinstance(x3_pkt, X3EscalatePacket):
+        final_output["reason_codes"] = list(x3_pkt.trigger_reasons)
+        final_output["rationale"] = ""
+    elif isinstance(x3_pkt, X3AllowPacket):
+        final_output["reason_codes"] = []
+        final_output["rationale"] = ""
+        final_output["text"] = x3_pkt.final_response
+    elif isinstance(x3_pkt, X3CommitRequestPacket):
+        final_output["reason_codes"] = []
+        final_output["rationale"] = ""
+    elif isinstance(x3_pkt, X3SafeAbstainPacket):
+        final_output["reason_codes"] = []
+        final_output["rationale"] = x3_pkt.abstain_reason
+    else:
+        final_output["reason_codes"] = []
+        final_output["rationale"] = ""
+
+    return X3Disposition(
+        request_id=l2.request_id,
+        run_id=l2.run_id,
+        app_id=_APP_ID,
+        trace_id=l2.trace_id,
+        exit_status=exit_status,
+        outcome_authorized=is_allow,
+        final_output=final_output,
+        output_artifact_path=None,
+        eval_score=None,
+        eval_threshold_met=is_allow,
+        hitl_required=(disp is V6Disposition.ESCALATE),
+        tenant_id=l2.tenant_id or "",
+        exit_timestamp=now_ts,
+        schema_version="W7.1",
+        sealed_l2_digest=l2.compilation_hash or "",
+        otel_span_refs=l2.otel_span_refs,
+        audit_refs=l2.audit_refs,
+        signature="",
+        posture=l2.posture,
+        gate_verdict_refs=gate_verdict_refs,
+        replay_key=l2.replay_key or "",
+        snapshot_refs=l2.snapshot_refs,
+        is_uwg_write_authority=False,
+        is_future_run_only=False,
+        l5_certification_ref=x3_pkt.l5_certification_ref,
     )
 
 
@@ -162,6 +251,9 @@ def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
 
     Consumes *l2* (SealedL2Artifact) only.  Produces exactly one
     X3Disposition per invocation.
+
+    AG-8-FU2: uses shared build_x3_packet path; l5_certification_ref
+    is threaded via ExitReviewPacket.l5_certification_refs[0].
 
     Hard-law summary:
     - No retrieval, no prompt assembly, no tool/model execution.
@@ -187,57 +279,17 @@ def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
 
     decision = aggregate_decision(gate_verdicts_for_x2, packet, x1_checkout_result=x1_checkout)
 
-    is_allow = decision.disposition in {V6Disposition.ALLOW, V6Disposition.COMMIT_REQUEST}
-
     gate_verdict_refs: tuple[str, ...] = tuple(
         f"{v.gate_id}:{v.result.value}" for v in verdicts
     )
 
-    exit_status: str
-    if is_allow:
-        exit_status = "success"
-    elif decision.disposition is V6Disposition.ESCALATE:
-        exit_status = "escalated"
-    elif decision.disposition is V6Disposition.SAFE_ABSTAIN:
-        exit_status = "abstain"
-    else:
-        exit_status = "failure"
-
-    final_output: dict[str, Any] = {
-        "disposition": decision.disposition.value,
-        "reason_codes": list(decision.reason_codes),
-        "rationale": decision.rationale,
-    }
-    if is_allow:
-        final_output["text"] = l2.generated_content
-
-    return X3Disposition(
-        request_id=l2.request_id,
-        run_id=l2.run_id,
-        app_id=_APP_ID,
-        trace_id=l2.trace_id,
-        exit_status=exit_status,
-        outcome_authorized=is_allow,
-        final_output=final_output,
-        output_artifact_path=None,
-        eval_score=None,
-        eval_threshold_met=is_allow,
-        hitl_required=(decision.disposition is V6Disposition.ESCALATE),
-        tenant_id=l2.tenant_id or "",
-        exit_timestamp=now_ts,
-        schema_version="W7.0",
-        sealed_l2_digest=l2.compilation_hash or "",
-        otel_span_refs=l2.otel_span_refs,
-        audit_refs=l2.audit_refs,
-        signature="",
-        posture=l2.posture,
-        gate_verdict_refs=gate_verdict_refs,
-        replay_key=l2.replay_key or "",
-        snapshot_refs=l2.snapshot_refs,
-        is_uwg_write_authority=False,
-        is_future_run_only=False,
-        l5_certification_ref=_CERT_REF,
+    x3_pkt = build_x3_packet(
+        packet,
+        decision,
+        final_response=l2.generated_content or "",
     )
 
+    return _x3_packet_to_disposition(x3_pkt, l2, gate_verdict_refs, now_ts)
 
-__all__ = ["exit_finalize_apps_lic"]
+
+__all__ = ["exit_finalize_apps_lic", "_x3_packet_to_disposition"]

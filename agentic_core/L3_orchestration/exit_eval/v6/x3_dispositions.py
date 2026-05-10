@@ -30,6 +30,38 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import AggregateDecision
 
+
+class MissingL5CertificationRef(ValueError):
+    """Raised when build_x3* cannot derive a non-empty l5_certification_ref.
+
+    Selection rule (AG-8-FU1):
+      1. Use ExitReviewPacket.l5_certification_refs[0] if the tuple is non-empty.
+      2. Else fail closed — packet construction is blocked until a ref is supplied.
+
+    l5_certification_ref MUST NOT be silently dropped (hard law AG-8-FU1).
+    """
+
+
+def _extract_cert_ref(packet: ExitReviewPacket) -> str:
+    """Derive a canonical, non-empty l5_certification_ref from *packet*.
+
+    Selection rule (AG-8-FU1):
+      1. First element of packet.l5_certification_refs if the tuple is non-empty.
+      2. No fallback — raises MissingL5CertificationRef (fail closed).
+
+    This function is the SINGLE point of cert-ref extraction for all shared
+    build_x3* helpers.  It must never return an empty string.
+    """
+    refs = packet.l5_certification_refs
+    if refs:
+        return refs[0]
+    raise MissingL5CertificationRef(
+        "build_x3_packet: ExitReviewPacket.l5_certification_refs is empty; "
+        "l5_certification_ref must not be silently dropped (AG-8-FU1 hard law). "
+        "Populate ExitReviewPacket.l5_certification_refs before calling build_x3_packet."
+    )
+
+
 # v4_hardening §H3.1 — gates that NEVER bypass under break-glass
 _X3F_FORBIDDEN_BYPASS_GATES: frozenset[str] = frozenset({"X1A", "X1C"})
 
@@ -75,6 +107,7 @@ def build_x3a_deny(
             ],
         },
         trace_root=packet.trace_root,
+        l5_certification_ref=_extract_cert_ref(packet),
     )
 
 
@@ -95,6 +128,7 @@ def build_x3b_escalate(
         h1_freeze_state=dict(h1_freeze_state or {}),
         review_packet_contents=dict(review_packet_contents or {}),
         trace_root=packet.trace_root,
+        l5_certification_ref=_extract_cert_ref(packet),
     )
 
 
@@ -129,6 +163,7 @@ def build_x3c_commit_request(
         pass_k_consistency_receipt=dict((packet.grader_composition or {}).get("consistency", {})),
         replay_determinism_digest=packet.replay_key,
         trace_evidence_seal=str((packet.otel_spans or {}).get("evidence_seal", "")),
+        l5_certification_ref=_extract_cert_ref(packet),
     )
 
 
@@ -151,6 +186,7 @@ def build_x3d_allow(
             "track_label": packet.track_label,
             "produced_at": int(time.time()),
         },
+        l5_certification_ref=_extract_cert_ref(packet),
     )
 
 
@@ -170,6 +206,7 @@ def build_x3e_safe_abstain(
         safe_alternative=safe_alternative,
         failed_support_target=failed_support_target,
         trace_root=packet.trace_root,
+        l5_certification_ref=_extract_cert_ref(packet),
     )
 
 
@@ -405,6 +442,7 @@ def _build_x3_packet_impl(
 
 
 __all__ = [
+    "MissingL5CertificationRef",
     "build_x3a_deny",
     "build_x3b_escalate",
     "build_x3c_commit_request",

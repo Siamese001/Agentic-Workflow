@@ -766,7 +766,96 @@ class TestA20_MaterialUnknownCannotPass:
 # ===========================================================================
 
 class TestA21_NotApplicableRequiresReason:
-    def test_x1g_not_applicable_has_reason(self) -> None:
+    """Hard law: gate_id identifies the check — it is NOT an applicability rationale.
+
+    Every NOT_APPLICABLE GateVerdict must carry at least one of:
+      - non-empty reason_codes  (preferred: machine-readable explanation)
+      - non-empty remediation_hint  (acceptable: human-readable explanation)
+    """
+
+    def _has_explicit_reason(self, verdict) -> bool:
+        """Return True iff verdict carries an explicit applicability rationale."""
+        return bool(verdict.reason_codes) or bool(verdict.remediation_hint)
+
+    def test_na_with_no_reason_fails_hard_law(self) -> None:
+        """A NOT_APPLICABLE verdict with empty reason_codes AND empty remediation_hint
+        violates the hard law — gate_id alone is not sufficient."""
+        from agentic_core.L3_orchestration.exit_eval.v6.types import GateVerdict, GateResult
+        bare_na = GateVerdict(
+            gate_id="X1_TEST",
+            result=GateResult.NOT_APPLICABLE,
+            severity="info",
+            reason_codes=[],
+            score=0.0, threshold=0.0, grader_type="code",
+            confidence=1.0, abstain_flag=False,
+            remediation_hint="",
+            metadata={},
+        )
+        assert not self._has_explicit_reason(bare_na), (
+            "Sanity check: bare NA verdict (no reason_codes, no remediation_hint) "
+            "must fail the explicit-reason test"
+        )
+
+    def test_na_with_only_gate_id_fails_hard_law(self) -> None:
+        """gate_id identifies the check, not why it is not applicable.
+        A verdict with only gate_id set still fails the hard-law check."""
+        from agentic_core.L3_orchestration.exit_eval.v6.types import GateVerdict, GateResult
+        gate_id_only = GateVerdict(
+            gate_id="X1_WITH_GATE_ID",
+            result=GateResult.NOT_APPLICABLE,
+            severity="info",
+            reason_codes=[],
+            score=0.0, threshold=0.0, grader_type="code",
+            confidence=1.0, abstain_flag=False,
+            remediation_hint="",
+            metadata={},
+        )
+        assert gate_id_only.gate_id, "gate_id is set"
+        assert not self._has_explicit_reason(gate_id_only), (
+            "A verdict with only gate_id and no reason_codes/remediation_hint "
+            "must fail the explicit-reason test — gate_id is not a rationale"
+        )
+
+    def test_na_with_explicit_reason_codes_passes(self) -> None:
+        """NOT_APPLICABLE verdict with non-empty reason_codes satisfies the hard law."""
+        from agentic_core.L3_orchestration.exit_eval.v6.types import GateVerdict, GateResult
+        na_with_codes = GateVerdict(
+            gate_id="X1_TEST",
+            result=GateResult.NOT_APPLICABLE,
+            severity="info",
+            reason_codes=["NO_STATE_DIFF_OR_ANSWER_ONLY_PATH"],
+            score=0.0, threshold=0.0, grader_type="code",
+            confidence=1.0, abstain_flag=False,
+            remediation_hint="",
+            metadata={},
+        )
+        assert self._has_explicit_reason(na_with_codes), (
+            "NOT_APPLICABLE with non-empty reason_codes must pass the hard law"
+        )
+
+    def test_na_with_remediation_hint_passes(self) -> None:
+        """NOT_APPLICABLE verdict with non-empty remediation_hint satisfies the hard law."""
+        from agentic_core.L3_orchestration.exit_eval.v6.types import GateVerdict, GateResult
+        na_with_hint = GateVerdict(
+            gate_id="X1_TEST",
+            result=GateResult.NOT_APPLICABLE,
+            severity="info",
+            reason_codes=[],
+            score=0.0, threshold=0.0, grader_type="code",
+            confidence=1.0, abstain_flag=False,
+            remediation_hint="advisory only for answer-only path",
+            metadata={},
+        )
+        assert self._has_explicit_reason(na_with_hint), (
+            "NOT_APPLICABLE with non-empty remediation_hint must pass the hard law"
+        )
+
+    def test_golden_path_all_na_verdicts_have_explicit_reason(self) -> None:
+        """AG-8 golden path: every NOT_APPLICABLE X1 verdict must carry an explicit reason.
+
+        This is the runtime enforcement of the hard law above — proves the actual
+        apps_lic pipeline (X1G and X1J) satisfies the requirement.
+        """
         from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
@@ -774,28 +863,34 @@ class TestA21_NotApplicableRequiresReason:
         packet = _build_exit_review_packet(l2)
         verdicts = run_all_x1_gates(packet)
         na_verdicts = [v for v in verdicts if v.result == GateResult.NOT_APPLICABLE]
-        for v in na_verdicts:
-            # GateVerdict.result == NOT_APPLICABLE is itself the documented reason;
-            # reason_codes may be empty tuple (acceptable per GateVerdict design).
-            # The assertion is: NOT_APPLICABLE must not be the same as FAIL — gate_id identifies which.
-            assert v.result == GateResult.NOT_APPLICABLE, (
-                f"Gate {v.gate_id} expected NOT_APPLICABLE, got {v.result}"
-            )
-            assert v.gate_id, f"NOT_APPLICABLE gate must have a non-empty gate_id"
+        assert na_verdicts, "Expected at least one NOT_APPLICABLE verdict from apps_lic golden path"
+        violations = [
+            v.gate_id for v in na_verdicts
+            if not self._has_explicit_reason(v)
+        ]
+        assert not violations, (
+            f"NOT_APPLICABLE verdicts lack explicit reason (reason_codes and "
+            f"remediation_hint both empty): {violations}"
+        )
 
-    def test_x1j_not_applicable_when_state_diff_empty(self) -> None:
+    def test_x1j_not_applicable_carries_reason_code(self) -> None:
+        """X1J specifically: when state_diff is empty (answer-only path),
+        X1J must be NOT_APPLICABLE AND carry reason_codes."""
         from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
         from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
         from agentic_core.L3_orchestration.exit_eval.v6.types import GateResult
         l2 = _make_sealed_l2(proposed_state_diff={})
         packet = _build_exit_review_packet(l2)
         verdicts = run_all_x1_gates(packet)
-        x1j = next((v for v in verdicts if "X1J" in v.gate_id.upper() or "x1j" in v.gate_id.lower()), None)
-        # When state_diff is empty, X1J must be NOT_APPLICABLE (never FAIL or UNKNOWN)
-        if x1j is not None:
-            assert x1j.result in (GateResult.NOT_APPLICABLE, GateResult.PASS), (
-                f"X1J with empty state_diff must be NOT_APPLICABLE or PASS, got {x1j.result}"
-            )
+        x1j = next((v for v in verdicts if v.gate_id == "X1J"), None)
+        assert x1j is not None, "X1J gate must be present"
+        assert x1j.result == GateResult.NOT_APPLICABLE, (
+            f"X1J with empty state_diff must be NOT_APPLICABLE, got {x1j.result}"
+        )
+        assert self._has_explicit_reason(x1j), (
+            f"X1J NOT_APPLICABLE must carry explicit reason — "
+            f"reason_codes={x1j.reason_codes!r}, remediation_hint={x1j.remediation_hint!r}"
+        )
 
 
 # ===========================================================================
@@ -925,7 +1020,13 @@ class TestA26_AG8FU1Documented:
         data = json.loads(path.read_text(encoding="utf-8"))
         divergences = {d["id"]: d for d in data.get("known_divergences", [])}
         fu1 = divergences.get("AG-8-FU1", {})
-        assert fu1.get("do_not_start") is True, "AG-8-FU1 must have do_not_start=true"
+        # Pre-completion: do_not_start=true (original guard).
+        # Post-completion: do_not_start=false AND status=COMPLETE (AG-8-FU1 done).
+        is_guarded = fu1.get("do_not_start") is True
+        is_complete = (fu1.get("do_not_start") is False and str(fu1.get("status", "")).startswith("COMPLETE"))
+        assert is_guarded or is_complete, (
+            "AG-8-FU1 must have do_not_start=true (guarded) or do_not_start=false+status=COMPLETE (done)"
+        )
 
     def test_ag8_fu1_has_workaround_description(self) -> None:
         path = _repo_root() / "artifacts" / "apps_lic" / "ag8_exit_x1_x3_receipt.json"

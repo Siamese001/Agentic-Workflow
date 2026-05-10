@@ -384,10 +384,14 @@ def check_material_fail_cannot_allow(execution_status: str = "failed") -> tuple[
 
 
 def check_na_verdicts_have_rationale() -> tuple[bool, str]:
-    """Verify NOT_APPLICABLE verdicts are properly formed (gate_id non-empty).
+    """Verify NOT_APPLICABLE verdicts carry an explicit applicability rationale.
 
-    GateVerdict uses reason_codes (tuple) not 'rationale'. An empty reason_codes
-    tuple is acceptable — the gate_id itself documents why the gate is not applicable.
+    Hard law: gate_id identifies the check — it is NOT an applicability rationale.
+    Every NOT_APPLICABLE verdict must carry at least one of:
+      - non-empty reason_codes  (preferred: machine-readable explanation)
+      - non-empty remediation_hint  (acceptable: human-readable explanation)
+    An empty reason_codes + empty remediation_hint is a hard-law violation even
+    if gate_id is present.
     """
     try:
         from agentic_core.runtime.exit.apps_lic_exit_binding import _build_exit_review_packet
@@ -396,16 +400,20 @@ def check_na_verdicts_have_rationale() -> tuple[bool, str]:
         l2 = _make_sealed_l2()
         packet = _build_exit_review_packet(l2)
         verdicts = run_all_x1_gates(packet)
-        # NOT_APPLICABLE must have a non-empty gate_id (the gate_id IS the rationale)
-        missing_id = [
-            repr(v) for v in verdicts
-            if v.result == GateResult.NOT_APPLICABLE and not v.gate_id
+        missing_reason = [
+            v.gate_id for v in verdicts
+            if v.result == GateResult.NOT_APPLICABLE
+            and not v.reason_codes
+            and not v.remediation_hint
         ]
-        if missing_id:
-            return False, f"NOT_APPLICABLE verdicts missing gate_id: {missing_id}"
+        if missing_reason:
+            return False, (
+                f"NOT_APPLICABLE verdicts lack explicit reason (reason_codes and "
+                f"remediation_hint both empty): {missing_reason}"
+            )
     except Exception as e:
         return False, f"Runtime rationale check error: {e}"
-    return True, "All NOT_APPLICABLE verdicts have gate_id (rationale documented by gate_id)"
+    return True, "All NOT_APPLICABLE verdicts carry explicit reason (reason_codes or remediation_hint)"
 
 
 def check_proposed_state_diff_inert() -> tuple[bool, str]:
@@ -465,9 +473,12 @@ def check_ag8_fu1_documented() -> tuple[bool, str]:
     if "AG-8-FU1" not in divergences:
         return False, "AG-8-FU1 not recorded in known_divergences of ag8_exit_x1_x3_receipt.json"
     fu1 = divergences["AG-8-FU1"]
-    if not fu1.get("do_not_start"):
-        return False, "AG-8-FU1 missing do_not_start=true"
-    return True, "AG-8-FU1 documented as known follow-up with do_not_start=true"
+    is_guarded = fu1.get("do_not_start") is True
+    is_complete = (fu1.get("do_not_start") is False and str(fu1.get("status", "")).startswith("COMPLETE"))
+    if not (is_guarded or is_complete):
+        return False, "AG-8-FU1 must have do_not_start=true (guarded) or do_not_start=false+status=COMPLETE (done)"
+    status_note = "do_not_start=true" if is_guarded else "COMPLETE"
+    return True, f"AG-8-FU1 documented as known follow-up with {status_note}"
 
 
 # ---------------------------------------------------------------------------

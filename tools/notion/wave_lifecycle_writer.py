@@ -55,6 +55,7 @@ from tools.notion._wave_lifecycle_helpers import (  # noqa: E402
     CANONICAL_STATUSES,
     NotionPatchSpec,
     PROP_AI_SUMMARY,
+    PROP_SLUG,
     PROP_STATUS,
     PROP_SUMMARY,
     SLUG_RE,
@@ -186,7 +187,25 @@ def find_plan_page(slug: str, token: str) -> tuple[str | None, dict[str, Any], s
     page_id = page.get("id")
     if not isinstance(page_id, str):
         return None, {}, "missing_page_id"
-    return page_id, page.get("properties") or {}, "ok"
+
+    # ── Slug cross-check (cardinal safety gate) ──────────────────────────────
+    # Notion's filter is exact-match on title, but we verify the returned page's
+    # own Slug property matches the queried slug.  This blocks any wrong-plan
+    # patch under DB corruption, Notion API drift, or duplicate-slug collisions.
+    props = page.get("properties") or {}
+    returned_slug = _extract_slug_from_properties(props)
+    if returned_slug is not None and returned_slug != slug:
+        _log(
+            {
+                "event": "find_plan_page_slug_mismatch",
+                "queried_slug": slug,
+                "returned_slug": returned_slug,
+                "page_id": page_id,
+            }
+        )
+        return None, {}, f"slug_mismatch:queried={slug!r} returned={returned_slug!r}"
+
+    return page_id, props, "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -387,6 +406,26 @@ def emit_from_markers(
         rows.append((slug, ok, msg))
         time.sleep(THROTTLE_S)
     return rows
+
+
+def _extract_slug_from_properties(properties: dict[str, Any]) -> str | None:
+    """Extract the plain-text Slug value from a Notion page properties dict.
+
+    Returns ``None`` when the property is absent or malformed (caller treats
+    that as "unknown — skip cross-check" rather than "mismatch").
+    """
+    slug_prop = properties.get(PROP_SLUG) or {}
+    if not isinstance(slug_prop, dict):
+        return None
+    title_list = slug_prop.get("title") or []
+    parts: list[str] = []
+    for blk in title_list:
+        if isinstance(blk, dict):
+            txt = blk.get("plain_text") or (blk.get("text") or {}).get("content", "")
+            if isinstance(txt, str):
+                parts.append(txt)
+    result = "".join(parts).strip()
+    return result if result else None
 
 
 def _extract_status(properties: dict[str, Any]) -> str | None:

@@ -1,0 +1,582 @@
+# apps_lic ingress contract v1 — field map SSOT
+#
+# Maps every JSON Pointer produced by AppsLicIngressContractV1.model_dump()
+# to its downstream consumer and status.
+#
+# Status taxonomy (exactly one per pointer):
+#   MAPPED    — reflected verbatim into a downstream contract (W3+)
+#   DERIVED   — consumed but transformed (normalization, digest, enum coercion)
+#   REJECTED  — explicitly blocked at U0 (governance field that cannot be
+#               disabled; U0 raises if the structurally-accepted value is
+#               enforcement-blocked at the policy level)
+#   DEFERRED  — recognized in v1 schema but not yet wired to a named
+#               downstream consumer; MUST carry an explicit reason linking
+#               to the plan wave or AG decision that will wire it
+#
+# CORE RULE: a field may be deferred. A field may not disappear.
+#
+# The U0 reflection adapter:
+#   1. Enumerates JSON Pointers from AppsLicIngressContractV1.model_dump()
+#   2. Looks up each pointer in `mappings` below
+#   3. Pointers without a `mappings` entry → SILENTLY_DROPPED → fail closed
+#   4. `mappings` entries with status outside the taxonomy → UNKNOWN_MAPPING → fail closed
+#
+# Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+# Schema ref: artifacts/apps_lic/ag8_apps_lic_payload_schema.json
+# Mapping ref: artifacts/apps_lic/ag8_apps_lic_payload_mapping_matrix.json
+
+version: v1
+contract_module: apps_lic.contracts.apps_lic_ingress_contract_v1
+schema_version: apps_lic_ingress_contract/v1
+
+policy:
+  fail_on_silently_dropped: true
+  fail_on_unknown_mapping: true
+  fail_on_unknown_pointer: true
+  permitted_statuses:
+    - MAPPED
+    - DERIVED
+    - REJECTED
+    - DEFERRED
+
+# Pattern (prefix) mappings for open-vocabulary sub-object trees.
+# Exact mappings below take priority; only uncovered pointers fall through here.
+pattern_mappings:
+  /entity_refs/lead_profile/:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.lead_profile.<key>
+    reason: "Inline lead profile sub-fields preserved verbatim under app_payload for C0/PA consumption (W4-W5)"
+  /entity_refs/sender_profile/:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.sender_profile.<key>
+    reason: "Inline sender profile sub-fields preserved verbatim under app_payload"
+  /entity_refs/company_profile/:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.company_profile.<key>
+    reason: "Inline company profile sub-fields preserved verbatim under app_payload"
+  /personalization/inputs/:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.personalization.inputs.<key>
+    reason: "Open-vocabulary personalization signals preserved verbatim; forbidden-key check runs at Pydantic validation time"
+  /research_requirements/required_evidence_types/:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Evidence type hints consumed by C0 retrieval binding — wired in W5"
+  /research_requirements/prohibited_source_types/:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Prohibited source types consumed by C0 retrieval binding — wired in W5"
+  /routing_policy/:
+    status: DEFERRED
+    target: apps_lic L0 binding (W4)
+    reason: "Routing hints consumed by L0 binding — wired in W4"
+  /ab_test/:
+    status: DEFERRED
+    target: apps_lic L0 binding A/B arm selection (W4)
+    reason: "A/B test profile consumed by L0 routing binding — wired in W4"
+  /replay_audit/replay_refs/:
+    status: MAPPED
+    target: ValidatedRequest.snapshot_refs
+    reason: "Replay refs preserved as ValidatedRequest.snapshot_refs (first entry → replay_key)"
+  /replay_audit/audit_refs/:
+    status: MAPPED
+    target: ValidatedRequest.audit_refs
+    reason: "Audit refs preserved as ValidatedRequest.audit_refs"
+  /gate_decision_policy/warn_only_dims/:
+    status: DEFERRED
+    target: apps_lic HOP7 gate_decision engine (W6)
+    reason: "warn_only_dims consumed by GateDecisionEngine — wired in W6"
+  /generation_hints/:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Generation hints consumed by PA prompt assembly binding — wired in W5"
+  /tone_constraints/:
+    status: DEFERRED
+    target: apps_lic sender_grounding + PA binding (W5)
+    reason: "Tone constraints consumed by sender_grounding (HOP3) and PA binding — wired in W5"
+  /output_format/:
+    status: DEFERRED
+    target: apps_lic PA binding + ValidationEngine (W5-W6)
+    reason: "Output format constraints consumed by PA assembly and HOP6 validation — wired in W5-W6"
+
+# ─── Flat mappings ──────────────────────────────────────────────────────────
+
+mappings:
+
+  # ── Root-level version field ────────────────────────────────────────────
+  /apps_lic_contract_version:
+    status: DERIVED
+    target: AppsLicU0ReflectionReceipt.contract_version
+    reason: "Version string validated against APPS_LIC_INGRESS_CONTRACT_VERSION; checked at U0"
+
+  # ── Transport section (F-01, identity quad) ─────────────────────────────
+  /transport:
+    status: MAPPED
+    target: ValidatedRequest (request_id, run_id, app_id, task_class, tenant_id, trace_id)
+    reason: "Transport sub-fields each mapped to named ValidatedRequest fields"
+
+  /transport/app_id:
+    status: DERIVED
+    target: ValidatedRequest.app_id = 'apps_lic'
+    reason: "Validated == 'apps_lic' by field validator; stamped on ValidatedRequest.app_id"
+
+  /transport/task_class:
+    status: DERIVED
+    target: ValidatedRequest.task_class = 'outreach_message'
+    reason: "Validated == 'outreach_message'; stamped on ValidatedRequest.task_class"
+
+  /transport/request_id:
+    status: MAPPED
+    target: ValidatedRequest.request_id
+    reason: "Identity quad — request_id threaded into ValidatedRequest"
+
+  /transport/run_id:
+    status: MAPPED
+    target: ValidatedRequest.run_id
+    reason: "Identity quad — run_id threaded into ValidatedRequest"
+
+  /transport/tenant_id:
+    status: MAPPED
+    target: ValidatedRequest.tenant_id
+    reason: "Identity quad — tenant_id threaded into ValidatedRequest"
+
+  /transport/trace_id:
+    status: MAPPED
+    target: ValidatedRequest.trace_id
+    reason: "Trace id propagated for OTEL span linkage"
+
+  /transport/submitted_at:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.transport.submitted_at
+    reason: "Submission timestamp preserved in app_payload for audit"
+
+  # ── Campaign section (F-02..F-10, F-33..F-35) ──────────────────────────
+  /campaign:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign
+    reason: "Campaign section preserved verbatim in app_payload"
+
+  /campaign/request_type:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.request_type
+    reason: "Governs U0 exit path and L0 route variant selection"
+
+  /campaign/campaign_objective:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.campaign_objective
+    reason: "Campaign intent fed to L1 plan contract and HOP1/HOP4 stages"
+
+  /campaign/channel:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.channel
+    reason: "Channel governs route variant, length validation, and PA prompt slot"
+
+  /campaign/audience_segment:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.audience_segment
+    reason: "Audience segment fed to L1 plan contract and HOP4 routing"
+
+  /campaign/action_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.action_required
+    reason: "Governs whether exit eval is invoked (draft_only skips)"
+
+  /campaign/workflow_required:
+    status: DERIVED
+    target: RouteContract.execution_form = MANAGED_WORKFLOW (set by L0 binding in W4)
+    reason: "Validated == 'managed_workflow_hop'; determines HopPipelineExecutor dispatch path"
+
+  /campaign/grounding_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.campaign.grounding_required
+    reason: "Governs C0 retrieval activation; False only permitted for dry_run"
+
+  /campaign/side_effect_class:
+    status: DERIVED
+    target: ValidatedRequest.posture = POSTURE_READ_ONLY
+    reason: "Validated == 'read_only' (NB-3); used to stamp read_only posture on ValidatedRequest"
+
+  # ── Forbidden send modes (F-17) ─────────────────────────────────────────
+  /forbidden_send_modes:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.forbidden_send_modes
+    reason: "Blocklist preserved; U0 enforces presence of hardcoded three"
+
+  /forbidden_send_modes/modes:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.forbidden_send_modes.modes
+    reason: "Forbidden send-mode list; U0 validates inclusion of required three"
+
+  # ── Entity refs (F-04..F-09) ────────────────────────────────────────────
+  /entity_refs:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs
+    reason: "Entity ref block preserved verbatim in app_payload for C0 resolution"
+
+  /entity_refs/lead_profile:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.lead_profile
+    reason: "Inline lead profile preserved; consent_attested checked by Pydantic"
+
+  /entity_refs/lead_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.lead_ref
+    reason: "Lead reference key preserved for C0 resolution (W5)"
+
+  /entity_refs/sender_profile:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.sender_profile
+    reason: "Inline sender profile preserved for sender_grounding (HOP3)"
+
+  /entity_refs/sender_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.sender_ref
+    reason: "Sender reference key preserved for C0 resolution"
+
+  /entity_refs/company_profile:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.company_profile
+    reason: "Inline company profile preserved for research stage (HOP2)"
+
+  /entity_refs/company_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.entity_refs.company_ref
+    reason: "Company reference key preserved for C0 resolution"
+
+  # ── Personalization (F-12) ──────────────────────────────────────────────
+  /personalization:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.personalization
+    reason: "Personalization signals preserved; forbidden-key check done by Pydantic"
+
+  /personalization/inputs:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.personalization.inputs
+    reason: "Personalization inputs dict preserved verbatim in app_payload"
+
+  # ── Generation hints (F-15) ─────────────────────────────────────────────
+  /generation_hints:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Generation hints consumed by PA prompt assembly binding — wired in W5"
+
+  /generation_hints/preferred_length_class:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Length class fed to PA slot hints — wired in W5"
+
+  /generation_hints/require_differentiator:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Differentiator flag fed to PA slot and exit dim — wired in W5"
+
+  /generation_hints/subject_line_constraints:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Subject line constraints fed to PA slot — wired in W5"
+
+  /generation_hints/cta_style:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "CTA style fed to PA slot — wired in W5"
+
+  # ── Tone constraints (F-16) ─────────────────────────────────────────────
+  /tone_constraints:
+    status: DEFERRED
+    target: apps_lic sender_grounding + PA binding (W5)
+    reason: "Tone constraints fed to HOP3 sender_grounding and PA voice_profile slot — wired in W5"
+
+  /tone_constraints/brand_voice_id:
+    status: DEFERRED
+    target: apps_lic PA binding voice_profile slot (W5)
+    reason: "Brand voice id resolved from sender_voice_profile store — wired in W5"
+
+  /tone_constraints/tone_register:
+    status: DEFERRED
+    target: apps_lic L0 binding route variant + PA slot (W4-W5)
+    reason: "Tone register fed to L0 for EXEC/peer variant and PA voice slot — wired in W4-W5"
+
+  /tone_constraints/formality_level:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Formality level fed to PA tone slot — wired in W5"
+
+  # ── Output format (F-29) ────────────────────────────────────────────────
+  /output_format:
+    status: DEFERRED
+    target: apps_lic PA binding + ValidationEngine (W5-W6)
+    reason: "Output format constraints fed to PA assembly and HOP6 validation — wired in W5-W6"
+
+  /output_format/include_subject_line:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Subject line inclusion flag fed to PA slot — wired in W5"
+
+  /output_format/include_ps_line:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "PS line inclusion flag fed to PA slot — wired in W5"
+
+  /output_format/max_paragraphs:
+    status: DEFERRED
+    target: apps_lic PA binding + ValidationEngine (W5-W6)
+    reason: "Max paragraph count fed to PA and HOP6 formatting_compliance dim — wired in W5-W6"
+
+  /output_format/bullet_list_allowed:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Bullet list flag fed to PA prompt boundary — wired in W5"
+
+  /output_format/output_schema_ref:
+    status: DEFERRED
+    target: apps_lic PA binding (W5)
+    reason: "Output schema ref for structured output assembly — wired in W5"
+
+  # ── Research requirements (F-13) ────────────────────────────────────────
+  /research_requirements:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Research requirements consumed by C0 retrieval binding — wired in W5"
+
+  /research_requirements/freshness_class:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Freshness class hint for evidence retrieval — wired in W5"
+
+  /research_requirements/required_evidence_types:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Required evidence type list consumed by C0 retrieval binding — wired in W5"
+
+  /research_requirements/prohibited_source_types:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Prohibited source type list consumed by C0 retrieval binding — wired in W5"
+
+  /research_requirements/max_sources:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Max sources hint for retrieval — wired in W5"
+
+  # ── Routing policy (F-14) ───────────────────────────────────────────────
+  /routing_policy:
+    status: DEFERRED
+    target: apps_lic L0 binding (W4)
+    reason: "Routing hints consumed by L0 binding — wired in W4"
+
+  /routing_policy/preferred_template_family:
+    status: DEFERRED
+    target: apps_lic L0 binding (W4)
+    reason: "Template family hint for route selection — wired in W4"
+
+  /routing_policy/allow_fallback_template:
+    status: DEFERRED
+    target: apps_lic L0 binding (W4)
+    reason: "Fallback template flag for route selection — wired in W4"
+
+  /routing_policy/outreach_mode:
+    status: DEFERRED
+    target: apps_lic L0 binding + HOP4 routing (W4)
+    reason: "Outreach mode fed to L0 and HOP4 template selection — wired in W4"
+
+  # ── Validation policy (F-18) ────────────────────────────────────────────
+  /validation_policy:
+    status: DEFERRED
+    target: apps_lic L2 binding → HOP6 ValidationEngine (W6)
+    reason: "Validation policy constraints consumed by HOP6 ValidationEngine — wired in W6"
+
+  /validation_policy/min_body_length:
+    status: DEFERRED
+    target: apps_lic HOP6 ValidationEngine (W6)
+    reason: "Minimum body length check — wired in W6"
+
+  /validation_policy/max_body_length:
+    status: DEFERRED
+    target: apps_lic HOP6 ValidationEngine (W6)
+    reason: "Maximum body length check — wired in W6"
+
+  /validation_policy/require_grounded:
+    status: DEFERRED
+    target: apps_lic HOP6 ValidationEngine (W6)
+    reason: "Grounded check flag — wired in W6"
+
+  /validation_policy/evidence_coverage_min:
+    status: DEFERRED
+    target: apps_lic HOP6 ValidationEngine (W6)
+    reason: "Evidence coverage minimum threshold — wired in W6"
+
+  # ── Gate decision policy (F-19) ─────────────────────────────────────────
+  /gate_decision_policy:
+    status: DEFERRED
+    target: apps_lic HOP7 GateDecisionEngine (W6)
+    reason: "Gate decision policy consumed by HOP7 — wired in W6"
+
+  /gate_decision_policy/warn_only_dims:
+    status: DEFERRED
+    target: apps_lic HOP7 GateDecisionEngine (W6)
+    reason: "warn_only_dims list consumed by GateDecisionEngine — wired in W6"
+
+  /gate_decision_policy/halt_on_validation_failure:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.gate_decision_policy.halt_on_validation_failure
+    reason: "Validated True by Pydantic; preserved in app_payload as proof of governance enforcement"
+
+  # ── QA report (F-20) ────────────────────────────────────────────────────
+  /qa_report:
+    status: DEFERRED
+    target: apps_lic HOP8 QaReportEngine (W7)
+    reason: "QA report requirements consumed by HOP8 — wired in W7"
+
+  /qa_report/include_evidence_audit:
+    status: DEFERRED
+    target: apps_lic HOP8 QaReportEngine (W7)
+    reason: "Evidence audit inclusion flag — wired in W7"
+
+  /qa_report/include_dim_scores:
+    status: DEFERRED
+    target: apps_lic HOP8 QaReportEngine (W7)
+    reason: "Dim scores inclusion flag — wired in W7"
+
+  /qa_report/include_omission_log:
+    status: DEFERRED
+    target: apps_lic HOP8 QaReportEngine (W7)
+    reason: "Omission log inclusion flag — wired in W7"
+
+  # ── Integration target (F-21) ────────────────────────────────────────────
+  /integration_target:
+    status: DEFERRED
+    target: apps_lic HOP9 IntegrationEngine (W7)
+    reason: "Integration target governs lic_run_record_fields collation — wired in W7"
+
+  # ── HITL policy (F-22) ──────────────────────────────────────────────────
+  /hitl_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.hitl_policy
+    reason: "HITL policy preserved in app_payload; bypass_hitl_freeze enforced by U0 env check"
+
+  /hitl_policy/bypass_hitl_freeze:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.hitl_policy.bypass_hitl_freeze
+    reason: "Preserved; U0 enforces HITL_FREEZE_BYPASS env var required when True"
+
+  /hitl_policy/confidence_override_threshold:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.hitl_policy.confidence_override_threshold
+    reason: "Preserved; U0 floor enforcement vs hitl_policy.yaml deferred to W6"
+
+  # ── PII policy (F-23) ───────────────────────────────────────────────────
+  /pii_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.pii_policy
+    reason: "PII policy preserved; fail_on_pii_detect validated True by Pydantic (governance)"
+
+  /pii_policy/pii_detection_mode:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.pii_policy.pii_detection_mode
+    reason: "PII detection mode preserved; strict/standard only"
+
+  /pii_policy/redact_on_warn:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.pii_policy.redact_on_warn
+    reason: "Redact-on-warn flag preserved in app_payload"
+
+  /pii_policy/fail_on_pii_detect:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.pii_policy.fail_on_pii_detect
+    reason: "Governance field: Pydantic enforces True; preserved in app_payload as proof"
+
+  # ── Governance shield (F-24) ────────────────────────────────────────────
+  /governance_shield:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.governance_shield
+    reason: "Governance shield preserved; shield_required validated True by Pydantic"
+
+  /governance_shield/shield_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.governance_shield.shield_required
+    reason: "Governance field: Pydantic enforces True; preserved in app_payload as proof"
+
+  /governance_shield/policy_profile_id:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.governance_shield.policy_profile_id
+    reason: "Policy profile id preserved for L2/ControlPlane binding (W6)"
+
+  # ── Antipattern policy (F-25) ───────────────────────────────────────────
+  /antipattern_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.antipattern_policy
+    reason: "Antipattern policy preserved; enabled validated True by Pydantic"
+
+  /antipattern_policy/enabled:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.antipattern_policy.enabled
+    reason: "Governance field: Pydantic enforces True; preserved in app_payload as proof"
+
+  /antipattern_policy/extended_patterns:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.antipattern_policy.extended_patterns
+    reason: "Additional patterns preserved for HOP6 ValidationEngine"
+
+  # ── Source lineage (F-28) ───────────────────────────────────────────────
+  /source_lineage:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.source_lineage
+    reason: "Source lineage preserved; source_lineage_required validated True by Pydantic"
+
+  /source_lineage/source_lineage_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.source_lineage.source_lineage_required
+    reason: "Governance field: Pydantic enforces True; preserved in app_payload as proof"
+
+  /source_lineage/required_source_types:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Required source type list consumed by C0 retrieval binding — wired in W5"
+
+  /source_lineage/prohibited_source_types:
+    status: DEFERRED
+    target: apps_lic C0 binding (W5)
+    reason: "Prohibited source types consumed by C0 retrieval binding — wired in W5"
+
+  # ── A/B test + learning (F-26, F-27) ────────────────────────────────────
+  /ab_test:
+    status: DEFERRED
+    target: apps_lic L0 binding A/B arm selection (W4)
+    reason: "A/B test and learning profile refs consumed by L0 routing binding — wired in W4"
+
+  /ab_test/ab_test_profile:
+    status: DEFERRED
+    target: apps_lic L0 binding (W4)
+    reason: "A/B test profile key for variant arm assignment — wired in W4"
+
+  /ab_test/learning_profile_ref:
+    status: DEFERRED
+    target: apps_lic Exit binding calibration ledger (W8)
+    reason: "Learning profile ref written to eval_harness_outcome ledger — wired in W8"
+
+  # ── Replay + audit + idempotency (F-31..F-32, F-36..F-37) ───────────────
+  /replay_audit:
+    status: MAPPED
+    target: ValidatedRequest (replay_key, snapshot_refs, audit_refs) + app_payload
+    reason: "Replay/audit block sub-fields mapped to named ValidatedRequest fields"
+
+  /replay_audit/idempotency_key:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.replay_audit.idempotency_key
+    reason: "Idempotency key preserved in app_payload for request dedup"
+
+  /replay_audit/replay_refs:
+    status: MAPPED
+    target: ValidatedRequest.replay_key (first) + ValidatedRequest.snapshot_refs (remainder)
+    reason: "Replay refs: first entry → replay_key; remaining → snapshot_refs"
+
+  /replay_audit/audit_refs:
+    status: MAPPED
+    target: ValidatedRequest.audit_refs
+    reason: "Audit linkage refs threaded into ValidatedRequest.audit_refs"
+
+  # ── Payload digest (F-37) ───────────────────────────────────────────────
+  /payload_digest:
+    status: DERIVED
+    target: ValidatedRequest.payload_digest (re-computed by adapter from contract_dump minus digest field)
+    reason: "Caller-supplied digest cross-checked against adapter-computed sha256; adapter's value wins"

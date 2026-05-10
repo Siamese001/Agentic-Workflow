@@ -11,6 +11,11 @@ writer bypasses the MCP layer entirely — no ``<invoke name="mcp*_API-*">``
 tags emitted, so this hook does NOT trip §25 serialization or
 ``notion-plan-wave-deferral.md``.
 
+Also updates the wave-status cells in the on-disk plan ``.md`` file via
+``tools.windsurf._plan_wave_table_updater``, so the Wave Structure / Phase-
+Level Summary tables stay in sync with actual progress without requiring
+manual edits. Bypass: WAVE_TABLE_UPDATE_BYPASS=1.
+
 Marker grammar (one per line)::
 
     WAVE_START: plan=<slug-6hex> wave=<N> [note="<short high-signal one-liner>"]
@@ -33,6 +38,7 @@ Fail policy: OPEN (exit 0 always). Never blocks. Never raises.
 
 Bypass: WAVE_LIFECYCLE_CAPTURE_BYPASS=1.
        WAVE_LIFECYCLE_NOTION_BYPASS=1 (writer-side; logs but doesn't PATCH).
+       WAVE_TABLE_UPDATE_BYPASS=1 (plan .md update skipped).
 
 Constitutional ties: §25 (preserved), §35 (preserved), §36 (extended).
 
@@ -93,6 +99,55 @@ def _load_writer():
         return None
 
 
+def _load_updater():
+    """Lazy-import the plan wave table updater."""
+    sys.path.insert(0, str(REPO_ROOT))
+    try:
+        return importlib.import_module("tools.windsurf._plan_wave_table_updater")
+    except ImportError as exc:
+        _log({"event": "updater_import_failed", "error": repr(exc)})
+        return None
+
+
+def _update_plan_files(markers: list[Any]) -> None:
+    """Apply wave-table status updates to on-disk plan .md files.
+
+    Iterates parsed WaveLifecycleMarker objects and calls update_wave_in_plan
+    for each. Fail-open: logs errors, never raises.
+    """
+    if os.environ.get("WAVE_TABLE_UPDATE_BYPASS") == "1":
+        _log({"event": "wave_table_update_bypass"})
+        return
+
+    updater = _load_updater()
+    if updater is None:
+        return
+
+    for marker in markers:
+        kind = marker.kind
+        slug = marker.slug
+        wave = marker.wave  # may be None for plan_complete / phase_complete
+
+        if kind == "phase_complete":
+            continue  # phase rows are not in the wave table
+
+        # plan_complete: wave=None signals "mark all remaining as done"
+        effective_wave = wave if wave is not None else -1
+
+        try:
+            ok, msg = updater.update_wave_in_plan(REPO_ROOT, slug, effective_wave, kind)
+        except Exception as exc:  # noqa: BLE001
+            _log({"event": "wave_table_update_error", "slug": slug, "kind": kind, "error": repr(exc)})
+            continue
+
+        _log({"event": "wave_table_update", "slug": slug, "kind": kind, "wave": wave, "ok": ok, "msg": msg})
+        if not ok:
+            print(
+                f"[wave_lifecycle_capture] plan-file update failed slug={slug} kind={kind}: {msg}",
+                file=sys.stderr,
+            )
+
+
 def main() -> int:
     if os.environ.get("WAVE_LIFECYCLE_CAPTURE_BYPASS") == "1":
         _log({"event": "capture_bypass"})
@@ -124,11 +179,24 @@ def main() -> int:
     if writer is None:
         return 0
 
+    # Parse markers once so both Notion sync and plan-file update share the same list.
+    sys.path.insert(0, str(REPO_ROOT))
+    try:
+        helpers = importlib.import_module("tools.notion._wave_lifecycle_helpers")
+        markers = helpers.parse_wave_lifecycle_markers(text)
+    except (ImportError, Exception) as exc:
+        _log({"event": "marker_parse_failed", "error": repr(exc)})
+        markers = []
+
     try:
         rows = writer.emit_from_markers(text, dry_run=False)
     except (OSError, ValueError) as exc:
         _log({"event": "emit_from_markers_failed", "error": repr(exc)})
-        return 0
+        rows = []
+
+    # Update on-disk plan .md wave tables.
+    if markers:
+        _update_plan_files(markers)
 
     if not rows:
         return 0
