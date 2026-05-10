@@ -38,6 +38,11 @@ from _notion_constants import (  # noqa: E402
     PLANS_DB_ID,
 )
 
+# RCA NOTION_PLANS_STATUS_RCA_2026-05-10 Cause B: shared dedup helper.
+from tools.notion._plan_registration_helpers import (  # noqa: E402
+    register_plan_idempotent,
+)
+
 try:
     from tqdm import tqdm
 except ImportError:
@@ -67,20 +72,9 @@ def _headers(token: str) -> dict[str, str]:
     }
 
 
-def _slug_already_registered(slug: str, token: str) -> bool:
-    body = json.dumps({
-        "filter": {"property": "Slug", "title": {"equals": slug}},
-        "page_size": 1,
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        PLANS_QUERY_URL, data=body, method="POST", headers=_headers(token),
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        return bool(data.get("results"))
-    except Exception:  # noqa: BLE001  # guardian: allow-broad -- fail-closed-as-not-registered
-        return False
+# Dedup logic moved to tools/notion/_plan_registration_helpers.py
+# (RCA NOTION_PLANS_STATUS_RCA_2026-05-10 Cause B). All Plans-DB POSTs
+# now route through register_plan_idempotent for shared dedup + telemetry.
 
 
 def _extract_summary(md_text: str, max_chars: int = 200) -> str:
@@ -145,19 +139,7 @@ def _build_payload(slug: str, plan_path: Path) -> dict:
     }
 
 
-def _post(payload: dict, token: str) -> tuple[bool, str, str]:
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        NOTION_POST_URL, data=body, method="POST", headers=_headers(token),
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        return True, data.get("id", ""), "ok"
-    except urllib.error.HTTPError as exc:
-        return False, "", f"http_{exc.code}:{exc.read().decode('utf-8', 'replace')[:200]}"
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        return False, "", f"net:{exc!r}"
+# _post() removed; use register_plan_idempotent() instead.
 
 
 def main() -> int:
@@ -207,35 +189,39 @@ def main() -> int:
 
     bar = tqdm(on_disk, desc="Registering", unit="plan", colour="magenta")
     for slug, path in bar:
-        if _slug_already_registered(slug, token):
-            skipped_existing += 1
-            tqdm.write(f"SKIP {slug}: already registered")
-            time.sleep(THROTTLE_S)
-            continue
-
-        if args.dry_run:
-            posted += 1
-            time.sleep(0.05)
-            continue
-
         payload = _build_payload(slug, path)
-        ok, page_id, err = _post(payload, token)
+        result = register_plan_idempotent(
+            slug,
+            payload["properties"],
+            token=token,
+            dry_run=args.dry_run,
+            writer="register_ondisk_plans_batch.py",
+        )
+
         rec = {
             "ts": today_iso,
             "slug": slug,
             "plan_path": str(path.relative_to(REPO_ROOT)),
-            "ok": ok,
-            "page_id": page_id,
-            "error": None if ok else err,
+            "action": result.action,
+            "page_id": result.page_id,
+            "detail": result.detail,
         }
         with RESULT_LOG.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec) + "\n")
 
-        if ok:
+        if result.action == "created":
             posted += 1
-        else:
+        elif result.action == "existed":
+            skipped_existing += 1
+            tqdm.write(f"SKIP {slug}: already registered (page_id={result.page_id})")
+        elif result.action == "dry_run":
+            posted += 1
+        elif result.action == "duplicate_blocked":
             failed += 1
-            tqdm.write(f"FAIL {slug}: {err}")
+            tqdm.write(f"BLOCKED {slug}: {result.detail}")
+        else:  # api_error / no_token
+            failed += 1
+            tqdm.write(f"FAIL {slug}: {result.action} {result.detail}")
         time.sleep(THROTTLE_S)
 
     print(

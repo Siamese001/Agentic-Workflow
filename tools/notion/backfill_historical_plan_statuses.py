@@ -124,8 +124,16 @@ def _rich_text_val(prop: dict) -> str:
     return "".join(c.get("plain_text", "") for c in prop.get("rich_text", []))
 
 
-def _extract_status_from_plan(md: str) -> str:
-    """Return canonical Notion status string extracted from plan markdown."""
+def _extract_status_from_plan(md: str) -> str | None:
+    """Return canonical Notion status string extracted from plan markdown.
+
+    Returns None when no on-disk ground truth exists. Callers MUST skip
+    rows with None — never overwrite Notion based on a default.
+
+    RCA NOTION_PLANS_STATUS_RCA_2026-05-10 (Cause A): the previous default
+    of "Not Started" caused a bulk overwrite of 89+ rows because most plan
+    markdowns lack frontmatter status. The only safe default is to skip.
+    """
     # 1. Frontmatter: status: <value>
     m = re.search(r"^status:\s*(.+)$", md, flags=re.IGNORECASE | re.MULTILINE)
     if m:
@@ -154,8 +162,8 @@ def _extract_status_from_plan(md: str) -> str:
     if "SUPERSEDED" in md:
         return "Retired"
 
-    # 5. Default: Not Started
-    return "Not Started"
+    # 5. No on-disk ground truth -> signal "do not overwrite Notion".
+    return None
 
 
 def _resolve_plan_file(slug: str, file_path_val: str | None) -> Path | None:
@@ -211,6 +219,12 @@ def main() -> int:
 
         md = plan_file.read_text(encoding="utf-8", errors="replace")
         disk_status = _extract_status_from_plan(md)
+
+        # RCA Cause A: when on-disk has no ground-truth status declaration,
+        # SKIP — never overwrite Notion based on an inferred default.
+        if disk_status is None:
+            skipped += 1
+            continue
 
         if notion_status != disk_status:
             drift_items.append({

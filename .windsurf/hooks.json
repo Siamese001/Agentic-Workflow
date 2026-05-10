@@ -95,6 +95,11 @@
         "show_output": true
       },
       {
+        "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_refresh.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/pre_ask_user_question_gate.py --hook-mode",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
@@ -224,6 +229,11 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_notion_plans_status_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_plans_dup_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
       },

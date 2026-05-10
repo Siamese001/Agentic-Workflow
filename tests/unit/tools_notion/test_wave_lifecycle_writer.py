@@ -20,6 +20,7 @@ import pytest
 
 from tools.notion._wave_lifecycle_helpers import (
     CANONICAL_STATUSES,
+    MAX_NOTE_CHARS,
     NotionPatchSpec,
     PROP_STATUS,
     PROP_SUMMARY,
@@ -395,3 +396,114 @@ class TestStatusTaxonomy:
         ok, msg = wlw.patch_status("x-aaaaaa", "Draft")
         assert ok is False
         assert "invalid_status" in msg
+
+
+# ---------------------------------------------------------------------------
+# note= field (high-signal Summary appends)
+# ---------------------------------------------------------------------------
+
+
+class TestNoteField:
+    """Regression coverage for the optional ``note="..."`` marker field.
+
+    Without ``note=`` the Notion Summary column collapses to a wall of
+    ``[Wave-Log <ts>] W{N} DONE`` lines. With ``note=`` operators see one
+    high-signal one-liner per wave. The field is parsed at marker time,
+    suffixed onto the summary append, and capped at MAX_NOTE_CHARS.
+    """
+
+    SLUG = "demo-plan-abc123"
+    FIXED_TS = "2026-05-10T12:00:00Z"
+
+    def test_parses_double_quoted_note_with_spaces(self):
+        markers = parse_wave_lifecycle_markers(
+            'WAVE_COMPLETE: plan=demo-plan-abc123 wave=3 '
+            'note="4 files, +12 tests, scope=summary-signal"\n'
+        )
+        assert len(markers) == 1
+        assert markers[0].note == "4 files, +12 tests, scope=summary-signal"
+
+    def test_parses_single_quoted_note(self):
+        markers = parse_wave_lifecycle_markers(
+            "WAVE_COMPLETE: plan=demo-plan-abc123 wave=2 note='hot path wired'\n"
+        )
+        assert markers[0].note == "hot path wired"
+
+    def test_parses_bareword_note(self):
+        markers = parse_wave_lifecycle_markers(
+            "WAVE_COMPLETE: plan=demo-plan-abc123 wave=1 note=quick\n"
+        )
+        assert markers[0].note == "quick"
+
+    def test_omitted_note_is_none(self):
+        markers = parse_wave_lifecycle_markers(
+            "WAVE_COMPLETE: plan=demo-plan-abc123 wave=1\n"
+        )
+        assert markers[0].note is None
+
+    def test_note_collapses_same_line_whitespace(self):
+        # Markers are line-anchored, so notes can't contain literal newlines
+        # via a marker — but tabs and runs of spaces inside a quoted value
+        # MUST collapse to single spaces for a clean Summary append.
+        markers = parse_wave_lifecycle_markers(
+            'PHASE_COMPLETE: plan=demo-plan-abc123 phase=P2.1 '
+            'note="multi   space\t\ttabbed   end"\n'
+        )
+        assert markers[0].note == "multi space tabbed end"
+
+    def test_note_truncated_at_cap(self):
+        long = "x" * (MAX_NOTE_CHARS + 50)
+        markers = parse_wave_lifecycle_markers(
+            f'WAVE_COMPLETE: plan=demo-plan-abc123 wave=1 note="{long}"\n'
+        )
+        assert markers[0].note is not None
+        assert len(markers[0].note) == MAX_NOTE_CHARS
+        assert markers[0].note.endswith("\u2026")
+
+    def test_summary_append_suffixes_note_em_dash(self):
+        marker = WaveLifecycleMarker(
+            kind="wave_complete",
+            slug=self.SLUG,
+            wave=3,
+            note="4 files, +12 tests",
+        )
+        spec = patch_for_marker(
+            marker, current_status=STATUS_IN_PROGRESS, now_iso=self.FIXED_TS
+        )
+        assert spec.summary_append is not None
+        assert "W3 DONE \u2014 4 files, +12 tests" in spec.summary_append
+        assert "note_present" in spec.reason
+
+    def test_summary_append_no_note_keeps_terse_line(self):
+        marker = WaveLifecycleMarker(
+            kind="wave_complete", slug=self.SLUG, wave=3
+        )
+        spec = patch_for_marker(
+            marker, current_status=STATUS_IN_PROGRESS, now_iso=self.FIXED_TS
+        )
+        assert spec.summary_append is not None
+        assert spec.summary_append.endswith("W3 DONE")
+        assert "\u2014" not in spec.summary_append
+        assert "note_present" not in spec.reason
+
+    def test_plan_complete_carries_note(self):
+        marker = WaveLifecycleMarker(
+            kind="plan_complete", slug=self.SLUG, note="9/9 phases green"
+        )
+        spec = patch_for_marker(
+            marker, current_status=STATUS_IN_PROGRESS, now_iso=self.FIXED_TS
+        )
+        assert "PLAN COMPLETE \u2014 9/9 phases green" in spec.summary_append
+
+    def test_hand_built_marker_with_unsanitized_note_is_resanitized(self):
+        # A caller bypassing parse_wave_lifecycle_markers (e.g. wave_execution_state.py
+        # passing --note straight through) should still get the cap + collapse.
+        sloppy = "  multi   space\n\nnote  "
+        marker = WaveLifecycleMarker(
+            kind="wave_complete", slug=self.SLUG, wave=1, note=sloppy
+        )
+        spec = patch_for_marker(
+            marker, current_status=STATUS_IN_PROGRESS, now_iso=self.FIXED_TS
+        )
+        assert spec.summary_append is not None
+        assert "multi space note" in spec.summary_append
