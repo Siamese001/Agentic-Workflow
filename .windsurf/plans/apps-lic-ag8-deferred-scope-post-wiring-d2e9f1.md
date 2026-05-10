@@ -25,16 +25,26 @@ dod_exempt: false
 
 ---
 
+## Waiting For
+
+| Item | Blocker | Earliest Date |
+|------|---------|---------------|
+| W2 Holdout corpus | 1 week production telemetry after AG-8 closure | 2026-05-17 |
+| W3 Full L3 DAG | Managed workflow maturity validation | TBD post-telemetry |
+| W4 R1B cache | Embedding compatibility proof | TBD post-telemetry |
+
+---
+
 ## Wave Structure
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
 | W1 | W1.P1–P3 | Real LLM inference wiring | ~12K | ✅ DONE |
-| W2 | W2.P1–P2 | Holdout corpus + Spearman calibration | ~8K | 🔲 TODO |
-| W3 | W3.P1–P2 | Full L3 DAG (beyond conditional participation) | ~10K | 🔲 TODO |
-| W4 | W4.P1 | R1B semantic cache (if embedding compat proven) | ~6K | 🔲 TODO |
+| W2 | W2.P1–P2 | Holdout corpus + Spearman calibration | ~8K | ⏳ WAITING |
+| W3 | W3.P1–P2 | Full L3 DAG (beyond conditional participation) | ~10K | ⏳ WAITING |
+| W4 | W4.P1 | R1B semantic cache (if embedding compat proven) | ~6K | ⏳ WAITING |
 
-**Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED · ⏸️ PAUSED
+**Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED · ⏸️ PAUSED · ⏳ WAITING
 
 ---
 
