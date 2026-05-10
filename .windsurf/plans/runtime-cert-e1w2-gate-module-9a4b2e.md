@@ -1,7 +1,7 @@
 # Runtime Cert — E1.W2 Advisory Gate Module (Planning Only)
 
 - **Plan ID**: `runtime-cert-e1w2-gate-module-9a4b2e`
-- **Status**: Planning — Author-Gate pending
+- **Status**: Completed 2026-05-10 (gate+37 tests at commit d59ce88ba9)
 - **Authored**: 2026-05-01
 - **Branch**: `rtc-w2b-scenario-a-local-qwen-proof`
 - **Parent plan**: [`runtime-cert-e1-fail-closed-ci-gate-c71f3d.md`](./runtime-cert-e1-fail-closed-ci-gate-c71f3d.md) — E-AG-1…5 APPROVED at commit `14c4e9eb5b`

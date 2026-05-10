@@ -1,7 +1,7 @@
 # Runtime Cert — Phase E.1 Fail-Closed CI Gate (Planning Only)
 
 - **Plan ID**: `runtime-cert-e1-fail-closed-ci-gate-c71f3d`
-- **Status**: Planning — Author-Gate pending
+- **Status**: Completed 2026-05-10 (E-AG-1..5 APPROVED 2026-05-01; all downstream e1w2+e1w3 done)
 - **Authored**: 2026-05-01
 - **Branch**: `rtc-w2b-live-provider-allow-proof-clean`
 - **ADR anchor**: [ADR-080 §11 E](../../docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md)

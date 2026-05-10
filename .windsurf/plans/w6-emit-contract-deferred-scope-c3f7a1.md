@@ -1,6 +1,6 @@
 ---
 slug: w6-emit-contract-deferred-scope-c3f7a1
-status: Not Started
+status: Completed
 parent_plan: w6-emit-contract-enrichment-d8b2a4
 created: 2026-05-10
 dod_exempt: true
