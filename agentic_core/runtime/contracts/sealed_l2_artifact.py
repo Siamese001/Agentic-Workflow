@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional
 
+from agentic_core.runtime.contracts.origin import Origin, OriginTaggedContent
+
 
 @dataclass(frozen=True, slots=True)
 class SealedL2Artifact:
@@ -26,6 +28,9 @@ class SealedL2Artifact:
 
     # Generated content
     generated_content: str = ""
+    # W3 P3.2: origin of generated_content (concern #6, D7=Origin enum)
+    # MODEL_GENERATION until HITL-cleared; then HUMAN_REVIEW_DATA
+    generated_content_origin: Origin = Origin.MODEL_GENERATION
 
     # State diff (for apps_rg: resume artifact)
     proposed_state_diff: Mapping[str, Any] = field(default_factory=dict)

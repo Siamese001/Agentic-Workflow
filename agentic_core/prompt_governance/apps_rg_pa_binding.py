@@ -38,6 +38,7 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
     PromptBlock,
 )
+from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.runtime.contracts.final_evidence_contract import (
     FinalEvidenceContract,
 )
@@ -214,9 +215,22 @@ def pa_compose_apps_rg(
     user_instruction = _build_user_instruction(payload, fec, l1_plan)
 
     blocks: tuple[PromptBlock, ...] = (
-        PromptBlock(role="system", content=system_preamble, block_index=0),
-        PromptBlock(role="user", content=user_instruction, block_index=1),
+        # W3 P3.3: system block is SYSTEM_INTERNAL (PA-authored directives)
+        PromptBlock(role="system", content=system_preamble, block_index=0,
+                    origin=Origin.SYSTEM_INTERNAL),
+        # W3 P3.3 airlock — user block carries USER_INTENT (verbatim user text)
+        PromptBlock(role="user", content=user_instruction, block_index=1,
+                    origin=Origin.USER_INTENT),
     )
+
+    # W3 P3.3: airlock verify — every user-role block MUST be tagged USER_INTENT.
+    # This catches accidental origin mislabelling at compile time.
+    for blk in blocks:
+        if blk.role == "user" and blk.origin != Origin.USER_INTENT:
+            raise ValueError(
+                f"PA airlock violation: user-role PromptBlock[{blk.block_index}] "
+                f"has origin={blk.origin!r} — must be USER_INTENT (D7)"
+            )
 
     # Compilation hash binds prompt content for L2 provenance + reuse caching.
     canonical = json.dumps(

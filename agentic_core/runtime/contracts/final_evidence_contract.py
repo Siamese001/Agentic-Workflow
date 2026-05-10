@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from agentic_core.runtime.contracts.origin import Origin, OriginTaggedContent
+
 
 @dataclass(frozen=True, slots=True)
 class EvidenceItem:
@@ -18,6 +20,8 @@ class EvidenceItem:
     content_type: str = "text"  # text, json, html, etc.
     retrieval_timestamp: str = ""
     confidence_score: float = 0.0
+    # W3 P3.2: origin/data-boundary tagging (concern #6, D7=Origin enum)
+    origin: Origin = Origin.RETRIEVED_DATA
 
 
 @dataclass(frozen=True, slots=True)

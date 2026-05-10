@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional
 
+from agentic_core.runtime.contracts.origin import Origin, OriginTaggedContent
+
 
 @dataclass(frozen=True, slots=True)
 class PromptBlock:
@@ -16,6 +18,9 @@ class PromptBlock:
     role: str  # system, user, assistant
     content: str
     block_index: int = 0
+    # W3 P3.2: origin/data-boundary tagging (concern #6, D7=Origin enum)
+    # user blocks carry USER_INTENT; system blocks are SYSTEM_INTERNAL
+    origin: Origin = Origin.SYSTEM_INTERNAL
 
 
 @dataclass(frozen=True, slots=True)
