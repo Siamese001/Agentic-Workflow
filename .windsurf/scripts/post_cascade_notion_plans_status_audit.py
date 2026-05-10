@@ -59,9 +59,11 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 try:
     from _notion_plans_status_check import decide as _decide  # type: ignore
+    from _notion_plans_status_check import decide_waiting_for as _decide_waiting_for  # type: ignore
     from _notion_plans_status_check import PLANS_DB_ID, PLANS_DATA_SOURCE_ID  # type: ignore
 except ImportError:  # fail-open: missing helper must never wedge a turn
     _decide = None  # type: ignore[assignment]
+    _decide_waiting_for = None  # type: ignore[assignment]
     PLANS_DB_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
     PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
@@ -102,6 +104,17 @@ _STATUS_SELECT_RE = re.compile(
 # parameter to identify the write target.
 _DB_ID_RE = re.compile(
     r'["\'](?:database_id|data_source_id)["\']\s*:\s*["\']([0-9a-fA-F\-]+)["\']'
+)
+
+# Match the text content of a "Waiting For" rich_text property write.
+# Covers shapes like:
+#   "Waiting For": {"rich_text": [{"text": {"content": "some text"}}]}
+#   'Waiting For': { 'rich_text': [{ 'text': { 'content': 'some text' } }] }
+# Also detects when the property is present but content is empty ("").
+_WAITING_FOR_RE = re.compile(
+    r'["\']Waiting\s+For["\']\s*:\s*\{[^}]*["\']rich_text["\']\s*:\s*\[.*?'
+    r'["\']content["\']\s*:\s*["\']([^"\']*)["\']',
+    re.DOTALL,
 )
 
 
@@ -235,6 +248,33 @@ def detect_violations(response_text: str) -> list[dict[str, Any]]:
             patch_meta = _auto_patch_violation(rec, body)
             rec["auto_patch_result"] = patch_meta
             violations.append(rec)
+
+        # Waiting-For completeness check (NP10).
+        # If this invoke writes Status=Waiting, verify Waiting For is also
+        # populated in the same body.  Absent property = blank.
+        if _decide_waiting_for is not None:
+            for status_match in _STATUS_SELECT_RE.finditer(body):
+                status_value = status_match.group(1)
+                if status_value != "Waiting":
+                    continue
+                # Extract Waiting For text from the same invoke body (may be absent).
+                wf_match = _WAITING_FOR_RE.search(body)
+                wf_text = wf_match.group(1).strip() if wf_match else ""
+                wf_verdict = _decide_waiting_for(PLANS_DB_ID, status_value, wf_text or None)
+                if wf_verdict is None:
+                    continue
+                violations.append({
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "severity": "error",
+                    "violation_type": "WAITING_EMPTY_WAITING_FOR",
+                    "tool": tool_name,
+                    "invoke_index": invoke_idx,
+                    "offending_value": "Waiting",
+                    "waiting_for_found": wf_text,
+                    "message": wf_verdict.message,
+                    "rule": "notion-plans-taxonomy.md > Field Requirements (NP10)",
+                    "plan": "notion-plans-status-enforcement-7a1e2d",
+                })
 
     return violations
 

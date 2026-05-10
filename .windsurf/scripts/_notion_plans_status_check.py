@@ -57,11 +57,11 @@ _PLANS_IDS: frozenset[str] = frozenset({
 # Renamed 2026-05-03: "Live" → "In Progress", "Draft" → "Not Started" (same
 # Notion option IDs, display names changed in the Notion UI).
 # Added 2026-05-05: "Deprioritized" for paused/deferred plans.
-# Renamed 2026-05-10: "Deprioritized" → "Deferred" (UI rename, same option ID).
+# Renamed 2026-05-10: "Deprioritized" → "Deferred" → "Lower Priority" (UI rename, same option ID).
 CANONICAL_STATUSES: frozenset[str] = frozenset({
     "In Progress",
     "Not Started",
-    "Deferred",
+    "Lower Priority",
     "Waiting",
     "Completed",
     "Retired",
@@ -86,8 +86,9 @@ STALE_EQUIVALENTS: dict[str, str] = {
     # Old plain-word forms superseded by the 2026-05-03 rename.
     "Live": "In Progress",
     "Draft": "Not Started",
-    # 2026-05-10: "Deprioritized" renamed to "Deferred".
-    "Deprioritized": "Deferred",
+    # 2026-05-10: "Deprioritized" renamed to "Deferred" → "Lower Priority".
+    "Deprioritized": "Lower Priority",
+    "Deferred": "Lower Priority",
 }
 
 # Property names that map to the Plans Status field.  Exact match required —
@@ -176,3 +177,58 @@ def check(
     if v is None:
         return (False, None, None)
     return (True, v.message, v.suggested or None)
+
+
+# ---------------------------------------------------------------------------
+# "Waiting For" completeness enforcement.
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class WaitingForViolation:
+    """Returned when Status=Waiting but Waiting For is blank or absent."""
+    db_id: str
+    waiting_for_value: str  # the blank/empty value that was provided (or "")
+    message: str
+
+
+def decide_waiting_for(
+    db_id: str | None,
+    status_value: str | None,
+    waiting_for_value: str | None,
+) -> WaitingForViolation | None:
+    """Return a WaitingForViolation when a Plans-DB row is set to Waiting
+    status but the Waiting For field is blank or absent.
+
+    Args:
+        db_id            — Notion database id or data-source id.
+        status_value     — The Status.select.name value being written.
+        waiting_for_value — The text content of the "Waiting For" property
+                            (empty string / None = blank).
+
+    Returns a WaitingForViolation when:
+      - db_id targets the Plans surface, AND
+      - status_value is "Waiting" (canonical), AND
+      - waiting_for_value is blank (None, empty string, or whitespace-only).
+    Returns None in all other cases (pass-through for non-Plans writes, non-
+    Waiting statuses, or properly populated Waiting For).
+    """
+    if not _is_plans_surface(db_id or ""):
+        return None
+    if (status_value or "").strip() != "Waiting":
+        return None
+    wf = (waiting_for_value or "").strip()
+    if wf:
+        return None
+    msg = (
+        "Plans-DB row set to 'Waiting' status but 'Waiting For' is blank. "
+        "Every 'Waiting' plan MUST name the specific blocker, person, system, "
+        "decision, or time-bound trigger it is waiting on. "
+        "Populate 'Waiting For' before (or in the same write as) setting "
+        "Status='Waiting'. "
+        "See .windsurf/rules/notion-plans-taxonomy.md > Field Requirements."
+    )
+    return WaitingForViolation(
+        db_id=_normalize_id(db_id),
+        waiting_for_value=wf,
+        message=msg,
+    )

@@ -587,6 +587,17 @@ def main():
             "NP9 Notion Plans new-plan status (advisory)",
             "ops_scripts/ci/check_notion_plans_new_status.py",
         ),
+        # NP10 -- Waiting-status plans must have non-blank Waiting For.
+        # Queries Notion API for all Waiting-status rows and reports ERROR
+        # for any with empty Waiting For property. Advisory by default;
+        # fail-closed via NOTION_PLANS_WAITING_FOR_FAIL_CLOSED=1.
+        # Bypass: NOTION_PLANS_WAITING_FOR_BYPASS=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plans-taxonomy.md > Field Requirements.
+        (
+            "NP10 Notion Plans Waiting-For completeness (advisory)",
+            "ops_scripts/ci/check_notion_plans_waiting_for.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.

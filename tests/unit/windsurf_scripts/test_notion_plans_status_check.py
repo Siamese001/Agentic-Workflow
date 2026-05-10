@@ -18,8 +18,10 @@ from _notion_plans_status_check import (  # type: ignore  # noqa: E402
     PLANS_DB_ID,
     STALE_EQUIVALENTS,
     Violation,
+    WaitingForViolation,
     check,
     decide,
+    decide_waiting_for,
 )
 
 
@@ -119,3 +121,60 @@ def test_message_lists_canonical_set() -> None:
     assert v is not None
     for canonical in CANONICAL_STATUSES:
         assert canonical in v.message
+
+
+# ---------------------------------------------------------------------------
+# decide_waiting_for — Waiting status + blank Waiting For.
+# ---------------------------------------------------------------------------
+
+def test_waiting_with_blank_waiting_for_is_violation() -> None:
+    v = decide_waiting_for(PLANS_DB_ID, "Waiting", "")
+    assert isinstance(v, WaitingForViolation)
+    assert "Waiting For" in v.message
+
+
+def test_waiting_with_none_waiting_for_is_violation() -> None:
+    v = decide_waiting_for(PLANS_DB_ID, "Waiting", None)
+    assert isinstance(v, WaitingForViolation)
+
+
+def test_waiting_with_whitespace_only_waiting_for_is_violation() -> None:
+    v = decide_waiting_for(PLANS_DB_ID, "Waiting", "   ")
+    assert isinstance(v, WaitingForViolation)
+
+
+def test_waiting_with_populated_waiting_for_passes() -> None:
+    v = decide_waiting_for(PLANS_DB_ID, "Waiting", "ADR-085 approval from Amit")
+    assert v is None
+
+
+def test_non_waiting_status_with_blank_waiting_for_passes() -> None:
+    for status in ("In Progress", "Not Started", "Lower Priority", "Completed"):
+        assert decide_waiting_for(PLANS_DB_ID, status, "") is None
+
+
+def test_non_plans_db_ignored_by_waiting_for_check() -> None:
+    other_db = "aa8d2507-101e-4384-81d9-60ea3fe33876"
+    assert decide_waiting_for(other_db, "Waiting", "") is None
+
+
+def test_waiting_for_check_uses_data_source_id() -> None:
+    v = decide_waiting_for(PLANS_DATA_SOURCE_ID, "Waiting", "")
+    assert isinstance(v, WaitingForViolation)
+
+
+def test_waiting_for_check_empty_db_id_ignored() -> None:
+    assert decide_waiting_for("", "Waiting", "") is None
+    assert decide_waiting_for(None, "Waiting", "") is None
+
+
+def test_waiting_for_violation_db_id_normalized() -> None:
+    v = decide_waiting_for(PLANS_DB_ID.upper(), "Waiting", "")
+    assert isinstance(v, WaitingForViolation)
+    assert v.db_id == PLANS_DB_ID.lower()
+
+
+def test_waiting_for_violation_message_contains_guidance() -> None:
+    v = decide_waiting_for(PLANS_DB_ID, "Waiting", None)
+    assert v is not None
+    assert "blocker" in v.message.lower() or "waiting for" in v.message.lower()
