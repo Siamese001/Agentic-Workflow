@@ -69,6 +69,51 @@ def _headers(token: str) -> dict[str, str]:
     }
 
 
+def _fetch_page_slug(page_id: str, token: str) -> str | None:
+    """Retrieve the Slug title property value for a Notion page.
+
+    Returns the plain-text slug string, or None when the page cannot be
+    fetched or has no Slug property.  Used by ``_assert_slug_matches``.
+    """
+    url = f"{NOTION_BASE}/pages/{page_id}"
+    req = urllib.request.Request(url, headers=_headers(token))
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError):
+        return None
+    props = payload.get("properties") or {}
+    slug_prop = props.get("Slug") or props.get("Name") or {}
+    title_list = slug_prop.get("title") or []
+    parts: list[str] = []
+    for blk in title_list:
+        if isinstance(blk, dict):
+            txt = blk.get("plain_text") or (blk.get("text") or {}).get("content", "")
+            if isinstance(txt, str):
+                parts.append(txt)
+    result = "".join(parts).strip()
+    return result if result else None
+
+
+def _assert_slug_matches(page_id: str, expected_slug: str, token: str) -> tuple[bool, str]:
+    """Verify that ``page_id`` belongs to the plan identified by ``expected_slug``.
+
+    Returns ``(True, "ok")`` when:
+      - The page cannot be fetched (permissive — network issues must not block runs).
+      - The page has no Slug property (permissive — old rows may lack it).
+      - The page's Slug matches ``expected_slug``.
+
+    Returns ``(False, reason)`` only when a Slug IS present and it does NOT match,
+    indicating a wrong-plan patch would occur.
+    """
+    actual = _fetch_page_slug(page_id, token)
+    if actual is None:
+        return True, "ok_no_slug"
+    if actual != expected_slug:
+        return False, f"slug_mismatch:expected={expected_slug!r} actual={actual!r}"
+    return True, "ok"
+
+
 def _patch_page(page_id: str, properties: dict, token: str) -> tuple[bool, str]:
     req = urllib.request.Request(
         PAGE_URL_FMT.format(page_id),
@@ -131,6 +176,7 @@ def main() -> int:
             skip += 1
             continue
 
+        expected_slug = row.get("slug", "")
         plan_status = row["fields"]["Status"]["plan_value"]
         props: dict = {
             "Status": {"select": {"name": plan_status}},
@@ -145,6 +191,20 @@ def main() -> int:
             if hasattr(bar, "write"):
                 bar.write(f"DRY {page_id}: Status → {plan_status}")
             continue
+
+        # ── Wrong-plan guard (D-1) ────────────────────────────────────────────
+        # Verify the page_id from the delta actually corresponds to expected_slug
+        # before patching.  Permissive on network errors / missing Slug property.
+        if expected_slug:
+            slug_ok, slug_msg = _assert_slug_matches(page_id, expected_slug, token)
+            if not slug_ok:
+                skip += 1
+                msg = f"SKIP {page_id}: wrong-plan guard blocked — {slug_msg}"
+                if hasattr(bar, "write"):
+                    bar.write(msg)
+                else:
+                    print(msg, file=sys.stderr)
+                continue
 
         success, err = _patch_page(page_id, props, token)
         if success:

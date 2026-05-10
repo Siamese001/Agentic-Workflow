@@ -147,6 +147,31 @@ def _rich_text_val(prop: dict) -> str:
     return "".join(c.get("plain_text", "") for c in prop.get("rich_text", []))
 
 
+def _assert_slug_matches(page_props: dict, expected_slug: str) -> tuple[bool, str]:
+    """Verify that the page's own Slug property matches ``expected_slug``.
+
+    Permissive (returns True) when the Slug property is absent or empty —
+    old rows may lack it and should still be repaired.
+
+    Returns ``(False, reason)`` only when a Slug IS present and it does NOT
+    match, indicating a wrong-plan patch would occur (bulk-repair guard, D-2).
+    """
+    slug_prop = page_props.get("Slug") or {}
+    title_list = slug_prop.get("title") or []
+    parts: list[str] = []
+    for blk in title_list:
+        if isinstance(blk, dict):
+            txt = blk.get("plain_text") or (blk.get("text") or {}).get("content", "")
+            if isinstance(txt, str):
+                parts.append(txt)
+    actual = "".join(parts).strip()
+    if not actual:
+        return True, "ok_no_slug"
+    if actual != expected_slug:
+        return False, f"slug_mismatch:expected={expected_slug!r} actual={actual!r}"
+    return True, "ok"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
@@ -168,6 +193,14 @@ def main() -> None:
             plan_file = PLANS_DIR / f"{slug}.md"
         if not plan_file.exists():
             print(f"  SKIP {slug} — no plan file on disk")
+            continue
+
+        # ── Wrong-plan guard (D-2) ────────────────────────────────────────────
+        # Verify the page's own Slug property matches the slug we derived from
+        # the query result.  Permissive on rows with no Slug property.
+        slug_ok, slug_reason = _assert_slug_matches(props, slug)
+        if not slug_ok:
+            print(f"  SKIP {page['id']}: wrong-plan guard — {slug_reason}")
             continue
 
         md = plan_file.read_text(encoding="utf-8", errors="replace")

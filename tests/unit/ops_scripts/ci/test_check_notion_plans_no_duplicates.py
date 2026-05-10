@@ -218,3 +218,130 @@ def test_load_cache_missing_plans_key_returns_none(mod, tmp_path, monkeypatch):
     # Should either return None or an empty dict — must not raise.
     result = mod.load_cache_snapshot()
     assert result is None or result == {}
+
+
+# ---------------------------------------------------------------------------
+# W2 Pagination — cursor exhaustion
+# ---------------------------------------------------------------------------
+
+def _make_page(slug: str, page_id: str, status: str = "In Progress") -> dict:
+    """Build a minimal Notion page response dict."""
+    return {
+        "id": page_id,
+        "in_trash": False,
+        "archived": False,
+        "properties": {
+            "Slug": {"title": [{"plain_text": slug}]},
+            "Status": {"select": {"name": status}},
+        },
+    }
+
+
+class TestFetchLivePlansPagination:
+    """fetch_live_plans must exhaust all cursor pages (W2 — D-4 deferred scope)."""
+
+    def test_single_page_no_cursor(self, mod, monkeypatch):
+        """Single page with has_more=False — one API call, correct result."""
+        pages = [
+            _make_page("plan-a-aaaaaa", "id-a"),
+            _make_page("plan-b-bbbbbb", "id-b"),
+        ]
+        response_data = {"results": pages, "has_more": False}
+
+        call_count = 0
+
+        def fake_urlopen(req, timeout=None):
+            nonlocal call_count
+            call_count += 1
+            body = json.dumps(response_data).encode("utf-8")
+
+            class Resp:
+                def read(self):
+                    return body
+                def __enter__(self):
+                    return self
+                def __exit__(self, *_):
+                    pass
+
+            return Resp()
+
+        import urllib.request as urq
+        monkeypatch.setattr(urq, "urlopen", fake_urlopen)
+
+        result = mod.fetch_live_plans("fake-token")
+
+        assert call_count == 1
+        assert set(result.keys()) == {"plan-a-aaaaaa", "plan-b-bbbbbb"}
+
+    def test_three_page_cursor_exhaustion(self, mod, monkeypatch):
+        """Three pages of results — all slugs collected via cursor pagination."""
+        pages = [
+            [_make_page(f"plan-{i}-aaaaaa", f"id-{i}") for i in range(1, 4)],
+            [_make_page(f"plan-{i}-aaaaaa", f"id-{i}") for i in range(4, 7)],
+            [_make_page(f"plan-{i}-aaaaaa", f"id-{i}") for i in range(7, 10)],
+        ]
+        responses = [
+            {"results": pages[0], "has_more": True,  "next_cursor": "cursor-1"},
+            {"results": pages[1], "has_more": True,  "next_cursor": "cursor-2"},
+            {"results": pages[2], "has_more": False},
+        ]
+
+        call_count = 0
+        sent_cursors: list[str | None] = []
+
+        def fake_urlopen(req, timeout=None):
+            nonlocal call_count
+            body_bytes = req.data or b"{}"
+            sent_body = json.loads(body_bytes)
+            sent_cursors.append(sent_body.get("start_cursor"))
+            resp_data = json.dumps(responses[call_count]).encode("utf-8")
+            call_count += 1
+
+            class Resp:
+                def read(self):
+                    return resp_data
+                def __enter__(self):
+                    return self
+                def __exit__(self, *_):
+                    pass
+
+            return Resp()
+
+        import urllib.request as urq
+        monkeypatch.setattr(urq, "urlopen", fake_urlopen)
+
+        result = mod.fetch_live_plans("fake-token")
+
+        assert call_count == 3
+        assert len(result) == 9
+        assert sent_cursors[0] is None        # first call: no cursor
+        assert sent_cursors[1] == "cursor-1"  # second call uses page-1 cursor
+        assert sent_cursors[2] == "cursor-2"  # third call uses page-2 cursor
+
+    def test_trashed_pages_excluded(self, mod, monkeypatch):
+        """Pages with in_trash=True or archived=True must be skipped."""
+        pages = [
+            _make_page("live-plan-aaaaaa", "id-live"),
+            {**_make_page("trashed-plan-bbbbbb", "id-trash"), "in_trash": True},
+            {**_make_page("archived-plan-cccccc", "id-arch"), "archived": True},
+        ]
+        response_data = {"results": pages, "has_more": False}
+
+        def fake_urlopen(req, timeout=None):
+            class Resp:
+                def read(self):
+                    return json.dumps(response_data).encode("utf-8")
+                def __enter__(self):
+                    return self
+                def __exit__(self, *_):
+                    pass
+            return Resp()
+
+        import urllib.request as urq
+        monkeypatch.setattr(urq, "urlopen", fake_urlopen)
+
+        result = mod.fetch_live_plans("fake-token")
+
+        assert "live-plan-aaaaaa" in result
+        assert "trashed-plan-bbbbbb" not in result
+        assert "archived-plan-cccccc" not in result

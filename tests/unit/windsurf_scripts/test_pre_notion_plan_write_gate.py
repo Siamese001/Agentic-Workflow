@@ -206,22 +206,56 @@ class TestCli:
 class TestLogging:
     """Test audit logging."""
     
-    def test_log_written(self):
-        """Verification attempts are logged to JSONL."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            log_path = Path(tmpdir) / "artifacts" / "windsurf"
-            log_path.mkdir(parents=True, exist_ok=True)
-            
-            with mock.patch(
-                "pre_notion_plan_write_gate._query_notion_plans_db",
-                return_value=None
-            ):
-                with mock.patch(
-                    "pre_notion_plan_write_gate.Path",
-                    return_value=log_path
-                ):
-                    result = verify_plan_identity("test-slug", "test-page")
-                    # Log should have been written
+    def test_log_written(self, tmp_path, monkeypatch):
+        """_log_verification writes a JSONL entry with all required fields."""
+        import pre_notion_plan_write_gate as gate
+
+        # _log_verification uses a relative path — redirect CWD to tmp_path
+        monkeypatch.chdir(tmp_path)
+
+        result = gate.VerificationResult(
+            ok=True,
+            message="Plan identity verified",
+            intended_slug="test-slug-aabbcc",
+            targeted_page_id="test-page-id-1234",
+            actual_slug="test-slug-aabbcc",
+            actual_page_id="test-page-id-1234",
+        )
+        gate._log_verification(result)
+
+        log_file = tmp_path / "artifacts" / "windsurf" / "plan_identity_verifications.jsonl"
+        assert log_file.exists(), "Audit JSONL was not created"
+
+        lines = log_file.read_text(encoding="utf-8").strip().splitlines()
+        assert len(lines) >= 1, "Expected at least one log entry"
+
+        entry = json.loads(lines[-1])
+        assert "timestamp" in entry
+        assert entry.get("intended_slug") == "test-slug-aabbcc"
+        assert entry.get("targeted_page_id") == "test-page-id-1234"
+        assert entry.get("ok") is True
+
+    def test_log_written_on_mismatch(self, tmp_path, monkeypatch):
+        """Mismatches are also logged to the audit JSONL with ok=False."""
+        import pre_notion_plan_write_gate as gate
+
+        monkeypatch.chdir(tmp_path)
+
+        result = gate.VerificationResult(
+            ok=False,
+            message="PLAN_IDENTITY_MISMATCH: slug mismatch",
+            intended_slug="test-slug-aabbcc",
+            targeted_page_id="wrong-page-id",
+            actual_slug="test-slug-aabbcc",
+            actual_page_id="correct-page-9999",
+        )
+        gate._log_verification(result)
+
+        log_file = tmp_path / "artifacts" / "windsurf" / "plan_identity_verifications.jsonl"
+        assert log_file.exists()
+        entry = json.loads(log_file.read_text(encoding="utf-8").strip().splitlines()[-1])
+        assert entry["ok"] is False
+        assert "MISMATCH" in entry.get("message", "")
 
 
 class TestEnvironmentVariables:
