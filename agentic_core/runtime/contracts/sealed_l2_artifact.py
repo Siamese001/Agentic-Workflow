@@ -36,6 +36,9 @@ class SealedL2Artifact:
     execution_duration_ms: int = 0
     sovereign_execution_receipt: str = ""
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from CompiledPromptArtifact.tenant_id (D6)
+
     # Provenance
     prompt_artifact_digest: str = ""
     contract_version: str = "W6.0"

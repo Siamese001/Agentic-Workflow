@@ -39,6 +39,7 @@ class L1PlanContract:
     risk_hint: str = ""
     policy_hash: str = ""
     write_requested: bool = False
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
 
@@ -63,6 +64,7 @@ class L0RouteContract:
     hmac_sig: str = ""
     required_slots: tuple[str, ...] = ()
     policy_hash: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
 

@@ -105,6 +105,7 @@ class L3RuntimeOrchestrationReceipt:
     schema_version: str = L3_RUNTIME_RECEIPT_SCHEMA_VERSION
     deterministic_digest: str = ""
     static_dag_ref: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

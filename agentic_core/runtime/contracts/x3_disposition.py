@@ -35,6 +35,9 @@ class X3Disposition:
     eval_threshold_met: bool = False
     hitl_required: bool = False
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from SealedL2Artifact.tenant_id (D6)
+
     # Metadata
     exit_timestamp: str = ""
     disposition_version: str = "W6.0"

@@ -163,6 +163,7 @@ class ExitReviewPacket:
     # Per-dimension eval results from app_specific_evaluator. Empty when
     # the route was not bound to an app-domain contract.
     app_specific_eval: dict[str, Any] = field(default_factory=dict)
+    tenant_id: str = ""  # W1: identity quad extension (D6)
 
 
 # ---- X3 disposition packets (required-output shapes from spec §X3) ----
@@ -181,6 +182,7 @@ class X3DenyPacket:
     replan_hint: str = ""
     l6_failure_packet: dict[str, Any] = field(default_factory=dict)
     trace_root: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
@@ -202,6 +204,7 @@ class X3EscalatePacket:
     h1_freeze_state: dict[str, Any] = field(default_factory=dict)
     review_packet_contents: dict[str, Any] = field(default_factory=dict)
     trace_root: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
@@ -241,6 +244,7 @@ class X3CommitRequestPacket:
     pass_k_consistency_receipt: dict[str, Any] = field(default_factory=dict)
     replay_determinism_digest: str = ""
     trace_evidence_seal: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
@@ -263,6 +267,7 @@ class X3AllowPacket:
     commit_receipt_id: str = ""
     trace_root: str = ""
     runtime_exhaust_manifest: dict[str, Any] = field(default_factory=dict)
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
@@ -284,6 +289,7 @@ class X3SafeAbstainPacket:
     safe_alternative: str = ""
     failed_support_target: str = ""
     trace_root: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
@@ -329,6 +335,7 @@ class X3BreakGlassAllowPacket:
     post_mortem_due_at_ms: int = 0  # 24h after grant
     final_response: str = ""
     trace_root: str = ""
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

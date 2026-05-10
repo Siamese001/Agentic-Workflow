@@ -41,6 +41,9 @@ class FinalEvidenceContract:
     support_target_partial: bool = False
     evidence_sufficiency_score: float = 0.0
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from RouteContract.tenant_id (D6)
+
     # Metadata
     evidence_collection_timestamp: str = ""
     contract_version: str = "W6.0"

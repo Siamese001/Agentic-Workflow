@@ -47,6 +47,9 @@ class CompiledPromptArtifact:
     evidence_digest: str = ""  # References FinalEvidenceContract.compilation_hash
     compilation_hash: str = ""  # Digest of this artifact
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from FinalEvidenceContract.tenant_id (D6)
+
     # Constraints
     max_tokens: int = 4096
     temperature: float = 0.7

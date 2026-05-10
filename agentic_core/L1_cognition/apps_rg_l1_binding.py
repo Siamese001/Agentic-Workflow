@@ -140,6 +140,8 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         run_id=validated_request.run_id,
         app_id=validated_request.app_id,
         trace_id=validated_request.trace_id,
+        # W1 P1.2: thread identity quad from U0 ValidatedRequest (D6)
+        tenant_id=validated_request.tenant_id,
         task_plan=_RESUME_GENERATION_TASK_PLAN,
         required_capabilities=_RESUME_GENERATION_REQUIRED_CAPABILITIES,
         grounding_required=True,

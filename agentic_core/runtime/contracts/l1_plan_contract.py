@@ -30,6 +30,9 @@ class L1PlanContract:
     model_generation_required: bool = False  # L2 model execution needed
     write_authority_present: bool = False  # State modification required
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from U0 ValidatedRequest.tenant_id (D6)
+
     # Profile binding
     profile_manifest_digest: str = ""
 

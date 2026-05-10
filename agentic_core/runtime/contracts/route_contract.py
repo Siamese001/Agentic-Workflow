@@ -30,6 +30,9 @@ class RouteContract:
     model_generation_required: bool
     write_authority_present: bool
 
+    # Identity extension
+    tenant_id: str = ""  # W1: threaded from L1PlanContract.tenant_id (D6)
+
     # Routing metadata
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     routing_timestamp: str = ""

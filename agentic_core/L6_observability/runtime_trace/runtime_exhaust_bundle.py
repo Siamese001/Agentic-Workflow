@@ -99,6 +99,7 @@ class RuntimeExhaustBundle:
     ingest_quality_score: float
     newest_span_age_seconds: float
     bundle_id: str
+    tenant_id: str = ""  # W1: identity quad extension (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

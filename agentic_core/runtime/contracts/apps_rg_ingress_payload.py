@@ -87,6 +87,7 @@ class RequestEnvelope:
     payload: AppsRgIngressPayload
     request_id: str = ""
     run_id: str = ""
+    tenant_id: str = ""  # W1: identity quad — sourced from app_id at U0 ingress (D6)
     trace_id: str = ""
     submitted_at: str = ""  # ISO-8601 timestamp
 
@@ -106,6 +107,7 @@ class ValidatedRequest:
     payload_digest: str
     authority_validation_receipt: "AuthorityValidationReceipt"
     trace_id: str
+    tenant_id: str = ""  # W1: identity quad — app_id value at U0 ingress (D6)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

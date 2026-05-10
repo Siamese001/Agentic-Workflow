@@ -27,11 +27,16 @@ from agentic_core.runtime.contracts.apps_rg_runtime_authority_policy import (
     AppsRgAuthorityViolation,
 )
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
+from agentic_core.L0_routing.apps_rg_l0_binding import l0_route_apps_rg
 from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
+from agentic_core.L2_execution.apps_rg_l2_binding import l2_execute_apps_rg
+from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
+from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
 from agentic_core.runtime.entry.u0_apps_rg_binding import (
     APPS_RG_TASK_CLASS,
     u0_validate_apps_rg,
 )
+from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
 
 # ---------------------------------------------------------------------------
 # Required fields — the payload keys that MUST be present and non-empty
@@ -97,6 +102,8 @@ def apps_rg_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
         payload=ingress,
         request_id=payload.get("request_id") or f"rg-req-{uuid4().hex[:12]}",
         run_id=payload.get("run_id") or f"rg-run-{uuid4().hex[:12]}",
+        # W1 P1.2: tenant_id flows into envelope so U0 can stamp ValidatedRequest (D6)
+        tenant_id=payload.get("tenant_id") or "",
         trace_id=payload.get("trace_id") or f"rg-trace-{uuid4().hex[:16]}",
         submitted_at=datetime.now(timezone.utc).isoformat(),
     )
@@ -116,9 +123,13 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     Pipeline progress (per plan apps-rg-runtime-wiring-completion-d4e8a1 §6):
         ✅ W3.P1 — U0 ingress validator         (real)
         ✅ W3.P2 — L1 plan contract              (real)
-        ⏸️ W3.P3 — L0 route contract             (next turn)
-        ⏸️ W3.P4 — [C0] / [PA] conditional emit (next turn)
-        ⏸️ W3.P5 — L2 execution + Exit          (next turn)
+        ✅ W3.P3 — L0 route contract             (real)
+        ✅ W3.P4 — [C0] grounding / [PA] prompt  (real)
+        ✅ W3.P5 — L2 execution + Exit           (real, L2 stub-mode)
+
+    All 5 W3 phases landed. exit_status='success' on happy path; Exit
+    writes the artifact under artifacts/apps_rg/runs/<ts_runid>/. Real
+    LLM dispatch (replacing L2 stub) lands in W5.
 
     Each landed stage replaces a 'pending' marker in the disposition until
     the entire chain is real and exit_status='success'.
@@ -176,49 +187,145 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             disposition_version="W3.P2",
         )
 
-    # U0 + L1 passed — L0 routing pending.
-    return X3Disposition(
-        request_id=l1_plan.request_id,
-        run_id=l1_plan.run_id,
-        app_id="apps_rg",
-        trace_id=l1_plan.trace_id,
-        exit_status="stub_pending_w3p3",
-        outcome_authorized=False,
-        final_output={
-            "stage": "U0_L1_PASSED_L0_PENDING",
-            "task_class": validated_request.task_class,
-            "payload_digest": validated_request.payload_digest,
-            "u0_receipt": {
-                "allowed": validated_request.authority_validation_receipt.allowed,
-                "checked_fields_count": len(
-                    validated_request.authority_validation_receipt.checked_fields
-                ),
-                "forbidden_fields_detected": list(
-                    validated_request.authority_validation_receipt.forbidden_fields_detected
-                ),
-                "policy_version": validated_request.authority_validation_receipt.policy_version,
+    # ----------------------------------------------------------------- L0
+    try:
+        route = l0_route_apps_rg(l1_plan)
+    except (TypeError, ValueError) as l0_err:
+        return X3Disposition(
+            request_id=l1_plan.request_id,
+            run_id=l1_plan.run_id,
+            app_id="apps_rg",
+            trace_id=l1_plan.trace_id,
+            exit_status="failure",
+            outcome_authorized=False,
+            final_output={
+                "stage": "L0",
+                "rejection_reason": "l0_routing_error",
+                "detail": str(l0_err),
             },
-            "l1_plan": {
-                "task_plan": list(l1_plan.task_plan),
-                "required_capabilities": list(l1_plan.required_capabilities),
-                "grounding_required": l1_plan.grounding_required,
-                "model_generation_required": l1_plan.model_generation_required,
-                "write_authority_present": l1_plan.write_authority_present,
-                "profile_manifest_digest": l1_plan.profile_manifest_digest,
-                "plan_version": l1_plan.plan_version,
-            },
-            "next_stage_pending": (
-                "L0 route contract for capabilities="
-                f"{list(l1_plan.required_capabilities)}. "
-                "Follow-up turn lands W3.P3 — agentic_core/L0_routing/apps_rg_l0_binding.py."
-            ),
-            "echoed_target_company": envelope.payload.target_company,
-            "echoed_target_role": envelope.payload.target_role,
-        },
-        exit_timestamp=datetime.now(timezone.utc).isoformat(),
-        disposition_version="W3.P2",
-    )
+            exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            disposition_version="W3.P3",
+        )
 
+    # ----------------------------------------------------------------- C0 (conditional)
+    fec = None
+    if route.grounding_required:
+        try:
+            fec = c0_retrieve_apps_rg(route, envelope.payload)
+        except (TypeError, ValueError, OSError) as c0_err:
+            return X3Disposition(
+                request_id=route.request_id,
+                run_id=route.run_id,
+                app_id="apps_rg",
+                trace_id=route.trace_id,
+                exit_status="failure",
+                outcome_authorized=False,
+                final_output={
+                    "stage": "C0",
+                    "rejection_reason": "c0_retrieval_error",
+                    "detail": str(c0_err),
+                },
+                exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                disposition_version="W3.P4",
+            )
+
+    # ----------------------------------------------------------------- PA (conditional)
+    prompt_artifact = None
+    if route.model_generation_required:
+        # PA requires a FinalEvidenceContract; if grounding wasn't requested we
+        # build an empty FEC so the PA binding stays pure-typed.
+        if fec is None:
+            from agentic_core.runtime.contracts.final_evidence_contract import (
+                FinalEvidenceContract as _FEC,
+            )
+            fec = _FEC(
+                request_id=route.request_id,
+                run_id=route.run_id,
+                app_id=route.app_id,
+                trace_id=route.trace_id,
+                evidence_collection_timestamp=datetime.now(timezone.utc).isoformat(),
+                contract_version="W3.P4",
+                l5_certification_ref="c0-apps-rg-no-grounding-required",
+            )
+        try:
+            prompt_artifact = pa_compose_apps_rg(route, l1_plan, fec, envelope.payload)
+        except (TypeError, ValueError) as pa_err:
+            return X3Disposition(
+                request_id=route.request_id,
+                run_id=route.run_id,
+                app_id="apps_rg",
+                trace_id=route.trace_id,
+                exit_status="failure",
+                outcome_authorized=False,
+                final_output={
+                    "stage": "PA",
+                    "rejection_reason": "pa_assembly_error",
+                    "detail": str(pa_err),
+                },
+                exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                disposition_version="W3.P4",
+            )
+
+    # ----------------------------------------------------------------- L2
+    if prompt_artifact is None:
+        # No model generation requested — skip L2/Exit, emit pipeline-complete
+        # disposition without an artifact write. This is the path for any
+        # future task class that doesn't need an LLM.
+        return X3Disposition(
+            request_id=route.request_id,
+            run_id=route.run_id,
+            app_id="apps_rg",
+            trace_id=route.trace_id,
+            exit_status="success",
+            outcome_authorized=True,
+            final_output={
+                "stage": "U0_L1_L0_C0_PASSED_NO_GEN",
+                "task_class": validated_request.task_class,
+                "note": "model_generation_required=false — L2/Exit skipped",
+            },
+            exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            disposition_version="W3.P5",
+        )
+
+    try:
+        sealed = l2_execute_apps_rg(prompt_artifact)
+    except (TypeError, ValueError) as l2_err:
+        return X3Disposition(
+            request_id=route.request_id,
+            run_id=route.run_id,
+            app_id="apps_rg",
+            trace_id=route.trace_id,
+            exit_status="failure",
+            outcome_authorized=False,
+            final_output={
+                "stage": "L2",
+                "rejection_reason": "l2_execution_error",
+                "detail": str(l2_err),
+            },
+            exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            disposition_version="W3.P5",
+        )
+
+    # ----------------------------------------------------------------- Exit
+    try:
+        return exit_finalize_apps_rg(sealed, prompt_artifact)
+    except (TypeError, ValueError, OSError) as exit_err:
+        return X3Disposition(
+            request_id=route.request_id,
+            run_id=route.run_id,
+            app_id="apps_rg",
+            trace_id=route.trace_id,
+            exit_status="failure",
+            outcome_authorized=False,
+            final_output={
+                "stage": "EXIT",
+                "rejection_reason": "exit_finalization_error",
+                "detail": str(exit_err),
+                "sealed_compilation_hash": sealed.compilation_hash,
+            },
+            exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            disposition_version="W3.P5",
+        )
 
 __all__ = [
     "APPS_RG_REQUIRED_FIELDS",
