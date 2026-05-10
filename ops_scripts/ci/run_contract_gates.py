@@ -676,6 +676,15 @@ def main():
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
         ),
+        # EC-UI — Enriched Choice UI invariants gate.
+        # Validates ask_user_question calls use enriched format (confidence prefix,
+        # trade-off segment, star marker) per consolidated plan a1e3f7.
+        # Advisory by default; fail-closed via ENRICHED_CHOICE_UI_FAIL_CLOSED=1.
+        # Bypass: ENRICHED_CHOICE_UI_BYPASS=1.
+        (
+            "EC-UI Enriched Choice UI invariants (advisory)",
+            "ops_scripts/ci/check_enriched_choice_ui_invariants.py",
+        ),
         # W6ECE1 — W6 Emit-Contract Enrichment 9-concern gate (ADR-084).
         # Structural field scan across all 11 emit contracts (AST-level).
         # Verifies: C1 identity quad, C2 l5_cert_ref, C3 gate_verdict_refs,
