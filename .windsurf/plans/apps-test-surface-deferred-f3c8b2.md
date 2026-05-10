@@ -1,6 +1,6 @@
 ---
 slug: apps-test-surface-deferred-f3c8b2
-status: In Progress
+status: Waiting
 parent_plan: apps-test-surface-consolidation-11acd9-v2
 created: 2026-05-09
 dod_exempt: false
@@ -18,13 +18,13 @@ dod_exempt: false
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|-----------------|
-| W1 | 1.1 | Promote TSP1 gate to fail-closed | ~3K | 30+ clean days since TSP1 green | ❌ BLOCKED | `APPS_TEST_SURFACE_FAIL_CLOSED=1` enforced in CI |
+| W1 | 1.1 | Promote TSP1 gate to fail-closed | ~3K | **DEPENDS ON**: 30 consecutive exit-0 TSP1 runs (earliest: 2026-06-09) | ⏳ WAITING | `APPS_TEST_SURFACE_FAIL_CLOSED=1` enforced in CI + gate exits 1 on violation |
 | W2 | 2.1–2.3 | Fix `apps-folder-taxonomy.md` rule gap | ~4K | — | ✅ DONE | Rule has no `tests/` row; forbidden note + 3-surface table present |
 | W3 | 3.1–3.2 | Fix blueprint `ssot.py` / derived `tests/` entry | ~5K | SSOT refactor in progress | ✅ DONE | `tests` in `FORBIDDEN_ROOT_FOLDERS` in `check_apps_folder_taxonomy.py` |
 | W4 | 4.1–4.2 | Add per-app contract surface baseline | ~8K | — | ✅ DONE | All 10 apps have ≥1 contract test; `AGENTS.md` 3-surface section added |
 | W5 | 5.1 | Import-path audit on relocated test files | ~6K | W4/W5 of parent complete | ✅ DONE | `apps_lic` `__init__.py` export fixed; 12/12 tests pass |
 
-**Status legend**: 🔲 TODO · 🔄 IN PROGRESS / PARTIAL · ✅ DONE · ❌ BLOCKED
+**Status legend**: 🔲 TODO · 🔄 IN PROGRESS / PARTIAL · ✅ DONE · ❌ BLOCKED · ⏳ WAITING (external dependency)
 
 ---
 
@@ -32,7 +32,7 @@ dod_exempt: false
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| 1.1 | Promote TSP1 gate to fail-closed | `run_contract_gates.py` + CI config | Requires 30-day clean-run baseline evidence | ~3K | ❌ BLOCKED |
+| 1.1 | Promote TSP1 gate to fail-closed | `run_contract_gates.py` + `.pre-commit-config.yaml` | **Depends on**: `artifacts/ci/check_apps_test_surface_parity_*.json` showing ≥30 consecutive exit-0 runs. Earliest unblock: 2026-06-09. | ~3K | ⏳ WAITING |
 | 2.1 | Drop `tests/` from `apps-folder-taxonomy.md` | `.windsurf/rules/apps-folder-taxonomy.md` | Rule prose may be load-bearing for other gates | ~2K | ✅ DONE |
 | 2.2 | Cross-link new taxonomy rule | `apps-folder-taxonomy.md` → `apps-test-surface-taxonomy.md` | — | ~1K | ✅ DONE |
 | 2.3 | Update `AGENTS.md` 3-surface declaration | `AGENTS.md` | Doc-only; low risk | ~1K | ✅ DONE |
@@ -49,7 +49,9 @@ dod_exempt: false
 ### D1 — TSP1 gate fail-closed promotion
 **From**: parent plan Out Of Scope §"Promoting the new `apps-test-surface-taxonomy.md` rule from advisory to fail-closed — deferred"
 **AG_QUEUE_SEED**: `plan=apps-test-surface-consolidation-11acd9-v2 id=W6_rule_promotion depends_on=W6_landing title=promote_apps-test-surface-taxonomy_advisory_to_fail_closed_after_30day_clean`
-**Action**: After 30+ consecutive clean TSP1 runs in CI, flip `APPS_TEST_SURFACE_FAIL_CLOSED=1` in `.pre-commit-config.yaml` and register as fail-closed in `run_contract_gates.py`.
+**Status**: ⏳ WAITING — blocked on external time dependency.
+**Dependency**: `artifacts/ci/check_apps_test_surface_parity_*.json` must show ≥30 consecutive exit-0 runs. TSP1 first went green 2026-05-10. **Earliest unblock date: 2026-06-09**.
+**Action when unblocked**: Flip `APPS_TEST_SURFACE_FAIL_CLOSED=1` in `.pre-commit-config.yaml`; update `run_contract_gates.py` advisory comment to fail-closed.
 **Gate evidence required**: `artifacts/ci/check_apps_test_surface_parity_*.json` history showing 30 consecutive exit-0 runs.
 
 ### D2 — `apps-folder-taxonomy.md` still lists `tests/` as valid subdir (GAP-1)
