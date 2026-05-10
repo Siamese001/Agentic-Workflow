@@ -157,6 +157,32 @@ If things go wrong:
 | [Metric 1] | [Target] | [How to verify] |
 | [Metric 2] | [Target] | [How to verify] |
 
+---
+
+## Definition of Done
+
+> **Mandatory section.** A plan may NOT be marked Completed in Notion or via `wave_execution_state.py complete` until every DoD row is ticked.
+> Enforced by CI gate `ops_scripts/ci/check_plan_definition_of_done.py` (PLAN-DOD).
+> A plan that is genuinely DoD-exempt (RCA-only, doc-only, audit observation report) MUST set `dod_exempt: true` in frontmatter — prose hand-waving is not an exemption.
+>
+> ⛔ Lesson from `apps-rg-declarative-ingress-only-spinal-governance-c8b3e1`: that plan was marked W9 COMPLETE while `python -m apps_rg` raised ImportError on first import. A DoD row of "smoke run exits 0 and produces an artifact" would have caught this. Every plan that touches an executable surface MUST include a smoke-test row.
+
+| # | Criterion | Verification command / evidence | Status |
+|---|---|---|---|
+| DoD-1 | [Primary functional outcome — what changed code DOES, not what tests assert] | `[command that produces evidence]` | 🔲 |
+| DoD-2 | [Smoke-run row if any executable surface is touched] | `python -m <module> [args]` exits 0 and produces a recognizable artifact at `artifacts/<path>` | 🔲 |
+| DoD-3 | [Test count + zero regressions] | `pytest <selector>` shows N pass, 0 fail, baseline preserved | 🔲 |
+| DoD-4 | [CI gate green / no new violations] | `python ops_scripts/ci/run_contract_gates.py` exits 0 (or known advisory baseline unchanged) | 🔲 |
+| DoD-5 | [Documentation / memory writeback] | `mem:` entity updated; ADR linked; sibling rules referencing this work patched | 🔲 |
+
+**Verification-vs-Deferral table** — fields that look like wins but were intentionally NOT verified must be listed here so a reviewer can audit scope honesty:
+
+| Item | Why deferred | Tracked in |
+|---|---|---|
+| [E.g. real LLM E2E] | [Out of plan scope; covered by next plan] | [Next plan slug or `NEXT_STEP:` marker] |
+
+---
+
 ## Cascade Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.

@@ -262,7 +262,12 @@ def _execute_via_qwen_vllm(
     resume_doc["stub_mode"] = False
 
     receipt = response_id or "vllm-no-id-returned"
-    return content, resume_doc, elapsed_ms, receipt, "completed"
+    # Re-serialize the parsed dict so generated_content is canonical clean
+    # JSON without any markdown fences or assistant-side wrapping. The raw
+    # response is recoverable from execution traces; the artifact file is
+    # consumer-friendly.
+    canonical_content = json.dumps(resume_doc, indent=2)
+    return canonical_content, resume_doc, elapsed_ms, receipt, "completed"
 
 
 def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:

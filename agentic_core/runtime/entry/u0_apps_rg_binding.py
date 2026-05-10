@@ -100,6 +100,9 @@ def u0_validate_apps_rg(envelope: RequestEnvelope) -> ValidatedRequest:
         payload_digest=_compute_payload_digest(envelope.payload),
         authority_validation_receipt=receipt,
         trace_id=envelope.trace_id,
+        # W1 identity quad (D6): tenant_id sourced from app_id at U0 ingress.
+        # Envelope override allowed when the host pre-populated it.
+        tenant_id=envelope.tenant_id or "apps_rg",
         l5_certification_ref=APPS_RG_U0_CERT_REF,
     )
 

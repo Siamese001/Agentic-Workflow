@@ -648,6 +648,25 @@ def main():
             "L5CR1 emit-contract l5_certification_ref field scan (advisory)",
             "ops_scripts/ci/check_l5_cert_ref_on_emit_contracts.py",
         ),
+        # APPS-IMPORT, APPS-DRYRUN, PLAN-DOD — Definition-of-Done discipline gates.
+        # Plan: apps-rg-runtime-wiring-completion-d4e8a1 W6.
+        # Closes the c8b3e1 failure mode (plan marked Completed while
+        # `python -m apps_rg` raised ImportError).
+        # APPS-IMPORT: advisory; fail-closed APPS_RG_IMPORT_GATE_FAIL_CLOSED=1; bypass APPS_RG_IMPORT_GATE_BYPASS=1.
+        # APPS-DRYRUN: advisory; fail-closed APPS_RG_DRYRUN_GATE_FAIL_CLOSED=1; bypass APPS_RG_DRYRUN_GATE_BYPASS=1.
+        # PLAN-DOD: advisory; fail-closed PLAN_DOD_GATE_FAIL_CLOSED=1; bypass PLAN_DOD_GATE_BYPASS=1.
+        (
+            "APPS-IMPORT apps_rg --help importable (advisory)",
+            "ops_scripts/ci/check_apps_rg_import.py",
+        ),
+        (
+            "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
+            "ops_scripts/ci/check_apps_rg_dryrun.py",
+        ),
+        (
+            "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
+            "ops_scripts/ci/check_plan_definition_of_done.py",
+        ),
     ]
 
     for label, script in assurance_gates:

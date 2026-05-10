@@ -39,8 +39,11 @@ Before writing any execution plan:
 2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
 3. Token estimates are **self-reported by Cascade** based on scope (files touched, lines changed, complexity). They are sizing heuristics only, not budget gates — the 1M context window (Opus 4.7+) makes historical token-estimation tooling obsolete (see 2026-04-24 decision). Use your own judgment; mark uncertain estimates with `~`.
 4. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
+5. Include a **`## Definition of Done`** section with at least 5 DoD rows (DoD-1..DoD-N) and a Verification-vs-Deferral table. Every plan touching an executable surface MUST have a smoke-run DoD row of the form `python -m <module> [args]` exits 0 + produces a recognizable artifact. RCA-only / doc-only / observational plans MAY set `dod_exempt: true` in frontmatter to skip this requirement — prose hand-waving is not an exemption. Enforced by CI gate `ops_scripts/ci/check_plan_definition_of_done.py` (PLAN-DOD).
 
-A plan missing the wave summary table **or** the phase-level summary table is **invalid and must not be saved**.
+A plan missing the wave summary table **or** the phase-level summary table **or** the `## Definition of Done` section (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
+
+> ⛔ **Failure precedent**: `apps-rg-declarative-ingress-only-spinal-governance-c8b3e1` was marked W9 COMPLETE while `python -m apps_rg` raised ImportError on first import. A DoD smoke-run row would have made the regression auto-falsifiable. The DoD requirement (added 2026-05-09 by plan `apps-rg-runtime-wiring-completion-d4e8a1` W6) closes that failure mode.
 
 > **History**: The `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) module was retired 2026-04-24 and archived to `archives/tools_planning_20260424_obsolete/`. It served the 200k-window era; the 1M-window era makes pre-flight budget enforcement unnecessary friction. Plans still size phases for scope clarity, not for budget compliance.
 
