@@ -50,6 +50,14 @@ class CompiledPromptArtifact:
     # Identity extension
     tenant_id: str = ""  # W1: threaded from FinalEvidenceContract.tenant_id (D6)
 
+    # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
+    sandbox_required: bool = False
+    egress_policy_ref: str = ""
+    allowed_tools: tuple[str, ...] = field(default_factory=tuple)
+    allowed_models: tuple[str, ...] = field(default_factory=tuple)
+    allowed_networks: tuple[str, ...] = field(default_factory=tuple)
+    allowed_file_roots: tuple[str, ...] = field(default_factory=tuple)
+
     # Constraints
     max_tokens: int = 4096
     temperature: float = 0.7

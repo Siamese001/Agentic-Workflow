@@ -242,6 +242,13 @@ def pa_compose_apps_rg(
         target_provider=APPS_RG_TARGET_PROVIDER,
         evidence_digest=fec.compilation_hash,
         compilation_hash=compilation_hash,
+        # W2 P2.2: thread capability/sandbox/egress from RouteContract
+        sandbox_required=route.sandbox_required,
+        egress_policy_ref=route.egress_policy_ref,
+        allowed_tools=route.allowed_tools,
+        allowed_models=route.allowed_models,
+        allowed_networks=route.allowed_networks,
+        allowed_file_roots=route.allowed_file_roots,
         max_tokens=4096,
         temperature=0.4,  # lower for factual resume generation
         l5_certification_ref=APPS_RG_PA_CERT_REF,

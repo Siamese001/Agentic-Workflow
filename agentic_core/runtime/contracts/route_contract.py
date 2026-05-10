@@ -33,6 +33,14 @@ class RouteContract:
     # Identity extension
     tenant_id: str = ""  # W1: threaded from L1PlanContract.tenant_id (D6)
 
+    # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
+    sandbox_required: bool = False
+    egress_policy_ref: str = ""
+    allowed_tools: tuple[str, ...] = field(default_factory=tuple)
+    allowed_models: tuple[str, ...] = field(default_factory=tuple)
+    allowed_networks: tuple[str, ...] = field(default_factory=tuple)
+    allowed_file_roots: tuple[str, ...] = field(default_factory=tuple)
+
     # Routing metadata
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     routing_timestamp: str = ""

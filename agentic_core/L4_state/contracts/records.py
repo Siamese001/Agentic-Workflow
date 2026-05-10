@@ -786,6 +786,13 @@ class CommitRequest:
     affected_state_surfaces: Tuple[str, ...] = field(default_factory=_empty_tuple)
     expected_read_surface_refreshes: Tuple[str, ...] = field(default_factory=_empty_tuple)
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
+    sandbox_required: bool = False
+    egress_policy_ref: str = ""
+    allowed_tools: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    allowed_models: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    allowed_networks: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    allowed_file_roots: Tuple[str, ...] = field(default_factory=_empty_tuple)
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

@@ -113,6 +113,13 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         grounding_required=l1_plan.grounding_required,
         model_generation_required=l1_plan.model_generation_required,
         write_authority_present=l1_plan.write_authority_present,
+        # W2 P2.1: capability/sandbox/egress — apps_rg is read-only, single vllm model (D11=default-empty)
+        sandbox_required=False,
+        egress_policy_ref="egress-policy:vllm-only",
+        allowed_models=("Qwen/Qwen2.5-32B-Instruct-AWQ",),
+        allowed_tools=(),
+        allowed_networks=("localhost:8000",),
+        allowed_file_roots=("artifacts/apps_rg/",),
         reason_codes=_build_reason_codes(l1_plan),
         routing_timestamp=datetime.now(timezone.utc).isoformat(),
         route_version="W3.P3",
