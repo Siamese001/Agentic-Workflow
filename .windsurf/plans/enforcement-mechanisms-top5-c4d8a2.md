@@ -342,9 +342,11 @@ If gates are too noisy:
 
 | Item | Why deferred | Tracked in |
 |---|---|---|
-| Real Notion API integration tests | Requires live token; mock-based unit tests only | Future plan: notion-test-harness-c7e3f1 |
-| Rule frontmatter validation | Separate concern; rule schema not yet formalized | Future plan: rule-schema-validation-d9e4b2 |
-| Pre-commit hook wiring | CI-only rollout first; local pre-commit after burn-in | Follow-up if CI stable for 14 days |
+| Real Notion API integration tests | Requires live token; mock-based unit tests only | Deferred plan: enforcement-deferred-followup-c4d8a2 |
+| Rule frontmatter validation | Separate concern; rule schema not yet formalized | Deferred plan: enforcement-deferred-followup-c4d8a2 |
+| Pre-commit hook wiring | CI-only rollout first; local pre-commit after burn-in | Deferred plan: enforcement-deferred-followup-c4d8a2 |
+
+**Deferred Scope Plan**: `enforcement-deferred-followup-c4d8a2.md` (Notion: 35c27693-f55c-812a-aed5-c100587234d8)
 
 ---
 
