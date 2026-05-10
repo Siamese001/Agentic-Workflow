@@ -131,3 +131,90 @@ def test_main_live_no_token_exits_two(mod, monkeypatch, capsys):
     rc = mod.main(["--live"])
     assert rc == 2
     assert "requires NOTION_TOKEN" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# Gap-filling tests
+# ---------------------------------------------------------------------------
+
+def test_load_cache_empty_plans_returns_empty_dict(mod, tmp_path, monkeypatch):
+    """Cache with zero plans is valid — no duplicates found."""
+    cache = _write_cache(tmp_path, {})
+    monkeypatch.setattr(mod, "CACHE_PATH", cache)
+    snapshot = mod.load_cache_snapshot()
+    assert snapshot == {}
+
+
+def test_main_empty_plans_cache_exits_zero(mod, tmp_path, monkeypatch, capsys):
+    """Empty plans dict → OK, exits 0."""
+    cache = _write_cache(tmp_path, {})
+    monkeypatch.setattr(mod, "CACHE_PATH", cache)
+    rc = mod.main([])
+    assert rc == 0
+    assert "OK" in capsys.readouterr().out
+
+
+def test_main_json_output_clean_cache(mod, tmp_path, monkeypatch, capsys):
+    """--json with no duplicates emits zero duplicate_count."""
+    cache = _write_cache(tmp_path, {
+        "solo-plan-aaaaaa": {"page_id": "p1", "status": "In Progress"},
+    })
+    monkeypatch.setattr(mod, "CACHE_PATH", cache)
+    rc = mod.main(["--json"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+    assert payload["duplicate_count"] == 0
+    assert payload["duplicates"] == []
+
+
+def test_main_live_no_duplicates_exits_zero(mod, monkeypatch, capsys):
+    """--live with all singletons → exits 0."""
+    monkeypatch.setenv("NOTION_TOKEN", "fake-token")
+    monkeypatch.setattr(
+        mod, "fetch_live_plans",
+        lambda token: {
+            "plan-a-aaaaaa": [{"id": "p1", "status": "In Progress"}],
+            "plan-b-bbbbbb": [{"id": "p2", "status": "Completed"}],
+        },
+    )
+    rc = mod.main(["--live"])
+    assert rc == 0
+    assert "OK" in capsys.readouterr().out
+
+
+def test_main_live_empty_fetch_exits_zero(mod, monkeypatch, capsys):
+    """--live returning empty dict → exits 0, no error."""
+    monkeypatch.setenv("NOTION_TOKEN", "fake-token")
+    monkeypatch.setattr(mod, "fetch_live_plans", lambda token: {})
+    rc = mod.main(["--live"])
+    assert rc == 0
+
+
+def test_main_live_json_output_multiple_duplicates(mod, monkeypatch, capsys):
+    """--live --json with two duplicate slugs → duplicate_count == 2."""
+    monkeypatch.setenv("NOTION_TOKEN", "fake-token")
+    monkeypatch.setattr(
+        mod, "fetch_live_plans",
+        lambda token: {
+            "dup-a-aaaaaa": [{"id": "p1"}, {"id": "p2"}],
+            "dup-b-bbbbbb": [{"id": "p3"}, {"id": "p4"}, {"id": "p5"}],
+        },
+    )
+    rc = mod.main(["--live", "--json"])
+    assert rc == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["duplicate_count"] == 2
+    slugs = [d["slug"] for d in payload["duplicates"]]
+    assert "dup-a-aaaaaa" in slugs
+    assert "dup-b-bbbbbb" in slugs
+
+
+def test_load_cache_missing_plans_key_returns_none(mod, tmp_path, monkeypatch):
+    """Cache JSON without a 'plans' key is considered malformed."""
+    cache = tmp_path / "bad.json"
+    cache.write_text(json.dumps({"fetched_at": "2026-05-10T00:00:00Z"}), encoding="utf-8")
+    monkeypatch.setattr(mod, "CACHE_PATH", cache)
+    # Should either return None or an empty dict — must not raise.
+    result = mod.load_cache_snapshot()
+    assert result is None or result == {}

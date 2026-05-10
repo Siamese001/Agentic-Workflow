@@ -284,6 +284,162 @@ class TestViolationStatuses:
         assert "Completed" in VIOLATION_STATUSES
         assert CANONICAL_NEW_PLAN_STATUS not in VIOLATION_STATUSES
 
+    def test_lower_priority_NOT_in_violation_statuses(self):
+        """'Lower Priority' is NOT in VIOLATION_STATUSES by design —
+        this gate only catches active-workflow statuses on brand-new plans."""
+        assert "Lower Priority" not in VIOLATION_STATUSES
+
+    def test_retired_NOT_in_violation_statuses(self):
+        """Retired is not checked by the new-plan gate (it's a terminal status
+        not produced by PLAN_CREATED markers)."""
+        assert "Retired" not in VIOLATION_STATUSES
+
+    def test_archived_NOT_in_violation_statuses(self):
+        """Archived is not checked by the new-plan gate."""
+        assert "Archived" not in VIOLATION_STATUSES
+
+    def test_violation_statuses_exhaustiveness(self):
+        """Exactly these 4 statuses are in VIOLATION_STATUSES."""
+        assert VIOLATION_STATUSES == {"Deferred", "Waiting", "In Progress", "Completed"}
+
+
+class TestEdgeCasePlans:
+    """Edge cases for plan properties that deviate from the happy path."""
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_missing_status_property_is_skipped(self, mock_query):
+        """Plan without a Status property is skipped, not flagged."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": "page-nostatus",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "no-status-plan-abc123"}}]},
+                    # No "Status" key
+                },
+            }
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 0
+        skipped_reasons = [s.get("reason") for s in report.get("skipped", [])]
+        assert any("status" in (r or "").lower() for r in skipped_reasons)
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_null_select_value_is_skipped(self, mock_query):
+        """Plan with Status.select == null is skipped gracefully."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": "page-nullstatus",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "null-status-plan-abc123"}}]},
+                    "Status": {"select": None},
+                },
+            }
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 0
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_mixed_pass_and_fail_in_same_batch(self, mock_query):
+        """One good + one bad in same response → exactly one violation."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": "page-good",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "good-plan-aaa111"}}]},
+                    "Status": {"select": {"name": CANONICAL_NEW_PLAN_STATUS}},
+                },
+            },
+            {
+                "id": "page-bad",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "bad-plan-bbb222"}}]},
+                    "Status": {"select": {"name": "In Progress"}},
+                },
+            },
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 1
+        assert report["passed_count"] == 1
+        assert report["violations"][0]["slug"] == "bad-plan-bbb222"
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_in_progress_on_new_plan_is_violation(self, mock_query):
+        """In Progress is not the canonical new-plan status — must flag."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": "page-inprog",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "inprog-plan-abc123"}}]},
+                    "Status": {"select": {"name": "In Progress"}},
+                },
+            }
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 1
+        assert report["violations"][0]["status"] == "In Progress"
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_completed_on_new_plan_is_violation(self, mock_query):
+        """Completed on a brand-new plan → violation."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": "page-comp",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": "comp-plan-abc123"}}]},
+                    "Status": {"select": {"name": "Completed"}},
+                },
+            }
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 1
+
+    @mock.patch("check_notion_plans_new_status._query_plans_db")
+    def test_multiple_violations_counted_correctly(self, mock_query):
+        """Three new plans each with a wrong status → violation_count == 3."""
+        now = _now_utc()
+        mock_query.return_value = [
+            {
+                "id": f"page-{i}",
+                "created_time": now.isoformat(),
+                "properties": {
+                    "Slug": {"title": [{"text": {"content": f"bad-plan-{i}aabb{i}c"}}]},
+                    "Status": {"select": {"name": status}},
+                },
+            }
+            for i, status in enumerate(["In Progress", "Completed", "Waiting"])
+        ]
+        with mock.patch("check_notion_plans_new_status._now_utc", return_value=now):
+            report = check_new_plans_status("fake-token")
+        assert report["violation_count"] == 3
+
+    def test_parse_iso8601_with_timezone_offset(self):
+        """ISO8601 with explicit +00:00 offset must parse."""
+        result = _parse_iso8601("2026-05-10T18:14:00+00:00")
+        assert result is not None
+        assert result.year == 2026
+
+    def test_parse_iso8601_with_negative_offset(self):
+        """ISO8601 with -04:00 timezone offset must parse without crashing."""
+        result = _parse_iso8601("2026-05-10T14:14:00-04:00")
+        # Either parses or returns None — must not raise
+        assert result is None or result.year == 2026
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

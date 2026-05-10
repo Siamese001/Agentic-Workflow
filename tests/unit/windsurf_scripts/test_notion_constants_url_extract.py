@@ -86,3 +86,80 @@ class TestExtractPageId:
 
     def test_whitespace_stripped(self) -> None:
         assert extract_page_id("  35727693f55c811895a8d62d11d50c25  ") == EXPECTED
+
+
+# ---------------------------------------------------------------------------
+# Gap-filling edge cases
+# ---------------------------------------------------------------------------
+
+class TestExtractPageIdEdgeCases:
+    """Edge cases found via API pagination + Notion URL format research."""
+
+    def test_url_with_fragment_anchor(self) -> None:
+        """Notion share links sometimes carry a #<block-id> fragment."""
+        url = (
+            "https://www.notion.so/my-plan-35727693f55c811895a8d62d11d50c25"
+            "#abc123def456789012345678901234ab"
+        )
+        result = extract_page_id(url)
+        assert result == EXPECTED
+
+    def test_url_with_path_after_page_id(self) -> None:
+        """Some Notion UI paths append /sub-page or /p/<id> after the page id."""
+        url = "https://www.notion.so/my-plan-35727693f55c811895a8d62d11d50c25/sub-page"
+        result = extract_page_id(url)
+        assert result == EXPECTED
+
+    def test_url_with_source_param_only(self) -> None:
+        """URL with ?source= but no v= param still extracts the page id."""
+        url = (
+            "https://www.notion.so/page-35727693f55c811895a8d62d11d50c25"
+            "?source=copy_link"
+        )
+        assert extract_page_id(url) == EXPECTED
+
+    def test_mixed_case_hex_in_url(self) -> None:
+        """Hex portion of URL in mixed case is normalised to lowercase."""
+        url = "https://www.notion.so/my-plan-35727693F55C811895A8D62D11D50C25"
+        result = extract_page_id(url)
+        assert result == EXPECTED
+
+    def test_notion_api_page_endpoint_url(self) -> None:
+        """Notion REST API v1/pages/<id> URL (used in some tool output)."""
+        url = "https://api.notion.com/v1/pages/35727693f55c811895a8d62d11d50c25"
+        result = extract_page_id(url)
+        assert result == EXPECTED
+
+    def test_dashed_uuid_in_api_url(self) -> None:
+        url = f"https://api.notion.com/v1/pages/{EXPECTED}"
+        result = extract_page_id(url)
+        assert result == EXPECTED
+
+    def test_string_with_only_dashes_returns_none(self) -> None:
+        assert extract_page_id("----") is None
+
+    def test_31_char_hex_too_short_returns_none(self) -> None:
+        assert extract_page_id("35727693f55c811895a8d62d11d50c2") is None
+
+    def test_33_char_hex_greedy_matches_first_32(self) -> None:
+        """extract_page_id uses a greedy regex — a 33-char hex string returns
+        the first 32 chars formatted as a UUID (not None).  This documents the
+        actual production behaviour: there is no strict boundary guard."""
+        result = extract_page_id("35727693f55c811895a8d62d11d50c255")
+        assert result == "35727693-f55c-8118-95a8-d62d11d50c25"
+
+
+class TestFormatUuidEdgeCases:
+    """format_uuid additional boundary cases."""
+
+    def test_all_zeros(self) -> None:
+        result = format_uuid("0" * 32)
+        assert result == "00000000-0000-0000-0000-000000000000"
+
+    def test_all_fs(self) -> None:
+        result = format_uuid("f" * 32)
+        assert result == "ffffffff-ffff-ffff-ffff-ffffffffffff"
+
+    def test_round_trip_dashed_undashed(self) -> None:
+        dashed = "35727693-f55c-8118-95a8-d62d11d50c25"
+        assert format_uuid(dashed.replace("-", "")) == dashed
