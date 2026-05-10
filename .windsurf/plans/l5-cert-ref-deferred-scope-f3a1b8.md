@@ -2,7 +2,7 @@
 
 **Slug:** `l5-cert-ref-deferred-scope-f3a1b8`
 **Tier:** T3 (cross-layer — apps_* caller wiring + semantic hardening + migration)
-**Status:** Not Started
+**Status:** In Progress
 **Created:** 2026-05-09
 **Parent plan:** `l5-cert-ref-emit-chain-threading-c4e7f1` (Completed 2026-05-09, commit `85892005de`)
 **Purpose:** Planning only — no implementation. Captures all scope explicitly deferred from the parent plan.
@@ -151,14 +151,14 @@ The plural field should be removed once all callers confirm they use the singula
 
 | Wave | Scope | Est. Tokens | Status |
 |---|---|---|---|
-| W1 | DS-7 — fix 5 residual test failures | ~3k | Not Started |
-| W2 | DS-1 — apps_rg caller glue (reference impl) | ~6k | Not Started |
-| W3 | DS-1 — remaining 9 apps caller glue | ~20k | Not Started |
-| W4 | DS-3 — remove plural field (post-audit) | ~4k | Not Started |
-| W5 | DS-5 — shadow eval analytics depth | ~6k | Not Started |
-| W6 | DS-2 — semantic validation (gated on Phase E) | ~12k | Not Started |
-| W7 | DS-4 — serialized artifact migration | ~8k | Not Started |
-| W8 | DS-6 — runtime certification claims (gated on §32 AG) | ~TBD | Not Started |
+| W1 | DS-7 — fix 5 residual test failures | ~3k | ✅ DONE (commit d41d3ca7c7) |
+| W2 | DS-1 — apps_rg caller glue (reference impl) | ~6k | ⏸ Waiting (gated on d4e8a1 W3) |
+| W3 | DS-1 — remaining 9 apps caller glue | ~20k | ⏸ Waiting (gated on DS-1/W2) |
+| W4 | DS-3 — remove plural field (post-audit) | ~4k | ⏸ Waiting (audit done; gated on DS-1) |
+| W5 | DS-5 — shadow eval analytics depth | ~6k | ✅ DONE (commit 21081bfb66) |
+| W6 | DS-2 — semantic validation (gated on Phase E) | ~12k | ⏸ Waiting (gated on ADR-080 Phase E) |
+| W7 | DS-4 — serialized artifact migration | ~8k | ⏸ Waiting (gated on DS-2) |
+| W8 | DS-6 — runtime certification claims (gated on §32 AG) | ~TBD | ⏸ Waiting (gated on DS-2 + §32 AG) |
 
 ---
 
@@ -166,14 +166,14 @@ The plural field should be removed once all callers confirm they use the singula
 
 | Phase ID | Title | Scope | Status |
 |---|---|---|---|
-| P1.1 | Fix W1 test constructors | `test_l5_cert_ref_w1.py` | Not Started |
-| P1.2 | Fix W2 L2 propagation test | `test_l5_cert_ref_w2.py`, `l2_execution_contract.py` | Not Started |
+| P1.1 | Fix W1 test constructors | `test_l5_cert_ref_w1.py` | ✅ Done |
+| P1.2 | Fix W2 L2 propagation test | `test_l5_cert_ref_w2.py`, `l2_execution_contract.py` | ✅ Done |
 | P2.1 | apps_rg l5_certification_ref glue at ingress | `apps_rg/__main__.py`, `apps_rg/...dispatch.py` | Not Started |
 | P2.2 | apps_rg propagation through layer bindings | per-layer binding files in `agentic_core/runtime/entry/` | Not Started |
 | P3.1–P3.9 | Per-app glue (apps_qna … apps_repo_brief) | `apps_*/` — one phase per app | Not Started |
 | P4.1 | Audit `l5_certification_refs` plural caller sites | `grep` sweep + evidence doc | Not Started |
 | P4.2 | Remove plural field + update gate | `L4_state/contracts/records.py`, `check_l5_cert_ref_on_emit_contracts.py` | Not Started |
-| P5.1 | Shadow eval cert-ref drift detection | `L6_observability/shadow_eval/` | Not Started |
+| P5.1 | Shadow eval cert-ref drift detection | `L6_observability/shadow_eval/` | ✅ Done |
 | P6.1 | Semantic validation helper upgrade | `L5_safety/contracts/verify.py` | Not Started |
 | P6.2 | Registry lookup integration | `L5_safety/contracts/registry.py` | Not Started |
 | P7.1 | Artifact backfill script | `ops_scripts/maintenance/backfill_l5_cert_ref.py` | Not Started |
