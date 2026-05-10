@@ -797,6 +797,15 @@ def main():
             "DEFER Deferred scope marker compliance (advisory baseline)",
             "ops_scripts/ci/check_deferred_scope_markers.py",
         ),
+        # RULE-FMT — Rule frontmatter schema validation.
+        # Validates .windsurf/rules/*.md YAML frontmatter against canonical schema.
+        # Baseline: many rules lack proper frontmatter (advisory).
+        # Advisory by default; fail-closed via RULE_FRONTMATTER_FAIL_CLOSED=1.
+        # Bypass: RULE_FRONTMATTER_BYPASS=1.
+        (
+            "RULE-FMT Rule frontmatter schema (advisory baseline)",
+            "ops_scripts/ci/check_rule_frontmatter_schema.py",
+        ),
     ]
 
     for label, script in assurance_gates:

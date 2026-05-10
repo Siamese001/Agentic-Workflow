@@ -315,6 +315,32 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6e1: Deferred Scope Marker Check (W5 implementation) ------------------------
+      # Validates that staged plan files with deferred-scope prose have
+      # DEFERRED_SCOPE: markers. Scans only added lines in staged files.
+      # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
+      - id: deferred-scope-marker
+        name: "T6e1: Deferred Scope Marker Check"
+        entry: py ops_scripts/ci/check_deferred_scope_markers.py --staged
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/plans/.*\.md$
+        always_run: false
+        require_serial: true
+
+      # -- T6e2: MCP Config Schema Validation (W5 implementation) ------------------------
+      # Validates .windsurf/mcp_config.json against canonical schema.
+      # Checks required servers, valid keys per constitutional §27.
+      # Bypass: MCP_CONFIG_SCHEMA_BYPASS=1.
+      - id: mcp-config-schema
+        name: "T6e2: MCP Config Schema Validation"
+        entry: py ops_scripts/ci/check_mcp_config_schema.py
+        language: system
+        pass_filenames: false
+        files: ^\.windsurf/mcp_config\.json$
+        always_run: false
+        require_serial: true
+
       # -- T6d3: AGENTS.md Autogen Block Integrity -------------------------------------
       # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
       # byte-identical to the SSOT generator output. Currently covers:
