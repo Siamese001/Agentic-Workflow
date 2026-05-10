@@ -17,6 +17,8 @@ import pytest
 
 from agentic_core.L6_observability.shadow_eval import (
     IngestError,
+    MISSING_CERT_REF_SENTINEL,
+    REASON_CERT_REF_MISSING,
     REASON_EXIT_DISPOSITION_MISSING,
     REASON_LIVE_RUN_NOT_CLOSED,
     REASON_REPLAY_KEY_MISSING,
@@ -65,9 +67,12 @@ def test_full_pipeline_smoke(sealed_completed_run):
     # 06.1: artifact inventory preserves lineage and hashes.
     assert inv.file_hashes
     assert inv.artifact_lineage
-    # 06.1: gap_codes for fully-clean run should not include trace/replay/policy issues.
+    # 06.1: gap_codes for fully-clean run should not include trace/replay/policy/cert issues.
     assert REASON_TRACE_LINK_MISSING not in gap.gap_codes
     assert REASON_REPLAY_KEY_MISSING not in gap.gap_codes
+    assert REASON_CERT_REF_MISSING not in gap.gap_codes
+    # DS-5: cert ref threaded through to bundle.
+    assert bundle.l5_certification_ref == "l5-cert-ref:test-run-001"
 
 
 def test_missing_trace_root_emits_gap(run_missing_trace_root):
@@ -125,6 +130,27 @@ def test_orphan_artifact_appears_in_gap_report(sealed_completed_run):
     ]
     _b, _n, _m, _smap, _inv, gap = build_runtime_exhaust_bundle(payload)
     assert "ORPHAN_ARTIFACT" in gap.gap_codes or gap.orphan_artifact_refs
+
+
+def test_missing_cert_ref_emits_gap(run_missing_cert_ref):
+    """DS-5: missing l5_certification_ref in raw_exhaust → L5_CERT_REF_MISSING gap code."""
+    bundle, _norm, _mans, _smap, _inv, gap = build_runtime_exhaust_bundle(run_missing_cert_ref)
+    assert REASON_CERT_REF_MISSING in gap.gap_codes
+    # Bundle must still be constructable; sentinel used.
+    assert bundle.l5_certification_ref == MISSING_CERT_REF_SENTINEL
+
+
+def test_present_cert_ref_not_flagged(run_with_cert_ref):
+    """DS-5: when l5_certification_ref present, no L5_CERT_REF_MISSING gap code emitted."""
+    bundle, _norm, _mans, _smap, _inv, gap = build_runtime_exhaust_bundle(run_with_cert_ref)
+    assert REASON_CERT_REF_MISSING not in gap.gap_codes
+    assert bundle.l5_certification_ref == "l5-cert-ref:run-certified-001"
+
+
+def test_sentinel_is_non_empty_string():
+    """DS-5: MISSING_CERT_REF_SENTINEL must pass verify_certification_ref (non-empty)."""
+    from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+    assert verify_certification_ref(MISSING_CERT_REF_SENTINEL)
 
 
 def test_impossible_stage_order_flagged():

@@ -293,6 +293,7 @@ def _bare_bundle(**overrides):
         source_lineage_manifest_ref="lin",
         artifact_inventory_ref="inv",
         ingest_gap_report_ref="gap",
+        l5_certification_ref="l5-cert-ref:branch-coverage-bare",
     )
     base.update(overrides)
     return RuntimeExhaustBundle(**base)
