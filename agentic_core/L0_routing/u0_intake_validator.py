@@ -15,6 +15,8 @@ Hard Constraints:
 
 from __future__ import annotations
 
+import logging
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Mapping, Optional
@@ -23,6 +25,29 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     AppsRgIngressPayload,
     ValidatedRequest,
 )
+
+_logger = logging.getLogger(__name__)
+
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref(ref: str, stage: str) -> None:
+    """Fail-soft L5 cert ref verify per AG-W0-3=A_consume_entry, AG-W0-5=A_fail_soft_env_gate.
+
+    Logs a warning when ref is empty/invalid. Raises only when
+    ``L5_CERT_REF_FAIL_CLOSED=1``.
+    """
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry import must not crash pipeline; treat as unverified
+        _logger.warning("L5CertRefViolation stage=%s registry_error=%s", stage, exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=%s ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (stage, ref))
+        _logger.warning(msg, stage, ref)
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,6 +89,12 @@ class U0IntakeValidator:
         """
         # Check for forbidden authority fields
         self._check_forbidden_fields(ingress_payload)
+
+        # L1 entry: verify upstream (ingress) l5_certification_ref (AG-W0-3)
+        _check_l5_cert_ref(
+            getattr(ingress_payload, "l5_certification_ref", ""),
+            stage="U0_intake",
+        )
 
         # Generate trace ID
         import uuid

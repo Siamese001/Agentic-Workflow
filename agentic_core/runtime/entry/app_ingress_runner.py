@@ -33,7 +33,7 @@ This module does NOT know the concrete types. Tests should patch
 
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Mapping
 
 from agentic_core.L5_safety.enforcement.ingress_envelope_check import (
     ClarificationRequired,
@@ -98,6 +98,56 @@ class AppIngressRunner:
         if isinstance(result, ClarificationRequired):
             return result
         return self._dispatch_or_clarify(result)
+
+    # ------------------------------------------------------------------ U3 direct payload
+    def run(self, payload: Mapping[str, Any]) -> Any | ClarificationRequired:
+        """Direct-payload entry point — bypasses chat/HTTP envelope adapters.
+
+        Per plan apps-rg-runtime-wiring-completion-d4e8a1 §5 (re-opens c8b3e1 W5/W6).
+        Accepts a normalized payload dict (as built by apps_*/__main__.py from
+        CLI/wizard input), validates required fields, parses to a typed domain
+        request, and dispatches.
+
+        Returns:
+            - The dispatched domain result on the happy path
+            - ClarificationRequired when payload is incomplete or unparseable
+
+        This is the third entry mode alongside handle_chat (U1) and
+        handle_http (U2). It exists for direct CLI invocation where the
+        chat/HTTP envelope is not meaningful.
+        """
+        request_id = str(payload.get("request_id") or "rg-direct-" + str(id(payload)))
+        trace_root = str(payload.get("trace_id") or payload.get("trace_root") or request_id)
+
+        if not isinstance(payload, Mapping):
+            return ClarificationRequired(
+                request_id=request_id,
+                trace_root=trace_root,
+                reason="payload must be a Mapping/dict",
+                suggested_followups=(f"Provide a dict containing: {', '.join(self._required)}.",),
+            )
+
+        missing = [
+            f for f in self._required if not (isinstance(payload.get(f), str) and payload.get(f, "").strip())
+        ]
+        if missing:
+            return ClarificationRequired(
+                request_id=request_id,
+                trace_root=trace_root,
+                reason=f"payload missing required fields: {missing}",
+                suggested_followups=(f"Provide non-empty string values for: {', '.join(missing)}.",),
+            )
+
+        domain_request = self._parse(dict(payload))
+        if domain_request is None:
+            return ClarificationRequired(
+                request_id=request_id,
+                trace_root=trace_root,
+                reason="payload could not be parsed into a domain request",
+                suggested_followups=(f"Verify types/values for required fields: {', '.join(self._required)}.",),
+            )
+
+        return self._dispatch(domain_request)
 
     # ------------------------------------------------------------------ shared
     def _dispatch_or_clarify(self, stamped: StampedRequest) -> Any | ClarificationRequired:

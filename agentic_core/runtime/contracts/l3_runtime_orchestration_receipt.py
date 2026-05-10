@@ -105,6 +105,7 @@ class L3RuntimeOrchestrationReceipt:
     schema_version: str = L3_RUNTIME_RECEIPT_SCHEMA_VERSION
     deterministic_digest: str = ""
     static_dag_ref: str = ""
+    l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
         for name in ("run_id", "request_id", "trace_root", "route_id", "dag_id", "dag_sha256"):
@@ -155,6 +156,12 @@ class L3RuntimeOrchestrationReceipt:
         if self.schema_version != L3_RUNTIME_RECEIPT_SCHEMA_VERSION:
             raise ValueError(
                 f"L3RuntimeOrchestrationReceipt.schema_version mismatch"
+            )
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+        if not verify_certification_ref(self.l5_certification_ref):
+            raise ValueError(
+                f"L3RuntimeOrchestrationReceipt: missing or invalid "
+                f"l5_certification_ref={self.l5_certification_ref!r} (AG-W0-5=fail_closed)"
             )
 
     def to_dict(self) -> dict[str, Any]:

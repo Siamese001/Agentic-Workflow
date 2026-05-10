@@ -17,10 +17,31 @@ stays free of any concrete backend dependency.
 
 from __future__ import annotations
 
+import logging
+import os
 import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Callable, Mapping
+
+_logger = logging.getLogger(__name__)
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref_c0(ref: str) -> None:
+    """Fail-soft L5 cert ref verify at C0 entry per AG-W0-3=A_consume_entry."""
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash C0 pipeline; treat as unverified
+        _logger.warning("L5CertRefViolation stage=C0_entry registry_error=%s", exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=C0_entry ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (ref,))
+        _logger.warning(msg, ref)
+
 
 from .candidate_pool import CandidateEvidencePool
 from .contradiction_gap import scan_conflicts_and_gaps
@@ -511,6 +532,9 @@ class C0Dispatcher:
         t_start: float,
         notes: list[str],
     ) -> C0Result:
+        # C0 entry: verify upstream (L0 route) l5_certification_ref (AG-W0-3)
+        _check_l5_cert_ref_c0(getattr(route, "l5_certification_ref", ""))
+
         # Stage C0.0 — preflight
         pre = run_preflight(route, plan_contract)
         if not pre.eligible:

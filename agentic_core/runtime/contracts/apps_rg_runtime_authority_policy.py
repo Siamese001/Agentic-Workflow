@@ -244,6 +244,7 @@ class AppsRgRuntimeAuthorityPolicy:
 
         passed = len(detected) == 0
         return AuthorityValidationReceipt(
+            allowed=passed,
             passed=passed,
             request_id=request_id,
             checked_fields=tuple(sorted(flat.keys())),

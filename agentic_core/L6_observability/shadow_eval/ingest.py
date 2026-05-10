@@ -45,6 +45,8 @@ REASON_IMPOSSIBLE_STAGE_ORDER = "IMPOSSIBLE_STAGE_ORDER"
 REASON_POLICY_HASH_MISMATCH = "POLICY_HASH_MISMATCH"
 REASON_REPLAY_KEY_MISSING = "REPLAY_KEY_MISSING"
 REASON_UNKNOWN_PROVIDER_FALLBACK = "UNKNOWN_PROVIDER_FALLBACK"
+REASON_CERT_REF_MISSING = "L5_CERT_REF_MISSING"
+MISSING_CERT_REF_SENTINEL = "l5-cert-ref:MISSING"  # valid non-empty sentinel for gap-analysis bundles
 
 # Canonical pipeline stages used by StageMap.expected_stages.
 EXPECTED_STAGES = ("U0", "L1", "L0", "C0", "PA", "L3", "L2", "EXIT", "UWG")
@@ -121,6 +123,8 @@ def validate_lineage(
         gap_codes.append(REASON_POLICY_HASH_MISMATCH)
     if not raw_exhaust.get("replay_key"):
         gap_codes.append(REASON_REPLAY_KEY_MISSING)
+    if not raw_exhaust.get("l5_certification_ref"):
+        gap_codes.append(REASON_CERT_REF_MISSING)
     # Orphan artifacts (those without lineage parents AND not stage-anchored).
     for m in manifests:
         if not m.lineage_parent_refs and m.observed_stage == "UNKNOWN":
@@ -327,6 +331,7 @@ def build_runtime_exhaust_bundle(
         source_lineage_manifest_ref=raw_exhaust.get("source_lineage_manifest_ref"),
         artifact_inventory_ref=inv.inventory_id,
         ingest_gap_report_ref=gap_report.gap_report_id,
+        l5_certification_ref=str(raw_exhaust.get("l5_certification_ref") or MISSING_CERT_REF_SENTINEL),
     )
     bundle = stamp_digest(bundle)
     normalized = normalize_records(raw_exhaust, bundle_id)
@@ -344,6 +349,8 @@ __all__ = [
     "REASON_POLICY_HASH_MISMATCH",
     "REASON_REPLAY_KEY_MISSING",
     "REASON_UNKNOWN_PROVIDER_FALLBACK",
+    "REASON_CERT_REF_MISSING",
+    "MISSING_CERT_REF_SENTINEL",
     "receive_completed_run_marker",
     "collect_source_refs",
     "validate_lineage",

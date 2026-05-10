@@ -42,6 +42,7 @@ def sealed_completed_run() -> dict:
         "l2_artifact_refs": ["l2-art-001"],
         "uwg_receipt_refs": ["uwg-001"],
         "uwg_commit_status": "COMMITTED",
+        "l5_certification_ref": "l5-cert-ref:test-run-001",
         "source_lineage_manifest_ref": "lineage-001",
         "source_exhaust": [
             {
@@ -159,3 +160,17 @@ def run_missing_trace_root(sealed_completed_run) -> dict:
     no_trace = dict(sealed_completed_run)
     no_trace["trace_root"] = ""
     return no_trace
+
+
+@pytest.fixture
+def run_missing_cert_ref(sealed_completed_run) -> dict:
+    no_cert = dict(sealed_completed_run)
+    no_cert.pop("l5_certification_ref", None)
+    return no_cert
+
+
+@pytest.fixture
+def run_with_cert_ref(sealed_completed_run) -> dict:
+    with_cert = dict(sealed_completed_run)
+    with_cert["l5_certification_ref"] = "l5-cert-ref:run-certified-001"
+    return with_cert

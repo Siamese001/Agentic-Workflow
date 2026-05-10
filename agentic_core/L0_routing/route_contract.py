@@ -15,10 +15,30 @@ Hard Constraints:
 
 from __future__ import annotations
 
+import logging
+import os
 from datetime import datetime, timezone
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
+
+_logger = logging.getLogger(__name__)
+_L5_CERT_REF_FAIL_CLOSED = os.getenv("L5_CERT_REF_FAIL_CLOSED", "0") == "1"
+
+
+def _check_l5_cert_ref_l0(ref: str) -> None:
+    """Fail-soft L5 cert ref verify at L0 entry per AG-W0-3=A_consume_entry."""
+    try:
+        from agentic_core.L5_safety.contracts.registry import verify_certification_ref
+        valid = verify_certification_ref(ref)
+    except Exception as exc:  # guardian: allow-log-and-swallow -- L5 registry must not crash L0 routing; treat as unverified
+        _logger.warning("L5CertRefViolation stage=L0_entry registry_error=%s", exc)
+        return
+    if not valid:
+        msg = "L5CertRefViolation stage=L0_entry ref=%r — missing or invalid l5_certification_ref"
+        if _L5_CERT_REF_FAIL_CLOSED:
+            raise ValueError(msg % (ref,))
+        _logger.warning(msg, ref)
 
 
 class L0Router:
@@ -36,6 +56,9 @@ class L0Router:
         Returns:
             RouteContract with selected route and execution path
         """
+        # L0 entry: verify upstream (L1 plan) l5_certification_ref (AG-W0-3)
+        _check_l5_cert_ref_l0(getattr(plan, "l5_certification_ref", ""))
+
         # Determine route based on plan requirements
         route_id, l3_required = self._select_route(plan)
 
@@ -54,6 +77,7 @@ class L0Router:
             reason_codes=reason_codes,
             routing_timestamp=datetime.now(timezone.utc).isoformat(),
             route_version="W6.0",
+            l5_certification_ref=getattr(plan, "l5_certification_ref", ""),
         )
 
     def _select_route(self, plan: L1PlanContract) -> tuple[str, bool]:
