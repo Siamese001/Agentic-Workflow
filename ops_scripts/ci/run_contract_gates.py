@@ -490,6 +490,13 @@ def main():
             "AEH2 AgentSpec completeness (advisory)",
             "ops_scripts/ci/check_agent_spec_completeness.py",
         ),
+        # AG8 — apps_lic golden path runtime proof (plan: apps-lic-ag8-golden-template-adoption-f3c2e1).
+        # Verifies full spine wiring: U0->L1->L0->L3->C0->PA->L2->Exit->X1/X3.
+        # Advisory by default; fail-closed via APPS_LIC_GOLDEN_PATH_FAIL_CLOSED=1.
+        (
+            "AG8 apps_lic golden path runtime (advisory)",
+            "ops_scripts/ci/check_apps_lic_golden_path_runtime.py",
+        ),
         # AEH3 — Grounded RAG dim activation gate.
         # Checks that dims removed from intentional_failopen_dims have
         # weight>0 and fail_closed_if_unknown=true (i.e. C0 fully wired).
@@ -607,6 +614,28 @@ def main():
         (
             "NP11 Notion Backlog Waiting-For completeness (advisory)",
             "ops_scripts/ci/check_notion_backlog_waiting_for.py",
+        ),
+        # NP13 -- Plans DB rows stuck In Progress for >7d with no
+        # PLAN_COMPLETE marker in wave_lifecycle_capture.jsonl.
+        # Advisory by default; fail-closed via
+        # NOTION_PLAN_COMPLETE_FAIL_CLOSED=1.
+        # Bypass: NOTION_PLAN_COMPLETE_BYPASS=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plan-wave-deferral.md.
+        # Plan: plan-complete-marker-enforcement-d2e9f1 W2.
+        (
+            "NP13 Notion Plans PLAN_COMPLETE marker freshness (advisory)",
+            "ops_scripts/ci/check_plan_complete_marker_freshness.py",
+        ),
+        # NP12 — Schema preflight validation. Validates that Notion write
+        # operations target existing properties before API calls are made.
+        # Advisory by default; fail-closed via NOTION_SCHEMA_PREFLIGHT_FAIL_CLOSED=1.
+        # Bypass: NOTION_SCHEMA_PREFLIGHT_BYPASS=1.
+        # Rule: .windsurf/rules/notion-sync-enforcement.md > Schema Validation.
+        # Plan: notion-sync-enforcement-hardening-f5a2c1 W1.P2.
+        (
+            "NP12 Notion Schema Pre-flight (advisory)",
+            "ops_scripts/ci/check_notion_schema_preflight.py",
         ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
@@ -882,6 +911,14 @@ def main():
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
         ("AG-WIRE Author-Gate hook wiring invariant (advisory)", "ops_scripts/ci/check_ag_hook_wiring.py"),
+        # AG-DEFER — Deferred-scope plan guard marker parity.
+        # Every plan with "do not implement without" prose MUST have a
+        # DO_NOT_IMPLEMENT_GUARD: marker so the pre_user_prompt hook can surface
+        # the block to Cascade at every turn. Advisory by default;
+        # fail-closed via DEFERRED_PLAN_GUARD_FAIL_CLOSED=1.
+        # RCA: 2026-05-10 notion-test-hardening-deferred-scope-a7b4c9.
+        # Bypass: DEFERRED_PLAN_GUARD_BYPASS=1.
+        ("AG-DEFER Deferred-scope plan guard marker parity (advisory)", "ops_scripts/ci/check_deferred_plan_guard_markers.py"),
         # WG1 — ADG wiring gap detector (4 modes: registry-gaps,
         # instantiation-orphans, port-adapter-gaps, dead-imports).
         # Advisory by default (--gate flag not passed); activates blocking via

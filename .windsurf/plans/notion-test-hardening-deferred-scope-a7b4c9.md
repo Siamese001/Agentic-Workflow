@@ -8,8 +8,9 @@ status: Not Started
 # Notion Test Hardening — Deferred Scope
 
 All items explicitly deferred or surfaced-but-not-implemented across the two
-Notion test-hardening sessions (sessions 2026-05-10). Nothing here should be
-implemented without a separate Author-Gate decision and wave plan.
+Notion test-hardening sessions (sessions 2026-05-10). Nothing here should be implemented without a separate Author-Gate decision and wave plan.
+
+DO_NOT_IMPLEMENT_GUARD: plan=notion-test-hardening-deferred-scope-a7b4c9 reason=requires Author-Gate decision before execution — D-3 through D-8 are unimplemented; executing without gate bypasses constitutional §6
 
 ---
 

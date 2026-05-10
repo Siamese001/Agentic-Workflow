@@ -90,6 +90,11 @@
         "show_output": true
       },
       {
+        "command": "python .windsurf/scripts/pre_user_prompt_deferred_plan_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
+      {
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
@@ -246,6 +251,11 @@
         "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_plan_complete_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
       },
       {
         "command": "python .windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
