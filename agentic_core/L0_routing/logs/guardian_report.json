@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-05-10T01:58:38.071174+00:00",
+  "timestamp": "2026-05-10T10:03:01.247617+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 441,
+    "total_tests": 439,
     "passed_tests": 0,
-    "failed_tests": 240,
+    "failed_tests": 238,
     "skipped_tests": 201,
     "exit_status": 1,
     "failed_by_category": {
@@ -22,7 +22,6 @@
       "subatomic": [],
       "forensic": [],
       "other": [
-        "tests/_apps_contract/test_apps_rg_cross_company_contamination_guard.py",
         "tests/_apps_contract/test_apps_rg_generate_step_uses_compiled_artifact_only.py",
         "tests/_apps_contract/test_apps_rg_pa_compiles_prompt_artifact.py",
         "tests/_apps_contract/test_apps_rg_prompt_artifact_in_sealed_l2_output.py",
@@ -42,7 +41,6 @@
         "tests/_apps_contract/test_w7_pre_export_gates.py",
         "tests/apps_eval/engines/test_narrative_judge_scorer.py",
         "tests/apps_eval/test_properties.py",
-        "tests/apps_lic/test_integrations.py",
         "tests/apps_lic/test_lic_reasoning.py",
         "tests/apps_lic/test_properties.py",
         "tests/apps_research/engines/test_company_brief_engine.py",

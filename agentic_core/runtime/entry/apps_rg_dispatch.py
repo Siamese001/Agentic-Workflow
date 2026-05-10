@@ -185,6 +185,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             outcome_authorized=False,
             final_output={"error": "apps_rg_dispatch received non-RequestEnvelope"},
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-bad-envelope",
         )
 
     # ----------------------------------------------------------------- U0
@@ -206,6 +207,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(violation),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-u0-authority-violation",
         )
 
     # ----------------------------------------------------------------- L1
@@ -219,6 +221,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             run_id=validated_request.run_id,
             app_id="apps_rg",
             trace_id=validated_request.trace_id,
+            tenant_id=validated_request.tenant_id,
             exit_status="failure",
             outcome_authorized=False,
             final_output={
@@ -227,6 +230,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l1_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-l1-planning",
         )
 
     # ----------------------------------------------------------------- L0
@@ -240,6 +244,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             run_id=l1_plan.run_id,
             app_id="apps_rg",
             trace_id=l1_plan.trace_id,
+            tenant_id=l1_plan.tenant_id,
             exit_status="failure",
             outcome_authorized=False,
             final_output={
@@ -248,6 +253,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l0_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-l0-routing",
         )
 
     # ----------------------------------------------------------------- C0 (conditional)
@@ -322,6 +328,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             run_id=route.run_id,
             app_id="apps_rg",
             trace_id=route.trace_id,
+            tenant_id=route.tenant_id,
             exit_status="success",
             outcome_authorized=True,
             final_output={
@@ -330,6 +337,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "note": "model_generation_required=false — L2/Exit skipped",
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-no-gen-complete",
         )
 
     try:
@@ -342,6 +350,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             run_id=route.run_id,
             app_id="apps_rg",
             trace_id=route.trace_id,
+            tenant_id=route.tenant_id,
             exit_status="failure",
             outcome_authorized=False,
             final_output={
@@ -350,6 +359,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l2_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-l2-execution",
         )
 
     # ----------------------------------------------------------------- Exit
@@ -363,6 +373,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             run_id=route.run_id,
             app_id="apps_rg",
             trace_id=route.trace_id,
+            tenant_id=route.tenant_id,
             exit_status="failure",
             outcome_authorized=False,
             final_output={
@@ -372,6 +383,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "sealed_compilation_hash": sealed.compilation_hash,
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-exit-finalization",
         )
 
 __all__ = [

@@ -138,10 +138,11 @@ def _build_user_instruction(
     target_role = payload.target_role or "the target role"
     target_level = payload.target_level or "unspecified"
 
-    # Inline at most ~6000 chars of evidence content to stay well under
-    # the 8192 model context window. W5 replaces this with chunk-budget logic.
+    # Qwen2.5-32B-Instruct-AWQ supports 128K context natively.
+    # Budget allows generous evidence inclusion; prompt + response typically
+    # stays well under 32K tokens even with full resume + JD + brief.
     inlined: list[str] = []
-    budget_remaining = 6000
+    budget_remaining = 60000
     for item in fec.evidence_items:
         if budget_remaining <= 0:
             break

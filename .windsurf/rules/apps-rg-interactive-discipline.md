@@ -9,19 +9,24 @@ description: Apply when invoking `python -m apps_rg` or discussing target-compan
 
 > ⛔ When the user asks Cascade to run apps_rg without naming all required inputs in the SAME turn, Cascade MUST issue ONE prompt requesting ALL inputs at once — never multi-turn back-and-forth.
 
+## Static Inputs (configured once, never re-asked)
+
+- **Source resume**: stored at `ops_scripts/apps_rg/` or user-configured path. Cascade resolves from the most recent `*_resume*.json` or `*_resume*.docx` in that folder. If no resume file exists, ask ONCE and remember the path for the session.
+
 ## Single-Prompt Template
 
+When the user says `python -m apps_rg` without all dynamic inputs in the same turn:
+
 ```
-To run apps_rg, please provide all of the following in your next message:
-1. Target company (e.g. "Brown & Brown")
-2. Target role (e.g. "SVP IT Strategy & Innovation")
-3. Target level (optional — SENIOR / STAFF / EXECUTIVE / skip)
-4. Source resume — file path OR paste text
-5. Job description — file path OR paste text
-6. Research briefing — file path to pre-built brief, OR "auto-internal", OR "auto-tavily", OR "skip"
+To run apps_rg, please provide in your next message:
+1. Target: company, role, and level (e.g. "Brown & Brown, SVP IT Strategy & Innovation, EXECUTIVE")
+2. Job description — file path OR paste text
+3. Research briefing — file path to pre-built brief, OR "auto-internal", OR "auto-tavily", OR "skip"
 ```
 
-If the user omits a field, ask for ONLY the missing field(s) in a single follow-up.
+- Item 1 is a single cluster (company + role + optional level) — ask together, not separately.
+- Source resume is STATIC — do not ask for it every run. Use the configured/most-recent path.
+- If the user omits a field, ask for ONLY the missing field(s) in a single follow-up.
 
 ## Hard Rules
 

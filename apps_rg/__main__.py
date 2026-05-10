@@ -21,10 +21,50 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-    AppsRgIngressPayload,
-    RequestEnvelope,
-)
+
+def _assert_artifact_matches_company(
+    artifact_path: Path | str,
+    target_company: str,
+    artifact_type: str,
+) -> None:
+    """Guard: if artifact_path exists and carries a `company` field, verify it
+    matches target_company (case-insensitive).  Missing file, empty
+    target_company, non-JSON/YAML extension, missing `company` key, and parse
+    errors are all treated as no-ops so the guard stays fail-soft on ambiguity.
+
+    Raises SystemExit with a FATAL message on company mismatch.
+    """
+    p = Path(artifact_path)
+    if not p.exists() or not target_company:
+        return
+    suffix = p.suffix.lower()
+    if suffix not in (".json", ".yaml", ".yml"):
+        return
+    try:
+        text = p.read_text(encoding="utf-8")
+        if suffix == ".json":
+            data = json.loads(text)
+        else:
+            try:
+                import yaml  # type: ignore[import-untyped]
+                data = yaml.safe_load(text)
+            except ImportError:
+                import re as _re
+                m = _re.search(r'^company:\s*(.+)$', text, _re.MULTILINE)
+                data = {"company": m.group(1).strip()} if m else {}
+    except Exception:  # guardian: allow-broad-exception -- fail-soft parse guard; never block valid runs
+        return
+    if not isinstance(data, dict):
+        return
+    artifact_company: str = data.get("company", "")
+    if not artifact_company:
+        return
+    if artifact_company.lower().strip() != target_company.lower().strip():
+        sys.exit(
+            f"FATAL: {artifact_type} company mismatch — "
+            f"artifact declares '{artifact_company}' but --target-company is '{target_company}'. "
+            "Remove or replace the artifact before running for this target company."
+        )
 
 
 def _interactive_wizard() -> dict[str, Any]:
@@ -185,10 +225,29 @@ def main() -> int:
         action="store_true",
         help="Launch interactive wizard for input collection",
     )
+    parser.add_argument(
+        "--cascade-prompts",
+        action="store_true",
+        help="Sentinel mode for Cascade: write prompt sentinel + exit 7 instead of launching TTY wizard",
+    )
     args = parser.parse_args()
 
+    # Cascade sentinel mode: when --cascade-prompts is set, require both
+    # target_company and target_role to be explicitly supplied; exit 7 if either
+    # is missing so that Cascade can surface the mandatory-fields prompt.
+    if getattr(args, 'cascade_prompts', False):
+        if not args.target_company or not args.target_role:
+            print(
+                "CASCADE SENTINEL: mandatory inputs required — "
+                "provide --target-company and --target-role to proceed.",
+                file=sys.stderr,
+            )
+            return 7
+
     # Launch wizard if requested or if no args provided
-    needs_wizard = args.wizard or (not args.target_company and not args.target_role and not args.source_resume)
+    needs_wizard = args.wizard or (
+        not args.target_company and not args.target_role and not args.source_resume
+    )
     if needs_wizard:
         if not sys.stdin.isatty():
             print("ERROR: Interactive wizard requires a terminal (TTY).", file=sys.stderr)
@@ -223,6 +282,32 @@ def main() -> int:
     if not (ingress_payload["target_company"] or ingress_payload["target_role"]):
         if not (ingress_payload["source_resume_ref"] or ingress_payload["source_resume_text"]):
             print("ERROR: At least one of (target_company, target_role) or resume source required.", file=sys.stderr)
+            return 1
+
+    # D1 W6 caller wiring: intake prerequisite checks before submitting to runner
+    _target_company: str = ingress_payload.get("target_company") or ""
+
+    # Contamination guard: verify artifact company fields match target
+    if ingress_payload.get("job_description_ref"):
+        _assert_artifact_matches_company(
+            ingress_payload["job_description_ref"], _target_company, "jd"
+        )
+    if ingress_payload.get("manual_brief_path"):
+        _assert_artifact_matches_company(
+            ingress_payload["manual_brief_path"], _target_company, "manual_brief"
+        )
+
+    # Prerequisite check: if explicit --manual-brief path provided but missing,
+    # the caller made a specific choice — surface it rather than silently stubbing.
+    if ingress_payload.get("manual_brief_path"):
+        _brief_path = Path(ingress_payload["manual_brief_path"])
+        if not _brief_path.exists():
+            print(
+                f"MISSING: manual_brief file not found at '{_brief_path}'. "
+                "Provide a valid briefing path or use --auto-research-internal "
+                "to delegate to apps_research.",
+                file=sys.stderr,
+            )
             return 1
 
     if args.dry_run:

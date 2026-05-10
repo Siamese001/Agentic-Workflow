@@ -34,6 +34,10 @@ from agentic_core.runtime.contracts.route_contract import RouteContract
 
 APPS_RG_C0_CERT_REF: str = "c0-apps-rg-resume-generation-w3p4"
 
+_DOCX_EXTENSIONS: frozenset[str] = frozenset({".docx"})
+_PDF_EXTENSIONS: frozenset[str] = frozenset({".pdf"})
+_JSON_EXTENSIONS: frozenset[str] = frozenset({".json"})
+
 
 def _resolve_repo_root() -> Path:
     here = Path(__file__).resolve()
@@ -68,6 +72,82 @@ def _read_json_evidence(
         content_type="json",
         retrieval_timestamp=timestamp_iso,
         confidence_score=1.0,  # direct file read, fully trusted
+    )
+
+
+def _extract_docx_text(path: Path) -> str | None:
+    """Extract plain text from a .docx file using python-docx."""
+    try:
+        import docx  # python-docx
+        doc = docx.Document(str(path))
+        paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+        return "\n".join(paragraphs) if paragraphs else None
+    except (ImportError, Exception):
+        return None
+
+
+def _extract_pdf_text(path: Path) -> str | None:
+    """Extract plain text from a .pdf file using PyPDF2."""
+    try:
+        from PyPDF2 import PdfReader
+        reader = PdfReader(str(path))
+        pages = [page.extract_text() or "" for page in reader.pages]
+        text = "\n".join(p for p in pages if p.strip())
+        return text if text.strip() else None
+    except (ImportError, Exception):
+        return None
+
+
+def _read_file_evidence(
+    relpath: str | None,
+    source_label: str,
+    timestamp_iso: str,
+    repo_root: Path,
+) -> EvidenceItem | None:
+    """Read a file as text evidence, handling JSON, DOCX, PDF, and plain text."""
+    if not relpath:
+        return None
+    abs_path = (
+        (repo_root / relpath).resolve()
+        if not Path(relpath).is_absolute()
+        else Path(relpath)
+    )
+    if not abs_path.exists() or not abs_path.is_file():
+        return None
+
+    suffix = abs_path.suffix.lower()
+    content: str | None = None
+    content_type = "text"
+
+    if suffix in _JSON_EXTENSIONS:
+        try:
+            raw = abs_path.read_bytes().decode("utf-8")
+            json.loads(raw)  # validate
+            content = raw
+            content_type = "json"
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            content = None
+    elif suffix in _DOCX_EXTENSIONS:
+        content = _extract_docx_text(abs_path)
+        content_type = "docx_text"
+    elif suffix in _PDF_EXTENSIONS:
+        content = _extract_pdf_text(abs_path)
+        content_type = "pdf_text"
+    else:
+        try:
+            content = abs_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            content = None
+
+    if not content or not content.strip():
+        return None
+
+    return EvidenceItem(
+        source=f"{source_label}:{relpath}",
+        content=content,
+        content_type=content_type,
+        retrieval_timestamp=timestamp_iso,
+        confidence_score=1.0,
     )
 
 
@@ -139,7 +219,7 @@ def c0_retrieve_apps_rg(
             items.append(jd_item)
             sources.append(jd_item.source)
 
-    # Source resume — JSON expected
+    # Source resume — DOCX, PDF, JSON, or plain text
     if payload.source_resume_text:
         items.append(EvidenceItem(
             source="resume:inline_text",
@@ -150,7 +230,7 @@ def c0_retrieve_apps_rg(
         ))
         sources.append("resume:inline_text")
     else:
-        resume_item = _read_json_evidence(
+        resume_item = _read_file_evidence(
             payload.source_resume_ref, "resume", timestamp_iso, repo_root,
         )
         if resume_item:
