@@ -1,7 +1,7 @@
 # Runtime Cert — E1.W3 Baseline Seed + First Evidence Report (Planning Only)
 
 - **Plan ID**: `runtime-cert-e1w3-baseline-seed-4d82a1`
-- **Status**: Planning — Author-Gate pending
+- **Status**: Completed 2026-05-10
 - **Authored**: 2026-05-01
 - **Branch**: `rtc-w2b-scenario-a-local-qwen-proof`
 - **Parent plan**: [`runtime-cert-e1-fail-closed-ci-gate-c71f3d.md`](./runtime-cert-e1-fail-closed-ci-gate-c71f3d.md) — E-AG-1…5 APPROVED at commit `14c4e9eb5b`
@@ -17,17 +17,17 @@
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---:|---|---|---|
-| W3.A | W3.P1 | Author-Gate approval of this plan | ~600 | E1.W2 gate committed and passing | Pending | User approves §10 decisions |
-| W3.B | W3.P2 | Author baseline TOML | ~400 | W3.A approved; no prior baseline file exists | Blocked on W3.A | `docs/reference/runtime_certification/cert_baseline.toml` lands with exact content from §2 |
-| W3.C | W3.P3 | Author first weekly advisory evidence report | ~1 200 | W3.B landed; baseline parses through the gate | Blocked on W3.B | `docs/reports/runtime_cert/phase_e_runs/2026-W18.md` lands with §3 required sections |
+| W3.A | W3.P1 | Author-Gate approval of this plan | ~600 | E1.W2 gate committed and passing | ✅ DONE | User approves §10 decisions |
+| W3.B | W3.P2 | Author baseline TOML | ~400 | W3.A approved; no prior baseline file exists | ✅ DONE | `docs/reference/runtime_certification/cert_baseline.toml` matches §2 verbatim |
+| W3.C | W3.P3 | Author first weekly advisory evidence report | ~1 200 | W3.B landed; baseline parses through the gate | ✅ DONE | `docs/reports/runtime_cert/phase_e_runs/2026-W18.md` present; gate exits 0 advisory, LEDGER_MISSING as expected |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---:|---|---|
-| W3.P1 | Plan approval | this plan file | Seed-only choice must be explicit; evidence-report content must not imply certification | ~600 | Pending |
-| W3.P2 | Baseline TOML seed | `docs/reference/runtime_certification/cert_baseline.toml` (new) | Content must match E1.W2 schema exactly; `mode="advisory"` is load-bearing (overrides future `--strict`) | ~400 | Blocked |
-| W3.P3 | First evidence report | `docs/reports/runtime_cert/phase_e_runs/2026-W18.md` (new) | No-certification disclaimer verbatim; must show observed gate output honestly — including the expected LEDGER_MISSING case | ~1 200 | Blocked |
+| W3.P1 | Plan approval | this plan file | Seed-only choice must be explicit; evidence-report content must not imply certification | ~600 | ✅ DONE |
+| W3.P2 | Baseline TOML seed | `docs/reference/runtime_certification/cert_baseline.toml` (new) | Content must match E1.W2 schema exactly; `mode="advisory"` is load-bearing (overrides future `--strict`) | ~400 | ✅ DONE |
+| W3.P3 | First evidence report | `docs/reports/runtime_cert/phase_e_runs/2026-W18.md` (new) | No-certification disclaimer verbatim; must show observed gate output honestly — including the expected LEDGER_MISSING case | ~1 200 | ✅ DONE |
 
 ---
 
