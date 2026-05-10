@@ -246,6 +246,11 @@
         "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
       }
     ],
     "post_setup_worktree": [

@@ -562,6 +562,15 @@ def main():
             "NP7 Notion telemetry log size (advisory)",
             "ops_scripts/ci/check_notion_telemetry_log_size.py",
         ),
+        # NP8 -- Plans DB status anomaly detection. Detects suspicious status
+        # changes (quick flips, identity mismatches, etc.). Advisory by default;
+        # fail-closed via NOTION_PLAN_STATUS_ANOMALIES_FAIL_CLOSED=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plan-identity-verification.md
+        (
+            "NP8 Notion plan status anomalies (advisory)",
+            "ops_scripts/ci/check_notion_plan_status_anomalies.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.
