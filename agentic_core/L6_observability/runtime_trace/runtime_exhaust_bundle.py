@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Mapping, Sequence
 
@@ -100,6 +100,9 @@ class RuntimeExhaustBundle:
     newest_span_age_seconds: float
     bundle_id: str
     tenant_id: str = ""  # W1: identity quad extension (D6)
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

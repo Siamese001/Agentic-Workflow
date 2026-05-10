@@ -52,13 +52,18 @@ class SealedL2Artifact:
     allowed_networks: tuple[str, ...] = field(default_factory=tuple)
     allowed_file_roots: tuple[str, ...] = field(default_factory=tuple)
 
-    # Provenance
+    # Digest for downstream referencing
     prompt_artifact_digest: str = ""
     contract_version: str = "W6.0"
 
     # Digest for downstream referencing
     compilation_hash: str = ""
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
+
+    # Provenance
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

@@ -786,6 +786,8 @@ class CommitRequest:
     affected_state_surfaces: Tuple[str, ...] = field(default_factory=_empty_tuple)
     expected_read_surface_refreshes: Tuple[str, ...] = field(default_factory=_empty_tuple)
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # W4: observability linkage (concern #9, D12=default-empty tuple)
+    otel_span_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
     sandbox_required: bool = False
     egress_policy_ref: str = ""

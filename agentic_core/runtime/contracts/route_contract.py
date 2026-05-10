@@ -45,6 +45,9 @@ class RouteContract:
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     routing_timestamp: str = ""
     route_version: str = "W6.0"
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

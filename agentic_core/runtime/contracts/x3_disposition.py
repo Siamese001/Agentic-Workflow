@@ -44,3 +44,7 @@ class X3Disposition:
 
     # Chain provenance
     sealed_l2_digest: str = ""  # References SealedL2Artifact.compilation_hash
+
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)

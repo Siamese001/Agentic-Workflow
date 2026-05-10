@@ -106,6 +106,9 @@ class L3RuntimeOrchestrationReceipt:
     deterministic_digest: str = ""
     static_dag_ref: str = ""
     tenant_id: str = ""  # W1: identity quad extension (D6)
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

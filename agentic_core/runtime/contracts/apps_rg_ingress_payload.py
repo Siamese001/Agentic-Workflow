@@ -108,6 +108,9 @@ class ValidatedRequest:
     authority_validation_receipt: "AuthorityValidationReceipt"
     trace_id: str
     tenant_id: str = ""  # W1: identity quad — app_id value at U0 ingress (D6)
+    # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
+    otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:
