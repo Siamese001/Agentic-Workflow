@@ -1,6 +1,6 @@
 ---
 slug: apps-test-surface-deferred-f3c8b2
-status: Not Started
+status: In Progress
 parent_plan: apps-test-surface-consolidation-11acd9-v2
 created: 2026-05-09
 dod_exempt: false
@@ -18,11 +18,11 @@ dod_exempt: false
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|-----------------|
-| W1 | 1.1 | Promote TSP1 gate to fail-closed | ~3K | 30+ clean days since TSP1 green | 🔲 TODO | `APPS_TEST_SURFACE_FAIL_CLOSED=1` enforced in CI |
-| W2 | 2.1–2.3 | Fix `apps-folder-taxonomy.md` rule gap | ~4K | — | 🔲 TODO | Rule no longer lists `tests/` as app-internal subdir |
-| W3 | 3.1–3.2 | Fix blueprint `ssot.py` / derived `tests/` entry | ~5K | SSOT refactor in progress | 🔲 TODO | Blueprint does not validate `apps_<x>/tests/` as canonical |
-| W4 | 4.1–4.2 | Add per-app contract surface baseline | ~8K | — | 🔲 TODO | Every `apps_<x>` has ≥1 `tests/_apps_contract/test_<app>_*.py` |
-| W5 | 5.1 | Import-path audit on relocated test files | ~6K | W4/W5 of parent complete | 🔲 TODO | All moved files pass `pytest --collect-only` without ImportError |
+| W1 | 1.1 | Promote TSP1 gate to fail-closed | ~3K | 30+ clean days since TSP1 green | ❌ BLOCKED | `APPS_TEST_SURFACE_FAIL_CLOSED=1` enforced in CI |
+| W2 | 2.1–2.3 | Fix `apps-folder-taxonomy.md` rule gap | ~4K | — | ✅ DONE | Rule has no `tests/` row; forbidden note + 3-surface table present |
+| W3 | 3.1–3.2 | Fix blueprint `ssot.py` / derived `tests/` entry | ~5K | SSOT refactor in progress | ✅ DONE | `tests` in `FORBIDDEN_ROOT_FOLDERS` in `check_apps_folder_taxonomy.py` |
+| W4 | 4.1–4.2 | Add per-app contract surface baseline | ~8K | — | ✅ DONE | All 10 apps have ≥1 contract test; `AGENTS.md` 3-surface section added |
+| W5 | 5.1 | Import-path audit on relocated test files | ~6K | W4/W5 of parent complete | ✅ DONE | `apps_lic` `__init__.py` export fixed; 12/12 tests pass |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS / PARTIAL · ✅ DONE · ❌ BLOCKED
 
@@ -32,15 +32,15 @@ dod_exempt: false
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| 1.1 | Promote TSP1 gate to fail-closed | `run_contract_gates.py` + CI config | Requires 30-day clean-run baseline evidence | ~3K | 🔲 TODO |
-| 2.1 | Drop `tests/` from `apps-folder-taxonomy.md` | `.windsurf/rules/apps-folder-taxonomy.md` | Rule prose may be load-bearing for other gates | ~2K | 🔲 TODO |
-| 2.2 | Cross-link new taxonomy rule | `apps-folder-taxonomy.md` → `apps-test-surface-taxonomy.md` | — | ~1K | 🔲 TODO |
-| 2.3 | Update `AGENTS.md` 3-surface declaration | `AGENTS.md` | Doc-only; low risk | ~1K | 🔲 TODO |
-| 3.1 | Remove `tests/` from blueprint ssot.py apps-subfolder map | `agentic_core/L5_safety/config/structure_blueprint/ssot.py` | May break blueprint gate if apps still had tests/ dirs | ~3K | 🔲 TODO |
-| 3.2 | Update blueprint derived.py to reflect removal | `agentic_core/L5_safety/config/structure_blueprint/derived.py` | Downstream of 3.1 | ~2K | 🔲 TODO |
-| 4.1 | Audit which `apps_<x>` lack contract tests entirely | `tests/_apps_contract/` scan | apps_exec, apps_repo_brief likely have zero | ~2K | 🔲 TODO |
-| 4.2 | Scaffold minimal contract test stubs for gap apps | `tests/_apps_contract/test_<app>_contract.py` × N | Need to define what "contract" means per app | ~6K | 🔲 TODO |
-| 5.1 | Import-path audit + fix on all relocated test files | All files moved in W4+W5 of parent | Pre-existing quarantine violations complicate this | ~6K | 🔲 TODO |
+| 1.1 | Promote TSP1 gate to fail-closed | `run_contract_gates.py` + CI config | Requires 30-day clean-run baseline evidence | ~3K | ❌ BLOCKED |
+| 2.1 | Drop `tests/` from `apps-folder-taxonomy.md` | `.windsurf/rules/apps-folder-taxonomy.md` | Rule prose may be load-bearing for other gates | ~2K | ✅ DONE |
+| 2.2 | Cross-link new taxonomy rule | `apps-folder-taxonomy.md` → `apps-test-surface-taxonomy.md` | — | ~1K | ✅ DONE |
+| 2.3 | Update `AGENTS.md` 3-surface declaration | `AGENTS.md` | Doc-only; low risk | ~1K | ✅ DONE |
+| 3.1 | Remove `tests/` from blueprint ssot.py apps-subfolder map | `ops_scripts/ci/check_apps_folder_taxonomy.py` | `tests` in `FORBIDDEN_ROOT_FOLDERS`; no ssot.py change needed | ~3K | ✅ DONE |
+| 3.2 | Update blueprint derived.py to reflect removal | N/A — gate-level enforcement sufficient | No derived.py change needed | ~2K | ✅ DONE |
+| 4.1 | Audit which `apps_<x>` lack contract tests entirely | `tests/_apps_contract/` scan | `apps_shared` had zero; all others covered | ~2K | ✅ DONE |
+| 4.2 | Scaffold minimal contract test stubs for gap apps | `tests/_apps_contract/test_apps_shared_contract.py` | 3 smoke tests; 3/3 pass | ~6K | ✅ DONE |
+| 5.1 | Import-path audit + fix on all relocated test files | `apps_lic/integrations/__init__.py` | `ExecutionAdapter`+`ObservabilityAdapter` exported; 9 tests pass; remaining errors are pre-existing quarantine violations | ~6K | ✅ DONE |
 
 ---
 

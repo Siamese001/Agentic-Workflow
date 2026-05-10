@@ -167,3 +167,17 @@ Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture predict
 **CI gate**: `python ops_scripts/ci/check_ledger_writer_contract.py` validates schema, writer-hook existence, consulting-skill existence.
 
 **Calibration surface**: on-disk only. Weekly reports at `docs/reports/calibration/<YYYY-Www>.md` are the SSOT; no mirror database exists in Notion by design (operator decision 2026-04-24). Revisit after 30 days of accumulated signal if cross-session visibility becomes necessary.
+
+## Apps Test Surface Taxonomy
+
+> ⛔ All `apps_<x>` test files MUST live in one of the 3 canonical surfaces. `apps_<x>/tests/` directories are **FORBIDDEN**. See `.windsurf/rules/apps-test-surface-taxonomy.md` and ADR-082.
+
+| Surface | Canonical Path | Content |
+|---|---|---|
+| Unit | `tests/unit/<app>/` | Isolated unit tests; mirrors `apps_<app>/` structure |
+| Integration | `tests/<app>/` | Integration/E2E tests requiring real dependencies |
+| Contract | `tests/_apps_contract/test_<app>_*.py` | Cross-app contract and governance tests |
+
+**Enforcement**: CI gate `TSP1` — `ops_scripts/ci/check_apps_test_surface_parity.py` (advisory; fail-closed via `APPS_TEST_SURFACE_FAIL_CLOSED=1`; bypass via `APPS_TEST_SURFACE_BYPASS=1`).
+
+**Rule**: `.windsurf/rules/apps-test-surface-taxonomy.md` — load when editing `apps_*/` trees or relocating test files.
