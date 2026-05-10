@@ -208,7 +208,37 @@ def pre_ask_user_question_gate(
 
 def main() -> int:
     """CLI entry point for testing/hook integration."""
-    # Read JSON from stdin
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Pre-hook for ask_user_question routing")
+    parser.add_argument("--hook-mode", action="store_true", help="Run as Windsurf hook")
+    parser.add_argument("--test", action="store_true", help="Test mode (prints diagnostic)")
+    args = parser.parse_args()
+    
+    if args.test:
+        print("[pre_ask_user_question_gate] Test mode: OK")
+        return 0
+    
+    if args.hook_mode:
+        # In hook mode, we check environment/context for decision signals
+        # This is a passive hook - it logs context but doesn't block
+        import os
+        
+        context_file = os.environ.get("WINDSURF_CONTEXT_FILE")
+        if context_file and Path(context_file).exists():
+            try:
+                with open(context_file) as f:
+                    ctx = json.load(f)
+                # Log that we're in a decision context
+                if ctx.get("tool_name") == "ask_user_question":
+                    print("[pre_ask_user_question_gate] Detected ask_user_question context")
+            except Exception:
+                pass
+        
+        # Hook always returns 0 (passive observation)
+        return 0
+    
+    # Standard stdin mode for testing
     try:
         input_raw = sys.stdin.read()
         if not input_raw.strip():

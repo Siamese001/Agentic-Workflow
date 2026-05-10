@@ -93,6 +93,11 @@
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
+      },
+      {
+        "command": "python .windsurf/scripts/pre_ask_user_question_gate.py --hook-mode",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
       }
     ],
     "post_write_code": [
