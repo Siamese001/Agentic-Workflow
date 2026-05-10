@@ -446,6 +446,15 @@ def main():
             "AEH1 apps_* eval-harness parity (advisory)",
             "ops_scripts/ci/check_app_domain_harness_parity.py",
         ),
+        # TSP1 — apps_* test surface parity gate.
+        # Verifies every apps_<x> has tests/unit/<app>/ + tests/<app>/ with
+        # __init__.py, and flags forbidden tests/integration/apps_<x>/ dirs.
+        # Advisory by default; fail-closed via APPS_TEST_SURFACE_FAIL_CLOSED=1.
+        # Plan: apps-test-surface-consolidation-11acd9-v2 W6.
+        (
+            "TSP1 apps_* test surface parity (advisory)",
+            "ops_scripts/ci/check_apps_test_surface_parity.py",
+        ),
         # EPE1 — Embedding provenance enforcement (ADR-055 W3.1).
         # Verifies EmbeddingProvenanceMismatchError is importable and
         # SovereignChromaClient references the hard-fail block.

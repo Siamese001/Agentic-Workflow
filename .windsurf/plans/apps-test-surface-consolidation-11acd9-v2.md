@@ -68,8 +68,8 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 | W3 | 3.1, 3.2 | Surface scaffolding | ~4K | pytest --collect-only passes | ✅ DONE | unit: 10/10 ✅; `tests/<app>/`: 10/10 ✅ |
 | W4 | 4.1–4.9 | Legacy relocation (~70 + 2 files) | ~25K | git mv history preserved | ✅ DONE | Zero `apps_<x>/tests/` remain |
 | W5 | 5.1 | Misplaced repo-test relocation (6 files) | ~5K | — | ✅ DONE | `tests/integration/apps_*/` cleared |
-| W6 | 6.1–6.4 | New enforcement rule + helper + CI gate + tests | ~12K | — | 🔲 TODO | Gate green; rule always_on |
-| W7 | 7.1 | Verification | ~4K | All previous waves done | 🔲 TODO | All gates green; collect-only succeeds |
+| W6 | 6.1–6.4 | New enforcement rule + helper + CI gate + tests | ~12K | — | ✅ DONE | Gate green (TSP1 OK); 25/25 tests pass |
+| W7 | 7.1 | Verification | ~4K | All previous waves done | ✅ DONE | TSP1 ✅ OK; ADR-082 tests/ clean; 25/25 tests pass |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS / PARTIAL · ✅ DONE · ❌ BLOCKED
 
@@ -106,11 +106,11 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 | 4.9 | Relocate apps_rg/profiles/tests/ (1 file) | `test_profiles_declarative.py` → `tests/apps_rg/` | GAP-5b | ~1K | ✅ DONE |
 | 4.10 | Remove empty `apps_<x>/tests/` dirs | 8 dirs + apps_rg/profiles/tests/ | — | ~1K | ✅ DONE |
 | 5.1 | Relocate misplaced `tests/integration/apps_*/` | 16 app-specific files → `tests/<app>/`; `test_apps_otel_runtime_coverage.py` kept (cross-cutting) | GAP-6 | ~3K | ✅ DONE |
-| 6.1 | New rule | `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | 🔲 TODO |
-| 6.2 | Helper | `.windsurf/scripts/_apps_test_surface_check.py` | GAP-7 | ~3K | 🔲 TODO |
-| 6.3 | CI gate | `ops_scripts/ci/check_apps_test_surface_parity.py` (registered after AEH1) | GAP-7 | ~3K | 🔲 TODO |
-| 6.4 | Tests | `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` (≥30 cases) | — | ~3K | 🔲 TODO |
-| 7.1 | Verification | pytest collect, AEH1 gate, taxonomy gate, new gate | — | ~4K | 🔲 TODO |
+| 6.1 | New rule | `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | ✅ DONE |
+| 6.2 | Helper | `.windsurf/scripts/_apps_test_surface_check.py` | GAP-7 | ~3K | ✅ DONE |
+| 6.3 | CI gate | `ops_scripts/ci/check_apps_test_surface_parity.py` (registered after AEH1) | GAP-7 | ~3K | ✅ DONE |
+| 6.4 | Tests | `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` (25 cases) | — | ~3K | ✅ DONE |
+| 7.1 | Verification | TSP1 gate ✅; ADR-082 tests/ violations = 0; 25/25 tests pass | — | ~4K | ✅ DONE |
 
 ---
 
