@@ -25,6 +25,7 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     GateVerdict,
     V6Disposition,
 )
+from agentic_core.runtime.contracts.x1_checkout_result import X1CheckoutResult
 
 # Reason codes that always force X3A regardless of any other clearance.
 _HARD_FAIL_CODES: frozenset[str] = frozenset(
@@ -77,7 +78,10 @@ _SAFE_ABSTAIN_CODES: frozenset[str] = frozenset(
 
 @dataclass(slots=True)
 class AggregateDecision:
-    """Output of X2 — exactly one X3 disposition with full provenance."""
+    """Output of X2 — exactly one X3 disposition with full provenance.
+
+    AG-5: Added x1_checkout_result for structured X1 gate carrier.
+    """
 
     disposition: V6Disposition
     failed_gate_ids: list[str] = field(default_factory=list)
@@ -85,6 +89,7 @@ class AggregateDecision:
     triggering_verdicts: list[GateVerdict] = field(default_factory=list)
     rationale: str = ""
     requires_uwg_handoff: bool = False
+    x1_checkout_result: X1CheckoutResult | None = None
 
 
 def _collect_codes(verdicts: list[GateVerdict], result: GateResult) -> list[tuple[GateVerdict, str]]:
@@ -197,8 +202,12 @@ def _app_hitl_routing(packet: ExitReviewPacket) -> tuple[bool, str, list[str]]:
 def aggregate_decision(
     verdicts: list[GateVerdict],
     packet: ExitReviewPacket,
+    x1_checkout_result: X1CheckoutResult | None = None,
 ) -> AggregateDecision:
-    """Apply the X2 aggregate decision matrix."""
+    """Apply the X2 aggregate decision matrix.
+
+    AG-5: Added x1_checkout_result parameter for structured X1 gate carrier.
+    """
     # Index verdicts by gate_id for lookups.
     by_id: dict[str, GateVerdict] = {v.gate_id: v for v in verdicts}
 
@@ -218,6 +227,7 @@ def aggregate_decision(
             reason_codes=hitl_codes,
             triggering_verdicts=[],
             rationale=hitl_rationale,
+            x1_checkout_result=x1_checkout_result,
         )
 
     # W1.P3 — App-specific eval failure is a hard-fail. Checked before the
@@ -232,6 +242,7 @@ def aggregate_decision(
             reason_codes=app_reason_codes,
             triggering_verdicts=[],
             rationale="app_specific_eval_failed",
+            x1_checkout_result=x1_checkout_result,
         )
 
     # ---- 1. HARD FAILS — X3A ----
@@ -254,6 +265,7 @@ def aggregate_decision(
             reason_codes=codes,
             triggering_verdicts=[v for v, _ in hard_fail_hits],
             rationale="hard_fail_condition",
+            x1_checkout_result=x1_checkout_result,
         )
 
     # Any FAIL on a non-hard code that didn't bubble up → still treat as DENY
@@ -273,6 +285,7 @@ def aggregate_decision(
             reason_codes=codes,
             triggering_verdicts=[v for v, _ in abstain_hits],
             rationale="safe_abstain_evidence_class",
+            x1_checkout_result=x1_checkout_result,
         )
 
     # ---- 3. ESCALATE — X3B ----
@@ -296,6 +309,7 @@ def aggregate_decision(
             reason_codes=codes,
             triggering_verdicts=[v for v, _ in escalate_hits] + material_unknown,
             rationale="escalation_required",
+            x1_checkout_result=x1_checkout_result,
         )
 
     # ---- 4. Remaining FAILs (non-hard, non-escalate) → X3A ----
@@ -308,6 +322,7 @@ def aggregate_decision(
             reason_codes=codes,
             triggering_verdicts=[v for v, _ in other_fail_pairs],
             rationale="gate_fail_non_hard",
+            x1_checkout_result=x1_checkout_result,
         )
 
     # ---- 5. COMMIT REQUEST — X3C ----
@@ -351,6 +366,7 @@ def aggregate_decision(
                 reason_codes=codes_blocking,
                 triggering_verdicts=[],
                 rationale="commit_path_preconditions_unmet",
+                x1_checkout_result=x1_checkout_result,
             )
         return AggregateDecision(
             disposition=V6Disposition.COMMIT_REQUEST,
@@ -359,6 +375,7 @@ def aggregate_decision(
             triggering_verdicts=[],
             rationale="commit_path_clear",
             requires_uwg_handoff=True,
+            x1_checkout_result=x1_checkout_result,
         )
 
     # ---- 6. ALLOW — X3D ----
@@ -369,6 +386,7 @@ def aggregate_decision(
         reason_codes=[],
         triggering_verdicts=[],
         rationale="answer_only_clear",
+        x1_checkout_result=x1_checkout_result,
     )
 
 

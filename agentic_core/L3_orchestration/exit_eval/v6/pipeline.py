@@ -53,10 +53,14 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     V6Disposition,
     X3DenyPacket,
 )
+from agentic_core.runtime.contracts.x1_checkout_result import X1CheckoutResult
 from agentic_core.L3_orchestration.exit_eval.v6.uwg import (
     UwgBackends,
     UwgReceipt,
     process_commit_request,
+)
+from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
+    build_x1_checkout_result,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import (
     run_all_x1_gates_with_sub_stages,
@@ -95,7 +99,10 @@ _X3_EMIT_SPAN_FOR_DISPOSITION: dict[V6Disposition, str] = {
 
 @dataclass(slots=True)
 class ExitEvalResult:
-    """End-to-end pipeline output."""
+    """End-to-end pipeline output.
+
+    AG-5: Added x1_checkout_result for structured X1 gate carrier.
+    """
 
     disposition: V6Disposition
     x3_packet: Any  # X3{Deny|Escalate|CommitRequest|Allow|SafeAbstain}Packet
@@ -110,6 +117,7 @@ class ExitEvalResult:
     runtime_boundary_closed: bool = False
     return_payload_failures: list[str] = field(default_factory=list)
     x1_sub_stages: list[dict[str, Any]] = field(default_factory=list)
+    x1_checkout_result: X1CheckoutResult | None = None
 
 
 def _preflight_deny_packet(
@@ -287,8 +295,11 @@ class ExitEvalPipeline:
                 },
             )
 
+        # AG-5: Build X1CheckoutResult from gate verdicts + packet
+        x1_checkout = build_x1_checkout_result(verdicts, review)
+
         # 5. X2 aggregate
-        decision = aggregate_decision(verdicts, review)
+        decision = aggregate_decision(verdicts, review, x1_checkout_result=x1_checkout)
 
         # 5b. W5.P7 — Emit eval_harness_outcome ledger row. Fail-soft: any
         # exception is swallowed so the ledger cannot crash the Exit pipeline.
@@ -336,6 +347,7 @@ class ExitEvalPipeline:
             packet=review,
             rationale=decision.rationale,
             x1_sub_stages=x1_sub_stages,
+            x1_checkout_result=decision.x1_checkout_result,
         )
 
         # 7. UWG handoff for COMMIT_REQUEST
