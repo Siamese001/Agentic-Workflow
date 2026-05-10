@@ -308,9 +308,9 @@ def test_iter_unregistered_on_disk(pr):
     assert result == ["slug-b-bbbbbb"]
 
 
-def test_active_statuses_includes_deprioritized(pr):
-    """Deprioritized added 2026-05-05 as valid active status."""
-    assert "Deprioritized" in pr.ACTIVE_STATUSES
+def test_active_statuses_includes_deferred(pr):
+    """Deferred (formerly Deprioritized, renamed 2026-05-10) is a valid active status."""
+    assert "Deferred" in pr.ACTIVE_STATUSES
     assert "In Progress" in pr.ACTIVE_STATUSES
     assert "Not Started" in pr.ACTIVE_STATUSES
     assert "Waiting" in pr.ACTIVE_STATUSES
@@ -320,10 +320,10 @@ def test_active_statuses_includes_deprioritized(pr):
     assert "Archived" not in pr.ACTIVE_STATUSES
 
 
-def test_deprioritized_status_registered_via_cache(pr):
-    """Plans with Deprioritized status are considered registered."""
-    pr.write_cache({"slug-one-aaaaaa": {"status": "Deprioritized"}})
+def test_deferred_status_registered_via_cache(pr):
+    """Plans with Deferred status are considered registered."""
+    pr.write_cache({"slug-one-aaaaaa": {"status": "Deferred"}})
     res = pr.check_registration("slug-one-aaaaaa")
     assert res.registered
     assert res.source == "cache"
-    assert res.status == "Deprioritized"
+    assert res.status == "Deferred"

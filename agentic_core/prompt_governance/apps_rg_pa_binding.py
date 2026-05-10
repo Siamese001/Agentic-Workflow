@@ -138,11 +138,11 @@ def _build_user_instruction(
     target_role = payload.target_role or "the target role"
     target_level = payload.target_level or "unspecified"
 
-    # Qwen2.5-32B-Instruct-AWQ supports 128K context natively.
-    # Budget allows generous evidence inclusion; prompt + response typically
-    # stays well under 32K tokens even with full resume + JD + brief.
+    # vLLM serving at --max-model-len 8192 tokens (~24K chars for evidence
+    # after system prompt + response reservation). The model itself supports
+    # 32K natively; increase --max-model-len when VRAM allows.
     inlined: list[str] = []
-    budget_remaining = 60000
+    budget_remaining = 20000
     for item in fec.evidence_items:
         if budget_remaining <= 0:
             break

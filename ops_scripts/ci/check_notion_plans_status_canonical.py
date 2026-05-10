@@ -8,7 +8,7 @@ Blocks CI if any stale/duplicate statuses found.
 Canonical statuses:
 - In Progress
 - Not Started  
-- Deprioritized
+- Deferred
 - Waiting
 - Completed
 - Retired
@@ -36,7 +36,7 @@ from typing import Set
 CANONICAL_STATUSES: Set[str] = {
     "In Progress",
     "Not Started",
-    "Deprioritized",
+    "Deferred",
     "Waiting",
     "Completed",
     "Retired",
@@ -71,7 +71,7 @@ def main() -> int:
 
     # Check that canonical set is exactly what we expect
     expected_canonical = {
-        "In Progress", "Not Started", "Deprioritized", "Waiting",
+        "In Progress", "Not Started", "Deferred", "Waiting",
         "Completed", "Retired", "Archived"
     }
 

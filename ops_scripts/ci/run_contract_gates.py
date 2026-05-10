@@ -526,6 +526,16 @@ def main():
             "NP3 Notion Backlog plan linkage (advisory)",
             "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
         ),
+        # NP4 -- Plans DB freshness vs on-disk plan files. Backstop for the
+        # wave-lifecycle auto-sync chain (plan notion-wave-lifecycle-autosync-f4a2b8).
+        # Advisory by default; fail-closed via NOTION_PLANS_WAVE_FAIL_CLOSED=1.
+        # Bypass: NOTION_PLANS_WAVE_BYPASS=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plan-wave-deferral.md (sanctioned non-MCP path).
+        (
+            "NP4 Notion Plans wave freshness (advisory)",
+            "ops_scripts/ci/check_plan_notion_wave_freshness.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.

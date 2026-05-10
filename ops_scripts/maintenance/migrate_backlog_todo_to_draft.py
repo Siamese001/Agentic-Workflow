@@ -3,7 +3,7 @@
 Plan: .windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md (adjacent
 cleanup). The canonical Backlog Items Status taxonomy (AGENTS.md "Plans DB
 Status Taxonomy" + "Shared taxonomy" note) is 7 options: In Progress, Not Started,
-Deprioritized, Waiting, Completed, Retired, Archived. `Todo` is a legacy drift that survived the
+Deferred, Waiting, Completed, Retired, Archived. `Todo` is a legacy drift that survived the
 2026-05-02 `Proposed -> Not Started` rename; this script retires it.
 
 Uses the Notion REST API directly via httpx, bypassing MCP serialization

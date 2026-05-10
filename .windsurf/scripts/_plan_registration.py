@@ -78,7 +78,7 @@ class RegistrationStatus:
 
     slug: str
     registered: bool
-    status: str | None         # Notion Status field (In Progress/Not Started/Deprioritized/Waiting/Completed/Retired/Archived)
+    status: str | None         # Notion Status field (In Progress/Not Started/Deferred/Waiting/Completed/Retired/Archived)
     source: str                # "cache" | "cache_stale" | "cache_missing" | "queue"
     reason: str | None         # Human-readable detail when registered=False
 
@@ -252,7 +252,7 @@ def write_cache(plans: dict[str, dict[str, Any]]) -> None:
 # Statuses that satisfy "registered" for the purpose of wave execution.
 # Retired/Archived mean the plan is not actively tracked; a wave-start on
 # such a plan should still block to force the operator to flip status first.
-ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started", "Deprioritized", "Waiting", "Completed"})
+ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started", "Deferred", "Waiting", "Completed"})
 
 
 def check_registration(slug: str, cache: dict[str, Any] | None = None) -> RegistrationStatus:
@@ -336,7 +336,7 @@ def drift_report(cache: dict[str, Any] | None = None) -> dict[str, list[str]]:
 
         {
           "on_disk_not_in_notion": [slug, ...],      # missing registrations
-          "notion_active_not_on_disk": [slug, ...],  # orphan In Progress/Not Started/Deprioritized rows
+          "notion_active_not_on_disk": [slug, ...],  # orphan In Progress/Not Started/Deferred rows
         }
 
     Callers decide whether staleness of cache itself is a blocker.

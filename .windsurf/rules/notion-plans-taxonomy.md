@@ -15,7 +15,7 @@ description: Use this rule when interacting with Notion Plans or Backlog Items d
 |---|---|---|---|
 | `In Progress` | `{"select": {"name": "In Progress"}}` | green — someone is working on this right now | File exists on disk · edited within last 14 days · has wave/phase work in progress |
 | `Not Started` | `{"select": {"name": "Not Started"}}` | gray — written, not started | File exists on disk · no execution work yet |
-| `Deprioritized` | `{"select": {"name": "Deprioritized"}}` | yellow — paused or deferred | File exists on disk · work intentionally suspended · may resume later |
+| `Deferred` | `{"select": {"name": "Deferred"}}` | yellow — paused or deferred | File exists on disk · work intentionally suspended · may resume later |
 | `Waiting` | `{"select": {"name": "Waiting"}}` | orange — blocked on external dependency | File exists on disk · blocked on upstream (person, system, decision) |
 | `Completed` | `{"select": {"name": "Completed"}}` | blue — work landed | All waves/phases done · audit trail kept |
 | `Retired` | `{"select": {"name": "Retired"}}` | purple — no longer relevant | Replaced by another plan, OR stale-by-design, OR work obsolete, OR file gone from disk — specific reason in Summary field |
@@ -40,7 +40,7 @@ Incident precedent (2026-05-03): four per-app FEC producer plans posted with `�
 
 ### Display mnemonic (for humans only)
 
-When discussing statuses in prose or dashboards, the 🟢In Progress / 🟡Not Started / �Deprioritized / 🟠Waiting / �🔵Completed / 🟣Retired / ⚪Archived glyph notation is a **display mnemonic** — convenient for eyeballing at a glance. These glyphs MUST NOT appear in any `API-post-page` / `API-patch-page` payload targeting the Plans or Backlog Items `Status` field.
+When discussing statuses in prose or dashboards, the 🟢In Progress / 🟡Not Started / 🟡Deferred / 🟠Waiting / 🔵Completed / 🟣Retired / ⚪Archived glyph notation is a **display mnemonic** — convenient for eyeballing at a glance. These glyphs MUST NOT appear in any `API-post-page` / `API-patch-page` payload targeting the Plans or Backlog Items `Status` field.
 
 **Schema note (2026-05-02)**: brown-colored duplicate `Completed` option was deleted via `API-update-a-data-source`. Desktop UI rename pass completed for both Plans and Backlog Items DBs: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`. Option IDs preserved across rename (Notion UI rename ≠ API rename — API does not support it).
 
@@ -49,12 +49,12 @@ When discussing statuses in prose or dashboards, the 🟢In Progress / 🟡Not S
 - A row with `Status = In Progress` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
 - A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
 - A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
-- **Mandatory `AI Summary` (added 2026-05-03)**: every Plans row with `Status ∈ {In Progress, Not Started, Deprioritized, Waiting, Completed}` MUST have a non-empty `AI Summary` property. Content MUST be **one single sentence, ≤ 12 words, scope + why-it-matters** — NOT bullet-style, NOT a prose recap of the `Summary` field. The DB grid shows only the first line; density per pixel is the goal. Examples: `"Completes apps_* spine migration; soak period before strict ADG certification flip."` (12 words), `"Turns ADG audit into two-stage certification so silent skips can't hide failures."` (12 words). Rows in `Retired`/`Archived` are exempt. Empty `AI Summary` is a reviewability violation — a reader scanning the DB learns nothing from a row without one. Enforcement: `ops_scripts/ci/check_notion_plans_ai_summary.py` checks presence (always) and ≤ 15-word length (advisory soft-cap on top of the 12-word target). Fail-closed via `NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1`.
+- **Mandatory `AI Summary` (added 2026-05-03)**: every Plans row with `Status ∈ {In Progress, Not Started, Deferred, Waiting, Completed}` MUST have a non-empty `AI Summary` property. Content MUST be **one single sentence, ≤ 12 words, scope + why-it-matters** — NOT bullet-style, NOT a prose recap of the `Summary` field. The DB grid shows only the first line; density per pixel is the goal. Examples: `"Completes apps_* spine migration; soak period before strict ADG certification flip."` (12 words), `"Turns ADG audit into two-stage certification so silent skips can't hide failures."` (12 words). Rows in `Retired`/`Archived` are exempt. Empty `AI Summary` is a reviewability violation — a reader scanning the DB learns nothing from a row without one. Enforcement: `ops_scripts/ci/check_notion_plans_ai_summary.py` checks presence (always) and ≤ 15-word length (advisory soft-cap on top of the 12-word target). Fail-closed via `NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1`.
 
-**Canonical Status option strings (updated 2026-05-05)**:
-Option names are `In Progress`/`Not Started`/`Deprioritized`/`Waiting`/`Completed`/`Retired`/`Archived` (same option IDs as former `Live`/`Draft` — only display names changed). `Deprioritized` added 2026-05-05 for paused/deferred work. The 🟢/🟡/🔵/🟣/⚪ notation in this rule is DISPLAY MNEMONIC — not literal option strings. When calling `API-post-page` / `API-patch-page`, pass `{"Status": {"select": {"name": "Not Started"}}}` — NEVER `"🟡Draft"` or `"Draft"`. The emoji-prefixed variants (`🟡Draft` red / `🔵Completed` pink) are STALE DUPLICATES and MUST NOT be selected. The old plain-word forms `Live` and `Draft` are also stale after the 2026-05-03 rename.
+**Canonical Status option strings (updated 2026-05-10)**:
+Option names are `In Progress`/`Not Started`/`Deferred`/`Waiting`/`Completed`/`Retired`/`Archived` (same option IDs as former `Live`/`Draft` — only display names changed). `Deferred` (formerly `Deprioritized`, renamed 2026-05-10) is for paused/deferred work. The 🟢/🟡/🔵/🟣/⚪ notation in this rule is DISPLAY MNEMONIC — not literal option strings. When calling `API-post-page` / `API-patch-page`, pass `{"Status": {"select": {"name": "Not Started"}}}` — NEVER `"🟡Draft"` or `"Draft"`. The emoji-prefixed variants (`🟡Draft` red / `🔵Completed` pink) are STALE DUPLICATES and MUST NOT be selected. The old plain-word forms `Live` and `Draft` are also stale after the 2026-05-03 rename.
 
-**Shared taxonomy — Backlog Items DB**: the same status names apply (In Progress/Not Started/Deprioritized/Waiting/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
+**Shared taxonomy — Backlog Items DB**: the same status names apply (In Progress/Not Started/Deferred/Waiting/Completed/Retired/Archived) for cross-DB consistency. However, Plans-specific invariants do NOT transfer:
 - Backlog Items have no `Exists On Disk` field → on-disk-presence invariant is Plans-only
 - Backlog items can legitimately sit in `Not Started` for months waiting on dependencies → 14-day staleness clock is Plans-only
 - The "descope → Retired" flip applies to both DBs ✅
@@ -64,6 +64,7 @@ Option names are `In Progress`/`Not Started`/`Deprioritized`/`Waiting`/`Complete
 - Schema rename pass on both Plans DB and Backlog Items DB: `Active`→`Live`, `Proposed`→`Draft`, `Complete`→`Completed`, `Superseded`→`Retired`; brown-colored `Completed` duplicate deleted on Plans DB
 - 2026-05-03: `Live`→`In Progress`, `Draft`→`Not Started` (same option IDs, display names changed in Notion UI)
 - 2026-05-05: `Deprioritized` added as canonical status for paused/deferred plans
+- 2026-05-10: `Deprioritized` → `Deferred` (UI rename, same option ID; legacy `Deprioritized` writes auto-mapped to `Deferred` by `_notion_plans_status_check.py`)
 - Higher-signal vocabulary chosen for outcome-orientation (`Completed` > `Complete`, `Retired` > `Superseded`)
 - 14-day staleness clock + on-disk-presence invariant exists specifically to prevent the graveyard pattern recurring (Plans only)
 
@@ -90,7 +91,7 @@ Before any Notion write, validate `Status.select.name` is in canonical set:
 
 ```python
 CANONICAL_STATUSES = {
-    "In Progress", "Not Started", "Deprioritized", "Waiting",
+    "In Progress", "Not Started", "Deferred", "Waiting",
     "Completed", "Retired", "Archived"
 }
 

@@ -1,6 +1,6 @@
 # L6 Mental Model — Observability + System Learning
 
-> **Doctrine:** L6 is **one layer with two physical surfaces**. `agentic_core/L6_observability/` is the *passive* surface (exhaust capture). `system_learning/` is the *active* surface (learn from exhaust). The latter sits at repo root without an `L6_` prefix — that's a known doctrinal/code-layout drift tracked by plan `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deprioritized).
+> **Doctrine:** L6 is **one layer with two physical surfaces**. `agentic_core/L6_observability/` is the *passive* surface (exhaust capture). `system_learning/` is the *active* surface (learn from exhaust). The latter sits at repo root without an `L6_` prefix — that's a known doctrinal/code-layout drift tracked by plan `l6-folder-rename-doctrinal-alignment-a8c4e2` (Deferred).
 
 ## Top-level shape
 
@@ -106,7 +106,7 @@ L6 (one layer, two surfaces)
 - Full doctrinal chapters: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Shadow_Evaluation_System_Learning`
 - ADG canonical invariants (Static vs Runtime ADG distinction): `.windsurf/rules/adg-canonical-invariants.md` §8
 - Promotion-gate rule: `.windsurf/rules/evaluation-promotion-gate.md`
-- Folder-rename plan (Deprioritized): `.windsurf/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
+- Folder-rename plan (Deferred): `.windsurf/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
 - Non-invasive alignment plan: `.windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`
 
 ## Alignment Status (plan `l6-doctrinal-alignment-noninvasive-b9d3f5`)

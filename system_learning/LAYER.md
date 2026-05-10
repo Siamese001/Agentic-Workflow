@@ -13,7 +13,7 @@ This directory is the **active half of L6** in the agentic spine.
 
 ## Why this directory is at repo root, not under `agentic_core/L6_*/`
 
-For historical reasons. The `L6_` prefix was applied to `agentic_core/L6_observability/` first; `system_learning/` predates the convention. A non-invasive alignment plan (`.windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`) declares L6 membership via in-tree markers (`__layer__ = "L6"`), a forward-import alias, and CI gates rather than forcing a 205-import-site rename. The invasive sibling plan (`l6-folder-rename-doctrinal-alignment-a8c4e2`) is Deprioritized.
+For historical reasons. The `L6_` prefix was applied to `agentic_core/L6_observability/` first; `system_learning/` predates the convention. A non-invasive alignment plan (`.windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`) declares L6 membership via in-tree markers (`__layer__ = "L6"`), a forward-import alias, and CI gates rather than forcing a 205-import-site rename. The invasive sibling plan (`l6-folder-rename-doctrinal-alignment-a8c4e2`) is Deferred.
 
 ## L6 invariants
 

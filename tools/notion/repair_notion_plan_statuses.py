@@ -13,7 +13,7 @@ Status extraction priority:
 5. If the plan file contains "AUTO-SCAFFOLD" → Not Started (keep)
 6. Default: Not Started (keep, no patch)
 
-Canonical Notion status values: In Progress, Not Started, Deprioritized, Waiting, Completed, Retired, Archived
+Canonical Notion status values: In Progress, Not Started, Deferred, Waiting, Completed, Retired, Archived
 
 Usage:
     python tools/notion/repair_notion_plan_statuses.py [--dry-run]
@@ -43,7 +43,7 @@ from _notion_constants import (  # noqa: E402
 PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
 TIMEOUT = 30.0
 
-CANONICAL = {"in progress", "not started", "deprioritized", "waiting", "completed", "retired", "archived"}
+CANONICAL = {"in progress", "not started", "deferred", "waiting", "completed", "retired", "archived"}
 
 # Map words found in plan files to canonical Notion status names
 _STATUS_MAP = {
@@ -51,7 +51,8 @@ _STATUS_MAP = {
     "live": "In Progress",
     "not started": "Not Started",
     "draft": "Not Started",
-    "deprioritized": "Deprioritized",
+    "deprioritized": "Deferred",
+    "deferred": "Deferred",
     "waiting": "Waiting",
     "completed": "Completed",
     "done": "Completed",

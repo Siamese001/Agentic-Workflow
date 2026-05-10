@@ -57,10 +57,11 @@ _PLANS_IDS: frozenset[str] = frozenset({
 # Renamed 2026-05-03: "Live" → "In Progress", "Draft" → "Not Started" (same
 # Notion option IDs, display names changed in the Notion UI).
 # Added 2026-05-05: "Deprioritized" for paused/deferred plans.
+# Renamed 2026-05-10: "Deprioritized" → "Deferred" (UI rename, same option ID).
 CANONICAL_STATUSES: frozenset[str] = frozenset({
     "In Progress",
     "Not Started",
-    "Deprioritized",
+    "Deferred",
     "Waiting",
     "Completed",
     "Retired",
@@ -85,6 +86,8 @@ STALE_EQUIVALENTS: dict[str, str] = {
     # Old plain-word forms superseded by the 2026-05-03 rename.
     "Live": "In Progress",
     "Draft": "Not Started",
+    # 2026-05-10: "Deprioritized" renamed to "Deferred".
+    "Deprioritized": "Deferred",
 }
 
 # Property names that map to the Plans Status field.  Exact match required —
