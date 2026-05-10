@@ -39,7 +39,7 @@ EMIT_CONTRACTS: list[tuple[str, str]] = [
     # PA
     ("agentic_core/runtime/contracts/compiled_prompt_artifact.py", "CompiledPromptArtifact"),
     # L3
-    ("agentic_core/L3_orchestration/doctrine/contracts_l3_7.py", "L3StepContract"),
+    ("agentic_core/runtime/contracts/l3_runtime_orchestration_receipt.py", "L3RuntimeOrchestrationReceipt"),
     # L2
     ("agentic_core/runtime/contracts/sealed_l2_artifact.py", "SealedL2Artifact"),
     # Exit X3 packets

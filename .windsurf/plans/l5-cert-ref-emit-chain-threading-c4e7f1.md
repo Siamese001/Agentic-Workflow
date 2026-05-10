@@ -2,7 +2,7 @@
 
 **Slug:** `l5-cert-ref-emit-chain-threading-c4e7f1`
 **Tier:** T3 (architectural — cross-layer contract change touching U0 → L1 → L0 → C0 → PA → L3 → L2 → Exit → UWG → L6)
-**Status:** In Progress (W3 complete — W4 ready)
+**Status:** Completed (all waves W0–W6 done)
 **Created:** 2026-05-09
 **Authoring mode:** plan only — no code changes in this session
 
@@ -75,8 +75,9 @@ Each inbound layer must verify the upstream `l5_certification_ref` against L5 au
 | W1 | P1.1 — P1.3 | Add `l5_certification_ref` field to U0/L1/L0/C0 contracts; add inbound verify at L1, L0, C0 entry sites | ~12k | W0 decisions inform shape | ✅ Done | 4 contracts updated; `verify.py` helper created; `__post_init__` fail-closed on `ValidatedRequest`, `L1PlanContract`, `RouteContract`, `FinalEvidenceContract` |
 | W2 | P2.1 — P2.3 | Add `l5_certification_ref` field to PA/L3/L2/X3 packets; add inbound verify at PA, L3, L2 entry sites | ~14k | W1 pattern reused | ✅ Done | `__post_init__` fail-closed on `CompiledPromptArtifact`, `SealedL2Artifact`, `L3RuntimeOrchestrationReceipt`, all 6 X3 packets; `l5_certification_ref` field added to `L3RuntimeOrchestrationReceipt` |
 | W3 | P3.1 — P3.2 | Reconcile `CommitRequest.l5_certification_refs` (plural) with new singular convention; add field to `UWGCommitReceipt` and `RuntimeExhaustBundle` (both variants) | ~8k | Plural/singular decision from W0 final | ✅ Done | `__post_init__` fail-closed on `CommitRequest`, `UWGCommitReceipt`, `RuntimeExhaustBundle` (runtime_trace + shadow_eval); plural `l5_certification_refs` retained as-is; singular `l5_certification_ref` alias already present on `CommitRequest` |
-| W4 | P4.1 — P4.2 | L5 authority registry verify helper; CI gate that asserts every W6 contract field-set contains `l5_certification_ref` | ~6k | Reuse `L5_safety/contracts/registry.py` per W0 decision | Not Started | New helper exported; new CI gate `check_l5_cert_ref_on_emit_contracts.py` registered in `run_contract_gates.py`; gate green |
-| W5 | P5.1 | Documentation + ADR + verify drift report | ~4k | All earlier waves landed | Not Started | ADR authored at `docs/architecture/adr/`; spec §2 reproduced as canonical reference; `docs/reference/00A_L5_Governance_Safety/` cross-linked |
+| W4 | P4.1 — P4.2 | L5 authority registry verify helper; CI gate that asserts every W6 contract field-set contains `l5_certification_ref` | ~6k | Reuse `L5_safety/contracts/registry.py` per W0 decision | ✅ Done | `verify.py` helper created (W1); `check_l5_cert_ref_on_emit_contracts.py` existed with stale `L3StepContract` ref — corrected to `L3RuntimeOrchestrationReceipt`; gate runs 18/18 OK |
+| W5 | P5.1 | Documentation + ADR + verify drift report | ~4k | All earlier waves landed | ✅ Done | `docs/architecture/adr/ADR-102-l5-cert-ref-emit-chain-threading.md` authored; implementation table of all 18 contracts; cross-links to `00A.8`, `00A.6`, `00A.2` L5 reference docs |
+| W6 | P6.1 | Test regression pass — fix stale `_defaults_empty` tests from pre-W3 era; verify 86-test suite green | ~2k | W3 `__post_init__` enforce landed before test update | ✅ Done | 5 stale `_defaults_empty` tests in `test_l5_cert_ref_w3.py` updated to `_empty_raises` (with explicit `l5_certification_ref=""`); all 86 W1–W4 tests passing |
 
 ---
 
@@ -94,8 +95,9 @@ Each inbound layer must verify the upstream `l5_certification_ref` against L5 au
 | P3.1 | UWG receipt + L6 bundle field add | `L4_state/contracts/records.py` (`UWGCommitReceipt`), `L6_observability/runtime_trace/runtime_exhaust_bundle.py`, `L6_observability/shadow_eval/contracts.py` | `l5_certification_ref` already present on all three; added `__post_init__` fail-closed on `UWGCommitReceipt` + both `RuntimeExhaustBundle` variants | ~4k | ✅ Done |
 | P3.2 | Plural/singular reconciliation | `L4_state/contracts/records.py` only | `CommitRequest` already had singular `l5_certification_ref` alias (line 784); `__post_init__` verify added on singular alias; plural tuple retained for backward compat; no shim needed | ~4k | ✅ Done |
 | P4.1 | L5 authority verify helper | `L5_safety/contracts/verify.py` (created in W1), `L5_safety/contracts/registry.py` (re-export) | Standalone helper created with no runtime imports; registry re-exports; circular-import-safe | ~3k | ✅ Done (landed in W1) |
-| P4.2 | CI gate for emit-contract field presence | new `ops_scripts/ci/check_l5_cert_ref_on_emit_contracts.py` | Static AST scan over the 11 contract dataclasses; bypass env var per house pattern | ~3k | Not Started |
-| P5.1 | ADR + cross-link docs | `docs/architecture/adr/<ADR-NNN>.md`, `docs/reference/00A_L5_Governance_Safety/` | Spec §2 must be reproduced verbatim as canonical reference | ~4k | Not Started |
+| P4.2 | CI gate for emit-contract field presence | `ops_scripts/ci/check_l5_cert_ref_on_emit_contracts.py` | Already existed with stale `L3StepContract` entry; corrected to `L3RuntimeOrchestrationReceipt`; gate verified 18/18 OK; registered in `run_contract_gates.py` as L5CR1 advisory | ~3k | ✅ Done |
+| P5.1 | ADR + cross-link docs | `docs/architecture/adr/ADR-102-l5-cert-ref-emit-chain-threading.md` | ADR-102 authored with SCQA, decision, implementation table of 18 contracts, alternatives, rollback; cross-links to `00A.6`, `00A.8`, `00A.2` | ~4k | ✅ Done |
+| P6.1 | Test regression pass | `tests/agentic_core/test_l5_cert_ref_w3.py` | 5 stale `_defaults_empty` tests expected empty construction to succeed; W3 `__post_init__` makes empty raise; updated to `_empty_raises` with explicit `l5_certification_ref=""`; 86/86 green | ~2k | ✅ Done |
 
 ---
 
