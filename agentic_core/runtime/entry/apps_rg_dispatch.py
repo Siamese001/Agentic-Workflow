@@ -37,6 +37,10 @@ from agentic_core.runtime.entry.u0_apps_rg_binding import (
     u0_validate_apps_rg,
 )
 from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
+    install_bridge,
+    get_bridge,
+)
 
 # ---------------------------------------------------------------------------
 # Required fields — the payload keys that MUST be present and non-empty
@@ -110,6 +114,38 @@ def apps_rg_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
 
 
 # ---------------------------------------------------------------------------
+# OTEL span emission helper (W3 P3.1)
+# ---------------------------------------------------------------------------
+def _emit_stage_span(stage: str, trace_id: str, status: str = "OK") -> None:
+    """Emit a zero-duration marker span for pipeline stage telemetry."""
+    bridge = get_bridge()
+    if bridge is None:
+        return
+    import time
+    import uuid
+    now_ns = time.time_ns()
+    span = {
+        "trace_id": trace_id,
+        "span_id": uuid.uuid4().hex[:16],
+        "parent_span_id": None,
+        "name": f"apps_rg.{stage}",
+        "kind": "INTERNAL",
+        "start_time_ns": now_ns,
+        "end_time_ns": now_ns,
+        "ts_utc": now_ns // 1_000_000,
+        "duration_ms": 0.0,
+        "status_code": status,
+        "attributes": {
+            "layer": stage.split("_")[0] if "_" in stage else stage,
+            "app_id": "apps_rg",
+            "stage": stage,
+        },
+        "events": [],
+    }
+    bridge._spans.append(span)
+
+
+# ---------------------------------------------------------------------------
 # dispatch() — invoke the apps_rg pipeline with the parsed RequestEnvelope.
 # Returns an X3Disposition.
 #
@@ -134,8 +170,12 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     Each landed stage replaces a 'pending' marker in the disposition until
     the entire chain is real and exit_status='success'.
     """
+    # W3 P3.1: Install OTEL bridge for span collection (noop if already installed)
+    install_bridge(root_trace_id=envelope.trace_id, app_id="apps_rg")
+
     if not isinstance(envelope, RequestEnvelope):
         # Defensive: wrong shape from parse() — surface as error disposition
+        _emit_stage_span("dispatch_error", envelope.trace_id or "unknown", "ERROR")
         return X3Disposition(
             request_id="unknown",
             run_id="unknown",
@@ -150,7 +190,9 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     # ----------------------------------------------------------------- U0
     try:
         validated_request = u0_validate_apps_rg(envelope)
+        _emit_stage_span("U0_validate", envelope.trace_id, "OK")
     except AppsRgAuthorityViolation as violation:
+        _emit_stage_span("U0_validate", envelope.trace_id, "ERROR")
         return X3Disposition(
             request_id=envelope.request_id,
             run_id=envelope.run_id,
@@ -164,13 +206,14 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(violation),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P1",
         )
 
     # ----------------------------------------------------------------- L1
     try:
         l1_plan = l1_plan_apps_rg(validated_request)
+        _emit_stage_span("L1_plan", envelope.trace_id, "OK")
     except (TypeError, ValueError) as l1_err:
+        _emit_stage_span("L1_plan", envelope.trace_id, "ERROR")
         return X3Disposition(
             request_id=validated_request.request_id,
             run_id=validated_request.run_id,
@@ -184,13 +227,14 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l1_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P2",
         )
 
     # ----------------------------------------------------------------- L0
     try:
         route = l0_route_apps_rg(l1_plan)
+        _emit_stage_span("L0_route", envelope.trace_id, "OK")
     except (TypeError, ValueError) as l0_err:
+        _emit_stage_span("L0_route", envelope.trace_id, "ERROR")
         return X3Disposition(
             request_id=l1_plan.request_id,
             run_id=l1_plan.run_id,
@@ -204,7 +248,6 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l0_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P3",
         )
 
     # ----------------------------------------------------------------- C0 (conditional)
@@ -212,7 +255,9 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     if route.grounding_required:
         try:
             fec = c0_retrieve_apps_rg(route, envelope.payload)
+            _emit_stage_span("C0_retrieve", envelope.trace_id, "OK")
         except (TypeError, ValueError, OSError) as c0_err:
+            _emit_stage_span("C0_retrieve", envelope.trace_id, "ERROR")
             return X3Disposition(
                 request_id=route.request_id,
                 run_id=route.run_id,
@@ -226,7 +271,6 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(c0_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
-                disposition_version="W3.P4",
             )
 
     # ----------------------------------------------------------------- PA (conditional)
@@ -244,12 +288,14 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 app_id=route.app_id,
                 trace_id=route.trace_id,
                 evidence_collection_timestamp=datetime.now(timezone.utc).isoformat(),
-                contract_version="W3.P4",
+                schema_version="W3.P4",
                 l5_certification_ref="c0-apps-rg-no-grounding-required",
             )
         try:
             prompt_artifact = pa_compose_apps_rg(route, l1_plan, fec, envelope.payload)
+            _emit_stage_span("PA_compose", envelope.trace_id, "OK")
         except (TypeError, ValueError) as pa_err:
+            _emit_stage_span("PA_compose", envelope.trace_id, "ERROR")
             return X3Disposition(
                 request_id=route.request_id,
                 run_id=route.run_id,
@@ -263,7 +309,6 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(pa_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
-                disposition_version="W3.P4",
             )
 
     # ----------------------------------------------------------------- L2
@@ -271,6 +316,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
         # No model generation requested — skip L2/Exit, emit pipeline-complete
         # disposition without an artifact write. This is the path for any
         # future task class that doesn't need an LLM.
+        _emit_stage_span("dispatch_complete_no_gen", envelope.trace_id, "OK")
         return X3Disposition(
             request_id=route.request_id,
             run_id=route.run_id,
@@ -284,12 +330,13 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "note": "model_generation_required=false — L2/Exit skipped",
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P5",
         )
 
     try:
         sealed = l2_execute_apps_rg(prompt_artifact)
+        _emit_stage_span("L2_execute", envelope.trace_id, "OK")
     except (TypeError, ValueError) as l2_err:
+        _emit_stage_span("L2_execute", envelope.trace_id, "ERROR")
         return X3Disposition(
             request_id=route.request_id,
             run_id=route.run_id,
@@ -303,12 +350,13 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "detail": str(l2_err),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P5",
         )
 
     # ----------------------------------------------------------------- Exit
     try:
-        return exit_finalize_apps_rg(sealed, prompt_artifact)
+        disposition = exit_finalize_apps_rg(sealed, prompt_artifact)
+        _emit_stage_span("Exit_finalize", envelope.trace_id, "OK")
+        return disposition
     except (TypeError, ValueError, OSError) as exit_err:
         return X3Disposition(
             request_id=route.request_id,
@@ -324,7 +372,6 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 "sealed_compilation_hash": sealed.compilation_hash,
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            disposition_version="W3.P5",
         )
 
 __all__ = [

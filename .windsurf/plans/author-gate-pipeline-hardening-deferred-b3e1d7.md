@@ -1,7 +1,7 @@
 # Plan: Author-Gate Pipeline Hardening — Deferred Scope
 
 **Slug:** `author-gate-pipeline-hardening-deferred-b3e1d7`
-**Status:** Completed
+**Status:** Waiting — DS-5 blocked on ≥14 days empirical data (earliest ~2026-05-23); only 1 violation log entry as of 2026-05-09
 **Tier:** T2 — multi-file, single concern family
 **Created:** 2026-05-09
 **Parent plan:** `author-gate-ui-renderer-hardening-a7f3c2` (Completed 2026-05-09)
@@ -88,7 +88,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
 | W1 | DS-1 | AGP1 shadow→block flip | ~2k | ≥7 days data, FP<5% | ✅ DONE | Default flipped to fail-closed; AG_PIPELINE_ADVISORY=1 for opt-in advisory; 15 tests updated+pass |
-| W2 | DS-2 | Rule always-on promotion | ~1k | §33 headroom confirmed; DS-1 live | ❌ BLOCKED | Only 362 bytes headroom in §33 budget; rule is ~6.5KB; cannot promote without first shrinking existing always-on rules |
+| W2 | DS-2 | Rule always-on promotion | ~1k | §33 headroom confirmed; DS-1 live | ✅ DONE | Promoted via plan always-on-budget-compression-ds2-c7f4a3; budget 47,321/51,200 (3,879 margin) |
 | W3 | DS-3 | Queue-drain integration | ~4k | DS-1 live; detection accuracy validated | ✅ DONE | AG_QUEUE_PENDING marker emitted to stderr on pipeline violation |
 | W4 | DS-4 | HITL_PACKET deprecation (phase 1) | ~6k | Consumer audit complete | ✅ DONE | emit_packet.py no longer emits HITL_PACKET alias; scanners retain detection for backward compat |
 | W5 | DS-5 | Regex refinement | ~3k | ≥14 days data | ❌ BLOCKED | Needs ≥14 days empirical data (~2026-05-23) |
@@ -102,7 +102,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | DS-1 | AGP1 shadow→block flip | `check_author_gate_pipeline_freshness.py`, `run_contract_gates.py` | Need FP evidence from violation log | ~2k | ✅ DONE |
-| DS-2 | Rule always-on promotion | `author-gate-enforcement.md` | §33 budget gate dependency | ~1k | ❌ BLOCKED |
+| DS-2 | Rule always-on promotion | `author-gate-enforcement.md` | §33 budget gate dependency | ~1k | ✅ DONE |
 | DS-3 | Queue-drain integration | `post_cascade_author_gate_pipeline_audit.py`, `_author_gate_queue.py` | Queue drain is complex subsystem | ~4k | ✅ DONE |
 | DS-4 | HITL_PACKET deprecation (phase 1) | `emit_packet.py` | Stop emitting alias; keep scanner detection | ~6k | ✅ DONE |
 | DS-5 | Regex refinement | `_author_gate_pipeline_check.py`, tests | Empirical data dependency | ~3k | ❌ BLOCKED |

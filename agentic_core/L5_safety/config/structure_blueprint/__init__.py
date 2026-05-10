@@ -91,6 +91,7 @@ from agentic_core.L5_safety.config.structure_enforcement_util import (
 # ---------------------------------------------------------------------------
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
     AGENT_RESILIENCE_CONFIG,
+    APPS_TEST_SURFACE_DEFINITION,
     DOWNSTREAM_ROOTS,
     GRAVITY_CONFIG,
     GRAVITY_SURGERY_ENABLED,
@@ -107,6 +108,8 @@ from agentic_core.L5_safety.config.structure_blueprint._constants import (
 # ssot.py — remaining constants not yet migrated to L0
 # ---------------------------------------------------------------------------
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    APPS_CONTRACT_BASE,
+    APPS_TEST_INTEGRATION_BASE,
     AUTONOMOUS_AGENT_WHITELIST,
     BLUEPRINT_SOVEREIGN_DIR,
     CODE_TERRITORIES,

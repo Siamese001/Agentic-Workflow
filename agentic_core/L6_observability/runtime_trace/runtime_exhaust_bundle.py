@@ -34,6 +34,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Mapping, Sequence
 
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,6 +109,16 @@ class RuntimeExhaustBundle:
     schema_version: str = "1.0"
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7; L6 observability is read-only)
+    posture: RuntimePosture = field(default_factory=lambda: POSTURE_READ_ONLY)
+    # W6 P6.3: gate verdict refs (concern #3)
+    gate_verdict_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W7 P7.1: replay/determinism (concern #4; D11=default-empty)
+    replay_key: str = ""
+    snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W8 P8.1: write/learning firewall (concern #10; L6 observability terminal — no write authority)
+    is_uwg_write_authority: bool = False
+    is_future_run_only: bool = False
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

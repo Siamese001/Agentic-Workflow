@@ -44,3 +44,15 @@ Included files:
 - OVERLAP_RECONCILIATION_REPORT.md
 
 Generated from uploaded L5 parent/child files and checked against the available Agentic AI detailed source-file boundaries.
+
+## Emit-Contract Enrichment (W6, ADR-084)
+
+Cross-cutting field standardisation across all 11 emit contracts (U0→L6).
+See `docs/architecture/adr/ADR-084-w6-emit-contract-enrichment.md` for the full decision record.
+
+Relevant reference docs:
+- Replay/audit certification evidence → `00A.6_L5_Replay_Audit_and_Certification_Evidence.md`
+- Write firewall / UWG admission → `00B_L4_State_Archive_and_UWG/`
+- Gate receipts → `00C_Runtime_Gates_Current_Run_Mesh/`
+
+CI gate: `ops_scripts/ci/check_w6_emit_contract_enrichment.py` (W6ECE1, advisory).

@@ -359,7 +359,7 @@ def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
         # W3 P3.3: L2 always produces MODEL_GENERATION content (airlock doctrine)
         generated_content_origin=Origin.MODEL_GENERATION,
         prompt_artifact_digest=prompt.compilation_hash,
-        contract_version="W5",
+        schema_version="W5",
         compilation_hash=compilation_hash,
         l5_certification_ref=APPS_RG_L2_CERT_REF,
     )

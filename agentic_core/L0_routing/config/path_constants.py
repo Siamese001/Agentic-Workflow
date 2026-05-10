@@ -171,6 +171,9 @@ SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
 WINDSURF_SCRIPTS_DIR: Final[str] = ".windsurf/scripts"
 TESTS_UNIT_DIR: Final[str] = "tests/unit"
+APPS_TEST_UNIT_DIR: Final[str] = "tests/unit"
+APPS_TEST_INTEGRATION_DIR: Final[str] = "tests"
+APPS_CONTRACT_DIR: Final[str] = "tests/_apps_contract"
 TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 REPORTS_DIR: Final[str] = "reports"
@@ -210,6 +213,30 @@ def get_all_apps_paths() -> list[Path]:
     project_root = get_validated_project_root()
     apps_dirs = get_apps_directories()
     return [project_root / dir_name for dir_name in apps_dirs]
+
+
+def apps_test_unit_dir(app_name: str) -> str:
+    """Return the canonical unit-test directory for an apps_* package.
+
+    Example: apps_test_unit_dir("apps_rg") == "tests/unit/apps_rg"
+    """
+    return f"{APPS_TEST_UNIT_DIR}/{app_name}"
+
+
+def apps_test_integration_dir(app_name: str) -> str:
+    """Return the canonical integration-test directory for an apps_* package.
+
+    Example: apps_test_integration_dir("apps_rg") == "tests/apps_rg"
+    """
+    return f"{APPS_TEST_INTEGRATION_DIR}/{app_name}"
+
+
+def apps_contract_glob(app_name: str) -> str:
+    """Return the glob pattern for cross-app contract tests for an apps_* package.
+
+    Example: apps_contract_glob("apps_rg") == "tests/_apps_contract/test_apps_rg_*.py"
+    """
+    return f"{APPS_CONTRACT_DIR}/test_{app_name}_*.py"
 
 
 # Layer-specific directories

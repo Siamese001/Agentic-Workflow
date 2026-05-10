@@ -2,9 +2,9 @@
 
 **Slug:** `w6-emit-contract-enrichment-d8b2a4`
 **Tier:** T3 (architectural — cross-layer contract enrichment touching every layer U0 → L1 → L0 → C0 → PA → L3 → L2 → Exit → UWG → L6)
-**Status:** Not Started — **BLOCKED on parent plan completion**
+**Status:** In Progress — W0 Done; W1 unblocked
 **Created:** 2026-05-09
-**Updated:** 2026-05-09 19:25 UTC-04 — sequencing resolved
+**Updated:** 2026-05-10 01:13 UTC-04 — W0 Author-Gate complete; all 12 decisions resolved
 **Authoring mode:** plan only — no code changes in this session
 
 **Depends on:** `.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` (parent plan covering concern #2 L5 authority certification end-to-end). This umbrella plan **may not start** until the parent plan is `Status=Completed` in Notion Plans DB. Per user direction 2026-05-09 19:25 UTC-04, AG-W0-D1 is resolved as **(c) chain**: the narrow L5 plan executes first; this umbrella picks up the remaining 9 concerns.
@@ -112,18 +112,18 @@ These decisions inform every later wave. They must be drained before W1 begins. 
 
 | Wave | Phase IDs | Focus | Concern # | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|---|
-| W0 | P0.1 — P0.2 | Author-Gate decisions on §6 (≤7 unresolved + 5 inherited from parent plan) | cross-cutting | ~4k | Parent plan W0 decisions readable via refactor decision ledger; AG-W0-D1 already resolved (chain order) | Blocked on parent plan completion | All unresolved packets answered; ledger rows visible; inherited answers re-used |
-| W1 | P1.1 — P1.2 | Concern #1 — `tenant_id` added to all 11 contracts; identity quad standardized | #1 | ~8k | tenant_id origin decided in W0 #6 | Blocked | All 11 contracts carry full `(request_id, run_id, tenant_id, trace_id)`; +20 tests |
-| W2 | P2.1 — P2.4 | Concern #8 — capability/sandbox/egress fields stamped on `RouteContract`, `CompiledPromptArtifact`, `SealedL2Artifact`, `CommitRequest`; verify against `CapabilityRegistryRecord` / `ToolCatalogRecord` | #8 | ~16k | L4 capability/tool registries already exist; just need cross-layer threading | Blocked | 4 emit contracts carry sandbox/egress allowlists; verify rejects out-of-allowlist tool/model use; +25 tests |
-| W3 | P3.1 — P3.3 | Concern #6 — origin/data boundary `Origin` enum tagging on `EvidenceItem`, `PromptBlock`, `SealedL2Artifact.generated_content` (wrap as `OriginTaggedContent`) | #6 | ~14k | W0 #7 settles enum vs string tag | Blocked | Every text payload in the chain is origin-typed; airlock CI gate green; +20 tests |
-| W4 | P4.1 — P4.2 | Concern #5 — `otel_span_refs` and `audit_refs` tuples added to all 11 contracts | #5 | ~10k | OTEL bridge in `otel_lifecycle_bridge.py` already emits spans; just need to stamp the refs on contracts | Blocked | All 11 contracts carry `otel_span_refs: Tuple[str, ...]` + `audit_refs: Tuple[str, ...]`; +15 tests |
-| W5 | P5.1 — P5.2 | Concern #9 — `schema_version` field standardized across all 11 contracts; per-layer `signature` field (HMAC) | #9 | ~12k | W0 #8/#9 settle naming + signature kind | Blocked | All 11 contracts carry `schema_version` + `signature`; signature verification helper added; +20 tests |
-| W6 | P6.1 — P6.3 | Concerns #3 + #7 — typed `RuntimePosture` struct (`read_only`, `external_call`, `write_intent`, `hitl_required`); typed `GateVerdictRef` array on every emit; reuse existing `gate_verdict_refs` on `CommitRequest` | #3, #7 | ~16k | Verdict shape borrowed from `L4_state/contracts/records.py` audit ledger | Blocked | All 11 contracts carry posture + verdict refs; +25 tests |
-| W7 | P7.1 — P7.2 | Concern #4 — `replay_key`, `snapshot_refs`, `deterministic_digest` standardized across all 11 contracts (currently only on CommitRequest + L3 receipt) | #4 | ~10k | `lifecycle_trace_contract.py` already produces replay_key | Blocked | All 11 contracts carry `replay_key` + `snapshot_refs`; replay determinism CI gate green; +15 tests |
-| W8 | P8.1 — P8.2 | Concern #10 — explicit `write_firewall_marker` (e.g. `is_uwg_write_authority: bool`, `is_future_run_only: bool`) on relevant contracts | #10 | ~6k | Gateway already enforces; this codifies it in shape | Blocked | `SealedL2Artifact`/`X3CommitRequestPacket`/`CommitRequest`/`RuntimeExhaustBundle` carry firewall markers; +10 tests |
-| W9 | P9.1 — P9.4 | CI gates (one per concern OR umbrella) + ADR + docs cross-link + final integration test sweep | cross-cutting | ~14k | All earlier waves landed | Blocked | Up to 9 CI gates registered in `run_contract_gates.py`; ADR(s) authored at `docs/architecture/adr/`; reference docs cross-linked under `docs/reference/00A_L5_Governance_Safety/`; full `tests/_apps_contract/` + `tests/runtime/` + `tests/uwg/` sweeps green |
+| W0 | P0.1 — P0.2 | Author-Gate decisions on §6 (≤7 unresolved + 5 inherited from parent plan) | cross-cutting | ~4k | Parent plan W0 decisions readable via refactor decision ledger; AG-W0-D1 already resolved (chain order) | ✅ Done | All 12 decisions answered (D2–D5, D10 inherited; D6–D9, D11–D12 fresh AG); ledger rows captured |
+| W1 | P1.1 — P1.2 | Concern #1 — `tenant_id` added to all 11 contracts; identity quad standardized | #1 | ~8k | D6=U0 ingress (app_id→tenant_id); D11=default-empty | Not Started | All 11 contracts carry full `(request_id, run_id, tenant_id, trace_id)`; +20 tests |
+| W2 | P2.1 — P2.4 | Concern #8 — capability/sandbox/egress fields stamped on `RouteContract`, `CompiledPromptArtifact`, `SealedL2Artifact`, `CommitRequest`; verify against `CapabilityRegistryRecord` / `ToolCatalogRecord` | #8 | ~16k | D11=default-empty; D3=`__post_init__` verify | Not Started | 4 emit contracts carry sandbox/egress allowlists; verify rejects out-of-allowlist tool/model use; +25 tests |
+| W3 | P3.1 — P3.3 | Concern #6 — origin/data boundary `Origin` enum tagging on `EvidenceItem`, `PromptBlock`, `SealedL2Artifact.generated_content` (wrap as `OriginTaggedContent`) | #6 | ~14k | D7=typed Origin enum + OriginTaggedContent; new `runtime/contracts/origin.py` | Not Started | Every text payload in the chain is origin-typed; airlock CI gate green; +20 tests |
+| W4 | P4.1 — P4.2 | Concern #5 — `otel_span_refs` and `audit_refs` tuples added to all 11 contracts | #5 | ~10k | D11=default-empty tuples; OTEL bridge already exists | Not Started | All 11 contracts carry `otel_span_refs: Tuple[str, ...]` + `audit_refs: Tuple[str, ...]`; +15 tests |
+| W5 | P5.1 — P5.2 | Concern #9 — `schema_version` field standardized across all 11 contracts; per-layer `signature` field (HMAC) | #9 | ~12k | D8=rename all to `schema_version`; D9=HMAC-SHA256 reusing `L0RouteContract.hmac_sig` pattern | Not Started | All 11 contracts carry `schema_version` + `signature`; signature verification helper added; +20 tests |
+| W6 | P6.1 — P6.3 | Concerns #3 + #7 — typed `RuntimePosture` struct (`read_only`, `external_call`, `write_intent`, `hitl_required`); typed `GateVerdictRef` array on every emit; reuse existing `gate_verdict_refs` on `CommitRequest` | #3, #7 | ~16k | D11=default-empty; new `runtime/contracts/posture.py` | Not Started | All 11 contracts carry posture + verdict refs; +25 tests |
+| W7 | P7.1 — P7.2 | Concern #4 — `replay_key`, `snapshot_refs`, `deterministic_digest` standardized across all 11 contracts (currently only on CommitRequest + L3 receipt) | #4 | ~10k | D11=default-empty; `lifecycle_trace_contract.py` source | Not Started | All 11 contracts carry `replay_key` + `snapshot_refs`; replay determinism CI gate green; +15 tests |
+| W8 | P8.1 — P8.2 | Concern #10 — explicit `write_firewall_marker` (e.g. `is_uwg_write_authority: bool`, `is_future_run_only: bool`) on relevant contracts | #10 | ~6k | D11=default False; gateway already enforces | Not Started | `SealedL2Artifact`/`X3CommitRequestPacket`/`CommitRequest`/`RuntimeExhaustBundle` carry firewall markers; +10 tests |
+| W9 | P9.1 — P9.4 | CI gates (9 per-concern) + ADR + docs cross-link + final integration test sweep | cross-cutting | ~14k | D12=9 separate gates; all earlier waves landed | Not Started | Up to 9 CI gates registered in `run_contract_gates.py`; ADR(s) authored at `docs/architecture/adr/`; reference docs cross-linked under `docs/reference/00A_L5_Governance_Safety/`; full `tests/_apps_contract/` + `tests/runtime/` + `tests/uwg/` sweeps green |
 
-**Total est. tokens: ~110k** (down from ~164k after parent plan absorbs W2's ~52k + W0 trims to ~4k from ~6k). Realistically delivered across multiple sessions. All waves marked **Blocked** until parent plan reports `Status=Completed`.
+**Total est. tokens: ~110k** (down from ~164k after parent plan absorbs W2's ~52k). W0 complete. W1 is next. W2–W9 remain Not Started.
 
 ---
 
@@ -133,10 +133,10 @@ These decisions inform every later wave. They must be drained before W1 begins. 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P0.1 | Author-Gate decisions — inherit from parent plan ledger (D2, D3, D4, D5, D10) | refactor decision ledger lookup | Must verify ledger entries exist; else escalate to fresh AG | ~2k | Blocked |
-| P0.2 | Author-Gate decisions D6–D9, D11–D12 (tenant_id origin, origin enum, schema naming, signature kind, back-compat, CI strategy) | none | D7 is the airlock-doctrine pivot; D11 affects rollout sequencing | ~2k | Blocked |
-| P1.1 | Identity quad — `tenant_id` field add to 11 contracts | all 11 contract files | tenant_id origin decision must land first | ~4k | Blocked |
-| P1.2 | Identity verify at every layer entry | 8 verify call-sites | Surrogate `app_id` field already exists; reconcile | ~4k | Blocked |
+| P0.1 | Author-Gate decisions — inherit from parent plan ledger (D2, D3, D4, D5, D10) | refactor decision ledger lookup | Must verify ledger entries exist; else escalate to fresh AG | ~2k | ✅ Done — D2=plain str, D3=`__post_init__`, D4=standalone helper, D5=fail-closed, D10=default-empty+plural retained |
+| P0.2 | Author-Gate decisions D6–D9, D11–D12 (tenant_id origin, origin enum, schema naming, signature kind, back-compat, CI strategy) | none | D7 is the airlock-doctrine pivot; D11 affects rollout sequencing | ~2k | ✅ Done — D6=U0 ingress, D7=Origin enum, D8=schema_version, D9=HMAC-SHA256, D11=default-empty, D12=9 per-concern gates |
+| P1.1 | Identity quad — `tenant_id` field add to 11 contracts | all 11 contract files | D6: tenant_id = app_id value at U0; default-empty on downstream contracts | ~4k | Not Started |
+| P1.2 | Identity verify at every layer entry | 8 verify call-sites | Surrogate `app_id` field already exists; reconcile | ~4k | Not Started |
 | P2.1 | Capability/sandbox/egress — `RouteContract` + `CompiledPromptArtifact` field add | 2 contracts | Tie to `ToolCatalogRecord` registry | ~4k | Blocked |
 | P2.2 | Capability/sandbox/egress — `SealedL2Artifact` field add (capability_used + sandbox_class_used + egress_used) | 1 contract | Records actual use; verify at L2 dispatch | ~4k | Blocked |
 | P2.3 | Capability/sandbox/egress — `CommitRequest` field add (already partial via `affected_state_surfaces`) | 1 contract | Reuse vs new field decision | ~4k | Blocked |

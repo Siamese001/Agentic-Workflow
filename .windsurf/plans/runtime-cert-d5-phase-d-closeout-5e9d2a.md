@@ -1,7 +1,7 @@
 # Runtime Cert — Phase D.5 Closeout Report (Planning Only)
 
 - **Plan ID**: `runtime-cert-d5-phase-d-closeout-5e9d2a`
-- **Status**: Planning — Author-Gate pending
+- **Status**: Completed — 2026-05-01
 - **Authored**: 2026-05-01
 - **ADR anchor**: [ADR-080 §11 D.5](../../docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md)
 - **Predecessors** (all complete on `rtc-w2b-live-provider-allow-proof-b24f8e` / `rtc-w2-clean`):

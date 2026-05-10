@@ -66,6 +66,11 @@ FORBIDDEN_ROOT_FOLDERS = {
     "proof",           # → validators/proof
     "enforcement",     # → validators/enforcement
     "_compat",         # DELETE if empty
+    "tests",           # FORBIDDEN: app-local tests/ consolidated into 3-surface canonical layout
+                       #   unit      → tests/unit/<app>/
+                       #   integration → tests/<app>/
+                       #   contract  → tests/_apps_contract/
+                       # See plan apps-test-surface-consolidation-11acd9-v2
 }
 
 # §4 — mandatory doc-set at app root

@@ -30,6 +30,13 @@ from typing import Any, Final, TypedDict
 # ============================================================================
 
 
+APPS_TEST_SURFACE_DEFINITION: Final[Mapping[str, str]] = {
+    "unit": "tests/unit/<app>",
+    "integration": "tests/<app>",
+    "contract": "tests/_apps_contract/test_<app>_*.py",
+}
+
+
 class SubfolderDefinition(TypedDict, total=False):
     purpose: str
     l4_specializations: Mapping[str, Sequence[str]]

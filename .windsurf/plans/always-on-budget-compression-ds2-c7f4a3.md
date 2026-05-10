@@ -35,11 +35,11 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P1.1 | Compress `apps-rg-interactive-discipline.md` | ~3k | Skill absorbs narrative | Not Started | Rule ≤2,200 bytes; hard rules + template preserved; budget gate passes |
-| W2 | P2.1 | Compress `mcp-serialization.md` | ~2k | Skill absorbs rationale + allowlist detail | Not Started | Rule ≤2,400 bytes; invariant + bypass preserved |
-| W3 | P3.1, P3.2 | Compress `notion-plan-wave-deferral.md` + `adg-canonical-invariants.md` | ~3k | Skills absorb enforcement + detail sections | Not Started | Combined savings ≥3,300 bytes; budget gate passes |
-| W4 | P4.1 | Compress `author-gate-enforcement.md` | ~2k | Procedural detail → skill | Not Started | Rule ≤7,000 bytes |
-| W5 | P5.1 | Flip trigger + verify | ~1k | All prior waves done | Not Started | `trigger: always_on`; budget gate PASS with ≥500 bytes margin |
+| W1 | P1.1 | Compress `apps-rg-interactive-discipline.md` | ~3k | Skill absorbs narrative | ✅ DONE | 5,914→1,992 bytes (3,922 saved); budget 4,284 free |
+| W2 | P2.1 | Compress `mcp-serialization.md` | ~2k | Skill absorbs rationale + allowlist detail | ✅ DONE | 5,031→1,213 bytes (3,818 saved); budget 8,102 free |
+| W3 | P3.1, P3.2 | Compress `notion-plan-wave-deferral.md` + `adg-canonical-invariants.md` | ~3k | Skills absorb enforcement + detail sections | ✅ DONE | 3,164→854 + 5,073→1,865 (5,518 saved); budget 13,620 free |
+| W4 | P4.1 | Compress `author-gate-enforcement.md` | ~2k | Procedural detail → skill | ⏭️ SKIPPED | 13,620 free > 9,941 needed; compression unnecessary |
+| W5 | P5.1 | Flip trigger + verify | ~1k | All prior waves done | ✅ DONE | trigger flipped; budget PASS 47,321/51,200 (3,879 margin) |
 
 **Total: ~11k tokens across 5 waves.**
 
@@ -59,12 +59,12 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P1.1 | Compress apps-rg-interactive-discipline | `apps-rg-interactive-discipline.md` | 5,914→≤2,200 bytes; "Why" section, incident narrative, defense-in-depth table → skill or memory | ~3k | 🔲 TODO |
-| P2.1 | Compress mcp-serialization | `mcp-serialization.md` | 5,031→≤2,400 bytes; "Why scoped to remote" rationale, allowlist detail, SQLite fallback → skill | ~2k | 🔲 TODO |
-| P3.1 | Compress notion-plan-wave-deferral | `notion-plan-wave-deferral.md` | 3,164→≤1,600 bytes; exemption list, forbidden patterns, enforcement layers → skill | ~1.5k | 🔲 TODO |
-| P3.2 | Compress adg-canonical-invariants | `adg-canonical-invariants.md` | 5,073→≤3,200 bytes; §4-§7 detail → skill | ~1.5k | 🔲 TODO |
-| P4.1 | Compress author-gate-enforcement | `author-gate-enforcement.md` | 9,941→≤7,000 bytes; "where detail lives" table, canonical-emitter narrative, calibration triggers → skill | ~2k | 🔲 TODO |
-| P5.1 | Flip trigger + verify | `author-gate-enforcement.md` frontmatter | Must pass budget gate with ≥500 bytes margin | ~1k | 🔲 TODO |
+| P1.1 | Compress apps-rg-interactive-discipline | `apps-rg-interactive-discipline.md` | 5,914→1,992 bytes | ~3k | ✅ DONE |
+| P2.1 | Compress mcp-serialization | `mcp-serialization.md` | 5,031→1,213 bytes | ~2k | ✅ DONE |
+| P3.1 | Compress notion-plan-wave-deferral | `notion-plan-wave-deferral.md` | 3,164→854 bytes | ~1.5k | ✅ DONE |
+| P3.2 | Compress adg-canonical-invariants | `adg-canonical-invariants.md` | 5,073→1,865 bytes | ~1.5k | ✅ DONE |
+| P4.1 | Compress author-gate-enforcement | `author-gate-enforcement.md` | SKIPPED — headroom sufficient without compression | ~0 | ⏭️ SKIPPED |
+| P5.1 | Flip trigger + verify | `author-gate-enforcement.md` frontmatter | Budget PASS 47,321/51,200 (3,879 margin) | ~1k | ✅ DONE |
 
 ---
 

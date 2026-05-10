@@ -6,6 +6,8 @@ Canonical dataclass for L0 routing output.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
 from typing import Any, Optional
 
 
@@ -50,6 +52,13 @@ class RouteContract:
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7)
+    posture: RuntimePosture = field(default_factory=lambda: POSTURE_READ_ONLY)
+    # W6 P6.3: gate verdict refs (concern #3)
+    gate_verdict_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W7 P7.1: replay/determinism (concern #4; D11=default-empty)
+    replay_key: str = ""
+    snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

@@ -251,7 +251,7 @@ def pa_compose_apps_rg(
         system_preamble=system_preamble,
         user_instruction=user_instruction,
         assembly_timestamp=datetime.now(timezone.utc).isoformat(),
-        assembly_version="W3.P4",
+        schema_version="W3.P4",
         target_model=APPS_RG_TARGET_MODEL,
         target_provider=APPS_RG_TARGET_PROVIDER,
         evidence_digest=fec.compilation_hash,

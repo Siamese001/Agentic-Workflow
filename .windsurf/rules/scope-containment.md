@@ -23,32 +23,16 @@ Operationalizes constitutional §18 (no hidden scope expansion).
 
 ## Retrieval Discipline
 
-- **Read named files; don't grep "to be sure".** Plan names files → read directly.
-- **Text-search cap: 3/response** (`grep_search` + `code_search` combined). Audit: `post_cascade_grep_budget_audit.py`. Need more → use ADG MCP (one structured call, not N text shots).
-- **File-read cap: 10/response** (native `read_file` / `read_notebook` / `read_url_content` + MCP `read_text_file` / `read_file` / `read_multiple_files`). Audit: `post_cascade_read_budget_audit.py`. Bypass: `READ_BUDGET_BYPASS=1`.
-- **ADG > grep for dependencies** (constitutional §28). Never grep "who imports X / what depends on Y". Use `adg_edge_fanin` / `adg_edge_fanout` / direct SQLite.
+**Caps**: `grep_search`+`code_search` ≤3/response; file reads ≤10/response. **ADG > grep** for dependencies. See `scope-containment` skill for detailed procedure.
 
-## Scope-Reset Marker (Cross-Turn Topic Transitions)
+## Scope Markers
 
-When the user shifts to a different module/layer/concern from the prior turn, Cascade MUST emit before any tool call:
+| Marker | When | Format |
+|--------|------|--------|
+| `SCOPE_RESET:` | Cross-turn topic shift | `SCOPE_RESET: from=<prior> to=<new> dropped=<files>` |
+| `NEXT_STEP:` | Out-of-scope ideas (don't implement) | `NEXT_STEP:` + description |
 
-```
-SCOPE_RESET: from=<prior-scope> to=<new-scope> dropped=<files-or-topics>
-```
-
-Triggers (any one): user names files in a different top-level dir; different layer (`L0`→`L4`) or app (`apps_qna`→`apps_rg`); different task type (refactor→debug→plan) on different code; explicit "new task" / "switch to" / "different question".
-
-Do NOT emit for natural continuations ("now W2", "verify that", "fix the typo"). The marker drops prior-turn files from active reasoning; if old context is genuinely needed, the user re-mentions it or the active plan lists it.
-
-## Summarize-Before-Return (Discarding Search Chunks)
-
-After any `code_search` or multi-file `grep_search`, Cascade MUST state retained paths and discard chunk contents before continuing:
-
-```
-[After code_search] Retained: <path1>, <path2>. Discarded: chunk contents (will read targeted files if needed).
-```
-
-Chunks served their purpose (locating files); paths are the durable artifact. Re-reasoning over chunk bulk across N more tool calls is the "ingest whole repo" failure mode this rule prevents. Behavioral — no hook enforcement.
+Triggers: different top-level dir, layer (L0→L4), app (apps_qna→apps_rg), task type (refactor→debug→plan), explicit "switch to".
 
 ## Forbidden Patterns
 
@@ -60,22 +44,17 @@ Chunks served their purpose (locating files); paths are the durable artifact. Re
 
 ## Escape Hatches
 
-- **User approved expansion** this turn ("yes, also fix Y") — proceed.
-- **Transitive requirement** — in-scope edit forces out-of-scope file change (e.g. import signature). State requirement inline before editing.
-- **Emergency rollback** — constitutional §7 auto-closure path.
-- **`SCOPE_CONTAINMENT_BYPASS=1`** — logs bypass row; scripted batch / acknowledged exploration only.
+- User approved expansion ("yes, also fix Y") — proceed
+- Transitive requirement — state inline before editing
+- Emergency rollback — constitutional §7
+- Scripted batch — `SCOPE_CONTAINMENT_BYPASS=1`
 
 ## Enforcement
 
-| Layer | Component |
-|---|---|
-| Composition | This rule (always_on, advisory) |
-| Text-search cap | `post_cascade_grep_budget_audit.py` → `artifacts/windsurf/grep_budget_violations.jsonl` |
-| File-read cap | `post_cascade_read_budget_audit.py` → `artifacts/windsurf/read_budget_violations.jsonl` |
-| Token telemetry | `post_cascade_token_telemetry.py` → `artifacts/windsurf/turn_budget.jsonl`; weekly: `ops_scripts/calibration/token_burn_weekly_report.py` |
-| Indexing surface | `.codeiumignore` excludes `archives/`, `artifacts/`, `reports/`, `data/` |
-| Out-of-scope ideas | `NEXT_STEP:` marker (`next-step-capture.md`) |
-| Topic transitions | `SCOPE_RESET:` marker (this rule) |
+- **Text-search cap**: `post_cascade_grep_budget_audit.py`
+- **File-read cap**: `post_cascade_read_budget_audit.py`
+- **Telemetry**: `post_cascade_token_telemetry.py`
+- **Procedure**: `scope-containment` skill
 
 ## References
 

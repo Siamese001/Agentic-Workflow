@@ -1,7 +1,13 @@
 ---
 plan_id: apps-test-surface-consolidation-11acd9
 plan_type: governance
+status: archived
+superseded_by: apps-test-surface-consolidation-11acd9-v2
+archived_date: 2026-05-09
+archived_reason: Rebaselined against 2026-05-09 repo state. W3 unit scaffold partially done; new split surface (apps_rg/profiles/tests/) discovered; file counts updated. See v2 plan.
 ---
+
+> ⚠️ **ARCHIVED** — Superseded by `.windsurf/plans/apps-test-surface-consolidation-11acd9-v2.md` (2026-05-09 rebaseline). All Author-Gate decisions (Q1–Q4), gap analysis, and SSOT file list carried forward unchanged into v2.
 
 # Apps_* Test-Surface Consolidation
 

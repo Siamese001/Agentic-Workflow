@@ -142,6 +142,8 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         trace_id=validated_request.trace_id,
         # W1 P1.2: thread identity quad from U0 ValidatedRequest (D6)
         tenant_id=validated_request.tenant_id,
+        # W2: thread target_level for L0 variant routing (DS-3)
+        target_level=validated_request.target_level,
         task_plan=_RESUME_GENERATION_TASK_PLAN,
         required_capabilities=_RESUME_GENERATION_REQUIRED_CAPABILITIES,
         grounding_required=True,
@@ -149,7 +151,7 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         write_authority_present=False,
         profile_manifest_digest=profile_digest,
         planning_timestamp=datetime.now(timezone.utc).isoformat(),
-        plan_version="W3.P2",
+        schema_version="W3.P2",
         l5_certification_ref=APPS_RG_L1_CERT_REF,
     )
 

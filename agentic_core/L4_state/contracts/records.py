@@ -15,7 +15,10 @@ serialization. The digest computation here includes them.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Tuple
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.contracts.posture import RuntimePosture
 
 from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 
@@ -27,6 +30,12 @@ L4_CONTRACT_SCHEMA_VERSION = "L4-UWG-1.0.0"
 def _empty_tuple() -> Tuple[Any, ...]:
     """Default factory for tuple fields — returns an empty immutable tuple."""
     return ()
+
+
+def _commit_posture() -> "RuntimePosture":
+    """Return the canonical POSTURE_WRITE_INTENT instance for CommitRequest."""
+    from agentic_core.runtime.contracts.posture import POSTURE_WRITE_INTENT
+    return POSTURE_WRITE_INTENT
 
 
 def _record_payload(record: Any, *, exclude: Tuple[str, ...] = ("deterministic_digest",)) -> Dict[str, Any]:
@@ -790,6 +799,13 @@ class CommitRequest:
     otel_span_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7; CommitRequest always write_intent)
+    posture: "RuntimePosture" = field(default_factory=lambda: _commit_posture())
+    # W7 P7.1: replay/determinism (concern #4; replay_key already required above; snapshot_refs new)
+    snapshot_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    # W8 P8.1: write/learning firewall (concern #10; default False — gateway enforces)
+    is_uwg_write_authority: bool = False
+    is_future_run_only: bool = False
     # W2: Capability / sandbox / egress allowlists (concern #8, D11=default-empty)
     sandbox_required: bool = False
     egress_policy_ref: str = ""

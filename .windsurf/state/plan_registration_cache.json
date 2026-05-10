@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-09T12:22:54Z",
-  "fetched_at_epoch": 1778329374.7736366,
+  "fetched_at": "2026-05-10T01:44:17Z",
+  "fetched_at_epoch": 1778377457.13218,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -1677,7 +1677,7 @@
       "has_ai_summary": true
     },
     "apps-test-surface-consolidation-11acd9": {
-      "status": "Deferred",
+      "status": "Archived",
       "page_id": "35927693-f55c-817d-af56-d08ccd2d9b13",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1784,9 +1784,33 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "w6-emit-contract-enrichment-d8b2a4": {
+      "status": "In Progress",
+      "page_id": "35b27693-f55c-8106-84f4-e118db132178",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l5-cert-ref-deferred-scope-f3a1b8": {
+      "status": "In Progress",
+      "page_id": "35b27693-f55c-810c-a40f-e7cde42b0da2",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-spine-hardening-7e3b9c": {
       "status": "Completed",
       "page_id": "35b27693-f55c-810d-bd4c-f5e328cd97c8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "unified-decision-presentation-ux-hardened-d9e5f2": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-8113-81ab-fdcbd21def2d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ask-user-question-interactive-enrichment-b8c3e1": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-8114-bfd8-d80adf1d2d44",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1796,15 +1820,69 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-rg-deferred-scope-completion-record-d9e4f2": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8120-b13e-dc4fc4d6a6f6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-spinal-execution-refactor-4a7f2c": {
-      "status": "Retired",
+      "status": "Archived",
       "page_id": "35b27693-f55c-8127-9545-f39a895bc9a9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ask-user-question-author-gate-harmonization-a7e3d2": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-8133-bd12-c2e4b5ad061f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ui-choice-consistency-zero-loss-d9e4f2": {
+      "status": "Not Started",
+      "page_id": "35b27693-f55c-8146-b30f-c3ef377209b4",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "l6-folder-rename-doctrinal-alignment-a8c4e2": {
       "status": "Enhancement",
       "page_id": "35b27693-f55c-814a-8a34-e513bd92307f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ui-choice-consistency-deferred-scope-a4f2b8": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8150-91c3-c1955cb1c3cb",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ui-choice-consistency-zero-loss-hardened-d9f3a1": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8152-a57b-d981c54f609d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-ui-renderer-hardening-a7f3c2": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-815d-affb-e4695742054c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "always-on-budget-compression-ds2-c7f4a3": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-815e-903e-f942ef806561",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l5-cert-ref-emit-chain-threading-c4e7f1": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-815f-bfcf-d5f2a35237ba",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-runtime-wiring-completion-d4e8a1": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-8161-aa25-dcb20efcdf3b",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1815,7 +1893,7 @@
       "has_ai_summary": true
     },
     "apps-pa-spine-w5-remaining-7e820f": {
-      "status": "Waiting",
+      "status": "Archived",
       "page_id": "35b27693-f55c-8179-b1eb-e89114897cde",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1826,21 +1904,69 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "author-gate-enforcement-deferred-scope-complete-d7f5e3": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-817f-9ef9-e5df645f0ffa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "l6-alignment-deferred-scope-c5e8a7": {
       "status": "In Progress",
       "page_id": "35b27693-f55c-8189-8827-c3dec80f05fa",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "author-gate-pipeline-hardening-deferred-b3e1d7": {
+      "status": "Waiting",
+      "page_id": "35b27693-f55c-818a-9bad-f0237cb136a1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "author-gate-enforcement-fix-c9d4e2": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-819b-8d61-cb64bbcdfaf9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-declarative-ingress-only-spinal-governance-c8b3e1": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "35b27693-f55c-81b8-b86f-e7a3230e9d66",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-declarative-ingress-deferred-scope-a9f2e3": {
+      "status": "Completed",
+      "page_id": "35b27693-f55c-81e6-b812-e234989aabd7",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "apps-rg-spine-hardening-deferred-wave-2f8b1d": {
       "status": "Completed",
       "page_id": "35b27693-f55c-81fc-a675-d5014ce58b97",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "windsurf-config-efficiency-optimization-8f3e9d": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8103-b619-e31413ebeebe",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-pipeline-deferred-e9f2a4": {
+      "status": "Not Started",
+      "page_id": "35c27693-f55c-813f-88bb-d308281ad131",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-test-surface-consolidation-11acd9-v2": {
+      "status": "Not Started",
+      "page_id": "35c27693-f55c-8176-85b2-e63adce9b1bf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "runtime-cert-d5-phase-d-closeout-5e9d2a": {
+      "status": "Not Started",
+      "page_id": "35c27693-f55c-81f9-a9a6-fce551f53f3c",
       "exists_on_disk": true,
       "has_ai_summary": true
     }

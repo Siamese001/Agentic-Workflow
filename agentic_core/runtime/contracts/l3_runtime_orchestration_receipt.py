@@ -25,6 +25,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
+
 L3_RUNTIME_RECEIPT_SCHEMA_VERSION = "1.0"
 
 ALLOWED_STEP_STATUSES: frozenset[str] = frozenset({
@@ -111,6 +113,13 @@ class L3RuntimeOrchestrationReceipt:
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7; L3 orchestrates, no direct write)
+    posture: RuntimePosture = field(default_factory=lambda: POSTURE_READ_ONLY)
+    # W6 P6.3: gate verdict refs (concern #3)
+    gate_verdict_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W7 P7.1: replay/determinism (concern #4; D11=default-empty; deterministic_digest already present)
+    replay_key: str = ""
+    snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

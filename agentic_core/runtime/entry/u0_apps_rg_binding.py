@@ -103,6 +103,8 @@ def u0_validate_apps_rg(envelope: RequestEnvelope) -> ValidatedRequest:
         # W1 identity quad (D6): tenant_id sourced from app_id at U0 ingress.
         # Envelope override allowed when the host pre-populated it.
         tenant_id=envelope.tenant_id or "apps_rg",
+        # W2: thread target_level for L0 variant routing (DS-3)
+        target_level=envelope.payload.target_level or "",
         l5_certification_ref=APPS_RG_U0_CERT_REF,
     )
 

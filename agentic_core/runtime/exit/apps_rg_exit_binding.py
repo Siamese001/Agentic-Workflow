@@ -102,12 +102,12 @@ def _write_artifact(
             "blocks_count": len(prompt.prompt_blocks),
             "max_tokens": prompt.max_tokens,
             "temperature": prompt.temperature,
-            "assembly_version": prompt.assembly_version,
+            "schema_version": prompt.schema_version,
         },
         "sealed_l2_artifact": {
             "compilation_hash": sealed.compilation_hash,
             "prompt_artifact_digest": sealed.prompt_artifact_digest,
-            "contract_version": sealed.contract_version,
+            "schema_version": sealed.schema_version,
             "state_diff_authorized": sealed.state_diff_authorized,
         },
         "stub_mode": sealed.execution_status in ("completed_stub", "completed_stub_fallback"),
@@ -157,6 +157,8 @@ def exit_finalize_apps_rg(
         "execution_status": sealed.execution_status,
         "generated_content_len": len(sealed.generated_content),
         "artifact_relpath": str(artifact_path.relative_to(repo_root)).replace("\\", "/"),
+        "artifact_paths": [str(artifact_path.relative_to(repo_root)).replace("\\", "/")],
+        "run_id": sealed.run_id,
         "stub_mode": sealed.execution_status in ("completed_stub", "completed_stub_fallback"),
         "sealed_compilation_hash": sealed.compilation_hash,
         "prompt_compilation_hash": prompt.compilation_hash,
@@ -169,6 +171,7 @@ def exit_finalize_apps_rg(
         run_id=sealed.run_id,
         app_id=sealed.app_id,
         trace_id=sealed.trace_id,
+        tenant_id=sealed.tenant_id,
         exit_status="success",
         outcome_authorized=True,
         final_output=final_output,
@@ -177,8 +180,8 @@ def exit_finalize_apps_rg(
         eval_threshold_met=False,  # eval not run in W3.P5 path
         hitl_required=False,
         exit_timestamp=timestamp_iso,
-        disposition_version="W3.P5",
         sealed_l2_digest=sealed.compilation_hash,
+        l5_certification_ref=APPS_RG_EXIT_CERT_REF,
     )
 
 

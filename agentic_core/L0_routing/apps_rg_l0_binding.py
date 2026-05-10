@@ -19,10 +19,15 @@ short_form). Variant selection (e.g. executive for senior+ levels) is a
 future optimization and would consume target_level from the original
 payload — that requires either a profile-aware L1 plan or passing the
 envelope alongside. Out of scope for W3.P3.
+
+W4 P4.2: L3 opt-in via environment variable APPS_RG_L3_OPT_IN=1.
+When set, l3_required=True in RouteContract (binding only; full L3 DAG
+implementation is deferred to future plan).
 """
 from __future__ import annotations
 
 import hashlib
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -32,6 +37,7 @@ from agentic_core.runtime.contracts.route_contract import RouteContract
 
 APPS_RG_L0_CERT_REF: str = "l0-apps-rg-resume-generation-w3p3"
 APPS_RG_DEFAULT_ROUTE_ID: str = "rg.resume_generation.default"
+APPS_RG_EXECUTIVE_ROUTE_ID: str = "rg.resume_generation.executive"
 _ROUTE_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/route_profiles.yaml"
 
 
@@ -101,6 +107,16 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     # Optional digest binding for tampering detection.
     _ = _read_route_profile_digest(_resolve_repo_root())  # captured for parity
 
+    # W2: variant routing based on target_level (DS-3)
+    route_id = (
+        APPS_RG_EXECUTIVE_ROUTE_ID
+        if l1_plan.target_level == "EXECUTIVE"
+        else APPS_RG_DEFAULT_ROUTE_ID
+    )
+
+    # W4 P4.2: L3 opt-in via env var (binding only; full DAG deferred)
+    l3_opt_in = os.environ.get("APPS_RG_L3_OPT_IN", "") in ("1", "true", "yes")
+
     return RouteContract(
         request_id=l1_plan.request_id,
         run_id=l1_plan.run_id,
@@ -108,8 +124,8 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         trace_id=l1_plan.trace_id,
         # W1 P1.2: thread identity quad from L1PlanContract (D6)
         tenant_id=l1_plan.tenant_id,
-        route_id=APPS_RG_DEFAULT_ROUTE_ID,
-        l3_required=False,
+        route_id=route_id,
+        l3_required=l3_opt_in,
         grounding_required=l1_plan.grounding_required,
         model_generation_required=l1_plan.model_generation_required,
         write_authority_present=l1_plan.write_authority_present,
@@ -122,7 +138,7 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         allowed_file_roots=("artifacts/apps_rg/",),
         reason_codes=_build_reason_codes(l1_plan),
         routing_timestamp=datetime.now(timezone.utc).isoformat(),
-        route_version="W3.P3",
+        schema_version="W3.P3",
         l5_certification_ref=APPS_RG_L0_CERT_REF,
     )
 
@@ -130,5 +146,6 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
 __all__ = [
     "APPS_RG_L0_CERT_REF",
     "APPS_RG_DEFAULT_ROUTE_ID",
+    "APPS_RG_EXECUTIVE_ROUTE_ID",
     "l0_route_apps_rg",
 ]

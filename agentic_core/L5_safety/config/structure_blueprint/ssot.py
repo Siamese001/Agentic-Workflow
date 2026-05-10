@@ -371,6 +371,8 @@ _BASE_MIRROR_ROOTS: frozenset[str] = frozenset(
 # to avoid requiring manual SSOT edits when adding new app territories.
 # ---------------------------------------------------------------------------
 TEST_MIRROR_BASE: str = "tests/unit"
+APPS_TEST_INTEGRATION_BASE: str = "tests"
+APPS_CONTRACT_BASE: str = "tests/_apps_contract"
 
 
 def get_test_mirror_roots(repo_root: Path | None = None) -> frozenset[str]:

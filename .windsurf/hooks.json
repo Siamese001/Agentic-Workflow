@@ -143,32 +143,7 @@
         "show_output": false
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_capture.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_miss_detector.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_ui_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_schema_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_ask_user_question_packet_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_pipeline_audit.py",
+        "command": "python .windsurf/scripts/post_cascade_author_gate_suite.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
       },
@@ -239,16 +214,6 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_ag_queue_drain_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
-      },
-      {
-        "command": "python .windsurf/scripts/post_cascade_ag_queue_seed_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
       },

@@ -1,6 +1,6 @@
 ---
-trigger: model_decision
-description: Apply when an Author-Gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Distinct from runtime HITL (ADR-023). Demoted from always_on 2026-05-01 per Anthropic two-tier compliance.
+trigger: always_on
+description: Author-Gate enforcement — pipeline steps, four-requirement contract, canonical-emitter invariant, pipeline-completion invariant. Promoted from model_decision 2026-05-09 per DS-2 of plan always-on-budget-compression-ds2-c7f4a3.
 ---
 
 # Author-Gate Enforcement — Invariant-Only Stub
@@ -19,29 +19,13 @@ When facing an author-gate decision point:
 4. **Filter** below `surface_threshold` (0.72 prod / 0.60 bootstrap)
 5. **Dominance**: top ≥0.85 AND gap ≥0.12 → surface alone
 6. **Material distinctness**: collapse cosmetic variants
-7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every surfaced option description MUST satisfy the **four-requirement contract** below. The canonical wire description is `candidate.surface_description` minted by `emit_packet.py`; consumers (renderer, Cascade composition) MUST pass it through unchanged or extend it without dropping any requirement.
+7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every option MUST satisfy the **four-requirement contract**:
+   - **Cascade clickable** — options reach `ask_user_question` (not prose)
+   - **Confidence prefix** — `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]`
+   - **Tradeoff segment** — ` · trade-off: <≥20 chars>`
+   - **Dominance star** — `⭐` on exactly one option iff dominance fires
 
-   | # | Requirement | Concrete shape | Enforced by |
-   |---|---|---|---|
-   | 1 | **Cascade clickable** | options reach `ask_user_question` (Windsurf-rendered clickable list, not chat prose) | `post_cascade_ask_user_question_packet_audit.py` (vacuum-closure: invalid packet OR missing packet at high decision-density → severity high/critical) |
-   | 2 | **Confidence prefix** | `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]` at start of `description` | `post_cascade_author_gate_ui_audit.py` invariant 1 |
-   | 3 | **Pros/cons (tradeoff segment)** | ` · trade-off: <≥20 chars>` somewhere after the prefix; emitter sets `surface_description_floor` from `key_tradeoffs[0]`, callers may extend via `surface_description` | `post_cascade_author_gate_ui_audit.py` invariant 4 (added by plan `author-gate-four-req-enforcement-c4d2a8`) |
-   | 4 | **Dominance star** | `⭐` prefix appears on **exactly one** option iff `routing.rule_applied == "dominance_fires"`, **zero** options otherwise | `post_cascade_author_gate_ui_audit.py` invariants 2 + 3 |
-
-   Failure modes log to `artifacts/windsurf/author_gate_ui_violations.jsonl` (UI invariants 1–4) and `artifacts/windsurf/ask_user_question_packet_violations.jsonl` (vacuum-closure). CI freshness gates: `ops_scripts/ci/author_gate/check_ui_conformance.py` and `ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py`.
-
-   **Pipeline Completion Invariant** (plan `author-gate-ui-renderer-hardening-a7f3c2`):
-
-   > ⛔ Every `AUTHOR_GATE_PACKET:` (or legacy `HITL_PACKET:`) emitted in a response **MUST** be followed by an `ask_user_question` tool invocation **in the same response**. A packet without a same-response `ask_user_question` is a critical violation.
-
-   | Direction | Invariant | Enforced by |
-   |---|---|---|
-   | Packet → Ask | `AUTHOR_GATE_PACKET:` present ⇒ `ask_user_question` present | `post_cascade_author_gate_pipeline_audit.py` → `artifacts/windsurf/author_gate_pipeline_violations.jsonl` |
-   | Ask → Packet | `ask_user_question` in AG context ⇒ `AUTHOR_GATE_PACKET:` present | `post_cascade_ask_user_question_packet_audit.py` → `artifacts/windsurf/ask_user_question_packet_violations.jsonl` |
-
-   Pure detection logic: `.windsurf/scripts/_author_gate_pipeline_check.py` (`decide()` function). CI freshness: `ops_scripts/ci/check_author_gate_pipeline_freshness.py` (AGP1, fail-closed by default; `AG_PIPELINE_ADVISORY=1` for warning-only). Bypass: `AG_PIPELINE_AUDIT_BYPASS=1`.
-
-   **Forbidden**: emitting `AUTHOR_GATE_PACKET:` then ending the response without `ask_user_question`; emitting the packet in one response and deferring `ask_user_question` to a follow-up response; relying on the user to manually trigger the question after seeing the packet.
+   **Pipeline Completion Invariant**: Every `AUTHOR_GATE_PACKET:` MUST be followed by `ask_user_question` in the **same response**. Enforced by `post_cascade_author_gate_pipeline_audit.py` and `post_cascade_ask_user_question_packet_audit.py`. **Forbidden**: packet without same-response ask; deferring to follow-up; relying on user manual trigger. **Bypass**: `AG_PIPELINE_AUDIT_BYPASS=1`.
 
 8. **Wait** for explicit user selection
 9. **Execute** chosen option; emit `DECISION_CAPTURED:` marker (refactor-class only) as **first plain-text line** of the response
@@ -62,27 +46,9 @@ calibration/weekly-report misses the decision, and CI gate
 `check_decision_ledger_sqlite_freshness.py` flags the turn as a stale-ledger
 violation (constitutional §30).
 
-**Required pipeline** for every Author-Gate emission:
+**Required pipeline**: Use `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question` → `DECISION_CAPTURED:` marker. See skill docs for detailed procedure.
 
-1. `refactor-decision-memory` skill — consult precedent ledger first.
-2. `author-gate-packet-builder` skill — build a JSON spec, pipe to
-   `emit_packet.py` via stdin; capture stdout (the canonical packet block)
-   and emit it inline so `post_cascade_author_gate_capture.py` can parse it.
-3. `author-gate-ui-renderer` skill — render the recommendation card.
-4. `ask_user_question` — descriptions begin with `[confidence=0.NN]`
-   (or `[RECOMMENDED ⭐ confidence=0.NN]` when dominance fires).
-5. On user reply — emit `DECISION_CAPTURED:` as the first plain-text line and
-   plumb to the SQLite ledger via `tools/capture/append_marker.py`.
-
-**Enforcement**: post-cascade hook
-`.windsurf/scripts/post_cascade_author_gate_schema_audit.py` validates the
-packet shape on every response and logs non-conformant packets to
-`artifacts/windsurf/author_gate_schema_violations.jsonl`. Sibling hook
-`post_cascade_author_gate_ui_audit.py` continues to validate the UI side
-(option-prefix, gold-star, dominance match).
-
-**Bypass**: `AUTHOR_GATE_SCHEMA_BYPASS=1` env var — logs a `reason="bypass"`
-row and lets the response pass. Use only for scripted batch runs.
+**Enforcement**: Post-cascade hooks validate schema (`post_cascade_author_gate_schema_audit.py`) and UI (`post_cascade_author_gate_ui_audit.py`). **Bypass**: `AUTHOR_GATE_SCHEMA_BYPASS=1`.
 
 ## Marker grammar (refactor-class only)
 
@@ -104,22 +70,15 @@ Typos/whitespace/formatting · single correct solution (syntax/import error) · 
 
 Every refactor-class decision MUST emit a `DECISION_CAPTURED:` marker — even when no options surfaced via `ask_user_question`. The seven trigger types are the gatekeeper: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`.
 
-## Where the procedural detail lives
+## Where detail lives
 
-| Concern | Location |
-|---|---|
-| Full AG-10 option shape, packet construction, gold-star format, precedent injection | `.windsurf/skills/author-gate-packet-builder/SKILL.md` |
-| Decision-point trigger doctrine (AG-1.1 through AG-1.11) | `.windsurf/rules/author-gate-decision-points.md` |
-| SVP calibration thresholds (band-by-band) | `.windsurf/rules/author-gate-svp-calibration.md` |
-| Refactor decision precedent | `.windsurf/skills/refactor-decision-memory/SKILL.md` |
-| Capture hook (live) | `.windsurf/scripts/post_cascade_author_gate_capture.py` |
-| Miss detector | `.windsurf/scripts/post_cascade_author_gate_miss_detector.py` |
-| Hook-independent fallback | `tools/capture/append_marker.py` + `tools/capture/queue_to_ledger.py` |
-| Pre-session staleness check | `tools/capture/ledger_staleness_check.py` |
-| CI gate | `ops_scripts/ci/check_capture_queue_freshness.py` |
-| Decision ledger SSOT | `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` |
-| Inline-capture queue | `artifacts/capture/markers.jsonl` |
-| Bypass | `AUTHOR_GATE_STALE_BYPASS=1` (queue) |
+- **AG-10 packet shape**: `author-gate-packet-builder` skill
+- **Trigger doctrine**: `author-gate-decision-points.md` rule  
+- **SVP calibration**: `author-gate-svp-calibration.md` rule
+- **Precedent lookup**: `refactor-decision-memory` skill
+- **Hooks**: `post_cascade_author_gate_*` scripts, `ledger_staleness_check.py`
+- **Ledger**: `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`
+- **Queue bypass**: `AUTHOR_GATE_STALE_BYPASS=1`
 
 ## Calibration-driven triggers
 

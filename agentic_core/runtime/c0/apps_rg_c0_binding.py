@@ -203,7 +203,7 @@ def c0_retrieve_apps_rg(
         support_target_partial=target_partial,
         evidence_sufficiency_score=round(score, 3),
         evidence_collection_timestamp=timestamp_iso,
-        contract_version="W3.P4",
+        schema_version="W3.P4",
         compilation_hash=compilation_hash,
         l5_certification_ref=APPS_RG_C0_CERT_REF,
     )

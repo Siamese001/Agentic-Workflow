@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.contracts.origin import Origin, OriginTaggedContent
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_WRITE_INTENT
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +64,16 @@ class SealedL2Artifact:
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7; L2 may write via UWG)
+    posture: RuntimePosture = field(default_factory=lambda: POSTURE_WRITE_INTENT)
+    # W6 P6.3: gate verdict refs (concern #3)
+    gate_verdict_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W7 P7.1: replay/determinism (concern #4; D11=default-empty)
+    replay_key: str = ""
+    snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W8 P8.1: write/learning firewall (concern #10; default False — gateway enforces)
+    is_uwg_write_authority: bool = False
+    is_future_run_only: bool = False
     l5_certification_ref: str = ""
 
     # Provenance

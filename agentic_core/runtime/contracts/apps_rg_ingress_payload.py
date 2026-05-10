@@ -7,6 +7,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Mapping, Optional
 
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
+
 if TYPE_CHECKING:
     from agentic_core.runtime.contracts.apps_rg_profile_manifest import AppsRgProfileManifest
 
@@ -108,6 +110,8 @@ class ValidatedRequest:
     authority_validation_receipt: "AuthorityValidationReceipt"
     trace_id: str
     tenant_id: str = ""  # W1: identity quad — app_id value at U0 ingress (D6)
+    # W2: target level for L0 variant routing (DS-3)
+    target_level: str = ""  # "SENIOR" | "STAFF" | "EXECUTIVE" | ""
     # W4: observability + audit linkage (concern #9, D12=default-empty tuples)
     otel_span_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
@@ -115,6 +119,13 @@ class ValidatedRequest:
     schema_version: str = "W6.0"
     # W5 P5.2: HMAC-SHA256 integrity signature (D9, default-empty = unsigned)
     signature: str = ""
+    # W6 P6.2: risk/side-effect posture (concern #7; U0 validates only, read_only)
+    posture: RuntimePosture = field(default_factory=lambda: POSTURE_READ_ONLY)
+    # W6 P6.3: gate verdict refs (concern #3)
+    gate_verdict_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W7 P7.1: replay/determinism (concern #4; D11=default-empty)
+    replay_key: str = ""
+    snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
 
     def __post_init__(self) -> None:

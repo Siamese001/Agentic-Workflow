@@ -667,6 +667,18 @@ def main():
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
         ),
+        # W6ECE1 — W6 Emit-Contract Enrichment 9-concern gate (ADR-084).
+        # Structural field scan across all 11 emit contracts (AST-level).
+        # Verifies: C1 identity quad, C2 l5_cert_ref, C3 gate_verdict_refs,
+        # C4 replay fields, C5 observability refs, C7 posture, C9 signature,
+        # C10 write-firewall, RuntimePosture sentinels.
+        # Advisory by default; fail-closed via W6_EMIT_CONTRACT_GATE_FAIL_CLOSED=1.
+        # Bypass: W6_EMIT_CONTRACT_GATE_BYPASS=1.
+        # Plan: w6-emit-contract-enrichment-d8b2a4 W9.
+        (
+            "W6ECE1 emit-contract enrichment 9-concern gate (advisory)",
+            "ops_scripts/ci/check_w6_emit_contract_enrichment.py",
+        ),
     ]
 
     for label, script in assurance_gates:

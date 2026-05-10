@@ -31,11 +31,22 @@ description: Apps folder taxonomy (ADR-082) enforcement — load when editing an
 | `types/` | Pydantic models, dataclasses |
 | `utils/` | Pure helpers (no business logic) |
 | `validators/` | Contract/schema/policy validators |
-| `tests/` | App-local unit tests |
 | `data/` | Static fixtures, bundled datasets, prompts, templates |
 | `spine/` | Spine manifest wiring (when app declares multi-stage spine) |
 
 Library-only apps (`apps_qna`, `apps_shared`) may omit `engines/` and `outputs/`.
+
+> ⛔ **`apps_<x>/tests/` is FORBIDDEN.** App-local test directories were consolidated into the 3-surface canonical test layout (plan `apps-test-surface-consolidation-11acd9-v2`). CI gate `T7r` (`check_apps_folder_taxonomy.py`) flags any `tests/` sub-folder at an app root as a violation.
+
+## Canonical test surfaces
+
+| Surface | Path | Content |
+|---|---|---|
+| Unit | `tests/unit/<app>/` | Isolated unit tests; mirrors `apps_<app>/` structure |
+| Integration | `tests/<app>/` | Integration/E2E tests requiring real dependencies |
+| Contract | `tests/_apps_contract/test_<app>_*.py` | Cross-app contract and governance tests |
+
+No test files belong inside `apps_<x>/`. Use `git mv` + `tests/<app>/` or `tests/unit/<app>/`.
 
 ## Migration discipline
 
