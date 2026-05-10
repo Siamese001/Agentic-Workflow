@@ -1037,12 +1037,13 @@ class TestA26_AG8FU1Documented:
         assert workaround.get("workaround_is_correct") is True
         assert workaround.get("apps_lic_behavior_unchanged") is True
 
-    def test_exit_binding_skips_build_x3_packet(self) -> None:
-        """Confirm the workaround is in place: build_x3_packet not called."""
+    def test_exit_binding_uses_build_x3_packet(self) -> None:
+        """AG-8-FU2: apps_lic now uses the shared build_x3_packet path."""
         src = _source_of("agentic_core.runtime.exit.apps_lic_exit_binding")
-        # The workaround constructs X3Disposition directly; build_x3_packet is NOT called
         code = _code_only(src)
-        # build_x3_packet must NOT appear as a call in non-comment code
-        assert "build_x3_packet(" not in code, (
-            "build_x3_packet() must not be called in Exit binding (AG-8-FU1 workaround)"
+        assert "build_x3_packet(" in code, (
+            "build_x3_packet() must be called in apps_lic Exit binding (AG-8-FU2)"
+        )
+        assert "from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_packet" in src, (
+            "build_x3_packet must be imported from shared x3_dispositions (AG-8-FU2)"
         )
