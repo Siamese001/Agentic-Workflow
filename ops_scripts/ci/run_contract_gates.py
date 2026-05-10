@@ -571,6 +571,22 @@ def main():
             "NP8 Notion plan status anomalies (advisory)",
             "ops_scripts/ci/check_notion_plan_status_anomalies.py",
         ),
+        # RULE-XREF -- Rule cross-reference validation. Ensures all rule-to-rule
+        # links are intact and targets exist. Advisory by default;
+        # fail-closed via RULE_CROSS_REF_FAIL_CLOSED=1.
+        # Bypass: RULE_CROSS_REF_BYPASS=1.
+        (
+            "RULE-XREF Rule cross-references (advisory)",
+            "ops_scripts/ci/check_rule_cross_references.py",
+        ),
+        # NP9 -- New plans must use "Not Started" status, not "Deferred" or "Waiting".
+        # 24h detection window. Advisory by default; fail-closed via
+        # NOTION_PLANS_NEW_STATUS_FAIL_CLOSED=1. Bypass: NOTION_PLANS_NEW_STATUS_BYPASS=1.
+        # Plan: notion-plans-new-status-enforcement-c9f2a3.
+        (
+            "NP9 Notion Plans new-plan status (advisory)",
+            "ops_scripts/ci/check_notion_plans_new_status.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.

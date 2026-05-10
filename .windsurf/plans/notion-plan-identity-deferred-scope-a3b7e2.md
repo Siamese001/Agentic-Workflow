@@ -108,8 +108,8 @@ Relations:
 |----|------|----------|--------|------------|
 | DS-1 | Real-time webhook | LOW | ~20k | Volume thresholds |
 | DS-2 | Auto-rollback | MEDIUM | ~15k | 30 days NP8 data |
-| DS-3 | Cross-ref enforcement | LOW | ~5k | None (queue by priority) |
-| DS-4 | Memory MCP integration | LOW | ~8k | None (queue by priority) |
+| DS-3 | Cross-reference enforcement | LOW | ~5k | ✅ DONE (RULE-XREF gate created, 1 broken ref found in apps-folder-taxonomy.md) |
+| DS-4 | Memory MCP integration | LOW | ~8k | ✅ DONE (Entity NotionPlanIdentityVerification created with 12 observations, 3 relations) |
 
 ---
 
@@ -123,4 +123,4 @@ This deferred scope plan activates when ANY of:
 
 ---
 
-PLAN_CREATED: slug=notion-plan-identity-deferred-scope-a3b7e2 notion_id=35c27693-f55c-8105-acc7-c121fe6860e4 path=.windsurf/plans/notion-plan-identity-deferred-scope-a3b7e2.md status=deferred tier=T3 layer=L_OPS parent_plan=notion-plan-identity-verification-enforcement-f2a9c1
+PLAN_CREATED: slug=notion-plan-identity-deferred-scope-a3b7e2 notion_id=35c27693-f55c-8105-acc7-c121fe6860e4 path=.windsurf/plans/notion-plan-identity-deferred-scope-a3b7e2.md status=Not Started tier=T3 layer=L_OPS parent_plan=notion-plan-identity-verification-enforcement-f2a9c1
