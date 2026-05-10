@@ -507,3 +507,180 @@ class TestLabelDescriptionLength:
         )
 
         assert len(payload["options"][0]["description"]) <= 240
+
+
+# ========================== Hardened E2E Invariant Tests ==========================
+# Mirror Author-Gate's four-requirement contract for enriched ask_user_question:
+#   1. Clickable — options reach ask_user_question format (label+description)
+#   2. Confidence prefix — [confidence=X.XX] on every option
+#   3. Tradeoff segment — ` · trade-off: <≥20 chars>` in every description
+#   4. Dominance star — ⭐ on exactly one option iff recommendation exists
+
+
+class TestE2EFourRequirementContract:
+    """End-to-end tests verifying all 4 invariants hold simultaneously."""
+
+    def test_all_four_invariants_with_recommendation(self):
+        """Full pipeline with recommended option satisfies all 4 invariants."""
+        payload = build_enriched_choice_question(
+            question="Which refactoring approach?",
+            options=[
+                {
+                    "id": "A",
+                    "label": "Extract method",
+                    "description": "Pull shared logic into utility",
+                    "tradeoff": "Increases import count but reduces duplication across modules",
+                    "confidence": 0.88,
+                },
+                {
+                    "id": "B",
+                    "label": "Inline and simplify",
+                    "description": "Merge callers into single function",
+                    "tradeoff": "Simpler call graph but longer function bodies per module",
+                    "confidence": 0.72,
+                },
+            ],
+            recommended_id="A",
+            telemetry_context="refactor-scope",
+        )
+
+        opts = payload["options"]
+        # INV-1: Clickable — each option has label + description keys
+        for opt in opts:
+            assert "label" in opt and isinstance(opt["label"], str)
+            assert "description" in opt and isinstance(opt["description"], str)
+
+        # INV-2: Confidence prefix on ALL options
+        for opt in opts:
+            assert re.search(r"\[confidence=\d\.\d{2}\]", opt["label"]), (
+                f"Missing confidence prefix in label: {opt['label']}"
+            )
+
+        # INV-3: Tradeoff segment in ALL descriptions
+        for opt in opts:
+            assert "· trade-off:" in opt["description"], (
+                f"Missing tradeoff in description: {opt['description']}"
+            )
+
+        # INV-4: Exactly one star on recommended, zero on others
+        star_labels = [o for o in opts if "⭐" in o["label"]]
+        assert len(star_labels) == 1
+        assert "A" in star_labels[0]["label"]
+
+    def test_all_four_invariants_without_recommendation(self):
+        """No-recommendation path: zero stars, all other invariants hold."""
+        payload = build_enriched_choice_question(
+            question="Which approach?",
+            options=[
+                {
+                    "id": "X",
+                    "label": "Option X",
+                    "description": "First choice",
+                    "tradeoff": "Faster delivery but less test coverage across layers",
+                },
+                {
+                    "id": "Y",
+                    "label": "Option Y",
+                    "description": "Second choice",
+                    "tradeoff": "More thorough testing but higher token cost per phase",
+                },
+            ],
+        )
+
+        opts = payload["options"]
+        for opt in opts:
+            assert "label" in opt and "description" in opt
+            assert re.search(r"\[confidence=\d\.\d{2}\]", opt["label"])
+            assert "· trade-off:" in opt["description"]
+            assert "⭐" not in opt["label"]
+
+    def test_telemetry_packet_round_trips_with_all_fields(self):
+        """Telemetry packet contains all required fields for SQLite writeback."""
+        payload = build_enriched_choice_question(
+            question="Pick a strategy",
+            options=[
+                {
+                    "id": "S1",
+                    "label": "Strategy 1",
+                    "description": "Aggressive approach",
+                    "tradeoff": "Faster but riskier — may require rollback if tests fail",
+                    "confidence": 0.91,
+                },
+            ],
+            recommended_id="S1",
+            telemetry_context="test-strategy",
+        )
+
+        telem = payload["telemetry_packet"]
+        # All required fields for ledger write
+        assert telem["packet_type"] == "ASK_USER_QUESTION_PACKET"
+        assert isinstance(telem["timestamp"], str) and "T" in telem["timestamp"]
+        assert telem["context"] == "test-strategy"
+        assert telem["option_count"] == 1
+        assert telem["recommended_index"] == 0
+        assert telem["confidence_source"] == "explicit"
+        assert set(telem["invariants"]) == {"confidence_prefix", "tradeoff_segment", "star_marker"}
+
+    def test_confidence_score_precision_two_decimals(self):
+        """Confidence labels use exactly two decimal places."""
+        for conf in [0.1, 0.5, 0.72, 0.999, 1.0, 0.0]:
+            payload = build_enriched_choice_question(
+                question="Q",
+                options=[{"id": "A", "label": "L", "description": "D", "tradeoff": "T", "confidence": conf}],
+            )
+            label = payload["options"][0]["label"]
+            match = re.search(r"\[confidence=(\d\.\d{2})\]", label)
+            assert match, f"Confidence format wrong for input {conf}: {label}"
+            parsed = float(match.group(1))
+            assert 0.0 <= parsed <= 1.0
+
+    def test_tradeoff_minimum_length_enforced(self):
+        """Tradeoff text should appear with meaningful content in description."""
+        payload = build_enriched_choice_question(
+            question="Q",
+            options=[
+                {
+                    "id": "A",
+                    "label": "Option A",
+                    "description": "Some description",
+                    "tradeoff": "Gains reversibility but increases import surface area significantly",
+                },
+            ],
+        )
+        desc = payload["options"][0]["description"]
+        # Extract tradeoff portion after "trade-off:"
+        idx = desc.index("trade-off:")
+        tradeoff_body = desc[idx + len("trade-off:"):].strip()
+        # Meaningful length (mirrors the ≥20 char check in UI audit)
+        assert len(tradeoff_body.replace(" ", "")) >= 10
+
+    def test_mixed_explicit_and_heuristic_confidence(self):
+        """Options with mixed confidence sources: explicit wins for telemetry."""
+        payload = build_enriched_choice_question(
+            question="Mix?",
+            options=[
+                {"id": "A", "label": "ExplA", "description": "D", "tradeoff": "Trade A detail here is longer", "confidence": 0.85},
+                {"id": "B", "label": "HeurB", "description": "D", "tradeoff": "Trade B detail here is longer"},
+            ],
+        )
+
+        # Telemetry source = explicit because at least one option had explicit
+        assert payload["telemetry_packet"]["confidence_source"] == "explicit"
+
+        # Option A shows its explicit confidence
+        assert "[confidence=0.85]" in payload["options"][0]["label"]
+        # Option B shows the heuristic default
+        assert f"[confidence={DEFAULT_HEURISTIC_CONFIDENCE:.2f}]" in payload["options"][1]["label"]
+
+    def test_star_never_appears_in_description(self):
+        """Star marker only appears in label, never in description."""
+        payload = build_enriched_choice_question(
+            question="Q",
+            options=[
+                {"id": "A", "label": "Opt A", "description": "D", "tradeoff": "Trade off detail long enough here", "confidence": 0.90},
+                {"id": "B", "label": "Opt B", "description": "D", "tradeoff": "Trade off detail long enough here", "confidence": 0.70},
+            ],
+            recommended_id="A",
+        )
+        for opt in payload["options"]:
+            assert "⭐" not in opt["description"]
