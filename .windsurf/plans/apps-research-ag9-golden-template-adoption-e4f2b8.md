@@ -67,21 +67,21 @@ Preservation-first plan that wires apps_research onto the shared agentic_core sp
 
 | Wave | Focus | Scope | Status |
 |------|-------|-------|--------|
-| W0 | Baseline verification | 6 gates, stop on any failure | 🔲 |
-| W1 | apps_research discovery | Full codebase inspection + 2 JSON artifacts | 🔲 |
-| W1.5 | Functionality preservation matrix | 1 JSON artifact, every capability mapped | 🔲 |
-| W1.8 | Prompt authority inventory | 1 JSON artifact, every prompt surface classified | 🔲 |
-| W2 | Custom apps_research U0 payload definition | 2 JSON artifacts | 🔲 |
-| W3 | apps_research U0 reflection implementation | New/hardened U0 adapter + tests | 🔲 |
-| W4 | L1/L0 consumption wiring | L1 binding + L0 binding + tests | 🔲 |
-| W5 | C0/PA wiring | C0 evidence + PA governed assembly + tests | 🔲 |
-| W5.5 | Prompt authority hardening closure | Resolve all PA risks, enforce separation | 🔲 |
-| W6 | L3 if required + L2 | L3 conditional + L2 sealed artifact + tests | 🔲 |
-| W7 | Exit/X1/X3 wiring | ExitReviewPacket + X1 + X3Disposition + tests | 🔲 |
-| W8 | E2E golden-path tests | `test_ag9_apps_research_golden_path.py` | 🔲 |
-| W9 | CI gate | `check_apps_research_golden_path_runtime.py` registered | 🔲 |
-| W10 | Prompt authority CI gate | `check_apps_research_prompt_authority.py` registered | 🔲 |
-| W11 | Output artifacts | All artifacts under `artifacts/apps_research/` | 🔲 |
+| W0 | Baseline verification | 6 gates, stop on any failure | DEFERRED → DS-W0 |
+| W1 | apps_research discovery | Full codebase inspection + 2 JSON artifacts | DEFERRED → DS-W1 |
+| W1.5 | Functionality preservation matrix | 1 JSON artifact, every capability mapped | DEFERRED → DS-W1.5 |
+| W1.8 | Prompt authority inventory | 1 JSON artifact, every prompt surface classified | DEFERRED → DS-W1.8 |
+| W2 | Custom apps_research U0 payload definition | 2 JSON artifacts | DEFERRED → DS-W2 |
+| W3 | apps_research U0 reflection implementation | New/hardened U0 adapter + tests | ✅ DONE (commit 8022620779) |
+| W4 | L1/L0 consumption wiring | L1 binding + L0 binding + tests | ✅ DONE (prior commit dca68ba195) |
+| W5 | C0/PA wiring | C0 evidence + PA governed assembly + tests | ✅ DONE (commit 8022620779) |
+| W5.5 | Prompt authority hardening closure | Resolve all PA risks, enforce separation | DEFERRED → DS-W5.5 |
+| W6 | L3 if required + L2 | L3 conditional + L2 sealed artifact + tests | ✅ DONE (commit 8022620779) |
+| W7 | Exit/X1/X3 wiring | ExitReviewPacket + X1 + X3Disposition + tests | ✅ DONE (commit 8022620779) |
+| W8 | E2E golden-path tests | `test_ag9_apps_research_golden_path.py` | DEFERRED → DS-W8 (15 spine tests pass) |
+| W9 | CI gate | `check_apps_research_golden_path_runtime.py` registered | DEFERRED → DS-W9 (import+dryrun gates green) |
+| W10 | Prompt authority CI gate | `check_apps_research_prompt_authority.py` registered | DEFERRED → DS-W10 |
+| W11 | Output artifacts | All artifacts under `artifacts/apps_research/` | DEFERRED → DS-W11 |
 
 ---
 
@@ -105,21 +105,21 @@ Preservation-first plan that wires apps_research onto the shared agentic_core sp
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W0 | Baseline verification | 6 CI gates | Must pass before any edits | ~2K | 🔲 |
-| W1 | apps_research discovery | All `apps_research/` source | Identifying all touchpoints | ~10K | 🔲 |
-| W1.5 | Preservation matrix | `artifacts/apps_research/` | Mapping every capability | ~6K | 🔲 |
-| W1.8 | Prompt authority inventory | `apps_research/prompt_assembly/` + all prompt surfaces | Classifying every prompt surface | ~6K | 🔲 |
-| W2 | U0 payload definition | `agentic_core/runtime/contracts/` | Extend existing ResearchIngressPayload | ~5K | 🔲 |
-| W3 | U0 reflection impl | `agentic_core/runtime/entry/` | Deterministic digests, zero drops | ~8K | 🔲 |
-| W4 | L1/L0 wiring | `agentic_core/L1_cognition/`, `agentic_core/L0_routing/` | app_payload consumption, no legacy reads | ~8K | 🔲 |
-| W5 | C0/PA wiring | `agentic_core/runtime/c0/`, `agentic_core/prompt_governance/` | Evidence governance, data-only slots | ~8K | 🔲 |
-| W5.5 | PA hardening closure | `agentic_core/prompt_governance/` | Resolve all prompt authority risks | ~6K | 🔲 |
-| W6 | L3+L2 wiring | `agentic_core/L3_orchestration/`, `agentic_core/L2_execution/` | Conditional L3, sealed artifact | ~8K | 🔲 |
-| W7 | Exit/X1/X3 | `agentic_core/runtime/exit/` + eval | X1 checkout, X3 disposition | ~8K | 🔲 |
-| W8 | E2E tests | `tests/_apps_contract/` | ~100+ tests, zero regressions | ~10K | 🔲 |
-| W9 | Runtime CI gate | `ops_scripts/ci/` | checks, registered in run_contract_gates.py | ~6K | 🔲 |
-| W10 | PA CI gate | `ops_scripts/ci/` | prompt authority checks | ~5K | 🔲 |
-| W11 | Output artifacts | `artifacts/apps_research/` | all acceptance artifacts | ~4K | 🔲 |
+| W0 | Baseline verification | 6 CI gates | Must pass before any edits | ~2K | DEFERRED |
+| W1 | apps_research discovery | All `apps_research/` source | Identifying all touchpoints | ~10K | DEFERRED |
+| W1.5 | Preservation matrix | `artifacts/apps_research/` | Mapping every capability | ~6K | DEFERRED |
+| W1.8 | Prompt authority inventory | `apps_research/prompt_assembly/` + all prompt surfaces | Classifying every prompt surface | ~6K | DEFERRED |
+| W2 | U0 payload definition | `agentic_core/runtime/contracts/` | Extend existing ResearchIngressPayload | ~5K | DEFERRED |
+| W3 | U0 reflection impl | `agentic_core/runtime/entry/` | Deterministic digests, zero drops | ~8K | ✅ DONE |
+| W4 | L1/L0 wiring | `agentic_core/L1_cognition/`, `agentic_core/L0_routing/` | app_payload consumption, no legacy reads | ~8K | ✅ DONE |
+| W5 | C0/PA wiring | `agentic_core/runtime/c0/`, `agentic_core/prompt_governance/` | Evidence governance, data-only slots | ~8K | ✅ DONE |
+| W5.5 | PA hardening closure | `agentic_core/prompt_governance/` | Resolve all prompt authority risks | ~6K | DEFERRED |
+| W6 | L3+L2 wiring | `agentic_core/L3_orchestration/`, `agentic_core/L2_execution/` | Conditional L3, sealed artifact | ~8K | ✅ DONE |
+| W7 | Exit/X1/X3 | `agentic_core/runtime/exit/` + eval | X1 checkout, X3 disposition | ~8K | ✅ DONE |
+| W8 | E2E tests | `tests/_apps_contract/` | ~100+ tests, zero regressions | ~10K | DEFERRED |
+| W9 | Runtime CI gate | `ops_scripts/ci/` | checks, registered in run_contract_gates.py | ~6K | DEFERRED |
+| W10 | PA CI gate | `ops_scripts/ci/` | prompt authority checks | ~5K | DEFERRED |
+| W11 | Output artifacts | `artifacts/apps_research/` | all acceptance artifacts | ~4K | DEFERRED |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
