@@ -78,7 +78,9 @@ def test_validated_request_preserves_full_app_payload() -> None:
     validated, _ = apps_rg_u0_adapt(raw)
 
     # Every top-level key from the input MUST appear under app_payload.
-    assert set(validated.app_payload.keys()) == set(raw.keys())
+    # app_payload may have ADDITIONAL keys from Pydantic default-valued fields
+    # (e.g. runtime_customization_package added in Wave 2.5).
+    assert set(raw.keys()).issubset(set(validated.app_payload.keys()))
     # Domain-specific nested data must round-trip verbatim.
     assert validated.app_payload["jd_payload"]["jd_hash"] == raw["jd_payload"]["jd_hash"]
     assert validated.app_payload["target"]["company"] == raw["target"]["company"]
