@@ -19,6 +19,10 @@ from datetime import datetime, timezone
 from typing import Any, Mapping
 from uuid import uuid4
 
+import json
+import logging
+from pathlib import Path
+
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     AppsRgIngressPayload,
     RequestEnvelope,
@@ -36,11 +40,18 @@ from agentic_core.runtime.entry.u0_apps_rg_binding import (
     APPS_RG_TASK_CLASS,
     u0_validate_apps_rg,
 )
-from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+from agentic_core.runtime.exit.apps_rg_exit_binding import (
+    exit_finalize_apps_rg,
+    _resolve_repo_root as _exit_resolve_repo_root,
+    _safe_run_dirname,
+    _ARTIFACT_BASE_DIR_RELPATH,
+)
 from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
     install_bridge,
     get_bridge,
 )
+
+_DISPATCH_LOGGER = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Required fields — the payload keys that MUST be present and non-empty
@@ -116,6 +127,58 @@ def apps_rg_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
 # ---------------------------------------------------------------------------
 # OTEL span emission helper (W3 P3.1)
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Stage output persistence — write every stage's contract to the run dir
+# ---------------------------------------------------------------------------
+def _ensure_run_dir(run_id: str, timestamp_iso: str) -> Path:
+    """Create and return the run directory for stage outputs."""
+    repo_root = _exit_resolve_repo_root()
+    dirname = _safe_run_dirname(run_id, timestamp_iso)
+    run_dir = repo_root / _ARTIFACT_BASE_DIR_RELPATH / dirname
+    run_dir.mkdir(parents=True, exist_ok=True)
+    return run_dir
+
+
+def _save_stage_output(run_dir: Path, stage: str, data: Any) -> None:
+    """Persist a stage's contract output as JSON to run_dir/<stage>.json.
+
+    All stage outputs live alongside final artifacts (generated_resume.json,
+    run_metadata.json) in the same run directory for full audit trail.
+
+    Fail-soft: never raise into the pipeline on serialization or I/O error.
+    """
+    try:
+        run_dir.mkdir(parents=True, exist_ok=True)
+        out_path = run_dir / f"{stage}.json"
+
+        # Serialize: dataclass → dict, or use as-is if already a dict/mapping.
+        if hasattr(data, "__dataclass_fields__"):
+            from dataclasses import asdict
+            serializable = asdict(data)
+        elif hasattr(data, "model_dump"):
+            serializable = data.model_dump(mode="python")
+        elif isinstance(data, dict):
+            serializable = data
+        else:
+            serializable = {"repr": repr(data)}
+
+        def _default(obj: Any) -> Any:
+            if isinstance(obj, Path):
+                return str(obj)
+            if isinstance(obj, (set, frozenset, tuple)):
+                return list(obj)
+            if hasattr(obj, "__dict__"):
+                return obj.__dict__
+            return str(obj)
+
+        out_path.write_text(
+            json.dumps(serializable, indent=2, default=_default),
+            encoding="utf-8",
+        )
+    except Exception:  # guardian: allow-broad-exception -- stage persistence is best-effort; must never block the pipeline
+        _DISPATCH_LOGGER.debug("Failed to save stage output for %s", stage, exc_info=True)
+
+
 def _emit_stage_span(stage: str, trace_id: str, status: str = "OK") -> None:
     """Emit a zero-duration marker span for pipeline stage telemetry."""
     bridge = get_bridge()
@@ -173,6 +236,20 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     # W3 P3.1: Install OTEL bridge for span collection (noop if already installed)
     install_bridge(root_trace_id=envelope.trace_id, app_id="apps_rg")
 
+    # Create run directory early so all stages can write their outputs.
+    _dispatch_ts = datetime.now(timezone.utc).isoformat()
+    run_dir = _ensure_run_dir(envelope.run_id, _dispatch_ts)
+
+    # Save the parse/envelope output as stage 0.
+    _save_stage_output(run_dir, "00_parse_envelope", {
+        "request_id": envelope.request_id,
+        "run_id": envelope.run_id,
+        "trace_id": envelope.trace_id,
+        "tenant_id": getattr(envelope, "tenant_id", ""),
+        "submitted_at": getattr(envelope, "submitted_at", ""),
+        "payload_type": type(envelope.payload).__name__,
+    })
+
     if not isinstance(envelope, RequestEnvelope):
         # Defensive: wrong shape from parse() — surface as error disposition
         _emit_stage_span("dispatch_error", envelope.trace_id or "unknown", "ERROR")
@@ -192,6 +269,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     try:
         validated_request = u0_validate_apps_rg(envelope)
         _emit_stage_span("U0_validate", envelope.trace_id, "OK")
+        _save_stage_output(run_dir, "01_U0_validated_request", validated_request)
     except AppsRgAuthorityViolation as violation:
         _emit_stage_span("U0_validate", envelope.trace_id, "ERROR")
         return X3Disposition(
@@ -214,6 +292,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     try:
         l1_plan = l1_plan_apps_rg(validated_request)
         _emit_stage_span("L1_plan", envelope.trace_id, "OK")
+        _save_stage_output(run_dir, "02_L1_plan_contract", l1_plan)
     except (TypeError, ValueError) as l1_err:
         _emit_stage_span("L1_plan", envelope.trace_id, "ERROR")
         return X3Disposition(
@@ -237,6 +316,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     try:
         route = l0_route_apps_rg(l1_plan)
         _emit_stage_span("L0_route", envelope.trace_id, "OK")
+        _save_stage_output(run_dir, "03_L0_route_contract", route)
     except (TypeError, ValueError) as l0_err:
         _emit_stage_span("L0_route", envelope.trace_id, "ERROR")
         return X3Disposition(
@@ -265,6 +345,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             # validated_request.app_payload, NOT from envelope.payload.
             fec = c0_retrieve_apps_rg(route, validated_request)
             _emit_stage_span("C0_retrieve", envelope.trace_id, "OK")
+            _save_stage_output(run_dir, "04_C0_evidence_contract", fec)
         except (TypeError, ValueError, OSError) as c0_err:
             _emit_stage_span("C0_retrieve", envelope.trace_id, "ERROR")
             return X3Disposition(
@@ -306,6 +387,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             # directives from validated_request.app_payload via L1 projections.
             prompt_artifact = pa_compose_apps_rg(route, l1_plan, fec, validated_request)
             _emit_stage_span("PA_compose", envelope.trace_id, "OK")
+            _save_stage_output(run_dir, "05_PA_compiled_prompt", prompt_artifact)
         except (TypeError, ValueError) as pa_err:
             _emit_stage_span("PA_compose", envelope.trace_id, "ERROR")
             return X3Disposition(
@@ -349,6 +431,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     try:
         sealed = l2_execute_apps_rg(prompt_artifact)
         _emit_stage_span("L2_execute", envelope.trace_id, "OK")
+        _save_stage_output(run_dir, "06_L2_sealed_artifact", sealed)
     except (TypeError, ValueError) as l2_err:
         _emit_stage_span("L2_execute", envelope.trace_id, "ERROR")
         return X3Disposition(
@@ -372,6 +455,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     try:
         disposition = exit_finalize_apps_rg(sealed, prompt_artifact)
         _emit_stage_span("Exit_finalize", envelope.trace_id, "OK")
+        _save_stage_output(run_dir, "07_Exit_disposition", disposition)
         return disposition
     except (TypeError, ValueError, OSError) as exit_err:
         return X3Disposition(

@@ -61,6 +61,18 @@ def _safe_run_dirname(run_id: str, timestamp_iso: str) -> str:
     return f"{compact_ts}_{safe_run_id}"
 
 
+def _find_existing_run_dir(repo_root: Path, run_id: str) -> Path | None:
+    """Find an already-created run directory matching run_id (from dispatch stage persistence)."""
+    base = repo_root / _ARTIFACT_BASE_DIR_RELPATH
+    if not base.exists():
+        return None
+    safe_id = "".join(c for c in run_id if c.isalnum() or c in "._-")
+    for d in base.iterdir():
+        if d.is_dir() and safe_id in d.name:
+            return d
+    return None
+
+
 def _write_artifact(
     sealed: SealedL2Artifact,
     prompt: CompiledPromptArtifact,
@@ -71,12 +83,19 @@ def _write_artifact(
 
     Returns the path to generated_resume.json. Side-effect: also writes
     a sibling run_metadata.json with prompt + sealed digests for provenance.
+
+    If dispatch already created a run directory (with stages/ inside),
+    reuses that directory to keep all artifacts co-located.
     """
-    run_dir = (
-        repo_root
-        / _ARTIFACT_BASE_DIR_RELPATH
-        / _safe_run_dirname(sealed.run_id, timestamp_iso)
-    )
+    existing = _find_existing_run_dir(repo_root, sealed.run_id)
+    if existing is not None:
+        run_dir = existing
+    else:
+        run_dir = (
+            repo_root
+            / _ARTIFACT_BASE_DIR_RELPATH
+            / _safe_run_dirname(sealed.run_id, timestamp_iso)
+        )
     run_dir.mkdir(parents=True, exist_ok=True)
 
     artifact_path = run_dir / "generated_resume.json"

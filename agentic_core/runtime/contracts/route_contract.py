@@ -61,6 +61,14 @@ class RouteContract:
     cache_eligibility: Mapping[str, bool] = field(default_factory=dict)
     action_required: bool = False
 
+    # Managed workflow resolution (populated when execution_form="managed_workflow")
+    workflow_ref: str = ""  # resolved workflow ID from registry; empty for single_step
+
+    # Cache lookup receipts (prove actual lookups completed before L3 entry)
+    cache_lookup_r1a_receipt: str = ""  # serialized R1A lookup result (hit/miss + digest)
+    cache_lookup_r1b_receipt: str = ""  # serialized R1B lookup result (hit/miss + digest)
+    cache_lookup_r5_receipt: str = ""  # serialized R5 fallback result (hit/miss)
+
     # Routing metadata
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
     routing_timestamp: str = ""

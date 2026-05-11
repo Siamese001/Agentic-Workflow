@@ -432,7 +432,7 @@ def pa_compose_apps_rg(
         allowed_models=route.allowed_models,
         allowed_networks=route.allowed_networks,
         allowed_file_roots=route.allowed_file_roots,
-        max_tokens=4096,
+        max_tokens=16384,
         temperature=0.4,  # lower for factual resume generation
         # AG-2: thread replay_key forward.
         replay_key=validated_request.replay_key,

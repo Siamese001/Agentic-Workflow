@@ -57,6 +57,13 @@ class L1PlanContract:
     output_expectation: Mapping[str, Any] = field(default_factory=dict)
     policy_refs: Mapping[str, str] = field(default_factory=dict)
 
+    # Work-shape hints (L0 uses these to evaluate execution_form after cache miss)
+    # All default False so non-managed-workflow apps are unaffected.
+    multiple_work_units_hint: bool = False  # >1 independent generation units
+    merge_required_hint: bool = False  # units must be merged into final output
+    per_unit_quality_selection_hint: bool = False  # each unit needs judge/gate selection
+    candidate_generation_expected_hint: bool = False  # multiple candidates per unit
+
     # Receipt
     planning_timestamp: str = ""
     schema_version: str = "W6.0"  # W5 P5.1: renamed from plan_version (D8)

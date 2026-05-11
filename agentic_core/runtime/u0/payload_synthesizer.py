@@ -70,11 +70,35 @@ def _sha256_hex(text: str) -> str:
     return hashlib.sha256((text or _PLACEHOLDER_HASH_INPUT).encode("utf-8")).hexdigest()
 
 
+def _extract_docx_text(path: Path) -> str:
+    """Extract plain text from a .docx file. Returns empty string on failure."""
+    try:
+        import docx  # python-docx
+        doc = docx.Document(str(path))
+        paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+        return "\n".join(paragraphs) if paragraphs else ""
+    except (ImportError, Exception):
+        return ""
+
+
+def _extract_pdf_text(path: Path) -> str:
+    """Extract plain text from a .pdf file. Returns empty string on failure."""
+    try:
+        from PyPDF2 import PdfReader
+        reader = PdfReader(str(path))
+        pages = [page.extract_text() or "" for page in reader.pages]
+        text = "\n".join(p for p in pages if p.strip())
+        return text if text.strip() else ""
+    except (ImportError, Exception):
+        return ""
+
+
 def _resolve_text(ref: str | None, inline: str | None) -> str:
     """Resolve text content from either an inline string or a path ref.
 
     Falls back to the inline value when the ref cannot be read. Returns
     empty string only when both inputs are missing.
+    Handles .docx and .pdf files via python-docx and PyPDF2 respectively.
     """
 
     if inline:
@@ -86,9 +110,14 @@ def _resolve_text(ref: str | None, inline: str | None) -> str:
         path = _REPO_ROOT / ref
     if not path.exists():
         return ""
+    suffix = path.suffix.lower()
+    if suffix == ".docx":
+        return _extract_docx_text(path)
+    if suffix == ".pdf":
+        return _extract_pdf_text(path)
     try:
         return path.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return ""
 
 
