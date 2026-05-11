@@ -235,7 +235,70 @@ def _maybe_run_exit_hook(fec: dict | None) -> None:
                      type(exc).__name__, exc)
 
 
+def _run_spine_dispatch(argv: list[str]) -> int:
+    """Run apps_research via the agentic_core spine dispatch (AG-9 path).
+
+    Parses --target-company, --target-role, --depth from argv.
+    Supports --dry-run (sets APPS_RESEARCH_L2_FORCE_STUB=1).
+    """
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(
+        prog="python -m apps_research --spine",
+        description="apps_research via agentic_core spine dispatch",
+    )
+    parser.add_argument("--target-company", default=None)
+    parser.add_argument("--target-role", default=None)
+    parser.add_argument("--depth", default="standard")
+    parser.add_argument("--manual-brief-path", default=None)
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Force stub fallback — no LLM call")
+    args, _ = parser.parse_known_args(argv)
+
+    if args.dry_run:
+        os.environ["APPS_RESEARCH_L2_FORCE_STUB"] = "1"
+        _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
+        sys.stdout.write("DRY RUN\n")
+
+    from agentic_core.runtime.entry.apps_research_dispatch import (  # noqa: PLC0415
+        apps_research_parse,
+        apps_research_dispatch,
+    )
+
+    payload: dict = {
+        "target_company": args.target_company,
+        "target_role": args.target_role,
+        "depth": args.depth,
+        "manual_brief_path": args.manual_brief_path,
+    }
+    envelope = apps_research_parse(payload)
+    if envelope is None:
+        _log.error("[apps_research spine] Could not build request envelope — "
+                   "provide --target-company")
+        return 1
+
+    disposition = apps_research_dispatch(envelope)
+    _log.info(
+        "[apps_research spine] exit_status=%s outcome_authorized=%s artifact=%s",
+        disposition.exit_status,
+        disposition.outcome_authorized,
+        disposition.output_artifact_path,
+    )
+    return 0 if disposition.exit_status == "success" else 1
+
+
 def main() -> int:
+    # Spine dispatch path (AG-9) — --spine flag routes through agentic_core pipeline
+    argv = list(sys.argv[1:])
+    if "--spine" in argv:
+        argv.remove("--spine")
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+            handlers=[logging.StreamHandler(sys.stdout)],
+        )
+        return _run_spine_dispatch(argv)
     # Live certification path — emits real spine receipts and exits 0.
     if _is_live_cert_mode():
         return _run_live_cert(list(sys.argv[1:]))

@@ -184,9 +184,10 @@ def u0_validate_apps_research(envelope: RequestEnvelope) -> ValidatedRequest:
     )
 
     authority_receipt = AuthorityValidationReceipt(
-        validated=True,
-        forbidden_fields_found=[],
-        validation_timestamp=reflection_timestamp,
+        allowed=True,
+        passed=True,
+        forbidden_fields_detected=(),
+        timestamp_iso=reflection_timestamp,
     )
 
     return ValidatedRequest(
