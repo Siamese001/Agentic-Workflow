@@ -1,3 +1,8 @@
+# INERT_CONFIG - AG-RGGOV-8 W1
+# Declarative hop topology only.
+# No provider imports, no LLM calls, no contract emission, no runtime execution authority.
+# Engine class references are strings only and must not be imported from this module.
+
 """apps_rg HOP pipeline topology.
 
 Declares the 7-stage resume generation inner DAG corresponding to the

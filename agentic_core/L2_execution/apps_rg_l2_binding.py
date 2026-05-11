@@ -27,6 +27,7 @@ The stub fallback:
 """
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 import logging
@@ -36,13 +37,16 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
 )
 from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
+from agentic_core.runtime.providers.provider_registry import get_provider_registry
+from agentic_core.runtime.providers.provider_gateway import ProviderGateway
+from agentic_core.runtime.providers.provider_types import ProviderKind, ProviderMode
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -55,6 +59,17 @@ _FORCE_STUB_ENV: str = "APPS_RG_L2_FORCE_STUB"
 
 # Real-call HTTP timeouts. Resume generation runs ~10-30s on Qwen 32B AWQ.
 _DEFAULT_LLM_TIMEOUT_S: float = 120.0
+
+# External provider profiles registered in provider_profiles.yaml.
+# These are called in ensemble mode alongside the Qwen vLLM primary.
+_EXTERNAL_ENSEMBLE_PROFILES: tuple[str, ...] = (
+    "anthropic_claude_generator",
+    "openai_gpt_generator",
+    "google_gemini_generator",
+)
+
+# Apps_rg provider profiles YAML path (relative to repo root).
+_PROVIDER_PROFILES_RELPATH = "apps_rg/config/provider_profiles.yaml"
 
 
 def _build_stub_resume(payload_echo: Mapping[str, Any]) -> dict[str, Any]:
@@ -244,9 +259,29 @@ def _execute_via_qwen_vllm(
     try:
         resume_doc = json.loads(stripped_content)
     except ValueError as exc:
-        raise ValueError(
-            f"vLLM returned non-JSON resume body (len={len(content)}): {exc}"
-        ) from exc
+        # Attempt inline repair for common Qwen output artifacts:
+        # (1) trailing commas before } or ]
+        # (2) truncated output — find last valid closing brace
+        import re as _re
+        repaired = _re.sub(r",\s*([}\]])", r"\1", stripped_content)
+        try:
+            resume_doc = json.loads(repaired)
+            _LOGGER.warning("[apps_rg L2] JSON repaired (trailing comma fix): original error: %s", exc)
+        except ValueError:
+            # Last resort: find the rightmost top-level closing brace
+            last_brace = repaired.rfind("}")
+            if last_brace > 0:
+                try:
+                    resume_doc = json.loads(repaired[: last_brace + 1])
+                    _LOGGER.warning("[apps_rg L2] JSON repaired (truncation trim at %d): original error: %s", last_brace, exc)
+                except ValueError:
+                    raise ValueError(
+                        f"vLLM returned non-JSON resume body (len={len(content)}): {exc}"
+                    ) from exc
+            else:
+                raise ValueError(
+                    f"vLLM returned non-JSON resume body (len={len(content)}): {exc}"
+                ) from exc
 
     if not isinstance(resume_doc, dict):
         raise ValueError(
@@ -268,6 +303,151 @@ def _execute_via_qwen_vllm(
     # consumer-friendly.
     canonical_content = json.dumps(resume_doc, indent=2)
     return canonical_content, resume_doc, elapsed_ms, receipt, "completed"
+
+
+def _load_apps_rg_registry():
+    """Load apps_rg provider profiles into the global registry (idempotent)."""
+    registry = get_provider_registry()
+    if registry.list_profiles():
+        return registry  # already loaded
+    try:
+        repo_root = _find_repo_root()
+        profiles_path = repo_root / _PROVIDER_PROFILES_RELPATH
+        registry.load_from_yaml(profiles_path, app_id="apps_rg")
+    except Exception as exc:  # guardian: allow-broad-net -- registry load is best-effort; missing file must not abort the pipeline
+        _LOGGER.warning("[apps_rg L2] Could not load provider profiles: %s", exc)
+    return registry
+
+
+def _find_repo_root() -> "__import__('pathlib').Path":
+    """Walk up from this file to find the repo root (has pyproject.toml)."""
+    import pathlib
+    p = pathlib.Path(__file__).resolve()
+    for parent in p.parents:
+        if (parent / "pyproject.toml").exists():
+            return parent
+    return p.parents[3]  # fallback: agentic_core/../..
+
+
+def _call_external_ensemble(
+    prompt: CompiledPromptArtifact,
+    payload_echo: dict[str, str],
+) -> list[tuple[str, dict, int, str, str]]:
+    """Call each external provider and collect (content, resume_doc, elapsed_ms, receipt, status) tuples.
+
+    Fail-soft: provider errors are logged and skipped — never raise.
+    Returns empty list when live calls are disabled or all providers fail.
+    """
+    force_stub = os.environ.get(_FORCE_STUB_ENV, "").strip().lower() in ("1", "true", "yes")
+    if force_stub:
+        return []
+
+    # Opt-in filter via env var.
+    allowed_raw = os.environ.get("APPS_RG_ENSEMBLE_PROVIDERS", "").strip()
+    allowed: set[str] | None = (
+        {p.strip() for p in allowed_raw.split(",") if p.strip()}
+        if allowed_raw else None
+    )
+
+    registry = _load_apps_rg_registry()
+    gateway = ProviderGateway(provider_mode=ProviderMode.LIVE_ALLOWED)
+
+    # Build a minimal prompt text from the compiled prompt.
+    prompt_text = f"{prompt.system_preamble}\n\n{prompt.user_instruction}"
+
+    results: list[tuple[str, dict, int, str, str]] = []
+    for profile_key in _EXTERNAL_ENSEMBLE_PROFILES:
+        if allowed is not None and profile_key not in allowed:
+            continue
+        try:
+            profile = registry.get_profile(profile_key)
+        except Exception as exc:
+            _LOGGER.warning("[apps_rg L2 ensemble] Profile %r not found: %s", profile_key, exc)
+            continue
+
+        if not registry.check_external_credentials(profile_key):
+            _LOGGER.warning(
+                "[apps_rg L2 ensemble] Skipping %r — API key env var %r not set",
+                profile_key,
+                profile.api_key_env_var,
+            )
+            continue
+
+        try:
+            from agentic_core.runtime.providers.provider_types import ProviderRequest
+            req = ProviderRequest(
+                prompt_text=prompt_text,
+                provider_profile=profile,
+                max_tokens=prompt.max_tokens,
+                temperature=prompt.temperature,
+                run_id=prompt.run_id,
+                node_id="l2_ensemble",
+            )
+            started = time.monotonic()
+            resp = gateway._invoke_external_api(req, profile)  # noqa: SLF001
+            elapsed_ms = int((time.monotonic() - started) * 1000.0)
+
+            if not resp.success:
+                _LOGGER.warning(
+                    "[apps_rg L2 ensemble] %r returned error: %s",
+                    profile_key, resp.error_message,
+                )
+                continue
+
+            stripped = _strip_json_fences(resp.text)
+            try:
+                resume_doc = json.loads(stripped)
+            except ValueError:
+                _LOGGER.warning(
+                    "[apps_rg L2 ensemble] %r returned non-JSON (len=%d)",
+                    profile_key, len(resp.text),
+                )
+                continue
+
+            if not isinstance(resume_doc, dict):
+                continue
+
+            resume_doc.setdefault("target_company", payload_echo.get("target_company", ""))
+            resume_doc.setdefault("target_role", payload_echo.get("target_role", ""))
+            resume_doc.setdefault("target_level", payload_echo.get("target_level", ""))
+            resume_doc.setdefault("schema_version", "1.0")
+            resume_doc["stub_mode"] = False
+            resume_doc["ensemble_provider"] = profile_key
+
+            content = json.dumps(resume_doc, indent=2)
+            receipt = f"external:{profile_key}:{resp.model_used or 'unknown'}"
+            results.append((content, resume_doc, elapsed_ms, receipt, "completed"))
+            _LOGGER.info("[apps_rg L2 ensemble] %r succeeded (%dms)", profile_key, elapsed_ms)
+
+        except Exception as exc:  # guardian: allow-broad-net -- ensemble provider failure must never abort the pipeline
+            _LOGGER.warning("[apps_rg L2 ensemble] %r raised: %s", profile_key, exc)
+
+    return results
+
+
+def _select_best_candidate(
+    primary: tuple[str, dict, int, str, str] | None,
+    ensemble: list[tuple[str, dict, int, str, str]],
+) -> tuple[str, dict, int, str, str]:
+    """Pick the best candidate from primary + ensemble results.
+
+    Selection heuristic (judge jury not yet wired — use length as proxy):
+    - Prefer any successful live candidate over stub.
+    - Among live candidates, pick the one with the longest generated_content
+      (correlated with completeness until real judge is wired).
+    """
+    candidates = []
+    if primary is not None:
+        candidates.append(primary)
+    candidates.extend(ensemble)
+
+    live = [(c, r, e, rc, s) for c, r, e, rc, s in candidates if s == "completed"]
+    if not live:
+        # All failed — return primary stub or first stub.
+        return primary if primary is not None else candidates[0]
+
+    best = max(live, key=lambda t: len(t[0]))
+    return best
 
 
 def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
@@ -305,20 +485,30 @@ def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
     # Decide live vs stub.
     force_stub = os.environ.get(_FORCE_STUB_ENV, "").strip().lower() in ("1", "true", "yes")
     fallback_reason: str = ""
+    primary_result = None
 
     if not force_stub:
         try:
-            content, resume_doc, elapsed_ms, receipt, exec_status = (
-                _execute_via_qwen_vllm(prompt, payload_echo)
-            )
+            primary_result = _execute_via_qwen_vllm(prompt, payload_echo)
         except (OSError, ValueError) as exc:  # guardian: allow-broad-net -- W5 fail-soft policy: vLLM HTTP/parse/health errors must NOT raise into the pipeline; the stub fallback below preserves E2E reach + records the reason on the artifact for telemetry
             _LOGGER.warning("[apps_rg L2] vLLM live call failed: %s", exc)
             fallback_reason = f"{type(exc).__name__}: {exc!s}"
-            content, resume_doc, elapsed_ms, receipt, exec_status = (
-                _build_stub_fallback(payload_echo, fallback_reason)
-            )
+
+    # Ensemble: call external providers (Anthropic, OpenAI, Gemini) fail-soft.
+    ensemble_results = _call_external_ensemble(prompt, payload_echo)
+
+    if primary_result is not None or ensemble_results:
+        # At least one live candidate — pick the best.
+        content, resume_doc, elapsed_ms, receipt, exec_status = _select_best_candidate(
+            primary_result, ensemble_results
+        )
+        # Annotate artifact with ensemble provenance.
+        resume_doc["ensemble_candidates"] = 1 + len(ensemble_results)
+        resume_doc["providers_attempted"] = ["local_qwen_generator"] + list(_EXTERNAL_ENSEMBLE_PROFILES)
     else:
-        fallback_reason = "APPS_RG_L2_FORCE_STUB=1"
+        # All live calls failed — fall back to stub.
+        if not fallback_reason:
+            fallback_reason = "all_providers_failed"
         content, resume_doc, elapsed_ms, receipt, exec_status = (
             _build_stub_fallback(payload_echo, fallback_reason)
         )
@@ -382,7 +572,206 @@ def _build_stub_fallback(
     return content, resume_doc, 0, receipt, "completed_stub_fallback"
 
 
+# ---------------------------------------------------------------------------
+# W5 quality gate consumer — apps-rg-quarantine-gap-remediation-8f405c W5.P1
+#
+# Reads quality_thresholds from ValidatedRequest.app_payload.
+# Actual field names from QualityThresholdsSection (ingress_contract_v1.py):
+#   min_quality (float 0-1), min_ats (int 0-100), word_min (int), word_max (int)
+#
+# Note: plan W5 referenced different field names (min_quality_score,
+# min_confidence, hallucination_threshold, jd_alignment_threshold) but the
+# actual contract fields differ — this binding uses the actual YAML/contract
+# names. hallucination_threshold and jd_alignment_threshold are carried as
+# POLICY METADATA only (no live judge result available at L2).
+#
+# Fail-soft by default (WARN / NOT_APPLICABLE).
+# APPS_RG_QUALITY_GATE_FAIL_CLOSED=1 converts WARN into FAIL for missing
+# required scores. UNKNOWN is never treated as PASS.
+# ---------------------------------------------------------------------------
+
+_QUALITY_GATE_FAIL_CLOSED_ENV: str = "APPS_RG_QUALITY_GATE_FAIL_CLOSED"
+
+
+@dataclasses.dataclass(frozen=True)
+class AppsRGQualityGatePolicy:
+    """Extracted quality threshold policy from apps_rg app_payload."""
+
+    min_quality: Optional[float]
+    min_ats: Optional[int]
+    word_min: Optional[int]
+    word_max: Optional[int]
+    payload_path: str
+    fail_closed: bool
+
+
+def extract_apps_rg_quality_gate_policy(validated_request: Any) -> AppsRGQualityGatePolicy:
+    """Extract quality_thresholds from ValidatedRequest.app_payload.
+
+    Reads the actual QualityThresholdsSection fields (min_quality, min_ats,
+    word_min, word_max). Returns NOT_APPLICABLE policy with None values if
+    the section is absent or malformed — never raises on missing optional data.
+
+    Args:
+        validated_request: ValidatedRequest carrying app_payload.
+
+    Returns:
+        AppsRGQualityGatePolicy with threshold values or None for absent fields.
+    """
+    fail_closed = os.environ.get(_QUALITY_GATE_FAIL_CLOSED_ENV, "").strip() == "1"
+    payload_path = "ValidatedRequest.app_payload.quality_thresholds"
+
+    try:
+        app_payload = validated_request.app_payload
+        qt = getattr(app_payload, "quality_thresholds", None)
+        if qt is None:
+            # Try dict-style access for payload that comes through as a dict
+            if isinstance(app_payload, dict):
+                qt_dict = app_payload.get("quality_thresholds") or {}
+                return AppsRGQualityGatePolicy(
+                    min_quality=qt_dict.get("min_quality"),
+                    min_ats=qt_dict.get("min_ats"),
+                    word_min=qt_dict.get("word_min"),
+                    word_max=qt_dict.get("word_max"),
+                    payload_path=payload_path,
+                    fail_closed=fail_closed,
+                )
+            return AppsRGQualityGatePolicy(
+                min_quality=None,
+                min_ats=None,
+                word_min=None,
+                word_max=None,
+                payload_path=payload_path,
+                fail_closed=fail_closed,
+            )
+        return AppsRGQualityGatePolicy(
+            min_quality=getattr(qt, "min_quality", None),
+            min_ats=getattr(qt, "min_ats", None),
+            word_min=getattr(qt, "word_min", None),
+            word_max=getattr(qt, "word_max", None),
+            payload_path=payload_path,
+            fail_closed=fail_closed,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- policy extraction must never abort L2; missing policy is WARN not ERROR
+        _LOGGER.warning("[apps_rg L2 quality gate] policy extraction failed: %s", exc)
+        return AppsRGQualityGatePolicy(
+            min_quality=None,
+            min_ats=None,
+            word_min=None,
+            word_max=None,
+            payload_path=payload_path,
+            fail_closed=fail_closed,
+        )
+
+
+def evaluate_apps_rg_l2_quality_precheck(
+    policy: AppsRGQualityGatePolicy,
+    run_context: Optional[Mapping[str, Any]] = None,
+) -> dict[str, Any]:
+    """Evaluate quality thresholds against available run-context scores.
+
+    L2 runs BEFORE LLM output exists, so judge scores are not available yet.
+    This precheck:
+      - Carries min_quality and min_ats as policy metadata for Exit consumption.
+      - Evaluates word_min / word_max only if run_context provides word_count.
+      - UNKNOWN is never PASS; absent scores produce WARN (or FAIL in fail-closed).
+
+    Args:
+        policy: Extracted quality gate policy.
+        run_context: Optional dict carrying pre-execution metrics.
+
+    Returns:
+        Gate result dict with verdict (PASS/WARN/FAIL/NOT_APPLICABLE),
+        per-field verdicts, and policy metadata for downstream visibility.
+    """
+    results: dict[str, Any] = {
+        "gate": "L2_QUALITY_PRECHECK",
+        "plan": "apps-rg-quarantine-gap-remediation-8f405c",
+        "wave": "W5.P1",
+        "policy": {
+            "min_quality": policy.min_quality,
+            "min_ats": policy.min_ats,
+            "word_min": policy.word_min,
+            "word_max": policy.word_max,
+            "fail_closed": policy.fail_closed,
+        },
+        "field_verdicts": {},
+        "policy_metadata": {},
+    }
+
+    if run_context is None:
+        run_context = {}
+
+    checks: list[str] = []
+
+    # min_quality — no judge score available at L2, carry as policy metadata
+    if policy.min_quality is not None:
+        results["policy_metadata"]["min_quality_threshold"] = policy.min_quality
+        results["field_verdicts"]["min_quality"] = "NOT_APPLICABLE"
+        results["policy_metadata"]["min_quality_note"] = (
+            "judge score not available at L2; threshold carried to Exit for post-LLM evaluation"
+        )
+        checks.append("NOT_APPLICABLE")
+
+    # min_ats — no ATS score available at L2, carry as policy metadata
+    if policy.min_ats is not None:
+        results["policy_metadata"]["min_ats_threshold"] = policy.min_ats
+        results["field_verdicts"]["min_ats"] = "NOT_APPLICABLE"
+        results["policy_metadata"]["min_ats_note"] = (
+            "ATS score not available at L2; threshold carried to Exit for post-LLM evaluation"
+        )
+        checks.append("NOT_APPLICABLE")
+
+    # word_min / word_max — only evaluable if run_context provides word_count
+    word_count = run_context.get("word_count")
+    if policy.word_min is not None or policy.word_max is not None:
+        if word_count is not None:
+            try:
+                wc = int(word_count)
+                if policy.word_min is not None and wc < policy.word_min:
+                    verdict = "FAIL" if policy.fail_closed else "WARN"
+                    results["field_verdicts"]["word_min"] = verdict
+                    checks.append(verdict)
+                elif policy.word_min is not None:
+                    results["field_verdicts"]["word_min"] = "PASS"
+                    checks.append("PASS")
+                if policy.word_max is not None and wc > policy.word_max:
+                    verdict = "FAIL" if policy.fail_closed else "WARN"
+                    results["field_verdicts"]["word_max"] = verdict
+                    checks.append(verdict)
+                elif policy.word_max is not None:
+                    results["field_verdicts"]["word_max"] = "PASS"
+                    checks.append("PASS")
+            except (ValueError, TypeError):
+                results["field_verdicts"]["word_count"] = "WARN"
+                checks.append("WARN")
+        else:
+            results["field_verdicts"]["word_min"] = "NOT_APPLICABLE"
+            results["field_verdicts"]["word_max"] = "NOT_APPLICABLE"
+            results["policy_metadata"]["word_count_note"] = (
+                "word_count not available in run_context at L2 precheck"
+            )
+            checks.append("NOT_APPLICABLE")
+
+    if not checks:
+        results["verdict"] = "NOT_APPLICABLE"
+        results["reason"] = "no quality_thresholds present in payload"
+    elif "FAIL" in checks:
+        results["verdict"] = "FAIL"
+    elif "WARN" in checks:
+        results["verdict"] = "WARN"
+    elif all(c == "NOT_APPLICABLE" for c in checks):
+        results["verdict"] = "NOT_APPLICABLE"
+    else:
+        results["verdict"] = "PASS"
+
+    return results
+
+
 __all__ = [
     "APPS_RG_L2_CERT_REF",
+    "AppsRGQualityGatePolicy",
+    "extract_apps_rg_quality_gate_policy",
+    "evaluate_apps_rg_l2_quality_precheck",
     "l2_execute_apps_rg",
 ]

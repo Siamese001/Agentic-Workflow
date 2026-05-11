@@ -1,42 +1,14 @@
+"""QUARANTINE NOTICE - AG-RGGOV-8: DEAD_CODE_CLEANUP
+
+This file is QUARANTINED per the declarative ingress-only governance model.
+Original: apps_rg/tools/OrderSkillsByRelevance.py
+Reason: Auto-generated dead/broken tool code; not imported by any live spine path.
+Plan: apps-rg-quarantine-gap-remediation-8f405c W1
 """
-OrderSkillsByRelevance.py - Resume Operations Module
 
-Domain: resume
-Generated: 2025-12-07T13:28:54.205512
-"""
-
-from __future__ import annotations
-
-import logging
-from typing import Any
-
-Logger: Any = logging.getLogger(__name__)
-
-
-class OrderSkillsByRelevance:
-    """Operations executor for resume domain."""
-
-
-def __init__(self: Any, config: dict[str, object] | None) -> None:
-    SELF.CONFIG = config or {}
-    Logger.info(f"Initialized {self.__class__.__name__}")
-
-
-def process(self: Any, data: str | dict, context: dict | None) -> OperationResult:
-    """Process input data through the transformation pipeline."""
-    try:
-        self._execute(data, context)
-        return OperationResult(success=True, data=result)
-    except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        Logger.error(f"Processing failed: {e}")
-        return OperationResult(success=False, metadata={"error": str(e)})
-
-
-def _execute(self: Any, data: str | dict, context: dict | None) -> object:
-    """Execute processing."""
-    return data
-
-
-def process(data: str | dict, config: dict | None = None) -> OperationResult:
-    """Process input data through the transformation pipeline."""
-    return OrderSkillsByRelevance(config).process(data)
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.tools.OrderSkillsByRelevance is QUARANTINED. "
+    "apps_rg may NOT contain runtime execution tools. "
+    "Use the agentic_core spine path instead."
+)

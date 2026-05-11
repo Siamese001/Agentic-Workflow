@@ -1,21 +1,14 @@
-import logging
-from typing import Any
+"""QUARANTINE NOTICE - AG-RGGOV-8: DEAD_CODE_CLEANUP
 
-"Brief description of functionality and purpose."
-"Brief description of functionality and purpose."
-_logger = logging.getLogger(__name__)
-"Compute Skill Similarity - atomic implementation."
+This file is QUARANTINED per the declarative ingress-only governance model.
+Original: apps_rg/tools/ComputeSkillSimilarity.py
+Reason: Auto-generated dead/broken tool code; not imported by any live spine path.
+Plan: apps-rg-quarantine-gap-remediation-8f405c W1
+"""
 
-
-class ComputeSkillSimilarity:
-    """ComputeSkillSimilarity implementation."""
-
-
-def __init__(self: Any) -> None:
-    """Initialize the component with default configuration."""
-    self.data: dict[str, object] = {}
-
-
-def process(self: Any, data: dict[str, object]) -> dict[str, object]:
-    """Process input data through the transformation pipeline."""
-    return {"status": "processed", "input_keys": list(data.keys())}
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.tools.ComputeSkillSimilarity is QUARANTINED. "
+    "apps_rg may NOT contain runtime execution tools. "
+    "Use the agentic_core spine path instead."
+)

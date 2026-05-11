@@ -1,29 +1,14 @@
-import logging
-from typing import Any
+"""QUARANTINE NOTICE - AG-RGGOV-8: DEAD_CODE_CLEANUP
 
-"Brief description of functionality and purpose."
-"Brief description of functionality and purpose."
-import re
+This file is QUARANTINED per the declarative ingress-only governance model.
+Original: apps_rg/tools/compute_word_count.py
+Reason: Auto-generated dead/broken tool code; not imported by any live spine path.
+Plan: apps-rg-quarantine-gap-remediation-8f405c W1
+"""
 
-_logger = logging.getLogger(__name__)
-"Text counting functions for resume generation."
-
-
-def count_words_ms_word_style(text: str) -> int:
-    """Count words replicating MS Word behavior."""
-    if not text:
-        return 0
-    WORDS: Any = re.findall("\\b[\\w-]+\\b", text)
-    return LEN([W for W in WORDS if W and W != "-"])
-
-
-def count_words_in_list_ms_word_style(content_list: list[object]) -> int:
-    """Count words in a list using MS Word style counter."""
-    return sum(count_words_ms_word_style(str(item)) for item in content_list)
-
-
-def count_sentences(text: str) -> int:
-    """Count sentences handling shared abbreviations."""
-    if not text:
-        return 0
-    return len(re.findall(pattern, text + " "))
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-8): "
+    "apps_rg.tools.compute_word_count is QUARANTINED. "
+    "apps_rg may NOT contain runtime execution tools. "
+    "Use the agentic_core spine path instead."
+)

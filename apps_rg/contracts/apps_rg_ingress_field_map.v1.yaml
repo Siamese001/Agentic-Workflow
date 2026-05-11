@@ -72,9 +72,9 @@ section_aggregations:
   /resume_payload: { status: DERIVED, target: "ValidatedRequest.app_payload.resume_payload", reason: "resume_hash promoted; full payload under app_payload" }
   /target: { status: DERIVED, target: "ValidatedRequest.{target_level,app_payload.target}", reason: "level promoted to ValidatedRequest.target_level for L0 routing; company/role under app_payload" }
   /profile_manifest: { status: DERIVED, target: "ValidatedRequest.app_payload.profile_manifest", reason: "Manifest preserved verbatim; digest verified at U0" }
-  /quality_thresholds: { status: DEFERRED, target: "future Wave 2 ExitReviewPacket builder + X1D groundedness gate", reason: "Per Author-Gate AG-7.c + AG-8.c W1 (G09/G21/G22) — thresholds consumed when ExitReviewPacket builder lands" }
-  /output_requirements: { status: DEFERRED, target: "future Wave 5 enrichment via apps_rg-owned Exit-stage callbacks (AG-14.a)", reason: "DOCX/RunReport callbacks register against output_requirements at W5" }
-  /provenance_requirements: { status: DEFERRED, target: "future Wave 2 verbatim_provenance_gate via gate registry (AG-9.b)", reason: "per-bullet provenance enforcement lands in W2 with apps_rg gate registry" }
+  /quality_thresholds: { status: MAPPED, target: "agentic_core/L2_execution/apps_rg_l2_binding.py:extract_apps_rg_quality_gate_policy", reason: "W5.P1 (apps-rg-quarantine-gap-remediation-8f405c): quality_thresholds extracted as AppsRGQualityGatePolicy; min_quality/min_ats carried as Exit metadata; word_min/word_max evaluated at L2 precheck when word_count available" }
+  /output_requirements: { status: MAPPED, target: "agentic_core/runtime/exit/apps_rg_exit_binding.py:extract_apps_rg_exit_gate_policy", reason: "W5.P2 (apps-rg-quarantine-gap-remediation-8f405c): formats/provenance_required/fact_checked_required extracted; provenance_required evaluated for consistency with per_bullet_required; formats/fact_checked_required carried as deferred metadata pending AG-14.a callbacks" }
+  /provenance_requirements: { status: MAPPED, target: "agentic_core/runtime/exit/apps_rg_exit_binding.py:extract_apps_rg_exit_gate_policy", reason: "W5.P2 (apps-rg-quarantine-gap-remediation-8f405c): per_bullet_required/source_quote_required extracted; per_bullet_required evaluated for consistency with output_requirements.provenance_required; source_quote_required carried as deferred metadata pending AG-14.a W5" }
   /runtime_customization_package: { status: DERIVED, target: "ValidatedRequest.app_payload.runtime_customization_package", reason: "Complete runtime operating package preserved verbatim under app_payload; digest verified at U0; downstream core resolvers consume individual refs" }
 
 mappings:
@@ -245,7 +245,7 @@ mappings:
   /profile_manifest/hitl_policy_ref:
     status: DEFERRED
     target: future Wave 4 HITL registry (AG-13.b)
-    reason: hitl_registry will resolve apps_rg's hitl_policy_ref to runtime triggers at W4
+    reason: "W5.P2 scope: hitl_policy_ref extracted by extract_apps_rg_exit_gate_policy as audit metadata ONLY (see AppsRGExitGatePolicy.hitl_policy_ref). NOT evaluated as gate verdict — HITL registry (AG-13.b) does not exist at Exit yet; evaluating before registry lands would produce false FAILs. Full wiring deferred to Wave 4."
 
   /profile_manifest/l0_policy_ref:
     status: DEFERRED
@@ -266,55 +266,55 @@ mappings:
   # /quality_thresholds — declarative quality intent
   # -------------------------------------------------------------------
   /quality_thresholds/min_quality:
-    status: DEFERRED
-    target: future Wave 2 G22 output_quality gate
-    reason: Per AG-8.c W1 phasing — G22 wired in Wave 2 of safety mesh restoration
+    status: MAPPED
+    target: agentic_core/L2_execution/apps_rg_l2_binding.py:AppsRGQualityGatePolicy.min_quality
+    reason: "W5.P1: extracted and carried as policy_metadata.min_quality_threshold at L2 precheck; carried to Exit for post-LLM judge evaluation (judge score not available at L2)"
 
   /quality_thresholds/min_ats:
-    status: DEFERRED
-    target: future Wave 2 ATS validator (AG-9.b apps gate registry)
-    reason: ats_validator runs as registered apps_rg gate at W2
+    status: MAPPED
+    target: agentic_core/L2_execution/apps_rg_l2_binding.py:AppsRGQualityGatePolicy.min_ats
+    reason: "W5.P1: extracted and carried as policy_metadata.min_ats_threshold at L2 precheck; carried to Exit for post-LLM ATS evaluation (ATS score not available at L2)"
 
   /quality_thresholds/word_min:
-    status: DEFERRED
-    target: future Wave 2 word-bound validator
-    reason: word-bound validation runs as registered apps_rg gate at W2
+    status: MAPPED
+    target: agentic_core/L2_execution/apps_rg_l2_binding.py:AppsRGQualityGatePolicy.word_min
+    reason: "W5.P1: evaluated against run_context.word_count at L2 precheck if available; WARN in fail-soft / FAIL in fail-closed when word count below floor"
 
   /quality_thresholds/word_max:
-    status: DEFERRED
-    target: future Wave 2 word-bound validator
-    reason: word-bound validation runs as registered apps_rg gate at W2
+    status: MAPPED
+    target: agentic_core/L2_execution/apps_rg_l2_binding.py:AppsRGQualityGatePolicy.word_max
+    reason: "W5.P1: evaluated against run_context.word_count at L2 precheck if available; WARN in fail-soft / FAIL in fail-closed when word count above ceiling"
 
   # -------------------------------------------------------------------
   # /output_requirements — output format intent
   # -------------------------------------------------------------------
   /output_requirements/formats:
-    status: DEFERRED
-    target: future Wave 5 output callback registry (AG-14.a)
-    reason: DOCX/RunReport callbacks register against output formats at W5
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.output_formats
+    reason: "W5.P2: extracted and carried as policy_metadata.output_formats at Exit; callback dispatch (DOCX/RunReport) deferred to AG-14.a W5"
 
   /output_requirements/provenance_required:
-    status: DEFERRED
-    target: future Wave 2 verbatim_provenance_gate (AG-9.b)
-    reason: gate registry invokes provenance gate when this flag set; W2
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:evaluate_apps_rg_exit_provenance_gate
+    reason: "W5.P2: evaluated for consistency with provenance_requirements.per_bullet_required; inconsistency produces WARN (fail-soft) or FAIL (fail-closed via APPS_RG_PROVENANCE_GATE_FAIL_CLOSED=1)"
 
   /output_requirements/fact_checked_required:
-    status: DEFERRED
-    target: future Wave 2 fact_check_engine via gate registry (AG-9.b)
-    reason: fact_check_engine restoration is gap category #61; W2
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.fact_checked_required
+    reason: "W5.P2: extracted and carried as deferred metadata at Exit; fact_check_engine restoration is gap category #61; gate registry invokes when engine lands (AG-9.b)"
 
   # -------------------------------------------------------------------
   # /provenance_requirements — per-bullet provenance contract
   # -------------------------------------------------------------------
   /provenance_requirements/per_bullet_required:
-    status: DEFERRED
-    target: future Wave 2 verbatim_provenance_gate per-bullet enforcement
-    reason: Per AG-9.b registered gate consumes this flag at W2
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.per_bullet_required
+    reason: "W5.P2: extracted; consistency check with output_requirements.provenance_required evaluated at Exit; per-bullet scanner enforcement deferred to AG-9.b W2 gate registry"
 
   /provenance_requirements/source_quote_required:
-    status: DEFERRED
-    target: future Wave 5 RunReport provenance manifest emitter (AG-14.a)
-    reason: source-quote evidence threaded through Exit-stage callback at W5
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.source_quote_required
+    reason: "W5.P2: extracted and carried as deferred metadata at Exit; source-quote evidence emitter deferred to AG-14.a W5 Exit-stage callback"
 
   # -------------------------------------------------------------------
   # /runtime_customization_package — U0 operating package (Wave 2.5)

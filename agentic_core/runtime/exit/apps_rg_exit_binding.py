@@ -20,9 +20,12 @@ LLM call; the artifact path stays the same.
 """
 from __future__ import annotations
 
+import dataclasses
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
@@ -318,13 +321,275 @@ def build_apps_rg_exit_harness(
     )
     return ExitGateHarness(
         gate_profile=profile,
-        app_id="apps_rg",
-        task_class="resume_generation",
     )
+
+
+# ---------------------------------------------------------------------------
+# W5 Exit gate consumers — apps-rg-quarantine-gap-remediation-8f405c W5.P2
+#
+# Reads provenance_requirements, output_requirements, and profile_manifest
+# from ValidatedRequest.app_payload.
+#
+# Actual field names from contract (apps_rg_ingress_contract_v1.py):
+#   ProvenanceRequirementsSection: per_bullet_required (bool), source_quote_required (bool)
+#   OutputRequirementsSection: formats (tuple[str]), provenance_required (bool),
+#                              fact_checked_required (bool)
+#   ProfileManifestSection.hitl_policy_ref — DEFERRED: no HITL consumer at Exit yet.
+#     Ref is extracted and logged as policy metadata only; hitl_policy_ref triggers
+#     land in future Wave 4 HITL registry (AG-13.b). hitl_policy_ref MUST NOT be
+#     evaluated as a gate verdict at Exit.
+#
+# Fail-soft by default (WARN / NOT_APPLICABLE).
+# APPS_RG_PROVENANCE_GATE_FAIL_CLOSED=1 converts WARN into FAIL.
+# ---------------------------------------------------------------------------
+
+_PROVENANCE_GATE_FAIL_CLOSED_ENV: str = "APPS_RG_PROVENANCE_GATE_FAIL_CLOSED"
+
+_EXIT_LOGGER = __import__("logging").getLogger(__name__)
+
+
+@dataclasses.dataclass(frozen=True)
+class AppsRGExitGatePolicy:
+    """Extracted provenance + output requirements from apps_rg app_payload."""
+
+    per_bullet_required: Optional[bool]
+    source_quote_required: Optional[bool]
+    output_provenance_required: Optional[bool]
+    fact_checked_required: Optional[bool]
+    output_formats: Optional[tuple]
+    hitl_policy_ref: Optional[str]
+    payload_path: str
+    fail_closed: bool
+
+
+def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePolicy:
+    """Extract provenance_requirements, output_requirements from ValidatedRequest.app_payload.
+
+    Also extracts profile_manifest.hitl_policy_ref as POLICY METADATA only
+    (deferred — no HITL consumer at Exit; returned for downstream observability).
+
+    Actual fields consumed:
+      provenance_requirements.per_bullet_required (bool)
+      provenance_requirements.source_quote_required (bool)
+      output_requirements.provenance_required (bool)
+      output_requirements.fact_checked_required (bool)
+      output_requirements.formats (tuple[str, ...])
+      profile_manifest.hitl_policy_ref (str, DEFERRED — metadata only)
+
+    Returns NOT_APPLICABLE policy with None values on any extraction failure.
+    Never raises.
+
+    Args:
+        validated_request: ValidatedRequest carrying app_payload.
+
+    Returns:
+        AppsRGExitGatePolicy with field values or None for absent data.
+    """
+    fail_closed = os.environ.get(_PROVENANCE_GATE_FAIL_CLOSED_ENV, "").strip() == "1"
+    payload_path = (
+        "ValidatedRequest.app_payload."
+        "{provenance_requirements,output_requirements,profile_manifest.hitl_policy_ref}"
+    )
+
+    def _getattr_or_dict(obj: Any, key: str) -> Any:
+        if obj is None:
+            return None
+        if isinstance(obj, dict):
+            return obj.get(key)
+        return getattr(obj, key, None)
+
+    try:
+        app_payload = validated_request.app_payload
+        prov_req = _getattr_or_dict(app_payload, "provenance_requirements")
+        out_req = _getattr_or_dict(app_payload, "output_requirements")
+        prof_manifest = _getattr_or_dict(app_payload, "profile_manifest")
+
+        per_bullet = _getattr_or_dict(prov_req, "per_bullet_required")
+        source_quote = _getattr_or_dict(prov_req, "source_quote_required")
+        out_provenance = _getattr_or_dict(out_req, "provenance_required")
+        fact_checked = _getattr_or_dict(out_req, "fact_checked_required")
+        formats_raw = _getattr_or_dict(out_req, "formats")
+        output_formats = tuple(formats_raw) if formats_raw is not None else None
+        hitl_ref = _getattr_or_dict(prof_manifest, "hitl_policy_ref")
+
+        return AppsRGExitGatePolicy(
+            per_bullet_required=per_bullet,
+            source_quote_required=source_quote,
+            output_provenance_required=out_provenance,
+            fact_checked_required=fact_checked,
+            output_formats=output_formats,
+            hitl_policy_ref=hitl_ref,
+            payload_path=payload_path,
+            fail_closed=fail_closed,
+        )
+    except Exception as exc:  # guardian: allow-broad-exception -- policy extraction must never abort Exit; missing policy is WARN not ERROR
+        _EXIT_LOGGER.warning("[apps_rg Exit gate] policy extraction failed: %s", exc)
+        return AppsRGExitGatePolicy(
+            per_bullet_required=None,
+            source_quote_required=None,
+            output_provenance_required=None,
+            fact_checked_required=None,
+            output_formats=None,
+            hitl_policy_ref=None,
+            payload_path=payload_path,
+            fail_closed=fail_closed,
+        )
+
+
+def evaluate_apps_rg_exit_provenance_gate(
+    policy: AppsRGExitGatePolicy,
+    sealed_artifact: Any = None,
+) -> dict[str, Any]:
+    """Evaluate provenance and output requirement gates at Exit.
+
+    Checks:
+      - output_requirements.provenance_required: if True and per_bullet_required
+        is also True, both flags are verified as consistent (PASS), else WARN.
+      - provenance_requirements.per_bullet_required / source_quote_required:
+        emitted as policy metadata for future per-bullet gate (AG-9.b).
+      - output_requirements.fact_checked_required: emitted as policy metadata
+        (fact-check engine restoration deferred; gap category #61).
+      - output_requirements.formats: emitted as policy metadata.
+      - profile_manifest.hitl_policy_ref: extracted as DEFERRED metadata only.
+        NEVER evaluated as a gate verdict at Exit — HITL registry (AG-13.b) not
+        yet wired; evaluating before the registry lands would produce false FAILs.
+
+    Fail-soft: no live gate produces FAIL in fail_closed=False mode for
+    currently un-evaluable checks (e.g. per-bullet provenance enforcement
+    requires output artifact scanner, not available at Exit yet).
+
+    Args:
+        policy: Extracted exit gate policy.
+        sealed_artifact: Optional SealedL2Artifact (reserved; not consumed yet).
+
+    Returns:
+        Gate result dict with verdict, per-field verdicts, and policy metadata.
+    """
+    results: dict[str, Any] = {
+        "gate": "EXIT_PROVENANCE_GATE",
+        "plan": "apps-rg-quarantine-gap-remediation-8f405c",
+        "wave": "W5.P2",
+        "policy": {
+            "per_bullet_required": policy.per_bullet_required,
+            "source_quote_required": policy.source_quote_required,
+            "output_provenance_required": policy.output_provenance_required,
+            "fact_checked_required": policy.fact_checked_required,
+            "output_formats": list(policy.output_formats) if policy.output_formats else None,
+            "hitl_policy_ref": policy.hitl_policy_ref,
+            "fail_closed": policy.fail_closed,
+        },
+        "field_verdicts": {},
+        "policy_metadata": {},
+        "deferred": {},
+    }
+
+    checks: list[str] = []
+
+    # provenance_required + per_bullet_required consistency check
+    if policy.output_provenance_required is not None:
+        if policy.output_provenance_required:
+            if policy.per_bullet_required is True:
+                results["field_verdicts"]["provenance_consistency"] = "PASS"
+                checks.append("PASS")
+            elif policy.per_bullet_required is False:
+                verdict = "FAIL" if policy.fail_closed else "WARN"
+                results["field_verdicts"]["provenance_consistency"] = verdict
+                results["policy_metadata"]["provenance_inconsistency_note"] = (
+                    "output_requirements.provenance_required=True but "
+                    "provenance_requirements.per_bullet_required=False; flags are inconsistent"
+                )
+                checks.append(verdict)
+            else:
+                results["field_verdicts"]["provenance_consistency"] = "NOT_APPLICABLE"
+                results["policy_metadata"]["per_bullet_required_note"] = (
+                    "per_bullet_required absent; provenance consistency check skipped"
+                )
+                checks.append("NOT_APPLICABLE")
+        else:
+            results["field_verdicts"]["provenance_required"] = "PASS"
+            checks.append("PASS")
+
+    # per_bullet_required — emitted as deferred metadata (gate enforcement
+    # requires per-bullet scanner; deferred to AG-9.b W2 gate registry)
+    if policy.per_bullet_required is not None:
+        results["deferred"]["per_bullet_required"] = {
+            "value": policy.per_bullet_required,
+            "status": "DEFERRED",
+            "reason": (
+                "per-bullet provenance scanner lands at W2 gate registry (AG-9.b); "
+                "Exit carries this flag as deferred metadata only"
+            ),
+        }
+
+    # source_quote_required — deferred to W5 RunReport provenance manifest emitter
+    if policy.source_quote_required is not None:
+        results["deferred"]["source_quote_required"] = {
+            "value": policy.source_quote_required,
+            "status": "DEFERRED",
+            "reason": (
+                "source-quote evidence emitter lands with Exit-stage callback at W5 (AG-14.a)"
+            ),
+        }
+
+    # fact_checked_required — deferred to gap category #61 (fact-check engine restoration)
+    if policy.fact_checked_required is not None:
+        results["deferred"]["fact_checked_required"] = {
+            "value": policy.fact_checked_required,
+            "status": "DEFERRED",
+            "reason": (
+                "fact_check_engine restoration is gap category #61; "
+                "gate registry invokes when engine lands (AG-9.b)"
+            ),
+        }
+
+    # output formats — carried as policy metadata; callback registry deferred to W5
+    if policy.output_formats is not None:
+        results["policy_metadata"]["output_formats"] = list(policy.output_formats)
+        results["deferred"]["output_formats"] = {
+            "value": list(policy.output_formats),
+            "status": "DEFERRED",
+            "reason": (
+                "DOCX/RunReport callbacks register against output_formats at W5 (AG-14.a)"
+            ),
+        }
+
+    # hitl_policy_ref — DEFERRED, extracted as metadata only.
+    # AG-13.b HITL registry does not exist at Exit yet. Evaluating this field
+    # here would produce false results. We carry it for audit/observability only.
+    if policy.hitl_policy_ref:
+        results["deferred"]["hitl_policy_ref"] = {
+            "value": policy.hitl_policy_ref,
+            "status": "DEFERRED",
+            "reason": (
+                "hitl_registry not yet wired at Exit; HITL triggers land in "
+                "future Wave 4 HITL registry (AG-13.b). "
+                "hitl_policy_ref carried as audit metadata only."
+            ),
+        }
+
+    if not checks:
+        results["verdict"] = "NOT_APPLICABLE"
+        results["reason"] = (
+            "no evaluable provenance/output requirements found in payload; "
+            "deferred fields extracted as metadata"
+        )
+    elif "FAIL" in checks:
+        results["verdict"] = "FAIL"
+    elif "WARN" in checks:
+        results["verdict"] = "WARN"
+    elif all(c == "NOT_APPLICABLE" for c in checks):
+        results["verdict"] = "NOT_APPLICABLE"
+    else:
+        results["verdict"] = "PASS"
+
+    return results
 
 
 __all__ = [
     "APPS_RG_EXIT_CERT_REF",
-    "build_apps_rg_exit_harness",
+    "AppsRGExitGatePolicy",
+    "extract_apps_rg_exit_gate_policy",
+    "evaluate_apps_rg_exit_provenance_gate",
     "exit_finalize_apps_rg",
+    "build_apps_rg_exit_harness",
 ]

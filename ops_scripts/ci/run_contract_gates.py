@@ -832,6 +832,16 @@ def main():
             "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
             "ops_scripts/ci/check_apps_rg_dryrun.py",
         ),
+        # APPS-AUTH — apps_rg live authority leak detection (advisory).
+        # Scans apps_rg/tools/ + apps_rg/config/ for non-quarantined files
+        # containing provider imports, core contract emissions, or runner
+        # execution patterns. Quarantine stubs and INERT_CONFIG files are exempt.
+        # Plan: apps-rg-quarantine-gap-remediation-8f405c W2.
+        # Fail-closed: APPS_RG_LIVE_AUTHORITY_FAIL_CLOSED=1. Bypass: APPS_RG_LIVE_AUTHORITY_BYPASS=1.
+        (
+            "APPS-AUTH apps_rg live authority leak detection (advisory)",
+            "ops_scripts/ci/check_apps_rg_live_authority.py",
+        ),
         (
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
