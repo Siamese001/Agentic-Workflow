@@ -179,6 +179,16 @@ def main() -> int:
     if writer is None:
         return 0
 
+    # W1.P1 (plan-complete-notion-status-enforcement-a7e2d1): warn loudly when
+    # NOTION_TOKEN is absent so silent-skip failures are observable.
+    if not (os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")):
+        print(
+            "[wave_lifecycle_capture] WARN: NOTION_TOKEN not set — "
+            "wave lifecycle markers parsed but Notion PATCH will be skipped",
+            file=sys.stderr,
+        )
+        _log({"event": "capture_no_token_warn"})
+
     # Parse markers once so both Notion sync and plan-file update share the same list.
     sys.path.insert(0, str(REPO_ROOT))
     try:

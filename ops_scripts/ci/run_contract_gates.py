@@ -586,7 +586,7 @@ def main():
             "RULE-XREF Rule cross-references (advisory)",
             "ops_scripts/ci/check_rule_cross_references.py",
         ),
-        # NP9 -- New plans must use "Not Started" status, not "Deferred" or "Waiting".
+        # NP9 -- New plans must use "Not Started" status, not "Lower Priority" or "Waiting".
         # 24h detection window. Advisory by default; fail-closed via
         # NOTION_PLANS_NEW_STATUS_FAIL_CLOSED=1. Bypass: NOTION_PLANS_NEW_STATUS_BYPASS=1.
         # Plan: notion-plans-new-status-enforcement-c9f2a3.
@@ -685,6 +685,18 @@ def main():
         (
             "NP18 Notion Plans status canonical (advisory)",
             "ops_scripts/ci/check_notion_plans_status_canonical.py",
+        ),
+        # NP-DONE -- Plans whose on-disk Wave Structure table shows all waves
+        # ✅ DONE but Notion status ≠ "Completed". Belt-and-suspenders backstop
+        # for the wave_execution_state.py + PLAN_COMPLETE: hook chain.
+        # Advisory by default; fail-closed via NP_PLAN_DONE_STATUS_FAIL_CLOSED=1.
+        # Bypass: NP_PLAN_DONE_STATUS_BYPASS=1.
+        # Skips when NOTION_TOKEN / NOTION_API_KEY unset (offline CI).
+        # RCA: plan apps-lic-quarantine-u0-coverage-review-d9f4a2 stayed Archived.
+        # Plan: plan-complete-notion-status-enforcement-a7e2d1 (W2.P1).
+        (
+            "NP-DONE Plans all-waves-done disk-vs-Notion (advisory)",
+            "ops_scripts/ci/check_plan_done_notion_status.py",
         ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),

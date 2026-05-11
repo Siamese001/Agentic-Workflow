@@ -387,6 +387,16 @@ def emit_from_markers(
     if token is None:
         token = _token()
 
+    # W1.P2 (plan-complete-notion-status-enforcement-a7e2d1): warn loudly when
+    # token is absent so the silent-skip failure mode is observable.
+    if not token:
+        print(
+            "[wave_lifecycle_writer] WARN: NOTION_TOKEN not set — "
+            "wave lifecycle markers parsed but Notion PATCH will be skipped",
+            file=sys.stderr,
+        )
+        _log({"event": "emit_from_markers_no_token_warn", "marker_count": len(markers)})
+
     # Look up current status per slug ONCE for the whole batch.
     current_status_by_slug: dict[str, str | None] = {}
     if token and not dry_run:

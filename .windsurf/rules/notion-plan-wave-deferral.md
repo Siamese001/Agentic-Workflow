@@ -60,6 +60,12 @@ The note is whitespace-collapsed and capped at ~240 chars (`MAX_NOTE_CHARS` in `
 
 **Backstop**: CI gate `NP4 Notion Plans wave freshness` (`ops_scripts/ci/check_plan_notion_wave_freshness.py`) detects on-disk-vs-Notion skew >7d on active plans.
 
+**Belt-and-suspenders (added 2026-05-11, plan `plan-complete-notion-status-enforcement-a7e2d1`)**: CI gate `NP-DONE` (`ops_scripts/ci/check_plan_done_notion_status.py`) detects plans whose on-disk Wave Structure table shows all waves ✅ DONE but Notion status ≠ `Completed`. Advisory by default; fail-closed via `NP_PLAN_DONE_STATUS_FAIL_CLOSED=1`. Bypass: `NP_PLAN_DONE_STATUS_BYPASS=1`. Skips when `NOTION_TOKEN` / `NOTION_API_KEY` unset.
+
+**Token-absent observability (added 2026-05-11)**: Both `post_cascade_wave_lifecycle_capture.py` and `tools/notion/wave_lifecycle_writer.py::emit_from_markers` now emit a visible `[...] WARN: NOTION_TOKEN not set` message to stderr when the token is absent, so the silent-skip failure mode is detectable in logs. Previously this was completely invisible (fail-open with no output).
+
+**RCA — `apps-lic-quarantine-u0-coverage-review-d9f4a2`**: Plan completed all 11 waves but Notion remained `Archived`. Root cause chain: (A) plan pre-emptively set to `Archived` before W8-W10 resumed, (B) `wave_execution_state.py start/complete` never called (plan predated the wave-lifecycle autosync), (C) `PLAN_COMPLETE:` marker hook either had no `NOTION_TOKEN` or the HTTP PATCH failed silently (fail-open). Result: Notion stuck at `Archived` until manual `API-patch-page`. NP-DONE gate closes this detection gap. Full RCA: plan `plan-complete-notion-status-enforcement-a7e2d1`.
+
 ## Retrospective-Plan Protocol (added 2026-05-10, plan notion-plan-status-hardening-e5f3a1)
 
 A **retrospective plan** is one authored to document already-completed work (all waves done in the same turn as plan creation, or plan created after work is complete).
