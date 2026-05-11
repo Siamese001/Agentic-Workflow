@@ -19,7 +19,6 @@ W9 Constraints:
 - Do NOT add UWG writeback
 - Do NOT let judges directly decide X3
 """
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime, timezone
@@ -52,29 +51,18 @@ class JudgeEvidence:
         }
 
 
-class BaseResearchJudge(ABC):
-    """Abstract base for apps_research W9 judges.
+class BaseResearchJudge:
+    """W9 stub base for apps_research judges.
     
-    Judges produce evidence that feeds into gates (G09, G10, G22, G25).
+    Judges are stubs only — execution is owned by core.
+    Judges produce metadata that feeds into gates (G09, G10, G22, G25).
     Judges do NOT directly decide X3 — Exit owns X3.
     """
     
     judge_id: str = ""
     dimension: str = ""
     version: str = "W9.0.0"
-    
-    @abstractmethod
-    def evaluate(self, brief: str, context: Dict[str, Any]) -> JudgeEvidence:
-        """Evaluate brief and return evidence.
-        
-        Args:
-            brief: The generated company brief
-            context: Evaluation context (sources, query, etc.)
-            
-        Returns:
-            JudgeEvidence with score and reasoning
-        """
-        ...
+    IS_STUB: bool = True
     
     def to_judge_result(self, evidence: JudgeEvidence, run_id: str = "") -> JudgeResult:
         """Convert evidence to JudgeResult for downstream consumption."""
