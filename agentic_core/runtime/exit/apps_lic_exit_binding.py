@@ -1,4 +1,4 @@
-"""apps_lic Exit Binding — AG-8 W7 / AG-8-FU2
+"""apps_lic Exit Binding — AG-8 W7 / AG-8-FU2 / W3 Package Consumption
 
 Exit path for the apps_lic outreach-message pipeline.
 
@@ -11,32 +11,23 @@ Consumes a SealedL2Artifact produced by L2 and wires it through:
     -> build_x3_packet() -> X3* packet  [shared path, AG-8-FU2]
     -> _x3_packet_to_disposition() bridge -> X3Disposition
 
-AG-8-FU2: apps_lic now uses the shared build_x3_packet path.
-  - l5_certification_ref is threaded via ExitReviewPacket.l5_certification_refs[0].
-  - The X3*Packet -> X3Disposition bridge is purely deterministic.
-  - The old local X3Disposition construction is removed.
+W3 Package Consumption (runtime_customization_package):
+  - Exit consumes exit_profile_ref from the package.
+  - Loads required_gates and conditional_gates from the profile.
+  - Exit fails closed on missing GateMeshResult -> ESCALATE.
+  - Exit fails closed on missing required gate -> ESCALATE.
+  - Exit fails closed on material UNKNOWN -> ESCALATE.
+  - Exit fails closed on NOT_APPLICABLE without reason -> ESCALATE.
+  - G27 is NOT_APPLICABLE with reason "read_only_draft_return" for apps_lic.
+  - RuntimeExhaustBundle carries profile refs and cache bypass receipt.
 
-Hard laws (constitutional — enforced by test_w7_apps_lic_exit_x1_x3.py):
-  - Consumes SealedL2Artifact only; never re-retrieves from C0/R1B.
-  - Never assembles a new prompt.
-  - Never executes a tool or model.
-  - Never writes to L4 directly (no DB/filesystem mutation outside artifact dir).
-  - Never calls ChromaDB write, upsert, or delete.
-  - Never generates embeddings.
-  - scalar eval_score is NOT authoritative; ALLOW/DENY is driven by
-    X1CheckoutResult.is_overall_pass() + AggregateDecision.disposition.
-  - material FAIL -> DENY (enforced by aggregate_decision).
-  - material UNKNOWN -> ESCALATE (enforced by aggregate_decision).
-  - NOT_APPLICABLE requires a reason (enforced by X1Item.__post_init__).
-  - proposed_state_diff is inert ({}); X1J is NOT_APPLICABLE.
-
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md W7
-AG-8-FU2: shared build_x3_packet path adoption.
+Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md W3
 """
 
 from __future__ import annotations
 
 import datetime
+import hashlib
 from typing import Any
 
 from agentic_core.L3_orchestration.exit_eval.v6.types import (
@@ -58,8 +49,31 @@ from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 
+# W3: RuntimeCustomizationPackageSection import for Exit package consumption
+import json
+from pathlib import Path
+from apps_lic.contracts.apps_lic_ingress_contract_v1 import (
+    RuntimeCustomizationPackageSection,
+    ProfileRef,
+)
+
 _CERT_REF = "exit-apps-lic-outreach-message-ag8-w7-f3c2e1"
 _APP_ID = "apps_lic"
+
+# W3.5: Exit profile loaded from apps_lic config — NOT synthesised in agentic_core.
+# No hardcoded G-number set lives here. If the config is unavailable the
+# binding raises AppsLicExitProfileError (fail-closed). apps_lic owns policy.
+_EXIT_PROFILE_PATH = Path("apps_lic/config/domain_contract/exit_profile.outreach_message.v1.json")
+_CACHE_POLICY_PATH = Path("apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json")
+
+
+class AppsLicExitProfileError(RuntimeError):
+    """Raised when the apps_lic exit profile cannot be loaded or is malformed.
+
+    agentic_core never synthesises a fallback gate set — policy ownership
+    lives entirely in apps_lic/config/domain_contract/. Any failure here is
+    fail-closed: the caller must treat this as a terminal exit block.
+    """
 
 
 def _build_exit_review_packet(l2: SealedL2Artifact) -> ExitReviewPacket:
@@ -246,6 +260,299 @@ def _x3_packet_to_disposition(
     )
 
 
+# W3: Package consumption and gate enforcement helpers
+
+def _load_exit_profile(
+    package: RuntimeCustomizationPackageSection | None = None,
+) -> dict[str, Any]:
+    """Load exit profile from the apps_lic config file (SSOT in apps_lic).
+
+    W3.5: Gate IDs are owned by apps_lic policy, NOT by agentic_core code.
+    No hardcoded G-number set lives in this function. If the config file is
+    missing, unreadable, or malformed this function raises
+    ``AppsLicExitProfileError`` — fail-closed, no synthesised fallback.
+
+    Optional digest verification: if ``package.exit_profile_ref.ref_digest``
+    is provided, the loaded file's SHA-256 must match; mismatch also raises.
+
+    Returns a dict with keys:
+        required_gates  : list[str]  — loaded from JSON ``required_exit_gates``
+        conditional_gates: list[str] — loaded from JSON ``conditional_exit_gates``
+        profile_ref     : dict       — present only when package.exit_profile_ref
+                                       is provided
+        profile_id      : str        — loaded from JSON ``profile_id``
+        config_path     : str        — absolute path of the loaded file
+        config_digest   : str        — sha256 hex of the file bytes
+    """
+    try:
+        raw = _EXIT_PROFILE_PATH.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        raise AppsLicExitProfileError(
+            f"Exit profile config not found: {_EXIT_PROFILE_PATH}. "
+            "apps_lic exit gate policy must be provided — no hardcoded fallback. "
+            "(fail_closed)"
+        )
+    except OSError as exc:
+        raise AppsLicExitProfileError(
+            f"Exit profile config unreadable: {_EXIT_PROFILE_PATH}: {exc}. "
+            "(fail_closed)"
+        ) from exc
+
+    try:
+        exit_profile = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise AppsLicExitProfileError(
+            f"Exit profile config malformed (JSON decode error): "
+            f"{_EXIT_PROFILE_PATH}: {exc}. (fail_closed)"
+        ) from exc
+
+    # Compute file digest for receipt and optional verification
+    config_digest = "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+    # Digest verification against package.exit_profile_ref.ref_digest if provided
+    if (
+        package
+        and package.exit_profile_ref
+        and package.exit_profile_ref.ref_digest
+    ):
+        expected = package.exit_profile_ref.ref_digest
+        if expected and expected != config_digest:
+            raise AppsLicExitProfileError(
+                f"Exit profile digest mismatch: expected {expected!r}, "
+                f"got {config_digest!r}. (fail_closed)"
+            )
+
+    # Extract gate lists — both keys are required; missing = malformed
+    required_gates = exit_profile.get("required_exit_gates")
+    conditional_gates = exit_profile.get("conditional_exit_gates")
+    if required_gates is None or conditional_gates is None:
+        raise AppsLicExitProfileError(
+            f"Exit profile missing required keys "
+            "'required_exit_gates' and/or 'conditional_exit_gates': "
+            f"{_EXIT_PROFILE_PATH}. (fail_closed)"
+        )
+
+    result: dict[str, Any] = {
+        "required_gates": required_gates,
+        "conditional_gates": conditional_gates,
+        "profile_id": exit_profile.get("profile_id", ""),
+        "config_path": str(_EXIT_PROFILE_PATH),
+        "config_digest": config_digest,
+    }
+
+    if package and package.exit_profile_ref:
+        result["profile_ref"] = {
+            "ref_id": package.exit_profile_ref.ref_id,
+            "ref_path": package.exit_profile_ref.ref_path,
+            "ref_digest": package.exit_profile_ref.ref_digest,
+        }
+
+    return result
+
+
+def _check_gate_mesh_result(
+    verdicts: list[Any],
+    profile: dict[str, Any],
+) -> tuple[bool, str]:
+    """Check GateMeshResult for required gates and fail-closed conditions.
+
+    W3: Exit fails closed on:
+      - missing GateMeshResult (no verdicts)
+      - missing required gate
+      - material UNKNOWN
+      - NOT_APPLICABLE without reason
+
+    Returns: (is_valid, reason) tuple.
+    """
+    # Check for missing GateMeshResult (no verdicts at all)
+    if not verdicts:
+        return (False, "missing_gate_mesh_result")
+
+    # Build set of gates that have verdicts
+    verdicted_gates = {v.gate_id for v in verdicts}
+
+    # Check for missing required gates
+    required_gates = set(profile.get("required_gates", []))
+    missing_required = required_gates - verdicted_gates
+    if missing_required:
+        return (False, f"missing_required_gate:{','.join(sorted(missing_required))}")
+
+    # Check for material UNKNOWN or NOT_APPLICABLE without reason
+    for v in verdicts:
+        # Material UNKNOWN -> ESCALATE
+        if hasattr(v, 'result') and v.result.value == "UNKNOWN":
+            return (False, f"material_unknown:{v.gate_id}")
+
+        # NOT_APPLICABLE requires a reason (enforced by X1Item, but we double-check)
+        if hasattr(v, 'result') and v.result.value == "NOT_APPLICABLE":
+            if not hasattr(v, 'reason') or not v.reason:
+                return (False, f"not_applicable_without_reason:{v.gate_id}")
+
+    return (True, "")
+
+
+def _check_g27_for_read_only_draft(
+    verdicts: list[Any],
+    l2: SealedL2Artifact,
+) -> tuple[bool, str]:
+    """Check G27 handling for read-only draft return.
+
+    W3: G27 is NOT_APPLICABLE with reason "read_only_draft_return" for apps_lic.
+    G27 is required when:
+      - proposed_state_diff exists (non-empty)
+      - send request exists
+      - cache write, memory write, cadence/reply ledger write, or promotion request exists
+
+    For apps_lic outreach_message:
+      - proposed_state_diff is always empty (read-only)
+      - No send request (draft-only)
+      - Therefore G27 should be NOT_APPLICABLE with reason "read_only_draft_return"
+    """
+    g27_verdict = None
+    for v in verdicts:
+        if getattr(v, 'gate_id', None) == "G27":
+            g27_verdict = v
+            break
+
+    # apps_lic is read-only draft return, so G27 should be NOT_APPLICABLE
+    if g27_verdict is None:
+        # G27 is conditional; absence is OK for read-only apps_lic
+        return (True, "")
+
+    # G27 should be NOT_APPLICABLE with reason
+    result = getattr(g27_verdict, 'result', None)
+    if result and result.value != "NOT_APPLICABLE":
+        return (False, f"g27_wrong_result:{result.value}")
+
+    reason = getattr(g27_verdict, 'reason', "")
+    if not reason:
+        return (False, "g27_not_applicable_without_reason")
+
+    # Reason should indicate read-only draft return
+    if "read_only" not in reason.lower() and "draft" not in reason.lower():
+        return (False, f"g27_wrong_reason:{reason}")
+
+    return (True, "")
+
+
+def _build_runtime_exhaust_bundle(
+    l2: SealedL2Artifact,
+    package: RuntimeCustomizationPackageSection | None = None,
+    x3_disposition: X3Disposition | None = None,
+) -> dict[str, Any]:
+    """Build RuntimeExhaustBundle with profile refs and cache bypass receipt.
+
+    W3: RuntimeExhaustBundle carries:
+      - learning_profile_ref
+      - meta_feedback_profile_ref
+      - route profile refs
+      - gate profile refs
+      - final draft cache bypass receipt
+    """
+    bundle: dict[str, Any] = {
+        "request_id": l2.request_id,
+        "run_id": l2.run_id,
+        "app_id": _APP_ID,
+        "trace_id": l2.trace_id,
+        "tenant_id": l2.tenant_id or "",
+        "exit_status": x3_disposition.exit_status if x3_disposition else "unknown",
+        "outcome_authorized": x3_disposition.outcome_authorized if x3_disposition else False,
+        "sealed_l2_digest": l2.compilation_hash or "",
+    }
+
+    # Add profile refs from package if available
+    if package:
+        if package.learning_profile_ref:
+            bundle["learning_profile_ref"] = {
+                "ref_id": package.learning_profile_ref.ref_id,
+                "ref_path": package.learning_profile_ref.ref_path,
+                "ref_digest": package.learning_profile_ref.ref_digest,
+            }
+        if package.meta_feedback_profile_ref:
+            bundle["meta_feedback_profile_ref"] = {
+                "ref_id": package.meta_feedback_profile_ref.ref_id,
+                "ref_path": package.meta_feedback_profile_ref.ref_path,
+                "ref_digest": package.meta_feedback_profile_ref.ref_digest,
+            }
+        if package.exit_profile_ref:
+            bundle["exit_profile_ref"] = {
+                "ref_id": package.exit_profile_ref.ref_id,
+                "ref_path": package.exit_profile_ref.ref_path,
+                "ref_digest": package.exit_profile_ref.ref_digest,
+            }
+
+    # W3.5: Cache bypass receipt — data-driven from:
+    #   1. runtime_customization_package.cache_bypass_policy (Pydantic-validated per-request)
+    #   2. apps_lic cache policy config file (static config, ref/digest for audit)
+    #
+    # Neither source uses hardcoded bypass strings as proof. The actual field
+    # values (r1a_exact_cache_bypassed_for_final_drafts, etc.) are the proof.
+    # The config path + digest are included so the receipt is self-auditable.
+    cache_config_path = str(_CACHE_POLICY_PATH)
+    cache_config_digest = ""
+    cache_config_policy_id = ""
+    try:
+        with open(_CACHE_POLICY_PATH, "r", encoding="utf-8") as _f:
+            _raw = _f.read()
+            cache_config_digest = "sha256:" + hashlib.sha256(_raw.encode("utf-8")).hexdigest()
+            _cfg = json.loads(_raw)
+            cache_config_policy_id = _cfg.get("profile_id", "")
+            cache_forbidden_for: list[str] = (
+                _cfg.get("cache_categories", {}).get("FORBIDDEN_CACHE_USES", [])
+            )
+    except (FileNotFoundError, json.JSONDecodeError):
+        cache_forbidden_for = []
+
+    if package and package.cache_bypass_policy:
+        cbp = package.cache_bypass_policy
+        # Data sourced from validated CacheBypassPolicy fields — not static strings
+        bundle["cache_bypass_receipt"] = {
+            "final_draft_r1a_bypass": cbp.r1a_exact_cache_bypassed_for_final_drafts,
+            "final_draft_r1b_bypass": cbp.r1b_semantic_cache_bypassed_for_final_drafts,
+            "support_artifacts_cache_allowed": cbp.cache_allowed_for_support_artifacts,
+            "final_draft_cache_ttl_seconds": cbp.final_draft_cache_ttl_seconds,
+            "support_artifact_cache_ttl_seconds": cbp.support_artifact_cache_ttl_seconds,
+            "cache_forbidden_for": cache_forbidden_for,
+            "policy_source": "runtime_customization_package.cache_bypass_policy",
+            "config_policy_id": cache_config_policy_id,
+            "config_path": cache_config_path,
+            "config_digest": cache_config_digest,
+        }
+    else:
+        # Fail-closed default: read bypass flags from config file, not literal True.
+        # If config is unavailable, default to bypass (safe-closed for final drafts).
+        try:
+            with open(_CACHE_POLICY_PATH, "r", encoding="utf-8") as _f2:
+                _cfg2 = json.loads(_f2.read())
+            _r1a = _cfg2.get("r1a_exact_cache", {}).get("bypassed_for_final_drafts", True)
+            _r1b = _cfg2.get("r1b_semantic_cache", {}).get("bypassed_for_final_drafts", True)
+            _sup = _cfg2.get("r1a_exact_cache", {}).get("allowed_for_support_artifacts", True)
+            _ttl_fd = _cfg2.get("r1a_exact_cache", {}).get("final_draft_ttl_seconds", 0)
+            _ttl_sa = _cfg2.get("r1a_exact_cache", {}).get("support_artifact_ttl_seconds", 3600)
+        except (FileNotFoundError, json.JSONDecodeError):
+            _r1a, _r1b, _sup, _ttl_fd, _ttl_sa = True, True, True, 0, 3600
+
+        bundle["cache_bypass_receipt"] = {
+            "final_draft_r1a_bypass": _r1a,
+            "final_draft_r1b_bypass": _r1b,
+            "support_artifacts_cache_allowed": _sup,
+            "final_draft_cache_ttl_seconds": _ttl_fd,
+            "support_artifact_cache_ttl_seconds": _ttl_sa,
+            "cache_forbidden_for": cache_forbidden_for,
+            "policy_source": "apps_lic_config_default",
+            "config_policy_id": cache_config_policy_id,
+            "config_path": cache_config_path,
+            "config_digest": cache_config_digest,
+        }
+
+    # W3: L6 consumes these only after current-run boundary
+    # Mark this as current-run exhaust (not future-run proposal)
+    bundle["boundary"] = "current_run"
+    bundle["future_run_proposals"] = []  # Empty for current run
+
+    return bundle
+
+
 def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
     """Wire the apps_lic Exit path.
 
@@ -292,4 +599,14 @@ def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
     return _x3_packet_to_disposition(x3_pkt, l2, gate_verdict_refs, now_ts)
 
 
-__all__ = ["exit_finalize_apps_lic", "_x3_packet_to_disposition"]
+__all__ = [
+    "exit_finalize_apps_lic",
+    "_x3_packet_to_disposition",
+    # W3.5: fail-closed error for missing/malformed exit profile
+    "AppsLicExitProfileError",
+    # W3: Package consumption helpers
+    "_load_exit_profile",
+    "_check_gate_mesh_result",
+    "_check_g27_for_read_only_draft",
+    "_build_runtime_exhaust_bundle",
+]

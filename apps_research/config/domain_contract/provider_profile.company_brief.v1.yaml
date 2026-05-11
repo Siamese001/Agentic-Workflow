@@ -1,0 +1,154 @@
+# Provider Profile for apps_research / company_brief
+#
+# Provider-specific configuration for L2 execution.
+# Defines approved model lanes, fallback policies, and gateway behavior.
+
+profile_id: apps_research_provider_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Approved model lanes (from lowest to highest priority)
+approved_model_lanes:
+  # Primary lane: Qwen 32B AWQ via local vLLM
+  primary:
+    lane_id: research_synthesis_primary
+    provider: local_vllm
+    model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    quantization: awq_marlin
+    
+    capabilities:
+      - json_mode
+      - structured_output
+      - long_context_8k
+    
+    capacity:
+      max_concurrent: 4
+      timeout_seconds: 120
+      
+    reliability:
+      health_check_endpoint: http://localhost:8000/v1/models
+      circuit_breaker_threshold: 3
+      
+  # Fallback lane: Same model with reduced context
+  fallback_1:
+    lane_id: research_synthesis_fallback
+    provider: local_vllm
+    model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    
+    modifications:
+      max_tokens: 2048
+      temperature: 0.2
+      
+  # Emergency fallback: Lower capability but reliable
+  emergency:
+    lane_id: research_synthesis_stub
+    provider: stub_provider
+    model: stub_research_synthesizer
+    
+    trigger_conditions:
+      - all_lanes_unavailable
+      - circuit_breaker_open
+      
+    stub_behavior:
+      emit_placeholder: true
+      include_caveats: true
+
+# Lane selection policy
+lane_selection:
+  strategy: priority_order
+  
+  selection_criteria:
+    - lane_health_status
+    - current_capacity
+    - estimated_latency
+    
+  promotion_rules:
+    promote_on_primary_failure: true
+    promote_to_emergency_after: 2_retries
+
+# Gateway configuration
+gateway:
+  type: generic_approved_lane
+  implementation: provider_gateway_v1
+  
+  request_formatting:
+    method: chat_completions_api
+    message_structure:
+      system: S0+D0+I0+E0+M0 slots
+      user: U0 slot
+      context: C0 slot (marked data_only)
+    
+    response_format:
+      type: json_object
+      schema_binding: strict
+  
+  error_handling:
+    on_provider_error: retry_with_fallback
+    on_timeout: promote_to_next_lane
+    on_invalid_json: attempt_repair
+    on_schema_violation: fail_closed
+  
+  retry_policy:
+    max_attempts_per_lane: 2
+    max_total_attempts: 4
+    backoff: exponential_jitter
+
+# Provider call constraints
+call_constraints:
+  # L2 may only call through generic gateway
+  direct_provider_calls_blocked: true
+  
+  # All calls must go through approved lanes
+  lane_verification_required: true
+  
+  # Call must include full execution context
+  context_preservation_required: true
+  
+  # Response must be validated before return
+  response_validation_required: true
+
+# Capacity management
+capacity:
+  # Local vLLM Docker container
+  local_vllm:
+    max_requests: 4
+    max_tokens_per_minute: 100000
+    queue_policy: fail_fast
+    
+  # Stub provider (always available)
+  stub_provider:
+    max_requests: unlimited
+    always_available: true
+
+# Health monitoring
+health_monitoring:
+  enabled: true
+  
+  checks:
+    - endpoint: http://localhost:8000/v1/models
+      interval_seconds: 30
+      timeout_seconds: 5
+      
+  circuit_breaker:
+    failure_threshold: 3
+    recovery_timeout_seconds: 60
+    
+  metrics_to_emit:
+    - latency_p50
+    - latency_p99
+    - success_rate
+    - token_throughput
+
+# Fallback cascade
+fallback_cascade:
+  level_1: retry_same_lane_with_backoff
+  level_2: promote_to_next_priority_lane
+  level_3: emergency_stub_with_caveats
+  level_4: fail_closed_with_receipt
+
+# Cost/performance tradeoffs (for future budget controls)
+tradeoffs:
+  note: "Local vLLM is fixed cost (GPU rental). No per-token pricing."
+  prioritize: quality_over_speed
+  accept_latency: up_to_30_seconds

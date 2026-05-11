@@ -1,0 +1,106 @@
+# Freshness Policy for apps_research / company_brief
+#
+# App-owned freshness rules and TTL configuration.
+# Consumed by generic C0 binding for evidence freshness evaluation.
+
+policy_id: apps_research_freshness_policy_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Freshness TTL by source type (days)
+freshness_ttl_by_source_type:
+  sec_filings:
+    ttl_days: 90
+    critical_filing_types:
+      - 10-K
+      - 10-Q
+      - 8-K_material_events
+    
+  company_investor_relations:
+    ttl_days: 30
+    
+  press_releases:
+    ttl_days: 14
+    
+  news_articles:
+    ttl_days: 7
+    
+  industry_analysis:
+    ttl_days: 90
+    
+  job_postings:
+    ttl_days: 30
+    
+  patent_filings:
+    ttl_days: 365
+    
+  conference_presentations:
+    ttl_days: 180
+    
+  social_media_company:
+    ttl_days: 7
+    
+  social_media_executive:
+    ttl_days: 14
+
+# Stale behavior by source type
+stale_behavior:
+  sec_filings:
+    when_stale_but_usable: downgrade_confidence
+    when_stale_and_material: block
+    
+  company_investor_relations:
+    when_stale_but_usable: flag_as_dated
+    when_stale_and_material: block
+    
+  news_articles:
+    when_stale_but_usable: exclude_from_current_events
+    when_stale_and_material: block
+    
+  industry_analysis:
+    when_stale_but_usable: flag_as_dated
+    when_stale_and_material: downgrade_confidence
+
+# Required freshness receipts
+required_freshness_receipts:
+  - source_freshness_check
+  - evidence_ttl_verification
+  - stale_source_flagging
+
+# Downgrade behavior
+downgrade_behavior:
+  confidence_reduction_factor: 0.5
+  min_confidence_after_downgrade: 0.3
+  
+  support_status_impact:
+    from_strong_to_pass: true
+    from_pass_to_weak: true
+    from_weak_to_insufficient: true
+
+# Block behavior
+block_behavior:
+  trigger_conditions:
+    - stale_and_material_to_answer
+    - no_alternative_fresh_sources
+    - financial_data_expired
+    - executive_claims_outdated
+  
+  block_message_template: "Evidence source {source_ref} is stale (last updated {date}). Fresh source required for material claim."
+
+# Freshness reporting
+freshness_report_contents:
+  sources_checked: true
+  sources_fresh: true
+  sources_stale: true
+  sources_blocked: true
+  ttl_violations: true
+  downgrade_applications: true
+  
+# Override conditions
+override_conditions:
+  allow_stale_when:
+    - historical_context_explicitly_requested
+    - no_fresh_sources_exist
+    - historical_claim_only
+    - approved_by_policy_override_with_receipt

@@ -1,0 +1,135 @@
+# Retrieval Profile for apps_research / company_brief
+#
+# App-owned retrieval configuration consumed by generic C0 binding.
+# No retrieval logic in core - all policy declared here.
+
+profile_id: apps_research_retrieval_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Depth profile support
+supported_depth_profiles:
+  - shallow
+  - standard
+  - deep
+  - comprehensive
+
+# Query decomposition strategy
+query_decomposition_strategy:
+  type: entity_centric
+  extract:
+    - company_name
+    - industry_sector
+    - key_executives
+    - financial_highlights
+    - recent_news
+    - competitive_position
+  
+# Coverage families
+coverage_families:
+  company_brief_v1:
+    required_evidence_types:
+      - corporate_overview
+      - leadership_profile
+      - financial_summary
+      - market_position
+      - recent_developments
+    
+    optional_evidence_types:
+      - historical_performance
+      - esg_initiatives
+      - partnership_ecosystem
+
+# Source limits by depth
+max_sources_by_depth:
+  shallow: 5
+  standard: 10
+  deep: 20
+  comprehensive: 30
+
+max_chunks_by_depth:
+  shallow: 50
+  standard: 100
+  deep: 200
+  comprehensive: 300
+
+# Source classification
+allowed_source_classes:
+  - tier_1_authoritative
+  - tier_2_credible
+  - tier_3_signal
+
+blocked_source_classes:
+  - tier_4_inferred
+  - unverified_social_media
+  - anonymous_forums
+  - paywalled_without_access
+
+# Metadata filters
+metadata_filters:
+  required:
+    - source_url
+    - retrieval_timestamp
+    - content_type
+  
+  optional:
+    - author_credibility
+    - publication_date
+    - update_frequency
+
+# Graph expansion
+graph_expansion_allowed: true
+graph_expansion_depth: 2
+graph_expansion_sources:
+  - linked_entities
+  - parent_companies
+  - subsidiaries
+  - key_partners
+
+# Contradiction policy
+contradiction_policy:
+  detection: enabled
+  handling: flag_for_review
+  confidence_threshold: 0.7
+  materiality_threshold: high
+
+# Citation requirements
+citation_requirement:
+  every_claim: true
+  source_url_required: true
+  retrieval_timestamp_required: true
+  inline_citations: true
+
+# Support status policy
+support_status_policy:
+  empty_threshold: 0
+  weak_threshold: 3
+  pass_threshold: 7
+  strong_threshold: 10
+  
+  status_values:
+    - EMPTY
+    - WEAK_INSUFFICIENT
+    - WEAK_WITH_CAVEATS
+    - PASS
+    - STRONG
+
+# Evidence quality gates
+evidence_quality_gates:
+  minimum_authoritative_sources: 2
+  minimum_credible_sources: 3
+  maximum_stale_sources_percent: 30
+  
+  required_evidence_coverage:
+    - corporate_overview
+    - leadership_profile
+    - financial_summary
+
+# Retrieval receipts to emit
+retrieval_receipts:
+  - retrieval_plan_receipt
+  - source_register_receipt
+  - evidence_quality_receipt
+  - freshness_receipt
+  - contradiction_receipt

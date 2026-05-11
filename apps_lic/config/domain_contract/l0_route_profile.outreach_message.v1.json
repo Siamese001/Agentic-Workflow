@@ -1,0 +1,56 @@
+{
+  "profile_id": "l0_route_profile.outreach_message.v1",
+  "app_id": "apps_lic",
+  "task_class": "outreach_message",
+  "version": "v1",
+  "routing_model": "final_l0_three_way",
+  "allowed_route_families": [
+    "R4_MANAGED_DRAFT",
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
+    "R5_FALLBACK"
+  ],
+  "forbidden_route_families": [
+    "evidence_grounded_generation",
+    "ungrounded_generation",
+    "R3_grounded_read",
+    "briefing-only",
+    "briefing_only"
+  ],
+  "default_route_family": "R4_MANAGED_DRAFT",
+  "route_selection_rules": {
+    "R4_MANAGED_DRAFT": {
+      "condition": "fresh_valid_context_exists",
+      "description": "Fresh, valid outreach context exists; no apps_research support needed",
+      "path": "U0 -> L1 -> L0 -> R4 -> MANAGED_WORKFLOW -> L3 HOP -> L2 -> Exit",
+      "cache_bypass": "R1A exact and R1B semantic bypassed for final drafts"
+    },
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": {
+      "condition": "research_authorized_for_missing_context",
+      "description": "Fresh context missing/stale/incomplete; research authorized",
+      "path": "U0 -> L1 -> L0 -> R3R4 -> L3 apps_research support -> L3 validates context -> L3 HOP -> L2 -> Exit",
+      "note": "apps_research is support step only, not final output"
+    },
+    "R5_FALLBACK": {
+      "condition": "no_valid_context_and_research_not_authorized",
+      "description": "No valid context; research not authorized; policy/consent/evidence/channel invalid",
+      "path": "U0/L1/L0/L3/L2 failure -> R5 terminal packet -> Exit -> bounded fail-closed / abstain / no-draft outcome",
+      "posture": "fail closed, no draft generated"
+    }
+  },
+  "briefing_only_policy": {
+    "allowed_in_apps_lic": false,
+    "routing_instruction": "Route briefing-only requests to apps_research directly, or reject/fail closed from apps_lic",
+    "reason": "apps_lic only uses research as support for outreach-message generation"
+  },
+  "execution_form_mapping": {
+    "R4_MANAGED_DRAFT": "MANAGED_WORKFLOW",
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": "MANAGED_WORKFLOW",
+    "R5_FALLBACK": "TERMINAL_FALLBACK"
+  },
+  "metadata": {
+    "description": "L0 routing profile for apps_lic outreach_message — FINAL MODEL with R4/R3R4/R5",
+    "author": "agentic_core",
+    "created_at": "2026-05-11",
+    "note": "OLD ROUTE NAMES FORBIDDEN: evidence_grounded_generation, ungrounded_generation, R3_grounded_read, briefing-only"
+  }
+}

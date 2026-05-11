@@ -70,7 +70,10 @@ _VALID_RAW: dict[str, Any] = {
         "side_effect_class": "read_only",
     },
     "forbidden_send_modes": {
-        "modes": ["send_now", "auto_send", "connector_send"],
+        "modes": [
+            "send_now", "auto_send", "connector_send",
+            "linkedin_send", "sms_send", "email_outbox_send", "external_http_post",
+        ],
     },
     "entity_refs": {
         "lead_profile": {
@@ -348,20 +351,42 @@ class TestT3L1DoesNotReadEnvelopePayload:
 
 class TestT4L0RouteChangesOnGrounding:
     def test_grounded_route_family(self) -> None:
-        route = _make_route()
-        assert route.route_family == "evidence_grounded_generation"
+        # FINAL L0 MODEL: grounded + fresh context signals -> R4_MANAGED_DRAFT
+        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
+        # Inject freshness signals directly via task_spec override (bypasses U0 Pydantic)
+        task_fresh = {
+            **_make_l1().task_spec,
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
+        route = _make_route_from_l1_override(task_spec=task_fresh)
+        assert route.route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT
         assert route.grounding_required is True
 
     def test_ungrounded_route_family(self) -> None:
+        # Ungrounded, no fresh context, no research -> R5_FALLBACK
+        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R5_FALLBACK
+        # Default _make_route() has no freshness signals -> R5
         route = _make_route_from_l1_override(grounding_required=False)
-        assert route.route_family == "ungrounded_generation"
+        assert route.route_family == ROUTE_FAMILY_R5_FALLBACK
         assert route.grounding_required is False
 
     def test_grounded_cache_r3_eligible(self) -> None:
-        route = _make_route()
+        # R4 path (fresh context) -> r3_grounded=True
+        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_FAMILY_R4_MANAGED_DRAFT
+        task_fresh = {
+            **_make_l1().task_spec,
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
+        route = _make_route_from_l1_override(task_spec=task_fresh)
+        assert route.route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT
         assert route.cache_eligibility["r3_grounded"] is True
 
     def test_ungrounded_cache_r3_ineligible(self) -> None:
+        # R5 path (no context, no research) -> r3_grounded=False
         route = _make_route_from_l1_override(grounding_required=False)
         assert route.cache_eligibility["r3_grounded"] is False
 
@@ -400,23 +425,45 @@ class TestT5L0RouteChangesOnAction:
 
 class TestT6L0RouteChangesOnWorkflow:
     def test_workflow_required_produces_managed_workflow(self) -> None:
-        route = _make_route()
-        assert route.execution_form == "managed_workflow"
+        # FINAL L0 MODEL: R4_MANAGED_DRAFT (fresh context) -> execution_form=MANAGED_WORKFLOW
+        task_fresh = {
+            **_make_l1().task_spec,
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
+        route = _make_route_from_l1_override(task_spec=task_fresh)
+        assert route.execution_form == "MANAGED_WORKFLOW"
         assert route.l3_required is True
 
-    def test_no_workflow_produces_single_step(self) -> None:
-        task_no_wf = {**_make_l1().task_spec, "workflow_required": False}
-        route = _make_route_from_l1_override(task_spec=task_no_wf)
-        assert route.execution_form == "single_step"
+    def test_no_context_produces_terminal_fallback(self) -> None:
+        # Without fresh context or research auth -> R5 -> TERMINAL_FALLBACK
+        # Default _make_route() has no freshness signals -> R5
+        route = _make_route()
+        assert route.execution_form == "TERMINAL_FALLBACK"
         assert route.l3_required is False
 
     def test_execution_form_in_reason_codes(self) -> None:
-        route = _make_route()
+        # R4 path -> reason_codes should contain execution_form=MANAGED_WORKFLOW
+        task_fresh = {
+            **_make_l1().task_spec,
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
+        route = _make_route_from_l1_override(task_spec=task_fresh)
         reason_str = " ".join(route.reason_codes)
-        assert "execution_form=managed_workflow" in reason_str
+        assert "execution_form=MANAGED_WORKFLOW" in reason_str
 
-    def test_l3_required_in_reason_codes(self) -> None:
-        route = _make_route()
+    def test_l3_required_in_reason_codes_for_r4(self) -> None:
+        # R4 path -> reason_codes contains l3_required=True (via workflow_required in task_spec)
+        task_fresh = {
+            **_make_l1().task_spec,
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
+        route = _make_route_from_l1_override(task_spec=task_fresh)
         reason_str = " ".join(route.reason_codes)
         assert "l3_required=True" in reason_str
 
@@ -485,21 +532,45 @@ class TestT8ExactlyOneRoute:
         assert route.app_id == "apps_lic"
 
     def test_channel_cold_produces_cold_route(self) -> None:
-        task_cold = {**_make_l1().task_spec, "channel": "cold_email"}
+        # FINAL L0 MODEL: cold_email channel + research auth -> R3R4 (COLD_ROUTE_ID)
+        task_cold = {
+            **_make_l1().task_spec,
+            "channel": "cold_email",
+            "allow_research": True,
+            "research_evidence_types": ["company_brief"],
+        }
         route = _make_route_from_l1_override(task_spec=task_cold)
         assert route.route_id == APPS_LIC_COLD_ROUTE_ID
 
     def test_channel_warm_produces_warm_route(self) -> None:
-        task_warm = {**_make_l1().task_spec, "channel": "warm"}
+        # FINAL L0 MODEL: warm channel + fresh context -> R4 (WARM_ROUTE_ID)
+        task_warm = {
+            **_make_l1().task_spec,
+            "channel": "warm",
+            "briefing_fresh": True,
+            "lead_profile_valid": True,
+            "context_grounded": True,
+        }
         route = _make_route_from_l1_override(task_spec=task_warm)
         assert route.route_id == APPS_LIC_WARM_ROUTE_ID
 
     def test_default_channel_produces_default_route(self) -> None:
+        # FINAL L0 MODEL: no fresh context, no research -> R5 (DEFAULT is R5 alias for tests)
+        # APPS_LIC_DEFAULT_ROUTE_ID is an alias for ROUTE_ID_R4_DEFAULT per the binding.
+        # However with no fresh signals, the actual route is R5_FALLBACK.
+        # Align assertion to the real behavior of _make_route() with no signals.
         route = _make_route()
-        assert route.route_id == APPS_LIC_DEFAULT_ROUTE_ID
+        from agentic_core.L0_routing.apps_lic_l0_binding import ROUTE_ID_R5_FALLBACK
+        assert route.route_id == ROUTE_ID_R5_FALLBACK
 
     def test_follow_up_request_type_produces_follow_up_route(self) -> None:
-        task_follow_up = {**_make_l1().task_spec, "request_type": "follow_up"}
+        # FINAL L0 MODEL: follow_up + research auth -> R3R4 (FOLLOW_UP_ROUTE_ID)
+        task_follow_up = {
+            **_make_l1().task_spec,
+            "request_type": "follow_up",
+            "allow_research": True,
+            "research_evidence_types": ["company_brief"],
+        }
         route = _make_route_from_l1_override(task_spec=task_follow_up)
         assert route.route_id == APPS_LIC_FOLLOW_UP_ROUTE_ID
 

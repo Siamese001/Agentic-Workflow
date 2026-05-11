@@ -1,0 +1,53 @@
+{
+  "profile_id": "final_draft_cache_policy.outreach_message.v1",
+  "app_id": "apps_lic",
+  "task_class": "outreach_message",
+  "version": "v1",
+  "cache_policy": "bypass_for_final_drafts",
+  "r1a_exact_cache": {
+    "bypassed_for_final_drafts": true,
+    "allowed_for_support_artifacts": true,
+    "final_draft_ttl_seconds": 0,
+    "support_artifact_ttl_seconds": 3600
+  },
+  "r1b_semantic_cache": {
+    "bypassed_for_final_drafts": true,
+    "allowed_for_support_artifacts": true,
+    "final_draft_ttl_seconds": 0,
+    "support_artifact_ttl_seconds": 3600
+  },
+  "cache_categories": {
+    "FORBIDDEN_CACHE_USES": [
+      "final_outreach_message",
+      "personalized_opening",
+      "cta_call_to_action",
+      "recipient_specific_claim",
+      "consent_dependent_language",
+      "channel_rendered_final_copy"
+    ],
+    "ALLOWED_CACHE_USES": [
+      "verified_company_briefing",
+      "public_company_facts",
+      "retrieval_manifests",
+      "consent_compliance_evidence",
+      "approved_prompt_profile_refs",
+      "policy_rubric_threshold_refs"
+    ]
+  },
+  "cache_invalidation_triggers": [
+    "new_campaign_config",
+    "profile_update",
+    "consent_change",
+    "compliance_policy_update"
+  ],
+  "enforcement": {
+    "fail_closed_on_cache_violation": true,
+    "audit_cache_decisions": true
+  },
+  "metadata": {
+    "description": "Cache bypass policy for apps_lic outreach_message final drafts",
+    "author": "agentic_core",
+    "created_at": "2026-05-11",
+    "note": "R1A exact and R1B semantic cache BYPASSED for final drafts — no reuse of personalized outreach"
+  }
+}

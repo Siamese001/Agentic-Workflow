@@ -1,0 +1,153 @@
+# L2 Execution Profile for apps_research / company_brief
+#
+# App-owned L2 execution configuration consumed by generic L2 binding.
+# No execution logic in core - all policy declared here.
+
+profile_id: apps_research_l2_execution_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Execution bounds
+execution_bounds:
+  max_attempts: 3
+  same_authority_repair_allowed: true
+  cross_authority_repair_blocked: true
+  max_repair_iterations: 2
+
+# Provider lane assignment
+provider_lane:
+  default: research_synthesis
+  allowed_lanes:
+    - research_synthesis
+    - company_brief_v1
+  blocked_lanes:
+    - creative_writing
+    - code_generation
+    - open_ended_chat
+
+# Model constraints
+model_constraints:
+  max_tokens: 4096
+  temperature: 0.3
+  top_p: 0.9
+  response_format: json_object
+  schema_enforcement: strict
+
+# Output validation
+output_validation:
+  schema_validation: required
+  required_fields:
+    - company_name
+    - synthesis_timestamp
+    - executive_summary
+    - support_status
+  field_type_checking: strict
+  citation_validation: required
+
+# Repair policy
+repair_policy:
+  trigger_conditions:
+    - schema_validation_failure
+    - required_field_missing
+    - invalid_json
+    - citation_format_error
+  
+  repair_strategy: same_authority_rewrite
+  
+  repair_hints_template: repair_hints_v1
+  
+  max_repair_attempts: 2
+  
+  escalate_after_max: true
+
+# State diffusion (inert only)
+state_diffusion:
+  allowed: false
+  proposed_state_diff_emission: inert_only
+  
+  inert_diffs_only:
+    - metadata_updates
+    - session_annotations
+    - non_actionable_observations
+  
+  blocked:
+    - cache_writes
+    - vector_store_updates
+    - l4_state_changes
+    - learning_updates
+
+# Execution artifacts to emit
+execution_artifacts:
+  required:
+    - SealedL2Artifact
+    - ExecutionValidationReceipt
+    - AttemptReceipt
+  
+  optional:
+    - HealReceipt (if repair performed)
+    - FrozenExecutionContext (for replay)
+
+# Provider gateway configuration
+provider_gateway:
+  gateway_type: generic_approved_lane
+  
+  routing:
+    method: lane_based
+    lane_resolver: static_profile
+  
+  fallback:
+    on_lane_unavailable: fail_closed
+    on_model_error: retry_with_backoff
+    on_timeout: fail_closed
+  
+  timeout_seconds: 120
+  
+  retry_policy:
+    max_retries: 2
+    backoff_strategy: exponential
+    initial_delay_ms: 1000
+
+# Execution context preservation
+context_preservation:
+  preserve_evidence_digest: true
+  preserve_prompt_hash: true
+  preserve_route_context: true
+  preserve_support_status: true
+
+# Safety constraints
+safety_constraints:
+  instruction_data_airlock: required
+  authority_preservation: strict
+  evidence_data_boundary: EVIDENCE_DATA_ONLY
+  
+  blocked_operations:
+    - retrieval
+    - c0_reentry
+    - routing_decisions
+    - prompt_reassembly
+    - cache_writes
+    - vector_store_writes
+    - l4_writes
+    - x3_emission
+    - learning_updates
+
+# Sealed artifact requirements
+sealed_artifact:
+  include_full_prompt_envelope: true
+  include_evidence_digest: true
+  include_output_schema_ref: true
+  include_validation_receipts: true
+  include_execution_timestamp: true
+  include_model_metadata: true
+  
+  signing:
+    algorithm: sha256
+    include_attempt_hashes: true
+
+# Completion criteria
+completion_criteria:
+  valid_output_produced: required
+  schema_compliance_verified: required
+  citations_present: required
+  support_status_accurate: required

@@ -1,0 +1,156 @@
+# Uploaded Briefing Normalization Policy for apps_research
+#
+# App-owned rules for handling uploaded briefings as evidence data only.
+# Prevents instruction smuggling and maintains data boundary.
+
+policy_id: apps_research_uploaded_briefing_normalization_v1
+app_id: apps_research
+schema_version: "1.0"
+
+# Data boundary label
+# CRITICAL: All uploaded content is marked as EVIDENCE_DATA_ONLY
+# This prevents the content from being treated as instructions
+data_boundary_label: EVIDENCE_DATA_ONLY
+
+# Provenance requirements
+provenance_required:
+  source_origin: true
+  uploader_identity: true
+  upload_timestamp: true
+  original_filename: true
+  file_hash: true
+  
+# ACL requirements
+acl_required:
+  owner_read: true
+  tenant_isolated: true
+  cross_tenant_reuse_blocked: true
+  
+# Security scanning
+security_scan:
+  injection_scan: required
+  injection_patterns_to_detect:
+    - instruction_override_attempts
+    - prompt_injection_markers
+    - system_prompt_leakage_attempts
+    - jailbreak_patterns
+    - role_confusion_attacks
+  
+  action_on_injection_detected: block_and_quarantine
+  
+# Source labeling
+source_labeling:
+  label_as: UPLOADED_EVIDENCE_BRIEFING
+  provenance_chain_required: true
+  
+  metadata_to_extract:
+    - original_author
+    - original_date
+    - original_source
+    - claimed_coverage_scope
+
+# Claim extraction
+claim_extraction:
+  enabled: true
+  extract_factual_claims: true
+  extract_attributions: true
+  
+  claim_types_to_extract:
+    - company_facts
+    - financial_figures
+    - executive_statements
+    - strategic_initiatives
+    - market_claims
+
+# Citation gap tagging
+citation_gap_tagging:
+  enabled: true
+  
+  tag_when:
+    - claim_without_source
+    - figure_without_audit_trail
+    - quote_without_attribution
+    - assertion_without_evidence
+  
+  gap_types:
+    - UNSOURCED_CLAIM
+    - UNSOURCED_FINANCIAL
+    - UNSOURCED_QUOTE
+    - UNSOURCED_ASSERTION
+
+# Contradiction scan
+contradiction_scan:
+  enabled: true
+  
+  scan_against:
+    - retrieved_evidence
+    - other_uploaded_briefings
+    - known_facts_database
+  
+  contradiction_types:
+    - direct_factual_conflict
+    - numerical_discrepancy
+    - temporal_inconsistency
+    - attribution_mismatch
+
+# Blocking conditions
+blocking_conditions:
+  block_when:
+    - instruction_smuggling_detected
+    - provenance_unknown
+    - acl_cross_tenant
+    - injection_patterns_found
+    - malware_detected
+    - encrypted_content_unreadable
+    - corrupted_file
+  
+  block_message: "Uploaded briefing blocked: {reason}. Briefing does not meet evidence ingestion requirements."
+
+# Normalization output
+normalization_output:
+  evidence_data_only: true
+  instruction_boundary_enforced: true
+  
+  output_artifacts:
+    - normalized_evidence_chunks
+    - claim_register
+    - citation_gap_report
+    - contradiction_flags
+    - provenance_receipt
+    - security_scan_receipt
+
+# Data boundary enforcement
+data_boundary_enforcement:
+  # CRITICAL: Uploaded content NEVER crosses from evidence to instruction space
+  
+  allowed_uses:
+    - evidence_for_grounding
+    - fact_verification_target
+    - claim_extraction_source
+    - contradiction_detection_target
+  
+  blocked_uses:
+    - prompt_instruction
+    - system_prompt_override
+    - behavior_modification
+    - role_definition
+    - output_format_instruction
+    - reasoning_procedure_instruction
+  
+  enforcement_mechanism:
+    - data_boundary_label_embedding
+    - retrieval_only_access
+    - no_prompt_assembly_inclusion
+
+# Quarantine for suspicious content
+quarantine_policy:
+  quarantine_when:
+    - injection_detected
+    - provenance_fraud_suspected
+    - cross_tenant_acl_violation
+  
+  quarantine_actions:
+    - isolate_from_retrieval_pool
+    - flag_for_security_review
+    - preserve_for_forensics
+    - block_all_access_pending_review

@@ -1,0 +1,38 @@
+# Skills block section prompt profile — W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::skills_block::v1"
+node_id: skills_block
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+
+slot_requirements:
+  required: [S0, I0, C0, U0, D0, R0]
+  optional: []
+
+template_ref: null
+template_inline_note: >
+  Skills block is assembled deterministically by extracting candidate_profile.skills
+  and intersecting with ATS keyword list from ats_keyword_kb. No free-form LLM generation.
+  Skills are sorted by relevance to target_role_spec (keyword match score descending).
+
+input_refs:
+  - "candidate_profile.skills"
+  - "ats_keywords (from ats_keyword_kb_ro)"
+  - "target_role_spec.required_skills"
+  - "target_role_spec.preferred_skills"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#skills_block"
+
+required_evidence_refs:
+  - "candidate_profile.skills (skills MUST be a subset of this list — no additions)"
+
+prompt_boundary_rules:
+  - "skills_block MUST be a strict subset of candidate_profile.skills (case-insensitive)"
+  - "no fabricated skills (skills not in candidate_profile are FORBIDDEN)"
+  - "ATS keyword alignment allowed only to reorder or select from existing profile skills"
+  - "no inferred skills from job descriptions"
+
+examples_ref: null

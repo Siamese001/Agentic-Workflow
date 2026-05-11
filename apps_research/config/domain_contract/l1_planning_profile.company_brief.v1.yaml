@@ -1,0 +1,101 @@
+# L1 Planning Profile for apps_research / company_brief task
+#
+# App-owned configuration for L1 planning hints.
+# Core L1 consumes this profile to emit generic hints.
+# No app-specific logic in core.
+
+profile_id: apps_research_l1_planning_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Source scope configuration
+source_scope:
+  allowed_sources:
+    - tavily
+    - manual_brief
+    - company_website
+  default_sources:
+    - tavily
+    - manual_brief
+    - company_website
+
+# Freshness configuration  
+freshness_profile:
+  default_window: "30d"
+  allowed_windows:
+    - "7d"
+    - "30d"
+    - "90d"
+    - "1y"
+
+# Coverage family
+coverage_family:
+  default: "company_brief_v1"
+  allowed:
+    - "company_brief_v1"
+    - "executive_summary_v1"
+
+# Cache hints
+cache_hints:
+  r1a_exact_cache_candidate: true
+  r1b_semantic_cache_candidate: true
+  semantic_cache_policy: "research_substrate_only"
+
+# Execution hints
+execution_hints:
+  grounding_required: true
+  prompt_assembly_required: true
+  writeback_candidate: false
+  read_only: true
+
+# Delegation hints
+delegation_hints:
+  cross_app_reuse_candidate: true
+  reuse_policy: "delegated_only"
+  allowed_consumers:
+    - apps_rg
+    - apps_lic
+    - apps_rfp
+
+# Context detection hints
+context_hints:
+  uploaded_briefing_present: detect_from_payload
+  jd_context_present: false  # Pure research has no JD
+  role_context_present: detect_target_role_from_payload
+
+# HITL hints
+hitl_hints:
+  required_for_ambiguous_entities: true
+  required_for_missing_target_company: true
+
+# Risk hints
+risk_hints:
+  entity_ambiguity_risk: high
+  auto_injection_risk: medium
+  delegation_context_risk: low
+
+# Advisory hints to emit (these become L1PlanContract.app_hints)
+advisory_hints:
+  - company_entity_hint
+  - entity_aliases_hint
+  - entity_ambiguity_hint
+  - task_class_hint
+  - downstream_consumer_hint
+  - caller_app_id_hint
+  - depth_profile_hint
+  - source_scope_hint
+  - freshness_profile_hint
+  - coverage_family_hint
+  - cache_lookup_candidate_hint
+  - semantic_cache_candidate_hint
+  - grounding_required_hint
+  - prompt_assembly_required_hint
+  - uploaded_briefing_present_hint
+  - jd_context_present_hint
+  - role_context_present_hint
+  - cross_app_reuse_candidate_hint
+  - writeback_candidate_hint
+  - hitl_hint
+  - risk_hint
+  - runtime_package_origin_hint

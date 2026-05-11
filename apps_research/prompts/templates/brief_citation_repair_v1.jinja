@@ -1,0 +1,37 @@
+{# Brief Citation Repair Template v1 for apps_research #}
+{# Used when citation gaps are detected in brief drafts #}
+
+## Citation Repair Task
+
+The brief draft below has been flagged for citation gaps. Your task is to:
+1. Identify all factual claims lacking proper citations
+2. Match claims to available evidence sources
+3. Add appropriate [Source: X] citations
+4. Flag any claims that cannot be verified
+
+## Original Brief Draft
+
+{{ brief_draft }}
+
+## Available Evidence Sources
+
+{{ source_register }}
+
+## Repair Guidelines
+
+1. **Cite Every Claim**: Every factual statement should have a source citation.
+2. **Use Source IDs**: Format citations as [Source: source_id] matching the source_register.
+3. **Flag Unverifiable Claims**: If a claim cannot be verified against available evidence, mark it as [UNVERIFIED].
+4. **Add Missing Sources**: If a claim references a source not in the register, add it with proper metadata.
+5. **Preserve Content**: Do not change the substance of claims, only add citations.
+
+## Output Format
+
+Return the repaired brief with:
+- All citations in [Source: X] format
+- [UNVERIFIED] markers where appropriate
+- A summary of citation repairs made
+
+## Citation Gap Analysis
+
+{{ citation_gap_report }}

@@ -1,0 +1,46 @@
+# Runtime Package Registry for apps_research
+# 
+# App-owned registry for resolving default runtime customization packages.
+# Core agentic_core does not hardcode these values - they are loaded from this registry.
+
+app_id: apps_research
+schema_version: "1.0"
+
+# Default packages by task class
+default_packages:
+  company_brief:
+    # Reference to app-owned package config
+    package_ref: apps_research/config/domain_contract/runtime_customization_package.company_brief.v1.yaml
+    schema_ref: apps_research/config/domain_contract/runtime_customization_package.company_brief.v1.json
+    
+    # Auto-injection eligibility
+    auto_injection_allowed_for:
+      - direct_apps_research
+    
+    auto_injection_blocked_for:
+      - delegated_apps_rg_without_context
+      - delegated_apps_lic_without_context
+    
+    # Delegation context requirements
+    delegation_requirements:
+      requires_explicit_package: true
+      allowed_caller_apps:
+        - apps_rg
+        - apps_lic
+      required_context_fields:
+        - caller_app_id
+        - delegation_purpose
+
+# Package resolution rules
+resolution_rules:
+  # For direct calls, auto-inject if missing
+  direct_call_default: company_brief
+  
+  # For delegated calls, require explicit package
+  delegated_call_requires_explicit: true
+
+# Registry metadata
+registry_metadata:
+  maintainer: apps_research
+  last_updated: "2026-05-11"
+  version: "1.0.0"

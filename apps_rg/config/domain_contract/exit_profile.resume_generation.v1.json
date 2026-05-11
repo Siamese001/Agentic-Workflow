@@ -1,0 +1,205 @@
+{
+  "_comment": "apps_rg Exit profile — W3, plan apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2",
+  "_governance": "Declarative data only. Exit owns X3 disposition. UWG owns durable write admission.",
+  "exit_profile_id": "xp::apps_rg::resume_generation::v1",
+  "app_id": "apps_rg",
+  "task_class": "resume_generation",
+  "version": "1.0.0",
+  "status": "active",
+  "created_at": "2026-05-11",
+  "source_refs": [
+    "apps_rg/config/domain_contract/output_schema.yaml",
+    "apps_rg/config/domain_contract/eval_rubrics.yaml",
+    "apps_rg/config/domain_contract/threshold_profiles.yaml",
+    "apps_rg/config/domain_contract/grader_roster.yaml",
+    "apps_rg/config/domain_contract/rubric_output_map.yaml",
+    "apps_rg/config/domain_contract/runtime_gate_profile.resume_generation.v1.json"
+  ],
+
+  "required_exit_gates": ["G21", "G22", "G23", "G24", "G26", "G28"],
+  "conditional_exit_gates": ["G25", "G27"],
+
+  "gate_definitions": {
+
+    "G21": {
+      "gate_name": "output_schema_validation",
+      "description": "Full output schema validation against aos::apps_rg::resume_generation::v1",
+      "authority": "deterministic",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "schema_ref": "apps_rg/config/domain_contract/output_schema.yaml",
+      "required_sections": [
+        "header_block",
+        "professional_summary",
+        "experience_block",
+        "skills_block",
+        "education_block"
+      ],
+      "hard_fail_conditions": [
+        "missing required section (any of required_sections absent)",
+        "malformed structured record (field type mismatch or null in non-nullable field)",
+        "experience entry without candidate_profile trace (employer+title+date_range not in candidate_profile.experiences)",
+        "skill not in candidate_profile.skills (case-insensitive)",
+        "education entry not in candidate_profile.education (institution + degree mismatch)",
+        "invalid or untraceable date range (not ISO-8601 YYYY-MM or 'present')",
+        "unsupported metric (metric in achievements not referenced by a profile evidence_id)",
+        "fabricated employer (employer not in candidate_profile.experiences[].employer)",
+        "fabricated title (title not in candidate_profile.experiences[].title or normalized progression)",
+        "fabricated degree (degree not in candidate_profile.education[].degree)",
+        "fabricated publication or authorship claim",
+        "self_disclosed_sensitive_attribute_inserted_by_generator"
+      ]
+    },
+
+    "G22": {
+      "gate_name": "quality_gate",
+      "description": "Weighted rubric score check against threshold_profiles",
+      "authority": "hybrid",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "rubric_ref": "aer::apps_rg::resume_generation::v1",
+      "threshold_profile_ref": "atp::apps_rg::resume_generation::v1",
+      "grader_roster_ref": "agr::apps_rg::resume_generation::v1",
+      "rubric_output_map_ref": "apps_rg/config/domain_contract/rubric_output_map.yaml",
+      "dimension_thresholds": {
+        "overall_pass_threshold": 0.75,
+        "factual_grounding": 0.95,
+        "role_alignment": 0.65,
+        "ats_readability": 0.80,
+        "specificity": 0.55,
+        "concision": 0.60,
+        "format_compliance": 0.95,
+        "no_fabrication": 0.99,
+        "executive_positioning": {
+          "threshold": 0.0,
+          "informational_only_by_default": true,
+          "note": "executive_positioning is tracked but not gated unless explicit policy activates it; see eval_rubrics.yaml informational_only field"
+        }
+      },
+      "enforcement": {
+        "overall": "pass if weighted_score >= 0.75 AND all non-zero dimension_minimums met",
+        "per_dim": "fail hard if any non-zero dimension_minimum is breached",
+        "unknown_score": "fail_closed per atp::apps_rg::resume_generation::v1 unknown_policy"
+      }
+    },
+
+    "G23": {
+      "gate_name": "leakage_gate",
+      "description": "Prompt, credential, PII, cross-tenant leakage scan on output",
+      "authority": "deterministic",
+      "severity": "hard_fail",
+      "evidence_required": false,
+      "hard_fail_conditions": [
+        "prompt leakage (system prompt text or slot labels in output)",
+        "system instruction leakage (governance, authority, or boundary instructions visible in output)",
+        "credential or secret leakage (API key, token, password, env var in output)",
+        "cross-tenant data leakage (data from another tenant's profile in output)",
+        "unauthorized PII (PII not in candidate_profile inserted by generator)",
+        "generated sensitive attribute insertion (protected class, health, religion, etc.)",
+        "instruction to fabricate present in output",
+        "instruction to omit evidence or provenance present in output"
+      ]
+    },
+
+    "G24": {
+      "gate_name": "replay_and_provenance",
+      "description": "Provenance completeness — full chain sealed before X3",
+      "authority": "deterministic",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "required_provenance_fields": [
+        "request_id",
+        "run_id",
+        "trace_root",
+        "replay_key",
+        "resume_candidate_profile_hash",
+        "jd_hash",
+        "target_role_spec_hash",
+        "prompt_profile_ref",
+        "output_schema_ref",
+        "rubric_ref",
+        "threshold_profile_ref",
+        "grader_roster_ref",
+        "route_contract_ref",
+        "workflow_manifest_ref",
+        "sealed_section_artifact_refs",
+        "sealed_workflow_artifact_ref",
+        "output_artifact_digest"
+      ]
+    },
+
+    "G25": {
+      "gate_name": "hitl_escalation",
+      "description": "HITL escalation — conditional on anomaly signals",
+      "authority": "runtime_policy",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "conditional": true,
+      "condition_ref": "apps_rg/config/domain_contract/runtime_gate_profile.resume_generation.v1.json#conditional_gate_triggers.G25",
+      "trigger_conditions": [
+        "runtime anomaly detected",
+        "judge disagreement: role_alignment hybrid score vs deterministic differ by > 0.25",
+        "schema repair loop exceeded 2 iterations",
+        "hallucination or fabrication signal: no_fabrication_score < 0.90 on any candidate",
+        "output length anomaly: rendered word count > 1.5x length_preference",
+        "missing required section after final_render",
+        "unsupported_claim spike: > 3 unsupported claims in winning candidate"
+      ]
+    },
+
+    "G26": {
+      "gate_name": "hallucination_audit",
+      "description": "Hard guardrail: no_fabrication score must be >= 0.99",
+      "authority": "deterministic",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "grader_ref": "rg::no_fabrication_guardrail::v1",
+      "threshold": 0.99,
+      "enforcement": "strict_pass_fail — no partial credit"
+    },
+
+    "G27": {
+      "gate_name": "durable_write_admission",
+      "description": "UWG write admission — required only when durable writes requested",
+      "authority": "uwg",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "conditional": true,
+      "default_verdict": "NOT_APPLICABLE",
+      "default_reason": "apps_rg resume generation produces user-visible artifacts only (artifacts/apps_rg/); no durable state writes beyond sandbox are required by this execution form. Set to NOT_APPLICABLE with this reason unless durable writes are explicitly requested.",
+      "trigger_conditions": [
+        "proposed_state_diff to any persistent store",
+        "R1A cache write",
+        "memory write (episodic or procedural)",
+        "prompt/rubric/policy/registry promotion via UWG",
+        "evidence/index writeback",
+        "durable artifact commit outside artifacts/apps_rg/ sandbox"
+      ]
+    },
+
+    "G28": {
+      "gate_name": "audit_trace_completeness",
+      "description": "Audit / Trace completeness — material audit refs required; optional observability refs produce WARN only",
+      "authority": "audit",
+      "severity": "hard_fail",
+      "evidence_required": true,
+      "required_audit_refs": [
+        "request_id",
+        "run_id",
+        "trace_root",
+        "route_contract_ref",
+        "workflow_ref",
+        "sealed_workflow_package_ref",
+        "gate_mesh_result_ref",
+        "decisive_reason"
+      ],
+      "optional_observability_refs": [
+        "otel_trace_id",
+        "otel_span_id",
+        "exhaust_bundle_ref",
+        "replay_key"
+      ],
+      "note": "PASS when all required_audit_refs present. WARN when required pass but optional_observability_refs missing. UNKNOWN/FAIL when required_audit_refs missing."
+    }
+  }
+}

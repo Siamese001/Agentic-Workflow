@@ -9,12 +9,22 @@
     ],
     "pre_run_command": [
       {
+        "command": "python tools/governance/receipt_required_guard.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
+      {
         "command": "python .windsurf/scripts/pre_run_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
       }
     ],
     "pre_write_code": [
+      {
+        "command": "python tools/governance/core_write_guard.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
       {
         "command": "python .windsurf/scripts/pre_author_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
@@ -127,6 +137,11 @@
         "show_output": true
       },
       {
+        "command": "python tools/governance/core_leakage_scan.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
+      {
         "command": "python .windsurf/scripts/post_write_mcp_config_sync.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
@@ -159,6 +174,11 @@
     "post_cascade_response": [
       {
         "command": "python .windsurf/scripts/post_cascade_heartbeat.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": true
+      },
+      {
+        "command": "python tools/governance/app_runtime_package_scan.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
       },

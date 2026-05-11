@@ -17,15 +17,17 @@ REMOVED imports (QUARANTINED):
 - REMOVED: All apps_rg/cert/*, All apps_rg/enforcement/*, All apps_rg/validators/*
 
 See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19
+
+W7 CLEANUP (2026-05-11): Removed 4 dead Wave-10 imports that raised ModuleNotFoundError:
+- REMOVED: CampaignBalanceAgent (file deleted Wave 10)
+- REMOVED: DeliverabilityAgent (file deleted Wave 10)
+- REMOVED: Hop1ProfileAnalysisAgent (file deleted Wave 10)
+- REMOVED: Hop2ResearchAgent (file deleted Wave 10)
+Retained 3 live agents still present in apps_lic/reasoning/.
 """
 
 # AG-RGGOV-9: apps_lic imports preserved (different app, out of scope)
-from apps_lic.reasoning.CampaignBalanceAgent import (
-    CampaignBalanceAgent as LicCampaignBalanceAgent,  # noqa: F401
-)
-from apps_lic.reasoning.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
-from apps_lic.reasoning.Hop1ProfileAnalysisAgent import Hop1ProfileAnalysisAgent  # noqa: F401
-from apps_lic.reasoning.Hop2ResearchAgent import Hop2ResearchAgent  # noqa: F401
+# Only agents confirmed present in apps_lic/reasoning/ as of W7 cleanup.
 from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
 from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator  # noqa: F401
 from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
@@ -34,12 +36,8 @@ from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F4
 # No apps_rg symbols may be exported from core aliases
 
 __all__ = [
-    # apps_lic exports preserved
-    "LicCampaignBalanceAgent",
-    "DeliverabilityAgent",
+    # apps_lic exports — live agents only (W7 cleanup removed deleted Wave-10 agents)
     "GovernanceShieldAgent",
-    "Hop1ProfileAnalysisAgent",
-    "Hop2ResearchAgent",
     "LicHealingOrchestrator",
     "LicReflectionAgent",
     # AG-RGGOV-9: All apps_rg exports REMOVED

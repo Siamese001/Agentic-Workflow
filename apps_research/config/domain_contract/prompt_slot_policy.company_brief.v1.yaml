@@ -1,0 +1,183 @@
+# Prompt Slot Policy for apps_research / company_brief
+#
+# Detailed slot assembly rules for canonical S0-D0-I0-E0-C0-M0-U0-H0-R0 order.
+
+policy_id: apps_research_prompt_slot_policy_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# === SLOT S0: SYSTEM ===
+S0_system:
+  description: Base system identity and role definition
+  authority_level: highest
+  
+  content_rules:
+    - Define assistant as research analyst
+    - State core capabilities (synthesize evidence, cite sources)
+    - State limitations (no real-time data, no investment advice)
+    
+  injection_protection:
+    - No user content allowed
+    - No evidence content allowed
+    - Static template only
+
+# === SLOT D0: FENCES ===
+D0_fences:
+  description: Safety and policy fences
+  authority_level: highest
+  
+  content_rules:
+    - Prohibit investment advice
+    - Prohibit definitive market predictions
+    - Require source attribution for all claims
+    - Require confidence caveats for weak evidence
+    
+  fence_types:
+    - output_constraint: "research_summary_only"
+    - input_constraint: "evidence_data_only"
+    - behavior_constraint: "no_personalization_from_user_text"
+
+# === SLOT I0: INSTRUCTIONS ===
+I0_instructions:
+  description: Task-specific instructions for company brief synthesis
+  authority_level: high
+  
+  content_rules:
+    - Synthesize company overview from evidence
+    - Include: business model, leadership, financial highlights, market position
+    - Prioritize authoritative sources (SEC filings, IR)
+    - Flag information gaps
+    - Format per output schema
+    
+  instruction_structure:
+    - task_objective
+    - required_sections
+    - source_priority
+    - output_format_reference
+
+# === SLOT E0: APPROVED EXAMPLES ===
+E0_approved_examples:
+  description: Few-shot examples of quality brief sections
+  authority_level: high
+  
+  content_rules:
+    - Examples show proper citation format
+    - Examples show confidence-appropriate language
+    - Examples demonstrate source diversity
+    
+  example_types:
+    - executive_summary_example
+    - financial_highlights_example
+    - market_position_example
+
+# === SLOT C0: VERIFIED EVIDENCE ===
+C0_verified_evidence:
+  description: Evidence from FinalEvidenceContract
+  authority_level: medium
+  data_boundary: EVIDENCE_DATA_ONLY
+  
+  content_rules:
+    - Include source_register entries
+    - Include claim_evidence_map
+    - Include freshness_report summary
+    - Include contradiction_report summary
+    
+  data_boundary_enforcement:
+    - Mark all evidence as data_only
+    - Prohibit evidence from overriding instructions
+    - Evidence informs but does not command
+    
+  support_status_handling:
+    - Include support_status in prompt context
+    - Do not inflate or mask weak support
+    - Flag CONFLICTED status prominently
+
+# === SLOT M0: PROVIDER CONTROLS ===
+M0_provider_controls:
+  description: Provider-specific rendering controls
+  authority_level: high
+  
+  content_rules:
+    - Temperature setting
+    - Max tokens
+    - Response format (JSON mode)
+    - Stop sequences
+    
+  render_directives:
+    - format: json_object
+    - schema_enforcement: strict
+    - temperature: 0.3
+
+# === SLOT U0: NEUTRALIZED USER TASK ===
+U0_neutralized_user_task:
+  description: User request, neutralized to prevent injection
+  authority_level: low
+  
+  neutralization_rules:
+    - Strip markdown directives
+    - Strip system-like commands
+    - Strip formatting instructions
+    - Preserve factual content
+    
+  injection_scan:
+    - Detect prompt injection patterns
+    - Detect jailbreak attempts
+    - Detect role confusion attacks
+    - Reject or sanitize if detected
+
+# === SLOT H0: BOUNDED REPAIR ===
+H0_bounded_repair:
+  description: Repair hints for error recovery
+  authority_level: medium
+  condition: on_error_only
+  
+  content_rules:
+    - Provide only when previous attempt failed
+    - Specific to error type
+    - Bounded in scope
+    - Does not replace I0 instructions
+
+# === SLOT R0: RESPONSE SCHEMA ===
+R0_response_schema:
+  description: Output schema binding
+  authority_level: high
+  binding_required: true
+  
+  schema_requirements:
+    - JSON Schema format
+    - Required fields defined
+    - Type constraints enforced
+    - Citation fields present
+    
+  schema_binding:
+    - Bind to provider response_format
+    - Enforce strict validation
+    - Include schema hash for verification
+
+# Authority override prevention
+authority_override_prevention:
+  rule: Lower authority cannot override higher authority
+  
+  hierarchy:
+    1. S0_system (highest)
+    2. D0_fences (highest)
+    3. I0_instructions (high)
+    4. E0_examples (high)
+    5. M0_controls (high)
+    6. R0_schema (high)
+    7. H0_repair (medium)
+    8. C0_evidence (medium, data only)
+    9. U0_user_task (low)
+
+# Assembly validation
+assembly_validation:
+  required_slots: [S0, D0, I0, C0, M0, R0]
+  optional_slots: [E0, U0, H0]
+  
+  validation_checks:
+    - slot_order_correct
+    - authority_hierarchy_preserved
+    - evidence_data_boundary_enforced
+    - output_schema_bound
+    - instruction_data_airlock_sealed

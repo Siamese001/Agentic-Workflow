@@ -1,0 +1,115 @@
+# Source Mix Policy for apps_research / company_brief
+#
+# App-owned source tier requirements and diversity rules.
+# Consumed by generic C0 binding for retrieval planning.
+
+policy_id: apps_research_source_mix_policy_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Source tier definitions
+tier_definitions:
+  tier_1_authoritative:
+    description: Official company sources, regulatory filings, audited financials
+    examples:
+      - SEC filings (10-K, 10-Q, 8-K)
+      - Company investor relations
+      - Official press releases
+      - Regulatory disclosures
+    
+    trust_score: 1.0
+    max_age_days: 90
+    required_citations: true
+    
+  tier_2_credible:
+    description: Established business news, reputable industry analysis
+    examples:
+      - Bloomberg
+      - Reuters
+      - Wall Street Journal
+      - Financial Times
+      - Industry analyst reports (Gartner, Forrester)
+    
+    trust_score: 0.8
+    max_age_days: 30
+    required_citations: true
+    
+  tier_3_signal:
+    description: Secondary signals, aggregated data, job postings
+    examples:
+      - LinkedIn company updates
+      - Job posting aggregators
+      - Patent filings
+      - Conference presentations
+    
+    trust_score: 0.5
+    max_age_days: 14
+    required_citations: true
+    usage_limit: supplemental_only
+    
+  tier_4_inferred:
+    description: Inferred or speculative information
+    blocked_by_default: true
+    allowed_only_when:
+      - explicitly_flagged_as_inference
+      - no_tier_1_2_3_available
+      - low_confidence_claim_only
+
+# Minimum tier counts by depth profile
+minimum_tier_counts:
+  shallow:
+    tier_1_authoritative: 2
+    tier_2_credible: 2
+    tier_3_signal: 0
+    
+  standard:
+    tier_1_authoritative: 3
+    tier_2_credible: 4
+    tier_3_signal: 2
+    
+  deep:
+    tier_1_authoritative: 5
+    tier_2_credible: 6
+    tier_3_signal: 3
+    
+  comprehensive:
+    tier_1_authoritative: 7
+    tier_2_credible: 8
+    tier_3_signal: 5
+
+# Source diversity requirements
+diversity_requirements:
+  min_unique_domains: 3
+  max_content_from_single_source_percent: 40
+  
+  perspective_diversity:
+    require_company_voice: true
+    require_analyst_voice: true
+    require_journalist_voice: false  # Optional
+    
+  temporal_diversity:
+    require_recent_updates: true
+    max_content_from_single_time_period_percent: 60
+    
+# Source blocklist (never use)
+source_blocklist:
+  - anonymous_forums
+  - unmoderated_social_media
+  - content_farms
+  - seo_spam_sites
+  - unverified_wikis
+  - paywalled_without_subscription
+
+# Cross-reference requirements
+cross_reference_requirements:
+  material_claims_require_multiple_sources: true
+  minimum_sources_for_material_claim: 2
+  
+  financial_claims:
+    require_tier_1_source: true
+    allow_tier_2_with_audit_trail: true
+    
+  executive_claims:
+    require_tier_1_or_tier_2: true
+    linkedin_ok_for_secondary_confirmation: true

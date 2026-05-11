@@ -14,6 +14,11 @@ Original code archived to:
 archives/apps_rg/quarantine_w4_20260509/engines\judges\executive_positioning_judge.py.ORIGINAL
 """
 
+# DO_NOT_IMPORT_FROM_CORE_RUNTIME
+# Machine-checkable sentinel for W2 quarantine-guard tests and CI grep proofs.
+# Any agentic_core active runtime module that imports executive_positioning_judge
+# as a live runtime authority is a QUARANTINE VIOLATION (AG-RGGOV-8).
+
 raise RuntimeError(
     "QUARANTINE VIOLATION (AG-RGGOV-8): "
     "apps_rg.engines.judges.executive_positioning_judge is QUARANTINED. "

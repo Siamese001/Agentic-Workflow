@@ -1,0 +1,33 @@
+{
+  "profile_id": "meta_feedback_profile.outreach_message.v1",
+  "app_id": "apps_lic",
+  "task_class": "outreach_message",
+  "version": "v1",
+  "learning_policy": {
+    "promotion_threshold": 0.6,
+    "min_n_each_arm": 30,
+    "holdout_required": true,
+    "judge_calibration_cadence_days": 7,
+    "regret_budget": 0.05,
+    "z_score": 1.96,
+    "uplift_required": 0.0
+  },
+  "meta_feedback_dimensions": [
+    "audience_fit",
+    "personalization_integrity",
+    "compliance",
+    "no_fake_personalization",
+    "no_sensitive_targeting"
+  ],
+  "feedback_collection_points": [
+    "post_generation",
+    "post_exit",
+    "post_send"
+  ],
+  "learning_target": "promotion_to_production",
+  "metadata": {
+    "description": "Meta-feedback and L6 learning policy for apps_lic outreach_message",
+    "author": "agentic_core",
+    "created_at": "2026-05-11"
+  }
+}

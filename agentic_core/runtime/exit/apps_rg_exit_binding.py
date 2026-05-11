@@ -291,7 +291,40 @@ def exit_finalize_apps_rg(
     )
 
 
+_APPS_RG_EXIT_PROFILE_PATH = (
+    "apps_rg/config/domain_contract/exit_profile.resume_generation.v1.json"
+)
+_APPS_RG_RUNTIME_GATE_PROFILE_PATH = (
+    "apps_rg/config/domain_contract/runtime_gate_profile.resume_generation.v1.json"
+)
+
+
+def build_apps_rg_exit_harness(
+    repo_root: "Path | None" = None,
+) -> "ExitGateHarness":
+    """Convenience factory for the apps_rg Exit harness.
+
+    Loads the apps_rg gate profile from disk.  Does NOT hardcode any
+    gate rules — all rules come from the profile JSON files.
+    """
+    from agentic_core.runtime.exit.exit_gate_harness import ExitGateHarness
+    from agentic_core.runtime.gates.gate_profile_resolver import GateProfileResolver
+
+    root = repo_root or _resolve_repo_root()
+    resolver = GateProfileResolver(root)
+    profile = resolver.resolve(
+        exit_profile_path=_APPS_RG_EXIT_PROFILE_PATH,
+        runtime_gate_profile_path=_APPS_RG_RUNTIME_GATE_PROFILE_PATH,
+    )
+    return ExitGateHarness(
+        gate_profile=profile,
+        app_id="apps_rg",
+        task_class="resume_generation",
+    )
+
+
 __all__ = [
     "APPS_RG_EXIT_CERT_REF",
+    "build_apps_rg_exit_harness",
     "exit_finalize_apps_rg",
 ]

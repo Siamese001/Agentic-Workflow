@@ -10,6 +10,11 @@ Core L2/L3 owns all execution orchestration. apps_rg is ingress-only.
 See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19
 """
 
+# DO_NOT_IMPORT_FROM_CORE_RUNTIME
+# Machine-checkable sentinel for W2 quarantine-guard tests and CI grep proofs.
+# Any agentic_core active runtime module that imports from apps_rg.integrations.hops
+# is a QUARANTINE VIOLATION (AG-RGGOV-8).
+
 # AG-RGGOV-8: Immediate RuntimeError on package import
 raise RuntimeError(
     "QUARANTINE VIOLATION (AG-RGGOV-8): "

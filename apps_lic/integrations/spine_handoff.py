@@ -1,7 +1,7 @@
-"""apps_lic spine-handoff -- W11 R3_grounded_read direct surfacing.
+"""apps_lic spine-handoff -- canonical contract surface and thin run delegate.
 
 Mirrors the apps_research W9 and apps_exec W10 patterns. Surfaces the
-canonical R3 contract chain (per
+canonical contract chain (per
 ``docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md``) directly from
 ``agentic_core`` so the runtime-mode scanner
 (``tools.analysis.apps_spine_coverage``) can verify the delegation
@@ -12,7 +12,7 @@ this module makes the surface **directly visible** without changing
 runtime behavior.
 
 This module is STATIC EVIDENCE only. It does NOT:
-  - construct any of the R3 contracts at runtime;
+  - construct any of the contracts at runtime;
   - rewrite or replace ``GovernedLicRun.run_governed_e2e()``;
   - rewrite ``EnterpriseLicOrchestrator.execute_workflow``;
   - add a ``CommitRequest`` (apps_lic has no durable-write surface);
@@ -25,17 +25,22 @@ This module is STATIC EVIDENCE only. It does NOT:
 HITL posture (informational): ``GovernedLicRun.HITL_ENABLED = True``.
 That gates the spine's runtime HITL escalation path for
 compliance-sensitive review of message drafts; it is NOT evidence of
-a durable-write surface and does not change the route shape. apps_lic
-stays in R3_grounded_read because the ``GovernedLicE2ERunRecord``
-carries no commit / durable-write field, and the pre-migration audit
-found ZERO matches in apps_lic/ for ``CommitRequest``,
-``commit_request``, ``StateDiffCandidate``, ``proposed_state_diff``,
-``MutationIntent``, ``durable_write``, ``write_gateway``,
-``compliance_log``, or ``send_queue``.
+a durable-write surface and does not change the route shape. The
+pre-migration audit found ZERO matches in apps_lic/ for
+``CommitRequest``, ``commit_request``, ``StateDiffCandidate``,
+``proposed_state_diff``, ``MutationIntent``, ``durable_write``,
+``write_gateway``, ``compliance_log``, or ``send_queue``.
 
-The R3 contract chain (8 contracts):
+Final L0 routing model (plan apps-lic-u0-runtime-package-complete-f8e2a1):
 
-    ValidatedRequest         intake -- L0 ingress
+  R4_MANAGED_DRAFT               -- fresh context; L3 HOP draft workflow
+  R3R4_MANAGED_RESEARCH_THEN_DRAFT -- stale/missing context; apps_research
+                                    support then HOP draft workflow
+  R5_FALLBACK                    -- no valid context; fail-closed / abstain
+
+The canonical contract chain (8 contracts):
+
+    ValidatedRequest         intake -- U0 ingress (carries runtime_customization_package)
     L1PlanContract           L1 typed reasoning output
     RouteContract            L0 deterministic instruction to C0
     RetrievalPlan            C0.1 bounded retrieval plan
@@ -53,6 +58,12 @@ Constitutional alignment:
   - §29 closed-loop: the GovernedLicRun pipeline keeps emitting
     ROUTER_DECISION + ledger events as it does today; this module adds
     no new emissions.
+
+W5 wiring (plan apps-lic-u0-runtime-package-complete-f8e2a1, P5.2/P5.4):
+  - Stale legacy route name removed; final L0 routing model applied (R4/R3R4/R5).
+  - ``ValidatedRequest.app_payload`` carries the full
+    ``runtime_customization_package``; this module preserves it through the
+    ``run_lic_via_spine`` delegate without extraction or mutation.
 """
 
 from __future__ import annotations
@@ -69,10 +80,9 @@ from typing import TYPE_CHECKING, Any, Mapping
 #
 # Canonical paths (matched to apps_research W9 and apps_exec W10).
 #
-# NOTE: CommitRequest is INTENTIONALLY NOT IMPORTED. apps_lic is
-# R3_grounded_read, not R3R4_managed_workflow. The pre-migration audit
-# proved no durable-write surface exists; importing CommitRequest here
-# would be contract theater.
+# NOTE: CommitRequest is INTENTIONALLY NOT IMPORTED. apps_lic has no
+# durable-write surface (pre-migration audit proved zero matches for
+# commit/write primitives). Importing CommitRequest would be contract theater.
 # ---------------------------------------------------------------------------
 from agentic_core.L0_routing.intake.validated_request import ValidatedRequest
 from agentic_core.L1_cognition.types.plan_contract_types import L1PlanContract
@@ -101,7 +111,7 @@ _log = logging.getLogger(__name__)
 # Inspectable surface
 # ---------------------------------------------------------------------------
 
-R3_CONTRACT_SURFACE: Mapping[str, type] = {
+CONTRACT_SURFACE: Mapping[str, type] = {
     "ValidatedRequest": ValidatedRequest,
     "L1PlanContract": L1PlanContract,
     "RouteContract": RouteContract,
@@ -111,16 +121,23 @@ R3_CONTRACT_SURFACE: Mapping[str, type] = {
     "SealedArtifact": SealedArtifact,
     "ExitReviewPacket": ExitReviewPacket,
 }
-"""The 8 canonical R3 contract types apps_lic delegates through.
+"""The 8 canonical contract types apps_lic delegates through.
 
 Declarative mapping. Importing this module brings the eight contract
 types into namespace; the values are the imported classes themselves.
-``CommitRequest`` is intentionally absent -- apps_lic is
-R3_grounded_read, not R3R4_managed_workflow.
+``CommitRequest`` is intentionally absent -- apps_lic has no
+durable-write surface.
 """
 
-R3_REQUIRED_CONTRACT_NAMES: tuple[str, ...] = tuple(R3_CONTRACT_SURFACE.keys())
-"""Stable ordering of the 8 R3 contract names (matches manifest order)."""
+# Legacy alias only.  Does NOT represent an active R3 route.
+# The stale legacy route name was removed in W5 (plan
+# apps-lic-u0-runtime-package-complete-f8e2a1, P5.4).
+# New callers must use CONTRACT_SURFACE.
+LEGACY_CONTRACT_SURFACE_ALIAS: Mapping[str, type] = CONTRACT_SURFACE
+R3_CONTRACT_SURFACE: Mapping[str, type] = CONTRACT_SURFACE  # kept for import compatibility only
+
+R3_REQUIRED_CONTRACT_NAMES: tuple[str, ...] = tuple(CONTRACT_SURFACE.keys())
+"""Stable ordering of the 8 contract names (matches manifest order)."""
 
 
 def validate_lic_r3_contract_surface() -> dict[str, bool]:
@@ -133,7 +150,7 @@ def validate_lic_r3_contract_surface() -> dict[str, bool]:
     inspection -- it does NOT instantiate any contract.
     """
     return {
-        name: cls is not None for name, cls in R3_CONTRACT_SURFACE.items()
+        name: cls is not None for name, cls in CONTRACT_SURFACE.items()
     }
 
 
@@ -182,7 +199,7 @@ def build_lic_r3_handoff_metadata(
         campaign_id=str(campaign_id),
         target_audience=str(target_audience),
         compliance_level=str(compliance_level),
-        route_type="R3_grounded_read",
+        route_type="R4_MANAGED_DRAFT",
         contract_surface=R3_REQUIRED_CONTRACT_NAMES,
     )
 
@@ -241,7 +258,7 @@ def run_lic_via_spine(
     campaign_id = getattr(request, "campaign_id", "") or ""
     _log.info(
         "spine_handoff: lic request trace_id=%s campaign_id=%s -> "
-        "GovernedLicRun.run_governed_e2e (R3_grounded_read)",
+        "GovernedLicRun.run_governed_e2e",
         trace_id,
         campaign_id,
     )
@@ -249,13 +266,14 @@ def run_lic_via_spine(
 
 
 __all__ = [
-    "R3_CONTRACT_SURFACE",
+    "CONTRACT_SURFACE",
+    "R3_CONTRACT_SURFACE",  # backward-compatible alias
     "R3_REQUIRED_CONTRACT_NAMES",
     "R3HandoffMetadata",
     "build_lic_r3_handoff_metadata",
     "run_lic_via_spine",
     "validate_lic_r3_contract_surface",
-    # Re-exports of the 8 R3 contract types.
+    # Re-exports of the 8 contract types.
     "CompiledPromptArtifact",
     "ExitReviewPacket",
     "FinalEvidenceContract",

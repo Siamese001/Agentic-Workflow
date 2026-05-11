@@ -1,0 +1,103 @@
+# Route Profile for apps_research / company_brief task
+#
+# App-owned route configuration consumed by generic L0 binding.
+# No route logic in core - all policy declared here.
+
+profile_id: apps_research_route_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Default route selection
+default_route_id: R3_SIMPLE_GROUNDED_READ
+
+# Execution form
+active_execution_form: SINGLE_STEP  # Not managed workflow for direct route
+
+# Managed workflow policy
+managed_workflow_allowed: false
+managed_workflow_status: not_active_for_apps_research_direct_route
+
+# Route evaluation order (priority sequence)
+route_evaluation_order:
+  - route_id: R5_PRE_ROUTE_FALLBACK
+    condition: unroutable_input
+    description: Check if request is fundamentally unroutable
+    
+  - route_id: R1A_EXACT_CACHE
+    condition: exact_cache_hit_available
+    description: Check R1A exact cache (always true for lookup candidate)
+    
+  - route_id: R1B_SEMANTIC_CACHE
+    condition: semantic_cache_compatible
+    description: Check R1B semantic cache with full compatibility verification
+    
+  - route_id: R3_SIMPLE_GROUNDED_READ
+    condition: default
+    description: Default grounded read route requiring C0 grounding
+
+# Route eligibility rules
+route_eligibility:
+  R5_PRE_ROUTE_FALLBACK:
+    # Triggered when: missing target_company, ambiguous entity, malformed request
+    required_fields: []
+    blocking_conditions:
+      - missing_target_company
+      - entity_ambiguity_high
+    terminal: true
+    
+  R1A_EXACT_CACHE:
+    required_fields:
+      - target_company
+    blocking_conditions: []
+    requires_cache_hit: true
+    cache_type: exact
+    
+  R1B_SEMANTIC_CACHE:
+    required_fields:
+      - target_company
+    blocking_conditions: []
+    requires_cache_hit: true
+    cache_type: semantic
+    # Semantic cache compatibility requirements
+    compatibility_requirements:
+      entity_match: true
+      task_class_compatible: true
+      downstream_consumer_compatible: true
+      depth_profile_compatible: true
+      jd_hash_compatible_when_present: true
+      role_context_hash_compatible_when_present: true
+      freshness_within_ttl: true
+      provenance_known: true
+      acl_permits_reuse: true
+      support_status: [PASS, WEAK_WITH_CAVEATS]
+      no_unresolved_contradiction: true
+      embedding_model_compatible: true
+      similarity_above_threshold: true
+      semantic_compatibility_receipt_ref_present: true
+      # Critical: never reuse final apps_rg/apps_lic customized output
+      not_final_apps_rg_output: true
+      not_final_apps_lic_output: true
+    
+  R3_SIMPLE_GROUNDED_READ:
+    required_fields:
+      - target_company
+    blocking_conditions: []
+    requires_grounding: true
+    execution_form: SINGLE_STEP
+
+# Terminal route handling
+terminal_routes:
+  - R5_PRE_ROUTE_FALLBACK
+  - R1A_EXACT_CACHE  # Terminal via cache hit -> Exit
+  - R1B_SEMANTIC_CACHE  # Terminal via RET packet -> Exit (never direct to user)
+
+# Non-terminal routes (continue to execution)
+non_terminal_routes:
+  - R3_SIMPLE_GROUNDED_READ  # Proceeds to C0 -> PA -> L2
+
+# Receipt emission
+receipts:
+  emit_route_selection_receipt: true
+  emit_cache_compatibility_receipt: true
+  emit_semantic_substrate_receipt: true

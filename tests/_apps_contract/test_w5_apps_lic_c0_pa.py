@@ -98,7 +98,17 @@ _VALID_RAW: dict[str, Any] = {
         "grounding_required": True,
         "side_effect_class": "read_only",
     },
-    "forbidden_send_modes": {"modes": ["send_now", "auto_send", "connector_send"]},
+    "forbidden_send_modes": {
+        "modes": [
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        ]
+    },
     "entity_refs": {
         "lead_profile": {
             "verified_name": "Jane Smith",
@@ -144,6 +154,13 @@ _VALID_RAW: dict[str, Any] = {
         "idempotency_key": "idem_lic_w5_001",
         "replay_refs": [],
         "audit_refs": [],
+    },
+    "runtime_customization_package": {
+        # package_digest = SHA-256 of canonical JSON of {} (no profile_refs supplied).
+        # Recompute if any fields are added: hashlib.sha256(json.dumps(
+        #   {k: v for k, v in pkg.items() if k != 'package_digest'},
+        #   sort_keys=True, separators=(',',':')).encode()).hexdigest()
+        "package_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
     },
     "payload_digest": "",
 }

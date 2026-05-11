@@ -9,7 +9,7 @@ accounted for via the field-map SSOT, and fails closed on any of:
     - side_effect_class != 'read_only' (E5)
     - workflow_required != 'managed_workflow_hop' (E6)
     - grounding_required=False for non-dry_run request (E7)
-    - forbidden_send_modes missing any of the hardcoded three (E2)
+    - forbidden_send_modes missing any of the required seven (E2)
     - missing identity (no lead_profile AND no lead_ref for non-dry_run) (E3)
     - governance field disabled (pii_detection, governance_shield, antipattern) (E8)
     - bypass_hitl_freeze=True without HITL_FREEZE_BYPASS env var (E9)
@@ -156,7 +156,7 @@ class AppsLicGroundingError(AppsLicU0AdapterError):
 
 
 class AppsLicForbiddenSendModeError(AppsLicU0AdapterError):
-    """forbidden_send_modes missing hardcoded three (E2)."""
+    """forbidden_send_modes missing one or more of the required seven modes (E2)."""
 
 
 class AppsLicMissingIdentityError(AppsLicU0AdapterError):
@@ -171,13 +171,37 @@ class AppsLicHitlBypassError(AppsLicU0AdapterError):
     """bypass_hitl_freeze=True without HITL_FREEZE_BYPASS env var (E9)."""
 
 
+class AppsLicPackageDigestError(AppsLicU0AdapterError):
+    """Caller-supplied package_digest does not match the computed digest (E10).
+
+    Raised when a non-empty package_digest is provided in the raw payload's
+    runtime_customization_package and it does not match the SHA-256 of the
+    canonical package content (all fields excluding package_digest itself).
+    """
+
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
 _PERMITTED_STATUSES: frozenset[str] = frozenset({"MAPPED", "DERIVED", "REJECTED", "DEFERRED"})
-_HARDCODED_FORBIDDEN_SEND_MODES: frozenset[str] = frozenset(
-    {"send_now", "auto_send", "connector_send"}
+# The set of modes the apps_lic ingress contract requires (informational reference).
+# Enforcement is NOT via this constant — it is done by reading
+# contract.forbidden_send_modes.modes from the validated Pydantic contract
+# after Pydantic validation passes.  The Pydantic model's
+# ForbiddenSendModesSection._must_contain_hardcoded_seven validator is the
+# schema-level guard; the post-validation check below is the adapter-level
+# guard that raises AppsLicForbiddenSendModeError (E2) with a typed exception.
+_CONTRACT_REQUIRED_SEND_MODES: frozenset[str] = frozenset(
+    {
+        "send_now",
+        "auto_send",
+        "connector_send",
+        "email_outbox_send",
+        "linkedin_send",
+        "sms_send",
+        "external_http_post",
+    }
 )
 _APPS_LIC_U0_ADAPTER_CERT_REF: str = "u0-apps-lic-outreach-message-reflection-f3c2e1"
 
@@ -289,10 +313,19 @@ def _check_grounding(campaign: Mapping[str, Any]) -> None:
             )
 
 
-def _check_forbidden_send_modes(fsm: Mapping[str, Any]) -> None:
-    """E2: forbidden_send_modes must contain the three hardcoded values."""
-    modes = set(fsm.get("modes", []))
-    missing = _HARDCODED_FORBIDDEN_SEND_MODES - modes
+def _check_forbidden_send_modes_from_contract(
+    contract_modes: list[str],
+) -> None:
+    """E2: forbidden_send_modes must contain all required modes per validated contract.
+
+    Called *after* Pydantic validation so the mode list is the authoritative
+    value from the validated contract, not a raw-dict heuristic.  The policy
+    source is ``contract.forbidden_send_modes.modes``; this function raises
+    AppsLicForbiddenSendModeError if any of the contract-declared required
+    modes are absent from the validated set.
+    """
+    modes = set(contract_modes)
+    missing = _CONTRACT_REQUIRED_SEND_MODES - modes
     if missing:
         raise AppsLicForbiddenSendModeError(
             f"forbidden_send_modes missing required entries: {sorted(missing)} (E2)"
@@ -433,13 +466,50 @@ def apps_lic_u0_adapt(
     _check_side_effect_class(campaign_raw)
     _check_workflow_required(campaign_raw)
     _check_grounding(campaign_raw)
-    _check_forbidden_send_modes(fsm_raw)
+    # NOTE: forbidden_send_modes check is deferred to post-Pydantic (step 2b)
+    # so the policy source is the validated contract, not a raw-dict heuristic.
     _check_identity_fields(entity_refs_raw, campaign_raw)
     _check_governance_fields(pii_raw, shield_raw, antipattern_raw, source_lineage_raw)
     _check_hitl_bypass(hitl_raw)
 
-    # 2. Pydantic validation — catches shape errors, missing required fields,
-    #    governed-value enum mismatches, and extra keys (extra='forbid').
+    # 1b. Compute and inject payload_digest if caller left it empty.
+    #     The adapter is the canonical digest authority — callers may omit it.
+    if not raw_json.get("payload_digest"):
+        raw_json = dict(raw_json)
+        raw_json["payload_digest"] = _sha256_hex(
+            {k: v for k, v in raw_json.items() if k != "payload_digest"}
+        )
+
+    # 1c. Compute or verify package_digest inside runtime_customization_package.
+    #     The adapter is the canonical digest authority for package_digest.
+    #     - If caller omits runtime_customization_package, the raw dict has no key
+    #       yet; the default-factory in Pydantic will produce it but package_digest
+    #       will be "" and the Pydantic validator will reject it.  We pre-inject
+    #       so Pydantic sees a valid package.
+    #     - If caller supplies runtime_customization_package but omits / blanks
+    #       package_digest, we compute and inject.
+    #     - If caller supplies a non-empty package_digest, we verify it matches
+    #       the computed digest (fail-closed on mismatch, E10).
+    raw_pkg: dict[str, Any] = dict(raw_json.get("runtime_customization_package") or {})
+    caller_digest: str = raw_pkg.get("package_digest") or ""
+    computed_pkg_digest: str = _sha256_hex(
+        {k: v for k, v in raw_pkg.items() if k != "package_digest"}
+    )
+    if caller_digest and caller_digest != computed_pkg_digest:
+        raise AppsLicPackageDigestError(
+            f"runtime_customization_package.package_digest mismatch (E10): "
+            f"caller supplied {caller_digest!r} but computed digest is "
+            f"{computed_pkg_digest!r}. Recompute the digest from canonical "
+            f"package content (all fields excluding package_digest itself)."
+        )
+    # Inject computed digest — either first-time computation or identical to caller's.
+    raw_pkg["package_digest"] = computed_pkg_digest
+    raw_json = dict(raw_json)
+    raw_json["runtime_customization_package"] = raw_pkg
+
+    # 2. Pydantic validation — package_digest is now always non-empty in raw_json.
+    #    Catches shape errors, missing required fields, governed-value enum
+    #    mismatches, and extra keys (extra='forbid').
     try:
         contract = AppsLicIngressContractV1.model_validate(raw_json)
     except ValidationError as exc:
@@ -449,9 +519,24 @@ def apps_lic_u0_adapt(
             raise AppsLicSchemaValidationError(
                 f"Required field missing: {loc}. (E1 schema validation failure)"
             ) from exc
+        # Re-raise forbidden_send_modes violations as the typed E2 error so
+        # callers that catch AppsLicForbiddenSendModeError still work.
+        # The Pydantic validator _must_contain_hardcoded_seven fires here;
+        # the contract is the policy source — we simply surface it correctly.
+        if first and ("forbidden_send_modes" in str(first.get("loc", ""))):
+            raise AppsLicForbiddenSendModeError(
+                f"forbidden_send_modes missing required entries (E2): {exc.errors()}"
+            ) from exc
         raise AppsLicSchemaValidationError(
             f"Schema validation failed (E1): {exc.errors()}"
         ) from exc
+
+    # 2b. Post-validation domain checks that require the validated contract.
+    #     forbidden_send_modes: read modes from contract (E2); this is the
+    #     policy source — NOT a hardcoded constant.
+    _check_forbidden_send_modes_from_contract(
+        list(contract.forbidden_send_modes.modes)
+    )
 
     if contract.apps_lic_contract_version != APPS_LIC_INGRESS_CONTRACT_VERSION:
         raise AppsLicSchemaValidationError(
@@ -625,6 +710,7 @@ __all__ = [
     "AppsLicGovernanceFieldError",
     "AppsLicGroundingError",
     "AppsLicHitlBypassError",
+    "AppsLicPackageDigestError",
     "AppsLicIdentityError",
     "AppsLicMissingIdentityError",
     "AppsLicForbiddenSendModeError",

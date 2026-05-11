@@ -11,6 +11,11 @@ Importing this module raises RuntimeError immediately.
 Core L1 Prompt Assembly owns all contract emission. apps_rg is ingress-only.
 """
 
+# DO_NOT_IMPORT_FROM_CORE_RUNTIME
+# Machine-checkable sentinel for W2 quarantine-guard tests and CI grep proofs.
+# Any agentic_core active runtime module that imports from apps_rg.prompt_assembly.contracts
+# is a QUARANTINE VIOLATION (AG-RGGOV-8).
+
 raise RuntimeError(
     "QUARANTINE VIOLATION (AG-RGGOV-8): "
     "apps_rg.prompt_assembly.contracts is QUARANTINED. "

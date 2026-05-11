@@ -3,8 +3,8 @@
 Per plan apps-research-golden-template-adoption-ag9.
 
 Thin glue between AppIngressRunner's generic ingress envelope flow and the
-apps_research domain runtime. Pure functions — no provider calls, no LLM
-logic, no state writes.
+generic agentic_core spine. Pure functions — no provider calls, no LLM
+logic, no state writes, no app-specific policy decisions.
 
 Pipeline: U0 → L1 → L0 → C0 (grounding) → PA → L2 → Exit
 """
@@ -26,10 +26,15 @@ from agentic_core.prompt_governance.apps_research_pa_binding import (
     pa_compose_apps_research,
 )
 from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
-from agentic_core.runtime.entry.u0_apps_research_binding import (
-    APPS_RESEARCH_TASK_CLASS,
-    AppsResearchAuthorityViolation,
-    u0_validate_apps_research,
+from agentic_core.runtime.entry.u0_runtime_package_binding import (
+    u0_resolve_runtime_package,
+    U0PackageValidationError,
+    RuntimePackageRegistry,
+)
+from agentic_core.runtime.contracts.runtime_customization_package import (
+    RuntimeCustomizationPackage,
+    UnknownPackageFieldError,
+    PackageDigestMismatchError,
 )
 from agentic_core.runtime.exit.apps_research_exit_binding import (
     exit_finalize_apps_research,
@@ -38,6 +43,7 @@ from agentic_core.runtime.exit.apps_research_exit_binding import (
 APPS_RESEARCH_REQUIRED_FIELDS: tuple[str, ...] = (
     "target_company",
 )
+
 
 
 def apps_research_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
@@ -111,9 +117,14 @@ def apps_research_dispatch(envelope: RequestEnvelope) -> X3Disposition:
         )
 
     # ----------------------------------------------------------------- U0
+    # Generic U0 runtime package resolution (app-agnostic)
+    # Resolves package from app-owned registry or explicit input
+    registry = RuntimePackageRegistry()
     try:
-        validated_request = u0_validate_apps_research(envelope)
-    except AppsResearchAuthorityViolation as violation:
+        validated_request, pkg_receipt, auto_inject_ctx = u0_resolve_runtime_package(
+            envelope, registry=registry
+        )
+    except (U0PackageValidationError, UnknownPackageFieldError, PackageDigestMismatchError) as u0_err:
         return X3Disposition(
             request_id=envelope.request_id,
             run_id=envelope.run_id,
@@ -123,14 +134,16 @@ def apps_research_dispatch(envelope: RequestEnvelope) -> X3Disposition:
             outcome_authorized=False,
             final_output={
                 "stage": "U0",
-                "rejection_reason": "authority_violation",
-                "detail": str(violation),
+                "rejection_reason": "runtime_package_validation_error",
+                "detail": str(u0_err),
+                "package_receipt": getattr(u0_err, 'receipt', None),
             },
             exit_timestamp=datetime.now(timezone.utc).isoformat(),
-            l5_certification_ref="dispatch-error-u0-authority-violation",
+            l5_certification_ref="dispatch-error-u0-runtime-package-validation",
         )
 
     # ----------------------------------------------------------------- L1
+    # Generic L1 planning hints from app-owned package refs (NO runtime authority)
     try:
         l1_plan = l1_plan_apps_research(validated_request)
     except (TypeError, ValueError) as l1_err:

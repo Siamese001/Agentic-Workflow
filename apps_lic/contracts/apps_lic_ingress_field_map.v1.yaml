@@ -580,3 +580,280 @@ mappings:
     status: DERIVED
     target: ValidatedRequest.payload_digest (re-computed by adapter from contract_dump minus digest field)
     reason: "Caller-supplied digest cross-checked against adapter-computed sha256; adapter's value wins"
+
+  # ── Runtime customization package (W3) ──────────────────────────────────
+  # W3.5: All package sub-fields are MAPPED because the entire
+  # runtime_customization_package block is preserved verbatim into
+  # ValidatedRequest.app_payload (via contract_dump at U0 line 559).
+  # Fields consumed at runtime (Exit, L6, L1) are still MAPPED here
+  # because the data is not lost — it travels in app_payload.
+  # DEFERRED is reserved only for fields with no loss path to a consumer.
+  /runtime_customization_package:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package
+    reason: "Entire package block preserved verbatim in app_payload; consumed by runtime bindings"
+
+  /runtime_customization_package/runtime_gate_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L3 gate orchestration (W4)"
+
+  /runtime_customization_package/exit_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by Exit binding _load_exit_profile (W3.5)"
+
+  /runtime_customization_package/judge_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.judge_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by eval rubric binding (W4)"
+
+  /runtime_customization_package/eval_rubric_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.eval_rubric_ref
+    reason: "Profile ref preserved in app_payload; consumed by AppSpecificEvaluator (W4)"
+
+  /runtime_customization_package/threshold_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.threshold_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by score threshold gate (W4)"
+
+  /runtime_customization_package/grader_roster_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.grader_roster_ref
+    reason: "Profile ref preserved in app_payload; consumed by app_grader_registry (W4)"
+
+  /runtime_customization_package/rubric_output_map_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.rubric_output_map_ref
+    reason: "Profile ref preserved in app_payload; consumed by rubric_output_mapper (W4)"
+
+  /runtime_customization_package/negative_controls_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.negative_controls_ref
+    reason: "Profile ref preserved in app_payload; consumed by eval rubric (W4)"
+
+  /runtime_customization_package/learning_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.learning_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by Exit _build_runtime_exhaust_bundle (W3)"
+
+  /runtime_customization_package/meta_feedback_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by Exit _build_runtime_exhaust_bundle (W3)"
+
+  /runtime_customization_package/route_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L0 routing binding (W4)"
+
+  /runtime_customization_package/retrieval_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.retrieval_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L1 C0 retrieval (W4)"
+
+  /runtime_customization_package/prompt_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.prompt_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L1 prompt assembly (W4)"
+
+  /runtime_customization_package/repair_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.repair_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L2 repair binding (W4)"
+
+  /runtime_customization_package/cache_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L1 cache layer (W4)"
+
+  /runtime_customization_package/capability_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.capability_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by capability layer (W4)"
+
+  /runtime_customization_package/orchestration_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.orchestration_profile_ref
+    reason: "Profile ref preserved in app_payload; consumed by L3 orchestration (W4)"
+
+  /runtime_customization_package/route_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_policy
+    reason: "Route policy preserved in app_payload; consumed by L0 routing binding (W4)"
+
+  /runtime_customization_package/route_policy/allowed_route_families:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_policy.allowed_route_families
+    reason: "Allowed route families preserved in app_payload; consumed by L0 routing (W4)"
+
+  /runtime_customization_package/route_policy/default_route_family:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_policy.default_route_family
+    reason: "Default route family preserved in app_payload; consumed by L0 routing (W4)"
+
+  /runtime_customization_package/route_policy/briefing_only_route_allowed:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_policy.briefing_only_route_allowed
+    reason: "Briefing-only route flag preserved in app_payload; consumed by L0 routing (W4)"
+
+  /runtime_customization_package/write_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.write_policy
+    reason: "Write policy preserved in app_payload; consumed by UWG write authority gate (W4)"
+
+  /runtime_customization_package/write_policy/durable_write_allowed:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.write_policy.durable_write_allowed
+    reason: "Durable write allowed flag preserved in app_payload; consumed by UWG gate (W4)"
+
+  /runtime_customization_package/write_policy/uwg_required_for_any_write:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.write_policy.uwg_required_for_any_write
+    reason: "UWG required flag preserved in app_payload; consumed by UWG gate (W4)"
+
+  /runtime_customization_package/write_policy/allowed_write_classes:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.write_policy.allowed_write_classes
+    reason: "Allowed write classes preserved in app_payload; consumed by UWG gate (W4)"
+
+  /runtime_customization_package/cache_bypass_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy
+    reason: "Cache bypass policy preserved in app_payload; consumed by Exit binding to build cache bypass receipt (W3.5)"
+
+  /runtime_customization_package/cache_bypass_policy/r1a_exact_cache_bypassed_for_final_drafts:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy.r1a_exact_cache_bypassed_for_final_drafts
+    reason: "R1A bypass flag preserved in app_payload; consumed by Exit cache bypass receipt (W3.5)"
+
+  /runtime_customization_package/cache_bypass_policy/r1b_semantic_cache_bypassed_for_final_drafts:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy.r1b_semantic_cache_bypassed_for_final_drafts
+    reason: "R1B bypass flag preserved in app_payload; consumed by Exit cache bypass receipt (W3.5)"
+
+  /runtime_customization_package/cache_bypass_policy/cache_allowed_for_support_artifacts:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy.cache_allowed_for_support_artifacts
+    reason: "Support artifact cache flag preserved in app_payload; consumed by Exit cache bypass receipt (W3.5)"
+
+  /runtime_customization_package/cache_bypass_policy/final_draft_cache_ttl_seconds:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy.final_draft_cache_ttl_seconds
+    reason: "Final draft cache TTL preserved in app_payload; consumed by L1 cache layer (W4)"
+
+  /runtime_customization_package/cache_bypass_policy/support_artifact_cache_ttl_seconds:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_bypass_policy.support_artifact_cache_ttl_seconds
+    reason: "Support artifact cache TTL preserved in app_payload; consumed by L1 cache layer (W4)"
+
+  /runtime_customization_package/runtime_gate_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_policy
+    reason: "Runtime gate policy preserved in app_payload; consumed by L3 gate orchestration (W4)"
+
+  /runtime_customization_package/runtime_gate_policy/required_runtime_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_policy.required_runtime_gates
+    reason: "Required runtime gates list preserved in app_payload; consumed by gate mesh (W4)"
+
+  /runtime_customization_package/runtime_gate_policy/conditional_runtime_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_policy.conditional_runtime_gates
+    reason: "Conditional runtime gates list preserved in app_payload; consumed by gate mesh (W4)"
+
+  /runtime_customization_package/runtime_gate_policy/halt_on_gate_failure:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_policy.halt_on_gate_failure
+    reason: "Halt-on-failure flag preserved in app_payload; consumed by gate mesh (W4)"
+
+  /runtime_customization_package/exit_gate_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_gate_policy
+    reason: "Exit gate policy preserved in app_payload; consumed by Exit binding (W3.5)"
+
+  /runtime_customization_package/exit_gate_policy/required_exit_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_gate_policy.required_exit_gates
+    reason: "Required exit gates preserved in app_payload; consumed by Exit binding gate check (W3.5)"
+
+  /runtime_customization_package/exit_gate_policy/conditional_exit_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_gate_policy.conditional_exit_gates
+    reason: "Conditional exit gates preserved in app_payload; consumed by Exit binding gate check (W3.5)"
+
+  /runtime_customization_package/exit_gate_policy/fail_closed_on_exit_failure:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_gate_policy.fail_closed_on_exit_failure
+    reason: "Fail-closed flag preserved in app_payload; consumed by Exit binding (W3.5)"
+
+  /runtime_customization_package/consent_compliance_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.consent_compliance_policy
+    reason: "Consent compliance policy preserved in app_payload; consumed by compliance gate (W4)"
+
+  /runtime_customization_package/consent_compliance_policy/consent_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.consent_compliance_policy.consent_required
+    reason: "Consent required flag preserved in app_payload; consumed by compliance gate (W4)"
+
+  /runtime_customization_package/consent_compliance_policy/compliance_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.consent_compliance_policy.compliance_profile_ref
+    reason: "Compliance profile ref preserved in app_payload; consumed by compliance gate (W4)"
+
+  /runtime_customization_package/consent_compliance_policy/gdpr_relevant:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.consent_compliance_policy.gdpr_relevant
+    reason: "GDPR relevance flag preserved in app_payload; consumed by compliance gate (W4)"
+
+  /runtime_customization_package/consent_compliance_policy/ccpa_relevant:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.consent_compliance_policy.ccpa_relevant
+    reason: "CCPA relevance flag preserved in app_payload; consumed by compliance gate (W4)"
+
+  /runtime_customization_package/meta_feedback_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy
+    reason: "Meta-feedback policy preserved in app_payload; consumed by L6 promo binding (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/promotion_threshold:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.promotion_threshold
+    reason: "Promotion threshold preserved in app_payload; consumed by L6 promo binding (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/min_n_each_arm:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.min_n_each_arm
+    reason: "Min n per arm preserved in app_payload; consumed by L6 promo binding (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/holdout_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.holdout_required
+    reason: "Holdout required flag preserved in app_payload; consumed by L6 promo binding (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/judge_calibration_cadence_days:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.judge_calibration_cadence_days
+    reason: "Judge calibration cadence preserved in app_payload; consumed by L6 (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/regret_budget:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.regret_budget
+    reason: "Regret budget preserved in app_payload; consumed by L6 regret binding (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/z_score:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.z_score
+    reason: "Z-score threshold preserved in app_payload; consumed by L6 Wilson CI (W4)"
+
+  /runtime_customization_package/meta_feedback_policy/uplift_required:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_policy.uplift_required
+    reason: "Uplift required preserved in app_payload; consumed by L6 promo gate (W4)"
+
+  /runtime_customization_package/package_digest:
+    status: DERIVED
+    target: ValidatedRequest.app_payload.runtime_customization_package.package_digest
+    reason: "Package digest computed by caller; preserved verbatim in app_payload for audit trail"

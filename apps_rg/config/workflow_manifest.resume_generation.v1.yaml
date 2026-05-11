@@ -1,0 +1,327 @@
+# apps_rg Managed Workflow Manifest — resume_generation v1
+#
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W3
+# Authority: declarative data only — no executable code.
+# Resolution: registered under apps_rg.resume_generation_managed_v1 in
+#   apps_rg/config/route_registry.yaml (l3_required=true entry).
+#
+# Consumed by: agentic_core.L3_orchestration.managed_workflow_router
+#   ManagedWorkflowEngine.register_workflow() — future W4.
+#
+# GOVERNANCE:
+#   - No runtime imports.
+#   - No provider calls.
+#   - No L4 writes.
+#   - Node names are declarative ids — NOT function/class names.
+#   - Legacy HOP names included as node_id strings only — never imported.
+
+manifest_id: wfm::apps_rg::resume_generation::v1
+manifest_version: "1.0.0"
+owner_ref: apps_rg
+task_class: resume_generation
+execution_form: MANAGED_WORKFLOW
+status: active
+created_at: "2026-05-11"
+schema_ref: "apps_rg/config/workflow_manifest.resume_generation.v1.yaml"
+
+# ── cross-profile refs (resolved by registry; never hard-imported) ──────────
+orchestration_profile_ref: "aop::apps_rg::resume_generation::v1"
+output_schema_ref: "aos::apps_rg::resume_generation::v1"
+prompt_profile_ref: "app::apps_rg::resume_generation::v1"
+runtime_gate_profile_ref: "rgp::apps_rg::resume_generation::v1"
+exit_profile_ref: "xp::apps_rg::resume_generation::v1"
+judge_profile_ref: "jp::apps_rg::resume_generation::v1"
+provider_profile_ref: "pvp::apps_rg::resume_generation::v1"
+candidate_gate_profile_ref: "cgp::apps_rg::resume_generation::v1"
+meta_feedback_profile_ref: "lp::apps_rg::resume_generation::v1"
+retrieval_profile_ref: "arp::apps_rg::resume_generation::v1"
+capability_profile_ref: "acp::apps_rg::resume_generation::v1"
+threshold_profile_ref: "atp::apps_rg::resume_generation::v1"
+
+# ── merge strategy ───────────────────────────────────────────────────────────
+merge_strategy:
+  policy: selection_winner
+  tie_break: highest_factual_grounding
+  fallback: abstain_with_hitl
+
+# ── digest placeholder ───────────────────────────────────────────────────────
+# Computed by tools/adg/_q_cache_fingerprint.py at ADG generation time.
+registry_digest: "DIGEST_PLACEHOLDER"
+
+# ── workflow nodes ────────────────────────────────────────────────────────────
+#
+# node_type values:
+#   ingestion         — normalises/validates input, no generation
+#   analysis          — analysis / projection step, no LLM generation
+#   generation        — LLM-backed content generation
+#   validation        — deterministic schema / grounding check
+#   guardrail         — hard-fail safety/anti-fabrication check
+#   render            — format-rendering step
+#
+# tier values (execution surface locality):
+#   L1   — cognition / planning
+#   L2   — execution / LLM call
+#   L3   — orchestration coordination
+#   C0   — local evidence retrieval
+#   PA   — prompt assembly
+#   Exit — exit evaluation
+#
+# selection_policy values:
+#   best_factual_score | best_role_alignment | rule_based | passthrough
+#
+# archive_policy values:
+#   all_candidates | winner_only | none
+
+nodes:
+
+  # ── 1. Profile normalisation / ingestion ──────────────────────────────────
+  - node_id: profile_normalization
+    node_type: ingestion
+    tier: L1
+    depends_on: []
+    candidate_count: 1
+    generator_profile: null
+    temperature_profile: null
+    prompt_variant_refs: []
+    candidate_gate_profile: null
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G01, G02, G03_lite, G04_lite, G17_lite]
+    description: "Validate and normalise candidate_profile + ingress contract; project L1 plan."
+
+  # ── 2. Role analysis / JD alignment ──────────────────────────────────────
+  - node_id: role_analysis
+    node_type: analysis
+    tier: L0
+    depends_on: [profile_normalization]
+    candidate_count: 1
+    generator_profile: null
+    temperature_profile: null
+    prompt_variant_refs: []
+    candidate_gate_profile: null
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G07, G08, G10, G20]
+    description: "L0 routing decision; C0 keyword/evidence retrieval; JD analysis."
+
+  # ── 3. Header block ───────────────────────────────────────────────────────
+  - node_id: header_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis]
+    candidate_count: 2
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::low_deterministic"
+    prompt_variant_refs:
+      - "section_prompts/header_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: best_factual_score
+    archive_policy: all_candidates
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G17, G21, G23]
+    description: "Generate header block (name, contact, location) from candidate_profile. No fabrication."
+
+  # ── 4. Professional summary ───────────────────────────────────────────────
+  - node_id: professional_summary
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis, header_block]
+    candidate_count: 3
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::moderate"
+    prompt_variant_refs:
+      - "section_prompts/professional_summary.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: "jp::apps_rg::resume_generation::v1"
+    selection_policy: best_role_alignment
+    archive_policy: all_candidates
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G14, G15, G17, G19, G21, G23]
+    description: "Generate professional summary. Grounded in candidate_profile metrics and profile evidence."
+
+  # ── 5. Skills block ───────────────────────────────────────────────────────
+  - node_id: skills_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis]
+    candidate_count: 2
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::low_deterministic"
+    prompt_variant_refs:
+      - "section_prompts/skills_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: best_factual_score
+    archive_policy: winner_only
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G17, G21, G23]
+    description: "Extract and align skills from candidate_profile.skills. ATS keyword match applied."
+
+  # ── 6. Experience block ───────────────────────────────────────────────────
+  - node_id: experience_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis, professional_summary]
+    candidate_count: 3
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::moderate"
+    prompt_variant_refs:
+      - "section_prompts/experience_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: "jp::apps_rg::resume_generation::v1"
+    selection_policy: best_factual_score
+    archive_policy: all_candidates
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G14, G15, G17, G19, G20, G21, G23, G24]
+    description: "Generate experience entries grounded in candidate_profile. Evidence citation mandatory per entry."
+
+  # ── 7. Education block ────────────────────────────────────────────────────
+  - node_id: education_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis]
+    candidate_count: 1
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::low_deterministic"
+    prompt_variant_refs:
+      - "section_prompts/education_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: winner_only
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G17, G21, G23]
+    description: "Generate education section. Must match candidate_profile.education exactly."
+
+  # ── 8. Certifications block (optional) ───────────────────────────────────
+  - node_id: certifications_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis]
+    candidate_count: 1
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::low_deterministic"
+    prompt_variant_refs:
+      - "section_prompts/certifications_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G17, G21, G23]
+    optional: true
+    description: "Optional certifications block when candidate_profile.certifications non-empty."
+
+  # ── 9. Selected projects block (optional) ─────────────────────────────────
+  - node_id: selected_projects_block
+    node_type: generation
+    tier: L2
+    depends_on: [role_analysis, experience_block]
+    candidate_count: 2
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::moderate"
+    prompt_variant_refs:
+      - "section_prompts/selected_projects_block.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: best_factual_score
+    archive_policy: winner_only
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G13, G17, G21, G23]
+    optional: true
+    description: "Optional selected projects when candidate_profile.projects non-empty."
+
+  # ── 10. Final render ─────────────────────────────────────────────────────
+  - node_id: final_render
+    node_type: render
+    tier: L2
+    depends_on:
+      - header_block
+      - professional_summary
+      - skills_block
+      - experience_block
+      - education_block
+    candidate_count: 1
+    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    temperature_profile: "temp::zero"
+    prompt_variant_refs:
+      - "section_prompts/final_render.yaml"
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: winner_only
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G11, G12, G17, G21, G23, G24]
+    description: "Assemble all sections into sealed resume artifact. Format render only — no new generation."
+
+  # ── 11. ATS validate ─────────────────────────────────────────────────────
+  - node_id: ats_validate
+    node_type: validation
+    tier: Exit
+    depends_on: [final_render]
+    candidate_count: 1
+    generator_profile: null
+    temperature_profile: null
+    prompt_variant_refs: []
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G21, G22, G23, G24, G28]
+    description: "Deterministic ATS readability and format compliance check. Hard fail on schema violation."
+
+  # ── 12. Factual grounding check ───────────────────────────────────────────
+  - node_id: factual_grounding_check
+    node_type: validation
+    tier: Exit
+    depends_on: [final_render]
+    candidate_count: 1
+    generator_profile: null
+    temperature_profile: null
+    prompt_variant_refs: []
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G21, G22, G23, G24, G28]
+    description: "Cross-reference every claim against candidate_profile evidence. Score >= 0.95 required."
+
+  # ── 13. No-fabrication guardrail ──────────────────────────────────────────
+  - node_id: no_fabrication_guardrail
+    node_type: guardrail
+    tier: Exit
+    depends_on: [final_render]
+    candidate_count: 1
+    generator_profile: null
+    temperature_profile: null
+    prompt_variant_refs: []
+    candidate_gate_profile: "cgp::apps_rg::resume_generation::v1"
+    judge_profile: null
+    selection_policy: passthrough
+    archive_policy: none
+    output_schema_ref: "aos::apps_rg::resume_generation::v1"
+    required_runtime_gates: [G21, G23, G24, G28]
+    description: "Hard guardrail: score < 0.99 fails closed. No partial pass."
+
+
+# ── Legacy HOP traceability (top-level, outside nodes list) ─────────────────
+# These ids correspond to the historical HOP pipeline for traceability.
+# They are NOT executed in the managed workflow — declarative reference only
+# for W4/W5 migration planning.  No Python imports of these ids permitted.
+legacy_hop_refs:
+  - headline
+  - exec_summary
+  - competencies
+  - unify_bullets
+  - ibm_bullets
+  - tradersense_bullets
+  - ey_bullets
+  - marquee
+  - final_merge

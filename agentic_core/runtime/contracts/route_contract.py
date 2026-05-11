@@ -64,10 +64,25 @@ class RouteContract:
     # Managed workflow resolution (populated when execution_form="managed_workflow")
     workflow_ref: str = ""  # resolved workflow ID from registry; empty for single_step
 
+    # W4: additional managed-workflow provenance fields (all default-empty for compat)
+    workflow_manifest_ref: str = ""       # e.g. "wfm::apps_rg::resume_generation::v1"
+    workflow_registry_ref: str = ""       # repo-relative path to the route_registry.yaml
+    registry_resolution_receipt_ref: str = ""  # serialised WorkflowResolutionReceipt JSON
+
+    # W4: route gate refs — G07/G08/G10/G20 placeholder refs (UNKNOWN when harness absent)
+    route_gate_refs: tuple[str, ...] = field(default_factory=tuple)
+    # W4: route policy ref — pointer to the route profile used
+    route_policy_ref: str = ""
+
     # Cache lookup receipts (prove actual lookups completed before L3 entry)
     cache_lookup_r1a_receipt: str = ""  # serialized R1A lookup result (hit/miss + digest)
     cache_lookup_r1b_receipt: str = ""  # serialized R1B lookup result (hit/miss + digest)
-    cache_lookup_r5_receipt: str = ""  # serialized R5 fallback result (hit/miss)
+    cache_lookup_r5_receipt: str = ""   # serialized R5 fallback result (hit/miss)
+
+    # W4: aliased receipt fields (mirrors existing fields for explicit cache-read-order proof)
+    r1a_lookup_receipt_ref: str = ""    # alias for cache_lookup_r1a_receipt
+    r1b_lookup_receipt_ref: str = ""    # alias for cache_lookup_r1b_receipt
+    r5_fallback_receipt_ref: str = ""   # alias for cache_lookup_r5_receipt
 
     # Routing metadata
     reason_codes: tuple[str, ...] = field(default_factory=tuple)

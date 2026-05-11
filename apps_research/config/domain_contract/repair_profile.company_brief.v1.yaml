@@ -1,0 +1,151 @@
+# Repair Profile for apps_research / company_brief
+#
+# Same-authority repair configuration for L2 execution.
+# No cross-authority escalation through L2.
+
+profile_id: apps_research_repair_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Repair authority
+repair_authority:
+  # Repairs happen at same authority level (L2 repairs L2 output)
+  same_authority_only: true
+  
+  # Cross-authority repairs (C0→L2, PA→L2) are blocked
+  cross_authority_blocked: true
+  
+  # Escalation to L3 managed workflow is blocked
+  l3_escalation_blocked: true
+  
+  # Repairs stay within L2 execution boundary
+  max_repair_depth: 2
+
+# Repair triggers
+trigger_conditions:
+  # Schema violations
+  schema_validation_failure:
+    action: repair_with_hints
+    max_attempts: 2
+    
+  # Missing required fields
+  required_field_missing:
+    action: repair_with_field_hints
+    max_attempts: 2
+    
+  # Invalid JSON
+  invalid_json:
+    action: repair_with_format_hints
+    max_attempts: 1
+    
+  # Citation format errors
+  citation_format_error:
+    action: repair_with_citation_hints
+    max_attempts: 2
+    
+  # Support status inflation detected
+  support_status_inflation:
+    action: repair_with_status_verification
+    max_attempts: 1
+
+# Repair strategy
+repair_strategy:
+  type: same_prompt_rewrite
+  
+  # Keep same prompt envelope, add repair hints to H0
+  modify_h0_slot_only: true
+  
+  # Never modify S0, D0, I0, C0, R0
+  protected_slots:
+    - S0_system
+    - D0_fences
+    - I0_instructions
+    - C0_verified_evidence
+    - R0_response_schema
+  
+  # H0 slot gets bounded repair hints
+  h0_content:
+    source: static_template
+    template_ref: repair_hints_v1
+    
+    hint_types:
+      - schema_violation_location
+      - missing_fields_list
+      - citation_format_example
+      - json_syntax_correction
+
+# Repair hints template
+repair_hints:
+  template: |
+    ## Repair Hints for Output Correction
+    
+    The previous attempt had the following issues:
+    {{ error_details }}
+    
+    Please correct:
+    1. {{ primary_fix_instruction }}
+    2. {{ secondary_fix_instruction }}
+    
+    Ensure output strictly follows the JSON schema in R0.
+    Maintain all citations in [Source: X] format.
+    Preserve accurate support_status from evidence.
+
+# Repair receipts
+repair_receipts:
+  emit_heal_receipt: true
+  emit_attempt_receipt: true
+  
+  heal_receipt_includes:
+    - original_error
+    - repair_strategy_used
+    - slots_modified
+    - hints_provided
+    - success_status
+    
+  attempt_receipt_includes:
+    - attempt_number
+    - trigger_condition
+    - validation_results
+    - next_action
+
+# Failure handling
+failure_handling:
+  max_repair_attempts_exceeded:
+    action: fail_closed
+    emit_failure_receipt: true
+    include_partial_output: true
+    
+  repeated_same_error:
+    action: fail_closed
+    emit_diagnostic_receipt: true
+    
+  unrepairable_error:
+    action: fail_closed
+    emit_escalation_blocked_receipt: true
+
+# Repair constraints
+constraints:
+  # Cannot add new evidence during repair
+  no_new_evidence: true
+  
+  # Cannot change output schema
+  no_schema_modification: true
+  
+  # Cannot inflate support status
+  no_status_inflation: true
+  
+  # Must preserve original evidence digest
+  preserve_evidence_digest: true
+  
+  # Must preserve original prompt hash
+  preserve_prompt_hash: true
+
+# Repair success criteria
+success_criteria:
+  schema_validation_passes: true
+  all_required_fields_present: true
+  json_syntax_valid: true
+  citations_format_valid: true
+  support_status_accurate: true
+  no_new_errors_introduced: true

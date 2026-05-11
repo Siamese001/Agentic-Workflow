@@ -1,117 +1,257 @@
 """
-DS-2: Workflow Stage Handlers
-Concrete implementations for each workflow stage.
-"""
-import hashlib
-import json
-from typing import Dict, Any, Optional
-from datetime import datetime
+L3 generic workflow stage handler registry.
 
-from .managed_workflow_router import (
-    WorkflowStage, StageOutcome, StageExecution, WorkflowExecution
+Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W2
+Purpose: Unblock ManagedWorkflowEngine construction without hardcoding any
+app-domain-specific stage names or section names in core.
+
+Design rules (non-negotiable, enforced by tests):
+  - STAGE_HANDLERS is an empty dict — no default handlers pre-registered.
+  - WorkflowStageHandlerRegistry is the canonical registration surface;
+    STAGE_HANDLERS is the empty sentinel consumed by ManagedWorkflowEngine
+    at construction so the import no longer raises ImportError.
+  - resolve() fails closed: MissingWorkflowStageHandlerError on unknown stage.
+  - register() fails closed: DuplicateWorkflowStageHandlerError on re-register.
+  - Handlers sourced from quarantined modules are rejected at register() time
+    via a quarantine-source check.
+  - Handlers MUST NOT make provider/model/tool calls.
+  - Handlers MUST NOT write to L4 state.
+  - Handlers MUST NOT emit X3 dispositions.
+  - There is NO fallback to single-step on missing handler.
+
+W2 invariant: ManagedWorkflowEngine constructs (STAGE_HANDLERS import succeeds)
+but workflow execution remains BLOCKED until explicit domain handlers are
+registered via WorkflowStageHandlerRegistry.register().  That wiring happens
+in W4 (apps_rg_l3_binding.py).
+"""
+from __future__ import annotations
+
+import logging
+from typing import Any, Callable, Dict, Mapping, Optional, Tuple
+
+_logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Quarantine source prefixes — any handler whose __module__ starts with one
+# of these strings is rejected at registration time.
+# ---------------------------------------------------------------------------
+_QUARANTINE_MODULE_PREFIXES: Tuple[str, ...] = (
+    "apps_rg.integrations.hops",
+    "apps_rg.integrations.gates",
+    "apps_rg.prompt_assembly.rg_pa_compiler",
+    "apps_rg.prompt_assembly.contracts",
+    "apps_rg._quarantine",
 )
 
 
-def handle_research_stage(execution: WorkflowExecution) -> Dict[str, Any]:
+# ---------------------------------------------------------------------------
+# Exception hierarchy
+# ---------------------------------------------------------------------------
+
+class WorkflowStageHandlerResolutionError(Exception):
+    """Base for all handler-registry resolution failures."""
+
+
+class MissingWorkflowStageHandlerError(WorkflowStageHandlerResolutionError):
+    """Raised when resolve() is called for a stage with no registered handler.
+
+    Fail-closed invariant: there is no fallback to single-step execution.
     """
-    Handle RESEARCH stage: C0 grounding/retrieval.
-    
-    This performs research via Tavily or other C0 retrieval sources.
+
+    def __init__(self, stage_type: str) -> None:
+        self.stage_type = stage_type
+        super().__init__(
+            f"No workflow stage handler registered for stage_type={stage_type!r}. "
+            "Register a domain handler via WorkflowStageHandlerRegistry.register() "
+            "before dispatching this stage. "
+            "INVARIANT: missing handler does NOT fall back to single-step execution."
+        )
+
+
+class DuplicateWorkflowStageHandlerError(WorkflowStageHandlerResolutionError):
+    """Raised when register() is called for an already-registered stage_type."""
+
+    def __init__(self, stage_type: str) -> None:
+        self.stage_type = stage_type
+        super().__init__(
+            f"Duplicate workflow stage handler registration for stage_type={stage_type!r}. "
+            "Each stage_type may only be registered once per registry instance."
+        )
+
+
+class QuarantinedWorkflowHandlerError(WorkflowStageHandlerResolutionError):
+    """Raised when register() is called with a handler sourced from a quarantined module.
+
+    Quarantined prefixes: apps_rg.integrations.hops, apps_rg.integrations.gates,
+    apps_rg.prompt_assembly.rg_pa_compiler, apps_rg.prompt_assembly.contracts,
+    apps_rg._quarantine.
     """
-    # In production, this would call C0 retrieval
-    # For now, return a stub result
-    result = {
-        "stage": WorkflowStage.RESEARCH.value,
-        "outcome": StageOutcome.SUCCESS.value,
-        "timestamp": datetime.utcnow().isoformat(),
-        "documents_retrieved": 5,
-        "sources": ["tavily", "company_website"],
-        "grounding_digest": hashlib.sha256(b"research_result").hexdigest()[:16],
-    }
-    return result
+
+    def __init__(self, stage_type: str, handler_module: str) -> None:
+        self.stage_type = stage_type
+        self.handler_module = handler_module
+        super().__init__(
+            f"Handler for stage_type={stage_type!r} is sourced from quarantined module "
+            f"{handler_module!r}. "
+            "DO_NOT_IMPORT_FROM_CORE_RUNTIME — quarantined legacy apps_rg runtime modules "
+            "must not be registered as active core workflow handlers."
+        )
 
 
-def handle_brief_synthesis_stage(execution: WorkflowExecution) -> Dict[str, Any]:
+# ---------------------------------------------------------------------------
+# Handler type alias
+# ---------------------------------------------------------------------------
+
+# A WorkflowStageHandler accepts a step_packet (any Mapping — intentionally
+# generic so core does not depend on domain-specific contract types in W2)
+# and returns a step_result Mapping.
+#
+# W2 constraints on all registered handlers:
+#   - Must NOT call provider/model/tool APIs.
+#   - Must NOT write to L4 state.
+#   - Must NOT emit X3 dispositions.
+# These are enforced by tests, not by this type alias.
+WorkflowStageHandler = Callable[[Mapping[str, Any]], Mapping[str, Any]]
+
+
+# ---------------------------------------------------------------------------
+# WorkflowStageHandlerRef — lightweight reference (for logging / receipts)
+# ---------------------------------------------------------------------------
+
+class WorkflowStageHandlerRef:
+    """Lightweight descriptor for a registered handler — used in receipts."""
+
+    __slots__ = ("stage_type", "handler_name", "handler_module")
+
+    def __init__(self, stage_type: str, handler: WorkflowStageHandler) -> None:
+        self.stage_type = stage_type
+        self.handler_name: str = getattr(handler, "__name__", repr(handler))
+        self.handler_module: str = getattr(handler, "__module__", "")
+
+    def as_dict(self) -> Dict[str, str]:
+        return {
+            "stage_type": self.stage_type,
+            "handler_name": self.handler_name,
+            "handler_module": self.handler_module,
+        }
+
+
+# ---------------------------------------------------------------------------
+# WorkflowStageHandlerRegistry
+# ---------------------------------------------------------------------------
+
+class WorkflowStageHandlerRegistry:
+    """Generic, fail-closed registry for L3 workflow stage handlers.
+
+    Usage::
+
+        registry = WorkflowStageHandlerRegistry()
+        registry.register("content_generation", my_handler)
+        handler = registry.resolve("content_generation")
+        result = handler(step_packet)
+
+    Invariants:
+      - resolve() raises MissingWorkflowStageHandlerError if stage_type is
+        not registered.  There is NO fallback.
+      - register() raises DuplicateWorkflowStageHandlerError if stage_type
+        is already registered.
+      - register() raises QuarantinedWorkflowHandlerError if the handler's
+        __module__ starts with a quarantined prefix.
+      - stage_type is treated as a plain string — no dependency on the
+        WorkflowStage enum so this registry is reusable by any domain.
     """
-    Handle BRIEF_SYNTHESIS stage: L1 planning.
-    
-    This synthesizes research into a company brief.
-    """
-    result = {
-        "stage": WorkflowStage.BRIEF_SYNTHESIS.value,
-        "outcome": StageOutcome.SUCCESS.value,
-        "timestamp": datetime.utcnow().isoformat(),
-        "brief_sections": ["overview", "culture", "technology", "leadership"],
-        "brief_digest": hashlib.sha256(b"company_brief").hexdigest()[:16],
-    }
-    return result
+
+    def __init__(self) -> None:
+        self._handlers: Dict[str, WorkflowStageHandler] = {}
+        self._refs: Dict[str, WorkflowStageHandlerRef] = {}
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def register(self, stage_type: str, handler: WorkflowStageHandler) -> None:
+        """Register *handler* for *stage_type*.
+
+        Raises:
+            DuplicateWorkflowStageHandlerError: stage_type already registered.
+            QuarantinedWorkflowHandlerError: handler originates from a
+                quarantined module.
+            TypeError: handler is not callable.
+        """
+        if not callable(handler):
+            raise TypeError(
+                f"Handler for stage_type={stage_type!r} must be callable; "
+                f"got {type(handler).__name__}."
+            )
+        handler_module: str = getattr(handler, "__module__", "") or ""
+        for prefix in _QUARANTINE_MODULE_PREFIXES:
+            if handler_module.startswith(prefix):
+                raise QuarantinedWorkflowHandlerError(stage_type, handler_module)
+
+        if stage_type in self._handlers:
+            raise DuplicateWorkflowStageHandlerError(stage_type)
+
+        self._handlers[stage_type] = handler
+        self._refs[stage_type] = WorkflowStageHandlerRef(stage_type, handler)
+        _logger.debug(
+            "WorkflowStageHandlerRegistry.register stage_type=%r handler=%r",
+            stage_type,
+            handler_module + "." + getattr(handler, "__name__", "?"),
+        )
+
+    def resolve(self, stage_type: str) -> WorkflowStageHandler:
+        """Return the handler for *stage_type*.
+
+        Raises:
+            MissingWorkflowStageHandlerError: no handler registered for this
+                stage_type.  Does NOT fall back to single-step.
+        """
+        handler = self._handlers.get(stage_type)
+        if handler is None:
+            raise MissingWorkflowStageHandlerError(stage_type)
+        return handler
+
+    def registered_stage_types(self) -> Tuple[str, ...]:
+        """Return the tuple of currently-registered stage_type strings."""
+        return tuple(self._handlers.keys())
+
+    def refs(self) -> Tuple[WorkflowStageHandlerRef, ...]:
+        """Return WorkflowStageHandlerRef descriptors for all registered handlers."""
+        return tuple(self._refs.values())
+
+    def __len__(self) -> int:
+        return len(self._handlers)
+
+    def __contains__(self, stage_type: object) -> bool:
+        return stage_type in self._handlers
 
 
-def handle_jd_analysis_stage(execution: WorkflowExecution) -> Dict[str, Any]:
-    """
-    Handle JD_ANALYSIS stage: L0 routing/C0 evidence.
-    
-    This analyzes the job description for requirements.
-    """
-    result = {
-        "stage": WorkflowStage.JD_ANALYSIS.value,
-        "outcome": StageOutcome.SUCCESS.value,
-        "timestamp": datetime.utcnow().isoformat(),
-        "requirements_extracted": 12,
-        "required_skills": ["python", "leadership", "strategy"],
-        "nice_to_have": ["golang", "kubernetes"],
-        "analysis_digest": hashlib.sha256(b"jd_analysis").hexdigest()[:16],
-    }
-    return result
+# ---------------------------------------------------------------------------
+# Module-level STAGE_HANDLERS sentinel
+#
+# ManagedWorkflowEngine does:
+#   from .workflow_stage_handlers import STAGE_HANDLERS
+#   self._stage_handlers.update(STAGE_HANDLERS)
+#
+# STAGE_HANDLERS is intentionally empty so that:
+#   (a) the import no longer raises ImportError (W2 blocker fixed), and
+#   (b) no domain handlers are silently pre-wired (domain wiring is W4).
+#
+# ManagedWorkflowEngine._stage_handlers will therefore start empty; any
+# attempt to dispatch a stage without prior domain-handler registration
+# must raise MissingWorkflowStageHandlerError via WorkflowStageHandlerRegistry.
+# ---------------------------------------------------------------------------
+
+STAGE_HANDLERS: Dict[Any, Any] = {}
 
 
-def handle_content_generation_stage(execution: WorkflowExecution) -> Dict[str, Any]:
-    """
-    Handle CONTENT_GENERATION stage: L2 execution.
-    
-    This generates the resume content via LLM.
-    """
-    # In production, this would call SovereignLLMGateway
-    result = {
-        "stage": WorkflowStage.CONTENT_GENERATION.value,
-        "outcome": StageOutcome.SUCCESS.value,
-        "timestamp": datetime.utcnow().isoformat(),
-        "sections_generated": 7,
-        "tokens_consumed": 2500,
-        "generation_time_ms": 3500,
-        "output_digest": hashlib.sha256(b"generated_resume").hexdigest()[:16],
-    }
-    return result
-
-
-def handle_quality_review_stage(execution: WorkflowExecution) -> Dict[str, Any]:
-    """
-    Handle QUALITY_REVIEW stage: Exit evaluation.
-    
-    This performs quality checks before final output.
-    """
-    result = {
-        "stage": WorkflowStage.QUALITY_REVIEW.value,
-        "outcome": StageOutcome.SUCCESS.value,
-        "timestamp": datetime.utcnow().isoformat(),
-        "quality_score": 0.87,
-        "checks_passed": 8,
-        "checks_failed": 0,
-        "review_digest": hashlib.sha256(b"quality_pass").hexdigest()[:16],
-    }
-    return result
-
-
-# Handler registry
-STAGE_HANDLERS = {
-    WorkflowStage.RESEARCH: handle_research_stage,
-    WorkflowStage.BRIEF_SYNTHESIS: handle_brief_synthesis_stage,
-    WorkflowStage.JD_ANALYSIS: handle_jd_analysis_stage,
-    WorkflowStage.CONTENT_GENERATION: handle_content_generation_stage,
-    WorkflowStage.QUALITY_REVIEW: handle_quality_review_stage,
-}
-
-
-def get_stage_handler(stage: WorkflowStage):
-    """Get the handler for a workflow stage."""
-    return STAGE_HANDLERS.get(stage)
+__all__ = [
+    "STAGE_HANDLERS",
+    "WorkflowStageHandler",
+    "WorkflowStageHandlerRef",
+    "WorkflowStageHandlerRegistry",
+    "WorkflowStageHandlerResolutionError",
+    "MissingWorkflowStageHandlerError",
+    "DuplicateWorkflowStageHandlerError",
+    "QuarantinedWorkflowHandlerError",
+]

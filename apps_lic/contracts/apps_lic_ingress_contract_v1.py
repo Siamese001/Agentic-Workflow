@@ -458,22 +458,243 @@ class SourceLineageSection(_ImmutableModel):
 class ForbiddenSendModesSection(_ImmutableModel):
     """Forbidden send-mode blocklist.
 
-    The three always-forbidden modes are enforced by U0; caller may add more.
+    All seven always-forbidden modes are enforced by U0; caller may add more.
     """
 
     modes: List[str] = Field(
-        default_factory=lambda: ["send_now", "auto_send", "connector_send"]
+        default_factory=lambda: [
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        ]
     )
 
     @field_validator("modes")
     @classmethod
-    def _must_contain_hardcoded_three(cls, v: List[str]) -> List[str]:
-        _REQUIRED = {"send_now", "auto_send", "connector_send"}
+    def _must_contain_hardcoded_seven(cls, v: List[str]) -> List[str]:
+        _REQUIRED = {
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        }
         missing = _REQUIRED - set(v)
         if missing:
             raise ValueError(
                 f"forbidden_send_modes must include {sorted(_REQUIRED)}; "
                 f"missing: {sorted(missing)}"
+            )
+        return v
+
+
+# ---------------------------------------------------------------------------
+# Sub-shapes: Runtime Customization Package (W1)
+# ---------------------------------------------------------------------------
+
+
+class ProfileRef(_ImmutableModel):
+    """Reference to a profile with optional digest for integrity verification."""
+
+    ref_id: str
+    ref_path: Optional[str] = None
+    ref_digest: Optional[str] = None
+    required: bool = True
+
+
+class RoutePolicy(_ImmutableModel):
+    """Route policy using final L0 model names only.
+
+    OLD NAMES NOT ALLOWED: evidence_grounded_generation, ungrounded_generation,
+    R3_grounded_read, briefing-only.
+    """
+
+    allowed_route_families: List[str] = Field(
+        default_factory=lambda: [
+            "R4_MANAGED_DRAFT",
+            "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
+            "R5_FALLBACK",
+        ]
+    )
+    default_route_family: str = "R4_MANAGED_DRAFT"
+    briefing_only_route_allowed: bool = False  # Always false for apps_lic
+
+    @field_validator("allowed_route_families")
+    @classmethod
+    def _forbid_old_route_names(cls, v: List[str]) -> List[str]:
+        _FORBIDDEN = {
+            "evidence_grounded_generation",
+            "ungrounded_generation",
+            "R3_grounded_read",
+            "briefing-only",
+            "briefing_only",
+        }
+        found_forbidden = _FORBIDDEN & set(v)
+        if found_forbidden:
+            raise ValueError(
+                f"allowed_route_families contains forbidden old route names: {sorted(found_forbidden)}. "
+                f"Use only: R4_MANAGED_DRAFT, R3R4_MANAGED_RESEARCH_THEN_DRAFT, R5_FALLBACK"
+            )
+        return v
+
+    @field_validator("briefing_only_route_allowed")
+    @classmethod
+    def _briefing_always_false(cls, v: bool) -> bool:
+        if v:
+            raise ValueError(
+                "briefing_only_route_allowed must be False for apps_lic — "
+                "briefing-only requests must route to apps_research directly"
+            )
+        return v
+
+
+class WritePolicy(_ImmutableModel):
+    """Write policy — apps_lic is read-only, no durable writes."""
+
+    durable_write_allowed: bool = False
+    uwg_required_for_any_write: bool = True
+    allowed_write_classes: List[str] = Field(default_factory=list)
+
+    @field_validator("durable_write_allowed")
+    @classmethod
+    def _write_always_false(cls, v: bool) -> bool:
+        if v:
+            raise ValueError(
+                "durable_write_allowed must be False for apps_lic — "
+                "apps_lic is read-only (side_effect_class=read_only)"
+            )
+        return v
+
+
+class CacheBypassPolicy(_ImmutableModel):
+    """Cache bypass policy for final outreach drafts.
+
+    R1A exact cache and R1B semantic cache must be bypassed for final drafts.
+    Cache allowed only for support artifacts (briefings, facts, manifests).
+    """
+
+    r1a_exact_cache_bypassed_for_final_drafts: bool = True
+    r1b_semantic_cache_bypassed_for_final_drafts: bool = True
+    cache_allowed_for_support_artifacts: bool = True
+    final_draft_cache_ttl_seconds: int = 0  # 0 = no cache
+    support_artifact_cache_ttl_seconds: int = 3600  # 1 hour
+
+    @field_validator("r1a_exact_cache_bypassed_for_final_drafts")
+    @classmethod
+    def _r1a_must_bypass_final(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError(
+                "r1a_exact_cache_bypassed_for_final_drafts must be True — "
+                "final outreach drafts must never be served from exact cache"
+            )
+        return v
+
+    @field_validator("r1b_semantic_cache_bypassed_for_final_drafts")
+    @classmethod
+    def _r1b_must_bypass_final(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError(
+                "r1b_semantic_cache_bypassed_for_final_drafts must be True — "
+                "final outreach drafts must never be served from semantic cache"
+            )
+        return v
+
+
+class RuntimeGatePolicy(_ImmutableModel):
+    """Runtime gate execution policy."""
+
+    required_runtime_gates: List[str] = Field(default_factory=list)
+    conditional_runtime_gates: List[str] = Field(default_factory=list)
+    halt_on_gate_failure: bool = True
+
+
+class ExitGatePolicy(_ImmutableModel):
+    """Exit gate execution policy."""
+
+    required_exit_gates: List[str] = Field(default_factory=list)
+    conditional_exit_gates: List[str] = Field(default_factory=list)
+    fail_closed_on_exit_failure: bool = True
+
+
+class ConsentCompliancePolicy(_ImmutableModel):
+    """Consent and compliance policy."""
+
+    consent_required: bool = True
+    compliance_profile_ref: Optional[ProfileRef] = None
+    gdpr_relevant: bool = False
+    ccpa_relevant: bool = False
+
+
+class MetaFeedbackPolicy(_ImmutableModel):
+    """Meta-feedback and L6 learning policy."""
+
+    promotion_threshold: float = 0.6
+    min_n_each_arm: int = 30
+    holdout_required: bool = True
+    judge_calibration_cadence_days: int = 7
+    regret_budget: float = 0.05
+    z_score: float = 1.96
+    uplift_required: float = 0.0
+
+
+class RuntimeCustomizationPackageSection(_ImmutableModel):
+    """Complete runtime customization package for apps_lic.
+
+    Carries all profile references, policies, and gate requirements
+    needed by agentic_core to run apps_lic on the common spine.
+
+    Route fields use FINAL L0 model names only:
+    - R4_MANAGED_DRAFT
+    - R3R4_MANAGED_RESEARCH_THEN_DRAFT
+    - R5_FALLBACK
+    """
+
+    # Profile references
+    runtime_gate_profile_ref: Optional[ProfileRef] = None
+    exit_profile_ref: Optional[ProfileRef] = None
+    judge_profile_ref: Optional[ProfileRef] = None
+    eval_rubric_ref: Optional[ProfileRef] = None
+    threshold_profile_ref: Optional[ProfileRef] = None
+    grader_roster_ref: Optional[ProfileRef] = None
+    rubric_output_map_ref: Optional[ProfileRef] = None
+    negative_controls_ref: Optional[ProfileRef] = None
+    learning_profile_ref: Optional[ProfileRef] = None
+    meta_feedback_profile_ref: Optional[ProfileRef] = None
+    route_profile_ref: Optional[ProfileRef] = None
+    retrieval_profile_ref: Optional[ProfileRef] = None
+    prompt_profile_ref: Optional[ProfileRef] = None
+    repair_profile_ref: Optional[ProfileRef] = None
+    cache_profile_ref: Optional[ProfileRef] = None
+    capability_profile_ref: Optional[ProfileRef] = None
+    orchestration_profile_ref: Optional[ProfileRef] = None
+
+    # Policies
+    route_policy: RoutePolicy = Field(default_factory=RoutePolicy)
+    write_policy: WritePolicy = Field(default_factory=WritePolicy)
+    cache_bypass_policy: CacheBypassPolicy = Field(default_factory=CacheBypassPolicy)
+    runtime_gate_policy: RuntimeGatePolicy = Field(default_factory=RuntimeGatePolicy)
+    exit_gate_policy: ExitGatePolicy = Field(default_factory=ExitGatePolicy)
+    consent_compliance_policy: ConsentCompliancePolicy = Field(
+        default_factory=ConsentCompliancePolicy
+    )
+    meta_feedback_policy: MetaFeedbackPolicy = Field(default_factory=MetaFeedbackPolicy)
+
+    # Integrity
+    package_digest: str = ""
+
+    @field_validator("package_digest")
+    @classmethod
+    def _package_digest_required(cls, v: str) -> str:
+        if not v or len(v.strip()) == 0:
+            raise ValueError(
+                "package_digest is required and must be non-empty — "
+                "RuntimeCustomizationPackageSection must have a computed digest"
             )
         return v
 
@@ -591,8 +812,23 @@ class AppsLicIngressContractV1(_ImmutableModel):
     # Replay, audit, idempotency
     replay_audit: ReplayAuditSection = Field(default_factory=ReplayAuditSection)
 
+    # Runtime customization package (W1)
+    runtime_customization_package: RuntimeCustomizationPackageSection = Field(
+        default_factory=RuntimeCustomizationPackageSection
+    )
+
     # Integrity — computed by caller's __post_init__ equivalent
     payload_digest: str = ""
+
+    @field_validator("payload_digest")
+    @classmethod
+    def _payload_digest_required(cls, v: str) -> str:
+        if not v or len(v.strip()) == 0:
+            raise ValueError(
+                "payload_digest is required and must be non-empty — "
+                "compute SHA-256 hex digest of canonical JSON serialization"
+            )
+        return v
 
     @field_validator("apps_lic_contract_version")
     @classmethod
@@ -609,13 +845,22 @@ __all__ = [
     "ActionRequired",
     "AntipatternPolicySection",
     "AppsLicIngressContractV1",
+    "CacheBypassPolicy",
     "CampaignSection",
     "Channel",
     "CompanyProfileSection",
+    "ConsentCompliancePolicy",
     "EntityRefsSection",
+    "ExitGatePolicy",
     "ForbiddenSendModesSection",
     "GateDecisionPolicySection",
     "GenerationHintsSection",
+    "MetaFeedbackPolicy",
+    "ProfileRef",
+    "RoutePolicy",
+    "RuntimeCustomizationPackageSection",
+    "RuntimeGatePolicy",
+    "WritePolicy",
     "GovernanceShieldSection",
     "HitlPolicySection",
     "LeadProfileSection",

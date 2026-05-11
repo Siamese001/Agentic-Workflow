@@ -142,6 +142,10 @@ def _make_envelope() -> Any:
             "name": "Amit Ayer",
             "title": "SVP AI Solutions",
         },
+        research_requirements={
+            "allow_research": True,
+            "research_evidence_types": ["company_brief", "lead_profile"],
+        },
     )
     return AppsLicRequestEnvelope(
         request_id=uuid.uuid4().hex[:16],

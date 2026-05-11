@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Downstream Research Substrate Contract",
+  "description": "Schema for research substrate passed to downstream apps (apps_rg, apps_lic)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "substrate_type",
+    "research_summary",
+    "key_findings",
+    "source_attributions",
+    "confidence_assessment",
+    "reuse_policy"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "research_substrate_v1.0"
+    },
+    "substrate_type": {
+      "type": "string",
+      "const": "company_research_brief"
+    },
+    "target_company": {
+      "type": "string"
+    },
+    "research_summary": {
+      "type": "object",
+      "required": ["overview", "business_model"],
+      "properties": {
+        "overview": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "business_model": {
+          "type": "string"
+        },
+        "market_position": {
+          "type": "string"
+        },
+        "leadership_summary": {
+          "type": "string"
+        }
+      }
+    },
+    "key_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding", "confidence", "sources"],
+        "properties": {
+          "finding": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["financial", "strategic", "operational", "market", "risk"]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["HIGH", "MEDIUM", "LOW"]
+          },
+          "sources": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "materiality": {
+            "type": "string",
+            "enum": ["CRITICAL", "SIGNIFICANT", "MODERATE", "MINOR"]
+          }
+        }
+      }
+    },
+    "source_attributions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "source_type", "credibility_tier", "citation"],
+        "properties": {
+          "source_id": { "type": "string" },
+          "source_type": {
+            "type": "string",
+            "enum": ["SEC_FILING", "COMPANY_IR", "NEWS", "ANALYST", "INDUSTRY"]
+          },
+          "credibility_tier": {
+            "type": "string",
+            "enum": ["TIER_1", "TIER_2", "TIER_3"]
+          },
+          "citation": { "type": "string" },
+          "retrieval_date": { "type": "string" },
+          "freshness_status": {
+            "type": "string",
+            "enum": ["CURRENT", "RECENT", "DATED", "STALE"]
+          }
+        }
+      }
+    },
+    "confidence_assessment": {
+      "type": "object",
+      "required": ["overall", "evidence_strength", "coverage_gaps"],
+      "properties": {
+        "overall": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "INSUFFICIENT"]
+        },
+        "evidence_strength": { "type": "string" },
+        "coverage_gaps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "caveats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "research_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "reuse_policy": {
+      "type": "object",
+      "required": ["permitted", "scope", "attribution_required"],
+      "properties": {
+        "permitted": { "type": "boolean" },
+        "scope": {
+          "type": "string",
+          "enum": ["DELEGATED_ONLY", "ANY"]
+        },
+        "attribution_required": { "type": "boolean" },
+        "allowed_consumers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "prohibited_uses": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "research_request_id": { "type": "string" },
+        "research_timestamp": { "type": "string" },
+        "apps_research_version": { "type": "string" },
+        "evidence_digest": { "type": "string" }
+      }
+    },
+    "data_boundary": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string", "const": "EVIDENCE_DATA_ONLY" },
+        "can_be_used_as": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": [["evidence", "reference", "grounding"]]
+        },
+        "cannot_be_used_as": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": [["instruction", "system_prompt", "behavior_override"]]
+        }
+      }
+    }
+  }
+}

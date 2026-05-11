@@ -79,7 +79,15 @@ class AppsLicIngressPayload:
 
     # Governance (F-17, F-22..F-25, F-28) — cannot be disabled
     forbidden_send_modes: tuple[str, ...] = field(
-        default_factory=lambda: ("send_now", "auto_send", "connector_send")
+        default_factory=lambda: (
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        )
     )
     hitl_policy: Mapping[str, Any] = field(default_factory=dict)
     pii_policy: Mapping[str, Any] = field(default_factory=dict)

@@ -167,6 +167,17 @@ def _build_app_payload_projections(
     write_authority_present: bool = False
 
     # ── 1. task_spec ─────────────────────────────────────────────────────────
+    # Research authorization flags (read from research_requirements sub-section)
+    allow_research: bool = bool(research_req.get("allow_research", False))
+    research_evidence_types: list[str] = list(
+        research_req.get("research_evidence_types", research_req.get("required_evidence_types", []))
+    )
+    # Context freshness flags (advisory — sourced from campaign context_signals if present)
+    context_signals = app_payload.get("context_signals", {})
+    briefing_fresh: bool = bool(context_signals.get("briefing_fresh", False))
+    lead_profile_valid: bool = bool(context_signals.get("lead_profile_valid", False))
+    context_grounded: bool = bool(context_signals.get("context_grounded", False))
+
     task_spec: dict[str, Any] = {
         "task_class": _coerce_str(transport.get("task_class", "outreach_message")),
         "request_type": _coerce_str(campaign.get("request_type", "outreach_draft")),
@@ -175,6 +186,14 @@ def _build_app_payload_projections(
         "workflow_required": workflow_required,
         "grounding_required": grounding_required,
         "side_effect_class": side_effect_class,
+        "campaign_objective": campaign.get("campaign_objective", ""),
+        # Research authorization (L0 routing decision inputs)
+        "allow_research": allow_research,
+        "research_evidence_types": research_evidence_types,
+        # Context freshness (L0 routing decision inputs)
+        "briefing_fresh": briefing_fresh,
+        "lead_profile_valid": lead_profile_valid,
+        "context_grounded": context_grounded,
     }
 
     # ── 2. query_spec ─────────────────────────────────────────────────────────

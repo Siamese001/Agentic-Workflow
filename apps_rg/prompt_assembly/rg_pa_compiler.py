@@ -11,9 +11,14 @@ Importing this module raises RuntimeError immediately.
 Core L6 Observability owns all trace emission. apps_rg is ingress-only.
 """
 
+# DO_NOT_IMPORT_FROM_CORE_RUNTIME
+# Machine-checkable sentinel for W2 quarantine-guard tests and CI grep proofs.
+# Any agentic_core active runtime module that imports from apps_rg.prompt_assembly.rg_pa_compiler
+# is a QUARANTINE VIOLATION (AG-RGGOV-8).
+
 raise RuntimeError(
     "QUARANTINE VIOLATION (AG-RGGOV-8): "
-    "apps_rg.prompt_assembly\rg_pa_compiler is QUARANTINED. "
+    "apps_rg.prompt_assembly.rg_pa_compiler is QUARANTINED. "
     "apps_rg may NOT contain runtime authority. "
     "Core L2/L5/L6 owns execution. apps_rg is ingress-only. "
     "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"

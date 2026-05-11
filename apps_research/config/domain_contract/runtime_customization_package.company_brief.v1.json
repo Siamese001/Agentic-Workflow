@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "apps_research_runtime_customization_package_v1",
+  "title": "Apps Research Runtime Customization Package",
+  "description": "U0-level runtime customization package for apps_research - declarative config refs only",
+  "type": "object",
+  "required": [
+    "package_id",
+    "package_version",
+    "app_id",
+    "task_class",
+    "package_digest"
+  ],
+  "properties": {
+    "package_id": {
+      "type": "string",
+      "description": "Unique package identifier"
+    },
+    "package_version": {
+      "type": "string",
+      "default": "1.0.0",
+      "description": "Package version"
+    },
+    "app_id": {
+      "type": "string",
+      "const": "apps_research",
+      "description": "Application identifier"
+    },
+    "task_class": {
+      "type": "string",
+      "enum": ["company_brief", "research_substrate", "uploaded_briefing_normalization"],
+      "description": "Task class for this run"
+    },
+    "spine_profile_ref": {
+      "type": "string",
+      "description": "Reference to spine profile config"
+    },
+    "route_profile_ref": {
+      "type": "string",
+      "description": "Reference to route profile config"
+    },
+    "retrieval_profile_ref": {
+      "type": "string",
+      "description": "Reference to retrieval profile config"
+    },
+    "cache_profile_ref": {
+      "type": "string",
+      "description": "Reference to cache profile config"
+    },
+    "source_mix_policy_ref": {
+      "type": "string",
+      "description": "Reference to source mix policy"
+    },
+    "freshness_policy_ref": {
+      "type": "string",
+      "description": "Reference to freshness policy"
+    },
+    "runtime_gate_profile_ref": {
+      "type": "string",
+      "description": "Reference to runtime gate profile"
+    },
+    "exit_profile_ref": {
+      "type": "string",
+      "description": "Reference to exit profile config"
+    },
+    "judge_profile_ref": {
+      "type": "string",
+      "description": "Reference to judge profile config"
+    },
+    "grader_roster_ref": {
+      "type": "string",
+      "description": "Reference to grader roster config"
+    },
+    "eval_rubric_ref": {
+      "type": "string",
+      "description": "Reference to eval rubric config"
+    },
+    "threshold_profile_ref": {
+      "type": "string",
+      "description": "Reference to threshold profile config"
+    },
+    "rubric_output_map_ref": {
+      "type": "string",
+      "description": "Reference to rubric output map config"
+    },
+    "negative_controls_ref": {
+      "type": "string",
+      "description": "Reference to negative controls config"
+    },
+    "prompt_profile_ref": {
+      "type": "string",
+      "description": "Reference to prompt profile config"
+    },
+    "prompt_bom_ref": {
+      "type": "string",
+      "description": "Reference to prompt BOM config"
+    },
+    "output_schema_ref": {
+      "type": "string",
+      "description": "Reference to output schema"
+    },
+    "research_substrate_schema_ref": {
+      "type": "string",
+      "description": "Reference to research substrate schema"
+    },
+    "learning_profile_ref": {
+      "type": "string",
+      "description": "Reference to learning profile config"
+    },
+    "meta_feedback_profile_ref": {
+      "type": "string",
+      "description": "Reference to meta-feedback profile config"
+    },
+    "briefing_normalization_policy_ref": {
+      "type": "string",
+      "description": "Reference to briefing normalization policy"
+    },
+    "entity_resolution_policy_ref": {
+      "type": "string",
+      "description": "Reference to entity resolution policy"
+    },
+    "capability_profile_ref": {
+      "type": "string",
+      "description": "Reference to capability profile"
+    },
+    "provider_profile_ref": {
+      "type": "string",
+      "description": "Reference to provider profile"
+    },
+    "write_policy": {
+      "type": "string",
+      "enum": ["read_only", "read_write"],
+      "default": "read_only",
+      "description": "Write policy for this run"
+    },
+    "required_runtime_gates": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Required runtime gate IDs"
+    },
+    "required_exit_gates": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Required exit gate IDs"
+    },
+    "conditional_exit_gates": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Conditional exit gate IDs"
+    },
+    "judge_execution_policy": {
+      "type": "string",
+      "enum": ["core_only", "app_delegated"],
+      "default": "core_only",
+      "description": "Judge execution policy"
+    },
+    "eval_execution_policy": {
+      "type": "string",
+      "enum": ["core_only", "app_delegated"],
+      "default": "core_only",
+      "description": "Eval execution policy"
+    },
+    "meta_feedback_policy": {
+      "type": "string",
+      "enum": ["l6_only", "disabled"],
+      "default": "l6_only",
+      "description": "Meta-feedback policy"
+    },
+    "l6_learning_policy": {
+      "type": "string",
+      "enum": ["future_run_only", "disabled"],
+      "default": "future_run_only",
+      "description": "L6 learning policy"
+    },
+    "semantic_cache_policy": {
+      "type": "string",
+      "enum": ["research_substrate_only", "disabled"],
+      "default": "research_substrate_only",
+      "description": "Semantic cache policy"
+    },
+    "cross_app_reuse_policy": {
+      "type": "string",
+      "enum": ["delegated_only", "disabled"],
+      "default": "delegated_only",
+      "description": "Cross-app reuse policy"
+    },
+    "package_digest": {
+      "type": "string",
+      "description": "SHA-256 digest of package contents"
+    }
+  },
+  "additionalProperties": false
+}

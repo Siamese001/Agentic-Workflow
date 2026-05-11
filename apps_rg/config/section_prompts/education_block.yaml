@@ -1,0 +1,39 @@
+# Education block section prompt profile — W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+# GOVERNANCE: Declarative data only. No prompt compiler logic here.
+prompt_id: "sp::apps_rg::education_block::v1"
+node_id: education_block
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+
+slot_requirements:
+  required: [S0, I0, C0, U0, D0, R0]
+  optional: []
+
+template_ref: null
+template_inline_note: >
+  Education block is assembled deterministically from candidate_profile.education.
+  No LLM generation — institution and degree are copied verbatim.
+  Ordering: most recent graduation year descending.
+
+input_refs:
+  - "candidate_profile.education[*].institution"
+  - "candidate_profile.education[*].degree"
+  - "candidate_profile.education[*].graduation_year"
+  - "candidate_profile.education[*].field_of_study"
+
+output_schema_ref: "aos::apps_rg::resume_generation::v1#education_block"
+
+required_evidence_refs:
+  - "candidate_profile.education (all entries MUST appear — no omission, no addition)"
+
+prompt_boundary_rules:
+  - "institution MUST equal candidate_profile.education[].institution exactly"
+  - "degree MUST equal candidate_profile.education[].degree exactly"
+  - "graduation year MUST equal candidate_profile.education[].graduation_year"
+  - "no additional degrees or institutions not in candidate_profile"
+  - "no inferred or implied credentials"
+
+examples_ref: null

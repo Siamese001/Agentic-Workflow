@@ -1,0 +1,420 @@
+{
+  "_comment": "apps_rg runtime gate profile — W3, plan apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2",
+  "_governance": "Declarative data only. No executable code. Gate enforcement owned by agentic_core runtime.",
+  "runtime_gate_profile_id": "rgp::apps_rg::resume_generation::v1",
+  "app_id": "apps_rg",
+  "task_class": "resume_generation",
+  "version": "1.0.0",
+  "status": "active",
+  "created_at": "2026-05-11",
+  "source_refs": [
+    "apps_rg/config/domain_contract/eval_rubrics.yaml",
+    "apps_rg/config/domain_contract/threshold_profiles.yaml",
+    "apps_rg/config/domain_contract/grader_roster.yaml"
+  ],
+
+  "gate_laws": [
+    "UNKNOWN is never PASS — an unknown gate verdict is treated as FAIL",
+    "NOT_APPLICABLE requires an explicit reason field — blank reason is UNKNOWN",
+    "A missing applicable gate verdict is treated as UNKNOWN",
+    "GateVerdict is evidence only — it does not constitute X3 output disposition",
+    "X3 output disposition is owned exclusively by Exit (G21-G28 family)",
+    "Durable write admission is owned exclusively by UWG (G29 family)",
+    "Any gate with severity=hard_fail: gate failure terminates the workflow immediately",
+    "Any gate with severity=warn: gate failure is logged but does not terminate",
+    "G25 (HITL escalation) is conditional — see conditional_gate_triggers",
+    "G27 (durable write admission) is conditional — see conditional_gate_triggers"
+  ],
+
+  "stages": {
+    "U0": {
+      "stage_description": "Ingress validation — schema check, replay key derivation, basic grounding pre-check",
+      "required_gates": [
+        {
+          "gate_id": "G01",
+          "description": "Ingress schema validation — AppsRgIngressContractV1 strict parse",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G02",
+          "description": "Replay key uniqueness — request_id + run_id not previously seen in trace store",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G03_lite",
+          "description": "Candidate profile structural pre-check (lite) — required top-level fields present",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G04_lite",
+          "description": "JD structural pre-check (lite) — required JD fields present and parseable",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G17_lite",
+          "description": "Security boundary lite — no injection markers in ingress fields",
+          "severity": "hard_fail",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "L1": {
+      "stage_description": "Cognition / planning — full profile validation, JD alignment, L1 plan projection",
+      "required_gates": [
+        {
+          "gate_id": "G03",
+          "description": "Candidate profile full validation — employer/title/date consistency, evidence completeness",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G04",
+          "description": "JD full validation — role title parseable, seniority inferrable, required skills extractable",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G05",
+          "description": "Retrieval profile ACL — tenant scope verified, candidate consent artifact present",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G18",
+          "description": "Capability profile side-effect class — no disallowed tool or connector invocation planned",
+          "severity": "hard_fail",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "L0": {
+      "stage_description": "Routing — route selection, cache check, execution form decision",
+      "required_gates": [
+        {
+          "gate_id": "G07",
+          "description": "Route contract validity — selected route exists in route_registry and is active",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G08",
+          "description": "Cache eligibility check — R1A exact-key match attempted; result documented",
+          "severity": "warn",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G10",
+          "description": "Execution form validity — MANAGED_WORKFLOW or DETERMINISTIC_PIPELINE declared in route contract",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G20",
+          "description": "Workflow manifest resolvability — wfm::apps_rg::resume_generation::v1 is registered",
+          "severity": "hard_fail",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "C0": {
+      "stage_description": "Local evidence retrieval — candidate profile projection, company brief, ATS keywords",
+      "required_gates": [
+        {
+          "gate_id": "G08",
+          "description": "Evidence source ACL — all retrieval sources are in allowed_sources list",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G09",
+          "description": "Evidence freshness — retrieved evidence within bounded_freshness window",
+          "severity": "warn",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G13",
+          "description": "Claim citation map present — every candidate_profile evidence item has an evidence_id",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G17",
+          "description": "Security boundary — no prohibited PII or cross-tenant data in evidence bundle",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G23",
+          "description": "Leakage pre-check — no prompt/credential leakage in retrieved evidence",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G24",
+          "description": "Provenance chain seeding — evidence_digest computed and attached to C0 receipt",
+          "severity": "hard_fail",
+          "evidence_required": true
+        }
+      ]
+    },
+
+    "PA": {
+      "stage_description": "Prompt assembly — slot filling, boundary enforcement, prompt compilation",
+      "required_gates": [
+        {
+          "gate_id": "G10",
+          "description": "Prompt profile ref valid — app::apps_rg::resume_generation::v1 resolved",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G13",
+          "description": "All required slots filled — S0/I0/C0/U0/D0/Y0/R0 present in assembled prompt",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G17",
+          "description": "Prompt boundary rules enforced — user_task classified as DATA, not instruction",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G21",
+          "description": "Prompt output schema ref present in compiled prompt",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G23",
+          "description": "No forbidden content in assembled prompt (instruction_to_fabricate etc.)",
+          "severity": "hard_fail",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "L3": {
+      "stage_description": "Orchestration coordination — workflow stage dispatch, inter-node dependency check",
+      "required_gates": [
+        {
+          "gate_id": "G18",
+          "description": "No disallowed tool invocation by orchestrated node",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G19",
+          "description": "Intermediate node output schema compliance — each node output matches output_schema_ref",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G20",
+          "description": "All required_runtime_gates for each node resolved before node executes",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G25",
+          "description": "HITL escalation — conditional; see conditional_gate_triggers",
+          "severity": "hard_fail",
+          "evidence_required": true,
+          "conditional": true,
+          "condition_ref": "conditional_gate_triggers.G25"
+        }
+      ]
+    },
+
+    "L2": {
+      "stage_description": "Execution — LLM generation, candidate production, candidate gate evaluation",
+      "required_gates": [
+        {
+          "gate_id": "G11",
+          "description": "Provider profile valid — pvp::apps_rg::resume_generation::v1 resolved",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G12",
+          "description": "Candidate count within bounds — at least 1 candidate generated",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G13",
+          "description": "Every candidate output has evidence citation map",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G14",
+          "description": "Candidate passes no_fabrication gate (score >= 0.99)",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G15",
+          "description": "Candidate passes factual_grounding gate (score >= 0.95)",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G17",
+          "description": "No PII leakage or cross-tenant signal in candidate output",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G19",
+          "description": "Candidate output schema valid against output_schema_ref",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G20",
+          "description": "Winner selection policy applied; winning candidate id recorded",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G21",
+          "description": "Output schema G21 pre-check — required sections present in winning candidate",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G23",
+          "description": "Leakage scan on winning candidate output",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G24",
+          "description": "Provenance chain — sealed L2 artifact digest computed and referenced",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G28",
+          "description": "L6 observability — sealed L2 artifact span emitted",
+          "severity": "warn",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "Exit": {
+      "stage_description": "Exit evaluation — full G21-G28 battery; X3 disposition authority",
+      "required_gates": [
+        {
+          "gate_id": "G21",
+          "description": "Output schema full validation — all required sections, field constraints",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G22",
+          "description": "Quality gate — weighted rubric score >= overall_pass_threshold (0.75)",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G23",
+          "description": "Leakage gate — prompt/credential/cross-tenant leakage scan",
+          "severity": "hard_fail",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G24",
+          "description": "Replay and provenance completeness — full chain sealed",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G25",
+          "description": "HITL escalation — conditional; see conditional_gate_triggers",
+          "severity": "hard_fail",
+          "evidence_required": true,
+          "conditional": true,
+          "condition_ref": "conditional_gate_triggers.G25"
+        },
+        {
+          "gate_id": "G26",
+          "description": "Hallucination/fabrication audit — no_fabrication score >= 0.99",
+          "severity": "hard_fail",
+          "evidence_required": true
+        },
+        {
+          "gate_id": "G27",
+          "description": "Durable write admission — conditional; see conditional_gate_triggers",
+          "severity": "hard_fail",
+          "evidence_required": true,
+          "conditional": true,
+          "condition_ref": "conditional_gate_triggers.G27"
+        },
+        {
+          "gate_id": "G28",
+          "description": "L6 RuntimeExhaustBundle — observability bundle sealed",
+          "severity": "warn",
+          "evidence_required": false
+        }
+      ]
+    },
+
+    "L6": {
+      "stage_description": "Observability — runtime exhaust bundle, trace emission, L6 telemetry",
+      "required_gates": [
+        {
+          "gate_id": "G28",
+          "description": "L6 RuntimeExhaustBundle present and sealed",
+          "severity": "warn",
+          "evidence_required": false
+        },
+        {
+          "gate_id": "G29",
+          "description": "UWG durable write admission — only when durable writes requested",
+          "severity": "hard_fail",
+          "evidence_required": true,
+          "conditional": true,
+          "condition_ref": "conditional_gate_triggers.G27"
+        }
+      ]
+    }
+  },
+
+  "conditional_gate_triggers": {
+    "G25": {
+      "description": "HITL escalation required when ANY of the following conditions fire",
+      "conditions": [
+        "runtime anomaly detected (unexpected exception, timeout, retry budget exceeded)",
+        "judge disagreement: role_alignment judge and deterministic keyword score differ by > 0.25",
+        "schema repair loop: more than 2 repair iterations attempted",
+        "hallucination/fabrication signal: no_fabrication_score < 0.90 on any candidate",
+        "output length anomaly: rendered word count > 1.5x length_preference",
+        "missing required section after final_render",
+        "unsupported_claim spike: > 3 unsupported claims in winning candidate"
+      ]
+    },
+    "G27": {
+      "description": "Durable write admission required when ANY of the following are requested",
+      "conditions": [
+        "proposed_state_diff to any persistent store",
+        "R1A cache write (warm cache with winning artifact)",
+        "memory write (episodic or procedural memory update)",
+        "prompt/rubric/policy/registry promotion via UWG",
+        "evidence/index writeback to candidate_profile_store",
+        "durable artifact commit (beyond artifacts/apps_rg/ sandbox)"
+      ],
+      "default_when_not_triggered": "NOT_APPLICABLE",
+      "default_reason": "apps_rg resume generation produces user-visible artifacts only; no durable state writes required"
+    }
+  }
+}

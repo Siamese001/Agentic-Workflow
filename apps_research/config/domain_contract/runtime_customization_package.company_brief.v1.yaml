@@ -1,0 +1,63 @@
+# Runtime Customization Package for apps_research / company_brief
+#
+# App-owned runtime package configuration.
+# Referenced by U0 and consumed throughout the pipeline.
+
+package_id: apps_research_runtime_package_company_brief_v1
+package_version: "1.0.0"
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Profile references (consumed by L0, L1, C0, PA, L2)
+profile_refs:
+  route_profile: apps_research/config/domain_contract/route_profile.company_brief.v1.yaml
+  cache_profile: apps_research/config/domain_contract/cache_profile.company_brief.v1.yaml
+  l1_planning_profile: apps_research/config/domain_contract/l1_planning_profile.company_brief.v1.yaml
+  c0_grounding_profile: apps_research/config/domain_contract/c0_grounding_profile.company_brief.v1.yaml
+  pa_prompt_profile: apps_research/config/domain_contract/pa_prompt_profile.company_brief.v1.yaml
+  l2_execution_profile: apps_research/config/domain_contract/l2_execution_profile.company_brief.v1.yaml
+
+# Package digest (computed at package creation/modification)
+package_digest: ""
+
+# Policy configuration
+policy:
+  # Read-only posture for research substrate
+  default_posture: read_only
+  write_policy: no_writes
+  
+  # Research substrate isolation
+  semantic_cache_scope: research_substrate_only
+  research_substrate_namespace: apps_research.semantic_research_substrate.v1
+  
+  # Cross-app delegation
+  cross_app_reuse_policy: delegated_only
+  allowed_consumer_apps:
+    - apps_rg
+    - apps_lic
+    - apps_rfp
+    - apps_underwriting_ai
+  
+  # Execution form
+  execution_form: SINGLE_STEP
+  managed_workflow_allowed: false
+
+# Default values (overridden by request payload)
+defaults:
+  depth_profile: standard
+  freshness_window: "30d"
+  source_scope:
+    - tavily
+    - manual_brief
+    - company_website
+
+# Registry integration
+registry:
+  registry_source: apps_research/config/domain_contract/runtime_package_registry.yaml
+  auto_injection_eligible: true
+  auto_injection_allowed_for:
+    - direct_apps_research
+  auto_injection_blocked_for:
+    - delegated_apps_rg_without_context
+    - delegated_apps_lic_without_context

@@ -1,0 +1,104 @@
+# apps_rg provider profile registry — W3
+# Plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
+#
+# GOVERNANCE:
+#   - Declarative registry data only. No provider calls, no secrets.
+#   - Keys resolved by agentic_core.L2_execution provider registry at runtime.
+#   - Do NOT put API keys or secrets in this file.
+#   - External provider keys are referenced via env var name only.
+#
+# Profile ID namespace: pvp::apps_rg::resume_generation::v1 (root profile)
+# Individual profiles are sub-keys under this namespace.
+
+provider_profile_registry_id: "pvp::apps_rg::resume_generation::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1.0.0"
+status: active
+created_at: "2026-05-11"
+
+profiles:
+
+  # ── Local stub generator — used in dry-run, CI, and test modes ─────────
+  local_generator_stub:
+    profile_id: "pvp::apps_rg::local_generator_stub"
+    provider_class: stub
+    model_id: null
+    endpoint_env_var: null
+    api_key_env_var: null
+    capabilities: [text_generation]
+    sandbox_safe: true
+    requires_network: false
+    activation_env_var: "APPS_RG_L2_FORCE_STUB"
+    description: >
+      Stub provider for CI / dry-run. Returns fixed-shape GeneratedResume JSON.
+      Activated when APPS_RG_L2_FORCE_STUB=1.
+
+  # ── Local Qwen vLLM generator — Docker Desktop, port 8000 ───────────────
+  local_qwen_generator:
+    profile_id: "pvp::apps_rg::local_qwen_generator"
+    provider_class: local_vllm
+    model_id: "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    endpoint_env_var: "VLLM_BASE_URL"
+    api_key_env_var: null
+    default_endpoint: "http://localhost:8000/v1"
+    capabilities: [text_generation, structured_json_generation]
+    sandbox_safe: true
+    requires_network: true
+    network_scope: localhost_only
+    max_tokens: 8192
+    temperature_range: [0.0, 1.0]
+    description: >
+      Primary generator. Qwen2.5-32B-Instruct-AWQ served via vLLM Docker container
+      local-qwen-vllm on port 8000. VLLM_BASE_URL env var overrides default_endpoint.
+      Model args: --quantization awq_marlin --dtype auto --max-model-len 8192.
+
+  # ── Deterministic grader — no model, rule-based evaluation ──────────────
+  deterministic_grader:
+    profile_id: "pvp::apps_rg::deterministic_grader"
+    provider_class: deterministic
+    model_id: null
+    endpoint_env_var: null
+    api_key_env_var: null
+    capabilities: [deterministic_evaluation, schema_validation, fact_check]
+    sandbox_safe: true
+    requires_network: false
+    description: >
+      Rule-based evaluation provider for factual_grounding, ats_readability,
+      format_compliance, no_fabrication, concision graders.
+      No LLM involved — pure algorithmic checks against candidate_profile.
+
+  # ── LLM judge stub — informational / test ──────────────────────────────
+  llm_judge_stub:
+    profile_id: "pvp::apps_rg::llm_judge_stub"
+    provider_class: stub
+    model_id: null
+    endpoint_env_var: null
+    api_key_env_var: null
+    capabilities: [llm_judgment]
+    sandbox_safe: true
+    requires_network: false
+    activation_env_var: "APPS_RG_JUDGE_FORCE_STUB"
+    description: >
+      Stub LLM judge for test and CI environments. Returns neutral/informational
+      scores only. Activated when APPS_RG_JUDGE_FORCE_STUB=1 or when the
+      actual judge model is unavailable.
+
+  # ── Executive positioning judge stub — quarantine-tracked ───────────────
+  executive_positioning_judge_stub:
+    profile_id: "pvp::apps_rg::executive_positioning_judge_stub"
+    provider_class: stub
+    model_id: null
+    endpoint_env_var: null
+    api_key_env_var: null
+    capabilities: [executive_positioning_judgment]
+    sandbox_safe: true
+    requires_network: false
+    judge_status: stub_quarantined
+    judge_implementation_ref: "apps_rg/engines/judges/executive_positioning_judge.py"
+    judge_implementation_note: >
+      QUARANTINED — raises RuntimeError on import. Stub-only until W7 judge implementation.
+      executive_positioning is informational_only=true; missing this judge does NOT hard fail.
+    description: >
+      Placeholder entry for executive_positioning judge. Returns informational score of 0.0.
+      Does NOT influence pass/fail until informational_only policy is flipped in judge_profile.

@@ -1,0 +1,154 @@
+# Prompt Profile for apps_research / company_brief
+#
+# App-owned prompt assembly configuration consumed by generic PA binding.
+# No prompt logic in core - all policy declared here.
+
+profile_id: apps_research_prompt_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Prompt BOM reference
+prompt_bom_ref: apps_research/prompts/prompt_bom.yaml
+
+# Prompt registry reference
+prompt_registry_ref: apps_research/prompts/prompt_registry.yaml
+
+# Output schema reference
+output_schema_ref: apps_research/config/domain_contract/output_schema.company_brief.v1.json
+
+# Downstream substrate contract reference (for apps_rg/apps_lic delegation)
+downstream_substrate_contract_ref: apps_research/config/domain_contract/downstream_substrate_contract.v1.json
+
+# Slot policy reference
+slot_policy_ref: apps_research/config/domain_contract/prompt_slot_policy.company_brief.v1.yaml
+
+# Template resolution rules
+template_resolution:
+  default_template: company_brief_synthesis_v1
+  
+  downstream_consumer_templates:
+    apps_rg: downstream_research_substrate_v1
+    apps_lic: downstream_research_substrate_v1
+  
+  degraded_support_template: degraded_support_caveat_v1
+  
+  citation_repair_template: brief_citation_repair_v1
+
+# Canonical slot configuration (S0-D0-I0-E0-C0-M0-U0-H0-R0)
+slot_configuration:
+  S0_system:
+    source: static_template
+    template_ref: system_base_v1
+    authority_level: highest
+    
+  D0_fences:
+    source: static_template
+    template_ref: safety_fences_v1
+    authority_level: highest
+    
+  I0_instructions:
+    source: static_template
+    template_ref: task_instructions_v1
+    authority_level: high
+    
+  E0_approved_examples:
+    source: static_examples
+    template_ref: few_shot_examples_v1
+    authority_level: high
+    
+  C0_verified_evidence:
+    source: final_evidence_contract
+    from_stage: C0
+    authority_level: medium
+    data_boundary_label: EVIDENCE_DATA_ONLY
+    evidence_marks_required: true
+    
+  M0_provider_controls:
+    source: static_template
+    template_ref: provider_controls_v1
+    authority_level: high
+    
+  U0_neutralized_user_task:
+    source: user_request
+    neutralization_required: true
+    authority_level: low
+    
+  H0_bounded_repair:
+    source: static_template
+    template_ref: repair_hints_v1
+    condition: on_error_only
+    authority_level: medium
+    
+  R0_response_schema:
+    source: output_schema
+    schema_ref: apps_research/config/domain_contract/output_schema.company_brief.v1.json
+    authority_level: high
+    binding_required: true
+
+# Evidence data boundary enforcement
+evidence_data_boundary:
+  enforce_for:
+    - retrieved_evidence
+    - uploaded_briefings
+    - cached_research_substrate
+  
+  label: EVIDENCE_DATA_ONLY
+  
+  blocked_uses:
+    - instruction_override
+    - system_prompt_modification
+    - behavior_change
+    - role_redefinition
+
+# Support status handling
+support_status_handling:
+  # Do not inflate support status
+  preserve_c0_support_status: true
+  
+  degraded_response_rules:
+    when_support_status: [EMPTY, WEAK_INSUFFICIENT, WEAK_WITH_CAVEATS]
+    use_template: degraded_support_caveat_v1
+    include_caveats: true
+    
+  abstain_rules:
+    when_support_status: [CONFLICTED]
+    use_template: abstain_due_to_conflict_v1
+    fail_closed: true
+
+# Provider render configuration
+provider_render:
+  format: chat_completions_api
+  message_roles:
+    - system  # S0 + D0 + I0 + E0 + M0
+    - user    # U0
+    - assistant  # Optional H0
+  
+  output_schema_binding:
+    method: json_schema_in_response_format
+    schema_location: R0
+    enforce_strict_compliance: true
+
+# Prompt hash and signature
+hash_configuration:
+  algorithm: sha256
+  include_slots: [S0, D0, I0, E0, C0, M0, U0, H0, R0]
+  evidence_digest_included: true
+  
+# Assembly security
+assembly_security:
+  instruction_data_airlock: required
+  authority_order_validation: required
+  slot_injection_scan: required
+  
+  receipts_to_emit:
+    - prompt_boundary_receipt
+    - assembly_security_receipt
+    - slot_lineage_receipt
+
+# Replay manifest
+replay_manifest:
+  include_prompt_template_refs: true
+  include_evidence_digest: true
+  include_output_schema_ref: true
+  include_slot_hashes: true

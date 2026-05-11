@@ -1,0 +1,27 @@
+{
+  "profile_id": "runtime_gate_profile.outreach_message.v1",
+  "app_id": "apps_lic",
+  "task_class": "outreach_message",
+  "version": "v1",
+  "required_runtime_gates": [
+    "app_id_validator",
+    "task_class_validator",
+    "side_effect_class_validator",
+    "forbidden_send_mode_validator",
+    "consent_attestation_validator",
+    "pii_detection_validator",
+    "governance_shield_validator"
+  ],
+  "conditional_runtime_gates": [
+    "hitl_freeze_gate",
+    "ab_test_assignment_gate"
+  ],
+  "halt_on_gate_failure": true,
+  "gate_execution_order": "sequential",
+  "max_parallel_gates": 1,
+  "metadata": {
+    "description": "Runtime gate execution policy for apps_lic outreach_message",
+    "author": "agentic_core",
+    "created_at": "2026-05-11"
+  }
+}

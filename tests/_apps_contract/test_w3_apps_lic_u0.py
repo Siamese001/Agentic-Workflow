@@ -79,7 +79,15 @@ _VALID_RAW: dict[str, Any] = {
         "side_effect_class": "read_only",
     },
     "forbidden_send_modes": {
-        "modes": ["send_now", "auto_send", "connector_send"],
+        "modes": [
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        ],
     },
     "entity_refs": {
         "lead_profile": {
@@ -163,7 +171,15 @@ def _valid_envelope() -> AppsLicRequestEnvelope:
             "industry": "Technology",
             "consent_attested": True,
         },
-        forbidden_send_modes=("send_now", "auto_send", "connector_send"),
+        forbidden_send_modes=(
+            "send_now",
+            "auto_send",
+            "connector_send",
+            "email_outbox_send",
+            "linkedin_send",
+            "sms_send",
+            "external_http_post",
+        ),
         hitl_policy={"bypass_hitl_freeze": False},
         pii_policy={"pii_detection_mode": "strict", "redact_on_warn": True, "fail_on_pii_detect": True},
         governance_shield_policy={"shield_required": True},
@@ -254,7 +270,7 @@ class TestT2MalformedPayloadRejected:
 
     def test_missing_forbidden_send_mode_raises(self) -> None:
         bad = copy.deepcopy(_VALID_RAW)
-        bad["forbidden_send_modes"]["modes"] = ["send_now", "auto_send"]  # connector_send missing
+        bad["forbidden_send_modes"]["modes"] = ["send_now", "auto_send"]  # missing 5 required modes
         with pytest.raises(AppsLicForbiddenSendModeError):
             apps_lic_u0_adapt(bad)
 

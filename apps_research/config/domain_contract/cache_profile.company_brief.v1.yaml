@@ -1,0 +1,105 @@
+# Cache Profile for apps_research / company_brief task
+#
+# App-owned cache configuration consumed by generic L0 binding.
+# No cache policy in core - all settings declared here.
+
+profile_id: apps_research_cache_profile_company_brief_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Semantic cache configuration
+semantic_cache:
+  enabled: true
+  scope: research_substrate_only
+  namespace: apps_research.semantic_research_substrate.v1
+  
+  # Embedding model compatibility
+  embedding_model: text-embedding-3-large
+  embedding_dimensions: 3072
+  similarity_metric: cosine
+  similarity_threshold: 0.85
+  
+  # TTL and freshness
+  default_ttl_seconds: 2592000  # 30 days
+  freshness_window: "30d"
+  
+  # R1A exact cache
+  r1a_exact_cache:
+    enabled: true
+    key_fields:
+      - target_company
+      - target_role
+      - task_class
+      - depth_profile
+    
+  # R1B semantic cache
+  r1b_semantic_cache:
+    enabled: true
+    compatibility_check_fields:
+      - entity_match
+      - task_class_compatible
+      - downstream_consumer_compatible
+      - depth_profile_compatible
+      - jd_hash_compatible
+      - role_context_hash_compatible
+      - freshness_within_ttl
+      - provenance_known
+      - acl_permits_reuse
+      - support_status
+      - no_unresolved_contradiction
+      - embedding_model_compatible
+      - similarity_above_threshold
+    
+    # Research substrate namespace isolation
+    substrate_namespace: apps_research.semantic_research_substrate.v1
+    
+    # Never cache final customized outputs from other apps
+    exclusions:
+      - final_apps_rg_resume_output
+      - final_apps_lic_response_output
+      - final_apps_rfp_proposal_output
+      - final_apps_underwriting_decision_output
+
+# Cache key construction
+cache_key_fields:
+  exact:
+    - app_id
+    - task_class
+    - target_company
+    - target_role
+    - target_level
+    - depth_profile
+    - caller_app_id  # For delegation context
+  
+  semantic:
+    - app_id
+    - task_class
+    - entity_vector
+    - task_intent_vector
+    - depth_profile
+    - consumer_context_hash
+
+# Cross-app reuse policy
+cross_app_reuse:
+  allowed: true
+  policy: delegated_only
+  permitted_consumer_apps:
+    - apps_rg
+    - apps_lic
+    - apps_rfp
+    - apps_underwriting_ai
+  
+  # When apps_research is substrate for another app
+  substrate_export:
+    allowed: true
+    requires_delegation_context: true
+    max_reuse_count: 10
+    reuse_ttl_extension: "7d"
+
+# Cache population rules (for L2 to follow)
+population_rules:
+  cache_after_successful_execution: true
+  cache_after_c0_grounding: true
+  do_not_cache_failed_executions: true
+  do_not_cache_incomplete_grounding: true

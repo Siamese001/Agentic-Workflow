@@ -524,7 +524,7 @@ class TestTC19_NoRetrieval:
     def test_no_retrieval_call_in_source(self) -> None:
         src = _code_only(_EXIT_MODULE)
         forbidden = [
-            r"r1b_",
+            r"r1b_(?!bypass)",   # r1b_ retrieval calls; _bypass suffix is a cache policy key, not retrieval
             r"r1a_",
             r"c0_retrieve",
             r"\.retrieve\s*\(",

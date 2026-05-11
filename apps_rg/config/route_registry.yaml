@@ -29,3 +29,23 @@ routes:
       narrative_pass (HOP-4A..4H) -> docx_export. No retry/branch/join
       logic; runtime L3 orchestration is not required.
     bypass_reason_when_invoked: NO_MANAGED_WORKFLOW_REQUIRED
+
+  # ── Managed workflow route (W3 registry binding — not yet active) ────────
+  # Registered for discoverability by ManagedWorkflowEngine.register_workflow().
+  # l3_required: true — this route requires runtime L3 orchestration.
+  # Activation guarded by route contract; DETERMINISTIC_PIPELINE route
+  # remains the active default until L3 runner is wired in W4.
+  - route_id: apps_rg.resume_generation_managed_v1
+    execution_form: MANAGED_WORKFLOW
+    l3_required: true
+    static_dag_ref: null
+    workflow_manifest_ref: "wfm::apps_rg::resume_generation::v1"
+    workflow_manifest_path: "apps_rg/config/workflow_manifest.resume_generation.v1.yaml"
+    selected_capability: apps_rg.resume_generation_managed_v1
+    status: registered_not_active
+    description: >-
+      Managed workflow route for apps_rg resume generation. Declares the
+      workflow manifest for ManagedWorkflowEngine resolution. Not active until
+      W4 L3 runner wiring is complete. Exists to make the manifest discoverable
+      without app-specific branching in core.
+    activation_plan_ref: "apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W4"

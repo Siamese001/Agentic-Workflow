@@ -6,6 +6,9 @@ Per plan apps-rg-runtime-wiring-completion-d4e8a1 §6 W3.P3 (initial)
    cache_eligibility + action_required).
 +   plan apps-rg-ensemble-judge-restoration-a7c4e2 W2 (cache lookup receipts
    + work-shape evaluation for managed_workflow execution_form).
++   plan apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W4 (registry
+   resolution via workflow_registry.resolve_managed_workflow_route — fail-closed
+   on all error paths; route gate placeholder refs G07/G08/G10/G20).
 
 L0 is the THIRD stage of the U0 -> L1 -> L0 -> [C0] -> [PA] -> L2 -> Exit
 pipeline. Its job is to consume the L1 plan + its five app_payload-derived
@@ -27,8 +30,23 @@ L0 produces on RouteContract:
     - cache_lookup_r1b_receipt: serialized R1B lookup result (always miss today)
     - cache_lookup_r5_receipt: serialized R5 lookup result (always miss today)
     - workflow_ref: resolved workflow ID when execution_form="managed_workflow"
+    - workflow_manifest_ref: canonical manifest ref from registry
+    - workflow_registry_ref: repo-relative registry path
+    - registry_resolution_receipt_ref: serialised WorkflowResolutionReceipt
+    - route_gate_refs: G07/G08/G10/G20 placeholder refs (UNKNOWN when harness absent)
+    - route_policy_ref: pointer to the apps_rg route profile
     - action_required: True only when generation_mode demands state mutation
       (resume_generation never does — write_authority_present=False)
+
+W4 fail-closed invariants:
+    - MANAGED_WORKFLOW selected only after R1A/R1B/R5 miss AND prerequisites pass.
+    - registered_not_active route blocked in production.
+    - Missing workflow_manifest_ref → WorkflowRegistryResolutionError (INVALID).
+    - Zero MANAGED_WORKFLOW routes → ZERO_MATCH error.
+    - Multiple MANAGED_WORKFLOW routes → MULTIPLE_MATCH error.
+    - Digest mismatch (if expected_digest supplied) → DIGEST_MISMATCH error.
+    - Unknown execution_form → INVALID error.
+    - No silent fallback from managed_workflow to single_step on registry failure.
 
 W4 P4.2: L3 opt-in via environment variable APPS_RG_L3_OPT_IN=1.
 Ensemble restoration W2: Actual cache lookups before execution_form decision.
@@ -52,6 +70,19 @@ APPS_RG_L0_CERT_REF: str = "l0-apps-rg-resume-generation-app-payload-b3a449"
 APPS_RG_DEFAULT_ROUTE_ID: str = "rg.resume_generation.default"
 APPS_RG_EXECUTIVE_ROUTE_ID: str = "rg.resume_generation.executive"
 _ROUTE_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/route_profiles.yaml"
+_ROUTE_REGISTRY_RELPATH: str = "apps_rg/config/route_registry.yaml"
+_CACHE_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/cache_profiles.yaml"
+
+# W4: env flag to activate registered_not_active managed workflow route in test mode.
+_MANAGED_ROUTE_TEST_FLAG: str = "APPS_RG_MANAGED_WORKFLOW_TEST_ENABLED"
+
+# W4: route gate placeholder refs — emitted when the gate harness is not yet wired.
+# MUST be UNKNOWN, NOT PASS (constitutional §D: gate refs must not claim PASS
+# when the gate has not been evaluated).
+_ROUTE_GATE_REF_G07: str = "G07:route_selection:UNKNOWN:gate_harness_not_wired_W4"
+_ROUTE_GATE_REF_G08: str = "G08:retrieval_grounding_requirement:UNKNOWN:gate_harness_not_wired_W4"
+_ROUTE_GATE_REF_G10: str = "G10:cache_freshness_reuse:UNKNOWN:gate_harness_not_wired_W4"
+_ROUTE_GATE_REF_G20: str = "G20:cost_latency_budget:UNKNOWN:gate_harness_not_wired_W4"
 
 # AG-2: route_family taxonomy keyed by generation_mode + grounded flag.
 # This is the high-level decision; route_id carries the variant detail.
@@ -290,10 +321,40 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     cache_eligibility = _derive_cache_eligibility(l1_plan)
     action_required = _derive_action_required(l1_plan)
 
-    # Ensemble W2: workflow_ref placeholder — registry resolution lands in Wave 3.
+    # W4: Resolve managed workflow route from registry — fail-closed on all paths.
     workflow_ref = ""
+    workflow_manifest_ref = ""
+    workflow_registry_ref = _ROUTE_REGISTRY_RELPATH
+    registry_resolution_receipt_ref = ""
+
     if l3_required:
-        workflow_ref = "apps_rg.resume_generation.managed_workflow.v1"
+        # Import lazily so single_step path never touches the registry module.
+        from agentic_core.L3_orchestration.workflow_registry import (
+            WorkflowRegistryResolutionError,
+            resolve_managed_workflow_route,
+        )
+        # Propagate any test-activation env override to the resolver without
+        # mutating os.environ.  The resolver reads the flag itself in production;
+        # we pass it explicitly here only to allow test injection via monkeypatch.
+        test_flag = os.environ.get(_MANAGED_ROUTE_TEST_FLAG, "")
+        receipt = resolve_managed_workflow_route(
+            registry_relpath=_ROUTE_REGISTRY_RELPATH,
+            repo_root=_resolve_repo_root(),
+            _test_activation_env_override=test_flag if test_flag else None,
+        )
+        # WorkflowRegistryResolutionError propagates uncaught → fail closed.
+        # No silent fallback to single_step on ANY registry failure.
+        workflow_ref = receipt.workflow_ref
+        workflow_manifest_ref = receipt.workflow_manifest_ref
+        registry_resolution_receipt_ref = receipt.as_json()
+
+    # W4: route gate placeholder refs — UNKNOWN not PASS (harness not wired yet).
+    _route_gate_refs: tuple[str, ...] = (
+        _ROUTE_GATE_REF_G07,
+        _ROUTE_GATE_REF_G08,
+        _ROUTE_GATE_REF_G10,
+        _ROUTE_GATE_REF_G20,
+    )
 
     return RouteContract(
         request_id=l1_plan.request_id,
@@ -325,12 +386,23 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
         execution_form=execution_form,
         cache_eligibility=cache_eligibility,
         action_required=action_required,
-        # Ensemble W2: managed workflow resolution (registry in Wave 3)
+        # W4: managed workflow registry resolution fields.
         workflow_ref=workflow_ref,
-        # Ensemble W2: actual cache lookup receipts (prove lookups happened)
+        workflow_manifest_ref=workflow_manifest_ref,
+        workflow_registry_ref=workflow_registry_ref,
+        registry_resolution_receipt_ref=registry_resolution_receipt_ref,
+        # W4: route gate placeholder refs (UNKNOWN — gate harness not wired yet).
+        route_gate_refs=_route_gate_refs,
+        # W4: route policy ref.
+        route_policy_ref=_ROUTE_PROFILE_RELPATH,
+        # Ensemble W2: actual cache lookup receipts (prove lookups happened).
         cache_lookup_r1a_receipt=r1a_receipt,
         cache_lookup_r1b_receipt=r1b_receipt,
         cache_lookup_r5_receipt=r5_receipt,
+        # W4: aliased receipt refs (same values, explicit naming for audit consumers).
+        r1a_lookup_receipt_ref=r1a_receipt,
+        r1b_lookup_receipt_ref=r1b_receipt,
+        r5_fallback_receipt_ref=r5_receipt,
         # AG-2: thread replay_key forward.
         replay_key=l1_plan.replay_key,
         reason_codes=_build_reason_codes(l1_plan) + (
@@ -340,9 +412,11 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
             f"action_required={action_required}",
             f"r1a_result={'hit' if r1a_hit else 'miss'}",
             f"workflow_ref={workflow_ref}",
+            f"workflow_manifest_ref={workflow_manifest_ref}",
+            f"route_gate_refs_count={len(_route_gate_refs)}",
         ),
         routing_timestamp=datetime.now(timezone.utc).isoformat(),
-        schema_version="AG-2.a7c4e2",
+        schema_version="W4.a3f7e2",
         l5_certification_ref=APPS_RG_L0_CERT_REF,
     )
 
@@ -351,5 +425,7 @@ __all__ = [
     "APPS_RG_L0_CERT_REF",
     "APPS_RG_DEFAULT_ROUTE_ID",
     "APPS_RG_EXECUTIVE_ROUTE_ID",
+    "_ROUTE_REGISTRY_RELPATH",
+    "_MANAGED_ROUTE_TEST_FLAG",
     "l0_route_apps_rg",
 ]

@@ -1,0 +1,192 @@
+# Final Evidence Contract Profile for apps_research / company_brief
+#
+# App-owned configuration for FinalEvidenceContract structure and validation.
+
+profile_id: apps_research_final_evidence_contract_profile_v1
+app_id: apps_research
+task_class: company_brief
+schema_version: "1.0"
+
+# Contract structure requirements
+contract_structure:
+  required_sections:
+    - route_contract_ref
+    - retrieval_plan_ref
+    - evidence_items
+    - source_register_ref
+    - claim_evidence_map_ref
+    - freshness_report_ref
+    - contradiction_report_ref
+    - citation_map
+    - source_lineage_map
+    - source_version_map
+    - acl_verification_receipts
+    - freshness_receipts
+    - support_status
+    - support_score_profile
+    - excluded_evidence_refs
+    - blocked_source_refs
+    - final_evidence_digest
+  
+  optional_sections:
+    - substrate_writeback_candidate_ref
+
+# Evidence item requirements
+evidence_item_structure:
+  required_fields:
+    - evidence_id
+    - source_ref
+    - content_snippet
+    - retrieval_timestamp
+    - freshness_status
+    - support_status
+    - citation_info
+  
+  optional_fields:
+    - claim_extractions
+    - confidence_score
+    - contradiction_flags
+
+# Source register requirements
+source_register_requirements:
+  required_per_source:
+    - source_id
+    - source_url
+    - source_type
+    - tier_classification
+    - retrieval_timestamp
+    - freshness_ttl
+    - acl_info
+    - provenance_chain
+  
+  required_aggregates:
+    - total_sources
+    - tier_breakdown
+    - freshness_breakdown
+    - domain_diversity_count
+
+# Claim-evidence map requirements
+claim_evidence_map_requirements:
+  required_per_claim:
+    - claim_id
+    - claim_text
+    - claim_type
+    - supporting_evidence_refs
+    - contradicting_evidence_refs
+    - confidence_assessment
+    - materiality_flag
+  
+  coverage_requirements:
+    minimum_claims_covered: 5
+    maximum_unsourced_claims_percent: 10
+
+# Freshness report requirements
+freshness_report_requirements:
+  required_sections:
+    - sources_checked
+    - sources_fresh
+    - sources_stale
+    - sources_blocked
+    - ttl_violations
+    - downgrade_applications
+    
+  freshness_thresholds:
+    fresh: within_ttl
+    stale: exceeded_ttl
+    critical: exceeded_ttl_and_material
+
+# Contradiction report requirements
+contradiction_report_requirements:
+  required_sections:
+    - contradictions_detected
+    - contradiction_details
+    - resolution_recommendations
+    - materiality_assessment
+    
+  contradiction_types:
+    - direct_factual_conflict
+    - numerical_discrepancy
+    - temporal_inconsistency
+    - source_credibility_conflict
+
+# Citation map requirements
+citation_map_requirements:
+  required_per_citation:
+    - citation_id
+    - source_ref
+    - claim_refs
+    - inline_location
+    - retrieval_timestamp
+  
+  coverage_requirement:
+    all_material_claims_must_have_citation: true
+
+# Support status policy
+support_status_policy:
+  status_values:
+    - EMPTY
+    - WEAK_INSUFFICIENT
+    - WEAK_WITH_CAVEATS
+    - PASS
+    - STRONG
+    - CONFLICTED
+  
+  thresholds:
+    empty_max_evidence_count: 0
+    weak_max_support_score: 30
+    pass_min_support_score: 70
+    strong_min_support_score: 90
+    conflicted_trigger: material_contradiction_detected
+
+# Support score profile
+support_score_profile:
+  factors:
+    source_tier_weight:
+      tier_1: 1.0
+      tier_2: 0.8
+      tier_3: 0.5
+    
+    freshness_weight:
+      fresh: 1.0
+      stale: 0.5
+      critical: 0.0
+    
+    citation_weight:
+      proper_citation: 1.0
+      missing_citation: 0.0
+    
+    contradiction_penalty:
+      minor_contradiction: -0.1
+      material_contradiction: -0.5
+
+# Substrate writeback candidate
+substrate_writeback_candidate:
+  inert_only: true
+  never_retrievable_as_instruction: true
+  
+  conditions_for_writeback:
+    - evidence_quality_pass
+    - no_contradictions
+    - proper_provenance
+    - acl_permits_reuse
+  
+  writeback_metadata_required:
+    - original_request_id
+    - evidence_digest
+    - source_register_digest
+    - freshness_at_writeback
+
+# Validation rules
+validation_rules:
+  require_all_required_sections: true
+  require_digest_verification: true
+  require_acl_check_passed: true
+  require_minimum_evidence_count: 3
+  require_minimum_source_tiers_met: true
+  
+  block_when:
+    - missing_required_section
+    - digest_mismatch
+    - acl_violation
+    - no_evidence_items
+    - all_evidence_blocked

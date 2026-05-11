@@ -1,0 +1,42 @@
+{# Degraded Support Caveat Template v1 for apps_research #}
+{# Used when evidence support is weak, insufficient, or conflicted #}
+
+## Evidence Quality Warning
+
+The evidence available for this company brief is **{{ support_status }}**.
+
+### What This Means
+{{ support_explanation }}
+
+### Caveats for This Brief
+
+1. **Information Gaps**: The following areas lack sufficient evidence:
+   {% for gap in research_gaps %}
+   - {{ gap }}
+   {% endfor %}
+
+2. **Confidence Level**: Overall confidence is {{ overall_confidence }}.
+
+3. **Source Quality**: 
+   - Authoritative sources (Tier 1): {{ tier_1_count }}
+   - Credible sources (Tier 2): {{ tier_2_count }}
+   - Signal sources (Tier 3): {{ tier_3_count }}
+
+4. **Freshness**: {{ freshness_summary }}
+
+### Recommendations
+
+- **For Decision Making**: Do not rely solely on this brief for high-stakes decisions.
+- **For Further Research**: Consider the following sources to fill gaps:
+  {% for suggestion in research_suggestions %}
+  - {{ suggestion }}
+  {% endfor %}
+
+- **For Downstream Use**: If this brief is being used as input to resume generation or response crafting, the consuming system should be notified of the weak evidence base.
+
+### Synthesized Content (With Caveats)
+
+{{ brief_content }}
+
+---
+*This brief was generated with degraded support. All claims should be independently verified before use.*

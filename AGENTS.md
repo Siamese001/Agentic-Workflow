@@ -195,3 +195,118 @@ Ten per-decision-class SQLite ledgers under `artifacts/ledgers/` capture predict
 **Enforcement**: CI gate `TSP1` — `ops_scripts/ci/check_apps_test_surface_parity.py` (advisory; fail-closed via `APPS_TEST_SURFACE_FAIL_CLOSED=1`; bypass via `APPS_TEST_SURFACE_BYPASS=1`).
 
 **Rule**: `.windsurf/rules/apps-test-surface-taxonomy.md` — load when editing `apps_*/` trees or relocating test files.
+
+---
+
+## App-Agnostic Core Governance
+
+> **Core Architecture Law**: `agentic_core` is the common governed runtime spine. `apps_*` customize behavior through U0 runtime_customization_package and app-owned profile refs. `agentic_core` enforces contracts generically.
+
+### Fundamental Principle
+
+- **Apps customize inputs. Core enforces contracts.**
+- App-specific behavior in shared `agentic_core` is **leakage** unless explicitly documented as a temporary thin adapter with a migration receipt.
+
+### Ownership Model
+
+| Component | Owned By | Responsibility |
+|-----------|----------|----------------|
+| Base contracts, spine execution, U0 handoff mechanics | `agentic_core` | Generic runtime infrastructure |
+| Route policy interpreter, profile resolver, GateMesh | `agentic_core` | Generic enforcement engines |
+| Exit enforcer, UWG write law, L6 consumer | `agentic_core` | Generic boundary enforcement |
+| Proof and receipt validators | `agentic_core` | Generic audit infrastructure |
+| Ingress contract, JSON schema, field map | `apps_*` | App-specific data contracts |
+| runtime_customization_package | `apps_*` | App behavior customization |
+| Route/retrieval/prompt/cache profiles | `apps_*` | App-specific policy profiles |
+| Exit/judge/eval/threshold profiles | `apps_*` | App-specific evaluation policy |
+| Tests and receipts | `apps_*` | App-specific verification |
+
+### Allowed Core Changes
+
+`agentic_core` may change **only** for generic runtime infrastructure that applies across all `apps_*`:
+- Generic contract-chain propagation
+- Generic profile resolver
+- Generic route policy interpreter
+- Generic GateMesh enforcement
+- Generic Exit profile enforcer
+- Generic UWG enforcement
+- Generic L6 completed-run profile consumer
+- Generic proof and receipt infrastructure
+- Generic anti-bypass checks
+
+### Forbidden Core Changes
+
+The following are **leakage** and require migration to app-owned profiles:
+- `apps_lic`-specific route logic
+- `apps_rg`-specific route logic
+- `apps_qna`-specific route logic
+- App-specific cache policy
+- App-specific Exit gate IDs
+- App-specific judge/eval thresholds
+- App-specific forbidden send policy
+- App-specific consent/compliance policy
+- App-specific L6 promotion logic
+- Hardcoded `app_id` branches in shared runtime
+- Hardcoded `apps_*` route names inside common core
+- Hardcoded app profile paths inside common core
+
+### Architecture Model
+
+**Correct**:
+```
+apps_*
+  -> U0 runtime_customization_package
+  -> agentic_core generic profile resolver
+  -> generic L0 policy interpreter
+  -> generic L3/L2/Exit/UWG/L6 enforcement
+```
+
+**Not Allowed**:
+```
+apps_*
+  -> special app-specific code inside every agentic_core layer
+```
+
+### Migration Policy for Existing Bindings
+
+Existing app-specific core bindings (e.g., `apps_lic_l0_binding.py`) are classified as:
+
+| Classification | Treatment |
+|----------------|-----------|
+| `TEMPORARY_THIN_ADAPTER` | Tolerated with explicit migration receipt; target: GENERIC_READY |
+| `CORE_APP_SPECIFIC_LEAKAGE` | Must migrate to app profiles + generic engines |
+| `GENERIC_READY` | Already follows governance model |
+| `MIGRATION_REQUIRED` | Scheduled for W5 binding migration |
+
+### Enforcement Layers
+
+Five-layer governance stack enforces this architecture:
+
+1. **AGENTS.md** — Architecture law and ownership rules
+2. **Windsurf Rules** — Static analysis and editing-time guidance
+3. **Skills** — Canonical procedures for audit/customization/migration
+4. **Workflows** — Executable governance procedures
+5. **Hooks/CI** — Automated enforcement and verification
+
+### Scoped AGENTS.md
+
+- `agentic_core/AGENTS.md` — Core boundary rules (allowed/forbidden)
+- `apps_lic/AGENTS.md` — App customization rules
+- `apps_rg/AGENTS.md` — App customization rules
+- `apps_qna/AGENTS.md` — App customization rules
+- `apps_research/AGENTS.md` — App customization rules
+
+### Receipts Required
+
+Every boundary-sensitive change to `agentic_core` requires a migration receipt at:
+`artifacts/governance/migration_receipts/<timestamp>_<change_id>.json`
+
+Receipt must include: changed files, classification, tests, known gaps, migration path.
+
+### Related Rules
+
+- `.windsurf/rules/agentic-core-static.md` — Always-on core behavior guidance
+- `.windsurf/rules/agentic-core-glob-lock.md` — Core editing restrictions
+- `.windsurf/rules/apps-customization.md` — App customization guidance
+- `.windsurf/rules/boundary-audit-required.md` — Boundary audit triggers
+- `.windsurf/rules/apps-folder-taxonomy.md` — App folder structure (ADR-082)

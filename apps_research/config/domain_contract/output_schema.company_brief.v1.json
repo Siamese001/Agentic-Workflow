@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Company Brief Output Schema",
+  "description": "JSON Schema for apps_research company_brief task output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "company_name",
+    "synthesis_timestamp",
+    "executive_summary",
+    "business_overview",
+    "leadership_profile",
+    "financial_highlights",
+    "market_position",
+    "recent_developments",
+    "research_gaps",
+    "confidence_assessment",
+    "source_attributions",
+    "support_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "company_brief_v1.0"
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Target company name"
+    },
+    "synthesis_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "executive_summary": {
+      "type": "object",
+      "required": ["overview", "key_findings"],
+      "properties": {
+        "overview": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "key_findings": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 5
+        }
+      }
+    },
+    "business_overview": {
+      "type": "object",
+      "required": ["description", "products_services", "customer_segments"],
+      "properties": {
+        "description": { "type": "string" },
+        "products_services": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "customer_segments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "geographic_presence": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "leadership_profile": {
+      "type": "object",
+      "properties": {
+        "ceo": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "tenure": { "type": "string" },
+            "background": { "type": "string" }
+          }
+        },
+        "key_executives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "title": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "financial_highlights": {
+      "type": "object",
+      "properties": {
+        "revenue": {
+          "type": "object",
+          "properties": {
+            "amount": { "type": "string" },
+            "period": { "type": "string" },
+            "source": { "type": "string" }
+          }
+        },
+        "market_cap": { "type": "string" },
+        "employees": { "type": "string" },
+        "fiscal_year_end": { "type": "string" }
+      }
+    },
+    "market_position": {
+      "type": "object",
+      "properties": {
+        "industry_sector": { "type": "string" },
+        "competitive_position": { "type": "string" },
+        "market_share": { "type": "string" },
+        "key_competitors": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "recent_developments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string" },
+          "event": { "type": "string" },
+          "significance": { "type": "string" },
+          "source": { "type": "string" }
+        }
+      }
+    },
+    "research_gaps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Areas where evidence was insufficient"
+    },
+    "confidence_assessment": {
+      "type": "object",
+      "required": ["overall_confidence", "evidence_quality"],
+      "properties": {
+        "overall_confidence": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "INSUFFICIENT"]
+        },
+        "evidence_quality": { "type": "string" },
+        "caveats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "source_attributions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "source_type", "citation"],
+        "properties": {
+          "source_id": { "type": "string" },
+          "source_type": {
+            "type": "string",
+            "enum": ["SEC_FILING", "COMPANY_IR", "NEWS", "ANALYST", "OTHER"]
+          },
+          "citation": { "type": "string" },
+          "retrieval_date": { "type": "string" }
+        }
+      }
+    },
+    "support_status": {
+      "type": "string",
+      "enum": ["EMPTY", "WEAK_INSUFFICIENT", "WEAK_WITH_CAVEATS", "PASS", "STRONG", "CONFLICTED"]
+    },
+    "delegation_context": {
+      "type": "object",
+      "properties": {
+        "downstream_consumer": { "type": "string" },
+        "reuse_permitted": { "type": "boolean" },
+        "substrate_only": { "type": "boolean" }
+      }
+    }
+  }
+}
