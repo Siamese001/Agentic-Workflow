@@ -1,0 +1,79 @@
+# W12 — apps_lic Research Delegation Profile (App-Owned Config Only)
+#
+# Defines how apps_lic delegates research to apps_research.
+
+profile_id: apps_lic_research_delegation_v1
+version: "W12.0.0"
+description: apps_lic profile for delegating research to apps_research
+
+# Delegation target
+target_app_id: apps_research
+
+# Caller identification
+caller_app_id: apps_lic
+
+# Allowed task classes
+task_classes:
+  - research_substrate
+  - uploaded_briefing_normalization
+
+# U0 package requirements for delegation
+u0_package_requirements:
+  required_fields:
+    - app_id = apps_research
+    - caller_app_id = apps_lic
+    - delegation_context_ref
+    - downstream_consumer = apps_lic
+    - task_class
+    - depth_profile
+    - source_scope
+    - route_profile_ref
+    - cache_profile_ref
+    - retrieval_profile_ref
+    - cross_app_reuse_policy_ref
+    - policy_hash
+    - blueprint_hash
+    - registry_digest_set
+    - replay_key
+  
+  # apps_lic specific: requires role context hash when role context exists
+  context_specific_requirements:
+    role_context_hash: required_when_role_present
+
+# Research substrate consumption
+substrate_consumption:
+  treat_as: evidence_data_only
+  instruction_authority: false
+  allowed_usage:
+    - evidence_for_outreach_generation
+    - grounding_for_positioning
+    - source_attribution
+  prohibited_usage:
+    - system_prompt_injection
+    - behavior_override
+    - final_outreach_terminal_cache
+
+# Uploaded briefing handling
+uploaded_briefings:
+  normalize_into: research_substrate
+  provenance_check: required
+  acl_check: required
+  injection_scan: required
+  citation_gaps_tagged: true
+  data_boundary: EVIDENCE_DATA_ONLY
+
+# Return packet expectations
+expected_return:
+  packet_type: SubstrateReturnPacket
+  data_boundary_label: EVIDENCE_DATA_ONLY
+  required_components:
+    - entity_aliases
+    - source_register
+    - claim_evidence_map
+    - substrate_provenance
+    - freshness_ttl
+
+# Policy references
+policy_refs:
+  cross_app_reuse: "apps_research/config/domain_contract/cross_app_reuse_policy.company_brief.v1.yaml"
+  downstream_contract: "apps_research/config/domain_contract/downstream_substrate_contract.v1.json"

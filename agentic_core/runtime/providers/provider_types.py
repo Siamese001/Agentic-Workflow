@@ -75,6 +75,7 @@ class ProviderProfile:
     requires_network: bool = False
     sandbox_safe: bool = True
     activation_env_var: Optional[str] = None
+    vendor: str = ""
 
 
 @dataclass(frozen=True)

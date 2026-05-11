@@ -68,7 +68,11 @@ profiles:
       format_compliance, no_fabrication, concision graders.
       No LLM involved — pure algorithmic checks against candidate_profile.
 
-  # ── LLM judge stub — informational / test ──────────────────────────────
+  # ── LLM judge stub — CI / test ONLY ────────────────────────────────────
+  # AUDIT (W-J1): this profile must NOT appear as provider_profile_ref in
+  # production grader_roster entries. grader_roster.yaml has been updated to
+  # use local_qwen_generator for all production judge dims (S-02, S-03 closed).
+  # This profile remains for APPS_RG_JUDGE_FORCE_STUB=1 CI-only override only.
   llm_judge_stub:
     profile_id: "pvp::apps_rg::llm_judge_stub"
     provider_class: stub
@@ -79,26 +83,88 @@ profiles:
     sandbox_safe: true
     requires_network: false
     activation_env_var: "APPS_RG_JUDGE_FORCE_STUB"
+    production_use: forbidden
     description: >
-      Stub LLM judge for test and CI environments. Returns neutral/informational
-      scores only. Activated when APPS_RG_JUDGE_FORCE_STUB=1 or when the
-      actual judge model is unavailable.
+      Stub LLM judge for CI environments ONLY. Must NOT appear as
+      provider_profile_ref in production grader_roster entries.
+      Activated only via APPS_RG_JUDGE_FORCE_STUB=1 env var override.
 
-  # ── Executive positioning judge stub — quarantine-tracked ───────────────
-  executive_positioning_judge_stub:
-    profile_id: "pvp::apps_rg::executive_positioning_judge_stub"
-    provider_class: stub
-    model_id: null
+  # ── Anthropic Claude generator — external API ────────────────────────────
+  anthropic_claude_generator:
+    profile_id: "pvp::apps_rg::anthropic_claude_generator"
+    provider_class: external_api
+    provider_vendor: anthropic
+    model_id: "claude-sonnet-4-6"
     endpoint_env_var: null
-    api_key_env_var: null
-    capabilities: [executive_positioning_judgment]
-    sandbox_safe: true
-    requires_network: false
-    judge_status: stub_quarantined
-    judge_implementation_ref: "apps_rg/engines/judges/executive_positioning_judge.py"
-    judge_implementation_note: >
-      QUARANTINED — raises RuntimeError on import. Stub-only until W7 judge implementation.
-      executive_positioning is informational_only=true; missing this judge does NOT hard fail.
+    api_key_env_var: "ANTHROPIC_API_KEY"
+    capabilities: [text_generation, structured_json_generation]
+    sandbox_safe: false
+    requires_network: true
+    network_scope: external
+    max_tokens: 8192
+    temperature_range: [0.0, 1.0]
     description: >
-      Placeholder entry for executive_positioning judge. Returns informational score of 0.0.
-      Does NOT influence pass/fail until informational_only policy is flipped in judge_profile.
+      Anthropic Claude ensemble generator. Model ID resolved from ANTHROPIC_MODEL env var
+      (default claude-sonnet-4-6 per model_registry.py). Requires ANTHROPIC_API_KEY env var.
+
+  # ── OpenAI GPT generator — external API ─────────────────────────────────
+  openai_gpt_generator:
+    profile_id: "pvp::apps_rg::openai_gpt_generator"
+    provider_class: external_api
+    provider_vendor: openai
+    model_id: "gpt-5.4-mini"
+    endpoint_env_var: "OPENAI_BASE_URL"
+    api_key_env_var: "OPENAI_API_KEY"
+    capabilities: [text_generation, structured_json_generation]
+    sandbox_safe: false
+    requires_network: true
+    network_scope: external
+    max_tokens: 8192
+    temperature_range: [0.0, 2.0]
+    description: >
+      OpenAI GPT ensemble generator. Model ID resolved from OPENAI_MODEL env var
+      (default gpt-5.4-mini per model_registry.py). Requires OPENAI_API_KEY env var.
+
+  # ── Google Gemini generator — external API ───────────────────────────────
+  google_gemini_generator:
+    profile_id: "pvp::apps_rg::google_gemini_generator"
+    provider_class: external_api
+    provider_vendor: google_gemini
+    model_id: "gemini-3.1-pro-preview"
+    endpoint_env_var: "GEMINI_BASE_URL"
+    api_key_env_var: "GOOGLE_API_KEY"
+    capabilities: [text_generation, structured_json_generation]
+    sandbox_safe: false
+    requires_network: true
+    network_scope: external
+    max_tokens: 8192
+    temperature_range: [0.0, 1.0]
+    description: >
+      Google Gemini Pro ensemble generator. Model ID resolved from GEMINI_PRO_MODEL env var
+      (default gemini-3.1-pro-preview per model_registry.py). Requires GOOGLE_API_KEY env var.
+
+  # ── Executive positioning judge — active (W-J2) ─────────────────────────
+  executive_positioning_judge:
+    profile_id: "pvp::apps_rg::executive_positioning_judge"
+    provider_class: local_vllm
+    model_id: "Qwen/Qwen2.5-32B-Instruct-AWQ"
+    endpoint_env_var: "VLLM_BASE_URL"
+    api_key_env_var: null
+    default_endpoint: "http://localhost:8000/v1"
+    capabilities: [llm_judgment, executive_positioning_judgment]
+    sandbox_safe: true
+    requires_network: true
+    network_scope: localhost_only
+    max_tokens: 512
+    temperature_range: [0.0, 0.0]
+    judge_status: active
+    judge_implementation_ref: "agentic_core/runtime/judges/resume_judges/executive_positioning.py"
+    judge_implementation_class: "ExecutivePositioningJudge"
+    judge_implementation_note: >
+      Real LLM-as-judge. Uses same Qwen2.5-32B-Instruct-AWQ container as the main
+      generator (local-qwen-vllm, port 8000). informational_only=true by default —
+      missing or UNKNOWN score does NOT gate X3. Temperature=0.0 for deterministic scoring.
+    description: >
+      Executive positioning quality judge. Scores whether the generated resume
+      foregrounds scope, ownership, scale, and outcomes for senior+/exec levels.
+      Informational only — does not influence pass/fail unless policy explicitly activates gating.

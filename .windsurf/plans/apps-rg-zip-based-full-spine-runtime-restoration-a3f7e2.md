@@ -10,11 +10,12 @@ created: "2026-05-11"
 created_for: apps_rg
 rebaseline_id: apps_rg_runtime_restoration_rebaseline_after_w11
 rebaseline_status: ACTIVE
-final_status: COMPLETE_WITH_NON_BLOCKING_GAPS
-closure_wave: RB15_FINAL_RESTORATION_RECEIPT
-closure_reason: "All waves RB0-RB15 complete. 20 receipts inventoried. 1 boundary drift explicitly deferred (executive_positioning string pattern in judge_registry.py). Route remains registered_not_active. Provider mode remains stub_only. 153 tests passing."
+final_status: COMPLETE
+closure_wave: RB16_JUDGE_BOUNDARY_CLEANUP
+closure_reason: "All waves RB0-RB16 complete. 21 receipts inventoried. RB13 boundary drift (executive_positioning string pattern) FIXED in RB16 via config-driven approach. Judge classification now fully profile-driven from grader_roster.yaml. Route remains registered_not_active. Provider mode remains stub_only. 158 tests passing."
 certification_status: PASS
 route_activation_status: NOT_ACTIVATED
+next_active_wave: null
 ---
 
 # apps_rg Zip-Based Full-Spine Runtime Restoration
@@ -118,7 +119,8 @@ The prior W3+ sequence (`apps-rg-ensemble-judge-restoration-a7c4e2`) is **archiv
 | RB12 | Guarded route activation readiness | ✅ DONE |
 | RB13 | Live provider and real LLM judge integration | ✅ DONE |
 | RB14 | apps_rg quality parity and regression proof | ✅ DONE |
-| **RB15** | **Final restoration receipt and plan closure** | **▶ NEXT** |
+| RB15 | Final restoration receipt and plan closure | ✅ DONE |
+| RB16 | Judge boundary cleanup — config-driven informational-only | ✅ DONE |
 
 ---
 
@@ -143,6 +145,7 @@ The prior W3+ sequence (`apps-rg-ensemble-judge-restoration-a7c4e2`) is **archiv
 | RB13 | Live Provider + Real Judge | provider_gateway.py, llm_judge_gateway.py, judge_registry.py (20+ tests) | Provider gateway generic; stub_only enforced; judge abstain/fail-closed; G22/G25 integration | ✅ DONE |
 | RB14 | Quality Parity + Regression | test_apps_rg_quality_parity.py (31 tests) + full spine suite | parity suite vs prior pipeline; 122 tests green | ✅ DONE |
 | RB15 | Final Restoration Receipt | full-spine receipt; plan closure | All DoD rows verified | ✅ DONE |
+| RB16 | Judge Boundary Cleanup | grader_roster.yaml; judge_registry.py | Config-driven informational-only; removes core hardcoding | ✅ DONE |
 
 ---
 

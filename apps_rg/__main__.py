@@ -395,15 +395,6 @@ def main() -> int:
             print(json.dumps(dict(final_output), indent=2, default=str))
         if result.exit_status == "success":
             return 0
-        if result.exit_status.startswith("stub_pending_"):
-            # Partial pipeline progress — N stages real, downstream stages
-            # still deferred per plan apps-rg-runtime-wiring-completion-d4e8a1.
-            print(
-                f"\nNOTE: dispatch returned '{result.exit_status}' — partial pipeline. "
-                "Subsequent W3 stages land in follow-up turns. "
-                "Reachability of all completed stages proven."
-            )
-            return 0
         return 4
 
     # ClarificationRequired path

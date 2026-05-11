@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "apps_research_substrate_writeback_v1",
+  "title": "Apps Research Substrate Writeback Schema",
+  "description": "Schema for research substrate records written to L4 via UWG",
+  "version": "W11.0.0",
+  
+  "definitions": {
+    "SourceRecord": {
+      "type": "object",
+      "required": ["source_id", "source_type", "provenance"],
+      "properties": {
+        "source_id": {"type": "string"},
+        "source_type": {
+          "type": "string",
+          "enum": ["sec_10k", "sec_10q", "press_release", "news_article", "company_website", "industry_report"]
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["url", "retrieved_at"],
+          "properties": {
+            "url": {"type": "string", "format": "uri"},
+            "retrieved_at": {"type": "string", "format": "date-time"},
+            "cached_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "freshness_ttl_hours": {"type": "integer", "minimum": 1}
+      }
+    },
+    
+    "EvidenceClaim": {
+      "type": "object",
+      "required": ["claim_id", "text", "sources"],
+      "properties": {
+        "claim_id": {"type": "string"},
+        "text": {"type": "string", "minLength": 1},
+        "sources": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/SourceRecord"},
+          "minItems": 1
+        },
+        "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "contradiction_status": {
+          "type": "string",
+          "enum": ["verified", "unverified", "contradicted", "superseded"]
+        }
+      }
+    },
+    
+    "EntityAlias": {
+      "type": "object",
+      "required": ["canonical_name", "aliases"],
+      "properties": {
+        "canonical_name": {"type": "string"},
+        "aliases": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": ["company", "person", "product", "industry", "location"]
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    
+    "SourceAuthoritySignal": {
+      "type": "object",
+      "required": ["source_id", "reliability_tier"],
+      "properties": {
+        "source_id": {"type": "string"},
+        "reliability_tier": {
+          "type": "string",
+          "enum": ["primary", "credible", "reference", "unverified"]
+        },
+        "authority_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "calibration_timestamp": {"type": "string", "format": "date-time"},
+        "sample_size": {"type": "integer", "minimum": 1}
+      }
+    }
+  },
+  
+  "oneOf": [
+    {
+      "title": "Research Substrate Record",
+      "type": "object",
+      "required": ["record_type", "claims"],
+      "properties": {
+        "record_type": {"const": "research_substrate_record"},
+        "claims": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/EvidenceClaim"}
+        },
+        "coverage_summary": {"type": "string"},
+        "completeness_score": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    {
+      "title": "Entity Alias Record",
+      "type": "object",
+      "required": ["record_type", "entities"],
+      "properties": {
+        "record_type": {"const": "entity_alias_record"},
+        "entities": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/EntityAlias"}
+        }
+      }
+    },
+    {
+      "title": "Source Authority Signal",
+      "type": "object",
+      "required": ["record_type", "sources"],
+      "properties": {
+        "record_type": {"const": "source_authority_signal"},
+        "sources": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/SourceAuthoritySignal"}
+        }
+      }
+    }
+  ]
+}

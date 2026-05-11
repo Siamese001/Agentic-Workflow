@@ -1,0 +1,80 @@
+# W10 — Learning Profile (App-Owned Config Only)
+#
+# Core owns L6 execution. This file is declarative config only.
+
+profile_id: apps_research_learning_v1
+version: "W10.0.0"
+description: Learning profile for company brief completed-run evaluation
+
+# Learning observation targets
+observation_targets:
+  entity_aliases:
+    enabled: true
+    min_confidence: 0.7
+    observation_window_runs: 10
+    
+  source_reliability:
+    enabled: true
+    track_sources:
+      - sec_10k
+      - sec_10q
+      - reuters
+      - bloomberg
+      - wsj
+      - company_website
+    reliability_tiers:
+      - primary
+      - credible
+      - reference
+    min_samples_for_tier_adjustment: 5
+    
+  cache_threshold:
+    enabled: true
+    observe_hit_rates: true
+    adjustment_sensitivity: 0.1
+    min_observation_runs: 3
+    
+  retrieval_profile:
+    enabled: true
+    observe_coverage_depth: true
+    observe_source_diversity: true
+    
+  judge_calibration:
+    enabled: true
+    observe_dimensions:
+      - claim_support
+      - citation_quality
+      - coverage_depth
+      - source_authority
+      - cache_compatibility
+      - briefing_injection
+      - downstream_relevance
+    recalibration_trigger_confidence: 0.7
+    min_samples_for_recalibration: 10
+    
+  downstream_usefulness:
+    enabled: true
+    observe_apps:
+      - apps_rg
+      - apps_lic
+    usefulness_signals:
+      - resume_generation_success
+      - license_check_success
+      - field_coverage_completeness
+
+# Learning constraints (hard rules)
+constraints:
+  post_runtime_only: true
+  no_current_run_mutation: true
+  no_cache_write: true
+  no_vector_store_write: true
+  no_l4_write: true
+  no_x3_emission: true
+  no_reroute: true
+  no_reexecute: true
+
+# Evidence retention
+evidence_retention:
+  completed_eval_records: 30  # days
+  rca_packets: 90  # days
+  proposal_packets: 180  # days

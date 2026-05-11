@@ -1,0 +1,87 @@
+# W10 — Learning Negative Controls (App-Owned Config)
+#
+# Defines what L6 is FORBIDDEN from doing.
+# These are hard constraints, not policies.
+
+negative_controls:
+  # Current-run boundary
+  l6_cannot_rescue_current_run:
+    description: L6 cannot rescue, repair, or salvage a failing current run
+    enforcement: hard_fail
+    detection: observer_law_validation
+    
+  l6_cannot_mutate_current_run:
+    description: L6 cannot change prompts, thresholds, or policy during current run
+    enforcement: hard_fail
+    detection: output_scan
+    
+  l6_cannot_reroute_current_run:
+    description: L6 cannot change routing decisions for current run
+    enforcement: hard_fail
+    detection: observer_law_validation
+    
+  l6_cannot_reexecute_current_run:
+    description: L6 cannot trigger re-execution of current run
+    enforcement: hard_fail
+    detection: observer_law_validation
+    
+  # X3 boundary
+  l6_cannot_emit_x3:
+    description: L6 cannot emit Exit X3 disposition
+    enforcement: hard_fail
+    detection: output_scan
+    
+  # Write boundaries
+  l6_cannot_write_cache_directly:
+    description: L6 cannot write to R1A/R1B cache directly
+    enforcement: hard_fail
+    detection: syscall_intercept
+    
+  l6_cannot_write_vector_store_directly:
+    description: L6 cannot write to vector store directly
+    enforcement: hard_fail
+    detection: syscall_intercept
+    
+  l6_cannot_write_l4_directly:
+    description: L6 cannot write to L4 UWG directly
+    enforcement: hard_fail
+    detection: output_scan
+    
+  # Source policy boundary
+  l6_cannot_change_source_policy_directly:
+    description: L6 cannot change source reliability policy directly
+    enforcement: hard_fail
+    detection: output_scan
+    
+  # Prompt/rubric boundary
+  l6_cannot_change_prompts_directly:
+    description: L6 cannot change PA prompt artifacts directly
+    enforcement: hard_fail
+    detection: output_scan
+    
+  l6_cannot_change_thresholds_directly:
+    description: L6 cannot change gate thresholds directly
+    enforcement: hard_fail
+    detection: output_scan
+    
+  # Provider call boundary
+  l6_cannot_call_providers_for_answer_repair:
+    description: L6 cannot call LLM providers to repair current-run answers
+    enforcement: hard_fail
+    detection: network_monitor
+
+# Violation responses
+violation_responses:
+  detection_immediate: true
+  block_outputs: true
+  log_to_violation_ledger: true
+  notify_operator: true
+  invalidate_session: true
+  require_manual_review: true
+
+# Validation cadence
+validation:
+  observer_law_check: every_l6_session
+  output_boundary_scan: every_l6_output
+  syscall_audit: sampled
+  network_audit: sampled

@@ -1,0 +1,67 @@
+# W11 — Write Policy for UWG Admission (App-Owned Config Only)
+#
+# Defines what writes apps_research can request through UWG.
+# Core owns UWG execution. This file is declarative policy only.
+
+policy_id: apps_research_write_v1
+version: "W11.0.0"
+description: Write policy for company brief research substrate writeback
+
+# Allowed write types (UWG will admit these)
+allowed_write_types:
+  - research_substrate_record_promotion
+  - embedding_index_record_promotion
+  - source_register_promotion
+  - claim_evidence_map_promotion
+  - freshness_report_promotion
+  - contradiction_report_promotion
+  - citation_anchor_registry_promotion
+  - entity_alias_record_promotion
+  - source_authority_signal_promotion
+  - cache_threshold_policy_promotion
+  - freshness_ttl_policy_promotion
+  - retrieval_profile_promotion
+  - judge_calibration_record_promotion
+
+# Prohibited write types (UWG will block these)
+prohibited_write_types:
+  - apps_rg_final_resume_bullets_terminal_cache
+  - apps_rg_final_resume_sections_terminal_cache
+  - apps_lic_final_outreach_copy_terminal_cache
+  - apps_lic_campaign_copy_terminal_cache
+  - customized_user_specific_final_narrative_terminal_cache
+  - ungrounded_synthesis_without_source_register
+  - uploaded_briefing_failed_provenance
+  - uploaded_briefing_failed_injection_scan
+
+# Required proofs by write type
+proof_requirements:
+  default:
+    - replay
+    - regression
+    - safety
+  
+  judge_calibration_record_promotion:
+    - replay
+    - regression
+    - safety
+    - calibration
+
+# Rollback plan required for all writes
+require_rollback_plan: true
+
+# Allowed L4 namespaces
+allowed_l4_namespaces:
+  - apps_research_substrate
+  - apps_research_index
+  - apps_research_cache
+  - apps_research_config
+
+# Policy hash (updated when policy changes)
+policy_hash: "sha256:apps-research-write-policy-v1"
+
+# Registry digest (links to policy registry)
+registry_digest: "sha256:apps-research-registry-v1"
+
+# Audit retention
+audit_retention_days: 365

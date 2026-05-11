@@ -78,7 +78,7 @@ class RegistrationStatus:
 
     slug: str
     registered: bool
-    status: str | None         # Notion Status field (In Progress/Not Started/Deferred/Waiting/Completed/Retired/Archived)
+    status: str | None         # Notion Status field (In Progress/Not Started/Lower Priority/Waiting/Completed/Retired/Archived)
     source: str                # "cache" | "cache_stale" | "cache_missing" | "queue"
     reason: str | None         # Human-readable detail when registered=False
 

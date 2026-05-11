@@ -113,8 +113,13 @@ nodes:
     node_type: generation
     tier: L2
     depends_on: [role_analysis]
-    candidate_count: 2
-    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    candidate_count: 4
+    generator_profile: "pvp::apps_rg::local_qwen_generator"
+    generator_profiles:
+      - "pvp::apps_rg::local_qwen_generator"
+      - "pvp::apps_rg::anthropic_claude_generator"
+      - "pvp::apps_rg::openai_gpt_generator"
+      - "pvp::apps_rg::google_gemini_generator"
     temperature_profile: "temp::low_deterministic"
     prompt_variant_refs:
       - "section_prompts/header_block.yaml"
@@ -131,8 +136,13 @@ nodes:
     node_type: generation
     tier: L2
     depends_on: [role_analysis, header_block]
-    candidate_count: 3
-    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    candidate_count: 4
+    generator_profile: "pvp::apps_rg::local_qwen_generator"
+    generator_profiles:
+      - "pvp::apps_rg::local_qwen_generator"
+      - "pvp::apps_rg::anthropic_claude_generator"
+      - "pvp::apps_rg::openai_gpt_generator"
+      - "pvp::apps_rg::google_gemini_generator"
     temperature_profile: "temp::moderate"
     prompt_variant_refs:
       - "section_prompts/professional_summary.yaml"
@@ -149,8 +159,13 @@ nodes:
     node_type: generation
     tier: L2
     depends_on: [role_analysis]
-    candidate_count: 2
-    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    candidate_count: 4
+    generator_profile: "pvp::apps_rg::local_qwen_generator"
+    generator_profiles:
+      - "pvp::apps_rg::local_qwen_generator"
+      - "pvp::apps_rg::anthropic_claude_generator"
+      - "pvp::apps_rg::openai_gpt_generator"
+      - "pvp::apps_rg::google_gemini_generator"
     temperature_profile: "temp::low_deterministic"
     prompt_variant_refs:
       - "section_prompts/skills_block.yaml"
@@ -167,8 +182,13 @@ nodes:
     node_type: generation
     tier: L2
     depends_on: [role_analysis, professional_summary]
-    candidate_count: 3
-    generator_profile: "pvp::apps_rg::resume_generation::v1"
+    candidate_count: 4
+    generator_profile: "pvp::apps_rg::local_qwen_generator"
+    generator_profiles:
+      - "pvp::apps_rg::local_qwen_generator"
+      - "pvp::apps_rg::anthropic_claude_generator"
+      - "pvp::apps_rg::openai_gpt_generator"
+      - "pvp::apps_rg::google_gemini_generator"
     temperature_profile: "temp::moderate"
     prompt_variant_refs:
       - "section_prompts/experience_block.yaml"

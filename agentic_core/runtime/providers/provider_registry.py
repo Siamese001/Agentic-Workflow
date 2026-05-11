@@ -21,6 +21,12 @@ from agentic_core.runtime.providers.provider_types import (
     ProviderProfile,
     ProviderProfileNotFoundError,
 )
+from agentic_core.L0_routing.config.model_registry import (
+    ANTHROPIC_MODEL_ID,
+    GEMINI_PRO_MODEL_ID,
+    OPENAI_MODEL_ID,
+    QWEN_LOCAL_MODEL_ID,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -111,10 +117,14 @@ class ProviderRegistry:
         if not endpoint_url and default_endpoint:
             endpoint_url = default_endpoint
         
+        vendor = data.get("provider_vendor", "")
+        raw_model_id = data.get("model_id")
+        model_id = self._resolve_model_id(raw_model_id, vendor)
+
         return ProviderProfile(
             profile_id=data.get("profile_id", profile_key),
             provider_kind=ProviderKind(data.get("provider_class", "stub")),
-            model_id=data.get("model_id"),
+            model_id=model_id,
             endpoint_url=endpoint_url,
             endpoint_env_var=endpoint_env_var,
             api_key_env_var=data.get("api_key_env_var"),
@@ -127,7 +137,30 @@ class ProviderRegistry:
             requires_network=data.get("requires_network", False),
             sandbox_safe=data.get("sandbox_safe", True),
             activation_env_var=data.get("activation_env_var"),
+            vendor=vendor,
         )
+
+    def _resolve_model_id(self, raw_model_id: Optional[str], vendor: str) -> Optional[str]:
+        """Resolve model_id through model_registry env-var constants.
+
+        YAML value acts as fallback default; env var (already baked into the
+        model_registry constants) takes precedence. Mapping:
+          anthropic      -> ANTHROPIC_MODEL_ID  (env: ANTHROPIC_MODEL)
+          openai         -> OPENAI_MODEL_ID     (env: OPENAI_MODEL)
+          google_gemini  -> GEMINI_PRO_MODEL_ID (env: GEMINI_PRO_MODEL)
+          local_vllm     -> QWEN_LOCAL_MODEL_ID (env: VLLM_MODEL_NAME)
+          other / null   -> raw_model_id as-is
+        """
+        if vendor == "anthropic":
+            return ANTHROPIC_MODEL_ID
+        if vendor == "openai":
+            return OPENAI_MODEL_ID
+        if vendor == "google_gemini":
+            return GEMINI_PRO_MODEL_ID
+        # local_vllm profiles: prefer env-resolved constant over YAML string
+        if raw_model_id and "qwen" in raw_model_id.lower():
+            return QWEN_LOCAL_MODEL_ID
+        return raw_model_id
     
     def get_profile(self, profile_ref: str) -> ProviderProfile:
         """Get a provider profile by reference.

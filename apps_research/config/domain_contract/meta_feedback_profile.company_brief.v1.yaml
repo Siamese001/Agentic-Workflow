@@ -1,0 +1,70 @@
+# W10 — Meta-Feedback Profile (App-Owned Config Only)
+#
+# Defines how learning observations feed back into system improvement.
+# All feedback is inert until UWG review.
+
+profile_id: apps_research_meta_feedback_v1
+version: "W10.0.0"
+description: Meta-feedback profile for future-run improvement proposals
+
+# Meta-feedback loops
+feedback_loops:
+  entity_alias_feedback:
+    enabled: true
+    target: semantic_cache_entity_resolution
+    proposal_type: ENTITY_ALIAS
+    feedback_cycle_runs: 5
+    min_confidence_for_proposal: 0.8
+    
+  source_reliability_feedback:
+    enabled: true
+    target: source_tier_ranking
+    proposal_type: SOURCE_RELIABILITY
+    feedback_cycle_runs: 10
+    min_samples_for_tier_change: 5
+    
+  cache_threshold_feedback:
+    enabled: true
+    target: r1b_semantic_cache_threshold
+    proposal_type: CACHE_THRESHOLD
+    feedback_cycle_runs: 3
+    adjustment_granularity: 0.05
+    
+  judge_calibration_feedback:
+    enabled: true
+    target: judge_score_calibration
+    proposal_type: JUDGE_CALIBRATION
+    feedback_cycle_runs: 10
+    recalibration_threshold_confidence: 0.7
+    
+  retrieval_profile_feedback:
+    enabled: true
+    target: c0_retrieval_depth_profile
+    proposal_type: RETRIEVAL_PROFILE
+    feedback_cycle_runs: 5
+    
+  downstream_usefulness_feedback:
+    enabled: true
+    target: research_brief_output_format
+    proposal_type: PROMPT_IMPROVEMENT
+    feedback_cycle_runs: 5
+    track_consumers:
+      - apps_rg
+      - apps_lic
+
+# Meta-feedback constraints
+constraints:
+  proposals_inert_until_uwg: true
+  activation_future_run_only: true
+  require_replay_proof: true
+  require_regression_proof: true
+  require_safety_proof: true
+  require_calibration_proof_for_judges: true
+  rollback_plan_required: true
+
+# Evidence synthesis
+evidence_synthesis:
+  aggregate_across_runs: true
+  min_runs_for_synthesis: 3
+  confidence_decay_half_life_days: 7
+  outlier_detection_enabled: true

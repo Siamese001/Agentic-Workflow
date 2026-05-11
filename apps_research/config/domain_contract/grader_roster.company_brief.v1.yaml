@@ -1,0 +1,90 @@
+# W9 Boundary Repair — App-Owned Grader Roster Config
+# Core owns execution. Apps own this config.
+
+roster_id: apps_research_company_brief_v1
+version: "W9.0.0"
+description: Grader roster for company brief evaluation
+
+# Dimension to grader mapping
+# Core deterministic graders referenced by dimension name
+dimension_graders:
+  # G09: Source Quality
+  source_authority:
+    grader_type: deterministic
+    core_grader_id: core_source_authority
+    
+  citation_quality:
+    grader_type: deterministic
+    core_grader_id: core_citation_quality
+    
+  coverage_depth:
+    grader_type: deterministic
+    core_grader_id: core_coverage_depth
+    
+  contradiction_status:
+    grader_type: deterministic
+    core_grader_id: core_contradiction_resolution
+    
+  # G10: Factual Grounding
+  cache_compatibility:
+    grader_type: deterministic
+    core_grader_id: core_cache_compatibility
+    
+  semantic_reuse_safety:
+    grader_type: deterministic
+    core_grader_id: core_semantic_reuse_safety
+    
+  instruction_data_boundary_for_cache_or_prompt_reuse:
+    grader_type: deterministic
+    core_grader_id: core_instruction_boundary
+    
+  # G13/G23: Injection/Security
+  briefing_injection:
+    grader_type: deterministic
+    core_grader_id: core_briefing_injection
+    
+  retrieved_content_injection:
+    grader_type: deterministic
+    core_grader_id: core_retrieved_injection
+    
+  leakage_or_security_risk:
+    grader_type: deterministic
+    core_grader_id: core_security_scan
+    
+  # G22: Answer Completeness
+  claim_support:
+    grader_type: deterministic
+    core_grader_id: core_claim_support
+    
+  contradiction_resolution:
+    grader_type: deterministic
+    core_grader_id: core_contradiction_resolution
+    
+  downstream_relevance:
+    grader_type: deterministic
+    core_grader_id: core_downstream_relevance
+
+# Grader execution config
+execution:
+  timeout_seconds: 5.0
+  fail_closed: true
+  max_retries: 0  # Deterministic graders don't retry
+
+# Calibration refs per dimension
+calibration:
+  source_authority:
+    - docs/reference/calibration/source_authority_baseline.json
+  citation_quality:
+    - docs/reference/calibration/citation_quality_baseline.json
+  coverage_depth:
+    - docs/reference/calibration/coverage_depth_baseline.json
+  claim_support:
+    - docs/reference/calibration/claim_support_baseline.json
+  contradiction_resolution:
+    - docs/reference/calibration/contradiction_resolution_baseline.json
+  cache_compatibility:
+    - docs/reference/calibration/cache_compatibility_baseline.json
+  briefing_injection:
+    - docs/reference/calibration/briefing_injection_baseline.json
+  downstream_relevance:
+    - docs/reference/calibration/downstream_relevance_baseline.json

@@ -1,0 +1,67 @@
+# W11 — L4 Namespace Policy (App-Owned Config Only)
+#
+# Defines L4 namespace structure and isolation for apps_research.
+
+policy_id: apps_research_l4_namespace_v1
+version: "W11.0.0"
+description: L4 namespace policy for company brief research substrate
+
+# Namespace definitions
+namespaces:
+  apps_research_substrate:
+    description: Core research substrate records
+    allowed_record_types:
+      - research_substrate_record
+      - claim_evidence_map
+      - contradiction_report
+    storage_tier: durable
+    replication: standard
+    
+  apps_research_index:
+    description: Search and retrieval indices
+    allowed_record_types:
+      - embedding_index_record
+      - source_register
+      - citation_anchor_registry
+      - entity_alias_record
+    storage_tier: index
+    replication: high
+    
+  apps_research_cache:
+    description: Semantic cache and freshness records
+    allowed_record_types:
+      - cache_threshold_policy
+      - freshness_ttl_policy
+      - freshness_report
+    storage_tier: cache
+    replication: standard
+    ttl_enabled: true
+    
+  apps_research_config:
+    description: Judge calibration and retrieval profiles
+    allowed_record_types:
+      - judge_calibration_record
+      - retrieval_profile
+      - source_authority_signal
+    storage_tier: config
+    replication: high
+
+# Namespace isolation
+isolation_rules:
+  cross_namespace_reads: allowed
+  cross_namespace_writes: forbidden
+  namespace_prefix_required: true
+
+# Access control
+access_policy:
+  uwg_only_writes: true
+  direct_l2_writes: forbidden
+  direct_exit_writes: forbidden
+  direct_l6_writes: forbidden
+  direct_app_writes: forbidden
+
+# Schema enforcement
+schema_enforcement:
+  validate_on_write: true
+  strict_mode: true
+  unknown_fields_rejected: true

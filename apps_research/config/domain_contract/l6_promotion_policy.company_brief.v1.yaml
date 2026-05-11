@@ -1,0 +1,91 @@
+# W10 — L6 Promotion Policy (App-Owned Config Only)
+#
+# Defines rules for promoting learning to future runs.
+# All promotions require UWG review and proof.
+
+policy_id: apps_research_l6_promotion_v1
+version: "W10.0.0"
+description: Promotion policy for L6 learning to future runs
+
+# Promotion gates (all must pass)
+promotion_gates:
+  gauntlet_pass_required:
+    enabled: true
+    fail_closed: true
+    
+  observer_law_compliance_required:
+    enabled: true
+    violations_block_promotion: true
+    
+  uwg_review_required:
+    enabled: true
+    pre_approval_not_allowed: true
+    
+  rollback_plan_required:
+    enabled: true
+    missing_plan_blocks_promotion: true
+
+# Required proofs by proposal type
+required_proofs:
+  ENTITY_ALIAS:
+    - REPLAY
+    - REGRESSION
+    
+  SOURCE_RELIABILITY:
+    - REPLAY
+    - REGRESSION
+    - SAFETY
+    
+  CACHE_THRESHOLD:
+    - REPLAY
+    - REGRESSION
+    
+  JUDGE_CALIBRATION:
+    - CALIBRATION
+    - REGRESSION
+    - SAFETY
+    
+  RETRIEVAL_PROFILE:
+    - REPLAY
+    - REGRESSION
+    
+  FRESHNESS_TTL:
+    - REPLAY
+    - REGRESSION
+    
+  CHUNKING_PROFILE:
+    - REPLAY
+    - REGRESSION
+    - SAFETY
+    
+  PROMPT_IMPROVEMENT:
+    - REPLAY
+    - REGRESSION
+    - SAFETY
+    
+  RUBRIC_IMPROVEMENT:
+    - CALIBRATION
+    - REGRESSION
+    - SAFETY
+
+# Activation constraints
+activation:
+  trigger: FUTURE_RUN_START
+  never_auto_activate: true
+  activation_window: NEXT_RUN  # Or specific date range
+  requires_uwg_final_approval: true
+  rollback_on_failure: true
+
+# Safety thresholds
+safety_thresholds:
+  min_replay_success_rate: 0.95
+  max_regression_rate: 0.05
+  min_calibration_spearman: 0.80
+  max_safety_incidents: 0
+
+# Promotion tracking
+tracking:
+  track_all_proposals: true
+  track_promotion_outcomes: true
+  track_rollback_activations: true
+  retention_days: 365

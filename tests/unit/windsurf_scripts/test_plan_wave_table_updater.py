@@ -389,3 +389,113 @@ def test_unknown_kind_is_noop(tmp_path: Path) -> None:
     assert ok
     assert "no-op" in msg
     assert plan_file.read_text(encoding="utf-8") == original
+
+
+# ---------------------------------------------------------------------------
+# Regression: bare 🔲 (without " TODO") must be recognized (RC-1)
+# ---------------------------------------------------------------------------
+
+SAMPLE_BARE_TODO = """\
+# Test Plan
+
+## Wave Structure
+
+| Wave | Focus | Scope | Status |
+|------|-------|-------|--------|
+| W0 | Baseline | 4 gates | ✅ DONE |
+| W1 | Fix bug | 3 files | ✅ DONE |
+| W2 | Stub files | 5 files | ✅ DONE |
+| W3 | Update docs | 2 files | 🔲 |
+| W4 | Final verify | tests | 🔲 |
+
+## Phase-Level Summary
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|----------|-------|---------------|-------------|-------------|--------|
+| W3 | Update docs | `README.md` | None | ~200 | 🔲 |
+| W4 | Final verify | test files | None | ~300 | 🔲 |
+"""
+
+
+def test_bare_todo_wave_complete(tmp_path: Path) -> None:
+    """wave_complete must flip bare 🔲 (no ' TODO') to ✅ DONE."""
+    plan_file = _make_plan(tmp_path, SAMPLE_BARE_TODO)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=3, kind="wave_complete")
+    assert ok, msg
+    content = plan_file.read_text(encoding="utf-8")
+    assert "| W3 | Update docs | 2 files | ✅ DONE |" in content
+    assert "| W3 | Update docs | `README.md` | None | ~200 | ✅ DONE |" in content
+    # W4 should still be bare 🔲
+    assert "| W4 | Final verify | tests | 🔲 |" in content
+
+
+def test_bare_todo_wave_start(tmp_path: Path) -> None:
+    """wave_start must flip bare 🔲 to 🔄 IN PROGRESS."""
+    plan_file = _make_plan(tmp_path, SAMPLE_BARE_TODO)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=3, kind="wave_start")
+    assert ok, msg
+    content = plan_file.read_text(encoding="utf-8")
+    assert "| W3 | Update docs | 2 files | 🔄 IN PROGRESS |" in content
+    assert "| W3 | Update docs | `README.md` | None | ~200 | 🔄 IN PROGRESS |" in content
+
+
+def test_bare_todo_plan_complete(tmp_path: Path) -> None:
+    """plan_complete must flip all bare 🔲 rows to ✅ DONE."""
+    plan_file = _make_plan(tmp_path, SAMPLE_BARE_TODO)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=-1, kind="plan_complete")
+    assert ok, msg
+    content = plan_file.read_text(encoding="utf-8")
+    assert "🔲" not in content
+    assert "| W3 | Update docs | 2 files | ✅ DONE |" in content
+    assert "| W4 | Final verify | tests | ✅ DONE |" in content
+
+
+# ---------------------------------------------------------------------------
+# Regression: letter-suffix wave labels like W2R (RC-2)
+# ---------------------------------------------------------------------------
+
+SAMPLE_LETTER_SUFFIX = """\
+# Test Plan
+
+## Wave Structure
+
+| Wave | Phase IDs | Focus | Est. Tokens | Status |
+|------|-----------|-------|-------------|--------|
+| W1 | W1.P1 | First wave | ~300 | ✅ DONE |
+| W2 | W2.P1 | Second wave | ~2000 | ✅ DONE |
+| W2R | W2R.P1 | Regression repair | ~600 | 🔲 TODO |
+| W3 | W3.P1 | Documentation | ~200 | 🔲 TODO |
+"""
+
+
+def test_letter_suffix_wave_complete(tmp_path: Path) -> None:
+    """wave_complete with wave=2 must also flip W2R row."""
+    plan_file = _make_plan(tmp_path, SAMPLE_LETTER_SUFFIX)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=2, kind="wave_complete")
+    assert ok, msg
+    content = plan_file.read_text(encoding="utf-8")
+    assert "| W2R | W2R.P1 | Regression repair | ~600 | ✅ DONE |" in content
+    # W3 should be unaffected
+    assert "| W3 | W3.P1 | Documentation | ~200 | 🔲 TODO |" in content
+
+
+def test_letter_suffix_wave_start(tmp_path: Path) -> None:
+    """wave_start with wave=2 must also flip W2R row."""
+    plan_file = _make_plan(tmp_path, SAMPLE_LETTER_SUFFIX)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=2, kind="wave_start")
+    assert ok, msg
+    content = plan_file.read_text(encoding="utf-8")
+    assert "| W2R | W2R.P1 | Regression repair | ~600 | 🔄 IN PROGRESS |" in content
+
+
+def test_letter_suffix_bare_todo_combined(tmp_path: Path) -> None:
+    """Both defects combined: W2R with bare 🔲 must be recognized."""
+    content = SAMPLE_LETTER_SUFFIX.replace(
+        "| W2R | W2R.P1 | Regression repair | ~600 | 🔲 TODO |",
+        "| W2R | W2R.P1 | Regression repair | ~600 | 🔲 |",
+    )
+    plan_file = _make_plan(tmp_path, content)
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=2, kind="wave_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W2R | W2R.P1 | Regression repair | ~600 | ✅ DONE |" in result

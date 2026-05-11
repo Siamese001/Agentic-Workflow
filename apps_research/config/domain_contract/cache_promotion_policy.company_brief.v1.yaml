@@ -1,0 +1,51 @@
+# W11 — Cache Promotion Policy (App-Owned Config Only)
+#
+# Defines policy for promoting records to semantic cache.
+
+policy_id: apps_research_cache_promotion_v1
+version: "W11.0.0"
+description: Cache promotion policy for company brief research substrate
+
+# Promotion eligibility
+eligibility:
+  min_confidence_score: 0.8
+  min_freshness_hours: 168  # 7 days
+  max_freshness_hours: 2160  # 90 days
+  require_verified_claims: true
+  allow_contradicted: false
+  allow_superseded: false
+
+# Promotion targets
+target_cache_types:
+  - r1a_exact_cache
+  - r1b_semantic_cache
+  - freshness_ttl_cache
+
+# Cache key generation
+key_generation:
+  include_company_name: true
+  include_query_fingerprint: true
+  include_timestamp: false  # Keys are stable for dedup
+
+# TTL policies
+ttl_policies:
+  default_ttl_hours: 168  # 7 days
+  max_ttl_hours: 720  # 30 days
+  extend_on_hit: true
+  extend_duration_hours: 24
+
+# Invalidation rules
+invalidation:
+  on_freshness_expired: true
+  on_contradiction_detected: true
+  on_source_unavailable: true
+
+# Promotion proofs required
+cache_promotion_proofs:
+  - replay  # Cache hit test
+  - freshness  # TTL validation
+
+# UWG requirements
+uwg_requirements:
+  require_uwg_admission: true
+  direct_cache_write_forbidden: true

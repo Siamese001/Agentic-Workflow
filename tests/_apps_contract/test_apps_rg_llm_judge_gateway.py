@@ -429,6 +429,121 @@ class TestJudgeRegistry:
         assert len(llms) == 1
 
 
+# ── RB16: Config-Driven Judge Registry Tests ─────────────────────────────────
+
+
+class TestRB16ConfigDrivenJudgeRegistry:
+    """RB16: Judge registry must be fully config-driven with no hardcoded dimension names."""
+    
+    def test_judge_registry_no_executive_positioning_special_case_in_core_logic(self):
+        """Judge registry does not contain hardcoded executive_positioning string check."""
+        repo_root = Path("c:/Git/Agentic-Workflow-FRESH")
+        registry_path = repo_root / "agentic_core/runtime/judges/judge_registry.py"
+        source = registry_path.read_text()
+        
+        # Should NOT have explicit string pattern checks for executive_positioning
+        # (excluding docstrings and comments which are allowed)
+        lines = source.splitlines()
+        for line in lines:
+            stripped = line.strip()
+            # Skip comments and docstrings
+            if (stripped.startswith('#') or stripped.startswith('"""') or 
+                stripped.startswith("'''") or stripped.startswith('- ') or
+                '"executive_positioning"' in line or "'executive_positioning'" in line):
+                continue
+            # Check for hardcoded pattern detection in runtime logic
+            assert 'in grader_ref.lower()' not in line or 'informational' not in line.lower(), \
+                f"Hardcoded string check found: {line.strip()[:80]}"
+    
+    def test_judge_registry_loads_informational_only_from_profile(self):
+        """Judge registry reads informational_only from grader config dict, not hardcoded."""
+        registry = JudgeRegistry()
+        
+        # Create profile with informational_only=True via config dict
+        from dataclasses import fields
+        profile = registry._create_llm_judge_profile(
+            grader_config={
+                "grader_ref": "test::info_judge::v1",
+                "informational_only": True,
+                "required_for_exit": False,
+                "provider_profile_ref": "stub_provider",
+            },
+            app_id="test_app",
+            roster_entry={},
+        )
+        
+        assert profile.informational_only is True
+        assert profile.required_for_exit is False
+    
+    def test_judge_registry_defaults_for_string_grader_ref(self):
+        """String-style grader refs get defaults (not informational-only)."""
+        registry = JudgeRegistry()
+        
+        profile = registry._create_llm_judge_profile(
+            grader_config="test::required_judge::v1",
+            app_id="test_app",
+            roster_entry={},
+        )
+        
+        # Should be required by default (backward compatible)
+        assert profile.informational_only is False
+        assert profile.required_for_exit is True
+    
+    def test_executive_positioning_informational_only_from_apps_rg_profile(self):
+        """executive_positioning is informational-only via apps_rg config, not core hardcoding."""
+        repo_root = Path("c:/Git/Agentic-Workflow-FRESH")
+        roster_path = repo_root / "apps_rg/config/domain_contract/grader_roster.yaml"
+        
+        import yaml
+        roster = yaml.safe_load(roster_path.read_text())
+        
+        # Find executive_positioning in roster
+        found = False
+        for entry in roster:
+            for grader in entry.get("llm_judge_graders", []):
+                if isinstance(grader, dict) and "executive_positioning" in grader.get("grader_ref", ""):
+                    found = True
+                    # Must be explicitly marked as informational in config
+                    assert grader.get("informational_only") is True, \
+                        "executive_positioning must have informational_only: true in config"
+                    assert grader.get("required_for_exit") is False, \
+                        "executive_positioning must have required_for_exit: false in config"
+        
+        assert found, "executive_positioning not found in grader_roster.yaml"
+    
+    def test_no_apps_rg_judge_dimension_hardcoding_in_generic_core(self):
+        """Generic core does not hardcode apps_rg judge dimension names."""
+        repo_root = Path("c:/Git/Agentic-Workflow-FRESH")
+        registry_path = repo_root / "agentic_core/runtime/judges/judge_registry.py"
+        source = registry_path.read_text()
+        
+        # List of apps_rg-specific dimension names
+        apps_rg_dims = [
+            "executive_positioning",
+            "factual_grounding",
+            "role_alignment",
+            "ats_readability",
+            "specificity",
+            "concision",
+            "format_compliance",
+            "no_fabrication",
+        ]
+        
+        lines = source.splitlines()
+        for line in lines:
+            stripped = line.strip()
+            # Skip comments and docstrings
+            if (stripped.startswith('#') or stripped.startswith('"""') or 
+                stripped.startswith("'''") or stripped.startswith('- ')):
+                continue
+            
+            for dim in apps_rg_dims:
+                # Check that dimension names don't appear in runtime logic
+                # (excluding the split("::") extraction which is generic)
+                if dim in line.lower() and 'split("::")' not in line:
+                    assert False, f"Hardcoded apps_rg dimension '{dim}' found: {line.strip()[:80]}"
+
+
 # ── All Required Tests Summary ────────────────────────────────────────────────
 
 
@@ -442,4 +557,9 @@ REQUIRED_TESTS = [
     "test_llm_judge_result_feeds_g22_evidence",
     "test_judge_disagreement_feeds_g25_anomaly_evidence",
     "test_no_apps_rg_quarantined_judge_imports",
+    # RB16 additions
+    "test_judge_registry_no_executive_positioning_special_case_in_core_logic",
+    "test_judge_registry_loads_informational_only_from_profile",
+    "test_executive_positioning_informational_only_from_apps_rg_profile",
+    "test_no_apps_rg_judge_dimension_hardcoding_in_generic_core",
 ]

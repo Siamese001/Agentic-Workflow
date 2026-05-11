@@ -1,0 +1,63 @@
+# W12 — Uploaded Briefing Ingest Policy (App-Owned Config Only)
+#
+# Defines policy for normalizing uploaded briefings into research substrate.
+
+policy_id: apps_research_uploaded_briefing_v1
+version: "W12.0.0"
+description: Policy for uploaded briefing normalization
+
+# Validation requirements
+validation:
+  provenance_check:
+    enabled: true
+    required_fields:
+      - source_url_or_document_id
+      - author_attribution
+      - date_published_or_accessed
+    
+  acl_check:
+    enabled: true
+    require_explicit_permissions: true
+    public_access_allowed: true
+    
+  injection_scan:
+    enabled: true
+    scan_patterns:
+      - "ignore previous instructions"
+      - "disregard all prior commands"
+      - "system prompt"
+      - "you are now"
+      - "new role"
+      - "DAN mode"
+      - "jailbreak"
+    block_on_detection: true
+    
+  citation_check:
+    enabled: true
+    require_sources_for_claims: true
+    min_sources_per_claim: 1
+    flag_insufficient_sources: true
+
+# Size limits
+size_limits:
+  max_briefing_size_mb: 10
+  max_single_file_size_mb: 5
+
+# Normalization output
+normalization:
+  output_format: research_substrate
+  data_boundary: EVIDENCE_DATA_ONLY
+  include_citation_gaps: true
+  
+# Data boundary
+data_boundary:
+  label: EVIDENCE_DATA_ONLY
+  never_treat_as_instruction: true
+  evidence_only: true
+
+# Rejection handling
+rejection:
+  on_provenance_failure: block_and_log
+  on_acl_failure: block_and_log
+  on_injection_detection: block_and_alert
+  on_size_exceeded: block_and_notify

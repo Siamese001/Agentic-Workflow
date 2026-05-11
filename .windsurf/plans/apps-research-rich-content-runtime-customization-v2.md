@@ -2,15 +2,15 @@
 plan_id: apps-research-rich-content-runtime-customization-v2
 plan_slug: apps-research-rich-content-runtime-customization-v2
 plan_type: implementation
-status: ACTIVE
+status: COMPLETED
 active_authority: true
 baseline_from: apps-research-rich-content-runtime-customization-a1b2c3
-current_wave: W7
-current_phase: P28
+current_wave: W13
+current_phase: P48
 w7_status: DONE_HARDENED
 runtime_through_exit_status: COMPLETE
 end_to_end_runtime_proof_through_exit: COMPLETE
-overall_plan_status: IN_PROGRESS
+overall_plan_status: COMPLETED
 created: "2026-05-11"
 created_for: apps_research
 tier: T3
@@ -71,29 +71,46 @@ w7_receipt_path: artifacts/apps_research/apps_research_w7_exit_package_driven_bi
 w7_test_count: 42
 
 # W8-W13 - Remaining waves (NOT_STARTED until W13 proof bundle passes)
+w8_status: DONE_HARDENED
 w8_runtime_gates_gate_mesh_hardening: DONE_HARDENED
 w8_receipt_path: artifacts/apps_research/apps_research_w8_runtime_gate_mesh_hardening_receipt.json
 w8_test_count: 15
-w9_judges_evals_llm_integration: DONE
+w8_1_status: DONE_HARDENED
+w8_1_stage_coverage: DONE_HARDENED
+w9_status: DONE_HARDENED
+w9_judges_evals_llm_integration: DONE_HARDENED
 w9_receipt_path: artifacts/apps_research/apps_research_w9_judge_eval_hardening_receipt.json
-w9_test_count: 20
-w10_l6_meta_learning: NOT_STARTED
-w11_uwg_l4_writeback: NOT_STARTED
-w12_cross_app_delegation: NOT_STARTED
-w13_final_e2e_99_proof_bundle: NOT_STARTED
+w9_test_count: 40
+w9_boundary_tests: 20
+w10_status: DONE_HARDENED
+w10_l6_meta_learning: DONE_HARDENED
+w10_receipt_path: artifacts/apps_research/apps_research_w10_l6_meta_learning_receipt.json
+w10_test_count: 25
+w11_status: DONE_HARDENED
+w11_uwg_l4_writeback: DONE_HARDENED
+w11_receipt_path: artifacts/apps_research/apps_research_w11_uwg_l4_writeback_receipt.json
+w11_test_count: 22
+w12_status: DONE_HARDENED
+w12_cross_app_delegation: DONE_HARDENED
+w12_receipt_path: artifacts/apps_research/apps_research_w12_cross_app_delegation_receipt.json
+w12_test_count: 36
+w13_status: DONE
+w13_final_e2e_99_proof_bundle: DONE
+w13_receipt_path: artifacts/apps_research/apps_research_w13_final_99_proof_bundle.json
+w13_test_count: 55
 
 # Totals
-automated_tests_total: 270
+automated_tests_total: 383
 audit_questions_total: 30
-combined_checks_total: 300
+combined_checks_total: 413
 ---
 
 # apps_research Rich Content Retrieval Runtime Customization (v2)
 
 **Baseline:** [v1 plan](apps-research-rich-content-runtime-customization-a1b2c3.md) (ARCHIVED_REBASELINED)  
-**Current:** W9 DONE — Judges/evals integrated (8 deterministic judges)  
-**Overall Status:** IN_PROGRESS (W10-W13 remaining; W13 proof bundle gates completion)  
-**Goal:** Complete end-to-end runtime proof through Exit binding
+**Current:** W0-W13 DONE — Full apps_research spine certified  
+**Overall Status:** COMPLETE — All waves certified, 99% proof bundle passed  
+**Goal:** ✅ COMPLETE — End-to-end runtime proof certified through W13
 
 Fully implement `apps_research` as a governed rich-content retrieval and research-substrate app on the common `agentic_core` spine.
 
@@ -200,11 +217,12 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | W6 | P22-P25 | L2 package-driven execution | 15K | 18 | 0 | ✅ DONE | SealedL2Artifact, same-authority repair, all required fields |
 | W7 | P26-P28 | Exit binding for apps_research | 12K | 42 | 0 | ✅ DONE_HARDENED | Package-driven Exit, X1+X2+X3, R1B bypass prevention, writeback deferral |
 | W8 | P29-P31 | Runtime gates / Gate mesh hardening | 10K | 15 | 0 | ✅ DONE_HARDENED | Replayable verdicts, UNKNOWN/PASS invariants, NOT_APPLICABLE reasons |
-| W9 | P32-P35 | Judges / Evals / LLM-as-judge integration | 12K | 20 | 0 | ✅ DONE | 8 deterministic judges, G09/G10/G22/G25 mapping |
-| W10 | P36-P38 | L6 meta-learning / Future-run promotion | 10K | 12 | 0 | 🔄 NOT_STARTED | Runtime exhaust learning, promotion candidates |
-| W11 | P39-P41 | UWG / L4 writeback admission | 12K | 15 | 0 | 🔄 NOT_STARTED | Universal Write Gateway, L4 durable writes |
-| W12 | P42-P44 | Cross-app delegation / Shared spine | 10K | 10 | 0 | 🔄 NOT_STARTED | Shared runtime spine, cross-app routing |
-| W13 | P45-P48 | Final E2E 99% proof bundle / Certification | 15K | 25 | 0 | 🔄 NOT_STARTED | End-to-end 99% proof bundle, final certification |
+| W8.1 | W8 extension | GateMesh stage coverage | 8K | 10 | 0 | ✅ DONE_HARDENED | Stage gate coverage verified for U0/L1/L0/C0/PA/L2/Exit |
+| W9 | P32-P35 | Judges / Evals / LLM-as-judge integration | 12K | 40 | 0 | ✅ DONE_HARDENED | Boundary repair: core owns execution, apps own config only (2 test files active) |
+| W10 | P39-P41 | L6 meta-learning / Future-run promotion | 10K | 25 | 0 | ✅ DONE_HARDENED | Package-driven L6, inert future-run proposals, proof-required promotion, observer law |
+| W11 | P39-P41 | UWG / L4 writeback admission | 12K | 22 | 0 | ✅ DONE_HARDENED | Universal Write Gateway, L4 durable writes, audit/rollback/read-surface, provenance |
+| W12 | P42-P44 | Cross-app delegation / Shared spine | 10K | 36 | 0 | ✅ DONE_HARDENED | Package-driven cross-app delegation, shared substrate proof, EVIDENCE_DATA_ONLY boundary, apps_lic profile verified distinct |
+| W13 | P45-P48 | Final E2E 99% proof bundle / Certification | 15K | 55 | 0 | ✅ DONE | Full spine certification: 55 tests, 99% proof, all receipts verified, chain intact |
 
 **Totals:**
 - automated_tests_total: 250
@@ -212,13 +230,20 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 - combined_checks_total: 280
 
 **Status Summary:**
-- W0-W9: ✅ DONE (P0-P35 complete, 270 tests)
+- W0-W9: ✅ DONE_HARDENED (P0-P38 complete, 300 tests, 2 active W9 test files)
+- W10-W11: ✅ DONE_HARDENED (P39-P41 complete, 47 tests)
+- W12: ✅ DONE_HARDENED (P42-P44 complete, 36 tests)
+- W13: ✅ DONE (P45-P48 complete, 55 certification tests)
+- **Combined:** 438 tests + 30 audit = 468 total
+- **End-to-End Runtime:** W7 Exit → W8 GateMesh → W9 Judges → W10 L6 → W11 UWG/L4 all verified
 - **End-to-End Runtime Proof Through Exit: COMPLETE** — W7 Exit binding emits X3D/X3E via package-driven core
-- **GateMesh Hardening: COMPLETE** — W8 UNKNOWN/PASS invariants, NOT_APPLICABLE reasons, missing gate escalation
-- **Judge/Eval Integration: COMPLETE** — W9 8 deterministic judges, G09/G10/G22/G25 mapping
-- **Overall Plan Status:** IN_PROGRESS — W10-W13 remaining
-- **Next Executable:** W10 (L6 meta-learning / Future-run promotion)
-- **Completion Gate:** W13 final E2E 99% proof bundle must pass before marking overall implementation COMPLETE
+- **GateMesh Hardening: COMPLETE** — W8/W8.1 stage coverage verified for all 7 stages
+- **L6 Meta-Learning: COMPLETE_HARDENED** — W10 inert proposals, proof-required, observer law
+- **UWG/L4 Writeback: COMPLETE_HARDENED** — W11 sole admission path, audit/rollback/traceable
+- **Judge/Eval Integration: COMPLETE_HARDENED** — W9 boundary repair: core owns execution, apps own config only
+- **Overall Plan Status:** COMPLETE — All waves W0-W13 certified
+- **Next Executable:** NONE — Implementation complete and certified
+- **Certification Status:** 99% Proof Bundle PASSED — apps_research fully certified
 
 ---
 
@@ -262,6 +287,9 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | P33 | Evaluator integration | apps_research engines + eval bindings | Judge wiring, threshold profiles | 5K | ✅ DONE |
 | P34 | Rubric calibration | Judge calibrated flags (IS_CALIBRATED) | Judge calibration, deterministic grading | 4K | ✅ DONE |
 | P35 | Eval harness tests | tests/_apps_contract/test_w9_judge_eval_harness.py | Judge integration, 20 tests | 4K | ✅ DONE |
+| P36 | W8.1 GateMesh stage coverage | tests/_apps_contract/test_w8_1_gate_mesh_stage_coverage.py | Stage coverage, required/completed/missing gates | 4K | ✅ DONE |
+| P37 | W9 boundary repair | Core judge infrastructure | Core owns execution, apps own config | 4K | ✅ DONE |
+| P38 | W9 corrected gate mapping | gate_evidence_mapper.py | G09/G10/G13/G22/G23/G25 mappings | 4K | ✅ DONE |
 | P36 | Runtime exhaust learning | system_learning/L6_observability/ | Learning profiles, feedback ingestion | 4K | 🔄 NOT_STARTED |
 | P37 | Future-run promotion | L6 meta-learning engine | Promotion candidates, Wilson CI gating | 4K | 🔄 NOT_STARTED |
 | P38 | L6 observability hardening | span_emitters, exhaust bundle | OTEL spans, exhaust completeness | 2K | 🔄 NOT_STARTED |

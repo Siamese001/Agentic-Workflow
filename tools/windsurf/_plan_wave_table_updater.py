@@ -37,9 +37,13 @@ from typing import Iterable
 # ---------------------------------------------------------------------------
 
 STATUS_TODO = "🔲 TODO"
+STATUS_TODO_BARE = "🔲"  # bare variant used by many plans
 STATUS_IN_PROGRESS = "🔄 IN PROGRESS"
 STATUS_DONE = "✅ DONE"
 STATUS_BLOCKED = "❌ BLOCKED"
+
+# All values that should be treated as "TODO" for replacement purposes
+_TODO_VARIANTS = {STATUS_TODO, STATUS_TODO_BARE}
 
 # ---------------------------------------------------------------------------
 # Table-row regex
@@ -55,7 +59,7 @@ STATUS_BLOCKED = "❌ BLOCKED"
 _ROW_RE = re.compile(
     r"^(?P<row_prefix>"
     r"\|\s*\*{0,2}"
-    r"(?P<wave_label>W\d+(?:\.\d+)?)"
+    r"(?P<wave_label>W\d+(?:[A-Za-z])?(?:\.\d+)?)"
     r"\*{0,2}\s*"
     r"(?:\|[^|\n]*){1,6}"  # 1-6 middle cells (handles Wave Structure + Phase-Level Summary)
     r"\|\s*)"
@@ -83,8 +87,8 @@ def _find_plan_file(repo_root: Path, slug: str) -> Path | None:
 def _wave_label_matches(label: str, wave: int) -> bool:
     """Return True if label (e.g. 'W3', 'W1.5', '**W3**') matches wave int."""
     bare = label.strip("*").strip()
-    # Accept W<N> or W<N>.<anything> (e.g. W1.5 matches wave=1)
-    m = re.fullmatch(r"W(\d+)(?:\.\d+)?", bare)
+    # Accept W<N>, W<N><letter>, or W<N>.<digit> (e.g. W1.5, W2R match wave int)
+    m = re.fullmatch(r"W(\d+)(?:[A-Za-z])?(?:\.\d+)?", bare)
     if not m:
         return False
     return int(m.group(1)) == wave
@@ -145,7 +149,7 @@ def update_wave_in_plan(
             m = _ROW_RE.match(stripped)
             if m and _wave_label_matches(m.group("wave_label"), wave):
                 new_stripped, changed = _replace_status_in_row(
-                    stripped, STATUS_IN_PROGRESS, {STATUS_TODO}
+                    stripped, STATUS_IN_PROGRESS, _TODO_VARIANTS
                 )
                 if changed:
                     changed_count += 1
@@ -157,7 +161,7 @@ def update_wave_in_plan(
             m = _ROW_RE.match(stripped)
             if m and _wave_label_matches(m.group("wave_label"), wave):
                 new_stripped, changed = _replace_status_in_row(
-                    stripped, STATUS_DONE, {STATUS_TODO, STATUS_IN_PROGRESS}
+                    stripped, STATUS_DONE, _TODO_VARIANTS | {STATUS_IN_PROGRESS}
                 )
                 if changed:
                     changed_count += 1
@@ -170,7 +174,7 @@ def update_wave_in_plan(
             m = _ROW_RE.match(stripped)
             if m:
                 new_stripped, changed = _replace_status_in_row(
-                    stripped, STATUS_DONE, {STATUS_TODO, STATUS_IN_PROGRESS}
+                    stripped, STATUS_DONE, _TODO_VARIANTS | {STATUS_IN_PROGRESS}
                 )
                 if changed:
                     changed_count += 1

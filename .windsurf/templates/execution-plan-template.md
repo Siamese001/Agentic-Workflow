@@ -39,10 +39,10 @@ One-sentence summary of what this plan accomplishes.
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/` rule / skill / workflow | governing repo procedure | 🔲 |
-| Exact files / symbols | direct repo evidence | 🔲 |
-| ADG / MCP evidence | structural or runtime proof | 🔲 |
-| External source (only if needed) | freshness or missing local evidence | 🔲 |
+| `.windsurf/` rule / skill / workflow | governing repo procedure | 🔲 TODO |
+| Exact files / symbols | direct repo evidence | 🔲 TODO |
+| ADG / MCP evidence | structural or runtime proof | 🔲 TODO |
+| External source (only if needed) | freshness or missing local evidence | 🔲 TODO |
 
 ---
 
@@ -50,13 +50,13 @@ One-sentence summary of what this plan accomplishes.
 
 > **W0 (optional)**: Pre-flight baseline verification — gate runs, smoke tests, environment checks. W0 is invisible to Notion status tracking; it runs while status remains "Not Started".
 
-| Waves | Metric | Scope | Checkpoint | Tokens |
-|-------|--------|-------|------------|---------|
-| Wave 0 | [Metric 0] | Baseline gates | Pre-flight | [Tokens] 🔲 |
-| Wave 1 | [Metric 1] | [Scope 1] | A | [Tokens] 🟢 |
-| Wave 2 | [Metric 2] | [Scope 2] | B | [Tokens] 🟢 |
-| Wave 3 | [Metric 3] | [Scope 3] | C | [Tokens] 🟢 |
-| Wave 4 | [Metric 4] | [Scope 4] | D | [Tokens] 🟢 |
+| Waves | Metric | Scope | Checkpoint | Tokens | Status |
+|-------|--------|-------|------------|---------|--------|
+| Wave 0 | [Metric 0] | Baseline gates | Pre-flight | [Tokens] | 🔲 TODO |
+| Wave 1 | [Metric 1] | [Scope 1] | A | [Tokens] | 🔲 TODO |
+| Wave 2 | [Metric 2] | [Scope 2] | B | [Tokens] | 🔲 TODO |
+| Wave 3 | [Metric 3] | [Scope 3] | C | [Tokens] | 🔲 TODO |
+| Wave 4 | [Metric 4] | [Scope 4] | D | [Tokens] | 🔲 TODO |
 
 **Total: [Total] tokens across [N] waves, all GREEN**
 

@@ -11,10 +11,25 @@
     - "rg::no_fabrication_guardrail::v1"
     - "rg::concision_grader::v1"
   llm_judge_graders:
-    - "rg::executive_positioning_judge::v1"
-  ensemble_or_consensus_graders:
-    - "rg::role_alignment_hybrid_v1"        # deterministic keyword match + LLM judge consensus
-    - "rg::specificity_hybrid_v1"
+    - grader_ref: "rg::executive_positioning_judge::v1"
+      informational_only: true
+      required_for_exit: false
+      timeout_behavior: warn
+      missing_behavior: warn
+      provider_profile_ref: "local_qwen_generator"
+    - grader_ref: "rg::role_alignment_hybrid_v1"
+      informational_only: false
+      required_for_exit: true
+      timeout_behavior: fail
+      missing_behavior: fail
+      provider_profile_ref: "local_qwen_generator"
+    - grader_ref: "rg::specificity_hybrid_v1"
+      informational_only: false
+      required_for_exit: true
+      timeout_behavior: fail
+      missing_behavior: fail
+      provider_profile_ref: "local_qwen_generator"
+  ensemble_or_consensus_graders: []
   calibration_refs:
     - "calibration://apps_rg/judges/2026-04-weekly"
   source_app_config_ref: "apps_eval/config/rubrics/rub_apps_rg_resume_generation_v1.yaml"

@@ -13,3 +13,60 @@
   l3_dag_ref: "apps_rg/config/l3_dag.yaml"
   source_app_config_ref: "apps_rg/config/route_registry.yaml"
   created_at: "2026-05-01"
+
+  # W5C P1 — Generic interpreter schema fields.
+  # The generic_route_policy_interpreter consumes these to derive route_family,
+  # execution_form, and l3_required from L1PlanContract projections.
+  # No apps_rg-specific field names appear in the interpreter itself.
+
+  # Route families in evaluation priority order.
+  allowed_route_families:
+    - "evidence_grounded_generation"
+    - "ungrounded_generation"
+    - "validation_only"
+
+  forbidden_route_families: []
+
+  # terminal_execution_families — used by derive_cache_eligibility_from_policy
+  # to suppress caching on fallback/terminal routes.
+  terminal_execution_families:
+    - "validation_only"
+
+  # Conditions evaluated in order by derive_route_family_from_profile.
+  # Field references resolve against L1PlanContract (task_spec dict + top-level attrs).
+  route_selection_conditions:
+    evidence_grounded_generation:
+      # Fires when L1 grounding_required=True. Mapped from grounding_required attribute.
+      requires_research_authorization: false
+      grounding_required_flag: true
+      # No fresh_context_fields — this family is the grounded execution path, not R4 fresh-context.
+      requires_fresh_context: false
+
+    ungrounded_generation:
+      # Default when grounding_required=False and not a validation mode.
+      requires_research_authorization: false
+      requires_fresh_context: false
+
+    validation_only:
+      # Terminal default: fires when generation_mode is a healing/validation mode.
+      is_terminal_default: false
+      validation_generation_modes:
+        - "healing_fact_check"
+        - "healing_unsupported_claim"
+      generation_mode_field: "generation_mode"
+
+  # Execution form per route family.
+  # single_step is the default; managed_workflow is gated separately by activation policy.
+  execution_form_mapping:
+    evidence_grounded_generation: "single_step"
+    ungrounded_generation: "single_step"
+    validation_only: "single_step"
+
+  # L3 (managed workflow) is not required purely from route family;
+  # it is determined by activation policy + work-shape hints at runtime.
+  l3_required_for_families: []
+
+  # Route ID mapping by target_level variant (owned by apps_rg, read by binding).
+  route_id_mapping:
+    default: "rg.resume_generation.default"
+    EXECUTIVE: "rg.resume_generation.executive"

@@ -1,0 +1,82 @@
+# W12 — Delegation Profile (App-Owned Config Only)
+#
+# Defines how apps_research receives and processes delegated research requests.
+
+profile_id: apps_research_delegation_v1
+version: "W12.0.0"
+description: Delegation profile for apps_research research substrate
+
+# Delegation acceptance
+delegation_acceptance:
+  accept_from_apps_rg: true
+  accept_from_apps_lic: true
+  require_caller_app_id: true
+  require_delegation_context: true
+  require_tenant_boundary: true
+
+# U0 package requirements for delegated calls
+u0_package_requirements:
+  required_fields:
+    - app_id
+    - caller_app_id
+    - delegation_context_ref
+    - downstream_consumer
+    - task_class
+    - depth_profile
+    - source_scope
+    - route_profile_ref
+    - cache_profile_ref
+    - retrieval_profile_ref
+    - cross_app_reuse_policy_ref
+    - policy_hash
+    - blueprint_hash
+    - registry_digest_set
+    - replay_key
+  
+  optional_fields:
+    - uploaded_briefing_policy_ref  # when uploads exist
+    - jd_content_hash  # when JD context exists (apps_rg)
+    - role_context_hash  # when role context exists (apps_lic)
+
+# Task classes supported
+task_classes:
+  research_substrate:
+    description: "Generate reusable research substrate"
+    output_format: SubstrateReturnPacket
+    data_boundary: EVIDENCE_DATA_ONLY
+    
+  uploaded_briefing_normalization:
+    description: "Normalize uploaded briefing into substrate"
+    output_format: BriefingNormalizationResult
+    data_boundary: EVIDENCE_DATA_ONLY
+
+# Downstream consumer handling
+downstream_consumers:
+  apps_rg:
+    allowed_task_classes:
+      - research_substrate
+      - uploaded_briefing_normalization
+    requires_jd_context: true
+    output_usage: evidence_data_only
+    
+  apps_lic:
+    allowed_task_classes:
+      - research_substrate
+      - uploaded_briefing_normalization
+    requires_role_context: true
+    output_usage: evidence_data_only
+
+# Return packet configuration
+return_packet:
+  include_entity_aliases: true
+  include_source_register: true
+  include_claim_evidence_map: true
+  include_freshness_ttl: true
+  include_provenance_chain: true
+  data_boundary_label: EVIDENCE_DATA_ONLY
+
+# Policy compliance
+policy_compliance:
+  cross_app_reuse_policy: "config/domain_contract/cross_app_reuse_policy.company_brief.v1.yaml"
+  uploaded_briefing_policy: "config/domain_contract/uploaded_briefing_ingest_policy.v1.yaml"
+  downstream_contract: "config/domain_contract/downstream_substrate_contract.v1.json"

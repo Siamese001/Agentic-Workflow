@@ -276,28 +276,32 @@ class TestRB13LeakageScan:
             assert file_path.exists(), f"Test file missing: {file_path}"
     
     def test_rb13_boundary_drift_documentation(self):
-        """Document known BOUNDARY_DRIFT findings."""
-        # Known non-blocking drift in RB13:
-        # - judge_registry.py checks for "executive_positioning" string pattern
-        #   to enforce informational-only behavior per RB13 spec
-        # - This is config-driven behavior that should move to profile YAML in future
+        """Document that RB13 boundary drift was FIXED in RB16."""
+        # RB16: The boundary drift from RB13 has been resolved.
+        # Previously, judge_registry.py had hardcoded executive_positioning string check.
+        # Now, informational-only status comes from grader_roster.yaml config.
         
         repo_root = Path("c:/Git/Agentic-Workflow-FRESH")
-        known_drift = {
-            "file": str(repo_root / "agentic_core/runtime/judges/judge_registry.py"),
-            "pattern": 'is_executive_positioning = "executive_positioning" in grader_ref.lower()',
-            "classification": "BOUNDARY_DRIFT",
-            "reason": "RB13 explicit requirement to treat executive_positioning as informational-only",
-            "future_remediation": "Move to judge profile YAML config in RB15+",
-            "blocking": False,
-        }
+        registry_path = repo_root / "agentic_core/runtime/judges/judge_registry.py"
+        roster_path = repo_root / "apps_rg/config/domain_contract/grader_roster.yaml"
         
-        # Verify the drift is still present
-        source = Path(known_drift["file"]).read_text()
-        assert known_drift["pattern"] in source, "Known drift pattern has changed"
+        # Verify the OLD drift pattern is REMOVED from registry
+        registry_source = registry_path.read_text()
+        old_pattern = 'is_executive_positioning = "executive_positioning" in grader_ref.lower()'
+        assert old_pattern not in registry_source, "RB13 boundary drift pattern should be removed in RB16"
         
-        # Verify it's classified as non-blocking
-        assert known_drift["blocking"] is False
+        # Verify the NEW config-driven approach is present in roster
+        import yaml
+        roster = yaml.safe_load(roster_path.read_text())
+        
+        found_info_config = False
+        for entry in roster:
+            for grader in entry.get("llm_judge_graders", []):
+                if isinstance(grader, dict) and "executive_positioning" in grader.get("grader_ref", ""):
+                    found_info_config = True
+                    assert grader.get("informational_only") is True, "Must be config-driven"
+        
+        assert found_info_config, "executive_positioning config must be in grader_roster.yaml"
 
 
 # ── Part 2: Quality Parity Tests ─────────────────────────────────────────────

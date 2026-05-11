@@ -315,26 +315,154 @@ class ProviderGateway:
         request: ProviderRequest,
         profile: ProviderProfile,
     ) -> ProviderResponse:
-        """Invoke external API provider.
-        
-        RB13: Placeholder — external providers require credential handling
-        that goes beyond stub. Returns error indicating external provider
-        not yet fully implemented.
+        """Invoke external API provider (Anthropic, OpenAI, Gemini).
+
+        Routes by provider_vendor attribute on the profile:
+          - anthropic      → anthropic SDK (messages API)
+          - openai         → openai SDK (chat completions)
+          - google_gemini  → openai SDK pointed at Gemini OpenAI-compat endpoint
+
+        API keys read from env vars declared in the profile.
         """
-        _LOGGER.warning(
-            "External API provider %s requested but RB13 only implements "
-            "local vLLM and stub providers. Use local_qwen_generator or stub.",
-            profile.profile_id,
-        )
-        return ProviderResponse(
-            success=False,
-            text="",
-            receipt=None,
-            error_message=(
-                f"External API provider {profile.profile_id} not implemented "
-                f"in RB13. Use local_vllm or stub provider."
-            ),
-        )
+        vendor = profile.vendor or self._infer_vendor(profile)
+        api_key_env = profile.api_key_env_var or ""
+        api_key = os.environ.get(api_key_env, "") if api_key_env else ""
+        model_id = profile.model_id or ""
+        max_tokens = request.max_tokens or profile.max_tokens
+        temperature = request.temperature if request.temperature is not None else 0.7
+        prompt = request.prompt_text
+
+        if vendor == "anthropic":
+            return self._invoke_anthropic(
+                prompt=prompt,
+                model_id=model_id,
+                api_key=api_key,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                profile=profile,
+            )
+        elif vendor in ("openai", "google_gemini"):
+            return self._invoke_openai_compat(
+                prompt=prompt,
+                model_id=model_id,
+                api_key=api_key,
+                base_url=self._resolve_base_url(profile, vendor),
+                max_tokens=max_tokens,
+                temperature=temperature,
+                profile=profile,
+            )
+        else:
+            _LOGGER.error("Unknown external vendor %r for profile %s", vendor, profile.profile_id)
+            return ProviderResponse(
+                success=False,
+                text="",
+                receipt=None,
+                error_message=f"Unknown external vendor {vendor!r} for profile {profile.profile_id}",
+            )
+
+    def _infer_vendor(self, profile: ProviderProfile) -> str:
+        """Infer vendor from profile_id when profile.vendor not set."""
+        pid = profile.profile_id.lower()
+        if "anthropic" in pid or "claude" in pid:
+            return "anthropic"
+        if "gemini" in pid or "google" in pid:
+            return "google_gemini"
+        return "openai"
+
+    def _resolve_base_url(self, profile: ProviderProfile, vendor: str) -> Optional[str]:
+        """Resolve base URL from env var override or vendor default."""
+        env_var = profile.endpoint_env_var
+        if env_var:
+            override = os.environ.get(env_var, "").strip()
+            if override:
+                return override
+        if vendor == "google_gemini":
+            return "https://generativelanguage.googleapis.com/v1beta/openai/"
+        return None  # OpenAI SDK uses its own default
+
+    def _invoke_anthropic(
+        self,
+        *,
+        prompt: str,
+        model_id: str,
+        api_key: str,
+        max_tokens: int,
+        temperature: float,
+        profile: ProviderProfile,
+    ) -> ProviderResponse:
+        """Call Anthropic messages API."""
+        try:
+            import anthropic as _anthropic  # type: ignore[import]
+        except ImportError:
+            return ProviderResponse(
+                success=False, text="", receipt=None,
+                error_message="anthropic package not installed. Run: pip install anthropic",
+            )
+        try:
+            client = _anthropic.Anthropic(api_key=api_key or None)
+            msg = client.messages.create(
+                model=model_id,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            text = msg.content[0].text if msg.content else ""
+            return ProviderResponse(
+                success=True,
+                text=text,
+                receipt=None,
+                model_used=msg.model,
+            )
+        except Exception as exc:
+            _LOGGER.error("Anthropic call failed for %s: %s", profile.profile_id, exc)
+            return ProviderResponse(
+                success=False, text="", receipt=None,
+                error_message=f"Anthropic invocation error: {exc}",
+            )
+
+    def _invoke_openai_compat(
+        self,
+        *,
+        prompt: str,
+        model_id: str,
+        api_key: str,
+        base_url: Optional[str],
+        max_tokens: int,
+        temperature: float,
+        profile: ProviderProfile,
+    ) -> ProviderResponse:
+        """Call OpenAI or OpenAI-compatible API (OpenAI, Gemini via compat endpoint)."""
+        try:
+            import openai as _openai  # type: ignore[import]
+        except ImportError:
+            return ProviderResponse(
+                success=False, text="", receipt=None,
+                error_message="openai package not installed. Run: pip install openai",
+            )
+        try:
+            kwargs: Dict[str, Any] = {"api_key": api_key or None}
+            if base_url:
+                kwargs["base_url"] = base_url
+            client = _openai.OpenAI(**kwargs)
+            resp = client.chat.completions.create(
+                model=model_id,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            text = resp.choices[0].message.content or "" if resp.choices else ""
+            return ProviderResponse(
+                success=True,
+                text=text,
+                receipt=None,
+                model_used=resp.model,
+            )
+        except Exception as exc:
+            _LOGGER.error("OpenAI-compat call failed for %s: %s", profile.profile_id, exc)
+            return ProviderResponse(
+                success=False, text="", receipt=None,
+                error_message=f"OpenAI-compat invocation error: {exc}",
+            )
     
     def _invoke_deterministic(
         self,

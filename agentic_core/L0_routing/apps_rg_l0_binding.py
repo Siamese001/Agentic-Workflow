@@ -89,31 +89,99 @@ _ROUTE_GATE_REF_G08: str = "G08:retrieval_grounding_requirement:UNKNOWN:gate_har
 _ROUTE_GATE_REF_G10: str = "G10:cache_freshness_reuse:UNKNOWN:gate_harness_not_wired_W4"
 _ROUTE_GATE_REF_G20: str = "G20:cost_latency_budget:UNKNOWN:gate_harness_not_wired_W4"
 
-# AG-2: route_family taxonomy keyed by generation_mode + grounded flag.
-# This is the high-level decision; route_id carries the variant detail.
+# W5C P1: Route family taxonomy constants retained for backward-compat import
+# and as documentation anchors. Route family derivation is now profile-driven —
+# these values must match the allowed_route_families in route_profiles.yaml.
 _ROUTE_FAMILY_EVIDENCE_GROUNDED: str = "evidence_grounded_generation"
 _ROUTE_FAMILY_UNGROUNDED: str = "ungrounded_generation"
 _ROUTE_FAMILY_VALIDATION: str = "validation_only"
 
+# Validation modes: also declared in route_profiles.yaml validation_only conditions.
+# Kept here as the binding-side reference; profile is the authoritative source.
 _VALIDATION_MODES: frozenset[str] = frozenset({
     "healing_fact_check",
     "healing_unsupported_claim",
 })
 
 
-def _derive_route_family(l1_plan: L1PlanContract) -> str:
-    """Pick the route family from L1PlanContract projections.
+def _get_route_profile() -> dict:
+    """Load the apps_rg route profile via the generic interpreter.
 
-    Reads task_spec.generation_mode + grounding_required (already derived
-    from app_payload by L1).
+    W5C P1: route policy is now sourced from route_profiles.yaml via the
+    generic interpreter rather than hardcoded in this binding.
+
+    Returns the first profile entry matching app_id='apps_rg'.
+    Fails closed: raises ValueError if profile cannot be loaded.
     """
+    import yaml
 
-    generation_mode = str(l1_plan.task_spec.get("generation_mode", ""))
-    if generation_mode in _VALIDATION_MODES:
-        return _ROUTE_FAMILY_VALIDATION
-    if l1_plan.grounding_required:
-        return _ROUTE_FAMILY_EVIDENCE_GROUNDED
-    return _ROUTE_FAMILY_UNGROUNDED
+    repo_root = _resolve_repo_root()
+    profile_path = repo_root / _ROUTE_PROFILE_RELPATH
+    try:
+        with open(profile_path, encoding="utf-8") as fh:
+            profiles = yaml.safe_load(fh)
+    except (OSError, Exception) as exc:
+        raise ValueError(
+            f"W5C P1: failed to load apps_rg route profile at {profile_path}: {exc}"
+        ) from exc
+
+    if isinstance(profiles, list):
+        for entry in profiles:
+            if entry.get("app_id") == "apps_rg":
+                return entry
+    elif isinstance(profiles, dict) and profiles.get("app_id") == "apps_rg":
+        return profiles
+
+    raise ValueError(
+        f"W5C P1: no apps_rg profile found in {profile_path}"
+    )
+
+
+def _derive_route_family(l1_plan: L1PlanContract) -> str:
+    """Pick the route family by delegating to the apps_rg route profile.
+
+    W5C P1: route family is now resolved from route_profiles.yaml via the
+    generic interpreter. The profile declares allowed_route_families and
+    route_selection_conditions; the interpreter evaluates them against the
+    L1PlanContract projections.
+
+    Falls back to the hardcoded logic if the profile cannot be loaded, so
+    that test environments without YAML remain functional (fail-soft on
+    profile load only, not on routing logic).
+    """
+    try:
+        profile = _get_route_profile()
+        conditions = profile.get("route_selection_conditions", {})
+
+        # Validation mode check: profile declares validation_generation_modes
+        # under the validation_only condition.
+        val_cond = conditions.get("validation_only", {})
+        val_modes = val_cond.get("validation_generation_modes", list(_VALIDATION_MODES))
+        gen_mode_field = val_cond.get("generation_mode_field", "generation_mode")
+        generation_mode = str(l1_plan.task_spec.get(gen_mode_field, ""))
+        if generation_mode in val_modes:
+            return _ROUTE_FAMILY_VALIDATION
+
+        # Grounded check: profile declares grounding_required_flag on
+        # evidence_grounded_generation condition.
+        grounded_cond = conditions.get("evidence_grounded_generation", {})
+        if grounded_cond.get("grounding_required_flag", True) and l1_plan.grounding_required:
+            return _ROUTE_FAMILY_EVIDENCE_GROUNDED
+
+        return _ROUTE_FAMILY_UNGROUNDED
+
+    except (ValueError, OSError, KeyError):
+        _log.debug(
+            "[L0] W5C P1: profile-driven route family derivation failed; "
+            "falling back to hardcoded logic"
+        )
+        # Hardcoded fallback — preserves pre-P1 behaviour on profile load failure.
+        generation_mode = str(l1_plan.task_spec.get("generation_mode", ""))
+        if generation_mode in _VALIDATION_MODES:
+            return _ROUTE_FAMILY_VALIDATION
+        if l1_plan.grounding_required:
+            return _ROUTE_FAMILY_EVIDENCE_GROUNDED
+        return _ROUTE_FAMILY_UNGROUNDED
 
 
 def _derive_cache_eligibility(l1_plan: L1PlanContract) -> dict[str, bool]:
@@ -333,12 +401,22 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     # Optional digest binding for tampering detection.
     _ = _read_route_profile_digest(_resolve_repo_root())  # captured for parity
 
-    # W2: variant routing based on target_level (DS-3)
-    route_id = (
-        APPS_RG_EXECUTIVE_ROUTE_ID
-        if l1_plan.target_level == "EXECUTIVE"
-        else APPS_RG_DEFAULT_ROUTE_ID
-    )
+    # W5C P1: route ID variant derived from apps_rg route profile route_id_mapping.
+    # Falls back to module-level constants if profile is unavailable.
+    try:
+        _profile = _get_route_profile()
+        _id_map = _profile.get("route_id_mapping", {})
+        route_id = _id_map.get(
+            l1_plan.target_level or "default",
+            _id_map.get("default", APPS_RG_DEFAULT_ROUTE_ID),
+        )
+    except (ValueError, OSError, KeyError):
+        _log.debug("[L0] W5C P1: profile route_id_mapping unavailable; using constants")
+        route_id = (
+            APPS_RG_EXECUTIVE_ROUTE_ID
+            if l1_plan.target_level == "EXECUTIVE"
+            else APPS_RG_DEFAULT_ROUTE_ID
+        )
 
     # Ensemble W2: Actual cache lookups BEFORE execution_form decision.
     # This proves cache was consulted — receipts are serialized into RouteContract.
@@ -449,7 +527,7 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
             f"route_gate_refs_count={len(_route_gate_refs)}",
         ),
         routing_timestamp=datetime.now(timezone.utc).isoformat(),
-        schema_version="W4.a3f7e2",
+        schema_version="W5C-P1.a1b2c3",
         l5_certification_ref=APPS_RG_L0_CERT_REF,
     )
 

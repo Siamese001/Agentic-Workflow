@@ -1,9 +1,11 @@
 """Judge registry — loads and resolves judge profiles.
 
-RB13: apps-rg-zip-based-full-spine-runtime-restoration-v1
+RB16: apps-rg-zip-based-full-spine-runtime-restoration-v1
 
-Generic registry for LLM judge profile resolution.
-No hardcoded judges. No app-specific code.
+Generic, config-driven registry for LLM judge profile resolution.
+All judge metadata (informational_only, required_for_exit, timeout_behavior,
+missing_behavior, provider_profile_ref) comes from app config (grader_roster.yaml).
+No hardcoded judge names. No hardcoded dimension special-casing. No app-specific code.
 """
 
 from __future__ import annotations
@@ -153,23 +155,45 @@ class JudgeRegistry:
     
     def _create_llm_judge_profile(
         self,
-        grader_ref: str,
+        grader_config: Any,
         app_id: str,
         roster_entry: Mapping[str, Any],
     ) -> JudgeProfile:
-        """Create an LLM judge profile.
+        """Create an LLM judge profile from config.
         
-        For RB13, executive_positioning is informational only by default.
+        RB16: Fully config-driven. No hardcoded dimension names.
+        Reads informational_only, required_for_exit, timeout_behavior,
+        missing_behavior, and provider_profile_ref from grader config.
         """
-        # Check if this is the quarantined executive_positioning judge
-        is_executive_positioning = "executive_positioning" in grader_ref.lower()
+        # Handle both string grader_ref and dict grader config
+        if isinstance(grader_config, str):
+            grader_ref = grader_config
+            # Default metadata for string-style grader refs (backward compatible)
+            informational_only = False
+            required_for_exit = True
+            timeout_behavior = "fail"
+            missing_behavior = "fail"
+            provider_profile_ref = "local_qwen_generator"
+            is_stub = False
+        elif isinstance(grader_config, dict):
+            grader_ref = grader_config.get("grader_ref", "")
+            # Config-driven metadata (RB16: source of truth from app config)
+            informational_only = grader_config.get("informational_only", False)
+            required_for_exit = grader_config.get("required_for_exit", True)
+            timeout_behavior = grader_config.get("timeout_behavior", "fail")
+            missing_behavior = grader_config.get("missing_behavior", "fail")
+            provider_profile_ref = grader_config.get("provider_profile_ref", "local_qwen_generator")
+            is_stub = grader_config.get("is_stub", False)
+        else:
+            raise ValueError(f"Invalid grader config type: {type(grader_config)}")
         
+        # Build dimensions from metadata
         dimensions: List[JudgeDimension] = []
-        if is_executive_positioning:
-            # Executive positioning is informational only by default
+        if informational_only:
+            # Informational dimensions get weight=0 and required=False
             dimensions.append(JudgeDimension(
-                dimension_id="executive_positioning",
-                weight=0.0,  # Doesn't contribute to composite
+                dimension_id=grader_ref.split("::")[-2] if "::" in grader_ref else grader_ref,
+                weight=0.0,  # Doesn't contribute to composite score
                 informational_only=True,
                 required=False,
             ))
@@ -177,12 +201,12 @@ class JudgeRegistry:
         return JudgeProfile(
             profile_id=grader_ref,
             judge_kind=JudgeKind.LLM_AS_JUDGE,
-            provider_profile_ref="llm_judge_stub" if is_executive_positioning else "local_qwen_generator",
+            provider_profile_ref=provider_profile_ref,
             dimensions=dimensions,
             grader_id=grader_ref,
-            is_stub=is_executive_positioning,  # Stub until fully implemented
-            informational_only=is_executive_positioning,
-            required_for_exit=not is_executive_positioning,
+            is_stub=is_stub,
+            informational_only=informational_only,
+            required_for_exit=required_for_exit,
         )
     
     def _create_hybrid_profile(

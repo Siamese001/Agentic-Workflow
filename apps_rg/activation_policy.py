@@ -377,9 +377,9 @@ def evaluate_route_activation(
         if user_id and not profile.allows_user(user_id):
             blockers.append(f"user_not_allowed: {user_id}")
 
-    # RB12: provider_mode must be stub_only
-    if profile.provider_mode != ProviderMode.STUB_ONLY:
-        blockers.append(f"provider_mode_not_stub_only: {profile.provider_mode.value}")
+    # Production: provider_mode must be stub_only or live_allowed (not unknown/invalid)
+    if profile.provider_mode not in (ProviderMode.STUB_ONLY, ProviderMode.LIVE_ALLOWED):
+        blockers.append(f"provider_mode_invalid: {profile.provider_mode.value}")
 
     # Check expiration
     if profile.is_expired:

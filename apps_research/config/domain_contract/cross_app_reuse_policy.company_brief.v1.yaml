@@ -1,0 +1,55 @@
+# W12 — Cross-App Reuse Policy (App-Owned Config Only)
+#
+# Defines policy for apps_research substrate reuse by other apps.
+
+policy_id: apps_research_cross_app_reuse_v1
+version: "W12.0.0"
+description: Cross-app reuse policy for company brief research substrate
+
+# Allowed consuming apps
+allowed_consumers:
+  - apps_rg
+  - apps_lic
+
+# Reuse eligibility rules
+eligibility:
+  tenant_boundary_enforced: true
+  session_boundary_enforced: true
+  context_compatibility_required: true
+  staleness_check_enabled: true
+  
+  # Context matching requirements
+  jd_hash_match_required_for_apps_rg: true
+  role_context_match_required_for_apps_lic: true
+  
+  # Staleness
+  max_substrate_age_hours: 168  # 7 days
+
+# Prohibited reuse scenarios
+prohibited_reuse:
+  - scenario: cross_tenant
+    reason: "Tenant isolation violation"
+  - scenario: jd_mismatch_apps_rg
+    reason: "JD context mismatch for resume generation"
+  - scenario: role_mismatch_apps_lic
+    reason: "Role context mismatch for license outreach"
+  - scenario: stale_substrate
+    reason: "Substrate exceeds freshness TTL"
+  - scenario: final_output_terminal_cache
+    reason: "Final customized outputs cannot be cached as terminal answers"
+
+# Data boundary
+data_boundary:
+  label: EVIDENCE_DATA_ONLY
+  instruction_authority: false
+  evidence_only: true
+
+# Reuse validation
+validation:
+  provenance_check_required: true
+  acl_check_required: true
+  injection_scan_required: true
+  citation_completeness_check: true
+
+# Policy hash
+policy_hash: "sha256:cross-app-reuse-policy-v1"

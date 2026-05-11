@@ -113,18 +113,258 @@ def _extract_style_directives(profile_text: str) -> tuple[list[str], list[str]]:
                 elif section == "power":
                     power.append(value)
         elif section and not stripped.startswith("-") and stripped and not stripped.startswith("#"):
-            # New top-level key — leave the section.
             section = None
     return forbidden, power
 
 
-def _build_system_preamble(forbidden: list[str], power: list[str]) -> str:
+def _extract_format_constraints(profile_text: str) -> dict[str, object]:
+    """Parse format_constraints block from profile YAML without a yaml dep.
+
+    Returns a dict with keys:
+      exec_sentence_count (int)
+      exec_structure (list[str])
+      competency_count (int)
+      role_bullets (list[dict]  — [{company_match, bullet_count}])
+    Falls back to best-practice defaults if section is absent.
+    """
+    defaults: dict[str, object] = {
+        "exec_sentence_count": 5,
+        "exec_structure": [
+            "positioning: who the candidate is + primary expertise tailored to this role",
+            "method: how they architect or govern — SEPARATE sentence from scope",
+            "scope: full leadership scope (strategy through delivery, team scale, commercialization) — SEPARATE sentence from method",
+            "outcomes: exactly 3-4 quantified metrics verbatim from source resume",
+            "credentials: single highest-signal credential",
+        ],
+        "competency_count": 12,
+        "role_bullets": [
+            {"company_match": "Unify", "bullet_count": 6},
+            {"company_match": "IBM", "bullet_count": 5},
+            {"company_match": "InsurTech", "bullet_count": 3},
+            {"company_match": "Ernst & Young", "bullet_count": 3},
+            {"company_match": "Early Career", "bullet_count": 1},
+        ],
+    }
+    in_format = False
+    in_exec = False
+    in_roles = False
+    in_competencies = False
+    exec_structure: list[str] = []
+    role_bullets: list[dict] = []
+    current_role: dict | None = None
+    exec_sentence_count = int(defaults["exec_sentence_count"])  # type: ignore[arg-type]
+    competency_count = int(defaults["competency_count"])  # type: ignore[arg-type]
+
+    for raw in profile_text.splitlines():
+        indent = len(raw) - len(raw.lstrip())
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.startswith("format_constraints:"):
+            in_format = True
+            continue
+        if in_format and indent == 0 and not stripped.startswith("format_constraints"):
+            in_format = False
+        if not in_format:
+            continue
+        if stripped.startswith("executive_summary:"):
+            in_exec = True
+            in_roles = False
+            in_competencies = False
+            continue
+        if stripped.startswith("experience_bullets:"):
+            in_exec = False
+            in_roles = True
+            in_competencies = False
+            continue
+        if stripped.startswith("competencies:"):
+            in_exec = False
+            in_roles = False
+            in_competencies = True
+            continue
+        if in_exec:
+            if stripped.startswith("sentence_count:"):
+                try:
+                    exec_sentence_count = int(stripped.split(":", 1)[1].strip())
+                except ValueError:
+                    pass
+            elif stripped.startswith("- ") and exec_structure is not None:
+                exec_structure.append(stripped[2:].strip().strip('"'))
+        if in_roles:
+            if stripped.startswith("- company_match:"):
+                if current_role:
+                    role_bullets.append(current_role)
+                current_role = {"company_match": stripped.split(":", 1)[1].strip().strip('"'), "bullet_count": 4}
+            elif stripped.startswith("bullet_count:") and current_role:
+                try:
+                    current_role["bullet_count"] = int(stripped.split(":", 1)[1].strip())
+                except ValueError:
+                    pass
+        if in_competencies:
+            if stripped.startswith("entry_count:"):
+                try:
+                    competency_count = int(stripped.split(":", 1)[1].strip())
+                except ValueError:
+                    pass
+
+    if current_role:
+        role_bullets.append(current_role)
+
+    return {
+        "exec_sentence_count": exec_sentence_count,
+        "exec_structure": exec_structure or list(defaults["exec_structure"]),  # type: ignore[arg-type]
+        "competency_count": competency_count,
+        "role_bullets": role_bullets or list(defaults["role_bullets"]),  # type: ignore[arg-type]
+    }
+
+
+def _extract_section_guidance(profile_text: str) -> dict[str, dict[str, list[str]]]:
+    """Parse section_guidance block from profile YAML without a yaml dep.
+
+    Returns dict keyed by section name (e.g. 'executive_summary', 'experience_unify'),
+    each value a dict with 'rigor_rules', 'voice_rules', 'ats_rules' lists.
+    Falls back to empty dict if section absent.
+    """
+    result: dict[str, dict[str, list[str]]] = {}
+    in_section_guidance = False
+    current_section: str | None = None
+    current_rule_type: str | None = None
+
+    for raw in profile_text.splitlines():
+        indent = len(raw) - len(raw.lstrip())
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        if stripped.startswith("section_guidance:"):
+            in_section_guidance = True
+            continue
+        if in_section_guidance and indent == 0 and not stripped.startswith("section_guidance"):
+            in_section_guidance = False
+        if not in_section_guidance:
+            continue
+
+        if indent == 2 and stripped.endswith(":") and not stripped.startswith("-"):
+            current_section = stripped.rstrip(":")
+            result[current_section] = {"rigor_rules": [], "voice_rules": [], "ats_rules": []}
+            current_rule_type = None
+            continue
+
+        if indent == 4 and stripped.endswith(":") and not stripped.startswith("-") and current_section:
+            rule_key = stripped.rstrip(":")
+            if rule_key in ("rigor_rules", "voice_rules", "ats_rules"):
+                current_rule_type = rule_key
+            else:
+                current_rule_type = None
+            continue
+
+        if indent == 6 and stripped.startswith("- ") and current_section and current_rule_type:
+            value = stripped[2:].strip().strip('"').strip("'")
+            if value:
+                result[current_section][current_rule_type].append(value)
+
+    return result
+
+
+def _build_section_rigor_block(section_guidance: dict[str, dict[str, list[str]]]) -> str:
+    """Build per-section rigor instructions injected into Qwen's system prompt.
+
+    Only emits substantive content — skips empty sections.
+    Sentence/structure counts are handled by _build_format_block;
+    this block covers CONTENT rigor (evidence grounding, voice, ATS).
+    """
+    if not section_guidance:
+        return ""
+
+    SECTION_LABELS = {
+        "executive_summary": "EXECUTIVE SUMMARY CONTENT RIGOR",
+        "experience_unify": "EXPERIENCE — UNIFY CONSULTING (current role)",
+        "experience_ibm": "EXPERIENCE — IBM",
+        "experience_insurtech": "EXPERIENCE — INSURTECH CLOUD SOLUTIONS",
+        "experience_ey": "EXPERIENCE — ERNST & YOUNG",
+        "experience_early_career": "EXPERIENCE — EARLY CAREER",
+        "competencies": "COMPETENCIES/SKILLS CONTENT RIGOR",
+    }
+    ORDER = ["executive_summary", "experience_unify", "experience_ibm",
+             "experience_insurtech", "experience_ey", "experience_early_career", "competencies"]
+
+    lines: list[str] = ["SECTION CONTENT RIGOR (applies to every section — grounded in source materials only):"]
+    for key in ORDER:
+        guidance = section_guidance.get(key)
+        if not guidance:
+            continue
+        label = SECTION_LABELS.get(key, key.upper())
+        all_rules: list[str] = (
+            guidance.get("rigor_rules", [])
+            + guidance.get("voice_rules", [])
+            + guidance.get("ats_rules", [])
+        )
+        if not all_rules:
+            continue
+        lines.append(f"  {label}:")
+        for r in all_rules:
+            lines.append(f"    - {r}")
+    return "\n".join(lines)
+
+
+def _build_format_block(fmt: dict[str, object] | None) -> str:
+    """Build the MANDATORY FORMAT instructions block from parsed profile constraints."""
+    if not fmt:
+        return ""
+    n = int(fmt.get("exec_sentence_count", 5))  # type: ignore[arg-type]
+    structure: list[str] = list(fmt.get("exec_structure", []))  # type: ignore[arg-type]
+    comp_n = int(fmt.get("competency_count", 12))  # type: ignore[arg-type]
+    role_bullets: list[dict] = list(fmt.get("role_bullets", []))  # type: ignore[arg-type]
+
+    struct_lines = " ".join(
+        f"Sentence {i+1} ({s.split(':')[0].strip()}): {s.split(':', 1)[1].strip() if ':' in s else s}."
+        for i, s in enumerate(structure)
+    )
+
+    role_lines = " ".join(
+        f"{r['company_match']}: 1 intro sentence + EXACTLY {r['bullet_count']} bullets."
+        for r in role_bullets
+    )
+
+    return (
+        f"EXECUTIVE SUMMARY — EXACTLY {n} SENTENCES, NO EXCEPTIONS: "
+        f"Write {n} period-terminated sentences as one dense paragraph. Count them before writing. "
+        f"{struct_lines} "
+        f"Output format — CRITICAL: {{\"content\": [\"<all {n} sentences as ONE string>\"]}}. "
+        f"The content array has EXACTLY ONE element — one string containing all {n} sentences. "
+        f"Do NOT split sentences into separate array elements."
+        f"\n"
+        f"EXPERIENCE SECTION — MANDATORY SENTENCE/BULLET COUNTS (sentence-based, not word/token-based): "
+        f"Each role: 1 intro sentence + exact bullet count per role below. "
+        f"{role_lines} "
+        f"Each bullet: bold keyword label followed by colon and achievement sentence. "
+        f"SCHEMA per role: {{\"title\": \"...\", \"company\": \"...\", \"location\": \"...\", \"dates\": \"...\", "
+        f"\"intro\": \"<one sentence>\", \"bullets\": [{{\"evidence_anchor\": \"Label\", \"description\": \"Label: achievement\"}}]}}. "
+        f"Do NOT use a top-level 'description' array. Use 'intro' + 'bullets'."
+        f"\n"
+        f"COMPETENCIES/SKILLS SECTION — MANDATORY: "
+        f"Output EXACTLY {comp_n} entries in the 'skills' array. "
+        f"Each entry: short noun phrase (2-4 words) matching JD language. "
+        f"Competencies communicate to the recruiter; embed matching JD keywords in experience bullets for full ATS credit."
+    )
+
+
+def _build_system_preamble(
+    forbidden: list[str],
+    power: list[str],
+    fmt: dict[str, object] | None = None,
+    section_guidance: dict[str, dict[str, list[str]]] | None = None,
+) -> str:
     """Compose the system preamble carrying style + role guidance."""
     parts: list[str] = [
-        "You are a senior resume writer producing a tailored resume.",
-        "Write in the third person voice of the candidate, deliver factual claims grounded in the supplied resume and JD.",
+        "You are a senior resume writer producing a tailored executive resume for an SVP/C-suite candidate.",
+        "Write in the third person voice of the candidate. Every factual claim MUST be grounded in the supplied source materials — no fabrication, no rounding, no inference.",
         "Output a JSON document matching the resume schema. No prose outside JSON.",
+        _build_format_block(fmt),
     ]
+    rigor_block = _build_section_rigor_block(section_guidance or {})
+    if rigor_block:
+        parts.append(rigor_block)
     if power:
         parts.append("Prefer power verbs such as: " + ", ".join(power[:10]) + ".")
     if forbidden:
@@ -297,8 +537,10 @@ def pa_compose_apps_rg(
     repo_root = _resolve_repo_root()
     style_text = _load_style_profile_text(repo_root)
     forbidden, power = _extract_style_directives(style_text)
+    fmt = _extract_format_constraints(style_text)
+    section_guidance = _extract_section_guidance(style_text)
 
-    system_preamble = _build_system_preamble(forbidden, power)
+    system_preamble = _build_system_preamble(forbidden, power, fmt, section_guidance)
     # W4/PAB-003: build U0 and C0 segments separately so slot_lineage_map
     # can record their distinct origins. Both are combined into user_instruction
     # for the PromptBlock, but the component hashes cover each independently.
@@ -432,7 +674,7 @@ def pa_compose_apps_rg(
         allowed_models=route.allowed_models,
         allowed_networks=route.allowed_networks,
         allowed_file_roots=route.allowed_file_roots,
-        max_tokens=16384,
+        max_tokens=8192,  # vLLM max_model_len=16384; prompt ~4k tokens leaves 12k headroom
         temperature=0.4,  # lower for factual resume generation
         # AG-2: thread replay_key forward.
         replay_key=validated_request.replay_key,

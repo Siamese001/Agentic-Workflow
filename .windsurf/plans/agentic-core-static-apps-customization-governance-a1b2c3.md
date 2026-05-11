@@ -46,13 +46,18 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 | W4 | 6 CI tests + 17 negative controls | tests/governance/ test suite + negative controls | D | ~8K | ✅ CERTIFIED |
 | W5A | Migration inventory | 37 bindings, 28 scoped, 9 excluded | E.0 | ~3K | ✅ COMPLETE |
 | W5B P1 | apps_lic Priority Migration | L6/Exit/L0 only | E.1 | ~8K | ✅ COMPLETE |
-|    P1a | apps_lic L6 promotion binding | Generic L6 profile consumer + app meta_feedback_profile | E.1a | ~2K | ✅ CERTIFIED |
-|    P1b | apps_lic Exit binding | Thin adapter bridge + app exit_profile | E.1b | ~3K | ✅ BRIDGE_ACCEPTED |
-|    P1c | apps_lic L0 routing binding | Generic route policy interpreter + app l0_route_profile | E.1c | ~3K | ✅ CERTIFIED |
-| W5C | apps_rg Migration | Deferred post-W5B P1 | E.2 | ~6K | 🔲 DEFERRED |
-| W5D | apps_research Consolidation | v1/v2 consolidation + migration | E.3 | ~8K | 🔲 DEFERRED |
-| W6 | Post-migration negative controls | Verify enforcement after migration | F | ~3K | 🔲 TODO |
-| W7 | Final receipt | Governance completion artifact | G | ~2K | 🔲 TODO |
+|    P1a | apps_lic L6 promotion binding | Generic L6 profile consumer + app meta_feedback_profile | E.1a | ~2K | ✅ CERTIFIED |
+|    P1b | apps_lic Exit binding | Thin adapter bridge + app exit_profile | E.1b | ~3K | ✅ BRIDGE_ACCEPTED |
+|    P1c | apps_lic L0 routing binding | Generic route policy interpreter + app l0_route_profile | E.1c | ~3K | ✅ CERTIFIED |
+| W6A | apps_lic post-migration negative controls | Verify W5B P1 preserved enforcement; classify pre-existing failures | E.1-NC | ~3K | ✅ COMPLETE — W6A_PASSED_WITH_PRE_EXISTING_EXCEPTIONS |
+| W5C-A | apps_rg migration preflight | Binding inventory, failure classification, go/no-go | E.2-pre | ~2K | ✅ COMPLETE — CONDITIONAL_GO |
+| W5C-P0 | apps_rg prerequisite closure | Route profile verify, DS-3 scope, TEST_BUG/DRIFT classification, Author-Gate | E.2-p0 | ~2K | ✅ COMPLETE — W5C_P0_CLOSED |
+| W5C P1 | apps_rg L0 route boundary migration | Replace apps_rg_l0_binding with package_driven engine + route_profiles.yaml | E.2.1 | ~4K | ✅ CERTIFIED_WITH_COMPATIBILITY_FALLBACK |
+| W5C P2 | apps_rg Exit binding migration | Generic exit profile enforcer | E.2.2 | ~3K | ➡️ MIGRATED → [apps-rg-quarantine-gap-remediation-8f405c](../plans/apps-rg-quarantine-gap-remediation-8f405c.md) W5 |
+| W5C P3+ | apps_rg remaining bindings | U0/L1/L2/PA/C0 migration | E.2.3+ | ~6K | ➡️ MIGRATED → [apps-rg-quarantine-gap-remediation-8f405c](../plans/apps-rg-quarantine-gap-remediation-8f405c.md) post-W5 |
+| W5D | apps_research Consolidation | v1/v2 consolidation + migration | E.3 | ~8K | ✅ COMPLETE — v1 bindings classified TEMPORARY_THIN_ADAPTER; migration to v2 deferred (incompatible L0 signature requires dispatch rewrite — see apps_research_binding_w5d_receipt.json) |
+| W6B | apps_rg post-migration negative controls | Verify W5C migrations preserved enforcement | F.2 | ~3K | ➡️ MIGRATED → [apps-rg-quarantine-gap-remediation-8f405c](../plans/apps-rg-quarantine-gap-remediation-8f405c.md) W6 |
+| W7 | Final receipt | Governance completion artifact | G | ~2K | ✅ COMPLETE — artifacts/governance/agentic_core_static_apps_customization_governance_a1b2c3_receipt.json |
 
 **Total: ~56K tokens across 8 waves**
 
@@ -107,12 +112,17 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 | 6.2 | W5B P1a apps_lic L6 promotion binding | Migrate to generic L6 profile consumer + app profile | Hardcoded UWG authority | ~2K | ✅ CERTIFIED |
 | 6.3 | W5B P1b apps_lic Exit binding | Migrate to generic exit profile enforcer + app profile | Hardcoded Exit gates | ~3K | ✅ BRIDGE_ACCEPTED |
 | 6.4 | W5B P1c apps_lic L0 routing binding | Migrate to generic route policy engine + app profile | Hardcoded route logic | ~3K | ✅ CERTIFIED |
-| 6.5 | W5C apps_rg migration | apps_rg L0/Exit/L6 or other bindings only after W5B P1 | Deferred post-W5B P1 | ~6K | 🔲 DEFERRED |
-| 6.6 | W5D apps_research v1/v2 consolidation and migration | v1/v2 consolidation first, migration later | Deferred post-W5B P1 | ~8K | 🔲 DEFERRED |
-| 7.1 | W6 Post-migration negative controls | Verify W5B P1 migrations preserved enforcement | Post-migration validation | ~1K | 🔲 TODO |
-| 7.2 | W6 Post-migration failure-mode documentation | Confirm each blocked after migration | Post-migration error paths | ~1K | 🔲 TODO |
-| 8.1 | W7 Final governance receipt | Per §17 receipt spec | No completion artifact | ~2K | 🔲 TODO |
-| 8.2 | W7 tracking/status update | Plan → Completed | Tracking | ~1K | 🔲 TODO |
+| 6.5 | W6A apps_lic post-migration negative controls | Verify W5B P1 preserved enforcement; 43 pre-existing failures classified | Post-W5B P1 validation | ~3K | ✅ COMPLETE — W6A_PASSED_WITH_PRE_EXISTING_EXCEPTIONS |
+| 6.6 | W5C-A apps_rg migration preflight | Binding inventory (7 bindings), failure classification, CONDITIONAL_GO | Pre-migration gate | ~2K | ✅ COMPLETE |
+| 6.7 | W5C-P0 apps_rg prerequisite closure | route_profiles.yaml verified, DS-3 NOT required for P1, IMPLEMENTATION_DRIFT resolved via Author-Gate Option B, route_registry reverted to registered_not_active, 35/35 sentinel tests pass | Prereq closure | ~2K | ✅ COMPLETE — W5C_P0_CLOSED |
+| 6.8 | W5C P1 apps_rg L0 route boundary migration | Replace apps_rg_l0_binding.py with package_driven_l0_binding.py consuming route_profiles.yaml | W5C P1 execution | ~4K | 🔲 GO — ready to start |
+| 6.9 | W5C P2 apps_rg Exit binding migration | Generic exit profile enforcer | W5C P2 | ~3K | 🔲 DEFERRED |
+| 6.10 | W5C P3+ apps_rg remaining bindings | U0/L1/L2/PA/C0 migration | W5C P3+ | ~6K | 🔲 DEFERRED |
+| 6.11 | W5D apps_research v1/v2 consolidation and migration | v1/v2 consolidation first, migration later | Deferred post-W5C | ~8K | ✅ DONE — TEMPORARY_THIN_ADAPTER receipt written; full migration deferred to separate plan (incompatible L0 v2 signature) |
+| 7.1 | W6B apps_rg post-migration negative controls | Verify W5C migrations preserved enforcement | Post-W5C validation | ~2K | ➡️ MIGRATED → apps-rg-quarantine-gap-remediation-8f405c W6 |
+| 7.2 | W6B post-migration failure-mode documentation | Confirm each blocked after migration | Post-W5C error paths | ~1K | ➡️ MIGRATED → apps-rg-quarantine-gap-remediation-8f405c W6 |
+| 8.1 | W7 Final governance receipt | Per §17 receipt spec | No completion artifact | ~2K | ✅ DONE — artifacts/governance/agentic_core_static_apps_customization_governance_a1b2c3_receipt.json |
+| 8.2 | W7 tracking/status update | Plan → Completed | Tracking | ~1K | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -157,7 +167,6 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 | P1b Exit | ✅ BRIDGE_ACCEPTED | 26/26 Exit tests; P1b_accepted_as_bridge=true in receipt |
 | P1c L0 Routing | ✅ CERTIFIED | 92/92 tests passing; generic_route_policy_interpreter.py; app-owned l0_route_profile.outreach_message.v1.json |
 
-**Receipt**: \rtifacts/governance/apps_lic_binding_migration_w5b_p1_receipt.json\ (version 4.0)
 **Receipt**: `artifacts/governance/apps_lic_binding_migration_w5b_p1_receipt.json` (version 4.0)
 **Pre-existing failures (not introduced by W5B P1)**:
 - `test_ag8_apps_lic_golden_path.py`: 18 failures — U0 AppsLicIngressContractV1 extra-fields schema error; unrelated to L0/Exit/L6
@@ -488,7 +497,7 @@ If skills/workflows are incomplete:
 | DoD-4 | 6 CI governance tests passing with 17 negative controls | `pytest tests/governance/ -v` shows 6 pass, 0 fail | ✅ W4 complete |
 | DoD-5 | ≥3 existing bindings migrated with receipts | W5B P1 complete: P1a CERTIFIED, P1b BRIDGE_ACCEPTED, P1c CERTIFIED. Receipt v4.0: artifacts/governance/apps_lic_binding_migration_w5b_p1_receipt.json | ✅ W5B P1 complete |
 | DoD-6 | Post-migration negative controls verify enforcement | W6 TODO: Re-run negative controls after W5B P1 to prove migration did not weaken governance | 🔄 W4 baseline complete, W6 post-migration pending |
-| DoD-7 | Final governance receipt generated | `cat artifacts/governance/agentic_core_static_apps_customization_governance_receipt.json` valid JSON | 🔲 W7 pending |
+| DoD-7 | Final governance receipt generated | `cat artifacts/governance/agentic_core_static_apps_customization_governance_a1b2c3_receipt.json` valid JSON | ✅ W7 COMPLETE |
 
 **Verification-vs-Deferral table**:
 

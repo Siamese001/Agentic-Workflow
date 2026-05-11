@@ -1,0 +1,61 @@
+# W9 Boundary Repair — App-Owned Judge Config Only
+# Core owns execution. Apps own this config.
+
+profile_id: apps_research_company_brief_v1
+version: "W9.0.0"
+description: Judge profile for company brief evaluation
+
+# Dimensions to evaluate (deterministic graders in core)
+dimensions:
+  # G09: Source Quality
+  - source_authority
+  - citation_quality
+  - coverage_depth
+  - contradiction_status
+  
+  # G10: Factual Grounding / Safety  
+  - cache_compatibility
+  - semantic_reuse_safety
+  - instruction_data_boundary_for_cache_or_prompt_reuse
+  
+  # G13/G23: Injection/Security
+  - briefing_injection
+  - retrieved_content_injection
+  - leakage_or_security_risk
+  
+  # G22: Answer Completeness
+  - claim_support
+  - contradiction_resolution
+  - downstream_relevance
+  
+  # G25: Anomaly Detection (future)
+  - judge_disagreement
+  - cache_hit_anomaly
+  - downstream_relevance_anomaly
+
+# Grader roster config
+grader_roster_path: grader_roster.company_brief.v1.yaml
+
+# Rubric paths
+rubric_paths:
+  - eval_rubrics.yaml
+
+# Calibration fixtures
+calibration_fixtures:
+  - calibration_fixtures/claim_support_baseline.json
+  - calibration_fixtures/citation_quality_baseline.json
+  - calibration_fixtures/coverage_depth_baseline.json
+  - calibration_fixtures/contradiction_resolution_baseline.json
+  - calibration_fixtures/source_authority_baseline.json
+  - calibration_fixtures/cache_compatibility_baseline.json
+  - calibration_fixtures/briefing_injection_baseline.json
+  - calibration_fixtures/downstream_relevance_baseline.json
+
+# LLM-as-judge gateway (PROFILE_ONLY for W9)
+llm_gateway:
+  mode: PROFILE_ONLY  # W9: deterministic only
+  # Future activation:
+  # mode: PASS_THROUGH
+  # provider: qwen_vllm
+  # timeout_seconds: 30
+  # fail_closed: true
