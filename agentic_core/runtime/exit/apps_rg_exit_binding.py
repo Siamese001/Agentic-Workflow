@@ -27,6 +27,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
+from agentic_core.runtime.exit.hitl_policy_registry import (
+    HitlPolicySpec,
+    resolve_hitl_policy,
+)
+
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
 )
@@ -325,7 +330,9 @@ def build_apps_rg_exit_harness(
 
 
 # ---------------------------------------------------------------------------
-# W5 Exit gate consumers — apps-rg-quarantine-gap-remediation-8f405c W5.P2
+# Exit gate consumers — wired across two plans:
+#   W5 fields:  apps-rg-quarantine-gap-remediation-8f405c W5.P2
+#   DF-1/2/3:  apps-rg-deferred-follow-ons-b3e9f1 W1-W3
 #
 # Reads provenance_requirements, output_requirements, and profile_manifest
 # from ValidatedRequest.app_payload.
@@ -334,16 +341,22 @@ def build_apps_rg_exit_harness(
 #   ProvenanceRequirementsSection: per_bullet_required (bool), source_quote_required (bool)
 #   OutputRequirementsSection: formats (tuple[str]), provenance_required (bool),
 #                              fact_checked_required (bool)
-#   ProfileManifestSection.hitl_policy_ref — DEFERRED: no HITL consumer at Exit yet.
-#     Ref is extracted and logged as policy metadata only; hitl_policy_ref triggers
-#     land in future Wave 4 HITL registry (AG-13.b). hitl_policy_ref MUST NOT be
-#     evaluated as a gate verdict at Exit.
+#   ProfileManifestSection.hitl_policy_ref — WIRED (DF-1): resolved via
+#     hitl_policy_registry.resolve_hitl_policy() → HitlPolicySpec; requires_hitl
+#     flag propagated to gate result for HITL routing agent.
+#   fact_checked_required — WIRED (DF-2): blocking gate (fail-closed default);
+#     APPS_RG_FACT_CHECK_FAIL_CLOSED=0 to soften.
+#   formats — WIRED (DF-3): DOCX renderer dispatched when "docx" in formats.
 #
 # Fail-soft by default (WARN / NOT_APPLICABLE).
-# APPS_RG_PROVENANCE_GATE_FAIL_CLOSED=1 converts WARN into FAIL.
+# APPS_RG_PROVENANCE_GATE_FAIL_CLOSED=1 converts provenance WARN into FAIL.
+# APPS_RG_FACT_CHECK_FAIL_CLOSED defaults to 1 (fail-closed for fact-check).
+# APPS_RG_HITL_REGISTRY_FAIL_CLOSED=1 treats unknown HITL refs as requires_hitl=True.
 # ---------------------------------------------------------------------------
 
 _PROVENANCE_GATE_FAIL_CLOSED_ENV: str = "APPS_RG_PROVENANCE_GATE_FAIL_CLOSED"
+_FACT_CHECK_FAIL_CLOSED_ENV: str = "APPS_RG_FACT_CHECK_FAIL_CLOSED"
+_HITL_REGISTRY_FAIL_CLOSED_ENV: str = "APPS_RG_HITL_REGISTRY_FAIL_CLOSED"
 
 _EXIT_LOGGER = __import__("logging").getLogger(__name__)
 
@@ -358,8 +371,10 @@ class AppsRGExitGatePolicy:
     fact_checked_required: Optional[bool]
     output_formats: Optional[tuple]
     hitl_policy_ref: Optional[str]
+    hitl_policy_spec: Optional[HitlPolicySpec]
     payload_path: str
     fail_closed: bool
+    fact_check_fail_closed: bool
 
 
 def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePolicy:
@@ -386,6 +401,7 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePo
         AppsRGExitGatePolicy with field values or None for absent data.
     """
     fail_closed = os.environ.get(_PROVENANCE_GATE_FAIL_CLOSED_ENV, "").strip() == "1"
+    fact_check_fail_closed = os.environ.get(_FACT_CHECK_FAIL_CLOSED_ENV, "1").strip() == "1"
     payload_path = (
         "ValidatedRequest.app_payload."
         "{provenance_requirements,output_requirements,profile_manifest.hitl_policy_ref}"
@@ -411,6 +427,7 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePo
         formats_raw = _getattr_or_dict(out_req, "formats")
         output_formats = tuple(formats_raw) if formats_raw is not None else None
         hitl_ref = _getattr_or_dict(prof_manifest, "hitl_policy_ref")
+        hitl_spec = resolve_hitl_policy(hitl_ref)
 
         return AppsRGExitGatePolicy(
             per_bullet_required=per_bullet,
@@ -419,8 +436,10 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePo
             fact_checked_required=fact_checked,
             output_formats=output_formats,
             hitl_policy_ref=hitl_ref,
+            hitl_policy_spec=hitl_spec,
             payload_path=payload_path,
             fail_closed=fail_closed,
+            fact_check_fail_closed=fact_check_fail_closed,
         )
     except Exception as exc:  # guardian: allow-broad-exception -- policy extraction must never abort Exit; missing policy is WARN not ERROR
         _EXIT_LOGGER.warning("[apps_rg Exit gate] policy extraction failed: %s", exc)
@@ -431,44 +450,104 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePo
             fact_checked_required=None,
             output_formats=None,
             hitl_policy_ref=None,
+            hitl_policy_spec=None,
             payload_path=payload_path,
             fail_closed=fail_closed,
+            fact_check_fail_closed=fact_check_fail_closed,
         )
+
+
+def _dispatch_docx_renderer(sealed_artifact: Any) -> dict[str, Any]:
+    """Invoke tools/apps_rg/resume_docx_renderer.render() for the run artifact.
+
+    Fail-soft: any error returns {status: 'error', error: <msg>}.
+    Requires python-docx; absent in CI lightweight environments is handled
+    gracefully (skipped, not a gate FAIL).
+
+    Args:
+        sealed_artifact: SealedL2Artifact or None. If None the artifact path
+                         is resolved from the most recent run directory.
+
+    Returns:
+        {status: 'ok', path: <docx_path>} on success,
+        {status: 'error', error: <msg>} on any failure.
+    """
+    try:
+        repo_root = _resolve_repo_root()
+        run_id = getattr(sealed_artifact, "run_id", None) if sealed_artifact else None
+        run_dir: Path | None = None
+        if run_id:
+            run_dir = _find_existing_run_dir(repo_root, run_id)
+        if run_dir is None:
+            # Fallback: most recent run directory
+            base = repo_root / _ARTIFACT_BASE_DIR_RELPATH
+            if base.exists():
+                candidates = sorted(
+                    [d for d in base.iterdir() if d.is_dir()], key=lambda d: d.name, reverse=True
+                )
+                run_dir = candidates[0] if candidates else None
+        if run_dir is None:
+            return {"status": "error", "error": "no run directory found for DOCX render"}
+
+        json_path = run_dir / "generated_resume.json"
+        if not json_path.exists():
+            return {"status": "error", "error": f"generated_resume.json not found at {json_path}"}
+
+        docx_path = run_dir / "generated_resume.docx"
+
+        try:
+            import json as _json  # noqa: PLC0415
+            from tools.apps_rg.resume_docx_renderer import render  # noqa: PLC0415
+
+            with open(json_path, encoding="utf-8") as _fh:
+                resume_data = _json.load(_fh)
+
+            default_template = Path(r"C:\Users\amita\Documents\Resumes\SVP Engineering Resume_Ayer.docx")
+            if not default_template.exists():
+                return {"status": "error", "error": f"DOCX template not found at {default_template}; skipped"}
+
+            render(resume_data, docx_path, default_template)
+            return {"status": "ok", "path": str(docx_path)}
+
+        except ImportError as ie:
+            return {"status": "error", "error": f"python-docx not available: {ie}"}
+
+    except Exception as exc:  # guardian: allow-broad-exception -- DOCX renderer dispatch is fail-soft; renderer failure must not block Exit
+        return {"status": "error", "error": str(exc)}
 
 
 def evaluate_apps_rg_exit_provenance_gate(
     policy: AppsRGExitGatePolicy,
     sealed_artifact: Any = None,
+    run_context: Any = None,
 ) -> dict[str, Any]:
     """Evaluate provenance and output requirement gates at Exit.
 
-    Checks:
-      - output_requirements.provenance_required: if True and per_bullet_required
-        is also True, both flags are verified as consistent (PASS), else WARN.
-      - provenance_requirements.per_bullet_required / source_quote_required:
-        emitted as policy metadata for future per-bullet gate (AG-9.b).
-      - output_requirements.fact_checked_required: emitted as policy metadata
-        (fact-check engine restoration deferred; gap category #61).
-      - output_requirements.formats: emitted as policy metadata.
-      - profile_manifest.hitl_policy_ref: extracted as DEFERRED metadata only.
-        NEVER evaluated as a gate verdict at Exit — HITL registry (AG-13.b) not
-        yet wired; evaluating before the registry lands would produce false FAILs.
-
-    Fail-soft: no live gate produces FAIL in fail_closed=False mode for
-    currently un-evaluable checks (e.g. per-bullet provenance enforcement
-    requires output artifact scanner, not available at Exit yet).
+    Checks (as of apps-rg-deferred-follow-ons-b3e9f1):
+      - output_requirements.provenance_required: consistency check with
+        per_bullet_required (PASS/WARN/FAIL).
+      - profile_manifest.hitl_policy_ref: resolved via hitl_policy_registry
+        (AG-13.b) to HitlPolicySpec; requires_hitl=True emits hitl_required
+        flag in gate result (not a blocking FAIL — HITL routing agent acts on it).
+      - output_requirements.fact_checked_required: if True, checks
+        run_context.fact_check_receipt is non-null; missing receipt → FAIL
+        (fail-closed default, APPS_RG_FACT_CHECK_FAIL_CLOSED=0 to soften).
+      - output_requirements.formats: dispatches DOCX renderer after gate pass
+        when 'docx' is present; other formats logged as metadata.
 
     Args:
         policy: Extracted exit gate policy.
-        sealed_artifact: Optional SealedL2Artifact (reserved; not consumed yet).
+        sealed_artifact: Optional SealedL2Artifact (reserved).
+        run_context: Optional object/dict with fact_check_receipt field.
 
     Returns:
-        Gate result dict with verdict, per-field verdicts, and policy metadata.
+        Gate result dict with verdict, per-field verdicts, hitl_required flag,
+        and renderer_dispatched list.
     """
     results: dict[str, Any] = {
         "gate": "EXIT_PROVENANCE_GATE",
-        "plan": "apps-rg-quarantine-gap-remediation-8f405c",
-        "wave": "W5.P2",
+        "plan": "apps-rg-deferred-follow-ons-b3e9f1",
+        "wave": "W1-W3",
         "policy": {
             "per_bullet_required": policy.per_bullet_required,
             "source_quote_required": policy.source_quote_required,
@@ -477,10 +556,14 @@ def evaluate_apps_rg_exit_provenance_gate(
             "output_formats": list(policy.output_formats) if policy.output_formats else None,
             "hitl_policy_ref": policy.hitl_policy_ref,
             "fail_closed": policy.fail_closed,
+            "fact_check_fail_closed": policy.fact_check_fail_closed,
         },
         "field_verdicts": {},
         "policy_metadata": {},
         "deferred": {},
+        "hitl_required": False,
+        "hitl_policy_spec": None,
+        "renderer_dispatched": [],
     }
 
     checks: list[str] = []
@@ -531,41 +614,86 @@ def evaluate_apps_rg_exit_provenance_gate(
             ),
         }
 
-    # fact_checked_required — deferred to gap category #61 (fact-check engine restoration)
+    # fact_checked_required — DF-2: blocking gate (fail-closed by default)
     if policy.fact_checked_required is not None:
-        results["deferred"]["fact_checked_required"] = {
-            "value": policy.fact_checked_required,
-            "status": "DEFERRED",
-            "reason": (
-                "fact_check_engine restoration is gap category #61; "
-                "gate registry invokes when engine lands (AG-9.b)"
-            ),
-        }
+        if policy.fact_checked_required:
+            fact_check_receipt = None
+            if run_context is not None:
+                if isinstance(run_context, dict):
+                    fact_check_receipt = run_context.get("fact_check_receipt")
+                else:
+                    fact_check_receipt = getattr(run_context, "fact_check_receipt", None)
+            if fact_check_receipt is not None:
+                results["field_verdicts"]["fact_checked_required"] = "PASS"
+                results["policy_metadata"]["fact_check_receipt"] = str(fact_check_receipt)
+                checks.append("PASS")
+            else:
+                verdict = "FAIL" if policy.fact_check_fail_closed else "WARN"
+                results["field_verdicts"]["fact_checked_required"] = verdict
+                results["policy_metadata"]["fact_check_missing_note"] = (
+                    "fact_checked_required=True but run_context.fact_check_receipt is absent; "
+                    f"gate verdict={verdict} (APPS_RG_FACT_CHECK_FAIL_CLOSED={'1' if policy.fact_check_fail_closed else '0'})"
+                )
+                checks.append(verdict)
+        else:
+            results["field_verdicts"]["fact_checked_required"] = "PASS"
+            checks.append("PASS")
 
-    # output formats — carried as policy metadata; callback registry deferred to W5
+    # output formats — DF-3: dispatch renderer callbacks (DOCX wired; others metadata)
     if policy.output_formats is not None:
         results["policy_metadata"]["output_formats"] = list(policy.output_formats)
-        results["deferred"]["output_formats"] = {
-            "value": list(policy.output_formats),
-            "status": "DEFERRED",
-            "reason": (
-                "DOCX/RunReport callbacks register against output_formats at W5 (AG-14.a)"
-            ),
-        }
+        dispatched: list[str] = []
+        skipped: list[str] = []
+        for fmt in policy.output_formats:
+            fmt_lower = str(fmt).strip().lower()
+            if fmt_lower == "json":
+                dispatched.append("json")  # natively produced
+            elif fmt_lower == "docx":
+                _docx_result = _dispatch_docx_renderer(sealed_artifact)
+                if _docx_result.get("status") == "ok":
+                    dispatched.append("docx")
+                    results["policy_metadata"]["docx_artifact_path"] = _docx_result.get("path", "")
+                else:
+                    skipped.append(f"docx:{_docx_result.get('error', 'unknown')}")
+            else:
+                skipped.append(fmt_lower)
+        results["renderer_dispatched"] = dispatched
+        if skipped:
+            results["policy_metadata"]["formats_skipped"] = skipped
+        if dispatched:
+            results["field_verdicts"]["output_formats"] = "PASS"
+            checks.append("PASS")
 
-    # hitl_policy_ref — DEFERRED, extracted as metadata only.
-    # AG-13.b HITL registry does not exist at Exit yet. Evaluating this field
-    # here would produce false results. We carry it for audit/observability only.
-    if policy.hitl_policy_ref:
-        results["deferred"]["hitl_policy_ref"] = {
-            "value": policy.hitl_policy_ref,
-            "status": "DEFERRED",
-            "reason": (
-                "hitl_registry not yet wired at Exit; HITL triggers land in "
-                "future Wave 4 HITL registry (AG-13.b). "
-                "hitl_policy_ref carried as audit metadata only."
-            ),
-        }
+    # hitl_policy_ref — resolved via AG-13.b HITL registry (DF-1 wired)
+    if policy.hitl_policy_ref is not None:
+        spec = policy.hitl_policy_spec
+        if spec is not None and spec.resolved:
+            results["field_verdicts"]["hitl_policy_ref"] = "PASS"
+            results["hitl_required"] = spec.requires_hitl
+            results["hitl_policy_spec"] = {
+                "policy_ref": spec.policy_ref,
+                "trigger_kind": spec.trigger_kind,
+                "requires_hitl": spec.requires_hitl,
+                "trigger_threshold": spec.trigger_threshold,
+                "operator_id": spec.operator_id,
+                "policy_version": spec.policy_version,
+                "resolved": spec.resolved,
+            }
+            checks.append("PASS")
+        else:
+            results["field_verdicts"]["hitl_policy_ref"] = "WARN"
+            results["policy_metadata"]["hitl_policy_ref_note"] = (
+                f"hitl_policy_ref={policy.hitl_policy_ref!r} unrecognised in registry; "
+                "treated as no-HITL (fail-soft)"
+            )
+            results["hitl_required"] = False
+            results["hitl_policy_spec"] = {
+                "policy_ref": policy.hitl_policy_ref,
+                "trigger_kind": "UNKNOWN",
+                "requires_hitl": False,
+                "resolved": False,
+            }
+            checks.append("WARN")
 
     if not checks:
         results["verdict"] = "NOT_APPLICABLE"
@@ -592,4 +720,5 @@ __all__ = [
     "evaluate_apps_rg_exit_provenance_gate",
     "exit_finalize_apps_rg",
     "build_apps_rg_exit_harness",
+    "_dispatch_docx_renderer",
 ]

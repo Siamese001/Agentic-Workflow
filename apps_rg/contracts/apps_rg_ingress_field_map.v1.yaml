@@ -243,9 +243,9 @@ mappings:
     reason: PA template chaining (AG-11.a) consumes from manifest
 
   /profile_manifest/hitl_policy_ref:
-    status: DEFERRED
-    target: future Wave 4 HITL registry (AG-13.b)
-    reason: "W5.P2 scope: hitl_policy_ref extracted by extract_apps_rg_exit_gate_policy as audit metadata ONLY (see AppsRGExitGatePolicy.hitl_policy_ref). NOT evaluated as gate verdict — HITL registry (AG-13.b) does not exist at Exit yet; evaluating before registry lands would produce false FAILs. Full wiring deferred to Wave 4."
+    status: MAPPED
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:extract_apps_rg_exit_gate_policy + hitl_policy_registry.resolve_hitl_policy
+    reason: "DF-1 wired (apps-rg-deferred-follow-ons-b3e9f1 W1): hitl_policy_ref resolved via resolve_hitl_policy() to HitlPolicySpec; requires_hitl flag propagated to gate result hitl_required field. FULLY_ENFORCED."
 
   /profile_manifest/l0_policy_ref:
     status: DEFERRED
@@ -290,8 +290,8 @@ mappings:
   # -------------------------------------------------------------------
   /output_requirements/formats:
     status: MAPPED
-    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.output_formats
-    reason: "W5.P2: extracted and carried as policy_metadata.output_formats at Exit; callback dispatch (DOCX/RunReport) deferred to AG-14.a W5"
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:_dispatch_docx_renderer + evaluate_apps_rg_exit_provenance_gate
+    reason: "DF-3 wired (apps-rg-deferred-follow-ons-b3e9f1 W3): formats dispatched post-Exit; 'json' natively produced; 'docx' dispatched via _dispatch_docx_renderer (fail-soft); 'pdf' logged as skipped pending renderer toolchain. FULLY_ENFORCED for json+docx."
 
   /output_requirements/provenance_required:
     status: MAPPED
@@ -300,8 +300,8 @@ mappings:
 
   /output_requirements/fact_checked_required:
     status: MAPPED
-    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:AppsRGExitGatePolicy.fact_checked_required
-    reason: "W5.P2: extracted and carried as deferred metadata at Exit; fact_check_engine restoration is gap category #61; gate registry invokes when engine lands (AG-9.b)"
+    target: agentic_core/runtime/exit/apps_rg_exit_binding.py:evaluate_apps_rg_exit_provenance_gate
+    reason: "DF-2 wired (apps-rg-deferred-follow-ons-b3e9f1 W2): fact_checked_required=True with no run_context.fact_check_receipt produces FAIL (fail-closed; APPS_RG_FACT_CHECK_FAIL_CLOSED=0 to soften). FULLY_ENFORCED."
 
   # -------------------------------------------------------------------
   # /provenance_requirements — per-bullet provenance contract

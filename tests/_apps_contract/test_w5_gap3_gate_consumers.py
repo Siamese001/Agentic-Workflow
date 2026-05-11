@@ -217,17 +217,22 @@ class TestExitGateExtraction:
         assert policy.fact_checked_required is True
         assert policy.hitl_policy_ref == "hitl/apps_rg/v1"
 
-    def test_hitl_policy_ref_is_metadata_only_not_evaluated_as_failure(self):
-        """Test 6b: hitl_policy_ref is metadata only — not a gate FAIL verdict."""
+    def test_hitl_policy_ref_is_wired_and_not_a_gate_fail(self):
+        """Test 6b (updated for DF-1): hitl_policy_ref is now resolved via registry.
+
+        Unrecognised ref 'hitl/apps_rg/v1' → WARN (fail-soft); never FAIL.
+        Registry wired as of apps-rg-deferred-follow-ons-b3e9f1 W1.
+        """
         req = FakeValidatedRequest({
             "profile_manifest": {"hitl_policy_ref": "hitl/apps_rg/v1"},
         })
         policy = extract_apps_rg_exit_gate_policy(req)
         result = evaluate_apps_rg_exit_provenance_gate(policy)
-        # hitl_policy_ref must appear in deferred section, never in field_verdicts as FAIL
-        assert "hitl_policy_ref" in result["deferred"]
-        assert result["deferred"]["hitl_policy_ref"]["status"] == "DEFERRED"
+        # hitl_policy_ref now appears in field_verdicts (PASS for known refs, WARN for unknown)
+        assert "hitl_policy_ref" in result["field_verdicts"]
         assert result["verdict"] != "FAIL"
+        # Must not block Exit with a FAIL
+        assert result["hitl_required"] is False  # unknown ref → no-HITL (fail-soft)
 
     def test_missing_payload_returns_none_fields(self):
         """Missing exit gate fields return policy with None values."""
@@ -299,20 +304,23 @@ class TestExitProvenanceGateEvaluation:
         assert result["field_verdicts"].get("provenance_required") == "PASS"
         assert result["verdict"] == "PASS"
 
-    def test_fact_checked_required_is_deferred_metadata_not_enforced(self):
-        """Test 9: fact_checked_required=True is deferred metadata, not falsely enforced."""
+    def test_fact_checked_required_is_enforced_blocking_gate(self):
+        """Test 9 (updated for DF-2): fact_checked_required=True is now a blocking gate.
+
+        No run_context.fact_check_receipt → FAIL (fail-closed default).
+        Wired as of apps-rg-deferred-follow-ons-b3e9f1 W2.
+        """
         req = FakeValidatedRequest({
             "output_requirements": {"fact_checked_required": True},
         })
         policy = extract_apps_rg_exit_gate_policy(req)
-        result = evaluate_apps_rg_exit_provenance_gate(policy)
-        # Must appear in deferred section, not produce FAIL
-        assert "fact_checked_required" in result["deferred"]
-        assert result["deferred"]["fact_checked_required"]["status"] == "DEFERRED"
-        assert result["verdict"] != "FAIL"
-        # Must not claim fact-check ran
-        deferred_reason = result["deferred"]["fact_checked_required"]["reason"]
-        assert "fact_check" in deferred_reason.lower() or "deferred" in deferred_reason.lower()
+        result = evaluate_apps_rg_exit_provenance_gate(policy, run_context=None)
+        # DF-2: fact_checked_required=True with no receipt → FAIL (fail-closed)
+        assert "fact_checked_required" in result["field_verdicts"]
+        assert result["field_verdicts"]["fact_checked_required"] == "FAIL"
+        assert result["verdict"] == "FAIL"
+        # Note must mention the env var for observability
+        assert "APPS_RG_FACT_CHECK_FAIL_CLOSED" in result["policy_metadata"].get("fact_check_missing_note", "")
 
     def test_empty_payload_returns_not_applicable(self):
         """Empty payload → no evaluable checks → NOT_APPLICABLE verdict."""
@@ -397,16 +405,16 @@ class TestFieldMapStatus:
             assert match, f"status not found for /output_requirements/{field}"
             assert match.group(1) == "MAPPED"
 
-    def test_hitl_policy_ref_remains_deferred(self):
-        """hitl_policy_ref must remain DEFERRED — no HITL registry consumer at Exit."""
+    def test_hitl_policy_ref_is_mapped(self):
+        """hitl_policy_ref must now be MAPPED — HITL registry (AG-13.b) wired in DF-1."""
         content = self._load_raw()
         import re
         assert "/profile_manifest/hitl_policy_ref" in content
         pattern = r"\s/profile_manifest/hitl_policy_ref:\s*\n\s+status:\s*(\w+)"
         match = re.search(pattern, content)
         assert match, "status not found for /profile_manifest/hitl_policy_ref"
-        assert match.group(1) == "DEFERRED", (
-            f"hitl_policy_ref should remain DEFERRED until HITL registry (AG-13.b) lands, "
+        assert match.group(1) == "MAPPED", (
+            f"hitl_policy_ref should be MAPPED after AG-13.b HITL registry wired (DF-1), "
             f"got {match.group(1)}"
         )
 
