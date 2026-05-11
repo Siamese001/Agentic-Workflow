@@ -38,6 +38,11 @@ _MATERIAL_UNKNOWN = frozenset({VERDICT_UNKNOWN})
 GATE_MESH_SCHEMA_VERSION = "W8.a3f7e2"
 
 
+def _now() -> str:
+    """Return current ISO 8601 timestamp."""
+    return datetime.now(timezone.utc).isoformat()
+
+
 @dataclass(frozen=True, slots=True)
 class GateVerdict:
     """Evaluation result for a single gate.
@@ -78,11 +83,28 @@ class GateVerdict:
 
     # NOT_APPLICABLE and UNKNOWN require explicit reason
     not_applicable_reason: str = ""
+
+    # ── W8 Hardening: Replay and Audit Fields ─────────────────────────────────
+    # Evidence digest from the gate evaluation (hash of raw evaluator output)
+    evidence_digest: str = ""
+
+    # Evaluator version for audit/replay verification
+    evaluator_version: str = ""
+
+    # Evaluation timestamp (ISO 8601)
+    evaluated_at: str = ""
+
+    # Computed state fields (for convenience and type safety)
+    is_pass: bool = False
+    is_hard_fail: bool = False
+    is_material_unknown: bool = False
+    is_not_applicable: bool = False
     unknown_reason: str = ""
 
     created_at: str = ""
 
     schema_version: str = GATE_MESH_SCHEMA_VERSION
+
 
     def __post_init__(self) -> None:
         if self.result not in _VALID_RESULTS:
@@ -95,23 +117,11 @@ class GateVerdict:
                 f"GateVerdict gate_id={self.gate_id!r}: "
                 "NOT_APPLICABLE requires not_applicable_reason to be non-empty"
             )
-
-    @property
-    def is_pass(self) -> bool:
-        """UNKNOWN is NEVER PASS. Only PASS is a pass."""
-        return self.result == VERDICT_PASS
-
-    @property
-    def is_hard_fail(self) -> bool:
-        return self.result == VERDICT_FAIL and self.severity == "hard_fail"
-
-    @property
-    def is_material_unknown(self) -> bool:
-        return self.result == VERDICT_UNKNOWN
-
-    @property
-    def is_not_applicable(self) -> bool:
-        return self.result == VERDICT_NOT_APPLICABLE
+        # Compute state fields from result
+        object.__setattr__(self, "is_pass", self.result == VERDICT_PASS)
+        object.__setattr__(self, "is_hard_fail", self.result == VERDICT_FAIL and self.severity == "hard_fail")
+        object.__setattr__(self, "is_material_unknown", self.result == VERDICT_UNKNOWN)
+        object.__setattr__(self, "is_not_applicable", self.result == VERDICT_NOT_APPLICABLE)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -140,6 +150,14 @@ class GateVerdict:
             "replay_key": self.replay_key,
             "not_applicable_reason": self.not_applicable_reason,
             "unknown_reason": self.unknown_reason,
+            # W8 Hardening fields
+            "evidence_digest": self.evidence_digest,
+            "evaluator_version": self.evaluator_version,
+            "evaluated_at": self.evaluated_at,
+            "is_pass": self.is_pass,
+            "is_hard_fail": self.is_hard_fail,
+            "is_material_unknown": self.is_material_unknown,
+            "is_not_applicable": self.is_not_applicable,
             "created_at": self.created_at,
             "schema_version": self.schema_version,
         }

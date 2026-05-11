@@ -332,6 +332,8 @@ class TestW3L6PackageConsumption:
         bundle = MagicMock()
         bundle.bundle_id = "bundle1"
         bundle.tenant_id = "tenant1"
+        # Mock lineage_manifest to return None for profile refs (no promotion eligibility)
+        bundle.lineage_manifest.get.return_value = None
 
         result = l6_process_apps_lic(bundle, uwg_write_authority=False)
         assert result.future_run_proposals == []

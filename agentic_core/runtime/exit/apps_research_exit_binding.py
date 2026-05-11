@@ -1,15 +1,29 @@
-"""Exit binding for apps_research `company_brief` task class.
+"""Thin Exit binding adapter for apps_research `company_brief` task class.
 
-Per plan apps-research-golden-template-adoption-ag9.
+W7 Exit binding — apps-research-rich-content-runtime-customization-v2.
 
-Exit is the SEVENTH and FINAL stage. Its job is to:
-1. Write the generated company_brief JSON to artifacts/apps_research/runs/<ts>/.
-2. Build a typed X3Disposition with exit_status='success',
-   outcome_authorized=True, output_artifact_path pointing at the artifact.
-3. Bind the disposition to the upstream SealedL2Artifact for provenance.
+Per active plan v2: Thin adapter only — no hardcoded Exit policy.
+All Exit behavior is package-driven via U0 runtime customization package refs:
+- exit_profile.company_brief.v1.json
+- required_exit_gates.company_brief.v1.yaml
 
 apps_research is R3_SIMPLE_GROUNDED_READ — no UWG writes, no L4 state mutation.
 Artifacts live under artifacts/ only.
+
+This module is a THIN ADAPTER that:
+1. Consumes ExitProfile + RequiredExitGates from U0 package
+2. Delegates to generic ExitPackageDrivenBinding
+3. Emits ExitReviewPacket, ExitDispositionReceipt, RuntimeExhaustBundle
+
+Does NOT:
+- Hardcode Exit policy
+- Emit X3 from app code
+- Write cache/vector/L4
+- Call providers
+- Retrieve evidence
+- Assemble prompts
+- Execute tools
+- Allow R1B bypass
 """
 from __future__ import annotations
 
@@ -175,7 +189,94 @@ def exit_finalize_apps_research(
     )
 
 
+# ── W7 Package-Driven Exit Binding Integration ───────────────────────────────
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.exit.exit_package_driven_binding import (
+        ExitPackageDrivenBinding,
+        ExitInput,
+        ExitPolicy,
+    )
+    from agentic_core.runtime.gates.gate_profile_resolver import GateProfile
+
+
+def exit_bind_and_finalize_apps_research(
+    *,
+    gate_profile: "GateProfile",
+    exit_policy: "ExitPolicy",
+    exit_input: "ExitInput",
+    request_id: str,
+    run_id: str,
+    trace_root: str,
+    route_id: str,
+    commit_requested: bool = False,
+) -> tuple:
+    """W7 Package-Driven Exit binding for apps_research.
+
+    Thin adapter that delegates to generic ExitPackageDrivenBinding.
+    All app-specific policy comes from U0 runtime package via GateProfile + ExitPolicy.
+
+    Args:
+        gate_profile: Gate profile loaded from apps_research U0 package
+        exit_policy: Exit policy loaded from apps_research U0 package
+        exit_input: Union of SealedL2Artifact/RETTerminalPacket + GateMeshResult
+        request_id/run_id/trace_root/route_id: Provenance identifiers
+        commit_requested: True if writeback/commit requested
+
+    Returns:
+        (ExitReviewPacket, ExitDispositionReceipt, RuntimeExhaustBundle)
+
+    Raises:
+        TypeError: on invalid input types
+        RuntimeError: on Exit binding failure
+
+    Example:
+        >>> from agentic_core.runtime.exit.exit_package_driven_binding import (
+        ...     ExitInput, ExitPolicy, ExitPackageDrivenBinding
+        ... )
+        >>> from agentic_core.runtime.gates.gate_profile_resolver import GateProfile
+        >>> gate_profile = GateProfile.from_yaml("apps_research/config/domain_contract/required_exit_gates.company_brief.v1.yaml")
+        >>> exit_policy = ExitPolicy.from_dict({...})
+        >>> exit_input = ExitInput(
+        ...     sealed_l2_artifact=sealed,
+        ...     gate_mesh_result=mesh,
+        ... )
+        >>> review, receipt, exhaust = exit_bind_and_finalize_apps_research(
+        ...     gate_profile=gate_profile,
+        ...     exit_policy=exit_policy,
+        ...     exit_input=exit_input,
+        ...     request_id=req_id,
+        ...     run_id=run_id,
+        ...     trace_root=trace_root,
+        ...     route_id=route_id,
+        ... )
+    """
+    # Import here to avoid circular imports at module load time
+    from agentic_core.runtime.exit.exit_package_driven_binding import (
+        ExitPackageDrivenBinding,
+    )
+
+    binding = ExitPackageDrivenBinding(
+        gate_profile=gate_profile,
+        exit_policy=exit_policy,
+        app_id="apps_research",
+        task_class="company_brief",
+    )
+
+    return binding.bind_and_evaluate(
+        exit_input=exit_input,
+        request_id=request_id,
+        run_id=run_id,
+        trace_root=trace_root,
+        route_id=route_id,
+        commit_requested=commit_requested,
+    )
+
+
 __all__ = [
     "APPS_RESEARCH_EXIT_CERT_REF",
-    "exit_finalize_apps_research",
+    "exit_finalize_apps_research",  # Legacy — kept for compatibility
+    "exit_bind_and_finalize_apps_research",  # W7 Package-Driven
 ]

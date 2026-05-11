@@ -6,7 +6,11 @@ status: ACTIVE
 active_authority: true
 baseline_from: apps-research-rich-content-runtime-customization-a1b2c3
 current_wave: W7
-current_phase: P26
+current_phase: P28
+w7_status: DONE_HARDENED
+runtime_through_exit_status: COMPLETE
+end_to_end_runtime_proof_through_exit: COMPLETE
+overall_plan_status: IN_PROGRESS
 created: "2026-05-11"
 created_for: apps_research
 tier: T3
@@ -61,20 +65,32 @@ w6_status: DONE_HARDENED
 w6_receipt_path: artifacts/apps_research/apps_research_w6_l2_package_driven_execution_receipt.json
 w6_test_count: 18
 
-# W7 - Exit binding (NEXT EXECUTABLE WAVE)
-w7_status: READY
-w7_next: Exit binding for apps_research
+# W7 - Exit binding
+w7_status: DONE_HARDENED
+w7_receipt_path: artifacts/apps_research/apps_research_w7_exit_package_driven_binding_receipt.json
+w7_test_count: 42
+
+# W8-W13 - Remaining waves (NOT_STARTED until W13 proof bundle passes)
+w8_runtime_gates_gate_mesh_hardening: DONE_HARDENED
+w8_receipt_path: artifacts/apps_research/apps_research_w8_runtime_gate_mesh_hardening_receipt.json
+w8_test_count: 15
+w9_judges_evals: NOT_STARTED
+w10_l6_meta_learning: NOT_STARTED
+w11_uwg_l4_writeback: NOT_STARTED
+w12_cross_app_delegation: NOT_STARTED
+w13_final_e2e_99_proof_bundle: NOT_STARTED
 
 # Totals
-automated_tests_total: 193
+automated_tests_total: 250
 audit_questions_total: 30
-combined_checks_total: 223
+combined_checks_total: 280
 ---
 
 # apps_research Rich Content Retrieval Runtime Customization (v2)
 
 **Baseline:** [v1 plan](apps-research-rich-content-runtime-customization-a1b2c3.md) (ARCHIVED_REBASELINED)  
-**Current:** W7 Exit binding — next executable wave  
+**Current:** W8 DONE_HARDENED — GateMesh hardened with replayable verdicts  
+**Overall Status:** IN_PROGRESS (W9-W13 remaining; W13 proof bundle gates completion)  
 **Goal:** Complete end-to-end runtime proof through Exit binding
 
 Fully implement `apps_research` as a governed rich-content retrieval and research-substrate app on the common `agentic_core` spine.
@@ -170,7 +186,7 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 ## Wave Structure
 
 | Wave | Phase IDs | Focus | Est. Tokens | Automated Tests | Audit Questions | Status | Success Criteria |
-|------|-------------|-------|-------------|-----------------|-----------------|--------|------------------|
+|------|-----------|-------|-------------|-----------------|-----------------|--------|------------------|
 | W0 | P0 | Pre-flight audit, gap identification | 10K | 0 | 30 | ✅ DONE | 30 audit questions answered, 16 carry-forward items identified |
 | W1 | P1-P3 | Runtime package contract + hardening | 15K | 34 | 0 | ✅ DONE | RuntimeCustomizationPackage schema, active entrypoint verified |
 | W1B | P4 | Core boundary repair (W1) | 8K | 11 | 0 | ✅ DONE | Generic contract, app-owned registry |
@@ -180,17 +196,26 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | W4 | P13-P16 | C0 package-driven grounding | 15K | 35 | 0 | ✅ DONE | FinalEvidenceContract, data boundary EVIDENCE_DATA_ONLY |
 | W5 | P17-P21 | PA package-driven prompt assembly | 18K | 41 | 0 | ✅ DONE | Canonical slot order S0-D0-I0-E0-C0-M0-U0-H0-R0 |
 | W6 | P22-P25 | L2 package-driven execution | 15K | 18 | 0 | ✅ DONE | SealedL2Artifact, same-authority repair, all required fields |
-| **W7** | **P26-P28** | **Exit binding for apps_research** | **12K** | **0** | **0** | 🔄 **NOT_STARTED** | **X3 emission through Exit binding** |
+| W7 | P26-P28 | Exit binding for apps_research | 12K | 42 | 0 | ✅ DONE_HARDENED | Package-driven Exit, X1+X2+X3, R1B bypass prevention, writeback deferral |
+| W8 | P29-P31 | Runtime gates / Gate mesh hardening | 10K | 15 | 0 | ✅ DONE_HARDENED | Replayable verdicts, UNKNOWN/PASS invariants, NOT_APPLICABLE reasons |
+| W9 | P32-P35 | Judges / Evals / LLM-as-judge integration | 12K | 20 | 0 | 🔄 NOT_STARTED | LLM-as-judge evaluators, rubric calibration |
+| W10 | P36-P38 | L6 meta-learning / Future-run promotion | 10K | 12 | 0 | 🔄 NOT_STARTED | Runtime exhaust learning, promotion candidates |
+| W11 | P39-P41 | UWG / L4 writeback admission | 12K | 15 | 0 | 🔄 NOT_STARTED | Universal Write Gateway, L4 durable writes |
+| W12 | P42-P44 | Cross-app delegation / Shared spine | 10K | 10 | 0 | 🔄 NOT_STARTED | Shared runtime spine, cross-app routing |
+| W13 | P45-P48 | Final E2E 99% proof bundle / Certification | 15K | 25 | 0 | 🔄 NOT_STARTED | End-to-end 99% proof bundle, final certification |
 
 **Totals:**
-- automated_tests_total: 193
+- automated_tests_total: 250
 - audit_questions_total: 30
-- combined_checks_total: 223
+- combined_checks_total: 280
 
 **Status Summary:**
-- W0-W6: ✅ DONE_HARDENED (P0-P25 complete, 193 tests)
-- **W7: 🔄 NOT_STARTED (P26-P28) — NEXT EXECUTABLE WAVE**
-- **Note:** Final runtime proof through Exit binding is not complete. W7 Exit binding required for end-to-end verification.
+- W0-W8: ✅ DONE_HARDENED (P0-P31 complete, 250 tests)
+- **End-to-End Runtime Proof Through Exit: COMPLETE** — W7 Exit binding emits X3D/X3E via package-driven core
+- **GateMesh Hardening: COMPLETE** — W8 UNKNOWN/PASS invariants, NOT_APPLICABLE reasons, missing gate escalation
+- **Overall Plan Status:** IN_PROGRESS — W9-W13 remaining
+- **Next Executable:** W9 (judges / evals / LLM-as-judge integration)
+- **Completion Gate:** W13 final E2E 99% proof bundle must pass before marking overall implementation COMPLETE
 
 ---
 
@@ -224,9 +249,29 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | P23 | Provider + repair profiles | provider_profile.yaml, repair_profile.yaml | Approved lanes, same-authority repair | 5K | ✅ DONE |
 | P24 | Package-driven L2 executor | l2_package_driven_executor.py | Generic L2 consumption | 6K | ✅ DONE |
 | P25 | apps_research L2 adapter | apps_research_l2_binding.py | Thin L2 adapter refactor | 3K | ✅ DONE |
-| **P26** | **Exit profile** | **exit_profile.yaml** | **X3 emission config** | **4K** | 🔄 **NOT_STARTED** |
-| **P27** | **Package-driven Exit binding** | **exit_package_driven_binding.py** | **Generic Exit consumption** | **5K** | 🔄 **NOT_STARTED** |
-| **P28** | **apps_research Exit adapter** | **apps_research_exit_binding.py** | **Thin Exit adapter** | **3K** | 🔄 **NOT_STARTED** |
+| P26 | Exit profile | exit_profile.yaml | X3 emission config | 4K | ✅ DONE |
+| P27 | Package-driven Exit binding | exit_package_driven_binding.py | Generic Exit consumption | 5K | ✅ DONE |
+| P28 | apps_research Exit adapter | apps_research_exit_binding.py | Thin Exit adapter | 3K | ✅ DONE |
+| P29 | Gate mesh hardening | agentic_core/runtime/gates/gate_types.py | Replayable verdicts, UNKNOWN/PASS invariants | 4K | ✅ DONE |
+| P30 | Gate verdict emission | tests/_apps_contract/test_w8_runtime_gate_mesh_hardening.py | Evidence digest, evaluator version, timestamp | 4K | ✅ DONE |
+| P31 | Missing gate handling | exit_package_driven_binding.py _decide_x3() | Missing gates block/escalate logic | 2K | ✅ DONE |
+| P32 | Judge/eval profile | apps_research/config/domain_contract/eval_rubrics.yaml | LLM-as-judge rubrics, calibration | 4K | 🔄 NOT_STARTED |
+| P33 | Evaluator integration | apps_research engines + eval bindings | Judge wiring, threshold profiles | 5K | 🔄 NOT_STARTED |
+| P34 | Rubric calibration | calibration scripts + threshold ADR | Judge calibration, score distributions | 4K | 🔄 NOT_STARTED |
+| P35 | Eval harness tests | tests/_apps_contract/test_w9_eval_harness.py | Judge integration, regression suite | 4K | 🔄 NOT_STARTED |
+| P36 | Runtime exhaust learning | system_learning/L6_observability/ | Learning profiles, feedback ingestion | 4K | 🔄 NOT_STARTED |
+| P37 | Future-run promotion | L6 meta-learning engine | Promotion candidates, Wilson CI gating | 4K | 🔄 NOT_STARTED |
+| P38 | L6 observability hardening | span_emitters, exhaust bundle | OTEL spans, exhaust completeness | 2K | 🔄 NOT_STARTED |
+| P39 | UWG profile | apps_research/config/domain_contract/uwg_profile.yaml | Writeback policy, admission gates | 4K | 🔄 NOT_STARTED |
+| P40 | UWG adapter binding | agentic_core/runtime/uwg/uwg_binding.py | Universal Write Gateway consumption | 5K | 🔄 NOT_STARTED |
+| P41 | L4 durable write | uwg_write_adapter.py, writeback admission | Writeback commits, durability receipts | 3K | 🔄 NOT_STARTED |
+| P42 | Shared spine contract | agentic_core/shared_spine/ | Cross-app routing, spine manifest | 4K | 🔄 NOT_STARTED |
+| P43 | App delegation profile | apps_research/config/domain_contract/delegation_profile.yaml | Delegation targets, fallback policies | 3K | 🔄 NOT_STARTED |
+| P44 | Delegation adapter | apps_research_delegation_binding.py | Thin delegation adapter | 3K | 🔄 NOT_STARTED |
+| P45 | E2E proof harness | tests/_apps_contract/test_e2e_99_proof_bundle.py | 99% coverage, regression suite | 5K | 🔄 NOT_STARTED |
+| P46 | Certification bundle | certification/apps_research/ | Evidence bundle, signoff artifacts | 5K | 🔄 NOT_STARTED |
+| P47 | Final gate sweep | ops_scripts/ci/run_contract_gates.py | All gates green, no violations | 3K | 🔄 NOT_STARTED |
+| P48 | Documentation closeout | docs/, README, SLO, RUNBOOK | Final docs, handoff materials | 2K | 🔄 NOT_STARTED |
 
 **Phase-to-Wave Mapping:**
 - P0 = W0 (Pre-flight audit)
@@ -238,7 +283,13 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 - P13-P16 = W4 (C0 package-driven grounding)
 - P17-P21 = W5 (PA package-driven prompt assembly)
 - P22-P25 = W6 (L2 package-driven execution)
-- **P26-P28 = W7 (Exit binding — CURRENT EXECUTABLE WAVE)**
+- P26-P28 = W7 (Exit binding — DONE_HARDENED)
+- P29-P31 = W8 (Gate mesh hardening — DONE_HARDENED)
+- P32-P35 = W9 (Judges / evals — NOT_STARTED)
+- P36-P38 = W10 (L6 meta-learning — NOT_STARTED)
+- P39-P41 = W11 (UWG writeback — NOT_STARTED)
+- P42-P44 = W12 (Cross-app delegation — NOT_STARTED)
+- P45-P48 = W13 (Final E2E proof — NOT_STARTED)
 
 ---
 

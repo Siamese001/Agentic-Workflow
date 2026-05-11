@@ -145,6 +145,87 @@ class ExitDispositionReceipt:
         return json.dumps(self.as_dict(), separators=(",", ":"))
 
 
+# ── ExitReviewPacket — X1+X2+X3 summary ─────────────────────────────────────
+
+@dataclass(frozen=True, slots=True)
+class ExitReviewPacket:
+    """Review packet from Exit — contains X1, X2, gate summary.
+
+    Does NOT write to any durable store.
+    """
+    request_id: str = ""
+    run_id: str = ""
+    trace_root: str = ""
+    app_id: str = ""
+    task_class: str = ""
+    input_type: str = ""
+    x1_checkout_result: "X1CheckoutResult" = field(default_factory=lambda: X1CheckoutResult())
+    x2_aggregation_result: "X2AggregationResult" = field(default_factory=lambda: X2AggregationResult())
+    gate_mesh_summary: dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    schema_version: str = EXIT_DISPOSITION_SCHEMA_VERSION
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "request_id": self.request_id,
+            "run_id": self.run_id,
+            "trace_root": self.trace_root,
+            "app_id": self.app_id,
+            "task_class": self.task_class,
+            "input_type": self.input_type,
+            "x1_checkout_result": self.x1_checkout_result.as_dict(),
+            "x2_aggregation_result": self.x2_aggregation_result.as_dict(),
+            "gate_mesh_summary": self.gate_mesh_summary,
+            "created_at": self.created_at,
+            "schema_version": self.schema_version,
+        }
+
+
+# ── X1CheckoutResult — Today’s Rules, Answered It, Safe to Leave, etc. ──────
+
+@dataclass(frozen=True, slots=True)
+class X1CheckoutResult:
+    """Result of X1 checkout — 10 required checks.
+
+    Invariants:
+    - UNKNOWN is never PASS
+    - NOT_APPLICABLE requires reason
+    """
+    checks: dict[str, Any] = field(default_factory=dict)
+    overall_pass: bool = False
+    blockers: list[str] = field(default_factory=list)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "checks": self.checks,
+            "overall_pass": self.overall_pass,
+            "blockers": self.blockers,
+        }
+
+
+# ── X2AggregationResult — Gate verdicts + evidence + trajectory ─────────────
+
+@dataclass(frozen=True, slots=True)
+class X2AggregationResult:
+    """Result of X2 aggregation — rolls up gate verdicts and metrics.
+
+    Invariants:
+    - UNKNOWN is never PASS
+    """
+    gate_verdicts: dict[str, list[str]] = field(default_factory=dict)
+    evidence_quality_score: float = 0.0
+    trajectory_metrics: dict[str, Any] = field(default_factory=dict)
+    x1_integration: dict[str, Any] = field(default_factory=dict)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "gate_verdicts": self.gate_verdicts,
+            "evidence_quality_score": self.evidence_quality_score,
+            "trajectory_metrics": self.trajectory_metrics,
+            "x1_integration": self.x1_integration,
+        }
+
+
 # ── RuntimeExhaustBundle placeholder ─────────────────────────────────────────
 
 @dataclass(frozen=True, slots=True)
@@ -162,6 +243,7 @@ class RuntimeExhaustBundle:
     exit_disposition_ref: str = ""
     gate_mesh_result_ref: str = ""
     learning_profile_ref: str = ""   # optional
+    writeback_candidates: list[str] = field(default_factory=list)  # Deferred to L6/UWG
     created_after_exit: bool = True
 
     schema_version: str = EXIT_DISPOSITION_SCHEMA_VERSION
@@ -175,6 +257,7 @@ class RuntimeExhaustBundle:
             "exit_disposition_ref": self.exit_disposition_ref,
             "gate_mesh_result_ref": self.gate_mesh_result_ref,
             "learning_profile_ref": self.learning_profile_ref,
+            "writeback_candidates": self.writeback_candidates,
             "created_after_exit": self.created_after_exit,
             "schema_version": self.schema_version,
         }

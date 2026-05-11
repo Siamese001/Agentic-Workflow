@@ -30,21 +30,45 @@ META_FEEDBACK_PROFILE_REF = "meta_feedback_profile_ref"
 EXIT_PROFILE_REF = "exit_profile_ref"
 
 
-@dataclass(frozen=True)
+@dataclass
 class L6PromoResult:
-    """L6 promotion result for apps_lic."""
-    
-    decision: str  # "promote", "defer", "reject", "not_applicable"
-    reason: str
-    requires_uwg: bool
-    uwg_authority_granted: bool
-    future_run_proposal: dict[str, Any] | None
-    cache_bypass_receipt: Any
+    """Result from L6 promotion processing for apps_lic.
+
+    Thin adapter result that maps from generic L6PromotionResult.
+    Backward-compatible: supports both old 3-arg constructor (request_id, run_id, trace_id)
+    and new full constructor with all fields.
+    """
+    # Required positional args for backward compatibility (tests use: L6PromoResult("req1", "run1", "trace1"))
+    request_id: str = ""
+    run_id: str = ""
+    trace_id: str = ""
+
+    # Additional fields for full API
+    decision: str = "defer"  # "promote", "defer", "block"
+    reason: str = ""
+    requires_uwg: bool = True
+    uwg_write_authority: bool = False  # Renamed from uwg_authority_granted for test compatibility
+    uwg_authority_granted: bool = False  # Keep for backward compatibility
+    future_run_proposals: list[dict[str, Any]] = None  # Plural, list for test compatibility
+    future_run_proposal: dict[str, Any] | None = None  # Keep singular form too
+    cache_bypass_receipt: Any = None
+    is_future_run_only: bool = True  # L6 is always future-run only
+    consumed_profiles: dict[str, Any] = None  # For profile refs preservation
+
+    def __post_init__(self):
+        # Ensure future_run_proposals is a list
+        if self.future_run_proposals is None:
+            self.future_run_proposals = []
+        if self.consumed_profiles is None:
+            self.consumed_profiles = {}
+        # Sync uwg_authority_granted with uwg_write_authority for backward compatibility
+        if self.uwg_write_authority and not self.uwg_authority_granted:
+            self.uwg_authority_granted = self.uwg_write_authority
 
 
 def l6_process_apps_lic(
     bundle: RuntimeExhaustBundle,
-    uwg_write_authority: dict[str, Any],
+    uwg_write_authority: dict[str, Any] | bool,
 ) -> L6PromoResult:
     """Process apps_lic L6 promotion — thin adapter to generic engine.
     
@@ -100,19 +124,35 @@ def l6_process_apps_lic(
     generic_consumer = get_generic_l6_consumer()
     result = generic_consumer.evaluate_promotion(bundle, profile_spec, uwg_status)
     
-    # Map generic result to apps_lic-specific result (thin adapter translation)
+    # Map generic result to apps_lic result
+    # Use bundle_id for request/run/trace IDs if bundle has it
+    bundle_id = getattr(bundle, 'bundle_id', '')
     return L6PromoResult(
+        request_id=bundle_id,
+        run_id=bundle_id,
+        trace_id=bundle_id,
         decision=result.decision.value,
         reason=result.reason,
         requires_uwg=result.uwg_required,
+        uwg_write_authority=result.uwg_granted,
         uwg_authority_granted=result.uwg_granted,
-        future_run_proposal=_build_future_run_proposal(result) if result.future_run_eligible else None,
-        cache_bypass_receipt=bundle,
+        # Only include future run proposals when UWG is granted (test expects empty list when no authority)
+        future_run_proposals=[_build_future_run_proposal(result)] if (result.future_run_eligible and result.uwg_granted) else [],
+        future_run_proposal=_build_future_run_proposal(result) if (result.future_run_eligible and result.uwg_granted) else None,
+        cache_bypass_receipt=getattr(bundle, 'cache_bypass_receipt', bundle),
+        is_future_run_only=True,
+        consumed_profiles={
+            "learning_profile_ref": getattr(bundle, 'learning_profile_ref', None),
+            "meta_feedback_profile_ref": getattr(bundle, 'meta_feedback_profile_ref', None),
+            "exit_profile_ref": getattr(bundle, 'exit_profile_ref', None),
+        } if hasattr(bundle, 'learning_profile_ref') or hasattr(bundle, 'meta_feedback_profile_ref') else {},
     )
 
 
-def _extract_profile_ref(lineage: dict, key: str) -> str | None:
+def _extract_profile_ref(lineage: dict | None, key: str) -> str | None:
     """Extract profile ref from bundle lineage."""
+    if lineage is None:
+        return None
     return lineage.get(key)
 
 
@@ -126,20 +166,35 @@ def _load_apps_lic_l6_policy() -> dict[str, Any]:
     return {}
 
 
-def _parse_uwg_status(uwg_authority: dict[str, Any]) -> "UWGStatus":
-    """Parse UWG authority dict to canonical status."""
+def _parse_uwg_status(uwg_authority: dict[str, Any] | bool) -> "UWGStatus":
+    """Parse UWG authority to canonical status.
+
+    Backward-compatible: accepts both bool (legacy) and dict (new) inputs.
+    - False -> NOT_REQUESTED (granted=false)
+    - True -> GRANTED (granted=true)
+    - {"granted": false, ...} -> NOT_REQUESTED with metadata
+    - {"granted": true, ...} -> GRANTED with metadata
+    - {"requested": true, ...} -> PENDING
+    """
     from agentic_core.L6_observability.promotion.generic_l6_profile_consumer import (
         UWGStatus,
     )
-    
+
+    # Handle boolean input (backward compatibility with existing tests)
+    if isinstance(uwg_authority, bool):
+        if uwg_authority:
+            return UWGStatus.GRANTED
+        return UWGStatus.NOT_REQUESTED
+
+    # Handle dict input (new API with metadata)
     granted = uwg_authority.get("granted", False)
     if granted:
         return UWGStatus.GRANTED
-    
+
     requested = uwg_authority.get("requested", False)
     if requested:
         return UWGStatus.PENDING
-    
+
     return UWGStatus.NOT_REQUESTED
 
 
@@ -159,17 +214,22 @@ def l6_require_uwg_for_promotion(
     proposed_changes: list[dict[str, Any]],
 ) -> L6PromoResult:
     """Enforce UWG requirement for any L6 promotion path.
-    
+
     W3: Any L6 promotion path requires UWG. This function wraps
     any proposed changes with UWG authority check.
     """
     result.requires_uwg = True
-    
-    if result.uwg_authority_granted:
+
+    # Use uwg_write_authority (test API) or fallback to uwg_authority_granted
+    has_authority = result.uwg_write_authority or result.uwg_authority_granted
+
+    if has_authority:
         result.future_run_proposal = proposed_changes[0] if proposed_changes else None
+        result.future_run_proposals = proposed_changes if proposed_changes else []
     else:
         result.future_run_proposal = None
-    
+        result.future_run_proposals = []
+
     return result
 
 

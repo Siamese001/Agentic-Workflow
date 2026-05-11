@@ -99,7 +99,7 @@ def _force_managed_workflow(
     monkeypatch.setattr(
         binding_mod,
         "_evaluate_execution_form",
-        lambda plan, r1a_hit: "managed_workflow",
+        lambda plan, r1a_hit, tenant_id=None, user_id=None: "managed_workflow",
     )
 
 
@@ -124,9 +124,9 @@ class TestCacheChecksBeforeManagedWorkflow:
 
         real_eval = binding_mod._evaluate_execution_form
 
-        def _spy_eval(plan, r1a_hit):
+        def _spy_eval(plan, r1a_hit, tenant_id=None, user_id=None):
             calls.append("eval_execution_form")
-            return real_eval(plan, r1a_hit)
+            return real_eval(plan, r1a_hit, tenant_id=tenant_id, user_id=user_id)
 
         monkeypatch.setattr(binding_mod, "_perform_cache_lookups", _spy_lookups)
         monkeypatch.setattr(binding_mod, "_evaluate_execution_form", _spy_eval)

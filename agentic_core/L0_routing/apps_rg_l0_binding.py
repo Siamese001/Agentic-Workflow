@@ -62,6 +62,11 @@ from pathlib import Path
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_rg.activation_policy import (
+    ActivationMode,
+    ProviderMode,
+    evaluate_route_activation,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -238,15 +243,26 @@ def _perform_cache_lookups(l1_plan: L1PlanContract) -> tuple[str, str, str]:
     )
 
 
-def _evaluate_execution_form(l1_plan: L1PlanContract, r1a_hit: bool) -> str:
-    """Determine execution_form from cache state + L1 work-shape hints.
+def _evaluate_execution_form(
+    l1_plan: L1PlanContract,
+    r1a_hit: bool,
+    tenant_id: str | None = None,
+    user_id: str | None = None,
+) -> str:
+    """Determine execution_form from cache state + L1 work-shape hints + activation policy.
+
+    RB12 guarded activation:
+    - If activation policy blocks managed_workflow → force single_step
+    - Test env var APPS_RG_EXECUTION_FORM can still override for testing
+    - Production requires explicit activation profile permit
 
     Logic:
       1. If R1A hit → "single_step" (cache serves the response directly)
       2. If env APPS_RG_EXECUTION_FORM is set → use that value explicitly
-      3. If ALL 4 work-shape hints are True → "managed_workflow"
-      4. If env APPS_RG_L3_OPT_IN=1 → "managed_workflow" (legacy opt-in)
-      5. Otherwise → "single_step"
+      3. Check activation policy for managed_workflow permit
+      4. If policy permits AND work-shape hints demand → "managed_workflow"
+      5. If env APPS_RG_L3_OPT_IN=1 → "managed_workflow" (legacy opt-in, test only)
+      6. Otherwise → "single_step"
 
     The explicit env var APPS_RG_EXECUTION_FORM overrides all hint-based
     logic so operators can force a specific form. This is the ONLY supported
@@ -259,6 +275,22 @@ def _evaluate_execution_form(l1_plan: L1PlanContract, r1a_hit: bool) -> str:
     if explicit_form in ("single_step", "managed_workflow"):
         return explicit_form
 
+    # RB12: Check activation policy before selecting managed_workflow
+    # Only proceed to managed_workflow if policy permits
+    activation_result = evaluate_route_activation(
+        tenant_id=tenant_id or l1_plan.tenant_id or "unknown",
+        user_id=user_id,
+    )
+
+    # If activation policy blocks, force single_step
+    if not activation_result["permitted"]:
+        _log.debug(
+            "[L0] Activation policy blocks managed_workflow: %s",
+            activation_result.get("blockers", []),
+        )
+        return "single_step"
+
+    # Policy permits — check work-shape hints
     if (
         l1_plan.multiple_work_units_hint
         and l1_plan.merge_required_hint
@@ -267,6 +299,7 @@ def _evaluate_execution_form(l1_plan: L1PlanContract, r1a_hit: bool) -> str:
     ):
         return "managed_workflow"
 
+    # Legacy opt-in (test only)
     l3_opt_in = os.environ.get("APPS_RG_L3_OPT_IN", "") in ("1", "true", "yes")
     if l3_opt_in:
         return "managed_workflow"
@@ -312,8 +345,8 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     r1a_receipt, r1b_receipt, r5_receipt = _perform_cache_lookups(l1_plan)
     r1a_hit = '"result":"hit"' in r1a_receipt
 
-    # Ensemble W2: Evaluate execution_form from cache state + work-shape hints.
-    execution_form = _evaluate_execution_form(l1_plan, r1a_hit)
+    # Ensemble W2: Evaluate execution_form from cache state + work-shape hints + activation policy.
+    execution_form = _evaluate_execution_form(l1_plan, r1a_hit, tenant_id=l1_plan.tenant_id)
     l3_required = execution_form == "managed_workflow"
 
     # AG-2: derive app_payload-aware routing fields from L1 projections.

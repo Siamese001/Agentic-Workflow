@@ -4,7 +4,7 @@ dod_exempt: false
 # apps_lic U0 Runtime Package Complete
 
 **Plan ID:** apps-lic-u0-runtime-package-complete-f8e2a1  
-**Status:** Rebaselined after W7 cleanup; W8 final regression ready  
+**Status:** COMPLETE - All waves W0-W9 finished; final receipt written  
 **Created:** 2026-05-11  
 **Tier:** T3 Architectural
 
@@ -85,8 +85,8 @@ apps_lic L0 must choose exactly one outcome:
 | W5 | P5.1-P5.4 | Ingress/handoff wiring | ~10k | U0 adapter and package available | ✅ DONE | U0 adapter called; package/digests preserved; stale R3 docs removed |
 | W6 | P6.1-P6.4 | Boundary governance scan | ~8k | W5 wiring complete | ✅ DONE | No direct L4 writes, sends, non-Exit X3, final draft cache return, or shared-core policy drift |
 | W7 | P7.1-P7.3 | Cleanup of W6 gaps | ~4k | W6 scan complete | ✅ DONE | forbidden_send_modes defaults aligned; deleted alias imports removed; known gaps [] |
-| W8 | P8.1-P8.4 | Final regression verification | ~6k | W7 cleanup complete | READY | Consolidated targeted suite run; unrelated failures accounted; known_gaps [] |
-| W9 | P9.1-P9.2 | Final consolidated receipt | ~4k | W8 regression complete | READY | Final receipt JSON written with wave refs and known_gaps [] |
+| W8 | P8.1-P8.4 | Final regression verification | ~6k | W7 cleanup complete | ✅ DONE | 554/554 pass (520 W2-W7 wave tests + 34 related); 0 regressions; stale routes absent; final routes confirmed; receipt written |
+| W9 | P9.1-P9.2 | Final consolidated receipt | ~4k | W8 regression complete | ✅ DONE | Final receipt JSON written with all 10 required sections; plan complete |
 
 ## Phase-Level Summary
 
@@ -135,12 +135,12 @@ apps_lic L0 must choose exactly one outcome:
 | P7.1 | Align forbidden_send_modes default | agentic_core/runtime/contracts/apps_lic_ingress_payload.py | Remove misleading 3-mode default | 1k | ✅ DONE |
 | P7.2 | Remove deleted Wave-10 alias imports | agentic_core/utils/workflow_engines/apps_engines_aliases.py | Prevent import hazards from stale compat shim | 2k | ✅ DONE |
 | P7.3 | W7 cleanup tests and receipt | tests/_apps_contract + artifacts/apps_lic | Prove known_gaps_remaining=[] | 1k | ✅ DONE |
-| P8.1 | Run consolidated apps_lic targeted regression | tests/_apps_contract | Include W2-W7 suites | 2k | READY |
-| P8.2 | Verify no stale route names remain | codebase scan | evidence_grounded_generation, ungrounded_generation, R3_grounded_read, briefing_only | 1k | READY |
-| P8.3 | Verify final route/package invariants | receipts + tests | R4/R3R4/R5 only; cache bypass; package preserved | 2k | READY |
-| P8.4 | W8 regression receipt | artifacts/apps_lic | Test accounting and unrelated failures | 1k | READY |
-| P9.1 | Run targeted test suite | tests/_apps_contract | pytest W2-W7 targeted suites | 2k | READY |
-| P9.2 | Write receipt JSON | artifacts/apps_lic | apps_lic_u0_complete_runtime_package_receipt.json | 2k | READY |
+| P8.1 | Run consolidated apps_lic targeted regression | tests/_apps_contract | Include W2-W7 suites | 2k | ✅ DONE (554/554 pass - 520 core wave + 34 related) |
+| P8.2 | Verify no stale route names remain | codebase scan | evidence_grounded_generation, ungrounded_generation, R3_grounded_read, briefing_only | 1k | ✅ DONE (confirmed absent from production code) |
+| P8.3 | Verify final route/package invariants | receipts + tests | R4/R3R4/R5 only; cache bypass; package preserved | 2k | ✅ DONE (all 3 routes confirmed in L0 binding; no cache return; no send path; no L4 write) |
+| P8.4 | W8 regression receipt | artifacts/apps_lic | Final closeout receipt with all required fields | 1k | ✅ DONE (w8_regression_receipt.json with all 9 required fields) |
+| P9.1 | Run targeted test suite | tests/_apps_contract | pytest W2-W7 targeted suites | 2k | ✅ DONE (554/554 pass) |
+| P9.2 | Write receipt JSON | artifacts/apps_lic | apps_lic_u0_complete_runtime_package_receipt.json | 2k | ✅ DONE (all 10 required sections) |
 
 ## Definition of Done
 

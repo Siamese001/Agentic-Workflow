@@ -63,8 +63,30 @@ _APP_ID = "apps_lic"
 # W3.5: Exit profile loaded from apps_lic config — NOT synthesised in agentic_core.
 # No hardcoded G-number set lives here. If the config is unavailable the
 # binding raises AppsLicExitProfileError (fail-closed). apps_lic owns policy.
-_EXIT_PROFILE_PATH = Path("apps_lic/config/domain_contract/exit_profile.outreach_message.v1.json")
-_CACHE_POLICY_PATH = Path("apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json")
+
+def _resolve_config_path(rel_path: str) -> Path:
+    """Resolve config path from repo root, working regardless of CWD.
+
+    Resolution order:
+    1. If AGENTIC_REPO_ROOT env var set, use that as base
+    2. Walk up from CWD looking for .git directory
+    3. Fall back to current working directory (legacy behavior)
+    """
+    import os
+    env_root = os.environ.get("AGENTIC_REPO_ROOT")
+    if env_root:
+        return Path(env_root) / rel_path
+    # Walk up from current file location
+    current_file = Path(__file__).resolve()
+    # This file is at agentic_core/runtime/exit/ ; repo root is 3 levels up
+    repo_root = current_file.parent.parent.parent.parent
+    if (repo_root / ".git").exists() or (repo_root / "agentic_core").exists():
+        return repo_root / rel_path
+    # Last resort: assume CWD is repo root
+    return Path(rel_path)
+
+_EXIT_PROFILE_PATH = _resolve_config_path("apps_lic/config/domain_contract/exit_profile.outreach_message.v1.json")
+_CACHE_POLICY_PATH = _resolve_config_path("apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json")
 
 
 class AppsLicExitProfileError(RuntimeError):

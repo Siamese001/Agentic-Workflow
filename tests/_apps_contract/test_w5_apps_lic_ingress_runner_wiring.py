@@ -166,9 +166,16 @@ class TestPackageDigestField:
     def test_package_digest_in_field_map_receipt_as_derived(self) -> None:
         """W4 field map receipt documents /runtime_customization_package/package_digest as DERIVED."""
         import pathlib
-        receipt = pathlib.Path(
-            "apps_lic/contracts/w4_schema_field_map_receipt.md"
-        )
+        import os
+        # Resolve from repo root using same logic as production code
+        env_root = os.environ.get("AGENTIC_REPO_ROOT")
+        if env_root:
+            receipt = pathlib.Path(env_root) / "apps_lic/contracts/w4_schema_field_map_receipt.md"
+        else:
+            # Resolve from current file location (tests/_apps_contract/)
+            current_file = pathlib.Path(__file__).resolve()
+            repo_root = current_file.parent.parent
+            receipt = repo_root / "apps_lic/contracts/w4_schema_field_map_receipt.md"
         assert receipt.exists(), f"W4 field map receipt missing at {receipt}"
         text = receipt.read_text(encoding="utf-8")
         assert "package_digest" in text
