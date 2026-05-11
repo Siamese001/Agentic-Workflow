@@ -328,10 +328,10 @@ class TestW11RouteActivation:
         from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
         validated = u0_validate_apps_rg(envelope)
         l1_plan = l1_plan_apps_rg(validated)
-        route = l0_route_apps_rg(l1_plan, validated)
-        # Production default must be DETERMINISTIC_PIPELINE (not MANAGED_WORKFLOW)
-        assert route.execution_form != "MANAGED_WORKFLOW", (
-            f"Production route must not be MANAGED_WORKFLOW without test flag; "
+        route = l0_route_apps_rg(l1_plan)
+        # Production default must not be managed_workflow
+        assert route.execution_form != "managed_workflow", (
+            f"Production route must not be managed_workflow without test flag; "
             f"got execution_form={route.execution_form!r}"
         )
 
@@ -345,9 +345,9 @@ class TestW11RouteActivation:
         from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
         validated = u0_validate_apps_rg(envelope)
         l1_plan = l1_plan_apps_rg(validated)
-        route = l0_route_apps_rg(l1_plan, validated)
-        assert route.execution_form == "MANAGED_WORKFLOW", (
-            f"Test-enabled path must select MANAGED_WORKFLOW, got {route.execution_form!r}"
+        route = l0_route_apps_rg(l1_plan)
+        assert route.execution_form == "managed_workflow", (
+            f"Test-enabled path must select managed_workflow, got {route.execution_form!r}"
         )
 
     def test_apps_rg_w11_no_silent_fallback_to_single_step(self, monkeypatch):
@@ -643,9 +643,10 @@ class TestW11NoBypasWriteProof:
             target_store=TARGET_STORE_EXACT_CACHE,
             target_ref="key::w11::test",
             proposed_state_diff='{"key":"value"}',
-            source_exhaust_bundle_ref="reb::test::001",
+            source_bundle_ref="reb::test::001",
             safety_class="standard",
             evidence_refs=("exit::ref::001",),
+            policy_ref="apps_rg/config/domain_contract/meta_feedback_profile.resume_generation.v1.json",
         )
         result = gate.admit(req)
         assert result.verdict == VERDICT_ADMIT, (
@@ -657,27 +658,35 @@ class TestW11NoBypasWriteProof:
         assert result.state_commit_receipt.committed_by == "UWG"
 
     def test_apps_rg_w11_uwg_emits_blocked_write_receipt_on_block(self):
-        """UWG must emit BlockedWriteReceipt when a promotion request is BLOCKED."""
+        """UWG must emit BlockedWriteReceipt when a promotion request is BLOCKED.
+
+        Uses PROMOTION_TYPE_SEMANTIC_CACHE_WRITEBACK without semantic_cache_enabled
+        in policy — triggers UWG Gate 5 (semantic cache disabled by policy).
+        The dataclass enforces non-empty evidence_refs and policy_ref at construction,
+        so the block must come from a valid-but-policy-rejected request.
+        """
         from agentic_core.runtime.contracts.future_run_promotion import (
             build_future_run_promotion_request,
-            PROMOTION_TYPE_EXACT_CACHE_WRITEBACK,
+            PROMOTION_TYPE_SEMANTIC_CACHE_WRITEBACK,
             TARGET_STORE_EXACT_CACHE,
         )
-        gate = UniversalWriteGate()  # no l4_adapter = stub mode
+        # policy has semantic_cache_enabled=False (default) → Gate 5 blocks
+        gate = UniversalWriteGate(policy={"semantic_cache_enabled": False})
         req = build_future_run_promotion_request(
             app_id="apps_rg",
             task_class="resume_generation",
-            promotion_type=PROMOTION_TYPE_EXACT_CACHE_WRITEBACK,
+            promotion_type=PROMOTION_TYPE_SEMANTIC_CACHE_WRITEBACK,
             target_store=TARGET_STORE_EXACT_CACHE,
             target_ref="key::w11::block_test",
             proposed_state_diff='{"key":"value"}',
-            source_exhaust_bundle_ref="reb::test::block",
-            safety_class="restricted",    # restricted class → UWG blocks
-            evidence_refs=(),             # no evidence → additional block reason
+            source_bundle_ref="reb::test::block",
+            safety_class="standard",
+            evidence_refs=("exit::ref::block",),
+            policy_ref="apps_rg/config/domain_contract/meta_feedback_profile.resume_generation.v1.json",
         )
         result = gate.admit(req)
         assert result.verdict == VERDICT_BLOCK, (
-            f"UWG must block restricted safety_class with no evidence; "
+            f"UWG must block semantic_cache_writeback when disabled by policy; "
             f"got {result.verdict!r}"
         )
         assert result.blocked_write_receipt is not None, (

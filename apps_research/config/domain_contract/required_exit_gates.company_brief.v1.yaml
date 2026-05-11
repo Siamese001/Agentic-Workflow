@@ -1,0 +1,106 @@
+# Required Exit Gates for apps_research company_brief
+# W7 Exit binding — package-driven through U0 runtime package
+
+schema_version: "1.0.0"
+profile_id: apps_research_required_exit_gates_company_brief_v1
+profile_type: required_exit_gates
+app_id: apps_research
+task_class: company_brief
+
+required_gates:
+  # Safety gates — always required
+  - gate_id: G1_NO_PROMPT_INJECTION
+    name: "No Prompt Injection"
+    description: "Output contains no prompt injection fragments"
+    evaluator: deterministic_pattern_scanner
+    required: always
+
+  - gate_id: G2_NO_SECRET_LEAKAGE
+    name: "No Secret Leakage"
+    description: "Output contains no secrets, keys, or credentials"
+    evaluator: deterministic_secret_scanner
+    required: always
+
+  - gate_id: G3_NO_PII_EXPOSURE
+    name: "No PII Exposure"
+    description: "Output contains no unredacted PII"
+    evaluator: deterministic_pii_scanner
+    required: always
+
+  - gate_id: G4_NO_UNSAFE_INSTRUCTIONS
+    name: "No Unsafe Instructions"
+    description: "Output contains no harmful or unsafe instructions"
+    evaluator: deterministic_safety_scanner
+    required: always
+
+  # Quality gates — always required
+  - gate_id: G5_ANSWER_PRESENT
+    name: "Answer Present"
+    description: "Output contains a substantive answer"
+    evaluator: deterministic_nonempty_checker
+    required: always
+
+  - gate_id: G6_ANSWER_RELEVANT
+    name: "Answer Relevant"
+    description: "Output is relevant to the research question"
+    evaluator: llm_as_judge_relevance
+    required: always
+
+  # Evidence gates — required for factual claims
+  - gate_id: G7_FACTUAL_CLAIMS_HAVE_EVIDENCE
+    name: "Factual Claims Have Evidence"
+    description: "All factual claims cite evidence from retrieved sources"
+    evaluator: deterministic_citation_verifier
+    required: conditional
+    condition: "output_contains_factual_claims"
+
+  - gate_id: G8_NO_HALLUCINATED_CITATIONS
+    name: "No Hallucinated Citations"
+    description: "All citations match retrieved sources"
+    evaluator: deterministic_citation_source_matcher
+    required: conditional
+    condition: "output_contains_citations"
+
+  # Consistency gates — required for research substrates
+  - gate_id: G9_SEMANTIC_COMPATIBILITY
+    name: "Semantic Compatibility"
+    description: "Output is semantically compatible with query intent"
+    evaluator: llm_as_judge_compatibility
+    required: conditional
+    condition: "r1b_semantic_cache_hit"
+
+  # Trajectory gates — required for multi-step
+  - gate_id: G10_TRAJECTORY_OK
+    name: "Trajectory OK"
+    description: "Execution trajectory shows no anomalies"
+    evaluator: deterministic_trajectory_checker
+    required: conditional
+    condition: "multi_step_execution"
+
+conditional_gates:
+  # Commit gates — required only if X3C requested
+  - gate_id: G27_COMMIT_SAFE
+    name: "Commit Safe"
+    description: "Writeback is safe and valid"
+    evaluator: deterministic_writeback_validator
+    required: on_commit_request
+
+  - gate_id: G28_COMMIT_ALLOWED
+    name: "Commit Allowed"
+    description: "Writeback is permitted by policy"
+    evaluator: deterministic_policy_checker
+    required: on_commit_request
+
+gate_mesh_requirements:
+  requires_all_specified: true
+  unknown_is_never_pass: true
+  not_applicable_requires_reason: true
+  material_unknown_blocks_x3d: true
+  material_unknown_escalates_hitl: true
+
+metadata:
+  created: "2026-05-11"
+  author: runtime_customization_package
+  version: "1.0.0"
+  wave: W7
+  phase: P26

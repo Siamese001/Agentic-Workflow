@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "apps_research_exit_profile_company_brief_v1",
+  "profile_type": "exit_profile",
+  "app_id": "apps_research",
+  "task_class": "company_brief",
+  "description": "Exit profile for apps_research company brief generation — read-only research output",
+  "exit_behavior": {
+    "allow_x3d_for_read_only_success": true,
+    "safe_abstain_on_empty_evidence": true,
+    "block_high_confidence_claims_without_evidence": true,
+    "block_r1b_bypass": true,
+    "writeback_deferred_to_l6_uwg": true
+  },
+  "disposition_policy": {
+    "successful_read_only_brief": "X3D_ALLOW_FINISH",
+    "weak_evidence_with_safe_caveat": "X3E_SAFE_ABSTAIN",
+    "material_contradiction_blocker": "X3A_DENY_REROUTE",
+    "missing_gate_mesh_result": "X3B_ESCALATE_HITL",
+    "proposed_writeback_with_output": "X3D_ALLOW_FINISH"
+  },
+  "x1_checkout_policy": {
+    "enabled": true,
+    "required_checks": [
+      "X1A_TODAYS_RULES",
+      "X1B_ANSWERED_IT",
+      "X1C_SAFE_TO_LEAVE",
+      "X1D_ANSWER_GOOD",
+      "X1E_TRAJECTORY_OK",
+      "X1F_STORY_ADDS_UP",
+      "X1G_REPLAY_ELIGIBLE",
+      "X1H_OBSERVABLE",
+      "X1I_CONSISTENCY",
+      "X1J_WRITE_ELIGIBILITY"
+    ],
+    "blocking_checks": ["X1C_SAFE_TO_LEAVE", "X1D_ANSWER_GOOD"],
+    "consistency_check_activated": true
+  },
+  "x2_aggregation_policy": {
+    "enabled": true,
+    "aggregate_gate_verdicts": true,
+    "aggregate_evidence_quality": true,
+    "aggregate_trajectory_metrics": true
+  },
+  "x3_emission_policy": {
+    "emit_exactly_one": true,
+    "allowed_dispositions": [
+      "X3A_DENY_REROUTE",
+      "X3B_ESCALATE_HITL",
+      "X3C_COMMIT_REQUEST_TO_UWG",
+      "X3D_ALLOW_FINISH",
+      "X3E_SAFE_ABSTAIN"
+    ],
+    "normal_read_only_disposition": "X3D_ALLOW_FINISH"
+  },
+  "input_requirements": {
+    "requires_gate_mesh_result": true,
+    "requires_sealed_l2_artifact": true,
+    "accepts_ret_terminal_packet": true,
+    "accepts_ret_exact_cache_packet": true,
+    "accepts_ret_semantic_cache_packet": true,
+    "accepts_ret_fallback_packet": true
+  },
+  "output_requirements": {
+    "emits_exit_review_packet": true,
+    "emits_x1_checkout_result": true,
+    "emits_x2_aggregation_result": true,
+    "emits_exit_disposition_receipt": true,
+    "emits_runtime_exhaust_bundle_ref": true
+  },
+  "forbidden_operations": {
+    "no_cache_write": true,
+    "no_vector_store_write": true,
+    "no_l4_write": true,
+    "no_provider_call": true,
+    "no_retrieval": true,
+    "no_prompt_assembly": true,
+    "no_tool_execution": true,
+    "no_x3_emission_by_app": true
+  },
+  "writeback_policy": {
+    "defer_to_runtime_exhaust": true,
+    "l6_promotion_proposal_only": true,
+    "uwg_admission_required": true,
+    "writeback_candidate_types": ["semantic_cache", "research_substrate"]
+  },
+  "eval_refs": {
+    "eval_rubric_ref": "apps_research/config/domain_contract/eval_rubrics.yaml",
+    "threshold_profile_ref": "apps_research/config/domain_contract/threshold_profile.company_brief.v1.yaml",
+    "grader_roster_ref": "apps_research/config/domain_contract/grader_roster.yaml"
+  },
+  "gate_refs": {
+    "required_exit_gates_ref": "apps_research/config/domain_contract/required_exit_gates.company_brief.v1.yaml",
+    "conditional_exit_gates_ref": "apps_research/config/domain_contract/conditional_exit_gates.company_brief.v1.yaml"
+  },
+  "metadata": {
+    "created": "2026-05-11",
+    "author": "runtime_customization_package",
+    "version": "1.0.0",
+    "wave": "W7",
+    "phase": "P26"
+  }
+}
