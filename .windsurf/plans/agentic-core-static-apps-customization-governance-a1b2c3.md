@@ -173,6 +173,62 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 
 ---
 
+## W5B P1 Certification Gate
+
+### P1a L6 Promotion Certification Requirements
+
+**Status**: IMPLEMENTED_PENDING_TEST_PROOF
+
+**Required for CERTIFIED status**:
+- [ ] Actual pytest command recorded
+- [ ] 8/8 L6 tests passing
+- [ ] RuntimeExhaustBundle refs preserved
+- [ ] learning_profile_ref preserved
+- [ ] meta_feedback_profile_ref preserved
+- [ ] L6 future-run only verified
+- [ ] L6 cannot mutate current run verified
+- [ ] Promotion requires UWG verified
+- [ ] Generic L6 engine contains no apps_lic business policy
+
+**Required command**:
+```bash
+python -m pytest tests -q -k "apps_lic and l6"
+```
+
+Or if exact file exists:
+```bash
+python -m pytest tests/_apps_contract/test_w3_apps_lic_exit_l6_package_consumption.py -q
+```
+
+### P1b Exit Bridge Acceptance Requirements
+
+**Status**: TEMPORARY_THIN_ADAPTER_WITH_REMAINING_WORK
+
+**Required for P1c unblock**:
+- [x] 26/26 Exit tests passing
+- [ ] Remaining hardcoded policy listed
+- [ ] Profile paths/gate IDs/cache hardcoding listed as remaining work
+- [ ] Classification = TEMPORARY_THIN_ADAPTER_WITH_REMAINING_WORK
+- [ ] Explicit `P1b_accepted_as_bridge = true` set in receipt
+
+**Remaining work to track**:
+- Hardcoded profile path `apps_lic/config/domain_contract/exit_profile.outreach_message.v1.json`
+- Hardcoded gate IDs (G21/G22/G23/G24/G26/G28 required, G25/G27 conditional)
+- Hardcoded cache policy config path
+- Gate verification logic must use generic exit_profile_enforcer
+- RuntimeExhaust construction must be shared/generic
+
+### P1c L0 Unblock Conditions
+
+**P1c may proceed only if ALL of**:
+1. P1a = CERTIFIED (actual pytest proof, not manual checks)
+2. P1b_accepted_as_bridge = true (explicit acceptance recorded)
+3. Governance tests pass: `python -m pytest tests/governance -q`
+4. Combined tests pass: `python -m pytest tests -q -k "apps_lic and (exit or l6 or governance)"`
+5. W5B P1 receipt updated with certification details
+
+---
+
 ## Rebaseline Receipt
 
 **Plan rebaselined from W5 forward**: `artifacts/governance/governance_plan_rebaseline_w5_forward_receipt.json`
@@ -274,36 +330,51 @@ python -m pytest tests/governance/test_no_app_exit_x3_emission.py -v
 
 **Acceptance**: 5 test files exist with ≥5 tests each, all passing
 
-### Phase 6 — W5 Migrate Existing App-Specific Core Bindings
-**Scope**: Inventory and refactor existing bindings
+### Phase 6 — W5A/W5B/W5C/W5D Migration Program
+
+**W5A — Migration Inventory and Reconciliation (COMPLETE)**
+- 37 binding-like files discovered
+- 28 migration-scoped bindings identified
+- 9 excluded with documented reasons
+- `app_specific_core_binding_migration_plan_w5a.json` written
+- apps_lic/apps_rg/apps_research scoped for migration sequencing
+
+**W5B P1 — apps_lic Priority Migration (IN PROGRESS / BLOCKED BEFORE P1c)**
+- Scope strictly limited to: L6 Promotion, Exit, L0 Routing only
+- Do NOT touch: L1/L2/L3/C0/PA/U0 bindings for apps_lic
+- Do NOT touch: apps_rg/apps_research/apps_qna/apps_rfp bindings
+- Execution order: P1a L6 → P1b Exit → P1c L0
+- P1c BLOCKED until P1a/P1b gates pass
+
+**W5C — apps_rg Migration (DEFERRED)**
+- Deferred until W5B P1 resolved
+- apps_rg L0/Exit/L6 or other bindings
+
+**W5D — apps_research Consolidation and Migration (DEFERRED)**
+- v1/v2 consolidation first
+- Migration later
+
+**Acceptance**:
+- W5A: Migration inventory complete with receipts
+- W5B P1: P1a CERTIFIED, P1b accepted, P1c unblocked
+- W5C: Deferred scope documented
+- W5D: Deferred scope documented
+
+### Phase 7 — W6 Post-Migration Negative Controls
+**Scope**: Re-run and extend negative controls AFTER W5B P1 migration to prove enforcement still catches violations
+
+**Important**: W4 already verified 17 negative controls before migration. W6 validates that post-migration governance still blocks violations.
 
 **Commands**:
 ```bash
-# Inventory phase
-python tools/governance/core_leakage_scan.py --inventory-only
-
-# Verify migration receipts exist
-ls artifacts/governance/migration_receipts/
-
-# Run post-migration verification
-pytest tests/governance/ -k "apps_lic or apps_rg" -v
-```
-
-**Acceptance**: ≥3 bindings migrated with migration receipts; CI tests pass
-
-### Phase 7 — W6 Prove Governance with Negative Controls
-**Scope**: Attempt violations, confirm enforcement catches them
-
-**Commands**:
-```bash
-# Run negative control tests
+# Re-run negative control tests post-migration
 pytest tests/governance/test_negative_controls.py -v
 
-# Verify each violation type blocked
-cat artifacts/governance/negative_control_results.json
+# Verify each violation type still blocked after migration
+python tests/governance/attempt_violations.py
 ```
 
-**Acceptance**: 5 violation attempts all caught by appropriate layer (hook/CI)
+**Acceptance**: 5 violation attempts all caught by appropriate layer (hook/CI) after W5B P1 migration
 
 ### Phase 8 — W7 Final Governance Receipt
 **Scope**: Write completion artifact and mark plan complete
