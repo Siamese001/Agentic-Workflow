@@ -19,9 +19,9 @@ dod_exempt: true
 
 | Wave | Phase IDs | Focus | Status |
 |------|-----------|-------|--------|
-| W1 | 1.1 | Verify Anti-Pattern Burndown active status | 🔲 TODO |
-| W2 | 2.1-2.2 | Hook deletion decisions (per-hook user approval) | 🔲 TODO |
-| W3 | 3.1 | Hook repurposing decisions finalization | 🔲 TODO |
+| W1 | 1.1 | Verify Anti-Pattern Burndown active status | ✅ DONE |
+| W2 | 2.1-2.2 | Hook deletion decisions (per-hook user approval) | ✅ DONE |
+| W3 | 3.1 | Hook repurposing decisions finalization | ✅ DONE (subsumed into W2) |
 
 ---
 
@@ -29,10 +29,10 @@ dod_exempt: true
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| 1.1 | Anti-Pattern Burndown live status check | Notion API query + AGENTS.md update if needed | Requires live NOTION_TOKEN | ~1K | 🔲 |
-| 2.1 | Audit remaining hook scripts for Notion writes | `.windsurf/scripts/` | Need to enumerate and review | ~2K | 🔲 |
-| 2.2 | Decide keep/retire per hook — user approval required | `.windsurf/hooks.json`, hook scripts | Must not delete hooks blindly | ~2K | 🔲 |
-| 3.1 | Finalize repurpose vs delete for remaining orphaned hooks | `.windsurf/scripts/` | Per-hook Author-Gate decision | ~2K | 🔲 |
+| 1.1 | Anti-Pattern Burndown live status check | `AGENTS.md`, `notion-archived-databases.md` | — | ~1K | ✅ 404 confirmed; both files updated |
+| 2.1 | Audit remaining hook scripts for Notion writes | `.windsurf/scripts/*.py` | — | ~2K | ✅ All 10 Notion-writing hooks target active DBs only |
+| 2.2 | Decide keep/retire per hook | n/a | — | ~0 | ✅ No dead writes found; no Author-Gate decisions needed |
+| 3.1 | Finalize repurpose vs delete | n/a | — | ~0 | ✅ Subsumed — W2 already clean |
 
 ---
 
@@ -81,10 +81,10 @@ dod_exempt: true
 
 | # | Criterion | Verification | Status |
 |---|---|---|---|
-| DoD-1 | Anti-Pattern Burndown status confirmed | Live Notion query result documented | 🔲 |
-| DoD-2 | All hook scripts with archived DB refs audited | Zero unreviewed archived-DB writes in `.windsurf/scripts/` | 🔲 |
-| DoD-3 | Per-hook keep/retire/repurpose decisions captured | Author-Gate markers emitted | 🔲 |
-| DoD-4 | AGENTS.md updated if Anti-Pattern Burndown archived | No stale entries in Notion Workspace Map | 🔲 |
+| DoD-1 | Anti-Pattern Burndown status confirmed | Live Notion query → 404 → archived | ✅ |
+| DoD-2 | All hook scripts with archived DB refs audited | Grep found 0 hook scripts with archived DB ID constants | ✅ |
+| DoD-3 | Per-hook keep/retire/repurpose decisions captured | No dead writes found; no Author-Gate decisions needed | ✅ |
+| DoD-4 | AGENTS.md updated if Anti-Pattern Burndown archived | Strikethrough row added; notion-archived-databases.md updated | ✅ |
 
 ---
 
