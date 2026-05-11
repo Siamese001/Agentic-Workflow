@@ -165,6 +165,43 @@ class ProvenanceRequirementsSection(_ImmutableModel):
     source_quote_required: bool
 
 
+class RuntimeCustomizationPackage(_ImmutableModel):
+    """Complete runtime operating package for apps_rg.
+
+    Carries declarative refs, digests, policies, and gate/judge/eval metadata
+    that downstream core stages consume. U0 validates and preserves this section
+    verbatim under app_payload — U0 does NOT execute any of these references.
+
+    Wave 2.5 (apps-rg-ensemble-judge-restoration-a7c4e2): blocking precondition
+    for Wave 3 (L3 workflow runner) and Wave 4 (L2 ENSEMBLE_MODEL lane).
+    """
+
+    workflow_manifest_ref: str = Field(default="", description="Ref to managed workflow manifest. Empty → single_step.")
+    runtime_gate_profile_ref: str = Field(default="", description="Ref to runtime gate profile (pre-L2 gates).")
+    exit_profile_ref: str = Field(default="", description="Ref to Exit-stage profile (G21-G28 enforcement).")
+    judge_profile_ref: str = Field(default="", description="Ref to judge jury profile (provider roster + rubric binding).")
+    eval_rubric_ref: str = Field(default="", description="Ref to evaluation rubric for quality scoring.")
+    threshold_profile_ref: str = Field(default="", description="Ref to threshold profile for gate pass/fail.")
+    grader_roster_ref: str = Field(default="", description="Ref to grader roster (which providers grade which sections).")
+    rubric_output_map_ref: str = Field(default="", description="Ref to rubric-output mapping (rubric → output format).")
+    negative_controls_ref: str = Field(default="", description="Ref to negative control definitions for judge calibration.")
+    learning_profile_ref: str = Field(default="", description="Ref to learning profile (L6 RuntimeExhaustBundle consumption).")
+    meta_feedback_profile_ref: str = Field(default="", description="Ref to meta-feedback profile (post-runtime learning).")
+    prompt_profile_ref: str = Field(default="", description="Ref to prompt profile (PA template selection).")
+    route_profile_ref: str = Field(default="", description="Ref to route profile (L0 routing hints).")
+    retrieval_profile_ref: str = Field(default="", description="Ref to retrieval profile (C0 grounding strategy).")
+    repair_profile_ref: str = Field(default="", description="Ref to repair profile (healing/retry strategy).")
+    cache_profile_ref: str = Field(default="", description="Ref to cache profile (R1A/R1B/R5 policy).")
+    capability_profile_ref: str = Field(default="", description="Ref to capability profile (model requirements).")
+    orchestration_profile_ref: str = Field(default="", description="Ref to orchestration profile (L3 merge/split strategy).")
+    provider_profile_ref: str = Field(default="", description="Ref to provider profile (model/judge provider roster).")
+    write_policy: str = Field(default="read_only", description="Write policy: 'read_only' | 'deferred_writeback'. apps_rg is always read_only.")
+    required_runtime_gates: tuple[str, ...] = Field(default_factory=tuple, description="Gate IDs that MUST pass before L2 execution.")
+    required_exit_gates: tuple[str, ...] = Field(default_factory=tuple, description="Gate IDs that MUST pass at Exit (G21-G28).")
+    conditional_exit_gates: tuple[str, ...] = Field(default_factory=tuple, description="Gate IDs conditionally invoked at Exit (based on output_requirements).")
+    package_digest: str = Field(default="", description="SHA-256 over canonical JSON of this section (integrity seal).")
+
+
 # ---------------------------------------------------------------------------
 # Top-level contract
 # ---------------------------------------------------------------------------
@@ -216,6 +253,14 @@ class AppsRgIngressContractV1(BaseModel):
     quality_thresholds: QualityThresholdsSection
     output_requirements: OutputRequirementsSection
     provenance_requirements: ProvenanceRequirementsSection
+    runtime_customization_package: RuntimeCustomizationPackage = Field(
+        default_factory=RuntimeCustomizationPackage,
+        description=(
+            "Complete runtime operating package. Carries all refs/digests/policies "
+            "downstream core stages need. Default-constructed (all empty) so existing "
+            "payloads without this section remain valid."
+        ),
+    )
     payload_digest: _Sha256Hex = Field(description="SHA-256 over canonical JSON of all sibling fields except payload_digest itself.")
 
 
@@ -270,5 +315,6 @@ __all__ = [
     "QualityThresholdsSection",
     "OutputRequirementsSection",
     "ProvenanceRequirementsSection",
+    "RuntimeCustomizationPackage",
     "emit_schema",
 ]

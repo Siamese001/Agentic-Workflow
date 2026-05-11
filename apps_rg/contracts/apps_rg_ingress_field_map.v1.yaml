@@ -75,6 +75,7 @@ section_aggregations:
   /quality_thresholds: { status: DEFERRED, target: "future Wave 2 ExitReviewPacket builder + X1D groundedness gate", reason: "Per Author-Gate AG-7.c + AG-8.c W1 (G09/G21/G22) — thresholds consumed when ExitReviewPacket builder lands" }
   /output_requirements: { status: DEFERRED, target: "future Wave 5 enrichment via apps_rg-owned Exit-stage callbacks (AG-14.a)", reason: "DOCX/RunReport callbacks register against output_requirements at W5" }
   /provenance_requirements: { status: DEFERRED, target: "future Wave 2 verbatim_provenance_gate via gate registry (AG-9.b)", reason: "per-bullet provenance enforcement lands in W2 with apps_rg gate registry" }
+  /runtime_customization_package: { status: DERIVED, target: "ValidatedRequest.app_payload.runtime_customization_package", reason: "Complete runtime operating package preserved verbatim under app_payload; digest verified at U0; downstream core resolvers consume individual refs" }
 
 mappings:
   # -------------------------------------------------------------------
@@ -314,3 +315,126 @@ mappings:
     status: DEFERRED
     target: future Wave 5 RunReport provenance manifest emitter (AG-14.a)
     reason: source-quote evidence threaded through Exit-stage callback at W5
+
+  # -------------------------------------------------------------------
+  # /runtime_customization_package — U0 operating package (Wave 2.5)
+  # -------------------------------------------------------------------
+  /runtime_customization_package/workflow_manifest_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.workflow_manifest_ref
+    reason: L0 resolves managed workflow via registry; L3 consumes for orchestration
+
+  /runtime_customization_package/runtime_gate_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.runtime_gate_profile_ref
+    reason: L2 consumes for pre-execution gate evaluation
+
+  /runtime_customization_package/exit_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.exit_profile_ref
+    reason: Exit consumes for G21-G28 enforcement
+
+  /runtime_customization_package/judge_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.judge_profile_ref
+    reason: L2 ENSEMBLE_MODEL lane consumes for judge jury configuration
+
+  /runtime_customization_package/eval_rubric_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.eval_rubric_ref
+    reason: L2 judge and Exit grader consume for quality scoring
+
+  /runtime_customization_package/threshold_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.threshold_profile_ref
+    reason: Gate evaluators consume for pass/fail thresholds
+
+  /runtime_customization_package/grader_roster_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.grader_roster_ref
+    reason: L2 ENSEMBLE_MODEL lane consumes for provider-to-section assignment
+
+  /runtime_customization_package/rubric_output_map_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.rubric_output_map_ref
+    reason: Exit grader consumes to map rubric dims to output structure
+
+  /runtime_customization_package/negative_controls_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.negative_controls_ref
+    reason: Judge calibration consumes for known-bad canaries
+
+  /runtime_customization_package/learning_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.learning_profile_ref
+    reason: L6 consumes after RuntimeExhaustBundle for cross-run learning
+
+  /runtime_customization_package/meta_feedback_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.meta_feedback_profile_ref
+    reason: L6 consumes for future-run promotion proposal generation
+
+  /runtime_customization_package/prompt_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.prompt_profile_ref
+    reason: PA consumes for template selection and chaining
+
+  /runtime_customization_package/route_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.route_profile_ref
+    reason: L0 consumes for domain-specific routing hints
+
+  /runtime_customization_package/retrieval_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.retrieval_profile_ref
+    reason: C0 consumes for grounding strategy and evidence budget
+
+  /runtime_customization_package/repair_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.repair_profile_ref
+    reason: L2/L3 consume for healing and retry strategy
+
+  /runtime_customization_package/cache_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.cache_profile_ref
+    reason: L0 consumes for R1A/R1B/R5 cache policy
+
+  /runtime_customization_package/capability_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.capability_profile_ref
+    reason: L0 model_registry consumes for provider/model resolution
+
+  /runtime_customization_package/orchestration_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.orchestration_profile_ref
+    reason: L3 consumes for merge/split/section strategy
+
+  /runtime_customization_package/provider_profile_ref:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.provider_profile_ref
+    reason: L0/L2 consume for provider roster binding
+
+  /runtime_customization_package/write_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.write_policy
+    reason: Exit validates posture matches (apps_rg must be read_only)
+
+  /runtime_customization_package/required_runtime_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.required_runtime_gates
+    reason: L2 pre-execution gate evaluator enumerates required gates
+
+  /runtime_customization_package/required_exit_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.required_exit_gates
+    reason: Exit gate evaluator enumerates required exit gates (G21-G28)
+
+  /runtime_customization_package/conditional_exit_gates:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.runtime_customization_package.conditional_exit_gates
+    reason: Exit gate evaluator selectively invokes based on output_requirements
+
+  /runtime_customization_package/package_digest:
+    status: DERIVED
+    target: AppsRgU0ReflectionReceipt.runtime_package_digest_verified
+    reason: U0 verifies digest is well-formed; stamps receipt with verification status
