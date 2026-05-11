@@ -18,6 +18,7 @@ description: Reference when deciding whether to write to a Notion database. Five
 | **Constitutional Rules Registry** | DB `1c1379bc-...` / DS `9bd2523e-...` | Rules live in `.windsurf/rules/*.md`; Notion mirror was never reliable | `.windsurf/rules/*.md` |
 | **SC/AP Violation Backlog** | DB `0a3b8072-...` / DS `803834e1-...` | ADG SQLite is the authoritative source; Notion mirror caused double-tracking | `artifacts/adg/*.sqlite` + violation JSON |
 | **Author-Gate Decision Ledger** | DB various | SQLite ledger is the SSOT; captured via `tools/capture/append_marker.py` | `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` |
+| **Anti-Pattern Burndown** | DB `80b30bc9-...` / DS `4599fe37-...` | 404 confirmed 2026-05-11 — DB not accessible to integration; filesystem ratchet files are canonical | `artifacts/adg/` ratchet files |
 
 ## What Changed
 
@@ -33,7 +34,6 @@ description: Reference when deciding whether to write to a Notion database. Five
 |---|---|---|
 | Plans DB | `ac53d31b-3068-4039-9ebe-856c12caab32` | Plan registration, wave lifecycle, status tracking |
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | Deferred scope items, next-step capture |
-| Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | Burndown trend, ratchet ceilings |
 | Wave/Phase Convergence | `WAVE_PHASE_DATA_SOURCE_ID` (in `_notion_constants.py`) | Phase evidence, P-band tracking |
 
 ## Hard Rules
