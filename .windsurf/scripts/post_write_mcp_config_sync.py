@@ -6,29 +6,26 @@ Behavior:
 2. Validate strict JSON.
 3. Sync the repo SSOT to `~/.codeium/windsurf/mcp_config.json`.
 4. Refresh the repo-root `AGENTS.md` MCP Quick Reference section.
-5. Optionally upsert the Notion MCP Registry when `NOTION_TOKEN` is present.
+
+Note: Notion MCP Registry sync removed 2026-05-11 — MCP Registry archived 2026-05-02.
+Filesystem (.windsurf/mcp_config.json) is the SSOT.
 
 This hook is advisory. It never blocks the write.
 """
 
 from __future__ import annotations
 
-import io
 import json
 import os
 import sys
 import time
-import urllib.error
-import urllib.request
-from datetime import date
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from sync_mcp_config import (
     REPO_CONFIG,
     GLOBAL_CONFIG,
     AGENTS_MD,
-    load_notion_databases,
     load_repo_config,
     validate_config,
     sync_agents_md,
@@ -38,24 +35,6 @@ from sync_mcp_config import (
 # Backward-compatible aliases used by tests/integrations.
 SSOT = REPO_CONFIG
 GLOBAL = GLOBAL_CONFIG
-
-
-def _resolve_mcp_registry_db_id() -> str | None:
-    """Pull the MCP Registry DB ID from config/notion_databases.yaml.
-
-    Returns None when the YAML is missing or the `mcp_registry` entry is absent,
-    in which case the Notion sync step is skipped (never silently target a wrong
-    database).
-    """
-    try:
-        payload = load_notion_databases()
-    except (FileNotFoundError, OSError, ValueError):  # guardian: allow-return-none-swallow -- notion DB load: non-fatal, caller handles None
-        return None
-    for db in payload.get("databases", []):
-        if db.get("key") == "mcp_registry":
-            db_id = db.get("id")
-            return str(db_id) if db_id is not None else None
-    return None
 
 
 def _validate_ssot(path: Path = SSOT) -> list[str]:
@@ -123,13 +102,6 @@ def _is_target_mcp_config_from_invocation() -> bool:
     return file_path.endswith("mcp_config.json")
 
 
-_notion_api = "https://api.notion.com/v1"
-_notion_version = "2022-06-28"
-# Fallback DB ID for legacy environments that predate config/notion_databases.yaml.
-# Prefer the YAML-resolved ID (see _resolve_mcp_registry_db_id) in main().
-_legacy_fallback_db_id = "59693bbc71b14c63bc9fb31eb8b08a0e"
-
-
 def _was_recent_write(path: Path, window_seconds: int = 10) -> bool:
     if not path.exists():
         return False
@@ -137,98 +109,6 @@ def _was_recent_write(path: Path, window_seconds: int = 10) -> bool:
         return (time.time() - path.stat().st_mtime) <= window_seconds
     except (OSError, TypeError, ValueError):
         return True
-
-
-def _notion_request(
-    method: str, path: str, token: str, payload: dict[str, Any] | None = None
-) -> dict[str, Any]:
-    url = f"{_notion_api}{path}"
-    data = json.dumps(payload).encode("utf-8") if payload is not None else None
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Notion-Version": _notion_version,
-            "Content-Type": "application/json",
-        },
-        method=method,
-    )
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        return cast(dict[str, Any], json.loads(resp.read().decode("utf-8")))
-
-
-def _derive_transport(cfg: dict[str, Any]) -> str:
-    if "serverUrl" in cfg:
-        return "serverUrl"
-    if "url" in cfg:
-        return "url"
-    return "command"
-
-
-def _derive_status(cfg: dict[str, Any]) -> str:
-    return "Disabled" if cfg.get("disabled") is True else "Active"
-
-
-def _find_existing_row(token: str, db_id: str, server_name: str) -> str | None:
-    payload = {"filter": {"property": "Server Name", "title": {"equals": server_name}}}
-    try:
-        result = _notion_request("POST", f"/databases/{db_id}/query", token, payload)
-        results = result.get("results", [])
-        return results[0]["id"] if results else None
-    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError, KeyError):  # guardian: allow-return-none-swallow -- notion query: non-fatal, caller handles None
-        return None
-
-
-def _upsert_server_row(token: str, db_id: str, name: str, transport: str, status: str, today: str) -> str:
-    page_id = _find_existing_row(token, db_id, name)
-    if page_id:
-        payload = {
-            "properties": {
-                "Transport": {"select": {"name": transport}},
-                "Status": {"select": {"name": status}},
-                "Last Validated": {"date": {"start": today}},
-            }
-        }
-        try:
-            _notion_request("PATCH", f"/pages/{page_id}", token, payload)
-            return "updated"
-        except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
-            print(f"[mcp_sync] Notion update failed for '{name}': {exc}", flush=True)
-            return "skipped"
-    payload = {
-        "parent": {"database_id": db_id},
-        "properties": {
-            "Server Name": {"title": [{"text": {"content": name}}]},
-            "Transport": {"select": {"name": transport}},
-            "Status": {"select": {"name": status}},
-            "Last Validated": {"date": {"start": today}},
-            "Capability Scope": {"rich_text": [{"text": {"content": "(auto-synced — review and fill)"}}]},
-        },
-    }
-    try:
-        _notion_request("POST", "/pages", token, payload)
-        return "created"
-    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
-        print(f"[mcp_sync] Notion create failed for '{name}': {exc}", flush=True)
-        return "skipped"
-
-
-def _sync_notion_mcp_registry(servers: dict[str, Any], token: str, db_id: str) -> None:
-    today = date.today().isoformat()
-    updated = created = skipped = 0
-    for name, cfg in servers.items():
-        outcome = _upsert_server_row(token, db_id, name, _derive_transport(cfg), _derive_status(cfg), today)
-        if outcome == "updated":
-            updated += 1
-        elif outcome == "created":
-            created += 1
-        else:
-            skipped += 1
-    print(
-        f"[mcp_sync] Notion MCP Registry: {updated} updated, {created} created, {skipped} skipped.",
-        flush=True,
-    )
 
 
 def main() -> int:
@@ -276,23 +156,8 @@ def main() -> int:
     except (OSError, ValueError) as exc:
         print(f"[mcp_sync] WARNING: AGENTS sync failed: {exc}", flush=True)
 
-    token = os.environ.get("NOTION_TOKEN", "").strip()
-    if token:
-        db_id_env = os.environ.get("NOTION_MCP_DATABASE_ID", "").strip()
-        db_id_yaml = _resolve_mcp_registry_db_id()
-        db_id = db_id_env or db_id_yaml or _legacy_fallback_db_id
-        if not db_id_env and not db_id_yaml:
-            print(
-                "[mcp_sync] WARNING: Notion DB ID resolved via legacy fallback; "
-                "ensure config/notion_databases.yaml has an 'mcp_registry' entry.",
-                flush=True,
-            )
-        try:
-            _sync_notion_mcp_registry(data.get("mcpServers", {}), token, db_id)
-        except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
-            print(f"[mcp_sync] WARNING: Notion sync failed: {exc}", flush=True)
-    else:
-        print("[mcp_sync] Notion sync skipped: NOTION_TOKEN not set.", flush=True)
+    # MCP Registry archived 2026-05-02 (notion-integration-consistency-audit-b2c4d8 W2).
+    # Notion sync removed; filesystem (.windsurf/mcp_config.json) is the SSOT.
 
     return 0
 

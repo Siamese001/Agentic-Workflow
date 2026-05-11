@@ -44,7 +44,7 @@ Keep Reasoning / Routing / Execution / Verification separate. No edits before `S
 | `redis` | Redis cache health, keys, TTL, namespace stats | `redis_health, redis_keys, redis_hgetall, redis_namespace_stats` | Use for hot-cache inspection and invalidation. | [`redis-cache`](.windsurf/skills/redis-cache/SKILL.md) |
 | `pytest_mcp` | Test discovery, runs, and coverage | `discover_tests, run_tests, get_test_details, analyze_test_coverage` | Prefer over plain pytest CLI when possible. | [`pytest-mcp`](.windsurf/skills/pytest-mcp/SKILL.md) |
 | `io.windsurf/mcp-playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use direct httpx in code or read_url_content for one-off fetches). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use. | [`playwright`](.windsurf/skills/playwright/SKILL.md) |
-| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Use for ADRs, Author-Gate ledgers, MCP registry, and plan/status data. | [`notion`](.windsurf/skills/notion/SKILL.md) |
+| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Use for Plans DB, Backlog Items, and Anti-Pattern Burndown. MCP Registry, ADR Registry, Constitutional Rules Registry, SC/AP Violation Backlog, and Author-Gate Decision Ledger are **archived** — filesystem SSOT only. | [`notion`](.windsurf/skills/notion/SKILL.md) |
 | `tavily` | AI-optimized web search, extraction, crawling, and site mapping | `tavily-search, tavily-extract, tavily-crawl, tavily-map` | Sole authority for web search. Use for upstream-issue research (Anthropic MCP race, chromadb bugs), ADR background, and domain research not answerable by deepwiki (GitHub-only) or one-off URL fetch via read_url_content. Requires TAVILY_API_KEY OS env var. | [`tavily-research`](.windsurf/skills/tavily-research/SKILL.md) |
 | `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | Use for external-package docs (chromadb, FastMCP, sentence-transformers, playwright, pytorch). Distinct from deepwiki (GitHub repo wiki/Q&A) and adg_sqlite (this repo's own code). No API key required; CONTEXT7_API_KEY optional for higher limits. | [`context7`](.windsurf/skills/context7/SKILL.md) |
 
@@ -59,9 +59,9 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 |----------|-----------------------|----------------------|--------------|----------------------------|
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
 | Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `ac53d31b-3068-4039-9ebe-856c12caab32` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.windsurf/plans/<slug>-<6hex>.md`: emit `PLAN_CREATED:` marker AND post Plans row with Slug, Status (Not Started/In Progress), Exists On Disk=true, Plan File Path, Summary, AI Summary. **Enforced by constitutional §36** — `wave_execution_state.py start` blocks on unregistered plans. CI gate T7u: `check_plan_registration_freshness.py`. **Wave/phase auto-sync (2026-05-10, plan `notion-wave-lifecycle-autosync-f4a2b8`)**: `wave_execution_state.py {start,wave-progress,complete}` and `post_cascade_wave_lifecycle_capture.py` patch Status + Summary via direct HTTP (sanctioned non-MCP path per `notion-plan-wave-deferral.md`); CI backstop NP4 `check_plan_notion_wave_freshness.py`. Bypass: `PLAN_REGISTRATION_BYPASS=1`, `WAVE_LIFECYCLE_NOTION_BYPASS=1`, `WAVE_LIFECYCLE_CAPTURE_BYPASS=1`. |
-| SC/AP Violation Backlog | `803834e1-0af8-4c3c-b45a-f513f80a7fef` | `0a3b8072-eabd-4516-9473-3c321bb011ff` | "SC/AP violations", "check severity", "promotion status" | When `generate_full_adg` emits new SC/AP rows |
-| Constitutional Rules Registry | `9bd2523e-7a6e-434d-89a7-ce4166457069` | `1c1379bc-32ca-4216-898a-3672f0316f69` | "constitutional rules", "rule status" | On rule addition/modification |
-| MCP Registry | `e7b149b4-0496-4e98-a5dd-074dbe31881b` | `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e` | "MCP status", "which MCPs are active", "server registry" | On ANY `mcp_config.json` change or gate-behavior change |
+| SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.windsurf/rules/*.md`. No Notion write. |
+| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.windsurf/mcp_config.json`. No Notion write. |
 | Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2.
@@ -70,6 +70,17 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 **Backlog Items → Plan linkage invariant (NP3, plan `backlog-plan-linkage-enforcement-a4b2f1`):** Every Backlog Items row must have a `Plan` relation OR a non-empty `Plan File` slug. True orphans (neither) are flagged by CI gate NP3 (`ops_scripts/ci/check_notion_backlog_plan_linkage.py`). Fix procedure: re-run `tools/notion/backfill_backlog_plan_relation.py`. Authoritative-source policy: Plan-derived Status wins only when Backlog Status is the scorer-default (`Draft`); Layer and Plan File are always Backlog-authoritative. Rule: `.windsurf/rules/notion-backlog-plan-linkage.md`.
 
 <!-- NOTION-MAP:END -->
+
+### Filesystem-SSOT Canonical Sources (No Notion Mirror)
+
+| Content | Canonical Path | Notion Mirror? | Notes |
+|---------|----------------|----------------|-------|
+| Rules | `.windsurf/rules/*.md` | **NO** — archived 2026-05-02 | 47 rules, filesystem-SSOT only. Use `rg` to search. |
+| ADRs | `docs/architecture/adr/*.md` | **NO** — since 2026-05-02 | Filename + metadata in frontmatter. Use `rg` to search. |
+| Plans | `.windsurf/plans/<slug>-<6hex>.md` | Row in Plans DB only | Full content on disk; Notion holds status/summary row. |
+| Calibration Reports | `docs/reports/calibration/<YYYY-Www>.md` | **NO** — by design | Weekly reports filesystem-only per operator decision 2026-04-24. |
+
+> ⛔ **Do NOT attempt to sync rules or ADRs to Notion.** The Constitutional Rules Registry and ADR Registry databases were archived on 2026-05-02 as part of Notion consolidation. Filesystem is the sole SSOT.
 
 ### Plans + Backlog Status Taxonomy (extracted 2026-05-02)
 
@@ -82,14 +93,16 @@ Cascade MUST route these events to Notion without being asked. Filesystem remain
 | Event in Cascade | Filesystem Artifact | Notion Write (parallel) |
 |---|---|---|
 | Create `docs/architecture/adr/ADR-NNN-*.md` | ADR markdown | **No Notion write** — on-disk ADR file IS the SSOT since commit `b11200e833` (2026-05-02 consolidation). Filename + metadata live in the markdown frontmatter. Use `rg` over `docs/architecture/adr/` for search. |
-| Modify `.windsurf/mcp_config.json` (add/remove/reconfigure server) | JSON edit | `API-patch-page` (or post new) into MCP Registry with Notes + updated Last Validated; link ADR if applicable |
-| Change gate behavior in `.windsurf/scripts/pre_mcp_gate.py` | Python edit | `API-patch-page` affected MCP Registry entries with Notes (behavior description) + Linked ADR |
-| Resolve a scored `ask_user_question` (Author-Gate decision) | — | `API-post-page` into Author-Gate Decision Ledger with decision type, options, selection, rationale |
-| Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | `API-post-page` per NEW violation into SC/AP Violation Backlog |
+| Modify `.windsurf/mcp_config.json` (add/remove/reconfigure server) | JSON edit | **No Notion write** — MCP Registry archived 2026-05-02. Document in commit message. Filesystem SSOT only. |
+| Change gate behavior in `.windsurf/scripts/pre_mcp_gate.py` | Python edit | **No Notion write** — MCP Registry archived 2026-05-02. Document in commit message. Filesystem SSOT only. |
+| Resolve a scored `ask_user_question` (Author-Gate decision) | `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` | **No Notion write** — Author-Gate Decision Ledger archived 2026-05-02. SQLite ledger + `DECISION_CAPTURED:` marker is the SSOT (constitutional §30). |
+| Run `generate_full_adg.py` and produce SC/AP defects | `artifacts/adg/*.sqlite`, violation JSON | **No Notion write** — SC/AP Violation Backlog archived 2026-05-02. Violations recorded in ADG SQLite snapshot only. |
 | Write RCA in `docs/reports/plans/*.md` | Markdown | Link from relevant registry row (no new database — RCA detail lives on disk) |
-| `generate_mutation_rejection_report.py` finds a newly-accepted mutation (Constitutional §32) | `artifacts/certification/fortknox_mutation_rejection_report.json` | `API-post-page` into SC/AP Violation Backlog with severity=CRITICAL, category=`fortknox_regression`, provenance block (mutation name, accepting validator step) |
+| `generate_mutation_rejection_report.py` finds a newly-accepted mutation (Constitutional §32) | `artifacts/certification/fortknox_mutation_rejection_report.json` | **No Notion write** — SC/AP Violation Backlog archived 2026-05-02. Regression logged in `artifacts/certification/fortknox_mutation_rejection_report.json` only. |
 | Trust level changes in Fort Knox bundle (e.g. `DEVELOPMENT_PROOF` → `INTEGRITY_PROOF`) | `artifacts/certification/final_requirement_signoff_report.json` | **No Notion write** — trust-level transitions are recorded in the certification bundle's `trust_level` field (verifiable via `scripts/verify_final_requirement_signoff_bundle.py`). If human-readable narrative is needed, author an ADR markdown file at `docs/architecture/adr/` (on-disk SSOT). |
 | Positive-control set grows (new `RTC-REQ-*` joins SIGNED_OFF via compiler run) | `certification/evidence_assertions.jsonl` (new rows) + compiler output | `API-patch-page` Wave/Phase Convergence row for that req with Status → Done and evidence pointers |
+
+> ⛔ **Archived Notion databases (2026-05-02 consolidation):** MCP Registry, Constitutional Rules Registry, SC/AP Violation Backlog, ADR Registry, and Author-Gate Decision Ledger are all archived. All formerly targeted writes to these databases are now filesystem-only. Do NOT attempt to write to these databases. See `.windsurf/rules/notion-archived-databases.md`.
 
 **Non-goals**: do NOT duplicate narrative content in Notion. Store the row; link the file.
 

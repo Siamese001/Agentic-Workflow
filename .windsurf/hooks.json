@@ -38,6 +38,11 @@
     ],
     "pre_mcp_tool_use": [
       {
+        "command": "python .windsurf/scripts/pre_notion_plan_creation_gate.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/pre_mcp_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true
@@ -243,6 +248,11 @@
         "show_output": false
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_plan_creation_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_plans_dup_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
@@ -259,6 +269,11 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
+        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "show_output": false
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_wave_completion_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false
       }

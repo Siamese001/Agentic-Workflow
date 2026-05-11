@@ -30,22 +30,26 @@ PLANS_DB_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
 PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 
-# ADR Registry DB
+# ADR Registry DB — ARCHIVED 2026-05-02 (commit b11200e833; filesystem SSOT only)
+# Retained for reference; post_cascade_adr_registry_capture.py now logs to filesystem only.
 ADR_REGISTRY_DB_ID: str = "6ed25e12-bd92-4352-ac7a-3a971311f024"
 ADR_REGISTRY_DS_ID: str = "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
 
 
-# Author-Gate Decision Ledger
+# Author-Gate Decision Ledger — ARCHIVED 2026-05-02 (SQLite SSOT per constitutional §30)
+# Filesystem SSOT: .windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite
 AUTHOR_GATE_LEDGER_DB_ID: str = "18bb9145-1320-4191-8b14-6c309776bcf5"
 AUTHOR_GATE_LEDGER_DS_ID: str = "5b60fdde-7259-491e-9f2d-e088f1f741ef"
 
 
-# SC/AP Violation Backlog
+# SC/AP Violation Backlog — ARCHIVED 2026-05-02 (filesystem SSOT only)
+# Filesystem SSOT: artifacts/adg/*.sqlite + violation JSON
 SCAP_BACKLOG_DB_ID: str = "0a3b8072-eabd-4516-9473-3c321bb011ff"
 SCAP_BACKLOG_DS_ID: str = "803834e1-0af8-4c3c-b45a-f513f80a7fef"
 
 
-# MCP Registry
+# MCP Registry — ARCHIVED 2026-05-02 (filesystem SSOT only)
+# Filesystem SSOT: .windsurf/mcp_config.json
 MCP_REGISTRY_DB_ID: str = "59693bbc-71b1-4c63-bc9f-b31eb8b08a0e"
 MCP_REGISTRY_DS_ID: str = "e7b149b4-0496-4e98-a5dd-074dbe31881b"
 

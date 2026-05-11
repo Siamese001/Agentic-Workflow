@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """post_cascade_adr_registry_capture.py — Windsurf post_cascade_response hook.
 
-Auto-posts new ADR markdown files to the Notion ADR Registry. Sibling to
-``post_cascade_deferred_scope_capture.py`` and ``post_cascade_next_step_capture.py``
-— same fail-open shape, same urllib-only dependency stance, same dedup story.
+**REPURPOSED 2026-05-11 (plan notion-integration-consistency-audit-b2c4d8 W2):**
+The Notion ADR Registry was archived 2026-05-02 as part of the Notion
+consolidation commit (b11200e833). Filesystem is now the SSOT for ADRs.
+This hook no longer writes to Notion; it logs detected ADR paths to the
+filesystem JSONL only, providing an audit trail without dead-DB writes.
 
-Why the auto-hook
------------------
-Constitutional §25 (mcp-serialization.md) forbids batching MCP tool calls in
-one Cascade response (upstream client SDK race). For ADR Registry posts that
-means Cascade must spend one whole response per ADR — slow, friction-heavy,
-and easy to forget. This hook runs in a separate process AFTER Cascade's
-response, so it sidesteps the SDK race entirely and posts on Cascade's behalf.
+Original purpose: auto-post new ADR markdown files to the Notion ADR Registry.
+Current purpose: detect ADR file references in Cascade responses, parse
+metadata, and log to ``artifacts/windsurf/adr_registry_capture.jsonl``
+(filesystem-only).
 
 Detection
 ---------
@@ -23,27 +22,16 @@ path:
   2. Parse the ADR markdown header for: ADR ID, Title, Status, Decision Date,
      Deciders, Impact Layers (e.g. ``L1, L4``), and a Summary derived from the
      first paragraph under "Context".
-  3. Query the Notion ADR Registry by ADR ID; skip if already present.
-  4. POST a new page; on conflict / network error, log to JSONL.
-
-Notion DB SSOT (write):  6ed25e12-bd92-4352-ac7a-3a971311f024
-Notion data source (read): e59d7640-dc09-48f9-8bdc-b0c94bf98c2a
+  3. Log ``kind: adr_filesystem_only`` to JSONL — no Notion write.
 
 Behavior (ADVISORY — always exits 0)
 ------------------------------------
-- New ADRs without a Notion row → auto-POST.
-- ADRs already in Notion (by ADR ID) → skipped, logged ``skipped_notion_duplicate``.
-- ADRs posted in the local log within DEDUP_WINDOW_MINUTES → skipped, logged
-  ``skipped_recent_duplicate``. (Backstop for cases where Notion query is
-  transiently unreachable.)
+- ADR file found → logged ``adr_filesystem_only``.
 - File missing on disk → logged ``file_missing``, skipped.
 - Parse failure → logged ``parse_error``, skipped.
-- NOTION_TOKEN absent → logged ``pending_no_token``; next session retries.
 
 Escape hatch: ADR_REGISTRY_CAPTURE_BYPASS=1
 Fail policy: OPEN — any error → exit 0 silently.
-Zero hardcoded paths beyond Notion DB IDs (those are workspace constants per
-AGENTS.md Notion Workspace Map).
 """
 
 from __future__ import annotations
@@ -52,8 +40,6 @@ import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -61,21 +47,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "adr_registry_capture.jsonl"
 
-import sys as _sys
-
-_sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _notion_constants import (  # noqa: E402
-    ADR_REGISTRY_DB_ID,
-    ADR_REGISTRY_DS_ID,
-    NOTION_API_VERSION,
-    NOTION_HTTP_TIMEOUT_S,
-    NOTION_POST_URL,
-)
-
-
-NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{ADR_REGISTRY_DS_ID}/query"
-
-DEDUP_WINDOW_MINUTES = 10080  # 7 days
+# ADR Registry was archived 2026-05-02. No Notion imports needed.
 
 # Hard cap on response payload bytes scanned for ADR paths. Defends against
 # pathological inputs (logs, captured stdout, etc.) that would otherwise drag
@@ -406,122 +378,14 @@ def _parse_adr_file(path: Path) -> dict[str, Any] | None:
 
 
 # ---------------------------------------------------------------------------
-# Notion API (stdlib urllib)
-# ---------------------------------------------------------------------------
-
-
-def _notion_token() -> str | None:
-    return os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
-
-
-def _build_notion_payload(adr: dict[str, Any]) -> dict[str, Any]:
-    properties: dict[str, Any] = {
-        "ADR Title": {"title": [{"text": {"content": adr["title"][:200]}}]},
-        "ADR ID": {"rich_text": [{"text": {"content": adr["adr_id"]}}]},
-        "Status": {"select": {"name": adr["status"]}},
-        "Filename": {"rich_text": [{"text": {"content": adr["filename"]}}]},
-        "Deciders": {"rich_text": [{"text": {"content": adr["deciders"]}}]},
-    }
-    if adr.get("decision_date"):
-        properties["Decision Date"] = {"date": {"start": adr["decision_date"]}}
-    if adr.get("impact_layers"):
-        properties["Impact Layers"] = {"multi_select": [{"name": lyr} for lyr in adr["impact_layers"]]}
-    if adr.get("summary"):
-        properties["Summary"] = {"rich_text": [{"text": {"content": adr["summary"]}}]}
-
-    return {
-        "parent": {"database_id": ADR_REGISTRY_DB_ID},
-        "properties": properties,
-    }
-
-
-def _notion_post(payload: dict[str, Any], token: str) -> dict[str, Any]:
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        NOTION_POST_URL,
-        data=body,
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Notion-Version": NOTION_API_VERSION,
-        },
-    )
-    with urllib.request.urlopen(req, timeout=NOTION_HTTP_TIMEOUT_S) as resp:
-        data = resp.read().decode("utf-8")
-    return json.loads(data) if data else {}
-
-
-def _notion_existing_page(adr_id: str, token: str) -> str | None:
-    """Return the page id of an existing ADR Registry row, or None."""
-
-    query = {
-        "filter": {"property": "ADR ID", "rich_text": {"equals": adr_id}},
-        "page_size": 1,
-    }
-    try:
-        req = urllib.request.Request(
-            NOTION_QUERY_URL,
-            data=json.dumps(query).encode("utf-8"),
-            method="POST",
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-                "Notion-Version": NOTION_API_VERSION,
-            },
-        )
-        with urllib.request.urlopen(req, timeout=NOTION_HTTP_TIMEOUT_S) as resp:
-            data = json.loads(resp.read().decode("utf-8") or "{}")
-    except (
-        urllib.error.HTTPError,
-        urllib.error.URLError,
-        TimeoutError,
-        OSError,
-        json.JSONDecodeError,
-        ValueError,
-    ):
-        return None  # fail-open — caller may rely on local-log dedup instead
-
-    for page in data.get("results", []):
-        if page.get("archived") or page.get("in_trash"):
-            continue
-        return str(page.get("id") or "") or None
-    return None
-
-
-def _recent_local_duplicate(adr_id: str) -> bool:
-    if not CAPTURE_LOG.exists():
-        return False
-    cutoff = datetime.now(timezone.utc).timestamp() - DEDUP_WINDOW_MINUTES * 60
-    try:
-        with CAPTURE_LOG.open("r", encoding="utf-8") as fh:
-            for line in fh:
-                try:
-                    rec = json.loads(line)
-                except (json.JSONDecodeError, ValueError):
-                    continue
-                if rec.get("kind") != "auto_posted":
-                    continue
-                if rec.get("adr", {}).get("adr_id") != adr_id:
-                    continue
-                ts_iso = rec.get("timestamp", "")
-                try:
-                    ts = datetime.fromisoformat(ts_iso).timestamp()
-                except (ValueError, TypeError):
-                    continue
-                if ts >= cutoff:
-                    return True
-    except OSError:
-        return False
-    return False
-
-
-# ---------------------------------------------------------------------------
 # Main flow
 # ---------------------------------------------------------------------------
 
+def _process_filename(filename: str) -> dict[str, Any]:
+    """Parse ADR file and return a filesystem-only log record.
 
-def _process_filename(filename: str, token: str | None) -> dict[str, Any]:
+    ADR Registry archived 2026-05-02; no Notion write is performed.
+    """
     path = REPO_ROOT / "docs" / "architecture" / "adr" / filename
     if not path.is_file():
         return {
@@ -539,49 +403,11 @@ def _process_filename(filename: str, token: str | None) -> dict[str, Any]:
             "filename": filename,
         }
 
-    base_record: dict[str, Any] = {
-        "timestamp": _utc_now_iso(),
-        "adr": adr,
-    }
-
-    if _recent_local_duplicate(adr["adr_id"]):
-        return {**base_record, "kind": "skipped_recent_duplicate"}
-
-    if not token:
-        return {
-            **base_record,
-            "kind": "pending_no_token",
-            "reason": "NOTION_TOKEN not set; next session will pick up",
-        }
-
-    existing = _notion_existing_page(adr["adr_id"], token)
-    if existing:
-        return {
-            **base_record,
-            "kind": "skipped_notion_duplicate",
-            "notion_page_id": existing,
-        }
-
-    try:
-        payload = _build_notion_payload(adr)
-        resp = _notion_post(payload, token)
-    except urllib.error.HTTPError as exc:
-        return {
-            **base_record,
-            "kind": "post_http_error",
-            "status": exc.code,
-            "error": str(exc),
-        }
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        return {**base_record, "kind": "post_transport_error", "error": str(exc)}
-    except (json.JSONDecodeError, ValueError) as exc:
-        return {**base_record, "kind": "post_decode_error", "error": str(exc)}
-
     return {
-        **base_record,
-        "kind": "auto_posted",
-        "notion_page_id": resp.get("id"),
-        "notion_url": resp.get("url"),
+        "timestamp": _utc_now_iso(),
+        "kind": "adr_filesystem_only",
+        "adr": adr,
+        "note": "ADR Registry archived 2026-05-02; filesystem SSOT only",
     }
 
 
@@ -616,23 +442,22 @@ def main() -> int:
         return 0
 
     filenames, variants = _find_adr_filenames(response)
-    # Log unsupported-naming variants for telemetry; they don't auto-post.
+    # Log unsupported-naming variants for telemetry.
     for variant in variants:
         _append_log(
             {
                 "timestamp": _utc_now_iso(),
                 "kind": "unsupported_naming",
                 "filename": variant,
-                "reason": "non-numeric ADR id; auto-poster only supports ADR-<digits>",
+                "reason": "non-numeric ADR id; filesystem logger only supports ADR-<digits>",
             }
         )
     if not filenames:
         return 0
 
-    token = _notion_token()
     summary: dict[str, int] = {}
     for filename in filenames:
-        record = _process_filename(filename, token)
+        record = _process_filename(filename)
         _append_log(record)
         kind = record.get("kind", "unknown")
         summary[kind] = summary.get(kind, 0) + 1

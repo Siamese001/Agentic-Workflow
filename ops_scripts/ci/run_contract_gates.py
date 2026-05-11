@@ -627,6 +627,17 @@ def main():
             "NP13 Notion Plans PLAN_COMPLETE marker freshness (advisory)",
             "ops_scripts/ci/check_plan_complete_marker_freshness.py",
         ),
+        # NP14 — Plans DB status at creation time. Detects plans created with
+        # wrong initial status (not "Not Started" or "Completed").
+        # Advisory by default; fail-closed via NOTION_PLAN_STATUS_INITIAL_FAIL_CLOSED=1.
+        # Bypass: NOTION_PLAN_STATUS_INITIAL_BYPASS=1.
+        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
+        # Rule: .windsurf/rules/notion-plans-taxonomy.md > Status Creation Invariant.
+        # Plan: holistic-plan-status-discipline-d4e8a1 (W3).
+        (
+            "NP14 Notion Plans status initial (advisory)",
+            "ops_scripts/ci/check_notion_plan_status_initial.py",
+        ),
         # NP12 — Schema preflight validation. Validates that Notion write
         # operations target existing properties before API calls are made.
         # Advisory by default; fail-closed via NOTION_SCHEMA_PREFLIGHT_FAIL_CLOSED=1.
@@ -636,6 +647,44 @@ def main():
         (
             "NP12 Notion Schema Pre-flight (advisory)",
             "ops_scripts/ci/check_notion_schema_preflight.py",
+        ),
+        # NP15 — Wave/Phase Convergence DB ↔ disk plan-file drift. Checks that
+        # open Backlog rows whose Plan File field is set resolve to an on-disk
+        # .windsurf/plans/ file. Orphan rows are reported.
+        # Advisory by default; fail-closed via STRICT_DRIFT=1.
+        # Bypass: PLAN_FILE_DRIFT_BYPASS=1.
+        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
+        (
+            "NP15 Notion plan file drift (advisory)",
+            "ops_scripts/ci/check_notion_plan_file_drift.py",
+        ),
+        # NP16 — Notion ↔ SQLite Author-Gate decision parity. Compares the local
+        # refactor_decision_ledger.sqlite count against the Notion audit log within
+        # a rolling window. Alarms on drift > threshold.
+        # Advisory by default; fail-closed via NOTION_DECISION_PARITY_FAIL_CLOSED=1.
+        # Bypass: NOTION_DECISION_PARITY_BYPASS=1.
+        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
+        (
+            "NP16 Notion decision parity (advisory)",
+            "ops_scripts/ci/check_notion_decision_parity.py",
+        ),
+        # NP17 — Wave/Phase Convergence MECE v2 schema gate. Verifies that known
+        # Notion writer scripts do not write retired fields and do write Evidence.
+        # Fail policy: exit 1 on any violation (always enforced).
+        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
+        (
+            "NP17 Notion Wave/Phase MECE v2 schema (enforced)",
+            "ops_scripts/ci/check_notion_schema_mece.py",
+        ),
+        # NP18 — Plans DB canonical status + discipline gate. Validates status
+        # option strings are canonical (not stale emoji variants) and flags
+        # In Progress plans with stale deferred items lacking Waiting For.
+        # Advisory by default; fail-closed via --fail-closed arg.
+        # Bypass: NOTION_PLANS_STATUS_CANONICAL_BYPASS=1 (env, advisory only).
+        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
+        (
+            "NP18 Notion Plans status canonical (advisory)",
+            "ops_scripts/ci/check_notion_plans_status_canonical.py",
         ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
@@ -834,6 +883,16 @@ def main():
         (
             "RULE-FMT Rule frontmatter schema (advisory baseline)",
             "ops_scripts/ci/check_rule_frontmatter_schema.py",
+        ),
+        # RULES1 — Rules filesystem integrity check.
+        # Validates .windsurf/rules/*.md files for: frontmatter presence,
+        # duplicate titles, kebab-case filenames, and broken internal refs.
+        # Advisory by default; fail-closed via RULES_INTEGRITY_FAIL_CLOSED=1.
+        # Bypass: RULES_INTEGRITY_BYPASS=1.
+        # Plan: fix-rules-notion-drift-c4e7b2 (Phase 1.3).
+        (
+            "RULES1 Rules filesystem integrity (advisory)",
+            "ops_scripts/ci/check_rules_filesystem_integrity.py",
         ),
     ]
 

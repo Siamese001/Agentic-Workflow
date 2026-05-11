@@ -57,7 +57,9 @@ Saving `.windsurf/mcp_config.json` triggers `.windsurf/scripts/post_write_mcp_co
 1. Validates strict JSON structure
 2. Backs up and overwrites `~/.codeium/windsurf/mcp_config.json`
 3. Refreshes the repo-root `AGENTS.md` MCP Quick Reference section
-4. Optionally upserts the Notion MCP Registry when `NOTION_TOKEN` is available
+
+> **Note**: Notion MCP Registry sync was removed 2026-05-02 (archived; filesystem SSOT only).
+> See plan `notion-integration-consistency-audit-b2c4d8` W2.
 
 Manual repair path:
 

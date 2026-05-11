@@ -1,4 +1,6 @@
-"""Tests for post_cascade_adr_registry_capture.py — auto-post ADRs to Notion.
+"""Tests for post_cascade_adr_registry_capture.py — filesystem-only ADR logger.
+
+ADR Registry archived 2026-05-02; this hook now logs to JSONL only.
 
 Coverage:
     * Path detection: forward/back slash, markdown link wrap, dedup, archive
@@ -8,12 +10,10 @@ Coverage:
       L_<NAMESPACE>), title separators (em/en-dash, hyphen, colon),
       Context-section summary fall-through.
     * File guards: missing file, oversized file, unicode-decode failure.
-    * Notion payload: required vs optional properties, length truncation,
-      multi-select preserves order.
-    * Main flow: empty stdin, response budget cap, bypass env, no-token
-      pending, dedup vs Notion existing page.
-    * No real network or filesystem-write side effects (Notion API stubbed,
-      capture log redirected to tmp_path).
+    * Process flow: filesystem-only record shape (kind=adr_filesystem_only).
+    * Main flow: empty stdin, response budget cap, bypass env.
+    * No real network or filesystem-write side effects
+      (capture log redirected to tmp_path).
 
 Loaded via importlib so the module's REPO_ROOT does not pollute sys.modules.
 """
@@ -25,9 +25,6 @@ import json
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import Any
-from unittest.mock import MagicMock, patch
-
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -352,59 +349,6 @@ class TestParseAdrFile:
 
 
 # ---------------------------------------------------------------------------
-# Notion payload shape
-# ---------------------------------------------------------------------------
-
-
-class TestBuildNotionPayload:
-    def _adr(self, **overrides: Any) -> dict[str, Any]:
-        base = {
-            "adr_id": "ADR-055",
-            "filename": "ADR-055-foo.md",
-            "title": "Embedding Model Enforcement",
-            "status": "Proposed",
-            "decision_date": "2026-04-24",
-            "deciders": "Maintainers",
-            "impact_layers": ["L4", "L_SHARED"],
-            "summary": "Brief description.",
-        }
-        base.update(overrides)
-        return base
-
-    def test_all_required_fields(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr())
-        props = payload["properties"]
-        assert props["ADR Title"]["title"][0]["text"]["content"] == "Embedding Model Enforcement"
-        assert props["ADR ID"]["rich_text"][0]["text"]["content"] == "ADR-055"
-        assert props["Status"]["select"]["name"] == "Proposed"
-        assert props["Filename"]["rich_text"][0]["text"]["content"] == "ADR-055-foo.md"
-        assert props["Deciders"]["rich_text"][0]["text"]["content"] == "Maintainers"
-        assert payload["parent"]["database_id"] == hook.ADR_REGISTRY_DB_ID
-
-    def test_optional_date_omitted_when_blank(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr(decision_date=""))
-        assert "Decision Date" not in payload["properties"]
-
-    def test_optional_layers_omitted_when_empty(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr(impact_layers=[]))
-        assert "Impact Layers" not in payload["properties"]
-
-    def test_optional_summary_omitted_when_blank(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr(summary=""))
-        assert "Summary" not in payload["properties"]
-
-    def test_layers_preserve_order(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr(impact_layers=["L_SHARED", "L1", "L4"]))
-        names = [m["name"] for m in payload["properties"]["Impact Layers"]["multi_select"]]
-        assert names == ["L_SHARED", "L1", "L4"]
-
-    def test_title_truncated_to_200(self, hook: ModuleType) -> None:
-        payload = hook._build_notion_payload(self._adr(title="x" * 500))
-        content = payload["properties"]["ADR Title"]["title"][0]["text"]["content"]
-        assert len(content) == 200
-
-
-# ---------------------------------------------------------------------------
 # Process flow
 # ---------------------------------------------------------------------------
 
@@ -413,120 +357,28 @@ class TestProcessFilename:
     def _write_adr(self, root: Path, name: str = "ADR-055-foo.md") -> Path:
         path = root / "docs" / "architecture" / "adr" / name
         path.write_text(
-            "# ADR-055 \u2014 Test ADR\n\n**Status**: Proposed\n"
+            "# ADR-055 — Test ADR\n\n**Status**: Proposed\n"
             "**Date**: 2026-04-24\n\n## Context\n\nTest body.\n",
             encoding="utf-8",
         )
         return path
 
     def test_file_missing(self, hook: ModuleType) -> None:
-        record = hook._process_filename("ADR-999-missing.md", token="t")
+        record = hook._process_filename("ADR-999-missing.md")
         assert record["kind"] == "file_missing"
 
-    def test_no_token_pending(self, hook: ModuleType, tmp_path: Path) -> None:
+    def test_adr_filesystem_only(self, hook: ModuleType, tmp_path: Path) -> None:
         self._write_adr(tmp_path)
-        record = hook._process_filename("ADR-055-foo.md", token=None)
-        assert record["kind"] == "pending_no_token"
+        record = hook._process_filename("ADR-055-foo.md")
+        assert record["kind"] == "adr_filesystem_only"
         assert record["adr"]["adr_id"] == "ADR-055"
+        assert "note" in record
 
-    def test_local_recent_duplicate_skipped(
-        self, hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        self._write_adr(tmp_path)
-        monkeypatch.setattr(hook, "_recent_local_duplicate", lambda _id: True)
-        record = hook._process_filename("ADR-055-foo.md", token="t")
-        assert record["kind"] == "skipped_recent_duplicate"
-
-    def test_notion_duplicate_skipped(
-        self, hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        self._write_adr(tmp_path)
-        monkeypatch.setattr(hook, "_recent_local_duplicate", lambda _id: False)
-        monkeypatch.setattr(hook, "_notion_existing_page", lambda _id, _t: "existing-page")
-        record = hook._process_filename("ADR-055-foo.md", token="t")
-        assert record["kind"] == "skipped_notion_duplicate"
-        assert record["notion_page_id"] == "existing-page"
-
-    def test_post_success(self, hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        self._write_adr(tmp_path)
-        monkeypatch.setattr(hook, "_recent_local_duplicate", lambda _id: False)
-        monkeypatch.setattr(hook, "_notion_existing_page", lambda _id, _t: None)
-        monkeypatch.setattr(
-            hook,
-            "_notion_post",
-            lambda _p, _t: {"id": "new-page-id", "url": "https://notion/new-page"},
-        )
-        record = hook._process_filename("ADR-055-foo.md", token="t")
-        assert record["kind"] == "auto_posted"
-        assert record["notion_page_id"] == "new-page-id"
-
-    def test_post_http_error(self, hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        import urllib.error
-
-        self._write_adr(tmp_path)
-        monkeypatch.setattr(hook, "_recent_local_duplicate", lambda _id: False)
-        monkeypatch.setattr(hook, "_notion_existing_page", lambda _id, _t: None)
-
-        def _raise(*_a: Any, **_kw: Any) -> None:
-            raise urllib.error.HTTPError("u", 409, "Conflict", {}, None)  # type: ignore[arg-type]
-
-        monkeypatch.setattr(hook, "_notion_post", _raise)
-        record = hook._process_filename("ADR-055-foo.md", token="t")
-        assert record["kind"] == "post_http_error"
-        assert record["status"] == 409
-
-    def test_post_transport_error_recorded(
-        self, hook: ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        import urllib.error
-
-        self._write_adr(tmp_path)
-        monkeypatch.setattr(hook, "_recent_local_duplicate", lambda _id: False)
-        monkeypatch.setattr(hook, "_notion_existing_page", lambda _id, _t: None)
-
-        def _raise(*_a: Any, **_kw: Any) -> None:
-            raise urllib.error.URLError("dns")
-
-        monkeypatch.setattr(hook, "_notion_post", _raise)
-        record = hook._process_filename("ADR-055-foo.md", token="t")
-        assert record["kind"] == "post_transport_error"
-
-
-class TestRecentLocalDuplicate:
-    def test_no_log_returns_false(self, hook: ModuleType) -> None:
-        assert hook._recent_local_duplicate("ADR-055") is False
-
-    def test_recent_auto_posted_match_true(self, hook: ModuleType, tmp_path: Path) -> None:
-        log = hook.CAPTURE_LOG
-        rec = {
-            "timestamp": hook._utc_now_iso(),
-            "kind": "auto_posted",
-            "adr": {"adr_id": "ADR-055"},
-        }
-        log.parent.mkdir(parents=True, exist_ok=True)
-        log.write_text(json.dumps(rec) + "\n", encoding="utf-8")
-        assert hook._recent_local_duplicate("ADR-055") is True
-
-    def test_old_record_ignored(self, hook: ModuleType) -> None:
-        from datetime import datetime, timedelta, timezone
-
-        log = hook.CAPTURE_LOG
-        old_ts = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
-        rec = {"timestamp": old_ts, "kind": "auto_posted", "adr": {"adr_id": "ADR-055"}}
-        log.parent.mkdir(parents=True, exist_ok=True)
-        log.write_text(json.dumps(rec) + "\n", encoding="utf-8")
-        assert hook._recent_local_duplicate("ADR-055") is False
-
-    def test_other_kinds_ignored(self, hook: ModuleType) -> None:
-        log = hook.CAPTURE_LOG
-        rec = {
-            "timestamp": hook._utc_now_iso(),
-            "kind": "post_http_error",
-            "adr": {"adr_id": "ADR-055"},
-        }
-        log.parent.mkdir(parents=True, exist_ok=True)
-        log.write_text(json.dumps(rec) + "\n", encoding="utf-8")
-        assert hook._recent_local_duplicate("ADR-055") is False
+    def test_parse_error_returns_parse_error_kind(self, hook: ModuleType, tmp_path: Path) -> None:
+        path = tmp_path / "docs" / "architecture" / "adr" / "ADR-XYZ-fake.md"
+        path.write_text("# Generic Doc\n\nNo ADR id anywhere.", encoding="utf-8")
+        record = hook._process_filename("ADR-XYZ-fake.md")
+        assert record["kind"] == "parse_error"
 
 
 # ---------------------------------------------------------------------------
@@ -567,11 +419,9 @@ class TestMain:
         from io import StringIO
 
         monkeypatch.setattr(sys, "stdin", StringIO(head + garbage))
-        # Stub Notion calls so we don't make a real request.
-        monkeypatch.setattr(hook, "_notion_token", lambda: None)
         rc = hook.main()
         assert rc == 0
-        # Head ADR was detected and recorded.
+        # Head ADR was detected and recorded as filesystem-only.
         records = [json.loads(line) for line in hook.CAPTURE_LOG.read_text(encoding="utf-8").splitlines()]
         ids_seen = {r.get("adr", {}).get("adr_id") for r in records if "adr" in r}
         assert "ADR-055" in ids_seen

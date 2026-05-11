@@ -410,6 +410,11 @@ def _check_schema_validity() -> list[dict[str, Any]]:
 
 def main() -> int:
     import argparse
+    import os
+    if os.environ.get("NOTION_PLANS_STATUS_CANONICAL_BYPASS") == "1":
+        print("[check_notion_plans_status_canonical] BYPASS engaged (NOTION_PLANS_STATUS_CANONICAL_BYPASS=1)", flush=True)
+        return 0
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fail-closed", action="store_true", help="Exit 1 on any violation")
     parser.add_argument("--json", action="store_true", help="Output JSON report")
@@ -417,7 +422,7 @@ def main() -> int:
     parser.add_argument("--deferred-age-days", type=int, default=_DEFERRED_AGE_DAYS,
                         help=f"Age threshold for stale deferred items (default: {_DEFERRED_AGE_DAYS})")
     args = parser.parse_args()
-    
+
     all_violations: list[dict[str, Any]] = []
 
     # 1. Schema validity checks (always run)
