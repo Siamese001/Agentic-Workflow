@@ -1,15 +1,16 @@
 {
   "summary": {
     "FORBID_RD": {
-      "STRUCTURAL": 16,
-      "FULL": 7
+      "STRUCTURAL": 17,
+      "FULL": 10
     },
     "HEADER_LABEL": {
-      "STRUCTURAL": 318
+      "STRUCTURAL": 319
     },
     "EVIDENCE": {
-      "STRUCTURAL": 66,
-      "FULL": 1
+      "STRUCTURAL": 81,
+      "FULL": 1,
+      "PARTIAL": 2
     },
     "SCOPE_FENCE": {
       "STRUCTURAL": 69
@@ -18,25 +19,36 @@
       "FULL": 54
     },
     "RUNTIME_INVARIANT": {
-      "STRUCTURAL": 31
+      "STRUCTURAL": 44
     },
     "EMIT": {
-      "STRUCTURAL": 2
+      "STRUCTURAL": 5,
+      "FULL": 2,
+      "PARTIAL": 1
     },
     "SCHEMA": {
-      "STRUCTURAL": 11
+      "STRUCTURAL": 14
+    },
+    "CAUSAL": {
+      "UNCOVERED": 1
+    },
+    "OTHER": {
+      "UNCOVERED": 8
+    },
+    "NO_DISPO": {
+      "STRUCTURAL": 3
     }
   },
   "grand_totals": {
-    "FULL": 62,
-    "STRUCTURAL": 513,
-    "PARTIAL": 0,
-    "UNCOVERED": 0
+    "FULL": 67,
+    "STRUCTURAL": 552,
+    "PARTIAL": 3,
+    "UNCOVERED": 9
   },
   "rows": [
     {
       "id": "R0001",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -47,7 +59,7 @@
     },
     {
       "id": "R0002",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -58,7 +70,7 @@
     },
     {
       "id": "R0003",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -69,19 +81,19 @@
     },
     {
       "id": "R0004",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 191,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0005",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 193,
       "text": "- This file must not decide whether execution proceeds.",
       "category": "SCOPE_FENCE",
@@ -92,7 +104,7 @@
     },
     {
       "id": "R0006",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 194,
       "text": "- This file must not approve final answer egress.",
       "category": "SCOPE_FENCE",
@@ -103,7 +115,7 @@
     },
     {
       "id": "R0007",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 195,
       "text": "- This file must not approve durable writes.",
       "category": "SCOPE_FENCE",
@@ -114,7 +126,7 @@
     },
     {
       "id": "R0008",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 196,
       "text": "- This file must not retrieve evidence.",
       "category": "SCOPE_FENCE",
@@ -125,7 +137,7 @@
     },
     {
       "id": "R0009",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 197,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -136,7 +148,7 @@
     },
     {
       "id": "R0010",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 198,
       "text": "- This file must not execute tools.",
       "category": "SCOPE_FENCE",
@@ -147,7 +159,7 @@
     },
     {
       "id": "R0011",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 199,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -158,7 +170,7 @@
     },
     {
       "id": "R0012",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 202,
       "text": "- classification_status = classified | unknown | conflict_detected | violation_detected",
       "category": "STATUS_SET",
@@ -170,7 +182,7 @@
     },
     {
       "id": "R0013",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 203,
       "text": "- structure_status = clean | violation_detected | waiver_required | unresolved",
       "category": "STATUS_SET",
@@ -182,7 +194,7 @@
     },
     {
       "id": "R0014",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 204,
       "text": "- registry_status = valid | missing | stale | mismatched | substituted",
       "category": "STATUS_SET",
@@ -194,7 +206,7 @@
     },
     {
       "id": "R0015",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 205,
       "text": "- gateway_status = certified_evidence | registry_gap | injection_evidence | replay_gap | audit_gap",
       "category": "STATUS_SET",
@@ -206,7 +218,7 @@
     },
     {
       "id": "R0016",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 206,
       "text": "- egress_evidence_status = clean | bypass_detected | substitution_detected | unsupported",
       "category": "STATUS_SET",
@@ -218,7 +230,7 @@
     },
     {
       "id": "R0017",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 207,
       "text": "- enforcement_receipt_status = complete | incomplete | non_replayable | audit_gap",
       "category": "STATUS_SET",
@@ -230,7 +242,7 @@
     },
     {
       "id": "R0018",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 275,
       "text": "- LLM_API agents must use allowed models only.",
       "category": "RUNTIME_INVARIANT",
@@ -242,7 +254,7 @@
     },
     {
       "id": "R0019",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 276,
       "text": "- Model substitution is forbidden.",
       "category": "FORBID_RD",
@@ -253,7 +265,7 @@
     },
     {
       "id": "R0020",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 283,
       "text": "- Replay mode must use transcript-backed responses, not live provider calls.",
       "category": "RUNTIME_INVARIANT",
@@ -265,7 +277,7 @@
     },
     {
       "id": "R0021",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 382,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -276,7 +288,7 @@
     },
     {
       "id": "R0022",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 392,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -287,7 +299,7 @@
     },
     {
       "id": "R0023",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 430,
       "text": "- forbidden import evidence",
       "category": "FORBID_RD",
@@ -298,7 +310,7 @@
     },
     {
       "id": "R0024",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 477,
       "text": "- no forbidden naming patterns",
       "category": "FORBID_RD",
@@ -309,7 +321,7 @@
     },
     {
       "id": "R0025",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 501,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -320,7 +332,7 @@
     },
     {
       "id": "R0026",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 512,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -331,7 +343,7 @@
     },
     {
       "id": "R0027",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 578,
       "text": "- allowed_models must be empty",
       "category": "RUNTIME_INVARIANT",
@@ -343,7 +355,7 @@
     },
     {
       "id": "R0028",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 579,
       "text": "- must be replayable through deterministic inputs",
       "category": "RUNTIME_INVARIANT",
@@ -355,7 +367,7 @@
     },
     {
       "id": "R0029",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 582,
       "text": "- must use Sovereign LLM Gateway",
       "category": "RUNTIME_INVARIANT",
@@ -367,7 +379,7 @@
     },
     {
       "id": "R0030",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 583,
       "text": "- allowed_models must be non-empty",
       "category": "RUNTIME_INVARIANT",
@@ -379,7 +391,7 @@
     },
     {
       "id": "R0031",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 584,
       "text": "- provider/model must be registry-compatible",
       "category": "RUNTIME_INVARIANT",
@@ -391,7 +403,7 @@
     },
     {
       "id": "R0032",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 597,
       "text": "- digest must be deterministic",
       "category": "RUNTIME_INVARIANT",
@@ -403,7 +415,7 @@
     },
     {
       "id": "R0033",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 598,
       "text": "- digest must sort registry entries stably",
       "category": "RUNTIME_INVARIANT",
@@ -415,7 +427,7 @@
     },
     {
       "id": "R0034",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 602,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -426,7 +438,7 @@
     },
     {
       "id": "R0035",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 614,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -437,7 +449,7 @@
     },
     {
       "id": "R0036",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 705,
       "text": "- Fallback provider must still be allowed for the agent, route, policy, registry, capability, and sandbox.",
       "category": "RUNTIME_INVARIANT",
@@ -449,7 +461,7 @@
     },
     {
       "id": "R0037",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 708,
       "text": "VALIDATION MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -460,7 +472,7 @@
     },
     {
       "id": "R0038",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 755,
       "text": "Each model egress attempt must produce:",
       "category": "EMIT",
@@ -471,7 +483,7 @@
     },
     {
       "id": "R0039",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 777,
       "text": "- replay_mode=true must not call provider",
       "category": "SCOPE_FENCE",
@@ -482,7 +494,7 @@
     },
     {
       "id": "R0040",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 778,
       "text": "- response must be read from transcript",
       "category": "RUNTIME_INVARIANT",
@@ -494,7 +506,7 @@
     },
     {
       "id": "R0041",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 779,
       "text": "- response_hash must match transcript",
       "category": "RUNTIME_INVARIANT",
@@ -506,7 +518,7 @@
     },
     {
       "id": "R0042",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 780,
       "text": "- provider metadata must match replay envelope",
       "category": "RUNTIME_INVARIANT",
@@ -518,7 +530,7 @@
     },
     {
       "id": "R0043",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 803,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -529,7 +541,7 @@
     },
     {
       "id": "R0044",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 819,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -540,7 +552,7 @@
     },
     {
       "id": "R0045",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 842,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -551,7 +563,7 @@
     },
     {
       "id": "R0046",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 848,
       "text": "- No forbidden imports.",
       "category": "FORBID_RD",
@@ -562,7 +574,7 @@
     },
     {
       "id": "R0047",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 861,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -573,7 +585,7 @@
     },
     {
       "id": "R0048",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 871,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -584,7 +596,7 @@
     },
     {
       "id": "R0049",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 883,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -595,7 +607,7 @@
     },
     {
       "id": "R0050",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 896,
       "text": "- Replay/audit storage is reachable if required.",
       "category": "EVIDENCE",
@@ -606,7 +618,7 @@
     },
     {
       "id": "R0051",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 898,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -617,7 +629,7 @@
     },
     {
       "id": "R0052",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 907,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -628,7 +640,7 @@
     },
     {
       "id": "R0053",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 933,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -639,7 +651,7 @@
     },
     {
       "id": "R0054",
-      "doc": "00A.1_L5_Safety_Enforcement_Plane_detailed.md",
+      "doc": "00A.1_L5_Safety_Enforcement_Plane.md",
       "line": 945,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -650,7 +662,7 @@
     },
     {
       "id": "R0055",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -661,7 +673,7 @@
     },
     {
       "id": "R0056",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -672,7 +684,7 @@
     },
     {
       "id": "R0057",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -683,19 +695,19 @@
     },
     {
       "id": "R0058",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 203,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0059",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 205,
       "text": "- This file must not decide whether execution proceeds.",
       "category": "SCOPE_FENCE",
@@ -706,7 +718,7 @@
     },
     {
       "id": "R0060",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 206,
       "text": "- This file must not approve final output egress.",
       "category": "SCOPE_FENCE",
@@ -717,7 +729,7 @@
     },
     {
       "id": "R0061",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 207,
       "text": "- This file must not approve durable writes.",
       "category": "SCOPE_FENCE",
@@ -728,7 +740,7 @@
     },
     {
       "id": "R0062",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 208,
       "text": "- This file must not retrieve evidence.",
       "category": "SCOPE_FENCE",
@@ -739,7 +751,7 @@
     },
     {
       "id": "R0063",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 209,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -750,7 +762,7 @@
     },
     {
       "id": "R0064",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 210,
       "text": "- This file must not execute tools, models, connectors, scripts, or workflows.",
       "category": "SCOPE_FENCE",
@@ -761,7 +773,7 @@
     },
     {
       "id": "R0065",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 211,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -772,7 +784,7 @@
     },
     {
       "id": "R0066",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 212,
       "text": "- This file must not replace Runtime Gates or Exit Eval.",
       "category": "SCOPE_FENCE",
@@ -783,7 +795,7 @@
     },
     {
       "id": "R0067",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 215,
       "text": "- authority_context_status = bound | incomplete | stale | mismatched | substituted | unauthorized",
       "category": "STATUS_SET",
@@ -795,7 +807,7 @@
     },
     {
       "id": "R0068",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 216,
       "text": "- policy_binding_status = current | missing | stale | mismatched",
       "category": "STATUS_SET",
@@ -807,7 +819,7 @@
     },
     {
       "id": "R0069",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 217,
       "text": "- blueprint_binding_status = current | missing | stale | mismatched",
       "category": "STATUS_SET",
@@ -819,7 +831,7 @@
     },
     {
       "id": "R0070",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 218,
       "text": "- registry_binding_status = compatible | missing | stale | mismatched | substituted",
       "category": "STATUS_SET",
@@ -831,7 +843,7 @@
     },
     {
       "id": "R0071",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 219,
       "text": "- principal_chain_status = valid | missing | ambiguous | cross_principal_bleed | cross_tenant_bleed",
       "category": "STATUS_SET",
@@ -843,7 +855,7 @@
     },
     {
       "id": "R0072",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 220,
       "text": "- capability_scope_status = sufficient | missing | too_broad | too_narrow | expired | forged",
       "category": "STATUS_SET",
@@ -855,7 +867,7 @@
     },
     {
       "id": "R0073",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 221,
       "text": "- sandbox_binding_status = bound | missing | stale | incompatible | widened",
       "category": "STATUS_SET",
@@ -867,7 +879,7 @@
     },
     {
       "id": "R0074",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 222,
       "text": "- replay_binding_status = bound | missing | incomplete | non_replayable",
       "category": "STATUS_SET",
@@ -879,7 +891,7 @@
     },
     {
       "id": "R0075",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 223,
       "text": "- recertification_status = not_required | required_due_to_authority_change",
       "category": "STATUS_SET",
@@ -891,7 +903,7 @@
     },
     {
       "id": "R0076",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 288,
       "text": "- Every governed packet requesting power must bind policy, blueprint, registry, principal, capability, sandbox,",
       "category": "SCHEMA",
@@ -902,7 +914,7 @@
     },
     {
       "id": "R0077",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 375,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -913,7 +925,7 @@
     },
     {
       "id": "R0078",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 382,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -924,7 +936,7 @@
     },
     {
       "id": "R0079",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 410,
       "text": "REQUIRED COMMON FIELDS:",
       "category": "HEADER_LABEL",
@@ -935,7 +947,7 @@
     },
     {
       "id": "R0080",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 432,
       "text": "- missing replay envelope for replay-required route",
       "category": "EVIDENCE",
@@ -946,7 +958,7 @@
     },
     {
       "id": "R0081",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 439,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -957,7 +969,7 @@
     },
     {
       "id": "R0082",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 444,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -968,7 +980,7 @@
     },
     {
       "id": "R0083",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 479,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -979,7 +991,7 @@
     },
     {
       "id": "R0084",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 506,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -990,7 +1002,7 @@
     },
     {
       "id": "R0085",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 519,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1001,7 +1013,7 @@
     },
     {
       "id": "R0086",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 530,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1012,7 +1024,7 @@
     },
     {
       "id": "R0087",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 568,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -1023,7 +1035,7 @@
     },
     {
       "id": "R0088",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 591,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1034,7 +1046,7 @@
     },
     {
       "id": "R0089",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 603,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1045,7 +1057,7 @@
     },
     {
       "id": "R0090",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 613,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1056,7 +1068,7 @@
     },
     {
       "id": "R0091",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 659,
       "text": "- referenced item has required audit fields",
       "category": "EVIDENCE",
@@ -1067,7 +1079,7 @@
     },
     {
       "id": "R0092",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 667,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -1078,7 +1090,7 @@
     },
     {
       "id": "R0093",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 681,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1089,7 +1101,7 @@
     },
     {
       "id": "R0094",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 692,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1100,7 +1112,7 @@
     },
     {
       "id": "R0095",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 699,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1111,7 +1123,7 @@
     },
     {
       "id": "R0096",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 710,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -1122,7 +1134,7 @@
     },
     {
       "id": "R0097",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 723,
       "text": "- audit fields required",
       "category": "EVIDENCE",
@@ -1133,7 +1145,7 @@
     },
     {
       "id": "R0098",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 725,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1144,7 +1156,7 @@
     },
     {
       "id": "R0099",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 737,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1155,7 +1167,7 @@
     },
     {
       "id": "R0100",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 745,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1166,7 +1178,7 @@
     },
     {
       "id": "R0101",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 756,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -1177,7 +1189,7 @@
     },
     {
       "id": "R0102",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 771,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1188,7 +1200,7 @@
     },
     {
       "id": "R0103",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 784,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1199,7 +1211,7 @@
     },
     {
       "id": "R0104",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 792,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1210,7 +1222,7 @@
     },
     {
       "id": "R0105",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 802,
       "text": "MUST RESOLVE:",
       "category": "HEADER_LABEL",
@@ -1221,7 +1233,7 @@
     },
     {
       "id": "R0106",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 816,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1232,7 +1244,7 @@
     },
     {
       "id": "R0107",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 829,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1243,7 +1255,7 @@
     },
     {
       "id": "R0108",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 838,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1254,7 +1266,7 @@
     },
     {
       "id": "R0109",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 849,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1265,7 +1277,7 @@
     },
     {
       "id": "R0110",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 905,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1276,7 +1288,7 @@
     },
     {
       "id": "R0111",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 908,
       "text": "- session scope is present when required",
       "category": "EVIDENCE",
@@ -1287,7 +1299,7 @@
     },
     {
       "id": "R0112",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 921,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1298,7 +1310,7 @@
     },
     {
       "id": "R0113",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 932,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1309,7 +1321,7 @@
     },
     {
       "id": "R0114",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 989,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1320,7 +1332,7 @@
     },
     {
       "id": "R0115",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1011,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1331,7 +1343,7 @@
     },
     {
       "id": "R0116",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1026,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1342,7 +1354,7 @@
     },
     {
       "id": "R0117",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1081,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1353,7 +1365,7 @@
     },
     {
       "id": "R0118",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1102,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1364,7 +1376,7 @@
     },
     {
       "id": "R0119",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1114,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1375,7 +1387,7 @@
     },
     {
       "id": "R0120",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1172,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1386,7 +1398,7 @@
     },
     {
       "id": "R0121",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1173,
       "text": "- replay_key exists when replay-required route",
       "category": "EVIDENCE",
@@ -1397,7 +1409,7 @@
     },
     {
       "id": "R0122",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1192,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1408,7 +1420,7 @@
     },
     {
       "id": "R0123",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1202,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1419,7 +1431,7 @@
     },
     {
       "id": "R0124",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1241,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1430,7 +1442,7 @@
     },
     {
       "id": "R0125",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1256,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1441,7 +1453,7 @@
     },
     {
       "id": "R0126",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1264,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1452,7 +1464,7 @@
     },
     {
       "id": "R0127",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1285,
       "text": "MUST TREAT AS NON-AUTHORITY:",
       "category": "RUNTIME_INVARIANT",
@@ -1464,7 +1476,7 @@
     },
     {
       "id": "R0128",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1299,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1475,7 +1487,7 @@
     },
     {
       "id": "R0129",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1311,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1486,7 +1498,7 @@
     },
     {
       "id": "R0130",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1318,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1497,7 +1509,7 @@
     },
     {
       "id": "R0131",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1342,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1508,7 +1520,7 @@
     },
     {
       "id": "R0132",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1361,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1519,7 +1531,7 @@
     },
     {
       "id": "R0133",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1369,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1530,7 +1542,7 @@
     },
     {
       "id": "R0134",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1437,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1541,7 +1553,7 @@
     },
     {
       "id": "R0135",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1443,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1552,7 +1564,7 @@
     },
     {
       "id": "R0136",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1456,
       "text": "- Identify when a new lane, target, or authority context must be certified again.",
       "category": "RUNTIME_INVARIANT",
@@ -1564,7 +1576,7 @@
     },
     {
       "id": "R0137",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1458,
       "text": "RE-CERTIFICATION REQUIRED WHEN:",
       "category": "EVIDENCE",
@@ -1575,7 +1587,7 @@
     },
     {
       "id": "R0138",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1482,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1586,7 +1598,7 @@
     },
     {
       "id": "R0139",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1488,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1597,7 +1609,7 @@
     },
     {
       "id": "R0140",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1506,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1608,7 +1620,7 @@
     },
     {
       "id": "R0141",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1522,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1619,7 +1631,7 @@
     },
     {
       "id": "R0142",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1531,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1630,7 +1642,7 @@
     },
     {
       "id": "R0143",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1542,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1641,7 +1653,7 @@
     },
     {
       "id": "R0144",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1560,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1652,7 +1664,7 @@
     },
     {
       "id": "R0145",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1569,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1663,7 +1675,7 @@
     },
     {
       "id": "R0146",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1631,
       "text": "- re-clearance required",
       "category": "EVIDENCE",
@@ -1674,7 +1686,7 @@
     },
     {
       "id": "R0147",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1650,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1685,7 +1697,7 @@
     },
     {
       "id": "R0148",
-      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding_detailed.md",
+      "doc": "00A.2_L5_Authority_Context_and_Registry_Binding.md",
       "line": 1656,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1696,7 +1708,7 @@
     },
     {
       "id": "R0149",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -1707,7 +1719,7 @@
     },
     {
       "id": "R0150",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -1718,7 +1730,7 @@
     },
     {
       "id": "R0151",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -1729,19 +1741,19 @@
     },
     {
       "id": "R0152",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 208,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0153",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 210,
       "text": "- This file must not decide whether execution proceeds.",
       "category": "SCOPE_FENCE",
@@ -1752,7 +1764,7 @@
     },
     {
       "id": "R0154",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 211,
       "text": "- This file must not approve final output egress.",
       "category": "SCOPE_FENCE",
@@ -1763,7 +1775,7 @@
     },
     {
       "id": "R0155",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 212,
       "text": "- This file must not approve durable writes.",
       "category": "SCOPE_FENCE",
@@ -1774,7 +1786,7 @@
     },
     {
       "id": "R0156",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 213,
       "text": "- This file must not retrieve evidence.",
       "category": "SCOPE_FENCE",
@@ -1785,7 +1797,7 @@
     },
     {
       "id": "R0157",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 214,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -1796,7 +1808,7 @@
     },
     {
       "id": "R0158",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 215,
       "text": "- This file must not execute tools, models, connectors, scripts, or workflows.",
       "category": "SCOPE_FENCE",
@@ -1807,7 +1819,7 @@
     },
     {
       "id": "R0159",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 216,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -1818,7 +1830,7 @@
     },
     {
       "id": "R0160",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 217,
       "text": "- This file must not replace Runtime Gates or Exit Eval.",
       "category": "SCOPE_FENCE",
@@ -1829,7 +1841,7 @@
     },
     {
       "id": "R0161",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 220,
       "text": "- origin_label_status = labeled | unlabeled | ambiguous | invalid",
       "category": "STATUS_SET",
@@ -1841,7 +1853,7 @@
     },
     {
       "id": "R0162",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 221,
       "text": "- content_boundary_status = intact | violated | unknown | requires_safe_extraction",
       "category": "STATUS_SET",
@@ -1853,7 +1865,7 @@
     },
     {
       "id": "R0163",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 222,
       "text": "- instruction_boundary_status = trusted_instruction | untrusted_data | quarantined | stripped | rejected_as_authority",
       "category": "STATUS_SET",
@@ -1865,7 +1877,7 @@
     },
     {
       "id": "R0164",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 223,
       "text": "- quarantine_status = not_required | required | applied | failed",
       "category": "STATUS_SET",
@@ -1877,7 +1889,7 @@
     },
     {
       "id": "R0165",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 224,
       "text": "- safe_extraction_status = not_required | extracted | partial | failed",
       "category": "STATUS_SET",
@@ -1889,7 +1901,7 @@
     },
     {
       "id": "R0166",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 225,
       "text": "- authority_attempt_status = none | attempted | blocked | unresolved",
       "category": "STATUS_SET",
@@ -1901,7 +1913,7 @@
     },
     {
       "id": "R0167",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 226,
       "text": "- origin_manifest_status = complete | incomplete | stale | mismatched",
       "category": "STATUS_SET",
@@ -1913,7 +1925,7 @@
     },
     {
       "id": "R0168",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 294,
       "text": "- Prompt-like text inside untrusted content must be fenced as data.",
       "category": "RUNTIME_INVARIANT",
@@ -1925,7 +1937,7 @@
     },
     {
       "id": "R0169",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 298,
       "text": "- Content labels must be replayable and auditable.",
       "category": "RUNTIME_INVARIANT",
@@ -1937,7 +1949,7 @@
     },
     {
       "id": "R0170",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 365,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -1948,7 +1960,7 @@
     },
     {
       "id": "R0171",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 380,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -1959,7 +1971,7 @@
     },
     {
       "id": "R0172",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 389,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -1970,7 +1982,7 @@
     },
     {
       "id": "R0173",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 421,
       "text": "- Must be versioned and hash-bound.",
       "category": "RUNTIME_INVARIANT",
@@ -1982,7 +1994,7 @@
     },
     {
       "id": "R0174",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 426,
       "text": "- Must be policy_hash-bound.",
       "category": "RUNTIME_INVARIANT",
@@ -1994,7 +2006,7 @@
     },
     {
       "id": "R0175",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 431,
       "text": "- Must be registry_digest-bound.",
       "category": "RUNTIME_INVARIANT",
@@ -2006,7 +2018,7 @@
     },
     {
       "id": "R0176",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 436,
       "text": "- Must not override higher authority.",
       "category": "SCOPE_FENCE",
@@ -2017,7 +2029,7 @@
     },
     {
       "id": "R0177",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 460,
       "text": "- Must preserve source lineage and citation refs.",
       "category": "RUNTIME_INVARIANT",
@@ -2029,7 +2041,7 @@
     },
     {
       "id": "R0178",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 465,
       "text": "- Must preserve invocation refs.",
       "category": "RUNTIME_INVARIANT",
@@ -2041,7 +2053,7 @@
     },
     {
       "id": "R0179",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 466,
       "text": "- Must be scanned before entering context or arguments.",
       "category": "RUNTIME_INVARIANT",
@@ -2053,7 +2065,7 @@
     },
     {
       "id": "R0180",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 494,
       "text": "- Must not enter authority-bearing slots.",
       "category": "SCOPE_FENCE",
@@ -2064,7 +2076,7 @@
     },
     {
       "id": "R0181",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 496,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2075,7 +2087,7 @@
     },
     {
       "id": "R0182",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 502,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2086,7 +2098,7 @@
     },
     {
       "id": "R0183",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 534,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2097,7 +2109,7 @@
     },
     {
       "id": "R0184",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 545,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2108,7 +2120,7 @@
     },
     {
       "id": "R0185",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 552,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2119,7 +2131,7 @@
     },
     {
       "id": "R0186",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 606,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2130,7 +2142,7 @@
     },
     {
       "id": "R0187",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 616,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2141,7 +2153,7 @@
     },
     {
       "id": "R0188",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 622,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2152,7 +2164,7 @@
     },
     {
       "id": "R0189",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 668,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2163,7 +2175,7 @@
     },
     {
       "id": "R0190",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 678,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2174,7 +2186,7 @@
     },
     {
       "id": "R0191",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 685,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2185,7 +2197,7 @@
     },
     {
       "id": "R0192",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 737,
       "text": "- required",
       "category": "EVIDENCE",
@@ -2196,7 +2208,7 @@
     },
     {
       "id": "R0193",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 742,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2207,7 +2219,7 @@
     },
     {
       "id": "R0194",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 751,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2218,7 +2230,7 @@
     },
     {
       "id": "R0195",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 758,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2229,7 +2241,7 @@
     },
     {
       "id": "R0196",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 809,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2240,7 +2252,7 @@
     },
     {
       "id": "R0197",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 819,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2251,7 +2263,7 @@
     },
     {
       "id": "R0198",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 827,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2262,7 +2274,7 @@
     },
     {
       "id": "R0199",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 874,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2273,7 +2285,7 @@
     },
     {
       "id": "R0200",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 881,
       "text": "- transformation is deterministic when required",
       "category": "EVIDENCE",
@@ -2284,7 +2296,7 @@
     },
     {
       "id": "R0201",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 884,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2295,7 +2307,7 @@
     },
     {
       "id": "R0202",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 890,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2306,7 +2318,7 @@
     },
     {
       "id": "R0203",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 930,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2317,7 +2329,7 @@
     },
     {
       "id": "R0204",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 937,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2328,7 +2340,7 @@
     },
     {
       "id": "R0205",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 943,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2339,7 +2351,7 @@
     },
     {
       "id": "R0206",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 957,
       "text": "RETRIEVED CONTENT MUST PRESERVE:",
       "category": "HEADER_LABEL",
@@ -2350,7 +2362,7 @@
     },
     {
       "id": "R0207",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 971,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2361,7 +2373,7 @@
     },
     {
       "id": "R0208",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 984,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2372,7 +2384,7 @@
     },
     {
       "id": "R0209",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 991,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2383,7 +2395,7 @@
     },
     {
       "id": "R0210",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1013,
       "text": "TOOL OUTPUT MUST PRESERVE:",
       "category": "HEADER_LABEL",
@@ -2394,7 +2406,7 @@
     },
     {
       "id": "R0211",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1028,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2405,7 +2417,7 @@
     },
     {
       "id": "R0212",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1042,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2416,7 +2428,7 @@
     },
     {
       "id": "R0213",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1049,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2427,7 +2439,7 @@
     },
     {
       "id": "R0214",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1063,
       "text": "MODEL OUTPUT MUST PRESERVE:",
       "category": "HEADER_LABEL",
@@ -2438,7 +2450,7 @@
     },
     {
       "id": "R0215",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1076,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2449,7 +2461,7 @@
     },
     {
       "id": "R0216",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1090,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2460,7 +2472,7 @@
     },
     {
       "id": "R0217",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1097,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2471,7 +2483,7 @@
     },
     {
       "id": "R0218",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1112,
       "text": "HUMAN REVIEW MUST PRESERVE:",
       "category": "HEADER_LABEL",
@@ -2482,7 +2494,7 @@
     },
     {
       "id": "R0219",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1125,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2493,7 +2505,7 @@
     },
     {
       "id": "R0220",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1137,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2504,7 +2516,7 @@
     },
     {
       "id": "R0221",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1144,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2515,7 +2527,7 @@
     },
     {
       "id": "R0222",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1180,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2526,7 +2538,7 @@
     },
     {
       "id": "R0223",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1194,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2537,7 +2549,7 @@
     },
     {
       "id": "R0224",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1201,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2548,7 +2560,7 @@
     },
     {
       "id": "R0225",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1214,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2559,7 +2571,7 @@
     },
     {
       "id": "R0226",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1227,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2570,7 +2582,7 @@
     },
     {
       "id": "R0227",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1234,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2581,7 +2593,7 @@
     },
     {
       "id": "R0228",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1274,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -2592,7 +2604,7 @@
     },
     {
       "id": "R0229",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1283,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2603,7 +2615,7 @@
     },
     {
       "id": "R0230",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1290,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2614,7 +2626,7 @@
     },
     {
       "id": "R0231",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1302,
       "text": "- Define static origin-trust evidence inputs required to prove prompts, configs, connector specs, and templates preserve instruction/data boundaries.",
       "category": "EVIDENCE",
@@ -2625,7 +2637,7 @@
     },
     {
       "id": "R0232",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1306,
       "text": "MUST CONSUME:",
       "category": "HEADER_LABEL",
@@ -2636,7 +2648,7 @@
     },
     {
       "id": "R0233",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1312,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2647,7 +2659,7 @@
     },
     {
       "id": "R0234",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1317,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2658,7 +2670,7 @@
     },
     {
       "id": "R0235",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1345,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2669,7 +2681,7 @@
     },
     {
       "id": "R0236",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1355,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2680,7 +2692,7 @@
     },
     {
       "id": "R0237",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1376,
       "text": "- planning priors must be policy/registry/dev approved",
       "category": "RUNTIME_INVARIANT",
@@ -2692,7 +2704,7 @@
     },
     {
       "id": "R0238",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1415,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -2703,7 +2715,7 @@
     },
     {
       "id": "R0239",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1423,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -2714,7 +2726,7 @@
     },
     {
       "id": "R0240",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1433,
       "text": "20. REQUIRED OUTPUT ARTIFACTS",
       "category": "EVIDENCE",
@@ -2725,7 +2737,7 @@
     },
     {
       "id": "R0241",
-      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary_detailed.md",
+      "doc": "00A.3_L5_Origin_Trust_and_Content_Boundary.md",
       "line": 1620,
       "text": "Do not replace MUST / MUST NOT / MUST EMIT / MUST CHECK requirements with broad prose.",
       "category": "SCOPE_FENCE",
@@ -2775,7 +2787,7 @@
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
@@ -3517,7 +3529,7 @@
     },
     {
       "id": "R0312",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -3528,7 +3540,7 @@
     },
     {
       "id": "R0313",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -3539,7 +3551,7 @@
     },
     {
       "id": "R0314",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -3550,7 +3562,7 @@
     },
     {
       "id": "R0315",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 151,
       "text": "or registry target changes, L5 must re-certify the new lane.",
       "category": "RUNTIME_INVARIANT",
@@ -3562,19 +3574,19 @@
     },
     {
       "id": "R0316",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 218,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0317",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 220,
       "text": "- This file must not execute model calls.",
       "category": "SCOPE_FENCE",
@@ -3585,7 +3597,7 @@
     },
     {
       "id": "R0318",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 221,
       "text": "- This file must not execute tool calls.",
       "category": "SCOPE_FENCE",
@@ -3596,7 +3608,7 @@
     },
     {
       "id": "R0319",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 222,
       "text": "- This file must not call connectors.",
       "category": "SCOPE_FENCE",
@@ -3607,7 +3619,7 @@
     },
     {
       "id": "R0320",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 223,
       "text": "- This file must not perform network access.",
       "category": "SCOPE_FENCE",
@@ -3618,7 +3630,7 @@
     },
     {
       "id": "R0321",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 224,
       "text": "- This file must not retrieve evidence.",
       "category": "SCOPE_FENCE",
@@ -3629,7 +3641,7 @@
     },
     {
       "id": "R0322",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 225,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -3640,7 +3652,7 @@
     },
     {
       "id": "R0323",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 226,
       "text": "- This file must not write durable state.",
       "category": "SCOPE_FENCE",
@@ -3651,7 +3663,7 @@
     },
     {
       "id": "R0324",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 227,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -3662,7 +3674,7 @@
     },
     {
       "id": "R0325",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 228,
       "text": "- This file must not replace Runtime Gates, L2, Exit, UWG, or L6.",
       "category": "SCOPE_FENCE",
@@ -3673,7 +3685,7 @@
     },
     {
       "id": "R0326",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 231,
       "text": "- egress_certification_status = certified_evidence | incomplete | stale | mismatched | substituted | unauthorized",
       "category": "STATUS_SET",
@@ -3685,7 +3697,7 @@
     },
     {
       "id": "R0327",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 232,
       "text": "- model_egress_status = bound | missing | unauthorized | substituted | replay_gap | audit_gap",
       "category": "STATUS_SET",
@@ -3697,7 +3709,7 @@
     },
     {
       "id": "R0328",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 233,
       "text": "- tool_egress_status = bound | missing | unauthorized | substituted | schema_gap | audit_gap",
       "category": "STATUS_SET",
@@ -3709,7 +3721,7 @@
     },
     {
       "id": "R0329",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 234,
       "text": "- connector_egress_status = bound | missing | unauthorized | expired | substituted | credential_gap",
       "category": "STATUS_SET",
@@ -3721,7 +3733,7 @@
     },
     {
       "id": "R0330",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 235,
       "text": "- network_egress_status = bound | missing | unauthorized_destination | broad_scope | credential_gap",
       "category": "STATUS_SET",
@@ -3733,7 +3745,7 @@
     },
     {
       "id": "R0331",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 236,
       "text": "- provider_lane_status = current | unavailable | substituted | incompatible | uncertified_fallback",
       "category": "STATUS_SET",
@@ -3745,7 +3757,7 @@
     },
     {
       "id": "R0332",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 237,
       "text": "- credential_scope_status = minimal | missing | too_broad | expired | incompatible | exposed",
       "category": "STATUS_SET",
@@ -3757,7 +3769,7 @@
     },
     {
       "id": "R0333",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 238,
       "text": "- fallback_status = not_required | certified | uncertified | substitution_detected | recertification_required",
       "category": "STATUS_SET",
@@ -3769,7 +3781,7 @@
     },
     {
       "id": "R0334",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 386,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3780,7 +3792,7 @@
     },
     {
       "id": "R0335",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 403,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3791,7 +3803,7 @@
     },
     {
       "id": "R0336",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 410,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3802,7 +3814,7 @@
     },
     {
       "id": "R0337",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 472,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3813,7 +3825,7 @@
     },
     {
       "id": "R0338",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 478,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3824,7 +3836,7 @@
     },
     {
       "id": "R0339",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 528,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3835,7 +3847,7 @@
     },
     {
       "id": "R0340",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 549,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3846,7 +3858,7 @@
     },
     {
       "id": "R0341",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 561,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3857,7 +3869,7 @@
     },
     {
       "id": "R0342",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 610,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3868,7 +3880,7 @@
     },
     {
       "id": "R0343",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 617,
       "text": "- allowed_args_hash or constraints are present when required",
       "category": "EVIDENCE",
@@ -3879,7 +3891,7 @@
     },
     {
       "id": "R0344",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 629,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3890,7 +3902,7 @@
     },
     {
       "id": "R0345",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 640,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3901,7 +3913,7 @@
     },
     {
       "id": "R0346",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 690,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3912,7 +3924,7 @@
     },
     {
       "id": "R0347",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 709,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3923,7 +3935,7 @@
     },
     {
       "id": "R0348",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 722,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3934,7 +3946,7 @@
     },
     {
       "id": "R0349",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 770,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3945,7 +3957,7 @@
     },
     {
       "id": "R0350",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 788,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -3956,7 +3968,7 @@
     },
     {
       "id": "R0351",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 800,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -3967,7 +3979,7 @@
     },
     {
       "id": "R0352",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 833,
       "text": "RE-CERTIFICATION REQUIRED WHEN:",
       "category": "EVIDENCE",
@@ -3978,7 +3990,7 @@
     },
     {
       "id": "R0353",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 849,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -3989,7 +4001,7 @@
     },
     {
       "id": "R0354",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 863,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4000,7 +4012,7 @@
     },
     {
       "id": "R0355",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 875,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4011,7 +4023,7 @@
     },
     {
       "id": "R0356",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 910,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4022,7 +4034,7 @@
     },
     {
       "id": "R0357",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 925,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4033,7 +4045,7 @@
     },
     {
       "id": "R0358",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 935,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4044,7 +4056,7 @@
     },
     {
       "id": "R0359",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 958,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4055,7 +4067,7 @@
     },
     {
       "id": "R0360",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 972,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4066,7 +4078,7 @@
     },
     {
       "id": "R0361",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 981,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4077,7 +4089,7 @@
     },
     {
       "id": "R0362",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1011,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4088,7 +4100,7 @@
     },
     {
       "id": "R0363",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1025,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4099,7 +4111,7 @@
     },
     {
       "id": "R0364",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1034,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4110,7 +4122,7 @@
     },
     {
       "id": "R0365",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1058,
       "text": "MUST CONSUME:",
       "category": "HEADER_LABEL",
@@ -4121,7 +4133,7 @@
     },
     {
       "id": "R0366",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1066,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4132,7 +4144,7 @@
     },
     {
       "id": "R0367",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1074,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4143,7 +4155,7 @@
     },
     {
       "id": "R0368",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1096,
       "text": "AUDIT MUST CAPTURE:",
       "category": "HEADER_LABEL",
@@ -4154,7 +4166,7 @@
     },
     {
       "id": "R0369",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1126,
       "text": "REPLAY MUST CAPTURE:",
       "category": "HEADER_LABEL",
@@ -4165,7 +4177,7 @@
     },
     {
       "id": "R0370",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1138,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4176,7 +4188,7 @@
     },
     {
       "id": "R0371",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1147,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4187,7 +4199,7 @@
     },
     {
       "id": "R0372",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1163,
       "text": "MUST CONSUME:",
       "category": "HEADER_LABEL",
@@ -4198,7 +4210,7 @@
     },
     {
       "id": "R0373",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1172,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4209,7 +4221,7 @@
     },
     {
       "id": "R0374",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1178,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4220,7 +4232,7 @@
     },
     {
       "id": "R0375",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1209,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4231,7 +4243,7 @@
     },
     {
       "id": "R0376",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1220,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4242,7 +4254,7 @@
     },
     {
       "id": "R0377",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1267,
       "text": "- recertification required evidence",
       "category": "EVIDENCE",
@@ -4253,7 +4265,7 @@
     },
     {
       "id": "R0378",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1275,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4264,7 +4276,7 @@
     },
     {
       "id": "R0379",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1285,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4275,7 +4287,7 @@
     },
     {
       "id": "R0380",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1294,
       "text": "16. REQUIRED OUTPUT ARTIFACTS",
       "category": "EVIDENCE",
@@ -4286,7 +4298,7 @@
     },
     {
       "id": "R0381",
-      "doc": "00A.5_L5_Egress_and_Provider_Governance_detailed.md",
+      "doc": "00A.5_L5_Egress_and_Provider_Governance.md",
       "line": 1522,
       "text": "Do not replace MUST / MUST NOT / MUST EMIT / MUST CHECK requirements with broad prose.",
       "category": "SCOPE_FENCE",
@@ -4297,7 +4309,7 @@
     },
     {
       "id": "R0382",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -4308,7 +4320,7 @@
     },
     {
       "id": "R0383",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -4319,7 +4331,7 @@
     },
     {
       "id": "R0384",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -4330,7 +4342,7 @@
     },
     {
       "id": "R0385",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 138,
       "text": "- Defines the evidence required to prove that a governed packet was certified under the correct policy, authority,",
       "category": "EVIDENCE",
@@ -4341,7 +4353,7 @@
     },
     {
       "id": "R0386",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 153,
       "text": "- what L5 must record",
       "category": "EMIT",
@@ -4352,7 +4364,7 @@
     },
     {
       "id": "R0387",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 155,
       "text": "- which receipts are required",
       "category": "EVIDENCE",
@@ -4363,19 +4375,19 @@
     },
     {
       "id": "R0388",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 214,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0389",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 216,
       "text": "- This file must not execute replay.",
       "category": "SCOPE_FENCE",
@@ -4386,7 +4398,7 @@
     },
     {
       "id": "R0390",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 217,
       "text": "- This file must not compare full run outputs.",
       "category": "SCOPE_FENCE",
@@ -4397,7 +4409,7 @@
     },
     {
       "id": "R0391",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 218,
       "text": "- This file must not perform L2 sealing.",
       "category": "SCOPE_FENCE",
@@ -4408,7 +4420,7 @@
     },
     {
       "id": "R0392",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 219,
       "text": "- This file must not decide whether the current run proceeds.",
       "category": "SCOPE_FENCE",
@@ -4419,7 +4431,7 @@
     },
     {
       "id": "R0393",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 220,
       "text": "- This file must not approve final output egress.",
       "category": "SCOPE_FENCE",
@@ -4430,7 +4442,7 @@
     },
     {
       "id": "R0394",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 221,
       "text": "- This file must not approve durable writes.",
       "category": "SCOPE_FENCE",
@@ -4441,7 +4453,7 @@
     },
     {
       "id": "R0395",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 222,
       "text": "- This file must not retrieve evidence.",
       "category": "SCOPE_FENCE",
@@ -4452,7 +4464,7 @@
     },
     {
       "id": "R0396",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 223,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -4463,7 +4475,7 @@
     },
     {
       "id": "R0397",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 224,
       "text": "- This file must not execute tools, models, connectors, scripts, or workflows.",
       "category": "SCOPE_FENCE",
@@ -4474,7 +4486,7 @@
     },
     {
       "id": "R0398",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 225,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -4485,7 +4497,7 @@
     },
     {
       "id": "R0399",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 228,
       "text": "- certification_evidence_status = complete | incomplete | stale | mismatched | non_replayable | audit_gap",
       "category": "STATUS_SET",
@@ -4497,7 +4509,7 @@
     },
     {
       "id": "R0400",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 229,
       "text": "- replay_binding_status = bound | missing | incomplete | mismatched | non_replayable",
       "category": "STATUS_SET",
@@ -4509,7 +4521,7 @@
     },
     {
       "id": "R0401",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 230,
       "text": "- audit_binding_status = complete | incomplete | hash_gap | trace_gap | receipt_gap",
       "category": "STATUS_SET",
@@ -4521,7 +4533,7 @@
     },
     {
       "id": "R0402",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 231,
       "text": "- trace_binding_status = complete | missing_trace | missing_span | orphan_span | parent_gap",
       "category": "STATUS_SET",
@@ -4533,7 +4545,7 @@
     },
     {
       "id": "R0403",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 232,
       "text": "- hash_binding_status = complete | missing_hash | mismatched_hash | unsealed | tamper_evidence",
       "category": "STATUS_SET",
@@ -4545,7 +4557,7 @@
     },
     {
       "id": "R0404",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 233,
       "text": "- reconstruction_status = ready | partial | blocked_by_gap | non_reconstructable",
       "category": "STATUS_SET",
@@ -4557,7 +4569,7 @@
     },
     {
       "id": "R0405",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 234,
       "text": "- certification_scope_status = bound | missing | widened | stale | mismatched",
       "category": "STATUS_SET",
@@ -4569,7 +4581,7 @@
     },
     {
       "id": "R0406",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 318,
       "text": "- Every L5 certification must be reconstructable.",
       "category": "RUNTIME_INVARIANT",
@@ -4581,7 +4593,7 @@
     },
     {
       "id": "R0407",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 319,
       "text": "- Every L5 certification must bind policy_hash.",
       "category": "SCHEMA",
@@ -4592,7 +4604,7 @@
     },
     {
       "id": "R0408",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 320,
       "text": "- Every L5 certification must bind blueprint_hash.",
       "category": "SCHEMA",
@@ -4603,7 +4615,7 @@
     },
     {
       "id": "R0409",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 321,
       "text": "- Every L5 certification must bind registry_digest_set.",
       "category": "SCHEMA",
@@ -4614,7 +4626,7 @@
     },
     {
       "id": "R0410",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 322,
       "text": "- Every L5 certification must bind principal_chain.",
       "category": "SCHEMA",
@@ -4625,7 +4637,7 @@
     },
     {
       "id": "R0411",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 323,
       "text": "- Every L5 certification must bind origin_trust_manifest.",
       "category": "SCHEMA",
@@ -4636,7 +4648,7 @@
     },
     {
       "id": "R0412",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 324,
       "text": "- Every L5 certification must bind capability_token when authority is granted.",
       "category": "SCHEMA",
@@ -4647,7 +4659,7 @@
     },
     {
       "id": "R0413",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 325,
       "text": "- Every L5 certification must bind sandbox_envelope when execution/egress/write proposal is involved.",
       "category": "SCHEMA",
@@ -4658,7 +4670,7 @@
     },
     {
       "id": "R0414",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 326,
       "text": "- Every L5 certification must bind replay_envelope.",
       "category": "SCHEMA",
@@ -4669,7 +4681,7 @@
     },
     {
       "id": "R0415",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 327,
       "text": "- Every L5 certification must bind trace_id and relevant span refs when available.",
       "category": "SCHEMA",
@@ -4680,7 +4692,7 @@
     },
     {
       "id": "R0416",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 340,
       "text": "- Define the canonical packet that proves a governance review was certified, not certified, or required more evidence.",
       "category": "EVIDENCE",
@@ -4691,7 +4703,7 @@
     },
     {
       "id": "R0417",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 397,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4702,7 +4714,7 @@
     },
     {
       "id": "R0418",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 418,
       "text": "- hmac_sig exists where required",
       "category": "EVIDENCE",
@@ -4713,7 +4725,7 @@
     },
     {
       "id": "R0419",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 420,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4724,7 +4736,7 @@
     },
     {
       "id": "R0420",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 427,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4735,7 +4747,7 @@
     },
     {
       "id": "R0421",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 498,
       "text": "FORBIDDEN RESULT FIELDS:",
       "category": "HEADER_LABEL",
@@ -4746,7 +4758,7 @@
     },
     {
       "id": "R0422",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 511,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4757,7 +4769,7 @@
     },
     {
       "id": "R0423",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 517,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4768,7 +4780,7 @@
     },
     {
       "id": "R0424",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 563,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4779,7 +4791,7 @@
     },
     {
       "id": "R0425",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 577,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4790,7 +4802,7 @@
     },
     {
       "id": "R0426",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 584,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4801,7 +4813,7 @@
     },
     {
       "id": "R0427",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 632,
       "text": "- wall_clock_for_decision = forbidden",
       "category": "FORBID_RD",
@@ -4812,7 +4824,7 @@
     },
     {
       "id": "R0428",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 637,
       "text": "- current_time_in_prompt = forbidden unless explicitly captured in replay envelope",
       "category": "FORBID_RD",
@@ -4823,7 +4835,7 @@
     },
     {
       "id": "R0429",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 639,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4834,7 +4846,7 @@
     },
     {
       "id": "R0430",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 640,
       "text": "- replay_key exists when required",
       "category": "EVIDENCE",
@@ -4845,7 +4857,7 @@
     },
     {
       "id": "R0431",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 651,
       "text": "- replay envelope includes snapshot manifest where required",
       "category": "EVIDENCE",
@@ -4856,7 +4868,7 @@
     },
     {
       "id": "R0432",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 656,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4867,7 +4879,7 @@
     },
     {
       "id": "R0433",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 666,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4878,7 +4890,7 @@
     },
     {
       "id": "R0434",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 722,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4889,7 +4901,7 @@
     },
     {
       "id": "R0435",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 723,
       "text": "- manifest has required identifiers",
       "category": "EVIDENCE",
@@ -4900,7 +4912,7 @@
     },
     {
       "id": "R0436",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 724,
       "text": "- manifest has required hashes",
       "category": "EVIDENCE",
@@ -4911,7 +4923,7 @@
     },
     {
       "id": "R0437",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 736,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4922,7 +4934,7 @@
     },
     {
       "id": "R0438",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 744,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -4933,7 +4945,7 @@
     },
     {
       "id": "R0439",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 759,
       "text": "REQUIRED RECEIPTS BY PATH:",
       "category": "HEADER_LABEL",
@@ -4944,7 +4956,7 @@
     },
     {
       "id": "R0440",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 817,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -4955,7 +4967,7 @@
     },
     {
       "id": "R0441",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 818,
       "text": "- required receipt set matches packet type",
       "category": "EVIDENCE",
@@ -4966,7 +4978,7 @@
     },
     {
       "id": "R0442",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 821,
       "text": "- every receipt is bound to policy/blueprint/registry where required",
       "category": "EVIDENCE",
@@ -4977,7 +4989,7 @@
     },
     {
       "id": "R0443",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 822,
       "text": "- every receipt has replay refs where required",
       "category": "EVIDENCE",
@@ -4988,7 +5000,7 @@
     },
     {
       "id": "R0444",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 827,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -4999,7 +5011,7 @@
     },
     {
       "id": "R0445",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 835,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5010,7 +5022,7 @@
     },
     {
       "id": "R0446",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 848,
       "text": "REQUIRED HASHES:",
       "category": "HEADER_LABEL",
@@ -5021,7 +5033,7 @@
     },
     {
       "id": "R0447",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 870,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5032,7 +5044,7 @@
     },
     {
       "id": "R0448",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 871,
       "text": "- every required hash exists",
       "category": "EVIDENCE",
@@ -5043,7 +5055,7 @@
     },
     {
       "id": "R0449",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 877,
       "text": "- hmac_sig exists where required",
       "category": "EVIDENCE",
@@ -5054,7 +5066,7 @@
     },
     {
       "id": "R0450",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 882,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5065,7 +5077,7 @@
     },
     {
       "id": "R0451",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 890,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5076,7 +5088,7 @@
     },
     {
       "id": "R0452",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 938,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5087,7 +5099,7 @@
     },
     {
       "id": "R0453",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 944,
       "text": "- spans include policy/blueprint/registry refs where required",
       "category": "EVIDENCE",
@@ -5098,7 +5110,7 @@
     },
     {
       "id": "R0454",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 945,
       "text": "- spans include certification_id where required",
       "category": "EVIDENCE",
@@ -5109,7 +5121,7 @@
     },
     {
       "id": "R0455",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 949,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5120,7 +5132,7 @@
     },
     {
       "id": "R0456",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 957,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5131,7 +5143,7 @@
     },
     {
       "id": "R0457",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1002,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5142,7 +5154,7 @@
     },
     {
       "id": "R0458",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1004,
       "text": "- sector overlay is present when required",
       "category": "EVIDENCE",
@@ -5153,7 +5165,7 @@
     },
     {
       "id": "R0459",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1005,
       "text": "- compliance hash includes required inputs",
       "category": "EVIDENCE",
@@ -5164,7 +5176,7 @@
     },
     {
       "id": "R0460",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1012,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5175,7 +5187,7 @@
     },
     {
       "id": "R0461",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1019,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5186,7 +5198,7 @@
     },
     {
       "id": "R0462",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1078,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5197,7 +5209,7 @@
     },
     {
       "id": "R0463",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1085,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5208,7 +5220,7 @@
     },
     {
       "id": "R0464",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1148,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5219,7 +5231,7 @@
     },
     {
       "id": "R0465",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1156,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5230,7 +5242,7 @@
     },
     {
       "id": "R0466",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1169,
       "text": "- Define static replay/audit evidence inputs required by the L5CertificationPacket.",
       "category": "EVIDENCE",
@@ -5242,7 +5254,7 @@
     },
     {
       "id": "R0467",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1173,
       "text": "MUST CONSUME:",
       "category": "HEADER_LABEL",
@@ -5253,7 +5265,7 @@
     },
     {
       "id": "R0468",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1181,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5264,7 +5276,7 @@
     },
     {
       "id": "R0469",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1187,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5275,7 +5287,7 @@
     },
     {
       "id": "R0470",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1206,
       "text": "- audit sink reachable if required",
       "category": "EVIDENCE",
@@ -5286,7 +5298,7 @@
     },
     {
       "id": "R0471",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1207,
       "text": "- replay storage reachable if required",
       "category": "EVIDENCE",
@@ -5297,7 +5309,7 @@
     },
     {
       "id": "R0472",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1217,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5308,7 +5320,7 @@
     },
     {
       "id": "R0473",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1229,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5319,7 +5331,7 @@
     },
     {
       "id": "R0474",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1299,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5330,7 +5342,7 @@
     },
     {
       "id": "R0475",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1308,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5341,7 +5353,7 @@
     },
     {
       "id": "R0476",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1316,
       "text": "15. REQUIRED OUTPUT ARTIFACTS",
       "category": "EVIDENCE",
@@ -5352,7 +5364,7 @@
     },
     {
       "id": "R0477",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1561,
       "text": "Do not replace MUST / MUST NOT / MUST EMIT / MUST CHECK requirements with broad prose.",
       "category": "SCOPE_FENCE",
@@ -5363,7 +5375,7 @@
     },
     {
       "id": "R0478",
-      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence_detailed.md",
+      "doc": "00A.6_L5_Replay_Audit_and_Certification_Evidence.md",
       "line": 1576,
       "text": "6. Audit manifest records required identifiers, hashes, reason codes, retention class, access class, and redaction policy.",
       "category": "EVIDENCE",
@@ -5374,7 +5386,7 @@
     },
     {
       "id": "R0479",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 52,
       "text": "Forbidden ownership in this 00A pack:",
       "category": "FORBID_RD",
@@ -5385,7 +5397,7 @@
     },
     {
       "id": "R0480",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 92,
       "text": "FORBIDDEN OUTPUTS FROM THIS CHILD:",
       "category": "HEADER_LABEL",
@@ -5396,7 +5408,7 @@
     },
     {
       "id": "R0481",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 124,
       "text": "- This file is intentionally detailed. Do not compress away required checks, fields, receipts, reports,",
       "category": "EVIDENCE",
@@ -5407,7 +5419,7 @@
     },
     {
       "id": "R0482",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 167,
       "text": "- what evidence must be emitted for downstream consumers",
       "category": "RUNTIME_INVARIANT",
@@ -5419,19 +5431,19 @@
     },
     {
       "id": "R0483",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 226,
       "text": "- This file must not emit ALLOW, DENY, REROUTE, ESCALATE_HITL, COMMIT_REQUEST, BLOCK_COMMIT,",
       "category": "FORBID_RD",
       "status": "FULL",
       "evidence": [
-        "Forbidden tokens cited: ['ALLOW', 'DENY', 'COMMIT_REQUEST', 'ESCALATE_HITL', 'REROUTE', 'BLOCK_COMMIT']",
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'BLOCK_COMMIT', 'ALLOW', 'ESCALATE_HITL', 'REROUTE']",
         "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
       ]
     },
     {
       "id": "R0484",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 228,
       "text": "- This file must not approve live execution.",
       "category": "SCOPE_FENCE",
@@ -5442,7 +5454,7 @@
     },
     {
       "id": "R0485",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 229,
       "text": "- This file must not perform runtime anomaly containment.",
       "category": "SCOPE_FENCE",
@@ -5453,7 +5465,7 @@
     },
     {
       "id": "R0486",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 230,
       "text": "- This file must not execute changed code.",
       "category": "SCOPE_FENCE",
@@ -5464,7 +5476,7 @@
     },
     {
       "id": "R0487",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 231,
       "text": "- This file must not retrieve missing context.",
       "category": "SCOPE_FENCE",
@@ -5475,7 +5487,7 @@
     },
     {
       "id": "R0488",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 232,
       "text": "- This file must not assemble prompts.",
       "category": "SCOPE_FENCE",
@@ -5486,7 +5498,7 @@
     },
     {
       "id": "R0489",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 233,
       "text": "- This file must not write durable state.",
       "category": "SCOPE_FENCE",
@@ -5497,7 +5509,7 @@
     },
     {
       "id": "R0490",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 234,
       "text": "- This file must not promote learning.",
       "category": "SCOPE_FENCE",
@@ -5508,7 +5520,7 @@
     },
     {
       "id": "R0491",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 235,
       "text": "- This file must not replace CI, Runtime Gates, Exit, L2, C0, Prompt Assembly, UWG, or L6.",
       "category": "SCOPE_FENCE",
@@ -5519,7 +5531,7 @@
     },
     {
       "id": "R0492",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 238,
       "text": "- static_governance_status = clean | drift_detected | weakening_detected | waiver_required | adr_required | unresolved",
       "category": "STATUS_SET",
@@ -5531,7 +5543,7 @@
     },
     {
       "id": "R0493",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 239,
       "text": "- structure_drift_status = none | detected | unresolved | waiver_required",
       "category": "STATUS_SET",
@@ -5543,7 +5555,7 @@
     },
     {
       "id": "R0494",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 240,
       "text": "- policy_drift_status = none | weakened | stale | missing | mismatched",
       "category": "STATUS_SET",
@@ -5555,7 +5567,7 @@
     },
     {
       "id": "R0495",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 241,
       "text": "- registry_drift_status = none | stale | missing | widened | substituted | orphaned",
       "category": "STATUS_SET",
@@ -5567,7 +5579,7 @@
     },
     {
       "id": "R0496",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 242,
       "text": "- bypass_evidence_status = none | hidden_egress | direct_write | direct_provider | direct_connector | direct_memory_mutation",
       "category": "STATUS_SET",
@@ -5579,7 +5591,7 @@
     },
     {
       "id": "R0497",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 243,
       "text": "- static_regression_status = clean | regression_detected | baseline_missing | comparison_incomplete",
       "category": "STATUS_SET",
@@ -5591,7 +5603,7 @@
     },
     {
       "id": "R0498",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 244,
       "text": "- waiver_status = not_required | required | present | missing | stale | incompatible",
       "category": "STATUS_SET",
@@ -5603,7 +5615,7 @@
     },
     {
       "id": "R0499",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 245,
       "text": "- adr_status = not_required | required | present | missing | stale | incompatible",
       "category": "STATUS_SET",
@@ -5615,7 +5627,7 @@
     },
     {
       "id": "R0500",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 309,
       "text": "- Static governance changes must preserve L5 authority boundaries.",
       "category": "RUNTIME_INVARIANT",
@@ -5627,7 +5639,7 @@
     },
     {
       "id": "R0501",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 401,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5638,7 +5650,7 @@
     },
     {
       "id": "R0502",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 408,
       "text": "- golden snapshot ref exists when required",
       "category": "EVIDENCE",
@@ -5649,7 +5661,7 @@
     },
     {
       "id": "R0503",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 411,
       "text": "- ADR refs exist if required",
       "category": "EVIDENCE",
@@ -5660,7 +5672,7 @@
     },
     {
       "id": "R0504",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 415,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5671,7 +5683,7 @@
     },
     {
       "id": "R0505",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 422,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5682,7 +5694,7 @@
     },
     {
       "id": "R0506",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 494,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5693,7 +5705,7 @@
     },
     {
       "id": "R0507",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 504,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5704,7 +5716,7 @@
     },
     {
       "id": "R0508",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 511,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5715,7 +5727,7 @@
     },
     {
       "id": "R0509",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 544,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5726,7 +5738,7 @@
     },
     {
       "id": "R0510",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 561,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5737,7 +5749,7 @@
     },
     {
       "id": "R0511",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 572,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5748,7 +5760,7 @@
     },
     {
       "id": "R0512",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 612,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5759,7 +5771,7 @@
     },
     {
       "id": "R0513",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 618,
       "text": "- sector overlay remains present where required",
       "category": "EVIDENCE",
@@ -5770,7 +5782,7 @@
     },
     {
       "id": "R0514",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 619,
       "text": "- standards fingerprint remains present where required",
       "category": "EVIDENCE",
@@ -5781,7 +5793,7 @@
     },
     {
       "id": "R0515",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 626,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5792,7 +5804,7 @@
     },
     {
       "id": "R0516",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 637,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5803,7 +5815,7 @@
     },
     {
       "id": "R0517",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 688,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5814,7 +5826,7 @@
     },
     {
       "id": "R0518",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 702,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5825,7 +5837,7 @@
     },
     {
       "id": "R0519",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 713,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5836,7 +5848,7 @@
     },
     {
       "id": "R0520",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 744,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5847,7 +5859,7 @@
     },
     {
       "id": "R0521",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 758,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5858,7 +5870,7 @@
     },
     {
       "id": "R0522",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 767,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5869,7 +5881,7 @@
     },
     {
       "id": "R0523",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 805,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5880,7 +5892,7 @@
     },
     {
       "id": "R0524",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 819,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5891,7 +5903,7 @@
     },
     {
       "id": "R0525",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 828,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5902,7 +5914,7 @@
     },
     {
       "id": "R0526",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 862,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5913,7 +5925,7 @@
     },
     {
       "id": "R0527",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 875,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5924,7 +5936,7 @@
     },
     {
       "id": "R0528",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 884,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5935,7 +5947,7 @@
     },
     {
       "id": "R0529",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 915,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5946,7 +5958,7 @@
     },
     {
       "id": "R0530",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 926,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5957,7 +5969,7 @@
     },
     {
       "id": "R0531",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 936,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -5968,7 +5980,7 @@
     },
     {
       "id": "R0532",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 971,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -5979,7 +5991,7 @@
     },
     {
       "id": "R0533",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 984,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -5990,7 +6002,7 @@
     },
     {
       "id": "R0534",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 993,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6001,7 +6013,7 @@
     },
     {
       "id": "R0535",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1022,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -6012,7 +6024,7 @@
     },
     {
       "id": "R0536",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1034,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6023,7 +6035,7 @@
     },
     {
       "id": "R0537",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1041,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6034,7 +6046,7 @@
     },
     {
       "id": "R0538",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1054,
       "text": "WAIVER REQUIRED WHEN:",
       "category": "HEADER_LABEL",
@@ -6045,7 +6057,7 @@
     },
     {
       "id": "R0539",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1084,
       "text": "- tests required",
       "category": "EVIDENCE",
@@ -6056,7 +6068,7 @@
     },
     {
       "id": "R0540",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1085,
       "text": "- monitoring required",
       "category": "EVIDENCE",
@@ -6067,7 +6079,7 @@
     },
     {
       "id": "R0541",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1093,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -6078,7 +6090,7 @@
     },
     {
       "id": "R0542",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1094,
       "text": "- required waiver exists",
       "category": "EVIDENCE",
@@ -6089,7 +6101,7 @@
     },
     {
       "id": "R0543",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1107,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6100,7 +6112,7 @@
     },
     {
       "id": "R0544",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1116,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6111,7 +6123,7 @@
     },
     {
       "id": "R0545",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1145,
       "text": "MUST COMPARE:",
       "category": "HEADER_LABEL",
@@ -6122,7 +6134,7 @@
     },
     {
       "id": "R0546",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1162,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6133,7 +6145,7 @@
     },
     {
       "id": "R0547",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1172,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6144,7 +6156,7 @@
     },
     {
       "id": "R0548",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1223,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -6155,7 +6167,7 @@
     },
     {
       "id": "R0549",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1229,
       "text": "- waiver/ADR status is included where required",
       "category": "EVIDENCE",
@@ -6166,7 +6178,7 @@
     },
     {
       "id": "R0550",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1234,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6177,7 +6189,7 @@
     },
     {
       "id": "R0551",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1240,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6188,7 +6200,7 @@
     },
     {
       "id": "R0552",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1266,
       "text": "MUST CHECK:",
       "category": "HEADER_LABEL",
@@ -6199,7 +6211,7 @@
     },
     {
       "id": "R0553",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1267,
       "text": "- all required static reports exist",
       "category": "EVIDENCE",
@@ -6210,7 +6222,7 @@
     },
     {
       "id": "R0554",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1272,
       "text": "- golden snapshot comparison is present when required",
       "category": "EVIDENCE",
@@ -6221,7 +6233,7 @@
     },
     {
       "id": "R0555",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1276,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6232,7 +6244,7 @@
     },
     {
       "id": "R0556",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1282,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6243,7 +6255,7 @@
     },
     {
       "id": "R0557",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1296,
       "text": "AUDIT MUST CAPTURE:",
       "category": "HEADER_LABEL",
@@ -6254,7 +6266,7 @@
     },
     {
       "id": "R0558",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1313,
       "text": "REPLAY MUST CAPTURE:",
       "category": "HEADER_LABEL",
@@ -6265,7 +6277,7 @@
     },
     {
       "id": "R0559",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1322,
       "text": "- environment/tooling digest if required",
       "category": "EVIDENCE",
@@ -6276,7 +6288,7 @@
     },
     {
       "id": "R0560",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1324,
       "text": "MUST EMIT:",
       "category": "HEADER_LABEL",
@@ -6287,7 +6299,7 @@
     },
     {
       "id": "R0561",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1332,
       "text": "MUST NOT:",
       "category": "HEADER_LABEL",
@@ -6298,7 +6310,7 @@
     },
     {
       "id": "R0562",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1339,
       "text": "17. REQUIRED OUTPUT ARTIFACTS",
       "category": "EVIDENCE",
@@ -6309,7 +6321,7 @@
     },
     {
       "id": "R0563",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1580,
       "text": "Do not replace MUST / MUST NOT / MUST EMIT / MUST CHECK requirements with broad prose.",
       "category": "SCOPE_FENCE",
@@ -6320,7 +6332,7 @@
     },
     {
       "id": "R0564",
-      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift_detailed.md",
+      "doc": "00A.7_L5_Static_Governance_and_Structure_Drift.md",
       "line": 1610,
       "text": "12. Waiver/ADR evidence is required for governance weakening or boundary exceptions.",
       "category": "EVIDENCE",
@@ -6331,6 +6343,234 @@
     },
     {
       "id": "R0565",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 36,
+      "text": "- l5_context_digest as the single equality anchor every L5 child must emit",
+      "category": "EMIT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "No specific output name in this MUST clause; verb-only requirement satisfied by general contract surface."
+      ]
+    },
+    {
+      "id": "R0566",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 54,
+      "text": "- The cross-child equality matrix (which children must emit, which must match)",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0567",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 71,
+      "text": "artifact (L5GovernanceContext) whose deterministic digest must match across",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: ['L5GovernanceContext']"
+      ]
+    },
+    {
+      "id": "R0568",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 78,
+      "text": "all certifiers must be certifying the SAME governed object. The L2 RCA",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0569",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 93,
+      "text": "The L5GovernanceContext is a frozen dataclass. Every required field below",
+      "category": "EVIDENCE",
+      "status": "PARTIAL",
+      "evidence": [
+        "Covered: []",
+        "UNCOVERED: ['L5GovernanceContext']"
+      ]
+    },
+    {
+      "id": "R0570",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 157,
+      "text": "prefix, and field-subset comparisons are FORBIDDEN.",
+      "category": "FORBID_RD",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic FORBIDDEN clause; no specific runtime token cited."
+      ]
+    },
+    {
+      "id": "R0571",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 164,
+      "text": "For any packet certified by L5, the following MUST hold:",
+      "category": "CAUSAL",
+      "status": "UNCOVERED",
+      "evidence": [
+        "Sequencing invariant not encoded in contracts package (envelope-only). Belongs to a future runtime emitter or ordering harness."
+      ]
+    },
+    {
+      "id": "R0572",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 166,
+      "text": "REQUIRED (always):",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0573",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 173,
+      "text": "CONDITIONALLY REQUIRED:",
+      "category": "HEADER_LABEL",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Section-header label, not a standalone requirement; the items it introduces are extracted as their own rows."
+      ]
+    },
+    {
+      "id": "R0574",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 174,
+      "text": "hitl_reclearance_digest          MUST be present and equal whenever",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0575",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 177,
+      "text": "egress_certification_digest      MUST be present and equal whenever",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0576",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 183,
+      "text": "aggregate_governance_digest      MUST equal each required digest above.",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0577",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 185,
+      "text": "If a conditionally required digest is absent when its trigger condition is",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0578",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 191,
+      "text": "INV-L5C-1   For any packet that L5 certifies, all required and applicable",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0579",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 192,
+      "text": "conditionally-required per-child digests MUST be identical.",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0580",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 197,
+      "text": "each child MUST consume the same L5GovernanceContext that",
+      "category": "SCHEMA",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Field-shape requirement; contract envelope provides run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. Per-packet specific fields NOT yet schematized. Names cited: ['L5GovernanceContext']"
+      ]
+    },
+    {
+      "id": "R0581",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 211,
+      "text": "INV-L5C-7   Conditionally required digests (HITL, Egress) SHALL NOT be",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0582",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 277,
+      "text": "Negative scenarios required (cross-reference 00A.8a expanded test list):",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0583",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 292,
+      "text": "O  aggregate_without_all_required         aggregate emitted while required child missing",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0584",
+      "doc": "00A.7a_L5_Governance_Context_Invariant.md",
+      "line": 294,
+      "text": "Each negative scenario MUST assert: certified=false, no aggregate_governance_digest",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0585",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 31,
       "text": "FORBIDDEN OUTPUTS FROM THIS FILE",
@@ -6341,7 +6581,7 @@
       ]
     },
     {
-      "id": "R0566",
+      "id": "R0586",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 33,
       "text": "This file must not emit or own final runtime dispositions unless explicitly stated as a Runtime Gate or Exit owner file.",
@@ -6352,7 +6592,7 @@
       ]
     },
     {
-      "id": "R0567",
+      "id": "R0587",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 78,
       "text": "- certification_status = L5_CERTIFIED | L5_NOT_CERTIFIED | L5_REQUIRES_RECLEARANCE | L5_REQUIRES_REMEDIATION_EVIDENCE",
@@ -6364,7 +6604,7 @@
       ]
     },
     {
-      "id": "R0568",
+      "id": "R0588",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 92,
       "text": "- match_status = MATCH | MISMATCH | STALE | UNKNOWN",
@@ -6376,7 +6616,7 @@
       ]
     },
     {
-      "id": "R0569",
+      "id": "R0589",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 112,
       "text": "- L2 E1 must receive L5RuntimeCertificationBinding refs or the equivalent policy/capability/sandbox evidence bundle.",
@@ -6387,7 +6627,7 @@
       ]
     },
     {
-      "id": "R0570",
+      "id": "R0590",
       "doc": "00A.8_L5_Runtime_Certification_Binding.md",
       "line": 124,
       "text": "- Replay envelope missing for replay-required route.",
@@ -6398,10 +6638,189 @@
       ]
     },
     {
-      "id": "R0571",
-      "doc": "00A_L5_Governance_Safety_detailed.md",
+      "id": "R0591",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 51,
+      "text": "Every test MUST consume a synthesized L5GovernanceContext with all",
+      "category": "SCHEMA",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Field-shape requirement; contract envelope provides run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. Per-packet specific fields NOT yet schematized. Names cited: ['L5GovernanceContext']"
+      ]
+    },
+    {
+      "id": "R0592",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
       "line": 52,
-      "text": "Forbidden ownership in this 00A pack:",
+      "text": "required and conditionally-required fields populated by deterministic",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0593",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 77,
+      "text": "P-1   All required children emit equal digests; aggregate emits an",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0594",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 80,
+      "text": "P-2   All required children plus HITL conditional digest emit equal",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0595",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 83,
+      "text": "P-3   All required children plus Egress conditional digest emit equal",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0596",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 86,
+      "text": "P-4   All required + both conditional digests equal when both triggers",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0597",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 90,
+      "text": "- Assert l5.governance.context.frozen span carries every required field.",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0598",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 101,
+      "text": "honest. The aggregate MUST refuse to emit and L5 MUST seal an",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0599",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 124,
+      "text": "- l5.governance.aggregate span MUST NOT emit aggregate_governance_digest.",
+      "category": "SCOPE_FENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
+      ]
+    },
+    {
+      "id": "R0600",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 145,
+      "text": "but hitl_reclearance_digest present \u2192 MUST be sealed as",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0601",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 150,
+      "text": "present \u2192 MUST be sealed as conditional_digest_unexpected.",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0602",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 162,
+      "text": "required child digest is absent. Test asserts the aggregator",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0603",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 169,
+      "text": "consistency gate MUST fail this test (i.e., the production code",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0604",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 170,
+      "text": "MUST refuse non-bit-equal comparison).",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0605",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 180,
+      "text": "For every test row, the OTEL exporter under test MUST surface:",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0606",
+      "doc": "00A.8a_L5_Cross_Child_Certification_Consistency_Tests.md",
+      "line": 187,
+      "text": "Tests MUST verify span attributes, not just span names. Missing",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0607",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 33,
+      "text": "**Forbidden behaviors**:",
       "category": "FORBID_RD",
       "status": "STRUCTURAL",
       "evidence": [
@@ -6409,47 +6828,279 @@
       ]
     },
     {
-      "id": "R0572",
-      "doc": "00A_L5_Governance_Safety_detailed.md",
-      "line": 134,
-      "text": "FORBIDDEN OVERLAP TERMS AS L5 OUTPUTS",
+      "id": "R0608",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 34,
+      "text": "- 00A MUST NOT emit live `ALLOW`/`DENY` dispositions as its canonical output.",
+      "category": "FORBID_RD",
+      "status": "FULL",
+      "evidence": [
+        "Forbidden tokens cited: ['DENY', 'ALLOW']",
+        "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
+      ]
+    },
+    {
+      "id": "R0609",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 35,
+      "text": "- 00A MUST NOT mutate L4 directly (UWG only).",
+      "category": "SCOPE_FENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
+      ]
+    },
+    {
+      "id": "R0610",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 36,
+      "text": "- 00A MUST NOT replace 00C runtime gate verdicts.",
+      "category": "SCOPE_FENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
+      ]
+    },
+    {
+      "id": "R0611",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 37,
+      "text": "- 00A MUST NOT make routing, retrieval, or execution decisions.",
+      "category": "NO_DISPO",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Enforced by L5OutputBase.is_evidence_only() == True and by the absence of disposition fields on every contract.",
+        "Smoke test test_no_class_name_collides_with_forbidden_dispositions asserts no contract carries a runtime-disposition name."
+      ]
+    },
+    {
+      "id": "R0612",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 50,
+      "text": "| `REQ-L5-CERTIFICATION-NOT-DISPOSITION-001` | L5 MUST emit certification statuses only; it MUST NOT emit a live runtime disposition (`ALLOW`/`DENY` etc.) as its top-level output. | 00A | governance source | `L5CertificationResult` | output",
+      "category": "FORBID_RD",
+      "status": "FULL",
+      "evidence": [
+        "Forbidden tokens cited: ['DENY', 'ALLOW', 'ALLOW_FINISH']",
+        "Encoded in FORBIDDEN_RUNTIME_DISPOSITIONS."
+      ]
+    },
+    {
+      "id": "R0613",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 51,
+      "text": "| `REQ-L5-AUTHORITY-BINDING-001` | Every L5 certification MUST bind a `policy_hash`, `blueprint_hash`, `registry_digest_set`, and `capability_token_id` to the certification result. | 00A.2 | policy/blueprint/registry/capability | `L5Certifi",
+      "category": "SCHEMA",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Field-shape requirement; contract envelope provides run_id/trace_id/digest_sha256/emitted_at_utc/evidence_refs. Per-packet specific fields NOT yet schematized. Names cited: ['L5CertificationResult']"
+      ]
+    },
+    {
+      "id": "R0614",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 52,
+      "text": "| `REQ-L5-ORIGIN-TRUST-001` | L5 MUST classify origin trust per source class and bind the classification to certification evidence. | 00A.3 | origin metadata | `L5CertificationResult` | result carries `origin_trust_class`, `content_boundary",
+      "category": "EMIT",
+      "status": "FULL",
+      "evidence": [
+        "Covered: ['L5CertificationResult']",
+        "UNCOVERED: []"
+      ]
+    },
+    {
+      "id": "R0615",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 53,
+      "text": "| `REQ-L5-HITL-RECLEAR-001` | When a run requires HITL re-clearance, L5 MUST emit a re-clearance certification before Exit can resume. | 00A.4 | HITL response | `L5HITLReclearanceResult` | result carries `human_response_hash`, `human_text_t",
+      "category": "EMIT",
+      "status": "PARTIAL",
+      "evidence": [
+        "Covered: []",
+        "UNCOVERED: ['L5HITLReclearanceResult']"
+      ]
+    },
+    {
+      "id": "R0616",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 54,
+      "text": "| `REQ-L5-EGRESS-CERT-001` | L5 MUST certify egress class and provider governance binding before any external call. | 00A.5 | egress request | `L5EgressCertification` | result carries `egress_class`, `provider_id`, `provider_governance_hash",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0617",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 55,
+      "text": "| `REQ-L5-REPLAY-AUDIT-CERT-001` | L5 MUST certify the replay snapshot manifest and the audit ledger pointer for every release-eligible run. | 00A.6 | replay manifest + audit ptr | `L5ReplayAuditCertification` | result carries `snapshot_man",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0618",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 56,
+      "text": "| `REQ-L5-STATIC-DRIFT-001` | L5 MUST certify static governance source against expected structure-drift baselines. | 00A.7 | source repo state | `L5StaticDriftCertification` | result carries `repo_drift_findings[]`, `baseline_hash` | `l5.st",
+      "category": "RUNTIME_INVARIANT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Runtime data invariant; enforced by L5 enforcement plane at emit/replay time, not by the contracts package itself.",
+        "Cited names: <none>"
+      ]
+    },
+    {
+      "id": "R0619",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 57,
+      "text": "| `REQ-L5-CONTEXT-INVARIANT-001` | L5 governance context invariant MUST hold: certification context cannot be mutated post-issuance; only superseded by a new certification with monotonic version. | 00A.7a | certification artifact | (immutab",
+      "category": "EMIT",
+      "status": "FULL",
+      "evidence": [
+        "Covered: ['L5CertificationResult']",
+        "UNCOVERED: []"
+      ]
+    },
+    {
+      "id": "R0620",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 58,
+      "text": "| `REQ-L5-RUNTIME-BIND-001` | At run start, L5 MUST emit a `RuntimeCertificationBinding` linking `request_id`, `run_id`, `policy_hash`, `blueprint_hash`, `registry_digest_set`, `capability_token_id`, and `origin_trust_class`. Downstream lay",
+      "category": "EMIT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "No specific output name in this MUST clause; verb-only requirement satisfied by general contract surface."
+      ]
+    },
+    {
+      "id": "R0621",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 59,
+      "text": "| `REQ-L5-CROSS-CHILD-CONSISTENCY-001` | All 00A child certifications MUST present mutually-consistent `policy_hash` and `blueprint_hash`; mismatch is FAIL. | 00A.8a | all 00A.x certs | (cross-check) | every certification artifact for the r",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0622",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 60,
+      "text": "| `REQ-L5-NO-WRITE-001` | L5 MUST NOT issue durable writes; it MAY only emit certification artifacts and consumes the UWG receipt as evidence (not as authority). | 00A | (governance) | (none) | absence of L5-originated writes in `audit_ledg",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0623",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 64,
+      "text": "Every L5 certification artifact MUST carry:",
+      "category": "EMIT",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "No specific output name in this MUST clause; verb-only requirement satisfied by general contract surface."
+      ]
+    },
+    {
+      "id": "R0624",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 77,
+      "text": "Required spans (children of `l5.certify` parent):",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0625",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 80,
+      "text": "Required attributes on every L5 span: `req_id`, `cert_status`, `policy_hash`, `blueprint_hash`, `replay_key`. Status code: `OK` for `certified`/`pending_reclearance`; `ERROR` (with `attributes.fail_reason_code`) for `not_certified`/`expired",
+      "category": "EVIDENCE",
+      "status": "PARTIAL",
+      "evidence": [
+        "Covered: []",
+        "UNCOVERED: ['cert_status']"
+      ]
+    },
+    {
+      "id": "R0626",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 99,
+      "text": "- L5 MUST NOT redirect a runtime decision; tamper attempts that bypass 00C/05 are routed to `NC-GATE-*` / `NC-EXIT-*`.",
+      "category": "NO_DISPO",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Enforced by L5OutputBase.is_evidence_only() == True and by the absence of disposition fields on every contract.",
+        "Smoke test test_no_class_name_collides_with_forbidden_dispositions asserts no contract carries a runtime-disposition name."
+      ]
+    },
+    {
+      "id": "R0627",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 103,
+      "text": "Every L5 certification artifact MUST replay byte-identical for the same `(domain, policy_hash, blueprint_hash, registry_digest_set, input)`. Allowed nondeterminism: only `span_id`, `trace_id`, `cert_issued_at_utc`. Any other diff is release",
+      "category": "OTHER",
+      "status": "UNCOVERED",
+      "evidence": [
+        "No actionable evidence link extracted."
+      ]
+    },
+    {
+      "id": "R0628",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 119,
+      "text": "**Forbidden duplicated ownership**: 00A MUST NOT redefine `GateVerdict` (00C) or `X3 disposition` (05). 00C/05 MUST NOT redefine certification status vocabulary.",
+      "category": "NO_DISPO",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Enforced by L5OutputBase.is_evidence_only() == True and by the absence of disposition fields on every contract.",
+        "Smoke test test_no_class_name_collides_with_forbidden_dispositions asserts no contract carries a runtime-disposition name."
+      ]
+    },
+    {
+      "id": "R0629",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 121,
+      "text": "**Forbidden output vocabulary**: `ALLOW_FINISH`, `DENY`, `REROUTE`, `COMMIT_REQUEST_TO_UWG`, `SAFE_FALLBACK`, `durable_write_committed`, `route_changed`, `workflow_expanded`, `evidence_contract_issued`, `prompt_envelope_constructed`, `learn",
+      "category": "FORBID_RD",
+      "status": "FULL",
+      "evidence": [
+        "Forbidden tokens cited: ['COMMIT_REQUEST', 'DENY', 'ALLOW', 'ALLOW_FINISH', 'SAFE_FALLBACK', 'REROUTE']"
+      ]
+    },
+    {
+      "id": "R0630",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 141,
+      "text": "- The OTEL span contract in \u00a76 names every L5 span and required attribute.",
+      "category": "EVIDENCE",
+      "status": "STRUCTURAL",
+      "evidence": [
+        "Generic REQUIRED clause."
+      ]
+    },
+    {
+      "id": "R0631",
+      "doc": "00A_L5_Governance_Safety.md",
+      "line": 142,
+      "text": "- The forbidden output vocabulary in \u00a711 reproduces the global ban list.",
       "category": "FORBID_RD",
       "status": "STRUCTURAL",
       "evidence": [
         "Generic FORBIDDEN clause; no specific runtime token cited."
-      ]
-    },
-    {
-      "id": "R0573",
-      "doc": "00A_L5_Governance_Safety_detailed.md",
-      "line": 276,
-      "text": "Children must not restate the full parent.",
-      "category": "SCOPE_FENCE",
-      "status": "STRUCTURAL",
-      "evidence": [
-        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
-      ]
-    },
-    {
-      "id": "R0574",
-      "doc": "00A_L5_Governance_Safety_detailed.md",
-      "line": 277,
-      "text": "Children must not define runtime decisions.",
-      "category": "SCOPE_FENCE",
-      "status": "STRUCTURAL",
-      "evidence": [
-        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
-      ]
-    },
-    {
-      "id": "R0575",
-      "doc": "00A_L5_Governance_Safety_detailed.md",
-      "line": 278,
-      "text": "Children must not define execution, retrieval, prompt assembly, durable write, or learning mechanics.",
-      "category": "SCOPE_FENCE",
-      "status": "STRUCTURAL",
-      "evidence": [
-        "Scope-fence requirement: contracts package contains only frozen dataclasses; structurally incapable of the named activity. No code surface to enforce."
       ]
     }
   ],

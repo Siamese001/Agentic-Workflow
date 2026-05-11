@@ -519,6 +519,44 @@ def _cmd_complete(plan: str, note: str | None = None) -> int:
     return 0
 
 
+def _prior_wave_completed(plan: str, current_wave: int) -> bool:
+    """Check if prior wave (N-1) was marked complete for this plan.
+
+    Scans the wave lifecycle log for a WAVE_COMPLETE entry.
+    """
+    if current_wave <= 1:
+        return True  # Wave 1 has no prior
+
+    log_path = _REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
+    if not log_path.exists():
+        return False
+
+    prior_wave = current_wave - 1
+    try:
+        with log_path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                    # Check for successful wave_complete events
+                    if entry.get("event") == "capture_summary":
+                        rows = entry.get("rows", [])
+                        for row in rows:
+                            if row.get("slug") == plan and row.get("ok"):
+                                return True
+                    # Also check direct wave_table_update events
+                    if entry.get("event") == "wave_table_update":
+                        if entry.get("slug") == plan and entry.get("kind") == "wave_complete":
+                            return True
+                except json.JSONDecodeError:
+                    continue
+    except OSError:
+        pass
+    return False
+
+
 def _cmd_wave_progress(plan: str, wave: int, note: str | None = None) -> int:
     """Log wave completion progress without changing wave-state.
 
@@ -540,6 +578,15 @@ def _cmd_wave_progress(plan: str, wave: int, note: str | None = None) -> int:
             f"requested wave-progress={plan!r}",
             file=sys.stderr,
         )
+
+    # Phase 1.4: warn if prior wave not marked complete
+    if not _prior_wave_completed(plan, wave):
+        print(
+            f"[wave-exec] WARNING: W{wave} progress recorded but W{wave-1} "
+            f"has no WAVE_COMPLETE marker — plan .md and Notion may be stale",
+            file=sys.stderr,
+        )
+
     print(f"[wave-exec] WAVE_PROGRESS plan={plan} wave={wave}")
     _notion_sync(plan, "wave_complete", wave=wave, note=note)
     return 0
