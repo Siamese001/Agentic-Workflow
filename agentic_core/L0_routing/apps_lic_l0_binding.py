@@ -38,13 +38,22 @@ Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from agentic_core.L0_routing.generic_route_policy_interpreter import (
+    load_route_profile,
+    load_cache_policy,
+    derive_route_family_from_profile,
+    derive_execution_form_from_profile,
+    derive_l3_required_from_profile,
+    derive_cache_eligibility_from_policy,
+    _check_fresh_context,
+    _check_research_authorized,
+)
 
 
 APPS_LIC_L0_CERT_REF: str = "l0-apps-lic-outreach-message-w2-final-routing-f8e2a1"
@@ -71,7 +80,12 @@ APPS_LIC_COLD_ROUTE_ID: str = ROUTE_ID_R3R4_WITH_RESEARCH
 APPS_LIC_WARM_ROUTE_ID: str = ROUTE_ID_R4_DEFAULT
 APPS_LIC_FOLLOW_UP_ROUTE_ID: str = ROUTE_ID_R3R4_WITH_RESEARCH
 
-_ROUTE_PROFILE_RELPATH: str = "apps_lic/config/domain_contract/l0_route_profile.outreach_message.v1.json"
+_ROUTE_PROFILE_RELPATH: str = (
+    "apps_lic/config/domain_contract/l0_route_profile.outreach_message.v1.json"
+)
+_CACHE_POLICY_RELPATH: str = (
+    "apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json"
+)
 
 # apps_lic allowed models: Qwen32B for draft generation
 _ALLOWED_MODELS: tuple[str, ...] = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
@@ -88,128 +102,77 @@ _ALLOWED_TOOLS: tuple[str, ...] = (
     "tool::compliance_check",
 )
 
+# ---------------------------------------------------------------------------
+# Lazy profile singletons — loaded once from app-owned JSON files
+# ---------------------------------------------------------------------------
+_route_profile: dict | None = None
+_cache_policy: dict | None = None
+
+
+def _get_route_profile() -> dict:
+    global _route_profile
+    if _route_profile is None:
+        _route_profile = load_route_profile(_ROUTE_PROFILE_RELPATH)
+    return _route_profile
+
+
+def _get_cache_policy() -> dict:
+    global _cache_policy
+    if _cache_policy is None:
+        _cache_policy = load_cache_policy(_CACHE_POLICY_RELPATH)
+    return _cache_policy
+
+
+# ---------------------------------------------------------------------------
+# Thin-adapter public helpers (preserve public API for tests)
+# ---------------------------------------------------------------------------
 
 def _derive_route_family(l1_plan: L1PlanContract) -> str:
-    """Derive final L0 route family (R4/R3R4/R5) based on context and authorization.
-
-    FINAL L0 ROUTING MODEL:
-    - R4_MANAGED_DRAFT: fresh valid context, no research needed
-    - R3R4_MANAGED_RESEARCH_THEN_DRAFT: missing/stale context, research authorized
-    - R5_FALLBACK: no valid context, research not authorized
-    """
-    # Check for briefing-only intent (must not route through apps_lic L0)
-    request_type = str(l1_plan.task_spec.get("request_type", "")).lower()
-    if "briefing_only" in request_type or "briefing-only" in request_type:
-        # Briefing-only must route to apps_research directly before apps_lic
-        # If it reaches apps_lic L0, it's a routing error -> fail closed
-        return ROUTE_FAMILY_R5_FALLBACK
-
-    # Check if fresh valid context exists
-    has_fresh_context = _has_fresh_valid_context(l1_plan)
-
-    # Check if research is authorized for missing/stale context
-    research_authorized = _is_research_authorized(l1_plan)
-
-    if has_fresh_context:
-        # Fresh context exists -> R4_MANAGED_DRAFT
-        return ROUTE_FAMILY_R4_MANAGED_DRAFT
-    elif research_authorized:
-        # Missing/stale context but research authorized -> R3R4
-        return ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT
-    else:
-        # No valid context and research not authorized -> R5_FALLBACK
-        return ROUTE_FAMILY_R5_FALLBACK
+    """Thin adapter: delegates to generic route policy interpreter using apps_lic profile."""
+    return derive_route_family_from_profile(l1_plan, _get_route_profile())
 
 
 def _has_fresh_valid_context(l1_plan: L1PlanContract) -> bool:
-    """Check if fresh, valid outreach context exists.
-
-    Fresh context requires:
-    - Valid company briefing available (briefing_fresh=true)
-    - Valid lead profile available (lead_profile_valid=true)
-    - Campaign objective defined (campaign_objective not empty)
-    - Grounding not explicitly required (or context is already grounded)
-    """
-    # Check if context freshness flags are present in task_spec
-    briefing_fresh = bool(l1_plan.task_spec.get("briefing_fresh", False))
-    lead_valid = bool(l1_plan.task_spec.get("lead_profile_valid", False))
-    campaign_defined = bool(l1_plan.task_spec.get("campaign_objective", ""))
-
-    # If grounding is required but not satisfied, context is not fresh
-    grounding_satisfied = not l1_plan.grounding_required or bool(
-        l1_plan.task_spec.get("context_grounded", False)
+    """Thin adapter: delegates to generic fresh-context check using profile conditions."""
+    profile = _get_route_profile()
+    cond = profile.get("route_selection_conditions", {}).get(
+        ROUTE_FAMILY_R4_MANAGED_DRAFT, {}
     )
-
-    return briefing_fresh and lead_valid and campaign_defined and grounding_satisfied
+    return _check_fresh_context(l1_plan, cond)
 
 
 def _is_research_authorized(l1_plan: L1PlanContract) -> bool:
-    """Check if research is authorized for missing/stale context.
-
-    Research authorization requires:
-    - research_requirements.required_evidence_types not empty
-    - research_requirements.allow_research=true in task_spec
-    - Not explicitly disabled by policy
-    """
-    # Check research authorization flags
-    allow_research = bool(l1_plan.task_spec.get("allow_research", False))
-    research_types = l1_plan.task_spec.get("research_evidence_types", [])
-
-    # Policy can explicitly disable research
-    research_disabled = bool(l1_plan.task_spec.get("research_disabled_by_policy", False))
-
-    return allow_research and len(research_types) > 0 and not research_disabled
+    """Thin adapter: delegates to generic research-authorization check using profile conditions."""
+    profile = _get_route_profile()
+    cond = profile.get("route_selection_conditions", {}).get(
+        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT, {}
+    )
+    return _check_research_authorized(l1_plan.task_spec or {}, cond)
 
 
 def _derive_route_id(l1_plan: L1PlanContract, route_family: str) -> str:
-    """Select route_id based on route_family from final L0 model.
+    """Select route_id based on route_family — thin mapping, no app logic in core.
 
     R4 -> ROUTE_ID_R4_DEFAULT (HOP draft workflow)
     R3R4 -> ROUTE_ID_R3R4_WITH_RESEARCH (apps_research support then HOP)
     R5 -> ROUTE_ID_R5_FALLBACK (terminal fallback, no draft)
     """
-    if route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT:
-        return ROUTE_ID_R4_DEFAULT
-    elif route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT:
-        return ROUTE_ID_R3R4_WITH_RESEARCH
-    elif route_family == ROUTE_FAMILY_R5_FALLBACK:
-        return ROUTE_ID_R5_FALLBACK
-    else:
-        # Should never happen due to route_family validation
-        return ROUTE_ID_R5_FALLBACK
+    _route_id_map = {
+        ROUTE_FAMILY_R4_MANAGED_DRAFT: ROUTE_ID_R4_DEFAULT,
+        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT: ROUTE_ID_R3R4_WITH_RESEARCH,
+        ROUTE_FAMILY_R5_FALLBACK: ROUTE_ID_R5_FALLBACK,
+    }
+    return _route_id_map.get(route_family, ROUTE_ID_R5_FALLBACK)
 
 
 def _derive_execution_form(route_family: str) -> str:
-    """Derive execution_form based on route_family from final L0 model.
-
-    FINAL L0 MODEL:
-    - R4_MANAGED_DRAFT -> MANAGED_WORKFLOW (L3 HOP orchestration)
-    - R3R4_MANAGED_RESEARCH_THEN_DRAFT -> MANAGED_WORKFLOW (L3 HOP after research)
-    - R5_FALLBACK -> TERMINAL_FALLBACK (no orchestration, fail closed)
-    """
-    if route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT:
-        return "MANAGED_WORKFLOW"
-    elif route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT:
-        return "MANAGED_WORKFLOW"
-    elif route_family == ROUTE_FAMILY_R5_FALLBACK:
-        return "TERMINAL_FALLBACK"
-    else:
-        # Conservative default
-        return "TERMINAL_FALLBACK"
+    """Thin adapter: derives execution form from apps_lic route profile mapping."""
+    return derive_execution_form_from_profile(route_family, _get_route_profile())
 
 
 def _derive_l3_required(route_family: str) -> bool:
-    """L3 is required for R4 and R3R4 (MANAGED_WORKFLOW), not for R5 (TERMINAL_FALLBACK).
-
-    FINAL L0 MODEL:
-    - R4_MANAGED_DRAFT -> L3 required (HOP orchestration)
-    - R3R4_MANAGED_RESEARCH_THEN_DRAFT -> L3 required (research + HOP)
-    - R5_FALLBACK -> L3 not required (terminal fallback)
-    """
-    return route_family in (
-        ROUTE_FAMILY_R4_MANAGED_DRAFT,
-        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT,
-    )
+    """Thin adapter: derives l3_required from apps_lic route profile."""
+    return derive_l3_required_from_profile(route_family, _get_route_profile())
 
 
 def _derive_action_required(l1_plan: L1PlanContract) -> bool:
@@ -227,49 +190,15 @@ def _derive_action_required(l1_plan: L1PlanContract) -> bool:
 
 
 def _derive_cache_eligibility(route_family: str) -> dict[str, bool]:
-    """Per-cache-tier eligibility with final draft bypass.
-
-    FINAL L0 MODEL CACHE RULES:
-    - R1A exact cache: BYPASS for final drafts (never serve personalized outreach from cache)
-    - R1B semantic cache: BYPASS for final drafts (no semantic reuse of personalized content)
-    - R3 grounded cache: Allowed for support artifacts only (briefings, facts)
-    - R4 action cache: Never (apps_lic has no state mutation)
-
-    Cache allowed for:
-    - verified company briefing
-    - public company facts
-    - retrieval manifests
-    - consent/compliance evidence
-    - approved prompt/profile refs
-    """
-    is_fallback = route_family == ROUTE_FAMILY_R5_FALLBACK
-
-    return {
-        # Final drafts bypass both cache tiers (proven at runtime)
-        "r1a_exact": False,  # BYPASS for final outreach drafts
-        "r1b_semantic": False,  # BYPASS for final outreach drafts
-        "r3_grounded": not is_fallback,  # Allowed for support artifacts if not R5
-        "r4_action": False,  # Never (read_only posture)
-        # Extended for final draft bypass proof
-        "final_draft_r1a_bypass": True,  # Proven: R1A exact cache bypassed for final drafts
-        "final_draft_r1b_bypass": True,  # Proven: R1B semantic cache bypassed for final drafts
-        "support_artifacts_cache_allowed": not is_fallback,  # Allowed: briefings, facts, manifests
-    }
+    """Thin adapter: derives cache eligibility from apps_lic cache policy profile."""
+    return derive_cache_eligibility_from_policy(
+        route_family, _get_route_profile(), _get_cache_policy()
+    )
 
 
 def _derive_side_effect_class(l1_plan: L1PlanContract) -> str:
     """Verified from task_spec; always read_only for outreach generation."""
     return str(l1_plan.task_spec.get("side_effect_class", "read_only"))
-
-
-def _read_route_profile_digest(repo_root: Path) -> str:
-    profile_path = repo_root / _ROUTE_PROFILE_RELPATH
-    if not profile_path.exists():
-        return ""
-    try:
-        return hashlib.sha256(profile_path.read_bytes()).hexdigest()
-    except OSError:
-        return ""
 
 
 def _resolve_repo_root() -> Path:
@@ -313,7 +242,10 @@ def _build_reason_codes(
 
 
 def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
-    """Emit a single deterministic RouteContract from an apps_lic L1 plan.
+    """Thin adapter: emit a single deterministic RouteContract from an apps_lic L1 plan.
+
+    Delegates all route/cache/execution policy decisions to the generic
+    route policy interpreter, driven by app-owned profile files.
 
     Args:
         l1_plan: L1PlanContract output of l1_plan_apps_lic.
@@ -325,7 +257,7 @@ def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
     Raises:
         TypeError: if l1_plan is not an L1PlanContract.
         ValueError: if l1_plan.app_id != 'apps_lic'.
-        ValueError: if workflow_required=True but execution_form derivation fails.
+        ValueError: if execution_form violates FINAL L0 MODEL hard law.
     """
     if not isinstance(l1_plan, L1PlanContract):
         raise TypeError(
@@ -336,9 +268,7 @@ def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
             f"l0_route_apps_lic expected app_id='apps_lic'; got {l1_plan.app_id!r}"
         )
 
-    _ = _read_route_profile_digest(_resolve_repo_root())  # captured for parity
-
-    # FINAL L0 MODEL: Derive route_family first, then other fields from it
+    # FINAL L0 MODEL: all policy derived from app-owned profiles via generic interpreter
     route_family = _derive_route_family(l1_plan)
     route_id = _derive_route_id(l1_plan, route_family)
     execution_form = _derive_execution_form(route_family)

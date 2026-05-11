@@ -47,6 +47,29 @@
     "R3R4_MANAGED_RESEARCH_THEN_DRAFT": "MANAGED_WORKFLOW",
     "R5_FALLBACK": "TERMINAL_FALLBACK"
   },
+  "route_selection_conditions": {
+    "R4_MANAGED_DRAFT": {
+      "requires_fresh_context": true,
+      "fresh_context_fields": ["briefing_fresh", "lead_profile_valid", "campaign_objective"],
+      "grounding_satisfied_when_not_required": true,
+      "grounding_context_field": "context_grounded"
+    },
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": {
+      "requires_fresh_context": false,
+      "requires_research_authorization": true,
+      "research_allow_field": "allow_research",
+      "research_types_field": "research_evidence_types",
+      "research_disabled_field": "research_disabled_by_policy"
+    },
+    "R5_FALLBACK": {
+      "is_terminal_default": true,
+      "briefing_only_request_types": ["briefing_only", "briefing-only"],
+      "request_type_field": "request_type"
+    }
+  },
+  "l3_required_for_families": ["R4_MANAGED_DRAFT", "R3R4_MANAGED_RESEARCH_THEN_DRAFT"],
+  "terminal_execution_families": ["R5_FALLBACK"],
+  "cache_bypass_policy_ref": "apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json",
   "metadata": {
     "description": "L0 routing profile for apps_lic outreach_message — FINAL MODEL with R4/R3R4/R5",
     "author": "agentic_core",
