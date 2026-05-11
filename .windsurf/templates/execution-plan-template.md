@@ -9,6 +9,12 @@ plan_type: refactor    # refactor | governance | audit | doc | infra | tracker
 #   infra      → SKIPPED (tooling / infrastructure, no code refactor)
 #   tracker    → SKIPPED (descope trackers, status dashboards)
 # See: .windsurf/rules/adg-graph-layer-enforcement.md § "Plan Scope via Frontmatter"
+#
+# NOTION STATUS DISCIPLINE (§plan-location.md):
+#   - Plans MUST be created with Status="Not Started" (never "In Progress")
+#   - Use: from tools.notion.plan_creation_helper import create_plan_in_notion
+#   - Retrospective plans only: force_status="Completed"
+#   - See: .windsurf/rules/plan-location.md § "Notion Status Discipline"
 ---
 
 # [Plan Title]

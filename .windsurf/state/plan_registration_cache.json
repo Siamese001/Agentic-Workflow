@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-10T18:23:19Z",
-  "fetched_at_epoch": 1778437399.6413732,
+  "fetched_at": "2026-05-11T09:03:25Z",
+  "fetched_at_epoch": 1778490205.051521,
   "plans": {
     "harness-enforcement-rename-a8f21c": {
       "status": "Completed",
@@ -1791,7 +1791,7 @@
       "has_ai_summary": true
     },
     "l5-cert-ref-deferred-scope-f3a1b8": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35b27693-f55c-810c-a40f-e7cde42b0da2",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1911,7 +1911,7 @@
       "has_ai_summary": true
     },
     "l6-alignment-deferred-scope-c5e8a7": {
-      "status": "Deferred",
+      "status": "Waiting",
       "page_id": "35b27693-f55c-8189-8827-c3dec80f05fa",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1946,6 +1946,12 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "rca-notion-status-transition-failure-f5a2c1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8101-923e-f33f87a8b248",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "windsurf-config-efficiency-optimization-8f3e9d": {
       "status": "Completed",
       "page_id": "35c27693-f55c-8103-b619-e31413ebeebe",
@@ -1953,9 +1959,9 @@
       "has_ai_summary": true
     },
     "notion-plan-identity-deferred-scope-a3b7e2": {
-      "status": "In Progress",
+      "status": "Waiting",
       "page_id": "35c27693-f55c-8105-acc7-c121fe6860e4",
-      "exists_on_disk": false,
+      "exists_on_disk": true,
       "has_ai_summary": true
     },
     "runtime-cert-e1-fail-closed-ci-gate-c71f3d": {
@@ -1976,15 +1982,45 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "notion-sync-enforcement-hardening-f5a2c1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-811c-81e1-d0f563e7b7be",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-ag8-deferred-scope-post-wiring-d2e9f1": {
+      "status": "Waiting",
+      "page_id": "35c27693-f55c-8120-82a6-cffeeba92b88",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-ag8-prompt-authority-coverage-d9f4c2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8121-991b-e1c6b127a39f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-lic-ag8-golden-template-adoption-f3c2e1": {
-      "status": "Not Started",
+      "status": "Retired",
       "page_id": "35c27693-f55c-8124-95fc-d7f75fb0562c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "enforcement-deferred-followup-c4d8a2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-812a-aed5-c100587234d8",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "notion-plans-db-hygiene-deferred-scope-d4f7c1": {
       "status": "Completed",
       "page_id": "35c27693-f55c-812b-b762-e3b51214a40f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-plan-status-hardening-e5f3a1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-812e-80ae-daf09740ca56",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -1995,7 +2031,7 @@
       "has_ai_summary": true
     },
     "wave-status-completion-enforcement-d4f8e2": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "35c27693-f55c-8132-9dcd-f30331211f89",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -2006,15 +2042,57 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "apps-lic-ag9-prompt-authority-coverage-e5f2a8": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-813b-b975-f1ff2d720df9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-pipeline-deferred-e9f2a4": {
       "status": "Waiting",
       "page_id": "35c27693-f55c-813f-88bb-d308281ad131",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "ask-user-question-shadow-loop-wiring-b4e1f7": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8146-a5cb-e4b988fc676b",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-prompt-authority-coverage-ag8-4f9e1a": {
+      "status": "In Progress",
+      "page_id": "35c27693-f55c-814e-85c6-c77ea48f8012",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "plan-complete-marker-enforcement-d2e9f1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-814e-887b-fa2d70f6fa03",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "w6-emit-contract-deferred-scope-c3f7a1": {
       "status": "Completed",
       "page_id": "35c27693-f55c-8150-aadf-f8301f0c8dbd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-enforcement-consolidation-e8f3a2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8150-af3b-d2a9816e2b80",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-ag9-golden-template-adoption-e4f2b8": {
+      "status": "In Progress",
+      "page_id": "35c27693-f55c-815c-927f-dca829cc1533",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "enforcement-mechanisms-top5-c4d8a2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-8165-ba06-dd06ed7ea408",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -2048,6 +2126,12 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "notion-test-hardening-deferred-scope-a7b4c9": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-818d-a8ea-cd7ccf42f961",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-test-surface-deferred-f3c8b2": {
       "status": "Waiting",
       "page_id": "35c27693-f55c-818f-855b-eeadfa81fc03",
@@ -2066,15 +2150,45 @@
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "notion-np10-waiting-for-enforcement-b3d7c2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-819e-8b50-e046252ed746",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "author-gate-ask-ui-consolidated-a1e3f7": {
       "status": "Completed",
       "page_id": "35c27693-f55c-81a4-93a9-f485347bedcb",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
+    "ask-user-question-test-hardening-a7f2e3": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-81cb-b1ba-c93ac95c65ce",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-np10-deferred-scope-c8f1a4": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-81d4-be6f-fddc9417cc72",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-test-hardening-session-c4d8f2": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-81e3-a725-e807953fa182",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-qna-l4-chromadb-init-p0-a7e4c3": {
       "status": "Archived",
       "page_id": "35c27693-f55c-81e4-8330-d97855e1a694",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-plan-status-reconciliation-a3f2e1": {
+      "status": "Completed",
+      "page_id": "35c27693-f55c-81ec-b235-f881c8b6c67d",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
@@ -2105,6 +2219,42 @@
     "notion-wave-lifecycle-autosync-f4a2b8": {
       "status": "Completed",
       "page_id": "35c27693-f55c-81fc-aecb-cfa2e8cea9c5",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "holistic-plan-status-discipline-d4e8a1": {
+      "status": "Not Started",
+      "page_id": "35d27693-f55c-8104-984f-d3efd8a04c08",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-integration-consistency-audit-b2c4d8": {
+      "status": "Not Started",
+      "page_id": "35d27693-f55c-8140-85b3-cfd59b7fbe93",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "wave-completion-markdown-enforcement-c4e7b2": {
+      "status": "Not Started",
+      "page_id": "35d27693-f55c-817c-962a-f0b4e9b0cf0a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-research-ag9-deferred-scope-f3c1b7": {
+      "status": "Not Started",
+      "page_id": "35d27693-f55c-81c4-b6e7-c1857186346e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "fix-rules-notion-drift-c4e7b2": {
+      "status": "Completed",
+      "page_id": "35d27693-f55c-81ce-9156-ce42094a7d81",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-ensemble-judge-restoration-a7c4e2": {
+      "status": "In Progress",
+      "page_id": "35d27693-f55c-81ed-b5b1-db110843992f",
       "exists_on_disk": true,
       "has_ai_summary": true
     },

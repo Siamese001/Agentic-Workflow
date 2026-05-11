@@ -47,6 +47,47 @@ A plan missing the wave summary table **or** the phase-level summary table **or*
 
 > **History**: The `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) module was retired 2026-04-24 and archived to `archives/tools_planning_20260424_obsolete/`. It served the 200k-window era; the 1M-window era makes pre-flight budget enforcement unnecessary friction. Plans still size phases for scope clarity, not for budget compliance.
 
+## Notion Status Discipline (added 2026-05-11)
+
+All new plans registered in Notion Plans DB **MUST** be created with Status="Not Started".
+
+**The Invariant**: A plan's initial status is NEVER "In Progress", "Waiting", or any other state. Only "Not Started" (standard) or "Completed" (retrospective plans only) are valid at creation time.
+
+**Why**: The "In Progress" at creation bug (RCA: `docs/rca/RCA_PLAN_STATUS_IN_PROGRESS_WRONG-b5d3e1.md`) caused plan tracking confusion and broke automation that depends on status state machine transitions.
+
+**Canonical Creation Path** (use for all new plans):
+```python
+from tools.notion.plan_creation_helper import create_plan_in_notion
+
+result = create_plan_in_notion(
+    slug="my-plan-abc123",
+    summary="Plan summary",
+    ai_summary="- Target: ...",
+    # Status defaults to "Not Started" — never override to "In Progress"
+)
+```
+
+**Retrospective Plans Only** (documenting already-completed work):
+```python
+result = create_plan_in_notion(
+    slug="retrospective-xyz789",
+    summary="Retrospective documentation",
+    ai_summary="- Target: ...",
+    force_status="Completed",  # Only valid exception
+)
+```
+
+**Defense Layers** (plan `holistic-plan-status-discipline-d4e8a1`):
+| Layer | Component | Enforcement |
+|-------|-----------|-------------|
+| 1 | `plan_creation_helper.py` | Code-level enforcement, rejects wrong status |
+| 2 | `pre_notion_plan_creation_gate.py` | Pre-flight hook validation |
+| 3 | `post_cascade_plan_creation_audit.py` | Post-creation auto-correction |
+| 4 | NP14 CI gate | Weekly drift detection in CI |
+| 5 | Documentation | This section + template |
+
+**Bypass** (emergency only): Set `NOTION_PLAN_STATUS_INITIAL_BYPASS=1` — logs warning but allows.
+
 ## Overwrite Default
 
 When updating an existing plan: **silently overwrite** `.windsurf/plans/<filename>.md` — no Author-Gate prompt, no confirmation request.

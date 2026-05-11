@@ -117,7 +117,7 @@ server_rows = [
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
-        "Use for ADRs, Author-Gate ledgers, MCP registry, and plan/status data.",
+        "Use for Plans DB, Backlog Items, and Anti-Pattern Burndown. MCP Registry, ADR Registry, Constitutional Rules Registry, SC/AP Violation Backlog, and Author-Gate Decision Ledger are **archived** — filesystem SSOT only.",
         "notion",
     ),
     (
@@ -303,8 +303,14 @@ def generate_notion_map_block() -> str:
         "|----------|-----------------------|----------------------|--------------|----------------------------|"
     )
     for db in dbs:
+        if db.get("archived"):
+            id_col = f"~~`{db['id']}`~~"
+            db_id_col = f"~~`{db.get('database_id', '— MISSING —')}`~~"
+        else:
+            id_col = f"`{db['id']}`"
+            db_id_col = f"`{db.get('database_id', '— MISSING —')}`"
         lines.append(
-            f"| {db['name']} | `{db['id']}` | `{db.get('database_id', '— MISSING —')}` | "
+            f"| {db['name']} | {id_col} | {db_id_col} | "
             f"{db.get('read_trigger', '')} | {db.get('write_trigger', '')} |"
         )
     lines.append("")
