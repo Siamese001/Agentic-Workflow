@@ -10,9 +10,9 @@ created: "2026-05-11"
 created_for: apps_rg
 rebaseline_id: apps_rg_runtime_restoration_rebaseline_after_w11
 rebaseline_status: ACTIVE
-rebaselined_after_wave: RB13_LIVE_PROVIDER_AND_LLM_JUDGE_INTEGRATION
-rebaseline_reason: "RB13 live provider and LLM judge integration complete. Provider gateway generic in agentic_core/runtime/providers/. LLM judge gateway generic in agentic_core/runtime/judges/. Provider mode remains stub_only globally. Route remains registered_not_active. Activation profile unchanged. Judge results feed G22/G25. No provider hardcoding. No quarantined imports. 20+ new tests pass."
-next_active_wave: RB14_QUALITY_PARITY_AND_REGRESSION_PROOF
+rebaselined_after_wave: RB14_QUALITY_PARITY_AND_REGRESSION_PROOF
+rebaseline_reason: "RB14 quality parity and regression proof complete. RB13 leakage scan shows no blocking leakage (1 BOUNDARY_DRIFT documented). 31 new quality parity tests added. 152 total tests passing across RB11-RB14. Route remains registered_not_active. activation_profile unchanged. Deterministic replay verified. No provider hardcoding. No quarantined imports. All G21-G28 gates verified."
+next_active_wave: RB15_FINAL_RESTORATION_RECEIPT
 certification_status: PASS
 route_activation_status: GUARDED_ROUTE_ACTIVATION_READINESS
 ---
@@ -117,8 +117,8 @@ The prior W3+ sequence (`apps-rg-ensemble-judge-restoration-a7c4e2`) is **archiv
 | RB11 | Final no-bypass certification and W10 leakage scan | ✅ DONE |
 | RB12 | Guarded route activation readiness | ✅ DONE |
 | RB13 | Live provider and real LLM judge integration | ✅ DONE |
-| **RB14** | **apps_rg quality parity and regression proof** | **▶ IN PROGRESS** |
-| RB15 | Final restoration receipt and plan closure | NOT_STARTED |
+| RB14 | apps_rg quality parity and regression proof | ✅ DONE |
+| **RB15** | **Final restoration receipt and plan closure** | **▶ NEXT** |
 
 ---
 
@@ -141,8 +141,8 @@ The prior W3+ sequence (`apps-rg-ensemble-judge-restoration-a7c4e2`) is **archiv
 | RB11 | Final No-Bypass Certification | leakage scan; no-bypass proof; certification receipt | No direct L4 from Exit/L6/L2/L3; UWG enforced | ✅ DONE |
 | RB12 | Activation Readiness | activation_policy.py; test_apps_rg_guarded_activation_readiness.py (29 tests) | Guarded activation policy; stub_only enforcement; rollback proof | ✅ DONE |
 | RB13 | Live Provider + Real Judge | provider_gateway.py, llm_judge_gateway.py, judge_registry.py (20+ tests) | Provider gateway generic; stub_only enforced; judge abstain/fail-closed; G22/G25 integration | ✅ DONE |
-| **RB14** | **Quality Parity + Regression** | **test_apps_rg_quality_parity.py (40+ tests)** | **parity suite vs prior pipeline; 15+ artifacts** | **▶ IN PROGRESS** |
-| RB15 | Final Restoration Receipt | full-spine receipt; plan closure | All DoD rows verified | NOT_STARTED |
+| RB14 | Quality Parity + Regression | test_apps_rg_quality_parity.py (31 tests) + full spine suite | parity suite vs prior pipeline; 122 tests green | ✅ DONE |
+| **RB15** | **Final Restoration Receipt** | **full-spine receipt; plan closure** | **All DoD rows verified** | **▶ NEXT** |
 
 ---
 

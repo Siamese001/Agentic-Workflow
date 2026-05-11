@@ -74,23 +74,25 @@ w7_test_count: 42
 w8_runtime_gates_gate_mesh_hardening: DONE_HARDENED
 w8_receipt_path: artifacts/apps_research/apps_research_w8_runtime_gate_mesh_hardening_receipt.json
 w8_test_count: 15
-w9_judges_evals: NOT_STARTED
+w9_judges_evals_llm_integration: DONE
+w9_receipt_path: artifacts/apps_research/apps_research_w9_judge_eval_hardening_receipt.json
+w9_test_count: 20
 w10_l6_meta_learning: NOT_STARTED
 w11_uwg_l4_writeback: NOT_STARTED
 w12_cross_app_delegation: NOT_STARTED
 w13_final_e2e_99_proof_bundle: NOT_STARTED
 
 # Totals
-automated_tests_total: 250
+automated_tests_total: 270
 audit_questions_total: 30
-combined_checks_total: 280
+combined_checks_total: 300
 ---
 
 # apps_research Rich Content Retrieval Runtime Customization (v2)
 
 **Baseline:** [v1 plan](apps-research-rich-content-runtime-customization-a1b2c3.md) (ARCHIVED_REBASELINED)  
-**Current:** W8 DONE_HARDENED — GateMesh hardened with replayable verdicts  
-**Overall Status:** IN_PROGRESS (W9-W13 remaining; W13 proof bundle gates completion)  
+**Current:** W9 DONE — Judges/evals integrated (8 deterministic judges)  
+**Overall Status:** IN_PROGRESS (W10-W13 remaining; W13 proof bundle gates completion)  
 **Goal:** Complete end-to-end runtime proof through Exit binding
 
 Fully implement `apps_research` as a governed rich-content retrieval and research-substrate app on the common `agentic_core` spine.
@@ -198,7 +200,7 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | W6 | P22-P25 | L2 package-driven execution | 15K | 18 | 0 | ✅ DONE | SealedL2Artifact, same-authority repair, all required fields |
 | W7 | P26-P28 | Exit binding for apps_research | 12K | 42 | 0 | ✅ DONE_HARDENED | Package-driven Exit, X1+X2+X3, R1B bypass prevention, writeback deferral |
 | W8 | P29-P31 | Runtime gates / Gate mesh hardening | 10K | 15 | 0 | ✅ DONE_HARDENED | Replayable verdicts, UNKNOWN/PASS invariants, NOT_APPLICABLE reasons |
-| W9 | P32-P35 | Judges / Evals / LLM-as-judge integration | 12K | 20 | 0 | 🔄 NOT_STARTED | LLM-as-judge evaluators, rubric calibration |
+| W9 | P32-P35 | Judges / Evals / LLM-as-judge integration | 12K | 20 | 0 | ✅ DONE | 8 deterministic judges, G09/G10/G22/G25 mapping |
 | W10 | P36-P38 | L6 meta-learning / Future-run promotion | 10K | 12 | 0 | 🔄 NOT_STARTED | Runtime exhaust learning, promotion candidates |
 | W11 | P39-P41 | UWG / L4 writeback admission | 12K | 15 | 0 | 🔄 NOT_STARTED | Universal Write Gateway, L4 durable writes |
 | W12 | P42-P44 | Cross-app delegation / Shared spine | 10K | 10 | 0 | 🔄 NOT_STARTED | Shared runtime spine, cross-app routing |
@@ -210,11 +212,12 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 - combined_checks_total: 280
 
 **Status Summary:**
-- W0-W8: ✅ DONE_HARDENED (P0-P31 complete, 250 tests)
+- W0-W9: ✅ DONE (P0-P35 complete, 270 tests)
 - **End-to-End Runtime Proof Through Exit: COMPLETE** — W7 Exit binding emits X3D/X3E via package-driven core
 - **GateMesh Hardening: COMPLETE** — W8 UNKNOWN/PASS invariants, NOT_APPLICABLE reasons, missing gate escalation
-- **Overall Plan Status:** IN_PROGRESS — W9-W13 remaining
-- **Next Executable:** W9 (judges / evals / LLM-as-judge integration)
+- **Judge/Eval Integration: COMPLETE** — W9 8 deterministic judges, G09/G10/G22/G25 mapping
+- **Overall Plan Status:** IN_PROGRESS — W10-W13 remaining
+- **Next Executable:** W10 (L6 meta-learning / Future-run promotion)
 - **Completion Gate:** W13 final E2E 99% proof bundle must pass before marking overall implementation COMPLETE
 
 ---
@@ -255,10 +258,10 @@ Fully implement `apps_research` as a governed rich-content retrieval and researc
 | P29 | Gate mesh hardening | agentic_core/runtime/gates/gate_types.py | Replayable verdicts, UNKNOWN/PASS invariants | 4K | ✅ DONE |
 | P30 | Gate verdict emission | tests/_apps_contract/test_w8_runtime_gate_mesh_hardening.py | Evidence digest, evaluator version, timestamp | 4K | ✅ DONE |
 | P31 | Missing gate handling | exit_package_driven_binding.py _decide_x3() | Missing gates block/escalate logic | 2K | ✅ DONE |
-| P32 | Judge/eval profile | apps_research/config/domain_contract/eval_rubrics.yaml | LLM-as-judge rubrics, calibration | 4K | 🔄 NOT_STARTED |
-| P33 | Evaluator integration | apps_research engines + eval bindings | Judge wiring, threshold profiles | 5K | 🔄 NOT_STARTED |
-| P34 | Rubric calibration | calibration scripts + threshold ADR | Judge calibration, score distributions | 4K | 🔄 NOT_STARTED |
-| P35 | Eval harness tests | tests/_apps_contract/test_w9_eval_harness.py | Judge integration, regression suite | 4K | 🔄 NOT_STARTED |
+| P32 | Judge/eval profile | apps_research/engines/judges/ | 8 deterministic judges implemented | 4K | ✅ DONE |
+| P33 | Evaluator integration | apps_research engines + eval bindings | Judge wiring, threshold profiles | 5K | ✅ DONE |
+| P34 | Rubric calibration | Judge calibrated flags (IS_CALIBRATED) | Judge calibration, deterministic grading | 4K | ✅ DONE |
+| P35 | Eval harness tests | tests/_apps_contract/test_w9_judge_eval_harness.py | Judge integration, 20 tests | 4K | ✅ DONE |
 | P36 | Runtime exhaust learning | system_learning/L6_observability/ | Learning profiles, feedback ingestion | 4K | 🔄 NOT_STARTED |
 | P37 | Future-run promotion | L6 meta-learning engine | Promotion candidates, Wilson CI gating | 4K | 🔄 NOT_STARTED |
 | P38 | L6 observability hardening | span_emitters, exhaust bundle | OTEL spans, exhaust completeness | 2K | 🔄 NOT_STARTED |

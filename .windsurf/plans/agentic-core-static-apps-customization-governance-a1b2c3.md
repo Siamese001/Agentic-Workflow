@@ -39,16 +39,17 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 
 | Wave | Metric | Scope | Checkpoint | Tokens |
 |------|--------|-------|------------|--------|
-| W0 | Baseline audit | Inventory current governance + bindings | Pre-flight | ~5K ✅ |
-| W1 | 7 governance docs | AGENTS.md + 3 scoped AGENTS.md + 4 rules | A | ~8K ✅ |
-| W2 | 5 skills + 4 workflows | Create SKILL.md and workflow docs | B | ~10K ✅ |
-| W3 | 6 scripts + hooks.json | Governance scripts + hook wiring | C | ~8K ✅ |
-| W4 | 6 CI tests | Boundary, leakage, package, bypass, X3, receipts tests | D | ~7K ✅ |
-| W5A | Migration inventory/reconciliation | 37 bindings discovered, 28 migration-scoped, 9 excluded | E.1 | ~3K ✅ |
-| W5B P1 | apps_lic L0/Exit/L6 migration | 3 bindings: L0 routing, Exit, L6 promotion | E.2 | ~8K 🔲 |
-| W5C | apps_rg migration (deferred) | 7 bindings deferred post-P1 | E.3 | ~6K 🔲 |
-| W6 | 5 negative controls | Prove enforcement catches violations | F | ~4K 🔲 |
-| W7 | 1 receipt | Final governance receipt artifact | G | ~3K 🔲 |
+| W0 | Baseline audit | Inventory current governance + bindings | Pre-flight | ~5K ✅ COMPLETE |
+| W1 | 7 governance docs | AGENTS.md + 3 scoped AGENTS.md + 4 rules | A | ~8K ✅ COMPLETE |
+| W2 | 5 skills + 4 workflows | SKILL.md files + workflow docs | B | ~10K ✅ COMPLETE |
+| W3 | 6 hooks/scripts | hooks.json + 5 governance scripts | C | ~8K ✅ COMPLETE |
+| W4 | 6 CI tests + 17 negative controls | tests/governance/ test suite + negative controls | D | ~8K ✅ CERTIFIED |
+| W5A | Migration inventory | 37 bindings, 28 scoped, 9 excluded | E.0 | ~3K ✅ COMPLETE |
+| W5B P1 | apps_lic Priority Migration | L6/Exit/L0 only | E.1 | ~8K � IN PROGRESS |
+| W5C | apps_rg Migration | Deferred post-W5B P1 | E.2 | ~6K 🔲 DEFERRED |
+| W5D | apps_research Consolidation | v1/v2 consolidation + migration | E.3 | ~8K 🔲 DEFERRED |
+| W6 | Post-migration negative controls | Verify enforcement after migration | F | ~3K 🔲 TODO |
+| W7 | Final receipt | Governance completion artifact | G | ~2K 🔲 TODO |
 
 **Total: ~56K tokens across 8 waves**
 
@@ -100,13 +101,15 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 | 5.5 | W4 test_no_app_exit_x3_emission.py | Per §14 | App X3 emission risk | ~1K | ✅ DONE |
 | 5.6 | W4 test_governance_receipts.py + w3_hardening_policy.md | Receipt validation + bypass policy | No receipt discipline | ~1K | ✅ DONE |
 | 6.1 | W5A Migration inventory/reconciliation | 37 bindings discovered, 28 migration-scoped, 9 excluded with reasons | Inventory gap closed | ~2K | ✅ DONE |
-| 6.2 | W5B P1 apps_lic L0 binding | Migrate to generic route policy engine + app profile | Hardcoded route logic | ~3K | 🔲 BLOCKED |
-| 6.3 | W5B P1 apps_lic Exit binding | Migrate to generic exit profile enforcer + app profile | Hardcoded Exit gates | ~3K | 🔲 BLOCKED |
-| 6.4 | W5B P1 apps_lic L6 promotion binding | Migrate to generic L6 profile consumer + app profile | Hardcoded UWG authority | ~2K | 🔲 BLOCKED |
+| 6.2 | W5B P1a apps_lic L6 promotion binding | Migrate to generic L6 profile consumer + app profile | Hardcoded UWG authority | ~2K | � IMPLEMENTED_PENDING_TEST_PROOF |
+| 6.3 | W5B P1b apps_lic Exit binding | Migrate to generic exit profile enforcer + app profile | Hardcoded Exit gates | ~3K | � TEMPORARY_THIN_ADAPTER_WITH_REMAINING_WORK |
+| 6.4 | W5B P1c apps_lic L0 routing binding | Migrate to generic route policy engine + app profile | Hardcoded route logic | ~3K | ❌ BLOCKED |
+| 6.5 | W5C apps_rg migration | apps_rg L0/Exit/L6 or other bindings only after W5B P1 | Deferred post-W5B P1 | ~6K | 🔲 DEFERRED |
+| 6.6 | W5D apps_research v1/v2 consolidation and migration | v1/v2 consolidation first, migration later | Deferred post-W5B P1 | ~8K | 🔲 DEFERRED |
 | 7.1 | W6 Post-migration negative controls | Verify W5B P1 migrations preserved enforcement | Post-migration validation | ~1K | 🔲 TODO |
-| 7.2 | W6 Document post-migration failure modes | Confirm each blocked after migration | Post-migration error paths | ~1K | 🔲 TODO |
+| 7.2 | W6 Post-migration failure-mode documentation | Confirm each blocked after migration | Post-migration error paths | ~1K | 🔲 TODO |
 | 8.1 | W7 Final governance receipt | Per §17 receipt spec | No completion artifact | ~2K | 🔲 TODO |
-| 8.2 | W7 Update Notion status | Plan → Completed | Tracking | ~1K | 🔲 TODO |
+| 8.2 | W7 tracking/status update | Plan → Completed | Tracking | ~1K | 🔲 TODO |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -143,23 +146,30 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 
 ## W5B P1 Current Blocker
 
-**Status**: 🔲 BLOCKED - Cannot proceed with migration
+**Status**: 🔲 BLOCKED before P1c - P1a and P1b gates not yet passed
 
-**Blocker**: Direct JSON tool file reads failed
+**Current Blockers**:
 
-**Details**:
-- Native `read_file` tool calls failing with JSON parsing errors
-- Cannot extract content from the three target binding files:
-  1. `agentic_core/L0_routing/apps_lic_l0_binding.py`
-  2. `agentic_core/runtime/exit/apps_lic_exit_binding.py`
-  3. `agentic_core/L6_observability/promotion/apps_lic_promo_binding.py`
+1. **P1a L6**: IMPLEMENTED_PENDING_TEST_PROOF
+   - API compatibility fixes applied (bool/dict uwg_write_authority support)
+   - L6PromoResult dataclass updated for backward compatibility
+   - **Required**: Actual pytest certification with command recorded
+   - **Command**: `python -m pytest tests -q -k "apps_lic and l6"`
+   - Must verify 8/8 L6 tests pass before CERTIFIED status
 
-**Required Resolution**:
-- Use PowerShell `Get-Content` or Python `pathlib.Path.read_text()` fallback
-- Snapshot the three files to `artifacts/governance/` for inspection
-- No migration may proceed without full file-content extraction
+2. **P1b Exit**: TEMPORARY_THIN_ADAPTER_WITH_REMAINING_WORK
+   - 26/26 Exit tests passing
+   - ~613 lines with hardcoded profile paths/gate IDs/cache handling
+   - **Required**: Explicit bridge acceptance via `P1b_accepted_as_bridge = true`
+   - Not certified as true thin adapter - temporary bridge only
 
-**Extraction Completed Via**: Python fallback (see session transcript)
+3. **P1c L0**: BLOCKED
+   - Cannot proceed until P1a has pytest proof AND P1b bridge acceptance recorded
+
+**Historical Note**:
+- Earlier JSON file-read failures were resolved via Python fallback extraction
+- Extraction summary: All three binding files snapshotted to `artifacts/governance/`
+- No longer a blocker - migration work is now active but gated
 
 ---
 
@@ -431,13 +441,13 @@ If skills/workflows are incomplete:
 
 | # | Criterion | Verification command / evidence | Status |
 |---|---|---|---|
-| DoD-1 | 7 governance instruction files exist (root AGENTS.md + 3 scoped AGENTS.md + 4 rules) | `ls AGENTS.md agentic_core/AGENTS.md apps_lic/AGENTS.md apps_rg/AGENTS.md .windsurf/rules/agentic-core-static.md .windsurf/rules/agentic-core-glob-lock.md .windsurf/rules/apps-customization.md .windsurf/rules/boundary-audit-required.md` | 🔲 |
-| DoD-2 | 5 skills + 4 workflows created | `ls .windsurf/skills/{core-boundary-audit,u0-app-customization,runtime-package-verifier,receipt-auditor,app-leakage-refactor}/SKILL.md .windsurf/workflows/{core-boundary-audit,u0-customize-app,pre-commit-agentic-cert,migrate-app-binding-to-generic-core}.md` | 🔲 |
-| DoD-3 | 6 governance scripts + hooks.json created | `ls tools/governance/{core_write_guard,core_leakage_scan,receipt_required_guard,app_runtime_package_scan,boundary_receipt_validator}.py .windsurf/hooks.json` | 🔲 |
-| DoD-4 | 6 CI governance tests passing with 17 negative controls | `pytest tests/governance/ -v` shows 6 pass, 0 fail | ✅ 2026-05-11 |
-| DoD-5 | ≥3 existing bindings migrated with receipts | `ls artifacts/governance/migration_receipts/*.json` and grep for "MIGRATION_REQUIRED" vs "GENERIC_READY" | 🔲 |
-| DoD-6 | 5 negative controls verify enforcement | `pytest tests/governance/test_negative_controls.py -v` shows all blocked | 🔲 |
-| DoD-7 | Final governance receipt generated | `cat artifacts/governance/agentic_core_static_apps_customization_governance_receipt.json` valid JSON | 🔲 |
+| DoD-1 | 7 governance instruction files exist (root AGENTS.md + 3 scoped AGENTS.md + 4 rules) | `ls AGENTS.md agentic_core/AGENTS.md apps_lic/AGENTS.md apps_rg/AGENTS.md .windsurf/rules/agentic-core-static.md .windsurf/rules/agentic-core-glob-lock.md .windsurf/rules/apps-customization.md .windsurf/rules/boundary-audit-required.md` | ✅ W1 complete |
+| DoD-2 | 5 skills + 4 workflows created | `ls .windsurf/skills/{core-boundary-audit,u0-app-customization,runtime-package-verifier,receipt-auditor,app-leakage-refactor}/SKILL.md .windsurf/workflows/{core-boundary-audit,u0-customize-app,pre-commit-agentic-cert,migrate-app-binding-to-generic-core}.md` | ✅ W2 complete |
+| DoD-3 | 6 governance scripts + hooks.json created | `ls tools/governance/{core_write_guard,core_leakage_scan,receipt_required_guard,app_runtime_package_scan,boundary_receipt_validator}.py .windsurf/hooks.json` | ✅ W3 complete |
+| DoD-4 | 6 CI governance tests passing with 17 negative controls | `pytest tests/governance/ -v` shows 6 pass, 0 fail | ✅ W4 complete |
+| DoD-5 | ≥3 existing bindings migrated with receipts | W5B P1 in progress: P1a L6 implemented, P1b Exit temporary, P1c L0 blocked | 🔄 In progress (W5B P1 scoped) |
+| DoD-6 | Post-migration negative controls verify enforcement | W6 TODO: Re-run negative controls after W5B P1 to prove migration did not weaken governance | 🔄 W4 baseline complete, W6 post-migration pending |
+| DoD-7 | Final governance receipt generated | `cat artifacts/governance/agentic_core_static_apps_customization_governance_receipt.json` valid JSON | 🔲 W7 pending |
 
 **Verification-vs-Deferral table**:
 
