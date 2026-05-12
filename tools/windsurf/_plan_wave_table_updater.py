@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import os
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -68,8 +69,25 @@ _ROW_RE = re.compile(
     re.MULTILINE,
 )
 
-# Phase-level summary table row: first cell is also W<N> / W<N>.5
-# Same structure — we treat it identically.
+# Phase-level summary table row: first cell is Phase ID like W<N>, W<N>.P<M>, W<N>.5
+# Captures: phase_id (e.g., W1, W1.P1, W5.P8, W10.P12) and status cell
+_PHASE_ROW_RE = re.compile(
+    r"^(?P<row_prefix>"
+    r"\|\s*"
+    r"(?P<phase_id>W\d+(?:\.\d+)?(?:\.P\d+)?)"
+    r"\s*"
+    r"(?:\|[^|\n]*){1,4}"
+    r"\|\s*)"
+    r"(?P<status>[^|\n]*?)"
+    r"(?P<row_suffix>\s*\|[^\n]*)",
+    re.MULTILINE,
+)
+
+# Frontmatter last_updated pattern
+_LAST_UPDATED_RE = re.compile(
+    r"^(last_updated:\s*)(\S*)",
+    re.MULTILINE,
+)
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -82,6 +100,24 @@ def _find_plan_file(repo_root: Path, slug: str) -> Path | None:
     if candidate.is_file():
         return candidate
     return None
+
+
+def _phase_id_matches(phase_id: str, target_phase: str) -> bool:
+    """Return True if phase_id matches target_phase exactly.
+
+    Supports:
+        - W<N> (e.g., W1, W10)
+        - W<N>.P<M> (e.g., W1.P1, W5.P8, W10.P12)
+        - W<N>.<decimal> (e.g., W1.5)
+    """
+    # Normalize: strip whitespace and compare exact match
+    return phase_id.strip() == target_phase.strip()
+
+
+def _refresh_last_updated(content: str) -> str:
+    """Refresh last_updated timestamp in frontmatter."""
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+    return _LAST_UPDATED_RE.sub(rf"\g<1>{now}", content)
 
 
 def _wave_label_matches(label: str, wave: int) -> bool:
@@ -194,3 +230,96 @@ def update_wave_in_plan(
         return False, f"write failed: {exc}"
 
     return True, f"updated {changed_count} row(s) wave={wave} kind={kind}"
+
+
+def _replace_phase_status_in_row(row: str, new_status: str, old_statuses: Iterable[str]) -> tuple[str, bool]:
+    """Replace the status cell value in a Phase-Level Summary table row.
+
+    Returns (new_row, changed). Only replaces when current status is in
+    old_statuses. Returns original row + False when no change needed.
+    """
+    m = _PHASE_ROW_RE.match(row)
+    if not m:
+        return row, False
+    current = m.group("status").strip()
+    if current not in old_statuses:
+        return row, False
+    new_row = m.group("row_prefix") + new_status + m.group("row_suffix")
+    return new_row, True
+
+
+def _update_phase_in_plan(
+    repo_root: Path,
+    slug: str,
+    phase: str,
+    kind: str,
+) -> tuple[bool, str]:
+    """Update phase-status cells in the Phase-Level Summary table for slug/phase/kind.
+
+    phase must be a phase ID like: W1.P1, W5.P8, W10.P12, or W1, W5, etc.
+    kind must be one of: 'phase_start', 'phase_complete'.
+
+    Returns (ok, message).
+    """
+    if os.environ.get("WAVE_TABLE_UPDATE_BYPASS") == "1":
+        return True, "bypassed"
+
+    if kind not in ("phase_start", "phase_complete"):
+        return True, f"no-op for kind={kind}"
+
+    plan_file = _find_plan_file(repo_root, slug)
+    if plan_file is None:
+        return False, f"plan file not found for slug={slug}"
+
+    try:
+        original = plan_file.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, f"read failed: {exc}"
+
+    lines = original.splitlines(keepends=True)
+    changed_count = 0
+    new_lines: list[str] = []
+
+    for line in lines:
+        stripped = line.rstrip("\n").rstrip("\r")
+
+        if kind == "phase_start":
+            m = _PHASE_ROW_RE.match(stripped)
+            if m and _phase_id_matches(m.group("phase_id"), phase):
+                new_stripped, changed = _replace_phase_status_in_row(
+                    stripped, STATUS_IN_PROGRESS, _TODO_VARIANTS
+                )
+                if changed:
+                    changed_count += 1
+                    eol = line[len(stripped):]
+                    new_lines.append(new_stripped + eol)
+                    continue
+
+        elif kind == "phase_complete":
+            m = _PHASE_ROW_RE.match(stripped)
+            if m and _phase_id_matches(m.group("phase_id"), phase):
+                new_stripped, changed = _replace_phase_status_in_row(
+                    stripped, STATUS_DONE, _TODO_VARIANTS | {STATUS_IN_PROGRESS}
+                )
+                if changed:
+                    changed_count += 1
+                    eol = line[len(stripped):]
+                    new_lines.append(new_stripped + eol)
+                    continue
+
+        new_lines.append(line)
+
+    if changed_count == 0:
+        return True, f"no matching rows found/changed for phase={phase} kind={kind}"
+
+    new_content = "".join(new_lines)
+
+    # Refresh last_updated in frontmatter
+    new_content = _refresh_last_updated(new_content)
+
+    try:
+        plan_file.write_text(new_content, encoding="utf-8")
+    except OSError as exc:
+        return False, f"write failed: {exc}"
+
+    return True, f"updated {changed_count} row(s) phase={phase} kind={kind}"

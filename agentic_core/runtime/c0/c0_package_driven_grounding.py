@@ -23,6 +23,10 @@ except ImportError:
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.L1_cognition.package_driven_l1_binding import PackageDrivenL1Plan
+from agentic_core.runtime.c0.c0_3_graph_rag_executor import (
+    GraphRagResult,
+    maybe_run_graph_rag,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -170,6 +174,18 @@ class FinalEvidenceContract:
     # Data boundary verification
     all_evidence_data_boundary_verified: bool = True
     data_boundary_label: str = "EVIDENCE_DATA_ONLY"
+    
+    # Graph-RAG extension fields (W4.1b) — populated only when C0.3 runs
+    graph_expansion_refs: List[str] = field(default_factory=list)
+    graph_evidence_items: List["EvidenceItem"] = field(default_factory=list)
+    graph_contradiction_report: Optional["ContradictionReport"] = None
+    graph_rag_executed: bool = False
+    graph_rag_skip_reason: str = ""
+    graph_rag_error: str = ""
+    graph_rag_nodes_accepted: int = 0
+    graph_rag_nodes_rejected: int = 0
+    graph_rag_contradiction_count: int = 0
+    graph_rag_manifest_hash: str = ""
     
     # Schema version
     schema_version: str = "AG9.C0.FEC.1"
@@ -565,14 +581,100 @@ def c0_ground_package_driven(
     }
     final_digest = _compute_digest(contract_content)
     
+    # C0.3 Graph-RAG execution (W4.wire) — only when policy is active
+    graph_rag_result: GraphRagResult = maybe_run_graph_rag(
+        route_contract, evidence_items
+    )
+
+    # W4.1b — map GraphExpandedEvidencePool onto FinalEvidenceContract fields
+    graph_expansion_refs: List[str] = []
+    graph_evidence_items: List[EvidenceItem] = []
+    graph_contradiction_report: Optional[ContradictionReport] = None
+
+    if graph_rag_result.executed and graph_rag_result.pool is not None:
+        pool = graph_rag_result.pool
+
+        # accepted graph neighbors → graph evidence items + expansion refs
+        for neighbor in pool.accepted_graph_neighbors:
+            node_id = getattr(neighbor, "neighbor_id", "") or ""
+            text = getattr(neighbor, "payload_preview", "") or ""
+            src = getattr(neighbor, "source_id", node_id) or node_id
+            if node_id:
+                graph_expansion_refs.append(node_id)
+            graph_evidence_items.append(
+                EvidenceItem(
+                    evidence_id=f"graph-{node_id}" if node_id else f"graph-ev-{len(graph_evidence_items)}",
+                    source_ref=src,
+                    content_snippet=text[:500],
+                    retrieval_timestamp=datetime.now(timezone.utc).isoformat(),
+                    freshness_status="FRESH",
+                    support_status="SUPPORTING",
+                    citation_info={"graph_node_id": node_id, "source_type": "GRAPH_NEIGHBOR"},
+                    data_boundary_label="EVIDENCE_DATA_ONLY",
+                    confidence_score=getattr(neighbor, "confidence", 0.0) or 0.0,
+                )
+            )
+
+        # contradiction candidates → graph_contradiction_report
+        if pool.contradiction_candidates:
+            contradiction_details = [
+                {
+                    "source_a": getattr(c, "source_a", ""),
+                    "source_b": getattr(c, "source_b", ""),
+                    "conflict_type": str(getattr(c, "conflict_type", "UNKNOWN")),
+                    "severity": getattr(c, "severity", ""),
+                    "confidence": getattr(c, "confidence", 0.0),
+                    "downstream_required_behavior": getattr(c, "downstream_required_behavior", ""),
+                }
+                for c in pool.contradiction_candidates
+            ]
+            graph_contradiction_report = ContradictionReport(
+                contradictions_detected=len(pool.contradiction_candidates),
+                contradiction_details=contradiction_details,
+                resolution_recommendations=[],
+                materiality_assessment="HIGH",
+                timestamp=datetime.now(timezone.utc).isoformat(),
+            )
+
+        # merge graph items into main evidence list (SUPPORTING lane)
+        evidence_items = list(evidence_items) + graph_evidence_items
+
+        # re-compute support status with graph evidence included
+        source_register = c0_build_source_register(evidence_items, retrieval_profile)
+        claim_evidence_map = c0_build_claim_evidence_map(evidence_items, retrieval_profile)
+        freshness_report = c0_build_freshness_report(evidence_items, freshness_policy)
+        effective_contradiction = graph_contradiction_report or contradiction_report
+        contradiction_report = effective_contradiction
+        support_status, support_score, support_profile = c0_compute_support_status(
+            evidence_items, source_register, freshness_report, contradiction_report, retrieval_profile
+        )
+
+        # update citation and lineage maps with graph items
+        for item in graph_evidence_items:
+            citation_map.append(
+                CitationInfo(
+                    citation_id=f"cite-{item.evidence_id}",
+                    source_ref=item.source_ref,
+                    claim_refs=[],
+                    inline_location="",
+                    retrieval_timestamp=item.retrieval_timestamp,
+                )
+            )
+            source_lineage_map[item.source_ref] = ["graph_traversal"]
+            source_version_map[item.source_ref] = "graph-v1"
+
     _LOGGER.info(
-        "C0 grounding complete: request=%s evidence=%d sources=%d support=%s",
+        "C0 grounding complete: request=%s evidence=%d graph_items=%d sources=%d support=%s"
+        " graph_rag_executed=%s skip=%s",
         validated_request.request_id,
         len(evidence_items),
+        len(graph_evidence_items),
         len(source_register),
         support_status,
+        graph_rag_result.executed,
+        graph_rag_result.skip_reason,
     )
-    
+
     return FinalEvidenceContract(
         request_id=validated_request.request_id,
         run_id=validated_request.run_id,
@@ -601,6 +703,16 @@ def c0_ground_package_driven(
         substrate_writeback_candidate_ref=None,
         all_evidence_data_boundary_verified=True,
         data_boundary_label="EVIDENCE_DATA_ONLY",
+        graph_expansion_refs=graph_expansion_refs,
+        graph_evidence_items=graph_evidence_items,
+        graph_contradiction_report=graph_contradiction_report,
+        graph_rag_executed=graph_rag_result.executed,
+        graph_rag_skip_reason=graph_rag_result.skip_reason,
+        graph_rag_error=graph_rag_result.error,
+        graph_rag_nodes_accepted=graph_rag_result.nodes_accepted,
+        graph_rag_nodes_rejected=graph_rag_result.nodes_rejected,
+        graph_rag_contradiction_count=graph_rag_result.contradiction_count,
+        graph_rag_manifest_hash=graph_rag_result.manifest_hash,
         schema_version="AG9.C0.FEC.1",
     )
 
@@ -616,4 +728,5 @@ __all__ = [
     "CitationInfo",
     "EvidenceSupportStatus",
     "DataBoundaryLabel",
+    "GraphRagResult",
 ]

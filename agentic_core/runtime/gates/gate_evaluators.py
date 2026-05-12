@@ -478,8 +478,7 @@ def evaluate_g27(
     if not durable_write_requested:
         default_reason = gate_def.get(
             "default_reason",
-            "apps_rg resume generation produces user-visible artifacts only; "
-            "no durable state writes required",
+            "no durable state writes requested",
         )
         return _base(
             gate_id, gate_def, pkg, request_id, run_id, trace_root,

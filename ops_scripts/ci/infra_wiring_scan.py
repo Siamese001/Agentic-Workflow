@@ -14,6 +14,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Add repo root to sys.path for tools.* imports (same pattern as other CI gates)
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 _log = logging.getLogger(__name__)
 
 # Forbidden direct imports in production layers

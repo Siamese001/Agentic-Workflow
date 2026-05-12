@@ -25,21 +25,21 @@ W8 successfully reconciled 208 blocking scanner findings (154 UNKNOWN + 54 RUNTI
 - STATIC_REGISTRY = 165 (properly classified, non-blocking)
 - OFFLINE_TOOLING = 24 (properly classified, non-blocking)
 - FALSE_POSITIVE = 11 (properly classified, non-blocking)
-- RUNTIME_POLICY_LEAKAGE = 55 (**requires W9 migration**)
+- RUNTIME_POLICY_LEAKAGE = 57 total taxonomy (**48 blocking** requires W9 migration, **2 GENERIC_CORE_SUBSTRATE_ALLOWED**, **7 OFFLINE_TOOLING_REFERENCE**)
 
-**Blocker for parent remediation:** The 55 remaining RUNTIME_POLICY_LEAKAGE findings prevent strict mode from exiting 0. W9 must migrate these to enable W8 parent remediation to finally close.
+**Blocker for parent remediation:** The 48 blocking RUNTIME_POLICY_LEAKAGE findings prevent strict mode from exiting 0. W9 must migrate these to enable W8 parent remediation to finally close. (Total runtime taxonomy: 57 = 48 blocking + 2 substrate + 7 tooling)
 
 ---
 
 ## Problem Statement
 
-55 true runtime policy leakage violations remain in `agentic_core` runtime paths. These are app-specific code branches that influence governed runtime decisions (routing, policy enforcement, validation).
+48 blocking runtime policy leakage violations remain in `agentic_core` runtime paths. (Total runtime taxonomy: 57 findings across 13 files) These are app-specific code branches that influence governed runtime decisions (routing, policy enforcement, validation).
 
 **W7 Phase 0 established:** Only RUNTIME_POLICY_LEAKAGE must be eliminated. All other categories (~295 non-runtime) are approved per W7.
 
 **Current State:**
 - Strict mode exits 2 (correctly blocking on runtime leakage)
-- 11 files in runtime paths contain hardcoded app references
+- 13 files in runtime paths contain hardcoded app references (12 original + 1 adapter_registry.py classified as GENERIC_CORE_SUBSTRATE_ALLOWED)
 - Pattern: `app_id="apps_rg"`, `if app_id == "apps_lic"`, app-specific paths
 
 ---
@@ -110,7 +110,7 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 
 **Source:** `artifacts/governance/scans/core_leakage_scan_1778562716.json`  
 **Timestamp:** 1778562716  
-**Total RUNTIME_POLICY_LEAKAGE Findings:** 55
+**Total RUNTIME_POLICY_LEAKAGE Findings:** 57 (48 blocking + 2 substrate + 7 tooling)
 
 | # | File Path | Findings | Patterns |
 |---|-----------|----------|----------|
@@ -122,11 +122,12 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 | 6 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | 1 | hardcoded_app_names |
 | 7 | `agentic_core/runtime/l6/apps_rg_learning_adapter.py` | 1 | hardcoded_app_names |
 | 8 | `agentic_core/runtime/l6/writeback_proposer.py` | 2 | hardcoded_app_names |
-| 9 | `agentic_core/runtime/prove_requirements/code_symbol_catalog.py` | 7 | hardcoded_app_names |
+| 9 | `agentic_core/runtime/prove_requirements/code_symbol_catalog.py` | 7 | hardcoded_app_names | **FALSE_RUNTIME/OFFLINE_TOOLING** |
 | 10 | `agentic_core/runtime/u0/apps_lic_u0_adapter.py` | 7 | hardcoded_app_names, app_specific_cache_policies |
 | 11 | `agentic_core/runtime/u0/apps_rg_u0_adapter.py` | 2 | hardcoded_app_names |
-| 12 | `agentic_core/runtime/u0/payload_synthesizer.py` | 2 | hardcoded_app_names |
-| **TOTAL** | | **55** | |
+| 12 | `agentic_core/runtime/u0/payload_synthesizer.py` | 2 | hardcoded_app_names | MIGRATE_TO_PROFILE |
+| 13 | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/adapter_registry.py` | 2 | hardcoded_app_names | **GENERIC_CORE_SUBSTRATE_ALLOWED** |
+| **TOTAL** | | **57** | | |
 
 ---
 
@@ -154,8 +155,8 @@ The W9 plan initially listed these 12 target files:
 
 | Reconciliation Item | Status |
 |-------------------|--------|
-| File count match | ✅ 12 files in scanner = 12 files in plan |
-| Finding count match | ✅ 55 total findings |
+| File count match | ✅ 13 files in scanner = 13 files in plan (12 original + 1 new) |
+| Finding count match | ✅ 57 total findings (55 original + 2 from adapter_registry.py) |
 | File name drift | ⚠️ 2 pipeline files renamed (shown above) |
 | Missing from initial audit | ⚠️ `cross_app_research_substrate_ingest.py` (1 finding) was missed |
 | Missing from initial audit | ⚠️ `apps_research_dispatch.py` (10 findings) was missed |
@@ -164,10 +165,11 @@ The W9 plan initially listed these 12 target files:
 
 | Count | Value | Note |
 |-------|-------|------|
-| Total RUNTIME findings | 55 | From scanner (verified) |
-| FALSE_RUNTIME (tooling) | 7 | `code_symbol_catalog.py` |
-| **Remaining blocking findings** | **48** | 55 - 7 = 48 (not 37 as previously miscalculated) |
-| Files requiring disposition | 12 | All 12 files have exactly one disposition |
+| Total RUNTIME findings | 57 | From scanner (verified) |
+| FALSE_RUNTIME (tooling) | 7 | `code_symbol_catalog.py` - OFFLINE_TOOLING_REFERENCE |
+| GENERIC_CORE_SUBSTRATE | 2 | `adapter_registry.py` - GENERIC_CORE_SUBSTRATE_ALLOWED |
+| **Remaining blocking findings** | **48** | 57 - 7 - 2 = 48 |
+| Files requiring disposition | 13 | All 13 files have exactly one disposition |
 
 ---
 
@@ -187,7 +189,8 @@ The W9 plan initially listed these 12 target files:
 | 10 | `agentic_core/runtime/u0/apps_lic_u0_adapter.py` | 7 | **MIGRATE_TO_PROFILE** | U0 validation with app_id checks |
 | 11 | `agentic_core/runtime/u0/apps_rg_u0_adapter.py` | 2 | **MIGRATE_TO_PROFILE** | U0 adapter with app_id assignment |
 | 12 | `agentic_core/runtime/u0/payload_synthesizer.py` | 2 | **MIGRATE_TO_PROFILE** | Payload with app-specific defaults |
-| **TOTALS** | **12 files** | **55 findings** | | |
+| 13 | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/adapter_registry.py` | 2 | **GENERIC_CORE_SUBSTRATE_ALLOWED** | Generic C0.3 adapter resolver - not leakage |
+| **TOTALS** | **13 files** | **57 findings** | | |
 
 ### Post-Disposition Summary (P0 Complete)
 
@@ -196,8 +199,9 @@ The W9 plan initially listed these 12 target files:
 | **MIGRATE_TO_PROFILE** | 6 | 19 | Migrate to profile-driven architecture (P4) |
 | **MOVE_TO_APP_PACKAGE** | 4 | 29 | Move dispatch to app packages (P5) |
 | **FALSE_RUNTIME_CLASSIFICATION** | 1 | 7 | Reclassify to OFFLINE_TOOLING_REFERENCE |
+| **GENERIC_CORE_SUBSTRATE_ALLOWED** | 1 | 2 | Generic C0.3 adapter resolver (not leakage) |
 | **TEMPORARY_THIN_ADAPTER** | 0 | 0 | None qualify (all have runtime behavior) |
-| **TOTAL** | 12 | 55 | |
+| **TOTAL** | 13 | 57 | |
 
 **Blocking findings after reclassification:** 48  
 **Non-blocking (tooling):** 7  
@@ -210,7 +214,8 @@ The W9 plan initially listed these 12 target files:
 | GENERIC_CORE_WITH_APP_PROFILE | 6 | 19 | P4 | Profile-driven generics |
 | MOVE_TO_APP_PACKAGE | 4 | 29 | P5 | App-owned dispatch |
 | FALSE_RUNTIME_CLASSIFICATION | 1 | 7 | N/A | Scanner reclassification |
-| **TOTAL** | **12** | **55** | | |
+| GENERIC_CORE_SUBSTRATE_ALLOWED | 1 | 2 | P4 | C0.3 adapter resolver (approved substrate) |
+| **TOTAL** | **13** | **57** | | |
 
 **Minimum Viable Core Components (5 only):**
 1. `RuntimeProfileResolver` - Load app-owned profiles
@@ -239,7 +244,7 @@ The W9 plan initially listed these 12 target files:
 
 | DoD | Criterion | Verification |
 |-----|-----------|--------------|
-| DoD-1 | **P0 Complete** | `artifacts/governance/w9_p0_runtime_leakage_audit.md` committed with 12 files, 55 findings |
+| DoD-1 | **P0 Complete** | `artifacts/governance/w9_p0_runtime_leakage_audit.md` committed with 13 files, 57 findings (48 blocking, 2 substrate, 7 tooling) |
 | DoD-2 | **P1/P2 Complete** | `artifacts/governance/w9_p1_p2_migration_architecture.md` committed with hardened architecture |
 | DoD-3 | **P3 Safety Gate Passed** | All 7 checkpoints verified (schemas, resolver, tests, fail-closed) |
 | DoD-4 | **P4 Complete** | 6 profile-driven files migrated, 21 findings eliminated |
@@ -274,7 +279,7 @@ W9 is accepted when:
 1. `python tools/governance/core_leakage_scan.py --strict` exits 0
 2. Scan output shows `[SUMMARY] Blocking: 0 (RUNTIME_POLICY_LEAKAGE: 0, UNKNOWN: 0)`
 3. `python ops_scripts/ci/run_contract_gates.py` exits 0
-4. All 12 files either:
+4. All 13 files either:
    - Migrated to app-owned runtime profiles, OR
    - Classified as valid TEMPORARY_THIN_ADAPTER (see strict criteria below), OR
    - Proven FALSE_RUNTIME_CLASSIFICATION and reclassified
@@ -305,7 +310,7 @@ Runtime files may ONLY receive TEMPORARY_THIN_ADAPTER classification if ALL of t
 
 ## P0 Runtime Leakage Audit Template
 
-For each of the 12 target files, P0 must produce:
+For each of the 13 target files, P0 must produce:
 
 | Field | Value |
 |-------|-------|
@@ -332,8 +337,11 @@ For each of the 12 target files, P0 must produce:
 - W8 P5 Receipt: `artifacts/governance/w8_p5_receipt.md`
 - W9 P0 Audit: `artifacts/governance/w9_p0_runtime_leakage_audit.md`
 - W9 P1/P2 Architecture: `artifacts/governance/w9_p1_p2_migration_architecture.md`
+- W9 P3 Author-Gate (adapter_registry): `artifacts/governance/w9_p3_adapter_registry_author_gate.json`
+- W9 P0 Audit Update (55→57): `artifacts/governance/w9_p0_audit_55_to_57_update.json`
+- W9 P4 CI Fix Task: `artifacts/governance/w9_p4_blocker_ci_fix_task.json`
 - Rule: `.windsurf/rules/agentic-core-static.md` (TEMPORARY_THIN_ADAPTER)
-- W9 Status: P0/P2 COMPLETE / P3-P5 BLOCKED pending safety gate approval
+- W9 Status: P0/P2 COMPLETE / P3 ACCEPTED / P4-P5 CONDITIONALLY READY pending CI fix
 
 ## P3 Safety Gate (Pre-Implementation Checklist)
 

@@ -511,7 +511,6 @@ class TestG27Evaluator:
         return {
             "gate_name": "durable_write_sovereignty",
             "severity": "hard_fail",
-            "default_reason": "apps_rg produces user-visible artifacts only",
         }
 
     def test_g27_not_applicable_for_resume_generation(self):
@@ -532,7 +531,20 @@ class TestG27Evaluator:
 
     def test_g27_not_applicable_with_explicit_reason(self):
         v = evaluate_g27("G27", self._gdef(), _clean_pkg(), {}, "req", "run", "trace")
-        assert "apps_rg" in v.not_applicable_reason.lower() or len(v.not_applicable_reason) > 0
+        assert len(v.not_applicable_reason) > 0, (
+            "not_applicable_reason must be non-empty when G27 is NOT_APPLICABLE"
+        )
+
+    def test_g27_default_reason_has_no_apps_rg_literal(self):
+        """Core G27 fallback default must not mention any apps_rg literal.
+        The default_reason in gate_evaluators.py must be generic."""
+        # No default_reason in gate_def → evaluator uses its own fallback string
+        gdef_no_default = {"gate_name": "durable_write_sovereignty", "severity": "hard_fail"}
+        v = evaluate_g27("G27", gdef_no_default, _clean_pkg(), {}, "req", "run", "trace")
+        assert v.result == VERDICT_NOT_APPLICABLE
+        assert "apps_rg" not in v.not_applicable_reason.lower(), (
+            f"Core G27 default reason must not mention apps_rg; got: {v.not_applicable_reason!r}"
+        )
 
 
 # ── G28 Audit / Trace ─────────────────────────────────────────────────────────
@@ -1350,3 +1362,83 @@ class TestExitFinalizeProofPersistence:
         assert disposition.gate_verdict_refs == (), (
             "gate_verdict_refs must be empty tuple when harness raises"
         )
+
+
+# ── HITL policy registry — core boundary invariants ───────────────────────────
+
+class TestHitlPolicyRegistryCoreClean:
+    """Core Addition Author-Gate tests — hitl_policy_registry must have
+    no app-specific rg_* policy definitions hardcoded."""
+
+    def test_builtin_policies_table_is_empty(self):
+        """_BUILTIN_POLICIES must be empty — no rg_* or any app-specific entries."""
+        from agentic_core.runtime.exit.hitl_policy_registry import _BUILTIN_POLICIES
+        assert _BUILTIN_POLICIES == {}, (
+            f"Core _BUILTIN_POLICIES must be empty; found keys: {list(_BUILTIN_POLICIES)}"
+        )
+
+    def test_no_rg_keys_in_builtin_table(self):
+        """Negative-control: no rg_* key should exist in the built-in table."""
+        from agentic_core.runtime.exit.hitl_policy_registry import _BUILTIN_POLICIES
+        rg_keys = [k for k in _BUILTIN_POLICIES if k.startswith("rg_")]
+        assert rg_keys == [], (
+            f"Core must not contain rg_* policies; found: {rg_keys}"
+        )
+
+    def test_resolve_unknown_ref_without_table_returns_unknown(self):
+        """resolve_hitl_policy with no table returns UNKNOWN/fail-soft for any ref."""
+        from agentic_core.runtime.exit.hitl_policy_registry import resolve_hitl_policy
+        spec = resolve_hitl_policy("rg_release_approval_v1")
+        assert spec.resolved is False
+        assert spec.trigger_kind == "UNKNOWN"
+
+    def test_resolve_none_ref_returns_unknown(self):
+        """resolve_hitl_policy(None) → UNKNOWN regardless of table."""
+        from agentic_core.runtime.exit.hitl_policy_registry import resolve_hitl_policy
+        spec = resolve_hitl_policy(None)
+        assert spec.resolved is False
+        assert spec.trigger_kind == "UNKNOWN"
+        assert spec.requires_hitl is False
+
+    def test_apps_rg_policies_load_from_yaml(self):
+        """apps_rg HITL policies must load from app-owned YAML, not from core."""
+        from agentic_core.runtime.exit.hitl_policy_registry import (
+            load_hitl_policy_table,
+            resolve_hitl_policy,
+        )
+        _POLICY_PATH = (
+            _REPO_ROOT / "apps_rg" / "config" / "domain_contract"
+            / "hitl_policies.resume_generation.v1.yaml"
+        )
+        assert _POLICY_PATH.exists(), f"apps_rg HITL policy YAML must exist at {_POLICY_PATH}"
+        table = load_hitl_policy_table(_POLICY_PATH)
+        assert len(table) > 0, "apps_rg HITL policy table must not be empty"
+        # All defined apps_rg policies should resolve
+        for ref in ("rg_release_approval_v1", "rg_missing_brief_v1", "rg_low_confidence_v1",
+                    "rg_no_hitl_v1"):
+            spec = resolve_hitl_policy(ref, policy_table=table)
+            assert spec.resolved is True, f"{ref} must resolve from apps_rg YAML table"
+            assert spec.trigger_kind != "UNKNOWN", f"{ref} must have a real trigger_kind"
+
+    def test_new_app_policy_loadable_without_editing_core(self):
+        """Negative-control: a hypothetical new app can define and load its own
+        HITL policy table without any edits to agentic_core.
+        This proves the plug-in test (core addition author-gate test #5)."""
+        from agentic_core.runtime.exit.hitl_policy_registry import resolve_hitl_policy
+        # Simulate another app's table loaded from its own config (in-memory here)
+        other_app_table = {
+            "lic_release_v1": {
+                "trigger_kind": "RELEASE_APPROVAL",
+                "requires_hitl": True,
+                "trigger_threshold": 0.75,
+                "operator_id": None,
+                "policy_version": "v1",
+            }
+        }
+        spec = resolve_hitl_policy("lic_release_v1", policy_table=other_app_table)
+        assert spec.resolved is True
+        assert spec.trigger_kind == "RELEASE_APPROVAL"
+        assert spec.requires_hitl is True
+        # And core never needed to be touched to support this
+        from agentic_core.runtime.exit.hitl_policy_registry import _BUILTIN_POLICIES
+        assert "lic_release_v1" not in _BUILTIN_POLICIES

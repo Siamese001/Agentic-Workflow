@@ -30,6 +30,7 @@ from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.exit.hitl_policy_registry import (
     HitlPolicySpec,
+    load_hitl_policy_table,
     resolve_hitl_policy,
 )
 
@@ -739,7 +740,10 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> AppsRGExitGatePo
         formats_raw = _getattr_or_dict(out_req, "formats")
         output_formats = tuple(formats_raw) if formats_raw is not None else None
         hitl_ref = _getattr_or_dict(prof_manifest, "hitl_policy_ref")
-        hitl_spec = resolve_hitl_policy(hitl_ref)
+        _hitl_table = load_hitl_policy_table(
+            "apps_rg/config/domain_contract/hitl_policies.resume_generation.v1.yaml"
+        )
+        hitl_spec = resolve_hitl_policy(hitl_ref, policy_table=_hitl_table)
 
         return AppsRGExitGatePolicy(
             per_bullet_required=per_bullet,

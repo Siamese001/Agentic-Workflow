@@ -8,8 +8,9 @@ content after calling update_wave_in_plan.
 """
 from __future__ import annotations
 
+import os
+import re
 import sys
-import textwrap
 from pathlib import Path
 
 import pytest
@@ -25,6 +26,7 @@ from tools.windsurf._plan_wave_table_updater import (  # noqa: E402
     STATUS_DONE,
     STATUS_IN_PROGRESS,
     STATUS_TODO,
+    _update_phase_in_plan,
     update_wave_in_plan,
 )
 
@@ -499,3 +501,214 @@ def test_letter_suffix_bare_todo_combined(tmp_path: Path) -> None:
     assert ok, msg
     result = plan_file.read_text(encoding="utf-8")
     assert "| W2R | W2R.P1 | Regression repair | ~600 | ✅ DONE |" in result
+
+
+# ---------------------------------------------------------------------------
+# Phase-Level Summary Update Tests (W4.P4)
+# ---------------------------------------------------------------------------
+
+
+def _make_plan_with_phase_table(tmp_path: Path, content: str) -> Path:
+    """Create a plan file with both Wave Structure and Phase-Level Summary tables."""
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True, exist_ok=True)
+    plan_file = plans_dir / PLAN_FILENAME
+    plan_file.write_text(content, encoding="utf-8")
+    return plan_file
+
+
+def test_phase_only_update_works(tmp_path: Path) -> None:
+    """Phase-only update: W1.P1 -> ✅ DONE."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Wave Structure\n\n"
+        "| Wave | Phase IDs | Focus | Status |\n"
+        "|------|-----------|-------|--------|\n"
+        "| W1 | P1 | Phase 1 work | 🔲 TODO |\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W1.P1 | Test phase | files.py | ~600 | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W1.P1", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    # Phase row updated
+    assert "| W1.P1 | Test phase | files.py | ~600 | ✅ DONE |" in result
+    # Wave Structure untouched
+    assert "| W1 | P1 | Phase 1 work | 🔲 TODO |" in result
+
+
+def test_phase_start_flips_todo_to_in_progress(tmp_path: Path) -> None:
+    """Phase start: 🔲 TODO -> 🔄 IN PROGRESS."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W5.P8 | Diagnostics | gap.py | ~800 | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W5.P8", kind="phase_start")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W5.P8 | Diagnostics | gap.py | ~800 | 🔄 IN PROGRESS |" in result
+
+
+def test_wave_and_phase_update_same_plan(tmp_path: Path) -> None:
+    """Wave + phase update in same plan works."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Wave Structure\n\n"
+        "| Wave | Phase IDs | Focus | Status |\n"
+        "|------|-----------|-------|--------|\n"
+        "| W3 | P5, P6 | Wave 3 work | 🔲 TODO |\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W3.P5 | Phase 5 | scope.py | ~400 | 🔲 TODO |\n"
+        "| W3.P6 | Phase 6 | more.py | ~500 | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    
+    # Update wave first
+    ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=3, kind="wave_complete")
+    assert ok, msg
+    
+    # Update phase
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W3.P5", kind="phase_complete")
+    assert ok, msg
+    
+    result = plan_file.read_text(encoding="utf-8")
+    # Wave updated
+    assert "| W3 | P5, P6 | Wave 3 work | ✅ DONE |" in result
+    # Phase updated
+    assert "| W3.P5 | Phase 5 | scope.py | ~400 | ✅ DONE |" in result
+    # Other phase untouched
+    assert "| W3.P6 | Phase 6 | more.py | ~500 | 🔲 TODO |" in result
+
+
+def test_missing_phase_returns_noop_message(tmp_path: Path) -> None:
+    """Missing phase is no-op with clear message (following existing updater pattern)."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W1.P1 | Test | file.py | ~600 | 🔲 TODO |\n"
+    )
+    _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W99.P99", kind="phase_complete")
+    # Returns True (not an error) with informative message
+    assert ok is True
+    assert "no matching rows found/changed" in msg
+    assert "phase=W99.P99" in msg
+
+
+def test_phase_update_refreshes_last_updated(tmp_path: Path) -> None:
+    """last_updated in frontmatter refreshes when phase status changes."""
+    old_timestamp = "2026-05-12T08:00Z"
+    content = (
+        f"---\n"
+        f"plan_id: test-plan-aabbcc\n"
+        f"last_updated: {old_timestamp}\n"
+        f"---\n\n"
+        f"## Phase-Level Summary\n\n"
+        f"| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        f"|----------|-------|-------|-------------|--------|\n"
+        f"| W10.P12 | Big phase | many.py | ~1000 | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W10.P12", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    # Old timestamp replaced with new one
+    assert old_timestamp not in result
+    # New timestamp format present (ISO 8601 UTC)
+    assert re.search(r"last_updated:\s*\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z", result)
+
+
+def test_unrelated_tables_untouched(tmp_path: Path) -> None:
+    """Unrelated markdown tables are untouched during phase update."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Gap Register\n\n"
+        "| ID | Description | Severity | Status |\n"
+        "|----|-------------|----------|--------|\n"
+        "| GAP-1 | Some gap | High | 🔲 TODO |\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W1.P1 | Test | file.py | ~600 | 🔲 TODO |\n\n"
+        "## Definition of Done\n\n"
+        "| ID | Criterion | Status |\n"
+        "|----|-----------|--------|\n"
+        "| DoD-1 | Test passes | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W1.P1", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    # Phase row updated
+    assert "| W1.P1 | Test | file.py | ~600 | ✅ DONE |" in result
+    # Gap Register untouched
+    assert "| GAP-1 | Some gap | High | 🔲 TODO |" in result
+    # DoD table untouched
+    assert "| DoD-1 | Test passes | 🔲 TODO |" in result
+
+
+def test_phase_complete_from_in_progress(tmp_path: Path) -> None:
+    """Phase complete: 🔄 IN PROGRESS -> ✅ DONE."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W5.P8 | Diagnostics | gap.py | ~800 | 🔄 IN PROGRESS |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W5.P8", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W5.P8 | Diagnostics | gap.py | ~800 | ✅ DONE |" in result
+
+
+def test_blocked_phase_not_flipped(tmp_path: Path) -> None:
+    """❌ BLOCKED phases are not flipped by phase_complete."""
+    content = (
+        "---\n"
+        "plan_id: test-plan-aabbcc\n"
+        "last_updated: 2026-05-12T08:00Z\n"
+        "---\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W1.P1 | Test | file.py | ~600 | ❌ BLOCKED |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="W1.P1", kind="phase_complete")
+    # No rows changed but returns success
+    assert ok is True
+    assert "no matching rows found/changed" in msg
+    result = plan_file.read_text(encoding="utf-8")
+    # BLOCKED status preserved
+    assert "| W1.P1 | Test | file.py | ~600 | ❌ BLOCKED |" in result
