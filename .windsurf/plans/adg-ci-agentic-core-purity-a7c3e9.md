@@ -42,11 +42,11 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 - [x] New ADG CI gate `gate_agentic_core_purity.py` exists at `ops_scripts/ci/adg_gates/`
 - [x] Gate ID: `AG-PURITY` (consistent throughout)
 - [x] W0 schema discovery phase queries ADG SQLite tables/views/relation types
-- [x] Detects 4 leakage types with precise classification (W2: 4 of 9 implemented)
+- [x] Detects 6 leakage types with precise classification (W2-W3: 6 of 9 implemented)
 - [x] Enforces positive allowed-flow: `apps_* -> U0 runtime_customization_package` ✅
 - [x] Violations emit full JSON artifact with 11 required fields
 - [x] Separate `violation_severity` (P1/P2/P3), `gate_mode` (advisory/strict), `ci_effect` (warn/fail)
-- [ ] Synthetic SQLite tests cover 9 scenarios (W4 QUEUED)
+- [x] W3 runtime package validation (11 apps scanned, 11 U0 missing, 3 thin adapters unreceipted)
 - [ ] Registered in `run_contract_gates.py` as "AG-PURITY agentic_core purity (advisory)" (W4 QUEUED)
 - [ ] Baseline artifact: `artifacts/ci/agentic_core_purity_baseline.json` (W4 QUEUED)
 - [ ] Promotion criteria documented for advisory → strict transition (W4 QUEUED)
@@ -58,7 +58,7 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 | W0 | P1-P2 | Schema discovery + baseline | ~2k | ADG SQLite accessible, can introspect schema | ✅ COMPLETE | Schema map emitted, baseline captured |
 | W1 | P1-P3 | Gate skeleton + ADG query layer | ~4k | ADGGateBase stable, semantic edges populated | ✅ COMPLETE | Gate runs, connects to ADG, emits JSON (Commit: 899df41daa) |
 | W2 | P1-P4 | Leakage detection refinement + exemptions | ~5k | Materialized views available, edge authority reliable | ✅ COMPLETE | 4 leakage types + 5 exemption types implemented (Commit: f34dbfbc87) |
-| W3 | P1-P3 | Runtime package validation + receipt checks | ~3k | U0 package paths resolvable | 🔲 QUEUED | Allowed flows verified, runtime package checks |
+| W3 | P1-P3 | Runtime package validation + receipt checks | ~3k | U0 package paths resolvable | ✅ COMPLETE | 11 apps scanned, 11 U0 missing, 3 thin adapters unreceipted (Commit: 6916c714a1) |
 | W4 | P1-P3 | CI registration + synthetic tests + baseline | ~4k | `run_contract_gates.py` accepts new gate | 🔲 QUEUED | CI integration complete, 9 test scenarios pass |
 
 ## Phase-Level Summary
@@ -75,9 +75,9 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 | W2.P3 | CORE_TO_APP_CALL detection | Edge query | agentic_core → apps_* calls | ~1k | ✅ COMPLETE (0 violations - clean) |
 | W2.P4 | APP_BYPASSES_U0 detection | Path analysis + exemptions | Apps entering core layers directly | ~1.5k | ✅ COMPLETE (426 violations, entrypoint filtered) |
 | W2.P5 | Exemption classifier | Python | TEST/DOC/RECEIPT/GENERATED/MIGRATION | ~1k | ✅ COMPLETE (5 exempted) |
-| W3.P1 | Runtime package existence check | File system | Verify U0 package exists per app | ~1k | 🔲 QUEUED |
-| W3.P2 | Runtime package type validation | AST analysis | U0 package type annotations | ~1k | 🔲 QUEUED |
-| W3.P3 | Thin adapter receipt check | File system | Verify TEMPORARY_THIN_ADAPTER receipts | ~1k | 🔲 QUEUED |
+| W3.P1 | Runtime package existence check | File system | Verify U0 package exists per app | ~1k | ✅ COMPLETE (11 apps missing U0) |
+| W3.P2 | Runtime package type validation | AST analysis | U0 package type annotations | ~1k | ✅ COMPLETE (0 untyped - no packages found) |
+| W3.P3 | Thin adapter receipt check | File system | Verify TEMPORARY_THIN_ADAPTER receipts | ~1k | ✅ COMPLETE (3 unreceipted, 0 receipted) |
 | W4.P1 | CI registration | run_contract_gates.py | Add AG-PURITY entry, advisory mode | ~1k | 🔲 QUEUED |
 | W4.P2 | Synthetic SQLite tests | 1 test file | 9 test scenarios with mock ADG | ~2k | 🔲 QUEUED |
 | W4.P3 | Baseline artifact + promotion doc | 2 files | JSON baseline + promotion criteria | ~1k | 🔲 QUEUED |
@@ -138,9 +138,9 @@ Per `agentic-core-static.md` §72-73:
 | `CORE_TO_APP_CALL` | P1 | warn | ✅ W2 | agentic_core calls apps_* function (runtime leakage) (0 found) |
 | `APP_BYPASSES_U0` | P1 | warn | ✅ W2 | apps_* imports L0/L1 core layer directly (211 found) |
 | `APP_DIRECT_TO_CORE_LAYER` | P2 | warn | ✅ W2 | apps_* imports L2-L6 core layer directly (215 found) |
-| `APP_RUNTIME_PACKAGE_MISSING` | P2 | warn | 🔲 W3 | apps_* has no runtime_customization_package |
-| `APP_RUNTIME_PACKAGE_UNTYPED` | P3 | warn | 🔲 W3 | U0 package exists but lacks type annotations |
-| `TEMPORARY_THIN_ADAPTER_UNRECEIPTED` | P2 | warn | 🔲 W3 | Thin adapter pattern without migration receipt |
+| `APP_RUNTIME_PACKAGE_MISSING` | P2 | warn | ✅ W3 | apps_* has no runtime_customization_package (11 found) |
+| `APP_RUNTIME_PACKAGE_UNTYPED` | P3 | warn | ✅ W3 | U0 package exists but lacks type annotations (0 found) |
+| `TEMPORARY_THIN_ADAPTER_UNRECEIPTED` | P2 | warn | ✅ W3 | Thin adapter pattern without migration receipt (3 found) |
 | `TEST_ALLOWED` | exempt | pass | ✅ W2 | Tests importing both layers (allowed) |
 | `DOC_ALLOWED` | exempt | pass | ✅ W2 | Documentation referencing both (allowed) |
 | `RECEIPT_ALLOWED` | exempt | pass | ✅ W2 | Migration receipts with app references (allowed) |
@@ -330,6 +330,41 @@ Strict mode activates via `AG_PURITY_STRICT=1` or gate mode change in config.
 | `apps_shared/integrations/governed_app_runner.py` | 13 |
 | `apps_qna/c0_adapter.py` | 12 |
 | `apps_lic/coordination/hitl_escalation.py` | 11 |
+
+### W3 Runtime Package Validation (COMPLETED)
+
+**Commit**: `6916c714a1`  
+**Receipt**: `artifacts/ci/ag_purity_w3_runtime_package_receipt.md`
+
+**Deliverables**:
+- APP_RUNTIME_PACKAGE_MISSING detection (filesystem scan)
+- APP_RUNTIME_PACKAGE_UNTYPED detection (type annotation patterns)
+- TEMPORARY_THIN_ADAPTER_UNREceiptED detection (marker + receipt validation)
+- W3 summary fields: w3_package_checks_applied, runtime_package_*_count, thin_adapter_*_count, apps_scanned
+
+**W3 Baseline Results**:
+| Metric | W2 | W3 | Delta |
+|--------|-----|-----|-------|
+| **Active Violations** | 955 | 969 | +14 (new W3 findings) |
+| **Total** | 960 | 974 | +14 |
+
+**By Leakage Type (W3)**:
+| Type | Count |
+|------|-------|
+| CORE_APP_SPECIFIC_LITERAL | 511 |
+| APP_BYPASSES_U0 | 211 |
+| APP_DIRECT_TO_CORE_LAYER | 215 |
+| CORE_TO_APP_IMPORT | 18 |
+| CORE_TO_APP_CALL | 0 |
+| **APP_RUNTIME_PACKAGE_MISSING** | **11** |
+| **TEMPORARY_THIN_ADAPTER_UNRECEIPTED** | **3** |
+
+**Apps Scanned (all missing U0)**:
+```
+apps_architect, apps_eval, apps_exec, apps_lic, apps_qna,
+apps_repo_brief, apps_research, apps_rfp, apps_rg, apps_shared,
+apps_underwriting_ai
+```
 
 ---
 
