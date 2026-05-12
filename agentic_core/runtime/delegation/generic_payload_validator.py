@@ -42,7 +42,7 @@ class AppValidationProfile:
 class ProfileLoader:
     """Loads delegation profiles from app-owned config files.
     
-    Profiles are stored at: apps_<name>/config/domain_contract/delegation_profile.yaml
+    Profiles are stored at: {app_id}/config/domain_contract/delegation_profile.yaml
     """
     
     @staticmethod
@@ -50,7 +50,7 @@ class ProfileLoader:
         """Load validation profile for the given app.
         
         Args:
-            app_id: The app identifier (e.g., "apps_rg", "apps_lic")
+            app_id: The app identifier (e.g., "apps_example")
             repo_root: Optional repository root path (for testing)
             
         Returns:
