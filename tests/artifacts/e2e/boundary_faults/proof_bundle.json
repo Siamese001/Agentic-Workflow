@@ -1,0 +1,233 @@
+{
+  "blocked_authority_expansions": [
+    "BF-01-L1-ROUTE-AUTHORITY",
+    "BF-02-L0-RETRIEVAL",
+    "BF-03-C0-ANSWER-GENERATION",
+    "BF-04-PA-RETRIEVAL-OUTSIDE-C0"
+  ],
+  "blocked_write_attempts": [
+    "BF-05-L2-DIRECT-L4-WRITE",
+    "BF-08-HITL-BYPASS-RECLEARANCE"
+  ],
+  "deterministic_digest": "blake2b:55732c8505cc94cbd3b69405c8ee9460",
+  "fail_count": 0,
+  "missing_expected_blocks": [],
+  "pass_count": 14,
+  "proof_bundle_id": "boundary-fault-matrix-v1",
+  "replay_comparison_refs": [
+    "BF-14-REPLAY-DIGEST-DRIFT"
+  ],
+  "scenarios_run": [
+    {
+      "actual_failures": [
+        "L1PlanContract: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "L1_attempts_route_authority",
+      "scenario_id": "BF-01-L1-ROUTE-AUTHORITY",
+      "target_layer": "L1"
+    },
+    {
+      "actual_failures": [
+        "RouteContract: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "L0_attempts_retrieval",
+      "scenario_id": "BF-02-L0-RETRIEVAL",
+      "target_layer": "L0"
+    },
+    {
+      "actual_failures": [
+        "FinalEvidenceContract: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "C0_attempts_answer_generation",
+      "scenario_id": "BF-03-C0-ANSWER-GENERATION",
+      "target_layer": "C0"
+    },
+    {
+      "actual_failures": [
+        "PromptEnvelope.upstream_evidence_ref does not match FinalEvidenceContract.digest"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "upstream_evidence_ref does not match",
+      "expected_validator": "groundedness",
+      "fault_class": "PA_attempts_retrieval",
+      "scenario_id": "BF-04-PA-RETRIEVAL-OUTSIDE-C0",
+      "target_layer": "PromptAssembly"
+    },
+    {
+      "actual_failures": [
+        "L4 write attempted outside UWG (SealedL2Artifact.direct_l4_write=True)",
+        "SealedL2Artifact: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "L4 write attempted outside UWG",
+      "expected_validator": "no_bypass",
+      "fault_class": "L2_attempts_direct_L4_write",
+      "scenario_id": "BF-05-L2-DIRECT-L4-WRITE",
+      "target_layer": "L2"
+    },
+    {
+      "actual_failures": [
+        "CommitRequest: declared digest does not match recomputed (tamper detected)",
+        "CommitRequest emitted without X3C_COMMIT_ELIGIBLE disposition"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "CommitRequest emitted without X3C_COMMIT_ELIGIBLE",
+      "expected_validator": "no_bypass",
+      "fault_class": "L2_emits_CommitRequest_directly",
+      "scenario_id": "BF-06-L2-EMITS-COMMIT-NON-UWG",
+      "target_layer": "L2"
+    },
+    {
+      "actual_failures": [
+        "SealedL2Artifact: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "E4_mutates_policy_hash",
+      "scenario_id": "BF-07-E4-POLICY-DRIFT",
+      "target_layer": "L2"
+    },
+    {
+      "actual_failures": [
+        "L4 write attempted outside UWG (SealedL2Artifact.direct_l4_write=True)",
+        "SealedL2Artifact: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "RC-HITL",
+      "blocked": true,
+      "expected_reason_substring": "L4 write attempted outside UWG",
+      "expected_validator": "no_bypass",
+      "fault_class": "HITL_bypass_of_L5_reclearance",
+      "scenario_id": "BF-08-HITL-BYPASS-RECLEARANCE",
+      "target_layer": "HITL"
+    },
+    {
+      "actual_failures": [
+        "X3DispositionReceipt: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "Exit_cites_uncommitted_as_committed",
+      "scenario_id": "BF-09-EXIT-CITES-UNCOMMITTED",
+      "target_layer": "Exit"
+    },
+    {
+      "actual_failures": [
+        "CommitRequest: declared digest does not match recomputed (tamper detected)",
+        "CommitRequest emitted with empty/missing state_diff"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "RC-UWG",
+      "blocked": true,
+      "expected_reason_substring": "empty/missing state_diff",
+      "expected_validator": "no_bypass",
+      "fault_class": "UWG_accepts_empty_state_diff",
+      "scenario_id": "BF-10-UWG-EMPTY-STATE-DIFF",
+      "target_layer": "UWG"
+    },
+    {
+      "actual_failures": [
+        "L6 influence before Exit disposition"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "L6 influence before Exit disposition",
+      "expected_validator": "no_bypass",
+      "fault_class": "L6_mutates_current_run",
+      "scenario_id": "BF-11-L6-MUTATES-CURRENT-RUN",
+      "target_layer": "L6"
+    },
+    {
+      "actual_failures": [
+        "ExitReviewPacket: declared digest does not match recomputed (tamper detected)"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "tamper detected",
+      "expected_validator": "no_bypass",
+      "fault_class": "Gate_UNKNOWN_treated_as_PASS",
+      "scenario_id": "BF-12-GATE-UNKNOWN-AS-PASS",
+      "target_layer": "00C_gates"
+    },
+    {
+      "actual_failures": [
+        "expected span missing: exit.disposition",
+        "span 'l6.ingest' has dangling parent span-50d2dda8"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "exit.disposition",
+      "expected_validator": "trace",
+      "fault_class": "Missing_OTEL_span_still_claims_proof",
+      "scenario_id": "BF-13-MISSING-OTEL-SPAN",
+      "target_layer": "otel"
+    },
+    {
+      "actual_failures": [
+        "route_digest mismatch on replay"
+      ],
+      "actual_status": "FAIL",
+      "base_scenario_id": "GP-001",
+      "blocked": true,
+      "expected_reason_substring": "route_digest mismatch",
+      "expected_validator": "replay",
+      "fault_class": "Replay_digest_mismatch_still_progresses",
+      "scenario_id": "BF-14-REPLAY-DIGEST-DRIFT",
+      "target_layer": "replay"
+    }
+  ],
+  "trace_coverage_map": {
+    "BF-13-MISSING-OTEL-SPAN": [
+      "intake.validate_envelope",
+      "intake.bind_identity_session",
+      "l1.parse_intent",
+      "l1.emit_plan_contract",
+      "l0.route.select",
+      "l0.route.emit_contract",
+      "c0.plan",
+      "c0.fetch",
+      "c0.shape",
+      "c0.contract",
+      "prompt_assembly.load_bom",
+      "prompt_assembly.compose_slots",
+      "prompt_assembly.emit_artifact",
+      "l2.e1.prep",
+      "l2.e2.valid",
+      "l2.e3.exec",
+      "l2.e5.seal",
+      "exit.normalize",
+      "exit.evaluate",
+      "l6.ingest"
+    ]
+  }
+}

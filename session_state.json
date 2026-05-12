@@ -1,0 +1,16 @@
+{
+  "plan_type": "platform_core_change",
+  "author_gate_receipt_ref": "artifacts/apps_rg/w2e_sovereign_base_agent_generic_repair_receipt.md",
+  "plan_slug": "apps-rg-golden-state-section-generation-a4f9e1",
+  "wave": "W2E",
+  "rationale": "generic_import_chain_repair",
+  "files_changed": [
+    "agentic_core/base_agents/SovereignBaseAgent.py"
+  ],
+  "classification": "GENERIC_IMPORT_CHAIN_REPAIR",
+  "apps_rg_specific": false,
+  "g22_changed": false,
+  "gate_changes": false,
+  "section_generation": false,
+  "timestamp": "2026-05-12T11:30:00-04:00"
+}
