@@ -8,7 +8,7 @@ Gate Family: agentic_core_purity
 Severity: P1
 Mode: advisory (CI effect: warn)
 
-W2 Refinement: Leakage detection with exemptions + literal detection (W3 runtime checks pending).
+W3 Runtime Package Validation: Thin adapter receipt checks + runtime package existence/type validation (W4 CI registration pending).
 """
 
 from __future__ import annotations
@@ -150,7 +150,7 @@ class AgenticCorePurityGate(ADGGateBase):
             "severity": self.severity,
             "gate_mode": self.gate_mode,
             "ci_effect": self.ci_effect,
-            "version": "W2-refinement",
+            "version": "W3-runtime-validation",
             "schema_adaptations": {
                 "nodes.body": "MISSING - use file-based literal detection",
                 "edges.target_file": "MISSING - join via edges.dst_id -> nodes.id",
@@ -175,6 +175,13 @@ class AgenticCorePurityGate(ADGGateBase):
             "w2_scope": "literal_detection, exemption_classification, app_to_core_refinement",
             "w3_pending": "runtime_package_validation, thin_adapter_receipt_checks",
             "w2_refinement_applied": True,
+            "w3_package_checks_applied": False,
+            "runtime_package_missing_count": 0,
+            "runtime_package_untyped_count": 0,
+            "thin_adapter_unreceipted_count": 0,
+            "thin_adapter_receipted_count": 0,
+            "apps_scanned": [],
+            "runtime_package_paths_found": [],
             "top_source_paths": [],
             "top_target_paths": [],
         }
@@ -192,6 +199,15 @@ class AgenticCorePurityGate(ADGGateBase):
         
         # W2: Literal detection in agentic_core files
         self._detect_core_app_specific_literals(summary)
+        
+        # W3: Runtime package validation and thin adapter checks
+        self._detect_runtime_package_missing(summary)
+        self._detect_runtime_package_untyped(summary)
+        self._detect_thin_adapter_unreceipted(summary)
+        
+        # Mark W3 as applied
+        summary["w3_package_checks_applied"] = True
+        summary["w3_scope"] = "runtime_package_validation, thin_adapter_receipt_checks"
         
         # Summary aggregation - separate active vs exempted
         all_violations = self.purity_violations + self.exempted_violations
@@ -664,6 +680,273 @@ class AgenticCorePurityGate(ADGGateBase):
                         
         except sqlite3.Error as e:
             summary[f"{query_name}_error"] = str(e)
+    
+    def _detect_runtime_package_missing(self, summary: dict[str, Any]) -> None:
+        """W3: Detect apps_* packages missing runtime customization package.
+        
+        Discovers apps_* packages and verifies at least one canonical U0 surface exists.
+        Accepts:
+        - apps_*/runtime/entry/runtime_customization_package.py
+        - apps_*/runtime_customization_package.py
+        - apps_*/runtime/entry/*runtime_customization*.py
+        """
+        query_name = "runtime_package_missing"
+        summary["queries_executed"].append(query_name)
+        
+        missing_count = 0
+        apps_scanned: list[str] = []
+        runtime_paths_found: list[str] = []
+        
+        # Discover apps_* directories
+        apps_dirs = [d for d in _REPO_ROOT.iterdir() if d.is_dir() and d.name.startswith("apps_")]
+        
+        for app_dir in tqdm(apps_dirs, desc=f"AG-PURITY {query_name}", unit="app"):
+            app_name = app_dir.name
+            apps_scanned.append(app_name)
+            
+            # Check for canonical runtime customization package paths
+            canonical_paths = [
+                app_dir / "runtime" / "entry" / "runtime_customization_package.py",
+                app_dir / "runtime_customization_package.py",
+            ]
+            
+            # Also check for any file matching *runtime_customization*.py in runtime/entry/
+            runtime_entry_dir = app_dir / "runtime" / "entry"
+            additional_paths: list[Path] = []
+            if runtime_entry_dir.exists():
+                additional_paths = [
+                    f for f in runtime_entry_dir.glob("*runtime_customization*.py")
+                    if f.name != "__init__.py"
+                ]
+            
+            all_paths = canonical_paths + additional_paths
+            found_path = None
+            
+            for path in all_paths:
+                if path.exists():
+                    found_path = str(path.relative_to(_REPO_ROOT))
+                    runtime_paths_found.append(found_path)
+                    break
+            
+            if not found_path:
+                missing_count += 1
+                violation = AGPurityViolation(
+                    source_path=f"{app_name}/",
+                    target_path=None,
+                    source_line=None,
+                    target_line=None,
+                    relation_type="filesystem_check",
+                    leakage_type="APP_RUNTIME_PACKAGE_MISSING",
+                    severity="P2",
+                    ci_effect=self.ci_effect,
+                    classification_reason=f"{app_name} has no runtime_customization_package U0 surface",
+                    suggested_action="Create runtime_customization_package.py at apps_*/runtime/entry/ or apps_*/",
+                    evidence_refs=[
+                        f"app:{app_name}",
+                        "missing:runtime_customization_package.py",
+                    ],
+                    violation_id=f"missing_u0_{app_name}",
+                    in_modified_area=self._is_in_modified_area(f"{app_name}/"),
+                )
+                self.purity_violations.append(violation)
+        
+        summary["runtime_package_missing_count"] = missing_count
+        summary["apps_scanned"] = apps_scanned
+        summary["runtime_package_paths_found"] = runtime_paths_found
+    
+    def _detect_runtime_package_untyped(self, summary: dict[str, Any]) -> None:
+        """W3: Detect runtime customization packages that appear untyped.
+        
+        Inspects found runtime package files for typed or schema-bound evidence.
+        Accepts:
+        - dataclass / pydantic model / TypedDict definitions
+        - explicit schema_ref assignments
+        - type annotations on functions/classes
+        - contract-like builder returning typed objects
+        """
+        query_name = "runtime_package_untyped"
+        summary["queries_executed"].append(query_name)
+        
+        untyped_count = 0
+        runtime_paths = summary.get("runtime_package_paths_found", [])
+        
+        # Type evidence patterns (regex)
+        typed_patterns = [
+            r"@dataclass",  # dataclass decorator
+            r"class\s+\w+.*:\s*",  # class with type hints (Python 3.7+)
+            r"->\s*\w+",  # return type annotations
+            r":\s*\w+\s*=",  # variable type annotations
+            r"TypedDict",  # TypedDict usage
+            r"BaseModel",  # Pydantic BaseModel
+            r"schema_ref",  # explicit schema reference
+            r"SchemaRef",  # SchemaRef type/usage
+            r"runtime_customization_package.*:",  # typed function parameter
+            r"def.*->.*Package",  # function returning Package type
+            r"def.*->.*Customization",  # function returning Customization type
+        ]
+        
+        for file_path in tqdm(runtime_paths, desc=f"AG-PURITY {query_name}", unit="file", disable=len(runtime_paths) < 5):
+            full_path = _REPO_ROOT / file_path
+            
+            if not full_path.exists():
+                continue
+            
+            try:
+                content = full_path.read_text(encoding="utf-8", errors="ignore")
+            except (OSError, UnicodeDecodeError):
+                continue
+            
+            # Check for type evidence
+            has_typing = any(re.search(pattern, content) for pattern in typed_patterns)
+            
+            if not has_typing:
+                untyped_count += 1
+                violation = AGPurityViolation(
+                    source_path=file_path,
+                    target_path=None,
+                    source_line=1,
+                    target_line=None,
+                    relation_type="static_analysis",
+                    leakage_type="APP_RUNTIME_PACKAGE_UNTYPED",
+                    severity="P3",
+                    ci_effect=self.ci_effect,
+                    classification_reason=f"Runtime package {file_path} lacks type annotations or schema binding",
+                    suggested_action="Add dataclass/pydantic models, TypedDict, or explicit schema_ref to U0 package",
+                    evidence_refs=[
+                        f"file:{file_path}",
+                        "missing:type_annotations",
+                    ],
+                    violation_id=f"untyped_u0_{self._hash_violation(file_path, 'untyped', '')}",
+                    in_modified_area=self._is_in_modified_area(file_path),
+                )
+                self.purity_violations.append(violation)
+        
+        summary["runtime_package_untyped_count"] = untyped_count
+    
+    def _detect_thin_adapter_unreceipted(self, summary: dict[str, Any]) -> None:
+        """W3: Detect thin adapter markers without corresponding receipts.
+        
+        Searches agentic_core files for thin adapter markers and validates
+        receipts exist under artifacts/governance/migration_receipts/.
+        """
+        query_name = "thin_adapter_unreceipted"
+        summary["queries_executed"].append(query_name)
+        
+        unreceipted_count = 0
+        receipted_count = 0
+        
+        # Thin adapter marker patterns
+        adapter_markers = [
+            r"TEMPORARY_THIN_ADAPTER",
+            r"thin[_\s]adapter",
+            r"temporary[_\s]adapter",
+            r"compatibility[_\s]adapter",
+            r"migration[_\s]shim",
+        ]
+        
+        # Get list of existing receipts
+        receipts_dir = _REPO_ROOT / "artifacts" / "governance" / "migration_receipts"
+        existing_receipts: list[Path] = []
+        if receipts_dir.exists():
+            existing_receipts = list(receipts_dir.glob("*.md")) + list(receipts_dir.glob("*.json"))
+        
+        receipt_refs: set[str] = set()
+        for receipt in existing_receipts:
+            try:
+                content = receipt.read_text(encoding="utf-8", errors="ignore")
+                # Extract referenced paths from receipt (look for file paths or adapter IDs)
+                # Match patterns like: agentic_core/... or apps_rg/... or adapter_id: ...
+                path_matches = re.findall(r'([\w/]+\.py)', content)
+                id_matches = re.findall(r'(?:adapter_id|thin_adapter|receipt_for)["\':\s]+(\w+)', content, re.IGNORECASE)
+                receipt_refs.update(path_matches)
+                receipt_refs.update(id_matches)
+            except (OSError, UnicodeDecodeError):
+                continue
+        
+        # Query ADG for agentic_core files to scan
+        if self.conn:
+            try:
+                cursor = self.conn.execute("""
+                    SELECT DISTINCT resolved_path
+                    FROM nodes
+                    WHERE resolved_path LIKE 'agentic_core/%'
+                      AND resolved_path LIKE '%.py'
+                      AND resolved_path NOT LIKE '%/tests/%'
+                      AND resolved_path NOT LIKE '%/docs/%'
+                """)
+                core_files = [row["resolved_path"] for row in cursor.fetchall()]
+            except sqlite3.Error:
+                core_files = []
+        else:
+            core_files = []
+        
+        for file_path in tqdm(core_files, desc=f"AG-PURITY {query_name}", unit="file", disable=len(core_files) < 10):
+            full_path = _REPO_ROOT / file_path
+            
+            if not full_path.exists():
+                continue
+            
+            try:
+                content = full_path.read_text(encoding="utf-8", errors="ignore")
+            except (OSError, UnicodeDecodeError):
+                continue
+            
+            # Search for thin adapter markers
+            found_markers: list[str] = []
+            for pattern in adapter_markers:
+                matches = re.finditer(pattern, content, re.IGNORECASE)
+                for match in matches:
+                    found_markers.append(match.group())
+            
+            if not found_markers:
+                continue
+            
+            # Check if file or adapter is referenced in any receipt
+            file_ref = str(file_path)
+            file_path_obj = Path(file_path)
+            file_name = file_path_obj.stem
+            file_basename = file_path_obj.name
+            
+            is_receipted = any(
+                file_ref in ref or file_name in ref or file_basename in ref
+                for ref in receipt_refs
+            )
+            
+            if is_receipted:
+                receipted_count += 1
+            else:
+                unreceipted_count += 1
+                line_num = 1
+                # Find line number of first marker
+                for marker in found_markers:
+                    match = re.search(re.escape(marker), content, re.IGNORECASE)
+                    if match:
+                        line_num = content[:match.start()].count('\n') + 1
+                        break
+                
+                violation = AGPurityViolation(
+                    source_path=file_path,
+                    target_path=None,
+                    source_line=line_num,
+                    target_line=None,
+                    relation_type="code_review",
+                    leakage_type="TEMPORARY_THIN_ADAPTER_UNRECEIPTED",
+                    severity="P2",
+                    ci_effect=self.ci_effect,
+                    classification_reason=f"Thin adapter marker found without migration receipt: {found_markers[0]}",
+                    suggested_action=f"Create receipt at artifacts/governance/migration_receipts/{file_name}_receipt.md referencing this adapter",
+                    evidence_refs=[
+                        f"file:{file_path}",
+                        f"marker:{found_markers[0]}",
+                        f"receipts_checked:{len(existing_receipts)}",
+                    ],
+                    violation_id=f"thin_adapter_{self._hash_violation(file_path, found_markers[0], '')}",
+                    in_modified_area=self._is_in_modified_area(file_path),
+                )
+                self.purity_violations.append(violation)
+        
+        summary["thin_adapter_unreceipted_count"] = unreceipted_count
+        summary["thin_adapter_receipted_count"] = receipted_count
     
     def _empty_result(self, summary: dict[str, Any] | None = None) -> GateResult:
         """Return empty result when connection unavailable."""
