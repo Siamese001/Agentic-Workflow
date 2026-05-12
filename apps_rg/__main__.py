@@ -356,9 +356,10 @@ def main() -> int:
     # Submit to AppIngressRunner (core runtime entry).
     # Per plan apps-rg-runtime-wiring-completion-d4e8a1 W2/W4: instantiate with
     # apps_rg-specific dispatch/parse/required_fields callables, call .run().
+    # W2G: Updated to use app-owned dispatch at apps_rg.runtime.dispatch
     try:
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from apps_rg.runtime.entry.dispatch import (
+        from apps_rg.runtime.dispatch import (
             APPS_RG_REQUIRED_FIELDS,
             apps_rg_dispatch,
             apps_rg_parse,

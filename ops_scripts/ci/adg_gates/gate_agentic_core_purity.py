@@ -150,7 +150,7 @@ class AgenticCorePurityGate(ADGGateBase):
             "severity": self.severity,
             "gate_mode": self.gate_mode,
             "ci_effect": self.ci_effect,
-            "version": "W3-runtime-validation",
+            "version": "W4-ci-registration",
             "schema_adaptations": {
                 "nodes.body": "MISSING - use file-based literal detection",
                 "edges.target_file": "MISSING - join via edges.dst_id -> nodes.id",
@@ -174,8 +174,10 @@ class AgenticCorePurityGate(ADGGateBase):
             "w1_scope": "core_to_app_import, core_to_app_call, app_to_core_direct",
             "w2_scope": "literal_detection, exemption_classification, app_to_core_refinement",
             "w3_pending": "runtime_package_validation, thin_adapter_receipt_checks",
+            "w4_pending": "ci_registration, synthetic_tests, baseline_artifact, promotion_criteria",
             "w2_refinement_applied": True,
-            "w3_package_checks_applied": False,
+            "w3_package_checks_applied": True,
+            "w4_ci_registration_applied": False,
             "runtime_package_missing_count": 0,
             "runtime_package_untyped_count": 0,
             "thin_adapter_unreceipted_count": 0,
@@ -208,6 +210,10 @@ class AgenticCorePurityGate(ADGGateBase):
         # Mark W3 as applied
         summary["w3_package_checks_applied"] = True
         summary["w3_scope"] = "runtime_package_validation, thin_adapter_receipt_checks"
+        
+        # Mark W4 as applied
+        summary["w4_ci_registration_applied"] = True
+        summary["w4_scope"] = "ci_registration, synthetic_tests, baseline_artifact, promotion_criteria"
         
         # Summary aggregation - separate active vs exempted
         all_violations = self.purity_violations + self.exempted_violations

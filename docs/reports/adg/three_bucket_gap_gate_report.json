@@ -1,12 +1,12 @@
 {
   "gate": "G-THREE-BUCKET-GAP",
   "tier": "B",
-  "timestamp": "2026-05-11T09:49:51.897311+00:00",
-  "report_path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-7121\\test_registry_drift_at_thresho0\\synthetic_gap_report.json",
+  "timestamp": "2026-05-12T16:14:34.765494+00:00",
+  "report_path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-7320\\test_floor_advisory_mode_exits0\\synthetic_gap_report.json",
   "snapshot": "synthetic.sqlite",
-  "strict_mode": true,
+  "strict_mode": false,
   "runtime_view_present": true,
-  "health_score_pct_triplet_attested": 0.0,
+  "health_score_pct_triplet_attested": 10.0,
   "classes": [
     {
       "defect_class": "TRIPLET_ATTESTED",
@@ -21,8 +21,8 @@
     {
       "defect_class": "REGISTRY_DRIFT",
       "severity": "P2",
-      "edge_count": 100,
-      "edge_pct": 5.0,
+      "edge_count": 0,
+      "edge_pct": 0.0,
       "threshold_count": null,
       "threshold_pct": 5.0,
       "violation": false,
@@ -79,6 +79,8 @@
       "violation_reason": ""
     }
   ],
-  "violations": [],
-  "status": "ok"
+  "violations": [
+    "HEALTH_SCORE (P1): health_score 10.00% < floor 50.00%"
+  ],
+  "status": "violations"
 }

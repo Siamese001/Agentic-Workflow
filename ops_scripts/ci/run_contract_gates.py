@@ -383,12 +383,27 @@ def main():
     except ImportError as exc:
         print(f"⚠️  P3 runner import failed — {exc} (non-blocking)")
 
+    # Parse args for --gate flag
+    import argparse
+    parser = argparse.ArgumentParser(description="Contract Gates — Main CI Entrypoint")
+    parser.add_argument("--gate", type=str, default=None, help="Run single gate by ID (e.g., AG-PURITY)")
+    args, _ = parser.parse_known_args()
+
     # ==================================================================
     # Assurance P1 gate plane (plan assurance-p1-gates-ab4758)
     # Runtime trace, replay digest, and requirements crosswalk.
     # ==================================================================
     print("\n[ASSURANCE-P1 GATE PLANE]")
     assurance_gates = [
+        # AG-PURITY — Agentic Core Purity gate (plan adg-ci-agentic-core-purity-a7c3e9).
+        # Validates agentic_core remains app-agnostic; apps_* enter via U0 runtime_customization_package.
+        # Advisory by default; fail-closed via AG_PURITY_FAIL_CLOSED=1. Bypass: AG_PURITY_BYPASS=1.
+        # W4: CI registration, synthetic tests, baseline artifact, promotion criteria doc.
+        (
+            "AG-PURITY agentic_core purity (advisory)",
+            "ops_scripts/ci/adg_gates/gate_agentic_core_purity.py",
+            "AG-PURITY",
+        ),
         # NOTE: check_windsurf_config_schema.py is canonical in wiring_gates (§26 label).
         # Removed from assurance_gates 2026-05-05 to eliminate true CI-plane duplication.
         # See: ops_scripts/ci/run_contract_gates.py wiring_gates entry "§26 Windsurf config schema purity".
@@ -916,6 +931,18 @@ def main():
             "RULES1 Rules filesystem integrity (advisory)",
             "ops_scripts/ci/check_rules_filesystem_integrity.py",
         ),
+        # HK-CONS — Hook consolidation and growth monitoring gate (W5.P3).
+        # Parses hooks.json to report hook statistics and detect growth risks:
+        # hook count thresholds, lifecycle stage thresholds, post_cascade growth,
+        # missing v2 metadata, duplicate hook_ids, invalid replacement references.
+        # Advisory by default (59 hooks, 10 stages, 22 replacement mappings baseline);
+        # fail-closed via HOOK_CONSOLIDATION_FAIL_CLOSED=1.
+        # Bypass: HOOK_CONSOLIDATION_BYPASS=1.
+        # Plan: windsurf-governance-consolidation-a7c3e9 W5.P3.
+        (
+            "HK-CONS Hook consolidation growth check (advisory)",
+            "ops_scripts/ci/check_hook_consolidation.py",
+        ),
         # GOV-1..GOV-4 — Agentic Core governance enforcement gates
         # Plan: agentic-core-governance-remediation-c4e8a2 W1.
         # Advisory by default (sunset 2026-06-15); strict post-sunset.
@@ -940,9 +967,34 @@ def main():
             "GOV-6 Governance receipts valid (advisory)",
             "ops_scripts/ci/check_governance_receipts.py",
         ),
+        # PFC1 — Plan Format Compliance gate (W4 of plan-format-simplification-rca-d4f8e2).
+        # Validates simplified-plan-format-v1 compliance for new and actively touched plans.
+        # Does NOT scan archived/completed historical plans by default.
+        # Modes: --advisory (exit 0) or --strict (exit non-zero on FAIL/ERROR/unclassified WARN).
+        # Advisory by default; fail-closed via PLAN_FORMAT_COMPLIANCE_FAIL_CLOSED=1.
+        # Bypass: PLAN_FORMAT_COMPLIANCE_BYPASS=1.
+        (
+            "PFC1 Plan format compliance (advisory)",
+            "ops_scripts/ci/check_plan_format_compliance.py",
+        ),
     ]
 
-    for label, script in assurance_gates:
+    for gate_tuple in assurance_gates:
+        # Handle both 2-tuple (label, script) and 3-tuple (label, script, gate_id)
+        if len(gate_tuple) == 3:
+            label, script, gate_id = gate_tuple
+        else:
+            label, script = gate_tuple
+            gate_id = None
+
+        # If --gate specified, skip gates that don't match
+        if args.gate:
+            # Check for exact match on gate_id or substring match on label
+            gate_id_match = gate_id and args.gate == gate_id
+            label_match = args.gate in label
+            if not (gate_id_match or label_match):
+                continue  # Skip this gate when filtering
+
         returncode, stdout, stderr = run_cmd([sys.executable, str(_script(script))], cwd=ROOT)
         if returncode != 0:
             print(f"❌ {label} failed (exit={returncode})")
@@ -953,6 +1005,25 @@ def main():
             sys.exit(1)
         else:
             print(f"✅ {label} passed")
+
+    # If --gate was specified and a gate ran, exit early (don't run wiring_gates)
+    if args.gate:
+        # Check if any gate matched
+        matched = False
+        for gate_tuple in assurance_gates:
+            if len(gate_tuple) == 3:
+                label, script, gate_id = gate_tuple
+            else:
+                label, script = gate_tuple
+                gate_id = None
+            if gate_id == args.gate or args.gate in label:
+                matched = True
+                break
+        if not matched:
+            print(f"⚠️ Gate '{args.gate}' not found in assurance_gates")
+            sys.exit(1)
+        # Successfully ran the specified gate, exit
+        return 0
 
     # ==================================================================
     # Wiring-CI gate plane (plan adg-wiring-ci-hardening-7a5d84)

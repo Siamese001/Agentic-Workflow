@@ -47,9 +47,13 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 - [x] Violations emit full JSON artifact with 11 required fields
 - [x] Separate `violation_severity` (P1/P2/P3), `gate_mode` (advisory/strict), `ci_effect` (warn/fail)
 - [x] W3 runtime package validation (11 apps scanned, 11 U0 missing, 3 thin adapters unreceipted)
+- [x] W4 CI registration (`--gate AG-PURITY` works, advisory mode, exit 0)
+- [x] W4 synthetic tests (9 scenarios T1-T9)
+- [x] W4 baseline artifact (21 fields)
+- [x] W4 promotion criteria doc (strict mode NOT activated, earliest 2026-05-26)
 - [ ] Registered in `run_contract_gates.py` as "AG-PURITY agentic_core purity (advisory)" (W4 QUEUED)
-- [ ] Baseline artifact: `artifacts/ci/agentic_core_purity_baseline.json` (W4 QUEUED)
-- [ ] Promotion criteria documented for advisory → strict transition (W4 QUEUED)
+- [x] Baseline artifact: `artifacts/ci/agentic_core_purity_baseline.json` (✅ W4)
+- [x] Promotion criteria documented for advisory → strict transition (✅ W4, earliest 2026-05-26)
 
 ## Wave Structure
 
@@ -59,7 +63,7 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 | W1 | P1-P3 | Gate skeleton + ADG query layer | ~4k | ADGGateBase stable, semantic edges populated | ✅ COMPLETE | Gate runs, connects to ADG, emits JSON (Commit: 899df41daa) |
 | W2 | P1-P4 | Leakage detection refinement + exemptions | ~5k | Materialized views available, edge authority reliable | ✅ COMPLETE | 4 leakage types + 5 exemption types implemented (Commit: f34dbfbc87) |
 | W3 | P1-P3 | Runtime package validation + receipt checks | ~3k | U0 package paths resolvable | ✅ COMPLETE | 11 apps scanned, 11 U0 missing, 3 thin adapters unreceipted (Commit: 6916c714a1) |
-| W4 | P1-P3 | CI registration + synthetic tests + baseline | ~4k | `run_contract_gates.py` accepts new gate | 🔲 QUEUED | CI integration complete, 9 test scenarios pass |
+| W4 | P1-P3 | CI registration + synthetic tests + baseline | ~4k | `run_contract_gates.py` accepts new gate | ✅ COMPLETE | --gate AG-PURITY works, 9 tests, baseline JSON, promotion doc |
 
 ## Phase-Level Summary
 
@@ -78,9 +82,9 @@ Per constitutional `agentic-core-static.md`, `agentic_core` must remain **app-ag
 | W3.P1 | Runtime package existence check | File system | Verify U0 package exists per app | ~1k | ✅ COMPLETE (11 apps missing U0) |
 | W3.P2 | Runtime package type validation | AST analysis | U0 package type annotations | ~1k | ✅ COMPLETE (0 untyped - no packages found) |
 | W3.P3 | Thin adapter receipt check | File system | Verify TEMPORARY_THIN_ADAPTER receipts | ~1k | ✅ COMPLETE (3 unreceipted, 0 receipted) |
-| W4.P1 | CI registration | run_contract_gates.py | Add AG-PURITY entry, advisory mode | ~1k | 🔲 QUEUED |
-| W4.P2 | Synthetic SQLite tests | 1 test file | 9 test scenarios with mock ADG | ~2k | 🔲 QUEUED |
-| W4.P3 | Baseline artifact + promotion doc | 2 files | JSON baseline + promotion criteria | ~1k | 🔲 QUEUED |
+| W4.P1 | CI registration | run_contract_gates.py | Add AG-PURITY entry, advisory mode | ~1k | ✅ COMPLETE (3-tuple registration with --gate filter) |
+| W4.P2 | Synthetic SQLite tests | 1 test file | 9 test scenarios with mock ADG | ~2k | ✅ COMPLETE (T1-T9 scenarios, 215 lines) |
+| W4.P3 | Baseline artifact + promotion doc | 2 files | JSON baseline + promotion criteria | ~1k | ✅ COMPLETE (21-field JSON + 12-section MD) |
 
 ## Gap Register
 
@@ -365,6 +369,57 @@ apps_architect, apps_eval, apps_exec, apps_lic, apps_qna,
 apps_repo_brief, apps_research, apps_rfp, apps_rg, apps_shared,
 apps_underwriting_ai
 ```
+
+### W4 CI Registration, Tests, Baseline, Promotion Criteria (COMPLETED)
+
+**Commit**: `TBD`  
+**Receipt**: `artifacts/ci/ag_purity_w4_ci_registration_tests_baseline_receipt.md`
+
+**Deliverables**:
+- CI registration in `run_contract_gates.py` (3-tuple with gate_id)
+- `--gate AG-PURITY` argument support with argparse
+- Synthetic test suite (T1-T9, 215 lines)
+- Baseline artifact JSON (21 fields)
+- Promotion criteria doc (12 sections, strict mode NOT activated)
+
+**W4 Results**:
+| Metric | Status |
+|--------|--------|
+| CI Registration | ✅ AG-PURITY in assurance_gates |
+| --gate filter | ✅ argparse with gate_id matching |
+| Synthetic Tests | ✅ 9 scenarios (T1-T9) |
+| Baseline JSON | ✅ 21 fields, all violations captured |
+| Promotion Doc | ✅ Strict mode earliest 2026-05-26 |
+
+**Baseline JSON Fields**:
+```json
+{
+  "gate_id": "AG-PURITY",
+  "gate_version": "W4-ci-registration",
+  "active_violation_count": 969,
+  "exempted_count": 5,
+  "counts_by_leakage_type": { 7 types },
+  "apps_scanned": 11,
+  "mode": "advisory",
+  "ci_effect": "warn"
+}
+```
+
+**Test Scenarios (T1-T9)**:
+| Test | Scenario |
+|------|----------|
+| T1 | core → apps import (CORE_TO_APP_IMPORT / P1) |
+| T2 | core → apps call (CORE_TO_APP_CALL / P1) |
+| T3 | core literal apps_* (CORE_APP_SPECIFIC_LITERAL / P1) |
+| T4 | apps → U0 approved entry (pass) |
+| T5 | apps bypass U0 → L2 (APP_BYPASSES_U0 / P1) |
+| T6 | untyped runtime package (APP_RUNTIME_PACKAGE_UNTYPED / P3) |
+| T7 | thin adapter with receipt (allowed) |
+| T8 | thin adapter without receipt (TEMPORARY_THIN_ADAPTER_UNRECEIPTED / P2) |
+| T9 | test/doc exemptions (exempt, not active) |
+
+**Explicit Statement**: ⛔ **Strict mode is NOT activated in W4.**  
+**Earliest strict mode date**: 2026-05-26 (requires 14-day stability window, <5% FP rate, <100 P1 violations, VP Eng approval).
 
 ---
 

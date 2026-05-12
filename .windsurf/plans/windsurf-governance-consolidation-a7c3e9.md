@@ -2,7 +2,7 @@
 title: Windsurf Governance Infrastructure Consolidation — Hardened
 slug: windsurf-governance-consolidation-a7c3e9
 created: 2026-05-12
-last_updated: 2026-05-12 16:13 UTC-04 (W5.P3 COMPLETE + PFC1 registered — 43 CI gates — GO FOR W5.P4 — STOPPED)
+last_updated: 2026-05-12 16:15 UTC-04 (W5 COMPLETE — P1/P1-R/P2/P3/P3-R all done — 43 CI gates — NO W5.P4 — FINAL CLOSEOUT)
 author: Cascade
 tier: T3
 status: In Progress
@@ -11,7 +11,7 @@ dod_exempt: false
 
 # Windsurf Governance Infrastructure Consolidation — Hardened
 
-> **CURRENT STATUS**: W0 REBASED ✅ | W1 COMPLETE ✅ | W2 COMPLETE ✅ | **W3 ALL DONE** 🏁 | **W3A COMPLETE** ✅ | **W4 ALL DONE** 🏁 | **W5.P0 COMPLETE** ✅ | **W5.P1 COMPLETE** ✅ | **W5.P1-R COMPLETE** ✅ | **W5.P2 COMPLETE** ✅ | **W5.P3 COMPLETE** ✅ | **W5.P4 READY** 🟢 | **STOPPED** ⏹️
+> **CURRENT STATUS**: W0 REBASED ✅ | W1 COMPLETE ✅ | W2 COMPLETE ✅ | **W3 ALL DONE** 🏁 | **W3A COMPLETE** ✅ | **W4 ALL DONE** 🏁 | **W5.P0 COMPLETE** ✅ | **W5.P1 COMPLETE** ✅ | **W5.P1-R COMPLETE** ✅ | **W5.P2 COMPLETE** ✅ | **W5.P3 COMPLETE** ✅ | **W5.P3-R COMPLETE** ✅ | **W5 FINAL CLOSEOUT** 🏁 | **NO W5.P4** ⏹️
 >
 > **W0**: Rebased to 59 hook entries (10 lifecycle stages), 53 rules, 33 skills, 25 workflows, 43 CI gates (+PFC1), 248 total scripts  
 > **W1**: 4 pure helpers created, hooks.json v2 schema defined, priority metadata assigned (proposed)  
@@ -233,9 +233,9 @@ Produce `artifacts/windsurf/governance-baseline-YYYY-MM-DD/`:
 | **W1A** | P1-P2 | **Apply v2 Metadata WITHOUT Consolidation** — metadata only | ~4K | ✅ DONE | v2 fields applied to all 59 hooks, zero consolidation, zero deletion |
 | **W1B** | P1-P2 | **B6A Harness Repair + Re-validation** — sys.path fix | ~4K | ✅ DONE | 21/23 hooks validated, 92% success, 1 hook issue isolated |
 | **W2** | P1-P5 | **Hook Consolidation** — ⛔ BLOCKED on B6 + OP-1 | ~10K | ❌ BLOCKED | B6B shadow mode required (35 hooks), OP-1 loader priority consumption |
-| **W3** | P1-P3 | **Rule Consolidation** — invariants preserved | ~12K | 🔲 TODO | 55→38 rules, §33 budget pass, trigger modes preserved |
-| **W4** | P1-P3 | **Skill Consolidation** — redirects maintained | ~10K | 🔲 TODO | 37→22 skills, no orphaned lookups, deprecated skills have redirects |
-| **W5** | P1-P3 | **Index Automation, Hook Growth Gate, CI Registration** | ~6K | 🔲 TODO | Auto-generated index, drift gate, hook growth gate, 42 CI gates mapped |
+| **W3** | P1-P3 | **Rule Consolidation** — invariants preserved | ~12K | ✅ **DONE** | 55→38 rules, §33 budget pass, trigger modes preserved |
+| **W4** | P1-P3 | **Skill Consolidation** — redirects maintained | ~10K | ✅ **DONE** | 37→22 skills, no orphaned lookups, deprecated skills have redirects |
+| **W5** | P1-P3-R | **Index Automation, Hook Growth Gate, CI Registration** | ~6K | ✅ **DONE** | 3 scripts, 2 gates, 43 CI gates, no RULES_INDEX.md refresh |
 
 ## 6. Phase-Level Summary (Hardened — 6 Waves)
 
@@ -277,18 +277,15 @@ Produce `artifacts/windsurf/governance-baseline-YYYY-MM-DD/`:
 | **W4A** | **W4 Final Audit** | All 8 checks pass | Mechanically clean | 0.5K | ✅ **DONE** |
 | **W5.P0** | **Index Generator Readiness** | W5 entry validation | **W5.P1 READY** | 0.5K | ✅ **DONE** |
 | **W5.P1** | **Index Generator Script** | 1 new script | scans dirs, generates markdown | 2K | ✅ **DONE** |
-| **W5.P2** | **Index Drift CI Gate** | 1 new gate | detects RULES_INDEX.md staleness | 2K | 🔲 **READY** |
-| **W5.P3** | Hook Growth CI Gate | 1 new gate | alerts on unchecked hook proliferation | 2K | 🔲 TODO |
-
-## 7. Gap & Blocker Register
-
-### 7.1 Gaps (Non-Blocking)
-
+| **W5.P1-R** | **Hook Count Repair** | 1 repair | semantics fix (59 entries, 10 stages) | 0.5K | ✅ **DONE** |
+| **W5.P2** | **Index Drift CI Gate** | 1 new gate | detects RULES_INDEX.md staleness | 2K | ✅ **DONE** |
+| **W5.P3** | **Hook Growth CI Gate** | 1 new gate | alerts on unchecked hook proliferation | 2K | ✅ **DONE** |
+| **W5.P3-R** | **Gate Semantics Repair** | 1 repair | survivor/replacement/v2 metadata fix | 0.5K | ✅ **DONE** |
 | ID | Gap | Discovered | Severity | Mitigation |
 |----|-----|------------|----------|------------|
 | G1 | Skill completeness variance (1-8 files) | 2026-05-12 | Low | Standardize in W4.P3 |
-| G2 | RULES_INDEX.md vs reality drift | 2026-05-12 | High | Automate in W5.P1 |
-| G3 | No hook consolidation gate exists | 2026-05-12 | Medium | Create in W5.P3 |
+| G2 | RULES_INDEX.md vs reality drift | 2026-05-12 | High | ✅ DONE — W5.P1 generator + W5.P2 drift gate |
+| G3 | No hook consolidation gate exists | 2026-05-12 | Medium | ✅ DONE — W5.P3 hook growth gate deployed |
 
 ### 7.2 Blockers (W2 Consolidation BLOCKED until resolved)
 
@@ -864,7 +861,7 @@ Each wave must produce a rollback checkpoint before proceeding to next wave.
 | DoD-12 | hooks.json deterministic priority order | ✅ | Computable from v2 metadata |
 | DoD-13 | No orphaned hooks/rules/skills | ✅ | 0 consolidation so far |
 | DoD-14 | No enforcement demotion | ✅ | No demotion in W0-W1A |
-| DoD-15 | All 42 CI gates still run | ✅ | No CI changes in W0-W1A |
+| DoD-15 | All 43 CI gates still run | ✅ | HK-CONS + PFC1 added in W5 |
 | DoD-16 | No deprecated skill lacks redirect | N/A | No skills deprecated yet |
 | DoD-17 | No hook docstring over 25 lines | N/A | Not enforced yet |
 | DoD-18 | All consolidated hooks have unit tests | 🔲 **PENDING** | W2 phase |
@@ -883,7 +880,7 @@ Each wave must produce a rollback checkpoint before proceeding to next wave.
 | Equivalence matrices | ✅ | — | Required for W2-W4 |
 | Golden receipts | ✅ | — | Required for W2 |
 | Shared helper purity | — | ✅ | Defer to W1.P1 |
-| Index automation | — | ✅ | Defer to W5.P1 |
+| Index automation | ✅ | — | W5.P1 generator + W5.P2 drift gate deployed |
 
 ---
 
@@ -895,6 +892,7 @@ Each wave must produce a rollback checkpoint before proceeding to next wave.
 | Notion Plans Taxonomy | notion-plans-status-enforcement-7a1e2d | W3.P3 affects plan taxonomy rule |
 | SSOT Folder Enforcement | ssot-folder-enforcement | Pattern reference for helper+hook+gate |
 | apps-rg-runtime-wiring | apps-rg-runtime-wiring-completion-d4e8a1 | DoD discipline precedent |
+| **W2 Deferred Scope** | windsurf-governance-w2-deferred-b6b-unblock-a8d4e2 | W2 scope deferred to B6B unlock |
 
 ---
 
@@ -914,11 +912,17 @@ Apply for W1 helpers, W5 gates.
 ---
 
 **PLAN_UPDATED**: windsurf-governance-consolidation-a7c3e9  
-**STATUS**: In Progress — W0 REBASED ✅ | W1 COMPLETE ✅ | W1A COMPLETE ✅ | **B6A COMPLETE** ✅ | **B6 OPEN 🔲** | **W2 BLOCKED ⛔**  
+**STATUS**: W5 COMPLETE 🏁 — W0 REBASED ✅ | W1 COMPLETE ✅ | W1A COMPLETE ✅ | **W3 COMPLETE** ✅ | **W4 COMPLETE** ✅ | **W5 COMPLETE** ✅ | **B6A COMPLETE** ✅ | **B6 OPEN 🔲** | **W2 BLOCKED ⛔** | **NO W5.P4** ⏹️  
 **WAVES**: 6 (W0-W5)  
-**PHASES**: 20  
+**PHASES**: 28 (including repairs)  
 **ESTIMATED_TOKENS**: ~52K  
 **PRIMARY_METRIC**: Zero enforcement loss (equivalence proven)  
 **SECONDARY_METRIC**: Compression (30% rules, 70% hooks, 40% skills)  
-**BLOCKERS**: B1-B5, B7 CLOSED | B6 OPEN (B6A done, B6B pending) | OP-1 OPEN  
-**W2_UNBLOCK_REQUIRES**: B6B shadow mode (14+ days) + harness fix + OP-1 resolution
+**BLOCKERS**: B1-B5, B6A, B7 CLOSED | B6B, OP-1 OPEN (W2 gated)  
+**W2_UNBLOCK_REQUIRES**: B6B shadow mode (14+ days) + harness fix + OP-1 resolution  
+**W5_DELIVERED**: 3 scripts, 2 CI gates, 43 total gates, no RULES_INDEX.md refresh  
+**DEFERRED_TO**: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2 (W2 scope)
+
+---
+
+**DEFERRED_SCOPE**: plan=windsurf-governance-consolidation-a7c3e9 id=w2-deferred-scoped-to-a8d4e2 depends_on=b6b-completion,b6a-harness-fix title="W2 Hook Consolidation deferred to dedicated plan" items="W2.P0-P5 consolidation,59→20 hook reduction,B6B shadow mode" rationale="B6B requires 14+ days shadow data; cannot complete within parent plan timeline" destination_plan=windsurf-governance-w2-deferred-b6b-unblock-a8d4e2 priority=P2
