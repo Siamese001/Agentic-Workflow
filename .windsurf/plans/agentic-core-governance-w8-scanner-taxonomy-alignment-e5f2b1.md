@@ -47,7 +47,10 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | W8 | P1 | Scanner taxonomy update | ~400 | W7 classification finalized | ✅ DONE | Scanner distinguishes 5 categories |
 | W8 | P2 | Strict mode redefinition | ~200 | P1 taxonomy implemented | ✅ DONE | strict exits 0 when runtime=0 |
 | W8 | P3 | CI integration verification | ~200 | P2 strict mode working | ✅ DONE | CI remains green, reports meaningful counts |
-| W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 DEFERRED | AGENTS.md references new taxonomy |
+| W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 BLOCKED | AGENTS.md references new taxonomy |
+| W8 | P5 | Classification reconciliation | ~600 | Taxonomy engine installed | 🔄 IN PROGRESS | UNKNOWN=0, RUNTIME=0 or moved to remediation |
+
+**Overall Plan Status**: **PARTIAL / BLOCKED ON CLASSIFICATION RECONCILIATION**
 
 **Total: ~900 tokens across 4 phases**
 
@@ -72,8 +75,11 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | P2.2 | Non-blocking category handling | Exit code logic | PP-4: Exit code logic needs category awareness | ~100 | ✅ DONE |
 | P3.1 | CI gate verification | `run_contract_gates.py` integration | PP-5: Gate must accept new taxonomy | ~100 | ✅ DONE |
 | P3.2 | Baseline scan run | Full repo scan | PP-6: Establish new baseline counts | ~100 | ✅ DONE |
-| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 DEFERRED |
-| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 DEFERRED |
+| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 BLOCKED on P5 |
+| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 BLOCKED on P5 |
+| P5.1 | UNKNOWN findings reconciliation | Scan output analysis | PP-7: 154 UNKNOWN need classification | ~300 | 🔄 IN PROGRESS |
+| P5.2 | RUNTIME_LEAKAGE reconciliation | Per-file runtime coupling verification | PP-8: 54 RUNTIME may be over-classified | ~200 | 🔄 IN PROGRESS |
+| P5.3 | Classification rule refinement | `core_leakage_scan.py` | PP-9: Improve heuristics based on P5.1-P5.2 | ~100 | 🔲 TODO |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -86,6 +92,69 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | G1 | Category detection heuristics may have false negatives | Medium | Validate against W7 classification ground truth |
 | G2 | Teams may rely on current scan behavior | Low | Document migration path; provide verbose mode showing all findings |
 | G3 | Strict mode change is breaking for CI that expects exit 1 | Low | Coordinate with ops; new taxonomy is more accurate |
+
+---
+
+## P5: Classification Reconciliation (IN PROGRESS)
+
+**Goal**: Reconcile 54 RUNTIME_POLICY_LEAKAGE + 154 UNKNOWN findings against W7 Phase 0 classification.
+
+**Current State** (post-P1-P3):
+```
+[SUMMARY] Total detections: 255
+[SUMMARY] Blocking: 208 (RUNTIME_POLICY_LEAKAGE: 54, UNKNOWN: 154)
+[SUMMARY] Non-blocking: 47 (STATIC_REGISTRY: 31, OFFLINE_TOOLING: 4, FALSE_POSITIVE: 12)
+```
+
+**W7 Phase 0 Ground Truth**:
+- W7 classified 297 violations total
+- Only 2 RUNTIME_POLICY_LEAKAGE files required migration (placement_advisor.py, placement_advisor_types.py) — **DONE in W7 P1**
+- Remaining ~295 approved as STATIC_REGISTRY_METADATA, OFFLINE_TOOLING_REFERENCE, or FALSE_POSITIVE
+
+**Reconciliation Required**:
+
+The scanner's heuristics are over-classifying. P5 validates each of the 208 blocking findings:
+
+### P5.1: UNKNOWN Findings (154)
+
+For each UNKNOWN finding:
+1. Examine file path and content
+2. Compare against W7 Phase 0 classification report
+3. Determine correct category:
+   - STATIC_REGISTRY_METADATA (registry entries, ownership tables, schemas)
+   - OFFLINE_TOOLING_REFERENCE (ADG adapters, analysis tools)
+   - FALSE_POSITIVE (docstrings, comments, examples)
+   - RUNTIME_POLICY_LEAKAGE (true runtime branching — unlikely given W7)
+4. Add content/file pattern to scanner for auto-classification
+5. Or mark as GENERIC_ALLOWED with rationale if legitimate
+
+**Deliverable**: UNKNOWN count = 0
+
+### P5.2: RUNTIME_POLICY_LEAKAGE Findings (54)
+
+For each RUNTIME finding:
+1. Verify if true runtime policy leakage:
+   - Does it branch on app_id/tenant_id at runtime?
+   - Does it affect governed paths (U0, L1, L0, C0, PA, L3, L2, Exit, UWG, L6)?
+2. If false positive (over-classified):
+   - Reclassify to STATIC_REGISTRY_METADATA (type definitions, constants)
+   - Reclassify to OFFLINE_TOOLING_REFERENCE (tooling, analysis)
+   - Reclassify to FALSE_POSITIVE (docstrings, examples)
+3. If true runtime leakage:
+   - Confirm not already fixed in W7
+   - Document in P5.3 for potential W9 remediation plan
+
+**Deliverable**: RUNTIME_POLICY_LEAKAGE = 0 (or documented true leaks for W9)
+
+### P5.3: Classification Rule Refinement
+
+Based on P5.1-P5.2 findings:
+1. Update `classify_violation()` heuristics in `core_leakage_scan.py`
+2. Add patterns for newly discovered categories
+3. Re-run scan and verify UNKNOWN=0, RUNTIME=0
+4. Document classification rationale for edge cases
+
+**Deliverable**: Updated scanner with refined classification
 
 ---
 
