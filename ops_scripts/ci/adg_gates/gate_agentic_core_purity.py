@@ -8,7 +8,7 @@ Gate Family: agentic_core_purity
 Severity: P1
 Mode: advisory (CI effect: warn)
 
-W1 Skeleton: Query layer and violation structure (W2/W3 heuristics pending).
+W2 Refinement: Leakage detection with exemptions + literal detection (W3 runtime checks pending).
 """
 
 from __future__ import annotations
@@ -65,6 +65,7 @@ class AGPurityViolation:
     # Internal tracking (not in JSON output)
     violation_id: str = ""
     in_modified_area: bool = False
+    exemption_type: str | None = None  # W2: TEST_ALLOWED, DOC_ALLOWED, etc.
     
     def to_dict(self) -> dict[str, Any]:
         """Emit the 11 required fields plus violation_id."""
@@ -82,6 +83,7 @@ class AGPurityViolation:
             "suggested_action": self.suggested_action,
             "evidence_refs": self.evidence_refs,
             "in_modified_area": self.in_modified_area,
+            "exemption_type": self.exemption_type,
         }
     
     def to_gate_violation(self) -> GateViolation:
@@ -141,13 +143,14 @@ class AgenticCorePurityGate(ADGGateBase):
     ):
         super().__init__(sqlite_path, modified_files, preflight_mode)
         self.purity_violations: list[AGPurityViolation] = []
+        self.exempted_violations: list[AGPurityViolation] = []
         self.gate_metadata = {
             "gate_id": "AG-PURITY",
             "gate_family": self.gate_family,
             "severity": self.severity,
             "gate_mode": self.gate_mode,
             "ci_effect": self.ci_effect,
-            "version": "W1-skeleton",
+            "version": "W2-refinement",
             "schema_adaptations": {
                 "nodes.body": "MISSING - use file-based literal detection",
                 "edges.target_file": "MISSING - join via edges.dst_id -> nodes.id",
@@ -157,35 +160,65 @@ class AgenticCorePurityGate(ADGGateBase):
         }
     
     def _execute_gate_logic(self) -> GateResult:
-        """Execute AG-PURITY detection (W1 skeleton)."""
+        """Execute AG-PURITY detection (W2 refinement)."""
         summary: dict[str, Any] = {
             "gate_metadata": self.gate_metadata,
             "total_violations": 0,
+            "active_violation_count": 0,
+            "exempted_count": 0,
             "by_leakage_type": {},
             "by_severity": {},
+            "by_exemption_type": {},
             "in_modified_area": 0,
             "queries_executed": [],
             "w1_scope": "core_to_app_import, core_to_app_call, app_to_core_direct",
-            "w2_w3_pending": "literal_detection, thin_adapter_checks, runtime_package_validation",
+            "w2_scope": "literal_detection, exemption_classification, app_to_core_refinement",
+            "w3_pending": "runtime_package_validation, thin_adapter_receipt_checks",
+            "w2_refinement_applied": True,
+            "top_source_paths": [],
+            "top_target_paths": [],
         }
         
         if not self.conn:
             return self._empty_result(summary)
         
         self.purity_violations = []
+        self.exempted_violations = []
         
-        # W1: Core detection queries
+        # W1/W2: Core detection queries with exemption classification
         self._detect_core_to_app_imports(summary)
         self._detect_core_to_app_calls(summary)
         self._detect_app_to_core_direct_imports(summary)
         
-        # Summary aggregation
-        summary["total_violations"] = len(self.purity_violations)
+        # W2: Literal detection in agentic_core files
+        self._detect_core_app_specific_literals(summary)
+        
+        # Summary aggregation - separate active vs exempted
+        all_violations = self.purity_violations + self.exempted_violations
+        summary["total_violations"] = len(all_violations)
+        summary["active_violation_count"] = len(self.purity_violations)
+        summary["exempted_count"] = len(self.exempted_violations)
+        
         for v in self.purity_violations:
             summary["by_leakage_type"][v.leakage_type] = summary["by_leakage_type"].get(v.leakage_type, 0) + 1
             summary["by_severity"][v.severity] = summary["by_severity"].get(v.severity, 0) + 1
             if v.in_modified_area:
                 summary["in_modified_area"] += 1
+        
+        # Track exemption types from exempted violations (stored in extra)
+        for v in self.exempted_violations:
+            exemption_type = v.to_dict().get("exemption_type", "UNKNOWN")
+            summary["by_exemption_type"][exemption_type] = summary["by_exemption_type"].get(exemption_type, 0) + 1
+        
+        # Compute top source/target paths
+        source_counts: dict[str, int] = {}
+        target_counts: dict[str, int] = {}
+        for v in self.purity_violations:
+            source_counts[v.source_path] = source_counts.get(v.source_path, 0) + 1
+            if v.target_path:
+                target_counts[v.target_path] = target_counts.get(v.target_path, 0) + 1
+        summary["top_source_paths"] = sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        summary["top_target_paths"] = sorted(target_counts.items(), key=lambda x: x[1], reverse=True)[:10]
         
         # Advisory mode: never blocked, always warn
         status = "warn" if self.purity_violations else "passed"
@@ -263,7 +296,13 @@ class AgenticCorePurityGate(ADGGateBase):
                     violation_id=f"core_import_{self._hash_violation(source_path, target_path, row['symbol'])}",
                     in_modified_area=in_mod,
                 )
-                self.purity_violations.append(violation)
+                # W2: Apply exemption classification
+                exemption = self._classify_exemption(source_path, target_path)
+                if exemption:
+                    violation.exemption_type = exemption
+                    self.exempted_violations.append(violation)
+                else:
+                    self.purity_violations.append(violation)
                 
         except sqlite3.Error as e:
             summary[f"{query_name}_error"] = str(e)
@@ -326,7 +365,13 @@ class AgenticCorePurityGate(ADGGateBase):
                     violation_id=f"core_call_{self._hash_violation(source_path, target_path, row['symbol'])}",
                     in_modified_area=in_mod,
                 )
-                self.purity_violations.append(violation)
+                # W2: Apply exemption classification
+                exemption = self._classify_exemption(source_path, target_path)
+                if exemption:
+                    violation.exemption_type = exemption
+                    self.exempted_violations.append(violation)
+                else:
+                    self.purity_violations.append(violation)
                 
         except sqlite3.Error as e:
             summary[f"{query_name}_error"] = str(e)
@@ -370,9 +415,18 @@ class AgenticCorePurityGate(ADGGateBase):
                 core_path = row["core_path"]
                 core_layer = row["core_layer"] if row["core_layer"] else "unknown"
                 
+                # W2: Skip allowed entrypoint/adapter imports
+                if self._is_allowed_entrypoint_adapter(core_path):
+                    continue
+                
+                # W2: Only flag internal layer imports
+                if not self._is_core_internal_layer(core_path):
+                    # Not an internal layer, skip
+                    continue
+                
                 in_mod = self._is_in_modified_area(app_path)
                 
-                # Determine leakage type based on layer
+                # W2: Determine leakage type based on layer severity
                 if core_layer in ["L0", "L1"]:
                     leakage_type = "APP_BYPASSES_U0"
                 else:
@@ -396,7 +450,13 @@ class AgenticCorePurityGate(ADGGateBase):
                     violation_id=f"app_direct_{self._hash_violation(app_path, core_path, row['app_node'])}",
                     in_modified_area=in_mod,
                 )
-                self.purity_violations.append(violation)
+                # W2: Apply exemption classification
+                exemption = self._classify_exemption(app_path, core_path)
+                if exemption:
+                    violation.exemption_type = exemption
+                    self.exempted_violations.append(violation)
+                else:
+                    self.purity_violations.append(violation)
                 
         except sqlite3.Error as e:
             summary[f"{query_name}_error"] = str(e)
@@ -406,6 +466,204 @@ class AgenticCorePurityGate(ADGGateBase):
         import hashlib
         content = f"{source}:{target}:{symbol}"
         return hashlib.md5(content.encode()).hexdigest()[:12]
+    
+    # =========================================================================
+    # W2 Exemption Classification
+    # =========================================================================
+    
+    def _classify_exemption(self, source_path: str, target_path: str | None = None) -> str | None:
+        """Classify if a path qualifies for exemption.
+        
+        Returns exemption type or None if not exempt.
+        """
+        path = source_path.lower()
+        
+        # TEST_ALLOWED: files in test directories or test-named files
+        if any(p in path for p in ['/tests/', '/test_', '_test.py', 'conftest.py']):
+            return "TEST_ALLOWED"
+        
+        # DOC_ALLOWED: documentation files and docs/ directories
+        if any(p in path for p in ['/docs/', '/doc/', '.md', '.rst', '.txt']):
+            return "DOC_ALLOWED"
+        
+        # RECEIPT_ALLOWED: governance receipt files
+        if any(p in path for p in ['receipt', '/receipts/', 'migration_receipt', '_receipt.md']):
+            return "RECEIPT_ALLOWED"
+        
+        # GENERATED_ALLOWED: generated artifacts and reports
+        if any(p in path for p in [
+            '/artifacts/', '/generated/', '/reports/', '/output/',
+            '.json', '.yaml', '.yml'  # Config/artifact files
+        ]):
+            # But not source code configs
+            if not path.endswith('.py'):
+                return "GENERATED_ALLOWED"
+        
+        # MIGRATION_ALLOWED: files clearly in migration paths
+        if any(p in path for p in [
+            '/migration/', '/migrations/', '/archive/', '/_archive/',
+            '/legacy/', '/deprecated/'
+        ]):
+            return "MIGRATION_ALLOWED"
+        
+        # Not exempt
+        return None
+    
+    def _is_allowed_entrypoint_adapter(self, core_path: str) -> bool:
+        """Check if core_path is an allowed entrypoint/adapter surface.
+        
+        Apps are allowed to import:
+        - U0 runtime customization_package surfaces
+        - Declared app entrypoints/adapters
+        """
+        path_lower = core_path.lower()
+        
+        # Allowed: runtime entry surfaces
+        if '/runtime/entry/' in path_lower:
+            return True
+        if '/runtime/customization_package/' in path_lower:
+            return True
+        if '/runtime/exit/' in path_lower:
+            return True
+        
+        # Allowed: explicit adapter surfaces (binding files)
+        if 'binding' in path_lower and ('_binding.py' in path_lower or '/binding' in path_lower):
+            return True
+        
+        # Allowed: dispatch entrypoints
+        if 'dispatch' in path_lower and '_dispatch' in path_lower:
+            return True
+        
+        return False
+    
+    def _is_core_internal_layer(self, core_path: str) -> bool:
+        """Check if core_path is an internal layer (not U0/entry surfaces).
+        
+        Internal layers that should not be directly imported:
+        - L0, L1, L2, L3, L4, L5, L6
+        - C0, prompt governance, UWG
+        """
+        path_lower = core_path.lower()
+        
+        internal_patterns = [
+            '/l0_', '/l0/', 'l0_',
+            '/l1_', '/l1/', 'l1_',
+            '/l2_', '/l2/', 'l2_',
+            '/l3_', '/l3/', 'l3_',
+            '/l4_', '/l4/', 'l4_',
+            '/l5_', '/l5/', 'l5_',
+            '/l6_', '/l6/', 'l6_',
+            '/c0/', '/c0_',
+            '/prompt_', '/prompt/',
+            '/uwg/', '/uwg_',
+            '/exit/', '/exit_',
+        ]
+        
+        for pattern in internal_patterns:
+            if pattern in path_lower:
+                return True
+        
+        return False
+    
+    def _detect_core_app_specific_literals(self, summary: dict[str, Any]) -> None:
+        """W2: Detect app-specific string literals in agentic_core files.
+        
+        Uses SQL + Python hybrid approach (nodes.body missing per W0).
+        - Query ADG for agentic_core Python files
+        - Read file contents from disk
+        - Search for app-specific literal patterns
+        """
+        query_name = "core_app_specific_literals"
+        summary["queries_executed"].append(query_name)
+        
+        if not self.conn:
+            return
+        
+        # App-specific literal patterns to search for
+        app_patterns = [
+            r'apps_rg',
+            r'apps_lic',
+            r'apps_research',
+            r'apps_qna',
+            r'apps_rfp',
+            r'apps_exec',
+            r'apps_underwriting_ai',
+            r'apps_architect',
+            r'apps_shared',
+            r'apps_[a-z_]+',  # Catch-all for apps_* pattern
+        ]
+        
+        try:
+            # Query ADG for agentic_core Python files (not tests/docs)
+            cursor = self.conn.execute("""
+                SELECT DISTINCT resolved_path
+                FROM nodes
+                WHERE resolved_path LIKE 'agentic_core/%'
+                  AND resolved_path LIKE '%.py'
+                  AND resolved_path NOT LIKE '%/tests/%'
+                  AND resolved_path NOT LIKE '%/docs/%'
+                  AND resolved_path NOT LIKE '%/_archive/%'
+                  AND resolved_path NOT LIKE '%/receipts/%'
+            """)
+            
+            core_files = [row["resolved_path"] for row in cursor.fetchall()]
+            
+            for file_path in tqdm(core_files, desc=f"AG-PURITY {query_name}", unit="file", disable=len(core_files) < 10):
+                full_path = _REPO_ROOT / file_path
+                
+                # Skip if file doesn't exist or can't be read
+                if not full_path.exists():
+                    continue
+                
+                try:
+                    content = full_path.read_text(encoding="utf-8", errors="ignore")
+                except (OSError, UnicodeDecodeError):
+                    continue
+                
+                # Search for app-specific literals
+                for pattern in app_patterns:
+                    for match in re.finditer(pattern, content, re.IGNORECASE):
+                        # Get line number
+                        line_num = content[:match.start()].count('\n') + 1
+                        
+                        # Extract surrounding context (80 chars before/after)
+                        start = max(0, match.start() - 40)
+                        end = min(len(content), match.end() + 40)
+                        context = content[start:end].replace('\n', ' ')
+                        
+                        in_mod = self._is_in_modified_area(file_path)
+                        
+                        violation = AGPurityViolation(
+                            source_path=file_path,
+                            target_path=None,
+                            source_line=line_num,
+                            target_line=None,
+                            relation_type="literal_reference",
+                            leakage_type="CORE_APP_SPECIFIC_LITERAL",
+                            severity=self.default_violation_severity,
+                            ci_effect=self.ci_effect,
+                            classification_reason=f"agentic_core contains app-specific literal '{match.group()}'",
+                            suggested_action="Move app-specific literal to U0 runtime_customization_package or use generic profile reference",
+                            evidence_refs=[
+                                f"literal:{match.group()}",
+                                f"context:{context[:80]}",
+                            ],
+                            violation_id=f"literal_{self._hash_violation(file_path, str(line_num), match.group())}",
+                            in_modified_area=in_mod,
+                        )
+                        # W2: Apply exemption classification
+                        exemption = self._classify_exemption(file_path)
+                        if exemption:
+                            violation.exemption_type = exemption
+                            self.exempted_violations.append(violation)
+                        else:
+                            self.purity_violations.append(violation)
+                        
+                        # Only report first match per pattern per file to avoid spam
+                        break
+                        
+        except sqlite3.Error as e:
+            summary[f"{query_name}_error"] = str(e)
     
     def _empty_result(self, summary: dict[str, Any] | None = None) -> GateResult:
         """Return empty result when connection unavailable."""
