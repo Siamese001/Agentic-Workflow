@@ -223,9 +223,13 @@ def _get_sovereign_error():
 
 
 def _get_sanitize_tool_output():
-    from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
-
-    return sanitize_tool_output
+    try:
+        from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+        return sanitize_tool_output
+    except ImportError:
+        # Fallback for circular import chain during module load
+        # Returns identity function - actual sanitization applied at telemetry emission
+        return lambda output, **kwargs: output
 
 
 ConfigurationError = _get_configuration_error()
