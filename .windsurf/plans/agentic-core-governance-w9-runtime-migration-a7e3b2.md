@@ -57,11 +57,11 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W9 | P1 | File-by-file audit | ~400 | W8 classification complete | 🔲 TODO | Each of 11 files audited |
-| W9 | P2 | TEMPORARY_THIN_ADAPTER verification | ~200 | P1 audit complete | 🔲 TODO | Valid receipts or migration path |
-| W9 | P3 | Generic resolver design | ~300 | P2 verification complete | 🔲 TODO | Profile-driven architecture spec |
-| W9 | P4 | Migration execution | ~800 | P3 design approved | 🔲 TODO | Runtime leakage = 0 |
-| W9 | P5 | Verification & handoff | ~200 | P4 migration complete | 🔲 TODO | Strict mode passes |
+| W9 | P0 | Runtime leakage audit | ~400 | W8 classification complete | 🔲 TODO | Each of 12 files audited with disposition |
+| W9 | P1 | TEMPORARY_THIN_ADAPTER verification | ~200 | P0 audit complete | 🔲 TODO | Valid receipts or migration path |
+| W9 | P2 | Generic resolver design | ~300 | P1 verification complete | 🔲 TODO | Profile-driven architecture spec |
+| W9 | P3 | Migration execution | ~800 | P2 design approved | 🔲 TODO | Runtime leakage = 0 |
+| W9 | P4 | Verification & handoff | ~200 | P3 migration complete | 🔲 TODO | Strict mode passes |
 
 **Total: ~1900 tokens across 5 phases**
 
@@ -80,6 +80,7 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
+| P0 | Runtime leakage audit | Per-file analysis | PP-0: Determine disposition for each target file | ~400 | 🔲 TODO |
 | P1.1 | Dispatch files audit | runtime/entry/apps_*_dispatch.py | PP-1: 11 dispatch files to audit | ~200 | 🔲 TODO |
 | P1.2 | Adapter files audit | runtime/u0/*_adapter.py | PP-2: U0 adapters with app checks | ~100 | 🔲 TODO |
 | P1.3 | L6 files audit | runtime/l6/*_learning_adapter.py | PP-3: L6 writeback with app literals | ~100 | 🔲 TODO |
@@ -100,7 +101,7 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 
 ## Files In Scope
 
-### P1 Audit Target Files (11 total)
+### P0/P1 Audit Target Files (12 total)
 
 | File | Path | Line Count | Pattern | Runtime Layer |
 |------|------|------------|---------|---------------|
@@ -117,7 +118,9 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 | integrated_r4_research_then_draft.py | runtime/entrypoints/ | ~480 | pipeline entrypoint | Entrypoint |
 | cross_app_research_substrate_ingest.py | C0_context/ | ~180 | app branching | C0 Context |
 
-**Total Lines:** ~3,967 lines across 11 files
+**Total Lines:** ~3,967 lines across 12 files
+
+**Note:** `code_symbol_catalog.py` disposition pending P0 analysis - must prove governed runtime policy leakage vs runtime/prove tooling metadata before inclusion in migration scope.
 
 ---
 
@@ -168,10 +171,54 @@ W9 is accepted when:
 1. `python tools/governance/core_leakage_scan.py --strict` exits 0
 2. Scan output shows `[SUMMARY] Blocking: 0 (RUNTIME_POLICY_LEAKAGE: 0, UNKNOWN: 0)`
 3. `python ops_scripts/ci/run_contract_gates.py` exits 0
-4. All 11 files either:
+4. All 12 files either:
    - Migrated to app-owned runtime profiles, OR
-   - Classified as TEMPORARY_THIN_ADAPTER with valid receipts
-5. W8 parent plan updated to "BLOCKED BY W9: RESOLVED"
+   - Classified as valid TEMPORARY_THIN_ADAPTER (see strict criteria below), OR
+   - Proven FALSE_RUNTIME_CLASSIFICATION and reclassified
+5. Every remaining runtime app literal is either gone or covered by valid unexpired TEMPORARY_THIN_ADAPTER receipt
+6. W8 parent plan updated to "BLOCKED BY W9: RESOLVED" **only after strict mode exits 0**
+
+---
+
+## TEMPORARY_THIN_ADAPTER Strict Criteria
+
+Runtime files may ONLY receive TEMPORARY_THIN_ADAPTER classification if ALL of the following are true:
+
+| Criterion | Verification |
+|-----------|--------------|
+| Pure boundary shim | No policy branching, no business logic |
+| No runtime routing decisions | Does not route requests based on app identity |
+| No durable writes | Does not write to L6 or external stores |
+| No orchestration | Does not coordinate multi-step processes |
+| No validation | Does not enforce domain constraints |
+| Valid 12-field receipt | Exists at `artifacts/governance/migration_receipts/<file>.receipt.json` |
+| Migration deadline | Receipt contains explicit `migration_deadline` timestamp |
+| Unexpired | Current date < `migration_deadline` |
+| Scanner treatment | Strict scanner treats as non-blocking ONLY when receipt valid and unexpired |
+
+**Files with runtime routing, validation, writeback, C0 ingest, or app-specific pipeline behavior MUST migrate to app-owned profile/package. They cannot receive TEMPORARY_THIN_ADAPTER receipts.**
+
+---
+
+## P0 Runtime Leakage Audit Template
+
+For each of the 12 target files, P0 must produce:
+
+| Field | Value |
+|-------|-------|
+| File | path/to/file.py |
+| Finding Count | N findings |
+| Runtime Layer | U0/U1/L2/L3/L4/L5/L6/Entrypoint/C0 |
+| Exact Leakage Pattern | e.g., `app_id="apps_rg"`, `if app_id == "apps_lic"` |
+| Branches on App Identity? | YES/NO |
+| Routes? | YES/NO |
+| Validates? | YES/NO |
+| Writes Back? | YES/NO |
+| Ingests? | YES/NO |
+| Orchestrates? | YES/NO |
+| **Disposition** | MIGRATE_TO_PROFILE / MOVE_TO_APP_PACKAGE / TEMPORARY_THIN_ADAPTER_WITH_RECEIPT / FALSE_RUNTIME_CLASSIFICATION |
+
+**P0 is mandatory. No implementation (P1-P5) begins until P0 is complete.**
 
 ---
 
