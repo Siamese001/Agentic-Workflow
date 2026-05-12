@@ -562,7 +562,12 @@ class PlacementAdvisor:
 
 
 def _infer_territory(path: str, layer: str) -> str:
-    """Infer territory label from path and layer."""
+    """Infer territory label from path and layer.
+    
+    Uses generic pattern matching to avoid app-specific hardcoding.
+    Any path starting with 'apps_' is automatically categorized.
+    """
+    # Layer-based patterns (core infrastructure)
     if path.startswith("agentic_core/L0"):
         return "ROUTING"
     if path.startswith("agentic_core/L1"):
@@ -579,12 +584,17 @@ def _infer_territory(path: str, layer: str) -> str:
         return "OBSERVABILITY"
     if path.startswith("agentic_core/"):
         return "SHARED"
-    if path.startswith("apps_rg"):
-        return "APP_RG"
-    if path.startswith("apps_lic"):
-        return "APP_LIC"
-    if path.startswith("apps_shared"):
-        return "APP_SHARED"
+    
+    # Generic app pattern - no hardcoded app names
+    # Matches any path starting with 'apps_' (e.g., apps_rg, apps_lic, apps_newapp)
+    if path.startswith("apps_"):
+        # Extract app identifier from path prefix
+        app_id = path.split("/")[0] if "/" in path else path
+        # Derive territory label generically: APP_<APP_NAME>
+        app_suffix = app_id.replace("apps_", "").upper()
+        return f"APP_{app_suffix}"
+    
+    # Other infrastructure patterns
     if path.startswith("tools"):
         return "TOOLS"
     if path.startswith("tests"):

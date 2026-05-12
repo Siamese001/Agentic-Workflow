@@ -1,10 +1,8 @@
 ---
-skill_id: u0-app-customization
-version: "1.0"
-tier: 2
+name: u0-app-customization
 description: |
-  Guide the addition or update of app customization through the 
-  U0 runtime_customization_package and app-owned profile refs.
+  Use when adding or updating app customization through U0 runtime_customization_package.
+  Guides canonical procedures for keeping app-specific logic in apps_* with profile refs.
 ---
 
 # U0 App Customization Skill

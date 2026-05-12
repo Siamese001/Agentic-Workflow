@@ -1,4 +1,5 @@
 ---
+name: scope-containment
 description: Use when managing scope boundaries, retrieval discipline, cross-turn topic transitions, or applying scope-containment procedures.
 trigger: model_decision
 ---

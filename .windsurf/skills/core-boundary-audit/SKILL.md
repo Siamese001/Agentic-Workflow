@@ -1,10 +1,8 @@
 ---
-skill_id: core-boundary-audit
-version: "1.0"
-tier: 2
+name: core-boundary-audit
 description: |
-  Audit the boundary between agentic_core and apps_* to detect 
-  app-specific leakage and validate governance compliance.
+  Use when auditing files in agentic_core to detect app-specific leakage.
+  Validates governance compliance and boundary integrity.
 ---
 
 # Core Boundary Audit Skill

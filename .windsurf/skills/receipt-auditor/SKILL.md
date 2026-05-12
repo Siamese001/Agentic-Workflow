@@ -1,10 +1,8 @@
 ---
-skill_id: receipt-auditor
-version: "1.0"
-tier: 2
+name: receipt-auditor
 description: |
-  Verify that migration receipts and governance receipts exist, are valid,
-  and cover all required information for audit compliance.
+  Use when verifying migration or governance receipts before committing changes.
+  Ensures receipts are complete, valid, and meet audit compliance requirements.
 ---
 
 # Receipt Auditor Skill

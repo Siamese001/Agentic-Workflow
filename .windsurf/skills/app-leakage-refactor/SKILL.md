@@ -1,10 +1,8 @@
 ---
-skill_id: app-leakage-refactor
-version: "1.0"
-tier: 2
+name: app-leakage-refactor
 description: |
-  Detect app-specific logic in agentic_core and migrate it to apps_* 
-  profiles and generic core engines.
+  Use when detecting app-specific logic in agentic_core during refactoring or migration tasks.
+  Guides migration of app-specific code to apps_* profiles and generic core engines.
 ---
 
 # App Leakage Refactor Skill

@@ -1,6 +1,8 @@
 ---
 name: ledger-consulter-ask-user-question
-description: Consult the ask_user_question intelligence ledger for precedent on enriched choice decisions — recommendation acceptance rates, confidence calibration, and override patterns.
+description: |
+  Use when consulting the ask_user_question intelligence ledger for precedent on enriched choice decisions.
+  Provides recommendation acceptance rates, confidence calibration, and override patterns.
 trigger: model_decision
 ---
 

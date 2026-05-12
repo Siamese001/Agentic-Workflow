@@ -1,10 +1,8 @@
 ---
-skill_id: runtime-package-verifier
-version: "1.0"
-tier: 2
+name: runtime-package-verifier
 description: |
-  Verify the integrity and completeness of U0 runtime_customization_package
-  for apps_* before core handoff.
+  Use when verifying U0 runtime_customization_package integrity before handoff to core.
+  Validates completeness, schema compliance, and readiness for generic engine consumption.
 ---
 
 # Runtime Package Verifier Skill
