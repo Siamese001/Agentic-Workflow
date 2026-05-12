@@ -134,6 +134,13 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     "apps_qna/integrations/memory_writeback.py",
     "apps_qna/integrations/rehearsal_cache.py",
     "apps_qna/router/promotion_gates.py",
+    # 2026-05-12 infra-wiring-scan-remediation-927628 — adapter boundary files (V-4 through V-9)
+    "apps_architect/engines/adg_client.py",  # ADG SQLite client — read-only snapshot queries
+    "apps_qna/integrations/provider_adapter.py",  # Multi-provider adapter — anthropic/openai/google/httpx
+    "apps_qna/engines/dispatch/provider_dispatch.py",  # Provider dispatch — anthropic/google
+    "apps_qna/engines/judges/interview_card_quality_judge.py",  # Judge adapter — anthropic
+    "apps_research/engines/integration/chroma_research_store.py",  # ChromaDB store — persistent vector store
+    "apps_underwriting_ai/engines/judges/rationale_quality_judge.py",  # Judge adapter — anthropic
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps

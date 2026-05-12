@@ -144,6 +144,15 @@ SANCTIONED_ADAPTER_FILES = {
     "narrative_judge_scorer.py",  # apps_* narrative judge (pre-existing)
     "qwen_llm_client.py",  # apps_* qwen LLM client (pre-existing)
     "architecture_synth.py",  # apps_qna architecture synth (pre-existing)
+    # 2026-05-12 infra-wiring-scan-remediation-927628 W1 — adapter boundary registrations
+    "gemini_provider.py",  # L2 provider boundary — httpx lazy-imported inside try/except for Gemini REST calls; peer of optimized_vllm_client.py; no domain logic
+    "provider_gateway.py",  # runtime provider gateway — anthropic + openai lazy-imported per-method inside try/except; canonical multi-provider dispatch surface; peer of claude_judge.py
+    "adg_client.py",  # apps_architect ADG SQLite client — top-level sqlite3 import for read-only ADG snapshot queries; peer of adg_span_annotator.py / l2_capable_agent_registry.py
+    "provider_adapter.py",  # apps_qna multi-provider adapter — anthropic/openai/google/httpx lazy-imported per provider branch; thin integration boundary; peer of llm_client.py
+    "provider_dispatch.py",  # apps_qna dispatch layer — anthropic/google lazy-imported in per-provider callables; thin dispatch; peer of provider_adapter.py
+    "interview_card_quality_judge.py",  # apps_qna judge adapter — anthropic lazy-imported inside try/except; LLM-as-judge boundary; peer of narrative_judge_scorer.py
+    "chroma_research_store.py",  # apps_research ChromaDB store — chromadb lazy-imported inside try/except in factory method; persistent vector store boundary; peer of chroma_client.py
+    "rationale_quality_judge.py",  # apps_underwriting_ai judge adapter — anthropic lazy-imported in _get_client(); LLM-as-judge boundary; peer of frontier_rationale_judge.py
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

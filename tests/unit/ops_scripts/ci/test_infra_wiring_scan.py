@@ -186,3 +186,67 @@ class TestScanDirectory:
         root.mkdir()
         violations = scan_directory(root)
         assert violations == {}
+
+
+# ---------------------------------------------------------------------------
+# Plan infra-wiring-scan-remediation-927628 W2 — positive + negative tests
+# ---------------------------------------------------------------------------
+
+
+class TestRemediation927628SanctionedEntries:
+    """One positive test per new SANCTIONED_ADAPTER_FILES entry (plan W1)."""
+
+    @pytest.mark.parametrize(
+        "filename, parent_parts",
+        [
+            pytest.param(
+                "gemini_provider.py",
+                ("agentic_core", "L2_execution", "providers"),
+                id="gemini_provider",
+            ),
+            pytest.param(
+                "provider_gateway.py",
+                ("agentic_core", "runtime", "providers"),
+                id="provider_gateway",
+            ),
+            pytest.param(
+                "adg_client.py",
+                ("apps_architect", "engines"),
+                id="adg_client",
+            ),
+            pytest.param(
+                "provider_adapter.py",
+                ("apps_qna", "integrations"),
+                id="provider_adapter",
+            ),
+            pytest.param(
+                "provider_dispatch.py",
+                ("apps_qna", "engines", "dispatch"),
+                id="provider_dispatch",
+            ),
+            pytest.param(
+                "interview_card_quality_judge.py",
+                ("apps_qna", "engines", "judges"),
+                id="interview_card_quality_judge",
+            ),
+            pytest.param(
+                "chroma_research_store.py",
+                ("apps_research", "engines", "integration"),
+                id="chroma_research_store",
+            ),
+            pytest.param(
+                "rationale_quality_judge.py",
+                ("apps_underwriting_ai", "engines", "judges"),
+                id="rationale_quality_judge",
+            ),
+        ],
+    )
+    def test_sanctioned_entry_allowed(self, filename: str, parent_parts: tuple[str, ...]) -> None:
+        """Positive: newly sanctioned adapter file returns True from is_allowed_path."""
+        p = Path("C:/Git/Agentic-Workflow-FRESH") / Path(*parent_parts) / filename
+        assert is_allowed_path(p) is True, f"{filename} should be sanctioned"
+
+    def test_non_adapter_still_blocked(self) -> None:
+        """Negative control: a nearby non-adapter file with a forbidden import is NOT allowed."""
+        p = Path("C:/Git/Agentic-Workflow-FRESH/apps_qna/engines/dispatch/some_business_logic.py")
+        assert is_allowed_path(p) is False, "Non-adapter file must remain blocked"
