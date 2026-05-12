@@ -1,20 +1,13 @@
 ---
 plan_id: <descriptive-name>-<6hex>
-plan_type: refactor    # refactor | governance | audit | doc | infra | tracker
-# plan_type governs §22 ADG graph-layer-evidence gate:
-#   refactor   → ENFORCED (ADG_HOTSPOT_REPORT + ADG_GRAPH_LAYER_EVIDENCE required)
-#   governance → SKIPPED (gates, schemas, CI, rule changes)
-#   audit      → SKIPPED (observational / inventory)
-#   doc        → SKIPPED (documentation only)
-#   infra      → SKIPPED (tooling / infrastructure, no code refactor)
-#   tracker    → SKIPPED (descope trackers, status dashboards)
-# See: .windsurf/rules/adg-graph-layer-enforcement.md § "Plan Scope via Frontmatter"
-#
-# NOTION STATUS DISCIPLINE (§plan-location.md):
-#   - Plans MUST be created with Status="Not Started" (never "In Progress")
-#   - Use: from tools.notion.plan_creation_helper import create_plan_in_notion
-#   - Retrospective plans only: force_status="Completed"
-#   - See: .windsurf/rules/plan-location.md § "Notion Status Discipline"
+plan_type: refactor    # refactor | governance | audit | doc | infra | tracker | platform_core_change
+touches_agentic_core: false   # true → plan_type MUST be platform_core_change + core_addition_author_gate_required=true
+touches_governance_ci: false   # true when modifying CI gates, schemas, or enforcement rules
+touches_windsurf_rules: false   # true when modifying .windsurf/rules/*.md
+touches_plan_templates: false   # true when modifying .windsurf/templates/*.md
+core_addition_author_gate_required: false   # true when touches_agentic_core=true; receipt ref required
+author_gate_receipt_ref: ""   # path to CoreAdditionAuthorGateReceipt JSON (required when core_addition_author_gate_required=true)
+dod_exempt: false   # true for RCA-only, doc-only, audit observation plans (exempt from PLAN-DOD gate)
 ---
 
 # [Plan Title]
@@ -23,86 +16,98 @@ One-sentence summary of what this plan accomplishes.
 
 ---
 
+## Plan State Markers
+
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: TODO
+CURRENT_WAVE: W0
+LAST_COMPLETED_WAVE: NONE
+LAST_UPDATED: 2026-01-01
+
+---
+
 ## Context (SCQA)
 
-> **Pyramid Principle / SCQA scaffold.** Use this 4-paragraph block to give any reader (next-session Cascade, reviewer, future you) the minimum context to act. Keep each section to 1–4 sentences. Delete this guidance line before saving.
-
-- **Situation** — current state. What exists, what works, what the baseline metrics are. Cite ADG snapshot ID, current burndown counts, or relevant prior plans.
-- **Complication** — what disrupts the situation. The defect, the gap, the new requirement, the regression, or the ratchet ceiling that forces action.
-- **Question** — the single question this plan answers. Phrase as "How do we …?" or "Should we …?". One question, not a list.
-- **Answer** — the one-line thesis of the plan. The remaining sections are the proof.
+- **Situation** — Current state. What exists, what works, what baseline metrics are.
+- **Complication** — What disrupts the situation. The defect, gap, new requirement, or regression.
+- **Question** — The single question this plan answers. Phrase as "How do we …?"
+- **Answer** — One-line thesis. Remaining sections are the proof.
 
 ---
 
+## Wave Overview
 
-## Evidence Sources
+**Waves**: [N] total (W1–W[N])
+**Total Estimate**: ~[N]K tokens
+**Current**: W0 (pre-flight)
 
-| Source | Why needed | Status |
-|---|---|---|
-| `.windsurf/` rule / skill / workflow | governing repo procedure | 🔲 TODO |
-| Exact files / symbols | direct repo evidence | 🔲 TODO |
-| ADG / MCP evidence | structural or runtime proof | 🔲 TODO |
-| External source (only if needed) | freshness or missing local evidence | 🔲 TODO |
+**Wave Manifest**:
+- **W1** — [Scope] | ~[N]K tokens | Checkpoint A | STATUS: TODO
+- **W2** — [Scope] | ~[N]K tokens | Checkpoint B | STATUS: TODO
+- **W3** — [Scope] | ~[N]K tokens | Checkpoint C | STATUS: TODO
 
 ---
 
-## Wave Structure
+## Wave 1 — [Wave Title]
 
-> **W0 (optional)**: Pre-flight baseline verification — gate runs, smoke tests, environment checks. W0 is invisible to Notion status tracking; it runs while status remains "Not Started".
+WAVE_ID: W1
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: A
 
-| Waves | Metric | Scope | Checkpoint | Tokens | Status |
-|-------|--------|-------|------------|---------|--------|
-| Wave 0 | [Metric 0] | Baseline gates | Pre-flight | [Tokens] | 🔲 TODO |
-| Wave 1 | [Metric 1] | [Scope 1] | A | [Tokens] | 🔲 TODO |
-| Wave 2 | [Metric 2] | [Scope 2] | B | [Tokens] | 🔲 TODO |
-| Wave 3 | [Metric 3] | [Scope 3] | C | [Tokens] | 🔲 TODO |
-| Wave 4 | [Metric 4] | [Scope 4] | D | [Tokens] | 🔲 TODO |
+**Authorization**: NOT_REQUIRED — No shared surface modifications in this wave.
 
-**Total: [Total] tokens across [N] waves, all GREEN**
+**Phases**:
+- **W1.1** — [Phase title] | ~[N]K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.2** — [Phase title] | ~[N]K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
-**Status tracking**: Notion Status flips "Not Started" → "In Progress" at **Wave 1 start** (via `wave_execution_state.py start`). W0 completion does NOT trigger a status change — it is pre-flight, not execution.
+**Acceptance**:
+- [Criterion 1]
+- [Criterion 2]
+
+---
+
+## Wave 2 — [Wave Title]
+
+WAVE_ID: W2
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: B
+
+**Phases**:
+- **W2.1** — [Phase title] | ~[N]K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.2** — [Phase title] | ~[N]K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Acceptance**:
+- [Criterion 1]
+- [Criterion 2]
 
 ---
 
 ## Out Of Scope
-
-> **Explicit guardrail.** List files, directories, refactors, or "while I'm here" urges that are NOT part of this plan. The scope-containment rule (`.windsurf/rules/scope-containment.md`) uses this section to deter gold-plating. Empty list allowed for narrow single-file plans; prefer explicit over implicit.
 
 - [Out-of-scope item 1]
 - [Out-of-scope item 2]
 
 ---
 
-## Phase-Level Summary
-
-> **MANDATORY for T2/T3 plans.** A plan missing this table is invalid and must not be saved.
-
-| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
-|----------|-------|---------------|-------------|-------------|--------|
-| 1.1 | [Phase 1.1 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
-| 1.2 | [Phase 1.2 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
-| 2.1 | [Phase 2.1 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
-| 2.2 | [Phase 2.2 title] | [files affected] | [PP-N, GAP-N] | ~[N]K | 🔲 TODO |
-
-**Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
-
----
-
 ## Gap Register
 
 **GAP-1: [Gap description]**
-- [Details about the gap]
-- [Impact]
+- Details about the gap
+- Impact
 
 **GAP-2: [Gap description]**
-- [Details about the gap]
-- [Impact]
+- Details about the gap
+- Impact
 
 ---
 
-## Execution Plan
+## Execution Details
 
-### Phase 1 — [Phase Title]
+### W1.1 — [Phase Title]
 **Scope**: [What this phase does]
 
 **Commands**:
@@ -111,9 +116,7 @@ One-sentence summary of what this plan accomplishes.
 # Command 2
 ```
 
-**Acceptance**: [Success criteria]
-
-### Phase 2 — [Phase Title]
+### W1.2 — [Phase Title]
 **Scope**: [What this phase does]
 
 **Commands**:
@@ -121,150 +124,142 @@ One-sentence summary of what this plan accomplishes.
 # Command 1
 # Command 2
 ```
-
-**Acceptance**: [Success criteria]
-
----
-
-## Rules
-
-- [Rule 1]
-- [Rule 2]
-- [Rule 3]
-
----
-
-## Success Criteria
-
-- [ ] [Criteria 1]
-- [ ] [Criteria 2]
-- [ ] [Criteria 3]
-
----
-
-## Implementation Commands
-
-```bash
-# Full implementation sequence
-python tools/[script].py --option
-python tools/[script].py --option
-```
-
----
-
-## Rollback Strategy
-
-If things go wrong:
-1. [Rollback step 1]
-2. [Rollback step 2]
-3. [Rollback step 3]
-
----
-
-## Acceptance Criteria
-
-| Metric | Target | Verification |
-|---|---|---|
-| [Metric 1] | [Target] | [How to verify] |
-| [Metric 2] | [Target] | [How to verify] |
 
 ---
 
 ## Definition of Done
 
-> **Mandatory section.** A plan may NOT be marked Completed in Notion or via `wave_execution_state.py complete` until every DoD row is ticked.
-> Enforced by CI gate `ops_scripts/ci/check_plan_definition_of_done.py` (PLAN-DOD).
-> A plan that is genuinely DoD-exempt (RCA-only, doc-only, audit observation report) MUST set `dod_exempt: true` in frontmatter — prose hand-waving is not an exemption.
->
-> ⛔ Lesson from `apps-rg-declarative-ingress-only-spinal-governance-c8b3e1`: that plan was marked W9 COMPLETE while `python -m apps_rg` raised ImportError on first import. A DoD row of "smoke run exits 0 and produces an artifact" would have caught this. Every plan that touches an executable surface MUST include a smoke-test row.
+DoD-1: [Primary functional outcome]
+- Evidence: [command that produces evidence]
+- Status: TODO
 
-| # | Criterion | Verification command / evidence | Status |
-|---|---|---|---|
-| DoD-1 | [Primary functional outcome — what changed code DOES, not what tests assert] | `[command that produces evidence]` | 🔲 |
-| DoD-2 | [Smoke-run row if any executable surface is touched] | `python -m <module> [args]` exits 0 and produces a recognizable artifact at `artifacts/<path>` | 🔲 |
-| DoD-3 | [Test count + zero regressions] | `pytest <selector>` shows N pass, 0 fail, baseline preserved | 🔲 |
-| DoD-4 | [CI gate green / no new violations] | `python ops_scripts/ci/run_contract_gates.py` exits 0 (or known advisory baseline unchanged) | 🔲 |
-| DoD-5 | [Documentation / memory writeback] | `mem:` entity updated; ADR linked; sibling rules referencing this work patched | 🔲 |
+DoD-2: [Smoke-run if executable surface touched]
+- Evidence: `python -m <module> [args]` exits 0, produces artifact at `artifacts/<path>`
+- Status: TODO
 
-**Verification-vs-Deferral table** — fields that look like wins but were intentionally NOT verified must be listed here so a reviewer can audit scope honesty:
+DoD-3: [Test count + zero regressions]
+- Evidence: `pytest <selector>` shows N pass, 0 fail, baseline preserved
+- Status: TODO
 
-| Item | Why deferred | Tracked in |
-|---|---|---|
-| [E.g. real LLM E2E] | [Out of plan scope; covered by next plan] | [Next plan slug or `NEXT_STEP:` marker] |
+DoD-4: [CI gate green / no new violations]
+- Evidence: `python ops_scripts/ci/run_contract_gates.py` exits 0
+- Status: TODO
+
+DoD-5: [Documentation / memory writeback]
+- Evidence: `mem:` entity updated; ADR linked; sibling rules patched
+- Status: TODO
 
 ---
 
 ## Scope Expansion Authorization
 
-When scope is discovered during execution that requires modifying this plan:
+When scope is discovered during execution:
 
-### Four-Step Discipline (mandatory)
+### Four-Step Discipline
 
-```
-Step 1: DISCOVERED_SCOPE marker (in-session, before any new work)
-Step 2: AUTHORIZATION_DECISION marker (same response, explicit verdict)
-Step 3: Plan file updates (if ACCEPTED) — last_updated, tables, gaps, DoD
-Step 4: SCOPE_EXPANSION marker (execution proceeds only after Step 3)
-```
+Step 1: DISCOVERED_SCOPE marker
+Step 2: AUTHORIZATION_DECISION marker
+Step 3: Plan updates (if ACCEPTED)
+Step 4: SCOPE_EXPANSION marker
 
 ### Marker Grammars
 
 **Step 1 — DISCOVERED_SCOPE:**
 ```
 DISCOVERED_SCOPE: plan=<slug-6hex> wave=<N> phase=<M> gap="<what was found>" impact="<severity>"
-
-Example:
-DISCOVERED_SCOPE: plan=foo-abc123 wave=3 phase=5 gap="G12 cache invalidation race" impact="High — corrupts L2 receipts"
 ```
+Example:
+DISCOVERED_SCOPE: plan=foo-abc123 wave=3 phase=5 gap="Cache race condition" impact="High — corrupts receipts"
 
 **Step 2 — AUTHORIZATION_DECISION:**
 ```
 AUTHORIZATION_DECISION: plan=<slug-6hex> decision=<ACCEPTED|DEFERRED|SPLIT_TO_NEW_PLAN|REJECTED> authorized_by=<user|author_gate|self> decisive_reason="<why>"
-
-Examples:
-AUTHORIZATION_DECISION: plan=foo-abc123 decision=ACCEPTED authorized_by=user decisive_reason="Critical path blocker — G24 hardening depends on this gap fix"
-AUTHORIZATION_DECISION: plan=foo-abc123 decision=DEFERRED authorized_by=author_gate decisive_reason="30-day time-gated; needs production log volume for calibration"
-AUTHORIZATION_DECISION: plan=foo-abc123 decision=SPLIT_TO_NEW_PLAN authorized_by=user decisive_reason="Scope too large — creates plan apps-rg-g22-diagnostics-d9f4a2"
-AUTHORIZATION_DECISION: plan=foo-abc123 decision=REJECTED authorized_by=user decisive_reason="Gold-plating; G22 diagnostics not required for v1 release"
 ```
+Examples:
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=ACCEPTED authorized_by=user decisive_reason="Critical path blocker"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=DEFERRED authorized_by=author_gate decisive_reason="Time-gated; needs data"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=SPLIT_TO_NEW_PLAN authorized_by=user decisive_reason="Scope too large"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=REJECTED authorized_by=user decisive_reason="Gold-plating"
 
-**Step 4 — SCOPE_EXPANSION (only after ACCEPTED):**
+**Step 4 — SCOPE_EXPANSION:**
 ```
 SCOPE_EXPANSION: plan=<slug-6hex> reason="<summary>" added="<waves/phases/gaps>" authorized="yes"
-
-Example:
-SCOPE_EXPANSION: plan=foo-abc123 reason="W3 revealed G22 diagnostics gap requiring new phases" added="W5.P8 (G22 diagnostics), W5.P9 (G28 receipt ordering), GAP-12" authorized="yes"
 ```
+Example:
+SCOPE_EXPANSION: plan=foo-abc123 reason="W3 revealed diagnostics gap" added="W5.P8, GAP-12" authorized="yes"
 
 ### Decision Vocabulary
 
-| Decision | When to use | Plan Update Required | Execution Continues? |
-|---|---|---|---|
-| **ACCEPTED** | Scope is critical path, in-charter, and absorbable | Yes — complete all Required Updates | Yes, on expanded scope |
-| **DEFERRED** | Scope is valid but time/volume gated | No — emit `DEFERRED_SCOPE:` marker | Yes, on original scope only |
-| **SPLIT_TO_NEW_PLAN** | Scope is valid but too large for current plan | No — create new plan, link to this one | Yes, on original scope only |
-| **REJECTED** | Scope is gold-plating, off-charter, or low priority | No | Yes, on original scope only |
-
-### Required Updates (if ACCEPTED)
-
-Must complete ALL before emitting SCOPE_EXPANSION marker:
-- [ ] **Refresh `last_updated`** — current date in frontmatter
-- [ ] **Add/modify Wave Structure row** — new wave if needed, or modify existing
-- [ ] **Add/modify Phase-Level Summary row** — new phase(s) with 🔲 TODO status
-- [ ] **Add/modify Gap Register row** — document the discovered gap
-- [ ] **Add/modify DoD criterion** — if new deliverables required
-- [ ] **Append to Scope Expansion Authorization Log** — inline documentation
+| Decision | When to use | Execution Continues? |
+|---|---|---|
+| **ACCEPTED** | In-charter, absorbable | Yes, on expanded scope |
+| **DEFERRED** | Valid but time-gated | Yes, on original scope |
+| **SPLIT_TO_NEW_PLAN** | Too large | Yes, on original scope |
+| **REJECTED** | Gold-plating, off-charter | Yes, on original scope |
 
 ### Retroactive Authorization Negative-Control
 
 > **Documentation ≠ Authorization.** A plan update filed after work completes is retroactive permission, not governance.
 
-The `post_cascade_plan_scope_audit.py` hook detects **RETROACTIVE_AUTHORIZATION_DETECTED** when:
-1. ≥3 file operations (edit/write) detected in response
-2. Active plan exists (modified within 24h)
-3. **NO** preceding `AUTHORIZATION_DECISION` marker with `decision=ACCEPTED` in same response
+---
 
-This prevents the anti-pattern where "plan update" becomes a post-hoc rationalization after gold-plating.
+## Format Reference
+
+### Required Top-Level Markers
+
+```
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: <TODO|IN_PROGRESS|DONE|BLOCKED|DEFERRED|WAITING|RETIRED|ARCHIVED>
+CURRENT_WAVE: <W0|W1|W2|...>
+LAST_COMPLETED_WAVE: <NONE|W1|W2|...>
+LAST_UPDATED: <YYYY-MM-DD>
+```
+
+### Required Per-Wave Markers
+
+```
+WAVE_ID: W<N>
+WAVE_STATUS: <TODO|IN_PROGRESS|DONE|BLOCKED>
+WAVE_COMPLETE: <YES|NO>
+AUTHORIZATION_STATUS: <NOT_REQUIRED|REQUIRED|GRANTED|DENIED>
+CHECKPOINT: <A|B|C|...>
+```
+
+### Required Per-Phase Markers (inline)
+
+```
+- **W<N>.<M>** — <Title> | ~<N>K tokens | PHASE_STATUS: <TODO|IN_PROGRESS|DONE|BLOCKED> | PHASE_COMPLETE: <YES|NO>
+```
+
+### Required DoD Markers (inline)
+
+```
+DoD-<N>: <Criterion description>
+- Evidence: <What proves completion>
+- Status: <TODO|IN_PROGRESS|DONE|BLOCKED|DEFERRED>
+```
+
+### Status Definitions
+
+| Status | Meaning |
+|---|---|
+| **TODO** | Not yet started (may require authorization) |
+| **IN_PROGRESS** | Active execution |
+| **DONE** | All acceptance criteria met |
+| **BLOCKED** | Technical, policy, validation, dependency, or governance failure |
+| **DEFERRED** | Intentionally delayed |
+| **WAITING** | Paused pending external dependency |
+| **RETIRED** | Abandoned or superseded |
+| **ARCHIVED** | Long-term archive |
+
+### AUTHORIZATION_STATUS Definitions
+
+| Status | Meaning |
+|---|---|
+| **NOT_REQUIRED** | Wave proceeds without explicit authorization |
+| **REQUIRED** | User must explicitly approve (e.g., modifies shared templates, CI, governance) |
+| **GRANTED** | User has authorized; may proceed |
+| **DENIED** | User declined; must become DEFERRED/RETIRED or await re-authorization |
 
 ---
 
@@ -273,5 +268,4 @@ This prevents the anti-pattern where "plan update" becomes a post-hoc rationaliz
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.
 - Prefer exact or structural matches before broad semantic expansion.
-- For high-risk outputs, extract evidence or quotes before summarizing.
 - Reserve deterministic enforcement for hooks or scripts, not template prose.

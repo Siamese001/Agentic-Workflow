@@ -21,30 +21,20 @@ description: SSOT folder routing — every NEW Python file must land in its cano
 
 ## Forbidden New-File Roots
 
-| Root | Why forbidden | Allowlist |
-|---|---|---|
-| `scripts/<name>.py` | Legacy tier-verify entrypoint folder | `verify_tier\d+_(enforcement\|runtime_proof)_gate.py`, `verify_all_requirements_*.py`, `verify_tier_gate_hardening.py`, `c0_evidence_harness.py`, `scripts/proof/**` |
-| Repo-root `<name>.py` | Top-level Python files clutter the workspace | `conftest.py` only |
-| `tools/_oneoff/`, `tools/_oneshot/` | Tombstoned scratch folders | (none) |
-| Hook-prefix file outside `.windsurf/scripts/` | Hooks discovered relative to that folder; misroute = silent disable | (none) |
+- `scripts/<name>.py` — except allowlist (`verify_tier\d+_*_gate.py`, `verify_all_requirements_*.py`, `verify_tier_gate_hardening.py`, `c0_evidence_harness.py`, `scripts/proof/**`)
+- Repo-root `<name>.py` — except `conftest.py`
+- `tools/_oneoff/`, `tools/_oneshot/` — tombstoned
+- Hook-prefix files (`pre_*_*.py`, `post_*_*.py`) outside `.windsurf/scripts/` — misroute = silent disable
 
 ## Forbidden Patterns
 
-- ❌ `write_to_file` to `scripts/check_foo.py` — must be `ops_scripts/ci/check_foo.py`
-- ❌ `write_to_file` to `scripts/post_cascade_bar.py` — must be `.windsurf/scripts/post_cascade_bar.py`
-- ❌ `write_to_file` to `weekly_report.py` at repo root — must be `ops_scripts/calibration/weekly_report.py`
-- ❌ `write_to_file` to `tools/_oneoff/cleanup.py` — must be `ops_scripts/maintenance/cleanup.py`
+- ❌ `scripts/check_foo.py` → `ops_scripts/ci/check_foo.py`
+- ❌ `scripts/post_cascade_bar.py` → `.windsurf/scripts/post_cascade_bar.py`
 
 ## Bypass
 
 `SSOT_FOLDER_BYPASS=1` env var — emits a `WARNING:` line and lets the write proceed. Use only for allowlisted legacy archetypes or scripted batch runs with operator approval.
 
-## Enforcement Layers
+## Enforcement
 
-1. **This rule** (always-on — advisory)
-2. **`.windsurf/scripts/_ssot_folder_check.py`** (helper — pure logic)
-3. **`.windsurf/scripts/pre_write_gate.py`** (Windsurf hook — fail-closed at write time)
-4. **`ops_scripts/ci/check_ssot_folder_routing.py`** (pre-commit `T7q` — fail-closed at commit time)
-5. **Tests:** `tests/unit/windsurf_scripts/test_ssot_folder_check.py`
-
-Constitutional rule §31. Sibling: `plan-location.md`. Same pattern: pure helper, two consumers (hook + CI), bypass env var, durable logging.
+Helper `_ssot_folder_check.py` → hook `pre_write_gate.py` (fail-closed) → CI gate `check_ssot_folder_routing.py` (T7q) → tests `test_ssot_folder_check.py`. Constitutional §31. Sibling: `plan-location.md`.

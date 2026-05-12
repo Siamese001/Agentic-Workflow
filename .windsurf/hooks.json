@@ -4,315 +4,1132 @@
       {
         "command": "python .windsurf/scripts/pre_read_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_read_gate",
+        "lifecycle_stage": "pre_read_code",
+        "priority": 10,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_read_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "READ_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "adg-canonical-invariants.md",
+        "replacement_for": []
       }
     ],
     "pre_run_command": [
       {
         "command": "python tools/governance/receipt_required_guard.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "receipt_required_guard",
+        "lifecycle_stage": "pre_run_command",
+        "priority": 20,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/receipt_required_guard.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "RECEIPT_REQUIRED_GUARD_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_run_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_run_gate",
+        "lifecycle_stage": "pre_run_command",
+        "priority": 20,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_run_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "RUN_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ],
     "pre_write_code": [
       {
         "command": "python tools/governance/core_write_guard.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "core_write_guard",
+        "lifecycle_stage": "pre_write_code",
+        "priority": 30,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/core_write_guard.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "CORE_WRITE_GUARD_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_author_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_author_gate",
+        "lifecycle_stage": "pre_write_code",
+        "priority": 30,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_author_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "AUTHOR_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "author-gate-enforcement.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_write_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_write_gate",
+        "lifecycle_stage": "pre_write_code",
+        "priority": 30,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_write_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "WRITE_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_write_plan_scope_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_write_plan_scope_gate",
+        "lifecycle_stage": "pre_write_code",
+        "priority": 30,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_write_plan_scope_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "WRITE_PLAN_SCOPE_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_write_fortknox_guard.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_write_fortknox_guard",
+        "lifecycle_stage": "pre_write_code",
+        "priority": 30,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_write_fortknox_guard.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "WRITE_FORTKNOX_GUARD_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "fortknox-certification-discipline.md",
+        "replacement_for": []
       }
     ],
     "pre_mcp_tool_use": [
       {
-        "command": "python .windsurf/scripts/pre_notion_plan_creation_gate.py",
+        "command": "python .windsurf/scripts/unified_plan_creation_auditor.py pre_flight",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": true,
+        "hook_id": "unified_plan_creation_auditor",
+        "lifecycle_stage": "pre_mcp_tool_use",
+        "priority": 45,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/unified_plan_creation_auditor.py",
+          "subcommand": "pre_flight"
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "NOTION_PLAN_CREATION_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "notion-plans-taxonomy.md",
+        "replacement_for": [
+          "pre_notion_plan_creation_gate"
+        ],
+        "consolidation_phase": "W2.P1",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating pre-flight plan creation validation"
       },
       {
         "command": "python .windsurf/scripts/pre_mcp_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_mcp_gate",
+        "lifecycle_stage": "pre_mcp_tool_use",
+        "priority": 40,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_mcp_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "MCP_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "mcp-serialization.md",
+        "replacement_for": []
       }
     ],
     "pre_user_prompt": [
       {
         "command": "python .windsurf/scripts/pre_prompt_classifier.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_prompt_classifier",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_prompt_classifier.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "PROMPT_CLASSIFIER_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_reminder_check.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_reminder_check",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 60,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_reminder_check.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_REMINDER_CHECK_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_deferred_scope_recovery.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_deferred_scope_recovery",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 130,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_deferred_scope_recovery.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_DEFERRED_SCOPE_RECOVERY_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "scope-containment.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_hook_health_check.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_hook_health_check",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 60,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_hook_health_check.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_HOOK_HEALTH_CHECK_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python tools/capture/ledger_staleness_check.py --advisory --quiet",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "ledger_staleness_check",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 60,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/ledger_staleness_check.py",
+          "subcommand": "--quiet"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "LEDGER_STALENESS_CHECK_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "memory-management.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_grep_for_deps_warning.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "pre_user_prompt_grep_for_deps_warning",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_grep_for_deps_warning.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_GREP_FOR_DEPS_WARNING_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "adg-canonical-invariants.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_weekly_report.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "pre_user_prompt_weekly_report",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_weekly_report.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_WEEKLY_REPORT_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_author_gate_reminder.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_author_gate_reminder",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 50,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_author_gate_reminder.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "USER_PROMPT_AUTHOR_GATE_REMINDER_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "author-gate-enforcement.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_ag_queue_surface.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_ag_queue_surface",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_ag_queue_surface.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_AG_QUEUE_SURFACE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "author-gate-enforcement.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_deferred_plan_gate.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_deferred_plan_gate",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 50,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_deferred_plan_gate.py",
+          "subcommand": null
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "USER_PROMPT_DEFERRED_PLAN_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_plan_registration_surface",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_PLAN_REGISTRATION_SURFACE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_refresh.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "pre_user_prompt_plan_registration_refresh",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_plan_registration_refresh.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_PLAN_REGISTRATION_REFRESH_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plans_dup_surface.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "pre_user_prompt_plans_dup_surface",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 80,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_user_prompt_plans_dup_surface.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "USER_PROMPT_PLANS_DUP_SURFACE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/pre_ask_user_question_gate.py --hook-mode",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "pre_ask_user_question_gate",
+        "lifecycle_stage": "pre_user_prompt",
+        "priority": 50,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/pre_ask_user_question_gate.py",
+          "subcommand": "--hook-mode"
+        },
+        "blocking_mode": "blocking",
+        "bypass_env_var": "ASK_USER_QUESTION_GATE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ],
     "post_write_code": [
       {
         "command": "python .windsurf/scripts/post_write_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_write_audit",
+        "lifecycle_stage": "post_write_code",
+        "priority": 250,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_write_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "WRITE_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python tools/governance/core_leakage_scan.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "core_leakage_scan",
+        "lifecycle_stage": "post_write_code",
+        "priority": 230,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/core_leakage_scan.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CORE_LEAKAGE_SCAN_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_write_mcp_config_sync.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_write_mcp_config_sync",
+        "lifecycle_stage": "post_write_code",
+        "priority": 230,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_write_mcp_config_sync.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "WRITE_MCP_CONFIG_SYNC_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "mcp-serialization.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_write_plan_reconcile.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_write_plan_reconcile",
+        "lifecycle_stage": "post_write_code",
+        "priority": 230,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_write_plan_reconcile.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "WRITE_PLAN_RECONCILE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_write_cert_stage.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_write_cert_stage",
+        "lifecycle_stage": "post_write_code",
+        "priority": 230,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_write_cert_stage.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "WRITE_CERT_STAGE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ],
     "post_run_command": [
       {
         "command": "python .windsurf/scripts/post_run_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_run_audit",
+        "lifecycle_stage": "post_run_command",
+        "priority": 260,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_run_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "RUN_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ],
     "post_mcp_tool_use": [
       {
         "command": "python .windsurf/scripts/post_mcp_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_mcp_audit",
+        "lifecycle_stage": "post_mcp_tool_use",
+        "priority": 270,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_mcp_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "MCP_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "mcp-serialization.md",
+        "replacement_for": []
       }
     ],
     "post_cascade_response": [
       {
         "command": "python .windsurf/scripts/post_cascade_heartbeat.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_cascade_heartbeat",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 330,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_heartbeat.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_HEARTBEAT_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python tools/governance/app_runtime_package_scan.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "app_runtime_package_scan",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 330,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/app_runtime_package_scan.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "APP_RUNTIME_PACKAGE_SCAN_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_cleanup.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_cleanup",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 390,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_cleanup.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_CLEANUP_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_author_gate_suite.py",
+        "command": "python .windsurf/scripts/post_cascade_author_gate_audit.py run_all",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_cascade_author_gate_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 300,
+        "entrypoint": {
+          "type": "python_script",
+          "path": "windsurf/scripts/post_cascade_author_gate_audit.py",
+          "subcommand": "run_all"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "AG_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "author-gate-enforcement.md",
+        "replacement_for": [
+          "post_cascade_author_gate_capture",
+          "post_cascade_author_gate_ui_audit",
+          "post_cascade_author_gate_schema_audit",
+          "post_cascade_author_gate_pipeline_audit",
+          "post_cascade_author_gate_miss_detector",
+          "post_cascade_author_gate_suite",
+          "post_cascade_ask_user_question_packet_audit",
+          "post_cascade_ag_queue_drain_audit"
+        ],
+        "consolidation_phase": "W2.P2",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating 8 Author-Gate audit functions into 7 subcommands"
       },
       {
         "command": "python .windsurf/scripts/post_cascade_adg_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_adg_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_adg_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_ADG_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_grep_budget_audit.py",
+        "command": "python .windsurf/scripts/post_cascade_resource_budget_audit.py run_all",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_resource_budget_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": "windsurf/scripts/post_cascade_resource_budget_audit.py",
+          "subcommand": "run_all"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "RESOURCE_BUDGET_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "adg-canonical-invariants.md",
+        "replacement_for": [
+          "post_cascade_grep_budget_audit",
+          "post_cascade_read_budget_audit",
+          "post_cascade_token_telemetry"
+        ],
+        "consolidation_phase": "W2.P4",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating 3 Resource Budget audit functions into 3 subcommands"
       },
       {
         "command": "python .windsurf/scripts/post_cascade_read_budget_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_read_budget_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_read_budget_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_READ_BUDGET_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "adg-canonical-invariants.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_token_telemetry.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_token_telemetry",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 330,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_token_telemetry.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_TOKEN_TELEMETRY_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_scope_drift_detector.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_scope_drift_detector",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 330,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_scope_drift_detector.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_SCOPE_DRIFT_DETECTOR_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "scope-containment.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_writeback_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_writeback_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_writeback_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_WRITEBACK_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_deferred_scope_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_deferred_scope_capture",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 380,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_deferred_scope_capture.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_DEFERRED_SCOPE_CAPTURE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "scope-containment.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_next_step_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_next_step_capture",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 380,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_next_step_capture.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_NEXT_STEP_CAPTURE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_adr_registry_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_adr_registry_capture",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 380,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_adr_registry_capture.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_ADR_REGISTRY_CAPTURE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_mcp_serialization_audit.py",
+        "command": "python .windsurf/scripts/post_cascade_mcp_hygiene_audit.py run_all",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_mcp_hygiene_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": "windsurf/scripts/post_cascade_mcp_hygiene_audit.py",
+          "subcommand": "run_all"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "MCP_HYGIENE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "mcp-serialization.md",
+        "replacement_for": [
+          "post_cascade_mcp_serialization_audit",
+          "post_cascade_mcp_preflight_audit",
+          "post_cascade_mcp_orphan_reap"
+        ],
+        "consolidation_phase": "W2.P5",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating 3 MCP Hygiene audit functions into 3 subcommands"
       },
       {
         "command": "python .windsurf/scripts/post_cascade_mcp_preflight_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_mcp_preflight_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_mcp_preflight_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_MCP_PREFLIGHT_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "mcp-serialization.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_long_command_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_long_command_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_long_command_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_LONG_COMMAND_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_plan_evidence_gate.py",
+        "command": "python .windsurf/scripts/post_cascade_plan_lifecycle_audit.py run_all",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_plan_lifecycle_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 300,
+        "entrypoint": {
+          "type": "python_script",
+          "path": "windsurf/scripts/post_cascade_plan_lifecycle_audit.py",
+          "subcommand": "run_all"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "PLAN_LIFECYCLE_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-update-enforcement.md",
+        "replacement_for": [
+          "post_cascade_plan_scope_audit",
+          "post_cascade_plan_complete_audit",
+          "post_cascade_plans_dup_audit",
+          "post_cascade_plan_evidence_gate"
+        ],
+        "consolidation_phase": "W2.P3",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating 5 Plan Lifecycle audit functions into 5 subcommands"
       },
       {
         "command": "python .windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_fortknox_integrity_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_FORTKNOX_INTEGRITY_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "fortknox-certification-discipline.md",
+        "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_notion_plans_status_audit.py",
+        "command": "python .windsurf/scripts/unified_notion_status_auditor.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "unified_notion_status_auditor",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 340,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/unified_notion_status_auditor.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_NOTION_PLANS_STATUS_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "notion-plans-taxonomy.md",
+        "replacement_for": [
+          "post_cascade_notion_plans_status_audit",
+          "post_cascade_notion_plan_identity_audit"
+        ],
+        "consolidation_phase": "W2.P1",
+        "status": "consolidated",
+        "note": "Survivor hook consolidating Notion status audit functions"
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_plan_creation_audit.py",
+        "command": "python .windsurf/scripts/unified_plan_creation_auditor.py post_flight",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "unified_plan_creation_auditor_post",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 290,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/unified_plan_creation_auditor.py",
+          "subcommand": "post_flight"
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_PLAN_CREATION_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": [
+          "post_cascade_plan_creation_audit"
+        ],
+        "consolidation_phase": "W2.P1",
+        "status": "consolidated",
+        "note": "Post-flight survivor component of unified_plan_creation_auditor"
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plans_dup_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_plans_dup_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_plans_dup_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_PLANS_DUP_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_capture.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_wave_lifecycle_capture",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 380,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_wave_lifecycle_capture.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_WAVE_LIFECYCLE_CAPTURE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_audit.py",
         "working_directory": "{repo_root}",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_cascade_wave_lifecycle_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_wave_lifecycle_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_WAVE_LIFECYCLE_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plan_scope_audit.py",
         "working_directory": "{repo_root}",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_cascade_plan_scope_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_plan_scope_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_PLAN_SCOPE_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plan_complete_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_cascade_plan_complete_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_plan_complete_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_PLAN_COMPLETE_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "plan-location.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_notion_plan_identity_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_NOTION_PLAN_IDENTITY_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "notion-plans-taxonomy.md",
+        "replacement_for": []
       },
       {
         "command": "python .windsurf/scripts/post_cascade_wave_completion_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false
+        "show_output": false,
+        "hook_id": "post_cascade_wave_completion_audit",
+        "lifecycle_stage": "post_cascade_response",
+        "priority": 350,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_cascade_wave_completion_audit.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "CASCADE_WAVE_COMPLETION_AUDIT_BYPASS",
+        "emits_receipt": true,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ],
     "post_setup_worktree": [
       {
         "command": "python .windsurf/scripts/post_setup_worktree.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": true
+        "show_output": true,
+        "hook_id": "post_setup_worktree",
+        "lifecycle_stage": "post_setup_worktree",
+        "priority": 930,
+        "entrypoint": {
+          "type": "python_script",
+          "path": ".windsurf/scripts/post_setup_worktree.py",
+          "subcommand": null
+        },
+        "blocking_mode": "advisory",
+        "bypass_env_var": "SETUP_WORKTREE_BYPASS",
+        "emits_receipt": false,
+        "owner_rule_ref": "TBD",
+        "replacement_for": []
       }
     ]
   },

@@ -2,11 +2,7 @@
 trigger: always_on
 ---
 
-> See `.windsurf/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
-
 # Global Rules - Always-On Policy (Tier 2 SSOT)
-
-Compact always-on policy statements covering cross-cutting concerns. Enforcement at Tier 1 (hooks), Tier 4 (pre-commit), Tier 5 (CI). This file is the SSOT for these topics.
 
 ## Tool Prefix Stability
 
@@ -18,21 +14,9 @@ Before ANY T2/T3 work, check ADG health: (1) **preferred** Redis hot cache via `
 
 ## ADG-First Analysis
 
-Dependency analysis MUST use ADG MCP tools — NOT grep/text search.
+Dependency analysis MUST use ADG MCP tools — NOT grep/text search. Fallback hierarchy: (1) `adg_sqlite` MCP → (2) direct SQLite of `artifacts/adg/adg_indexed_<ts>.sqlite` → (3) grep ONLY if both unreachable AND `DEGRADED_FALLBACK: reason=<mcp_err>+<sqlite_err>` emitted.
 
-| Query Need | Required Tool |
-|---|---|
-| Find by layer | `adg_nodes_by_layer` |
-| Find by file | `adg_nodes_by_file` |
-| Outgoing/incoming deps | `adg_edge_fanout` / `adg_edge_fanin` |
-| Node details | `adg_node` |
-| Health check | `adg_health` |
-| **MCP-down fallback (REQUIRED first)** | Direct SQLite read of `artifacts/adg/adg_indexed_<ts>.sqlite` (`nodes`/`edges`/`mv_*`/`v_p*` tables expose the same surface) |
-| Degraded fallback (last resort) | grep ONLY after BOTH MCP and SQLite are unreachable AND `DEGRADED_FALLBACK: reason=<mcp_err>+<sqlite_err>` is emitted |
-
-`grep_search` for dependency analysis is **FORBIDDEN** — only confirm literals. Silent degraded fallback (grep without health check + reason code) = `severity: critical` violation. MCP serialization (§25, hardened 2026-05-01) applies only to remote MCPs; `adg_sqlite` is local and may be called multiple times per response. When ADG MCP unavailable for any reason, canonical path is direct SQLite, not grep — see `mcp-serialization.md` §"Hard Rule — SQLite-Direct Fallback Supersedes Grep" for the SQL template.
-
-**Why this matters**: `grep_search` is native with NO pre-execution hook. Enforcement: this rule + `SR_MANDATE` step 0 (injected by `pre_prompt_classifier.py`) + retroactive `post_cascade_adg_audit.py`. Violations: `artifacts/windsurf/adg_first_violations.jsonl`.
+Key tools: `adg_nodes_by_layer`, `adg_nodes_by_file`, `adg_edge_fanout`/`adg_edge_fanin`, `adg_node`, `adg_health`. `grep_search` for dependency analysis FORBIDDEN — only confirm literals. Silent fallback = `severity: critical` in `adg_first_violations.jsonl`. `adg_sqlite` is local — call freely per response (§25 applies to remote MCPs only).
 
 ## Hotspot-First Refactoring Gate
 
@@ -40,14 +24,7 @@ Before drafting ANY T2/T3 refactoring plan, AFTER MCP green light, BEFORE edits:
 
 ## Graph-Layer Primary Driver (Refactoring)
 
-The ADG is **SQLite + graph-layer overlay** (not native graph DB). MVs / semantic edges / P-views provide graph-DB semantics over a relational store. Graph-layer primitives MUST be PRIMARY drivers of T2/T3 refactoring plans:
-
-- **Materialized views** (pre-computed hotspots / blast-radius / chokepoints): `mv_graph_reverse_dependency_hotspots`, `mv_graph_chokepoint_bridges`, `mv_graph_critical_path_blast_radius`, `mv_hotspot_centrality`, `mv_dependency_cone_risk`, etc.
-- **Semantic edges** (behavior beyond imports): `flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite`
-- **Pre-built P-views** (pre-classified concerns): `v_p0_*`, `v_p1_*`, `v_p2_*`, `v_p3_*`
-- **Precision tables** (when populated): `precision_variable_attributes`, `precision_side_effects`, `precision_call_resolution`
-
-FORBIDDEN: a T2/T3 plan citing only raw `edges`/`violations` counts. Every T2/T3 plan at `.windsurf/plans/<slug>-<6hex>.md` MUST include `## ADG_GRAPH_LAYER_EVIDENCE` with ≥3 MVs + semantic edges + P-view matches. Constitutional §22 + gate `check_graph_layer_evidence.py`. Full protocol: `adg-graph-layer-enforcement.md`.
+T2/T3 refactoring plans MUST use graph-layer primitives as PRIMARY drivers: materialized views (`mv_graph_reverse_dependency_hotspots`, `mv_hotspot_centrality`, `mv_dependency_cone_risk`, etc.), semantic edges (`flows_to`, `reads_from`, `writes_to`, `emits_side_effect`, `controls_flow`, `resolves_callsite`), and P-views (`v_p0_*`..`v_p3_*`). FORBIDDEN: plans citing only raw `edges`/`violations`. Every T2/T3 plan MUST include `## ADG_GRAPH_LAYER_EVIDENCE` (≥3 MVs + semantic edges + P-view matches). Gate: `check_graph_layer_evidence.py`. Detail: `adg-graph-layer-enforcement.md`.
 
 ## Subprocess Timeout Discipline
 
@@ -67,19 +44,15 @@ Before restarting any MCP server: (1) `adg_close_connections`; (2) restart; (3) 
 
 ## MCP Authority: One SSOT Per Capability
 
-Each capability has exactly ONE authoritative MCP. Full MCP routing table is in `AGENTS.md` Quick Reference (auto-generated, always loaded, CI-enforced). Overlap details: `docs/guides/MCP_Registry.md`. Before adding a new MCP, verify no existing MCP covers the capability.
+Each capability has exactly ONE authoritative MCP. Full table: `AGENTS.md` Quick Reference. Before adding a new MCP, verify no existing MCP covers the capability.
 
 **Key routing invariants:**
 - Structural dependencies → `adg_sqlite` only. `grep_search` FORBIDDEN.
 - Persistent memory → `memory` MCP only. NOT Windsurf built-in `create_memory`.
 - Semantic search → `vector_db` only. NOT for structural deps, NOT for episodic recall.
-- HTTP routing follows the decision tree: external content → `tavily`; external library docs → `context7`; GitHub repo Q&A → `deepwiki`; JS-rendered pages → `playwright`; local/internal HTTP → direct `httpx`; one-off URL fetch with user approval → `read_url_content`.
+- HTTP routing: external content → `tavily`; external library docs → `context7`; GitHub repo Q&A → `deepwiki`; JS-rendered pages → `playwright`; local/internal HTTP → direct `httpx`; one-off URL fetch → `read_url_content`.
 - Git state / PRs / issues → `GitKraken` only.
 
 ## Continuous Execution
 
-Execute continuously without stopping UNLESS a genuine Author-Gate decision point is reached.
-
-FORBIDDEN: stopping after tool calls to check in; asking permission for deterministic actions; presenting options when there is one correct path; breaking work into artificial phase-breaks; narrating work-in-progress without advancing it.
-
-REQUIRED: chain all deterministic tool calls; stop only when scoring reveals genuine decision ambiguity; validate before declaring done.
+Execute continuously without stopping UNLESS a genuine Author-Gate decision point is reached. FORBIDDEN: stopping after tool calls, asking permission for deterministic actions, presenting options when there is one correct path. See `author-gate-enforcement.md` for bypass conditions.

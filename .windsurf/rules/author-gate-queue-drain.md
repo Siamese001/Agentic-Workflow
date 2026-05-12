@@ -45,14 +45,4 @@ Queue empty · user says stop/pause/wait · `AG_QUEUE_DRAIN_BYPASS=1`.
 
 ## Enforcement
 
-1. This rule (always-on).
-2. Helper `_author_gate_queue.py` (pure SSOT).
-3. Pre-hook `pre_user_prompt_ag_queue_surface.py` (emits `AG_QUEUE_PENDING:` lines).
-4. Post-hook `post_cascade_ag_queue_drain_audit.py` (violation logging).
-5. Post-hook `post_cascade_ag_queue_seed_capture.py` (marker → queue).
-6. Pre-commit `check_ag_queue_seed_markers.py` (prose↔marker parity, T7t).
-7. Weekly `check_ag_queue_drain_freshness.py` (drift ≥3/7d → fail).
-
-## References
-
-§6, §24, §30, §35. Siblings: `author-gate-enforcement.md`, `deferred-scope-capture.md`, `ssot-folder-enforcement.md`.
+This rule + `_author_gate_queue.py` (SSOT helper) + `pre_user_prompt_ag_queue_surface.py` (emits `AG_QUEUE_PENDING:`) + `post_cascade_ag_queue_drain_audit.py` (violations) + `post_cascade_ag_queue_seed_capture.py` (marker → queue) + `check_ag_queue_seed_markers.py` (T7t pre-commit) + `check_ag_queue_drain_freshness.py` (weekly drift). §6, §24, §30, §35.

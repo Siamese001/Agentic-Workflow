@@ -5,9 +5,9 @@ description: Author-Gate enforcement — pipeline steps, four-requirement contra
 
 # Author-Gate Enforcement — Invariant-Only Stub
 
-> **Terminology**: This rule governs **Author-Gate Decisions** (developer-loop / harness-side, per ADR-023). It is NOT runtime HITL (v30 step [5] ESCALATE in `agentic_core/L5_safety/`). Historical markers (`HITL_PACKET:`) retain their legacy names but refer to Author-Gate events.
+> **Terminology**: Governs **Author-Gate Decisions** (developer-loop / harness-side, per ADR-023). NOT runtime HITL (v30 step [5] in `agentic_core/L5_safety/`). Historical `HITL_PACKET:` markers retain legacy names.
 
-> **Canonical SSOT for packet shape**: `.windsurf/schemas/author_gate_packet.schema.json` (plan `author-gate-ssot-consolidation-b7c3e1`). All field names, types, enums, and the `routing.rule_applied` star-count contract live there. This rule defines *when to fire* and *score discipline*; field-level shape questions defer to the schema.
+> **Packet shape SSOT**: `.windsurf/schemas/author_gate_packet.schema.json`. This rule defines *when to fire* and *score discipline*; field-level shape defers to the schema.
 
 ## The Pipeline (constitutional invariant — short form)
 
@@ -30,25 +30,13 @@ When facing an author-gate decision point:
 8. **Wait** for explicit user selection
 9. **Execute** chosen option; emit `DECISION_CAPTURED:` marker (refactor-class only) as **first plain-text line** of the response
 
-## Canonical-emitter invariant (added 2026-05-03)
+## Canonical-emitter invariant
 
-> ⛔ `AUTHOR_GATE_PACKET:` blocks MUST be produced by the canonical emitter at
-> `.windsurf/skills/author-gate-packet-builder/emit_packet.py`. Hand-crafting
-> the packet from memory of the schema is FORBIDDEN — the emitter is the
-> SSOT for AG-10 shape (`decision_id`, `policy_snapshot`, `context_fingerprint.fp`,
-> `routing.{rule_applied,surface_threshold,top_score}`, `precedent.verdict`,
-> `reason_code_palette`, per-candidate `signals`/`signal_weights`/`raw_score`).
+> ⛔ `AUTHOR_GATE_PACKET:` MUST be produced by `.windsurf/skills/author-gate-packet-builder/emit_packet.py`. Hand-crafting is FORBIDDEN — the emitter is the SSOT for AG-10 shape. Hand-crafted packets omit fields that `post_cascade_author_gate_capture.py` keys on, causing ledger misses and stale-ledger CI violations (§30).
 
-**Why**: hand-crafted packets typically omit the canonical fields the capture
-hook `post_cascade_author_gate_capture.py` keys on, so the row never lands in
-`.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`,
-calibration/weekly-report misses the decision, and CI gate
-`check_decision_ledger_sqlite_freshness.py` flags the turn as a stale-ledger
-violation (constitutional §30).
+**Required pipeline**: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question` → `DECISION_CAPTURED:` marker.
 
-**Required pipeline**: Use `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question` → `DECISION_CAPTURED:` marker. See skill docs for detailed procedure.
-
-**Enforcement**: Post-cascade hooks validate schema (`post_cascade_author_gate_schema_audit.py`) and UI (`post_cascade_author_gate_ui_audit.py`). **Bypass**: `AUTHOR_GATE_SCHEMA_BYPASS=1`.
+**Enforcement**: `post_cascade_author_gate_schema_audit.py`, `post_cascade_author_gate_ui_audit.py`. **Bypass**: `AUTHOR_GATE_SCHEMA_BYPASS=1`.
 
 ## Marker grammar (refactor-class only)
 
@@ -66,24 +54,60 @@ Execute continuously WITHOUT stopping UNLESS a genuine Author-Gate decision poin
 
 Typos/whitespace/formatting · single correct solution (syntax/import error) · explicit unambiguous user directive · emergency rollback · auto-fixable lint.
 
-## Silent-marker invariant (added 2026-04-27)
+## Silent-marker invariant
 
-Every refactor-class decision MUST emit a `DECISION_CAPTURED:` marker — even when no options surfaced via `ask_user_question`. The seven trigger types are the gatekeeper: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`.
+Every refactor-class decision MUST emit a `DECISION_CAPTURED:` marker — even when no options surfaced via `ask_user_question`. The seven trigger types: `architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`.
+
+## Anti-Pattern Author-Gate Extension
+
+Anti-patterns detected by the ADG burndown gate require the same Author-Gate pipeline with anti-pattern-specific extensions:
+
+### Scope
+
+| Pattern | Guardian Comment |
+|---------|------------------|
+| `magic_configuration` | `# guardian: allow-magic-configuration` |
+| `silent_swallower` | `# guardian: allow-silent-swallower` |
+| `global_mutation` | `# guardian: allow-global-mutation` |
+| `direct_prompt_compilation` | `# guardian: allow-direct-prompt-compilation` |
+| `config_with_logic` | `# guardian: allow-config-with-logic` |
+| `path_fragility` | `# guardian: allow-path-fragility` |
+
+**Format**: Hyphens only, module-level placement.
+
+### Anti-Pattern Approval Protocol
+
+When ADG burndown gate (`T3a`) detects new violations:
+
+```python
+ask_user_question(
+    question=f"ADG detected {count} new anti-pattern violations. Select approach?",
+    options=[
+        {"label": "Approve All", "description": "Accept all violations with guardian comments. Pros: Unblocks work. Cons: Adds debt. ⭐ RECOMMENDED if unavoidable and documented."},
+        {"label": "Reject All", "description": "Revert all changes. Pros: Zero debt. Cons: Work blocked. ⭐ RECOMMENDED if alternatives exist."},
+        {"label": "Review Details", "description": "Show breakdown before deciding. Pros: Informed. Cons: Slower. ⭐ RECOMMENDED for first-time violations."}
+    ]
+)
+```
+
+**Commit prefix**: `Author-Gate-APPROVED: <count> anti-pattern violations`
+
+### Integration
+
+- `ops_scripts/ci/_adg_burndown_gate.py` — Violation detection
+- `post_cascade_author_gate_audit.py` — Approval pipeline
+- `.pre-commit-config.yaml` — T3a ratchet enforcement
+
+---
 
 ## Where detail lives
 
-- **AG-10 packet shape**: `author-gate-packet-builder` skill
-- **Trigger doctrine**: `author-gate-decision-points.md` rule  
-- **SVP calibration**: `author-gate-svp-calibration.md` rule
-- **Precedent lookup**: `refactor-decision-memory` skill
-- **Hooks**: `post_cascade_author_gate_*` scripts, `ledger_staleness_check.py`
-- **Ledger**: `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`
-- **Queue bypass**: `AUTHOR_GATE_STALE_BYPASS=1`
+AG-10 shape: `author-gate-packet-builder` skill. Triggers: `author-gate-decision-points.md`. SVP calibration: `author-gate-svp-calibration.md`. Precedent: `refactor-decision-memory` skill. Ledger: `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`. Bypass: `AUTHOR_GATE_STALE_BYPASS=1`.
 
 ## Calibration-driven triggers
 
-Empirical Wilson CI evidence in `docs/reports/calibration/<YYYY-Www>.md` MAY require an Author-Gate when: a band has `n ≥ 20` AND CI miss > 0.05 from nominal range, OR ≥2 bands in same ledger are mis-calibrated. Action: `decision_type=architecture_choice`. Smaller deltas auto-tune silently.
+Wilson CI evidence in `docs/reports/calibration/<YYYY-Www>.md` MAY require an Author-Gate when a band has `n ≥ 20` AND CI miss > 0.05, OR ≥2 bands mis-calibrated. Action: `decision_type=architecture_choice`. Smaller deltas auto-tune silently.
 
 ## Constitutional cross-reference
 
-§6 (Author-Gate for ambiguous decisions). §30 (Author-Gate capture health mandatory). Sibling `.windsurf/rules/anti-pattern-author-gate.md` for the anti-pattern subcase. ADR-023 separates this from runtime HITL.
+§6, §30. ADR-023 separates from runtime HITL.

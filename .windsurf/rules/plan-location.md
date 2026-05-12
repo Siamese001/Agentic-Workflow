@@ -37,56 +37,21 @@ Before writing any execution plan:
 
 1. Read template: `.windsurf/templates/execution-plan-template.md`
 2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
-3. Token estimates are **self-reported by Cascade** based on scope (files touched, lines changed, complexity). They are sizing heuristics only, not budget gates — the 1M context window (Opus 4.7+) makes historical token-estimation tooling obsolete (see 2026-04-24 decision). Use your own judgment; mark uncertain estimates with `~`.
+3. Token estimates are self-reported sizing heuristics only (not budget gates). Mark uncertain estimates with `~`.
 4. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
-5. Include a **`## Definition of Done`** section with at least 5 DoD rows (DoD-1..DoD-N) and a Verification-vs-Deferral table. Every plan touching an executable surface MUST have a smoke-run DoD row of the form `python -m <module> [args]` exits 0 + produces a recognizable artifact. RCA-only / doc-only / observational plans MAY set `dod_exempt: true` in frontmatter to skip this requirement — prose hand-waving is not an exemption. Enforced by CI gate `ops_scripts/ci/check_plan_definition_of_done.py` (PLAN-DOD).
+5. Include a **`## Definition of Done`** section with at least 5 DoD rows + Verification-vs-Deferral table. Plans touching an executable surface MUST have a smoke-run DoD row (`python -m <module> [args]` exits 0). Use `dod_exempt: true` frontmatter for RCA/doc/observational plans. Enforced by CI gate `check_plan_definition_of_done.py` (PLAN-DOD).
 
-A plan missing the wave summary table **or** the phase-level summary table **or** the `## Definition of Done` section (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
+A plan missing the wave summary table, phase-level summary table, or `## Definition of Done` (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
 
-> ⛔ **Failure precedent**: `apps-rg-declarative-ingress-only-spinal-governance-c8b3e1` was marked W9 COMPLETE while `python -m apps_rg` raised ImportError on first import. A DoD smoke-run row would have made the regression auto-falsifiable. The DoD requirement (added 2026-05-09 by plan `apps-rg-runtime-wiring-completion-d4e8a1` W6) closes that failure mode.
+## Notion Status Discipline
 
-> **History**: The `tools/utils/planning/token_estimator.py` (`ContextWindowEstimator`) module was retired 2026-04-24 and archived to `archives/tools_planning_20260424_obsolete/`. It served the 200k-window era; the 1M-window era makes pre-flight budget enforcement unnecessary friction. Plans still size phases for scope clarity, not for budget compliance.
+All new plans MUST be created in Notion with `Status="Not Started"`. Only exception: retrospective plans use `force_status="Completed"` in `create_plan_in_notion()`.
 
-## Notion Status Discipline (added 2026-05-11)
+**Canonical path**: `from tools.notion.plan_creation_helper import create_plan_in_notion` — helper enforces correct status, validates slug, populates required fields.
 
-All new plans registered in Notion Plans DB **MUST** be created with Status="Not Started".
+Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py` (hook), `post_cascade_plan_creation_audit.py` (audit), NP14 CI gate.
 
-**The Invariant**: A plan's initial status is NEVER "In Progress", "Waiting", or any other state. Only "Not Started" (standard) or "Completed" (retrospective plans only) are valid at creation time.
-
-**Why**: The "In Progress" at creation bug (RCA: `docs/rca/RCA_PLAN_STATUS_IN_PROGRESS_WRONG-b5d3e1.md`) caused plan tracking confusion and broke automation that depends on status state machine transitions.
-
-**Canonical Creation Path** (use for all new plans):
-```python
-from tools.notion.plan_creation_helper import create_plan_in_notion
-
-result = create_plan_in_notion(
-    slug="my-plan-abc123",
-    summary="Plan summary",
-    ai_summary="- Target: ...",
-    # Status defaults to "Not Started" — never override to "In Progress"
-)
-```
-
-**Retrospective Plans Only** (documenting already-completed work):
-```python
-result = create_plan_in_notion(
-    slug="retrospective-xyz789",
-    summary="Retrospective documentation",
-    ai_summary="- Target: ...",
-    force_status="Completed",  # Only valid exception
-)
-```
-
-**Defense Layers** (plan `holistic-plan-status-discipline-d4e8a1`):
-| Layer | Component | Enforcement |
-|-------|-----------|-------------|
-| 1 | `plan_creation_helper.py` | Code-level enforcement, rejects wrong status |
-| 2 | `pre_notion_plan_creation_gate.py` | Pre-flight hook validation |
-| 3 | `post_cascade_plan_creation_audit.py` | Post-creation auto-correction |
-| 4 | NP14 CI gate | Weekly drift detection in CI |
-| 5 | Documentation | This section + template |
-
-**Bypass** (emergency only): Set `NOTION_PLAN_STATUS_INITIAL_BYPASS=1` — logs warning but allows.
+**Bypass**: `NOTION_PLAN_STATUS_INITIAL_BYPASS=1` — logs warning but allows.
 
 ## Overwrite Default
 

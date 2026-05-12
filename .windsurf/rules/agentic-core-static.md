@@ -40,15 +40,7 @@ Classify the change:
 
 ## Allowed Generic Core Changes
 
-- Generic contract-chain propagation
-- Generic profile resolver (any app profile)
-- Generic route policy interpreter
-- Generic GateMesh enforcement
-- Generic Exit profile enforcer
-- Generic UWG enforcement
-- Generic L6 completed-run profile consumer
-- Generic proof and receipt validators
-- Generic anti-bypass checks
+Generic contract-chain propagation, profile resolver, route policy interpreter, GateMesh/UWG/Exit enforcement, L6 completed-run consumer, proof/receipt validators, anti-bypass checks.
 
 ## Forbidden App-Specific Core Changes
 
@@ -69,20 +61,15 @@ Before modifying `agentic_core/`:
 3. If adding new app-specific logic: **BLOCK** — move to `apps_*/config/domain_contract/`
 4. Write/update receipt documenting: files changed, classification, tests, migration path
 
+## Core Addition Author-Gate
+
+> ⛔ Any `agentic_core/` edit adding mechanism, layer, contract, or capability MUST carry a `CoreAdditionAuthorGateReceipt` (verdict=PASS). Missing receipt → fail closed. Requires `plan_type: platform_core_change`.
+
+Core owns reusable mechanisms; apps own meaning. App literals, app-specific branches/defaults/routes/validation/graph/prompt/writeback/eval in `agentic_core` → **FAIL**. Future `apps_*` plug in via app-owned config only.
+
 ## Triage Categories for App References
 
-The 1,292 app-specific literal matches are classified as:
-
-| Category | Treatment | Example |
-|----------|-----------|---------|
-| `CORE_APP_SPECIFIC_LEAKAGE` | Migrate immediately | `if app_id == "apps_lic":` |
-| `TEMPORARY_THIN_ADAPTER` | Tolerated with receipt | `apps_lic_l0_binding.py` |
-| `GENERIC_READY` | Core stays | Generic resolver using profile ref |
-| `TEST_ALLOWED` | Allowed in test context | `tests/_apps_contract/test_*.py` |
-| `DOC_ALLOWED` | Allowed in documentation | `.md` files referencing apps |
-| `RECEIPT_ALLOWED` | Allowed in migration receipts | `artifacts/governance/` receipts |
-| `APP_CONFIG_ALLOWED` | Allowed in app configs | `apps_lic/config/domain_contract/` |
-| `MIGRATION_EXCEPTION` | Allowed temporarily | Explicit exemption with deadline |
+App-specific literal matches are classified as: `CORE_APP_SPECIFIC_LEAKAGE` (migrate immediately) · `TEMPORARY_THIN_ADAPTER` (tolerated with receipt) · `GENERIC_READY` (core stays) · `TEST_ALLOWED` · `DOC_ALLOWED` · `RECEIPT_ALLOWED` · `APP_CONFIG_ALLOWED` · `MIGRATION_EXCEPTION` (explicit exemption with deadline).
 
 ## Related
 

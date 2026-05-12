@@ -51,11 +51,4 @@ Triggers: different top-level dir, layer (L0→L4), app (apps_qna→apps_rg), ta
 
 ## Enforcement
 
-- **Text-search cap**: `post_cascade_grep_budget_audit.py`
-- **File-read cap**: `post_cascade_read_budget_audit.py`
-- **Telemetry**: `post_cascade_token_telemetry.py`
-- **Procedure**: `scope-containment` skill
-
-## References
-
-Constitutional §18 (no hidden scope expansion), §28 (ADG over grep), §31 (SSOT folder routing). Siblings: `next-step-capture.md`, `deferred-scope-capture.md`, `global_rules.md` (ADG-First Retrieval-Tool Decision Tree).
+`post_cascade_grep_budget_audit.py` (text-search cap) · `post_cascade_read_budget_audit.py` (file-read cap) · `post_cascade_token_telemetry.py` (telemetry). `scope-containment` skill for detailed procedure. Constitutional §18, §28, §31. Siblings: `next-step-capture.md`, `deferred-scope-capture.md`, `global_rules.md`.
