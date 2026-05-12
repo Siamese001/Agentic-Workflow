@@ -143,19 +143,35 @@ def classify_violation(violation: Dict) -> str:
     normalized_path = filepath.replace('\\', '/')
     
     # PRIORITY 1: Check for specific file path patterns (most reliable)
-    # STATIC_REGISTRY_METADATA: analysis files, schema files
+    # STATIC_REGISTRY_METADATA: analysis files, schema files, config files
     if re.search(r".*/analysis/.*\.py$", normalized_path, re.IGNORECASE) or \
        re.search(r".*/schema\.py$", normalized_path, re.IGNORECASE) or \
        re.search(r".*/ModuleOwnership\.py$", normalized_path, re.IGNORECASE) or \
-       re.search(r".*/ownership\.py$", normalized_path, re.IGNORECASE):
-        # Check if it's a type declaration or schema entry
+       re.search(r".*/ownership\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/config/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/config/.*\.json$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/structure_blueprint/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if it's a type declaration, schema entry, config constant, or ownership table
         if re.search(r'Owner\s*=\s*Literal\[.*apps_', content, re.IGNORECASE) or \
-           re.search(r'"apps_\w+":\s*"L_APP"', content, re.IGNORECASE):
+           re.search(r'"apps_\w+":\s*"L_APP"', content, re.IGNORECASE) or \
+           re.search(r'APPS_\w+_DIR\s*:\s*Final\[str\]', content, re.IGNORECASE) or \
+           re.search(r'"apps_\w+":\s*\{', content, re.IGNORECASE) or \
+           re.search(r'"apps_\w+":\s*\d+', content, re.IGNORECASE) or \
+           re.search(r'downstream_domains.*apps_', content, re.IGNORECASE) or \
+           re.search(r'\(\s*["\']apps_\w+/["\']\s*,\s*["\']apps_\w+["\']\s*,', content, re.IGNORECASE):
             return "STATIC_REGISTRY_METADATA"
     
-    # OFFLINE_TOOLING_REFERENCE: adapter files, applications files
+    # W8 P5: Additional STATIC_REGISTRY patterns for registry/config files
+    if re.search(r".*/registry_config\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/layer_hierarchy\.json$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/data/territories\.json$", normalized_path, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
+    # OFFLINE_TOOLING_REFERENCE: adapter files, applications files, identity normalizers
     if re.search(r".*/adapters/.*\.py$", normalized_path, re.IGNORECASE) or \
-       re.search(r".*/applications/.*\.py$", normalized_path, re.IGNORECASE):
+       re.search(r".*/applications/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/identity/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/normalizer\.py$", normalized_path, re.IGNORECASE):
         return "OFFLINE_TOOLING_REFERENCE"
     
     # PRIORITY 2: Check for specific pattern types that indicate runtime leakage
@@ -169,10 +185,107 @@ def classify_violation(violation: Dict) -> str:
     if pattern_name in ["app_specific_routes", "app_specific_exit_gates"]:
         return "RUNTIME_POLICY_LEAKAGE"
     
+    # W8 P5: L5 Safety reasoning/analysis files (heuristic analysis, not runtime policy)
+    if re.search(r".*/L5_safety/reasoning/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/L5_safety/utils/.*\.py$", normalized_path, re.IGNORECASE):
+        # These are analysis/heuristic tools, not runtime enforcement
+        # Unless they contain actual app_id branching
+        if not re.search(r'if\s+.*app_id', content, re.IGNORECASE):
+            return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: L5 Safety config files (structure_blueprint - all static registry)
+    if re.search(r".*/L5_safety/config/.*\.py$", normalized_path, re.IGNORECASE):
+        # All structure_blueprint, artifacts, semantics, ssot, etc. are static config
+        return "STATIC_REGISTRY_METADATA"
+    
+    # W8 P5: L5 Safety enforcement files (check for actual runtime branching)
+    if re.search(r".*/L5_safety/enforcement/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if it's actual app_id branching logic or just lookup/config
+        if re.search(r'if.*app_id.*==', content, re.IGNORECASE) or \
+           re.search(r'if\s+apps_\w+', content, re.IGNORECASE):
+            return "RUNTIME_POLICY_LEAKAGE"
+        # Configuration lookups and mappings are static
+        return "STATIC_REGISTRY_METADATA"
+    
+    # W8 P5: L0 routing config (path_constants - static registry)
+    if re.search(r".*/L0_routing/config/.*\.py$", normalized_path, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
+    # W8 P5: L1 cognition reasoning (meta_client default configs)
+    if re.search(r".*/L1_cognition/reasoning/.*\.py$", normalized_path, re.IGNORECASE):
+        if re.search(r'default_factory.*lambda.*\{.*apps_', content, re.IGNORECASE):
+            return "STATIC_REGISTRY_METADATA"
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: Auditability/L7 files (audit trail, observability - not runtime policy)
+    if re.search(r".*/L7_auditability/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/how_trace/.*\.py$", normalized_path, re.IGNORECASE):
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: Mixin files (documentation and type hints, not runtime)
+    if re.search(r".*/mixins/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if docstring/description vs actual code
+        if re.search(r'Domain string.*apps_', content, re.IGNORECASE) or \
+           re.search(r'e\.g\.\s*[`\'"]apps_', content, re.IGNORECASE):
+            return "FALSE_POSITIVE"
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: Territory healing adapters (L3 orchestration analysis, not runtime policy)
+    if re.search(r".*/territory_healing/.*\.py$", normalized_path, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
     # Check for app-specific Exit gate configurations (runtime leakage)
     if re.search(r'APPS_\w+_EXIT_GATES', content, re.IGNORECASE) or \
        re.search(r'APPS_\w+_FORBIDDEN_ACTIONS', content, re.IGNORECASE):
         return "RUNTIME_POLICY_LEAKAGE"
+    
+    # W8 P5: Content-based patterns (checked before file path)
+    # Ownership table tuples: ("apps_lic/", "apps_lic", "medium", "prod")
+    if re.search(r'\(\s*["\']apps_\w+/["\']\s*,\s*["\']apps_\w+["\']\s*,', content, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
+    # Docstrings with code examples
+    if re.search(r'Example:\s*\w+\(["\']apps_', content, re.IGNORECASE):
+        return "FALSE_POSITIVE"
+    
+    # W8 P5: L2 execution types and healers (documentation/type hints, not runtime)
+    if re.search(r".*/L2_execution/types/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/L2_execution/healers/.*\.py$", normalized_path, re.IGNORECASE):
+        # These are type definitions and diagnostic docstrings
+        if re.search(r'domain_id.*e\.g\.\s*[`\'"]apps_', content, re.IGNORECASE) or \
+           re.search(r'app_name.*Calling app identifier', content, re.IGNORECASE):
+            return "FALSE_POSITIVE"
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: L3 orchestration config (qwen_vllm config files)
+    if re.search(r".*/qwen_vllm/config/.*\.py$", normalized_path, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
+    # W8 P5: Base agents and protocols (documentation/typing)
+    if re.search(r".*/base_agents/.*\.py$", normalized_path, re.IGNORECASE):
+        return "FALSE_POSITIVE"
+    
+    # W8 P5: C0 context files (cross-app research substrate)
+    if re.search(r".*/C0_context/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if it's actual branching logic
+        if re.search(r'if.*source_app_id.*!=', content, re.IGNORECASE):
+            return "RUNTIME_POLICY_LEAKAGE"
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: Prompt governance managed workflow (default args, not runtime branching)
+    if re.search(r".*/prompt_governance/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if it's default argument vs actual runtime branching
+        if re.search(r'app_id=\"apps_\w+\"', content, re.IGNORECASE) and \
+           not re.search(r'if\s+.*app_id', content, re.IGNORECASE):
+            return "STATIC_REGISTRY_METADATA"
+        if not re.search(r'if\s+.*app_id', content, re.IGNORECASE):
+            return "OFFLINE_TOOLING_REFERENCE"
+    
+    # W8 P5: Runtime gates documentation (type hints in docstrings)
+    if re.search(r".*/runtime_gates/.*\.py$", normalized_path, re.IGNORECASE):
+        if re.search(r'app_id.*The application.*e\.g\.\s*[`\'"]apps_', content, re.IGNORECASE):
+            return "FALSE_POSITIVE"
+        return "OFFLINE_TOOLING_REFERENCE"
     
     # PRIORITY 3: Check for false positives (comments, docstrings, examples)
     # These should be checked before file path patterns

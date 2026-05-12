@@ -50,7 +50,15 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 BLOCKED | AGENTS.md references new taxonomy |
 | W8 | P5 | Classification reconciliation | ~600 | Taxonomy engine installed | 🔄 IN PROGRESS | UNKNOWN=0, RUNTIME=0 or moved to remediation |
 
-**Overall Plan Status**: **PARTIAL / BLOCKED ON CLASSIFICATION RECONCILIATION**
+**Overall Plan Status**: **P5 COMPLETE - REQUIRES W9 REMEDIATION FOR RUNTIME LEAKAGE**
+
+**Final State**:
+- UNKNOWN = 0 ✅ (all 154 reclassified)
+- RUNTIME_POLICY_LEAKAGE = 55 (true runtime leakage - requires W9 remediation)
+- STATIC_REGISTRY = 165 (properly classified)
+- OFFLINE_TOOLING = 24 (properly classified)
+- FALSE_POSITIVE = 11 (properly classified)
+- Strict mode exits 2 (correct - blocking on runtime leakage)
 
 **Total: ~900 tokens across 4 phases**
 
@@ -77,9 +85,11 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | P3.2 | Baseline scan run | Full repo scan | PP-6: Establish new baseline counts | ~100 | ✅ DONE |
 | P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 BLOCKED on P5 |
 | P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 BLOCKED on P5 |
-| P5.1 | UNKNOWN findings reconciliation | Scan output analysis | PP-7: 154 UNKNOWN need classification | ~300 | 🔄 IN PROGRESS |
-| P5.2 | RUNTIME_LEAKAGE reconciliation | Per-file runtime coupling verification | PP-8: 54 RUNTIME may be over-classified | ~200 | 🔄 IN PROGRESS |
-| P5.3 | Classification rule refinement | `core_leakage_scan.py` | PP-9: Improve heuristics based on P5.1-P5.2 | ~100 | 🔲 TODO |
+| P5.1 | UNKNOWN findings reconciliation | Scan output analysis | PP-7: 154 UNKNOWN need classification | ~300 | ✅ DONE |
+| P5.2 | RUNTIME_LEAKAGE reconciliation | Per-file runtime coupling verification | PP-8: 54 RUNTIME may be over-classified | ~200 | ✅ DONE |
+| P5.3 | Classification rule refinement | `core_leakage_scan.py` | PP-9: Improve heuristics based on P5.1-P5.2 | ~100 | ✅ DONE |
+| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | ✅ DONE |
+| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
