@@ -6,7 +6,16 @@ status: active
 source_app_config_ref: apps_lic/config/domain_contract/cache_profiles.yaml
 created_at: '2026-05-03'
 
-semantic_cache_enabled: false
+semantic_cache:
+  enabled: false
+  reason: personalized_outreach_not_cacheable
+  # W2N (chroma-graphrag-lic-rg-research-f4a2e9 no-core track):
+  # CONFIG_PREPARED_ONLY — R1B lookup NOT wired (package_driven_l0_binding.py deferred).
+  # apps_lic MUST NOT emit SEMANTIC_CACHE_HIT under this no-core plan.
+  # apps_lic MAY still use ChromaDB for C0 evidence retrieval (separate path).
+  live_wiring_deferred: true
+  wiring_gate: W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED
+
 ttl_seconds: 0
 cache_scope: user
 grounded_only: true
@@ -14,6 +23,3 @@ invalidation_triggers:
   - source_updated
   - config_version_bump
   - policy_hash_change
-notes: >
-  Outreach messages are highly personalized (profile-grounded). Semantic
-  caching is disabled to prevent same-message delivery to distinct contacts.

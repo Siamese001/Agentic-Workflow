@@ -1,0 +1,27 @@
+# Test app U0 adapter profile
+
+schema_version: "1.0"
+profile_type: "u0_adapter"
+app_id: "apps_test"
+
+adapter_config:
+  ingress_payload_type: "tests.fixture_test_payload.IngressPayload"
+  egress_transform_enabled: false
+  default_tenant_id: "apps_test"
+  sandbox_mode: false
+
+identity_mapping:
+  app_id_field: "app_id"
+  tenant_id_field: "tenant_id"
+  capability_field: "capability"
+  identity_quad_required: true
+
+cache_policies:
+  cache_enabled: true
+  cache_ttl_seconds: 3600
+  cache_key_fields: ["tenant_id", "capability"]
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED

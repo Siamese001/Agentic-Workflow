@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,12 +36,45 @@ from agentic_core.runtime.exit.hitl_policy_registry import (
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
 )
+from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
+from apps_rg.exit.apps_rg_exit_evidence_builder import (
+    FactualGroundingResult as _FactualGroundingResult,
+    MissingPerInputHashError as _MissingPerInputHashError,
+    build_g24_provenance as _build_g24_provenance,
+    compute_factual_grounding as _compute_factual_grounding,
+    compute_g22_rubric_scores as _compute_deterministic_dim_scores,
+    seal_resume_sections as _seal_resume_sections,
+)
 
 
 APPS_RG_EXIT_CERT_REF: str = "exit-apps-rg-resume-generation-w3p5"
 _ARTIFACT_BASE_DIR_RELPATH: str = "artifacts/apps_rg/runs"
+_EXIT_LOGGER: logging.Logger = logging.getLogger(__name__)
+
+
+def _safe_build_g24_provenance(
+    sealed: SealedL2Artifact,
+    prompt: CompiledPromptArtifact,
+    pkg: Any,
+) -> dict[str, Any]:
+    """Wrap build_g24_provenance with honest-fail semantics.
+
+    When pkg is absent or any required per-input hash is missing from
+    component_hash_map, returns {} so G24 evaluates UNKNOWN rather than
+    falsely PASS on a fallback aggregate hash.
+    """
+    if pkg is None:
+        return {}
+    try:
+        return _build_g24_provenance(sealed, prompt, pkg)
+    except _MissingPerInputHashError as exc:
+        _EXIT_LOGGER.warning(
+            "G24 provenance omitted — %s",
+            exc,
+        )
+        return {}
 
 
 def _resolve_repo_root() -> Path:
@@ -148,6 +182,7 @@ def _write_artifact(
 def exit_finalize_apps_rg(
     sealed: SealedL2Artifact,
     prompt: CompiledPromptArtifact,
+    fec: Optional[FinalEvidenceContract] = None,
 ) -> X3Disposition:
     """Finalize the apps_rg pipeline by writing the artifact and producing
     the canonical X3Disposition.
@@ -155,6 +190,10 @@ def exit_finalize_apps_rg(
     Args:
         sealed: L2 output carrying generated_content + proposed_state_diff.
         prompt: PA output (for provenance metadata in run_metadata.json).
+        fec: Optional FinalEvidenceContract from C0.  When present (grounded
+             runs), factual_grounding is computed and added to g22_rubric_scores
+             evidence for G22.  When None (generate_scratch), factual_grounding
+             remains absent and G22 stays UNKNOWN on that dimension.
 
     Returns:
         X3Disposition with exit_status='success' and output_artifact_path
@@ -265,9 +304,279 @@ def exit_finalize_apps_rg(
     except Exception:  # guardian: allow-broad-exception -- C0 chunk writeback is best-effort; ChromaDB may be absent
         pass
 
+    # ── Exit gate evaluation ──────────────────────────────────────────────────
+    # Two-pass approach for G28 post-mesh audit:
+    #   Pass 1 — evaluate G21/G22/G23/G24/G26 + first-pass G28 with
+    #             sealed_workflow_package_ref already known.
+    #   Pass 2 — evaluate G28 again with gate_mesh_result_ref and
+    #             decisive_reason from Pass-1 receipt (Option 1).
+    # Fail-soft: harness evaluation failure must never block artifact delivery.
+    _gate_receipt = None
+    _mesh_result = None
+    _exhaust = None
+    _g28_post_mesh_verdict = None
+    _gate_verdict_refs: tuple[str, ...] = ()
+    _outcome_authorized: bool = False
+    _hitl_required: bool = False
+    _exit_status_from_harness: str = "blocked"
+
+    try:
+        # Parse generated content for G22 dim scoring (None if unparseable).
+        _parsed: dict[str, Any] | None = None
+        try:
+            _parsed = json.loads(sealed.generated_content) if sealed.generated_content else None
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        # Seal L2 resume sections into canonical SealedSectionArtifact objects.
+        # seal_resume_sections maps L2 flat keys → canonical section IDs;
+        # header_block is NOT synthesised from target_* fields.
+        _sealed_sections = _seal_resume_sections(_parsed, sealed.run_id)
+        _merged_content: str = sealed.generated_content or ""
+
+        # Build SealedWorkflowPackage with real sections and merged content.
+        # Import lazily to avoid circular-import risk.
+        try:
+            from agentic_core.runtime.contracts.sealed_workflow_types import (  # noqa: PLC0415
+                SealedWorkflowPackage,
+            )
+            _pkg = SealedWorkflowPackage(
+                package_id=f"pkg::apps_rg::{sealed.run_id}",
+                run_id=sealed.run_id,
+                trace_root=sealed.trace_id,
+                route_contract_ref="rcr::apps_rg::resume_generation::v1",
+                workflow_ref="wfm::apps_rg::resume_generation::v1",
+                workflow_manifest_ref="wfm::apps_rg::resume_generation::v1",
+                sealed_sections=_sealed_sections,
+                section_count=len(_sealed_sections),
+                merged_content=_merged_content,
+                merged_content_digest=sealed.compilation_hash,
+                merged_payload_digest=prompt.compilation_hash,
+                replay_manifest=sealed.compilation_hash,
+            )
+        except Exception:  # guardian: allow-broad-exception -- pkg construction is best-effort
+            _pkg = None  # type: ignore[assignment]
+
+        # Pass 1: supply sealed_workflow_package_ref (available now).
+        # gate_mesh_result_ref and decisive_reason are not yet known — G28
+        # will return UNKNOWN on this pass; corrected by post-mesh Pass 2.
+        # Merge deterministic dim scores with factual_grounding when FEC is available.
+        _dim_scores = _compute_deterministic_dim_scores(_parsed, sealed)
+        _fg_result: _FactualGroundingResult | None = None
+        if fec is not None:
+            _fg_result = _compute_factual_grounding(_parsed, fec)
+            if _fg_result is not None:
+                _dim_scores["factual_grounding"] = _fg_result.score
+                # Recompute overall_pass_threshold with factual_grounding included.
+                _all_dims = [v for k, v in _dim_scores.items()
+                             if k != "overall_pass_threshold" and isinstance(v, float)]
+                if _all_dims:
+                    _dim_scores["overall_pass_threshold"] = round(
+                        len(_all_dims) / sum(1.0 / max(d, 1e-9) for d in _all_dims), 4
+                    )
+
+        evidence: dict[str, Any] = {
+            "g22_rubric_scores": _dim_scores,
+            "g24_provenance": _safe_build_g24_provenance(sealed, prompt, _pkg),
+            "g28": {
+                "output_artifact_path": str(artifact_path),
+                "sealed_compilation_hash": sealed.compilation_hash,
+                "audit_refs": {
+                    "sealed_workflow_package_ref": _pkg.package_id if _pkg else "",
+                },
+            },
+        }
+
+        _harness = build_apps_rg_exit_harness(repo_root=repo_root)
+        _gate_receipt, _mesh_result, _exhaust = _harness.evaluate(
+            _pkg,
+            evidence=evidence,
+            request_id=sealed.request_id,
+            run_id=sealed.run_id,
+            trace_root=sealed.trace_id,
+        )
+
+        # ── Persist Pass-1 mesh result + optional exhaust (NOT the receipt yet) ──
+        # 07_gate_receipt.json is written AFTER Pass-2 so it contains both
+        # g28_initial_verdict and g28_post_mesh_verdict (Patch B).
+        _run_dir = artifact_path.parent
+        try:
+            _run_dir.mkdir(parents=True, exist_ok=True)
+            (_run_dir / "07_gate_mesh_result.json").write_text(
+                _mesh_result.as_json(), encoding="utf-8"
+            )
+            if _exhaust is not None:
+                try:
+                    (_run_dir / "07_runtime_exhaust.json").write_text(
+                        _exhaust.as_json(), encoding="utf-8"
+                    )
+                except Exception:  # guardian: allow-broad-exception -- exhaust serialization is optional
+                    pass
+        except Exception:  # guardian: allow-broad-exception -- proof artifact write is fail-soft
+            pass
+
+        # ── Persist G22 factual_grounding diagnostics artifact (Patch A) ─────
+        # Written independently of gate verdict — diagnostics never change pass/fail.
+        if _fg_result is not None:
+            try:
+                _fg_diag_payload: dict[str, Any] = {
+                    "schema_version": "1.0",
+                    "gate_id": "G22",
+                    "dimension": "factual_grounding",
+                    "run_id": sealed.run_id,
+                    "score": _fg_result.score,
+                    "supported_token_samples": _fg_result.supported_token_samples,
+                    "unsupported_token_samples": _fg_result.unsupported_token_samples,
+                    "source_evidence_refs": _fg_result.source_evidence_refs,
+                    "decisive_reason": _fg_result.decisive_reason,
+                }
+                (_run_dir / "07_g22_factual_grounding_diagnostics.json").write_text(
+                    json.dumps(_fg_diag_payload, indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+            except Exception:  # guardian: allow-broad-exception -- diagnostics write is fail-soft
+                pass
+
+        # ── Pass 2: post-mesh G28 audit with real gate_mesh_result_ref ───────
+        # Re-evaluate G28 only, using the receipt fields now known from Pass 1.
+        _g28_initial_verdict_dict: dict[str, Any] | None = None
+        try:
+            from agentic_core.runtime.gates.gate_evaluators import (  # noqa: PLC0415
+                evaluate_g28,
+            )
+            # Capture Pass-1 G28 verdict for dual-verdict receipt.
+            _pass1_g28 = next(
+                (v for v in _mesh_result.verdicts if v.gate_id == "G28"), None
+            )
+            if _pass1_g28 is not None:
+                try:
+                    _g28_initial_verdict_dict = json.loads(_pass1_g28.as_json())
+                except Exception:  # guardian: allow-broad-exception -- serialization is optional
+                    pass
+
+            _g28_gate_def = _harness._profile.gate_definitions.get("G28", {})  # noqa: SLF001
+            _g28_post_mesh_evidence: dict[str, Any] = {
+                "g28": {
+                    "output_artifact_path": str(artifact_path),
+                    "sealed_compilation_hash": sealed.compilation_hash,
+                    "audit_refs": {
+                        "sealed_workflow_package_ref": _pkg.package_id if _pkg else "",
+                        "gate_mesh_result_ref": _gate_receipt.gate_mesh_result_ref,
+                        "decisive_reason": _gate_receipt.decisive_reason,
+                    },
+                },
+            }
+            _g28_post_mesh_verdict = evaluate_g28(
+                "G28",
+                _g28_gate_def,
+                _pkg,
+                _g28_post_mesh_evidence,
+                request_id=sealed.request_id,
+                run_id=sealed.run_id,
+                trace_root=sealed.trace_id,
+            )
+            try:
+                (_run_dir / "07_g28_post_mesh_verdict.json").write_text(
+                    _g28_post_mesh_verdict.as_json(), encoding="utf-8"
+                )
+            except Exception:  # guardian: allow-broad-exception -- verdict write is fail-soft
+                pass
+        except Exception:  # guardian: allow-broad-exception -- post-mesh G28 evaluation is fail-soft
+            _g28_post_mesh_verdict = None
+
+        # ── Persist 07_gate_receipt.json AFTER Pass-2 (Patch B) ──────────────
+        # Includes both g28_initial_verdict and g28_post_mesh_verdict so the
+        # receipt clearly shows the two-pass audit chain.  The in-memory
+        # _gate_receipt object is unchanged; only the on-disk JSON is extended.
+        try:
+            _receipt_dict: dict[str, Any] = json.loads(_gate_receipt.as_json())
+            # Attach dual G28 verdict fields under app-owned diagnostics key.
+            _receipt_dict["g28_audit_chain"] = {
+                "g28_initial_verdict": _g28_initial_verdict_dict,
+                "g28_post_mesh_verdict": (
+                    json.loads(_g28_post_mesh_verdict.as_json())
+                    if _g28_post_mesh_verdict is not None
+                    else None
+                ),
+                "factual_grounding_diagnostics_ref": (
+                    "07_g22_factual_grounding_diagnostics.json"
+                    if _fg_result is not None
+                    else None
+                ),
+            }
+            (_run_dir / "07_gate_receipt.json").write_text(
+                json.dumps(_receipt_dict, indent=2, ensure_ascii=False),
+                encoding="utf-8",
+            )
+        except Exception:  # guardian: allow-broad-exception -- receipt write is fail-soft
+            # Fallback: write the plain receipt without the dual-verdict extension.
+            try:
+                (_run_dir / "07_gate_receipt.json").write_text(
+                    _gate_receipt.as_json(), encoding="utf-8"
+                )
+            except Exception:  # guardian: allow-broad-exception -- fallback receipt write is fail-soft
+                pass
+
+        # ── Build gate_verdict_refs from Pass-1 mesh + post-mesh G28 ─────────
+        _verdict_map: dict[str, Any] = {
+            v.gate_id: v for v in _mesh_result.verdicts
+        }
+        # Substitute post-mesh G28 verdict if it improved on UNKNOWN
+        if _g28_post_mesh_verdict is not None:
+            _verdict_map["G28"] = _g28_post_mesh_verdict
+
+        _gate_verdict_refs = tuple(
+            f"{v.gate_id}::{v.result}::{v.deterministic_digest}"
+            for v in _verdict_map.values()
+        )
+
+        # ── Determine final authorization from harness + post-mesh G28 ───────
+        # Pass-1 receipt x3_code reflects G21/G22/G23/G24/G26 plus first-pass G28.
+        # Post-mesh G28 may upgrade or block.
+        from agentic_core.runtime.exit.exit_disposition import (  # noqa: PLC0415
+            X3A_DENY_REROUTE,
+            X3B_ESCALATE_HITL,
+            X3D_ALLOW_FINISH,
+        )
+        _pass1_allows = _gate_receipt.x3_code == X3D_ALLOW_FINISH
+        _pass1_blocked_only_by_g28 = (
+            not _gate_receipt.allows_finish
+            and set(_gate_receipt.decisive_blocker_gate_ids) == {"G28"}
+        )
+        _g28_post_ok = (
+            _g28_post_mesh_verdict is not None
+            and _g28_post_mesh_verdict.result in ("PASS", "WARN")
+        )
+
+        if _pass1_allows:
+            # All gates including first-pass G28 passed — final authorization.
+            _outcome_authorized = True
+            _hitl_required = False
+            _exit_status_from_harness = "success"
+        elif _pass1_blocked_only_by_g28 and _g28_post_ok:
+            # Pass-1 was blocked solely because G28 lacked post-mesh refs.
+            # Post-mesh G28 now passes/warns — authorize.
+            _outcome_authorized = True
+            _hitl_required = False
+            _exit_status_from_harness = "success"
+        else:
+            # Hard fail or UNKNOWN in G21/G22/G23/G24/G26, or G28 post-mesh
+            # still fails/unknown — do not authorize.
+            _outcome_authorized = False
+            _hitl_required = _gate_receipt.x3_code == X3B_ESCALATE_HITL
+            _exit_status_from_harness = (
+                "blocked_hitl" if _hitl_required else "blocked_denied"
+            )
+
+    except Exception:  # guardian: allow-broad-exception -- gate evaluation is advisory; must not block exit artifact delivery
+        # Fall back to conservative values — do not authorize when harness fails.
+        _outcome_authorized = False
+        _gate_verdict_refs = ()
+        _exit_status_from_harness = "blocked"
+
     # Final output for chat surface — small summary, not the full resume body.
     final_output = {
-        "stage": "EXIT_SUCCESS",
+        "stage": "EXIT_SUCCESS" if _outcome_authorized else "EXIT_BLOCKED",
         "execution_status": sealed.execution_status,
         "generated_content_len": len(sealed.generated_content),
         "artifact_relpath": str(artifact_path.relative_to(repo_root)).replace("\\", "/"),
@@ -286,15 +595,16 @@ def exit_finalize_apps_rg(
         app_id=sealed.app_id,
         trace_id=sealed.trace_id,
         tenant_id=sealed.tenant_id,
-        exit_status="success",
-        outcome_authorized=True,
+        exit_status=_exit_status_from_harness,
+        outcome_authorized=_outcome_authorized,
         final_output=final_output,
         output_artifact_path=str(artifact_path),
         eval_score=None,
         eval_threshold_met=False,  # eval not run in W3.P5 path
-        hitl_required=False,
+        hitl_required=_hitl_required,
         exit_timestamp=timestamp_iso,
         sealed_l2_digest=sealed.compilation_hash,
+        gate_verdict_refs=_gate_verdict_refs,
         l5_certification_ref=APPS_RG_EXIT_CERT_REF,
     )
 
@@ -326,6 +636,8 @@ def build_apps_rg_exit_harness(
     )
     return ExitGateHarness(
         gate_profile=profile,
+        app_id="apps_rg",
+        task_class="resume_generation",
     )
 
 

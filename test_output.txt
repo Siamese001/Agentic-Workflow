@@ -1,0 +1,940 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 27 items
+
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestResolverInitialization::test_resolver_discovers_paths_via_convention FAILED [  3%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestResolverInitialization::test_resolver_accepts_explicit_paths PASSED [  7%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestResolverInitialization::test_schema_registry_contains_all_w9_types PASSED [ 11%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestProfileResolutionSuccess::test_resolve_valid_profile PASSED [ 14%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestProfileResolutionSuccess::test_resolve_uses_cache PASSED [ 18%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestProfileResolutionSuccess::test_clear_cache PASSED [ 22%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedMissingProfile::test_missing_app_directory_raises_unknown_app PASSED [ 25%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedMissingProfile::test_missing_profile_file_raises_missing_profile PASSED [ 29%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedMissingProfile::test_missing_profile_type_in_registry_raises_resolution_error PASSED [ 33%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedInvalidProfile::test_invalid_yaml_raises_invalid_profile PASSED [ 37%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedInvalidProfile::test_empty_profile_raises_invalid_profile PASSED [ 40%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedInvalidProfile::test_missing_required_field_raises_invalid_profile PASSED [ 44%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedInvalidProfile::test_wrong_field_type_raises_invalid_profile PASSED [ 48%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedUnknownApp::test_nonexistent_app_raises_unknown_app PASSED [ 51%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestFailClosedUnknownApp::test_list_available_profiles_raises_for_unknown_app PASSED [ 55%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestNewAppRequiresProfileOnly::test_new_app_can_be_added_via_profile_only FAILED [ 59%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestNoAppLiteralsInCore::test_resolver_source_no_hardcoded_app_names FAILED [ 62%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestNoAppLiteralsInCore::test_resolver_init_no_app_literals PASSED [ 66%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestSchemaValidation::test_valid_profile_passes_validation PASSED [ 70%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestSchemaValidation::test_enum_validation_works PASSED [ 74%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestSchemaValidation::test_pattern_validation_works PASSED [ 77%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestConvenienceFunction::test_convenience_function_exists PASSED [ 81%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestTypedPayloadExtraction::test_typed_payload_contains_expected_fields PASSED [ 85%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestListAvailableProfiles::test_list_available_profiles_returns_existing PASSED [ 88%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestProfileKey::test_profile_key_creation PASSED [ 92%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestProfileKey::test_profile_key_requires_non_empty PASSED [ 96%]
+tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestExceptionHierarchy::test_exceptions_inherit_from_base PASSED [100%]
+
+================================== FAILURES ===================================
+___ TestResolverInitialization.test_resolver_discovers_paths_via_convention ___
+tests\unit\agentic_core\runtime\profiles\test_profile_resolver.py:45: in test_resolver_discovers_paths_via_convention
+    assert resolver._schema_root.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Git/Agentic-Workflow-FRESH/agentic_core/.windsurf/schemas').exists
+E    +      where WindowsPath('C:/Git/Agentic-Workflow-FRESH/agentic_core/.windsurf/schemas') = <agentic_core.runtime.profiles.profile_resolver.RuntimeProfileResolver object at 0x0000022785EE93D0>._schema_root
+__ TestNewAppRequiresProfileOnly.test_new_app_can_be_added_via_profile_only ___
+tests\unit\agentic_core\runtime\profiles\test_profile_resolver.py:519: in test_new_app_can_be_added_via_profile_only
+    assert result.typed_payload["config"]["custom"] == "value"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'config'
+_____ TestNoAppLiteralsInCore.test_resolver_source_no_hardcoded_app_names _____
+tests\unit\agentic_core\runtime\profiles\test_profile_resolver.py:550: in test_resolver_source_no_hardcoded_app_names
+    assert pattern not in source_code, (
+E   AssertionError: Forbidden app literal 'apps_rg' found in resolver source. Core must be app-agnostic.
+E   assert 'apps_rg' not in '"""\nRuntime Profile Resolver\n\nGeneric profile resolution for app-owned runtime configuration.\n\nThis module provides fail-closed profile resolution for runtime components.\nIt contains NO app-specific literals and branches only on generic profile_type,\nnever on app_id values.\n\nConstitutional Compliance:\n- No hardcoded app names (apps_rg, apps_lic, etc.)\n- No app-specific branching logic\n- Fail-closed on missing, invalid, or unknown profiles\n- Core generic infrastructure only\n"""\n\nfrom __future__ import annotations\n\nimport json\nimport os\nfrom dataclasses import dataclass, field\nfrom pathlib import Path\nfrom typing import Any, Protocol, runtime_checkable\n\nimport yaml\n\n\nclass ProfileResolutionError(Exception):\n    """Base exception for profile resolution failures."""\n    pass\n\n\nclass UnknownAppError(ProfileResolutionError):\n    """Raised when requested app has no profile defined."""\n    pass\n\n\nclass InvalidProfileError(ProfileResolutionError):\n    """Raised when profile exists but fails schema validation."""\n    pass\n\n\nclass MissingProfileError(ProfileResolutionError):\n    """Raised when profile file is missing."""\n    pass\n\n\n@runtime_checkable\nclass ProfileValidator(Protocol):\n    """Protocol for profile validators."""\n    \n    def validate(self, profile_data: dict[str, Any], schema_path: Path) -> bool:\n        """Validate profile data against schema."""\n        ...\n\n\n@dataclass(frozen=True)\nclass ProfileKey:\n    """Composite key for profile lookup."""\n    app_id: str\n    profile_type: str\n    \n    def __post_init__(self) -> None:\n        if not self.app_id or not self.profile_type:\n            raise ValueError("app_id and profile_type are required")\n\n\n@dataclass\nclass ResolvedProfile:\n    """Result of successful profile resolution."""\n    key: ProfileKey\n    raw_data: dict[str, Any]\n    source_path: Path\n    schema_version: str\n    # App-specific typed payload extracted by caller\n    typed_payload: dict[str, Any] = field(default_factory=dict)\n\n\nclass RuntimeProfileResolver:\n    """\n    Generic profile resolver for runtime configuration.\n    \n    Design principles:\n    - App-agnostic: Never branches on specific app_id values\n    - Fail-closed: Raises typed exceptions on any resolution failure\n    - Schema-driven: Validates all profiles against declared schemas\n    - Path-convention: Locates profiles via convention, not hardcoded paths\n    \n    Profile path convention:\n        {profile_root}/{app_id}/{profile_type}.yaml\n        \n    Example:\n        ~/.config/agentic/profiles/apps_rg/u0_validation.yaml\n        \n    Usage:\n        resolver = RuntimeProfileResolver()\n        try:\n            profile = resolver.resolve("apps_rg", "u0_validation")\n            # Use profile.typed_payload for app-specific config\n        except UnknownAppError:\n            # Handle unknown app - fail closed\n            raise\n    """\n    \n    # Schema registry: profile_type -> schema file path (relative to schema_root)\n    SCHEMA_REGISTRY: dict[str, str] = {\n        "u0_validation": "u0_validation_profile.schema.yaml",\n        "u0_adapter": "u0_adapter_profile.schema.yaml",\n        "pipeline_defaults": "pipeline_defaults.schema.yaml",\n        "l6_learning": "l6_learning_profile.schema.yaml",\n        "l6_writeback": "l6_writeback_profile.schema.yaml",\n        "c0_substrate": "c0_substrate_profile.schema.yaml",\n        "u0_payload_defaults": "u0_payload_defaults.schema.yaml",\n    }\n    \n    def __init__(\n        self,\n        profile_root: Path | str | None = None,\n        schema_root: Path | str | None = None,\n        validator: ProfileValidator | None = None,\n        strict_mode: bool = True,\n    ) -> None:\n        """\n        Initialize resolver.\n        \n        Args:\n            profile_root: Root directory for profile storage.\n                         Default: {REPO_ROOT}/config/profiles/\n            schema_root: Root directory for schema files.\n                        Default: {REPO_ROOT}/.windsurf/schemas/\n            validator: Optional custom validator. If None, uses schema-aware validation.\n            strict_mode: If True (default), fail closed on any validation issue.\n        """\n        self._strict_mode = strict_mode\n        self._validator = validator\n        \n        # Determine roots via convention or environment\n        if profile_root is None:\n            profile_root = self._discover_profile_root()\n        if schema_root is None:\n            schema_root = self._discover_schema_root()\n            \n        self._profile_root = Path(profile_root)\n        self._schema_root = Path(schema_root)\n        \n        # Runtime cache (non-persistent, per-instance)\n        self._cache: dict[ProfileKey, ResolvedProfile] = {}\n    \n    def _discover_profile_root(self) -> Path:\n        """Discover profile root via convention."""\n        # Convention: profiles live in config/profiles/ relative to repo root\n        repo_root = self._discover_repo_root()\n        return repo_root / "config" / "profiles"\n    \n    def _discover_schema_root(self) -> Path:\n        """Discover schema root via convention."""\n        repo_root = self._discover_repo_root()\n        return repo_root / ".windsurf" / "schemas"\n    \n    def _discover_repo_root(self) -> Path:\n        """Discover repository root via marker file."""\n        # Walk up from current file looking for pyproject.toml or AGENTS.md\n        current = Path(__file__).resolve().parent\n        for parent in [current] + list(current.parents):\n            if (parent / "pyproject.toml").exists() or (parent / "AGENTS.md").exists():\n                return parent\n        # Fallback: assume we\'re in agentic_core/runtime/profiles/\n        return current.parent.parent.parent\n    \n    def resolve(self, app_id: str, profile_type: str) -> ResolvedProfile:\n        """\n        Resolve profile for given app and type.\n        \n        Args:\n            app_id: Application identifier (e.g., "apps_rg", "apps_lic")\n            profile_type: Type of profile to resolve (must be in SCHEMA_REGISTRY)\n            \n        Returns:\n            ResolvedProfile with validated configuration\n            \n        Raises:\n            UnknownAppError: If app profile directory doesn\'t exist\n            MissingProfileError: If profile file doesn\'t exist\n            InvalidProfileError: If profile fails schema validation\n            ProfileResolutionError: For other resolution failures\n        """\n        key = ProfileKey(app_id=app_id, profile_type=profile_type)\n        \n        # Check cache\n        if key in self._cache:\n            return self._cache[key]\n        \n        # Validate profile_type is known\n        if profile_type not in self.SCHEMA_REGISTRY:\n            raise ProfileResolutionError(\n                f"Unknown profile_type: {profile_type}. "\n                f"Known types: {list(self.SCHEMA_REGISTRY.keys())}"\n            )\n        \n        # Locate app profile directory\n        app_profile_dir = self._profile_root / app_id\n        if not app_profile_dir.exists():\n            raise UnknownAppError(\n                f"No profile directory for app: {app_id}. "\n                f"Expected: {app_profile_dir}"\n            )\n        \n        # Locate profile file\n        profile_path = app_profile_dir / f"{profile_type}.yaml"\n        if not profile_path.exists():\n            raise MissingProfileError(\n                f"Profile not found: {profile_path} "\n                f"for app={app_id}, type={profile_type}"\n            )\n        \n        # Load and validate\n        try:\n            with open(profile_path, "r", encoding="utf-8") as f:\n                raw_data = yaml.safe_load(f)\n        except yaml.YAMLError as e:\n            raise InvalidProfileError(\n                f"YAML parsing failed for {profile_path}: {e}"\n            ) from e\n        \n        if raw_data is None:\n            raise InvalidProfileError(f"Empty profile file: {profile_path}")\n        \n        # Schema validation\n        schema_path = self._schema_root / self.SCHEMA_REGISTRY[profile_type]\n        self._validate_profile(raw_data, schema_path, profile_path)\n        \n        # Extract version\n        schema_version = raw_data.get("schema_version", "unknown")\n        \n        # Build typed payload (app-agnostic extraction of common fields)\n        typed_payload = self._extract_typed_payload(raw_data, profile_type)\n        \n        # Construct result\n        result = ResolvedProfile(\n            key=key,\n            raw_data=raw_data,\n            source_path=profile_path,\n            schema_version=schema_version,\n            typed_payload=typed_payload,\n        )\n        \n        # Cache and return\n        self._cache[key] = result\n        return result\n    \n    def _validate_profile(\n        self, \n        profile_data: dict[str, Any], \n        schema_path: Path,\n        profile_path: Path\n    ) -> None:\n        """\n        Validate profile against its schema.\n        \n        Raises InvalidProfileError on validation failure.\n        """\n        if not schema_path.exists():\n            if self._strict_mode:\n                raise InvalidProfileError(\n                    f"Schema not found: {schema_path} for profile {profile_path}"\n                )\n            return  # Non-strict: skip validation if schema missing\n        \n        # Load schema\n        try:\n            with open(schema_path, "r", encoding="utf-8") as f:\n                schema = yaml.safe_load(f)\n        except Exception as e:\n            if self._strict_mode:\n                raise InvalidProfileError(\n                    f"Failed to load schema {schema_path}: {e}"\n                ) from e\n            return\n        \n        # Perform validation\n        validation_errors = self._validate_against_schema(profile_data, schema)\n        \n        if validation_errors:\n            raise InvalidProfileError(\n                f"Profile validation failed for {profile_path}: "\n                f"{\'; \'.join(validation_errors)}"\n            )\n    \n    def _validate_against_schema(\n        self, \n        data: dict[str, Any], \n        schema: dict[str, Any]\n    ) -> list[str]:\n        """\n        Validate data against schema.\n        \n        Returns list of validation error messages (empty if valid).\n        """\n        errors: list[str] = []\n        \n        # Check required fields\n        required_fields = schema.get("required_fields", [])\n        for field in required_fields:\n            if field not in data:\n                errors.append(f"Missing required field: {field}")\n        \n        # Check fields structure if defined\n        fields_spec = schema.get("fields", {})\n        for field_name, field_spec in fields_spec.items():\n            if field_name in data:\n                field_value = data[field_name]\n                field_type = field_spec.get("type")\n                \n                # Type checking\n                if field_type == "string" and not isinstance(field_value, str):\n                    errors.append(f"Field {field_name} must be string, got {type(field_value).__name__}")\n                elif field_type == "boolean" and not isinstance(field_value, bool):\n                    errors.append(f"Field {field_name} must be boolean, got {type(field_value).__name__}")\n                elif field_type == "integer" and not isinstance(field_value, int):\n                    errors.append(f"Field {field_name} must be integer, got {type(field_value).__name__}")\n                elif field_type == "array" and not isinstance(field_value, list):\n                    errors.append(f"Field {field_name} must be array, got {type(field_value).__name__}")\n                elif field_type == "object" and not isinstance(field_value, dict):\n                    errors.append(f"Field {field_name} must be object, got {type(field_value).__name__}")\n                \n                # Pattern checking for strings\n                pattern = field_spec.get("pattern")\n                if pattern and isinstance(field_value, str):\n                    import re\n                    if not re.match(pattern, field_value):\n                        errors.append(f"Field {field_name} value \'{field_value}\' doesn\'t match pattern {pattern}")\n                \n                # Enum checking\n                enum_values = field_spec.get("enum")\n                if enum_values and field_value not in enum_values:\n                    errors.append(f"Field {field_name} must be one of {enum_values}, got {field_value}")\n        \n        return errors\n    \n    def _extract_typed_payload(\n        self, \n        raw_data: dict[str, Any], \n        profile_type: str\n    ) -> dict[str, Any]:\n        """\n        Extract app-agnostic typed payload from raw profile data.\n        \n        This method is generic - it extracts common structure without\n        app-specific knowledge. Apps interpret their own profile fields.\n        """\n        # Generic extraction of common fields\n        payload: dict[str, Any] = {\n            "app_id": raw_data.get("app_id"),\n            "schema_version": raw_data.get("schema_version"),\n            "profile_type": profile_type,\n        }\n        \n        # Include validation behavior (critical for fail-closed)\n        validation = raw_data.get("validation_behavior", {})\n        payload["validation_behavior"] = validation\n        \n        # Include the app-specific config as opaque blob\n        # Core doesn\'t interpret this - generic components pass it through\n        config_keys = [\n            "validation_rules", "adapter_config", "pipeline_config",\n            "writeback_config", "learning_policy", "substrate_config",\n            "payload_defaults", "synthesis_config", "source_filtering",\n            "orchestration_config", "store_mapping", "identity_mapping",\n            "cache_policies", "namespace_defaults", "routing_hints",\n            "writeback_filter", "cross_app_behavior", "app_specific_handlers",\n        ]\n        \n        for key in config_keys:\n            if key in raw_data:\n                payload[key] = raw_data[key]\n        \n        return payload\n    \n    def list_available_profiles(self, app_id: str) -> list[str]:\n        """\n        List available profile types for an app.\n        \n        Args:\n            app_id: Application identifier\n            \n        Returns:\n            List of available profile type strings\n            \n        Raises:\n            UnknownAppError: If app profile directory doesn\'t exist\n        """\n        app_profile_dir = self._profile_root / app_id\n        if not app_profile_dir.exists():\n            raise UnknownAppError(f"No profile directory for app: {app_id}")\n        \n        available: list[str] = []\n        for profile_type in self.SCHEMA_REGISTRY.keys():\n            profile_path = app_profile_dir / f"{profile_type}.yaml"\n            if profile_path.exists():\n                available.append(profile_type)\n        \n        return available\n    \n    def clear_cache(self) -> None:\n        """Clear the resolution cache."""\n        self._cache.clear()\n    \n    def get_schema_path(self, profile_type: str) -> Path:\n        """Get schema path for a profile type."""\n        if profile_type not in self.SCHEMA_REGISTRY:\n            raise ProfileResolutionError(f"Unknown profile_type: {profile_type}")\n        return self._schema_root / self.SCHEMA_REGISTRY[profile_type]\n\n\ndef resolve_runtime_profile(app_id: str, profile_type: str) -> ResolvedProfile:\n    """\n    Convenience function for one-shot profile resolution.\n    \n    Uses default resolver configuration.\n    \n    Raises:\n        UnknownAppError: If app unknown\n        MissingProfileError: If profile missing\n        InvalidProfileError: If profile invalid\n    """\n    resolver = RuntimeProfileResolver()\n    return resolver.resolve(app_id, profile_type)\n'
+E     
+E     'apps_rg' is contained here:
+E       """
+E       Runtime Profile Resolver
+E       
+E       Generic profile resolution for app-owned runtime configuration.
+E       
+E       This module provides fail-closed profile resolution for runtime components.
+E       It contains NO app-specific literals and branches only on generic profile_type,
+E       never on app_id values.
+E       
+E       Constitutional Compliance:
+E       - No hardcoded app names (apps_rg, apps_lic, etc.)
+E     ?                           +++++++
+E       - No app-specific branching logic
+E       - Fail-closed on missing, invalid, or unknown profiles
+E       - Core generic infrastructure only
+E       """
+E       
+E       from __future__ import annotations
+E       
+E       import json
+E       import os
+E       from dataclasses import dataclass, field
+E       from pathlib import Path
+E       from typing import Any, Protocol, runtime_checkable
+E       
+E       import yaml
+E       
+E       
+E       class ProfileResolutionError(Exception):
+E           """Base exception for profile resolution failures."""
+E           pass
+E       
+E       
+E       class UnknownAppError(ProfileResolutionError):
+E           """Raised when requested app has no profile defined."""
+E           pass
+E       
+E       
+E       class InvalidProfileError(ProfileResolutionError):
+E           """Raised when profile exists but fails schema validation."""
+E           pass
+E       
+E       
+E       class MissingProfileError(ProfileResolutionError):
+E           """Raised when profile file is missing."""
+E           pass
+E       
+E       
+E       @runtime_checkable
+E       class ProfileValidator(Protocol):
+E           """Protocol for profile validators."""
+E           
+E           def validate(self, profile_data: dict[str, Any], schema_path: Path) -> bool:
+E               """Validate profile data against schema."""
+E               ...
+E       
+E       
+E       @dataclass(frozen=True)
+E       class ProfileKey:
+E           """Composite key for profile lookup."""
+E           app_id: str
+E           profile_type: str
+E           
+E           def __post_init__(self) -> None:
+E               if not self.app_id or not self.profile_type:
+E                   raise ValueError("app_id and profile_type are required")
+E       
+E       
+E       @dataclass
+E       class ResolvedProfile:
+E           """Result of successful profile resolution."""
+E           key: ProfileKey
+E           raw_data: dict[str, Any]
+E           source_path: Path
+E           schema_version: str
+E           # App-specific typed payload extracted by caller
+E           typed_payload: dict[str, Any] = field(default_factory=dict)
+E       
+E       
+E       class RuntimeProfileResolver:
+E           """
+E           Generic profile resolver for runtime configuration.
+E           
+E           Design principles:
+E           - App-agnostic: Never branches on specific app_id values
+E           - Fail-closed: Raises typed exceptions on any resolution failure
+E           - Schema-driven: Validates all profiles against declared schemas
+E           - Path-convention: Locates profiles via convention, not hardcoded paths
+E           
+E           Profile path convention:
+E               {profile_root}/{app_id}/{profile_type}.yaml
+E               
+E           Example:
+E               ~/.config/agentic/profiles/apps_rg/u0_validation.yaml
+E               
+E           Usage:
+E               resolver = RuntimeProfileResolver()
+E               try:
+E                   profile = resolver.resolve("apps_rg", "u0_validation")
+E                   # Use profile.typed_payload for app-specific config
+E               except UnknownAppError:
+E                   # Handle unknown app - fail closed
+E                   raise
+E           """
+E           
+E           # Schema registry: profile_type -> schema file path (relative to schema_root)
+E           SCHEMA_REGISTRY: dict[str, str] = {
+E               "u0_validation": "u0_validation_profile.schema.yaml",
+E               "u0_adapter": "u0_adapter_profile.schema.yaml",
+E               "pipeline_defaults": "pipeline_defaults.schema.yaml",
+E               "l6_learning": "l6_learning_profile.schema.yaml",
+E               "l6_writeback": "l6_writeback_profile.schema.yaml",
+E               "c0_substrate": "c0_substrate_profile.schema.yaml",
+E               "u0_payload_defaults": "u0_payload_defaults.schema.yaml",
+E           }
+E           
+E           def __init__(
+E               self,
+E               profile_root: Path | str | None = None,
+E               schema_root: Path | str | None = None,
+E               validator: ProfileValidator | None = None,
+E               strict_mode: bool = True,
+E           ) -> None:
+E               """
+E               Initialize resolver.
+E               
+E               Args:
+E                   profile_root: Root directory for profile storage.
+E                                Default: {REPO_ROOT}/config/profiles/
+E                   schema_root: Root directory for schema files.
+E                               Default: {REPO_ROOT}/.windsurf/schemas/
+E                   validator: Optional custom validator. If None, uses schema-aware validation.
+E                   strict_mode: If True (default), fail closed on any validation issue.
+E               """
+E               self._strict_mode = strict_mode
+E               self._validator = validator
+E               
+E               # Determine roots via convention or environment
+E               if profile_root is None:
+E                   profile_root = self._discover_profile_root()
+E               if schema_root is None:
+E                   schema_root = self._discover_schema_root()
+E                   
+E               self._profile_root = Path(profile_root)
+E               self._schema_root = Path(schema_root)
+E               
+E               # Runtime cache (non-persistent, per-instance)
+E               self._cache: dict[ProfileKey, ResolvedProfile] = {}
+E           
+E           def _discover_profile_root(self) -> Path:
+E               """Discover profile root via convention."""
+E               # Convention: profiles live in config/profiles/ relative to repo root
+E               repo_root = self._discover_repo_root()
+E               return repo_root / "config" / "profiles"
+E           
+E           def _discover_schema_root(self) -> Path:
+E               """Discover schema root via convention."""
+E               repo_root = self._discover_repo_root()
+E               return repo_root / ".windsurf" / "schemas"
+E           
+E           def _discover_repo_root(self) -> Path:
+E               """Discover repository root via marker file."""
+E               # Walk up from current file looking for pyproject.toml or AGENTS.md
+E               current = Path(__file__).resolve().parent
+E               for parent in [current] + list(current.parents):
+E                   if (parent / "pyproject.toml").exists() or (parent / "AGENTS.md").exists():
+E                       return parent
+E               # Fallback: assume we're in agentic_core/runtime/profiles/
+E               return current.parent.parent.parent
+E           
+E           def resolve(self, app_id: str, profile_type: str) -> ResolvedProfile:
+E               """
+E               Resolve profile for given app and type.
+E               
+E               Args:
+E                   app_id: Application identifier (e.g., "apps_rg", "apps_lic")
+E                   profile_type: Type of profile to resolve (must be in SCHEMA_REGISTRY)
+E                   
+E               Returns:
+E                   ResolvedProfile with validated configuration
+E                   
+E               Raises:
+E                   UnknownAppError: If app profile directory doesn't exist
+E                   MissingProfileError: If profile file doesn't exist
+E                   InvalidProfileError: If profile fails schema validation
+E                   ProfileResolutionError: For other resolution failures
+E               """
+E               key = ProfileKey(app_id=app_id, profile_type=profile_type)
+E               
+E               # Check cache
+E               if key in self._cache:
+E                   return self._cache[key]
+E               
+E               # Validate profile_type is known
+E               if profile_type not in self.SCHEMA_REGISTRY:
+E                   raise ProfileResolutionError(
+E                       f"Unknown profile_type: {profile_type}. "
+E                       f"Known types: {list(self.SCHEMA_REGISTRY.keys())}"
+E                   )
+E               
+E               # Locate app profile directory
+E               app_profile_dir = self._profile_root / app_id
+E               if not app_profile_dir.exists():
+E                   raise UnknownAppError(
+E                       f"No profile directory for app: {app_id}. "
+E                       f"Expected: {app_profile_dir}"
+E                   )
+E               
+E               # Locate profile file
+E               profile_path = app_profile_dir / f"{profile_type}.yaml"
+E               if not profile_path.exists():
+E                   raise MissingProfileError(
+E                       f"Profile not found: {profile_path} "
+E                       f"for app={app_id}, type={profile_type}"
+E                   )
+E               
+E               # Load and validate
+E               try:
+E                   with open(profile_path, "r", encoding="utf-8") as f:
+E                       raw_data = yaml.safe_load(f)
+E               except yaml.YAMLError as e:
+E                   raise InvalidProfileError(
+E                       f"YAML parsing failed for {profile_path}: {e}"
+E                   ) from e
+E               
+E               if raw_data is None:
+E                   raise InvalidProfileError(f"Empty profile file: {profile_path}")
+E               
+E               # Schema validation
+E               schema_path = self._schema_root / self.SCHEMA_REGISTRY[profile_type]
+E               self._validate_profile(raw_data, schema_path, profile_path)
+E               
+E               # Extract version
+E               schema_version = raw_data.get("schema_version", "unknown")
+E               
+E               # Build typed payload (app-agnostic extraction of common fields)
+E               typed_payload = self._extract_typed_payload(raw_data, profile_type)
+E               
+E               # Construct result
+E               result = ResolvedProfile(
+E                   key=key,
+E                   raw_data=raw_data,
+E                   source_path=profile_path,
+E                   schema_version=schema_version,
+E                   typed_payload=typed_payload,
+E               )
+E               
+E               # Cache and return
+E               self._cache[key] = result
+E               return result
+E           
+E           def _validate_profile(
+E               self, 
+E               profile_data: dict[str, Any], 
+E               schema_path: Path,
+E               profile_path: Path
+E           ) -> None:
+E               """
+E               Validate profile against its schema.
+E               
+E               Raises InvalidProfileError on validation failure.
+E               """
+E               if not schema_path.exists():
+E                   if self._strict_mode:
+E                       raise InvalidProfileError(
+E                           f"Schema not found: {schema_path} for profile {profile_path}"
+E                       )
+E                   return  # Non-strict: skip validation if schema missing
+E               
+E               # Load schema
+E               try:
+E                   with open(schema_path, "r", encoding="utf-8") as f:
+E                       schema = yaml.safe_load(f)
+E               except Exception as e:
+E                   if self._strict_mode:
+E                       raise InvalidProfileError(
+E                           f"Failed to load schema {schema_path}: {e}"
+E                       ) from e
+E                   return
+E               
+E               # Perform validation
+E               validation_errors = self._validate_against_schema(profile_data, schema)
+E               
+E               if validation_errors:
+E                   raise InvalidProfileError(
+E                       f"Profile validation failed for {profile_path}: "
+E                       f"{'; '.join(validation_errors)}"
+E                   )
+E           
+E           def _validate_against_schema(
+E               self, 
+E               data: dict[str, Any], 
+E               schema: dict[str, Any]
+E           ) -> list[str]:
+E               """
+E               Validate data against schema.
+E               
+E               Returns list of validation error messages (empty if valid).
+E               """
+E               errors: list[str] = []
+E               
+E               # Check required fields
+E               required_fields = schema.get("required_fields", [])
+E               for field in required_fields:
+E                   if field not in data:
+E                       errors.append(f"Missing required field: {field}")
+E               
+E               # Check fields structure if defined
+E               fields_spec = schema.get("fields", {})
+E               for field_name, field_spec in fields_spec.items():
+E                   if field_name in data:
+E                       field_value = data[field_name]
+E                       field_type = field_spec.get("type")
+E                       
+E                       # Type checking
+E                       if field_type == "string" and not isinstance(field_value, str):
+E                           errors.append(f"Field {field_name} must be string, got {type(field_value).__name__}")
+E                       elif field_type == "boolean" and not isinstance(field_value, bool):
+E                           errors.append(f"Field {field_name} must be boolean, got {type(field_value).__name__}")
+E                       elif field_type == "integer" and not isinstance(field_value, int):
+E                           errors.append(f"Field {field_name} must be integer, got {type(field_value).__name__}")
+E                       elif field_type == "array" and not isinstance(field_value, list):
+E                           errors.append(f"Field {field_name} must be array, got {type(field_value).__name__}")
+E                       elif field_type == "object" and not isinstance(field_value, dict):
+E                           errors.append(f"Field {field_name} must be object, got {type(field_value).__name__}")
+E                       
+E                       # Pattern checking for strings
+E                       pattern = field_spec.get("pattern")
+E                       if pattern and isinstance(field_value, str):
+E                           import re
+E                           if not re.match(pattern, field_value):
+E                               errors.append(f"Field {field_name} value '{field_value}' doesn't match pattern {pattern}")
+E                       
+E                       # Enum checking
+E                       enum_values = field_spec.get("enum")
+E                       if enum_values and field_value not in enum_values:
+E                           errors.append(f"Field {field_name} must be one of {enum_values}, got {field_value}")
+E               
+E               return errors
+E           
+E           def _extract_typed_payload(
+E               self, 
+E               raw_data: dict[str, Any], 
+E               profile_type: str
+E           ) -> dict[str, Any]:
+E               """
+E               Extract app-agnostic typed payload from raw profile data.
+E               
+E               This method is generic - it extracts common structure without
+E               app-specific knowledge. Apps interpret their own profile fields.
+E               """
+E               # Generic extraction of common fields
+E               payload: dict[str, Any] = {
+E                   "app_id": raw_data.get("app_id"),
+E                   "schema_version": raw_data.get("schema_version"),
+E                   "profile_type": profile_type,
+E               }
+E               
+E               # Include validation behavior (critical for fail-closed)
+E               validation = raw_data.get("validation_behavior", {})
+E               payload["validation_behavior"] = validation
+E               
+E               # Include the app-specific config as opaque blob
+E               # Core doesn't interpret this - generic components pass it through
+E               config_keys = [
+E                   "validation_rules", "adapter_config", "pipeline_config",
+E                   "writeback_config", "learning_policy", "substrate_config",
+E                   "payload_defaults", "synthesis_config", "source_filtering",
+E                   "orchestration_config", "store_mapping", "identity_mapping",
+E                   "cache_policies", "namespace_defaults", "routing_hints",
+E                   "writeback_filter", "cross_app_behavior", "app_specific_handlers",
+E               ]
+E               
+E               for key in config_keys:
+E                   if key in raw_data:
+E                       payload[key] = raw_data[key]
+E               
+E               return payload
+E           
+E           def list_available_profiles(self, app_id: str) -> list[str]:
+E               """
+E               List available profile types for an app.
+E               
+E               Args:
+E                   app_id: Application identifier
+E                   
+E               Returns:
+E                   List of available profile type strings
+E                   
+E               Raises:
+E                   UnknownAppError: If app profile directory doesn't exist
+E               """
+E               app_profile_dir = self._profile_root / app_id
+E               if not app_profile_dir.exists():
+E                   raise UnknownAppError(f"No profile directory for app: {app_id}")
+E               
+E               available: list[str] = []
+E               for profile_type in self.SCHEMA_REGISTRY.keys():
+E                   profile_path = app_profile_dir / f"{profile_type}.yaml"
+E                   if profile_path.exists():
+E                       available.append(profile_type)
+E               
+E               return available
+E           
+E           def clear_cache(self) -> None:
+E               """Clear the resolution cache."""
+E               self._cache.clear()
+E           
+E           def get_schema_path(self, profile_type: str) -> Path:
+E               """Get schema path for a profile type."""
+E               if profile_type not in self.SCHEMA_REGISTRY:
+E                   raise ProfileResolutionError(f"Unknown profile_type: {profile_type}")
+E               return self._schema_root / self.SCHEMA_REGISTRY[profile_type]
+E       
+E       
+E       def resolve_runtime_profile(app_id: str, profile_type: str) -> ResolvedProfile:
+E           """
+E           Convenience function for one-shot profile resolution.
+E           
+E           Uses default resolver configuration.
+E           
+E           Raises:
+E               UnknownAppError: If app unknown
+E               MissingProfileError: If profile missing
+E               InvalidProfileError: If profile invalid
+E           """
+E           resolver = RuntimeProfileResolver()
+E           return resolver.resolve(app_id, profile_type)
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestResolverInitialization::test_resolver_discovers_paths_via_convention - AssertionError: assert False
+ +  where False = exists()
+ +    where exists = WindowsPath('C:/Git/Agentic-Workflow-FRESH/agentic_core/.windsurf/schemas').exists
+ +      where WindowsPath('C:/Git/Agentic-Workflow-FRESH/agentic_core/.windsurf/schemas') = <agentic_core.runtime.profiles.profile_resolver.RuntimeProfileResolver object at 0x0000022785EE93D0>._schema_root
+FAILED tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestNewAppRequiresProfileOnly::test_new_app_can_be_added_via_profile_only - KeyError: 'config'
+FAILED tests/unit/agentic_core/runtime/profiles/test_profile_resolver.py::TestNoAppLiteralsInCore::test_resolver_source_no_hardcoded_app_names - AssertionError: Forbidden app literal 'apps_rg' found in resolver source. Core must be app-agnostic.
+assert 'apps_rg' not in '"""\nRuntime Profile Resolver\n\nGeneric profile resolution for app-owned runtime configuration.\n\nThis module provides fail-closed profile resolution for runtime components.\nIt contains NO app-specific literals and branches only on generic profile_type,\nnever on app_id values.\n\nConstitutional Compliance:\n- No hardcoded app names (apps_rg, apps_lic, etc.)\n- No app-specific branching logic\n- Fail-closed on missing, invalid, or unknown profiles\n- Core generic infrastructure only\n"""\n\nfrom __future__ import annotations\n\nimport json\nimport os\nfrom dataclasses import dataclass, field\nfrom pathlib import Path\nfrom typing import Any, Protocol, runtime_checkable\n\nimport yaml\n\n\nclass ProfileResolutionError(Exception):\n    """Base exception for profile resolution failures."""\n    pass\n\n\nclass UnknownAppError(ProfileResolutionError):\n    """Raised when requested app has no profile defined."""\n    pass\n\n\nclass InvalidProfileError(ProfileResolutionError):\n    """Raised when profile exists but fails schema validation."""\n    pass\n\n\nclass MissingProfileError(ProfileResolutionError):\n    """Raised when profile file is missing."""\n    pass\n\n\n@runtime_checkable\nclass ProfileValidator(Protocol):\n    """Protocol for profile validators."""\n    \n    def validate(self, profile_data: dict[str, Any], schema_path: Path) -> bool:\n        """Validate profile data against schema."""\n        ...\n\n\n@dataclass(frozen=True)\nclass ProfileKey:\n    """Composite key for profile lookup."""\n    app_id: str\n    profile_type: str\n    \n    def __post_init__(self) -> None:\n        if not self.app_id or not self.profile_type:\n            raise ValueError("app_id and profile_type are required")\n\n\n@dataclass\nclass ResolvedProfile:\n    """Result of successful profile resolution."""\n    key: ProfileKey\n    raw_data: dict[str, Any]\n    source_path: Path\n    schema_version: str\n    # App-specific typed payload extracted by caller\n    typed_payload: dict[str, Any] = field(default_factory=dict)\n\n\nclass RuntimeProfileResolver:\n    """\n    Generic profile resolver for runtime configuration.\n    \n    Design principles:\n    - App-agnostic: Never branches on specific app_id values\n    - Fail-closed: Raises typed exceptions on any resolution failure\n    - Schema-driven: Validates all profiles against declared schemas\n    - Path-convention: Locates profiles via convention, not hardcoded paths\n    \n    Profile path convention:\n        {profile_root}/{app_id}/{profile_type}.yaml\n        \n    Example:\n        ~/.config/agentic/profiles/apps_rg/u0_validation.yaml\n        \n    Usage:\n        resolver = RuntimeProfileResolver()\n        try:\n            profile = resolver.resolve("apps_rg", "u0_validation")\n            # Use profile.typed_payload for app-specific config\n        except UnknownAppError:\n            # Handle unknown app - fail closed\n            raise\n    """\n    \n    # Schema registry: profile_type -> schema file path (relative to schema_root)\n    SCHEMA_REGISTRY: dict[str, str] = {\n        "u0_validation": "u0_validation_profile.schema.yaml",\n        "u0_adapter": "u0_adapter_profile.schema.yaml",\n        "pipeline_defaults": "pipeline_defaults.schema.yaml",\n        "l6_learning": "l6_learning_profile.schema.yaml",\n        "l6_writeback": "l6_writeback_profile.schema.yaml",\n        "c0_substrate": "c0_substrate_profile.schema.yaml",\n        "u0_payload_defaults": "u0_payload_defaults.schema.yaml",\n    }\n    \n    def __init__(\n        self,\n        profile_root: Path | str | None = None,\n        schema_root: Path | str | None = None,\n        validator: ProfileValidator | None = None,\n        strict_mode: bool = True,\n    ) -> None:\n        """\n        Initialize resolver.\n        \n        Args:\n            profile_root: Root directory for profile storage.\n                         Default: {REPO_ROOT}/config/profiles/\n            schema_root: Root directory for schema files.\n                        Default: {REPO_ROOT}/.windsurf/schemas/\n            validator: Optional custom validator. If None, uses schema-aware validation.\n            strict_mode: If True (default), fail closed on any validation issue.\n        """\n        self._strict_mode = strict_mode\n        self._validator = validator\n        \n        # Determine roots via convention or environment\n        if profile_root is None:\n            profile_root = self._discover_profile_root()\n        if schema_root is None:\n            schema_root = self._discover_schema_root()\n            \n        self._profile_root = Path(profile_root)\n        self._schema_root = Path(schema_root)\n        \n        # Runtime cache (non-persistent, per-instance)\n        self._cache: dict[ProfileKey, ResolvedProfile] = {}\n    \n    def _discover_profile_root(self) -> Path:\n        """Discover profile root via convention."""\n        # Convention: profiles live in config/profiles/ relative to repo root\n        repo_root = self._discover_repo_root()\n        return repo_root / "config" / "profiles"\n    \n    def _discover_schema_root(self) -> Path:\n        """Discover schema root via convention."""\n        repo_root = self._discover_repo_root()\n        return repo_root / ".windsurf" / "schemas"\n    \n    def _discover_repo_root(self) -> Path:\n        """Discover repository root via marker file."""\n        # Walk up from current file looking for pyproject.toml or AGENTS.md\n        current = Path(__file__).resolve().parent\n        for parent in [current] + list(current.parents):\n            if (parent / "pyproject.toml").exists() or (parent / "AGENTS.md").exists():\n                return parent\n        # Fallback: assume we\'re in agentic_core/runtime/profiles/\n        return current.parent.parent.parent\n    \n    def resolve(self, app_id: str, profile_type: str) -> ResolvedProfile:\n        """\n        Resolve profile for given app and type.\n        \n        Args:\n            app_id: Application identifier (e.g., "apps_rg", "apps_lic")\n            profile_type: Type of profile to resolve (must be in SCHEMA_REGISTRY)\n            \n        Returns:\n            ResolvedProfile with validated configuration\n            \n        Raises:\n            UnknownAppError: If app profile directory doesn\'t exist\n            MissingProfileError: If profile file doesn\'t exist\n            InvalidProfileError: If profile fails schema validation\n            ProfileResolutionError: For other resolution failures\n        """\n        key = ProfileKey(app_id=app_id, profile_type=profile_type)\n        \n        # Check cache\n        if key in self._cache:\n            return self._cache[key]\n        \n        # Validate profile_type is known\n        if profile_type not in self.SCHEMA_REGISTRY:\n            raise ProfileResolutionError(\n                f"Unknown profile_type: {profile_type}. "\n                f"Known types: {list(self.SCHEMA_REGISTRY.keys())}"\n            )\n        \n        # Locate app profile directory\n        app_profile_dir = self._profile_root / app_id\n        if not app_profile_dir.exists():\n            raise UnknownAppError(\n                f"No profile directory for app: {app_id}. "\n                f"Expected: {app_profile_dir}"\n            )\n        \n        # Locate profile file\n        profile_path = app_profile_dir / f"{profile_type}.yaml"\n        if not profile_path.exists():\n            raise MissingProfileError(\n                f"Profile not found: {profile_path} "\n                f"for app={app_id}, type={profile_type}"\n            )\n        \n        # Load and validate\n        try:\n            with open(profile_path, "r", encoding="utf-8") as f:\n                raw_data = yaml.safe_load(f)\n        except yaml.YAMLError as e:\n            raise InvalidProfileError(\n                f"YAML parsing failed for {profile_path}: {e}"\n            ) from e\n        \n        if raw_data is None:\n            raise InvalidProfileError(f"Empty profile file: {profile_path}")\n        \n        # Schema validation\n        schema_path = self._schema_root / self.SCHEMA_REGISTRY[profile_type]\n        self._validate_profile(raw_data, schema_path, profile_path)\n        \n        # Extract version\n        schema_version = raw_data.get("schema_version", "unknown")\n        \n        # Build typed payload (app-agnostic extraction of common fields)\n        typed_payload = self._extract_typed_payload(raw_data, profile_type)\n        \n        # Construct result\n        result = ResolvedProfile(\n            key=key,\n            raw_data=raw_data,\n            source_path=profile_path,\n            schema_version=schema_version,\n            typed_payload=typed_payload,\n        )\n        \n        # Cache and return\n        self._cache[key] = result\n        return result\n    \n    def _validate_profile(\n        self, \n        profile_data: dict[str, Any], \n        schema_path: Path,\n        profile_path: Path\n    ) -> None:\n        """\n        Validate profile against its schema.\n        \n        Raises InvalidProfileError on validation failure.\n        """\n        if not schema_path.exists():\n            if self._strict_mode:\n                raise InvalidProfileError(\n                    f"Schema not found: {schema_path} for profile {profile_path}"\n                )\n            return  # Non-strict: skip validation if schema missing\n        \n        # Load schema\n        try:\n            with open(schema_path, "r", encoding="utf-8") as f:\n                schema = yaml.safe_load(f)\n        except Exception as e:\n            if self._strict_mode:\n                raise InvalidProfileError(\n                    f"Failed to load schema {schema_path}: {e}"\n                ) from e\n            return\n        \n        # Perform validation\n        validation_errors = self._validate_against_schema(profile_data, schema)\n        \n        if validation_errors:\n            raise InvalidProfileError(\n                f"Profile validation failed for {profile_path}: "\n                f"{\'; \'.join(validation_errors)}"\n            )\n    \n    def _validate_against_schema(\n        self, \n        data: dict[str, Any], \n        schema: dict[str, Any]\n    ) -> list[str]:\n        """\n        Validate data against schema.\n        \n        Returns list of validation error messages (empty if valid).\n        """\n        errors: list[str] = []\n        \n        # Check required fields\n        required_fields = schema.get("required_fields", [])\n        for field in required_fields:\n            if field not in data:\n                errors.append(f"Missing required field: {field}")\n        \n        # Check fields structure if defined\n        fields_spec = schema.get("fields", {})\n        for field_name, field_spec in fields_spec.items():\n            if field_name in data:\n                field_value = data[field_name]\n                field_type = field_spec.get("type")\n                \n                # Type checking\n                if field_type == "string" and not isinstance(field_value, str):\n                    errors.append(f"Field {field_name} must be string, got {type(field_value).__name__}")\n                elif field_type == "boolean" and not isinstance(field_value, bool):\n                    errors.append(f"Field {field_name} must be boolean, got {type(field_value).__name__}")\n                elif field_type == "integer" and not isinstance(field_value, int):\n                    errors.append(f"Field {field_name} must be integer, got {type(field_value).__name__}")\n                elif field_type == "array" and not isinstance(field_value, list):\n                    errors.append(f"Field {field_name} must be array, got {type(field_value).__name__}")\n                elif field_type == "object" and not isinstance(field_value, dict):\n                    errors.append(f"Field {field_name} must be object, got {type(field_value).__name__}")\n                \n                # Pattern checking for strings\n                pattern = field_spec.get("pattern")\n                if pattern and isinstance(field_value, str):\n                    import re\n                    if not re.match(pattern, field_value):\n                        errors.append(f"Field {field_name} value \'{field_value}\' doesn\'t match pattern {pattern}")\n                \n                # Enum checking\n                enum_values = field_spec.get("enum")\n                if enum_values and field_value not in enum_values:\n                    errors.append(f"Field {field_name} must be one of {enum_values}, got {field_value}")\n        \n        return errors\n    \n    def _extract_typed_payload(\n        self, \n        raw_data: dict[str, Any], \n        profile_type: str\n    ) -> dict[str, Any]:\n        """\n        Extract app-agnostic typed payload from raw profile data.\n        \n        This method is generic - it extracts common structure without\n        app-specific knowledge. Apps interpret their own profile fields.\n        """\n        # Generic extraction of common fields\n        payload: dict[str, Any] = {\n            "app_id": raw_data.get("app_id"),\n            "schema_version": raw_data.get("schema_version"),\n            "profile_type": profile_type,\n        }\n        \n        # Include validation behavior (critical for fail-closed)\n        validation = raw_data.get("validation_behavior", {})\n        payload["validation_behavior"] = validation\n        \n        # Include the app-specific config as opaque blob\n        # Core doesn\'t interpret this - generic components pass it through\n        config_keys = [\n            "validation_rules", "adapter_config", "pipeline_config",\n            "writeback_config", "learning_policy", "substrate_config",\n            "payload_defaults", "synthesis_config", "source_filtering",\n            "orchestration_config", "store_mapping", "identity_mapping",\n            "cache_policies", "namespace_defaults", "routing_hints",\n            "writeback_filter", "cross_app_behavior", "app_specific_handlers",\n        ]\n        \n        for key in config_keys:\n            if key in raw_data:\n                payload[key] = raw_data[key]\n        \n        return payload\n    \n    def list_available_profiles(self, app_id: str) -> list[str]:\n        """\n        List available profile types for an app.\n        \n        Args:\n            app_id: Application identifier\n            \n        Returns:\n            List of available profile type strings\n            \n        Raises:\n            UnknownAppError: If app profile directory doesn\'t exist\n        """\n        app_profile_dir = self._profile_root / app_id\n        if not app_profile_dir.exists():\n            raise UnknownAppError(f"No profile directory for app: {app_id}")\n        \n        available: list[str] = []\n        for profile_type in self.SCHEMA_REGISTRY.keys():\n            profile_path = app_profile_dir / f"{profile_type}.yaml"\n            if profile_path.exists():\n                available.append(profile_type)\n        \n        return available\n    \n    def clear_cache(self) -> None:\n        """Clear the resolution cache."""\n        self._cache.clear()\n    \n    def get_schema_path(self, profile_type: str) -> Path:\n        """Get schema path for a profile type."""\n        if profile_type not in self.SCHEMA_REGISTRY:\n            raise ProfileResolutionError(f"Unknown profile_type: {profile_type}")\n        return self._schema_root / self.SCHEMA_REGISTRY[profile_type]\n\n\ndef resolve_runtime_profile(app_id: str, profile_type: str) -> ResolvedProfile:\n    """\n    Convenience function for one-shot profile resolution.\n    \n    Uses default resolver configuration.\n    \n    Raises:\n        UnknownAppError: If app unknown\n        MissingProfileError: If profile missing\n        InvalidProfileError: If profile invalid\n    """\n    resolver = RuntimeProfileResolver()\n    return resolver.resolve(app_id, profile_type)\n'
+  
+  'apps_rg' is contained here:
+    """
+    Runtime Profile Resolver
+    
+    Generic profile resolution for app-owned runtime configuration.
+    
+    This module provides fail-closed profile resolution for runtime components.
+    It contains NO app-specific literals and branches only on generic profile_type,
+    never on app_id values.
+    
+    Constitutional Compliance:
+    - No hardcoded app names (apps_rg, apps_lic, etc.)
+  ?                           +++++++
+    - No app-specific branching logic
+    - Fail-closed on missing, invalid, or unknown profiles
+    - Core generic infrastructure only
+    """
+    
+    from __future__ import annotations
+    
+    import json
+    import os
+    from dataclasses import dataclass, field
+    from pathlib import Path
+    from typing import Any, Protocol, runtime_checkable
+    
+    import yaml
+    
+    
+    class ProfileResolutionError(Exception):
+        """Base exception for profile resolution failures."""
+        pass
+    
+    
+    class UnknownAppError(ProfileResolutionError):
+        """Raised when requested app has no profile defined."""
+        pass
+    
+    
+    class InvalidProfileError(ProfileResolutionError):
+        """Raised when profile exists but fails schema validation."""
+        pass
+    
+    
+    class MissingProfileError(ProfileResolutionError):
+        """Raised when profile file is missing."""
+        pass
+    
+    
+    @runtime_checkable
+    class ProfileValidator(Protocol):
+        """Protocol for profile validators."""
+        
+        def validate(self, profile_data: dict[str, Any], schema_path: Path) -> bool:
+            """Validate profile data against schema."""
+            ...
+    
+    
+    @dataclass(frozen=True)
+    class ProfileKey:
+        """Composite key for profile lookup."""
+        app_id: str
+        profile_type: str
+        
+        def __post_init__(self) -> None:
+            if not self.app_id or not self.profile_type:
+                raise ValueError("app_id and profile_type are required")
+    
+    
+    @dataclass
+    class ResolvedProfile:
+        """Result of successful profile resolution."""
+        key: ProfileKey
+        raw_data: dict[str, Any]
+        source_path: Path
+        schema_version: str
+        # App-specific typed payload extracted by caller
+        typed_payload: dict[str, Any] = field(default_factory=dict)
+    
+    
+    class RuntimeProfileResolver:
+        """
+        Generic profile resolver for runtime configuration.
+        
+        Design principles:
+        - App-agnostic: Never branches on specific app_id values
+        - Fail-closed: Raises typed exceptions on any resolution failure
+        - Schema-driven: Validates all profiles against declared schemas
+        - Path-convention: Locates profiles via convention, not hardcoded paths
+        
+        Profile path convention:
+            {profile_root}/{app_id}/{profile_type}.yaml
+            
+        Example:
+            ~/.config/agentic/profiles/apps_rg/u0_validation.yaml
+            
+        Usage:
+            resolver = RuntimeProfileResolver()
+            try:
+                profile = resolver.resolve("apps_rg", "u0_validation")
+                # Use profile.typed_payload for app-specific config
+            except UnknownAppError:
+                # Handle unknown app - fail closed
+                raise
+        """
+        
+        # Schema registry: profile_type -> schema file path (relative to schema_root)
+        SCHEMA_REGISTRY: dict[str, str] = {
+            "u0_validation": "u0_validation_profile.schema.yaml",
+            "u0_adapter": "u0_adapter_profile.schema.yaml",
+            "pipeline_defaults": "pipeline_defaults.schema.yaml",
+            "l6_learning": "l6_learning_profile.schema.yaml",
+            "l6_writeback": "l6_writeback_profile.schema.yaml",
+            "c0_substrate": "c0_substrate_profile.schema.yaml",
+            "u0_payload_defaults": "u0_payload_defaults.schema.yaml",
+        }
+        
+        def __init__(
+            self,
+            profile_root: Path | str | None = None,
+            schema_root: Path | str | None = None,
+            validator: ProfileValidator | None = None,
+            strict_mode: bool = True,
+        ) -> None:
+            """
+            Initialize resolver.
+            
+            Args:
+                profile_root: Root directory for profile storage.
+                             Default: {REPO_ROOT}/config/profiles/
+                schema_root: Root directory for schema files.
+                            Default: {REPO_ROOT}/.windsurf/schemas/
+                validator: Optional custom validator. If None, uses schema-aware validation.
+                strict_mode: If True (default), fail closed on any validation issue.
+            """
+            self._strict_mode = strict_mode
+            self._validator = validator
+            
+            # Determine roots via convention or environment
+            if profile_root is None:
+                profile_root = self._discover_profile_root()
+            if schema_root is None:
+                schema_root = self._discover_schema_root()
+                
+            self._profile_root = Path(profile_root)
+            self._schema_root = Path(schema_root)
+            
+            # Runtime cache (non-persistent, per-instance)
+            self._cache: dict[ProfileKey, ResolvedProfile] = {}
+        
+        def _discover_profile_root(self) -> Path:
+            """Discover profile root via convention."""
+            # Convention: profiles live in config/profiles/ relative to repo root
+            repo_root = self._discover_repo_root()
+            return repo_root / "config" / "profiles"
+        
+        def _discover_schema_root(self) -> Path:
+            """Discover schema root via convention."""
+            repo_root = self._discover_repo_root()
+            return repo_root / ".windsurf" / "schemas"
+        
+        def _discover_repo_root(self) -> Path:
+            """Discover repository root via marker file."""
+            # Walk up from current file looking for pyproject.toml or AGENTS.md
+            current = Path(__file__).resolve().parent
+            for parent in [current] + list(current.parents):
+                if (parent / "pyproject.toml").exists() or (parent / "AGENTS.md").exists():
+                    return parent
+            # Fallback: assume we're in agentic_core/runtime/profiles/
+            return current.parent.parent.parent
+        
+        def resolve(self, app_id: str, profile_type: str) -> ResolvedProfile:
+            """
+            Resolve profile for given app and type.
+            
+            Args:
+                app_id: Application identifier (e.g., "apps_rg", "apps_lic")
+                profile_type: Type of profile to resolve (must be in SCHEMA_REGISTRY)
+                
+            Returns:
+                ResolvedProfile with validated configuration
+                
+            Raises:
+                UnknownAppError: If app profile directory doesn't exist
+                MissingProfileError: If profile file doesn't exist
+                InvalidProfileError: If profile fails schema validation
+                ProfileResolutionError: For other resolution failures
+            """
+            key = ProfileKey(app_id=app_id, profile_type=profile_type)
+            
+            # Check cache
+            if key in self._cache:
+                return self._cache[key]
+            
+            # Validate profile_type is known
+            if profile_type not in self.SCHEMA_REGISTRY:
+                raise ProfileResolutionError(
+                    f"Unknown profile_type: {profile_type}. "
+                    f"Known types: {list(self.SCHEMA_REGISTRY.keys())}"
+                )
+            
+            # Locate app profile directory
+            app_profile_dir = self._profile_root / app_id
+            if not app_profile_dir.exists():
+                raise UnknownAppError(
+                    f"No profile directory for app: {app_id}. "
+                    f"Expected: {app_profile_dir}"
+                )
+            
+            # Locate profile file
+            profile_path = app_profile_dir / f"{profile_type}.yaml"
+            if not profile_path.exists():
+                raise MissingProfileError(
+                    f"Profile not found: {profile_path} "
+                    f"for app={app_id}, type={profile_type}"
+                )
+            
+            # Load and validate
+            try:
+                with open(profile_path, "r", encoding="utf-8") as f:
+                    raw_data = yaml.safe_load(f)
+            except yaml.YAMLError as e:
+                raise InvalidProfileError(
+                    f"YAML parsing failed for {profile_path}: {e}"
+                ) from e
+            
+            if raw_data is None:
+                raise InvalidProfileError(f"Empty profile file: {profile_path}")
+            
+            # Schema validation
+            schema_path = self._schema_root / self.SCHEMA_REGISTRY[profile_type]
+            self._validate_profile(raw_data, schema_path, profile_path)
+            
+            # Extract version
+            schema_version = raw_data.get("schema_version", "unknown")
+            
+            # Build typed payload (app-agnostic extraction of common fields)
+            typed_payload = self._extract_typed_payload(raw_data, profile_type)
+            
+            # Construct result
+            result = ResolvedProfile(
+                key=key,
+                raw_data=raw_data,
+                source_path=profile_path,
+                schema_version=schema_version,
+                typed_payload=typed_payload,
+            )
+            
+            # Cache and return
+            self._cache[key] = result
+            return result
+        
+        def _validate_profile(
+            self, 
+            profile_data: dict[str, Any], 
+            schema_path: Path,
+            profile_path: Path
+        ) -> None:
+            """
+            Validate profile against its schema.
+            
+            Raises InvalidProfileError on validation failure.
+            """
+            if not schema_path.exists():
+                if self._strict_mode:
+                    raise InvalidProfileError(
+                        f"Schema not found: {schema_path} for profile {profile_path}"
+                    )
+                return  # Non-strict: skip validation if schema missing
+            
+            # Load schema
+            try:
+                with open(schema_path, "r", encoding="utf-8") as f:
+                    schema = yaml.safe_load(f)
+            except Exception as e:
+                if self._strict_mode:
+                    raise InvalidProfileError(
+                        f"Failed to load schema {schema_path}: {e}"
+                    ) from e
+                return
+            
+            # Perform validation
+            validation_errors = self._validate_against_schema(profile_data, schema)
+            
+            if validation_errors:
+                raise InvalidProfileError(
+                    f"Profile validation failed for {profile_path}: "
+                    f"{'; '.join(validation_errors)}"
+                )
+        
+        def _validate_against_schema(
+            self, 
+            data: dict[str, Any], 
+            schema: dict[str, Any]
+        ) -> list[str]:
+            """
+            Validate data against schema.
+            
+            Returns list of validation error messages (empty if valid).
+            """
+            errors: list[str] = []
+            
+            # Check required fields
+            required_fields = schema.get("required_fields", [])
+            for field in required_fields:
+                if field not in data:
+                    errors.append(f"Missing required field: {field}")
+            
+            # Check fields structure if defined
+            fields_spec = schema.get("fields", {})
+            for field_name, field_spec in fields_spec.items():
+                if field_name in data:
+                    field_value = data[field_name]
+                    field_type = field_spec.get("type")
+                    
+                    # Type checking
+                    if field_type == "string" and not isinstance(field_value, str):
+                        errors.append(f"Field {field_name} must be string, got {type(field_value).__name__}")
+                    elif field_type == "boolean" and not isinstance(field_value, bool):
+                        errors.append(f"Field {field_name} must be boolean, got {type(field_value).__name__}")
+                    elif field_type == "integer" and not isinstance(field_value, int):
+                        errors.append(f"Field {field_name} must be integer, got {type(field_value).__name__}")
+                    elif field_type == "array" and not isinstance(field_value, list):
+                        errors.append(f"Field {field_name} must be array, got {type(field_value).__name__}")
+                    elif field_type == "object" and not isinstance(field_value, dict):
+                        errors.append(f"Field {field_name} must be object, got {type(field_value).__name__}")
+                    
+                    # Pattern checking for strings
+                    pattern = field_spec.get("pattern")
+                    if pattern and isinstance(field_value, str):
+                        import re
+                        if not re.match(pattern, field_value):
+                            errors.append(f"Field {field_name} value '{field_value}' doesn't match pattern {pattern}")
+                    
+                    # Enum checking
+                    enum_values = field_spec.get("enum")
+                    if enum_values and field_value not in enum_values:
+                        errors.append(f"Field {field_name} must be one of {enum_values}, got {field_value}")
+            
+            return errors
+        
+        def _extract_typed_payload(
+            self, 
+            raw_data: dict[str, Any], 
+            profile_type: str
+        ) -> dict[str, Any]:
+            """
+            Extract app-agnostic typed payload from raw profile data.
+            
+            This method is generic - it extracts common structure without
+            app-specific knowledge. Apps interpret their own profile fields.
+            """
+            # Generic extraction of common fields
+            payload: dict[str, Any] = {
+                "app_id": raw_data.get("app_id"),
+                "schema_version": raw_data.get("schema_version"),
+                "profile_type": profile_type,
+            }
+            
+            # Include validation behavior (critical for fail-closed)
+            validation = raw_data.get("validation_behavior", {})
+            payload["validation_behavior"] = validation
+            
+            # Include the app-specific config as opaque blob
+            # Core doesn't interpret this - generic components pass it through
+            config_keys = [
+                "validation_rules", "adapter_config", "pipeline_config",
+                "writeback_config", "learning_policy", "substrate_config",
+                "payload_defaults", "synthesis_config", "source_filtering",
+                "orchestration_config", "store_mapping", "identity_mapping",
+                "cache_policies", "namespace_defaults", "routing_hints",
+                "writeback_filter", "cross_app_behavior", "app_specific_handlers",
+            ]
+            
+            for key in config_keys:
+                if key in raw_data:
+                    payload[key] = raw_data[key]
+            
+            return payload
+        
+        def list_available_profiles(self, app_id: str) -> list[str]:
+            """
+            List available profile types for an app.
+            
+            Args:
+                app_id: Application identifier
+                
+            Returns:
+                List of available profile type strings
+                
+            Raises:
+                UnknownAppError: If app profile directory doesn't exist
+            """
+            app_profile_dir = self._profile_root / app_id
+            if not app_profile_dir.exists():
+                raise UnknownAppError(f"No profile directory for app: {app_id}")
+            
+            available: list[str] = []
+            for profile_type in self.SCHEMA_REGISTRY.keys():
+                profile_path = app_profile_dir / f"{profile_type}.yaml"
+                if profile_path.exists():
+                    available.append(profile_type)
+            
+            return available
+        
+        def clear_cache(self) -> None:
+            """Clear the resolution cache."""
+            self._cache.clear()
+        
+        def get_schema_path(self, profile_type: str) -> Path:
+            """Get schema path for a profile type."""
+            if profile_type not in self.SCHEMA_REGISTRY:
+                raise ProfileResolutionError(f"Unknown profile_type: {profile_type}")
+            return self._schema_root / self.SCHEMA_REGISTRY[profile_type]
+    
+    
+    def resolve_runtime_profile(app_id: str, profile_type: str) -> ResolvedProfile:
+        """
+        Convenience function for one-shot profile resolution.
+        
+        Uses default resolver configuration.
+        
+        Raises:
+            UnknownAppError: If app unknown
+            MissingProfileError: If profile missing
+            InvalidProfileError: If profile invalid
+        """
+        resolver = RuntimeProfileResolver()
+        return resolver.resolve(app_id, profile_type)
+================== 3 failed, 24 passed, 3 warnings in 0.40s ===================

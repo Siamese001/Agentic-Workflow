@@ -4,22 +4,35 @@ core_write_guard.py - Pre-write hook for agentic_core governance.
 
 Blocks unsafe edits to agentic_core/ unless:
 - Generic infrastructure
-- Temporary thin adapter with migration receipt
+- Temporary thin adapter with 12-field migration receipt
 - Documentation/tests/receipts
 
 Exit codes:
-  0 - Allow (no blocking violations)
-  2 - Block (unsafe edits detected)
+  0 - Allow (advisory mode, or no violations)
+  1 - Warn (advisory mode with warnings)
+  2 - Block (strict mode, or unsafe edits detected)
 """
 
+import argparse
 import json
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Set, Tuple
 
+# Import shared receipt validation
+try:
+    from receipt_validator import find_and_validate_receipt, REQUIRED_FIELDS
+except ImportError:
+    # Handle running from different directories
+    sys.path.insert(0, str(Path(__file__).parent))
+    from receipt_validator import find_and_validate_receipt, REQUIRED_FIELDS
+
 # Configuration
+ADVISORY_SUNSET = "2026-06-15"
+
 REPO_ROOT = Path("C:\\Git\\Agentic-Workflow-FRESH")
 AGENTIC_CORE_PATH = REPO_ROOT / "agentic_core"
 GOVERNANCE_DIR = REPO_ROOT / "artifacts" / "governance"
@@ -85,24 +98,15 @@ def is_temporary_binding(filepath: str) -> bool:
     return bool(BINDING_PATTERN.match(filepath))
 
 
-def has_migration_receipt(binding_file: str) -> bool:
-    """Check if migration receipt exists for binding file."""
-    if not MIGRATION_RECEIPTS_DIR.exists():
-        return False
+def has_valid_receipt(binding_file: str) -> Tuple[bool, str]:
+    """
+    Check if binding file has valid 12-field migration receipt.
     
-    binding_name = Path(binding_file).stem
-    # Look for receipts matching binding name
-    for receipt_file in MIGRATION_RECEIPTS_DIR.glob("*.json"):
-        try:
-            with open(receipt_file, 'r', encoding='utf-8') as f:
-                receipt = json.load(f)
-                if receipt.get('binding_file', '').endswith(binding_file):
-                    return True
-                if receipt.get('original_binding', {}).get('file', '').endswith(binding_file):
-                    return True
-        except (json.JSONDecodeError, IOError):
-            continue
-    return False
+    Returns:
+        (has_valid_receipt, reason_message)
+    """
+    is_valid, reason, receipt = find_and_validate_receipt(binding_file)
+    return is_valid, reason
 
 
 def scan_for_forbidden_patterns(filepath: str) -> List[Dict]:
@@ -134,7 +138,7 @@ def scan_for_forbidden_patterns(filepath: str) -> List[Dict]:
     return violations
 
 
-def classify_file(filepath: str) -> Tuple[str, List[Dict]]:
+def classify_file(filepath: str, strict: bool = False) -> Tuple[str, List[Dict]]:
     """Classify a file according to governance model."""
     rel_path = str(filepath).replace(str(REPO_ROOT), "").lstrip("/\\")
     
@@ -152,12 +156,16 @@ def classify_file(filepath: str) -> Tuple[str, List[Dict]]:
     
     # Check if it's a temporary binding
     if is_temporary_binding(rel_path):
-        if has_migration_receipt(rel_path):
+        has_receipt, reason = has_valid_receipt(rel_path)
+        if has_receipt:
             return ("TEMPORARY_THIN_ADAPTER", [])
         else:
-            return ("TEMPORARY_THIN_ADAPTER", [{
-                "warning": "Binding without verified migration receipt"
-            }])
+            violation = {
+                "severity": "HIGH" if strict else "MEDIUM",
+                "message": f"TEMPORARY_THIN_ADAPTER without valid 12-field receipt: {reason}",
+                "receipt_issue": reason
+            }
+            return ("TEMPORARY_THIN_ADAPTER_NO_RECEIPT", [violation])
     
     # Scan for forbidden patterns
     violations = scan_for_forbidden_patterns(filepath)
@@ -205,11 +213,40 @@ def get_staged_files() -> List[str]:
     return []
 
 
+def get_enforcement_mode(cli_strict: bool) -> Tuple[bool, str]:
+    """Returns (is_strict, reason_message)."""
+    today = datetime.now().isoformat()[:10]
+    
+    if today > ADVISORY_SUNSET:
+        if cli_strict:
+            return True, f"STRICT MODE (sunset {ADVISORY_SUNSET} passed, --strict flag)"
+        return True, f"STRICT MODE (sunset {ADVISORY_SUNSET} enforced)"
+    
+    if cli_strict:
+        return True, "Strict mode (CLI flag)"
+    
+    return False, f"Advisory mode (sunset {ADVISORY_SUNSET})"
+
+
 def main():
     """Main entry point."""
+    parser = argparse.ArgumentParser(
+        description="CORE_WRITE_GUARD: Pre-write hook for agentic_core governance"
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail-closed mode (post-sunset, this is default)",
+    )
+    args = parser.parse_args()
+    
+    is_strict, mode_reason = get_enforcement_mode(args.strict)
+    
     violations = []
     warnings = []
     blocked_files = []
+    
+    print(f"CORE_WRITE_GUARD: Pre-write hook ({mode_reason})")
     
     # Get files to check
     files_to_check = get_staged_files()
@@ -235,7 +272,7 @@ def main():
         if full_path.is_dir():
             continue
         
-        classification, issues = classify_file(str(full_path))
+        classification, issues = classify_file(str(full_path), strict=is_strict)
         
         if classification == "CORE_APP_SPECIFIC_LEAKAGE":
             blocked_files.append({
@@ -243,20 +280,40 @@ def main():
                 "classification": classification,
                 "violations": issues
             })
-        elif classification == "TEMPORARY_THIN_ADAPTER" and issues:
-            warnings.append({
-                "file": filepath,
-                "warning": issues[0].get("warning", "Unverified binding")
-            })
+        elif classification == "TEMPORARY_THIN_ADAPTER_NO_RECEIPT":
+            if is_strict:
+                blocked_files.append({
+                    "file": filepath,
+                    "classification": classification,
+                    "violations": issues
+                })
+            else:
+                warnings.append({
+                    "file": filepath,
+                    "warning": issues[0].get("message", "Unverified binding")
+                })
         elif classification == "NEEDS_CLASSIFICATION":
             warnings.append({
                 "file": filepath,
                 "warning": "File needs explicit classification"
             })
     
+    # Determine exit code
+    exit_code = 0
+    if blocked_files:
+        exit_code = 2
+    elif warnings and is_strict:
+        # Strict mode: treat warnings as blocking
+        exit_code = 2
+    elif warnings and not is_strict:
+        # Advisory mode: warnings non-blocking
+        exit_code = 0
+    
     # Generate output
     output = {
         "guard": "core_write_guard",
+        "mode": mode_reason,
+        "is_strict": is_strict,
         "timestamp": str(Path(__file__).stat().st_mtime),
         "files_checked": len(files_to_check),
         "agentic_core_files": len([f for f in files_to_check if "agentic_core" in f]),
@@ -264,7 +321,7 @@ def main():
         "warnings": len(warnings),
         "violations": blocked_files,
         "warning_details": warnings,
-        "exit_code": 2 if blocked_files else 0
+        "exit_code": exit_code
     }
     
     # Print JSON output for parsing
@@ -285,7 +342,7 @@ def main():
         print("\n" + "="*60)
         print("These files contain app-specific logic in agentic_core.")
         print("Move to apps_*/config/domain_contract/ or use TEMPORARY_THIN_ADAPTER")
-        print("with migration receipt.")
+        print("with 12-field migration receipt.")
         print("="*60)
         sys.exit(2)
     
@@ -293,9 +350,11 @@ def main():
         print("\nWARNINGS:")
         for w in warnings:
             print(f"  {w['file']}: {w['warning']}")
+        if not is_strict:
+            print(f"\n[ADVISORY MODE] Warnings non-blocking. Set --strict for fail-closed.")
     
     print("\nCORE_WRITE_GUARD: All agentic_core files passed.")
-    sys.exit(0)
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

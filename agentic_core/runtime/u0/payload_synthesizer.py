@@ -93,12 +93,16 @@ def _extract_pdf_text(path: Path) -> str:
         return ""
 
 
-def _resolve_text(ref: str | None, inline: str | None) -> str:
+def _resolve_text(ref: str | None, inline: str | None, *, field_name: str = "ref") -> str:
     """Resolve text content from either an inline string or a path ref.
 
     Falls back to the inline value when the ref cannot be read. Returns
     empty string only when both inputs are missing.
     Handles .docx and .pdf files via python-docx and PyPDF2 respectively.
+
+    Raises FileNotFoundError when a non-empty ref points to a path that does
+    not exist on disk, so callers receive an actionable error rather than a
+    silent ``"<empty>"`` placeholder in the synthesized contract.
     """
 
     if inline:
@@ -109,7 +113,10 @@ def _resolve_text(ref: str | None, inline: str | None) -> str:
     if not path.is_absolute():
         path = _REPO_ROOT / ref
     if not path.exists():
-        return ""
+        raise FileNotFoundError(
+            f"synthesizer: {field_name} ref points to a missing file: {path}. "
+            "Provide the correct path via --jd / --source-resume, or pass inline text."
+        )
     suffix = path.suffix.lower()
     if suffix == ".docx":
         return _extract_docx_text(path)
@@ -160,8 +167,12 @@ def synthesize_contract_payload(envelope: RequestEnvelope) -> dict[str, Any]:
     payload = envelope.payload
 
     # Resolve actual JD/resume text (inline preferred, ref fallback).
-    jd_text = _resolve_text(payload.job_description_ref, payload.job_description_text)
-    resume_text = _resolve_text(payload.source_resume_ref, payload.source_resume_text)
+    jd_text = _resolve_text(
+        payload.job_description_ref, payload.job_description_text, field_name="jd"
+    )
+    resume_text = _resolve_text(
+        payload.source_resume_ref, payload.source_resume_text, field_name="resume"
+    )
 
     # Compute deterministic hashes — these are real, not placeholder.
     jd_hash = _sha256_hex(jd_text)

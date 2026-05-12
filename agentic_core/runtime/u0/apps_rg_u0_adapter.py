@@ -245,6 +245,11 @@ def _check_jd_payload(jd: Mapping[str, Any]) -> None:
     jd_text = jd.get("jd_text")
     if jd_text is None or (isinstance(jd_text, str) and jd_text.strip() == ""):
         raise InvalidJdPayloadError("/jd_payload/jd_text is missing or empty.")
+    if isinstance(jd_text, str) and jd_text == "<empty>":
+        raise InvalidJdPayloadError(
+            "/jd_payload/jd_text is the '<empty>' placeholder — the JD ref file "
+            "was not found or could not be read. Pass a valid --jd file path."
+        )
 
 
 def _check_replay_key(replay: Mapping[str, Any]) -> None:

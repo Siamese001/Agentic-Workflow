@@ -916,6 +916,26 @@ def main():
             "RULES1 Rules filesystem integrity (advisory)",
             "ops_scripts/ci/check_rules_filesystem_integrity.py",
         ),
+        # GOV-1..GOV-4 — Agentic Core governance enforcement gates
+        # Plan: agentic-core-governance-remediation-c4e8a2 W1.
+        # Advisory by default (sunset 2026-06-15); strict post-sunset.
+        # Bypass: GOV_LITERALS_BYPASS=1, GOV_BOUNDARY_BYPASS=1, etc.
+        (
+            "GOV-1 No app-specific literals in core (advisory)",
+            "ops_scripts/ci/check_no_app_specific_literals_in_core.py",
+        ),
+        (
+            "GOV-2 Agentic core static boundary (advisory)",
+            "ops_scripts/ci/check_agentic_core_static_boundary.py",
+        ),
+        (
+            "GOV-3 Apps runtime package contracts (advisory)",
+            "ops_scripts/ci/check_apps_runtime_package_contracts.py",
+        ),
+        (
+            "GOV-4 Governance receipts valid (advisory)",
+            "ops_scripts/ci/check_governance_receipts.py",
+        ),
     ]
 
     for label, script in assurance_gates:

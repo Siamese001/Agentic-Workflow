@@ -1060,3 +1060,293 @@ class TestG28RequiredGateRepair:
             + str([(v.gate_id, v.result, v.reason_codes) for v in mesh.verdicts
                    if v.result in (VERDICT_FAIL, VERDICT_UNKNOWN)])
         )
+
+
+# ── TestExitFinalizeProofPersistence ─────────────────────────────────────────
+
+class TestExitFinalizeProofPersistence:
+    """Verify exit_finalize_apps_rg persists proof artifacts and wires
+    gate harness outputs into X3Disposition correctly.
+
+    Tests cover:
+      P1 — gate_verdict_refs is non-empty after a successful run
+      P2 — gate_verdict_refs entries follow gate_id::result::digest format
+      P3 — outcome_authorized reflects actual gate verdict, not hardcoded True
+      P4 — hitl_required is False when harness allows finish
+      P5 — exit_status is 'success' when outcome_authorized
+      P6 — 07_gate_mesh_result.json written to run directory
+      P7 — 07_gate_receipt.json written to run directory
+      P8 — gate_verdict_refs contains no placeholder refs ('PLACEHOLDER', 'UNKNOWN::SKIP')
+      P9 — harness failure falls back conservatively (outcome_authorized=False)
+    """
+
+    def _make_sealed(self, *, run_id: str = "run-persist-001") -> "SealedL2Artifact":
+        from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
+        import json as _json
+        content = _json.dumps({
+            "schema_version": "master_resume_v2.16",
+            "header": {"name": "Test User"},
+        })
+        return SealedL2Artifact(
+            generated_content=content,
+            compilation_hash="sha256::persist::compilation",
+            prompt_artifact_digest="sha256::persist::prompt",
+            run_id=run_id,
+            trace_id="trace::persist::001",
+            request_id="req::persist::001",
+            tenant_id="apps_rg",
+            app_id="apps_rg",
+            execution_status="completed",
+            l5_certification_ref="exit-apps-rg-resume-generation-w3p5",
+        )
+
+    def _make_prompt(self, *, run_id: str = "run-persist-001") -> "CompiledPromptArtifact":
+        from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
+        return CompiledPromptArtifact(
+            request_id="req::persist::001",
+            run_id=run_id,
+            app_id="apps_rg",
+            trace_id="trace::persist::001",
+            compilation_hash="sha256::persist::prompt",
+            evidence_digest="sha256::persist::evidence",
+            prompt_blocks=(),
+            l5_certification_ref="exit-apps-rg-resume-generation-w3p5",
+        )
+
+    def test_gate_verdict_refs_nonempty_after_finalize(self, tmp_path):
+        """P1: gate_verdict_refs must be populated after exit_finalize_apps_rg."""
+        from unittest.mock import patch
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+
+        sealed = self._make_sealed()
+        prompt = self._make_prompt()
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ):
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        # gate_verdict_refs must be non-empty tuple
+        assert isinstance(disposition.gate_verdict_refs, tuple), (
+            "gate_verdict_refs must be a tuple"
+        )
+        assert len(disposition.gate_verdict_refs) > 0, (
+            "gate_verdict_refs must be non-empty — harness outputs not wired in"
+        )
+
+    def test_gate_verdict_refs_format(self, tmp_path):
+        """P2: each gate_verdict_ref entry must be 'GATE_ID::RESULT::DIGEST'."""
+        from unittest.mock import patch
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+
+        sealed = self._make_sealed(run_id="run-persist-format")
+        prompt = self._make_prompt()
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ):
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        for ref in disposition.gate_verdict_refs:
+            parts = ref.split("::")
+            assert len(parts) >= 3, (
+                f"gate_verdict_ref {ref!r} must have >=3 '::'-separated parts"
+            )
+            gate_id = parts[0]
+            result = parts[1]
+            assert gate_id.startswith("G"), f"gate_id part {gate_id!r} must start with 'G'"
+            assert result in ("PASS", "FAIL", "WARN", "UNKNOWN", "NOT_APPLICABLE"), (
+                f"result part {result!r} is not a known verdict"
+            )
+
+    def test_outcome_authorized_not_hardcoded_true(self, tmp_path):
+        """P3: outcome_authorized must reflect actual gate result, not hardcoded True."""
+        from unittest.mock import patch, MagicMock
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from agentic_core.runtime.exit.exit_disposition import (
+            X3A_DENY_REROUTE, ExitDispositionReceipt,
+        )
+        from agentic_core.runtime.gates.gate_types import GateMeshResult, GateVerdict
+
+        sealed = self._make_sealed(run_id="run-persist-deny")
+        prompt = self._make_prompt()
+
+        # Build a mock receipt that denies
+        mock_verdict = GateVerdict(
+            gate_id="G21",
+            result="FAIL",
+            severity="hard_fail",
+            reason_codes=("fabrication_marker",),
+        )
+        mock_mesh = GateMeshResult(verdicts=(mock_verdict,), required_gate_ids=("G21",))
+        mock_receipt = ExitDispositionReceipt(
+            x3_code=X3A_DENY_REROUTE,
+            request_id="req::deny",
+            run_id="run-persist-deny",
+            decisive_blocker_gate_ids=("G21",),
+            gate_mesh_result_ref=mock_mesh.deterministic_digest,
+            hard_fail_count=1,
+        )
+        from agentic_core.runtime.exit.exit_disposition import RuntimeExhaustBundle
+        mock_exhaust = RuntimeExhaustBundle(run_id="run-persist-deny", created_after_exit=True)
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ), patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+        ) as mock_harness_factory:
+            mock_harness = MagicMock()
+            mock_harness.evaluate.return_value = (mock_receipt, mock_mesh, mock_exhaust)
+            mock_harness._profile.gate_definitions = {"G28": {}}
+            mock_harness_factory.return_value = mock_harness
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        assert disposition.outcome_authorized is False, (
+            "outcome_authorized must be False when harness returns X3A_DENY_REROUTE"
+        )
+
+    def test_outcome_authorized_true_when_harness_allows_finish(self, tmp_path):
+        """P3b: outcome_authorized must be True when harness returns X3D_ALLOW_FINISH."""
+        from unittest.mock import patch, MagicMock
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+        from agentic_core.runtime.exit.exit_disposition import (
+            X3D_ALLOW_FINISH, ExitDispositionReceipt,
+        )
+        from agentic_core.runtime.gates.gate_types import GateMeshResult, GateVerdict
+
+        sealed = self._make_sealed(run_id="run-persist-allow")
+        prompt = self._make_prompt()
+
+        mock_verdict = GateVerdict(
+            gate_id="G21",
+            result="PASS",
+            severity="hard_fail",
+            reason_codes=(),
+        )
+        mock_mesh = GateMeshResult(
+            verdicts=(mock_verdict,),
+            required_gate_ids=("G21",),
+        )
+        mock_receipt = ExitDispositionReceipt(
+            x3_code=X3D_ALLOW_FINISH,
+            request_id="req::allow",
+            run_id="run-persist-allow",
+            gate_mesh_result_ref=mock_mesh.deterministic_digest,
+            decisive_reason="all gates passed",
+            hard_fail_count=0,
+        )
+        from agentic_core.runtime.exit.exit_disposition import RuntimeExhaustBundle
+        mock_exhaust = RuntimeExhaustBundle(run_id="run-persist-allow", created_after_exit=True)
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ), patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+        ) as mock_harness_factory:
+            mock_harness = MagicMock()
+            mock_harness.evaluate.return_value = (mock_receipt, mock_mesh, mock_exhaust)
+            mock_harness._profile.gate_definitions = {"G28": {}}
+            mock_harness_factory.return_value = mock_harness
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        assert disposition.outcome_authorized is True, (
+            "outcome_authorized must be True when harness returns X3D_ALLOW_FINISH"
+        )
+        assert disposition.hitl_required is False, (
+            "hitl_required must be False when harness allows finish"
+        )
+        assert disposition.exit_status == "success", (
+            f"exit_status must be 'success' when outcome_authorized, got {disposition.exit_status!r}"
+        )
+
+    def test_proof_artifacts_written_to_run_dir(self):
+        """P6+P7: 07_gate_mesh_result.json and 07_gate_receipt.json must exist in run dir."""
+        from unittest.mock import patch
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+
+        sealed = self._make_sealed(run_id="run-proof-artifacts")
+        prompt = self._make_prompt()
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ):
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        # Find the run directory from the output_artifact_path
+        import os
+        artifact_path = Path(disposition.output_artifact_path)
+        run_dir = artifact_path.parent
+        assert run_dir.exists(), f"Run directory {run_dir} does not exist"
+
+        mesh_path = run_dir / "07_gate_mesh_result.json"
+        receipt_path = run_dir / "07_gate_receipt.json"
+        assert mesh_path.exists(), (
+            f"07_gate_mesh_result.json not found in {run_dir}"
+        )
+        assert receipt_path.exists(), (
+            f"07_gate_receipt.json not found in {run_dir}"
+        )
+
+        # Validate JSON content is parseable and has required keys
+        import json as _json
+        mesh_data = _json.loads(mesh_path.read_text(encoding="utf-8"))
+        assert "deterministic_digest" in mesh_data, (
+            "07_gate_mesh_result.json must contain deterministic_digest"
+        )
+        receipt_data = _json.loads(receipt_path.read_text(encoding="utf-8"))
+        assert "x3_code" in receipt_data, (
+            "07_gate_receipt.json must contain x3_code"
+        )
+        assert "gate_mesh_result_ref" in receipt_data, (
+            "07_gate_receipt.json must contain gate_mesh_result_ref"
+        )
+
+    def test_no_placeholder_refs_in_gate_verdict_refs(self):
+        """P8: gate_verdict_refs must not contain placeholder sentinel values."""
+        from unittest.mock import patch
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+
+        sealed = self._make_sealed(run_id="run-no-placeholder")
+        prompt = self._make_prompt()
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ):
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        forbidden_sentinels = ("PLACEHOLDER", "UNKNOWN::SKIP", "skip", "placeholder")
+        for ref in disposition.gate_verdict_refs:
+            for sentinel in forbidden_sentinels:
+                assert sentinel not in ref, (
+                    f"gate_verdict_refs contains forbidden placeholder {sentinel!r} in {ref!r}"
+                )
+
+    def test_harness_exception_falls_back_conservatively(self):
+        """P9: if harness raises, outcome_authorized must be False (never True on exception)."""
+        from unittest.mock import patch
+        from agentic_core.runtime.exit.apps_rg_exit_binding import exit_finalize_apps_rg
+
+        sealed = self._make_sealed(run_id="run-harness-exception")
+        prompt = self._make_prompt()
+
+        with patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding._resolve_repo_root",
+            return_value=_REPO_ROOT,
+        ), patch(
+            "agentic_core.runtime.exit.apps_rg_exit_binding.build_apps_rg_exit_harness",
+            side_effect=RuntimeError("harness exploded"),
+        ):
+            disposition = exit_finalize_apps_rg(sealed, prompt)
+
+        assert disposition.outcome_authorized is False, (
+            "outcome_authorized must be False when harness raises"
+        )
+        assert disposition.gate_verdict_refs == (), (
+            "gate_verdict_refs must be empty tuple when harness raises"
+        )

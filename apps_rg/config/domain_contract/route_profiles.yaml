@@ -70,3 +70,45 @@
   route_id_mapping:
     default: "rg.resume_generation.default"
     EXECUTIVE: "rg.resume_generation.executive"
+
+  # W2 route evaluation order — R1B present (semantic cache enabled for apps_rg)
+  route_evaluation_order:
+    - route_id: R5_PRE_ROUTE_FALLBACK
+      condition: unroutable_input
+      description: Check if request is fundamentally unroutable
+    - route_id: R1A_EXACT_CACHE
+      condition: exact_cache_hit_available
+      description: Check R1A exact cache
+    - route_id: R1B_SEMANTIC_CACHE
+      condition: semantic_cache_compatible
+      description: Check R1B semantic cache with full compatibility verification
+      compatibility_requirements:
+        target_company: required
+        target_role: required
+        task_class: required
+    - route_id: R3_SIMPLE_GROUNDED_READ
+      condition: default
+      description: Default grounded read route requiring C0 grounding
+
+  # W3N graph traversal policy — chroma-graphrag-lic-rg-research-f4a2e9 (no-core track)
+  # CONFIG_PREPARED_ONLY — RouteContract does NOT carry GraphTraversePolicy under no-core plan.
+  # C0.3 pipeline does NOT execute graph traversal under no-core plan.
+  # apps_rg.integrations.c0_graph_adapter does NOT exist yet (deferred to W4N).
+  # run_graph_traverse() is NOT wired.
+  # apps_rg bounded to max_hops=1, max_nodes=32, max_edges=64.
+  graph_traverse:
+    graph_expansion_allowed: true
+    max_hops: 1
+    max_nodes: 32
+    max_edges: 64
+    allowed_relation_types:
+      - DERIVED_FROM
+      - IMPLEMENTS
+      - CONTRADICTS
+      - SOURCE_VERSION
+      - EVIDENCE
+    contradiction_scan_enabled: true
+    supersession_scan_enabled: false
+    graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
+    live_wiring_deferred: true
+    wiring_gate: GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED

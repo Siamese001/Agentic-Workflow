@@ -14,3 +14,37 @@
   l3_dag_ref: "apps_lic/config/hop_pipeline.py"
   source_app_config_ref: "apps_lic/config/agent_specs.json"
   created_at: "2026-05-01"
+
+  # W2 route evaluation order — R1B intentionally absent (semantic cache disabled for apps_lic)
+  route_evaluation_order:
+    - route_id: R5_PRE_ROUTE_FALLBACK
+      condition: unroutable_input
+      description: Check if request is fundamentally unroutable
+    - route_id: R1A_EXACT_CACHE
+      condition: exact_cache_hit_available
+      description: Check R1A exact cache
+    - route_id: R3_SIMPLE_GROUNDED_READ
+      condition: default
+      description: Default grounded read route requiring C0 grounding
+
+  # W3N graph traversal policy — chroma-graphrag-lic-rg-research-f4a2e9 (no-core track)
+  # CONFIG_PREPARED_ONLY — RouteContract does NOT carry GraphTraversePolicy under no-core plan.
+  # C0.3 pipeline does NOT execute graph traversal under no-core plan.
+  # apps_lic.integrations.c0_graph_adapter does NOT exist yet (deferred to W4N).
+  # run_graph_traverse() is NOT wired.
+  graph_traverse:
+    graph_expansion_allowed: true
+    max_hops: 2
+    max_nodes: 64
+    max_edges: 128
+    allowed_relation_types:
+      - GOVERNED_BY
+      - OBSERVED_IN
+      - CONTRADICTS
+      - OWNED_BY
+      - REQUIRES
+    contradiction_scan_enabled: true
+    supersession_scan_enabled: false
+    graph_adapter_ref: apps_lic.integrations.c0_graph_adapter
+    live_wiring_deferred: true
+    wiring_gate: GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED

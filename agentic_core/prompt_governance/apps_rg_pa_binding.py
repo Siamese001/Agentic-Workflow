@@ -415,6 +415,36 @@ def _build_u0_task_block(
         directives.append("Each experience bullet MUST include a `source_quote` field with the verbatim source span.")
     directives_block = ("\n".join(f"- {d}" for d in directives)) if directives else "(none)"
 
+    # Grounded runs (strategic_tailor / tailor_existing) MUST emit a header object
+    # extracted from source resume identity fields.  generate_scratch runs omit it.
+    _gm_raw = (validated_request.app_payload or {}).get("generation_mode") or ""
+    generation_mode: str = (
+        _gm_raw.value if hasattr(_gm_raw, "value") else str(_gm_raw)
+    )
+    _GROUNDED_MODES = {"strategic_tailor", "tailor_existing"}
+    is_grounded = generation_mode in _GROUNDED_MODES
+
+    if is_grounded:
+        header_instruction = (
+            f"\n"
+            f"HEADER SECTION — MANDATORY FOR GROUNDED RUNS:\n"
+            f"Extract candidate identity fields verbatim from the source resume. "
+            f"Do NOT invent or modify any field. Emit a top-level \"header\" key with "
+            f"this exact schema:\n"
+            f"  {{\"name\": \"<full name from resume>\", "
+            f"\"phone\": \"<phone or null>\", "
+            f"\"email\": \"<email or null>\", "
+            f"\"linkedin\": \"<linkedin URL or null>\", "
+            f"\"github\": \"<github URL or null>\", "
+            f"\"location\": \"<city, state or null>\"}}\n"
+            f"If a field is absent in the source resume, set it to null. "
+            f"Do NOT substitute target_company or target_role values."
+        )
+        sections_str = "header, executive_summary, experience, skills, education, certifications"
+    else:
+        header_instruction = ""
+        sections_str = "executive_summary, experience, skills, education, certifications"
+
     return (
         f"Tailor a resume for the following position:\n"
         f"  Company: {target_company}\n"
@@ -424,10 +454,10 @@ def _build_u0_task_block(
         f"Task plan from L1: {', '.join(l1_plan.task_plan)}\n"
         f"\n"
         f"AG-2 provenance directives:\n{directives_block}\n"
+        f"{header_instruction}"
         f"\n"
         f"Produce output in formats: {formats_str}. Default to a JSON resume "
-        f"document with sections: executive_summary, experience, skills, "
-        f"education, certifications. Output JSON only — no markdown, no prose preamble."
+        f"document with sections: {sections_str}. Output JSON only — no markdown, no prose preamble."
     )
 
 
@@ -626,6 +656,24 @@ def pa_compose_apps_rg(
             "action_required": route.action_required,
         }),
     }
+
+    # Per-input hashes — deposited into component_hash_map so Exit G24 can read
+    # them without a separate contract field.  Keys are apps_rg-specific but the
+    # container (component_hash_map) is the existing generic field on the artifact.
+    _app_payload: Mapping[str, Any] = validated_request.app_payload or {}
+    _jd_section = _app_payload.get("jd_payload") or {}
+    _resume_section = _app_payload.get("resume_payload") or {}
+    _target_section = _app_payload.get("target") or {}
+    _target_spec_str = "|".join([
+        str(_target_section.get("company", "")),
+        str(_target_section.get("role", "")),
+        str(_target_section.get("level", "")),
+    ])
+    component_hash_map["jd_hash"] = str(_jd_section.get("jd_hash") or "")
+    component_hash_map["resume_hash"] = str(_resume_section.get("resume_hash") or "")
+    component_hash_map["target_role_spec_hash"] = hashlib.sha256(
+        _target_spec_str.encode("utf-8")
+    ).hexdigest()
 
     # W4: compilation_hash covers actual block CONTENT (not just length) so
     # prompt_hash changes whenever any meaningful S0/I0/U0/C0/R0 content changes.

@@ -1,0 +1,29 @@
+# Test app L6 learning profile
+
+schema_version: "1.0"
+profile_type: "l6_learning"
+app_id: "apps_test"
+
+writeback_config:
+  writeback_enabled: true
+  writeback_async: true
+  default_writeback_store: "sqlite"
+  writeback_batch_size: 100
+  writeback_flush_interval_seconds: 60
+
+learning_policy:
+  aggregation_mode: "windowed"
+  aggregation_window_seconds: 300
+  dim_score_learning_enabled: true
+  dim_score_fields: ["test_dim_1", "test_dim_2"]
+  exclude_patterns: ["test", "draft"]
+
+writeback_filter:
+  min_confidence_threshold: 0.5
+  require_success_status: true
+  excluded_tenant_patterns: []
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED

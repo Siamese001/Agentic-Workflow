@@ -18,8 +18,9 @@ except ImportError:
     yaml = None
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
-from agentic_core.runtime.contracts.route_contract import RouteContract
+from agentic_core.runtime.contracts.route_contract import GraphTraversePolicy, RouteContract
 from agentic_core.L1_cognition.package_driven_l1_binding import PackageDrivenL1Plan
+from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cache
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,6 +68,18 @@ class RETTerminalPacket:
     exit_status: str = "success"
     outcome_authorized: bool = True
     final_output: Dict[str, Any] = field(default_factory=dict)
+
+    # W1 (chroma-graphrag-core-wiring-gaps-b3f7a1): R1B semantic cache enrichment fields.
+    # These carry the signal emitted by check_d2_semantic_cache() so Exit and audit
+    # have full provenance without needing to re-query the cache.
+    semantic_similarity_score: Optional[float] = None      # similarity from D2 hit dict
+    semantic_threshold_used: Optional[float] = None        # namespace-resolved threshold
+    semantic_namespace: str = ""                            # cache namespace
+    cache_record_ref: str = ""                             # opaque key / record ref from hit
+    cache_record_digest: str = ""                          # digest from hit dict if present
+    semantic_profile_ref: str = ""                         # cache_profile_id that governed lookup
+    compatibility_check_fields: List[str] = field(default_factory=list)  # from profile
+    ret_type: str = ""                                     # always "SEMANTIC_CACHE_HIT" for R1B hits
 
 
 @dataclass(frozen=True)
@@ -118,6 +131,121 @@ def _load_cache_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
             return yaml.safe_load(f)
     except Exception:
         return None
+
+
+def _read_semantic_cache_profile(cache_profile: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Generic reader for the semantic cache configuration block.
+
+    Handles two canonical profile shapes without any app_id branching:
+
+    Shape A — nested block (apps_rg, apps_lic):
+        semantic_cache:
+          enabled: true|false
+          namespace: "some.namespace.v1"
+          similarity_threshold: 0.88
+          compatibility_check_fields: [...]
+          live_wiring_deferred: true|false
+
+    Shape B — flat keys (apps_research legacy shape):
+        semantic_cache_enabled: true|false
+        similarity_threshold: 0.92
+        # namespace absent — falls back to cache_profile_id
+        # live_wiring_deferred absent — treated as false (live)
+
+    Returns a normalised dict with keys:
+        enabled              bool
+        namespace            str   (never empty; falls back to cache_profile_id)
+        similarity_threshold float
+        compatibility_check_fields  list[str]
+        live_wiring_deferred bool
+        wiring_gate          str
+        profile_id           str
+
+    Returns None when the profile cannot be read or enabled is definitively false.
+    Returns None when live_wiring_deferred is True (caller must skip the live call).
+    """
+    profile_id: str = cache_profile.get("cache_profile_id", "")
+
+    # --- Shape A: nested semantic_cache block ---
+    nested: Optional[Dict[str, Any]] = cache_profile.get("semantic_cache")  # type: ignore[assignment]
+    if isinstance(nested, dict):
+        enabled: bool = bool(nested.get("enabled", False))
+        if not enabled:
+            return None
+        live_wiring_deferred: bool = bool(nested.get("live_wiring_deferred", False))
+        if live_wiring_deferred:
+            _LOGGER.debug(
+                "_read_semantic_cache_profile: R1B live_wiring_deferred=true for profile=%s — skipping call",
+                profile_id,
+            )
+            return None
+        namespace: str = nested.get("namespace") or profile_id
+        threshold: float = float(nested.get("similarity_threshold", 0.98))
+        compat_fields: List[str] = list(nested.get("compatibility_check_fields") or [])
+        wiring_gate: str = nested.get("wiring_gate", "")
+        return {
+            "enabled": True,
+            "namespace": namespace,
+            "similarity_threshold": threshold,
+            "compatibility_check_fields": compat_fields,
+            "live_wiring_deferred": False,
+            "wiring_gate": wiring_gate,
+            "profile_id": profile_id,
+        }
+
+    # --- Shape B: flat keys ---
+    flat_enabled: bool = bool(cache_profile.get("semantic_cache_enabled", False))
+    if not flat_enabled:
+        return None
+    flat_deferred: bool = bool(cache_profile.get("live_wiring_deferred", False))
+    if flat_deferred:
+        _LOGGER.debug(
+            "_read_semantic_cache_profile: R1B live_wiring_deferred=true (flat) for profile=%s — skipping call",
+            profile_id,
+        )
+        return None
+    flat_namespace: str = cache_profile.get("namespace") or profile_id
+    flat_threshold: float = float(cache_profile.get("similarity_threshold", 0.98))
+    flat_compat: List[str] = list(cache_profile.get("compatibility_check_fields") or [])
+    return {
+        "enabled": True,
+        "namespace": flat_namespace,
+        "similarity_threshold": flat_threshold,
+        "compatibility_check_fields": flat_compat,
+        "live_wiring_deferred": False,
+        "wiring_gate": "",
+        "profile_id": profile_id,
+    }
+
+
+def _read_graph_traverse_policy(route_profile: Dict[str, Any]) -> Optional[GraphTraversePolicy]:
+    """Generic reader for the graph_traverse block in an app route profile.
+
+    Returns a GraphTraversePolicy built from the profile's ``graph_traverse:``
+    block, or None if the block is absent.  No app_id branching — field names
+    are fully generic.
+
+    The returned policy is forwarded to C0 via RouteContract.graph_traverse_policy.
+    L0 does NOT call run_graph_traverse().
+
+    W2: chroma-graphrag-core-wiring-gaps-b3f7a1
+    """
+    gt: Optional[Dict[str, Any]] = route_profile.get("graph_traverse")  # type: ignore[assignment]
+    if not isinstance(gt, dict):
+        return None
+    relation_types_raw = gt.get("allowed_relation_types") or []
+    return GraphTraversePolicy(
+        graph_expansion_allowed=bool(gt.get("graph_expansion_allowed", False)),
+        max_hops=int(gt.get("max_hops", 0)),
+        max_nodes=int(gt.get("max_nodes", 0)),
+        max_edges=int(gt.get("max_edges", 0)),
+        allowed_relation_types=tuple(relation_types_raw),
+        contradiction_scan_enabled=bool(gt.get("contradiction_scan_enabled", False)),
+        supersession_scan_enabled=bool(gt.get("supersession_scan_enabled", False)),
+        graph_adapter_ref=str(gt.get("graph_adapter_ref", "")),
+        live_wiring_deferred=bool(gt.get("live_wiring_deferred", True)),
+        wiring_gate=str(gt.get("wiring_gate", "")),
+    )
 
 
 def _check_r5_preroute_fallback(
@@ -344,17 +472,20 @@ def l0_evaluate_routes_package_driven(
             evaluations.append(eval_result)
             
             if eval_result.terminal and eval_result.eligible:
-                # Request is unroutable - emit terminal RouteContract
+                # R5 is a terminal route — no C0 grounding, no graph policy.
                 selected_route = RouteContract(
                     request_id=validated_request.request_id,
                     run_id=validated_request.run_id,
                     app_id=validated_request.app_id,
-                    task_class=validated_request.task_class,
+                    trace_id=validated_request.trace_id,
                     tenant_id=validated_request.tenant_id,
                     route_id="R5_PRE_ROUTE_FALLBACK",
-                    route_type="TERMINAL",
-                    terminal_reason=eval_result.reason,
-                    trace_id=validated_request.trace_id,
+                    l3_required=False,
+                    grounding_required=False,
+                    model_generation_required=False,
+                    write_authority_present=False,
+                    l5_certification_ref=getattr(validated_request, "l5_certification_ref", ""),
+                    graph_traverse_policy=None,
                 )
                 break
         
@@ -363,23 +494,21 @@ def l0_evaluate_routes_package_driven(
             evaluations.append(eval_result)
             
             if eval_result.eligible:
-                # R1A is selected for cache lookup
-                # Actual cache hit check happens in L2
-                # For L0, we emit RouteContract for R1A
+                # R1A is a cache/terminal route — no C0 grounding, no graph policy.
                 selected_route = RouteContract(
                     request_id=validated_request.request_id,
                     run_id=validated_request.run_id,
                     app_id=validated_request.app_id,
-                    task_class=validated_request.task_class,
+                    trace_id=validated_request.trace_id,
                     tenant_id=validated_request.tenant_id,
                     route_id="R1A_EXACT_CACHE",
-                    route_type="CACHE_LOOKUP",
-                    requires_cache_hit=True,
-                    cache_type="exact",
-                    trace_id=validated_request.trace_id,
+                    l3_required=False,
+                    grounding_required=False,
+                    model_generation_required=False,
+                    write_authority_present=False,
+                    l5_certification_ref=getattr(validated_request, "l5_certification_ref", ""),
+                    graph_traverse_policy=None,
                 )
-                # Note: R1A evaluation continues - if cache miss, we'll try R1B then R3
-                # For now, we select R1A as the route
                 break
         
         elif route_id == "R1B_SEMANTIC_CACHE":
@@ -387,40 +516,78 @@ def l0_evaluate_routes_package_driven(
             evaluations.append(eval_result)
             
             if eval_result.eligible:
-                # R1B is selected for semantic cache lookup
-                selected_route = RouteContract(
-                    request_id=validated_request.request_id,
-                    run_id=validated_request.run_id,
-                    app_id=validated_request.app_id,
-                    task_class=validated_request.task_class,
-                    tenant_id=validated_request.tenant_id,
-                    route_id="R1B_SEMANTIC_CACHE",
-                    route_type="CACHE_LOOKUP",
-                    requires_cache_hit=True,
-                    cache_type="semantic",
-                    semantic_compatibility_required=True,
-                    trace_id=validated_request.trace_id,
-                )
-                break
+                # W1 (chroma-graphrag-core-wiring-gaps-b3f7a1 GAP-01/GAP-02):
+                # Read the generic semantic cache profile; call check_d2_semantic_cache()
+                # when live wiring is active.  On miss, fall through to the next route
+                # (do NOT break here).  On hit, emit RETTerminalPacket — never RouteContract.
+                r1b_cfg = _read_semantic_cache_profile(cache_profile or {})
+                if r1b_cfg is not None:
+                    # Build the minimal request dict for the cache key.
+                    app_payload_for_cache: Dict[str, Any] = validated_request.app_payload or {}
+                    request_dict: Dict[str, Any] = {
+                        "task_class": validated_request.task_class,
+                        "app_id": validated_request.app_id,
+                        "payload": app_payload_for_cache,
+                    }
+                    d2_hit = check_d2_semantic_cache(
+                        request_dict,
+                        namespace=r1b_cfg["namespace"],
+                        tenant_id=validated_request.tenant_id,
+                        similarity_threshold_override=r1b_cfg["similarity_threshold"],
+                    )
+                    if d2_hit is not None:
+                        # Cache HIT — emit RETTerminalPacket to Exit.
+                        # Never route to C0, Prompt Assembly, L3, or L2.
+                        hit_similarity: Optional[float] = (
+                            d2_hit.get("similarity")
+                            or d2_hit.get("similarity_score")
+                        )
+                        selected_route = _build_r1b_ret_packet(
+                            validated_request=validated_request,
+                            d2_hit=d2_hit,
+                            r1b_cfg=r1b_cfg,
+                            hit_similarity=hit_similarity,
+                        )
+                        break
+                    else:
+                        # Cache MISS — continue to next route (fall through, do NOT break).
+                        _LOGGER.debug(
+                            "R1B semantic cache miss for app=%s namespace=%s — continuing to next route",
+                            validated_request.app_id,
+                            r1b_cfg["namespace"],
+                        )
+                        # continue loop; do not break
+                else:
+                    # live_wiring_deferred=true or profile disabled — skip R1B, continue.
+                    _LOGGER.debug(
+                        "R1B skipped (live_wiring_deferred or disabled) for app=%s",
+                        validated_request.app_id,
+                    )
+                    # continue loop; do not break
         
         elif route_id == "R3_SIMPLE_GROUNDED_READ":
             eval_result = _check_r3_simple_grounded_read(validated_request, route_profile)
             evaluations.append(eval_result)
             
             if eval_result.eligible:
-                # R3 is the default execution route
+                # R3 is the default execution route — only C0-grounded routes
+                # may carry an active graph policy.  Read it generically from
+                # the route profile's graph_traverse block.
+                # L0 does NOT call run_graph_traverse().
+                graph_policy = _read_graph_traverse_policy(route_profile)
                 selected_route = RouteContract(
                     request_id=validated_request.request_id,
                     run_id=validated_request.run_id,
                     app_id=validated_request.app_id,
-                    task_class=validated_request.task_class,
+                    trace_id=validated_request.trace_id,
                     tenant_id=validated_request.tenant_id,
                     route_id="R3_SIMPLE_GROUNDED_READ",
-                    route_type="EXECUTION",
-                    requires_grounding=True,
-                    execution_form=route_profile.get("active_execution_form", "SINGLE_STEP"),
-                    managed_workflow_allowed=route_profile.get("managed_workflow_allowed", False),
-                    trace_id=validated_request.trace_id,
+                    l3_required=route_profile.get("managed_workflow_allowed", False),
+                    grounding_required=True,
+                    model_generation_required=True,
+                    write_authority_present=False,
+                    l5_certification_ref=getattr(validated_request, "l5_certification_ref", ""),
+                    graph_traverse_policy=graph_policy,
                 )
                 break
     
@@ -437,6 +604,49 @@ def l0_evaluate_routes_package_driven(
     )
     
     return selected_route, evaluations
+
+
+def _build_r1b_ret_packet(
+    validated_request: "ValidatedRequest",
+    d2_hit: Dict[str, Any],
+    r1b_cfg: Dict[str, Any],
+    hit_similarity: Optional[float],
+) -> RETTerminalPacket:
+    """Build a fully-populated RETTerminalPacket from a D2 semantic cache hit.
+
+    Internal helper called exclusively from the R1B arm of
+    ``l0_evaluate_routes_package_driven``.  All fields are populated from
+    the generic profile config and the hit dict returned by
+    ``check_d2_semantic_cache()`` — no app_id branching.
+    """
+    return RETTerminalPacket(
+        route_id="R1B_SEMANTIC_CACHE",
+        terminal_type="semantic_cache_hit",
+        ret_type="SEMANTIC_CACHE_HIT",
+        # Evidence from the cache hit dict
+        evidence_digest=d2_hit.get("evidence_digest") or d2_hit.get("query_hash", ""),
+        provenance_chain=d2_hit.get("provenance_chain") or [],
+        compatibility_receipt_ref=d2_hit.get("receipt_ref", ""),
+        compatibility_checks_passed=d2_hit.get("checks_passed") or {},
+        substrate_namespace=r1b_cfg["namespace"],
+        substrate_entry_ref=d2_hit.get("entry_ref") or d2_hit.get("cache_key", ""),
+        is_final_customized_output=False,
+        source_app_id=d2_hit.get("source_app_id", ""),
+        request_id=validated_request.request_id,
+        trace_id=validated_request.trace_id,
+        timestamp_iso=d2_hit.get("timestamp", ""),
+        exit_status="success",
+        outcome_authorized=True,
+        final_output=d2_hit.get("content") or d2_hit.get("response") or {},
+        # W1 enrichment fields
+        semantic_similarity_score=hit_similarity,
+        semantic_threshold_used=r1b_cfg["similarity_threshold"],
+        semantic_namespace=r1b_cfg["namespace"],
+        cache_record_ref=d2_hit.get("cache_key") or d2_hit.get("entry_ref", ""),
+        cache_record_digest=d2_hit.get("digest") or d2_hit.get("evidence_digest", ""),
+        semantic_profile_ref=r1b_cfg["profile_id"],
+        compatibility_check_fields=r1b_cfg["compatibility_check_fields"],
+    )
 
 
 def emit_r1b_ret_terminal_packet(
@@ -475,4 +685,5 @@ __all__ = [
     "RETTerminalPacket",
     "RouteEvaluation",
     "RouteStatus",
+    "_read_semantic_cache_profile",
 ]

@@ -101,3 +101,27 @@ receipts:
   emit_route_selection_receipt: true
   emit_cache_compatibility_receipt: true
   emit_semantic_substrate_receipt: true
+
+# W3N graph traversal policy — chroma-graphrag-lic-rg-research-f4a2e9 (no-core track)
+# CONFIG_PREPARED_ONLY — RouteContract does NOT carry GraphTraversePolicy under no-core plan.
+# C0.3 pipeline does NOT execute graph traversal under no-core plan.
+# apps_research.integrations.c0_graph_adapter does NOT exist yet (deferred to W4N).
+# run_graph_traverse() is NOT wired.
+graph_traverse:
+  graph_expansion_allowed: true
+  max_hops: 2
+  max_nodes: 64
+  max_edges: 128
+  allowed_relation_types:
+    - SOURCE_AUTHORITY
+    - SOURCE_VERSION
+    - CONTRADICTS
+    - SUPERSEDES
+    - SUPERSEDED_BY
+    - EVIDENCE
+    - DERIVED_FROM
+  contradiction_scan_enabled: true
+  supersession_scan_enabled: true
+  graph_adapter_ref: apps_research.integrations.c0_graph_adapter
+  live_wiring_deferred: true
+  wiring_gate: GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED

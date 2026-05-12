@@ -360,8 +360,21 @@ class ResearchRetrievalEngine:
 
 def create_retrieval_engine(
     chromadb_path: str | None = None,
-    collection_name: str = "research_artifacts",
-) -> ResearchRetrievalEngine:
-    """Factory for creating a retrieval engine."""
-    _log.info("[create_retrieval_engine] Using in-memory store (install chromadb for persistence)")
-    return ResearchRetrievalEngine(store=InMemoryResearchStore())
+) -> "ResearchRetrievalEngine":
+    """Factory for creating a retrieval engine.
+
+    W5N gate:
+      - chromadb_path=None  → InMemoryResearchStore (test/dev; keeps mock embed).
+      - chromadb_path=<path> → ChromaResearchStore   (Chroma-backed; BAAI/bge-m3/1024;
+                                                       no mock SHA-256 embedding).
+
+    Live C0 spine wiring is deferred (CONFIG_PREPARED_ONLY — W5N invariant).
+    """
+    if chromadb_path is None:
+        _log.info("[create_retrieval_engine] chromadb_path=None → InMemoryResearchStore (test/dev)")
+        return ResearchRetrievalEngine(store=InMemoryResearchStore())
+
+    from apps_research.engines.integration.chroma_research_store import ChromaResearchStore
+
+    _log.info("[create_retrieval_engine] chromadb_path=%s → ChromaResearchStore", chromadb_path)
+    return ResearchRetrievalEngine(store=ChromaResearchStore(chromadb_path=chromadb_path))

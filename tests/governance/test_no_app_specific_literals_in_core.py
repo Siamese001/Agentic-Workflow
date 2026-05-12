@@ -44,7 +44,21 @@ CATEGORIES = {
 }
 
 # Forbidden literal patterns
+# Order matters: CRITICAL patterns (branching) must come before HIGH patterns (simple literals)
+# to ensure proper detection priority in the negative control tests
 FORBIDDEN_LITERALS = {
+    # CRITICAL: Branching patterns (must be first for priority matching)
+    "app_id_branching": {
+        "patterns": [r'if\s+app_id\s*==\s*["\']', r'app_id\s*==\s*["\']'],
+        "description": "app_id equality check",
+        "severity": "CRITICAL"
+    },
+    "tenant_id_branching": {
+        "patterns": [r'if\s+tenant_id\s*==\s*["\']', r'tenant_id\s*==\s*["\']apps_'],
+        "description": "tenant_id equality check with apps",
+        "severity": "CRITICAL"
+    },
+    # HIGH: Simple app name literals (checked after branching patterns)
     "apps_lic": {
         "patterns": [r'["\']apps_lic["\']', r'apps_lic\b'],
         "description": "apps_lic hardcoded",
@@ -52,7 +66,7 @@ FORBIDDEN_LITERALS = {
     },
     "apps_rg": {
         "patterns": [r'["\']apps_rg["\']', r'apps_rg\b'],
-        "description": "apps_rg hardcoded", 
+        "description": "apps_rg hardcoded",
         "severity": "HIGH"
     },
     "apps_qna": {
@@ -64,16 +78,6 @@ FORBIDDEN_LITERALS = {
         "patterns": [r'["\']apps_research["\']', r'apps_research\b'],
         "description": "apps_research hardcoded",
         "severity": "HIGH"
-    },
-    "app_id_branching": {
-        "patterns": [r'if\s+app_id\s*==\s*["\']', r'app_id\s*==\s*["\']'],
-        "description": "app_id equality check",
-        "severity": "CRITICAL"
-    },
-    "tenant_id_branching": {
-        "patterns": [r'if\s+tenant_id\s*==\s*["\']', r'tenant_id\s*==\s*["\']apps_'],
-        "description": "tenant_id equality check with apps",
-        "severity": "CRITICAL"
     },
     "app_specific_routes": {
         "patterns": [
@@ -295,16 +299,20 @@ def test_literal_classification():
     
     for code, expected_literal, should_match in test_cases:
         found = False
+        matched_literal = None
         for literal_name, literal_info in FORBIDDEN_LITERALS.items():
             for pattern in literal_info["patterns"]:
                 if re.search(pattern, code, re.IGNORECASE):
                     found = True
-                    if expected_literal:
-                        assert literal_name == expected_literal, f"Expected {expected_literal}, got {literal_name}"
-                    break
+                    matched_literal = literal_name
+                    break  # Exit pattern loop
+            if found:
+                break  # Exit literal_name loop after first match
         
         if should_match:
             assert found, f"Should have matched: {code}"
+            if expected_literal:
+                assert matched_literal == expected_literal, f"Expected {expected_literal}, got {matched_literal}"
         else:
             assert not found, f"Should not have matched: {code}"
     
@@ -317,7 +325,8 @@ def test_file_classification():
         ("agentic_core/tests/test_foo.py", "TEST_ALLOWED"),
         ("agentic_core/AGENTS.md", "DOC_ALLOWED"),
         ("agentic_core/L0_routing/apps_lic_l0_binding.py", "TEMPORARY_THIN_ADAPTER"),
-        ("agentic_core/L0_routing/package_driven_selector.py", None),  # Generic
+        ("agentic_core/L0_routing/package_driven_selector.py", "GENERIC_READY"),  # Generic engine
+        ("agentic_core/L0_routing/generic_route_resolver.py", "GENERIC_READY"),  # Generic engine
     ]
     
     for filepath, expected in test_cases:

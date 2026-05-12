@@ -1,0 +1,27 @@
+# Test app C0 substrate profile
+
+schema_version: "1.0"
+profile_type: "c0_substrate"
+app_id: "apps_test"
+
+substrate_config:
+  substrate_enabled: true
+  default_collection_depth: "shallow"
+  max_substrate_items: 100
+  substrate_ttl_seconds: 86400
+
+source_filtering:
+  include_sources: ["test_source"]
+  exclude_sources: ["exclude_me"]
+  require_source_tags: []
+  min_source_reliability: "medium"
+
+cross_app_behavior:
+  allow_cross_app_ingest: false
+  allowed_cross_app_refs: []
+  cross_app_filter_field: "source_app_id"
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED

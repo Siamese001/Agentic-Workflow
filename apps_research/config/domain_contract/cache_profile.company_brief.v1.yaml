@@ -15,10 +15,15 @@ semantic_cache:
   namespace: apps_research.semantic_research_substrate.v1
   
   # Embedding model compatibility
-  embedding_model: text-embedding-3-large
-  embedding_dimensions: 3072
+  embedding_model: BAAI/bge-m3
+  embedding_dimensions: 1024
   similarity_metric: cosine
   similarity_threshold: 0.85
+
+  # W5N no-core readiness markers
+  embedding_profile_status: CONFIG_PREPARED_ONLY
+  live_wiring_deferred: true
+  wiring_gate: APPS_RESEARCH_CHROMA_RUNTIME_WIRING_REQUIRED
   
   # TTL and freshness
   default_ttl_seconds: 2592000  # 30 days

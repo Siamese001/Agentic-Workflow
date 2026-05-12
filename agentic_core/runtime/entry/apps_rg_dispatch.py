@@ -452,8 +452,11 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
         )
 
     # ----------------------------------------------------------------- Exit
+    # Patch B: pass fec (FinalEvidenceContract) through to Exit so factual_grounding
+    # can be computed.  fec is None when grounding_required=False (generate_scratch);
+    # exit_finalize_apps_rg handles None gracefully (factual_grounding stays absent).
     try:
-        disposition = exit_finalize_apps_rg(sealed, prompt_artifact)
+        disposition = exit_finalize_apps_rg(sealed, prompt_artifact, fec=fec)
         _emit_stage_span("Exit_finalize", envelope.trace_id, "OK")
         _save_stage_output(run_dir, "07_Exit_disposition", disposition)
         return disposition

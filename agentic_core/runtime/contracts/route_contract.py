@@ -8,7 +8,38 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_READ_ONLY
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Tuple
+
+
+@dataclass(frozen=True, slots=True)
+class GraphTraversePolicy:
+    """Generic graph traversal policy carried from L0 to C0.
+
+    Populated by L0 when the selected route is a C0-grounded route (e.g. R3).
+    Always None for terminal/cache routes (R1A, R1B hit, R5).
+
+    Fields sourced from app-owned route profile ``graph_traverse:`` block.
+    L0 does NOT call run_graph_traverse(); policy is forwarded to C0 for
+    execution during the C0 grounding phase.
+
+    W2: chroma-graphrag-core-wiring-gaps-b3f7a1
+    """
+
+    graph_expansion_allowed: bool = False
+    max_hops: int = 0
+    max_nodes: int = 0
+    max_edges: int = 0
+    allowed_relation_types: Tuple[str, ...] = field(default_factory=tuple)
+    contradiction_scan_enabled: bool = False
+    supersession_scan_enabled: bool = False
+    graph_adapter_ref: str = ""
+    live_wiring_deferred: bool = True
+    wiring_gate: str = ""
+
+    @property
+    def is_active(self) -> bool:
+        """True iff graph expansion is enabled and live wiring is not deferred."""
+        return self.graph_expansion_allowed and not self.live_wiring_deferred
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,6 +132,11 @@ class RouteContract:
     replay_key: str = ""
     snapshot_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_certification_ref: str = ""
+    # W2: graph traversal policy — populated for C0-grounded routes only (e.g. R3).
+    # Terminal/cache routes (R1A, R1B hit, R5) MUST carry None.
+    # L0 reads graph_traverse block from app route profile; does NOT call run_graph_traverse().
+    # chroma-graphrag-core-wiring-gaps-b3f7a1 W2
+    graph_traverse_policy: Optional["GraphTraversePolicy"] = None
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

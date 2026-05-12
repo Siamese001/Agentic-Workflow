@@ -7,7 +7,7 @@ Ported from: archives/legacy_lic/Agentic LIC/memory_LIC.py
 import hashlib
 from dataclasses import dataclass
 
-from agentic_core.L4_state.utils.client.chroma_client import SovereignChromaClient
+from apps_lic.integrations.chroma_delegate import get_sovereign_chroma_client
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -294,13 +294,13 @@ class LICVectorMemory:
 
     def initialize(self) -> bool:
         """
-        Initialize the ChromaDB client and collection via SovereignChromaClient.
+        Initialize the ChromaDB client and collection via the chroma_delegate.
 
         Returns:
             True if initialization successful, False otherwise
         """
         try:
-            self._client = SovereignChromaClient(persist_dir=self.persist_directory)
+            self._client = get_sovereign_chroma_client(self.persist_directory)
             self._collection = self._client.get_collection(self.collection_name)
             self._initialized = True
             return True

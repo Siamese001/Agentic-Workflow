@@ -1,0 +1,33 @@
+{
+  "report_schema_version": "calibration_report.outreach_quality.v1",
+  "generated_at": "",
+  "corpus_version": "outreach_holdout_corpus.v1",
+  "human_labels_version": "human_labels.outreach_quality.v1",
+  "adjudicated_scores_version": "adjudicated_scores.outreach_quality.v1",
+  "judges_evaluated": [],
+  "summary": {
+    "corpus_size": 80,
+    "human_labeled_items": 0,
+    "adjudicated_items": 0,
+    "judges_available": 0,
+    "judges_unavailable": 0
+  },
+  "per_judge_results": {},
+  "aggregate_metrics": {
+    "best_response_likelihood_spearman": null,
+    "best_brand_voice_spearman": null,
+    "best_overall_spearman": null,
+    "mean_mae_per_dimension": null
+  },
+  "guardrail_audit": {
+    "total_hard_negatives": 20,
+    "false_passes_by_judge": {},
+    "false_fail_rate": null
+  },
+  "promotion_recommendations": {
+    "no_judges_meet_promotion_threshold": true,
+    "required_spearman_threshold": 0.8,
+    "notes": "Awaiting human labels and judge implementation"
+  },
+  "notes": "Seed report template. Populate after adjudication and judge scoring."
+}

@@ -6,15 +6,25 @@ status: active
 source_app_config_ref: apps_rg/config/domain_contract/cache_profiles.yaml
 created_at: '2026-05-03'
 
-semantic_cache_enabled: false
-ttl_seconds: 0
+semantic_cache:
+  enabled: true
+  namespace: apps_rg.resume_gen.v1
+  similarity_threshold: 0.88
+  compatibility_check_fields:
+    - role_compatible
+    - freshness_within_ttl
+    - provenance_known
+  # W2N (chroma-graphrag-lic-rg-research-f4a2e9 no-core track):
+  # CONFIG_PREPARED_ONLY — R1B lookup NOT live-wired.
+  # package_driven_l0_binding.py is in agentic_core and is off-limits under no-core plan.
+  # check_d2_semantic_cache() is NOT called. Live R1B wiring is deferred to W2 (core-authorized).
+  # apps_rg/cache/r1b_adapter.py remains quarantined and untouched.
+  live_wiring_deferred: true
+  wiring_gate: W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED
+
+ttl_seconds: 3600
 cache_scope: user
 grounded_only: true
 invalidation_triggers:
   - config_version_bump
   - policy_hash_change
-notes: >
-  Resume generation is highly personalized per-user; semantic caching is
-  disabled because even highly similar inputs produce meaningfully different
-  outputs depending on user profile. May be revisited when a user-scoped
-  cache surface is available.
