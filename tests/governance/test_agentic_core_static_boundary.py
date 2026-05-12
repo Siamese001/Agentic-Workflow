@@ -59,6 +59,22 @@ FORBIDDEN_APP_PATTERNS = [
     (r'final_draft_r1b_bypass', "app-specific cache bypass", "MEDIUM"),
     (r'linkedin_send', "app-specific send mode", "MEDIUM"),
     (r'email_outbox_send', "app-specific send mode", "MEDIUM"),
+    # W4 extensions — new app literals and semantic patterns
+    (r'["\']apps_architect["\']', "hardcoded apps_architect", "HIGH"),
+    (r'["\']apps_eval["\']', "hardcoded apps_eval", "HIGH"),
+    (r'["\']apps_rfp["\']', "hardcoded apps_rfp", "HIGH"),
+    (r'company_brief', "app-specific domain: company_brief", "HIGH"),
+    (r'interview_card', "app-specific domain: interview_card", "HIGH"),
+    (r'resume_generator', "app-specific domain: resume_generator", "HIGH"),
+    (r'recruiter', "app-specific role literal", "MEDIUM"),
+    (r'outreach', "app-specific action: outreach", "MEDIUM"),
+    (r'JD[._-]specific', "JD-domain semantics", "HIGH"),
+    (r'resume[._-]specific', "resume-domain semantics", "HIGH"),
+    (r'LIC[._-]specific', "apps_lic domain semantics", "HIGH"),
+    (r'RG[._-]specific', "apps_rg domain semantics", "HIGH"),
+    (r'QNA[._-]specific', "apps_qna domain semantics", "HIGH"),
+    (r'research[._-]specific', "research-domain semantics", "HIGH"),
+    (r"""["']apps_[a-z_]+["']""", "generic apps_* quoted literal in core", "HIGH"),
 ]
 
 # Allowlisted file patterns

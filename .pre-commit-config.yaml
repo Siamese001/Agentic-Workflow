@@ -656,6 +656,22 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- GOV-3: Core Addition Author-Gate (Constitutional §CoreAdditionAuthorGate) --
+      # Fail-closed scanner for agentic_core/ changes that lack a valid
+      # CoreAdditionAuthorGateReceipt proof. Triggers on any agentic_core/ Python
+      # file change. Advisory mode local-only via CORE_ADDITION_GATE_ADVISORY=1.
+      # CI must not set advisory mode. Bypass: CORE_ADDITION_GATE_BYPASS=1 (audit-logged).
+      # Artifact: artifacts/ci/agentic_core_addition_gate.json
+      # Plan: .windsurf/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
+      - id: gov3-core-addition-author-gate
+        name: "GOV-3: Core Addition Author-Gate (fail-closed)"
+        entry: py ops_scripts/ci/check_agentic_core_addition.py
+        language: system
+        pass_filenames: false
+        files: ^agentic_core/.*\.py$
+        always_run: false
+        require_serial: true
+
       # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
       # Sums bytes of all .windsurf/rules/*.md with `trigger: always_on` and
       # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic

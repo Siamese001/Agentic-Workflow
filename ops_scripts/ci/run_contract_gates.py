@@ -929,11 +929,15 @@ def main():
             "ops_scripts/ci/check_agentic_core_static_boundary.py",
         ),
         (
-            "GOV-3 Apps runtime package contracts (advisory)",
+            "GOV-3 Core Addition Author-Gate (fail-closed)",
+            "ops_scripts/ci/check_agentic_core_addition.py",
+        ),
+        (
+            "GOV-5 Apps runtime package contracts (advisory)",
             "ops_scripts/ci/check_apps_runtime_package_contracts.py",
         ),
         (
-            "GOV-4 Governance receipts valid (advisory)",
+            "GOV-6 Governance receipts valid (advisory)",
             "ops_scripts/ci/check_governance_receipts.py",
         ),
     ]

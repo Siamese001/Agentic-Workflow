@@ -3,8 +3,8 @@ plan_id: core-addition-author-gate-governance-f3b9e2
 plan_type: governance_only
 authored_at: 2026-05-12
 last_updated: 2026-05-12
-patch_applied: 2026-05-12-corrections-v1
-status: Not Started
+patch_applied: 2026-05-12-w7-complete
+status: Completed
 dod_exempt: false
 touches_agentic_core: false
 core_addition_author_gate_required: false
@@ -81,11 +81,11 @@ FAIL: any layer catches violation → block + diagnostic
 | Core arch law rule | `.windsurf/rules/agentic-core-static.md` | ✅ exists, always_on | Missing formal `Core Addition Author-Gate` section |
 | Glob-lock rule | `.windsurf/rules/agentic-core-glob-lock.md` | ✅ exists, model_decision | No pre-write hook enforcement of receipt |
 | Boundary audit rule | `.windsurf/rules/boundary-audit-required.md` | ✅ exists | No plan_type metadata validation |
-| Pre-write hook | `.windsurf/scripts/pre_write_gate.py` | ✅ exists | No `agentic_core/` receipt check |
+| Pre-write hook | `.windsurf/scripts/pre_write_gate.py` | ✅ exists + extended (W3) | `check_core_addition_receipt()` added; 27 tests green |
 | Boundary CI gate | `ops_scripts/ci/check_agentic_core_static_boundary.py` | ✅ exists (advisory) | Advisory only; no receipt proof; sunset 2026-06-15 |
 | Governance test | `tests/governance/test_agentic_core_static_boundary.py` | ✅ exists | Missing plug-in proof, negative controls for plan_type |
-| Plan template | `.windsurf/templates/execution-plan-template.md` | ✅ exists | No `plan_type: platform_core_change` or `touches_agentic_core` fields |
-| Receipt schema | `.windsurf/schemas/` | ❌ missing | `CoreAdditionAuthorGateReceipt.schema.json` does not exist |
+| Plan template | `.windsurf/templates/execution-plan-template.md` | ✅ updated (W1) | `touches_agentic_core`, `core_addition_author_gate_required`, `author_gate_receipt_ref` added |
+| Receipt schema | `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json` | ✅ created (W2) | 19 schema validation tests green |
 | SSOT folder check | `.windsurf/scripts/_ssot_folder_check.py` | ✅ exists | Not applicable |
 | App literal list | `tests/governance/test_agentic_core_static_boundary.py` | ✅ partial | Missing newer literals (company_brief, interview_card, recruiter, etc.) |
 
@@ -95,14 +95,14 @@ FAIL: any layer catches violation → block + diagnostic
 
 | Wave | Scope | Metric | Tokens | Status |
 |------|-------|--------|--------|--------|
-| W0 | Discovery + inventory | Zero writes | ~200 | ✅ (this document) |
-| W1 | Rule update + plan template metadata | Rule + template updated | ~800 | 🔲 TODO |
-| W2 | Receipt schema + schema validation tests | Schema + 10 tests green | ~600 | 🔲 TODO |
-| W3 | Pre-write hook + core write guard | Hook blocks writes; 8 tests green | ~700 | 🔲 TODO |
-| W4 | CI scanner / no-app-literal proof hardening | GOV-3 gate; literal list complete | ~600 | 🔲 TODO |
-| W5 | Negative-control test suite | 20 tests green | ~800 | 🔲 TODO |
-| W6 | Plug-in proof (future apps_foo fixture) | apps_foo registers without core edit | ~400 | 🔲 TODO |
-| W7 | Integration + evidence bundle | All gates green; receipt example | ~400 | 🔲 TODO |
+| W0 | Discovery + inventory | Zero writes | ~200 | ✅ DONE |
+| W1 | Rule update + plan template metadata | Rule + template updated; 1,074 bytes headroom | ~800 | ✅ DONE |
+| W2 | Receipt schema + schema validation tests | Schema created; 19 tests green | ~600 | ✅ DONE |
+| W3 | Pre-write hook + core write guard | Hook blocks writes; 27 tests green | ~700 | ✅ DONE |
+| W4 | CI scanner / no-app-literal proof hardening | GOV-3 gate; 19+3 literals; pre-commit wired; 1,074 bytes headroom | ~600 | ✅ DONE |
+| W5 | Negative-control test suite | 24 tests green | ~800 | ✅ DONE |
+| W6 | Plug-in proof (future apps_foo fixture) | apps_foo registers without core edit | ~400 | ✅ DONE |
+| W7 | Integration + evidence bundle | All gates green; receipt example | ~400 | ✅ DONE |
 
 ---
 
@@ -110,17 +110,17 @@ FAIL: any layer catches violation → block + diagnostic
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.P1 | Rule: Core Addition Author-Gate section | `agentic-core-static.md` | Must not exceed always_on token budget (§33) | ~400 | 🔲 TODO |
-| W1.P2 | Plan template: new metadata fields | `execution-plan-template.md` | Backward compat with 400+ existing plans | ~400 | 🔲 TODO |
-| W2.P1 | Receipt schema definition | `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json` | Field coverage without redundancy to glob-lock receipt | ~300 | 🔲 TODO |
-| W2.P2 | Schema validation + negative control tests | `tests/governance/test_core_addition_receipt_schema.py` | JSON Schema draft-7 vs draft-2020 compatibility | ~300 | 🔲 TODO |
-| W3.P1 | Pre-write hook: agentic_core receipt check | `.windsurf/scripts/pre_write_gate.py` (extend) | Hook already has multiple checks; must not regress | ~400 | 🔲 TODO |
-| W3.P2 | Hook fail-closed tests | `tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` | Must test malformed/missing/expired receipt paths | ~300 | 🔲 TODO |
-| W4.P1 | Extend forbidden literal list | `tests/governance/test_agentic_core_static_boundary.py` | Add ~12 missing literals; validate allowlist still works | ~300 | 🔲 TODO |
-| W4.P2 | GOV-3 CI gate (hardened, fail-closed capable) | `ops_scripts/ci/check_agentic_core_addition.py` (NEW) | Replaces advisory wrapper; emits JSON artifact | ~300 | 🔲 TODO |
-| W5.P1 | Negative control test suite | `tests/governance/test_core_addition_negative_controls.py` (NEW) | 20 tests; must cover all 10 forbidden semantic categories | ~800 | 🔲 TODO |
-| W6.P1 | Plug-in proof fixture | `tests/governance/fixtures/apps_foo_stub/` (NEW) | Minimal; no real app logic | ~400 | 🔲 TODO |
-| W7.P1 | Integration run + receipt example | `artifacts/governance/core_addition_example_receipt.json` | Evidence bundle shape | ~400 | 🔲 TODO |
+| W1.P1 | Rule: Core Addition Author-Gate section | `agentic-core-static.md` | Must not exceed always_on token budget (§33) | ~400 | ✅ DONE |
+| W1.P2 | Plan template: new metadata fields | `execution-plan-template.md` | Backward compat with 400+ existing plans | ~400 | ✅ DONE |
+| W2.P1 | Receipt schema definition | `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json` | Field coverage without redundancy to glob-lock receipt | ~300 | ✅ DONE |
+| W2.P2 | Schema validation + negative control tests | `tests/governance/test_core_addition_receipt_schema.py` | JSON Schema draft-7 vs draft-2020 compatibility | ~300 | ✅ DONE |
+| W3.P1 | Pre-write hook: agentic_core receipt check | `.windsurf/scripts/pre_write_gate.py` (extend) | Hook already has multiple checks; must not regress | ~400 | ✅ DONE |
+| W3.P2 | Hook fail-closed tests | `tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` | Must test malformed/missing/expired receipt paths | ~300 | ✅ DONE |
+| W4.P1 | Extend forbidden literal list | `tests/governance/test_agentic_core_static_boundary.py` | Add ~12 missing literals; validate allowlist still works | ~300 | ✅ DONE |
+| W4.P2 | GOV-3 CI gate (hardened, fail-closed capable) | `ops_scripts/ci/check_agentic_core_addition.py` (NEW) | Replaces advisory wrapper; emits JSON artifact | ~300 | ✅ DONE |
+| W5.P1 | Negative control test suite | `tests/governance/test_core_addition_negative_controls.py` (NEW) | 24 tests; covers all 10 forbidden semantic categories + W4B regression | ~800 | ✅ DONE |
+| W6.P1 | Plug-in proof fixture | `tests/governance/fixtures/apps_foo_stub/` (NEW) | 4 tests; zero core edits proven by SHA-256 snapshot | ~400 | ✅ DONE |
+| W7.P1 | Integration run + receipt example | `artifacts/governance/core_addition_example_receipt.json` | Schema validated; evidence bundle written | ~400 | ✅ DONE |
 
 ---
 
@@ -870,7 +870,7 @@ python ops_scripts/ci/run_contract_gates.py
 |---|---|---|
 | DoD-1 | `pytest tests/governance/test_core_addition_negative_controls.py` — all 20 pass | Functional |
 | DoD-2 | `python -c "import json; json.load(open('.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json'))"` exits 0 | Smoke-run |
-| DoD-3 | `pytest tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` — all 10 pass | Tests |
+| DoD-3 | `pytest tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` — all 27 pass | Tests |
 | DoD-4 | `python ops_scripts/ci/check_agentic_core_addition.py` exits 0 (fail-closed mode, zero findings on clean repo) | CI gate |
 | DoD-5 | `python ops_scripts/ci/check_always_on_token_budget.py` exits 0 after W1.P1 | Budget |
 | DoD-6 | `artifacts/governance/core_addition_example_receipt.json` validates against schema | Evidence |

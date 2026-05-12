@@ -1,0 +1,21 @@
+# apps_foo_stub — W6 plug-in proof fixture
+# This file lives entirely under apps_foo_stub/config/domain_contract/.
+# No agentic_core edits are required to declare this profile.
+# Any future app follows the same pattern: author app-owned config files,
+# then reference them in the spine_manifest — zero core changes.
+
+app_id: apps_foo
+plan_type: apps_work
+route_class: generic_spine
+
+capability_refs:
+  - generic route resolver capability
+  - generic profile planner capability
+
+# Proof invariants (machine-readable for test_apps_foo_can_plug_in.py):
+proof:
+  no_core_patch_instruction: true
+  plan_type_is_not_platform_core_change: true
+  author_gate_receipt_required: false
+  config_owner: apps_foo
+  registration_path: apps_foo_stub/config/domain_contract/route_profile.yaml
