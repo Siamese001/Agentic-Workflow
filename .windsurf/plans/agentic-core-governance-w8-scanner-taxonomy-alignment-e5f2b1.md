@@ -50,15 +50,26 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 BLOCKED | AGENTS.md references new taxonomy |
 | W8 | P5 | Classification reconciliation | ~600 | Taxonomy engine installed | 🔄 IN PROGRESS | UNKNOWN=0, RUNTIME=0 or moved to remediation |
 
-**Overall Plan Status**: **P5 COMPLETE - REQUIRES W9 REMEDIATION FOR RUNTIME LEAKAGE**
+**Overall Plan Status**: **PARTIAL / CLASSIFICATION COMPLETE / REMEDIATION BLOCKED BY W9**
 
-**Final State**:
-- UNKNOWN = 0 ✅ (all 154 reclassified)
-- RUNTIME_POLICY_LEAKAGE = 55 (true runtime leakage - requires W9 remediation)
-- STATIC_REGISTRY = 165 (properly classified)
-- OFFLINE_TOOLING = 24 (properly classified)
-- FALSE_POSITIVE = 11 (properly classified)
-- Strict mode exits 2 (correct - blocking on runtime leakage)
+**W8 Deliverables (PASS)**:
+- ✅ Taxonomy engine installed and functioning
+- ✅ UNKNOWN = 0 (all 154 reclassified with rationale)
+- ✅ Classification rationale present for all findings
+- ✅ Strict mode behavior correct (blocks on runtime/unknown)
+
+**W8 Blockers (EXPECTED - HANDED OFF TO W9)**:
+- ❌ Strict mode exit 0: BLOCKED - 55 true RUNTIME_POLICY_LEAKAGE remain
+- ❌ Final remediation: BLOCKED BY W9 - requires runtime migration
+
+**Final Counts**:
+- RUNTIME_POLICY_LEAKAGE = 55 (W9 scope)
+- STATIC_REGISTRY = 165 (non-blocking)
+- OFFLINE_TOOLING = 24 (non-blocking)
+- FALSE_POSITIVE = 11 (non-blocking)
+- UNKNOWN = 0 ✅
+
+**Strict Mode**: Exits 2 (correct behavior - will pass after W9)
 
 **Total: ~900 tokens across 4 phases**
 
@@ -90,6 +101,7 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | P5.3 | Classification rule refinement | `core_leakage_scan.py` | PP-9: Improve heuristics based on P5.1-P5.2 | ~100 | ✅ DONE |
 | P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | ✅ DONE |
 | P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | ✅ DONE |
+| P6 | W9 Remediation Handoff | Create W9 plan for runtime leakage | BLOCKER: 55 RUNTIME findings require migration | ~0 | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
