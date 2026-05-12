@@ -3,6 +3,9 @@ plan_id: chroma-graphrag-core-wiring-gaps-b3f7a1
 plan_type: refactor
 parent_plan: chroma-graphrag-lic-rg-research-f4a2e9
 gap_register_source: artifacts/chromadb_graphrag_remediation/no_core_gap_register_final.md
+authored_at: 2026-05-01
+last_updated: 2026-05-12T06:30:00
+status: Completed
 ---
 
 # ChromaDB + Graph RAG — Core Wiring Gaps (GAP-01 through GAP-09)
@@ -45,14 +48,14 @@ Close all nine deferred gaps from the W*N no-core track: wire R1B semantic cache
 
 | Wave | Scope | Focus | Gaps Closed | Est. Tokens | Status |
 |------|-------|-------|-------------|-------------|--------|
-| W0 | Pre-flight | Verify all nine gap states live in source; emit preflight receipt | — | ~600 | 🔲 TODO |
-| W1 | `agentic_core/L0_routing/` | GENERIC_INFRA_EDIT: wire `check_d2_semantic_cache()` in L0 binding R1B arm; add generic namespace/threshold reader from app-owned cache profile | GAP-01, GAP-02 | ~2,000 | 🔲 TODO |
-| W2 | `agentic_core/runtime/contracts/` + L0 binding | GENERIC_INFRA_EDIT: add `graph_traverse_policy: GraphTraversePolicy \| None = None` to `RouteContract`; read `graph_traverse` block from route profiles in L0 binding | GAP-03 | ~1,500 | 🔲 TODO |
-| W3 | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/` | Register `apps_lic`, `apps_rg`, `apps_research` adapters in `ADAPTER_REGISTRY` | GAP-04 | ~800 | 🔲 TODO |
-| W4 | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/` + app C0.3 | Wire `run_graph_traverse()` invocation chain; flip `live_wiring_deferred: false` on all three graph traverse profiles | GAP-05 | ~2,500 | 🔲 TODO |
-| W5 | `apps_rg/cache/` | RCA sign-off + unquarantine `r1b_adapter.py`; wire live R1B cache for apps_rg | GAP-09 | ~1,500 | 🔲 TODO |
-| W6 | `apps_research/engines/` + ingestion tooling | Real BAAI/bge-m3 embedding in `ChromaResearchStore._embed()`; ingestion pipeline populates `process_docs` Chroma collection | GAP-06, GAP-07 | ~3,000 | 🔲 TODO |
-| W7 | All three apps | Integration verification: smoke runs, gate sweep, flip all `live_wiring_deferred` false, emit closure receipt | — | ~1,200 | 🔲 TODO |
+| W0 | Pre-flight | Verify all nine gap states live in source; emit preflight receipt | — | ~600 | ✅ DONE |
+| W1 | `agentic_core/L0_routing/` | GENERIC_INFRA_EDIT: wire `check_d2_semantic_cache()` in L0 binding R1B arm; add generic namespace/threshold reader from app-owned cache profile | GAP-01, GAP-02 | ~2,000 | ✅ DONE |
+| W2 | `agentic_core/runtime/contracts/` + L0 binding | GENERIC_INFRA_EDIT: add `graph_traverse_policy: GraphTraversePolicy \| None = None` to `RouteContract`; read `graph_traverse` block from route profiles in L0 binding | GAP-03 | ~1,500 | ✅ DONE |
+| W3 | `agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/` | Register `apps_lic`, `apps_rg`, `apps_research` adapters in `ADAPTER_REGISTRY` | GAP-04 | ~800 | ✅ DONE |
+| W4 | `agentic_core/runtime/c0/` + app graph profiles | Wire `maybe_run_graph_rag()` in `c0_ground_package_driven()`; map `GraphExpandedEvidencePool` to `FinalEvidenceContract`; flip `live_wiring_deferred: false` on all three graph traverse profiles | GAP-05 | ~2,500 | ✅ DONE |
+| W5 | `apps_rg/cache/` | RCA sign-off + keep quarantine; flip `apps_rg` to generic L0 R1B path (KEEP_QUARANTINED_DEPRECATED decision) | GAP-09 | ~1,500 | ✅ DONE |
+| W6 | `apps_research/engines/` + ingestion tooling | Real BAAI/bge-m3 embedding in `ChromaResearchStore._embed()`; ingestion pipeline populates `process_docs` Chroma collection | GAP-06, GAP-07 | ~3,000 | ✅ DONE |
+| W7 | All three apps | Integration verification: smoke runs, gate sweep, emit closure receipt | — | ~1,200 | ✅ DONE |
 
 **Total: ~13,100 tokens across 8 waves (W0–W7)**
 
@@ -76,21 +79,21 @@ Close all nine deferred gaps from the W*N no-core track: wire R1B semantic cache
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W0.1 | Pre-flight gap verification | `no_core_gap_register_final.md` + all 9 gap source files | None expected | ~600 | 🔲 TODO |
-| W1.1 | Generic namespace/threshold reader | `package_driven_l0_binding.py` | GAP-01 (no profile reader for cache lookup dispatch) | ~1,000 | 🔲 TODO |
-| W1.2 | `check_d2_semantic_cache()` call wiring | `package_driven_l0_binding.py`, `route_gates.py` | GAP-02 (always-miss R1B arm) | ~1,000 | 🔲 TODO |
-| W2.1 | `GraphTraversePolicy` dataclass + `RouteContract` field | `route_contract.py`, `graph_traverse_policy.py` (new) | GAP-03 (no policy carriage) | ~800 | 🔲 TODO |
-| W2.2 | L0 binding reads `graph_traverse` block from route profile | `package_driven_l0_binding.py` | GAP-03 (block never consumed) | ~700 | 🔲 TODO |
-| W3.1 | Adapter registry entries for all three apps | `c0_3_enhanced/adapter_registry.py` or `pipeline.py` | GAP-04 (ADAPTER_REGISTRY empty for these apps) | ~800 | 🔲 TODO |
-| W4.1 | `run_graph_traverse()` invocation in C0.3 pipeline | `c0_3_enhanced/pipeline.py` | GAP-05 (never called despite full impl) | ~1,500 | 🔲 TODO |
-| W4.2 | Flip `live_wiring_deferred: false` on graph profiles | 3 app route profiles | GAP-05 (gate marker removal) | ~600 | 🔲 TODO |
-| W4.3 | Graph RAG integration tests | `tests/_apps_contract/` | GAP-05 (no graph traverse call assertion) | ~400 | 🔲 TODO |
-| W5.1 | RCA completion for `r1b_adapter.py` quarantine | `apps_rg/cache/r1b_adapter.py`, RCA doc | GAP-09 (L4 import violation RCA) | ~800 | 🔲 TODO |
-| W5.2 | Unquarantine + live wire apps_rg R1B | `apps_rg/cache/r1b_adapter.py`, `apps_rg/config/domain_contract/cache_profiles.yaml` | GAP-09 (quarantine removal + profile flip) | ~700 | 🔲 TODO |
-| W6.1 | Real `sentence-transformers` BAAI/bge-m3 in `_embed()` | `apps_research/engines/chroma_research_store.py` | GAP-07 (zero-vector stub) | ~1,500 | 🔲 TODO |
-| W6.2 | Ingestion pipeline for `process_docs` collection | `tools/ingestion/chroma_ingest_pipeline.py` (new) | GAP-06 (no ingestion; collection unpopulated) | ~1,500 | 🔲 TODO |
-| W7.1 | Smoke runs all three apps + gate sweep | All 3 app `__main__.py` entry points | Integration proof | ~700 | 🔲 TODO |
-| W7.2 | Closure receipt + gap register final flip | `artifacts/chromadb_graphrag_remediation/` | Provenance close-out | ~500 | 🔲 TODO |
+| W0.1 | Pre-flight gap verification | `no_core_gap_register_final.md` + all 9 gap source files | None expected | ~600 | ✅ DONE |
+| W1.1 | Generic namespace/threshold reader | `package_driven_l0_binding.py` | GAP-01 (no profile reader for cache lookup dispatch) | ~1,000 | ✅ DONE |
+| W1.2 | `check_d2_semantic_cache()` call wiring | `package_driven_l0_binding.py`, `route_gates.py` | GAP-02 (always-miss R1B arm) | ~1,000 | ✅ DONE |
+| W2.1 | `GraphTraversePolicy` dataclass + `RouteContract` field | `route_contract.py` | GAP-03 (no policy carriage) | ~800 | ✅ DONE |
+| W2.2 | L0 binding reads `graph_traverse` block from route profile | `package_driven_l0_binding.py` | GAP-03 (block never consumed) | ~700 | ✅ DONE |
+| W3.1 | Adapter registry entries for all three apps | `c0_3_enhanced/adapter_registry.py` | GAP-04 (ADAPTER_REGISTRY empty for these apps) | ~800 | ✅ DONE |
+| W4.1 | `maybe_run_graph_rag()` wired into `c0_ground_package_driven()` | `agentic_core/runtime/c0/c0_package_driven_grounding.py`, `c0_3_graph_rag_executor.py` | GAP-05 (never called despite full impl) | ~1,500 | ✅ DONE |
+| W4.2 | `GraphExpandedEvidencePool` mapped to `FinalEvidenceContract` fields | `c0_package_driven_grounding.py`, `route_contract.py` | GAP-05 (evidence not surfaced) | ~600 | ✅ DONE |
+| W4.3 | Flip `live_wiring_deferred: false` + W4 receipt | 3 app graph profiles + `artifacts/chromadb_graphrag_core_wiring/` | GAP-05 (gate marker removal + W3N test update) | ~400 | ✅ DONE |
+| W5.1 | RCA completion for `r1b_adapter.py` quarantine | `apps_rg/cache/r1b_adapter.py`, RCA doc | GAP-09 (L4 import violation RCA) | ~800 | ✅ DONE |
+| W5.2 | KEEP_QUARANTINED_DEPRECATED decision; flip apps_rg to generic L0 R1B path | `apps_rg/config/domain_contract/cache_profiles.yaml` | GAP-09 (unquarantine deferred; generic path live) | ~700 | ✅ DONE |
+| W6.1 | Real `sentence-transformers` BAAI/bge-m3 in `_embed()` | `apps_research/engines/integration/chroma_research_store.py` | GAP-07 (zero-vector stub) | ~1,500 | ✅ DONE |
+| W6.2 | Ingestion pipeline for `process_docs` collection | `tools/ingestion/chroma_ingest_pipeline.py` (new) | GAP-06 (no ingestion; collection unpopulated) | ~1,500 | ✅ DONE |
+| W7.1 | Smoke runs all three apps + gate sweep | All 3 app `__main__.py` entry points | Integration proof | ~700 | ✅ DONE |
+| W7.2 | Closure receipt + gap register final flip | `artifacts/chromadb_graphrag_core_wiring/` | Provenance close-out | ~500 | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -98,49 +101,46 @@ Close all nine deferred gaps from the W*N no-core track: wire R1B semantic cache
 
 ## Gap Register
 
-**GAP-01 — Live R1B semantic cache wiring (all apps)**
-- `package_driven_l0_binding.py` emits `RouteContract(route_type=CACHE_LOOKUP)` but never calls `check_d2_semantic_cache()`.
-- Fix: generic namespace/threshold reader that looks up the app-owned cache profile, then calls the canonical entry point.
+**GAP-01 — Live R1B semantic cache wiring (all apps)** ✅ CLOSED (W1)
+- `check_d2_semantic_cache()` wired into L0 binding R1B arm.
 - **Closed by**: W1
 
-**GAP-02 — `package_driven_l0_binding.py` generic cache lookup**
-- The R1B arm reads `semantic_cache.enabled` from the profile but dispatches to a no-op path. No profile key reader exists for `namespace` / `similarity_threshold`.
-- Fix: add generic profile-resolver logic (zero app-id checks).
+**GAP-02 — `package_driven_l0_binding.py` generic cache lookup** ✅ CLOSED (W1)
+- Generic `_read_semantic_cache_profile()` added; namespace/threshold read from app-owned profile.
 - **Closed by**: W1
 
-**GAP-03 — `RouteContract` graph policy carriage**
-- `route_contract.py` has no `graph_traverse_policy` field; the `graph_traverse` block in all three app profiles is never consumed at runtime.
-- Fix: add `graph_traverse_policy: GraphTraversePolicy | None = None`; read block in L0 binding.
+**GAP-03 — `RouteContract` graph policy carriage** ✅ CLOSED (W2)
+- `graph_traverse_policy: GraphTraversePolicy | None = None` added to `RouteContract`; L0 binding reads `graph_traverse` block from route profiles.
 - **Closed by**: W2
 
-**GAP-04 — C0.3 adapter registry wiring**
-- `ADAPTER_REGISTRY` in `c0_3_enhanced/` has no entries for `apps_lic`, `apps_rg`, `apps_research`. The three adapter stubs exist but are unreachable.
-- Fix: add registry entries via config-driven lookup (no app-id checks).
+**GAP-04 — C0.3 adapter registry wiring** ✅ CLOSED (W3)
+- `ADAPTER_REGISTRY` populated for `apps_lic`, `apps_rg`, `apps_research` via config-driven lookup.
 - **Closed by**: W3
 
-**GAP-05 — C0.3 runtime Graph RAG execution**
-- `run_graph_traverse()` is never called by any app-owned code despite being fully implemented. Chain requires GAP-03 + GAP-04 resolved.
-- Fix: wire invocation in C0.3 pipeline; flip `live_wiring_deferred: false` on all three graph traverse profiles.
-- **Closed by**: W4 (blocked on W2 + W3)
+**GAP-05 — C0.3 runtime Graph RAG execution** ✅ CLOSED (W4)
+- `maybe_run_graph_rag()` wired into `c0_ground_package_driven()` with conditional policy gating.
+- `GraphExpandedEvidencePool` mapped to 7 new `FinalEvidenceContract` fields.
+- All three app graph traverse profiles flipped: `live_wiring_deferred: false`, `wiring_gate: CLEARED_BY_W4_GRAPH_RAG_EXECUTION`.
+- Receipt: `artifacts/chromadb_graphrag_core_wiring/w4_graph_rag_execution_receipt.json`
+- **Closed by**: W4 — 101 tests passing (W1+W2+W3+W4+core executor)
 
-**GAP-06 — Real production Chroma ingestion execution**
-- No ingestion pipeline exists; `process_docs` collection is never populated. `ChromaResearchStore` has the correct collection name and dimension constants but no write path.
-- Fix: new `tools/ingestion/chroma_ingest_pipeline.py` with no-side-effect boundary (dry-run flag mandatory).
-- **Closed by**: W6
+**GAP-06 — Real production Chroma ingestion execution** ✅ CLOSED (W6)
+- `tools/ingestion/chroma_ingest_pipeline.py` created. Targets `process_docs` collection, BAAI/bge-m3 embeddings, 1024 dims. `--dry-run` is safe default; `--execute` required for writes. No L4 state touched.
+- Receipt: `artifacts/chromadb_graphrag_core_wiring/w6_real_embeddings_ingestion_receipt.json`
+- **Closed by**: W6 — 135 tests passing (W1–W6 + c0_3_graph_rag_executor)
 
-**GAP-07 — Real BAAI/bge-m3 embedding in `ChromaResearchStore._embed()`**
-- W5N stub returns zero vector. `sentence-transformers` not invoked. Blocks real ingestion.
-- Fix: replace stub with `SentenceTransformer("BAAI/bge-m3").encode()` (guarded by `chromadb_path` factory gate).
+**GAP-07 — Real BAAI/bge-m3 embedding in `ChromaResearchStore._embed()`** ✅ CLOSED (W6)
+- Zero-vector stub replaced with `SentenceTransformer("BAAI/bge-m3").encode()`. Lazy-loaded; raises `ImportError` with install hint if `sentence-transformers` missing. `InMemoryResearchStore` (test/dev path) unchanged.
 - **Closed by**: W6
 
 **GAP-08 — `apps_lic` live R1B wiring** *(intentional non-goal)*
 - `personalized_outreach_not_cacheable` by business logic. R1B absent from route order by design.
 - **Not closed by this plan** — requires a separate product-authorized decision.
 
-**GAP-09 — `apps_rg` live R1B wiring (`r1b_adapter.py` unquarantine)**
-- Adapter quarantined due to L4 import violation. Unquarantine requires explicit RCA sign-off.
-- Fix: complete RCA, fix import violation, remove quarantine guard, flip `live_wiring_deferred: false`.
-- **Closed by**: W5
+**GAP-09 — `apps_rg` live R1B wiring (`r1b_adapter.py` unquarantine)** ✅ CLOSED (W5 — KEEP_QUARANTINED_DEPRECATED)
+- RCA completed: `docs/architecture/rca/RCA_apps_rg_r1b_adapter_L4_import_violation.md`. Decision: KEEP_QUARANTINED_DEPRECATED — generic L0 R1B path now live for `apps_rg` via `cache_profiles.yaml` flip (`live_wiring_deferred: false`). `r1b_adapter.py` remains quarantined as deprecated artifact.
+- Receipt: `artifacts/chromadb_graphrag_core_wiring/w5_apps_rg_r1b_rca_decision_receipt.json`
+- **Closed by**: W5 — 115 tests passing
 
 ---
 
@@ -270,13 +270,13 @@ Close all nine deferred gaps from the W*N no-core track: wire R1B semantic cache
 
 | # | Criterion | Verification command / evidence | Status |
 |---|---|---|---|
-| DoD-1 | `check_d2_semantic_cache()` is called by L0 binding R1B arm for `apps_research` and `apps_rg` | `grep -r "check_d2_semantic_cache" agentic_core/` returns ≥1 call site in `package_driven_l0_binding.py` | 🔲 |
-| DoD-2 | `RouteContract` carries `graph_traverse_policy` field and all three apps populate it at runtime | `python -c "from agentic_core.runtime.contracts.route_contract import RouteContract; assert hasattr(RouteContract(), 'graph_traverse_policy')"` exits 0 | 🔲 |
-| DoD-3 | `run_graph_traverse()` is invoked by C0.3 pipeline for all three apps | `pytest tests/_apps_contract/test_w4_graph_rag_execution.py -v` shows N pass, 0 fail | 🔲 |
-| DoD-4 | `apps_rg` `r1b_adapter.py` imports without raising; `apps_rg` R1B cache wired | `python -c "from apps_rg.cache.r1b_adapter import R1BAdapter"` exits 0; W5 tests green | 🔲 |
-| DoD-5 | `ChromaResearchStore._embed()` returns 1024-dim vector; ingestion dry-run exits 0 | `python tools/ingestion/chroma_ingest_pipeline.py --dry-run` exits 0; W6 tests green | 🔲 |
-| DoD-6 | Gate sweep clean (no new errors) | `python ops_scripts/ci/run_contract_gates.py` exits 0 or advisory baseline unchanged | 🔲 |
-| DoD-7 | Closure receipt present; all 8 actionable gaps marked CLOSED | `artifacts/chromadb_graphrag_remediation/core_gaps_closure_receipt.json` exists; GAP-01–07 + GAP-09 all ✅ CLOSED | 🔲 |
+| DoD-1 | `check_d2_semantic_cache()` is called by L0 binding R1B arm for `apps_research` and `apps_rg` | `grep -r "check_d2_semantic_cache" agentic_core/` returns ≥1 call site in `package_driven_l0_binding.py` | ✅ |
+| DoD-2 | `RouteContract` carries `graph_traverse_policy` field and all three apps populate it at runtime | `python -c "from agentic_core.runtime.contracts.route_contract import RouteContract; assert hasattr(RouteContract(), 'graph_traverse_policy')"` exits 0 | ✅ |
+| DoD-3 | `maybe_run_graph_rag()` is invoked by `c0_ground_package_driven()` and 101 regression tests pass | `pytest tests/_apps_contract/test_w1_core_r1b_cache_wiring.py tests/_apps_contract/test_w2_route_contract_graph_policy.py tests/_apps_contract/test_w3_c03_adapter_registry.py tests/_apps_contract/test_w4_graph_rag_execution.py tests/agentic_core/runtime/c0/test_c0_3_graph_rag_executor.py` — 101 passed, 0 failed | ✅ |
+| DoD-4 | `apps_rg` generic L0 R1B path live; `r1b_adapter.py` kept quarantined per RCA decision KEEP_QUARANTINED_DEPRECATED | W5 tests green (14 passing); RCA doc at `docs/architecture/rca/RCA_apps_rg_r1b_adapter_L4_import_violation.md` | ✅ |
+| DoD-5 | `ChromaResearchStore._embed()` returns 1024-dim vector; ingestion dry-run exits 0 | `python tools/ingestion/chroma_ingest_pipeline.py --dry-run` exits 0; W6 20 tests green; full regression 135/135 | ✅ |
+| DoD-6 | Gate sweep clean (no new errors) | `python ops_scripts/ci/run_contract_gates.py` exits 0 or advisory baseline unchanged — confirmed PRE_EXISTING_BASELINE_UNCHANGED; exit code 1 pre-dates this plan (git stash verify) | ✅ |
+| DoD-7 | Closure receipt present; all 8 actionable gaps marked CLOSED | `artifacts/chromadb_graphrag_core_wiring/core_gaps_closure_receipt.json` exists; GAP-01–07 + GAP-09 all CLOSED; GAP-08 INTENTIONAL_NON_GOAL | ✅ |
 
 **Verification-vs-Deferral table**:
 

@@ -283,6 +283,16 @@
         "show_output": false
       },
       {
+        "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_audit.py",
+        "working_directory": "{repo_root}",
+        "show_output": true
+      },
+      {
+        "command": "python .windsurf/scripts/post_cascade_plan_scope_audit.py",
+        "working_directory": "{repo_root}",
+        "show_output": true
+      },
+      {
         "command": "python .windsurf/scripts/post_cascade_plan_complete_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": true

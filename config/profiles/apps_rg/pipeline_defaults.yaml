@@ -1,0 +1,45 @@
+# Pipeline Defaults Profile for apps_rg
+# Default values for R4 deterministic pipeline
+
+schema_version: "1.0"
+app_id: "apps_rg"
+profile_type: "pipeline_defaults"
+
+# Identity defaults for envelope construction
+identity_defaults:
+  source_channel: "apps_rg_cli"
+  user_id_default: "u-apps_rg"
+  declared_schema: "apps_rg_jd_v1"
+  caller_surface: "apps_rg_cli"
+  tenant_id: "apps_rg"
+
+# Auth defaults
+auth_defaults:
+  kind: "internal"
+  token: "apps-rg-internal"
+
+# Artifact directory prefix
+artifact_prefix: "apps_rg_r4"
+
+# Replay key derivation fields
+replay_key_fields:
+  - "jd_hash"
+  - "brief_hash"
+  - "resume_hash"
+  - "policy_hash"
+  - "blueprint_hash"
+
+# Default policy and blueprint refs (for runtime validation)
+policy_refs:
+  prompt_registry: "apps_rg/prompt_assembly/prompt_registry.yaml"
+  hitl_policy: "apps_rg/config/hitl_trigger_policy.yaml"
+  l0_policy: "apps_rg/config/l0_policy.yaml"
+  agent_spec: "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml"
+  thresholds: "apps_rg/config/rg_thresholds.yaml"
+
+# Quality thresholds
+quality_defaults:
+  min_quality: 0.75
+  min_ats: 70
+  word_min: 400
+  word_max: 1200

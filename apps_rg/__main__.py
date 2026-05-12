@@ -149,6 +149,11 @@ def _interactive_wizard() -> dict[str, Any]:
     return inputs
 
 
+_CANONICAL_SOURCE_RESUME: str = "ops_scripts/apps_rg/source_resume_2026_05_12.json"
+"""Canonical, immutable source resume snapshot (2026-05-12, SVP Engineering Resume_Ayer.docx).
+Always use this as the default — never the April-dated docx files."""
+
+
 def main() -> int:
     """Main entry point — ingress-only, no runtime authority."""
     parser = argparse.ArgumentParser(
@@ -266,7 +271,11 @@ def main() -> int:
         "target_company": args.target_company or wizard_inputs.get("target_company"),
         "target_role": args.target_role or wizard_inputs.get("target_role"),
         "target_level": args.target_level or wizard_inputs.get("target_level"),
-        "source_resume_ref": args.source_resume or wizard_inputs.get("source_resume_ref"),
+        "source_resume_ref": (
+            args.source_resume
+            or wizard_inputs.get("source_resume_ref")
+            or _CANONICAL_SOURCE_RESUME
+        ),
         "source_resume_text": args.source_resume_text or wizard_inputs.get("source_resume_text"),
         "job_description_ref": args.jd or wizard_inputs.get("job_description_ref"),
         "job_description_text": args.jd_text or wizard_inputs.get("job_description_text"),
@@ -319,7 +328,7 @@ def main() -> int:
         # receipt's pass_status + digests so the operator sees the harness
         # is on the live path. No L1+ stage runs.
         try:
-            from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_parse
+            from apps_rg.runtime.entry.dispatch import apps_rg_parse
             from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
             envelope = apps_rg_parse(ingress_payload)
             if envelope is None:
@@ -349,7 +358,7 @@ def main() -> int:
     # apps_rg-specific dispatch/parse/required_fields callables, call .run().
     try:
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from agentic_core.runtime.entry.apps_rg_dispatch import (
+        from apps_rg.runtime.entry.dispatch import (
             APPS_RG_REQUIRED_FIELDS,
             apps_rg_dispatch,
             apps_rg_parse,

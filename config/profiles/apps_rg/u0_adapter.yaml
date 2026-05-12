@@ -1,0 +1,53 @@
+# U0 Adapter Profile for apps_rg
+# Defines identity and validation rules for U0 reflection
+
+schema_version: "1.0"
+app_id: "apps_rg"
+profile_type: "u0_adapter"
+
+# Identity validation rules
+validation_behavior:
+  strict_mode: true
+  fail_on_unknown_fields: true
+
+# Expected app identity
+identity:
+  expected_app_id: "apps_rg"
+  expected_task_class: "resume_generation"
+  
+# Default values for envelope construction
+envelope_defaults:
+  source_channel: "apps_rg_cli"
+  user_id_default: "u-apps_rg"
+  declared_schema: "apps_rg_jd_v1"
+  auth_credential:
+    kind: "internal"
+    token: "apps-rg-internal"
+
+# Field map reference (relative to repo root)
+field_map_path: "apps_rg/contracts/apps_rg_ingress_field_map.v1.yaml"
+
+# Certification reference
+cert_ref: "u0-apps-rg-reflection-adapter-79d032"
+
+# U0 domain checks configuration (E1-E9)
+domain_checks:
+  e1_schema_validation: true
+  e2_required_modes_check: true
+  e3_identity_check: true
+  e4_app_id_check: true
+  e5_side_effect_check: true
+  e6_workflow_check: true
+  e7_grounding_check: true
+  e8_governance_fields: true
+  e9_hitl_bypass: true
+
+# Required send modes for E2 check
+required_send_modes:
+  - "send_now"
+  - "auto_send"
+  - "connector_send"
+  - "email_outbox_send"
+  - "linkedin_send"
+  - "sms_send"
+  - "external_http_post"

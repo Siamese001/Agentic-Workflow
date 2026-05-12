@@ -261,7 +261,7 @@ def _run_spine_dispatch(argv: list[str]) -> int:
         _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
         sys.stdout.write("DRY RUN\n")
 
-    from agentic_core.runtime.entry.apps_research_dispatch import (  # noqa: PLC0415
+    from apps_research.runtime.entry.dispatch import (  # noqa: PLC0415
         apps_research_parse,
         apps_research_dispatch,
     )

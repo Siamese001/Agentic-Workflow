@@ -1,0 +1,38 @@
+# U0 Payload Defaults Profile for apps_rg
+# Default values for payload synthesizer
+
+schema_version: "1.0"
+app_id: "apps_rg"
+profile_type: "u0_payload_defaults"
+
+# Default policy refs (relative to repo root)
+policy_refs:
+  prompt_registry: "apps_rg/prompt_assembly/prompt_registry.yaml"
+  hitl_policy: "apps_rg/config/hitl_trigger_policy.yaml"
+  l0_policy: "apps_rg/config/l0_policy.yaml"
+  agent_spec: "apps_rg/config/specs/agent_spec.resume_generation.v1.0.0.yaml"
+  thresholds: "apps_rg/config/rg_thresholds.yaml"
+
+# Quality thresholds
+quality_defaults:
+  min_quality: 0.75
+  min_ats: 70
+  word_min: 400
+  word_max: 1200
+
+# Transport defaults
+transport_defaults:
+  app_id: "apps_rg"
+  task_class: "resume_generation"
+  tenant_id: "apps_rg"
+
+# Identity defaults
+identity_defaults:
+  actor_id: "apps_rg:cli"
+  actor_role: "user"
+
+# Generation mode defaults
+generation_mode:
+  default: "strategic_tailor"
+  fallback_no_resume: "generate_scratch"
+  fallback_no_jd: "tailor_existing"

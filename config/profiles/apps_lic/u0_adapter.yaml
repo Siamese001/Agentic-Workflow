@@ -1,0 +1,57 @@
+# U0 Adapter Profile for apps_lic
+# Defines identity and validation rules for U0 reflection
+
+schema_version: "1.0"
+app_id: "apps_lic"
+profile_type: "u0_adapter"
+
+# Identity validation rules
+validation_behavior:
+  strict_mode: true
+  fail_on_unknown_fields: true
+
+# Expected app identity
+identity:
+  expected_app_id: "apps_lic"
+  expected_task_class: "outreach_message"
+  
+# Default values for envelope construction
+envelope_defaults:
+  source_channel: "apps_lic_cli"
+  user_id_default: "u-apps_lic"
+  declared_schema: "apps_lic_outreach_v1"
+  transport: "cli"
+  method: "POST"
+  content_type: "application/json"
+
+# Field map reference (relative to repo root)
+field_map_path: "apps_lic/contracts/apps_lic_ingress_field_map.v1.yaml"
+
+# Certification reference
+cert_ref: "u0-apps-lic-outreach-message-reflection-f3c2e1"
+
+# U0 domain checks configuration (E1-E9)
+domain_checks:
+  e1_schema_validation: true
+  e2_required_modes_check: true
+  e3_identity_fields_check: true
+  e4_app_id_check: true
+  e5_side_effect_check: true
+  e6_workflow_check: true
+  e7_grounding_check: true
+  e8_governance_fields: true
+  e9_hitl_bypass: true
+  e10_package_digest: true
+
+# Required send modes for E2 check
+required_send_modes:
+  - "send_now"
+  - "auto_send"
+  - "connector_send"
+  - "email_outbox_send"
+  - "linkedin_send"
+  - "sms_send"
+  - "external_http_post"
+
+# Contract version
+contract_version: "v1"

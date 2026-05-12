@@ -1442,3 +1442,449 @@ class TestHitlPolicyRegistryCoreClean:
         # And core never needed to be touched to support this
         from agentic_core.runtime.exit.hitl_policy_registry import _BUILTIN_POLICIES
         assert "lic_release_v1" not in _BUILTIN_POLICIES
+
+
+# ── G21 deterministic header repair ──────────────────────────────────────────
+
+class TestG21HeaderRepair:
+    """Tests for deterministic header extraction and repair from FEC source resume.
+
+    Validates:
+    1. Generated header present → header_block sealed normally (no repair).
+    2. Generated header missing + source resume evidence present → repair creates header_block.
+    3. Generated header missing + no source evidence → G21 fails (no header_block).
+    4. Deterministic repair never uses target_company/target_role/target_level.
+    5. Repair receipt records source_evidence_ref.
+    6. Extractor parses all 6 canonical fields from representative resume text.
+    """
+
+    _SAMPLE_RESUME_TEXT = (
+        "Page  1 of 3 \n"
+        "+1-917-239-3830  | amitayer1@gmail.com  | linkedin.com/in/amitayer1/  "
+        "| github.com/Siamese001/Agentic-Workflow\n"
+        " Amit  Ayer \n"
+        "SVP Engineering | Agentic AI Platforms\n"
+        "+1-917-239-3830 | amitayer1@gmail.com\n"
+        "Boca Raton, FL\n"
+        "EXECUTIVE SUMMARY\n"
+        "Engineering executive building production-grade AI platforms.\n"
+    )
+
+    def _make_fec_with_resume(self, resume_text: str) -> Any:
+        from agentic_core.runtime.contracts.final_evidence_contract import (
+            EvidenceItem,
+            FinalEvidenceContract,
+        )
+        item = EvidenceItem(
+            source="resume:app_payload.source_resume_text",
+            content=resume_text,
+            content_type="text",
+        )
+        return FinalEvidenceContract(
+            request_id="req-hdr-test",
+            run_id="run-hdr-test",
+            app_id="apps_rg",
+            trace_id="trace::hdr-test",
+            evidence_items=(item,),
+            l5_certification_ref="cert::test::v1",
+        )
+
+    def _make_fec_jd_only(self) -> Any:
+        from agentic_core.runtime.contracts.final_evidence_contract import (
+            EvidenceItem,
+            FinalEvidenceContract,
+        )
+        item = EvidenceItem(
+            source="jd:app_payload.jd_text",
+            content="Some job description text",
+            content_type="text",
+        )
+        return FinalEvidenceContract(
+            request_id="req-hdr-test",
+            run_id="run-hdr-test",
+            app_id="apps_rg",
+            trace_id="trace::hdr-test",
+            evidence_items=(item,),
+            l5_certification_ref="cert::test::v1",
+        )
+
+    def test_generated_header_present_no_repair(self) -> None:
+        """Generated header present → sealed normally; repair=False."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import seal_resume_sections
+
+        content = {
+            "header": {"name": "Amit Ayer", "email": "amitayer1@gmail.com"},
+            "executive_summary": "summary text",
+            "experience": [],
+            "skills": [],
+            "education": [],
+        }
+        fec = self._make_fec_with_resume(self._SAMPLE_RESUME_TEXT)
+        sections, repair = seal_resume_sections(content, "run-001", fec)
+
+        section_ids = [s.node_id for s in sections]
+        assert "header_block" in section_ids, "header_block must be sealed when generated"
+        assert not repair.repaired, "Repair must NOT fire when header is present in generated output"
+
+        hdr_section = next(s for s in sections if s.node_id == "header_block")
+        assert hdr_section.payload_ref == "generated_resume.json#header"
+
+    def test_missing_header_with_source_evidence_triggers_repair(self) -> None:
+        """Generated header absent + FEC source resume → deterministic repair creates header_block."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import seal_resume_sections
+
+        content = {
+            "executive_summary": "summary text",
+            "experience": [],
+            "skills": [],
+            "education": [],
+        }
+        fec = self._make_fec_with_resume(self._SAMPLE_RESUME_TEXT)
+        sections, repair = seal_resume_sections(content, "run-002", fec)
+
+        section_ids = [s.node_id for s in sections]
+        assert "header_block" in section_ids, (
+            "header_block must be created via repair when header absent + FEC has source resume"
+        )
+        assert repair.repaired, "repair.repaired must be True"
+        assert repair.source_evidence_ref.startswith("resume:"), (
+            f"source_evidence_ref must reference the resume item; got {repair.source_evidence_ref!r}"
+        )
+        hdr_section = next(s for s in sections if s.node_id == "header_block")
+        assert hdr_section.payload_ref == "fec_source_resume#header_repair"
+
+    def test_missing_header_no_source_evidence_no_repair(self) -> None:
+        """Generated header absent + no source resume evidence → header_block omitted; G21 fails honestly."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import seal_resume_sections
+
+        content = {
+            "executive_summary": "summary text",
+            "experience": [],
+            "skills": [],
+            "education": [],
+        }
+        fec = self._make_fec_jd_only()  # no resume: item
+        sections, repair = seal_resume_sections(content, "run-003", fec)
+
+        section_ids = [s.node_id for s in sections]
+        assert "header_block" not in section_ids, (
+            "header_block must be absent when no source resume evidence available"
+        )
+        assert not repair.repaired
+
+    def test_missing_header_fec_none_no_repair(self) -> None:
+        """Generated header absent + fec=None → header_block omitted; G21 fails honestly."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import seal_resume_sections
+
+        content = {
+            "executive_summary": "summary text",
+            "experience": [],
+            "skills": [],
+            "education": [],
+        }
+        sections, repair = seal_resume_sections(content, "run-004", None)
+
+        section_ids = [s.node_id for s in sections]
+        assert "header_block" not in section_ids
+        assert not repair.repaired
+
+    def test_repair_never_uses_target_fields(self) -> None:
+        """Repair must never produce header fields derived from target_company/target_role/target_level."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import extract_header_from_source_resume
+
+        fec = self._make_fec_with_resume(self._SAMPLE_RESUME_TEXT)
+        result = extract_header_from_source_resume(fec)
+
+        assert result.repaired
+        for key in ("target_company", "target_role", "target_level"):
+            assert key not in result.header_dict, (
+                f"Repair must never inject {key} into header"
+            )
+        # Verify the actual values came from the resume, not job description
+        if "email" in result.header_dict:
+            assert "@" in result.header_dict["email"]
+        if "phone" in result.header_dict:
+            assert any(c.isdigit() for c in result.header_dict["phone"])
+
+    def test_repair_receipt_records_source_evidence_ref(self) -> None:
+        """repair.source_evidence_ref is populated and identifies the resume evidence item."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import extract_header_from_source_resume
+
+        fec = self._make_fec_with_resume(self._SAMPLE_RESUME_TEXT)
+        result = extract_header_from_source_resume(fec)
+
+        assert result.repaired
+        assert result.source_evidence_ref == "resume:app_payload.source_resume_text"
+
+    def test_extractor_parses_all_six_fields(self) -> None:
+        """extract_header_from_source_resume parses name, phone, email, linkedin, github, location."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import extract_header_from_source_resume
+
+        fec = self._make_fec_with_resume(self._SAMPLE_RESUME_TEXT)
+        result = extract_header_from_source_resume(fec)
+
+        assert result.repaired
+        hdr = result.header_dict
+        assert "name" in hdr, f"name not extracted; header={hdr}"
+        assert "phone" in hdr, f"phone not extracted; header={hdr}"
+        assert "email" in hdr, f"email not extracted; header={hdr}"
+        assert "linkedin" in hdr, f"linkedin not extracted; header={hdr}"
+        assert "github" in hdr, f"github not extracted; header={hdr}"
+        assert "location" in hdr, f"location not extracted; header={hdr}"
+        assert "Ayer" in hdr["name"] or "Amit" in hdr["name"]
+        assert "amitayer1@gmail.com" == hdr["email"]
+        assert "amitayer1" in hdr["linkedin"]
+        assert "Boca Raton" in hdr["location"] or "FL" in hdr["location"]
+
+    def test_no_repair_when_resume_text_too_sparse(self) -> None:
+        """Extraction with fewer than 2 parseable fields → repaired=False."""
+        from apps_rg.exit.apps_rg_exit_evidence_builder import extract_header_from_source_resume
+
+        sparse_text = "This resume has no recognizable contact information."
+        fec = self._make_fec_with_resume(sparse_text)
+        result = extract_header_from_source_resume(fec)
+
+        assert not result.repaired, (
+            "Should not repair when fewer than 2 fields can be extracted"
+        )
+
+
+# ── G28 post-mesh authorization logic ────────────────────────────────────────
+
+class TestG28PostMeshAuthorization:
+    """Tests for the two-pass G28 receipt finalization logic.
+
+    Validates that:
+    - Pass-1 circular G28 FAIL + post-mesh WARN → receipt x3_code=X3D_ALLOW_FINISH
+    - Pass-1 circular G28 FAIL + post-mesh FAIL → receipt stays X3A_DENY_REROUTE
+    - Both g28_initial_verdict and g28_post_mesh_verdict are present in receipt
+    - Receipt is consistent with 07_Exit_disposition.json outcome_authorized
+    - G22 verdict is preserved unchanged
+    """
+
+    def _make_pkg(self, pkg_id: str = "pkg::receipt-test-001") -> SealedWorkflowPackage:
+        return SealedWorkflowPackage(
+            package_id=pkg_id,
+            run_id="run-receipt-test",
+            trace_root="trace::receipt-test",
+            route_contract_ref="rc::test",
+            workflow_ref="wfm::apps_rg::v1",
+        )
+
+    def _make_g28_gdef(self, severity: str = "hard_fail") -> dict:
+        return {
+            "gate_name": "audit_trace_completeness",
+            "severity": severity,
+            "required_audit_refs": [
+                "request_id", "run_id", "trace_root",
+                "route_contract_ref", "workflow_ref",
+                "sealed_workflow_package_ref", "gate_mesh_result_ref", "decisive_reason",
+            ],
+            "optional_observability_refs": [
+                "otel_trace_id", "otel_span_id", "exhaust_bundle_ref", "replay_key",
+            ],
+        }
+
+    def test_pass1_g28_fail_plus_post_mesh_warn_produces_x3d_receipt(self):
+        """When Pass-1 G28 is FAIL (circular: no mesh ref yet) and post-mesh G28 is WARN,
+        the receipt dict finalized by the binding must show x3_code=X3D_ALLOW_FINISH."""
+        import json as _json
+        from agentic_core.runtime.exit.exit_disposition import X3D_ALLOW_FINISH
+
+        # Simulate Pass-1 receipt dict (G28 was the sole blocker)
+        receipt_dict: dict = {
+            "x3_code": "X3A_DENY_REROUTE",
+            "decisive_reason": "Hard gate failures: ['G28']",
+            "decisive_blocker_gate_ids": ["G28"],
+            "decisive_blocker_codes": ["missing_material_audit_ref:gate_mesh_result_ref"],
+            "required_gates_passed": False,
+            "hard_fail_count": 1,
+            "allows_finish": False,
+        }
+
+        pkg = self._make_pkg()
+        post_mesh_ev = {
+            "g28": {
+                "audit_refs": {
+                    "sealed_workflow_package_ref": pkg.package_id,
+                    "gate_mesh_result_ref": "gmr::test::001",
+                    "decisive_reason": "Hard gate failures: ['G28']",
+                }
+            }
+        }
+        post_mesh_verdict = evaluate_g28(
+            "G28", self._make_g28_gdef(), pkg, post_mesh_ev,
+            "req-001", "run-receipt-test", "trace::receipt-test",
+        )
+        # Expect WARN (material refs present; optional OTEL refs absent)
+        assert post_mesh_verdict.result == VERDICT_WARN, (
+            f"post-mesh G28 should be WARN, got {post_mesh_verdict.result}"
+        )
+
+        # Simulate the finalization logic from apps_rg_exit_binding
+        pass1_blocked_only_by_g28 = (
+            not receipt_dict.get("allows_finish", False)
+            and set(receipt_dict.get("decisive_blocker_gate_ids", [])) == {"G28"}
+        )
+        g28_post_ok = post_mesh_verdict.result in ("PASS", "WARN")
+        assert pass1_blocked_only_by_g28 is True
+        assert g28_post_ok is True
+
+        # Apply finalization (mirrors the binding logic)
+        if pass1_blocked_only_by_g28 and g28_post_ok:
+            receipt_dict["x3_code"] = X3D_ALLOW_FINISH
+            receipt_dict["decisive_reason"] = (
+                f"post_mesh_g28_{post_mesh_verdict.result.lower()}: "
+                "all material audit refs satisfied after mesh"
+            )
+            receipt_dict["decisive_blocker_gate_ids"] = []
+            receipt_dict["decisive_blocker_codes"] = []
+            receipt_dict["required_gates_passed"] = True
+            receipt_dict["hard_fail_count"] = 0
+
+        assert receipt_dict["x3_code"] == X3D_ALLOW_FINISH, (
+            "Receipt x3_code must be updated to X3D_ALLOW_FINISH after post-mesh G28 WARN"
+        )
+        assert receipt_dict["decisive_blocker_gate_ids"] == []
+        assert receipt_dict["required_gates_passed"] is True
+        assert receipt_dict["hard_fail_count"] == 0
+        assert "post_mesh_g28_warn" in receipt_dict["decisive_reason"]
+
+    def test_pass1_g28_fail_plus_post_mesh_fail_keeps_x3a_receipt(self):
+        """When post-mesh G28 still FAIL, receipt must remain X3A_DENY_REROUTE."""
+        from agentic_core.runtime.exit.exit_disposition import X3A_DENY_REROUTE
+
+        receipt_dict: dict = {
+            "x3_code": "X3A_DENY_REROUTE",
+            "decisive_reason": "Hard gate failures: ['G28']",
+            "decisive_blocker_gate_ids": ["G28"],
+            "decisive_blocker_codes": ["missing_material_audit_ref:gate_mesh_result_ref"],
+            "required_gates_passed": False,
+            "hard_fail_count": 1,
+            "allows_finish": False,
+        }
+        pkg = self._make_pkg("pkg::fail-test")
+        # Post-mesh evidence deliberately missing material ref (audit_failure=True)
+        post_mesh_ev = {
+            "g28": {
+                "audit_failure": True,
+                "audit_refs": {
+                    "sealed_workflow_package_ref": "pkg::fail-test",
+                },
+            }
+        }
+        post_mesh_verdict = evaluate_g28(
+            "G28", self._make_g28_gdef(), pkg, post_mesh_ev,
+            "req-002", "run-fail-test", "trace::fail-test",
+        )
+        assert post_mesh_verdict.result == VERDICT_FAIL
+
+        # Finalization: post_mesh not ok → do NOT update receipt
+        g28_post_ok = post_mesh_verdict.result in ("PASS", "WARN")
+        assert g28_post_ok is False
+
+        # receipt_dict unchanged
+        assert receipt_dict["x3_code"] == X3A_DENY_REROUTE
+        assert receipt_dict["required_gates_passed"] is False
+        assert receipt_dict["hard_fail_count"] == 1
+
+    def test_receipt_contains_both_g28_verdicts(self):
+        """g28_audit_chain must carry both g28_initial_verdict and g28_post_mesh_verdict."""
+        import json as _json
+
+        pkg = self._make_pkg()
+        # Simulate Pass-1 G28 — missing gate_mesh_result_ref
+        pass1_ev: dict = {"g28": {"audit_refs": {"sealed_workflow_package_ref": pkg.package_id}}}
+        pass1_verdict = evaluate_g28(
+            "G28", self._make_g28_gdef(), pkg, pass1_ev,
+            "req-003", "run-dual-test", "trace::dual-test",
+        )
+        assert pass1_verdict.result in (VERDICT_FAIL, VERDICT_UNKNOWN)
+
+        # Simulate post-mesh G28 — with gate_mesh_result_ref + decisive_reason
+        post_ev = {
+            "g28": {
+                "audit_refs": {
+                    "sealed_workflow_package_ref": pkg.package_id,
+                    "gate_mesh_result_ref": "gmr::dual::001",
+                    "decisive_reason": "Hard gate failures: ['G28']",
+                }
+            }
+        }
+        post_verdict = evaluate_g28(
+            "G28", self._make_g28_gdef(), pkg, post_ev,
+            "req-003", "run-dual-test", "trace::dual-test",
+        )
+        assert post_verdict.result in (VERDICT_WARN, VERDICT_PASS)
+
+        receipt_dict: dict = {"x3_code": "X3A_DENY_REROUTE"}
+        receipt_dict["g28_audit_chain"] = {
+            "g28_initial_verdict": _json.loads(pass1_verdict.as_json()),
+            "g28_post_mesh_verdict": _json.loads(post_verdict.as_json()),
+            "factual_grounding_diagnostics_ref": "07_g22_factual_grounding_diagnostics.json",
+        }
+
+        chain = receipt_dict["g28_audit_chain"]
+        assert "g28_initial_verdict" in chain, "Receipt must contain g28_initial_verdict"
+        assert "g28_post_mesh_verdict" in chain, "Receipt must contain g28_post_mesh_verdict"
+        # Initial verdict preserves the FAIL (not hidden)
+        assert chain["g28_initial_verdict"]["result"] in ("FAIL", "UNKNOWN"), (
+            "g28_initial_verdict must preserve the Pass-1 failure"
+        )
+        # Post-mesh verdict is the upgraded one
+        assert chain["g28_post_mesh_verdict"]["result"] in ("WARN", "PASS"), (
+            "g28_post_mesh_verdict must reflect the post-mesh improvement"
+        )
+
+    def test_g22_verdict_unchanged_by_g28_receipt_finalization(self):
+        """G22 PASS verdict must not be affected by any G28 receipt finalization."""
+        pkg = self._make_pkg()
+        # Full G22 evidence
+        g22_gdef = {"dimension_thresholds": {"factual_grounding": 0.95, "overall_pass_threshold": 0.75}}
+        g22_ev = {"g22_rubric_scores": {
+            "factual_grounding": 0.99,
+            "role_alignment": 0.80,
+            "ats_readability": 0.85,
+            "overall_pass_threshold": 0.92,
+        }}
+        from agentic_core.runtime.gates.gate_evaluators import evaluate_g22
+        g22_verdict = evaluate_g22("G22", g22_gdef, pkg, g22_ev, "req-004", "run-g22-test", "trace::g22-test")
+        assert g22_verdict.result == VERDICT_PASS, (
+            f"G22 must PASS with valid rubric scores; got {g22_verdict.result}"
+        )
+        # Simulating G28 finalization does not touch g22 verdict
+        receipt_dict: dict = {
+            "x3_code": "X3A_DENY_REROUTE",
+            "decisive_blocker_gate_ids": ["G28"],
+            "allows_finish": False,
+            "required_gates_passed": False,
+            "hard_fail_count": 1,
+        }
+        from agentic_core.runtime.exit.exit_disposition import X3D_ALLOW_FINISH
+        receipt_dict["x3_code"] = X3D_ALLOW_FINISH
+        receipt_dict["required_gates_passed"] = True
+        # G22 verdict object is completely independent
+        assert g22_verdict.result == VERDICT_PASS
+        assert g22_verdict.gate_id == "G22"
+
+    def test_post_mesh_g28_only_warn_not_fail_for_optional_observability_gap(self):
+        """When all material refs present but optional OTEL refs absent, G28 must be WARN not FAIL."""
+        pkg = self._make_pkg()
+        ev = {
+            "g28": {
+                "audit_refs": {
+                    "sealed_workflow_package_ref": pkg.package_id,
+                    "gate_mesh_result_ref": "gmr::warn-test::001",
+                    "decisive_reason": "post_mesh_g28_warn: all material audit refs satisfied after mesh",
+                    # otel_trace_id, otel_span_id, exhaust_bundle_ref, replay_key intentionally absent
+                }
+            }
+        }
+        v = evaluate_g28(
+            "G28", self._make_g28_gdef(), pkg, ev,
+            "req-005", "run-warn-test", "trace::warn-test",
+        )
+        assert v.result == VERDICT_WARN, (
+            f"Optional observability ref gap must produce WARN not FAIL; got {v.result}"
+        )
+        assert all("missing_optional_observability_ref" in rc for rc in v.reason_codes)

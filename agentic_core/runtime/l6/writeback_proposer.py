@@ -57,10 +57,10 @@ class L6WritebackProposer:
     Usage::
 
         proposer = L6WritebackProposer(
-            app_id="apps_rg",
-            task_class="resume_generation",
+            app_id="<app_id>",  # From caller or profile
+            task_class="<task_class>",  # From caller or profile
             learning_profile={...},
-            policy_ref="apps_rg/config/domain_contract/meta_feedback_profile.resume_generation.v1.json",
+            policy_ref="<app_id>/config/domain_contract/meta_feedback_profile.v1.json",
         )
         proposals = proposer.propose(exhaust_bundle)
         # Each proposal: FutureRunPromotionRequest with requires_uwg=True
@@ -69,17 +69,30 @@ class L6WritebackProposer:
     def __init__(
         self,
         *,
-        app_id: str = "apps_rg",
-        task_class: str = "resume_generation",
+        app_id: str,
+        task_class: str,
         learning_profile: Optional[dict] = None,
-        policy_ref: str = "",
+        policy_ref: str,
     ) -> None:
+        """Initialize L6WritebackProposer.
+        
+        Args:
+            app_id: Application identifier (required, no default)
+            task_class: Task class identifier (required, no default)
+            learning_profile: Optional learning parameters dict
+            policy_ref: Path to policy file (required, no default)
+        """
+        if not app_id:
+            raise ValueError("app_id is required")
+        if not task_class:
+            raise ValueError("task_class is required")
+        if not policy_ref:
+            raise ValueError("policy_ref is required")
+            
         self._app_id = app_id
         self._task_class = task_class
         self._lp = learning_profile or {}
-        self._policy_ref = policy_ref or (
-            "apps_rg/config/domain_contract/meta_feedback_profile.resume_generation.v1.json"
-        )
+        self._policy_ref = policy_ref
 
     # ------------------------------------------------------------------
     # Public interface
@@ -231,7 +244,7 @@ class L6WritebackProposer:
                 bundle=bundle,
                 promotion_type=PROMOTION_TYPE_PROMPT_PROFILE_UPDATE,
                 target_store=TARGET_STORE_PROMPT_REGISTRY,
-                target_ref=f"pp::apps_rg::{bundle.run_id}",
+                target_ref=f"pp::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
                 metric_summary=(
                     f'{{"signal":"prompt_variant_performance","run_id":"{bundle.run_id}"}}'
@@ -250,7 +263,7 @@ class L6WritebackProposer:
                 bundle=bundle,
                 promotion_type=PROMOTION_TYPE_RUBRIC_THRESHOLD_UPDATE,
                 target_store=TARGET_STORE_RUBRIC_REGISTRY,
-                target_ref=f"rubric::apps_rg::{bundle.run_id}",
+                target_ref=f"rubric::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
             )
         ]
@@ -266,7 +279,7 @@ class L6WritebackProposer:
                 bundle=bundle,
                 promotion_type=PROMOTION_TYPE_JUDGE_CALIBRATION_UPDATE,
                 target_store=TARGET_STORE_JUDGE_CALIBRATION,
-                target_ref=f"jc::apps_rg::{bundle.run_id}",
+                target_ref=f"jc::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
             )
         ]
@@ -282,7 +295,7 @@ class L6WritebackProposer:
                 bundle=bundle,
                 promotion_type=PROMOTION_TYPE_ROUTE_POLICY_UPDATE,
                 target_store=TARGET_STORE_ROUTE_POLICY,
-                target_ref=f"rp::apps_rg::{bundle.run_id}",
+                target_ref=f"rp::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
             )
         ]
@@ -298,7 +311,7 @@ class L6WritebackProposer:
                 bundle=bundle,
                 promotion_type=PROMOTION_TYPE_CACHE_POLICY_UPDATE,
                 target_store=TARGET_STORE_CACHE_POLICY,
-                target_ref=f"cp::apps_rg::{bundle.run_id}",
+                target_ref=f"cp::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
             )
         ]

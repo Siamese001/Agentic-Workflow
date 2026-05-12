@@ -122,6 +122,15 @@ def _resolve_text(ref: str | None, inline: str | None, *, field_name: str = "ref
         return _extract_docx_text(path)
     if suffix == ".pdf":
         return _extract_pdf_text(path)
+    if suffix == ".json":
+        try:
+            import json as _json
+            data = _json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and "source_resume_text" in data:
+                return data["source_resume_text"]
+        except (OSError, UnicodeDecodeError, ValueError):
+            pass
+        return ""
     try:
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):

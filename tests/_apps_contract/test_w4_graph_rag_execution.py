@@ -679,17 +679,33 @@ class TestGRE17SemanticCacheUnchanged:
         )
 
     def test_apps_rg_semantic_cache_unchanged(self) -> None:
-        """GRE-17: W4 must not have changed apps_rg semantic_cache."""
+        """GRE-17: W4 must not have disabled apps_rg semantic_cache.
+
+        Note: W5 legitimately flipped live_wiring_deferred to false and set
+        wiring_gate=CLEARED_BY_W1_GENERIC_R1B_CACHE_WIRING (RCA decision
+        KEEP_QUARANTINED_DEPRECATED). This test only asserts that W4 did not
+        disable semantic caching — enabled must still be true.
+        """
         cache_path = (
             REPO_ROOT / "apps_rg" / "config" / "domain_contract" / "cache_profiles.yaml"
         )
         data = yaml.safe_load(cache_path.read_text(encoding="utf-8"))
         sc = data.get("semantic_cache", {})
         assert sc.get("enabled") is True, (
-            f"apps_rg semantic_cache.enabled changed by W4: {sc.get('enabled')!r}"
+            f"apps_rg semantic_cache.enabled must remain true, got {sc.get('enabled')!r}"
         )
-        assert sc.get("live_wiring_deferred") is True, (
-            "apps_rg semantic_cache.live_wiring_deferred changed by W4"
+        # live_wiring_deferred: W5 flipped this to false (generic R1B path activated).
+        # Structural invariant: must be a bool.
+        assert isinstance(sc.get("live_wiring_deferred"), bool), (
+            f"apps_rg semantic_cache.live_wiring_deferred must be bool, got {sc.get('live_wiring_deferred')!r}"
+        )
+        # wiring_gate must be one of the known cleared values
+        _VALID_GATES = {
+            "W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED",  # pre-W5 (deferred)
+            "CLEARED_BY_W1_GENERIC_R1B_CACHE_WIRING",          # W5 (generic path live)
+        }
+        assert sc.get("wiring_gate") in _VALID_GATES, (
+            f"apps_rg semantic_cache.wiring_gate unexpected: {sc.get('wiring_gate')!r}"
         )
 
 

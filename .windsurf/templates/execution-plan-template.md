@@ -194,6 +194,80 @@ If things go wrong:
 
 ---
 
+## Scope Expansion Authorization
+
+When scope is discovered during execution that requires modifying this plan:
+
+### Four-Step Discipline (mandatory)
+
+```
+Step 1: DISCOVERED_SCOPE marker (in-session, before any new work)
+Step 2: AUTHORIZATION_DECISION marker (same response, explicit verdict)
+Step 3: Plan file updates (if ACCEPTED) — last_updated, tables, gaps, DoD
+Step 4: SCOPE_EXPANSION marker (execution proceeds only after Step 3)
+```
+
+### Marker Grammars
+
+**Step 1 — DISCOVERED_SCOPE:**
+```
+DISCOVERED_SCOPE: plan=<slug-6hex> wave=<N> phase=<M> gap="<what was found>" impact="<severity>"
+
+Example:
+DISCOVERED_SCOPE: plan=foo-abc123 wave=3 phase=5 gap="G12 cache invalidation race" impact="High — corrupts L2 receipts"
+```
+
+**Step 2 — AUTHORIZATION_DECISION:**
+```
+AUTHORIZATION_DECISION: plan=<slug-6hex> decision=<ACCEPTED|DEFERRED|SPLIT_TO_NEW_PLAN|REJECTED> authorized_by=<user|author_gate|self> decisive_reason="<why>"
+
+Examples:
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=ACCEPTED authorized_by=user decisive_reason="Critical path blocker — G24 hardening depends on this gap fix"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=DEFERRED authorized_by=author_gate decisive_reason="30-day time-gated; needs production log volume for calibration"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=SPLIT_TO_NEW_PLAN authorized_by=user decisive_reason="Scope too large — creates plan apps-rg-g22-diagnostics-d9f4a2"
+AUTHORIZATION_DECISION: plan=foo-abc123 decision=REJECTED authorized_by=user decisive_reason="Gold-plating; G22 diagnostics not required for v1 release"
+```
+
+**Step 4 — SCOPE_EXPANSION (only after ACCEPTED):**
+```
+SCOPE_EXPANSION: plan=<slug-6hex> reason="<summary>" added="<waves/phases/gaps>" authorized="yes"
+
+Example:
+SCOPE_EXPANSION: plan=foo-abc123 reason="W3 revealed G22 diagnostics gap requiring new phases" added="W5.P8 (G22 diagnostics), W5.P9 (G28 receipt ordering), GAP-12" authorized="yes"
+```
+
+### Decision Vocabulary
+
+| Decision | When to use | Plan Update Required | Execution Continues? |
+|---|---|---|---|
+| **ACCEPTED** | Scope is critical path, in-charter, and absorbable | Yes — complete all Required Updates | Yes, on expanded scope |
+| **DEFERRED** | Scope is valid but time/volume gated | No — emit `DEFERRED_SCOPE:` marker | Yes, on original scope only |
+| **SPLIT_TO_NEW_PLAN** | Scope is valid but too large for current plan | No — create new plan, link to this one | Yes, on original scope only |
+| **REJECTED** | Scope is gold-plating, off-charter, or low priority | No | Yes, on original scope only |
+
+### Required Updates (if ACCEPTED)
+
+Must complete ALL before emitting SCOPE_EXPANSION marker:
+- [ ] **Refresh `last_updated`** — current date in frontmatter
+- [ ] **Add/modify Wave Structure row** — new wave if needed, or modify existing
+- [ ] **Add/modify Phase-Level Summary row** — new phase(s) with 🔲 TODO status
+- [ ] **Add/modify Gap Register row** — document the discovered gap
+- [ ] **Add/modify DoD criterion** — if new deliverables required
+- [ ] **Append to Scope Expansion Authorization Log** — inline documentation
+
+### Retroactive Authorization Negative-Control
+
+> **Documentation ≠ Authorization.** A plan update filed after work completes is retroactive permission, not governance.
+
+The `post_cascade_plan_scope_audit.py` hook detects **RETROACTIVE_AUTHORIZATION_DETECTED** when:
+1. ≥3 file operations (edit/write) detected in response
+2. Active plan exists (modified within 24h)
+3. **NO** preceding `AUTHORIZATION_DECISION` marker with `decision=ACCEPTED` in same response
+
+This prevents the anti-pattern where "plan update" becomes a post-hoc rationalization after gold-plating.
+
+---
+
 ## Cascade Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.

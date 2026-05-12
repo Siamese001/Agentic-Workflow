@@ -42,6 +42,7 @@ from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 from apps_rg.exit.apps_rg_exit_evidence_builder import (
     FactualGroundingResult as _FactualGroundingResult,
+    HeaderRepairResult as _HeaderRepairResult,
     MissingPerInputHashError as _MissingPerInputHashError,
     build_g24_provenance as _build_g24_provenance,
     compute_factual_grounding as _compute_factual_grounding,
@@ -320,6 +321,7 @@ def exit_finalize_apps_rg(
     _outcome_authorized: bool = False
     _hitl_required: bool = False
     _exit_status_from_harness: str = "blocked"
+    _header_repair = _HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref="")
 
     try:
         # Parse generated content for G22 dim scoring (None if unparseable).
@@ -330,9 +332,11 @@ def exit_finalize_apps_rg(
             pass
 
         # Seal L2 resume sections into canonical SealedSectionArtifact objects.
-        # seal_resume_sections maps L2 flat keys → canonical section IDs;
-        # header_block is NOT synthesised from target_* fields.
-        _sealed_sections = _seal_resume_sections(_parsed, sealed.run_id)
+        # seal_resume_sections maps L2 flat keys → canonical section IDs.
+        # When header absent from LLM output and fec contains source resume,
+        # deterministic repair extracts header fields from source resume evidence.
+        # header_block is NEVER synthesised from target_company/target_role/target_level.
+        _sealed_sections, _header_repair = _seal_resume_sections(_parsed, sealed.run_id, fec)
         _merged_content: str = sealed.generated_content or ""
 
         # Build SealedWorkflowPackage with real sections and merged content.
@@ -534,6 +538,11 @@ def exit_finalize_apps_rg(
                     if _fg_result is not None
                     else None
                 ),
+            }
+            # Record deterministic header repair audit field.
+            _receipt_dict["deterministic_header_repair"] = {
+                "repaired": _header_repair.repaired,
+                "source_evidence_ref": _header_repair.source_evidence_ref,
             }
             (_run_dir / "07_gate_receipt.json").write_text(
                 json.dumps(_receipt_dict, indent=2, ensure_ascii=False),

@@ -14,13 +14,13 @@ semantic_cache:
     - role_compatible
     - freshness_within_ttl
     - provenance_known
-  # W2N (chroma-graphrag-lic-rg-research-f4a2e9 no-core track):
-  # CONFIG_PREPARED_ONLY — R1B lookup NOT live-wired.
-  # package_driven_l0_binding.py is in agentic_core and is off-limits under no-core plan.
-  # check_d2_semantic_cache() is NOT called. Live R1B wiring is deferred to W2 (core-authorized).
-  # apps_rg/cache/r1b_adapter.py remains quarantined and untouched.
-  live_wiring_deferred: true
-  wiring_gate: W2_GENERIC_INFRA_EDIT_IN_AGENTIC_CORE_REQUIRED
+  # W5 (chroma-graphrag-core-wiring-gaps-b3f7a1 RCA decision KEEP_QUARANTINED_DEPRECATED):
+  # Generic R1B path is now live via package_driven_l0_binding._read_semantic_cache_profile()
+  # + check_d2_semantic_cache(). apps_rg/cache/r1b_adapter.py remains QUARANTINED and
+  # DEPRECATED — no app-specific adapter code is required or used.
+  # RCA: docs/architecture/rca/RCA_apps_rg_r1b_adapter_L4_import_violation.md
+  live_wiring_deferred: false
+  wiring_gate: CLEARED_BY_W1_GENERIC_R1B_CACHE_WIRING
 
 ttl_seconds: 3600
 cache_scope: user

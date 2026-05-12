@@ -370,8 +370,30 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
         # build an empty FEC so the PA binding stays pure-typed.
         if fec is None:
             from agentic_core.runtime.contracts.final_evidence_contract import (
+                EvidenceItem as _EvidenceItem,
                 FinalEvidenceContract as _FEC,
             )
+            # Even when grounding is not required for generation, the source resume
+            # text must be available in the FEC for deterministic header repair at
+            # Exit (G21 header determinism patch).  Inject it as an EvidenceItem
+            # so seal_resume_sections can extract header fields if the LLM omits
+            # the header key.  Falls through to empty tuple when resume is absent.
+            _resume_text: str = ""
+            try:
+                _ap = getattr(validated_request, "app_payload", None) or {}
+                _rp = _ap.get("resume_payload", {}) if isinstance(_ap, dict) else {}
+                _resume_text = (_rp.get("source_resume_text", "") if isinstance(_rp, dict) else "") or ""
+            except Exception:  # guardian: allow-broad-exception -- resume text extraction is best-effort
+                _resume_text = ""
+            _resume_items: tuple[_EvidenceItem, ...] = ()
+            if _resume_text and _resume_text.strip():
+                _resume_items = (
+                    _EvidenceItem(
+                        source="resume:app_payload.source_resume_text",
+                        content=_resume_text,
+                        content_type="text",
+                    ),
+                )
             fec = _FEC(
                 request_id=route.request_id,
                 run_id=route.run_id,
@@ -380,6 +402,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                 evidence_collection_timestamp=datetime.now(timezone.utc).isoformat(),
                 schema_version="W3.P4",
                 l5_certification_ref="c0-apps-rg-no-grounding-required",
+                evidence_items=_resume_items,
             )
         try:
             # AG-2 (apps-rg-app-payload-consumption-wiring-b3a449 W4.P4.3):

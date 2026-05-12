@@ -1,0 +1,45 @@
+# L6 Writeback Profile for apps_rg
+# Configuration for L6 learning and writeback
+
+schema_version: "1.0"
+app_id: "apps_rg"
+profile_type: "l6_writeback"
+
+# Writeback proposer configuration
+writeback_config:
+  app_id: "apps_rg"
+  task_class: "resume_generation"
+  
+# Policy references (relative to repo root)
+policy_refs:
+  meta_feedback_profile: "apps_rg/config/domain_contract/meta_feedback_profile.resume_generation.v1.json"
+
+# Learning configuration
+learning_policy:
+  enabled: true
+  # D2 semantic cache namespace
+  cache_namespace: "apps_rg"
+  
+  # Target ref pattern for writeback
+  # Pattern: pp::{app_id}::{run_id}
+  target_ref_pattern: "pp::{app_id}::{run_id}"
+  
+  # Learning eligibility criteria
+  eligibility:
+    require_successful_completion: true
+    allowed_x3_dispositions:
+      - "EXIT_OK"
+      - "EXIT_PARTIAL"
+
+# Store mapping for writeback
+store_mapping:
+  default_store: "semantic_cache"
+  stores:
+    - name: "semantic_cache"
+      type: "memory"
+      ttl_hours: 168
+
+# Identity mapping for provenance
+identity_mapping:
+  actor_id: "apps_rg:cli"
+  actor_role: "user"

@@ -1,0 +1,37 @@
+# L6 Writeback Profile for apps_lic
+# Configuration for L6 learning and writeback
+
+schema_version: "1.0"
+app_id: "apps_lic"
+profile_type: "l6_writeback"
+
+# Writeback proposer configuration
+writeback_config:
+  app_id: "apps_lic"
+  task_class: "outreach_message"
+  
+# Learning configuration
+learning_policy:
+  enabled: true
+  # D2 semantic cache namespace
+  cache_namespace: "apps_lic"
+  
+  # Learning eligibility criteria
+  eligibility:
+    require_successful_completion: true
+    allowed_x3_dispositions:
+      - "EXIT_OK"
+      - "EXIT_PARTIAL"
+
+# Store mapping for writeback
+store_mapping:
+  default_store: "semantic_cache"
+  stores:
+    - name: "semantic_cache"
+      type: "memory"
+      ttl_hours: 168
+
+# Identity mapping for provenance
+identity_mapping:
+  actor_id: "apps_lic:cli"
+  actor_role: "user"

@@ -1,0 +1,50 @@
+# Pipeline Defaults Profile for apps_lic
+# Default values for R4 deterministic pipeline (apps_lic variant)
+
+schema_version: "1.0"
+app_id: "apps_lic"
+profile_type: "pipeline_defaults"
+
+# Identity defaults for envelope construction
+identity_defaults:
+  source_channel: "apps_lic_cli"
+  user_id_default: "u-apps_lic"
+  declared_schema: "apps_lic_outreach_v1"
+  caller_surface: "apps_lic_cli"
+  tenant_id: "apps_lic"
+
+# App name constant (for manifest/receipts)
+app_name: "apps_lic"
+
+# Route constants
+route_constants:
+  chain_kind: "R4_SINGLE_ACTION"
+  route_family: "R4_SINGLE_ACTION"
+  route_id: "R4_SINGLE_ACTION"
+
+# Artifact directory prefix
+artifact_prefix: "apps_lic_r4"
+
+# Replay key derivation fields (outreach-specific)
+replay_key_fields:
+  - "manifest_hash"
+  - "policy_hash"
+  - "blueprint_hash"
+  - "recipient_brief_ref"
+  - "resume_ref"
+
+# Receipt filenames
+receipt_filenames:
+  identity: "r4_lic_identity_receipt.json"
+  c0_bypass: "r4_lic_c0_bypass_receipt.json"
+  manifest: "r4_lic_run_manifest.json"
+
+# C0 bypass configuration
+c0_config:
+  bypass_reason: "BYPASS_PRELOADED_CONTEXT"
+  preloaded_context_ref: "R4_SINGLE_ACTION"
+
+# Producer component reference
+producer:
+  component: "agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run"
+  function: "run_integrated_r4_lic_pipeline"

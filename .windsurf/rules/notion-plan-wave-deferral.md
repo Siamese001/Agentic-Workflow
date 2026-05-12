@@ -14,17 +14,13 @@ trigger: always_on
 4. **After final wave**: `python tools/windsurf/wave_execution_state.py complete --plan <slug-6hex>` — patches Plans DB Status → `Completed` via direct HTTP.
 5. **After step 4**: any remaining Cascade-side Notion **MCP** writes (post-mortem reads, ledger sync, etc.) batch one-per-block per §25.
 
-> ⛔ **`PLAN_COMPLETE:` marker is mandatory when all plan tasks finish in a single session and `wave_execution_state.py complete` is not called.** Emit `PLAN_COMPLETE: plan=<slug-6hex>` as a bare line in the final response. Omission = Notion status enforcement failure (plan stays `In Progress` or `Not Started` forever). Enforced by `post_cascade_plan_complete_audit.py` (advisory warn on todo-all-done without marker) and CI gate NP13 (`check_plan_complete_marker_freshness.py`). RCA: `notion-np10-deferred-scope-c8f1a4` left at `Not Started` 2026-05-10 because this marker was never emitted.
+> ⛔ **`PLAN_COMPLETE:` marker is mandatory when all plan tasks finish in a single session and `wave_execution_state.py complete` is not called.** Emit `PLAN_COMPLETE: plan=<slug-6hex>` as a bare line in the final response. Enforced by `post_cascade_plan_complete_audit.py` and CI gate NP13 (`check_plan_complete_marker_freshness.py`).
 
 Applies to plans with ≥2 waves. Single-wave/T0/T1 exempt. Notion **reads** at end-of-plan, not end-of-wave.
 
-## Sanctioned non-MCP path (added 2026-05-10, plan notion-wave-lifecycle-autosync-f4a2b8)
+## Sanctioned non-MCP path
 
-> ⛔ The "no Notion MCP calls" rule above governs **MCP tool invocations** only — i.e. anything that emits an `<invoke name="mcp*_API-*">` tag in the Cascade response. **Direct HTTP calls to Notion's REST API from Python scripts are explicitly sanctioned**, even mid-wave, because they:
->
-> 1. Do not invoke any MCP tool (no `<invoke>` tag → §25 audit does not fire).
-> 2. Do not pass through Cascade's MCP transport layer (immune to the upstream Anthropic concurrent-dispatch race that motivates §25).
-> 3. Are deterministically invoked by hooks / CLI subcommands, not by Cascade prose (drift-resistant).
+> ⛔ Direct HTTP calls to Notion's REST API from Python scripts are **explicitly sanctioned** mid-wave. They do not invoke MCP tools and are immune to the §25 concurrent-dispatch constraint.
 
 The sanctioned chain is:
 
@@ -35,9 +31,9 @@ The sanctioned chain is:
 | `wave_execution_state.py complete` | Direct HTTP | Status → `Completed`; Summary append `[Wave-Log <ts>] PLAN COMPLETE` |
 | `WAVE_START:` / `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers in Cascade response | `post_cascade_wave_lifecycle_capture.py` hook → direct HTTP | Same as above, decided per marker |
 
-### High-signal Summary appends (added 2026-05-10)
+### High-signal Summary appends
 
-> ⛔ Every `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` marker Cascade emits SHOULD carry an optional `note="<succinct one-liner>"` field. Without it the Notion Summary column degrades to a wall of `[Wave-Log <ts>] W{N} DONE` lines with zero scope information.
+> ⛔ Every completion marker SHOULD carry `note="<one-liner>"`. Without it the Notion Summary degrades to bare timestamps.
 
 Marker grammar with note:
 
@@ -47,51 +43,27 @@ PHASE_COMPLETE: plan=<slug-6hex> phase=<id> note="<one-liner>"
 PLAN_COMPLETE: plan=<slug-6hex> note="<final outcome>"
 ```
 
-The note is whitespace-collapsed and capped at ~240 chars (`MAX_NOTE_CHARS` in `tools/notion/_wave_lifecycle_helpers.py`). Quotes (`"..."` or `'...'`) are required when the note contains spaces. Good shape:
+Note capped at ~240 chars. Quotes required when note contains spaces.
 
-- ✅ `note="4 files, +12 tests, summary-signal upgrade"`
-- ✅ `note="9/9 phases green; ledger-binder hot path"`
-- ❌ `note=stuff` (single bareword — works but signals nothing)
-- ❌ `note="see plan §3 for details"` (forces operator to context-switch)
+**Failure mode**: fail-soft. HTTP errors log to `artifacts/windsurf/wave_lifecycle_notion.jsonl`; wave-state on disk is source of truth.
 
-`WAVE_START:` MAY include `note=` but typically doesn't — start lines are noise unless something noteworthy gates the wave.
+**CI backstops**: NP4 (`check_plan_notion_wave_freshness.py`) detects on-disk-vs-Notion skew >7d. NP-DONE (`check_plan_done_notion_status.py`) detects all-waves-done plans where Notion status ≠ `Completed`; advisory, fail-closed via `NP_PLAN_DONE_STATUS_FAIL_CLOSED=1`.
 
-**Failure mode**: fail-soft. Any HTTP error logs to `artifacts/windsurf/wave_lifecycle_notion.jsonl` and exits 0. Wave-state on disk is the source of truth; Notion sync is best-effort.
+## Retrospective-Plan Protocol
 
-**Backstop**: CI gate `NP4 Notion Plans wave freshness` (`ops_scripts/ci/check_plan_notion_wave_freshness.py`) detects on-disk-vs-Notion skew >7d on active plans.
+A **retrospective plan** documents already-completed work.
 
-**Belt-and-suspenders (added 2026-05-11, plan `plan-complete-notion-status-enforcement-a7e2d1`)**: CI gate `NP-DONE` (`ops_scripts/ci/check_plan_done_notion_status.py`) detects plans whose on-disk Wave Structure table shows all waves ✅ DONE but Notion status ≠ `Completed`. Advisory by default; fail-closed via `NP_PLAN_DONE_STATUS_FAIL_CLOSED=1`. Bypass: `NP_PLAN_DONE_STATUS_BYPASS=1`. Skips when `NOTION_TOKEN` / `NOTION_API_KEY` unset.
+> ⛔ **NEVER call `wave_execution_state.py start` on a retrospective plan.** It will flip `Not Started` → `In Progress`, undoing a same-turn `Completed` status.
 
-**Token-absent observability (added 2026-05-11)**: Both `post_cascade_wave_lifecycle_capture.py` and `tools/notion/wave_lifecycle_writer.py::emit_from_markers` now emit a visible `[...] WARN: NOTION_TOKEN not set` message to stderr when the token is absent, so the silent-skip failure mode is detectable in logs. Previously this was completely invisible (fail-open with no output).
+### Correct protocol
 
-**RCA — `apps-lic-quarantine-u0-coverage-review-d9f4a2`**: Plan completed all 11 waves but Notion remained `Archived`. Root cause chain: (A) plan pre-emptively set to `Archived` before W8-W10 resumed, (B) `wave_execution_state.py start/complete` never called (plan predated the wave-lifecycle autosync), (C) `PLAN_COMPLETE:` marker hook either had no `NOTION_TOKEN` or the HTTP PATCH failed silently (fail-open). Result: Notion stuck at `Archived` until manual `API-patch-page`. NP-DONE gate closes this detection gap. Full RCA: plan `plan-complete-notion-status-enforcement-a7e2d1`.
-
-## Retrospective-Plan Protocol (added 2026-05-10, plan notion-plan-status-hardening-e5f3a1)
-
-A **retrospective plan** is one authored to document already-completed work (all waves done in the same turn as plan creation, or plan created after work is complete).
-
-> ⛔ **NEVER call `wave_execution_state.py start` on a retrospective plan.** The `start` command emits a `wave_start` Notion sync which will flip `Not Started` / `Waiting` → `In Progress`, undoing a same-turn `Completed` status set via `API-post-page`.
-
-### Correct protocol for retrospective plans
-
-1. Write the plan file to `.windsurf/plans/<slug>.md`.
+1. Write plan to `.windsurf/plans/<slug>.md`.
 2. Register in Notion via `API-post-page` with `status=Completed` directly.
-3. Emit `PLAN_COMPLETE: plan=<slug>` in the response (satisfies NP13 audit).
-4. Do **NOT** emit `PLAN_CREATED:` marker (which would queue a registration expecting `Not Started`).
+3. Emit `PLAN_COMPLETE: plan=<slug>` in the response (satisfies NP13).
+4. Do **NOT** emit `PLAN_CREATED:` marker.
 5. Do **NOT** call `wave_execution_state.py start`.
 
-### Belt-and-suspenders guards (plan notion-plan-status-hardening-e5f3a1)
-
-Even if `start` is called inadvertently, two guards prevent the status flip:
-
-1. **Primary guard** (`tools/windsurf/wave_execution_state.py` `_cmd_start`): looks up the current Notion status before calling `_notion_sync`. If `current_status == "Completed"`, skips the `wave_start` sync entirely and logs `NOTION_SYNC SKIPPED reason=status_already_completed`.
-2. **Secondary guard** (`tools/notion/_wave_lifecycle_helpers.py` `patch_for_marker`): `wave_start` on a `Completed` plan returns an is_noop `NotionPatchSpec` with `reason=status_completed_guard:noop`. No status property is set, no Summary append is made.
-
-CI gate `NP-GUARD` (`ops_scripts/ci/check_notion_plan_lifecycle_guard.py`) validates both guards are present. Advisory by default; `NP_LIFECYCLE_GUARD_FAIL_CLOSED=1` activates blocking.
-
-### RCA reference
-
-Race condition that motivated this section: 2026-05-10 session where `apps-rg-ag8-prompt-authority-coverage-d9f4c2` was created-and-completed in one turn. The `PLAN_CREATED:` marker was queued; when `wave_execution_state.py start` ran on the next turn, it saw `Not Started` (timing window before MCP `API-post-page` landed) and flipped to `In Progress`. Closed by this rule + guards.
+Two guards in `wave_execution_state.py` and `_wave_lifecycle_helpers.py` prevent accidental status flip if `start` is called anyway. CI gate `NP-GUARD` (`check_notion_plan_lifecycle_guard.py`) validates guards are present; fail-closed via `NP_LIFECYCLE_GUARD_FAIL_CLOSED=1`.
 
 ## Bypass
 

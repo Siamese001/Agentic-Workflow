@@ -95,19 +95,59 @@ from agentic_core.runtime.contracts.c0_bypass_receipt import (
 from agentic_core.runtime.contracts.identity import (
     build_runtime_identity_envelope,
 )
+from agentic_core.runtime.profiles.profile_resolver import (
+    RuntimeProfileResolver,
+    UnknownAppError,
+    MissingProfileError,
+    InvalidProfileError,
+)
 
 # ---------------------------------------------------------------------------
-# apps_lic identity constants
+# Helper: Profile-driven app defaults
+# ---------------------------------------------------------------------------
+
+def _get_app_defaults(app_name: str) -> dict[str, str]:
+    """Get app identity defaults from profile.
+    
+    Fail-closed: returns empty dict if profile resolution fails,
+    forcing caller to handle missing defaults explicitly.
+    """
+    if not app_name:
+        return {}
+    
+    try:
+        resolver = RuntimeProfileResolver()
+        profile = resolver.resolve(app_name, "pipeline_defaults")
+        payload = profile.typed_payload
+        
+        defaults: dict[str, str] = {}
+        identity = payload.get("identity_defaults", {})
+        if identity:
+            defaults["source_channel"] = identity.get("source_channel", "")
+            defaults["user_id_default"] = identity.get("user_id_default", "")
+            defaults["declared_schema"] = identity.get("declared_schema", "")
+            defaults["tenant_id"] = identity.get("tenant_id", "")
+        
+        # Get app_name from profile or use passed value
+        defaults["app_name"] = payload.get("app_name", app_name)
+        
+        return defaults
+    except (UnknownAppError, MissingProfileError, InvalidProfileError):
+        return {}
+    except Exception:
+        return {}
+
+
+# ---------------------------------------------------------------------------
+# Module constants (generic, not app-specific)
 # ---------------------------------------------------------------------------
 
 CHAIN_KIND = "R4_SINGLE_ACTION"
 ROUTE_FAMILY = "R4_SINGLE_ACTION"
 ROUTE_ID = "R4_SINGLE_ACTION"
 
-APP_NAME = "apps_lic"
-SOURCE_CHANNEL = "apps_lic_cli"
-DECLARED_SCHEMA = "apps_lic_outreach_v1"
-USER_ID_DEFAULT = "u-apps_lic"
+# Profile-driven identity defaults loaded via _get_app_defaults()
+# (previously had hardcoded constants here - now migrated to profiles)
 
 _PRODUCER_COMPONENT = (
     "agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run"
@@ -166,12 +206,17 @@ def _write_json(path: Path, payload: dict[str, Any]) -> str:
     return f"sha256:{hashlib.sha256(blob.encode()).hexdigest()}"
 
 
-def _build_lic_envelope(raw_request: dict[str, Any]) -> RawIngressEnvelope:
-    """Map caller dict → RawIngressEnvelope with apps_lic identity binding.
+def _build_lic_envelope(
+    raw_request: dict[str, Any],
+    app_name: str = "",
+) -> RawIngressEnvelope:
+    """Map caller dict → RawIngressEnvelope with profile-driven identity binding.
 
-    apps_lic requests carry outreach-specific fields (recipient_class,
-    channel, outreach_mode) rather than the JD-centric fields apps_rg uses.
+    Uses pipeline_defaults profile for app-specific identity values.
     """
+    # Get defaults from profile
+    defaults = _get_app_defaults(app_name)
+    
     body_text = (
         raw_request.get("body_text")
         or raw_request.get("query")
@@ -188,17 +233,23 @@ def _build_lic_envelope(raw_request: dict[str, Any]) -> RawIngressEnvelope:
             }
         )
     )
+    
+    # Use profile-driven defaults (fail-closed: empty string if no profile)
+    default_source_channel = defaults.get("source_channel", "")
+    default_user_id = defaults.get("user_id_default", "")
+    default_declared_schema = defaults.get("declared_schema", "")
+    
     return RawIngressEnvelope(
         transport=str(raw_request.get("transport", "cli")),
         method=str(raw_request.get("method", "POST")),
         content_type=str(raw_request.get("content_type", "application/json")),
-        source_channel=str(raw_request.get("source_channel", SOURCE_CHANNEL)),
+        source_channel=str(raw_request.get("source_channel", default_source_channel)),
         claimed_tenant_id=raw_request.get("tenant_id"),
-        claimed_user_id=str(raw_request.get("user_id", USER_ID_DEFAULT)),
+        claimed_user_id=str(raw_request.get("user_id", default_user_id)),
         body_text=body_text,
         body_bytes=None,
         declared_schema=str(
-            raw_request.get("declared_schema", DECLARED_SCHEMA)
+            raw_request.get("declared_schema", default_declared_schema)
         ),
         declared_content_length=len(body_text.encode()),
         attachments=None,
@@ -229,15 +280,20 @@ def _build_r5_exit_receipts(
     request_id: str,
     trace_root: str,
     reason_code: str,
+    app_name: str = "",
 ) -> dict[str, Any]:
     """Minimal receipts dict for an R5 terminal path through Exit V6."""
+    # Get defaults from profile for app_name if not provided
+    defaults = _get_app_defaults(app_name)
+    effective_app_name = app_name or defaults.get("app_name", "")
+    
     return {
         "run_id": run_id,
         "request_id": request_id,
         "trace_root": trace_root,
         "route_id": ROUTE_ID,
         "chain_kind": CHAIN_KIND,
-        "app_name": APP_NAME,
+        "app_name": effective_app_name,
         "terminal_r5": True,
         "r5_reason_code": reason_code,
         "l2_executed": False,
@@ -254,15 +310,20 @@ def _build_l2_exit_receipts(
     trace_root: str,
     l2_result: Any,
     replay_key: str,
+    app_name: str = "",
 ) -> dict[str, Any]:
     """Receipts dict for a successful L2 execution path through Exit V6."""
+    # Get defaults from profile for app_name if not provided
+    defaults = _get_app_defaults(app_name)
+    effective_app_name = app_name or defaults.get("app_name", "")
+    
     return {
         "run_id": run_id,
         "request_id": request_id,
         "trace_root": trace_root,
         "route_id": ROUTE_ID,
         "chain_kind": CHAIN_KIND,
-        "app_name": APP_NAME,
+        "app_name": effective_app_name,
         "terminal_r5": False,
         "r5_reason_code": "",
         "l2_executed": True,
@@ -309,12 +370,18 @@ def run_integrated_r4_lic_pipeline(
     """
     run_id = run_id or str(uuid.uuid4())
     request_id = str(raw_request.get("request_id", uuid.uuid4()))
-    trace_root = str(raw_request.get("trace_id", f"tr-lic-{run_id[:8]}"))
+    
+    # Get app defaults early for trace_root prefix and artifact naming
+    defaults = _get_app_defaults(app_name or "")
+    app_name_for_trace = app_name or defaults.get("app_name", "")
+    app_prefix = app_name_for_trace.replace("apps_", "") if app_name_for_trace else ""
+    trace_root = str(raw_request.get("trace_id", f"tr-{app_prefix}-{run_id[:8]}"))
     replay_key = _compute_replay_key(raw_request)
 
     if artifact_dir is None:
         import tempfile
-        artifact_dir = Path(tempfile.mkdtemp(prefix=f"apps_lic_r4_{run_id[:8]}_"))
+        artifact_prefix = defaults.get("app_name", app_name or "unknown").replace("_", "_")
+        artifact_dir = Path(tempfile.mkdtemp(prefix=f"{artifact_prefix}_r4_{run_id[:8]}_"))
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
     if exit_pipeline is None:
@@ -323,7 +390,7 @@ def run_integrated_r4_lic_pipeline(
     # ------------------------------------------------------------------
     # U0 — request intake (six-question gate)
     # ------------------------------------------------------------------
-    envelope = _build_lic_envelope(raw_request)
+    envelope = _build_lic_envelope(raw_request, app_name=app_name or "")
     try:
         validated_request = run_request_intake(envelope)
     except Exception as exc:  # noqa: BLE001
@@ -357,6 +424,7 @@ def run_integrated_r4_lic_pipeline(
             request_id=request_id,
             trace_root=trace_root,
             reason_code=reason_code,
+            app_name=app_name or "",
         )
         exit_result: ExitEvalResult = exit_pipeline.run(receipts)
         return LicR4RunResult(
@@ -442,6 +510,7 @@ def run_integrated_r4_lic_pipeline(
         trace_root=trace_root,
         l2_result=l2_result,
         replay_key=replay_key,
+        app_name=app_name or "",
     )
     exit_result = exit_pipeline.run(receipts)
 
@@ -456,14 +525,14 @@ def run_integrated_r4_lic_pipeline(
         replay_key=replay_key,
         policy_hash="",
         blueprint_hash="",
-        caller_surface=SOURCE_CHANNEL,
+        caller_surface=defaults.get("source_channel", ""),
         entrypoint_command=_PRODUCER_COMPONENT,
         started_at_utc=_utc_now_iso(),
         git_commit=git_commit,
         git_dirty=git_dirty,
         route_contract_id=run_id,
         route_id=ROUTE_ID,
-        app_name=APP_NAME,
+        app_name=app_name or defaults.get("app_name", ""),
     )
     _write_json(artifact_dir / _IDENTITY_RECEIPT_FILENAME, identity.to_dict())
 
@@ -476,7 +545,7 @@ def run_integrated_r4_lic_pipeline(
         "trace_root": trace_root,
         "route_id": ROUTE_ID,
         "chain_kind": CHAIN_KIND,
-        "app_name": APP_NAME,
+        "app_name": app_name or defaults.get("app_name", ""),
         "replay_key": replay_key,
         "x3_disposition": exit_result.x3_disposition.value,
         "producer_component": _PRODUCER_COMPONENT,

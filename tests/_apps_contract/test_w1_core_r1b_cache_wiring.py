@@ -630,17 +630,32 @@ def test_no_graph_code_changed_in_w1():
 # ---------------------------------------------------------------------------
 
 def test_no_ingestion_changed_in_w1():
-    """W1 must not create or modify any ingestion pipeline file.
-    tools/ingestion/chroma_ingest_pipeline.py must NOT exist yet (it is W6 scope)."""
-    ingestion_pipeline = INGESTION_DIR / "chroma_ingest_pipeline.py"
-    assert not ingestion_pipeline.exists(), (
-        "chroma_ingest_pipeline.py must not exist in W1 — it is W6 scope"
-    )
+    """W1 must not have introduced any ingestion pipeline content.
 
-    # Also verify sentence-transformers is not referenced in the L0 binding
+    W1 original: asserted chroma_ingest_pipeline.py does NOT exist (W6 scope).
+    W6 update: the file now exists — created by W6 as expected. The W1 invariant
+    is that L0 binding (package_driven_l0_binding.py) does NOT reference
+    sentence-transformers (that belongs to the app-layer ingestion path, not L0).
+    """
+    ingestion_pipeline = INGESTION_DIR / "chroma_ingest_pipeline.py"
+    # W6 created this file — confirm it is W6-scoped (contains W6 marker)
+    if ingestion_pipeline.exists():
+        content = ingestion_pipeline.read_text(encoding="utf-8")
+        assert "process_docs" in content, (
+            "chroma_ingest_pipeline.py must target process_docs collection (W6 invariant)"
+        )
+        assert "BAAI/bge-m3" in content, (
+            "chroma_ingest_pipeline.py must use BAAI/bge-m3 embedding model (W6 invariant)"
+        )
+
+    # W1 core invariant: L0 binding must NEVER reference sentence-transformers
     source = L0_BINDING.read_text(encoding="utf-8")
-    assert "sentence_transformers" not in source
-    assert "SentenceTransformer" not in source
+    assert "sentence_transformers" not in source, (
+        "package_driven_l0_binding.py must not reference sentence_transformers (L0 boundary)"
+    )
+    assert "SentenceTransformer" not in source, (
+        "package_driven_l0_binding.py must not reference SentenceTransformer (L0 boundary)"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -670,15 +685,24 @@ def test_live_wiring_deferred_true_returns_none():
 # Regression: read apps_rg actual profile (live_wiring_deferred=true → None)
 
 def test_apps_rg_actual_profile_deferred():
-    """apps_rg/config/domain_contract/cache_profiles.yaml must still return None
-    from _read_semantic_cache_profile (live_wiring_deferred=true until W5)."""
+    """apps_rg/config/domain_contract/cache_profiles.yaml — generic R1B path state check.
+
+    W1 original: asserted result is None (live_wiring_deferred=true until W5).
+    W5 update: live_wiring_deferred flipped to false (RCA decision KEEP_QUARANTINED_DEPRECATED).
+    _read_semantic_cache_profile now returns a live config dict for apps_rg.
+    """
     from agentic_core.L0_routing.package_driven_l0_binding import _read_semantic_cache_profile
 
     profile = _load_yaml(APPS_RG_CACHE_PROFILE)
     result = _read_semantic_cache_profile(profile)
-    assert result is None, (
-        "apps_rg cache profile has live_wiring_deferred=true — must return None until W5"
+    # W5: generic path is now live — result must be a populated config dict
+    assert result is not None, (
+        "apps_rg cache profile live_wiring_deferred=false after W5 — "
+        "_read_semantic_cache_profile must return a config dict, not None"
     )
+    assert result.get("enabled") is True
+    assert result.get("live_wiring_deferred") is False
+    assert result.get("namespace") == "apps_rg.resume_gen.v1"
 
 
 # Regression: check_d2_semantic_cache is called with exact expected arguments

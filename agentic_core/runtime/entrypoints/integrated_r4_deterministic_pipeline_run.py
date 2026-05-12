@@ -89,6 +89,12 @@ from agentic_core.runtime.contracts.c0_bypass_receipt import (
 from agentic_core.runtime.contracts.identity import (
     build_runtime_identity_envelope,
 )
+from agentic_core.runtime.profiles.profile_resolver import (
+    RuntimeProfileResolver,
+    UnknownAppError,
+    MissingProfileError,
+    InvalidProfileError,
+)
 
 # ---------------------------------------------------------------------------
 # Module-level constants
@@ -215,6 +221,43 @@ def _utc_now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def _get_app_defaults(app_name: str) -> dict[str, str]:
+    """Get app identity defaults from profile.
+    
+    Fail-closed: returns empty dict if profile resolution fails,
+    forcing caller to handle missing defaults explicitly.
+    """
+    if not app_name:
+        return {}
+    
+    try:
+        resolver = RuntimeProfileResolver()
+        profile = resolver.resolve(app_name, "pipeline_defaults")
+        payload = profile.typed_payload
+        
+        defaults: dict[str, str] = {}
+        identity = payload.get("identity_defaults", {})
+        if identity:
+            defaults["source_channel"] = identity.get("source_channel", "")
+            defaults["user_id_default"] = identity.get("user_id_default", "")
+            defaults["caller_surface"] = identity.get("caller_surface", "")
+            defaults["declared_schema"] = identity.get("declared_schema", "")
+            defaults["tenant_id"] = identity.get("tenant_id", "")
+        
+        auth = payload.get("auth_defaults", {})
+        if auth:
+            defaults["auth_kind"] = auth.get("kind", "")
+            defaults["auth_token"] = auth.get("token", "")
+        
+        return defaults
+    except (UnknownAppError, MissingProfileError, InvalidProfileError):
+        # Fail-closed: return empty dict on profile resolution failure
+        return {}
+    except Exception:
+        # Fail-closed: any unexpected error returns empty defaults
+        return {}
+
+
 def _sha256_file(path: Path) -> str | None:
     """Return sha256 hex of file contents, or None if file doesn't exist."""
     if not path.exists():
@@ -239,22 +282,41 @@ def _hash_payload(payload: dict[str, Any]) -> str:
     return f"sha256:{hashlib.sha256(blob).hexdigest()}"
 
 
-def _build_raw_envelope(raw_request: dict[str, Any]) -> RawIngressEnvelope:
-    """Map caller dict → RawIngressEnvelope for U0 intake."""
+def _build_raw_envelope(
+    raw_request: dict[str, Any],
+    app_name: str = "",
+) -> RawIngressEnvelope:
+    """Map caller dict → RawIngressEnvelope for U0 intake.
+    
+    Uses profile-driven defaults for app-specific identity values.
+    """
+    # Get app defaults from profile (fail-closed: empty dict on failure)
+    defaults = _get_app_defaults(app_name)
+    
     body_text = (
         raw_request.get("body_text")
         or raw_request.get("query")
         or json.dumps(raw_request.get("jd_payload") or {})
     )
+    
+    # Use profile defaults or fallback to empty string (not hardcoded app literals)
+    default_source_channel = defaults.get("source_channel", "")
+    default_user_id = defaults.get("user_id_default", "")
+    default_auth_kind = defaults.get("auth_kind", "internal")
+    default_auth_token = defaults.get("auth_token", "")
+    
     return RawIngressEnvelope(
         transport=str(raw_request.get("transport", "api")),
         method=str(raw_request.get("method", "POST")),
         content_type=str(raw_request.get("content_type", "application/json")),
-        source_channel=str(raw_request.get("source_channel", "apps_rg_cli")),
+        source_channel=str(raw_request.get("source_channel", default_source_channel)),
         claimed_tenant_id=raw_request.get("tenant_id"),
-        claimed_user_id=str(raw_request.get("user_id", "u-apps_rg")),
+        claimed_user_id=str(raw_request.get("user_id", default_user_id)),
         auth_credential=dict(
-            raw_request.get("auth_credential") or {"kind": "internal", "token": "apps-rg-internal"}
+            raw_request.get("auth_credential") or {
+                "kind": default_auth_kind,
+                "token": default_auth_token,
+            }
         ),
         body_text=body_text,
     )
@@ -434,7 +496,7 @@ def run_integrated_r4_deterministic_pipeline(
     # ------------------------------------------------------------------
     # U0 — intake
     # ------------------------------------------------------------------
-    envelope = _build_raw_envelope(raw_request)
+    envelope = _build_raw_envelope(raw_request, app_name=app_name)
     intake_result = run_request_intake(envelope)
 
     # If U0 rejects, return schema-rejection result (not R5 — see plan §W2)
@@ -518,6 +580,11 @@ def run_integrated_r4_deterministic_pipeline(
     # ------------------------------------------------------------------
     # Identity envelope
     # ------------------------------------------------------------------
+    # Get app defaults from profile for identity values
+    _identity_defaults = _get_app_defaults(app_name)
+    _caller_surface = _identity_defaults.get("caller_surface", "") or app_name or ""
+    _app_name_for_identity = app_name or _identity_defaults.get("app_id", "")
+    
     identity = build_runtime_identity_envelope(
         run_id=run_id,
         request_id=request_id,
@@ -525,14 +592,14 @@ def run_integrated_r4_deterministic_pipeline(
         replay_key=replay_key,
         policy_hash=policy_hash or raw_request.get("policy_hash", ""),
         blueprint_hash=blueprint_hash or raw_request.get("blueprint_hash", ""),
-        caller_surface="apps_rg_cli",
+        caller_surface=_caller_surface,
         entrypoint_command=_PRODUCER_COMPONENT,
         started_at_utc=started_at,
         git_commit=git_commit,
         git_dirty=git_dirty,
         route_contract_id=route_contract_id,
         route_id=effective_route_id,
-        app_name="apps_rg",
+        app_name=_app_name_for_identity,
     )
     _write_json(artifact_dir / _IDENTITY_RECEIPT_FILENAME, identity.to_dict())
 
@@ -544,9 +611,9 @@ def run_integrated_r4_deterministic_pipeline(
         "trace_root": trace_root,
         "run_id": run_id,
         "tenant_id": str(getattr(validated, "tenant_id", "") or raw_request.get("tenant_id", "default")),
-        "user_id": str(getattr(validated, "user_id", "") or raw_request.get("user_id", "u-apps_rg")),
+        "user_id": str(getattr(validated, "user_id", "") or raw_request.get("user_id", _identity_defaults.get("user_id_default", ""))),
         "transport": str(getattr(envelope, "transport", "api")),
-        "source_channel": str(getattr(envelope, "source_channel", "apps_rg_cli")),
+        "source_channel": str(getattr(envelope, "source_channel", _identity_defaults.get("source_channel", ""))),
         "target_company": raw_request.get("target_company", ""),
         "target_role": raw_request.get("target_role", ""),
         "intake_status": "VALIDATED",
@@ -650,13 +717,16 @@ def run_integrated_r4_deterministic_pipeline(
             _cache = SemanticCacheManager.get_instance()
             _intent_text = raw_request.get("user_intent") or raw_request.get("jd_payload", {}).get("text", "")
             if _intent_text:
-                _cache.learn(
-                    context=str(_intent_text)[:4096],
-                    namespace=app_name or "apps_rg",
-                    result={"output": str(l2_result)[:8192] if l2_result is not None else ""},
-                    tenant_id=raw_request.get("tenant_id", "default"),
-                    policy_version=policy_hash or raw_request.get("policy_hash", ""),
-                )
+                # Fail-closed: require app_name for namespace (no hardcoded fallback)
+                _cache_namespace = app_name or _identity_defaults.get("cache_namespace", "")
+                if _cache_namespace:
+                    _cache.learn(
+                        context=str(_intent_text)[:4096],
+                        namespace=_cache_namespace,
+                        result={"output": str(l2_result)[:8192] if l2_result is not None else ""},
+                        tenant_id=raw_request.get("tenant_id", "default"),
+                        policy_version=policy_hash or raw_request.get("policy_hash", ""),
+                    )
                 _log.debug("[R4] D2 semantic cache learn() committed for %s", app_name)
         except Exception as _d2_err:
             _log.debug("[R4] D2 semantic cache learn() skipped: %s", _d2_err)

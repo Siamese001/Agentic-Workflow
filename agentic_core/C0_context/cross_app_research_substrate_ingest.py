@@ -118,8 +118,9 @@ class CrossAppResearchSubstrateIngest:
         if not ingested.is_evidence_only():
             return False
         
-        # Verify source
-        if ingested.source_app_id != "apps_research":
+        # Verify source against configured policy
+        approved_sources = self._policy.get("approved_source_apps", [])
+        if approved_sources and ingested.source_app_id not in approved_sources:
             return False
         
         # Verify freshness

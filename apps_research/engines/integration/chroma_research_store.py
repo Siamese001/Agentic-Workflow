@@ -1,4 +1,4 @@
-"""apps_research Chroma-backed research store — W5N chroma-graphrag-lic-rg-research-f4a2e9.
+"""apps_research Chroma-backed research store — W6 real-embeddings upgrade.
 
 W5N (no-core track) invariants enforced here:
   - App-owned integration layer only; does not edit agentic_core.
@@ -8,10 +8,17 @@ W5N (no-core track) invariants enforced here:
   - Does not execute graph traversal or call the traversal engine.
   - Does not claim live C0 integration.
   - Live runtime wiring is deferred (CONFIG_PREPARED_ONLY).
-  - Uses embedding model marker BAAI/bge-m3 / 1024 dims (matches W5N profile).
+  - Uses embedding model BAAI/bge-m3 / 1024 dims.
   - Collection name: process_docs
   - Lazy factory pattern: SovereignChromaClient constructed only when a real
     chromadb_path is supplied; tests may inject a fake client via Protocol.
+
+W6 upgrade:
+  - _embed() now calls SentenceTransformer("BAAI/bge-m3") for real 1024-dim vectors.
+  - Zero-vector stub removed from the ChromaResearchStore path.
+  - If sentence-transformers is missing, raises ImportError with install hint.
+  - Model is lazy-loaded (class-level cache) to keep import-time side-effects low.
+  - InMemoryResearchStore (chromadb_path=None) is unchanged — test/dev path.
 """
 
 from __future__ import annotations
@@ -163,17 +170,39 @@ class ChromaResearchStore:
         return chromadb.PersistentClient(path=chromadb_path)  # type: ignore[return-value]
 
     # ------------------------------------------------------------------
-    # Embedding helper — BAAI/bge-m3 stub (real model requires sentence-transformers)
+    # Embedding helper — BAAI/bge-m3 via sentence-transformers (W6)
     # ------------------------------------------------------------------
 
-    def _embed(self, text: str) -> list[float]:
-        """Produce an embedding vector for the given text.
+    _model: Any = None  # class-level lazy cache; shared across instances
 
-        W5N stub: returns a zero-vector of length EMBEDDING_DIMENSIONS.
-        Real ingestion will replace this with a sentence-transformers call
-        using BAAI/bge-m3 (deferred to W6N / ingestion pipeline).
+    @classmethod
+    def _get_model(cls) -> Any:
+        """Lazy-load SentenceTransformer("BAAI/bge-m3").
+
+        Raises ImportError with install hint if sentence-transformers is missing.
         """
-        return [0.0] * EMBEDDING_DIMENSIONS
+        if cls._model is None:
+            try:
+                from sentence_transformers import SentenceTransformer  # type: ignore[import]
+            except ImportError as exc:
+                raise ImportError(
+                    "ChromaResearchStore requires sentence-transformers for real embeddings. "
+                    "Install with: pip install sentence-transformers>=2.2.0"
+                ) from exc
+            cls._model = SentenceTransformer(EMBEDDING_MODEL)
+        return cls._model
+
+    def _embed(self, text: str) -> list[float]:
+        """Produce a real BAAI/bge-m3 embedding vector for the given text.
+
+        Returns a 1024-dimensional float list.
+        Raises ImportError if sentence-transformers is not installed.
+        Does NOT fall back to zero vectors — zero-vector fallback is removed
+        from the ChromaResearchStore path (W6 invariant).
+        """
+        model = self._get_model()
+        vector = model.encode(text, normalize_embeddings=True)
+        return vector.tolist()
 
     # ------------------------------------------------------------------
     # Public interface

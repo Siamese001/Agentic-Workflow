@@ -16,12 +16,13 @@ import dataclasses
 import hashlib
 import json
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from agentic_core.runtime.contracts.compiled_prompt_artifact import (
         CompiledPromptArtifact,
     )
+    from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
     from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
     from agentic_core.runtime.contracts.sealed_workflow_types import SealedSectionArtifact
 
@@ -59,10 +60,156 @@ _SPECIFICITY_PATTERN = re.compile(
 )
 
 
+@dataclasses.dataclass(frozen=True)
+class HeaderRepairResult:
+    """Result of deterministic header extraction from source resume evidence.
+
+    repaired=True means header_block was created from source evidence.
+    repaired=False means header extraction was skipped (header already present
+    or no source evidence available).
+    header_dict is the extracted header when repaired=True; empty dict otherwise.
+    source_evidence_ref identifies which FEC evidence item was used.
+    """
+
+    repaired: bool
+    header_dict: dict[str, str]
+    source_evidence_ref: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return dataclasses.asdict(self)
+
+
+# ── Regexes for deterministic header field extraction ─────────────────────────
+# Applied to source resume text; all patterns require a real match to populate.
+# target_company / target_role / target_level are NEVER used here.
+_HDR_PHONE = re.compile(
+    r"(?<!\d)(\+?1[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})(?!\d)"
+)
+_HDR_EMAIL = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}")
+_HDR_LINKEDIN = re.compile(
+    r"(?:https?://)?(?:www\.)?linkedin\.com/in/[A-Za-z0-9_\-/]+"
+)
+_HDR_GITHUB = re.compile(
+    r"(?:https?://)?(?:www\.)?github\.com/[A-Za-z0-9_\-/]+"
+)
+# Location: city, ST or City, State (full word)
+_HDR_LOCATION = re.compile(
+    r"\b([A-Z][a-z]{2,}(?:\s[A-Z][a-z]+)*),\s*([A-Z]{2}|[A-Z][a-z]+)\b"
+)
+# Name: first occurrence of "Firstname Lastname" in the resume (title-case words
+# on a line by themselves or after contact block, at most 4 words).
+_HDR_NAME = re.compile(
+    r"(?m)^[ \t]*([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})[ \t]*$"
+)
+
+
+def extract_header_from_source_resume(
+    fec: "Optional[FinalEvidenceContract]",
+) -> "HeaderRepairResult":
+    """Extract candidate header fields from FEC source resume evidence.
+
+    Parses the raw resume text evidence item (source starts with 'resume:')
+    to extract: name, phone, email, linkedin, github, location.
+
+    Hard constraints:
+    - Uses ONLY source resume evidence from FEC.
+    - NEVER uses target_company, target_role, or target_level.
+    - Returns repaired=False when FEC is None, no resume evidence exists,
+      or extraction yields fewer than 2 fields (not enough to be useful).
+
+    Returns HeaderRepairResult with repaired=True and populated header_dict
+    when extraction succeeds, repaired=False otherwise.
+    """
+    if fec is None:
+        return HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref="")
+
+    # Locate the first source resume evidence item.
+    resume_item = None
+    for item in (getattr(fec, "evidence_items", None) or ()):
+        src = getattr(item, "source", "") or ""
+        if src.startswith("resume:"):
+            resume_item = item
+            break
+
+    if resume_item is None:
+        return HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref="")
+
+    text: str = getattr(resume_item, "content", "") or ""
+    if not text.strip():
+        return HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref="")
+
+    source_ref: str = getattr(resume_item, "source", "") or ""
+
+    header: dict[str, str] = {}
+
+    # Phone
+    m = _HDR_PHONE.search(text)
+    if m:
+        raw = m.group(0).strip()
+        # Normalise to +1-XXX-XXX-XXXX when prefix detected
+        digits = re.sub(r"[^\d]", "", raw)
+        if len(digits) == 11 and digits.startswith("1"):
+            header["phone"] = f"+1-{digits[1:4]}-{digits[4:7]}-{digits[7:]}"
+        elif len(digits) == 10:
+            header["phone"] = f"+1-{digits[0:3]}-{digits[3:6]}-{digits[6:]}"
+        else:
+            header["phone"] = raw
+
+    # Email
+    m = _HDR_EMAIL.search(text)
+    if m:
+        header["email"] = m.group(0).strip()
+
+    # LinkedIn
+    m = _HDR_LINKEDIN.search(text)
+    if m:
+        url = m.group(0).strip()
+        # Strip protocol prefix for storage consistency
+        url = re.sub(r"^https?://(?:www\.)?", "", url).rstrip("/")
+        header["linkedin"] = url
+
+    # GitHub
+    m = _HDR_GITHUB.search(text)
+    if m:
+        url = m.group(0).strip()
+        url = re.sub(r"^https?://(?:www\.)?", "", url).rstrip("/")
+        # Remove internal spaces introduced by PDF extraction artifacts
+        url = url.replace(" ", "")
+        header["github"] = url
+
+    # Location (city, state)
+    m = _HDR_LOCATION.search(text)
+    if m:
+        header["location"] = f"{m.group(1)}, {m.group(2)}"
+
+    # Name: look for a standalone "Firstname Lastname" line.
+    # Skip lines that look like contact info (contain @, +, digits-only words).
+    for m in _HDR_NAME.finditer(text):
+        candidate = m.group(1).strip()
+        # Reject if line contains email/phone fragments
+        if any(c in candidate for c in ("@", "+", "/")):
+            continue
+        # Reject all-caps candidates (section headings)
+        if candidate.upper() == candidate:
+            continue
+        # Require at least two words
+        words = candidate.split()
+        if len(words) >= 2:
+            header["name"] = candidate
+            break
+
+    # Guard: require at least 2 fields to consider the extraction useful.
+    if len(header) < 2:
+        return HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref=source_ref)
+
+    return HeaderRepairResult(repaired=True, header_dict=header, source_evidence_ref=source_ref)
+
+
 def seal_resume_sections(
     content: "dict[str, Any] | None",
     run_id: str,
-) -> "tuple[SealedSectionArtifact, ...]":
+    fec: "Optional[FinalEvidenceContract]" = None,
+) -> "tuple[tuple[SealedSectionArtifact, ...], HeaderRepairResult]":
     """Map L2 flat output keys to canonical SealedSectionArtifact objects.
 
     Key mapping (L2 key → canonical section_id):
@@ -72,10 +219,16 @@ def seal_resume_sections(
       education          → education_block
       certifications     → certifications_block  (only when present)
 
-    Hard rule: header_block is NOT fabricated from target_company / target_role /
-    target_level. It is only created from actual candidate identity data if present
-    in a dedicated "header" / "contact" key. If that key is absent, header_block
-    is omitted and G21 will correctly FAIL for that section.
+    header_block sourcing (in priority order):
+      1. Generated resume contains "header" or "contact" key → use directly.
+      2. Header absent AND fec provided with source resume evidence →
+         deterministic repair via extract_header_from_source_resume().
+         SealedSectionArtifact payload_ref is set to
+         "fec_source_resume#header_repair" to distinguish from generated headers.
+      3. Neither available → header_block omitted; G21 will correctly FAIL.
+
+    Hard rule: header_block is NEVER fabricated from target_company /
+    target_role / target_level.
 
     Each SealedSectionArtifact carries:
       - node_id:        canonical section ID
@@ -83,12 +236,16 @@ def seal_resume_sections(
       - sealed_content: JSON serialisation of the section value
       - content_digest: SHA-256 of sealed_content (hex)
       - app_context:    "apps_rg"
-      - payload_ref:    pointer back to generated_resume.json section key
+      - payload_ref:    pointer back to source
 
-    Returns an empty tuple when content is None or empty.
+    Returns a 2-tuple of:
+      - tuple of SealedSectionArtifact (empty when content is None/empty)
+      - HeaderRepairResult (repaired=False when no repair was needed/attempted)
     """
+    _no_repair = HeaderRepairResult(repaired=False, header_dict={}, source_evidence_ref="")
+
     if not content:
-        return ()
+        return (), _no_repair
 
     from agentic_core.runtime.contracts.sealed_workflow_types import (  # noqa: PLC0415
         SealedSectionArtifact,
@@ -112,10 +269,12 @@ def seal_resume_sections(
             payload_ref=f"generated_resume.json#{l2_key}",
         ))
 
-    # header_block: only from explicit candidate header/contact data.
-    # target_company / target_role / target_level are NOT used.
+    # header_block: prefer generated content, fall back to deterministic repair.
     header_src = content.get("header") or content.get("contact") or None
+    repair_result = _no_repair
+
     if header_src and isinstance(header_src, dict):
+        # Path 1: LLM generated a valid header — use it directly.
         sealed_content = json.dumps(header_src, ensure_ascii=False)
         content_digest = hashlib.sha256(sealed_content.encode("utf-8")).hexdigest()
         sections.append(SealedSectionArtifact(
@@ -126,8 +285,23 @@ def seal_resume_sections(
             content_digest=content_digest,
             payload_ref="generated_resume.json#header",
         ))
+    else:
+        # Path 2: Header absent — attempt deterministic repair from FEC source resume.
+        repair_result = extract_header_from_source_resume(fec)
+        if repair_result.repaired:
+            sealed_content = json.dumps(repair_result.header_dict, ensure_ascii=False)
+            content_digest = hashlib.sha256(sealed_content.encode("utf-8")).hexdigest()
+            sections.append(SealedSectionArtifact(
+                node_id="header_block",
+                run_id=run_id,
+                app_context="apps_rg",
+                sealed_content=sealed_content,
+                content_digest=content_digest,
+                payload_ref="fec_source_resume#header_repair",
+            ))
+        # Path 3: No repair possible — header_block omitted; G21 fails honestly.
 
-    return tuple(sections)
+    return tuple(sections), repair_result
 
 
 def compute_g22_rubric_scores(
