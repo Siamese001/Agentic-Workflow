@@ -44,10 +44,10 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W8 | P1 | Scanner taxonomy update | ~400 | W7 classification finalized | 🔲 TODO | Scanner distinguishes 5 categories |
-| W8 | P2 | Strict mode redefinition | ~200 | P1 taxonomy implemented | 🔲 TODO | strict exits 0 when runtime=0 |
-| W8 | P3 | CI integration verification | ~200 | P2 strict mode working | 🔲 TODO | CI remains green, reports meaningful counts |
-| W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 TODO | AGENTS.md references new taxonomy |
+| W8 | P1 | Scanner taxonomy update | ~400 | W7 classification finalized | ✅ DONE | Scanner distinguishes 5 categories |
+| W8 | P2 | Strict mode redefinition | ~200 | P1 taxonomy implemented | ✅ DONE | strict exits 0 when runtime=0 |
+| W8 | P3 | CI integration verification | ~200 | P2 strict mode working | ✅ DONE | CI remains green, reports meaningful counts |
+| W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 DEFERRED | AGENTS.md references new taxonomy |
 
 **Total: ~900 tokens across 4 phases**
 
@@ -66,14 +66,14 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | Taxonomy rule implementation | `core_leakage_scan.py` rule engine | PP-1: Current rules don't distinguish categories | ~200 | 🔲 TODO |
-| P1.2 | Category mapping definitions | Config/spec files | PP-2: Need canonical category definitions | ~200 | 🔲 TODO |
-| P2.1 | Strict mode severity logic | `core_leakage_scan.py` --strict flag | PP-3: Strict mode treats all violations equally | ~100 | 🔲 TODO |
-| P2.2 | Non-blocking category handling | Exit code logic | PP-4: Exit code logic needs category awareness | ~100 | 🔲 TODO |
-| P3.1 | CI gate verification | `run_contract_gates.py` integration | PP-5: Gate must accept new taxonomy | ~100 | 🔲 TODO |
-| P3.2 | Baseline scan run | Full repo scan | PP-6: Establish new baseline counts | ~100 | 🔲 TODO |
-| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 TODO |
-| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 TODO |
+| P1.1 | Taxonomy rule implementation | `core_leakage_scan.py` rule engine | PP-1: Current rules don't distinguish categories | ~200 | ✅ DONE |
+| P1.2 | Category mapping definitions | Config/spec files | PP-2: Need canonical category definitions | ~200 | ✅ DONE |
+| P2.1 | Strict mode severity logic | `core_leakage_scan.py` --strict flag | PP-3: Strict mode treats all violations equally | ~100 | ✅ DONE |
+| P2.2 | Non-blocking category handling | Exit code logic | PP-4: Exit code logic needs category awareness | ~100 | ✅ DONE |
+| P3.1 | CI gate verification | `run_contract_gates.py` integration | PP-5: Gate must accept new taxonomy | ~100 | ✅ DONE |
+| P3.2 | Baseline scan run | Full repo scan | PP-6: Establish new baseline counts | ~100 | ✅ DONE |
+| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 DEFERRED |
+| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 DEFERRED |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
