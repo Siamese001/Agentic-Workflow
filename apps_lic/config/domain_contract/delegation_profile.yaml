@@ -1,0 +1,73 @@
+# apps_lic Delegation Profile
+# Defines validation and delegation rules for the Licensing/Outreach app
+# This is app-owned configuration - agentic_core reads but does not hardcode these values
+
+profile_version: "1.0"
+app_id: "apps_lic"
+
+# Payload validation rules
+payload_validation:
+  # Whether this app requires jd_content_hash for delegation
+  require_jd_content_hash: false
+  
+  # Whether this app requires role_context_hash for delegation
+  require_role_context_hash: true
+  
+  # Custom error messages for validation failures
+  error_messages:
+    missing_jd_hash: "apps_lic delegation requires jd_content_hash when JD context present"
+    missing_role_hash: "apps_lic delegation requires role_context_hash when role context present"
+
+# Substrate reuse validation rules
+reuse_validation:
+  # Fields to compare for substrate reuse eligibility
+  required_match_fields:
+    - tenant_id
+    - role_context_hash
+  
+  # Fields that must not be compared (app-specific exclusions)
+  exclude_fields: []
+  
+  # Reuse eligibility rules
+  eligibility_rules:
+    - rule_id: "role_context_match"
+      field: "role_context_hash"
+      condition: "equals"
+      failure_eligibility: "ROLE_CONTEXT_MISMATCH"
+      description: "Substrate role context must match request role context"
+
+# Terminal cache prohibition
+terminal_cache:
+  # Output types that are prohibited from being cached as terminal answers
+  prohibited_output_types:
+    - "apps_lic_final_outreach_copy_terminal_cache"
+    - "apps_lic_campaign_copy_terminal_cache"
+  
+  # Data boundary labels that are always allowed
+  allowed_boundary_labels:
+    - "EVIDENCE_DATA_ONLY"
+
+# Delegation routing rules
+delegation_routing:
+  # Allowed target apps for delegation
+  allowed_targets:
+    - "apps_research"
+  
+  # Required fields in delegation context
+  required_context_fields:
+    - "caller_app_id"
+    - "task_class"
+    - "cross_app_reuse_policy_ref"
+  
+  # Optional fields that may be validated if present
+  optional_context_fields:
+    - "role_context_hash"
+    - "tenant_id"
+    - "session_id"
+
+# Profile metadata
+metadata:
+  description: "Licensing/Outreach app delegation profile"
+  owner: "apps_lic"
+  created_at: "2026-05-11"
+  migration_source: "cross_app_payload_validator.py, package_driven_delegation_broker.py"
