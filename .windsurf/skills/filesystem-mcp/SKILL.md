@@ -5,14 +5,17 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Filesystem MCP Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §1
 
-In-house. **Use sparingly.** Native Cascade file tools (`read_file`, `edit`, `write_to_file`, `find_by_name`, `grep_search`, `list_dir`) are the default; this MCP is the fallback for batch or out-of-workspace operations.
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §1 — Filesystem MCP (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §1 for current guidance.
 
-## When To Use This MCP
-
+---
 | User intent | Use filesystem MCP? | Native alternative |
 |---|---|---|
 | Read a single file | ❌ No | `read_file` |

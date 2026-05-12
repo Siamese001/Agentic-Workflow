@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Tavily Research Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §8
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §8 — Tavily Research (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §8 for current guidance.
+
+---
+
+# Tavily Research Skill (Legacy)
 
 **PREREQUISITE:** `TAVILY_API_KEY` must be set as a Windows OS environment variable (`setx TAVILY_API_KEY tvly-...` then restart Windsurf). `pre_mcp_gate.py` blocks every Tavily call with an actionable message until the key is present — the skill itself does not need to verify the key.
 

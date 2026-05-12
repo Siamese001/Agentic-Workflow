@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Vector DB Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §6
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §6 — Vector DB (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §6 for current guidance.
+
+---
+
+# Vector DB Skill (Legacy)
 
 In-house. ChromaDB-backed semantic search via BAAI/bge-m3 embeddings.
 

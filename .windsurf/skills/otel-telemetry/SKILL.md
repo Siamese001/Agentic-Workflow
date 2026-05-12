@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# OTel MCP Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §9
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §9 — OTel Telemetry (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §9 for current guidance.
+
+---
+
+# OTel MCP Skill (Legacy)
 
 In-house. The canonical surface for runtime telemetry: OTEL spans, healing chains, anomaly detection, policy decisions, runtime ADG.
 

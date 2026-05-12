@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# GitKraken Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §11
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §11 — GitKraken (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §11 for current guidance.
+
+---
+
+# GitKraken Skill (Legacy)
 
 GitKraken MCP is the **sole authority** for git state, PRs, and cross-provider issues per AGENTS.md routing. Do not invoke `git` via `run_command` for state-inspection tasks when GitKraken can answer.
 

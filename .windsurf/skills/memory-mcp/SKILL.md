@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Memory MCP Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §12
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §12 — Memory MCP (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §12 for current guidance.
+
+---
+
+# Memory MCP Skill (Legacy)
 
 In-house persistent knowledge graph. SQLite-backed at `artifacts/memory/knowledge_graph.sqlite`. Survives Windsurf restarts.
 

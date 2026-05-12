@@ -24,7 +24,9 @@ Zero hardcoded paths.
 """
 
 import ast
+import datetime
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -32,6 +34,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _secret_patterns import scan_content as _scan_secrets  # noqa: E402
 from _ssot_folder_check import decide as _ssot_decide  # noqa: E402
+
+try:
+    import jsonschema as _jsonschema
+    _JSONSCHEMA_AVAILABLE = True
+except ImportError:  # guardian: allow-broad-exception -- optional dep; gate fails closed without it
+    _JSONSCHEMA_AVAILABLE = False
 
 fail_policy = "closed"
 
@@ -45,6 +53,22 @@ _SHELL_TRUE_RE = re.compile(r"shell\s*=\s*True")
 # Matches subprocess call sites — used to enforce timeout= (constitutional §14)
 _SUBPROCESS_CALL_RE = re.compile(r"subprocess\.(run|Popen|call|check_output|check_call)\s*\(")
 _TIMEOUT_RE = re.compile(r"timeout\s*=")
+
+# Core Addition Author-Gate forbidden app literals (W3 lightweight scan)
+_CORE_FORBIDDEN_LITERALS: tuple[str, ...] = (
+    "apps_rg",
+    "apps_lic",
+    "apps_research",
+    "apps_qna",
+    "resume_generator",
+    "outreach",
+    "company_brief",
+    "interview_card",
+    "recruiter",
+)
+
+_SCHEMA_PATH = repo_root / ".windsurf" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
+_VIOLATIONS_LOG = repo_root / "artifacts" / "windsurf" / "core_addition_gate_violations.jsonl"
 
 mcp_config_suffix = "mcp_config.json"
 _RISKY_MCP_PATTERNS = [
@@ -271,6 +295,176 @@ def check_mcp_config(file_path: str, edits: list[dict]) -> tuple[bool, list[str]
     return False, warnings
 
 
+def _append_violation_event(path: str, reason: str, bypassed: bool) -> None:
+    """Append an audit event to core_addition_gate_violations.jsonl."""
+    event = {
+        "path": path,
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        "reason": reason,
+        "bypassed": bypassed,
+        "CORE_ADDITION_GATE_BYPASS": os.environ.get("CORE_ADDITION_GATE_BYPASS", "0"),
+    }
+    try:
+        _VIOLATIONS_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _VIOLATIONS_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(event) + "\n")
+    except OSError:  # guardian: allow-broad-exception -- audit log write is non-fatal; never block on log failure
+        pass
+
+
+def check_core_addition_receipt(file_path: str, new_string: str) -> str | None:
+    """
+    Core Addition Author-Gate check (W3 lightweight binding).
+
+    Returns a block reason string if the write should be denied, or None if allowed.
+
+    Scope: author-time receipt binding only.
+    Full proof validation (digest recompute, artifact verdict checks) is deferred to W4/W7.
+
+    Bypass: CORE_ADDITION_GATE_BYPASS=1 allows the write but logs an audit event.
+    """
+    norm = file_path.replace("\\", "/")
+    if "agentic_core/" not in norm:
+        return None
+
+    bypass = os.environ.get("CORE_ADDITION_GATE_BYPASS") == "1"
+
+    def _block(reason: str) -> str | None:
+        _append_violation_event(file_path, reason, bypassed=bypass)
+        if bypass:
+            _warn(f"CORE_ADDITION_GATE_BYPASS active — violation logged but write allowed: {reason}")
+            return None
+        return reason
+
+    # --- 1. Load active plan metadata from session_state ----------------------
+    try:
+        if not session_state.exists():
+            return _block(
+                "agentic_core/ write blocked: no session_state.json found. "
+                "Active plan metadata (plan_type=platform_core_change) is required."
+            )
+        state = json.loads(session_state.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:  # guardian: allow-broad-exception -- session state read failure must block, not pass
+        return _block(f"agentic_core/ write blocked: could not read session_state.json — {exc}")
+
+    plan_meta = state.get("active_plan", {})
+    if not isinstance(plan_meta, dict):
+        plan_meta = {}
+
+    plan_id = plan_meta.get("plan_id", "")
+    plan_type = plan_meta.get("plan_type", "")
+    touches_core = plan_meta.get("touches_agentic_core", False)
+    gate_required = plan_meta.get("core_addition_author_gate_required", False)
+    receipt_ref = plan_meta.get("author_gate_receipt_ref", "")
+
+    if not plan_id:
+        return _block(
+            "agentic_core/ write blocked: active plan has no plan_id. "
+            "Set plan_type=platform_core_change in session_state.active_plan."
+        )
+    if plan_type != "platform_core_change":
+        return _block(
+            f"agentic_core/ write blocked: plan_type is '{plan_type}', "
+            "must be 'platform_core_change'."
+        )
+    if not touches_core:
+        return _block(
+            "agentic_core/ write blocked: touches_agentic_core is not true in active plan metadata."
+        )
+    if not gate_required:
+        return _block(
+            "agentic_core/ write blocked: core_addition_author_gate_required is not true in active plan metadata."
+        )
+    if not receipt_ref:
+        return _block(
+            "agentic_core/ write blocked: author_gate_receipt_ref is empty in active plan metadata."
+        )
+
+    # --- 2. Load receipt file -------------------------------------------------
+    receipt_path = Path(receipt_ref) if Path(receipt_ref).is_absolute() else repo_root / receipt_ref
+    try:
+        receipt_text = receipt_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return _block(f"agentic_core/ write blocked: cannot read receipt file '{receipt_ref}' — {exc}")
+
+    try:
+        receipt = json.loads(receipt_text)
+    except json.JSONDecodeError as exc:
+        return _block(f"agentic_core/ write blocked: malformed receipt JSON in '{receipt_ref}' — {exc}")
+
+    # --- 3. Schema validation -------------------------------------------------
+    if not _JSONSCHEMA_AVAILABLE:
+        return _block(
+            "agentic_core/ write blocked: jsonschema package unavailable; "
+            "cannot validate CoreAdditionAuthorGateReceipt."
+        )
+    try:
+        schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
+        validator = _jsonschema.Draft7Validator(schema)
+        schema_errors = [e.message for e in validator.iter_errors(receipt)]
+    except (OSError, json.JSONDecodeError, Exception) as exc:  # guardian: allow-broad-exception -- schema load failure must block
+        return _block(f"agentic_core/ write blocked: could not load/run receipt schema — {exc}")
+
+    if schema_errors:
+        return _block(
+            f"agentic_core/ write blocked: receipt fails schema validation — "
+            + "; ".join(schema_errors[:3])
+        )
+
+    # --- 4. Semantic field checks ---------------------------------------------
+    if receipt.get("receipt_type") != "CoreAdditionAuthorGateReceipt":
+        return _block(
+            f"agentic_core/ write blocked: receipt.receipt_type is "
+            f"'{receipt.get('receipt_type')}', expected 'CoreAdditionAuthorGateReceipt'."
+        )
+    if receipt.get("plan_type") != "platform_core_change":
+        return _block(
+            f"agentic_core/ write blocked: receipt.plan_type is "
+            f"'{receipt.get('plan_type')}', expected 'platform_core_change'."
+        )
+    if receipt.get("plan_id") != plan_id:
+        return _block(
+            f"agentic_core/ write blocked: receipt.plan_id '{receipt.get('plan_id')}' "
+            f"does not match active plan_id '{plan_id}'."
+        )
+
+    decision = receipt.get("decision", {})
+    if decision.get("verdict") != "PASS":
+        return _block(
+            f"agentic_core/ write blocked: receipt.decision.verdict is "
+            f"'{decision.get('verdict')}', must be 'PASS'."
+        )
+
+    changed_paths = receipt.get("changed_paths", [])
+    covered = any(
+        norm.endswith(cp.replace("\\", "/")) or cp.replace("\\", "/") in norm
+        for cp in changed_paths
+    )
+    if not covered:
+        return _block(
+            f"agentic_core/ write blocked: '{file_path}' is not covered by "
+            f"receipt.changed_paths {changed_paths}."
+        )
+
+    sig = receipt.get("signature", {})
+    digest = sig.get("receipt_digest", "")
+    if not digest or not str(digest).startswith("sha256:"):
+        return _block(
+            "agentic_core/ write blocked: receipt.signature.receipt_digest is "
+            "missing or does not start with 'sha256:'."
+        )
+
+    # --- 5. Lightweight forbidden literal scan --------------------------------
+    for literal in _CORE_FORBIDDEN_LITERALS:
+        if literal in new_string:
+            return _block(
+                f"agentic_core/ write blocked: forbidden app literal '{literal}' found in new content. "
+                "Core must remain app-agnostic (agentic-core-static.md)."
+            )
+
+    return None
+
+
 def main() -> int:
     # Standalone-invocation guard: avoid indefinite hang when invoked via
     # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
@@ -281,7 +475,12 @@ def main() -> int:
     # This prevents fail-closed stdin logic from blocking non-.py/.json writes.
     if len(sys.argv) > 1:
         argv_path = sys.argv[1]
-        if not argv_path.endswith(".py") and not argv_path.endswith(mcp_config_suffix):
+        argv_norm = argv_path.replace("\\", "/")
+        if (
+            not argv_path.endswith(".py")
+            and not argv_path.endswith(mcp_config_suffix)
+            and "agentic_core/" not in argv_norm
+        ):
             return 0
 
     raw = sys.stdin.read()
@@ -319,13 +518,15 @@ def main() -> int:
         edits = []
 
     # Payload-level file type check (covers cases where argv is not provided).
-    if not file_path.endswith(".py") and not file_path.endswith(mcp_config_suffix):
+    # Allow .py, .json (mcp_config), and files under agentic_core/ regardless of extension.
+    norm_fp = file_path.replace("\\", "/")
+    is_core = "agentic_core/" in norm_fp
+    if not file_path.endswith(".py") and not file_path.endswith(mcp_config_suffix) and not is_core:
         return 0
 
     # --- SSOT folder routing check (constitutional §31) ---------------------
     # Only catches NEW files — pre-existing files in any folder pass through.
     # Bypass: SSOT_FOLDER_BYPASS=1 (logged below).
-    import os
     ssot_bypass = os.environ.get("SSOT_FOLDER_BYPASS") == "1"
     try:
         target_exists = Path(file_path).exists() if file_path else True
@@ -347,6 +548,17 @@ def main() -> int:
     task_block = check_task_exists(file_path)
     if task_block:
         return _exit_block(task_block)
+
+    # --- Core Addition Author-Gate (W3) ---------------------------------------
+    # Run once across all edits: any forbidden literal in any new_string blocks.
+    combined_new = "\n".join(
+        edit.get("new_string", "") or ""
+        for edit in edits
+        if isinstance(edit, dict)
+    )
+    core_block = check_core_addition_receipt(file_path, combined_new)
+    if core_block:
+        return _exit_block(core_block)
 
     violations = []
 

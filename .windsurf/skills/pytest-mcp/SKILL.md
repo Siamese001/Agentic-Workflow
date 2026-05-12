@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Pytest MCP Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §10
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §10 — Pytest MCP (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §10 for current guidance.
+
+---
+
+# Pytest MCP Skill (Legacy)
 
 In-house. Prefer over raw `pytest` CLI when the operation maps cleanly onto an MCP tool — the MCP returns structured results.
 

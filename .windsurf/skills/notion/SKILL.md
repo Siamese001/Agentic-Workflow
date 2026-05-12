@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Notion Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §7
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §7 — Notion (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §7 for current guidance.
+
+---
+
+# Notion Skill (Legacy)
 
 Notion holds the searchable rows; disk holds the full artifact. Never duplicate narrative — link the row to the file.
 

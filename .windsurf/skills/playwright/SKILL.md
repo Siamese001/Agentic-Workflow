@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Playwright Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §5
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §5 — Playwright (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §5 for current guidance.
+
+---
+
+# Playwright Skill (Legacy)
 
 Windsurf-native adaptation of the upstream Playwright agent skills. The MCP server is `io.windsurf/mcp-playwright` (Microsoft's `@playwright/mcp` thin wrapper).
 

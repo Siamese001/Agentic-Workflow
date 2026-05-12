@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Task Manager MCP Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §13
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §13 — Task Manager MCP (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §13 for current guidance.
+
+---
+
+# Task Manager MCP Skill (Legacy)
 
 In-house. **Selective use only.** This MCP is for durable, queryable task state — not for ordinary planning.
 

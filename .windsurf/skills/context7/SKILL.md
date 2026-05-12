@@ -5,9 +5,19 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Context7 Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §4
+
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §4 — Context7 (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §4 for current guidance.
+
+---
+
+# Context7 Skill (Legacy)
 
 Context7 is the doc-lookup authority for **external** libraries. Prefer it over web search whenever you'd otherwise grep StackOverflow for an API signature — Context7 returns versioned, source-grounded examples.
 

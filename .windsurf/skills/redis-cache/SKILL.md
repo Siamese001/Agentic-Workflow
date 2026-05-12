@@ -5,14 +5,17 @@ metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
   enforcement_type: tool_routing
+  deprecated: true
+  redirect_to: mcp-integration
 ---
 
-# Redis Cache Skill
+# ⚠️ DEPRECATED — Redirected to mcp-integration §2
 
-In-house. Redis is the **hot read-only projection** of the ADG. SQLite is canonical. (Per `adg-canonical-invariants` §1.)
+> **Consolidated**: This skill content moved to `mcp-integration/SKILL.md` §2 — Redis Cache (2026-05-12, W4.P2).
+> **Status**: Redirect stub — preserved for backwards compatibility.
+> **Action**: Consult `.windsurf/skills/mcp-integration/SKILL.md` §2 for current guidance.
 
-## When To Use This MCP
-
+---
 | User intent | Use redis MCP? |
 |---|---|
 | Check ADG hot cache status (warm/cold) | ✅ Yes |
