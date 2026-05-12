@@ -47,8 +47,9 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | W8 | P1 | Scanner taxonomy update | ~400 | W7 classification finalized | ✅ DONE | Scanner distinguishes 5 categories |
 | W8 | P2 | Strict mode redefinition | ~200 | P1 taxonomy implemented | ✅ DONE | strict exits 0 when runtime=0 |
 | W8 | P3 | CI integration verification | ~200 | P2 strict mode working | ✅ DONE | CI remains green, reports meaningful counts |
-| W8 | P4 | Documentation update | ~100 | P3 verified | 🔲 BLOCKED | AGENTS.md references new taxonomy |
-| W8 | P5 | Classification reconciliation | ~600 | Taxonomy engine installed | 🔄 IN PROGRESS | UNKNOWN=0, RUNTIME=0 or moved to remediation |
+| W8 | P4 | Documentation update | ~100 | P3 verified | ✅ DONE | AGENTS.md references new taxonomy |
+| W8 | P5 | Classification reconciliation | ~600 | Taxonomy engine installed | ✅ DONE | UNKNOWN=0, RUNTIME=0 or moved to remediation |
+| W8 | P6 | W9 Remediation Handoff | ~0 | P5 complete | ✅ DONE | W9 plan created for 55 RUNTIME findings |
 
 **Overall Plan Status**: **PARTIAL / CLASSIFICATION COMPLETE / REMEDIATION BLOCKED BY W9**
 
@@ -94,13 +95,11 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | P2.2 | Non-blocking category handling | Exit code logic | PP-4: Exit code logic needs category awareness | ~100 | ✅ DONE |
 | P3.1 | CI gate verification | `run_contract_gates.py` integration | PP-5: Gate must accept new taxonomy | ~100 | ✅ DONE |
 | P3.2 | Baseline scan run | Full repo scan | PP-6: Establish new baseline counts | ~100 | ✅ DONE |
-| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | 🔲 BLOCKED on P5 |
-| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | 🔲 BLOCKED on P5 |
+| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | ✅ DONE |
+| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | ✅ DONE |
 | P5.1 | UNKNOWN findings reconciliation | Scan output analysis | PP-7: 154 UNKNOWN need classification | ~300 | ✅ DONE |
 | P5.2 | RUNTIME_LEAKAGE reconciliation | Per-file runtime coupling verification | PP-8: 54 RUNTIME may be over-classified | ~200 | ✅ DONE |
 | P5.3 | Classification rule refinement | `core_leakage_scan.py` | PP-9: Improve heuristics based on P5.1-P5.2 | ~100 | ✅ DONE |
-| P4.1 | AGENTS.md update | Documentation | GAP-1: Need taxonomy reference | ~50 | ✅ DONE |
-| P4.2 | Scan output format docs | README/help text | GAP-2: Users need category legend | ~50 | ✅ DONE |
 | P6 | W9 Remediation Handoff | Create W9 plan for runtime leakage | BLOCKER: 55 RUNTIME findings require migration | ~0 | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
