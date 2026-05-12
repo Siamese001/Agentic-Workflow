@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-workflow/governance/migration_receipt.schema.json",
+  "title": "Migration Receipt Schema",
+  "description": "12-field mandatory schema for TEMPORARY_THIN_ADAPTER migration receipts in agentic_core governance. Validates that app-specific bindings have a concrete migration path with CI-enforced expiration.",
+  "type": "object",
+  "required": [
+    "binding_file",
+    "classification",
+    "owner",
+    "created_at",
+    "migration_target_date",
+    "expiry_enforced_by_ci",
+    "migration_path",
+    "blocking_migration_reason",
+    "adapter_only_justification",
+    "test_coverage",
+    "approver",
+    "receipt_version"
+  ],
+  "properties": {
+    "binding_file": {
+      "type": "string",
+      "description": "Exact path to the binding file in agentic_core/ that this receipt validates",
+      "examples": ["agentic_core/L0_routing/apps_lic_l0_binding.py"]
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "TEMPORARY_THIN_ADAPTER",
+        "GENERIC_READY",
+        "MIGRATION_EXCEPTION",
+        "FALSE_POSITIVE",
+        "CORE_APP_SPECIFIC_LEAKAGE"
+      ],
+      "description": "Governance classification of the binding file"
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Owner responsible for migration (github username or email)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when receipt was created"
+    },
+    "migration_target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target date (YYYY-MM-DD) by which migration must complete. CI will fail if expired."
+    },
+    "expiry_enforced_by_ci": {
+      "type": "boolean",
+      "enum": [true],
+      "description": "Must be true. CI gates will reject receipt if false or missing."
+    },
+    "migration_path": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Concrete migration path describing how to move to generic engine + app profile"
+    },
+    "blocking_migration_reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Specific reason migration is currently blocked (e.g., dependency not ready)"
+    },
+    "adapter_only_justification": {
+      "type": "string",
+      "minLength": 100,
+      "description": "Proof that binding is thin adapter only: no business logic, no policy branching, no orchestration, no durable writes, only translation/binding behavior"
+    },
+    "test_coverage": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of test file paths proving adapter-only behavior",
+      "items": {
+        "type": "string",
+        "description": "Path to test file relative to repo root"
+      }
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Person who approved this receipt (github username or email)"
+    },
+    "receipt_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Receipt schema version (e.g., '1.0')"
+    },
+    "plan_id": {
+      "type": "string",
+      "description": "Optional: Plan ID that authorized this receipt (e.g., 'agentic-core-governance-remediation-c4e8a2')"
+    },
+    "original_binding": {
+      "type": "object",
+      "description": "Optional: Reference to original binding if this is a migration receipt",
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "line_count": {
+          "type": "integer"
+        },
+        "app_specific_refs": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "validation_rules": {
+      "description": "Validation rules enforced by receipt_validator.py",
+      "rules": [
+        "binding_file must match exactly the file being validated",
+        "classification must be in allowed enum",
+        "owner must be non-empty string",
+        "created_at must be valid ISO 8601 timestamp",
+        "migration_target_date must be YYYY-MM-DD format and not expired",
+        "expiry_enforced_by_ci must be true (boolean)",
+        "migration_path must be at least 20 characters",
+        "blocking_migration_reason must be non-empty",
+        "adapter_only_justification must be at least 100 characters",
+        "test_coverage must be non-empty list, each path must exist",
+        "approver must be non-empty",
+        "receipt_version must be present"
+      ]
+    }
+  }
+}

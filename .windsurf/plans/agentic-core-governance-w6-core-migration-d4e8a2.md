@@ -1,0 +1,139 @@
+# W6: Migrate Remaining CORE_APP_SPECIFIC_LEAKAGE Files
+
+**Plan ID:** agentic-core-governance-w6-core-migration-d4e8a2  
+**Parent Plan:** agentic-core-governance-remediation-c4e8a2 (W1-W5)  
+**Status:** Not Started  
+**Created:** 2026-05-11  
+**Target Completion:** 2026-05-18
+
+---
+
+## Objective
+
+Move the final 2 CORE_APP_SPECIFIC_LEAKAGE files out of agentic_core and into app-owned domain_contract profiles, completing the governance remediation.
+
+---
+
+## Wave Structure
+
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|------|-----------|-------|-------------|-------------|--------|------------------|
+| W6 | P1-P2 | Migration of cross_app_payload_validator.py | ~3,000 | Generic validator framework exists | ⏳ Not Started | File migrated, strict scan passes for this file |
+| W6 | P3-P4 | Migration of package_driven_delegation_broker.py | ~3,500 | Delegation profile schema exists | ⏳ Not Started | File migrated, strict scan passes for this file |
+| W6 | P5 | Final verification and strict mode validation | ~1,500 | All migrations complete | ⏳ Not Started | core_leakage_scan.py --strict exits 0 |
+
+---
+
+## Phase-Level Summary
+
+| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
+|----------|-------|---------------|-------------|-------------|--------|
+| P1 | Extract validation profiles for apps_rg and apps_lic | 2 config files | Profile schema alignment | ~1,500 | ⏳ Not Started |
+| P2 | Migrate cross_app_payload_validator to generic validator | 1 core file, 1 new generic | Preserving validation logic | ~1,500 | ⏳ Not Started |
+| P3 | Extract delegation profiles for apps_rg and apps_lic | 2 config files | Delegation routing semantics | ~1,500 | ⏳ Not Started |
+| P4 | Migrate package_driven_delegation_broker to generic router | 1 core file, 1 new generic | Maintaining dispatch behavior | ~2,000 | ⏳ Not Started |
+| P5 | Final verification and receipt generation | Tests + verification | Strict mode compliance | ~1,500 | ⏳ Not Started |
+
+---
+
+## Gap Register
+
+| Gap | Impact | Resolution |
+|-----|--------|------------|
+| Profile schema for validation rules needs definition | Blocks P1 | Define in apps_lic/config/domain_contract/validation_profile.v1.json |
+| Delegation profile schema needs definition | Blocks P3 | Define in apps_lic/config/domain_contract/delegation_profile.v1.json |
+| Migration receipt for removed files needs handling | Cleanup | Mark receipts as "MIGRATED_TO_GENERIC" with replacement refs |
+
+---
+
+## Definition of Done
+
+| DoD | Criterion | Verification |
+|-----|-----------|--------------|
+| DoD-1 | cross_app_payload_validator.py app-specific logic migrated to profiles | `grep -r "if.*caller_app_id.*==" agentic_core/runtime/delegation/` returns empty |
+| DoD-2 | package_driven_delegation_broker.py app-specific routing migrated to profiles | `grep -r "if.*requesting_app_id.*==" agentic_core/runtime/delegation/` returns empty |
+| DoD-3 | Generic validator and router created in agentic_core | Files exist at `agentic_core/runtime/delegation/generic_payload_validator.py` and `generic_delegation_router.py` |
+| DoD-4 | App profiles created for both apps_lic and apps_rg | Validation and delegation profiles exist in respective app configs |
+| DoD-5 | Strict mode passes | `python tools/governance/core_leakage_scan.py --strict` exits 0 | DoD-6 | CI gates pass | `python ops_scripts/ci/run_contract_gates.py` exits 0 |
+| DoD-7 | All existing TEMPORARY_THIN_ADAPTER receipts remain valid | `python tools/governance/receipt_validator.py` shows 20 valid receipts |
+| DoD-8 | Final remediation receipt says COMPLETE | W6 receipt documents `remediation_complete: true` |
+
+### Verification-vs-Deferral
+
+| What | Verify Now | Defer |
+|------|------------|-------|
+| Generic validator behavior | Unit tests in tests/governance/ | Load testing |
+| App profile loading | Integration test | Production monitoring |
+| Strict mode compliance | Immediate | N/A |
+| Performance impact of profile lookup | Benchmark | Production profiling |
+
+---
+
+## Target Files
+
+### Files to Migrate (CORE_APP_SPECIFIC_LEAKAGE)
+
+1. **agentic_core/runtime/delegation/cross_app_payload_validator.py**
+   - Violations: 8
+   - Issue: App-specific validation branching
+   - Migration: Move to `agentic_core/runtime/delegation/generic_payload_validator.py` + app profiles
+
+2. **agentic_core/runtime/delegation/package_driven_delegation_broker.py**
+   - Violations: 7
+   - Issue: App-specific delegation routing
+   - Migration: Move to `agentic_core/runtime/delegation/generic_delegation_router.py` + app profiles
+
+### New Files to Create
+
+| File | Purpose |
+|------|---------|
+| `agentic_core/runtime/delegation/generic_payload_validator.py` | App-agnostic payload validator using profiles |
+| `agentic_core/runtime/delegation/generic_delegation_router.py` | App-agnostic delegation router using profiles |
+| `apps_rg/config/domain_contract/validation_profile.v1.json` | apps_rg-specific validation rules |
+| `apps_lic/config/domain_contract/validation_profile.v1.json` | apps_lic-specific validation rules |
+| `apps_rg/config/domain_contract/delegation_profile.v1.json` | apps_rg-specific delegation routing |
+| `apps_lic/config/domain_contract/delegation_profile.v1.json` | apps_lic-specific delegation routing |
+
+---
+
+## W6 Acceptance Criteria
+
+```
+core_leakage_scan.py --strict exits 0
+0 CORE_APP_SPECIFIC_LEAKAGE
+0 unclassified findings
+all TEMPORARY_THIN_ADAPTER receipts remain valid (20/20)
+run_contract_gates.py exits 0
+final remediation receipt says COMPLETE
+```
+
+---
+
+## Dependencies
+
+- W1-W5 must be complete (✅ DONE)
+- W5 receipt must show PARTIAL status (✅ DONE)
+- Profile schema definitions must be finalized before P1/P3
+- Generic validator/router design must be approved
+
+---
+
+## Related
+
+- W5 Receipt: `artifacts/governance/agentic-core-governance-remediation-c4e8a2_w5_receipt.json`
+- Classification Report: `artifacts/governance/violations_classification_c4e8a2.json`
+- Migration Receipts: `artifacts/governance/migration_receipts/`
+
+---
+
+## Notes
+
+**Do NOT mark full remediation complete until:**
+1. `cross_app_payload_validator.py` is fully migrated to generic validator + profiles
+2. `package_driven_delegation_broker.py` is fully migrated to generic router + profiles
+3. `core_leakage_scan.py --strict` exits 0
+4. CI gates pass
+
+**Stop after creating this plan. Do not implement W6 yet.**
+
+AG_QUEUE_SEED: plan=agentic-core-governance-w6-core-migration-d4e8a2 id=w6-start depends_on=w5-complete title="Begin W6: Migrate remaining CORE leakage files"
