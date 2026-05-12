@@ -101,6 +101,7 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | DoD-6 | **W6 delegation tests still pass** | `pytest tests/_apps_contract/test_w6_generic_delegation.py` passes (regression guard) |
 | DoD-7 | **Documentation updated** | AGENTS.md references new scan taxonomy |
 | DoD-8 | **W8 receipt generated** | Receipt exists at `artifacts/governance/agentic-core-governance-remediation-c4e8a2_w8_receipt.json` |
+| DoD-9 | **0 UNKNOWN / UNCLASSIFIED findings in strict scan** | All findings classified; unknown count = 0 |
 
 ---
 
@@ -125,12 +126,24 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 | **OFFLINE_TOOLING_REFERENCE** | INFO | ✅ Non-blocking | ADG adapters, analysis tools |
 | **FALSE_POSITIVE** | DEBUG or excluded | ✅ Non-blocking | Comments, test fixtures |
 | **TRUE_CI_BREAKAGE** | WARN (if not fixed) | ✅ Non-blocking | Skill frontmatter (already fixed in W7) |
+| **UNKNOWN / UNCLASSIFIED** | HIGH | ❌ Blocks strict mode | Unmapped detections requiring classification |
+
+## Exit Logic Matrix
+
+| Finding Mix | Strict Exit | Rationale |
+|-------------|-------------|-----------|
+| RUNTIME_POLICY_LEAKAGE > 0 | ❌ Nonzero | Actual governance risk detected |
+| UNKNOWN / UNCLASSIFIED > 0 | ❌ Nonzero | Classification gap must be resolved |
+| STATIC_REGISTRY_METADATA only | ✅ 0 | Approved non-runtime metadata |
+| OFFLINE_TOOLING_REFERENCE only | ✅ 0 | Approved offline tooling |
+| FALSE_POSITIVE only | ✅ 0 | No actual governance issue |
+| No findings | ✅ 0 | Clean scan |
 
 ---
 
 ## Acceptance Criteria
 
-1. `python tools/governance/core_leakage_scan.py --strict` exits 0 when runtime policy leakage = 0
+1. `python tools/governance/core_leakage_scan.py --strict` exits 0 when runtime policy leakage = 0 AND unknown/unclassified = 0
 2. Static registry metadata violations are reported as INFO (visible but non-blocking)
 3. Offline tooling references are reported as INFO (visible but non-blocking)
 4. False positives are excluded from strict mode or reported separately as DEBUG
@@ -138,6 +151,7 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 6. All W6 delegation tests pass (regression guard)
 7. Scan output clearly distinguishes blocking vs non-blocking findings
 8. W8 receipt generated with `remediation_complete=true`
+9. **0 UNKNOWN / UNCLASSIFIED findings** — all detections have classification with source/rationale
 
 ---
 
@@ -157,6 +171,25 @@ Align `core_leakage_scan.py` strict mode with W7 Phase 0 semantic classification
 1. **Detection pass**: Find all app literal matches (current behavior)
 2. **Classification pass**: Apply W7 taxonomy to categorize each match
 3. **Severity assignment**: Map categories to severities per taxonomy table
-4. **Exit logic**: Only RUNTIME_POLICY_LEAKAGE causes strict mode failure
+4. **Exit logic**: RUNTIME_POLICY_LEAKAGE > 0 OR UNKNOWN/UNCLASSIFIED > 0 causes strict mode failure
+
+**Strict Mode Transparency Requirement:**
+Strict mode must NOT hide findings. It must emit:
+- Total detections (all categories)
+- Blocking findings (RUNTIME_POLICY_LEAKAGE + UNKNOWN/UNCLASSIFIED)
+- Non-blocking classified findings (STATIC_REGISTRY, OFFLINE_TOOLING, FALSE_POSITIVE)
+- Classification source/rationale (W7 Phase 0 classification)
+- Unknown/unclassified findings count (must be 0 for strict pass)
 
 **Backward compatibility:** Non-strict mode (--default) should maintain current behavior showing all violations. Only strict mode (--strict) implements the new taxonomy-based severity.
+
+**Transparency Requirement (Per Constraint):**
+Strict mode output must include:
+```
+[SUMMARY] Total detections: 304
+[SUMMARY] Blocking: 0 (RUNTIME_POLICY_LEAKAGE: 0, UNKNOWN: 0)
+[SUMMARY] Non-blocking: 304 (STATIC_REGISTRY: 140, OFFLINE_TOOLING: 60, FALSE_POSITIVE: 90, TRUE_CI_BREAKAGE: 5)
+[CLASSIFICATION] Source: W7 Phase 0 classification report
+[CLASSIFICATION] Rationale: Per-file runtime coupling analysis
+[EXIT] Code: 0 (strict mode pass)
+```
