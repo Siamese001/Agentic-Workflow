@@ -13,6 +13,7 @@ Logs: artifacts/windsurf/plan_scope_audit.jsonl
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -21,12 +22,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Add repo root to path for W2 imports
+# Load W2 module via importlib (can't import from dot-prefixed .windsurf directly)
 REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+W2_MODULE_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_plan_scope_expansion_check.py"
+
+_w2_spec = importlib.util.spec_from_file_location(
+    "_plan_scope_expansion_check", W2_MODULE_PATH
+)
+_w2_module = importlib.util.module_from_spec(_w2_spec)
+sys.modules["_plan_scope_expansion_check"] = _w2_module
+_w2_spec.loader.exec_module(_w2_module)
 
 # W2 imports — all marker parsing happens in W2
-from windsurf.scripts._plan_scope_expansion_check import (
+from _plan_scope_expansion_check import (
     check_scope_authorization,
     ScopeAuthorizationResult,
     REASON_OK,
@@ -91,7 +99,8 @@ def extract_markers_from_text(text: str) -> list[str]:
 # Plan Detection
 # ---------------------------------------------------------------------------
 
-_PLAN_FILE_RE = re.compile(r'plan[-_]([a-z0-9]+)-([a-f0-9]{6,})\.md$', re.IGNORECASE)
+_PLAN_FILE_RE = re.compile(r'[\\/]plan[-_]([a-z0-9-]+)-([a-f0-9]{6,})\.md$', re.IGNORECASE)
+_PLAN_EDIT_RE = re.compile(r'file_path=["\']([^"\']*plan[-_][a-z0-9-]+-[a-f0-9]{6,}\.md)["\']', re.IGNORECASE)
 
 
 def detect_active_plan(response_text: str, file_paths: list[str]) -> str | None:
@@ -103,9 +112,12 @@ def detect_active_plan(response_text: str, file_paths: list[str]) -> str | None:
     3. Return first valid plan_id found
     """
     # Check markers in response
-    marker_match = re.search(r'plan=([\w-]+-[a-f0-9]{6,})', response_text)
+    # Match plan=<slug> where slug is descriptive-name-6hex (e.g., foo-bar-a7d4e1)
+    # Pattern: starts with letter, contains hyphens, ends with hyphen + 6+ hex chars
+    # The non-greedy [a-z0-9-]*? ensures we stop at the last hyphen before hex digits
+    marker_match = re.search(r'plan=([a-z][a-z0-9-]*?-[a-f0-9]{6,})\b', response_text, re.IGNORECASE)
     if marker_match:
-        return marker_match.group(1)
+        return marker_match.group(1).lower()
     
     # Check file paths for plan file references
     for path in file_paths:
@@ -113,11 +125,10 @@ def detect_active_plan(response_text: str, file_paths: list[str]) -> str | None:
         if match:
             return f"{match.group(1)}-{match.group(2)}"
     
-    # Check for plan mentions in text
-    text_match = re.search(r'plan[-_](\w+[-_][a-f0-9]{6,})', response_text, re.IGNORECASE)
+    # Check for plan mentions in text (fallback)
+    text_match = re.search(r'plan[-_]([a-z][a-z0-9-]*?-[a-f0-9]{6,})\b', response_text, re.IGNORECASE)
     if text_match:
-        plan_slug = text_match.group(1).replace('_', '-')
-        return plan_slug
+        return text_match.group(1).lower()
     
     return None
 
@@ -185,8 +196,10 @@ def write_audit_record(
         record["should_warn"] = result.should_warn if hasattr(result, 'should_warn') else False
         record["should_block"] = result.should_block if hasattr(result, 'should_block') else False
     
+    # Merge extra fields at top level (not nested)
     if extra:
-        record.update(extra)
+        for key, value in extra.items():
+            record[key] = value
     
     with open(LOG_PATH, 'a', encoding='utf-8') as f:
         json.dump(record, f, default=str)
