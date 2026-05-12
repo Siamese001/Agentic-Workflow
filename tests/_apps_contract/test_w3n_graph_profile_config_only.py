@@ -60,7 +60,9 @@ CORE_C03_PIPELINE = (
     / "pipeline.py"
 )
 
-_WIRING_GATE = "GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED"
+_WIRING_GATE_W3N = "GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED"
+_WIRING_GATE_W4 = "CLEARED_BY_W4_GRAPH_RAG_EXECUTION"
+_VALID_WIRING_GATES = {_WIRING_GATE_W3N, _WIRING_GATE_W4}
 
 
 def _load_lic_route_profile() -> dict:
@@ -114,11 +116,13 @@ def _assert_graph_traverse_canonical(
         f"{label} graph_adapter_ref: expected {expected_adapter_ref!r}, "
         f"got {gt.get('graph_adapter_ref')!r}"
     )
-    assert gt.get("live_wiring_deferred") is True, (
-        f"{label} missing live_wiring_deferred=true"
+    # After W4 flip, live_wiring_deferred is false; W3N config is superseded but
+    # structural shape (bool present) is still invariant.
+    assert isinstance(gt.get("live_wiring_deferred"), bool), (
+        f"{label} live_wiring_deferred must be a bool, got {gt.get('live_wiring_deferred')!r}"
     )
-    assert gt.get("wiring_gate") == _WIRING_GATE, (
-        f"{label} wiring_gate wrong: {gt.get('wiring_gate')!r}"
+    assert gt.get("wiring_gate") in _VALID_WIRING_GATES, (
+        f"{label} wiring_gate wrong: {gt.get('wiring_gate')!r} not in {_VALID_WIRING_GATES}"
     )
 
 
@@ -196,22 +200,25 @@ def test_apps_research_graph_traverse_config_prepared() -> None:
 
 
 # ---------------------------------------------------------------------------
-# AC-4: all profiles carry live_wiring_deferred=true
+# AC-4: all profiles carry live_wiring_deferred field and a recognised wiring_gate
+# (W3N set live_wiring_deferred=true; W4 cleared it to false — both are valid)
 # ---------------------------------------------------------------------------
 
 def test_graph_profiles_mark_live_wiring_deferred() -> None:
-    """AC-4: all three graph_traverse blocks must have live_wiring_deferred=true."""
+    """AC-4: all three graph_traverse blocks have live_wiring_deferred bool + known wiring_gate."""
     lic_gt = _load_lic_route_profile().get("graph_traverse", {})
     rg_gt = _load_rg_route_profile().get("graph_traverse", {})
     research_data = yaml.safe_load(RESEARCH_ROUTE_PROFILE.read_text(encoding="utf-8"))
     research_gt = research_data.get("graph_traverse", {})
 
     for label, gt in (("apps_lic", lic_gt), ("apps_rg", rg_gt), ("apps_research", research_gt)):
-        assert gt.get("live_wiring_deferred") is True, (
-            f"{label} graph_traverse missing live_wiring_deferred=true"
+        assert isinstance(gt.get("live_wiring_deferred"), bool), (
+            f"{label} graph_traverse live_wiring_deferred must be a bool, "
+            f"got {gt.get('live_wiring_deferred')!r}"
         )
-        assert gt.get("wiring_gate") == _WIRING_GATE, (
-            f"{label} graph_traverse missing wiring_gate={_WIRING_GATE!r}"
+        assert gt.get("wiring_gate") in _VALID_WIRING_GATES, (
+            f"{label} graph_traverse wiring_gate {gt.get('wiring_gate')!r} "
+            f"not in {_VALID_WIRING_GATES}"
         )
 
 
@@ -220,13 +227,14 @@ def test_graph_profiles_mark_live_wiring_deferred() -> None:
 # ---------------------------------------------------------------------------
 
 def test_w3n_does_not_claim_route_contract_policy() -> None:
-    """AC-5: route_contract.py must not contain W3N sentinel markers."""
+    """AC-5: route_contract.py must not contain W3N sentinel markers.
+
+    Note: live_wiring_deferred is a legitimate field on GraphTraversePolicy (W4+).
+    Only the W3N marker itself is forbidden.
+    """
     source = CORE_ROUTE_CONTRACT.read_text(encoding="utf-8")
     assert "W3N" not in source, (
         "route_contract.py contains W3N marker — W3N must not touch agentic_core"
-    )
-    assert "live_wiring_deferred" not in source, (
-        "route_contract.py contains W3N config sentinel — agentic_core must not be modified"
     )
 
 
@@ -271,14 +279,16 @@ def test_w3n_does_not_create_app_adapters() -> None:
 # ---------------------------------------------------------------------------
 
 def test_no_agentic_core_files_changed_in_w3n() -> None:
-    """AC-8: agentic_core L0 binding and route_contract must not contain W3N markers."""
+    """AC-8: agentic_core L0 binding and route_contract must not contain W3N markers.
+
+    Note: W4 legitimately added live_wiring_deferred reading to the L0 binding
+    (in _read_graph_traverse_policy / _read_semantic_cache_profile) — so we only
+    check for the W3N-specific marker, not the field name itself.
+    """
     for path in (CORE_L0_BINDING, CORE_ROUTE_CONTRACT):
         source = path.read_text(encoding="utf-8")
         assert "W3N" not in source, (
             f"{path.name} contains 'W3N' marker — W3N must not touch agentic_core"
-        )
-        assert "live_wiring_deferred" not in source, (
-            f"{path.name} contains W3N config sentinel — agentic_core must not be modified"
         )
 
 

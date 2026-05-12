@@ -734,17 +734,22 @@ class TestGRE18ProfileDeferredCheck:
         assert "wiring_gate" in gt, "apps_research graph_traverse missing wiring_gate"
 
     def test_policy_with_live_wiring_deferred_true_returns_deferred(self) -> None:
-        """GRE-18: constructing policy from YAML live_wiring_deferred=true → DEFERRED skip."""
+        """GRE-18: a policy with live_wiring_deferred=true → DEFERRED skip.
+
+        This tests the executor skip logic regardless of current YAML state.
+        W4 has already flipped profiles to live_wiring_deferred=false; this test
+        constructs the policy explicitly to verify the skip path still works.
+        """
         gt = self._load_gt_policy(
             REPO_ROOT / "apps_lic" / "config" / "domain_contract" / "route_profiles.yaml"
         )
         policy = GraphTraversePolicy(
-            graph_expansion_allowed=gt.get("graph_expansion_allowed", False),
-            live_wiring_deferred=gt.get("live_wiring_deferred", True),
-            graph_adapter_ref=gt.get("graph_adapter_ref", ""),
-            max_hops=gt.get("max_hops", 0),
-            max_nodes=gt.get("max_nodes", 0),
-            max_edges=gt.get("max_edges", 0),
+            graph_expansion_allowed=gt.get("graph_expansion_allowed", True),
+            live_wiring_deferred=True,  # explicit: testing the deferred skip path
+            graph_adapter_ref=gt.get("graph_adapter_ref", "apps_lic.integrations.c0_graph_adapter"),
+            max_hops=gt.get("max_hops", 2),
+            max_nodes=gt.get("max_nodes", 64),
+            max_edges=gt.get("max_edges", 128),
             allowed_relation_types=tuple(gt.get("allowed_relation_types", [])),
             contradiction_scan_enabled=gt.get("contradiction_scan_enabled", False),
             supersession_scan_enabled=gt.get("supersession_scan_enabled", False),
@@ -752,6 +757,6 @@ class TestGRE18ProfileDeferredCheck:
         )
         route = _make_route(policy=policy)
         result = maybe_run_graph_rag(route, [_make_evidence_item()])
-        # While live_wiring_deferred=true, must be DEFERRED
+        # live_wiring_deferred=True must always produce DEFERRED skip
         assert result.skip_reason == "DEFERRED"
         assert result.executed is False

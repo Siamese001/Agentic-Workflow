@@ -110,5 +110,5 @@
     contradiction_scan_enabled: true
     supersession_scan_enabled: false
     graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
-    live_wiring_deferred: true
-    wiring_gate: GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED
+    live_wiring_deferred: false
+    wiring_gate: CLEARED_BY_W4_GRAPH_RAG_EXECUTION

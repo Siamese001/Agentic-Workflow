@@ -196,24 +196,22 @@ The W9 plan initially listed these 12 target files:
 
 | Category | Files | Findings | Action Required |
 |----------|-------|----------|-----------------|
-| **MIGRATE_TO_PROFILE** | 6 | 19 | Migrate to profile-driven architecture (P4) |
-| **MOVE_TO_APP_PACKAGE** | 4 | 29 | Move dispatch to app packages (P5) |
-| **FALSE_RUNTIME_CLASSIFICATION** | 1 | 7 | Reclassify to OFFLINE_TOOLING_REFERENCE |
-| **GENERIC_CORE_SUBSTRATE_ALLOWED** | 1 | 2 | Generic C0.3 adapter resolver (not leakage) |
+| **MIGRATE_TO_PROFILE** | 11 | 48 | Migrate to profile-driven architecture (P4) |
+| **FALSE_RUNTIME_CLASSIFICATION / OFFLINE_TOOLING_REFERENCE** | 1 | 7 | Static analysis tooling, not runtime behavior |
+| **GENERIC_CORE_SUBSTRATE_ALLOWED** | 1 | 2 | Generic C0.3 adapter resolver (approved substrate) |
 | **TEMPORARY_THIN_ADAPTER** | 0 | 0 | None qualify (all have runtime behavior) |
 | **TOTAL** | 13 | 57 | |
 
 **Blocking findings after reclassification:** 48  
-**Non-blocking (tooling):** 7  
+**Non-blocking (tooling + substrate):** 9 (7 + 2)  
 **Strict scan will pass when:** 48 → 0 via migration
 
 ### Architecture Pattern Distribution (P1/P2 Complete - Hardened)
 
 | Pattern | Files | Findings | Phase | Core Component |
 |---------|-------|----------|-------|----------------|
-| GENERIC_CORE_WITH_APP_PROFILE | 6 | 19 | P4 | Profile-driven generics |
-| MOVE_TO_APP_PACKAGE | 4 | 29 | P5 | App-owned dispatch |
-| FALSE_RUNTIME_CLASSIFICATION | 1 | 7 | N/A | Scanner reclassification |
+| MIGRATE_TO_PROFILE (all runtime) | 11 | 48 | P4/P5 | Migrate to profile-driven or app-owned |
+| OFFLINE_TOOLING_REFERENCE | 1 | 7 | N/A | Static analysis (code_symbol_catalog.py) |
 | GENERIC_CORE_SUBSTRATE_ALLOWED | 1 | 2 | P4 | C0.3 adapter resolver (approved substrate) |
 | **TOTAL** | **13** | **57** | | |
 

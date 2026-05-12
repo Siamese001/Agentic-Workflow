@@ -105,6 +105,14 @@ TAXONOMY_CATEGORIES = {
             r'for\s+prefix\s+in\s+\(.*apps_shared.*apps_lic.*apps_rg',
         ]
     },
+    "GENERIC_CORE_SUBSTRATE_ALLOWED": {
+        "description": "Generic core infrastructure with dotted-path resolution - W9 P3 approved substrate",
+        "severity": "INFO",
+        "file_patterns": [
+            r".*/c0_3_enhanced/adapter_registry\.py$",
+        ],
+        "content_patterns": []
+    },
     "FALSE_POSITIVE": {
         "description": "Legitimate generic patterns incorrectly flagged",
         "severity": "DEBUG",
@@ -124,6 +132,7 @@ TAXONOMY_CATEGORIES = {
 }
 
 # Blocking categories (cause strict mode failure)
+# W9: GENERIC_CORE_SUBSTRATE_ALLOWED is NON-BLOCKING (approved substrate)
 BLOCKING_CATEGORIES = {"RUNTIME_POLICY_LEAKAGE", "UNKNOWN"}
 
 # Classification source reference
@@ -141,6 +150,15 @@ def classify_violation(violation: Dict) -> str:
     
     # Normalize path for cross-platform matching (Windows backslashes -> forward slashes)
     normalized_path = filepath.replace('\\', '/')
+    
+    # W9 P0/P3: PRIORITY 0 - Specific file classifications (non-negotiable)
+    # code_symbol_catalog.py = OFFLINE_TOOLING_REFERENCE (static analysis, not runtime)
+    if re.search(r".*/code_symbol_catalog\.py$", normalized_path, re.IGNORECASE):
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # adapter_registry.py = GENERIC_CORE_SUBSTRATE_ALLOWED (W9 P3 approved substrate)
+    if re.search(r".*/c0_3_enhanced/adapter_registry\.py$", normalized_path, re.IGNORECASE):
+        return "GENERIC_CORE_SUBSTRATE_ALLOWED"
     
     # PRIORITY 1: Check for specific file path patterns (most reliable)
     # STATIC_REGISTRY_METADATA: analysis files, schema files, config files

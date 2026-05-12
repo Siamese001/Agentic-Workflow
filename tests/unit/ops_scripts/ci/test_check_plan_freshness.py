@@ -13,6 +13,7 @@ import os
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -38,6 +39,7 @@ from ops_scripts.ci.check_plan_freshness import (  # noqa: E402
     count_work_evidence,
     evaluate_all_plans,
     generate_report,
+    import_w2_authorization_check,
     is_active_status,
     main,
     parse_plan_file,
@@ -360,6 +362,20 @@ status: In Progress
 # ---------------------------------------------------------------------------
 
 
+def mock_w2_check_authorized(**kwargs: Any) -> dict[str, Any]:
+    """Mock W2 check that returns authorized."""
+    return {"authorized": True, "reason_codes": [], "discovered_gap": None}
+
+
+def mock_w2_check_unauthorized(**kwargs: Any) -> dict[str, Any]:
+    """Mock W2 check that returns unauthorized."""
+    return {
+        "authorized": False,
+        "reason_codes": ["MISSING_AUTHORIZATION_DECISION"],
+        "discovered_gap": "Test gap",
+    }
+
+
 class TestCheckUnauthorizedExpansion:
     """Test unauthorized expansion detection using W2 logic."""
 
@@ -409,6 +425,60 @@ edit("file4.py", ...)
 
         assert finding is not None
         assert finding.reason_code == "W2_HELPER_UNAVAILABLE"
+
+    def test_authorized_expansion_no_finding(
+        self, mock_config: Config, tmp_path: Path
+    ) -> None:
+        """Authorized expansion returns no finding."""
+        plan_file = tmp_path / "test-plan.md"
+        content = """---
+status: In Progress
+last_updated: 2026-05-12T08:50Z
+---
+
+# Test Plan
+
+edit("file1.py", ...)
+edit("file2.py", ...)
+edit("file3.py", ...)
+edit("file4.py", ...)
+DISCOVERED_SCOPE: plan=test-plan wave=1 phase=1 gap="test gap"
+AUTHORIZATION_DECISION: plan=test-plan decision=ACCEPTED authorized_by=user decisive_reason="test"
+"""
+        plan_file.write_text(content, encoding="utf-8")
+        plan = parse_plan_file(plan_file)
+
+        finding = check_unauthorized_expansion(plan, mock_config, mock_w2_check_authorized)
+
+        # Authorized - no finding
+        assert finding is None
+
+    def test_unauthorized_expansion_returns_finding(
+        self, mock_config: Config, tmp_path: Path
+    ) -> None:
+        """Unauthorized expansion returns finding with ERROR severity."""
+        plan_file = tmp_path / "test-plan.md"
+        content = """---
+status: In Progress
+last_updated: 2026-05-12T08:50Z
+---
+
+# Test Plan
+
+edit("file1.py", ...)
+edit("file2.py", ...)
+edit("file3.py", ...)
+edit("file4.py", ...)
+"""
+        plan_file.write_text(content, encoding="utf-8")
+        plan = parse_plan_file(plan_file)
+
+        finding = check_unauthorized_expansion(plan, mock_config, mock_w2_check_unauthorized)
+
+        assert finding is not None
+        assert finding.check_type == "unauthorized_expansion"
+        assert finding.severity == "ERROR"
+        assert finding.reason_code == "MISSING_AUTHORIZATION_DECISION"
 
 
 # ---------------------------------------------------------------------------
@@ -480,9 +550,9 @@ class TestEvaluateAllPlans:
         config = Config(max_hours=168, strict_mode=False, min_files=3, recency_sec=300)
         findings = evaluate_all_plans(config)
 
-        assert len(findings) == 2  # W2 helper unavailable + no plans
-        reason_codes = {f.reason_code for f in findings}
-        assert "NO_PLANS_FOUND" in reason_codes
+        # Only NO_PLANS_FOUND is expected (W2 helper check happens per-plan, not at scan time)
+        assert len(findings) == 1
+        assert findings[0].reason_code == "NO_PLANS_FOUND"
 
 
 # ---------------------------------------------------------------------------

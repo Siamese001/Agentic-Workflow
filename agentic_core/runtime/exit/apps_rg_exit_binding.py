@@ -487,10 +487,40 @@ def exit_finalize_apps_rg(
 
         # ── Persist 07_gate_receipt.json AFTER Pass-2 (Patch B) ──────────────
         # Includes both g28_initial_verdict and g28_post_mesh_verdict so the
-        # receipt clearly shows the two-pass audit chain.  The in-memory
-        # _gate_receipt object is unchanged; only the on-disk JSON is extended.
+        # receipt clearly shows the two-pass audit chain.
+        # When Pass-1 was blocked solely by the circular G28 dependency and
+        # post-mesh G28 is PASS/WARN, the on-disk receipt is updated to reflect
+        # the authorized outcome so it stays consistent with 07_Exit_disposition.json.
+        _pass1_blocked_only_by_g28_for_receipt = (
+            not _gate_receipt.allows_finish
+            and set(_gate_receipt.decisive_blocker_gate_ids) == {"G28"}
+        )
+        _g28_post_ok_for_receipt = (
+            _g28_post_mesh_verdict is not None
+            and _g28_post_mesh_verdict.result in ("PASS", "WARN")
+        )
         try:
+            from agentic_core.runtime.exit.exit_disposition import X3D_ALLOW_FINISH as _X3D  # noqa: PLC0415
             _receipt_dict: dict[str, Any] = json.loads(_gate_receipt.as_json())
+            # If post-mesh G28 authorized the run, update Pass-1 fields that
+            # were set based on the circular G28 failure.  Initial verdict is
+            # preserved in g28_audit_chain.g28_initial_verdict.
+            if _pass1_blocked_only_by_g28_for_receipt and _g28_post_ok_for_receipt:
+                _receipt_dict["x3_code"] = _X3D
+                _receipt_dict["decisive_reason"] = (
+                    f"post_mesh_g28_{_g28_post_mesh_verdict.result.lower()}: "
+                    "all material audit refs satisfied after mesh"
+                )
+                _receipt_dict["decisive_blocker_gate_ids"] = []
+                _receipt_dict["decisive_blocker_codes"] = []
+                _receipt_dict["required_gates_passed"] = True
+                _receipt_dict["hard_fail_count"] = 0
+                _receipt_dict["post_mesh_authorization"] = {
+                    "authorized": True,
+                    "reason": "pass1_blocked_only_by_circular_g28_dependency",
+                    "post_mesh_g28_result": _g28_post_mesh_verdict.result,
+                    "post_mesh_g28_digest": _g28_post_mesh_verdict.deterministic_digest,
+                }
             # Attach dual G28 verdict fields under app-owned diagnostics key.
             _receipt_dict["g28_audit_chain"] = {
                 "g28_initial_verdict": _g28_initial_verdict_dict,
