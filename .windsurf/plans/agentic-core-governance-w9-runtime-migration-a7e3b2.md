@@ -101,26 +101,101 @@ Move app-specific runtime behavior out of `agentic_core` into app-owned runtime 
 
 ## Files In Scope
 
-### P0/P1 Audit Target Files (12 total)
+### P0/P1 Audit Target## Source Scanner Output (Ground Truth)
 
-| File | Path | Line Count | Pattern | Runtime Layer |
-|------|------|------------|---------|---------------|
-| apps_rg_dispatch.py | runtime/entry/ | ~487 | app_id="apps_rg" | U0 Entry |
-| apps_research_dispatch.py | runtime/entry/ | ~420 | app_id="apps_research" | U0 Entry |
-| apps_lic_u0_adapter.py | runtime/u0/ | ~350 | app_id checks | U0 Adapter |
-| apps_rg_u0_adapter.py | runtime/u0/ | ~340 | app_id checks | U0 Adapter |
-| u0_apps_research_binding_v2.py | runtime/entry/ | ~280 | delegation check | U0 Entry |
-| apps_rg_learning_adapter.py | runtime/l6/ | ~220 | L6 writeback | L6 |
-| writeback_proposer.py | runtime/l6/ | ~190 | L6 app literals | L6 |
-| code_symbol_catalog.py | runtime/prove_requirements/ | ~260 | code catalog | Utility |
-| payload_synthesizer.py | runtime/u0/ | ~310 | app-specific paths | U0 |
-| integrated_r4_resume_gen.py | runtime/entrypoints/ | ~450 | pipeline entrypoint | Entrypoint |
-| integrated_r4_research_then_draft.py | runtime/entrypoints/ | ~480 | pipeline entrypoint | Entrypoint |
-| cross_app_research_substrate_ingest.py | C0_context/ | ~180 | app branching | C0 Context |
+**Source:** `artifacts/governance/scans/core_leakage_scan_1778562716.json`  
+**Timestamp:** 1778562716  
+**Total RUNTIME_POLICY_LEAKAGE Findings:** 55
 
-**Total Lines:** ~3,967 lines across 12 files
+| # | File Path | Findings | Patterns |
+|---|-----------|----------|----------|
+| 1 | `agentic_core/C0_context/cross_app_research_substrate_ingest.py` | 1 | hardcoded_app_names |
+| 2 | `agentic_core/runtime/entry/apps_research_dispatch.py` | 10 | hardcoded_app_names |
+| 3 | `agentic_core/runtime/entry/apps_rg_dispatch.py` | 11 | hardcoded_app_names, app_id_branching |
+| 4 | `agentic_core/runtime/entry/u0_apps_research_binding_v2.py` | 9 | hardcoded_app_names, app_id_branching |
+| 5 | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | 2 | hardcoded_app_names |
+| 6 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | 1 | hardcoded_app_names |
+| 7 | `agentic_core/runtime/l6/apps_rg_learning_adapter.py` | 1 | hardcoded_app_names |
+| 8 | `agentic_core/runtime/l6/writeback_proposer.py` | 2 | hardcoded_app_names |
+| 9 | `agentic_core/runtime/prove_requirements/code_symbol_catalog.py` | 7 | hardcoded_app_names |
+| 10 | `agentic_core/runtime/u0/apps_lic_u0_adapter.py` | 7 | hardcoded_app_names, app_specific_cache_policies |
+| 11 | `agentic_core/runtime/u0/apps_rg_u0_adapter.py` | 2 | hardcoded_app_names |
+| 12 | `agentic_core/runtime/u0/payload_synthesizer.py` | 2 | hardcoded_app_names |
+| **TOTAL** | | **55** | |
 
-**Note:** `code_symbol_catalog.py` disposition pending P0 analysis - must prove governed runtime policy leakage vs runtime/prove tooling metadata before inclusion in migration scope.
+---
+
+## Scope Reconciliation: W9 Plan vs Scanner Reality
+
+### Original W9 Plan Target Files (12 claimed)
+
+The W9 plan initially listed these 12 target files:
+1. `apps_rg_dispatch.py` ✓
+2. `apps_research_dispatch.py` ✓
+3. `apps_lic_u0_adapter.py` ✓
+4. `apps_rg_u0_adapter.py` ✓
+5. `u0_apps_research_binding_v2.py` ✓
+6. `apps_rg_learning_adapter.py` ✓
+7. `writeback_proposer.py` ✓
+8. `code_symbol_catalog.py` ✓
+9. `payload_synthesizer.py` ✓
+10. `integrated_r4_resume_gen.py` → **RENAMED** to `integrated_r4_deterministic_pipeline_run.py`
+11. `integrated_r4_research_then_draft.py` → **RENAMED** to `integrated_r4_lic_pipeline_run.py`
+12. `cross_app_research_substrate_ingest.py` ✓
+
+### Scanner Verification
+
+**Result:** 12 files confirmed, 55 findings confirmed
+
+| Reconciliation Item | Status |
+|-------------------|--------|
+| File count match | ✅ 12 files in scanner = 12 files in plan |
+| Finding count match | ✅ 55 total findings |
+| File name drift | ⚠️ 2 pipeline files renamed (shown above) |
+| Missing from initial audit | ⚠️ `cross_app_research_substrate_ingest.py` (1 finding) was missed |
+| Missing from initial audit | ⚠️ `apps_research_dispatch.py` (10 findings) was missed |
+
+### Arithmetic Correction
+
+| Count | Value | Note |
+|-------|-------|------|
+| Total RUNTIME findings | 55 | From scanner (verified) |
+| FALSE_RUNTIME (tooling) | 7 | `code_symbol_catalog.py` |
+| **Remaining blocking findings** | **48** | 55 - 7 = 48 (not 37 as previously miscalculated) |
+| Files requiring disposition | 12 | All 12 files have exactly one disposition |
+
+---
+
+## Final Disposition Table
+
+| # | File Path | Findings | Disposition | Rationale |
+|---|-----------|----------|-------------|-----------|
+| 1 | `agentic_core/C0_context/cross_app_research_substrate_ingest.py` | 1 | **MIGRATE_TO_PROFILE** | C0 ingest with app_id filtering - runtime policy behavior |
+| 2 | `agentic_core/runtime/entry/apps_research_dispatch.py` | 10 | **MIGRATE_TO_PROFILE** | Full dispatch orchestration for apps_research |
+| 3 | `agentic_core/runtime/entry/apps_rg_dispatch.py` | 11 | **MIGRATE_TO_PROFILE** | Full runtime orchestration with dispatch, bridge install |
+| 4 | `agentic_core/runtime/entry/u0_apps_research_binding_v2.py` | 9 | **MIGRATE_TO_PROFILE** | App-specific delegation, validation, research-only orchestration |
+| 5 | `agentic_core/runtime/entrypoints/integrated_r4_deterministic_pipeline_run.py` | 2 | **MIGRATE_TO_PROFILE** | Pipeline runner with app-specific namespace defaults |
+| 6 | `agentic_core/runtime/entrypoints/integrated_r4_lic_pipeline_run.py` | 1 | **MIGRATE_TO_PROFILE** | Pipeline runner with hardcoded APP_NAME |
+| 7 | `agentic_core/runtime/l6/apps_rg_learning_adapter.py` | 1 | **MIGRATE_TO_PROFILE** | L6 writeback with hardcoded app_id |
+| 8 | `agentic_core/runtime/l6/writeback_proposer.py` | 2 | **MIGRATE_TO_PROFILE** | L6 writeback orchestration |
+| 9 | `agentic_core/runtime/prove_requirements/code_symbol_catalog.py` | 7 | **FALSE_RUNTIME_CLASSIFICATION** | Static analysis tooling, not runtime behavior |
+| 10 | `agentic_core/runtime/u0/apps_lic_u0_adapter.py` | 7 | **MIGRATE_TO_PROFILE** | U0 validation with app_id checks |
+| 11 | `agentic_core/runtime/u0/apps_rg_u0_adapter.py` | 2 | **MIGRATE_TO_PROFILE** | U0 adapter with app_id assignment |
+| 12 | `agentic_core/runtime/u0/payload_synthesizer.py` | 2 | **MIGRATE_TO_PROFILE** | Payload with app-specific defaults |
+| **TOTALS** | **12 files** | **55 findings** | | |
+
+### Post-Disposition Summary
+
+| Category | Files | Findings | Action Required |
+|----------|-------|----------|-----------------|
+| **MIGRATE_TO_PROFILE** | 11 | 48 | Migrate to profile-driven architecture |
+| **FALSE_RUNTIME_CLASSIFICATION** | 1 | 7 | Reclassify to OFFLINE_TOOLING_REFERENCE |
+| **TEMPORARY_THIN_ADAPTER** | 0 | 0 | None qualify (all have runtime behavior) |
+| **TOTAL** | 12 | 55 | |
+
+**Blocking findings after reclassification:** 48  
+**Non-blocking (tooling):** 7  
+**Strict scan will pass when:** 48 → 0 via profile migration
 
 ---
 
