@@ -2,7 +2,7 @@
 title: Windsurf Governance Infrastructure Consolidation — Hardened
 slug: windsurf-governance-consolidation-a7c3e9
 created: 2026-05-12
-last_updated: 2026-05-12 15:50 UTC-04 (W5.P1-R COMPLETE — hook counts corrected: 59 entries, 10 stages — GO FOR W5.P2 — STOPPED)
+last_updated: 2026-05-12 16:13 UTC-04 (W5.P3 COMPLETE + PFC1 registered — 43 CI gates — GO FOR W5.P4 — STOPPED)
 author: Cascade
 tier: T3
 status: In Progress
@@ -11,9 +11,9 @@ dod_exempt: false
 
 # Windsurf Governance Infrastructure Consolidation — Hardened
 
-> **CURRENT STATUS**: W0 REBASED ✅ | W1 COMPLETE ✅ | W2 COMPLETE ✅ | **W3 ALL DONE** 🏁 | **W3A COMPLETE** ✅ | **W4 ALL DONE** 🏁 | **W5.P0 COMPLETE** ✅ | **W5.P1 COMPLETE** ✅ | **W5.P1-R COMPLETE** ✅ | **W5.P2 READY** 🟢 | **STOPPED** ⏹️
+> **CURRENT STATUS**: W0 REBASED ✅ | W1 COMPLETE ✅ | W2 COMPLETE ✅ | **W3 ALL DONE** 🏁 | **W3A COMPLETE** ✅ | **W4 ALL DONE** 🏁 | **W5.P0 COMPLETE** ✅ | **W5.P1 COMPLETE** ✅ | **W5.P1-R COMPLETE** ✅ | **W5.P2 COMPLETE** ✅ | **W5.P3 COMPLETE** ✅ | **W5.P4 READY** 🟢 | **STOPPED** ⏹️
 >
-> **W0**: Rebased to 59 hook entries (10 lifecycle stages), 53 rules, 33 skills, 25 workflows, 42 CI gates, 248 total scripts  
+> **W0**: Rebased to 59 hook entries (10 lifecycle stages), 53 rules, 33 skills, 25 workflows, 43 CI gates (+PFC1), 248 total scripts  
 > **W1**: 4 pure helpers created, hooks.json v2 schema defined, priority metadata assigned (proposed)  
 > **W1A**: v2 metadata applied to all 59 hooks, deterministic ordering computable  
 > **B6A**: Integration harness complete — 0/24 testable hooks validated (23 harness bugs), 35 SHADOW_REQUIRED  
