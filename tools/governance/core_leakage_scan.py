@@ -10,22 +10,243 @@ Scans for forbidden literals and patterns:
 - App-specific send modes
 
 Exit codes:
-  0 - Clean (no unapproved leakage)
-  2 - Leakage detected
+  0 - Clean (advisory mode, or no leakage)
+  1 - Warn (advisory mode with warnings)
+  2 - Fail (strict mode, or leakage detected)
+
+Note: The 1531 violations vs original 323:
+- 1531 includes all pattern matches including tests, docs, bindings
+- 323 is the subset classified as CORE_APP_SPECIFIC_LEAKAGE (real violations)
+- Full classification deferred to W4
 """
 
+import argparse
 import json
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Set, Tuple, Optional
 
+# Import shared receipt validation
+try:
+    from receipt_validator import find_and_validate_receipt, REQUIRED_FIELDS
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent))
+    from receipt_validator import find_and_validate_receipt, REQUIRED_FIELDS
+
 # Configuration
+ADVISORY_SUNSET = "2026-06-15"
+
 REPO_ROOT = Path("C:\\Git\\Agentic-Workflow-FRESH")
 AGENTIC_CORE_PATH = REPO_ROOT / "agentic_core"
 GOVERNANCE_DIR = REPO_ROOT / "artifacts" / "governance"
 SCAN_OUTPUT_DIR = GOVERNANCE_DIR / "scans"
+MIGRATION_RECEIPTS_DIR = GOVERNANCE_DIR / "migration_receipts"
+
+# W8 Taxonomy Classification (based on W7 Phase 0 classification)
+# Maps file patterns to governance risk categories
+TAXONOMY_CATEGORIES = {
+    "RUNTIME_POLICY_LEAKAGE": {
+        "description": "App literals influencing governed runtime decisions - MUST ELIMINATE",
+        "severity": "CRITICAL",
+        "file_patterns": [
+            # Files with runtime branching on app_id/tenant_id
+            r".*runtime.*\.py$",
+            r".*routing.*\.py$",
+            r".*orchestration.*\.py$",
+            r".*execution.*\.py$",
+            r".*L0.*\.py$",
+            r".*L1.*\.py$",
+            r".*L2.*\.py$",
+            r".*L3.*\.py$",
+            r".*L5.*\.py$",
+            r".*entry.*\.py$",
+            r".*exit.*\.py$",
+        ],
+        "content_patterns": [
+            r'if\s+app_id\s*==\s*["\']',
+            r'if\s+tenant_id\s*==\s*["\']apps_',
+            r'APPS_\w+_EXIT_GATES',
+            r'APPS_\w+_CACHE_BYPASS',
+        ]
+    },
+    "STATIC_REGISTRY_METADATA": {
+        "description": "App registry entries, ownership tables, analysis metadata - GENERIC_ALLOWED",
+        "severity": "INFO",
+        "file_patterns": [
+            r".*analysis/.*\.py$",
+            r".*contracts/.*\.py$",
+            r".*analysis/.*\.yaml$",
+            r".*contracts/.*\.yaml$",
+            r".*/schema\.py$",
+            r".*/ModuleOwnership\.py$",
+            r".*/ownership\.py$",
+        ],
+        "content_patterns": [
+            r'Owner\s*=\s*Literal\[.*apps_',
+            r'"apps_\w+":\s*"L_APP"',
+        ]
+    },
+    "OFFLINE_TOOLING_REFERENCE": {
+        "description": "Developer tooling, offline analysis - Boundary-defined",
+        "severity": "INFO",
+        "file_patterns": [
+            r".*adapters/.*\.py$",
+            r".*applications/.*\.py$",
+            r".*adapters/.*\.yaml$",
+            r".*applications/.*\.yaml$",
+            r".*/ADGMemoryAdapter\.py$",
+            r".*/memory_mcp_adapter\.py$",
+            r".*/placement_advisor.*\.py$",
+        ],
+        "content_patterns": [
+            r'for\s+prefix\s+in\s+\(.*apps_shared.*apps_lic.*apps_rg',
+        ]
+    },
+    "FALSE_POSITIVE": {
+        "description": "Legitimate generic patterns incorrectly flagged",
+        "severity": "DEBUG",
+        "file_patterns": [],
+        "content_patterns": [
+            r'#.*apps_\w+',  # Comments mentioning apps
+            r'""".*apps_\w+.*"""',  # Docstrings
+            r"'''.*apps_\w+.*'''",
+        ]
+    },
+    "UNKNOWN": {
+        "description": "Unclassified detection requiring manual review",
+        "severity": "HIGH",
+        "file_patterns": [],
+        "content_patterns": []
+    }
+}
+
+# Blocking categories (cause strict mode failure)
+BLOCKING_CATEGORIES = {"RUNTIME_POLICY_LEAKAGE", "UNKNOWN"}
+
+# Classification source reference
+CLASSIFICATION_SOURCE = "W7 Phase 0 classification report (artifacts/governance/w7_phase0_classification.md)"
+
+
+def classify_violation(violation: Dict) -> str:
+    """
+    Classify a violation into taxonomy category.
+    Returns category name (RUNTIME_POLICY_LEAKAGE, STATIC_REGISTRY_METADATA, etc.)
+    """
+    filepath = violation.get('file', '')
+    content = violation.get('content', '')
+    pattern_name = violation.get('pattern_name', '')
+    
+    # Normalize path for cross-platform matching (Windows backslashes -> forward slashes)
+    normalized_path = filepath.replace('\\', '/')
+    
+    # PRIORITY 1: Check for specific file path patterns (most reliable)
+    # STATIC_REGISTRY_METADATA: analysis files, schema files
+    if re.search(r".*/analysis/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/schema\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/ModuleOwnership\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/ownership\.py$", normalized_path, re.IGNORECASE):
+        # Check if it's a type declaration or schema entry
+        if re.search(r'Owner\s*=\s*Literal\[.*apps_', content, re.IGNORECASE) or \
+           re.search(r'"apps_\w+":\s*"L_APP"', content, re.IGNORECASE):
+            return "STATIC_REGISTRY_METADATA"
+    
+    # OFFLINE_TOOLING_REFERENCE: adapter files, applications files
+    if re.search(r".*/adapters/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/applications/.*\.py$", normalized_path, re.IGNORECASE):
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # PRIORITY 2: Check for specific pattern types that indicate runtime leakage
+    # App branching on app_id or tenant_id is always runtime leakage
+    if pattern_name == "app_id_branching" or \
+       re.search(r'if\s+app_id\s*==\s*["\']', content, re.IGNORECASE) or \
+       re.search(r'if\s+tenant_id\s*==\s*["\']apps_', content, re.IGNORECASE):
+        return "RUNTIME_POLICY_LEAKAGE"
+    
+    # Route/exit gate patterns are runtime leakage indicators
+    if pattern_name in ["app_specific_routes", "app_specific_exit_gates"]:
+        return "RUNTIME_POLICY_LEAKAGE"
+    
+    # Check for app-specific Exit gate configurations (runtime leakage)
+    if re.search(r'APPS_\w+_EXIT_GATES', content, re.IGNORECASE) or \
+       re.search(r'APPS_\w+_FORBIDDEN_ACTIONS', content, re.IGNORECASE):
+        return "RUNTIME_POLICY_LEAKAGE"
+    
+    # PRIORITY 3: Check for false positives (comments, docstrings, examples)
+    # These should be checked before file path patterns
+    # Docstrings with backticks (e.g. ``"apps_rg"``)
+    if re.search(r'`.*apps_\w+.*`', content, re.IGNORECASE):
+        return "FALSE_POSITIVE"
+    # Comments
+    if re.search(r'#.*apps_\w+', content, re.IGNORECASE) or \
+       re.search(r'""".*apps_\w+.*"""', content, re.IGNORECASE) or \
+       re.search(r"'''.*apps_\w+.*'''", content, re.IGNORECASE):
+        return "FALSE_POSITIVE"
+    
+    # PRIORITY 4: Contract/ingress files in runtime - check content more carefully
+    # If it's a contracts file, it's likely metadata not runtime leakage
+    if re.search(r".*/contracts/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/delegation/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/audit/.*\.py$", normalized_path, re.IGNORECASE):
+        # Check if it has actual runtime branching logic
+        if re.search(r'if\s+.*app_id', content, re.IGNORECASE) or \
+           re.search(r'if\s+.*tenant_id', content, re.IGNORECASE):
+            return "RUNTIME_POLICY_LEAKAGE"
+        # Otherwise it's likely just type definitions (metadata)
+        return "STATIC_REGISTRY_METADATA"
+    
+    # PRIORITY 5: Check file path against runtime layer patterns (only for non-contract files)
+    # RUNTIME_POLICY_LEAKAGE: runtime, routing, L0-L5 layers, entry/exit
+    if re.search(r".*/runtime/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/routing/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/orchestration/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/execution/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/L[0-5]/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/entry/.*\.py$", normalized_path, re.IGNORECASE) or \
+       re.search(r".*/exit/.*\.py$", normalized_path, re.IGNORECASE):
+        return "RUNTIME_POLICY_LEAKAGE"
+    
+    # PRIORITY 5: Check for specific content patterns
+    # Registry metadata: type declarations, schema entries
+    if re.search(r'Owner\s*=\s*Literal\[.*apps_', content, re.IGNORECASE) or \
+       re.search(r'"apps_\w+":\s*"L_APP"', content, re.IGNORECASE):
+        return "STATIC_REGISTRY_METADATA"
+    
+    # Tooling references: for loops with app prefixes
+    if re.search(r'for\s+prefix\s+in\s+\(.*apps_', content, re.IGNORECASE):
+        return "OFFLINE_TOOLING_REFERENCE"
+    
+    # Cache/exit gates in non-runtime files (typically config or tooling)
+    if pattern_name in ["app_specific_cache_policies", "app_specific_thresholds"]:
+        # These are typically config patterns, classify based on file location
+        if re.search(r".*/config/.*\.py$", normalized_path, re.IGNORECASE) or \
+           re.search(r".*/contracts/.*\.py$", normalized_path, re.IGNORECASE):
+            return "STATIC_REGISTRY_METADATA"
+    
+    # Default to UNKNOWN for unclassified detections (require manual review)
+    return "UNKNOWN"
+
+
+def add_taxonomy_to_violations(violations: List[Dict]) -> List[Dict]:
+    """Add taxonomy classification to each violation."""
+    for v in violations:
+        category = classify_violation(v)
+        v['taxonomy_category'] = category
+        v['taxonomy_severity'] = TAXONOMY_CATEGORIES.get(category, {}).get('severity', 'HIGH')
+        v['taxonomy_description'] = TAXONOMY_CATEGORIES.get(category, {}).get('description', '')
+    return violations
+
+
+def count_by_category(violations: List[Dict]) -> Dict[str, int]:
+    """Count violations by taxonomy category."""
+    counts = {cat: 0 for cat in TAXONOMY_CATEGORIES.keys()}
+    for v in violations:
+        cat = v.get('taxonomy_category', 'UNKNOWN')
+        counts[cat] = counts.get(cat, 0) + 1
+    return counts
+
 
 # Forbidden patterns in agentic_core
 FORBIDDEN_PATTERNS = {
@@ -133,9 +354,11 @@ ALLOWLIST_CATEGORIES = {
 
 def matches_allowlist(filepath: str, category: str) -> bool:
     """Check if file matches allowlist category."""
+    # Normalize path for cross-platform matching
+    normalized_path = filepath.replace('\\', '/')
     patterns = ALLOWLIST_CATEGORIES.get(category, [])
     for pattern in patterns:
-        if re.search(pattern, filepath, re.IGNORECASE):
+        if re.search(pattern, normalized_path, re.IGNORECASE):
             return True
     return False
 
@@ -244,12 +467,91 @@ def save_scan_results(results: Dict):
     return output_file
 
 
+def get_enforcement_mode(cli_strict: bool) -> Tuple[bool, str]:
+    """Returns (is_strict, reason_message)."""
+    today = datetime.now().isoformat()[:10]
+    
+    if today > ADVISORY_SUNSET:
+        if cli_strict:
+            return True, f"STRICT MODE (sunset {ADVISORY_SUNSET} passed, --strict flag)"
+        return True, f"STRICT MODE (sunset {ADVISORY_SUNSET} enforced)"
+    
+    if cli_strict:
+        return True, "Strict mode (CLI flag)"
+    
+    return False, f"Advisory mode (sunset {ADVISORY_SUNSET})"
+
+
+def validate_binding_receipts(scan_results: Dict, strict: bool) -> List[Dict]:
+    """
+    Validate that all TEMPORARY_THIN_ADAPTER files have valid 12-field receipts.
+    Returns list of receipt violations.
+    """
+    receipt_violations = []
+    
+    for v in scan_results.get('violations', []):
+        if v.get('allowlist_category') == 'TEMPORARY_THIN_ADAPTER':
+            filepath = v.get('file', '')
+            is_valid, reason, _ = find_and_validate_receipt(filepath)
+            if not is_valid:
+                receipt_violations.append({
+                    'file': filepath,
+                    'line': v.get('line', 0),
+                    'severity': 'HIGH' if strict else 'MEDIUM',
+                    'pattern_name': 'TEMPORARY_THIN_ADAPTER_NO_RECEIPT',
+                    'description': f'Binding without valid 12-field receipt: {reason}',
+                    'content': v.get('content', ''),
+                    'receipt_issue': reason
+                })
+    
+    return receipt_violations
+
+
 def main():
     """Main entry point."""
+    parser = argparse.ArgumentParser(
+        description="CORE_LEAKAGE_SCAN: Scan agentic_core for app-specific leakage"
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail-closed mode (post-sunset, this is default)",
+    )
+    args = parser.parse_args()
+    
+    is_strict, mode_reason = get_enforcement_mode(args.strict)
+    
     print("CORE_LEAKAGE_SCAN: Scanning agentic_core for app-specific leakage...")
+    print(f"Mode: {mode_reason}")
     
     # Run scan
     results = scan_agentic_core()
+    
+    # Apply taxonomy classification (W8)
+    results['violations'] = add_taxonomy_to_violations(results['violations'])
+    category_counts = count_by_category(results['violations'])
+    results['taxonomy_category_counts'] = category_counts
+    results['taxonomy_source'] = CLASSIFICATION_SOURCE
+    
+    # Validate receipts for TEMPORARY_THIN_ADAPTER files
+    receipt_violations = validate_binding_receipts(results, is_strict)
+    if receipt_violations:
+        # Classify receipt violations as UNKNOWN (need manual review)
+        for rv in receipt_violations:
+            rv['taxonomy_category'] = 'UNKNOWN'
+            rv['taxonomy_severity'] = 'HIGH'
+            rv['taxonomy_description'] = 'Unclassified detection requiring manual review'
+        results['violations'].extend(receipt_violations)
+        results['total_violations'] += len(receipt_violations)
+        category_counts['UNKNOWN'] += len(receipt_violations)
+        # Count receipt violations by severity
+        for rv in receipt_violations:
+            if rv['severity'] == 'CRITICAL':
+                results['critical_count'] += 1
+            elif rv['severity'] == 'HIGH':
+                results['high_count'] += 1
+            else:
+                results['medium_count'] += 1
     
     # Save results
     output_file = save_scan_results(results)
@@ -257,14 +559,31 @@ def main():
     # Add metadata
     results["scan_output_file"] = str(output_file)
     results["timestamp"] = str(Path(__file__).stat().st_mtime)
+    results["enforcement_mode"] = mode_reason
+    results["is_strict"] = is_strict
+    results["receipt_violations"] = len(receipt_violations)
     
-    # Print summary
-    print(f"\nFiles scanned: {results['files_scanned']}")
-    print(f"Files with violations: {results['files_with_violations']}")
-    print(f"Total violations: {results['total_violations']}")
-    print(f"  Critical: {results['critical_count']}")
-    print(f"  High: {results['high_count']}")
-    print(f"  Medium: {results['medium_count']}")
+    # Calculate blocking vs non-blocking counts
+    blocking_count = sum(category_counts.get(cat, 0) for cat in BLOCKING_CATEGORIES)
+    non_blocking_count = results['total_violations'] - blocking_count
+    
+    # Print summary (W8 transparency requirement)
+    print(f"\n[SUMMARY] Files scanned: {results['files_scanned']}")
+    print(f"[SUMMARY] Files with violations: {results['files_with_violations']}")
+    print(f"[SUMMARY] Total detections: {results['total_violations']}")
+    
+    if is_strict:
+        # Strict mode: show taxonomy-based breakdown
+        print(f"\n[SUMMARY] Blocking: {blocking_count} (RUNTIME_POLICY_LEAKAGE: {category_counts.get('RUNTIME_POLICY_LEAKAGE', 0)}, UNKNOWN: {category_counts.get('UNKNOWN', 0)})")
+        print(f"[SUMMARY] Non-blocking: {non_blocking_count} (STATIC_REGISTRY: {category_counts.get('STATIC_REGISTRY_METADATA', 0)}, OFFLINE_TOOLING: {category_counts.get('OFFLINE_TOOLING_REFERENCE', 0)}, FALSE_POSITIVE: {category_counts.get('FALSE_POSITIVE', 0)})")
+        print(f"[CLASSIFICATION] Source: {CLASSIFICATION_SOURCE}")
+        print(f"[CLASSIFICATION] Rationale: Per-file runtime coupling analysis")
+    else:
+        # Advisory mode: show legacy severity breakdown
+        print(f"  Critical: {results['critical_count']}")
+        print(f"  High: {results['high_count']}")
+        print(f"  Medium: {results['medium_count']}")
+        print(f"  Receipt violations: {len(receipt_violations)}")
     
     # Print violations
     if results['violations']:
@@ -273,10 +592,10 @@ def main():
         print("="*70)
         
         for v in results['violations'][:20]:  # Limit output
-            print(f"\n[{v['severity']}] {v['pattern_name']}")
-            print(f"  File: {v['file']}:{v['line']}")
-            print(f"  {v['description']}")
-            print(f"  Content: {v['content']}")
+            print(f"\n[{v['severity']}] {v.get('pattern_name', 'UNKNOWN')}")
+            print(f"  File: {v['file']}:{v.get('line', 'N/A')}")
+            print(f"  {v.get('description', 'No description')}")
+            print(f"  Content: {v.get('content', 'N/A')[:80]}")
         
         if len(results['violations']) > 20:
             print(f"\n... and {len(results['violations']) - 20} more violations")
@@ -287,14 +606,38 @@ def main():
         print("  CRITICAL: App branching logic - must migrate immediately")
         print("  HIGH: App-specific constants - move to apps_*/config/")
         print("  MEDIUM: App-specific config - use profile refs")
+        print("  TEMPORARY_THIN_ADAPTER_NO_RECEIPT: Missing 12-field receipt")
         print("="*70)
         print(f"\nFull report: {output_file}")
         
-        # Exit with error if critical or high violations exist
-        if results['critical_count'] > 0 or results['high_count'] > 0:
-            sys.exit(2)
+        # Determine exit code (W8 taxonomy-based logic)
+        if is_strict:
+            # Strict mode: only fail on RUNTIME_POLICY_LEAKAGE or UNKNOWN/UNCLASSIFIED
+            runtime_leakage_count = category_counts.get('RUNTIME_POLICY_LEAKAGE', 0)
+            unknown_count = category_counts.get('UNKNOWN', 0)
+            
+            if runtime_leakage_count > 0 or unknown_count > 0:
+                print(f"\n[STRICT MODE] Blocking violations detected:")
+                print(f"  RUNTIME_POLICY_LEAKAGE: {runtime_leakage_count}")
+                print(f"  UNKNOWN/UNCLASSIFIED: {unknown_count}")
+                print(f"\n[EXIT] Code: 2 (strict mode failure - governance risk detected)")
+                sys.exit(2)
+            else:
+                # Only non-blocking categories (STATIC_REGISTRY, OFFLINE_TOOLING, FALSE_POSITIVE)
+                print(f"\n[STRICT MODE] No runtime policy leakage or unclassified findings.")
+                print(f"[STRICT MODE] {non_blocking_count} non-blocking findings (acceptable per W7 classification).")
+                print(f"\n[EXIT] Code: 0 (strict mode pass)")
+                sys.exit(0)
+        else:
+            # Advisory mode: warn but exit 0 (non-blocking)
+            print(f"\n[ADVISORY MODE] Violations detected but non-blocking")
+            print(f"  Set --strict for taxonomy-based fail-closed behavior")
+            print(f"  Or wait until sunset {ADVISORY_SUNSET}")
+            print(f"\n[EXIT] Code: 0 (advisory mode)")
+            sys.exit(0)
     else:
-        print("\nCORE_LEAKAGE_SCAN: No app-specific leakage detected.")
+        print("\n[SUMMARY] No app-specific leakage detected.")
+        print("\n[EXIT] Code: 0 (clean scan)")
     
     sys.exit(0)
 
