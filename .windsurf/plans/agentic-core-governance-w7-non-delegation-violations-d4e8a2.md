@@ -23,29 +23,56 @@ W6 successfully cleaned `agentic_core/runtime/delegation` (zero app-specific lit
 - MEDIUM: 0
 - Locations: `agentic_core/adg/`, `agentic_core/applications/`, `agentic_core/contracts/`
 
-## Wave Structure
+## Wave Structure (CORRECTED)
+
+**MANDATORY PHASE 0: Classification (NO CODE CHANGES)**
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W7 | P1-P3 | CRITICAL violations | ~800 | No breaking changes to TEMPORARY_THIN_ADAPTER | 🔲 TODO | 0 CRITICAL, core_leakage_scan critical-only exits 0 |
-| W7 | P4-P7 | HIGH violations (adg/) | ~1200 | ADG analysis still functional post-migration | 🔲 TODO | adg/ folder has 0 HIGH violations |
-| W7 | P8-P10 | HIGH violations (applications/) | ~600 | Placement advisor logic preserved | 🔲 TODO | applications/ folder has 0 HIGH violations |
-| W7 | P11-P13 | HIGH violations (contracts/) | ~400 | Contract schema integrity maintained | 🔲 TODO | contracts/ folder has 0 HIGH violations |
-| W7 | P14 | CI/skill fixes | ~200 | Frontmatter issues are auto-fixable | 🔲 TODO | run_contract_gates.py exits 0 |
-| W7 | P15 | Final verification | ~100 | All gates pass sequentially | 🔲 TODO | ALL gates exit 0, remediation_complete=true |
+| **W7** | **P0** | **Classification Report** | ~400 | Scan output available | 🔲 **BLOCKING** | All 297 violations categorized into 5 semantic buckets |
 
-## Phase-Level Summary
+**PHASE 1+: Implementation (ONLY after P0 approval)**
 
-| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
-|----------|-------|---------------|---------------|-------------|--------|
-| P1 | ADG MemoryAdapter fix | 1 file | Hardcoded app prefixes in tuple | ~300 | 🔲 TODO |
-| P2 | ADG ModuleOwnership fix | 1 file | Literal app strings in enum/ownership table | ~300 | 🔲 TODO |
-| P3 | Placement Advisor fix | 2 files | path.startswith() app checks | ~200 | 🔲 TODO |
-| P4-P7 | ADG adapters/analysis | ~15 files | App-specific constants → profile refs | ~1200 | 🔲 TODO |
-| P8-P10 | Applications folder | ~5 files | Generic resolver for placement logic | ~600 | 🔲 TODO |
-| P11-P13 | Contracts schema | ~3 files | App enum → generic app registry lookup | ~400 | 🔲 TODO |
-| P14 | Skill frontmatter | ~7 files | Add name/when-trigger per Anthropic spec | ~200 | 🔲 TODO |
-| P15 | Verification & receipt | 1 receipt | Final strict scan + CI pass | ~100 | 🔲 TODO |
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|------|-----------|-------|-------------|-------------|--------|------------------|
+| W7 | P1 | RUNTIME_POLICY_LEAKAGE fixes | ~600 | P0 approved | 🔲 TODO | 0 runtime-coupled app literals |
+| W7 | P2 | TRUE_CI_BREAKAGE fixes | ~200 | P0 approved | 🔲 TODO | run_contract_gates.py exits 0 |
+| W7 | P3 | FALSE_POSITIVE resolution | ~100 | P0 approved | 🔲 TODO | Scan updated, violations reclassified |
+| W7 | P4 | STATIC_REGISTRY_METADATA documentation | ~200 | P0 approved | 🔲 TODO | GENERIC_ALLOWED rationale documented |
+| W7 | P5 | OFFLINE_TOOLING_REFERENCE boundary audit | ~200 | P0 approved | 🔲 TODO | Tooling boundary explicitly defined |
+| W7 | P6 | Final verification | ~100 | All above done | 🔲 TODO | ALL gates exit 0, scan aligned with classification |
+
+## Phase-Level Summary (CORRECTED)
+
+**PHASE 0 (MANDATORY - NO CODE CHANGES):**
+
+| Phase ID | Title | Scope | Deliverable | Est. Tokens | Status |
+|----------|-------|-------|-------------|-------------|--------|
+| P0.1 | Runtime coupling analysis | All 297 violations | Per-file: governed runtime path? | ~100 | 🔲 TODO |
+| P0.2 | ADG metadata classification | agentic_core/adg/ | Category: STATIC_REGISTRY_METADATA vs RUNTIME_POLICY | ~100 | 🔲 TODO |
+| P0.3 | Placement advisor audit | agentic_core/applications/ | Category: OFFLINE_TOOLING vs RUNTIME_POLICY | ~100 | 🔲 TODO |
+| P0.4 | Contracts schema audit | agentic_core/contracts/ | Category: STATIC_REGISTRY vs RUNTIME_POLICY | ~50 | 🔲 TODO |
+| P0.5 | CI breakage triage | skill frontmatter checks | Category: TRUE_CI_BREAKAGE vs FALSE_POSITIVE | ~50 | 🔲 TODO |
+
+**Classification Categories:**
+
+| Category | Definition | Treatment | Examples (Expected) |
+|----------|------------|-----------|---------------------|
+| **RUNTIME_POLICY_LEAKAGE** | App literals influencing governed runtime decisions | **MUST ELIMINATE** | Branching on caller_app_id, policy checks |
+| **STATIC_REGISTRY_METADATA** | App registry entries, ownership tables, analysis metadata | **GENERIC_ALLOWED** with docs | ModuleOwnership, ADG node classification |
+| **OFFLINE_TOOLING_REFERENCE** | Developer tooling, placement advisors, offline analysis | **Boundary-defined** | placement_advisor if not runtime-coupled |
+| **FALSE_POSITIVE** | Scan incorrectly flags legitimate generic patterns | **Reclassify in scan** | Literal in comment, example code |
+| **TRUE_CI_BREAKAGE** | Actual failures blocking CI pass | **Fix regardless** | Skill frontmatter missing required fields |
+
+**PHASE 1+ (PENDING P0 APPROVAL):**
+
+| Phase ID | Title | Scope | Treatment per P0 classification | Est. Tokens | Status |
+|----------|-------|-------|--------------------------------|-------------|--------|
+| P1 | RUNTIME_POLICY fixes | Files classified as #1 | Profile-driven migration | ~600 | ⏸️ BLOCKED on P0 |
+| P2 | CI breakage fixes | Files classified as #5 | Fix frontmatter/syntax issues | ~200 | ⏸️ BLOCKED on P0 |
+| P3 | False positive correction | Scan configuration | Update scan rules, re-run | ~100 | ⏸️ BLOCKED on P0 |
+| P4 | Registry metadata docs | STATIC_REGISTRY items | Document as GENERIC_ALLOWED | ~200 | ⏸️ BLOCKED on P0 |
+| P5 | Tooling boundary definition | OFFLINE_TOOLING items | Explicit boundary in AGENTS.md | ~200 | ⏸️ BLOCKED on P0 |
 
 ## Gap Register
 
@@ -57,59 +84,61 @@ W6 successfully cleaned `agentic_core/runtime/delegation` (zero app-specific lit
 | G4 | Contract schema app enum may be serialized | Low | Version bump if schema changes |
 | G5 | Skill frontmatter fixes may be extensive | Low | Template-based auto-fix acceptable |
 
-## Definition of Done
+## Definition of Done (CORRECTED)
 
 | DoD | Criterion | Verification |
 |-----|-----------|-------------- |
-| DoD-1 | 0 CORE_APP_SPECIFIC_LEAKAGE across all agentic_core | `grep -c CORE_APP_SPECIFIC_LEAKAGE artifacts/governance/scans/core_leakage_scan_*.json` returns 0 |
-| DoD-2 | core_leakage_scan.py --strict exits 0 | Run command, verify exit code 0 |
-| DoD-3 | run_contract_gates.py exits 0 | Run command, verify exit code 0 |
-| DoD-4 | No unrelated CI failures | Only scheduled/long-term items remain |
-| DoD-5 | W7 receipt generated with remediation_complete=true | Receipt exists and field is true |
-| DoD-6 | All W6 delegation tests still pass | `pytest tests/_apps_contract/test_w6_generic_delegation.py` passes |
-| DoD-7 | Parent remediation can be marked COMPLETE | Update parent receipt final_status to REMEDIATION_COMPLETE |
+| DoD-0 | **Phase 0 Classification Report complete** | Document: `docs/reports/governance/w7_phase0_classification.md` exists with all 297 violations categorized |
+| DoD-1 | **0 RUNTIME_POLICY_LEAKAGE in governed runtime paths** | All violations in category #1 eliminated or migrated to profiles |
+| DoD-2 | **CI gates pass** | `python ops_scripts/ci/run_contract_gates.py` exits 0 |
+| DoD-3 | **Strict scan aligned with classification** | `python tools/governance/core_leakage_scan.py --strict` exits 0 with updated classification rules |
+| DoD-4 | **STATIC_REGISTRY_METADATA documented** | All category #2 violations have GENERIC_ALLOWED rationale in AGENTS.md or docs |
+| DoD-5 | **OFFLINE_TOOLING boundary defined** | Category #3 violations have explicit boundary documentation |
+| DoD-6 | **FALSE_POSITIVE corrected** | Scan rules updated so category #4 violations are no longer flagged |
+| DoD-7 | **W7 receipt generated with remediation_complete=true** | Receipt exists and field is true |
+| DoD-8 | **W6 delegation tests still pass** | `pytest tests/_apps_contract/test_w6_generic_delegation.py` passes (regression guard) |
+| DoD-9 | **Parent remediation can be marked COMPLETE** | Update parent receipt final_status to REMEDIATION_COMPLETE |
 
-## Verification vs Deferral
+## Verification vs Deferral (CORRECTED)
 
 | Item | Verify Now | Defer | Rationale |
 |------|-----------|-------|-----------|
-| CRITICAL violations fixed | ✅ | | Must be resolved for strict mode pass |
-| HIGH violations in adg/ | ✅ | | Block strict mode, must resolve |
-| HIGH violations in applications/ | ✅ | | Block strict mode, must resolve |
-| HIGH violations in contracts/ | ✅ | | Block strict mode, must resolve |
-| Skill frontmatter | ✅ | | Blocks CI pass, quick fix |
-| TEMPORARY_THIN_ADAPTER receipts | | ✅ | Already verified valid in W6 |
-| Full ADG re-architecture | | ✅ | Out of scope; migration to profiles is W7 scope |
+| Phase 0 classification | ✅ | | Mandatory before any code changes |
+| RUNTIME_POLICY_LEAKAGE fixes | ✅ | | Only after P0 identifies actual violations |
+| CI breakage fixes | ✅ | | Category #5 - must fix regardless |
+| STATIC_REGISTRY_METADATA docs | ✅ | | Document as GENERIC_ALLOWED post-P0 |
+| OFFLINE_TOOLING boundary | ✅ | | Define boundary post-P0 |
+| FALSE_POSITIVE correction | ✅ | | Update scan rules post-P0 |
+| W6 delegation tests | | ✅ | Already verified valid in W6 |
+| Full ADG re-architecture | | ✅ | Out of scope unless P0 proves runtime-coupled |
 
-## Files In Scope
+## Files Awaiting Classification (P0 will determine scope)
 
-**CRITICAL fixes:**
-- `agentic_core/adg/adapters/ADGMemoryAdapter.py` (line 469: hardcoded prefixes)
-- `agentic_core/adg/adapters/memory_mcp_adapter.py` (line 412: hardcoded prefixes)
-- `agentic_core/adg/analysis/ModuleOwnership.py` (lines 165, 197-198: app literals)
-- `agentic_core/adg/analysis/ownership.py` (lines 165, 197-198: app literals)
-- `agentic_core/adg/applications/placement_advisor.py` (lines 582, 584: path checks)
-- `agentic_core/adg/applications/placement_advisor_types.py` (lines 582, 584: path checks)
-- `agentic_core/adg/contracts/schema.py` (lines 567-572: app enum)
+**Candidate locations for review:**
+- `agentic_core/adg/adapters/` - ADGMemoryAdapter.py, memory_mcp_adapter.py
+- `agentic_core/adg/analysis/` - ModuleOwnership.py, ownership.py
+- `agentic_core/adg/applications/` - placement_advisor.py, placement_advisor_types.py
+- `agentic_core/adg/contracts/` - schema.py
+- `.windsurf/skills/` - Multiple skill files
 
-**Skill frontmatter fixes:**
-- `.windsurf/skills/app-leakage-refactor/SKILL.md`
-- `.windsurf/skills/core-boundary-audit/SKILL.md`
-- `.windsurf/skills/ledger-consulter-ask-user-question/SKILL.md`
-- `.windsurf/skills/receipt-auditor/SKILL.md`
-- `.windsurf/skills/runtime-package-verifier/SKILL.md`
-- `.windsurf/skills/scope-containment/SKILL.md`
-- `.windsurf/skills/u0-app-customization/SKILL.md`
+**Classification will determine:**
+1. Which files are actual RUNTIME_POLICY_LEAKAGE (must migrate)
+2. Which files are STATIC_REGISTRY_METADATA (document only)
+3. Which files are OFFLINE_TOOLING (boundary definition only)
+4. Which are FALSE_POSITIVE (scan correction only)
+5. Which are TRUE_CI_BREAKAGE (syntax fix only)
 
-## Acceptance Criteria
+## Acceptance Criteria (CORRECTED)
 
-1. `python tools/governance/core_leakage_scan.py --strict` exits 0
-2. `python ops_scripts/ci/run_contract_gates.py` exits 0
-3. 0 CORE_APP_SPECIFIC_LEAKAGE across all agentic_core
-4. 0 CRITICAL violations remaining
-5. W7 receipt generated with `remediation_complete=true`
-6. Parent remediation c4e8a2 can be marked COMPLETE
-7. All W6 delegation tests still pass (regression guard)
+1. **Phase 0 complete**: Classification report produced with all 297 violations categorized
+2. `python tools/governance/core_leakage_scan.py --strict` exits 0 (with updated classification)
+3. `python ops_scripts/ci/run_contract_gates.py` exits 0
+4. **0 RUNTIME_POLICY_LEAKAGE** in governed runtime paths (not 0 app literals everywhere)
+5. STATIC_REGISTRY_METADATA violations documented as GENERIC_ALLOWED
+6. OFFLINE_TOOLING_REFERENCE boundary explicitly defined
+7. W7 receipt generated with `remediation_complete=true`
+8. Parent remediation c4e8a2 can be marked COMPLETE
+9. All W6 delegation tests still pass (regression guard)
 
 ## Related Artifacts
 
@@ -120,7 +149,50 @@ W6 successfully cleaned `agentic_core/runtime/delegation` (zero app-specific lit
 
 ## Notes
 
-- W6 proved the profile-driven pattern works for delegation
-- W7 applies same pattern to remaining core modules
-- True full completion requires ALL gates passing
-- No new TEMPORARY_THIN_ADAPTER receipts needed (W6 covered migration receipts)
+**CRITICAL: Phase 0 Classification Required Before Any Code Changes**
+
+W7 is NOT "migrate everything like W6." W7 is "classify first, then only migrate what is actually runtime policy leakage."
+
+### Classification Principle
+
+| Category | Action | Rationale |
+|----------|--------|-----------|
+| RUNTIME_POLICY_LEAKAGE | **MUST migrate** | These are actual governance violations |
+| STATIC_REGISTRY_METADATA | **Document as GENERIC_ALLOWED** | Registry metadata is not leakage |
+| OFFLINE_TOOLING_REFERENCE | **Define boundary** | Tooling outside runtime governance |
+| FALSE_POSITIVE | **Fix scan** | Incorrectly flagged legitimate code |
+| TRUE_CI_BREAKAGE | **Fix immediately** | CI must pass regardless |
+
+### Specific Concerns Addressed
+
+**ModuleOwnership / ownership tables:**
+- Likely STATIC_REGISTRY_METADATA, not runtime leakage
+- ADG analysis uses these for report generation, not runtime decisions
+- Document as GENERIC_ALLOWED if no runtime coupling proven
+
+**ADG adapters (memory_mcp_adapter, ADGMemoryAdapter):**
+- Need proof they influence governed runtime behavior
+- If only used for offline analysis → OFFLINE_TOOLING_REFERENCE
+- If used in runtime path → RUNTIME_POLICY_LEAKAGE (must migrate)
+
+**contracts/schema.py app enums:**
+- Likely STATIC_REGISTRY_METADATA (valid app declarations)
+- Unless schema drives runtime routing decisions
+- Document rationale, don't blindly migrate
+
+### W6 vs W7 Difference
+
+- **W6**: Delegation had actual runtime branching → mandatory migration
+- **W7**: Many violations are metadata/tooling → classification determines action
+
+### Phase 0 Output
+
+Phase 0 produces: `docs/reports/governance/w7_phase0_classification.md`
+
+Structure:
+- Per-violation classification with rationale
+- Category counts
+- Implementation recommendation per category
+- Risk assessment for edge cases
+
+**NO CODE CHANGES UNTIL P0 CLASSIFICATION COMPLETE AND REVIEWED.**
