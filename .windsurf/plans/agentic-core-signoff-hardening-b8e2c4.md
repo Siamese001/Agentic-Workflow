@@ -1,14 +1,120 @@
+---
+plan_id: agentic-core-signoff-hardening-b8e2c4
+plan_type: audit
+touches_agentic_core: false
+touches_governance_ci: false
+touches_windsurf_rules: false
+touches_plan_templates: false
+core_addition_author_gate_required: false
+author_gate_receipt_ref: ""
+dod_exempt: false
+---
+
 # Agentic-Core Signoff Hardening + Re-Curate
 
-> **Plan slug**: `agentic-core-signoff-hardening-b8e2c4`
-> **Plan path**: `.windsurf/plans/agentic-core-signoff-hardening-b8e2c4.md`
-> **Status**: Draft (no execution; planning + Notion registration only)
-> **Author-Gate decisions foreseen**: 2 (W3 OTEL reconcile path, W4 L7 closure-vs-scope-out)
+Re-curate the agentic_core certification bundle to address signature gaps, internal contradictions, and disclosure gaps. No source code changes — curation and documentation only.
+
+---
+
+## Plan State Markers
+
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W0
+LAST_COMPLETED_WAVE: NONE
+LAST_UPDATED: 2026-05-12
+
+---
+
+## Wave Overview
+
+**Waves**: 4 total (W0–W4)
+**Current**: W0 (planning + Notion registration)
+
+**Wave Manifest**:
+- **W0** — Planning and Notion registration | DONE
+- **W1** — Bundle cleanup + rebuild | TODO
+- **W2** — Signature application | TODO
+- **W3** — OTEL reconcile path | TODO
+- **W4** — L7 closure vs scope-out | TODO
 
 PLAN_CREATED: slug=agentic-core-signoff-hardening-b8e2c4 path=.windsurf/plans/agentic-core-signoff-hardening-b8e2c4.md
 
 AG_QUEUE_SEED: plan=agentic-core-signoff-hardening-b8e2c4 id=AG-W3-otel-reconcile depends_on= title=OTEL replay 020/022 reconcile path (launch collector vs authority-manifest scope)
 AG_QUEUE_SEED: plan=agentic-core-signoff-hardening-b8e2c4 id=AG-W4-l7-closure depends_on= title=L7 route-family 8-of-9 closure vs scope-out manifest
+
+## Wave 0 — Planning
+
+WAVE_ID: W0
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: Planning
+
+**Phases**:
+- **W0.1** — Notion registration | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+---
+
+## Wave 1 — Bundle Cleanup + Rebuild
+
+WAVE_ID: W1
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: A
+
+**Phases**:
+- **W1.1** — Quiesce working tree | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.2** — Capture clean HEAD | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.3** — Rebuild signoff reports | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+---
+
+## Wave 2 — Signature Application
+
+WAVE_ID: W2
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: B
+
+**Phases**:
+- **W2.1** — Apply ed25519 signer to agentic_core arm | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.2** — Verify signature | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+---
+
+## Wave 3 — OTEL Reconcile Path
+
+WAVE_ID: W3
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: REQUIRED
+CHECKPOINT: C
+
+**Authorization Required**: W3 has 2 declared Author-Gate decisions on OTEL reconcile path.
+
+**Phases**:
+- **W3.1** — Reconcile RTC-REQ-020 + RTC-REQ-022 | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+---
+
+## Wave 4 — L7 Closure vs Scope-Out
+
+WAVE_ID: W4
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: REQUIRED
+CHECKPOINT: D
+
+**Authorization Required**: W4 has Author-Gate decision on L7 route-family 8-of-9 closure.
+
+**Phases**:
+- **W4.1** — L7 closure decision | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.2** — Authority manifest update | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+---
 
 ## 1. Background
 
@@ -20,6 +126,30 @@ The `artifacts/certification/` bundle for the agentic_core arm shows `102/102 SI
 4. **Disclosure gap.** Per-chain proofs uniformly report `l7_route_family_coverage_summary: {certified: 1, fixture_only: 1, not_certified: 8, total: 9}`. The agentic_core arm draws 76/102 rows from `apps_rg/` overlay evidence and 0 rows from paths under `agentic_core/`. Neither fact is surfaced in any top-level claim.
 
 Pure re-curation closes only stale-artifact-in-bundle and missing-arm visibility. Items 1–4 require hardening or explicit scope declaration.
+
+## Definition of Done
+
+DoD-1: Working tree quiesced and clean HEAD captured
+- Evidence: Single source-of-truth commit documented
+- Status: TODO
+
+DoD-2: Signoff reports rebuilt
+- Evidence: final_requirement_signoff_report files regenerated
+- Status: TODO
+
+DoD-3: Signature applied and verified
+- Evidence: signature.json shows VERIFIED, trust_level=SIGNED_PROOF
+- Status: TODO
+
+DoD-4: OTEL reconcile resolved
+- Evidence: RTC-REQ-020 + RTC-REQ-022 consistent state
+- Status: TODO
+
+DoD-5: Authority manifest authored
+- Evidence: certification/agentic_core/AUTHORITY.md exists
+- Status: TODO
+
+---
 
 ## 2. Scope
 

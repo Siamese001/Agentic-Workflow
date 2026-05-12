@@ -1,12 +1,28 @@
 ---
 plan_id: acceptance-gates-master-tracking-b5c3e1
-plan_type: tracker    # tracker for AG status dashboard
+plan_type: tracker
+touches_agentic_core: false
+touches_governance_ci: false
+touches_windsurf_rules: false
+touches_plan_templates: false
+core_addition_author_gate_required: false
+author_gate_receipt_ref: ""
 dod_exempt: false
 ---
 
 # Acceptance Gates (AG) Master Tracking Plan
 
 Single plan tracking all Acceptance Gates (AG-1 through AG-6 completed, AG-7+ planned). Each wave represents a discrete acceptance proof for the apps_rg pipeline and related components.
+
+---
+
+## Plan State Markers
+
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W6
+LAST_COMPLETED_WAVE: W6
+LAST_UPDATED: 2026-05-12
 
 ---
 
@@ -33,35 +49,146 @@ Single plan tracking all Acceptance Gates (AG-1 through AG-6 completed, AG-7+ pl
 
 ---
 
-## Wave Structure
+## Wave Overview
 
-| Wave | AG Item | Status | Focus | Key Artifacts |
-|------|---------|--------|-------|---------------|
-| Wave 1 | AG-1 | ✅ COMPLETE | Contract Definitions for apps_rg | `l1_plan_contract.py`, `final_evidence_contract.py`, `compiled_prompt_artifact.py` |
-| Wave 2 | AG-2 | ✅ COMPLETE | Prompt Assembly with Evidence Slots | `apps_rg_pa_binding.py`, slot_lineage_map |
-| Wave 3 | AG-3 | ✅ COMPLETE | C0 Evidence Integration | `apps_rg_c0_binding.py`, `FinalEvidenceContract` population |
-| Wave 4 | AG-4 | ✅ COMPLETE | Final Evidence Contract Fields | 23/25 AG-4 fields populated, NOT_APPLICABLE with reasons |
-| Wave 5 | AG-5 | ✅ COMPLETE | Exit X1 Evaluator Wiring | `x1_checkout_adapter.py`, `x1d_deterministic_evaluator.py`, `x1_gates.py` |
-| Wave 6 | AG-6 | ✅ COMPLETE | Golden Path Runtime Proof | `test_ag6_apps_rg_golden_path.py`, 15 tests, CI gate |
-| Wave 7 | AG-7 | 🟡 PLANNED | Template Extraction | Pending AG-6 acceptance |
-| Wave 8 | AG-8+ | ⚪ FUTURE | (Reserved for future gates) | — |
+**Waves**: 8 total (W1–W8)
+**Total**: 6 complete, 2 planned/future
+**Current**: W6 (tracking AG-6 completion)
+
+**Wave Manifest**:
+- **W1** — AG-1 Contract Definitions | DONE
+- **W2** — AG-2 Prompt Assembly | DONE
+- **W3** — AG-3 C0 Integration | DONE
+- **W4** — AG-4 Field Compliance | DONE
+- **W5** — AG-5 Exit X1 Wiring | DONE
+- **W6** — AG-6 Golden Path Proof | DONE
+- **W7** — AG-7 Template Extraction | TODO
+- **W8** — AG-8+ Future | TODO
+
+---
+
+## Wave 1 — AG-1 Contract Definitions
+
+WAVE_ID: W1
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-1
+
+**Phases**:
+- **W1.1** — L1PlanContract | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** — FinalEvidenceContract | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Artifacts**: `l1_plan_contract.py`, `final_evidence_contract.py`, `compiled_prompt_artifact.py`
 
 ---
 
-## Phase-Level Summary
+## Wave 2 — AG-2 Prompt Assembly
 
-| Phase ID | Title | Scope | Status |
-|----------|-------|-------|--------|
-| P1 | AG-1 Contract Definitions | `L1PlanContract`, `FinalEvidenceContract`, `CompiledPromptArtifact` | ✅ Done |
-| P2 | AG-2 Prompt Assembly Slots | `slot_lineage_map`, `component_hash_map`, evidence data-only | ✅ Done |
-| P3 | AG-3 C0 Integration | `c0_retrieve_apps_rg()`, evidence population | ✅ Done |
-| P4 | AG-4 Field Compliance | 23/25 AG-4 fields, NOT_APPLICABLE reasons | ✅ Done |
-| P5 | AG-5 Exit X1 Wiring | X1CheckoutResult, X1D evaluator, X2 aggregate, X3 disposition | ✅ Done |
-| P6 | AG-6 Golden Path Proof | E2E test, CI gate, 15 tests, no Chroma/embedding/bypass | ✅ Done |
-| P7 | AG-7 Template Extraction | (Planned) Resume template extraction from generated outputs | 🟡 Not Started |
-| P8 | AG-8+ | (Reserved) | Future acceptance gates | ⚪ Not Started |
+WAVE_ID: W2
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-2
+
+**Phases**:
+- **W2.1** — Slot lineage map | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Artifacts**: `apps_rg_pa_binding.py`, slot_lineage_map
 
 ---
+
+## Wave 3 — AG-3 C0 Integration
+
+WAVE_ID: W3
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-3
+
+**Phases**:
+- **W3.1** — C0 retrieve binding | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W3.2** — Evidence population | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Artifacts**: `apps_rg_c0_binding.py`, `FinalEvidenceContract` population
+
+---
+
+## Wave 4 — AG-4 Field Compliance
+
+WAVE_ID: W4
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-4
+
+**Phases**:
+- **W4.1** — Field mapping | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Acceptance**: 23/25 AG-4 fields populated, NOT_APPLICABLE with reasons
+
+---
+
+## Wave 5 — AG-5 Exit X1 Wiring
+
+WAVE_ID: W5
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-5
+
+**Phases**:
+- **W5.1** — X1 checkout adapter | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W5.2** — X1D evaluator | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Artifacts**: `x1_checkout_adapter.py`, `x1d_deterministic_evaluator.py`, `x1_gates.py`
+
+---
+
+## Wave 6 — AG-6 Golden Path Proof
+
+WAVE_ID: W6
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-6
+
+**Phases**:
+- **W6.1** — E2E test suite | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W6.2** — CI gate | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+**Acceptance**: 15 tests pass, no Chroma/embedding/bypass
+
+---
+
+## Wave 7 — AG-7 Template Extraction
+
+WAVE_ID: W7
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-7
+
+**Phases**:
+- **W7.1** — Resume template extraction | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Dependencies**: Blocked on AG-6 acceptance (completed)
+
+---
+
+## Wave 8 — AG-8+ Future
+
+WAVE_ID: W8
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: AG-8+
+
+**Phases**:
+- **W8.1** — Reserved for future acceptance gates | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+---
+
 
 ## AG-6 Completion Evidence
 
@@ -95,13 +222,25 @@ TestAG6NoBypass::test_pa_never_reads_legacy_payload PASSED
 
 ## Definition of Done
 
-| DoD | Criterion | Status |
-|-----|-----------|--------|
-| DoD-1 | All AG-1 through AG-6 artifacts documented | ✅ |
-| DoD-2 | AG-6 tests pass (15/15) | ✅ |
-| DoD-3 | CI gate passes (10/10) | ✅ |
-| DoD-4 | Plan registered in Notion | 🟡 This plan |
-| DoD-5 | AG-7+ future waves defined | ✅ |
+DoD-1: All AG-1 through AG-6 artifacts documented
+- Evidence: Artifacts listed per wave above
+- Status: DONE
+
+DoD-2: AG-6 tests pass (15/15)
+- Evidence: Test results show 15 passed
+- Status: DONE
+
+DoD-3: CI gate passes (10/10)
+- Evidence: ALL 10 CHECKS PASSED
+- Status: DONE
+
+DoD-4: Plan registered in Notion
+- Evidence: PLAN_CREATED marker present
+- Status: DONE
+
+DoD-5: AG-7+ future waves defined
+- Evidence: W7 and W8 defined above
+- Status: DONE
 
 ---
 

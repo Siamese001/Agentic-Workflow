@@ -1,6 +1,41 @@
+---
+plan_id: adg-antipattern-hardening-e5a569
+plan_type: refactor
+touches_agentic_core: true
+touches_governance_ci: false
+touches_windsurf_rules: false
+touches_plan_templates: false
+core_addition_author_gate_required: false
+author_gate_receipt_ref: ""
+dod_exempt: false
+---
+
 # ADG Anti-Pattern Hardening Plan
 
 Expand HIGH severity coverage to all `agentic_core/` and `system_learning/` paths, and add three hardened detectors (`blocking_call_in_async`, `global_state_mutation`, `retry_without_backoff`) to `_AntipatternVisitor` with FP guards, then sync `antipattern_registry._SEVERITY_MAP` with the SQL severity classification.
+
+---
+
+## Plan State Markers
+
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W1
+LAST_COMPLETED_WAVE: NONE
+LAST_UPDATED: 2026-05-12
+
+---
+
+## Wave Overview
+
+**Waves**: 4 total (W1–W4)
+**Current**: W1
+
+**Wave Manifest**:
+- **W1** — SQL severity expansion | agentic_core + system_learning | TODO
+- **W2** — Hardened detectors | 3 new visitors | TODO
+- **W3** — Severity map sync | registry alignment | TODO
+- **W4** — ADG run + validate | terminal verification | TODO
 
 ---
 
@@ -20,18 +55,21 @@ Expand HIGH severity coverage to all `agentic_core/` and `system_learning/` path
 
 ---
 
-## Wave Summary
-
-| Wave | Focus | Files | Est. tests |
-|---|---|---|---|
-| **W1** | SQL severity expansion — all `agentic_core/` + `system_learning/` → HIGH | `multi_writer.py`, `ArtifactPaths.py` | Extend existing SQL tests |
-| **W2** | Add 3 hardened detectors to `_AntipatternVisitor` in `core.py` | `visitors/core.py` | New parametrised detector tests |
-| **W3** | Sync `_SEVERITY_MAP` in `antipattern_registry.py` | `antipattern_registry.py` | Registry severity map tests |
-| **W4** | Run ADG + validate terminal table | None (run only) | — |
-
----
-
 ## Wave 1 — SQL Severity Expansion
+
+WAVE_ID: W1
+WAVE_STATUS: IN_PROGRESS
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: A
+
+**Phases**:
+- **W1.1** — Update multi_writer.py HIGH CASE branch | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO
+- **W1.2** — Extend test_violation_severity_sql.py | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Files**: `agentic_core/adg/artifact/multi_writer.py`, `agentic_core/adg/artifact/ArtifactPaths.py`
+
+**Scope**:
 
 **File:** `agentic_core/adg/artifact/multi_writer.py` and `agentic_core/adg/artifact/ArtifactPaths.py`
 
@@ -57,11 +95,22 @@ THEN 'HIGH'
 
 ---
 
-## Wave 2 — Three Hardened Detectors in `_AntipatternVisitor`
+## Wave 2 — Three Hardened Detectors
 
-**File:** `agentic_core/adg/extraction/visitors/core.py`
+WAVE_ID: W2
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: B
 
-Add three new visitor methods to `_AntipatternVisitor` with FP guards:
+**Phases**:
+- **W2.1** — blocking_call_in_async detector | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.2** — global_state_mutation detector | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.3** — retry_without_backoff detector | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**File**: `agentic_core/adg/extraction/visitors/core.py`
+
+**Scope**: Add three new visitor methods to `_AntipatternVisitor` with FP guards:
 
 ### 2a. `blocking_call_in_async`
 ```python
@@ -107,11 +156,21 @@ def _loop_contains_retry_without_backoff(self, node: ast.AST) -> bool:
 
 ---
 
-## Wave 3 — Sync `antipattern_registry._SEVERITY_MAP`
+## Wave 3 — Sync Severity Map
 
-**File:** `agentic_core/adg/runtime/antipattern_registry.py`
+WAVE_ID: W3
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: C
 
-The `_SEVERITY_MAP` is currently out of sync with the SQL classification. Align it:
+**Phases**:
+- **W3.1** — Update _SEVERITY_MAP values | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.2** — Add registry severity map tests | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**File**: `agentic_core/adg/runtime/antipattern_registry.py`
+
+**Scope**: The `_SEVERITY_MAP` is currently out of sync with the SQL classification. Align it:
 
 | Category | Current `_SEVERITY_MAP` | New value | Rationale |
 |---|---|---|---|
@@ -128,12 +187,46 @@ The `_SEVERITY_MAP` is currently out of sync with the SQL classification. Align 
 
 ## Wave 4 — ADG Run + Validate
 
+WAVE_ID: W4
+WAVE_STATUS: TODO
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: D
+
+**Phases**:
+- **W4.1** — Run generate_full_adg.py | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.2** — Verify terminal table metrics | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.3** — Refresh Redis hot cache | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Acceptance**:
 1. Run `python tools/generate/generate_full_adg.py`
 2. Verify terminal table shows:
    - P2 HIGH count increases (more agentic_core/ violations promoted from MEDIUM)
    - P3 MEDIUM count decreases correspondingly
    - P4 LOW count drops (retry/blocking/mutation move to MEDIUM or HIGH)
 3. Run `/adg-redis-refresh` to reload hot cache
+
+## Definition of Done
+
+DoD-1: SQL severity expansion complete
+- Evidence: HIGH CASE branch covers all agentic_core/ + system_learning/
+- Status: TODO
+
+DoD-2: Three hardened detectors implemented
+- Evidence: Tests pass for blocking_call_in_async, global_state_mutation, retry_without_backoff
+- Status: TODO
+
+DoD-3: Severity map synchronized
+- Evidence: _SEVERITY_MAP aligns with SQL classification
+- Status: TODO
+
+DoD-4: ADG run validates changes
+- Evidence: Terminal table shows expected count shifts
+- Status: TODO
+
+DoD-5: Redis cache refreshed
+- Evidence: /adg-redis-refresh completes successfully
+- Status: TODO
 
 ---
 

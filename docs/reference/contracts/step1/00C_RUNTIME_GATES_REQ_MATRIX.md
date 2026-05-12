@@ -1,3 +1,18 @@
+# ⚠️ ARCHIVED — 00C Runtime Gates Current-Run Mesh (Legacy REQ Matrix)
+
+> **DEPRECATED**: This file is archived historical context. The 00C Runtime Gates terminology (G01–G29, "RuntimeGates" as a separate layer) has been superseded by the **contract gates** framing.
+>
+> **Contract gates are validation obligations attached to each contract handoff**, not a separate runtime layer. See the Layer Contract Governance Matrix in `agentic-core-spine-contract-hardening-a7d4e1.md` for the canonical contract gate definitions per layer.
+>
+> **Migration status**: The semantic content of this file is being migrated to:
+> - Layer REQ_MATRIX files: `01_U0_INTAKE_REQ_MATRIX.md`, `02_L1_PLAN_REQ_MATRIX.md`, etc.
+> - Each layer now specifies its `required_contract_gates` inline with handoff obligations
+> - `ContractGateVerdict` replaces `GateVerdict`; `ContractGateMeshResult` replaces `GateMeshResult`
+>
+> **Do not add new requirements to this file.**
+
+---
+
 # 00C Runtime Gates Current-Run Mesh — REQ Matrix (Step 1 Aggregation)
 
 Step 1 aggregation only. Implementation mapping and proof are Phase 2.
