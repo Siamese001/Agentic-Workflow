@@ -35,7 +35,7 @@ This gap report remains as evidence reference, not implementation plan. The iden
 
 **Resume Shipping Critical Path:**
 - GAP-001/GAP-002 block governed production, not local/dev resume generation.
-- Resume shipping requires cache writes disabled or proposal-only (S9), but not the full L5 packet producer.
+- Resume shipping requires cache writes disabled or proposal-only before any full resume-generation smoke run via Master S0.5. S9 is closeout verification only. The full L5 packet producer is not required for local/dev resume shipping.
 
 ---
 

@@ -81,7 +81,7 @@ LAST_UPDATED: 2026-05-13
 
 - **Question** — How do we consolidate the existing fragmented apps_rg runtime surface, patch the active paths to enforce core boundaries, and implement tiered customization without creating parallel frameworks?
 
-- **Answer** — Inventory and classify all existing paths (W0A), patch the single active dispatch→bindings→runtime path (W2/W4), inventory existing judge surface before any new creation (W9), and repair L6 shadow learning as strictly future-run (W10).
+- **Answer** — Inventory and classify all existing paths (W0A), patch the single active dispatch→bindings→runtime path (W2/W4), inventory existing judge surface before any new creation (W9). W10 is superseded: do not repair apps_rg/runtime/l6_shadow_learning.py. Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff through the master plan.
 
 ---
 
@@ -166,7 +166,7 @@ CHECKPOINT: A0
 |------|-----------|
 | `apps_rg/runtime/bindings/*` | U0→L1→L0→C0→PA→L2→Exit spine bindings |
 | `apps_rg/runtime/runtime_executive_summary.py` | W4 bug patch for correct display |
-| `apps_rg/runtime/l6_shadow_learning.py` | SUPERSEDED / REFERENCE ONLY — do not repair. Duplicate app-local L6 runtime must be deleted or quarantined unless live caller proof exists. Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff. |
+| `apps_rg/runtime/l6_shadow_learning.py` | W10 repair for future-run learning |
 | `apps_rg/runtime/schemas/*` | App-specific schemas (SectionArtifact, etc.) |
 | `apps_rg/config/domain_contract/*` | App profiles, rubrics, thresholds |
 | `tests/_apps_contract/test_apps_rg_*.py` | App-specific test coverage |
@@ -202,7 +202,7 @@ CHECKPOINT: A0
 - **W7** — C0 Evidence Trust & Retrieval Safety | ~600 tokens | STATUS: Not Started
 - **W8** — Identity, Budget, L6 Firewall + Inert Writeback | ~600 tokens | STATUS: Not Started
 - **W9** — Judge Surface Consolidation (Inventory First) | ~1000 tokens | STATUS: Not Started
-- **W10** — SUPERSEDED / REFERENCE ONLY: Canonical L6 Handoff Verification Only | ~600 tokens | STATUS: Not Started
+- **W10** — SUPERSEDED: L6 Shadow Learning (Reference Only) | ~0 tokens | STATUS: Superseded by Master Plan
 
 ---
 
@@ -221,7 +221,7 @@ CHECKPOINT: A0
 | W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | Not Started |
 | W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | Not Started |
 | W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | Not Started |
-| W10 | W10.1, W10.2 | SUPERSEDED / REFERENCE ONLY — do not repair l6_shadow_learning.py; verify canonical Exit -> RuntimeExhaustBundle handoff only | ~600 | Not Started |
+| W10 | — | SUPERSEDED: Canonical L6 handoff owned by Master Phase 12 | ~0 | Superseded |
 
 ---
 
@@ -251,8 +251,8 @@ CHECKPOINT: A0
 | W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | Not Started |
 | W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | Not Started |
 | W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | Not Started |
-| W10.1 | SUPERSEDED — no l6_shadow_learning.py changes | Reference only; canonical handoff owned by master Phase 12 | ~300 | Not Started |
-| W10.2 | SUPERSEDED — no ProposalPacket repair in apps_rg | Reference only; G29/promotion proof owned by Core G29 plan | ~300 | Not Started |
+| W10.1 | SUPERSEDED | No extension of l6_shadow_learning.py RuntimeExhaustBundle — canonical handoff owned by Master Phase 12 | ~0 | Superseded |
+| W10.2 | SUPERSEDED | No repair of ProposalPacket — G29 work owned by Core G29 plan | ~0 | Superseded |
 
 ---
 
@@ -749,42 +749,32 @@ Calibration requirements:
 
 ---
 
-STATUS: SUPERSEDED_BY_MASTER
-MASTER_PHASES: Phase 2 and Phase 12
-RESOLUTION:
-- Do not repair apps_rg/runtime/l6_shadow_learning.py.
-- Delete or quarantine duplicate app-local L6 runtime unless live caller proof exists.
-- Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff.
-- G29 and promotion proof fields remain owned by the separate Core G29 plan.
-
 ## Wave 10 — SUPERSEDED / REFERENCE ONLY: Canonical L6 Handoff Verification Only
 
-**Critical Reframe**: L6 is strictly shadow/future-run. Never part of live generation.
+**SUPERSEDED ORIGINAL INTENT — DO NOT IMPLEMENT**
 
-**Repair `l6_shadow_learning.py`**:
+The original W10 intent was to repair `apps_rg/runtime/l6_shadow_learning.py` by extending duplicate local classes such as RuntimeExhaustBundle, SectionCompletedEvalRecord, AggregateCompletedEvalRecord, and ProposalPacket.
 
-Extend existing classes to satisfy all reference requirements:
+**Resolution:**
+- Do not repair `apps_rg/runtime/l6_shadow_learning.py`.
+- Do not extend duplicate app-local RuntimeExhaustBundle or ProposalPacket classes.
+- Do not create or preserve an app-local L6 runtime engine.
+- Delete or quarantine the duplicate app-local L6 runtime unless live caller proof exists.
+- Structured resume may only verify canonical Exit -> RuntimeExhaustBundle handoff.
+- G29 and promotion proof fields remain owned by the separate Core G29 plan.
 
-| Class | Extensions Required |
-|-------|-------------------|
-| `RuntimeExhaustBundle` | Add ExitDispositionReceipt ref, X1/X2 refs, GateMeshResult ref, OTEL refs |
-| `SectionCompletedEvalRecord` | Add judge result refs, calibration status refs, evidence trace refs |
-| `AggregateCompletedEvalRecord` | Add budget refs, G29 firewall receipt, inert proposal fields |
-| `ProposalPacket` | Add gauntlet→FutureRunPromotionRequest→UWG→L4 promotion path fields |
+**Reference-only historical requirements, superseded:**
+- RuntimeExhaustBundle ref completion
+- SectionCompletedEvalRecord enrichment
+- AggregateCompletedEvalRecord enrichment
+- ProposalPacket promotion path fields
+- l6_shadow_learning.py acceptance tests
 
-**Hard Constraints**:
-- L6 produces **inert** ProposalPackets only (`inert_until_promotion=True`)
-- L6 NEVER mutates current-run output
-- L6 NEVER triggers retry/regeneration
-- L6 proposals route through: gauntlet → UWG → L4 (only path to activation)
-- G29 learning firewall receipt required for any future-run promotion
-
-**Acceptance**:
-- `l6_shadow_learning.py` produces complete RuntimeExhaustBundle
-- All required refs present (Exit, X1/X2, GateMesh, OTEL, judge, calibration, budget, G29)
-- ProposalPackets have `inert_until_promotion=True` by default
-- Tests verify: L6 output does NOT affect current-run Exit disposition
-- Tests verify: Proposals require gauntlet→UWG→L4 path for activation
+**Active acceptance for structured resume scope:**
+- No change to `apps_rg/runtime/l6_shadow_learning.py`.
+- No active W10 implementation task remains in this plan.
+- Any canonical L6 handoff verification is owned by Master Phase 12.
+- Any G29/promotion proof work is owned by `core-l6-g29-promotion-proof-hardening-d9e3b2.md`.
 
 ---
 
@@ -831,7 +821,7 @@ VIOLATION = CI FAIL (run_contract_gates.py)
 | DoD-10 | W8: Identity/budget/L6 + inert writeback | UWG receipts required for durable commits; L6 shadow-only | P0 |
 | DoD-11 | W9: Judge inventory complete | All 7+ files classified; Migrate/Wrap/Replace decision recorded | P0 |
 | DoD-12 | W9: No parallel framework | No new `apps_rg/runtime/judges/` until inventory complete | P0 |
-| DoD-13 | W10: L6 future-run only | Tests prove L6 doesn't affect current-run; proposals inert | P0 |
+| DoD-13 | W10: SUPERSEDED / REFERENCE ONLY | No repair of l6_shadow_learning.py; canonical L6 handoff owned by Master Phase 12 | P0 |
 
 ---
 
@@ -930,10 +920,8 @@ python -m pytest tests/_apps_contract/test_judge_no_gate_verdict.py -v
 python -m pytest tests/_apps_contract/test_uncalibrated_advisory_only.py -v
 python -m pytest tests/_apps_contract/test_copy_verbatim_no_judges.py -v
 
-# W10: L6 future-run only
-python -m pytest tests/_apps_contract/test_l6_shadow_inert.py -v
-python -m pytest tests/_apps_contract/test_l6_no_current_run_mutation.py -v
-python -m pytest tests/_apps_contract/test_proposal_gauntlet_uwg_l4_path.py -v
+# W10: SUPERSEDED — no active tests (canonical L6 handoff owned by Master Phase 12)
+# Historical reference only — do not repair l6_shadow_learning.py
 
 # Full suite
 python -m pytest tests/_apps_contract/ -v --tb=short
@@ -955,7 +943,7 @@ python -m pytest tests/_apps_contract/ -v --tb=short
 | W7 C0 Evidence Trace Map | ☐ | ~600 | ~0 |
 | W8 Identity/Budget/L6 + Inert Writeback | ☐ | ~600 | ~0 |
 | W9 Judge Surface Consolidation | ☐ | | |
-| W10 L6 Shadow Repair | ☐ | | |
+| W10 L6 Shadow (SUPERSEDED) | N/A | — | — |
 | **New CI Scripts** | | | |
 | `check_agentic_core_leakage.py` | ☐ | ~280 | ~0 |
 | `check_major_checkpoint_core_boundary.py` | ☐ | ~350 | ~0 |
@@ -978,7 +966,7 @@ python -m pytest tests/_apps_contract/ -v --tb=short
 - Active dispatch: `apps_rg/runtime/dispatch/apps_rg_dispatch.py`
 - PA binding (to patch): `apps_rg/runtime/bindings/pa_binding.py`
 - Runtime summary (to patch): `apps_rg/runtime/runtime_executive_summary.py`
-- L6 shadow (to repair): `apps_rg/runtime/l6_shadow_learning.py`
+- L6 shadow (SUPERSEDED / REFERENCE ONLY — do not repair): `apps_rg/runtime/l6_shadow_learning.py`
 
 ### CI Checkpoint Scripts (New)
 - Core leakage detection: `ops_scripts/ci/check_agentic_core_leakage.py`
