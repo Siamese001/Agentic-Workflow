@@ -10,9 +10,42 @@ author_gate_receipt_ref: ""
 dod_exempt: false
 ---
 
+> [!IMPORTANT]
+> PORTFOLIO_STATUS: MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION
+> MASTER_PLAN_REF: .windsurf/plans/apps-rg-master-governed-runtime-hardening.md
+> DISPOSITION: MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION
+> SUPERSEDED_BY_PHASES: Phase 0, Phase 10, Phase 11, Phase 12
+> RETAINED_SCOPE:
+> - structured source resume JSON
+> - tiered bullet customization
+> - provider-neutral prompts
+> - anti-invention guardrails
+> - exact source-span extraction
+> - deterministic G21/G22 checks
+> - judge surface inventory
+> MOVED_SCOPE:
+> - runtime path inventory moves to Phase 0
+> - C0 evidence trust moves to Phase 9/11
+> - L6 handoff verification moves to Phase 12
+> DEFERRED_SCOPE:
+> - LLM judges and benchmark calibration
+> CONFLICTS_RESOLVED:
+> - W10 must not repair `l6_shadow_learning.py`; rewrite as canonical L6 handoff verification only
+
+## Portfolio Consolidation Notes
+This plan has been merged into the master consolidation with conflict resolution:
+- Phase 0: Runtime path inventory (W0A)
+- Phase 10: Structured resume schema + PA tiering + Exit G21/G22
+- Phase 11: C0 fact_vectors integration with structured resume
+- Phase 12: Canonical L6 handoff (NOT repair of l6_shadow_learning.py)
+
+**CRITICAL**: W10 L6 Shadow Learning Repair is superseded by Master Phase 2 (delete/quarantine L6) and Phase 12 (canonical handoff verification). Do not implement W10 as originally written.
+
+---
+
 # Refactor apps_rg to Structured Resume with Tiered Customization
 
-Refactor the apps_rg resume generation pipeline to use a structured source resume JSON with separated narrative/bullets and implement tiered customization strategies per role section, plus add inline runtime executive summary output at end of each run.
+Refactor the apps_rg resume generation pipeline to use a structured source resume JSON with separated narrative/bullets and implement tiered customization strategies per role section. Patch existing runtime paths to correctly display U0→L2 live pipeline vs L6 shadow/future-run boundaries.
 
 ---
 
@@ -28,9 +61,9 @@ LAST_UPDATED: 2026-05-13
 
 ## Context (SCQA)
 
-- **Situation** — Current apps_rg uses flat text resume source (`source_resume_text` string) with no separation between narrative context and achievement bullets. All sections get same generation treatment regardless of role importance (Unify/IBM vs InsurTech/EY vs Early Career).
+- **Situation** — Current apps_rg has multiple overlapping runtime paths (runtime/bindings, runtime/section_*, integrations/hops, engines/judges) with unclear ACTIVE vs LEGACY vs QUARANTINED status. The `pa_binding.py` exists but needs role-aware tiering. The `runtime_executive_summary.py` incorrectly implies L6 and Cache are part of live pipeline.
 
-- **Complication** — Heavy customization roles (Unify, IBM) need full narrative + bullet rewriting with JD alignment. Medium roles (InsurTech, EY) need light reframing. Early career should copy verbatim with zero customization. Current flat structure cannot support differentiated strategies.
+- **Complication** — Heavy customization roles (Unify, IBM) need bullet rewriting with JD alignment, but existing code has quarantined judges and multiple abandoned paths. Need to inventory existing surface before creating new frameworks. Core boundary must be strictly enforced: no agentic_core modifications, no G01-G29 renames, no canonical schema changes.
 
 - **Design Decisions from 2026-05-13 Session** —
   1. **Narrative copied verbatim** — No LLM customization; U0 supplies briefing, JD, base resume
@@ -38,18 +71,56 @@ LAST_UPDATED: 2026-05-13
   3. **Provider-neutral prompts** — XML-style sections, no Claude-specific wording, Qwen vLLM compatible
   4. **Anti-invention guardrails** — NO new metrics/clients/tools/domains/scope/titles/impacts without source support. INSUFFICIENT_SOURCE_SUPPORT emitted when evidence inadequate.
   5. **Exact source-span extraction** — Verbatim citation required before rewrite, JSON output with source_span, jd_alignment, rewritten_bullet, blocked_items, status
+  6. **Hard core boundary** — apps_rg may consume agentic_core contracts but NEVER modify core, G01-G29, or canonical X1/X2/X3 schemas
+  7. **L6 is shadow-only** — Never part of live generation pipeline; only future-run learning
 
-- **Question** — How do we refactor apps_rg to use structured source resume with narrative/bullet separation and implement tiered customization per role, while also adding inline ASCII runtime summary at pipeline completion?
+- **Question** — How do we consolidate the existing fragmented apps_rg runtime surface, patch the active paths to enforce core boundaries, and implement tiered customization without creating parallel frameworks?
 
-- **Answer** — Implement `source_resume_v2_structured.json` schema, update exit binding ingestion to produce structured format, refactor PA binding with section-specific prompt strategies, and add runtime executive summary inline output.
+- **Answer** — Inventory and classify all existing paths (W0A), patch the single active dispatch→bindings→runtime path (W2/W4), inventory existing judge surface before any new creation (W9), and repair L6 shadow learning as strictly future-run (W10).
 
 ---
 
 ## Wave Overview
 
-**Waves**: 8 total (W1–W8)
-**Total Estimate**: ~6,200 tokens
+**Waves**: 11 total (W0A, W1–W8, W9, W10) including W6.0
+**Total Estimate**: ~7,800 tokens
 **Current**: W0 (pre-flight)
+
+---
+
+## Wave 0A — Active Runtime Path Inventory (New)
+
+WAVE_ID: W0A
+WAVE_STATUS: Not Started
+WAVE_COMPLETE: NO
+AUTHORIZATION_STATUS: NOT_REQUIRED
+CHECKPOINT: A0
+
+**Goal**: Classify every apps_rg runtime-related file as ACTIVE, LEGACY, QUARANTINED, or OUT_OF_SCOPE. Declare exactly one active generation path.
+
+**Initial Classification Hypothesis, to be verified by W0A**:
+
+| Path | Classification | Rationale | Binding Evidence Required |
+|------|---------------|-----------|---------------------------|
+| `apps_rg/runtime/bindings/*.py` | **ACTIVE** | U0→L1→L0→C0→PA→L2→Exit spine per plan d4e8a1 | Import graph proves dispatch uses these |
+| `apps_rg/runtime/dispatch/apps_rg_dispatch.py` | **ACTIVE** | Entry point for `python -m apps_rg` | Import graph + dry-run test |
+| `apps_rg/runtime/section_*.py` | **LEGACY** | Per-section pipeline was aspirational; section logic moves to PA | Import graph confirms no active imports |
+| `apps_rg/integrations/hops/*.py` | **QUARANTINED** | AG-RGGOV-8 runtime authority | Import graph proves no active imports |
+| `apps_rg/engines/judges/*.py` | **QUARANTINED** | `executive_positioning_judge.py` has QUARANTINE notice | Import graph proves no active imports |
+| `apps_rg/integrations/gates/online_judges.py` | **QUARANTINED** | RuntimeError on import | Import graph proves no active imports |
+| `apps_rg/reasoning/` | **OUT_OF_SCOPE** | Unfunded complexity; no active reasoning loop | Mark archived |
+| `apps_rg/tools/` | **ACTIVE** | Utility tools (word_count, context_format) used by bindings | Import graph proves bindings use these |
+| `apps_rg/_quarantine/` | **QUARANTINED** | `compiler.py`, `HardenedanthropicexecutorStrategy.py`, `ResumeAssemblyAgent.py` | Already isolated |
+
+**Acceptance**:
+- **Import graph generated** via `tools/analysis/import_graph_builder.py` or static analysis
+- Classification is **evidence-based**, not aspirational — every ACTIVE classification must have import proof
+- **Mismatch blocks W0A completion**: If import graph shows active imports from QUARANTINED paths, W0A fails
+- CI gate `check_apps_rg_runtime_path_inventory.py` verifies:
+  - No imports from quarantined paths in active code
+  - Exactly one active path: `apps_rg_dispatch.py` → `bindings/` → spine
+  - Deprecation warnings on LEGACY paths (section_*.py)
+- Tests prove: `python -m apps_rg --help` imports only from `bindings/`, `dispatch/`, `tools/`
 
 ---
 
@@ -57,281 +128,677 @@ LAST_UPDATED: 2026-05-13
 
 | Section | Pipeline | Narrative | Bullets | Count | Treatment Tier | Rationale |
 |---------|----------|-----------|---------|-------|----------------|-----------|
-| **Headline** | Agentic (U0-L6) | Single X\|Y\|Z line | N/A | 1 line | **Heavy** | High JD visibility, keyword optimization critical |
-| **Executive Summary** | Agentic (U0-L6) | 5-sentence paragraph | N/A | 5 sentences | **Heavy** | Flagship positioning, every sentence needs metric/scope/technical term |
-| **Unify** | Agentic (U0-L6) | 1 intro sentence | 6 bullets | 6 | **Top 3: Heavy, 4-5: Moderate, 6: Light** | Current role, highest investment, flagship achievements |
-| **IBM** | Agentic (U0-L6) | 1 intro sentence | 5 bullets | 5 | **Top 2: Moderate, 3-5: Light** | Supporting relevance, moderate customization |
-| **InsurTech** | Agentic (U0-L6) | 1 intro sentence | 3 bullets | 3 | **Moderate** | Background context, selective JD alignment |
-| **EY** | Agentic (U0-L6) | 1 intro sentence | 3 bullets | 3 | **Light** | Older experience, minimal customization |
-| **Early Career** | Agentic (U0-L6) | 1 intro sentence | 1 bullet | 1 | **Preserve Verbatim** | Historical record, no customization needed |
-| **Competencies** | Agentic (U0-L6) | N/A | 12 entries | 12 | **Moderate** | JD-ranked, 2-4 word noun phrases |
-| **Education** | **Verbatim Copy** | Exact from source | N/A | All | **None** | No LLM generation, copy exactly |
-| **Certifications** | **Verbatim Copy** | Exact from source | N/A | All | **None** | No LLM generation, copy exactly |
+| **Headline** | U0→L1→L0→C0→PA→L2→Exit | Single X\|Y\|Z line | N/A | 1 line | **Heavy** | High JD visibility, keyword optimization critical |
+| **Executive Summary** | U0→L1→L0→C0→PA→L2→Exit | 5-sentence paragraph | N/A | 5 sentences | **Heavy** | Flagship positioning, every sentence needs metric/scope/technical term |
+| **Unify** | U0→L1→L0→C0→PA→L2→Exit | 1 intro sentence (verbatim) | 6 bullets | 6 | **Top 3: Heavy, 4-5: Moderate, 6: Light** | Current role, highest investment |
+| **IBM** | U0→L1→L0→C0→PA→L2→Exit | 1 intro sentence (verbatim) | 5 bullets | 5 | **Top 2: Moderate, 3-5: Light** | Supporting relevance |
+| **InsurTech** | U0→L1→L0→C0→PA→L2→Exit | 1 intro sentence (verbatim) | 3 bullets | 3 | **Moderate** | Background context |
+| **EY** | U0→L1→L0→C0→PA→L2→Exit | 1 intro sentence (verbatim) | 3 bullets | 3 | **Light** | Older experience |
+| **Early Career** | U0→L1→L0→C0→PA→L2→Exit | 1 intro sentence (verbatim) | 1 bullet | 1 | **Preserve Verbatim** | Historical record |
+| **Competencies** | U0→L1→L0→C0→PA→L2→Exit | N/A | 12 entries | 12 | **Moderate** | JD-ranked, 2-4 word noun phrases |
+| **Education** | **Verbatim Copy** | Exact from source | N/A | All | **None** | No LLM generation |
+| **Certifications** | **Verbatim Copy** | Exact from source | N/A | All | **None** | No LLM generation |
 
-### Treatment Tier Definitions
+### Treatment Tier Definitions (Role-Aware)
 
-| Tier | Description | Rewrite Depth | JD Keywords |
-|------|-------------|---------------|-------------|
-| **Heavy** | Full STAR method, specificity expansion, natural length variation | Complete reframing | First 3 words |
-| **Moderate** | Preserve core structure/metric, light injection | Selective reframe | 1-2 keywords |
-| **Light** | Minimal changes, grammar/format only | Touch-up only | No forced injection |
-| **Verbatim** | Copy exactly from source | No rewrite | N/A |
+| Role | Bullets | Tier Assignment |
+|------|---------|-----------------|
+| **Unify** | 6 | 1-3: Heavy, 4-5: Moderate, 6: Light |
+| **IBM** | 5 | 1-2: Moderate, 3-5: Light |
+| **InsurTech** | 3 | All: Moderate |
+| **EY** | 3 | All: Light |
+| **Early Career** | 1 | Verbatim (no LLM) |
 
-### Anti-Invention Guardrails (All Agentic Sections)
+**Key Principle**: Narratives (intro sentences) are **copied verbatim** from structured source. Only achievement bullets go through agentic spine with tiered treatment.
 
-```
-NO new metrics not in source materials
-NO new client names not in source materials
-NO new tools/technologies not in source materials
-NO new domains/industries not in source materials
-NO expanded scope beyond source support
-NO title claims beyond verified source material
-NO impact claims without source backing
+---
 
-If support insufficient: emit INSUFFICIENT_SOURCE_SUPPORT
-Output format: JSON with source_span, jd_alignment, rewritten_bullet, blocked_items, status
-```
+## Allowed Change Surface
 
-**Wave Manifest**:
+**Explicitly Allowed to Change** (app-specific paths only):
+
+| Path | Rationale |
+|------|-----------|
+| `apps_rg/runtime/bindings/*` | U0→L1→L0→C0→PA→L2→Exit spine bindings |
+| `apps_rg/runtime/runtime_executive_summary.py` | W4 bug patch for correct display |
+| `apps_rg/runtime/l6_shadow_learning.py` | W10 repair for future-run learning |
+| `apps_rg/runtime/schemas/*` | App-specific schemas (SectionArtifact, etc.) |
+| `apps_rg/config/domain_contract/*` | App profiles, rubrics, thresholds |
+| `tests/_apps_contract/test_apps_rg_*.py` | App-specific test coverage |
+| `ops_scripts/ci/check_apps_rg_*.py` | CI gates for apps_rg |
+| `ops_scripts/ci/check_agentic_core_leakage.py` | W5 core boundary enforcement |
+| `ops_scripts/ci/check_major_checkpoint_core_boundary.py` | W5 checkpoint validator |
+| `artifacts/apps_rg/**/*` | App-specific build artifacts |
+
+**Explicitly Forbidden to Change**:
+
+| Path | Rationale | Violation Action |
+|------|-----------|------------------|
+| `agentic_core/**/*` | Core must remain app-agnostic | CI gate BLOCKS, checkpoint fails |
+| Canonical G01-G29 gate definitions | Governance stability | CI gate BLOCKS, checkpoint fails |
+| Canonical X1/X2/X3 schemas | Exit eval stability | CI gate BLOCKS, checkpoint fails |
+| `.windsurf/rules/*` | Global governance rules | Exception: rule update plans only |
+| Global plan templates (`execution-plan-template.md`) | Cross-plan consistency | Exception: template update plans only |
+
+**Boundary Principle**: apps_rg may consume agentic_core contracts; apps_rg may NEVER modify agentic_core. All changes to the above forbidden paths require separate architectural plan with Author-Gate.
+
+---
+
+## Wave Manifest
+
+- **W0A** — Active Runtime Path Inventory | ~400 tokens | STATUS: Not Started
 - **W1** — Structured JSON Schema + Exit Binding Ingestion | ~800 tokens | STATUS: Not Started
-- **W2** — PA Binding Section-Specific Prompt Strategies | ~1,200 tokens | STATUS: Not Started
+- **W2** — PA Binding Tiered Prompt Patching | ~800 tokens | STATUS: Not Started
 - **W3** — U0 Payload Synthesizer Structured Resume Support | ~600 tokens | STATUS: Not Started
-- **W4** — Inline Runtime Executive Summary Output | ~600 tokens | STATUS: Not Started
-- **W5** — CI Gates + Tests + Documentation | ~300 tokens | STATUS: Not Started
-- **W6** — Exit Gate Payload Extensions (G21/G22 Critical Gaps) | ~800 tokens | STATUS: Not Started
-- **W7** — C0 Evidence Trust & Retrieval Safety (G08/G13) | ~600 tokens | STATUS: Not Started
-- **W8** — Identity, Budget, and L6 Firewall (G02/G17/G20/G29) | ~400 tokens | STATUS: Not Started
+- **W4** — Runtime Executive Summary Bug Patch | ~400 tokens | STATUS: Not Started
+- **W5** — CI Gates + Core Boundary Enforcement | ~600 tokens | STATUS: Not Started
+- **W6.0** — Canonical Exit Harness Wiring | ~600 tokens | STATUS: Not Started
+- **W6** — Exit Gate Payload Extensions (G21/G22) | ~800 tokens | STATUS: Not Started
+- **W7** — C0 Evidence Trust & Retrieval Safety | ~600 tokens | STATUS: Not Started
+- **W8** — Identity, Budget, L6 Firewall + Inert Writeback | ~600 tokens | STATUS: Not Started
+- **W9** — Judge Surface Consolidation (Inventory First) | ~1000 tokens | STATUS: Not Started
+- **W10** — L6 Shadow Learning Repair (Future-Run Only) | ~600 tokens | STATUS: Not Started
 
 ---
 
 ## Wave Structure Table
 
-| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
-|------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | W1.1, W1.2 | Structured JSON schema + exit binding DOCX→JSON ingestion | ~800 | python-docx available | Not Started | `source_resume_v2_structured.json` produced with all fields |
-| W2 | W2.1, W2.2, W2.3 | PA binding section-specific prompt strategies (heavy/light/none) | ~1,200 | LLM prompt format stable | Not Started | Per-section prompts match customization tier |
-| W3 | W3.1, W3.2 | U0 payload synthesizer reads structured resume | ~600 | JSON schema backward compat | Not Started | U0 emits `resume_payload` with structured flag |
-| W4 | W4.1, W4.2 | Inline ASCII runtime summary at pipeline end | ~600 | Terminal supports UTF-8 | Not Started | Summary prints to stdout + saves to run dir |
-| W5 | W5.1, W5.2 | CI gates, tests, documentation updates | ~300 | pytest available | Not Started | All tests pass, gates green |
-| W6 | W6.1, W6.2, W6.3 | Exit gate payload extensions (G21/G22 critical gaps) | ~800 | X1 gate packet structure stable | Not Started | All G21/G22 gaps upgraded to ACTIVE |
-| W7 | W7.1, W7.2 | C0 evidence trust & retrieval safety (G08/G13) | ~600 | Chroma retrieval available | Not Started | Evidence scoping + injection check active |
-| W8 | W8.1, W8.2 | Identity, budget, L6 firewall (G02/G17/G20/G29) | ~400 | L6 shadow infra available | Not Started | Identity binding + budget enforcement active |
+| Wave | Phase IDs | Focus | Est. Tokens | Status |
+|------|-----------|-------|-------------|--------|
+| W0A | W0A.1, W0A.2 | Runtime path inventory + classification + CI gate | ~400 | Not Started |
+| W1 | W1.1, W1.2 | Structured JSON schema + exit binding ingestion | ~800 | Not Started |
+| W2 | W2.1, W2.2 | Patch pa_binding.py with role-aware tiering | ~800 | Not Started |
+| W3 | W3.1, W3.2 | U0 payload synthesizer structured support | ~600 | Not Started |
+| W4 | W4.1 | Bug patch runtime_executive_summary.py display | ~400 | Not Started |
+| W5 | W5.1, W5.2 | CI gates + core boundary enforcement tests | ~600 | Not Started |
+| W6.0 | W6.0 | Canonical Exit harness wiring | ~600 | Not Started |
+| W6 | W6.1, W6.2, W6.3 | Exit G21/G22 payload extensions | ~800 | Not Started |
+| W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | Not Started |
+| W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | Not Started |
+| W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | Not Started |
+| W10 | W10.1, W10.2 | Repair l6_shadow_learning.py (future-run only) | ~600 | Not Started |
 
 ---
 
 ## Phase-Level Summary Table
 
-| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
-|----------|-------|---------------|-------------|-------------|--------|
-| W1.1 | Define Structured Resume Schema | `source_resume_structured.json` reference, schema doc | Field naming, nested structure validation | ~400 | Not Started |
-| W1.2 | Update Exit Binding Ingestion | `exit_binding.py:_ingest_docx_to_master_resume` | Parsing DOCX into structured sections, bullet detection | ~400 | Not Started |
-| W2.1 | Heavy Customization Prompts (Unify/IBM) | `pa_binding.py:_build_section_prompt` | Full narrative+bullet rewrite with JD alignment | ~500 | Not Started |
-| W2.2 | Medium Customization Prompts (InsurTech/EY) | `pa_binding.py:_build_section_prompt` | Light reframing, preserve core story | ~400 | Not Started |
-| W2.3 | Competency Bullet Generation | `pa_binding.py:_build_competencies_prompt` | Match base resume bullet style (Category: Skills) | ~300 | Not Started |
-| W3.1 | U0 Structured Resume Detection | `payload_synthesizer.py`, `u0_binding.py` | Detect structured vs flat, populate `resume_payload` | ~300 | Not Started |
-| W3.2 | Backward Compatibility | `payload_synthesizer.py` | Fall back to flat text if structured not available | ~300 | Not Started |
-| W4.1 | Runtime Summary Generator | `runtime_executive_summary.py` (existing), `apps_rg_dispatch.py` | ASCII formatting, inline output | ~300 | Not Started |
-| W4.2 | Integrate Summary into Dispatch | `apps_rg_dispatch.py` | Call summary at pipeline end, write to stdout + file | ~300 | Not Started |
-| W5.1 | Tests for Structured Resume Pipeline | `tests/_apps_contract/test_structured_resume.py` | Schema validation, ingestion correctness | ~150 | Not Started |
-| W5.2 | CI Gate + Documentation | `ops_scripts/ci/check_apps_rg_structured_resume.py`, README updates | Gate checks structured resume availability | ~150 | Not Started |
-| W6.1 | Exit Payload Extensions: G21 Schema Gates | `exit_binding.py`, `section_scorer.py` | Headline X\|Y\|Z format, competency bullet count, P0 structure | ~300 | Not Started |
-| W6.2 | Exit Payload Extensions: G22 Quality Gates | `exit_binding.py`, `apps_rg_exit_evidence_builder.py` | Metric preservation, early career hash compare, claim tracking | ~300 | Not Started |
-| W6.3 | Exit Gate Integration Tests | `tests/_apps_contract/test_exit_gate_payloads.py` | Verify G21/G22 gates active with apps_rg fields | ~200 | Not Started |
-| W7.1 | C0 Evidence Scoping (G08) | `c0_binding.py`, `airlocks/c0_evidence.py` | Per-section evidence scope profiles, retrieval scoping | ~300 | Not Started |
-| W7.2 | Retrieved Content Trust (G13) | `c0_binding.py` | Injection risk detection, content safety scoring | ~300 | Not Started |
-| W8.1 | Identity & Isolation (G02/G17) | `u0_binding.py`, `payload_synthesizer.py` | Caller/session/workspace binding, JD/resume isolation | ~200 | Not Started |
-| W8.2 | Budget & L6 Firewall (G20/G29) | `l0_binding.py`, `l2_binding.py` | Token/cost/latency caps, L6 shadow learning-only enforcement | ~200 | Not Started |
+| Phase ID | Title | Scope (files) | Est. Tokens | Status |
+|----------|-------|---------------|-------------|--------|
+| W0A.1 | Inventory Runtime Paths | All `runtime/`, `integrations/`, `engines/`, `_quarantine/` | ~200 | Not Started |
+| W0A.2 | CI Gate + Classification Enforcement | `check_apps_rg_runtime_path_inventory.py` | ~200 | Not Started |
+| W1.1 | Define Structured Resume Schema | `source_resume_structured.json` schema doc | ~400 | Not Started |
+| W1.2 | Update Exit Binding Ingestion | `exit_binding.py:_ingest_docx_to_master_resume` | ~400 | Not Started |
+| W2.1 | Patch PA Binding Role-Aware Tiering | `pa_binding.py` section detection + tiering | ~400 | Not Started |
+| W2.2 | PA Provider-Neutral Prompt Polish | `pa_binding.py` XML structure, anti-invention | ~400 | Not Started |
+| W3.1 | U0 Structured Resume Detection | `payload_synthesizer.py`, `u0_binding.py` | ~300 | Not Started |
+| W3.2 | Backward Compatibility | Flat text fallback | ~300 | Not Started |
+| W4.1 | Patch Runtime Summary Display | `runtime_executive_summary.py` bug fixes | ~400 | Not Started |
+| W5.1 | Core Boundary CI Gate | `check_apps_rg_core_boundary.py` | ~300 | Not Started |
+| W5.2 | Core Diff Prevention Tests | Tests for no core modification | ~300 | Not Started |
+| W6.0 | Canonical Exit Harness Wiring | `apps_rg/runtime/bindings/exit_binding.py` | ~600 | Not Started |
+| W6.1 | Exit G21 Schema Gates | `exit_binding.py` headline/bullet count | ~300 | Not Started |
+| W6.2 | Exit G22 Quality Gates | Metric preservation, hash compare | ~250 | Not Started |
+| W6.3 | Exit G22 Verbatim Integrity | Hash-based proof for education, certifications, early career | ~250 | Not Started |
+| W7.1 | C0 Evidence Scoping | `c0_binding.py` per-section profiles | ~300 | Not Started |
+| W7.2 | Retrieved Content Trust | Injection risk detection | ~300 | Not Started |
+| W8.1 | Identity & Isolation | `u0_binding.py` caller/session binding | ~200 | Not Started |
+| W8.2 | Budget & L6 Firewall | Token/cost caps, learning-only mode | ~200 | Not Started |
+| W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | Not Started |
+| W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | Not Started |
+| W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | Not Started |
+| W10.1 | Extend RuntimeExhaustBundle | `l6_shadow_learning.py` exhaust refs | ~300 | Not Started |
+| W10.2 | Repair ProposalPacket Future-Run | Gauntlet/UWG/L4 promotion path | ~300 | Not Started |
+
+---
+
+## Wave 0A — Active Runtime Path Inventory
+
+**Phases**:
+- **W0A.1** — Inventory all runtime/bindings, runtime/section_*, integrations/hops, integrations/gates, engines/judges, reasoning/, tools/, _quarantine/
+- **W0A.2** — Create CI gate to enforce classification; block new files in quarantined paths
+
+**Acceptance**:
+- Classification table in plan (ACTIVE/LEGACY/QUARANTINED/OUT_OF_SCOPE)
+- Exactly one active generation path: `apps_rg_dispatch.py` → `bindings/` → spine
+- CI gate passes: no imports from quarantined paths in active code
+- Tests prove: `python -m apps_rg --help` imports only from `bindings/` and `dispatch/`
+- Deprecation warnings on LEGACY paths (section_*.py)
 
 ---
 
 ## Wave 1 — Structured JSON Schema + Exit Binding Ingestion
 
-WAVE_ID: W1
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: A
-
-**Authorization**: NOT_REQUIRED — No shared surface modifications in this wave.
+**Critical Reframe**: Standardize resume input to structured JSON with normalized identifiers and clear separation of narrative vs bullets.
 
 **Phases**:
-- **W1.1** — Define Structured Resume Schema v2 | ~400 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W1.2** — Update Exit Binding DOCX→JSON Ingestion | ~400 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
+- **W1.1** — Define Structured Resume Schema with normalized IDs
+- **W1.2** — Update Exit Binding to produce structured format from DOCX
 
-**Acceptance**:
-- `source_resume_v2_structured.json` schema defined with all required fields
-- Exit binding `_ingest_docx_to_master_resume` produces structured JSON from DOCX
-- `header` (name, headline, contact), `executive_summary`, `experience[]` (company, location, title, date_range, narrative, bullets[]), `education[]`, `certifications[]`, `competencies[]`
-- Early career entry has `narrative: null`, bullets[] with single entry
-- Unify/IBM entries have full narrative + 5-6 bullets
-- InsurTech/EY entries have narrative + 3 bullets
-- **Design principle**: Narrative intro sentences are copied verbatim from source (no LLM customization). Only achievement bullets go through agentic spine with tiered treatment.
+**Schema Requirements** (`source_resume_v2_structured.json`):
 
----
-
-## Wave 2 — PA Binding Section-Specific Prompt Strategies
-
-WAVE_ID: W2
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: B
-
-**Phases**:
-- **W2.1** — Provider-Nutral Bullet Rewrite Prompt (Unify tiered: Top 3 Heavy, 4-5 Moderate, 6 Light) | ~500 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W2.2** — Medium/Light Customization Prompts (IBM/InsurTech/EY/Early Career) | ~400 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W2.3** — Competency & Verbatim Section Prompts (Competencies, Education, Certifications) | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-
-**Acceptance**:
-- PA binding detects section type from `experience[].company`
-- **Unify**: 6 bullets through agentic spine — Top 3: HEAVY rewrite (STAR, JD keywords first 3 words), Bullets 4-5: MODERATE reframe, Bullet 6: LIGHT touch/preserve
-- **IBM**: 5 bullets through agentic spine — Top 2: MODERATE reframe, Bullets 3-5: LIGHT touch
-- **InsurTech/EY**: 3 bullets through agentic spine — All: LIGHT reframe, preserve core story
-- **Early career**: 1 bullet — COPY VERBATIM, NO LLM generation
-- **Competencies**: 12 entries, JD-ranked, 2-4 word noun phrases
-- **Education/Certifications**: COPY VERBATIM, no agentic processing
-- **Provider-neutral prompt structure**: XML-style sections (`<task>`, `<source_materials>`, `<instructions>`, `<output_format>`), no Claude/Anthropic-specific wording
-- **Anti-invention rules**: Strict enforcement — NO new metrics, clients, tools, domains, scope, titles, or impacts without source support. Emit `INSUFFICIENT_SOURCE_SUPPORT` when evidence inadequate.
-- **JSON output**: source_span, jd_alignment, rewritten_bullet, blocked_items, status (SUCCESS|INSUFFICIENT_SOURCE_SUPPORT|PRESERVED_VERBATIM)
-
----
-
-## Wave 3 — U0 Payload Synthesizer Structured Resume Support
-
-WAVE_ID: W3
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: C
-
-**Phases**:
-- **W3.1** — Structured Resume Detection & Loading | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W3.2** — Backward Compatibility with Flat Text | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-
-**Acceptance**:
-- U0 payload synthesizer detects `.json` extension and structured schema version
-- Populates `resume_payload` with `structured: true`, `header`, `executive_summary`, `experience[]`, `education[]`, `certifications[]`, `competencies[]`
-- Falls back to flat `source_resume_text` if structured JSON not available or schema version mismatch
-- `resume_hash` computed over structured content or text accordingly
-
----
-
-## Wave 4 — Inline Runtime Executive Summary Output
-
-WAVE_ID: W4
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: D
-
-**Phases**:
-- **W4.1** — ASCII Runtime Summary Formatter | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W4.2** — Integrate into Dispatch Pipeline | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-
-**Acceptance**:
-- At end of `apps_rg_dispatch.py` section pipeline, generate ASCII summary:
+```python
+StructuredResumeV2:
+  schema_version: "2.0.0"           # Explicit version
+  resume_id: str                    # Unique resume identifier
+  
+  sections: List[Section]
+  
+Section:
+  # Normalized identifiers
+  section_id: str                    # "headline", "executive_summary", "unify", "ibm", "insurtech", "ey", "early_career", "competencies", "education", "certifications"
+  company_id: Optional[str]         # Normalized: "unify_consulting", "ibm", "ernst_young", etc.
+  
+  # Content classification
+  content_kind: str                  # "narrative_only", "bullets_only", "narrative_and_bullets", "verbatim_copy"
+  
+  # Processing policy
+  rewrite_policy: str                # "heavy", "moderate", "light", "verbatim"
+  judge_policy: str                  # "p0_full_panel", "p1_full_panel", "p2_deterministic_only", "none"
+  
+  # Content
+  narrative: Optional[str]           # Intro sentences (verbatim for experience sections)
+  bullets: List[str]                # Achievement bullets (tiered treatment)
+  verbatim_fields: Optional[Dict]   # Exact copy fields for education/certifications
+  
+  # Provenance
+  source_location: str              # JSON path in original DOCX
+  extraction_confidence: float       # 0.0-1.0
 ```
-╔════════════════════════════════════════════════════════════════╗
-║           🤖 APPS_RG RUNTIME EXECUTIVE SUMMARY 🤖              ║
-╠════════════════════════════════════════════════════════════════╣
-║  Target: Brown & Brown | SVP IT Strategy & Innovation        ║
-║  Pipeline: U0→L1→L0→C0→PA→L2→Exit→L6 | Duration: 165s          ║
-╠════════════════════════════════════════════════════════════════╣
-║  ✅ Headline           [P0]  T1   68 words  score: 0.89        ║
-║  ✅ Executive Summary  [P0]  T1  142 words  score: 0.85        ║
-║  ✅ Unify Narrative    [P0]  T2  198 words  score: 0.82        ║
-║  ✅ IBM Experience     [P0]  T2  312 words  score: 0.88        ║
-║  ✅ Competencies       [P1]  T2  156 words  score: 0.91        ║
-║  ... (5 more sections)                                         ║
-╚════════════════════════════════════════════════════════════════╝
+
+**Normalized ID Conventions**:
+
+| Field | Format | Examples |
+|-------|--------|----------|
+| `section_id` | lowercase_snake | `"headline"`, `"executive_summary"`, `"unify"`, `"ibm"`, `"insurtech"`, `"ey"`, `"early_career"`, `"competencies"`, `"education"`, `"certifications"` |
+| `company_id` | lowercase_snake | `"unify_consulting"`, `"ibm"`, `"ernst_young"`, etc. |
+| `content_kind` | snake_case | `"narrative_and_bullets"`, `"bullets_only"`, `"verbatim_copy"` |
+| `rewrite_policy` | lowercase | `"heavy"`, `"moderate"`, `"light"`, `"verbatim"` |
+| `judge_policy` | pN_descriptor | `"p0_full_panel"`, `"p2_deterministic_only"`, `"none"` |
+
+**Acceptance**:
+- `source_resume_v2_structured.json` validates against schema with `schema_version: "2.0.0"`
+- Exit binding produces structured format from DOCX with all normalized IDs
+- All required fields present: `section_id`, `company_id`, `content_kind`, `rewrite_policy`, `judge_policy`
+- Verbatim fields (header, education, certifications) extracted exactly with `content_kind: "verbatim_copy"`
+- Tests: `test_source_resume_schema_v2.py`, `test_exit_binding_structured_output.py`
+
+---
+
+## Wave 2 — PA Binding Tiered Prompt Patching
+
+**Critical Reframe**: This is NOT creating a new PA layer. It patches `apps_rg/runtime/bindings/pa_binding.py` to add role-aware tiering.
+
+**Phases**:
+- **W2.1** — Add role detection from `experience[].company` → tier assignment
+- **W2.2** — Polish provider-neutral XML structure, anti-invention rules
+
+**Acceptance**:
+- `pa_binding.py` detects: Unify→heavy/moderate/light, IBM→moderate/light, InsurTech/EY→light, Early Career→verbatim
+- System preamble uses provider-neutral wording (no Claude references)
+- Bullet rewrite prompt includes tiered treatment instructions
+- Anti-invention rules embedded: NO new metrics/clients/tools/domains without source support
+- Tests: `test_pa_binding_role_tiering.py` verifies correct tier per role
+
+---
+
+## Wave 4 — Runtime Executive Summary Bug Patch
+
+**Critical Reframe**: This is NOT a new feature. It patches bugs in `runtime_executive_summary.py` to correctly display the live pipeline vs shadow boundaries.
+
+**Required Display Corrections**:
+
 ```
-- Summary prints to stdout (inline) AND saves to `artifacts/apps_rg/runs/<ts>/99_runtime_executive_summary.md`
-- Includes per-section: status, P-level, tier, word count, score
+LIVE GENERATION PIPELINE (U0 → L2):
+  U0 Validate ──► L1 Plan ──► L0 Route ──► C0 Retrieve ──► PA Compose ──► L2 Execute ──► Exit Finalize
+  
+POST-RUNTIME (NO PRODUCTION IMPACT):
+  RuntimeExhaustBundle emitted: YES/NO
+  L6 Shadow Handoff emitted: YES/NO
+  G29 Learning Firewall: PASS/WARN/FAIL
+  
+WRITE-BACK STATUS (REQUIRES UWG RECEIPTS):
+  inert_writeback_candidates: <count>
+  uwg_committed_writes: <count> (only with ExitReceipt)
+  
+NO LIVE CACHE WRITES WITHOUT UWG
+NO L6 IN LIVE PIPELINE
+NO AUTONOMOUS LEARNING MUTATION
+```
+
+**Removed Claims**:
+- ~~"L6 part of live pipeline"~~ → L6 is shadow-only, future-run
+- ~~"Cache writes durable"~~ → Only with UWG receipts
+- ~~"Semantic cache immediate"~~ → inert_writeback_candidates until UWG
+
+**Acceptance**:
+- `runtime_executive_summary.py` displays corrected ASCII table
+- Tests verify no L6 in live path claims
+- Tests verify "inert" prefix on writeback candidates without receipts
 
 ---
 
-## Wave 5 — CI Gates, Tests, Documentation
+## Wave 5 — Core Boundary Enforcement + Checkpoint CI
 
-WAVE_ID: W5
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: E
+**Hard Constraints**:
+- apps_rg may consume existing `agentic_core` contracts
+- apps_rg may NOT modify `agentic_core/**`
+- apps_rg may NOT rename or redefine G01-G29
+- apps_rg may NOT modify canonical X1/X2/X3 schemas
+- Violations fail CI immediately
 
 **Phases**:
-- **W5.1** — Tests for Structured Resume Pipeline | ~150 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W5.2** — CI Gate + Documentation | ~150 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
+- **W5.1** — CI gate `check_agentic_core_leakage.py` + `check_major_checkpoint_core_boundary.py`
+- **W5.2** — Tests verify no apps_rg literals added to core files
+
+**CI Scripts Created**:
+
+| Script | Location | Purpose |
+|--------|----------|---------|
+| `check_agentic_core_leakage.py` | `ops_scripts/ci/` | Detect apps_* literals, imports, conditionals in agentic_core |
+| `check_major_checkpoint_core_boundary.py` | `ops_scripts/ci/` | Run at every major checkpoint (pre/post wave, pre-commit, pre-merge) |
+
+**Checkpoint Schedule**:
+
+| Checkpoint | When | Action |
+|------------|------|--------|
+| `pre-wave` | Before W1, W2, W3... | Verify core clean, no staged core changes with leakage |
+| `post-wave` | After each wave complete | Verify no leakage introduced during wave execution |
+| `pre-commit` | Before every `git commit` | Block commit if core leakage detected in staging |
+| `pre-merge` | Before merge to main | Comprehensive scan + uncommitted core change check |
+| `post-core-edit` | After any agentic_core edit | Immediate verification, alert on leakage |
 
 **Acceptance**:
-- Tests validate structured JSON schema, ingestion correctness, PA prompt strategies
-- CI gate `check_apps_rg_structured_resume.py` verifies `source_resume_structured.json` exists and is valid
-- Documentation updates: `apps_rg/RUNBOOK.md`, `apps_rg/AGENTS.md` with new schema and customization tiers
+- CI gate fails if `git diff agentic_core/` non-empty (with fail-closed)
+- CI gate fails if `grep -r "apps_rg" agentic_core/` finds new literals
+- CI gate fails if G01-G29 definitions changed
+- CI gate fails if X1/X2/X3 canonical schemas modified
+- Checkpoint log at `artifacts/ci/checkpoint_core_boundary_log.jsonl` tracks every run
+- All waves must pass `post-wave` checkpoint before marking complete
 
 ---
 
-## Wave 6 — Exit Gate Payload Extensions (G21/G22 Critical Gaps)
+## Wave 6.0 — Canonical Exit Harness Wiring
 
-WAVE_ID: W6
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: F
+**Critical Prerequisite**: G21/G22 evidence is useless if Exit never consumes it through the canonical path. Ensure apps_rg Exit uses the canonical Exit flow BEFORE adding richer G21/G22/X1D evidence.
 
-**Phases**:
-- **W6.1** — G21 Schema Gates: Headline X\|Y\|Z Format, Competency Bullet Count, P0 Structure | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W6.2** — G22 Quality Gates: Metric Preservation, Early Career Hash Compare, Claim Tracking | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W6.3** — Exit Gate Integration Tests | ~200 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
+**Required Runtime Path**:
+
+```
+apps_rg sealed output
+  -> SealedWorkflowPackage or canonical terminal package
+  -> ExitReviewPacket
+  -> X1CheckoutResult
+  -> X2AggregationResult
+  -> GateMeshResult
+  -> ExitDispositionReceipt
+  -> RuntimeExhaustBundle
+```
+
+**Scope**:
+- `apps_rg/runtime/bindings/exit_binding.py`
+- `apps_rg/exit/apps_rg_exit_evidence_builder.py`
+- `apps_rg/config/domain_contract/exit_profile.resume_generation.v1.json`
+- `tests/_apps_contract/test_apps_rg_exit_integration.py`
+
+**Hard Constraints**:
+- Do not modify `agentic_core`
+- Do not modify canonical X1/X2/X3 schemas
+- Do not redefine G01-G29
+- Do not let apps_rg emit final X3 directly if canonical ExitDispositionReceipt is required
+- Do not let local stub gates replace GateMeshResult
+- **UNKNOWN is never PASS**
 
 **Acceptance**:
-- `AppsRgSectionValidationReceipt` populated in `packet.output["apps_rg_section_validation"]` with headline XYZ format regex check
-- `competency_bullet_count` validated in Exit gate (3-5 bullets per competency section)
-- `p0_narrative_bullets_required` pre-L2 structure check in PA binding
-- `AppsRgMetricPreservationEnvelope` in `packet.evidence_bundle["apps_rg_metrics"]` with quantified claim-to-source binding
-- `early_career_hash_compare` verifies P2 sections match source resume SHA256
-- All G21/G22 gaps upgraded from GAP → ACTIVE status in canonical gate table
+- apps_rg constructs/normalizes the terminal output into the expected Exit input shape
+- ExitReviewPacket is created for apps_rg runs
+- X1CheckoutResult is produced or populated with explicit UNKNOWN/NOT_APPLICABLE reasons
+- X2AggregationResult consumes exactly one X1CheckoutResult
+- GateMeshResult includes required G21/G22/G23/G24/G26/G28 verdict refs
+- ExitDispositionReceipt emits exactly one X3
+- RuntimeExhaustBundle is produced after Exit
+- **X3D_ALLOW_FINISH is impossible when material G22/G24/G28 is UNKNOWN**
+- Integration test proves apps_rg no longer relies on local G24-G27 stub logic
+
+**Tests**:
+- `test_apps_rg_exit_review_packet_created.py`
+- `test_apps_rg_x1_checkout_result_produced.py`
+- `test_apps_rg_x2_aggregation_consumes_x1.py`
+- `test_apps_rg_gate_mesh_result_includes_g21_g28.py`
+- `test_apps_rg_exit_disposition_receipt_emits_x3.py`
+- `test_apps_rg_runtime_exhaust_bundle_produced.py`
+- `test_apps_rg_no_local_stub_gates.py`
 
 ---
 
-## Wave 7 — C0 Evidence Trust & Retrieval Safety (G08/G13)
+## Wave 6 — Exit Gate Payload Extensions (G21/G22)
 
-WAVE_ID: W7
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: G
+**Critical Gap Closure**: G21 (Schema/Completeness) and G22 (Quality/Safety) currently DORMANT or PARTIAL. **apps_rg emits app-owned evidence payloads** for existing canonical G21/G22 — NO canonical gate modifications.
+
+**Core Principle**: Canonical G21/G22 gates remain unchanged. apps_rg produces **app-specific evidence receipts** that the generic Exit evaluation consumes alongside canonical signals.
 
 **Phases**:
-- **W7.1** — C0 Evidence Scoping (G08): Per-section evidence scope profiles | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W7.2** — Retrieved Content Trust (G13): Injection risk detection | ~300 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
+- **W6.1** — AppsRgSectionValidationReceipt: Per-section schema validation (headline XYZ, bullet counts, structure)
+- **W6.2** — AppsRgMetricPreservationEnvelope: Metric extraction from source vs generated, preservation proof
+- **W6.3** — AppsRgVerbatimIntegrityReceipt: Hash-based proof for education, certifications, early career
+
+**New Evidence Types** (app-owned, not canonical):
+
+```python
+AppsRgSectionValidationReceipt:
+  receipt_id: str                    # Unique receipt identifier
+  run_id: str                        # Parent run
+  section_id: str                    # "headline", "executive_summary", "unify", etc.
+  g21_schema_check: G21CheckResult   # Headline XYZ format, bullet count, structure
+  g22_quality_check: G22CheckResult  # Metric presence, anti-invention flags
+  timestamp: datetime
+  evidence_digest: str               # Hash of validation inputs
+
+AppsRgHeadlineValidationReceipt:
+  receipt_id: str
+  headline_text: str
+  xyz_format_valid: bool             # X|Y|Z structure
+  xyz_parsed: {x: str, y: str, z: str}
+  jd_keyword_density: float          # Keywords from JD present
+  seniority_signal_detected: bool    # SVP/C-suite language
+
+AppsRgMetricPreservationEnvelope:
+  envelope_id: str
+  section_id: str
+  source_metrics: List[Metric]        # Extracted from source resume
+  generated_metrics: List[Metric]   # Extracted from generated output
+  preservation_ratio: float         # % of source metrics preserved
+  invented_metrics: List[Metric]     # Any metrics not in source (BLOCKED)
+  blocked_inventions: List[str]      # Attempted inventions caught by anti-invention
+
+AppsRgVerbatimIntegrityReceipt:
+  receipt_id: str
+  section_id: str                    # "education", "certifications", "early_career"
+  source_hash: str                    # SHA256 of source content
+  generated_hash: str                 # SHA256 of generated content
+  hash_match: bool                   # Must be True for verbatim sections
+  verbatim_preservation_verdict: "PASS" | "FAIL" | "NOT_APPLICABLE"
+
+AppsRgClaimSupportMap:
+  map_id: str
+  section_id: str
+  claims: List[Claim]                 # Claims made in generated output
+  claim_support_status: Dict[str, "SUPPORTED" | "INSUFFICIENT_EVIDENCE" | "BLOCKED"]
+  source_spans: Dict[str, List[str]]  # Verbatim source supporting each claim
+```
 
 **Acceptance**:
-- `AppsRgSectionEvidenceScope` populated in `packet.final_evidence_contract["apps_rg_evidence_trust"]`
-- Per-section Chroma query hashes, retrieved chunk counts, and scoping metadata
-- `injection_risk_score` computed for retrieved content (0.0-1.0 scale)
-- `content_safety_verdict` in ["clean", "suspicious_patterns", "instruction_injection"]
-- G08 and G13 gaps upgraded from GAP → ACTIVE status
+- G21 gates ACTIVE via apps-owned receipts: Headline parses as X|Y|Z, 12 competency bullets present, all P0 sections have content
+- G22 gates ACTIVE via apps-owned receipts: Metrics preserved from source, early career copied verbatim (hash match)
+- **NO canonical G21/G22 changes**: All evidence is app-specific, consumed by generic Exit eval
+- Exit gate emits enriched payload with per-section gate results
+- Tests: `test_apps_rg_section_validation_receipt.py`, `test_apps_rg_metric_preservation.py`, `test_apps_rg_verbatim_integrity.py`
+- Checkpoint: `post-wave W6` proves no modifications to `agentic_core/**/g21_*.py` or `**/g22_*.py`
 
 ---
 
-## Wave 8 — Identity, Budget, and L6 Firewall (G02/G17/G20/G29)
+## Wave 7 — C0 Evidence Trust & Retrieval Safety
 
-WAVE_ID: W8
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: H
+**Critical Gap Closure**: G08 (Evidence Trust) and G13 (Retrieval Safety) currently UNFUNDED. **C0 remains evidence-only** — NO answer generation, NO prompt assembly, NO direct L4 writes.
+
+**Core Principle**: C0 supplies evidence to PA/L2. C0 does not generate answers, compile prompts, or write to L4. Apps-specific evidence tracing captures provenance.
 
 **Phases**:
-- **W8.1** — Identity & Isolation (G02/G17): Caller/session/workspace binding | ~200 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
-- **W8.2** — Budget & L6 Firewall (G20/G29): Token/cost/latency caps | ~200 tokens | PHASE_STATUS: Not Started | PHASE_COMPLETE: NO
+- **W7.1** — AppsRgEvidenceTraceMap: Per-section evidence provenance with full traceability
+- **W7.2** — Retrieved Content Trust: Injection risk detection, source span verification, blocked claims tracking
+
+**New Evidence Type** (app-owned trace map):
+
+```python
+AppsRgEvidenceTraceMap:
+  map_id: str
+  run_id: str
+  request_id: str
+  section_id: str                    # Section this evidence supports
+  
+  # Provenance hashes
+  source_resume_hash: str           # Hash of full source resume
+  jd_hash: str                      # Hash of job description
+  briefing_hash: str                # Hash of research briefing
+  
+  # Retrieval trace
+  retrieval_query_hash: str         # Hash of query sent to retriever
+  retrieved_chunk_refs: List[str]   # References to retrieved chunks
+  retrieved_chunk_hashes: List[str] # Verification hashes
+  
+  # Source-to-claim mapping
+  source_span_refs: List[SourceSpan] # Exact source spans available
+  claim_refs: List[ClaimRef]        # Claims that will be made
+  blocked_claims: List[BlockedClaim] # Claims blocked due to insufficient evidence
+  
+  # Status
+  support_status: "SUFFICIENT" | "PARTIAL" | "INSUFFICIENT"
+  injection_risk_score: float       # 0.0-1.0, threshold at 0.15
+  content_safety_verdict: "PASS" | "REVIEW" | "BLOCK"
+  
+  # Contract reference
+  final_evidence_contract_ref: str   # Reference to C0 FinalEvidenceContract
+
+SourceSpan:
+  span_id: str
+  source_location: str               # JSON path in source resume
+  verbatim_text: str                # Exact text
+  hash: str                         # Verification hash
+
+ClaimRef:
+  claim_id: str
+  claim_text: str                   # The claim to be made
+  supporting_span_ids: List[str]     # SourceSpan IDs that support this
+  support_status: "VERIFIED" | "UNVERIFIED" | "BLOCKED"
+
+BlockedClaim:
+  claim_text: str                   # Claim that was blocked
+  reason: "NO_SOURCE_SUPPORT" | "CONTRADICTS_SOURCE" | "INJECTION_RISK" | "SAFETY"
+  required_source_type: str          # What evidence would be needed
+```
 
 **Acceptance**:
-- `AppsRgIdentityBinding` in `packet.state_diff["apps_rg_identity"]` with verified caller/tenant/session
-- `AppsRgIsolationEnvelope` proves JD/resume/session isolation with fingerprint hashes
-- `AppsRgBudgetReceipt` in `packet.exec_trace["apps_rg_budget"]` with per-stage cost tracking
-- Token/cost/latency caps enforced at L0 (routing) and L2 (generation)
-- `AppsRgLearningFirewallReceipt` in L6 shadow output confirming `learning_only_mode_verified`
-- G02, G17, G20, G29 gaps upgraded from GAP/PARTIAL → ACTIVE status
+- C0 retrieves only evidence relevant to section being generated (per-section scoping)
+- **NO C0 answer generation**: C0 supplies evidence, PA/L2 generate answers
+- **NO C0 prompt assembly**: PA composes prompts
+- **NO C0 direct L4 writes**: All writes via Exit/X3 or inert until UWG
+- Retrieved content hash-verified against source (retrieved_chunk_hashes)
+- No evidence cross-contamination between sections (per-section trace maps)
+- Injection risk score computed per evidence item (threshold 0.15)
+- Blocked claims tracked with reasons (NO_SOURCE_SUPPORT, CONTRADICTS_SOURCE, etc.)
+- Tests: `test_apps_rg_evidence_trace_map.py`, `test_c0_no_answer_generation.py`, `test_c0_no_direct_l4_write.py`
+- Checkpoint: `post-wave W7` proves no C0 code changes that add answer generation or L4 write paths
+
+---
+
+## Wave 8 — Identity, Budget, L6 Firewall + Inert Writeback
+
+**Phases**:
+- **W8.1** — Identity & Isolation: U0 caller binding, session isolation
+- **W8.2** — Budget & L6 Firewall: Token/cost caps, L6 learning-only mode enforcement
+- **W8.3** — Inert Writeback Candidate Envelope: Distinguish candidates from committed writes
+
+**New Evidence Type** (W8.3 — inert writeback envelope):
+
+```python
+AppsRgInertWritebackCandidate:
+  candidate_id: str
+  run_id: str
+  section_id: str
+  
+  # Content
+  proposed_content: str             # Content that could be written back
+  content_hash: str                 # Verification hash
+  
+  # Admission requirements
+  requires_x3c: bool = True         # Requires X3C exit certification
+  requires_uwg_admission: bool = True  # Requires UWG approval
+  
+  # Status (initially inert)
+  durable_commit_occurred: bool = False  # FALSE until UWG admits
+  inert_until_uwg: bool = True      # TRUE until admitted
+  
+  # Timeline
+  created_at: datetime
+  x3c_certification_ref: Optional[str]  # Populated after X3C
+  uwg_admission_ref: Optional[str]    # Populated after UWG approval
+  committed_at: Optional[datetime]    # Populated after durable commit
+
+RuntimeExhaustBundle (extended):
+  # ... existing fields ...
+  inert_writeback_candidates: List[AppsRgInertWritebackCandidate]
+  uwg_committed_writes: List[AppsRgInertWritebackCandidate]  # Subset with durable_commit_occurred=True
+```
+
+**Runtime Summary Display** (must distinguish):
+
+```
+POST-RUNTIME STATUS:
+  X3C Certification: PASS/WARN/FAIL
+  
+WRITE-BACK STATUS:
+  inert_writeback_candidates: <count> (requires X3C + UWG)
+  uwg_committed_writes: <count> (durable commits with receipts)
+  
+L6 SHADOW (FUTURE-RUN ONLY):
+  L6 Shadow Handoff: YES/NO
+  G29 Learning Firewall: PASS/WARN/FAIL
+  inert_proposals: <count> (gauntlet→UWG→L4 path only)
+```
+
+**Acceptance**:
+- U0 validates caller identity, binds to session
+- Budget caps enforced (token limit, cost limit)
+- L6 operates in learning-only mode (no production impact)
+- G29 firewall receipt required for any L6 output activation
+- **W8.3**: Runtime summary distinguishes `inert_writeback_candidates` from `uwg_committed_writes`
+- **W8.3**: `durable_commit_occurred=False` for all candidates until UWG receipt present
+- Tests: `test_apps_rg_inert_writeback_candidate.py`, `test_runtime_summary_inert_vs_committed.py`
+
+---
+
+## Wave 9 — Judge Surface Consolidation (Inventory First)
+
+**Critical Reframe**: Do NOT create new judge framework until existing surface is inventoried.
+
+**Existing Files to Inventory**:
+
+| File | Status | Content | Decision |
+|------|--------|---------|----------|
+| `engines/judges/executive_positioning_judge.py` | QUARANTINED | RuntimeError on import | Keep quarantined; reference for prompts only |
+| `engines/judges/__init__.py` | QUARANTINED | Empty | Keep quarantined |
+| `config/domain_contract/judge_profile.resume_generation.v1.json` | ACTIVE | Dimension definitions, thresholds | **WRAP** — Use as config source for X1D |
+| `config/domain_contract/judge_prompts.yaml` | ACTIVE | LLM-as-judge prompts | **WRAP** — Use as prompt templates for X1D |
+| `config/domain_contract/grader_roster.yaml` | ACTIVE | Grader references | **WRAP** — Use as roster spec for X1D |
+| `integrations/gates/online_judges.py` | QUARANTINED | RuntimeError on import | Keep quarantined; do not use |
+| `integrations/hops/*` | QUARANTINED | Runtime authority | Keep quarantined; no judge calls from here |
+
+**Judge Role Boundary** (strict enforcement):
+
+```
+JUDGE PRODUCES X1D EVIDENCE ONLY
+
+Judges MAY:
+  ✓ Produce X1D evidence packets (JudgeResult, scores, rationale)
+  ✓ Emit quality assessments with confidence scores
+  ✓ Flag insufficient evidence or blocked claims
+  ✓ Recommend retry or HITL (advisory only)
+
+Judges MAY NOT:
+  ✗ Emit GateVerdict (PASS/FAIL/BLOCK) — X3 owns this
+  ✗ Emit X3 disposition — Exit/X3 owns final say
+  ✗ Trigger retry or regeneration — L3/L4 orchestration owns this
+  ✗ Mutate current-run state — shadow-only
+  ✗ Write directly to L4 — must route through gauntlet/UWG
+  ✗ Autonomously PASS P0 sections when uncalibrated — advisory only
+
+Copy-verbatim sections (education, certifications, early career):
+  → Use deterministic checks only (hash compare, schema validation)
+  → NO subjective LLM judges
+  → Judges produce no evidence for these sections
+
+Calibration requirements:
+  UNCALIBRATED judges → advisory_only=True, no autonomous PASS
+  CALIBRATED judges (Spearman ≥ 0.80) → may contribute to PASS with deterministic checks
+```
+
+**Inventory Decision Matrix**:
+
+| Option | Action | When |
+|--------|--------|------|
+| **Migrate** | Move working code to new location | If existing code is sound but misplaced |
+| **Wrap** | Adapter layer around existing config | If existing config is valid but needs runtime |
+| **Replace** | New implementation | If existing code is fundamentally broken |
+
+**Phases**:
+- **W9.1** — Complete inventory of all judge-related files with classification + Judge Role Boundary documentation
+- **W9.2** — Decision: Migrate/Wrap/Replace per file; do not create parallel framework
+
+**Acceptance**:
+- Inventory table complete with all 7+ files classified
+- **Judge Role Boundary** documented and enforced: Judges produce X1D evidence only, no GateVerdict, no X3, no retry, no L4 write, no autonomous PASS when uncalibrated
+- Decision recorded for each: Migrate/Wrap/Replace
+- No new `apps_rg/runtime/judges/` created until inventory complete
+- If "Wrap" chosen: Adapter uses existing config files as SSOT
+- If "Replace" chosen: Explicit rationale why existing config cannot be used
+- Tests: `test_judge_produces_x1d_only.py`, `test_judge_no_gate_verdict.py`, `test_uncalibrated_advisory_only.py`, `test_copy_verbatim_no_judges.py`
+
+---
+
+## Wave 10 — L6 Shadow Learning Repair (Future-Run Only)
+
+**Critical Reframe**: L6 is strictly shadow/future-run. Never part of live generation.
+
+**Repair `l6_shadow_learning.py`**:
+
+Extend existing classes to satisfy all reference requirements:
+
+| Class | Extensions Required |
+|-------|-------------------|
+| `RuntimeExhaustBundle` | Add ExitDispositionReceipt ref, X1/X2 refs, GateMeshResult ref, OTEL refs |
+| `SectionCompletedEvalRecord` | Add judge result refs, calibration status refs, evidence trace refs |
+| `AggregateCompletedEvalRecord` | Add budget refs, G29 firewall receipt, inert proposal fields |
+| `ProposalPacket` | Add gauntlet→FutureRunPromotionRequest→UWG→L4 promotion path fields |
+
+**Hard Constraints**:
+- L6 produces **inert** ProposalPackets only (`inert_until_promotion=True`)
+- L6 NEVER mutates current-run output
+- L6 NEVER triggers retry/regeneration
+- L6 proposals route through: gauntlet → UWG → L4 (only path to activation)
+- G29 learning firewall receipt required for any future-run promotion
+
+**Acceptance**:
+- `l6_shadow_learning.py` produces complete RuntimeExhaustBundle
+- All required refs present (Exit, X1/X2, GateMesh, OTEL, judge, calibration, budget, G29)
+- ProposalPackets have `inert_until_promotion=True` by default
+- Tests verify: L6 output does NOT affect current-run Exit disposition
+- Tests verify: Proposals require gauntlet→UWG→L4 path for activation
+
+---
+
+## Core Boundary Contract
+
+```
+APPS_RG BOUNDARY — NON-NEGOTIABLE
+
+apps_rg MAY:
+  ✓ Import and use agentic_core contracts (ValidatedRequest, L1PlanContract, etc.)
+  ✓ Implement app-specific logic in apps_rg/** only
+  ✓ Consume canonical G01-G29 gates via Exit binding
+  ✓ Produce X1D evidence for X2 aggregation → X3 disposition
+  ✓ Shadow learning in L6 (strictly future-run)
+
+apps_rg MAY NOT:
+  ✗ Modify any file in agentic_core/**
+  ✗ Rename or redefine G01-G29
+  ✗ Modify canonical X1/X2/X3 schemas
+  ✗ Import from quarantined paths (integrations/hops, engines/judges)
+  ✗ Emit autonomous PASS from uncalibrated judges
+  ✗ Run subjective judges for copy-verbatim sections
+  ✗ Claim L6 in live pipeline
+  ✗ Claim durable writes without UWG receipts
+
+VIOLATION = CI FAIL (run_contract_gates.py)
+```
 
 ---
 
@@ -339,214 +806,189 @@ CHECKPOINT: H
 
 | DoD | Criterion | Verification | Priority |
 |-----|-----------|--------------|----------|
-| DoD-1 | `source_resume_v2_structured.json` schema defined and validated | Schema file exists, tests pass | P0 |
-| DoD-2 | Exit binding produces structured JSON from DOCX | Run `--ingest-master-resume`, output matches schema | P0 |
-| DoD-3 | PA binding implements tiered customization (heavy/medium/light/verbatim) | Unit tests for each tier, prompts verified | P0 |
-| DoD-3a | **Provider-neutral prompt compliance** | Tests verify: no Claude/Anthropic wording, no retrieval language, XML structure, anti-invention rules | P0 |
-| DoD-4 | U0 payload synthesizer supports structured + flat fallback | Test both paths, verify `resume_payload` | P0 |
-| DoD-5 | Inline ASCII runtime summary at pipeline end | Run `apps_rg`, verify stdout output + file | P0 |
-| DoD-6 | CI gate passes for structured resume | `check_apps_rg_structured_resume.py` green | P1 |
-| DoD-7 | Documentation updated (RUNBOOK.md, AGENTS.md) | Read docs, verify schema + tiers documented | P1 |
-| DoD-8 | **W6: All G21/G22 Exit gaps ACTIVE** | `headline_xyz_format`, `competency_bullet_count`, `numeric_claim_tracking` enforced | P0 |
-| DoD-9 | **W7: G08/G13 evidence trust ACTIVE** | `section_evidence_scope_profile`, `retrieved_content_data_only` enforced | P1 |
-| DoD-10 | **W8: Identity/budget/L6 firewall ACTIVE** | `caller_session_workspace_binding`, `resume_generation_budget`, `future_run_learning_only` enforced | P2 |
+| DoD-1 | W0A: Runtime paths classified | Inventory table committed, CI gate passes | P0 |
+| DoD-2 | W1: Structured JSON schema | `source_resume_v2_structured.json` validates | P0 |
+| DoD-3 | W2: PA role-aware tiering | Tests verify Unify→heavy/moderate/light, IBM→moderate/light | P0 |
+| DoD-4 | W3: U0 structured support | `payload_synthesizer.py` detects structured vs flat | P0 |
+| DoD-5 | W4: Runtime summary bug patch | Display shows U0→L2 only, L6 shadow separate, no cache claims | P0 |
+| DoD-6 | W5: Core boundary enforced | CI gate blocks core diffs, G01-G29 changes, X1/X2/X3 schema changes; checkpoint CI passes | P0 |
+| DoD-7 | W6.0: Canonical Exit harness wired | ExitReviewPacket → X1 → X2 → GateMesh → ExitDisposition → ExhaustBundle proven | P0 |
+| DoD-8 | W6: Exit G21/G22 active | Headline XYZ format, bullet count, metric preservation enforced | P0 |
+| DoD-9 | W7: C0 evidence trace map | Per-section evidence provenance with injection risk scoring | P0 |
+| DoD-10 | W8: Identity/budget/L6 + inert writeback | UWG receipts required for durable commits; L6 shadow-only | P0 |
+| DoD-11 | W9: Judge inventory complete | All 7+ files classified; Migrate/Wrap/Replace decision recorded | P0 |
+| DoD-12 | W9: No parallel framework | No new `apps_rg/runtime/judges/` until inventory complete | P0 |
+| DoD-13 | W10: L6 future-run only | Tests prove L6 doesn't affect current-run; proposals inert | P0 |
 
-**Smoke-Run Verification**:
+---
+
+## CI Checkpoint Commands (Run at Every Major Boundary)
+
 ```bash
-# DoD-1: Schema validation
-python -c "import json; json.load(open('ops_scripts/apps_rg/source_resume_structured.json')); print('Schema OK')"
+# Pre-wave checkpoint (run before starting any wave)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint pre-wave --wave W1
 
-# DoD-2: Ingestion
-python -m apps_rg --ingest-master-resume
+# Post-wave checkpoint (run after completing any wave)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint post-wave --wave W1
 
-# DoD-5: Full pipeline with inline summary
-python -m apps_rg \
-  --target-company "Brown & Brown" \
-  --target-role "SVP IT Strategy" \
-  --target-level "EXECUTIVE" \
-  --jd-text "..." \
-  --source-resume "ops_scripts/apps_rg/source_resume_structured.json"
-# Verify ASCII summary prints at end
+# Pre-commit checkpoint (run before git commit)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint pre-commit
+
+# Pre-merge checkpoint (run before merging to main)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint pre-merge
+
+# Post-core-edit checkpoint (run after any agentic_core modification)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint post-core-edit
+
+# Full suite (comprehensive check)
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint full-suite
 ```
 
----
+## Verification Command Checklist
 
-## Gap Register
+```bash
+# W0A: Runtime path classification
+python -m pytest tests/_apps_contract/test_runtime_path_inventory.py -v
+python -m pytest tests/_apps_contract/test_import_graph_no_quarantine.py -v
+python ops_scripts/ci/check_apps_rg_runtime_path_inventory.py
 
-### Canonical Gate Gaps (from Runtime Gate Analysis)
+# W1: Structured JSON schema + normalized IDs
+python -m pytest tests/_apps_contract/test_source_resume_schema_v2.py -v
+python -m pytest tests/_apps_contract/test_exit_binding_structured_output.py -v
+python -m pytest tests/_apps_contract/test_normalized_ids_present.py -v
 
-**GAP-G21-1: Headline X|Y|Z Format Validation** (W6)
-- Current: Only extracted at ingest, NOT validated at generation time
-- Fix: Add `AppsRgHeadlineValidationReceipt` to ExitReviewPacket.output
-- Owner: W6.1
+# W2: PA role-aware tiering
+python -m pytest tests/_apps_contract/test_pa_binding_role_tiering.py -v
 
-**GAP-G21-2: Competency Bullet Count Cardinality** (W6)
-- Current: No validation of competency section bullet counts (3-5 required)
-- Fix: Add `narrative_bullets_count` to `AppsRgSectionValidationReceipt`
-- Owner: W6.1
+# W3: U0 structured support
+python -m pytest tests/_apps_contract/test_u0_structured_resume_detection.py -v
 
-**GAP-G21-3: P0 Narrative Bullets Structure** (W6)
-- Current: No pre-L2 validation that P0 sections have required structure
-- Fix: Pre-L2 structure check in PA binding with `structure_check_passed` field
-- Owner: W6.1
+# W4: Runtime summary display
+python -m pytest tests/_apps_contract/test_runtime_summary_display.py -v
+python -m pytest tests/_apps_contract/test_no_l6_in_live_path.py -v
+python -m pytest tests/_apps_contract/test_inert_prefix_on_candidates.py -v
 
-**GAP-G22-1: Numeric Claim Tracking** (W6)
-- Current: No metric-to-source binding validation
-- Fix: `AppsRgMetricPreservationEnvelope` in `evidence_bundle["apps_rg_metrics"]`
-- Owner: W6.2
+# W5: Core boundary + checkpoint CI
+python ops_scripts/ci/check_agentic_core_leakage.py
+python ops_scripts/ci/check_major_checkpoint_core_boundary.py --checkpoint full-suite
+python -m pytest tests/_apps_contract/test_core_boundary.py -v
+python -m pytest tests/_apps_contract/test_no_core_modifications.py -v
 
-**GAP-G22-2: Early Career Hash Compare** (W6)
-- Current: No verbatim integrity hash validation for P2 sections
-- Fix: SHA256 hash compare in Exit gate with `early_career_hash_compare` field
-- Owner: W6.2
+# W6.0: Canonical Exit harness wiring
+python -m pytest tests/_apps_contract/test_apps_rg_exit_integration.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_exit_review_packet_created.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_x1_checkout_result_produced.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_x2_aggregation_consumes_x1.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_gate_mesh_result_includes_g21_g28.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_exit_disposition_receipt_emits_x3.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_runtime_exhaust_bundle_produced.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_no_local_stub_gates.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_unknown_never_pass.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_x3d_no_allow_on_unknown_material.py -v
 
-**GAP-G08: Section Evidence Scope Profile** (W7)
-- Current: No per-section C0 evidence scoping
-- Fix: `AppsRgSectionEvidenceScope` in `final_evidence_contract["apps_rg_evidence_trust"]`
-- Owner: W7.1
+# W6: Exit G21/G22 + apps-owned evidence receipts
+python -m pytest tests/_apps_contract/test_apps_rg_section_validation_receipt.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_headline_validation_receipt.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_metric_preservation.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_verbatim_integrity.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_claim_support_map.py -v
+python -m pytest tests/_apps_contract/test_no_canonical_g21_g22_changes.py -v
 
-**GAP-G13: Retrieved Content Data Only** (W7)
-- Current: No instruction-injection check on retrieved resume content
-- Fix: Add `injection_risk_score` and `content_safety_verdict` to C0 retrieval
-- Owner: W7.2
+# W7: C0 evidence trust + AppsRgEvidenceTraceMap
+python -m pytest tests/_apps_contract/test_apps_rg_evidence_trace_map.py -v
+python -m pytest tests/_apps_contract/test_c0_no_answer_generation.py -v
+python -m pytest tests/_apps_contract/test_c0_no_prompt_assembly.py -v
+python -m pytest tests/_apps_contract/test_c0_no_direct_l4_write.py -v
+python -m pytest tests/_apps_contract/test_injection_risk_score.py -v
+python -m pytest tests/_apps_contract/test_blocked_claims_tracking.py -v
 
-**GAP-G02: Caller/Session/Workspace Binding** (W8)
-- Current: Basic request_id only, no full identity/tenant/session binding
-- Fix: `AppsRgIdentityBinding` in `state_diff["apps_rg_identity"]`
-- Owner: W8.1
+# W8: Identity, budget, L6 firewall + inert writeback
+python -m pytest tests/_apps_contract/test_u0_identity_binding.py -v
+python -m pytest tests/_apps_contract/test_budget_caps.py -v
+python -m pytest tests/_apps_contract/test_l6_learning_only_mode.py -v
+python -m pytest tests/_apps_contract/test_apps_rg_inert_writeback_candidate.py -v
+python -m pytest tests/_apps_contract/test_runtime_summary_inert_vs_committed.py -v
+python -m pytest tests/_apps_contract/test_durable_commit_requires_uwg.py -v
 
-**GAP-G17: Candidate/JD/Session Isolation** (W8)
-- Current: No explicit cross-context contamination check
-- Fix: `AppsRgIsolationEnvelope` with JD/resume fingerprint hashes
-- Owner: W8.1
+# W9: Judge inventory + role boundary
+python -m pytest tests/_apps_contract/test_judge_surface_inventory.py -v
+python -m pytest tests/_apps_contract/test_judge_produces_x1d_only.py -v
+python -m pytest tests/_apps_contract/test_judge_no_gate_verdict.py -v
+python -m pytest tests/_apps_contract/test_uncalibrated_advisory_only.py -v
+python -m pytest tests/_apps_contract/test_copy_verbatim_no_judges.py -v
 
-**GAP-G20: Resume Generation Budget** (W8)
-- Current: No token/cost/latency caps enforced
-- Fix: `AppsRgBudgetReceipt` in `exec_trace["apps_rg_budget"]` with per-stage tracking
-- Owner: W8.2
+# W10: L6 future-run only
+python -m pytest tests/_apps_contract/test_l6_shadow_inert.py -v
+python -m pytest tests/_apps_contract/test_l6_no_current_run_mutation.py -v
+python -m pytest tests/_apps_contract/test_proposal_gauntlet_uwg_l4_path.py -v
 
-**GAP-G29: Future Run Learning Only** (W8)
-- Current: L6 learning firewall not explicitly wired for apps_rg
-- Fix: `AppsRgLearningFirewallReceipt` in L6 shadow output
-- Owner: W8.2
-
----
-
-### Implementation Waves for Canonical Gate Gaps
-
-| Gap ID | Canonical Gate | Subcheck Name | Wave | Priority |
-|--------|---------------|---------------|------|----------|
-| GAP-G21-1 | G21 | `headline_xyz_format` | W6 | P0 (Exit Critical) |
-| GAP-G21-2 | G21 | `competency_bullet_count` | W6 | P0 (Exit Critical) |
-| GAP-G21-3 | G21 | `p0_narrative_bullets_required` | W6 | P0 (Exit Critical) |
-| GAP-G22-1 | G22 | `numeric_claim_tracking` | W6 | P0 (Exit Critical) |
-| GAP-G22-2 | G22 | `early_career_hash_compare` | W6 | P1 |
-| GAP-G08 | G08 | `section_evidence_scope_profile` | W7 | P1 |
-| GAP-G13 | G13 | `retrieved_content_data_only` | W7 | P1 |
-| GAP-G02 | G02 | `caller_session_workspace_binding` | W8 | P2 |
-| GAP-G17 | G17 | `candidate_jd_session_isolation` | W8 | P2 |
-| GAP-G20 | G20 | `resume_generation_budget` | W8 | P2 |
-| GAP-G29 | G29 | `future_run_learning_only` | W8 | P2 |
-
----
-
-### Legacy Gaps (Pre-existing)
-
-**GAP-1: Structured vs Flat Migration Path**
-- Need backward compatibility during transition period
-- Mitigation: U0 detects schema version, falls back gracefully
-- Owner: W3
-
-**GAP-2: DOCX Parsing Edge Cases**
-- Early career formatting may not parse cleanly into narrative/bullets
-- Mitigation: Manual review after ingestion, fallback to flat text if parsing fails
-- Owner: W1
-
-**GAP-3: PA Prompt Token Budget**
-- Structured resume adds more content to prompts (separate narrative + bullets)
-- Mitigation: Monitor token usage, truncate narrative if needed, prioritize bullets
-- Owner: W2
-
-**GAP-4: Human-Scored Benchmarks for Resume Sections**
-- **Sections Requiring Benchmarks** (Generated content with JD variance):
-  - `executive_summary` — Heavy customization, needs quality scoring
-  - `experience[].bullets` (Unify, IBM) — Heavy rewrite, needs relevance + quality scoring
-  - `competencies` bullets — Generated from 8 categories, needs skill mapping accuracy
-  - `headline` — X|Y|Z format compliance, needs JD alignment scoring
-
-- **Sections NOT Requiring Benchmarks** (Verbatim or light reframe):
-  - `header.*` — Copy exact from source (name, phone, email, linkedin, github)
-  - `experience[].company`, `location`, `title`, `date_range` — Copy exact
-  - `experience[].narrative` (InsurTech, EY) — Light reframe, no benchmark
-  - `experience[].bullets` (InsurTech, EY) — Mostly preserved
-  - `experience[].bullets` (Early Career) — Copy verbatim
-  - `education[]`, `certifications[]` — Copy exact
-
-- **Benchmark Acquisition Strategy**:
-  | Section | Method | Sample Size | Frequency |
-  |---------|--------|-------------|-----------|
-  | Executive Summary | Expert review (SVP Engineering peers) | n=20 resumes | Per plan release |
-  | Experience Bullets (Unify/IBM) | Hiring manager blind rating (1-5 scale) | n=15 per role | Quarterly |
-  | Competencies | Keyword coverage vs JD analysis | Automated | Every run |
-  | Headline | X\|Y\|Z format compliance check | Automated | Every run |
-  | End-to-end resume | Recruiter "would interview" rate | n=10 recruiters | Per major schema change |
-
-- **Benchmark Storage**: `artifacts/apps_rg/benchmarks/` — JSON files with `{section, sample_id, human_score, judge_score, jd_hash, timestamp}`
-
-- **Calibration Target**: Spearman ρ ≥ 0.80 between human scores and LLM-as-judge scores before judge can substitute for human review
-
-- **Mitigation**: Defer full benchmark corpus to post-W5; W2-W4 use synthetic JD-aligned test cases for validation
+# Full suite
+python -m pytest tests/_apps_contract/ -v --tb=short
 
 ---
 
-## Out Of Scope
+## Closeout Receipt (To Be Filled on Completion)
 
-- ~~Chroma embedding integration (C0)~~ — NOW IN SCOPE (W7: C0 Evidence Trust)
-- Semantic cache R1B writeback — separate plan
-- LLM judge implementations — separate plan (stubs in place from apps-eval-harness-deferred-e4a1b7)
-- Multi-provider ensemble (beyond Qwen) — separate plan
-- Real LLM-judge calibration (Spearman ≥ 0.80) — requires human-labeled holdout corpus
-- Holdout vs dev eval-set separation — deferred to eval harness plan
-- Production-log mining with PII redaction — deferred to eval harness plan
+| Section | Changed | Lines Added | Lines Removed |
+|---------|---------|-------------|---------------|
+| W0A Active Runtime Path Inventory | ☐ | | |
+| W1 Structured JSON Schema | ☐ | | |
+| W2 PA Tiered Patching | ☐ | | |
+| W3 U0 Structured Support | ☐ | | |
+| W4 Runtime Summary Bug Patch | ☐ | | |
+| W5 Core Boundary Enforcement + Checkpoint CI | ☐ | ~500 | ~0 |
+| W6.0 Canonical Exit Harness Wiring | ☐ | ~600 | ~0 |
+| W6 Apps-Owned G21/G22 Receipts | ☐ | ~800 | ~0 |
+| W7 C0 Evidence Trace Map | ☐ | ~600 | ~0 |
+| W8 Identity/Budget/L6 + Inert Writeback | ☐ | ~600 | ~0 |
+| W9 Judge Surface Consolidation | ☐ | | |
+| W10 L6 Shadow Repair | ☐ | | |
+| **New CI Scripts** | | | |
+| `check_agentic_core_leakage.py` | ☐ | ~280 | ~0 |
+| `check_major_checkpoint_core_boundary.py` | ☐ | ~350 | ~0 |
 
----
+**Files Changed List**:
+- (To be filled on completion)
 
-## Requirements Summary (from User Feedback)
+**Tests Added**: 
+- (To be filled on completion)
 
-1. **PDF/DOCX Auto-Resolution**: `--source-resume` with PDF/DOCX path auto-resolves to canonical JSON (W3.P1, already implemented)
-2. **Structured Resume Schema**: Separate `narrative` vs `bullets[]`, immutable fields (company, location, title, date, education, certifications)
-3. **Tiered Customization**:
-   - **Heavy**: Unify + IBM (narrative + bullets, full rewrite with JD alignment)
-   - **Heavy**: Competencies (8 categories → bullets matching base resume style)
-   - **Medium**: InsurTech + EY (narrative + bullets, light reframing)
-   - **None**: Early career (copy verbatim, `narrative: null`)
-4. **Inline Runtime Summary**: ASCII table at end of run showing per-section status, P-level, tier, word count, score
-5. **Verbatim Fields**: Header (name, phone, email, linkedin, github), company/location/title/date, education, certifications — never modified
-6. **Generated Fields**: Headline (X|Y|Z), executive_summary, narrative (if present), bullets (selected/framed)
-
----
-
-## Verification vs Deferral
-
-| Item | Verified | Deferred |
-|------|----------|----------|
-| Structured JSON schema | W1.1 | — |
-| Exit binding ingestion | W1.2 | — |
-| PA tiered prompts | W2 | — |
-| U0 structured support | W3 | — |
-| Inline summary | W4 | — |
-| CI gates + docs | W5 | — |
-| **Exit gate payload extensions (G21/G22)** | **W6** | — |
-| **C0 evidence trust (G08/G13)** | **W7** | — |
-| **Identity/budget/L6 firewall (G02/G17/G20/G29)** | **W8** | — |
-| Full bypass test audit | — | W9 (future) |
+**Verification Results**:
+- (To be filled on completion)
 
 ---
 
 ## References
 
-- Source resume structured JSON: `c:/Git/Agentic-Workflow-FRESH/source_resume_structured.json`
-- Exit binding: `apps_rg/runtime/bindings/exit_binding.py:_ingest_docx_to_master_resume`
-- PA binding: `apps_rg/runtime/bindings/pa_binding.py`
-- U0 payload synthesizer: `apps_rg/runtime/u0/payload_synthesizer.py`
-- Runtime summary: `apps_rg/runtime/runtime_executive_summary.py`
+### Active Runtime Files
+- Active runtime bindings: `apps_rg/runtime/bindings/*.py`
+- Active dispatch: `apps_rg/runtime/dispatch/apps_rg_dispatch.py`
+- PA binding (to patch): `apps_rg/runtime/bindings/pa_binding.py`
+- Runtime summary (to patch): `apps_rg/runtime/runtime_executive_summary.py`
+- L6 shadow (to repair): `apps_rg/runtime/l6_shadow_learning.py`
+
+### CI Checkpoint Scripts (New)
+- Core leakage detection: `ops_scripts/ci/check_agentic_core_leakage.py`
+- Major checkpoint validator: `ops_scripts/ci/check_major_checkpoint_core_boundary.py`
+- Checkpoint audit log: `artifacts/ci/checkpoint_core_boundary_log.jsonl`
+
+### Judge Inventory Files
+- Existing judge config: `apps_rg/config/domain_contract/judge_profile.resume_generation.v1.json`
+- Existing judge prompts: `apps_rg/config/domain_contract/judge_prompts.yaml`
+- Existing grader roster: `apps_rg/config/domain_contract/grader_roster.yaml`
+- Quarantined engines: `apps_rg/engines/judges/*.py`
+- Quarantined gates: `apps_rg/integrations/gates/online_judges.py`
+
+### Related Plans
+- Plan d4e8a1 (runtime wiring): `.windsurf/plans/apps-rg-runtime-wiring-completion-d4e8a1.md`
+- Plan c8b3e1 (governance): `.windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md`
+
+---
+
+## Out Of Scope
+
+- Creating new `apps_rg/runtime/judges/` framework (W9 decides Migrate/Wrap/Replace first)
+- L4 writeback execution (future plan)
+- UWG promotion decisions (Exit/UWG scope)
+- Real LLM-judge calibration with Spearman ≥ 0.80 (requires human-labeled corpus)
+- Production-log mining with PII redaction (future plan)
