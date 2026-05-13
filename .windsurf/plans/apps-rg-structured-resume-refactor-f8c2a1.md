@@ -166,7 +166,7 @@ CHECKPOINT: A0
 |------|-----------|
 | `apps_rg/runtime/bindings/*` | U0→L1→L0→C0→PA→L2→Exit spine bindings |
 | `apps_rg/runtime/runtime_executive_summary.py` | W4 bug patch for correct display |
-| `apps_rg/runtime/l6_shadow_learning.py` | W10 repair for future-run learning |
+| `apps_rg/runtime/l6_shadow_learning.py` | SUPERSEDED / REFERENCE ONLY — do not repair. Duplicate app-local L6 runtime must be deleted or quarantined unless live caller proof exists. Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff through Master Phase 12. |
 | `apps_rg/runtime/schemas/*` | App-specific schemas (SectionArtifact, etc.) |
 | `apps_rg/config/domain_contract/*` | App profiles, rubrics, thresholds |
 | `tests/_apps_contract/test_apps_rg_*.py` | App-specific test coverage |
@@ -943,7 +943,7 @@ python -m pytest tests/_apps_contract/ -v --tb=short
 | W7 C0 Evidence Trace Map | ☐ | ~600 | ~0 |
 | W8 Identity/Budget/L6 + Inert Writeback | ☐ | ~600 | ~0 |
 | W9 Judge Surface Consolidation | ☐ | | |
-| W10 L6 Shadow (SUPERSEDED) | N/A | — | — |
+| W10 SUPERSEDED / REFERENCE ONLY — Canonical L6 handoff verification only | N/A | — | — |
 | **New CI Scripts** | | | |
 | `check_agentic_core_leakage.py` | ☐ | ~280 | ~0 |
 | `check_major_checkpoint_core_boundary.py` | ☐ | ~350 | ~0 |
