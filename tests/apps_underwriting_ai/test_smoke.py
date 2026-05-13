@@ -1,98 +1,113 @@
-"""Smoke tests for apps_underwriting_ai skeleton.
+"""Smoke tests for apps_underwriting_ai U0 binding + sub-engines.
 
-Verifies the 5-stage pipeline runs end-to-end via both drivers and emits a
-well-formed DecisionPacket.
+Verifies the U0 ingress validation path works end-to-end and that the
+active backing engines (DecisionPacketAssembler, EvidenceRegisterEngine)
+are importable.
+
+Parallel-path tests (UnderwritingEngine / ExecutionAdapter /
+governed_underwriting_run / SpineHandoff) were removed when those
+files were deleted in plan apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W1.
 """
 
 from __future__ import annotations
 
-from apps_underwriting_ai.engines.underwriting_engine import UnderwritingEngine
-from apps_underwriting_ai.integrations.execution_adapter import (
-    ExecutionAdapter,
-    ExecutionRequest,
+from apps_underwriting_ai.runtime.bindings.u0_binding import (
+    U0ValidationError,
+    u0_validate_underwriting,
 )
-from apps_underwriting_ai.integrations.governed_underwriting_run import (
-    governed_underwriting_run,
-)
-from apps_underwriting_ai.integrations.spine_handoff import SpineHandoff
-from apps_underwriting_ai.outputs.decision_renderer import DecisionRenderer
-from apps_underwriting_ai.types.underwriting_types import (
-    DecisionVerdict,
-    UnderwritingRequest,
+from apps_underwriting_ai.runtime.contracts.underwriting_ingress_payload import (
+    UnderwritingIngressEnvelope,
 )
 
 
-def _make_request() -> UnderwritingRequest:
-    return UnderwritingRequest(
+def _make_envelope(**kwargs) -> UnderwritingIngressEnvelope:
+    defaults = dict(
         request_id="smoke-0001",
         applicant_id="applicant-smoke",
         product_class="auto",
         documents=({"kind": "id_card"}, {"kind": "income_proof"}),
         metadata={"source": "smoke"},
+        trace_id="trace-smoke",
     )
+    defaults.update(kwargs)
+    return UnderwritingIngressEnvelope(**defaults)
 
 
-def test_imperative_driver_runs_end_to_end() -> None:
-    request = _make_request()
-    result = UnderwritingEngine().run(request, trace_id="trace-smoke")
-    assert result.request_id == "smoke-0001"
-    assert result.trace_id == "trace-smoke"
-    assert result.decision.verdict in {
-        DecisionVerdict.APPROVE,
-        DecisionVerdict.REFER,
-        DecisionVerdict.INSUFFICIENT_EVIDENCE,
+def test_u0_validate_returns_validated_request() -> None:
+    envelope = _make_envelope()
+    validated = u0_validate_underwriting(envelope)
+    assert validated.request_id == "smoke-0001"
+    assert validated.applicant_id == "applicant-smoke"
+    assert validated.product_class == "auto"
+    assert validated.trace_id == "trace-smoke"
+    assert validated.task_class == "underwriting_decision"
+    assert validated.app_id == "apps_underwriting_ai"
+
+
+def test_u0_validate_loads_all_17_config_keys() -> None:
+    validated = u0_validate_underwriting(_make_envelope())
+    pkg = validated.runtime_customization_package
+    expected_keys = {
+        "app_domain_manifest", "cache_profiles", "capability_profiles",
+        "eval_rubrics", "fixtures", "grader_roster", "input_contract",
+        "learning_profiles", "negative_controls", "orchestration_profiles",
+        "output_schema", "prompt_profiles", "repair_profiles",
+        "retrieval_profiles", "route_profiles", "task_classes", "threshold_profiles",
     }
-    # Reconciliation should reflect document count.
-    assert result.reconciliation.reconciled_count == 2
-    assert result.reconciliation.unresolved_count == 0
-
-
-def test_governed_run_matches_imperative_path() -> None:
-    result = governed_underwriting_run(
-        request_id="smoke-0002",
-        applicant_id="applicant-smoke",
-        product_class="auto",
-        documents=({"kind": "id_card"},),
-        trace_id="trace-smoke-2",
+    assert expected_keys == set(pkg.keys()), (
+        f"runtime_customization_package missing keys: {expected_keys - set(pkg.keys())}"
     )
-    assert result.request_id == "smoke-0002"
-    assert result.trace_id == "trace-smoke-2"
-    assert result.reconciliation.reconciled_count == 1
 
 
-def test_execution_adapter_dispatches() -> None:
-    adapter = ExecutionAdapter()
-    req = ExecutionRequest(
-        request_id="smoke-0003",
-        applicant_id="applicant-smoke",
-        product_class="auto",
-        documents=(),
-        metadata={},
-        trace_id="trace-smoke-3",
+def test_u0_validate_extracts_convenience_fields() -> None:
+    validated = u0_validate_underwriting(_make_envelope())
+    assert isinstance(validated.app_domain_manifest, dict)
+    assert isinstance(validated.input_contract, dict)
+    assert isinstance(validated.route_profiles, list)
+    assert isinstance(validated.threshold_profiles, list)
+
+
+def test_u0_validate_preserves_documents() -> None:
+    docs = ({"kind": "id_card"}, {"kind": "income_proof"}, {"kind": "bank_statement"})
+    validated = u0_validate_underwriting(_make_envelope(documents=docs))
+    assert len(validated.documents) == 3
+
+
+def test_u0_validate_rejects_missing_request_id() -> None:
+    import pytest
+    with pytest.raises(U0ValidationError, match="request_id"):
+        u0_validate_underwriting(_make_envelope(request_id=""))
+
+
+def test_u0_validate_rejects_missing_applicant_id() -> None:
+    import pytest
+    with pytest.raises(U0ValidationError, match="applicant_id"):
+        u0_validate_underwriting(_make_envelope(applicant_id=""))
+
+
+def test_u0_validate_rejects_missing_product_class() -> None:
+    import pytest
+    with pytest.raises(U0ValidationError, match="product_class"):
+        u0_validate_underwriting(_make_envelope(product_class=""))
+
+
+def test_u0_validate_rejects_wrong_envelope_type() -> None:
+    import pytest
+    with pytest.raises(TypeError):
+        u0_validate_underwriting({"request_id": "x"})  # type: ignore[arg-type]
+
+
+def test_u0_validate_u0_cert_ref_set() -> None:
+    validated = u0_validate_underwriting(_make_envelope())
+    assert validated.u0_cert_ref.startswith("u0-apps-underwriting-ai-")
+
+
+def test_engines_namespace_importable_without_underwriting_engine() -> None:
+    from apps_underwriting_ai.engines import (
+        BaseUnderwritingEngine,
+        DecisionPacketAssembler,
+        EvidenceRegisterEngine,
     )
-    result = adapter.execute(req)
-    # Empty documents but stage 4 collects 5 evidence dimensions and stage 3
-    # emits a 3-key feature vector → APPROVE under the skeleton heuristic.
-    assert result.decision.verdict == DecisionVerdict.APPROVE
-    assert len(result.register.records) == 5
-    assert result.features.feature_vector["document_count"] == 0.0
-
-
-def test_decision_renderer_emits_markdown_and_json() -> None:
-    result = UnderwritingEngine().run(_make_request())
-    md = DecisionRenderer().to_markdown(result)
-    assert "Underwriting Decision" in md
-    assert result.decision.verdict.value in md
-
-    j = DecisionRenderer().to_json(result)
-    assert "\"request_id\"" in j
-    assert "\"verdict\"" in j
-
-
-def test_spine_handoff_packages_envelope() -> None:
-    result = UnderwritingEngine().run(_make_request())
-    envelope = SpineHandoff().package(result)
-    assert envelope.app == "apps_underwriting_ai"
-    assert envelope.route == "R3_grounded_read"
-    assert envelope.request_id == result.request_id
-    assert envelope.payload["verdict"] == result.decision.verdict.value
+    assert BaseUnderwritingEngine is not None
+    assert DecisionPacketAssembler is not None
+    assert EvidenceRegisterEngine is not None

@@ -1,0 +1,115 @@
+# apps_underwriting_ai — Best-Practice Sample Underwriting Request
+#
+# Design rationale (grounded in OpenAI/Anthropic/Google governed agentic pipeline research, 2025):
+#
+# 1. STRUCTURED SCHEMA-CONSTRAINED INPUT (OpenAI Structured Outputs + Google Vertex AI)
+#    Every field is typed and enumerated. U0 validates all required fields fail-closed.
+#    No free-form blobs reach the model — only curated extracted spans.
+#
+# 2. DOCUMENT EVIDENCE GROUNDING (Google Document AI + Anthropic grounding guidance)
+#    Submitted documents carry document_class keys so C0 maps them to exact extraction
+#    profiles. Coverage scoring (support_score) gates downstream decisioning.
+#    No open-web retrieval — SUBMITTED_DOCUMENT_EVIDENCE_ONLY mode.
+#
+# 3. PROVENANCE + AUDIT TRAIL (Google Cloud Audit Logging + OpenAI enterprise privacy)
+#    trace_id, request_id, and applicant_id are distinct — enabling per-applicant,
+#    per-run, and per-trace audit queries without conflating identity with correlation.
+#
+# 4. FORBIDDEN INPUTS ENFORCED AT U0 (OpenAI input guardrails + Google Model Armor)
+#    No protected attributes (race, gender, religion) allowed in documents or metadata.
+#    Non-consented external scoring is forbidden. U0 rejects requests with these fields.
+#
+# 5. DATA MODE DECLARATION (regulatory / model risk management)
+#    data_mode declares synthetic vs production intent. SYNTHETIC_DEMO_ONLY prevents
+#    accidental real-decision emission while retaining full pipeline execution for testing.
+#
+# 6. MULTI-DOCUMENT CORROBORATION (insurance underwriting best practice)
+#    Three document classes covering financial capacity (BANK_STATEMENT), tax identity
+#    (TAX_RETURN), and credit risk (CREDIT_REPORT) map to the 5 scoring dimensions:
+#    financial / credit / document / policy / c0. Cross-document reconciliation
+#    catches contradictions (e.g. stated income vs filed income mismatch).
+#
+# 7. HITL ESCALATION HOOKS (Anthropic HITL + Google Human-in-the-Loop)
+#    hitl_notify_on_refer=true ensures HITL_ADVISORY cases surface to underwriter queue.
+#    hitl_required_on_contradiction=true forces HITL_REQUIRED when C0 flags contradiction.
+#
+# 8. PRODUCT-CLASS ROUTING (underwriting line-of-business governance)
+#    product_class drives route_profiles.yaml selection → determines risk weight matrix,
+#    required documents, approval thresholds, and exit X3 disposition mapping.
+
+# ── Identity ──────────────────────────────────────────────────────────────────
+request_id: "uw-sample-2026-001"
+applicant_id: "applicant-acme-small-biz-001"
+product_class: "small_business_loan"
+trace_id: "trace-uw-2026-001-a"
+
+# ── Submitted Documents ───────────────────────────────────────────────────────
+# Each document_class maps to a C0 extraction profile.
+# Fields within each doc are the canonicalized extracted spans (not raw text).
+# In production: C0 runs OCR + Document AI → populates these fields from source PDFs.
+documents:
+  - document_class: "BANK_STATEMENT"
+    # Financial capacity signals
+    average_monthly_balance: 12500
+    account_tenure_months: 48
+    nsf_events_last_12m: 0
+    average_monthly_deposits: 18000
+    average_monthly_withdrawals: 14200
+    institution_name: "First National Bank"
+    statement_period_months: 3
+    # Provenance (in production: C0 populates from extraction)
+    source_document_ref: "bank_stmt_q1_2026.pdf"
+    extraction_confidence: 0.94
+
+  - document_class: "TAX_RETURN"
+    # Income verification signals
+    annual_gross_income: 175000
+    business_net_income: 98000
+    tax_year: 2024
+    filing_status: "S_CORP"
+    deductions_total: 42000
+    agi: 133000
+    # Provenance
+    source_document_ref: "1120s_2024.pdf"
+    extraction_confidence: 0.97
+
+  - document_class: "CREDIT_REPORT"
+    # Credit risk signals
+    credit_score: 748
+    derogatory_mark_count: 0
+    open_trade_lines: 6
+    total_revolving_utilization_pct: 18
+    oldest_account_age_months: 84
+    inquiries_last_6m: 1
+    collections_balance: 0
+    # Provenance
+    source_document_ref: "experian_report_2026.pdf"
+    extraction_confidence: 0.99
+
+# ── Request Metadata ──────────────────────────────────────────────────────────
+metadata:
+  # Data governance (regulatory / model risk management)
+  data_mode: "SYNTHETIC_DEMO_ONLY"       # Switch to PRODUCTION for live runs
+  source: "broker_portal"
+  submission_channel: "api_v2"
+  broker_id: "broker-midwest-001"
+  submission_timestamp: "2026-05-13T15:00:00Z"
+
+  # HITL escalation policy (Anthropic + Google HITL best practice)
+  hitl_notify_on_refer: true             # Surface REFER decisions to underwriter queue
+  hitl_required_on_contradiction: true   # Force HITL_REQUIRED if C0 flags contradiction
+  hitl_notify_email: "underwriters@example.com"
+
+  # Audit + traceability (Google Cloud Audit + OpenAI enterprise privacy)
+  audit_retention_days: 2555             # 7 years — insurance regulatory minimum
+  pii_classification: "APPLICANT_FINANCIAL_DATA"
+  acl_scope: "uw-team-midwest"
+
+  # Model risk management fields
+  model_version_expected: "qwen2.5-32b-instruct-awq"
+  rationale_required: true              # Always require LLM rationale generation
+  rationale_min_chars: 150              # Reject rationale below this threshold
+
+  # Forbidden inputs explicitly absent (U0 enforces, listed here for auditability)
+  # protected_attribute_direct_input: ABSENT
+  # non_consented_external_scoring: ABSENT

@@ -5,14 +5,13 @@ engine instantiation, no C0 adapter imports, no PA compiler imports, no
 L2 adapter imports, no provider SDK imports, no l2_callable construction,
 no inline underwriting closure.
 
-Plan: apps-underwriting-ai-spine-hardening-d7f3b2 P0.1 / P0.4.
+Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W1+W3.
 
-Tests 1–11 (entrypoint group). The entrypoint purity tests (1–9) are
-xfail(strict=True) on the current codebase because __main__.py still
-imports governed_underwriting_run / UnderwritingIngressRunner / engines.
-They become GREEN after W1 rewrites __main__.py into a pure shim.
-
-Tests 10–11 (scaffold presence) pass immediately after P0 stubs land.
+Tests 1–9 (entrypoint purity) are GREEN after W1+W3 rewrote __main__.py.
+Test 10 (registry deleted) confirms underwriting_capability_registry.py
+  was removed in W1 and must NOT exist.
+Test 11 (integration stubs present) confirms the 4 C0/L3/L2/Exit
+  integration files that drive the managed workflow remain in place.
 """
 from __future__ import annotations
 
@@ -267,27 +266,38 @@ def test_apps_underwriting_ai_main_does_not_import_output_renderers() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 10. Scaffold: capability registry file exists
+# 10. Registry deleted: underwriting_capability_registry.py must NOT exist
 # ---------------------------------------------------------------------------
 
 @pytest.mark.governance
-def test_apps_underwriting_ai_capability_registry_file_exists() -> None:
-    """underwriting_capability_registry.py must exist (created in P0.2)."""
+def test_apps_underwriting_ai_capability_registry_file_deleted() -> None:
+    """underwriting_capability_registry.py must NOT exist after W1 deletion.
+
+    This file duplicated agentic_core capability resolution and was deleted
+    in plan apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W1.
+    The canonical capability path is now: U0 binding -> agentic_core dispatch.
+    """
     registry = INTEGRATIONS_DIR / "underwriting_capability_registry.py"
-    assert registry.exists(), (
+    assert not registry.exists(), (
         f"apps_underwriting_ai/integrations/underwriting_capability_registry.py "
-        f"is missing at {registry}. "
-        "P0.2 must create this file before W1 wires agentic_core capability resolution."
+        f"still exists at {registry}. "
+        "This file was deleted in plan a3f7e2 W1 — it must not be re-created. "
+        "The canonical path is: U0 binding -> agentic_core dispatch chain."
     )
 
 
 # ---------------------------------------------------------------------------
-# 11. Scaffold: integration stub files exist
+# 11. Managed workflow integration stubs remain present
 # ---------------------------------------------------------------------------
 
 @pytest.mark.governance
-def test_apps_underwriting_ai_integration_stubs_exist() -> None:
-    """All four P0.3 integration stub files must exist."""
+def test_apps_underwriting_ai_managed_workflow_stubs_exist() -> None:
+    """The 4 managed-workflow integration files must exist.
+
+    These files implement the C0/L3/L2/Exit stages of the 5-stage managed
+    workflow and are NOT parallel paths — they are active stages driven
+    by the agentic_core dispatch chain.
+    """
     stubs = [
         "underwriting_c0_adapter.py",
         "underwriting_l3_workflow_adapter.py",
@@ -296,7 +306,7 @@ def test_apps_underwriting_ai_integration_stubs_exist() -> None:
     ]
     missing = [s for s in stubs if not (INTEGRATIONS_DIR / s).exists()]
     assert not missing, (
-        f"Missing P0.3 integration stub files: {missing}. "
+        f"Missing managed-workflow integration files: {missing}. "
         f"Expected at apps_underwriting_ai/integrations/. "
-        "P0.3 must create all stubs before W2/W3/W4/W5 implement them."
+        "These files implement C0/L3/L2/Exit stages and must not be deleted."
     )

@@ -100,7 +100,6 @@ class FutureRunProposalBuilder:
             request_id=f"promotion-{run_id}",
             run_id=run_id,
             proposal_packets=tuple(proposals),
-            required_proofs=required_proofs,
             rollback_plan_ref=rollback_plan_ref,
             target_future_run_window="NEXT_RUN",
             auto_activate=False,  # Never auto-activate

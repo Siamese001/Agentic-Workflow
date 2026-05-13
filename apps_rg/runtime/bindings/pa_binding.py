@@ -847,4 +847,268 @@ __all__ = [
     "_build_user_instruction",
     "_build_system_preamble",
     "_component_hash",
+    # S3 — section-aware, tier-aware prompt artifact assembly
+    "SectionPromptArtifact",
+    "build_section_prompt_artifact",
+    "build_section_prompt_artifact_for_bullet",
+    "PA_BOUNDARY_CERT_S3",
 ]
+
+
+# ---------------------------------------------------------------------------
+# S3 — PA Tiered Prompt Patching
+#
+# Adds section-aware, treatment-tier-aware prompt artifact assembly driven by
+# the S2 section treatment profile resolver. No model calls. No retrieval.
+# No cache writes. No L4 writes. No C0 or L2 invocation. No agentic_core
+# imports. Composes only.
+#
+# See: artifacts/governance/apps_rg_resume_shipping_s3_pa_tiered_prompt_patching.md
+# ---------------------------------------------------------------------------
+
+from dataclasses import dataclass, field as _dc_field
+
+from apps_rg.runtime.schemas.section_treatment_profile import (
+    get_section_policy,
+    get_bullet_treatment,
+    is_verbatim_section,
+    SectionTreatmentProfileError,
+    UnknownSectionError,
+)
+
+PA_BOUNDARY_CERT_S3: str = "pa-s3-tiered-prompt-patching-apps-rg-resume-shipping"
+
+_PA_PROMPT_PROFILE_RELPATH: str = (
+    "apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"
+)
+
+_pa_prompt_profile_cache: dict | None = None
+
+
+def _load_pa_prompt_profile() -> dict:
+    """Load PA prompt profile from disk. Cached after first load.
+
+    No model calls. No provider access. Config data only.
+    """
+    global _pa_prompt_profile_cache
+    if _pa_prompt_profile_cache is not None:
+        return _pa_prompt_profile_cache
+    repo_root = _resolve_repo_root()
+    profile_path = repo_root / _PA_PROMPT_PROFILE_RELPATH
+    if not profile_path.exists():
+        raise FileNotFoundError(
+            f"PA prompt profile not found: {profile_path}. "
+            "S3 requires apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"
+        )
+    with open(profile_path, encoding="utf-8") as f:
+        data = json.load(f)
+    _pa_prompt_profile_cache = data
+    return data
+
+
+def reset_pa_prompt_profile_cache() -> None:
+    """Reset the PA prompt profile cache. For testing only."""
+    global _pa_prompt_profile_cache
+    _pa_prompt_profile_cache = None
+
+
+@dataclass
+class SectionPromptArtifact:
+    """Typed prompt artifact for a single resume section or bullet.
+
+    Assembled by PA from S2 treatment policy + S3 PA prompt profile.
+    Consumed by downstream L2/provider execution. PA does NOT execute.
+    PA does NOT call models, providers, C0, or L2.
+
+    Fields:
+        section_id: Canonical section identifier (e.g. 'unify_bullets').
+        treatment: Treatment tier string from S2 profile.
+        rewrite_allowed: Whether rewriting is permitted.
+        preserve_verbatim: Whether section must be copied verbatim.
+        evidence_required: Whether source evidence is required.
+        copy_only: Whether the section must be copied without edits.
+        source_span_required: Whether source_span field is required in output.
+        jd_alignment_required: Whether jd_alignment field is required in output.
+        blocked_items_required: Whether blocked_items field is required in output.
+        support_status_required: Whether support_status field is required in output.
+        prompt_directive: Human/model-readable prompt instruction string.
+        anti_invention_rules: List of anti-invention constraint strings.
+        role_id: Optional role/employer identifier (e.g. 'unify', 'ibm').
+        employer: Optional employer name string.
+        bullet_ordinal: 1-based bullet position within a role (None for sections).
+        source_text: Optional verbatim source text reference.
+        jd_context_ref: Optional JD context reference string.
+        phrase_word_bounds: Optional dict with 'min'/'max' keys for noun phrase constraints.
+        support_status_values: Allowed values for support_status output field.
+    """
+
+    section_id: str
+    treatment: str
+    rewrite_allowed: bool
+    preserve_verbatim: bool
+    evidence_required: bool
+    copy_only: bool
+    source_span_required: bool
+    jd_alignment_required: bool
+    blocked_items_required: bool
+    support_status_required: bool
+    prompt_directive: str
+    anti_invention_rules: list[str]
+    role_id: str | None = None
+    employer: str | None = None
+    bullet_ordinal: int | None = None
+    source_text: str | None = None
+    jd_context_ref: str | None = None
+    phrase_word_bounds: dict | None = None
+    support_status_values: list[str] = _dc_field(
+        default_factory=lambda: ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"]
+    )
+
+
+def build_section_prompt_artifact(
+    section_id: str,
+    *,
+    role_id: str | None = None,
+    employer: str | None = None,
+    source_text: str | None = None,
+    jd_context_ref: str | None = None,
+) -> SectionPromptArtifact:
+    """Build a SectionPromptArtifact for a non-bullet section.
+
+    Consumes S2 section treatment policy + S3 PA prompt profile.
+    Fails closed (via SectionTreatmentProfileError / UnknownSectionError)
+    if section_id is unknown or profile is missing.
+
+    PA boundary:
+    - Composes only. Does not retrieve. Does not execute.
+    - Does not call providers, models, C0, or L2.
+    - Does not mutate cache or write L4.
+
+    Args:
+        section_id: Canonical section ID (e.g. 'headline', 'education').
+        role_id: Optional role/employer key (e.g. 'unify', 'ibm').
+        employer: Optional employer display name.
+        source_text: Optional verbatim source text to embed in artifact.
+        jd_context_ref: Optional JD context reference string.
+
+    Returns:
+        SectionPromptArtifact with all fields populated from policy + profile.
+
+    Raises:
+        UnknownSectionError: section_id not in S2 profile.
+        SectionTreatmentProfileError: profile missing or malformed.
+        FileNotFoundError: PA prompt profile missing.
+    """
+    policy = get_section_policy(section_id)
+    treatment = policy["treatment"]
+
+    pa_profile = _load_pa_prompt_profile()
+    treatment_instructions = pa_profile.get("treatment_instructions", {})
+
+    # TIERED_BY_ORDINAL sections have no single prompt_directive at section level;
+    # use the HEAVY tier directive as the section-level fallback for narrative context.
+    instr_key = treatment if treatment != "TIERED_BY_ORDINAL" else "HEAVY"
+    instr = treatment_instructions.get(instr_key, {})
+
+    anti_invention_rules: list[str] = pa_profile.get("anti_invention_rules", [])
+    output_schema: dict = pa_profile.get("output_artifact_schema", {})
+    support_status_values: list[str] = output_schema.get(
+        "support_status_values",
+        ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"],
+    )
+
+    phrase_word_bounds: dict | None = instr.get("phrase_word_bounds")
+
+    return SectionPromptArtifact(
+        section_id=section_id,
+        treatment=treatment,
+        rewrite_allowed=bool(policy.get("rewrite_allowed", False)),
+        preserve_verbatim=bool(policy.get("preserve_verbatim", False)),
+        evidence_required=bool(policy.get("evidence_required", False)),
+        copy_only=bool(instr.get("copy_only", policy.get("preserve_verbatim", False))),
+        source_span_required=bool(instr.get("source_span_required", False)),
+        jd_alignment_required=bool(instr.get("jd_alignment_required", False)),
+        blocked_items_required=bool(instr.get("blocked_items_required", False)),
+        support_status_required=bool(instr.get("support_status_required", False)),
+        prompt_directive=str(instr.get("prompt_directive", "")),
+        anti_invention_rules=list(anti_invention_rules),
+        role_id=role_id,
+        employer=employer,
+        source_text=source_text,
+        jd_context_ref=jd_context_ref,
+        phrase_word_bounds=phrase_word_bounds,
+        support_status_values=support_status_values,
+    )
+
+
+def build_section_prompt_artifact_for_bullet(
+    section_id: str,
+    ordinal: int,
+    *,
+    role_id: str | None = None,
+    employer: str | None = None,
+    source_text: str | None = None,
+    jd_context_ref: str | None = None,
+) -> SectionPromptArtifact:
+    """Build a SectionPromptArtifact for a specific bullet within a role section.
+
+    For TIERED_BY_ORDINAL sections (e.g. 'unify_bullets', 'ibm_bullets'),
+    resolves the correct treatment tier for the given 1-based ordinal.
+    For flat treatment sections (e.g. 'insurtech_bullets'), ordinal is
+    recorded in the artifact but treatment is the flat section treatment.
+
+    PA boundary identical to build_section_prompt_artifact.
+
+    Args:
+        section_id: Canonical section ID (e.g. 'unify_bullets').
+        ordinal: 1-based bullet ordinal position within the role.
+        role_id: Optional role/employer key.
+        employer: Optional employer display name.
+        source_text: Optional verbatim source text.
+        jd_context_ref: Optional JD context reference string.
+
+    Returns:
+        SectionPromptArtifact with treatment resolved for this ordinal.
+
+    Raises:
+        UnknownSectionError: section_id not in S2 profile.
+        SectionTreatmentProfileError: profile missing, malformed, or ordinal unmatched.
+        FileNotFoundError: PA prompt profile missing.
+    """
+    resolved_treatment = get_bullet_treatment(section_id, ordinal)
+
+    pa_profile = _load_pa_prompt_profile()
+    treatment_instructions = pa_profile.get("treatment_instructions", {})
+    instr = treatment_instructions.get(resolved_treatment, {})
+
+    anti_invention_rules: list[str] = pa_profile.get("anti_invention_rules", [])
+    output_schema: dict = pa_profile.get("output_artifact_schema", {})
+    support_status_values: list[str] = output_schema.get(
+        "support_status_values",
+        ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"],
+    )
+
+    policy = get_section_policy(section_id)
+    phrase_word_bounds: dict | None = instr.get("phrase_word_bounds")
+
+    return SectionPromptArtifact(
+        section_id=section_id,
+        treatment=resolved_treatment,
+        rewrite_allowed=bool(policy.get("rewrite_allowed", False)),
+        preserve_verbatim=bool(policy.get("preserve_verbatim", False)),
+        evidence_required=bool(policy.get("evidence_required", False)),
+        copy_only=bool(instr.get("copy_only", False)),
+        source_span_required=bool(instr.get("source_span_required", False)),
+        jd_alignment_required=bool(instr.get("jd_alignment_required", False)),
+        blocked_items_required=bool(instr.get("blocked_items_required", False)),
+        support_status_required=bool(instr.get("support_status_required", False)),
+        prompt_directive=str(instr.get("prompt_directive", "")),
+        anti_invention_rules=list(anti_invention_rules),
+        role_id=role_id,
+        employer=employer,
+        bullet_ordinal=ordinal,
+        source_text=source_text,
+        jd_context_ref=jd_context_ref,
+        phrase_word_bounds=phrase_word_bounds,
+        support_status_values=support_status_values,
+    )

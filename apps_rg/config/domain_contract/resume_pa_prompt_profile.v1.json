@@ -1,0 +1,103 @@
+{
+  "schema_version": "resume_pa_prompt_profile.v1",
+  "description": "S3: PA tiered prompt profile for apps_rg resume-shipping pipeline. Defines per-treatment prompt instructions, anti-invention rules, and output artifact schema. No model calls. No generation. Consumed by pa_binding.py build_section_prompt_artifact().",
+  "treatment_instructions": {
+    "HEAVY": {
+      "label": "HEAVY rewrite",
+      "instruction": "Full STAR-method rewrite anchored to exact source span. Maximum JD keyword integration. Preserve all source metrics verbatim.",
+      "rewrite_depth": "full",
+      "source_span_required": true,
+      "jd_alignment_required": true,
+      "blocked_items_required": true,
+      "support_status_required": true,
+      "copy_only": false,
+      "anti_invention": true,
+      "prompt_directive": "<task>HEAVY REWRITE — STAR method (Situation, Task, Action, Result)</task>\n<source>Quote exact source span first. No paraphrasing. No summarization. Exact source span only.</source>\n<jd_alignment>Integrate top JD keywords. Preserve every source metric verbatim.</jd_alignment>\n<constraints>NO new metrics not present in source materials. NO new client names. NO new tools or tech. NO expanded scope. NO title claims without source backing.</constraints>\n<output_schema>section_id, company_id, bullet_index, treatment_tier, source_span, jd_alignment, rewritten_bullet, blocked_items, status</output_schema>\n<status_values>SUCCESS | INSUFFICIENT_SOURCE_SUPPORT | BLOCKED</status_values>"
+    },
+    "MODERATE": {
+      "label": "MODERATE reframe",
+      "instruction": "Light JD alignment reframe preserving core claim. Minor restructuring. No new metrics or clients.",
+      "rewrite_depth": "light",
+      "source_span_required": true,
+      "jd_alignment_required": true,
+      "blocked_items_required": true,
+      "support_status_required": true,
+      "copy_only": false,
+      "anti_invention": true,
+      "prompt_directive": "<task>MODERATE REFRAME — preserve the core claim with light JD alignment only</task>\n<source>Quote exact source span first. No paraphrasing.</source>\n<jd_alignment>Light JD alignment. Minor restructuring allowed. No new metrics or clients.</jd_alignment>\n<constraints>NO new metrics, clients, tools, domains, or scope beyond source materials.</constraints>\n<output_schema>section_id, company_id, bullet_index, treatment_tier, source_span, jd_alignment, rewritten_bullet, blocked_items, status</output_schema>\n<status_values>SUCCESS | INSUFFICIENT_SOURCE_SUPPORT | BLOCKED</status_values>"
+    },
+    "LIGHT": {
+      "label": "LIGHT polish",
+      "instruction": "Minimal polish only. Preserve meaning and all metrics. JD alignment optional.",
+      "rewrite_depth": "minimal",
+      "source_span_required": true,
+      "jd_alignment_required": false,
+      "blocked_items_required": true,
+      "support_status_required": true,
+      "copy_only": false,
+      "anti_invention": true,
+      "prompt_directive": "<task>LIGHT POLISH — minimal changes only</task>\n<source>Quote exact source span first. Preserve meaning, all metrics, all claims verbatim.</source>\n<jd_alignment>JD alignment optional. Preserve original meaning.</jd_alignment>\n<constraints>NO scope expansion. NO invented metrics or clients. Preserve all source material verbatim except minimal polish.</constraints>\n<output_schema>section_id, company_id, bullet_index, treatment_tier, source_span, jd_alignment, rewritten_bullet, blocked_items, status</output_schema>\n<status_values>SUCCESS | BLOCKED</status_values>"
+    },
+    "VERBATIM": {
+      "label": "VERBATIM copy",
+      "instruction": "Copy original source text exactly. No rewrite. No summary. No compression. No style polish.",
+      "rewrite_depth": "none",
+      "source_span_required": true,
+      "jd_alignment_required": false,
+      "blocked_items_required": false,
+      "support_status_required": true,
+      "copy_only": true,
+      "anti_invention": true,
+      "prompt_directive": "<task>VERBATIM — copy original source text exactly</task>\n<source>Copy the original source text character-for-character. No rewriting. No summarization. No compression. No style polish. No edits.</source>\n<constraints>rewrite_allowed=false. preserve_verbatim=true. No LLM rewrite.</constraints>\n<output_schema>section_id, company_id, source_text (verbatim copy)</output_schema>\n<status_values>SUCCESS | BLOCKED</status_values>"
+    },
+    "JD_RANKED_NOUN_PHRASES": {
+      "label": "JD-ranked noun phrases",
+      "instruction": "Produce noun phrases (2-4 words each) ranked by JD relevance. No sentence bullets. No unsupported skills or tools.",
+      "rewrite_depth": "phrases_only",
+      "source_span_required": false,
+      "jd_alignment_required": true,
+      "blocked_items_required": true,
+      "support_status_required": true,
+      "copy_only": false,
+      "anti_invention": true,
+      "phrase_word_bounds": {"min": 2, "max": 4},
+      "prompt_directive": "<task>JD-RANKED NOUN PHRASES — produce 2-4 word noun phrases ranked by JD relevance</task>\n<source>Ground every phrase in source materials. No invented capabilities.</source>\n<jd_alignment>Rank phrases by JD keyword overlap. Most relevant first.</jd_alignment>\n<constraints>2-4 words per phrase. No sentence bullets. No unsupported skills, tools, or domains.</constraints>\n<output_schema>section_id, company_id, noun_phrases[], blocked_items, status</output_schema>\n<status_values>SUCCESS | INSUFFICIENT_SOURCE_SUPPORT | BLOCKED</status_values>"
+    }
+  },
+  "anti_invention_rules": [
+    "NO new metrics not present in source materials",
+    "NO new client names not present in source materials",
+    "NO new tools or technologies not present in source materials",
+    "NO new domains or industries not present in source materials",
+    "NO expanded scope beyond what source materials support",
+    "NO title claims beyond verified source material",
+    "NO impact claims without source material backing",
+    "If source support is insufficient: emit INSUFFICIENT_SOURCE_SUPPORT and preserve original verbatim"
+  ],
+  "output_artifact_schema": {
+    "required_fields": [
+      "section_id",
+      "treatment",
+      "rewrite_allowed",
+      "preserve_verbatim",
+      "evidence_required",
+      "copy_only",
+      "source_span_required",
+      "jd_alignment_required",
+      "blocked_items_required",
+      "support_status_required",
+      "prompt_directive",
+      "anti_invention_rules"
+    ],
+    "optional_fields": [
+      "role_id",
+      "employer",
+      "bullet_ordinal",
+      "source_text",
+      "jd_context_ref",
+      "phrase_word_bounds"
+    ],
+    "support_status_values": ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"],
+    "notes": "PA assembles this artifact. PA does not call models. PA does not execute. PA does not mutate cache. PA does not write L4. PA does not invoke C0 or L2."
+  }
+}

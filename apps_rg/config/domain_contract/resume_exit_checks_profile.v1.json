@@ -1,0 +1,69 @@
+{
+  "_comment": "S6: Deterministic Resume Exit Checks profile — apps_rg resume-shipping pipeline.",
+  "_governance": "Declarative config only. No model calls, no PA/C0/L2 invocation, no cache writes, no L4/L6 writes.",
+  "profile_id": "rec::apps_rg::resume_generation::v1",
+  "app_id": "apps_rg",
+  "task_class": "resume_generation",
+  "version": "1.0.0",
+  "status": "active",
+  "created_at": "2026-05-14",
+  "source_refs": [
+    "apps_rg/runtime/schemas/source_resume_v2_structured.json",
+    "apps_rg/config/domain_contract/exit_profile.resume_generation.v1.json"
+  ],
+
+  "required_sections": [
+    "headline",
+    "executive_summary",
+    "roles",
+    "competencies",
+    "education",
+    "certifications",
+    "early_career"
+  ],
+
+  "verbatim_sections": [
+    "education",
+    "certifications",
+    "early_career"
+  ],
+
+  "headline": {
+    "max_length": 200,
+    "allow_multiline": false
+  },
+
+  "executive_summary": {
+    "min_length": 10,
+    "max_length": 2000,
+    "empty_placeholder_values": ["", "TBD", "TODO", "PLACEHOLDER", "N/A", "n/a"]
+  },
+
+  "roles": {
+    "require_employer": true,
+    "require_title": true,
+    "require_narrative": true,
+    "bullet_min_count": 0,
+    "bullet_max_count": 10
+  },
+
+  "competencies": {
+    "min_words_per_phrase": 2,
+    "max_words_per_phrase": 4
+  },
+
+  "support_status": {
+    "sendable_blocking_values": [
+      "INSUFFICIENT_SOURCE_SUPPORT",
+      "BLOCKED",
+      "UNKNOWN"
+    ],
+    "unknown_is_pass": false,
+    "missing_support_status_for_rewrite_allowed": "WARN"
+  },
+
+  "hash_check": {
+    "emit_warn_when_hash_absent": true,
+    "do_not_invent_hashes": true
+  }
+}

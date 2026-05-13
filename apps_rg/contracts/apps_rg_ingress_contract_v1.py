@@ -115,6 +115,7 @@ class ResumePayloadSection(_ImmutableModel):
     resume_hash: _Sha256Hex
     source_resume_text: str = Field(default="", description="Inline resume text. Empty allowed if source_resume_ref provided.")
     source_resume_ref: str = Field(default="", description="Path to source resume file. Empty allowed if source_resume_text provided.")
+    s4_metadata: Mapping[str, Any] = Field(default_factory=dict, description="S4 structured resume classification metadata. Populated by attach_structured_resume_metadata; empty for legacy flat resume paths.")
 
 
 class TargetSection(_ImmutableModel):

@@ -1,0 +1,155 @@
+{
+  "schema_name": "source_resume_v2_structured",
+  "schema_version": "2.0.0",
+  "headline": {
+    "section_id": "headline",
+    "content_kind": "narrative_only",
+    "rewrite_policy": "heavy",
+    "judge_policy": "p0_full_panel",
+    "text": "Senior Technology Executive | Digital Transformation | P&C Insurance",
+    "preserve_verbatim": false,
+    "treatment_tier": null
+  },
+  "executive_summary": {
+    "section_id": "executive_summary",
+    "content_kind": "narrative_only",
+    "rewrite_policy": "heavy",
+    "judge_policy": "p0_full_panel",
+    "text": "Proven technology leader with 20+ years driving enterprise digital transformation across P&C insurance, financial services, and professional services. Track record of building high-performing engineering organizations and delivering complex platform modernization programs.",
+    "preserve_verbatim": false,
+    "treatment_tier": null
+  },
+  "roles": [
+    {
+      "section_id": "unify_consulting",
+      "content_kind": "narrative_and_bullets",
+      "rewrite_policy": "moderate",
+      "judge_policy": "p1_full_panel",
+      "employer": "Unify Consulting",
+      "company_id": "unify_consulting",
+      "title": "Managing Director, Technology",
+      "location": "Seattle, WA",
+      "start_date": "2021-03",
+      "end_date": "Present",
+      "narrative": "Led technology practice for Pacific Northwest management consulting firm, building and scaling digital transformation capabilities across insurance and financial services clients.",
+      "preserve_narrative_verbatim": true,
+      "bullets": [
+        {
+          "source_text": "Built 45-person technology practice from 12 consultants, achieving 3.2x revenue growth over 30 months.",
+          "source_span_ref": "unify_resume_p1_b1",
+          "ordinal": 1,
+          "treatment_tier": null,
+          "rewrite_allowed": true,
+          "preserve_verbatim": false,
+          "evidence_required": false
+        },
+        {
+          "source_text": "Delivered $18M enterprise data platform for top-10 P&C insurer on time and 8% under budget.",
+          "source_span_ref": "unify_resume_p1_b2",
+          "ordinal": 2,
+          "treatment_tier": null,
+          "rewrite_allowed": true,
+          "preserve_verbatim": false,
+          "evidence_required": true
+        }
+      ],
+      "source_span_refs": ["unify_resume_p1"],
+      "bullet_treatment_tier": null
+    },
+    {
+      "section_id": "ibm",
+      "content_kind": "narrative_and_bullets",
+      "rewrite_policy": "moderate",
+      "judge_policy": "p1_full_panel",
+      "employer": "IBM Global Business Services",
+      "company_id": "ibm",
+      "title": "Associate Partner",
+      "location": "New York, NY",
+      "start_date": "2017-06",
+      "end_date": "2021-02",
+      "narrative": "Managed a portfolio of strategic technology advisory engagements for Fortune 500 insurance carriers.",
+      "preserve_narrative_verbatim": true,
+      "bullets": [
+        {
+          "source_text": "Led cloud migration program for regional P&C insurer, reducing infrastructure costs by 34%.",
+          "source_span_ref": null,
+          "ordinal": 1,
+          "treatment_tier": null,
+          "rewrite_allowed": true,
+          "preserve_verbatim": false,
+          "evidence_required": false
+        }
+      ],
+      "source_span_refs": null,
+      "bullet_treatment_tier": null
+    }
+  ],
+  "early_career": {
+    "section_id": "early_career",
+    "content_kind": "verbatim_copy",
+    "rewrite_policy": "verbatim",
+    "judge_policy": "none",
+    "entries": [
+      {
+        "text": "Accenture, Consultant (2010–2017): Technology strategy and systems integration for financial services clients.",
+        "label": "Accenture",
+        "preserve_verbatim": true
+      }
+    ],
+    "preserve_verbatim": true
+  },
+  "competencies": {
+    "section_id": "competencies",
+    "content_kind": "bullets_only",
+    "rewrite_policy": "moderate",
+    "judge_policy": "p1_full_panel",
+    "items": [
+      "Digital Transformation",
+      "P&C Insurance Technology",
+      "Enterprise Architecture",
+      "Cloud Migration",
+      "Agile Delivery",
+      "Stakeholder Management"
+    ],
+    "treatment_tier": null,
+    "preserve_verbatim": false
+  },
+  "education": {
+    "section_id": "education",
+    "content_kind": "verbatim_copy",
+    "rewrite_policy": "verbatim",
+    "judge_policy": "none",
+    "entries": [
+      {
+        "text": "MBA, The Wharton School, University of Pennsylvania, 2010",
+        "label": "MBA, Wharton",
+        "preserve_verbatim": true
+      },
+      {
+        "text": "B.S. Computer Science, Carnegie Mellon University, 2005",
+        "label": "B.S. CS, CMU",
+        "preserve_verbatim": true
+      }
+    ],
+    "preserve_verbatim": true
+  },
+  "certifications": {
+    "section_id": "certifications",
+    "content_kind": "verbatim_copy",
+    "rewrite_policy": "verbatim",
+    "judge_policy": "none",
+    "entries": [
+      {
+        "text": "AWS Certified Solutions Architect – Professional",
+        "label": null,
+        "preserve_verbatim": true
+      },
+      {
+        "text": "CPCU – Chartered Property Casualty Underwriter",
+        "label": null,
+        "preserve_verbatim": true
+      }
+    ],
+    "preserve_verbatim": true
+  }
+}

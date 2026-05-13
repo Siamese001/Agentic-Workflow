@@ -33,7 +33,7 @@ from typing import Any
 _LOGGER = logging.getLogger(__name__)
 
 EXIT_MODE = "FAIL_CLOSED"
-DURABLE_WRITE_PATH = "UWG_ONLY"
+WRITE_PATH = "UWG_ONLY"
 
 # X3 disposition classes.
 X3A_APPROVE = "X3A_APPROVE"
@@ -203,7 +203,7 @@ class UnderwritingExitFecProducer:
                 "x3_disposition": X3E_SAFE_ABSTAIN,
                 "x3_emitted": True,
                 "violations": violations,
-                "durable_write_path": DURABLE_WRITE_PATH,
+                "write_path": WRITE_PATH,
                 "l4_write_attempted": False,
                 "l6_post_run_only": True,
                 "demo_mode": True,
@@ -257,7 +257,7 @@ class UnderwritingExitFecProducer:
                 "x3_disposition": X3E_SAFE_ABSTAIN,
                 "x3_emitted": True,
                 "violations": additional_violations,
-                "durable_write_path": DURABLE_WRITE_PATH,
+                "write_path": WRITE_PATH,
                 "l4_write_attempted": False,
                 "l6_post_run_only": True,
                 "demo_mode": True,
@@ -315,7 +315,7 @@ class UnderwritingExitFecProducer:
             "blueprint_hash": blueprint_hash,
             "demo_packet_id": demo_packet_id,
             "final_evidence_contract": fec,
-            "durable_write_path": DURABLE_WRITE_PATH,
+            "write_path": WRITE_PATH,
             "l4_write_attempted": False,
             "l6_post_run_only": True,
             "demo_mode": True,

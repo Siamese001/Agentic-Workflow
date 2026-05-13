@@ -1,7 +1,16 @@
 """Runtime Executive Summary Generator for apps_rg.
 
-Generates a human-readable executive summary of the full U0-L6 agentic pipeline
-execution, displayed inline in Cascade after resume generation.
+Generates a human-readable executive summary of the resume-shipping pipeline
+execution path.  Displays only the LIVE generation path (U0->L1->L0->C0->PA->L2->Exit).
+
+S5 DISPLAY TRUTH (see apps_rg_resume_shipping_s5_runtime_summary_display_fix.md):
+- Live path:  U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit
+- L6 status:  POST_RUNTIME / FUTURE_RUN_ONLY / NOT_IN_LIVE_GENERATION_PATH
+- Semantic cache: DISABLED_OR_PROPOSAL_ONLY_FOR_RESUME_SHIPPING
+- section_agentic_pipeline: NOT_ACTIVE
+- apps_rg_dispatch_section_pipeline: NOT_ACTIVE
+- l6_shadow_learning: NOT_ACTIVE
+- L5-governed production: NOT_CLAIMED
 """
 from __future__ import annotations
 
@@ -65,9 +74,17 @@ class RuntimeExecutiveSummary:
     failed_sections: int = 0
     cache_writes: int = 0
     
-    # Pipeline depth
-    pipeline_depth: str = "U0-L6 Full Agentic Spine"
+    # Pipeline depth — S5: live path is U0->Exit only; L6 is post-runtime
+    pipeline_depth: str = "U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit (Resume Shipping Critical Path)"
     stages_executed: list[str] = field(default_factory=list)
+
+    # S5 display status fields
+    l6_status: str = "POST_RUNTIME / FUTURE_RUN_ONLY / NOT_IN_LIVE_GENERATION_PATH"
+    cache_write_status: str = "DISABLED_OR_PROPOSAL_ONLY_FOR_RESUME_SHIPPING"
+    section_pipeline_status: str = "NOT_ACTIVE"
+    section_dispatch_status: str = "NOT_ACTIVE"
+    l6_shadow_learning_status: str = "NOT_ACTIVE"
+    l5_governed_production_claimed: bool = False
 
 
 def generate_runtime_executive_summary(
@@ -103,7 +120,7 @@ def generate_runtime_executive_summary(
             status = result.disposition.exit_status
             if status == "success":
                 successful += 1
-                # Standard U0-L6 stages for successful execution
+                # S5: Only live path stages — L6 and cache are NOT in the live path
                 stages = [
                     PipelineStageMetrics("U0_validate", "OK"),
                     PipelineStageMetrics("L1_plan", "OK"),
@@ -112,10 +129,8 @@ def generate_runtime_executive_summary(
                     PipelineStageMetrics("PA_compose", "OK"),
                     PipelineStageMetrics("L2_execute", "OK"),
                     PipelineStageMetrics("Exit_finalize", "OK"),
-                    PipelineStageMetrics("L6_shadow_learning", "OK"),
-                    PipelineStageMetrics("Cache_writeback", "OK"),
                 ]
-                cache_writes += 1
+                # S5: cache_writes is always 0 — semantic cache is disabled for resume-shipping
             else:
                 failed += 1
                 stages = [
@@ -158,14 +173,15 @@ def generate_runtime_executive_summary(
         cache_writes=cache_writes,
         stages_executed=[
             "U0: Intake & Validation",
-            "L1: Planning & Cognition", 
+            "L1: Planning & Cognition",
             "L0: Routing & Dispatch",
             "C0: Evidence Retrieval",
             "PA: Prompt Assembly",
             "L2: Generation & Inference",
             "Exit: Finalization & Gates",
-            "L6: Shadow Learning & Telemetry",
-            "Semantic Cache: Writeback",
+            # S5: L6 and semantic cache are NOT in the live generation path
+            # L6 status: POST_RUNTIME / FUTURE_RUN_ONLY / NOT_IN_LIVE_GENERATION_PATH
+            # Cache status: DISABLED_OR_PROPOSAL_ONLY_FOR_RESUME_SHIPPING
         ],
     )
     
@@ -186,11 +202,21 @@ def format_executive_summary_markdown(summary: RuntimeExecutiveSummary) -> str:
     lines.append(f"**Duration:** {summary.total_duration_ms}ms | **Sections:** {summary.successful_sections}/{summary.total_sections} successful")
     lines.append("")
     
-    # Pipeline Stages Executed
-    lines.append("## 📊 Pipeline Stages Executed")
+    # Pipeline Stages Executed (live path only)
+    lines.append("## 📊 Live Pipeline Stages (Resume Shipping Critical Path)")
     lines.append("")
     for i, stage in enumerate(summary.stages_executed, 1):
         lines.append(f"{i}. ✅ {stage}")
+    lines.append("")
+    # S5: Explicit post-runtime and disabled status display
+    lines.append("## 🚫 Non-Live Stage Status")
+    lines.append("")
+    lines.append(f"- **L6 (Shadow Learning):** {summary.l6_status}")
+    lines.append(f"- **Semantic Cache Write:** {summary.cache_write_status}")
+    lines.append(f"- **section_agentic_pipeline:** {summary.section_pipeline_status}")
+    lines.append(f"- **apps_rg_dispatch_section_pipeline:** {summary.section_dispatch_status}")
+    lines.append(f"- **l6_shadow_learning module:** {summary.l6_shadow_learning_status}")
+    lines.append(f"- **L5-Governed Production Claimed:** {summary.l5_governed_production_claimed}")
     lines.append("")
     
     # Section Results
@@ -232,8 +258,11 @@ def format_executive_summary_markdown(summary: RuntimeExecutiveSummary) -> str:
     lines.append(f"- **Total Sections:** {summary.total_sections}")
     lines.append(f"- **Successful:** {summary.successful_sections} ✅")
     lines.append(f"- **Failed:** {summary.failed_sections}")
-    lines.append(f"- **Cache Writebacks:** {summary.cache_writes}")
-    lines.append(f"- **Shadow Learning Spans:** {summary.total_sections} (one per section)")
+    lines.append(f"- **Semantic Cache Writes (resume-shipping):** {summary.cache_writes} (DISABLED — {summary.cache_write_status})")
+    lines.append(f"- **L6 Shadow Learning:** {summary.l6_status}")
+    lines.append(f"- **S0.5 Cache Guard:** ENFORCED")
+    lines.append(f"- **S4 Structured Resume Metadata:** AVAILABLE")
+    lines.append(f"- **Governed-Production Track:** NOT_COMPLETE — L5-governed production release not claimed")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -318,7 +347,8 @@ def display_runtime_summary_inline(summary: RuntimeExecutiveSummary) -> str:
     lines.append("╠════════════════════════════════════════════════════════════════════════════════╣")
     
     # Pipeline stages
-    lines.append("║  PIPELINE STAGES: U0 → L1 → L0 → C0 → PA → L2 → Exit → L6 → Cache            ║")
+    lines.append("║  LIVE PATH: U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit                           ║")
+    lines.append("║  L6: POST_RUNTIME/FUTURE_RUN_ONLY  |  Cache: DISABLED_OR_PROPOSAL_ONLY        ║")
     lines.append("║                                                                                ║")
     
     # Section summary
@@ -329,7 +359,7 @@ def display_runtime_summary_inline(summary: RuntimeExecutiveSummary) -> str:
         lines.append(f"║  {status} {sec.section_name:<18} {p_badge:<6} {content_info:>12}  cache: {sec.cache_key:<12} ║")
     
     lines.append("╠════════════════════════════════════════════════════════════════════════════════╣")
-    lines.append(f"║  ✅ {summary.successful_sections} sections successful  |  📦 {summary.cache_writes} cache writebacks  |  📊 {summary.total_sections} shadow spans ║")
+    lines.append(f"║  ✅ {summary.successful_sections}/{summary.total_sections} sections  |  S0.5 cache guard: ENFORCED  |  L5-governed: NOT_CLAIMED  ║")
     lines.append("╚════════════════════════════════════════════════════════════════════════════════╝")
     
     return "\n".join(lines)
@@ -384,3 +414,31 @@ def _get_section_tier(section_id: str) -> str:
         "certifications_low_signal": "T4_MINIMAL",
     }
     return tiers.get(section_id, "T3_STANDARD")
+
+
+# ---------------------------------------------------------------------------
+# S5: Resume Shipping Status helper — machine-readable truth table
+# ---------------------------------------------------------------------------
+
+#: Canonical live path string for resume-shipping mode.
+RESUME_SHIPPING_LIVE_PATH: str = "U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit"
+
+
+def build_resume_shipping_status() -> dict[str, str | bool]:
+    """Return the machine-readable display truth table for resume-shipping mode.
+
+    Used by tests to assert S5 display invariants without constructing a
+    full RuntimeExecutiveSummary.
+    """
+    return {
+        "live_path": RESUME_SHIPPING_LIVE_PATH,
+        "l6_status": "POST_RUNTIME / FUTURE_RUN_ONLY / NOT_IN_LIVE_GENERATION_PATH",
+        "cache_write_status": "DISABLED_OR_PROPOSAL_ONLY_FOR_RESUME_SHIPPING",
+        "section_pipeline_status": "NOT_ACTIVE",
+        "section_dispatch_status": "NOT_ACTIVE",
+        "l6_shadow_learning_status": "NOT_ACTIVE",
+        "l5_governed_production_claimed": False,
+        "s05_cache_guard": "ENFORCED",
+        "s4_structured_resume_metadata": "AVAILABLE",
+        "governed_production_track": "NOT_COMPLETE",
+    }

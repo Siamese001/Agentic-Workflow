@@ -1265,10 +1265,170 @@ def extract_apps_rg_exit_gate_policy(validated_request: Any) -> dict[str, Any]:
         }
 
 
+def produce_structured_resume_from_docx(
+    docx_path: str | Path,
+    target_company: str | None = None,
+    target_role: str | None = None,
+) -> dict[str, Any]:
+    """Produce structured resume JSON from DOCX input.
+
+    W1: DOCX ingestion emits normalized structured resume format.
+    This function wraps _ingest_docx_to_master_resume and adds the
+    required schema fields (content_kind, rewrite_policy, judge_policy,
+    section_id, company_id) per source_resume_v2_structured.json schema.
+
+    Args:
+        docx_path: Path to DOCX resume file.
+        target_company: Optional target company for provenance.
+        target_role: Optional target role for provenance.
+
+    Returns:
+        Structured resume dict conforming to source_resume_v2_structured.json.
+    """
+    # Ingest raw data from DOCX
+    raw_data = _ingest_docx_to_master_resume(docx_path)
+
+    # Normalize to structured format
+    structured: dict[str, Any] = {
+        "schema_name": "source_resume_v2_structured",
+        "schema_version": "2.0.0",
+        "flat_text_fallback": None,
+        "headline": {
+            "section_id": "headline",
+            "content_kind": "narrative_only",
+            "rewrite_policy": "heavy",
+            "judge_policy": "p0_full_panel",
+            "text": raw_data.get("headline", ""),
+            "preserve_verbatim": False,
+            "treatment_tier": None,
+        },
+        "executive_summary": {
+            "section_id": "executive_summary",
+            "content_kind": "narrative_only",
+            "rewrite_policy": "heavy",
+            "judge_policy": "p0_full_panel",
+            "text": raw_data.get("executive_summary", ""),
+            "preserve_verbatim": False,
+            "treatment_tier": None,
+        },
+        "roles": [],
+        "early_career": {
+            "section_id": "early_career",
+            "content_kind": "verbatim_copy",
+            "rewrite_policy": "verbatim",
+            "judge_policy": "none",
+            "entries": [],
+            "preserve_verbatim": True,
+        },
+        "competencies": {
+            "section_id": "competencies",
+            "content_kind": "bullets_only",
+            "rewrite_policy": "moderate",
+            "judge_policy": "p1_full_panel",
+            "items": raw_data.get("competencies", []),
+            "treatment_tier": None,
+            "preserve_verbatim": False,
+        },
+        "education": {
+            "section_id": "education",
+            "content_kind": "verbatim_copy",
+            "rewrite_policy": "verbatim",
+            "judge_policy": "none",
+            "entries": [],
+            "preserve_verbatim": True,
+        },
+        "certifications": {
+            "section_id": "certifications",
+            "content_kind": "verbatim_copy",
+            "rewrite_policy": "verbatim",
+            "judge_policy": "none",
+            "entries": [],
+            "preserve_verbatim": True,
+        },
+    }
+
+    # Normalize roles with section_id and company_id
+    company_id_map: dict[str, str] = {
+        "unify": "unify_consulting",
+        "unify consulting": "unify_consulting",
+        "ibm": "ibm",
+        "insurtech": "insurtech_tech_solutions",
+        "insurtech tech solutions": "insurtech_tech_solutions",
+        "ey": "ernst_young",
+        "ernst & young": "ernst_young",
+        "ernst and young": "ernst_young",
+    }
+
+    for raw_role in raw_data.get("experience", []):
+        company = raw_role.get("company", "")
+        company_lower = company.lower().strip()
+        company_id = company_id_map.get(company_lower, company_lower.replace(" ", "_").replace("&", "and"))
+        
+        # Generate section_id from company
+        section_id = company_id.replace("_", "").replace(" ", "_")
+        
+        role = {
+            "section_id": section_id,
+            "content_kind": "narrative_and_bullets",
+            "rewrite_policy": "moderate",
+            "judge_policy": "p1_full_panel",
+            "employer": company,
+            "company_id": company_id,
+            "title": raw_role.get("title", ""),
+            "location": raw_role.get("location"),
+            "start_date": raw_role.get("start_date"),
+            "end_date": raw_role.get("end_date"),
+            "narrative": raw_role.get("narrative", ""),
+            "preserve_narrative_verbatim": True,
+            "bullets": [
+                {
+                    "source_text": b.get("text", ""),
+                    "ordinal": b.get("ordinal", i + 1),
+                    "treatment_tier": None,
+                    "rewrite_allowed": b.get("rewrite_allowed", True),
+                    "preserve_verbatim": b.get("preserve_verbatim", False),
+                    "evidence_required": b.get("evidence_required", False),
+                    "source_span_ref": b.get("source_span_ref"),
+                }
+                for i, b in enumerate(raw_role.get("bullets", []))
+            ],
+            "source_span_refs": raw_role.get("source_span_refs"),
+            "bullet_treatment_tier": None,
+        }
+        structured["roles"].append(role)
+
+    # Normalize education entries
+    for edu in raw_data.get("education", []):
+        structured["education"]["entries"].append({
+            "text": edu.get("text", ""),
+            "label": edu.get("label"),
+            "preserve_verbatim": True,
+        })
+
+    # Normalize certifications
+    for cert in raw_data.get("certifications", []):
+        structured["certifications"]["entries"].append({
+            "text": cert.get("text", ""),
+            "label": cert.get("label"),
+            "preserve_verbatim": True,
+        })
+
+    # Normalize early career (if present in raw data)
+    for entry in raw_data.get("early_career", []):
+        structured["early_career"]["entries"].append({
+            "text": entry.get("text", ""),
+            "label": entry.get("label"),
+            "preserve_verbatim": True,
+        })
+
+    return structured
+
+
 __all__ = [
     "APPS_RG_EXIT_CERT_REF",
     "ExitBindingResult",
     "build_apps_rg_exit_harness",
     "exit_finalize_apps_rg",
     "extract_apps_rg_exit_gate_policy",
+    "produce_structured_resume_from_docx",
 ]

@@ -206,6 +206,61 @@ mappings:
     target: ValidatedRequest.app_payload.resume_payload.source_resume_ref
     reason: Path preserved for audit replay
 
+  /resume_payload/s4_metadata:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata
+    reason: S4 structured resume classification block; consumed by C0 and PA for structured-resume-aware evidence assembly
+
+  /resume_payload/s4_metadata/source_resume_schema_version:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.source_resume_schema_version
+    reason: Schema version of the source resume; used for structured-vs-flat routing in C0
+
+  /resume_payload/s4_metadata/source_resume_digest:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.source_resume_digest
+    reason: SHA-256 digest of source resume for audit provenance
+
+  /resume_payload/s4_metadata/source_resume_mode:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.source_resume_mode
+    reason: Classification mode (STRUCTURED / LEGACY_FLAT_RESUME / MISSING_OR_INVALID_RESUME)
+
+  /resume_payload/s4_metadata/available_sections:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.available_sections
+    reason: List of structured section IDs present in the source resume
+
+  /resume_payload/s4_metadata/role_count:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.role_count
+    reason: Number of roles in the structured resume
+
+  /resume_payload/s4_metadata/has_education:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.has_education
+    reason: Boolean indicating education section presence
+
+  /resume_payload/s4_metadata/has_certifications:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.has_certifications
+    reason: Boolean indicating certifications section presence
+
+  /resume_payload/s4_metadata/has_early_career:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.has_early_career
+    reason: Boolean indicating early_career section presence
+
+  /resume_payload/s4_metadata/structured_resume_validation_status:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.structured_resume_validation_status
+    reason: Validation verdict (VALID / INVALID / NOT_APPLICABLE)
+
+  /resume_payload/s4_metadata/flat_text_fallback_present:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.resume_payload.s4_metadata.flat_text_fallback_present
+    reason: Boolean indicating whether flat_text_fallback is available alongside structured resume
+
   # -------------------------------------------------------------------
   # /target
   # -------------------------------------------------------------------

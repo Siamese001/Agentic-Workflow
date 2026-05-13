@@ -26,10 +26,14 @@ Plan: .windsurf/plans/apps-rg-u0-reflection-live-wiring-105147.md (W1.P1.1)
 from __future__ import annotations
 
 import hashlib
+import logging
 from pathlib import Path
 from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelope
+from apps_rg.runtime.u0.structured_resume_classifier import attach_structured_resume_metadata
+
+_logger = logging.getLogger(__name__)
 
 
 _REPO_ROOT: Path = Path(__file__).resolve().parents[3]
@@ -335,6 +339,10 @@ def synthesize_contract_payload(envelope: RequestEnvelope) -> dict[str, Any]:
     contract["payload_digest"] = hashlib.sha256(
         json.dumps(digest_input, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
+
+    # S4: Attach structured resume classification metadata to resume_payload.
+    # Pure classification only — no rewrite, no model calls, no cache writes.
+    attach_structured_resume_metadata(contract)
 
     return contract
 

@@ -32,7 +32,7 @@ def test_audit_summary_has_zero_findings() -> None:
 
 def test_resolve_symbol_handles_class_method() -> None:
     ok, reason = _resolve_symbol(
-        "apps_underwriting_ai.engines.underwriting_engine.UnderwritingEngine.run"
+        "apps_underwriting_ai.runtime.dispatch.underwriting_dispatch.run_underwriting_dispatch"
     )
     assert ok, reason
 

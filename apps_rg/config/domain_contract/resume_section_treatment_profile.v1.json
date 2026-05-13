@@ -1,0 +1,131 @@
+{
+  "profile_id": "resume_section_treatment_profile.v1",
+  "schema_version": "resume_section_treatment_profile_v1",
+  "description": "S2: Section-by-section treatment matrix for apps_rg resume-shipping pipeline. Defines per-section treatment policy, rewrite budget, verbatim rules, and bullet ordinal tiers. No generation behavior — policy data only.",
+  "valid_treatments": ["HEAVY", "MODERATE", "LIGHT", "VERBATIM", "JD_RANKED_NOUN_PHRASES"],
+  "sections": {
+    "headline": {
+      "section_id": "headline",
+      "treatment": "HEAVY",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "One-line professional headline. Heavy JD-aligned rewrite."
+    },
+    "executive_summary": {
+      "section_id": "executive_summary",
+      "treatment": "HEAVY",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "Executive summary paragraph. Heavy JD-aligned rewrite."
+    },
+    "unify_narrative": {
+      "section_id": "unify_narrative",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "Unify Consulting role narrative. Copied verbatim — no LLM involvement."
+    },
+    "unify_bullets": {
+      "section_id": "unify_bullets",
+      "treatment": "TIERED_BY_ORDINAL",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "Unify Consulting role bullets. Ordinal-tiered: 1-3 HEAVY, 4-5 MODERATE, 6+ LIGHT.",
+      "bullet_ordinal_tiers": [
+        {"ordinal_min": 1, "ordinal_max": 3, "treatment": "HEAVY"},
+        {"ordinal_min": 4, "ordinal_max": 5, "treatment": "MODERATE"},
+        {"ordinal_min": 6, "ordinal_max": null, "treatment": "LIGHT"}
+      ]
+    },
+    "ibm_narrative": {
+      "section_id": "ibm_narrative",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "IBM role narrative. Copied verbatim — no LLM involvement."
+    },
+    "ibm_bullets": {
+      "section_id": "ibm_bullets",
+      "treatment": "TIERED_BY_ORDINAL",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "IBM role bullets. Ordinal-tiered: 1-2 MODERATE, 3+ LIGHT.",
+      "bullet_ordinal_tiers": [
+        {"ordinal_min": 1, "ordinal_max": 2, "treatment": "MODERATE"},
+        {"ordinal_min": 3, "ordinal_max": null, "treatment": "LIGHT"}
+      ]
+    },
+    "insurtech_narrative": {
+      "section_id": "insurtech_narrative",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "InsurTech role narrative. Copied verbatim — no LLM involvement."
+    },
+    "insurtech_bullets": {
+      "section_id": "insurtech_bullets",
+      "treatment": "MODERATE",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "InsurTech role bullets. Moderate reframe."
+    },
+    "ey_narrative": {
+      "section_id": "ey_narrative",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "EY role narrative. Copied verbatim — no LLM involvement."
+    },
+    "ey_bullets": {
+      "section_id": "ey_bullets",
+      "treatment": "LIGHT",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "description": "EY role bullets. Light reframe only."
+    },
+    "early_career": {
+      "section_id": "early_career",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "Early career roles. Copied verbatim — no LLM involvement."
+    },
+    "competencies": {
+      "section_id": "competencies",
+      "treatment": "JD_RANKED_NOUN_PHRASES",
+      "rewrite_allowed": true,
+      "preserve_verbatim": false,
+      "evidence_required": true,
+      "max_phrase_words": 4,
+      "min_phrase_words": 2,
+      "description": "Core competencies. JD-ranked 2-4 word noun phrases. No new competencies invented."
+    },
+    "education": {
+      "section_id": "education",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "Education entries. Copied verbatim — no LLM involvement."
+    },
+    "certifications": {
+      "section_id": "certifications",
+      "treatment": "VERBATIM",
+      "rewrite_allowed": false,
+      "preserve_verbatim": true,
+      "evidence_required": false,
+      "description": "Certification entries. Copied verbatim — no LLM involvement."
+    }
+  }
+}

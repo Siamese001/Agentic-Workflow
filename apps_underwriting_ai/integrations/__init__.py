@@ -1,29 +1,19 @@
 """apps_underwriting_ai integrations.
 
-Exports execution adapter, governed-run wrapper, ingress runner,
-observability adapter, and spine-handoff utilities.
+Active integration adapters consumed by the agentic_core dispatch chain.
+
+REMOVED (plan apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W1):
+  - ExecutionAdapter / ExecutionRequest — parallel bypass path, deleted
+  - governed_underwriting_run — parallel bypass path, deleted
+  - UnderwritingIngressRunner — file-based ingress into parallel path, deleted
+  - SpineHandoff — stale envelope for wrong route, deleted
+  - underwriting_capability_registry — app-side registry duplication, deleted
 """
 
-from apps_underwriting_ai.integrations.execution_adapter import (
-    ExecutionAdapter,
-    ExecutionRequest,
-)
-from apps_underwriting_ai.integrations.governed_underwriting_run import (
-    governed_underwriting_run,
-)
 from apps_underwriting_ai.integrations.observability_adapter import (
     ObservabilityAdapter,
 )
-from apps_underwriting_ai.integrations.spine_handoff import SpineHandoff
-from apps_underwriting_ai.integrations.underwriting_ingress_runner import (
-    UnderwritingIngressRunner,
-)
 
 __all__ = [
-    "ExecutionAdapter",
-    "ExecutionRequest",
     "ObservabilityAdapter",
-    "SpineHandoff",
-    "UnderwritingIngressRunner",
-    "governed_underwriting_run",
 ]

@@ -8,7 +8,7 @@ Prompt Assembly owns compilation ONLY. This module MUST NOT:
 - route requests (forbidden: route_registry lookups)
 - execute tools (forbidden: any tool call)
 - call providers (forbidden: openai, anthropic, litellm, llm_client, etc.)
-- mutate L4 state (forbidden: DurableWriteGateway, StateStore, etc.)
+- mutate L4 state (forbidden: L4 state stores, UWG-only write path, etc.)
 - emit Exit disposition (forbidden: Exit v6, x3_dispositions, etc.)
 - approve egress (forbidden: UWG admission gate)
 - change the underwriting verdict or reason codes (LOCKED by DeterministicRiskScorer)

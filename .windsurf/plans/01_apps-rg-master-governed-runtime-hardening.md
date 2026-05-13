@@ -19,10 +19,131 @@ Collapse 8 overlapping apps_rg plans into one sequenced master implementation pl
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-05-13
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: COMPLETE — all S0–S9 phases PASS
+LAST_COMPLETED_WAVE: W9/S9 — Resume-Shipping Cache Safety Closeout (PASS 2026-05-14)
+LAST_UPDATED: 2026-05-14
+
+**COMPLETED_PHASES:**
+- S0 — Fast Runtime Path Inventory: S0 BLOCKED (stop conditions documented) → receipt: artifacts/governance/apps_rg_resume_shipping_s0_runtime_path_inventory.md
+- S0.5 — Resume-Shipping Cache Safety Guard: S0.5 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md
+  - write_section_to_semantic_cache removed from resume-shipping runtime path
+  - SECTION_PIPELINE_AVAILABLE hard-set to False
+  - apps_rg_dispatch_section_pipeline removed from __all__, raises RuntimeError on call
+  - Files changed: apps_rg/runtime/section_agentic_pipeline.py, apps_rg/runtime/dispatch/apps_rg_dispatch.py
+- S1 — Structured Resume Schema and Ingestion: S1 PASS_WITH_EXTERNAL_CHECKPOINT_BLOCKER 2026-05-13 → receipt: artifacts/governance/apps_rg_resume_shipping_s1_structured_resume_schema.md
+  - JSON Schema: apps_rg/runtime/schemas/source_resume_v2_structured.json
+  - Validator: apps_rg/runtime/schemas/source_resume_schema.py
+  - Fixture: tests/_apps_contract/source_resume_v2_structured_minimal.json
+  - Tests: tests/_apps_contract/test_source_resume_schema_v2.py (94/94 PASS)
+  - W1_APP_TESTS: PASS (94/94)
+  - CORE_BOUNDARY_CHECKPOINT: BLOCKED_BY_PREEXISTING_FINDINGS
+  - AGENTIC_CORE_CHANGED_BY_W1: false
+  - W1_STATUS: PARTIAL_PASS_PENDING_CHECKPOINT_DISPOSITION
+  - No generation behavior changes; no agentic_core changes; no reactivation
+- S2 — Section-by-Section Treatment Matrix: S2 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s2_section_treatment_matrix.md
+  - Profile: apps_rg/config/domain_contract/resume_section_treatment_profile.v1.json
+  - Resolver: apps_rg/runtime/schemas/section_treatment_profile.py
+  - Tests: tests/_apps_contract/test_resume_section_treatment_profile.py (53/53 PASS + 36 S1 regression = 89/89)
+  - No generation behavior changes; no agentic_core changes; no reactivation
+- S3 — PA Tiered Prompt Patching: S3 PASS 2026-05-13 → receipt: artifacts/governance/apps_rg_resume_shipping_s3_pa_tiered_prompt_patching.md
+  - PA prompt profile: apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json (XML-style sections, anti-invention rules, output schema)
+  - PA patch: apps_rg/runtime/bindings/pa_binding.py (SectionPromptArtifact + build_section_prompt_artifact + build_section_prompt_artifact_for_bullet)
+  - Tests: tests/_apps_contract/test_pa_binding_role_tiering.py (36/36 PASS) + tests/_apps_contract/test_pa_binding_prompt_contract.py (25/25 PASS)
+  - W2_STATUS: PASS
+  - W2_APP_TESTS: PASS (61/61)
+  - W1_SCHEMA_REGRESSION: PASS (53/53)
+  - W0A_RUNTIME_PATH_CI: PASS
+  - SOURCE_CHANGES_MADE: true
+  - AGENTIC_CORE_CHANGED: false
+  - SOURCE_RESUME_SCHEMA_CHANGED_BY_W2: false
+  - PA_BINDING_PATCH_ONLY: true
+  - NEW_PA_LAYER_CREATED: false
+  - PA_TIERING_PROVEN: true
+  - VERBATIM_BYPASS_PROVEN: true
+  - ANTI_INVENTION_RULES_PRESENT: true
+  - SOURCE_SPAN_FIRST_PROVEN: true
+  - JUDGE_RUNTIME_ACTIVATED: false
+  - Commit: apps-rg-w2: enforce PA role tiering and prompt contract
+  - All 5 modes: HEAVY/MODERATE/LIGHT/VERBATIM/JD_RANKED_NOUN_PHRASES; ordinal routing; anti-invention enforcement
+  - Tiering verified: headline/executive_summary=HEAVY, education/certifications/early_career=VERBATIM, insurtech=MODERATE, ey=LIGHT
+  - Bullet tiering verified: unify_bullets=1-3HEAVY/4-5MODERATE/6+LIGHT, ibm_bullets=1-2MODERATE/3+LIGHT
+  - No generation behavior changes; no agentic_core changes; no reactivation; no model calls
+- S4 — U0 Structured Resume Support: S4 PASS 2026-05-13 → receipt: artifacts/governance/apps_rg_resume_shipping_s4_u0_structured_resume_support.md
+  - Classifier: apps_rg/runtime/u0/structured_resume_classifier.py (fixed schema_name check)
+  - Payload synthesizer: apps_rg/runtime/u0/payload_synthesizer.py (structured resume detection)
+  - Tests: tests/_apps_contract/test_apps_rg_u0_structured_resume_support.py (60/60 PASS)
+  - W3_STATUS: PASS
+  - W3_APP_TESTS: PASS (60/60)
+  - SOURCE_CHANGES_MADE: true
+  - AGENTIC_CORE_CHANGED: false
+  - STRUCTURED_RESUME_DETECTION_PROVEN: true
+  - FLAT_FALLBACK_PROVEN: true
+  - NO_FLATTENING_PROVEN: true
+  - VERBATIM_PRESERVATION_PROVEN: true
+  - JUDGE_RUNTIME_ACTIVATED: false
+  - W2_REGRESSION: PASS (61/61)
+  - W1_SCHEMA_REGRESSION: PASS (53/53)
+  - W0A_RUNTIME_PATH_CI: PASS
+  - Commit: apps-rg-w3: U0 structured resume detection and pass-through
+  - No agentic_core changes; no model calls; no cache writes; no reactivation
+- S5 — Runtime Executive Summary Display Fix: S5 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md
+  - Display fix: apps_rg/runtime/runtime_executive_summary.py (modified)
+  - New helpers: build_resume_shipping_status(), RESUME_SHIPPING_LIVE_PATH constant
+  - Tests: tests/_apps_contract/test_apps_rg_runtime_summary_display.py (71/71 PASS)
+  - S1/S2/S3/S4 targeted regression: 269/269 PASS
+  - No runtime behavior changes; no agentic_core changes; no model calls; no cache writes; no reactivation
+- S6 — Deterministic Resume Exit Checks: S6 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s6_deterministic_resume_exit_checks.md
+  - Checker: apps_rg/runtime/exit/resume_exit_checks.py (new) — 7 deterministic checks (A–G)
+  - Config: apps_rg/config/domain_contract/resume_exit_checks_profile.v1.json (new)
+  - Tests: tests/_apps_contract/test_apps_rg_resume_exit_checks.py (89/89 PASS)
+  - S1–S5 targeted regression: 340/340 PASS
+  - No model calls; no agentic_core changes; no cache writes; no reactivation
+
+- S7 — Minimum C0 Safety: S7 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s7_minimum_c0_safety.md
+  - Checker: apps_rg/runtime/bindings/c0_minimum_safety.py (new) — 5 deterministic C0 safety checks
+  - Config: apps_rg/config/domain_contract/resume_c0_minimum_safety_profile.v1.json (new)
+  - Tests: tests/_apps_contract/test_apps_rg_c0_minimum_safety.py (75/75 PASS)
+  - S1–S6 targeted regression: 89/89 PASS
+  - No model calls; no agentic_core changes; no cache writes; no reactivation; no fact_vectors
+
+- S8 — Manual Section Review Harness: S8 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s8_manual_section_review_harness.md
+  - Package: apps_rg/runtime/review/__init__.py (new)
+  - Harness: apps_rg/runtime/review/manual_section_review.py (new) — build_review_packet, format_review_packet_markdown, review_packet_to_dict
+  - Config: apps_rg/config/domain_contract/resume_manual_section_review_profile.v1.json (new)
+  - Tests: tests/_apps_contract/test_apps_rg_manual_section_review.py (88/88 PASS)
+  - S1–S7 targeted regression: 504/504 PASS
+  - No model calls; no agentic_core changes; no cache writes; no reactivation; no external send
+
+- S9 — Resume-Shipping Cache Safety Closeout: S9 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s9_cache_safety_closeout.md
+  - Investigation only — no runtime/source changes required
+  - S0.5 guard confirmed intact through S1–S8: write_section_to_semantic_cache/section_agentic_pipeline/apps_rg_dispatch_section_pipeline/SECTION_PIPELINE_AVAILABLE/l6_shadow_learning all BLOCKED/DORMANT
+  - S1–S8 targeted regression: 592/592 PASS
+  - No full smoke run executed before closeout
+
+**NEXT_PHASE:** Generate first local/dev sendable resume candidate with manual section review. Do not claim L5-governed or production-governed status.
+
+---
+
+## ✅ Resume Shipping Phase Progress
+
+| Phase | Title | Status | Receipt |
+|-------|-------|--------|---------|
+| S0 | Fast Runtime Path Inventory | ⛔ BLOCKED (stop conditions hit — see receipt) | `artifacts/governance/apps_rg_resume_shipping_s0_runtime_path_inventory.md` |
+| S0.5 | Resume-Shipping Cache Safety Guard | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md` |
+| S1 | Structured Resume Schema and Ingestion | ✅ PASS_WITH_EXTERNAL_CHECKPOINT_BLOCKER 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s1_structured_resume_schema.md` |
+| S2 | Section-by-Section Treatment Matrix | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s2_section_treatment_matrix.md` |
+| S3 | PA Tiered Prompt Patching | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s3_pa_tiered_prompt_patching.md` |
+| S4 | U0 Structured Resume Support | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s4_u0_structured_resume_support.md` |
+| S5 | Runtime Executive Summary Display Fix | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md` |
+| S6 | Deterministic Resume Exit Checks | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s6_deterministic_resume_exit_checks.md` |
+| S7 | Minimum C0 Safety | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s7_minimum_c0_safety.md` |
+| S8 | Manual Section Review Harness | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s8_manual_section_review_harness.md` |
+| S9 | Resume-Shipping Cache Safety Closeout | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s9_cache_safety_closeout.md` |
+
+**Legend:** ✅ PASS · ✅ PASS_WITH_EXTERNAL_CHECKPOINT_BLOCKER · ⛔ BLOCKED · 🔲 NOT STARTED · 🔄 IN PROGRESS
+
+---
 
 **CANONICAL_EXECUTION_SET:**
 - 01_apps-rg-master-governed-runtime-hardening.md

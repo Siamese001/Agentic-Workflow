@@ -66,8 +66,8 @@ claimed_routes:
       - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.RiskScoringAdapter.run
       - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.DecisionAssemblyAdapter.run
       - apps_underwriting_ai.integrations.underwriting_c0_adapter.UnderwritingC0Adapter.run
-      - apps_underwriting_ai.engines.underwriting_engine.UnderwritingEngine.run
-      - apps_underwriting_ai.integrations.execution_adapter.ExecutionAdapter.execute
+      - apps_underwriting_ai.runtime.dispatch.underwriting_dispatch.run_underwriting_dispatch
+      - apps_underwriting_ai.runtime.bindings.pa_binding.pa_compose_underwriting
 
     exit_points:
       - apps_underwriting_ai.integrations.underwriting_l2_step_adapters.L2StepReceipt
@@ -75,7 +75,7 @@ claimed_routes:
       - apps_underwriting_ai.integrations.underwriting_c0_adapter.FinalEvidenceContract
       - apps_underwriting_ai.types.underwriting_types.DecisionPacket
       - apps_underwriting_ai.types.underwriting_types.UnderwritingResult
-      - apps_underwriting_ai.integrations.spine_handoff.SpineHandoff.package
+      - apps_underwriting_ai.runtime.dispatch.underwriting_dispatch.DispatchResult
 
     l2_receipts:
       - L2.E1.underwriting_execution_context_bound
@@ -92,7 +92,8 @@ claimed_routes:
 #   dependency edges, HITL posture, and evidence_refs injection.
 # - L2 step adapters are fully implemented: E1-E5, no retrieval, no L4 write.
 # - FinalEvidenceContract (W2.1/W2.2) feeds into the L3 expand() call.
-# - ZERO matches in apps_underwriting_ai/ for: CommitRequest, commit_request,
-#   StateDiffCandidate, proposed_state_diff, MutationIntent, durable_write,
-#   write_gateway, publish, policy_issue, loan_book, ledger_write.
+# - Deleted entry points: UnderwritingEngine.run, ExecutionAdapter.execute (W1 consolidation).
+# - Deleted exit point: SpineHandoff.package (W1 consolidation).
+# - New entry points: run_underwriting_dispatch (W4), pa_compose_underwriting (W4 PA).
+# - New exit point: DispatchResult (W4 dispatch result contract).
 # - The DecisionPacket is a read-side artifact; UWG-only write path enforced.

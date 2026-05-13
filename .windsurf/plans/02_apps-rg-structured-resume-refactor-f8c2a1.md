@@ -57,9 +57,9 @@ Refactor the apps_rg resume generation pipeline to use a structured source resum
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: Not Started
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: In Progress
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-05-13
 
 ---
@@ -89,20 +89,8 @@ LAST_UPDATED: 2026-05-13
 
 **Waves**: 11 total (W0A, W1–W8, W9, W10) including W6.0
 **Total Estimate**: ~7,800 tokens
-**Current**: W0 (pre-flight)
-
----
-
-## Wave 0A — Active Runtime Path Inventory (New)
-
-WAVE_ID: W0A
-WAVE_STATUS: Not Started
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: NOT_REQUIRED
-CHECKPOINT: A0
-
-**Goal**: Classify every apps_rg runtime-related file as ACTIVE, LEGACY, QUARANTINED, or OUT_OF_SCOPE. Declare exactly one active generation path.
-
+**Current**: W2
+**Last Completed**: W1
 **Initial Classification Hypothesis, to be verified by W0A**:
 
 | Path | Classification | Rationale | Binding Evidence Required |
@@ -185,19 +173,16 @@ CHECKPOINT: A0
 | `.windsurf/rules/*` | Global governance rules | Exception: rule update plans only |
 | Global plan templates (`execution-plan-template.md`) | Cross-plan consistency | Exception: template update plans only |
 
-**Boundary Principle**: apps_rg may consume agentic_core contracts; apps_rg may NEVER modify agentic_core. All changes to the above forbidden paths require separate architectural plan with Author-Gate.
-
----
-
 ## Wave Manifest
 
-- **W0A** — Active Runtime Path Inventory | ~400 tokens | STATUS: Not Started
-- **W1** — Structured JSON Schema + Exit Binding Ingestion | ~800 tokens | STATUS: Not Started
+- **W0A** — Active Runtime Path Inventory ✅ COMPLETED | ~400 tokens | STATUS: **Completed**
+- **W1** — Structured JSON Schema + Exit Binding Ingestion | ~800 tokens | STATUS: **Completed**
 - **W2** — PA Binding Tiered Prompt Patching | ~800 tokens | STATUS: Not Started
 - **W3** — U0 Payload Synthesizer Structured Resume Support | ~600 tokens | STATUS: Not Started
 - **W4** — Runtime Executive Summary Bug Patch | ~400 tokens | STATUS: Not Started
 - **W5** — CI Gates + Core Boundary Enforcement | ~600 tokens | STATUS: Not Started
 - **W6.0** — Canonical Exit Harness Wiring | ~600 tokens | STATUS: Not Started
+- **W6** — Exit G21/G22 Payload Extensions | ~800 tokens | STATUS: Not Started
 - **W6** — Exit Gate Payload Extensions (G21/G22) | ~800 tokens | STATUS: Not Started
 - **W7** — C0 Evidence Trust & Retrieval Safety | ~600 tokens | STATUS: Not Started
 - **W8** — Identity, Budget, L6 Firewall + Inert Writeback | ~600 tokens | STATUS: Not Started
@@ -210,8 +195,8 @@ CHECKPOINT: A0
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status |
 |------|-----------|-------|-------------|--------|
-| W0A | W0A.1, W0A.2 | Runtime path inventory + classification + CI gate | ~400 | Not Started |
-| W1 | W1.1, W1.2 | Structured JSON schema + exit binding ingestion | ~800 | Not Started |
+| W0A | W0A.1, W0A.2 | Runtime path inventory + classification + CI gate | ~400 | **Completed** |
+| W1 | W1.1, W1.2 | Structured JSON schema + exit binding ingestion | ~800 | **Completed** |
 | W2 | W2.1, W2.2 | Patch pa_binding.py with role-aware tiering | ~800 | Not Started |
 | W3 | W3.1, W3.2 | U0 payload synthesizer structured support | ~600 | Not Started |
 | W4 | W4.1 | Bug patch runtime_executive_summary.py display | ~400 | Not Started |
@@ -229,10 +214,10 @@ CHECKPOINT: A0
 
 | Phase ID | Title | Scope (files) | Est. Tokens | Status |
 |----------|-------|---------------|-------------|--------|
-| W0A.1 | Inventory Runtime Paths | All `runtime/`, `integrations/`, `engines/`, `_quarantine/` | ~200 | Not Started |
-| W0A.2 | CI Gate + Classification Enforcement | `check_apps_rg_runtime_path_inventory.py` | ~200 | Not Started |
-| W1.1 | Define Structured Resume Schema | `source_resume_structured.json` schema doc | ~400 | Not Started |
-| W1.2 | Update Exit Binding Ingestion | `exit_binding.py:_ingest_docx_to_master_resume` | ~400 | Not Started |
+| W0A.1 | Inventory Runtime Paths | All `runtime/`, `integrations/`, `engines/`, `_quarantine/` | ~200 | **Completed** |
+| W0A.2 | CI Gate + Classification Enforcement | `check_apps_rg_runtime_path_inventory.py` | ~200 | **Completed** |
+| W1.1 | Define Structured Resume Schema | `source_resume_v2_structured.json` schema doc | ~400 | **Completed** |
+| W1.2 | Update Exit Binding Ingestion | `exit_binding.py:produce_structured_resume_from_docx()` | ~400 | **Completed** |
 | W2.1 | Patch PA Binding Role-Aware Tiering | `pa_binding.py` section detection + tiering | ~400 | Not Started |
 | W2.2 | PA Provider-Neutral Prompt Polish | `pa_binding.py` XML structure, anti-invention | ~400 | Not Started |
 | W3.1 | U0 Structured Resume Detection | `payload_synthesizer.py`, `u0_binding.py` | ~300 | Not Started |
@@ -271,13 +256,15 @@ CHECKPOINT: A0
 
 ---
 
-## Wave 1 — Structured JSON Schema + Exit Binding Ingestion
+## Wave 1 — Structured JSON Schema + Exit Binding Ingestion ✅ COMPLETED
 
 **Critical Reframe**: Standardize resume input to structured JSON with normalized identifiers and clear separation of narrative vs bullets.
 
+**Status**: COMPLETED — 89 tests passing (48 schema + 19 exit binding + 22 normalized IDs)
+
 **Phases**:
-- **W1.1** — Define Structured Resume Schema with normalized IDs
-- **W1.2** — Update Exit Binding to produce structured format from DOCX
+- **W1.1** ✅ — Define Structured Resume Schema with normalized IDs (`source_resume_v2_structured.json`)
+- **W1.2** ✅ — Update Exit Binding to produce structured format from DOCX (`produce_structured_resume_from_docx()`) |
 
 **Schema Requirements** (`source_resume_v2_structured.json`):
 

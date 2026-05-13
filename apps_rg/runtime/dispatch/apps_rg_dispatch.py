@@ -47,15 +47,15 @@ from apps_rg.runtime.bindings.u0_binding import (
 )
 from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
 
-# W5: Per-section full agentic pipeline (optional execution mode)
-try:
-    from apps_rg.runtime.section_agentic_pipeline import (
-        execute_all_sections_full_pipeline,
-        SectionAgenticResult,
-    )
-    SECTION_PIPELINE_AVAILABLE = True
-except ImportError:
-    SECTION_PIPELINE_AVAILABLE = False
+# S0.5 CACHE SAFETY GUARD: Section pipeline is DISABLED for resume-shipping mode.
+# SECTION_PIPELINE_AVAILABLE is hard-set to False regardless of whether
+# section_agentic_pipeline imports successfully. This ensures apps_rg_dispatch()
+# cannot activate the per-section path (which previously loaded write_section_to_semantic_cache).
+# Re-enable only after S0.5 cache guard passes full validation.
+# See: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md
+SECTION_PIPELINE_AVAILABLE: bool = False
+# (execute_all_sections_full_pipeline and SectionAgenticResult are not imported here;
+#  apps_rg_dispatch_section_pipeline() will raise RuntimeError if called.)
 
 # Runtime executive summary generator
 try:
@@ -74,6 +74,16 @@ from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
 )
 
 _DISPATCH_LOGGER = logging.getLogger(__name__)
+
+
+def _exit_resolve_repo_root() -> Path:
+    """Resolve repository root using pyproject.toml sentinel."""
+    here = Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        if (parent / "pyproject.toml").exists():
+            return parent
+    return here.parent.parent.parent
+
 
 # ---------------------------------------------------------------------------
 # Required fields — the payload keys that MUST be present and non-empty
@@ -551,20 +561,27 @@ def apps_rg_dispatch_section_pipeline(
     dry_run: bool = False,
 ) -> X3Disposition:
     """Execute apps_rg using PER-SECTION full U0-L6 agentic pipeline.
-    
-    User directive 2026-05-12: Each subsection (headline, exec_summary, 
-    Unify, IBM, InsurTech, EY, competencies, etc.) runs through FULL 
-    agentic spine with shadow learning and semantic cache writeback.
-    
+
+    S0.5 CACHE SAFETY GUARD: This function is BLOCKED for resume-shipping mode.
+    Calling it raises RuntimeError. It is not exported from apps_rg.runtime.dispatch.
+    Re-enable only after UWG promotion gate and cache guard are validated (S1+ scope).
+    See: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md
+
     Args:
         envelope: Original request envelope
         validated_request: U0 validated request
         run_dir: Output directory for artifacts
         dry_run: If True, skip actual L2 execution
-    
+
     Returns:
         X3Disposition aggregating all section results
     """
+    raise RuntimeError(
+        "S0.5 CACHE SAFETY GUARD: apps_rg_dispatch_section_pipeline is BLOCKED. "
+        "This path is not active for resume-shipping mode. "
+        "Use apps_rg_dispatch() for the canonical U0->L1->L0->C0->PA->L2->Exit pipeline. "
+        "See: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md"
+    )
     from apps_rg.runtime.section_planner import build_section_plan, SectionPlan
     
     trace_id = envelope.trace_id
@@ -721,5 +738,7 @@ __all__ = [
     "APPS_RG_REQUIRED_FIELDS",
     "apps_rg_parse",
     "apps_rg_dispatch",
-    "apps_rg_dispatch_section_pipeline",
+    # apps_rg_dispatch_section_pipeline intentionally omitted from export surface.
+    # S0.5 CACHE SAFETY GUARD: section pipeline is not an active CLI path.
+    # Re-add only after UWG promotion gate and cache guard are validated (S1+ scope).
 ]

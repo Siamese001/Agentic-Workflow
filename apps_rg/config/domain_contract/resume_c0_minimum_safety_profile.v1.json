@@ -1,0 +1,133 @@
+{
+  "app_id": "apps_rg",
+  "profile_id": "resume_c0_minimum_safety_profile",
+  "schema_version": "v1",
+  "description": "S7: Minimum C0 safety profile for apps_rg resume shipping. Defines required FEC fields, support status promotion rules, briefing authority/freshness policy, and no-company-research-lane invariant.",
+
+  "grounding_required_policy": {
+    "when_grounding_required_true_and_no_evidence": "FAIL",
+    "when_grounding_required_false": "NOT_APPLICABLE",
+    "c0_bypass_when_grounding_required": "BLOCKED",
+    "note": "C0 must be required before PA when grounding_required=true. Bypass is never silent PASS."
+  },
+
+  "fec_required_fields": {
+    "evidence_items": {
+      "required": true,
+      "empty_allowed_with_explicit_reason": true,
+      "absent_verdict": "FAIL",
+      "empty_without_reason_verdict": "FAIL"
+    },
+    "support_status": {
+      "required": true,
+      "absent_verdict": "UNKNOWN",
+      "note": "Missing support_status is treated as UNKNOWN, never PASS"
+    },
+    "final_evidence_digest": {
+      "required": true,
+      "absent_verdict": "WARN",
+      "note": "Empty digest breaks provenance chain — WARN not hard FAIL for file-only path"
+    },
+    "source_lineage_map": {
+      "required": false,
+      "absent_verdict": "WARN",
+      "note": "Required when Chroma active; WARN when file-only"
+    },
+    "freshness_receipts": {
+      "required": false,
+      "absent_verdict": "WARN",
+      "note": "Required per source when freshness class declared; WARN when absent"
+    },
+    "acl_verification_receipts": {
+      "required": false,
+      "absent_verdict": "WARN",
+      "note": "Required per source when ACL check declared; WARN when absent"
+    },
+    "contradiction_report": {
+      "required": false,
+      "absent_verdict": "WARN",
+      "not_applicable_allowed_with_reason": true,
+      "note": "WARN when absent and no not_applicable_reason; NOT_APPLICABLE allowed with reason"
+    },
+    "citation_map": {
+      "required": false,
+      "absent_verdict": "WARN",
+      "note": "WARN when Chroma active and absent; OK for file-only path"
+    }
+  },
+
+  "support_status_rules": {
+    "PASS": {
+      "allowed_to_continue_to_pa": true,
+      "requires_evidence_completeness": true,
+      "note": "PASS may remain PASS only if required evidence fields are present"
+    },
+    "PARTIAL": {
+      "allowed_to_continue_to_pa": true,
+      "note": "PARTIAL is a passing status per FEC contract"
+    },
+    "WEAK_WITH_CAVEATS": {
+      "allowed_to_continue_to_pa": false,
+      "promote_to_pass": false,
+      "note": "WEAK_WITH_CAVEATS must NOT be promoted to PASS"
+    },
+    "WEAK": {
+      "allowed_to_continue_to_pa": false,
+      "promote_to_pass": false,
+      "note": "WEAK must NOT be promoted to PASS"
+    },
+    "CONFLICTED": {
+      "allowed_to_continue_to_pa": false,
+      "blocks_confident_output": true,
+      "note": "CONFLICTED must block confident output"
+    },
+    "EMPTY": {
+      "allowed_to_continue_to_pa": false,
+      "blocks_confident_output": true,
+      "note": "EMPTY must block confident output"
+    },
+    "BLOCKED": {
+      "allowed_to_continue_to_pa": false,
+      "blocks_confident_output": true,
+      "note": "BLOCKED must block confident output"
+    },
+    "UNKNOWN": {
+      "allowed_to_continue_to_pa": false,
+      "is_never_pass": true,
+      "blocks_confident_output": true,
+      "note": "UNKNOWN is NEVER PASS. Missing support_status defaults to UNKNOWN."
+    },
+    "missing": {
+      "treated_as": "UNKNOWN",
+      "allowed_to_continue_to_pa": false,
+      "note": "Missing support_status is treated as UNKNOWN, not PASS"
+    }
+  },
+
+  "briefing_policy": {
+    "authority_classes_allowed": ["AUTHORITATIVE", "PRIMARY", "SECONDARY"],
+    "authority_classes_requiring_block": ["UNKNOWN", "DENIED", "UNAUTHORIZED"],
+    "freshness_max_age_hours": 72,
+    "stale_briefing_verdict": "WEAK_WITH_CAVEATS",
+    "unauthorized_briefing_verdict": "BLOCKED",
+    "missing_authority_marker_verdict": "UNKNOWN",
+    "missing_freshness_marker_verdict": "WARN",
+    "missing_digest_verdict": "WARN",
+    "stale_can_be_clean_pass": false,
+    "unauthorized_can_be_clean_pass": false,
+    "note": "Stale or unauthorized briefing can never become a clean PASS"
+  },
+
+  "company_research_lane": {
+    "allowed_inside_apps_rg_c0": false,
+    "company_research_owner": "apps_research",
+    "briefing_source": "supplied_authoritative_briefing_or_apps_research_via_L3",
+    "note": "apps_rg C0 handles candidate-owned facts, JD/resume grounding, per-section support only. No company research retrieval inside apps_rg C0."
+  },
+
+  "safe_to_continue_to_pa_rules": {
+    "required_verdict": ["PASS", "WARN"],
+    "blocking_verdicts": ["FAIL", "BLOCKED", "UNKNOWN"],
+    "note": "safe_to_continue_to_pa=true requires overall verdict PASS or WARN. FAIL/BLOCKED/UNKNOWN blocks PA."
+  }
+}

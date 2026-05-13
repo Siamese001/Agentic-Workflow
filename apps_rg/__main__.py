@@ -361,8 +361,9 @@ def main() -> int:
         # receipt's pass_status + digests so the operator sees the harness
         # is on the live path. No L1+ stage runs.
         try:
-            from apps_rg.runtime.entry.dispatch import apps_rg_parse
-            from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
+            # W0A: Use canonical dispatch path only — apps_rg/runtime/dispatch
+            from apps_rg.runtime.dispatch import apps_rg_parse
+            from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
             envelope = apps_rg_parse(ingress_payload)
             if envelope is None:
                 print("DRY RUN: U0 harness — envelope build skipped (parse returned None).")

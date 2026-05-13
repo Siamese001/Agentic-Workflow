@@ -1,19 +1,23 @@
-"""apps_rg-specific dispatch/parse/required_fields callables for AppIngressRunner.
+"""QUARANTINE NOTICE — AG-RGGOV-W0A: LEGACY_DISPATCH_PATH
 
-Per plan apps-rg-runtime-wiring-completion-d4e8a1 §5 (re-opens c8b3e1 W6/W7).
+This file is QUARANTINED per W0A runtime path classification.
+The canonical active path is: apps_rg/runtime/dispatch/apps_rg_dispatch.py
 
-These three callables are the thin glue between AppIngressRunner's generic
-ingress envelope flow and the apps_rg domain runtime. They are pure
-functions — no provider calls, no LLM logic, no state writes.
+Original: apps_rg/runtime/entry/dispatch.py
+Quarantined: 2026-05-13
+Reason: W0A requires single active generation path through runtime.dispatch only.
 
-W2 (this file) lands the callable shape and a STUB dispatcher that emits a
-well-formed X3Disposition with exit_status='stub_pending_w3'. The real
-U0 -> L1 -> L0 -> [C0] -> [PA] -> L2 -> Exit pipeline binding lands in W3.
-
-This is the W4 governance pattern from c8b3e1 §4.1: apps_rg builds an
-ingress payload; core dispatches it; apps_rg never plans/routes/executes.
+Importing this module raises RuntimeError immediately.
+Use apps_rg.runtime.dispatch (the canonical path) instead.
 """
 from __future__ import annotations
+
+raise RuntimeError(
+    "QUARANTINE VIOLATION (AG-RGGOV-W0A): "
+    "apps_rg.runtime.entry.dispatch is QUARANTINED. "
+    "Use apps_rg.runtime.dispatch (the canonical path). "
+    "See: artifacts/apps_rg/runtime_path_inventory_w0a.json"
+)
 
 from datetime import datetime, timezone
 from typing import Any, Mapping

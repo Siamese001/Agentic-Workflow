@@ -1,10 +1,11 @@
 """apps_underwriting_ai engines.
 
-Two layers:
-- Backing engines (UnderwritingEngine, EvidenceRegisterEngine,
-  DecisionPacketAssembler) — the imperative pipeline implementation.
-- Hop adapters (Hop*Engine) — thin substrate-compatible wrappers driven
-  by the shared HopPipelineExecutor.
+Active backing engines consumed by the agentic_core dispatch chain
+(U0 → L1 → L0 → C0 → PA → L2 → Exit).
+
+REMOVED: UnderwritingEngine — relocated to engines/_legacy/underwriting_engine.py
+         (not on any active import path; preserved as reference only).
+         Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W1.
 """
 
 from apps_underwriting_ai.engines.base_underwriting_engine import (
@@ -16,11 +17,9 @@ from apps_underwriting_ai.engines.decision_packet_assembler import (
 from apps_underwriting_ai.engines.evidence_register_engine import (
     EvidenceRegisterEngine,
 )
-from apps_underwriting_ai.engines.underwriting_engine import UnderwritingEngine
 
 __all__ = [
     "BaseUnderwritingEngine",
     "DecisionPacketAssembler",
     "EvidenceRegisterEngine",
-    "UnderwritingEngine",
 ]

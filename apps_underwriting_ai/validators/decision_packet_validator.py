@@ -1,8 +1,8 @@
 """Composite validator — orchestrates the three gate validators.
 
-The composite pattern lets callers (ExecutionAdapter, IngressRunner,
-audit tools) run the full validator stack against a DecisionPacket with
-one call and inspect per-validator results.
+The composite pattern lets callers (L2 step adapters, audit tools)
+run the full validator stack against a DecisionPacket with one call
+and inspect per-validator results.
 """
 from __future__ import annotations
 

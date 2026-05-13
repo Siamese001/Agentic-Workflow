@@ -68,8 +68,21 @@ from apps_rg.runtime.schemas import (
     SectionWritebackCandidate,
 )
 
-# Semantic cache
-from apps_rg.cache.r1b_semantic import write_section_to_semantic_cache
+# S0.5 CACHE SAFETY GUARD: Direct semantic cache writes are DISABLED for resume-shipping mode.
+# write_section_to_semantic_cache is NOT imported. All cache writeback attempts produce an
+# inert SectionCacheWriteProposal(status=PENDING_UWG) only. No filesystem write occurs.
+# Re-enable only after UWG promotion gate is implemented (S1+ scope).
+# See: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md
+@dataclass(frozen=True)
+class SectionCacheWriteProposal:
+    """Inert proposal for a future cache write. No filesystem write is performed.
+
+    Produced by _write_section_to_semantic_cache when resume-shipping cache guard
+    is active (S0.5+). Actual write requires UWG promotion (out of scope until S1+).
+    """
+    section_id: str
+    cache_key: str
+    status: str = "PENDING_UWG"  # Never "written" until UWG promotion gate passes
 
 
 @dataclass
@@ -225,9 +238,14 @@ def _write_section_to_semantic_cache(
     generated_content: str,
     section_context: dict[str, Any],
 ) -> str | None:
-    """Write section result to semantic cache for future retrieval.
-    
-    Enables cache hits on similar sections in future runs.
+    """S0.5 CACHE SAFETY GUARD: Returns inert proposal only. No filesystem write.
+
+    Direct cache writes are DISABLED for resume-shipping mode. This function
+    produces a SectionCacheWriteProposal(status=PENDING_UWG) and returns the
+    cache key string for logging, but performs zero filesystem I/O.
+
+    To re-enable: implement UWG promotion gate (S1+ scope) and remove this guard.
+    See: artifacts/governance/apps_rg_resume_shipping_s05_cache_safety_guard.md
     """
     try:
         # Build cache key from section content hash + target context
@@ -235,27 +253,22 @@ def _write_section_to_semantic_cache(
             "section_id": section_spec.section_id,
             "target_company": section_context.get("target_company", ""),
             "target_role": section_context.get("target_role", ""),
-            "content_preview": generated_content[:200],  # For similarity matching
+            "content_preview": generated_content[:200],
         }
-        
+
         cache_key = hashlib.sha256(
             json.dumps(cache_payload, sort_keys=True).encode()
         ).hexdigest()[:32]
-        
-        # Write to semantic cache
-        write_section_to_semantic_cache(
+
+        # S0.5 GUARD: Produce inert proposal only — no write_section_to_semantic_cache call.
+        _proposal = SectionCacheWriteProposal(
             section_id=section_spec.section_id,
             cache_key=cache_key,
-            content=generated_content,
-            metadata={
-                "target_company": section_context.get("target_company", ""),
-                "target_role": section_context.get("target_role", ""),
-                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+            status="PENDING_UWG",
         )
-        
+        # _proposal is intentionally unused beyond this point (no dispatch, no write).
         return cache_key
-        
+
     except Exception as e:
         # Cache write failures are non-fatal
         print(f"[CACHE-WARNING] Failed to write section {section_spec.section_id} to cache: {e}")
