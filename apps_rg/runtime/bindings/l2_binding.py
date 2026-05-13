@@ -35,10 +35,7 @@ import hashlib
 import json
 import logging
 import os
-import socket
 import time
-import urllib.error
-import urllib.request
 from datetime import datetime, timezone
 from typing import Any, Mapping, Optional
 
@@ -52,6 +49,17 @@ from agentic_core.runtime.providers.provider_gateway import ProviderGateway
 from agentic_core.runtime.providers.provider_types import ProviderKind, ProviderMode
 
 _LOGGER = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
+
+# W7B Feature Flag: APPS_RG_L2_USE_V4_ENVELOPE=1 enables v4 L2 envelope path
+def _use_v4_l2_envelope() -> bool:
+    """Check if v4 L2 envelope feature flag is enabled.
+    
+    Returns True if APPS_RG_L2_USE_V4_ENVELOPE environment variable is set to "1".
+    Otherwise returns False, preserving legacy behavior.
+    """
+    return os.environ.get("APPS_RG_L2_USE_V4_ENVELOPE", "").strip() == "1"
 
 APPS_RG_L2_CERT_REF: str = "l2-apps-rg-resume-generation-w3p5"
 
@@ -145,71 +153,6 @@ def _strip_json_fences(text: str) -> str:
     return s
 
 
-def _post_chat_completion(
-    base_url: str,
-    model: str,
-    system: str,
-    user: str,
-    *,
-    max_tokens: int,
-    temperature: float,
-    timeout_s: float,
-) -> tuple[str, str]:
-    """POST to vLLM's OpenAI-compat endpoint; return (assistant_text, response_id).
-
-    Raises OSError on transport failure, ValueError on malformed response.
-    Caller is responsible for fail-soft fallback to stub on failure.
-    """
-    endpoint = f"{base_url.rstrip('/')}/chat/completions"
-    body: dict[str, Any] = {
-        "model": model,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-    }
-    headers = {"content-type": "application/json"}
-    api_key = os.environ.get("VLLM_API_KEY", "").strip()
-    if api_key:
-        headers["authorization"] = f"Bearer {api_key}"
-
-    request = urllib.request.Request(
-        url=endpoint,
-        data=json.dumps(body).encode("utf-8"),
-        method="POST",
-        headers=headers,
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=timeout_s) as resp:
-            raw = resp.read()
-    except (socket.timeout, urllib.error.URLError, urllib.error.HTTPError, OSError) as exc:
-        raise OSError(f"vLLM HTTP failure: {type(exc).__name__}: {exc!s}") from exc
-
-    try:
-        parsed = json.loads(raw.decode("utf-8"))
-    except (ValueError, UnicodeDecodeError) as exc:
-        raise ValueError(f"vLLM response not JSON: {exc}") from exc
-
-    if not isinstance(parsed, dict):
-        raise ValueError(f"vLLM response not an object: {type(parsed).__name__}")
-    response_id = str(parsed.get("id") or "")
-    choices = parsed.get("choices")
-    if not isinstance(choices, list) or not choices:
-        raise ValueError("vLLM response missing choices")
-    first = choices[0]
-    if not isinstance(first, dict):
-        raise ValueError("vLLM first choice not an object")
-    message = first.get("message")
-    if not isinstance(message, dict):
-        raise ValueError("vLLM choice missing message")
-    content = message.get("content")
-    if not isinstance(content, str):
-        raise ValueError("vLLM message content not a string")
-    return content, response_id
-
-
 def _execute_via_qwen_vllm(
     prompt: CompiledPromptArtifact,
     payload_echo: Mapping[str, Any],
@@ -220,42 +163,45 @@ def _execute_via_qwen_vllm(
     str,           # sovereign_execution_receipt (response id)
     str,           # execution_status: 'completed' or raises
 ]:
-    """Execute the prompt via the live Qwen vLLM endpoint.
+    """Execute the prompt via the live Qwen vLLM endpoint using governed ProviderGateway.
 
+    W1 cleanup: Refactored from direct urllib to ProviderGateway for governance.
     Raises OSError/ValueError on health, HTTP, or parse failure — caller
     must fall back to stub mode and record execution_status='completed_stub_fallback'.
     """
-    # Pre-flight health probe (5s TTL cached). Imported lazily to avoid
-    # paying the import cost when force-stub is set or in offline tests.
-    from agentic_core.L2_execution.healers.vllm_health_probe import (
-        is_qwen_available,
-        probe,
-    )
-    from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL
+    from agentic_core.runtime.providers.provider_types import ProviderRequest
+    from agentic_core.runtime.providers.provider_gateway import ProviderGateway, ProviderMode
 
-    base_url = (os.environ.get("VLLM_BASE_URL") or VLLM_BASE_URL or "").rstrip("/")
-    if not base_url:
-        raise OSError("VLLM_BASE_URL not configured")
+    registry = _load_apps_rg_registry()
+    gateway = ProviderGateway(provider_mode=ProviderMode.LIVE_ALLOWED)
 
-    # Probe checks /v1/models endpoint and verifies Qwen-family model is loaded.
-    if not is_qwen_available(base_url=base_url):
-        health = probe(base_url=base_url, force_refresh=True)
-        raise OSError(
-            f"Qwen vLLM unavailable: status={health.status} "
-            f"model_id={health.model_id!r} error={health.error!r}"
-        )
+    # Load the local Qwen generator profile from registry
+    profile = registry.get_profile("local_qwen_generator")
+    if profile is None:
+        raise OSError("local_qwen_generator profile not found in registry")
 
-    started = time.monotonic()
-    content, response_id = _post_chat_completion(
-        base_url=base_url,
-        model=prompt.target_model,
-        system=prompt.system_preamble,
-        user=prompt.user_instruction,
+    # Build prompt text from compiled prompt
+    prompt_text = f"{prompt.system_preamble}\n\n{prompt.user_instruction}"
+
+    req = ProviderRequest(
+        prompt_text=prompt_text,
+        provider_profile=profile,
         max_tokens=prompt.max_tokens,
         temperature=prompt.temperature,
-        timeout_s=_DEFAULT_LLM_TIMEOUT_S,
+        run_id=prompt.run_id,
+        node_id="l2_qwen_primary",
     )
+
+    started = time.monotonic()
+    # Use the governed gateway public API (routes by provider_kind)
+    resp = gateway.invoke(req)
     elapsed_ms = int((time.monotonic() - started) * 1000.0)
+
+    if not resp.success:
+        raise OSError(f"Qwen vLLM gateway call failed: {resp.error_message}")
+
+    content = resp.text
+    response_id = resp.receipt.invocation_id if resp.receipt else "vllm-no-receipt"
 
     # Parse JSON body. Strip markdown fences if present.
     stripped_content = _strip_json_fences(content)
@@ -387,7 +333,7 @@ def _call_external_ensemble(
                 node_id="l2_ensemble",
             )
             started = time.monotonic()
-            resp = gateway._invoke_external_api(req, profile)  # noqa: SLF001
+            resp = gateway.invoke(req)
             elapsed_ms = int((time.monotonic() - started) * 1000.0)
 
             if not resp.success:
@@ -457,13 +403,13 @@ def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
     """Execute the LLM call described by a CompiledPromptArtifact.
 
     W5 happy path: POSTs to the local Qwen vLLM Docker stack at VLLM_BASE_URL,
-    parses the JSON resume body, and emits a SealedL2Artifact with
-    execution_status='completed'.
+    parses the response, and returns a fully-populated SealedL2Artifact.
 
-    Fail-soft fallback (any of: APPS_RG_L2_FORCE_STUB=1, vLLM unhealthy,
-    HTTP failure, non-JSON response): emits a stub artifact with
-    execution_status='completed_stub_fallback' so the pipeline still
-    reaches Exit and writes an artifact (per plan §3 fail-soft policy).
+    W7B Feature Flag: Set APPS_RG_L2_USE_V4_ENVELOPE=1 to use the v4 envelope
+    orchestration path (E1→E2→E3→E4→E5) instead of legacy direct execution.
+
+    Fail-soft: If the model is unreachable or returns malformed output, we
+    fall back to a stub response so the pipeline can continue to Exit.
 
     Args:
         prompt: PA output carrying prompt blocks, target model/provider,
@@ -476,12 +422,21 @@ def l2_execute_apps_rg(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
     Raises:
         TypeError: if prompt is not a CompiledPromptArtifact.
     """
+    # Validate input type first (preserves existing contract)
     if not isinstance(prompt, CompiledPromptArtifact):
         raise TypeError(
             f"l2_execute_apps_rg expected CompiledPromptArtifact, got "
             f"{type(prompt).__name__}"
         )
-
+    
+    # W7B Feature Flag Bridge: Use v4 envelope path when enabled
+    if _use_v4_l2_envelope():
+        from apps_rg.runtime.bindings.l2_envelope_adapter import (
+            run_apps_rg_l2_envelope,
+        )
+        return run_apps_rg_l2_envelope(prompt)
+    
+    # Legacy path (preserved for backward compatibility)
     timestamp_iso = datetime.now(timezone.utc).isoformat()
     payload_echo = _extract_payload_echo(prompt.user_instruction)
 
@@ -613,7 +568,7 @@ def extract_apps_rg_quality_gate_policy(validated_request: Any) -> AppsRGQuality
 
     Reads the actual QualityThresholdsSection fields (min_quality, min_ats,
     word_min, word_max). Returns NOT_APPLICABLE policy with None values if
-    the section is absent or malformed — never raises on missing optional data.
+    the section is absent or malformed - never raises on missing optional data.
 
     Args:
         validated_request: ValidatedRequest carrying app_payload.

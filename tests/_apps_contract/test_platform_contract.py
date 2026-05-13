@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests._apps_contract import (
+from tests._apps_contract.fixtures import (
     APP_CONTRACT_REGISTRY,
     AppContract,
     build_config,

@@ -884,6 +884,15 @@ def main():
             "APPS-EXIT-PATH apps_rg exit path construction (advisory)",
             "ops_scripts/ci/check_apps_rg_exit_path_construction.py",
         ),
+        # APPS-RG-L2-V4-ENVELOPE — apps_rg L2 v4 envelope feature flag bridge validation.
+        # Validates W7B feature flag integration: _use_v4_l2_envelope helper,
+        # feature flag bridge delegation, legacy path preservation, boundary checks,
+        # provider governance, and mutation law invariants.
+        # Plan: apps-rg-l2-v4-envelope-adoption-e9f2b1 W8.
+        (
+            "APPS-RG-L2-V4-ENVELOPE apps_rg L2 v4 envelope bridge (advisory)",
+            "ops_scripts/ci/check_apps_rg_l2_v4_envelope.py",
+        ),
         # APPS-AUTH — apps_rg live authority leak detection (advisory).
         # Scans apps_rg/tools/ + apps_rg/config/ for non-quarantined files
         # containing provider imports, core contract emissions, or runner

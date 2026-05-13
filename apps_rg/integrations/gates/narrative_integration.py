@@ -1,27 +1,13 @@
-"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
+"""apps_rg integrations gates narrative_integration — INERT (W0 cleanup).
 
-This file is QUARANTINED per the declarative ingress-only governance model.
-apps_rg may NOT emit lifecycle trace contracts or make provider calls.
-
-Original: apps_rg/integrations\gates\narrative_integration.py
-Quarantined: 2026-05-09
-Reason: AG-RGGOV-W4-SCOPE — Runtime authority violation
-
-Importing this module raises RuntimeError immediately.
-Core L6 Observability owns all trace emission. apps_rg is ingress-only.
+This module is neutralized per W0 cleanup of quarantine rot.
+Runtime gate functionality has been relocated to agentic_core.
 """
 
-raise RuntimeError(
-    "QUARANTINE VIOLATION (AG-RGGOV-8): "
-    "apps_rg.integrations\gates\narrative_integration is QUARANTINED. "
-    "apps_rg may NOT contain runtime authority. "
-    "Core L2/L5/L6 owns execution. apps_rg is ingress-only. "
-    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
-)
+# W0 cleanup: Module made inert. No runtime functionality remains here.
+__all__: list[str] = []
 
-# Original code archived to: archives/apps_rg/quarantine_w4_20260509/integrations\gates\narrative_integration.py.ORIGINAL
-
-# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+# Original code archived. NOT EXECUTABLE:
 # """Narrative Pipeline Gate Integration — RuntimeGateEngine binding for narrative_pass.py.
 # 
 # Implements the W1 P0 write-boundary fix: integrates RuntimeGateEngine into the

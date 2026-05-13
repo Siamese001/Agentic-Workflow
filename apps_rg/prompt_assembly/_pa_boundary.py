@@ -1,27 +1,13 @@
-"""QUARANTINE NOTICE — AG-RGGOV-8: QUARANTINE_ALL_RUNTIME_HOPS
+"""apps_rg prompt_assembly _pa_boundary — INERT (W0 cleanup).
 
-This file is QUARANTINED per the declarative ingress-only governance model.
-apps_rg may NOT emit lifecycle trace contracts or make provider calls.
-
-Original: apps_rg/prompt_assembly\_pa_boundary.py
-Quarantined: 2026-05-09
-Reason: AG-RGGOV-W4-SCOPE — Runtime authority violation
-
-Importing this module raises RuntimeError immediately.
-Core L6 Observability owns all trace emission. apps_rg is ingress-only.
+This module is neutralized per W0 cleanup of quarantine rot.
+PA boundary functionality has been relocated to agentic_core.
 """
 
-raise RuntimeError(
-    "QUARANTINE VIOLATION (AG-RGGOV-8): "
-    "apps_rg.prompt_assembly\_pa_boundary is QUARANTINED. "
-    "apps_rg may NOT contain runtime authority. "
-    "Core L2/L5/L6 owns execution. apps_rg is ingress-only. "
-    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
-)
+# W0 cleanup: Module made inert. No runtime functionality remains here.
+__all__: list[str] = []
 
-# Original code archived to: archives/apps_rg/quarantine_w4_20260509/prompt_assembly\_pa_boundary.py.ORIGINAL
-
-# QUARANTINED — Original content below for reference only — NOT EXECUTABLE:
+# Original code archived. NOT EXECUTABLE:
 # """PA boundary helper — receipt generation and mixin guard for apps_rg.
 # 
 # Small, typed, deterministic utilities for:
