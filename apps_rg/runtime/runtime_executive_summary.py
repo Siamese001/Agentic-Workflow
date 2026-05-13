@@ -86,6 +86,13 @@ class RuntimeExecutiveSummary:
     l6_shadow_learning_status: str = "NOT_ACTIVE"
     l5_governed_production_claimed: bool = False
 
+    # W4: Post-runtime and writeback status fields
+    runtime_exhaust_bundle_emitted: bool = False
+    l6_shadow_handoff_emitted: bool = False
+    g29_learning_firewall_status: str = "PASS"
+    inert_writeback_candidates: int = 0
+    uwg_committed_writes: int = 0
+
 
 def generate_runtime_executive_summary(
     section_results: list[Any],
@@ -208,7 +215,30 @@ def format_executive_summary_markdown(summary: RuntimeExecutiveSummary) -> str:
     for i, stage in enumerate(summary.stages_executed, 1):
         lines.append(f"{i}. ✅ {stage}")
     lines.append("")
-    # S5: Explicit post-runtime and disabled status display
+    # W4: Live Generation Pipeline (explicit arrow format)
+    lines.append("## LIVE GENERATION PIPELINE")
+    lines.append("")
+    lines.append("U0 Validate -> L1 Plan -> L0 Route -> C0 Retrieve -> PA Compose -> L2 Execute -> Exit Finalize")
+    lines.append("")
+
+    # W4: Post-runtime status section
+    lines.append("## POST-RUNTIME")
+    lines.append("")
+    reb_status = "YES" if summary.runtime_exhaust_bundle_emitted else "NO"
+    l6_status = "YES" if summary.l6_shadow_handoff_emitted else "NO"
+    lines.append(f"RuntimeExhaustBundle emitted: {reb_status}")
+    lines.append(f"L6 Shadow Handoff emitted: {l6_status}")
+    lines.append(f"G29 Learning Firewall: {summary.g29_learning_firewall_status}")
+    lines.append("")
+
+    # W4: Write-back status section
+    lines.append("## WRITE-BACK STATUS")
+    lines.append("")
+    lines.append(f"inert_writeback_candidates: {summary.inert_writeback_candidates}")
+    lines.append(f"uwg_committed_writes: {summary.uwg_committed_writes}")
+    lines.append("")
+
+    # S5: Explicit post-runtime and disabled status display (preserved)
     lines.append("## 🚫 Non-Live Stage Status")
     lines.append("")
     lines.append(f"- **L6 (Shadow Learning):** {summary.l6_status}")
@@ -346,9 +376,20 @@ def display_runtime_summary_inline(summary: RuntimeExecutiveSummary) -> str:
     lines.append(f"║  Duration:  {summary.total_duration_ms:>6}ms  |  Sections: {summary.successful_sections}/{summary.total_sections} successful      ║")
     lines.append("╠════════════════════════════════════════════════════════════════════════════════╣")
     
-    # Pipeline stages
-    lines.append("║  LIVE PATH: U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit                           ║")
-    lines.append("║  L6: POST_RUNTIME/FUTURE_RUN_ONLY  |  Cache: DISABLED_OR_PROPOSAL_ONLY        ║")
+    # W4: Live Generation Pipeline
+    lines.append("║  LIVE GENERATION PIPELINE:                                                     ║")
+    lines.append("║  U0 Validate -> L1 Plan -> L0 Route -> C0 Retrieve -> PA Compose -> L2 -> Exit ║")
+    lines.append("║                                                                                ║")
+    
+    # W4: Post-runtime status
+    reb = "YES" if summary.runtime_exhaust_bundle_emitted else "NO"
+    l6_ho = "YES" if summary.l6_shadow_handoff_emitted else "NO"
+    lines.append(f"║  POST-RUNTIME: REB={reb} | L6-Handoff={l6_ho} | G29={summary.g29_learning_firewall_status:<8}          ║")
+    lines.append("║  L6: POST_RUNTIME/FUTURE_RUN_ONLY | Cache: DISABLED_OR_PROPOSAL_ONLY         ║")
+    lines.append("║                                                                                ║")
+    
+    # W4: Write-back status
+    lines.append(f"║  WRITE-BACK: inert_candidates={summary.inert_writeback_candidates} | uwg_committed={summary.uwg_committed_writes}                    ║")
     lines.append("║                                                                                ║")
     
     # Section summary
@@ -424,10 +465,17 @@ def _get_section_tier(section_id: str) -> str:
 RESUME_SHIPPING_LIVE_PATH: str = "U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit"
 
 
-def build_resume_shipping_status() -> dict[str, str | bool]:
+def build_resume_shipping_status(
+    *,
+    runtime_exhaust_bundle_emitted: bool = False,
+    l6_shadow_handoff_emitted: bool = False,
+    g29_learning_firewall_status: str = "PASS",
+    inert_writeback_candidates: int = 0,
+    uwg_committed_writes: int = 0,
+) -> dict[str, str | bool | int]:
     """Return the machine-readable display truth table for resume-shipping mode.
 
-    Used by tests to assert S5 display invariants without constructing a
+    Used by tests to assert S5/W4 display invariants without constructing a
     full RuntimeExecutiveSummary.
     """
     return {
@@ -441,4 +489,10 @@ def build_resume_shipping_status() -> dict[str, str | bool]:
         "s05_cache_guard": "ENFORCED",
         "s4_structured_resume_metadata": "AVAILABLE",
         "governed_production_track": "NOT_COMPLETE",
+        # W4 fields
+        "runtime_exhaust_bundle_emitted": runtime_exhaust_bundle_emitted,
+        "l6_shadow_handoff_emitted": l6_shadow_handoff_emitted,
+        "g29_learning_firewall_status": g29_learning_firewall_status,
+        "inert_writeback_candidates": inert_writeback_candidates,
+        "uwg_committed_writes": uwg_committed_writes,
     }

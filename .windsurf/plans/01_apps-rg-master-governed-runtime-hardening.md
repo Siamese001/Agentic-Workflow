@@ -87,11 +87,27 @@ LAST_UPDATED: 2026-05-14
   - W0A_RUNTIME_PATH_CI: PASS
   - Commit: apps-rg-w3: U0 structured resume detection and pass-through
   - No agentic_core changes; no model calls; no cache writes; no reactivation
-- S5 — Runtime Executive Summary Display Fix: S5 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md
-  - Display fix: apps_rg/runtime/runtime_executive_summary.py (modified)
+- S5 — Runtime Executive Summary Display Fix: S5 PASS 2026-05-13 → receipt: artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md
+  - Display fix: apps_rg/runtime/runtime_executive_summary.py (W4 format with LIVE GENERATION PIPELINE, POST-RUNTIME, WRITE-BACK STATUS sections)
+  - New fields: runtime_exhaust_bundle_emitted, l6_shadow_handoff_emitted, g29_learning_firewall_status, inert_writeback_candidates, uwg_committed_writes
   - New helpers: build_resume_shipping_status(), RESUME_SHIPPING_LIVE_PATH constant
   - Tests: tests/_apps_contract/test_apps_rg_runtime_summary_display.py (71/71 PASS)
-  - S1/S2/S3/S4 targeted regression: 269/269 PASS
+  - Tests: tests/_apps_contract/test_no_l6_in_live_path.py (15/15 PASS)
+  - Tests: tests/_apps_contract/test_inert_prefix_on_candidates.py (12/12 PASS)
+  - W4_STATUS: PASS
+  - W4_APP_TESTS: PASS (98/98)
+  - SOURCE_CHANGES_MADE: true
+  - AGENTIC_CORE_CHANGED: false
+  - LIVE_PIPELINE_DISPLAY_CORRECT: true
+  - L6_SHADOW_ONLY_DISPLAY_PROVEN: true
+  - INERT_WRITEBACK_DISPLAY_PROVEN: true
+  - UWG_COMMIT_CLAIM_GUARDED: true
+  - W3_REGRESSION: PASS (60/60)
+  - W2_REGRESSION: PASS (61/61)
+  - W1_SCHEMA_REGRESSION: PASS (53/53)
+  - W0A_RUNTIME_PATH_CI: PASS
+  - TOTAL_VERIFIED_TESTS: 174 PASS (W2+W3+W4)
+  - Commit: apps-rg-w4: runtime executive summary bug patch
   - No runtime behavior changes; no agentic_core changes; no model calls; no cache writes; no reactivation
 - S6 — Deterministic Resume Exit Checks: S6 PASS → receipt: artifacts/governance/apps_rg_resume_shipping_s6_deterministic_resume_exit_checks.md
   - Checker: apps_rg/runtime/exit/resume_exit_checks.py (new) — 7 deterministic checks (A–G)
@@ -135,7 +151,7 @@ LAST_UPDATED: 2026-05-14
 | S2 | Section-by-Section Treatment Matrix | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s2_section_treatment_matrix.md` |
 | S3 | PA Tiered Prompt Patching | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s3_pa_tiered_prompt_patching.md` |
 | S4 | U0 Structured Resume Support | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s4_u0_structured_resume_support.md` |
-| S5 | Runtime Executive Summary Display Fix | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md` |
+| S5 | Runtime Executive Summary Display Fix | ✅ PASS 2026-05-13 | `artifacts/governance/apps_rg_resume_shipping_s5_runtime_summary_display_fix.md` |
 | S6 | Deterministic Resume Exit Checks | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s6_deterministic_resume_exit_checks.md` |
 | S7 | Minimum C0 Safety | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s7_minimum_c0_safety.md` |
 | S8 | Manual Section Review Harness | ✅ PASS 2026-05-14 | `artifacts/governance/apps_rg_resume_shipping_s8_manual_section_review_harness.md` |
