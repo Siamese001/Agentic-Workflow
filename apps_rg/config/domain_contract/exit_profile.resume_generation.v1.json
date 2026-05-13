@@ -16,8 +16,8 @@
     "apps_rg/config/domain_contract/runtime_gate_profile.resume_generation.v1.json"
   ],
 
-  "required_exit_gates": ["G21", "G22", "G23", "G24", "G26", "G28"],
-  "conditional_exit_gates": ["G25", "G27"],
+  "required_exit_gates": ["G21", "G23", "G26", "G28"],
+  "conditional_exit_gates": ["G22", "G24", "G25", "G27"],
 
   "gate_definitions": {
 
@@ -29,12 +29,26 @@
       "evidence_required": true,
       "schema_ref": "apps_rg/config/domain_contract/output_schema.yaml",
       "required_sections": [
-        "header_block",
-        "professional_summary",
+        "executive_summary_block",
         "experience_block",
         "skills_block",
         "education_block"
       ],
+      "json_key_to_section_id": {
+        "executive_summary": "executive_summary_block",
+        "header": "header_block",
+        "name": "header_block",
+        "summary": "professional_summary",
+        "professional_summary": "professional_summary",
+        "experience": "experience_block",
+        "work_experience": "experience_block",
+        "skills": "skills_block",
+        "education": "education_block",
+        "certifications": "certifications_block"
+      },
+      "skills_block_min_items": 6,
+      "skills_block_format": "category_with_subphrases",
+      "skills_block_format_pattern": "^[^:]+: .+,.+",
       "hard_fail_conditions": [
         "missing required section (any of required_sections absent)",
         "malformed structured record (field type mismatch or null in non-nullable field)",
@@ -188,18 +202,18 @@
         "run_id",
         "trace_root",
         "route_contract_ref",
-        "workflow_ref",
-        "sealed_workflow_package_ref",
-        "gate_mesh_result_ref",
-        "decisive_reason"
+        "workflow_ref"
       ],
       "optional_observability_refs": [
+        "sealed_workflow_package_ref",
+        "gate_mesh_result_ref",
+        "decisive_reason",
         "otel_trace_id",
         "otel_span_id",
         "exhaust_bundle_ref",
         "replay_key"
       ],
-      "note": "PASS when all required_audit_refs present. WARN when required pass but optional_observability_refs missing. UNKNOWN/FAIL when required_audit_refs missing."
+      "note": "PASS when all required_audit_refs present. WARN when required pass but optional_observability_refs missing. The post-mesh refs (sealed_workflow_package_ref, gate_mesh_result_ref, decisive_reason) are captured in ExitDispositionReceipt after evaluation and therefore cannot be pre-supplied; they are optional_observability_refs."
     }
   }
 }

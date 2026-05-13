@@ -2,11 +2,16 @@
 """
 post_cascade_wave_completion_audit.py — Audit wave marker presence.
 
-Hook: post_cascade_response (show_output=false).
+Hook: post_cascade_response (show_output=true).
 
 Heuristic check: if substantial file writes (≥3 files) occurred in
 agentic_core/, apps_*/, or tests/ AND no WAVE_COMPLETE / WAVE_START
 marker is present in the response, emit advisory warning.
+
+Fires unconditionally — does NOT require wave_execution_state.py start
+to have been called first. This closes GAP-1 (RCA rca-wave-marker-
+emission-gap-c7d3f1): the _has_active_plan() guard was the reason the
+auditor silenced itself when wave_execution_state.py start was skipped.
 
 Fail policy: OPEN (exit 0 always). Advisory only.
 
@@ -28,10 +33,18 @@ MAX_RESPONSE_BYTES = 1_048_576
 # Paths that indicate "wave-like work"
 WAVE_WORK_PATHS = ["agentic_core/", "apps_", "tests/"]
 
-# Pattern for substantial file-write evidence (edit/write_file calls)
+# Pattern for substantial file-write evidence (edit/write_file/write_to_file calls).
+# Widened in rca-wave-marker-emission-gap-c7d3f1 W1.P3 (GAP-3) to catch the
+# actual tool-call shapes Windsurf emits in the response text.
 EDIT_PATTERNS = [
-    re.compile(r'edit\s*\([^)]*file_path\s*=\s*["\'][^"\']+", "(?:file_path|new_string|old_string)"'),
-    re.compile(r'write_to_file\s*\([^)]*TargetFile\s*=\s*["\'][^"\']+'),
+    # Native edit tool: <file_path>...</file_path> XML shape
+    re.compile(r"<file_path>[^<]+</file_path>"),
+    # write_to_file: TargetFile parameter
+    re.compile(r'"TargetFile"\s*:\s*"[^"]+"'),
+    # multi_edit / edit: file_path parameter key
+    re.compile(r'"file_path"\s*:\s*"[^"]+"'),
+    # Fallback: any invocation of edit/write_to_file tool names
+    re.compile(r'<invoke name="(?:edit|write_to_file|multi_edit)">'),
 ]
 
 
@@ -83,16 +96,6 @@ def _has_wave_markers(text: str) -> bool:
     return bool(re.search(r"^WAVE_(COMPLETE|START):", text, re.MULTILINE))
 
 
-def _has_active_plan() -> bool:
-    """Check if there's an active wave-execution plan."""
-    sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
-    try:
-        import _wave_execution_state as wes
-        return wes.is_active() is not None
-    except (ImportError, OSError):
-        return False
-
-
 def main() -> int:
     if os.environ.get("WAVE_COMPLETION_AUDIT_BYPASS") == "1":
         _log({"event": "audit_bypass"})
@@ -117,10 +120,6 @@ def main() -> int:
 
     text = _extract_response_text(payload)
     if not text:
-        return 0
-
-    # Only audit if there's an active plan (GAP-1 mitigation)
-    if not _has_active_plan():
         return 0
 
     write_count = _count_file_writes(text)

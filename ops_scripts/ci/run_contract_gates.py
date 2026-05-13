@@ -720,6 +720,17 @@ def main():
             "NP-DONE Plans all-waves-done disk-vs-Notion (advisory)",
             "ops_scripts/ci/check_plan_done_notion_status.py",
         ),
+        # WAVE-MARKER — Plans with mixed wave state (some DONE, some TODO) but
+        # no WAVE_COMPLETE / PLAN_COMPLETE entry in wave_lifecycle_capture.jsonl.
+        # Detects the failure mode from RCA rca-wave-marker-emission-gap-c7d3f1
+        # where Cascade executed waves without emitting required markers.
+        # Advisory by default; fail-closed via WAVE_MARKER_GATE_FAIL_CLOSED=1.
+        # Bypass: WAVE_MARKER_EMISSION_BYPASS=1.
+        # Report: artifacts/ci/wave_marker_emission_gate.json.
+        (
+            "WAVE-MARKER Wave marker emission completeness (advisory)",
+            "ops_scripts/ci/check_wave_marker_emission.py",
+        ),
         # RG-W3 — R1B semantic cache warm-up smoke gate.
         # Verifies warm_r1b_cache is importable, dry-run top-5 succeeds (0 failures),
         # and CLI --dry-run --top 3 exits 0 in < 30 s.

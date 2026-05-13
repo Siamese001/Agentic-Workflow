@@ -1,18 +1,18 @@
-"""Production-log mining skeleton — harvest eval samples from live runs.
+"""Production-log mining — harvest eval samples from live runs with PII redaction.
 
 Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W3.P1.
 
 Purpose
 -------
-Skeleton pipeline that reads production log streams (OTEL-derived JSONL),
-applies a PII-redaction hook, and emits weekly eval-sample JSONL bundles
+Pipeline that reads production log streams (OTEL-derived JSONL),
+applies PII-redaction via `apps_eval.integrations.pii_redactor`,
+and emits weekly eval-sample JSONL bundles
 at `artifacts/eval_samples/<app>/<yyyy-ww>.jsonl` for later promotion
 into `apps_eval/fixtures/dev/`.
 
-This is a **skeleton** — the PII redactor is a stub that returns input
-unchanged. Operators MUST wire a real redactor before the pipeline
-runs against real traffic. A loud warning is logged at startup if the
-redactor is still the stub.
+The PII redactor is auto-wired on module load from `apps_eval.integrations.pii_redactor`.
+If the redactor cannot be imported, the stub remains in place and --force-stub
+is required to run (fail-safe for production safety).
 
 Authority
 ---------
@@ -23,8 +23,8 @@ Usage
 -----
     python ops_scripts/calibration/production_log_miner.py \
         --input path/to/production.jsonl \
-        --app apps_qna \
-        --out artifacts/eval_samples/apps_qna/2026-W18.jsonl \
+        --app apps_lic \
+        --out artifacts/eval_samples/apps_lic/2026-W18.jsonl \
         --max-samples 500
 """
 
@@ -50,6 +50,28 @@ def _stub_pii_redactor(row: Mapping[str, object]) -> Mapping[str, object]:
 
 _REDACTOR: PiiRedactor = _stub_pii_redactor
 _REDACTOR_IS_STUB: bool = True
+
+
+def _wire_real_redactor() -> None:
+    """Wire the real PII redactor from apps_eval if available.
+    
+    This function attempts to import and configure the production PiiRedactor.
+    Called automatically at module load; failures leave stub in place (safe default).
+    """
+    global _REDACTOR, _REDACTOR_IS_STUB
+    try:
+        from apps_eval.integrations.pii_redactor import PiiRedactor as RealRedactor
+        real_instance = RealRedactor()
+        _REDACTOR = real_instance.redact
+        _REDACTOR_IS_STUB = False
+        Logger.info("[production_log_miner] Wired real PII redactor from apps_eval")
+    except ImportError:
+        # Keep stub in place; warn at runtime if not --force-stub
+        pass
+
+
+# Attempt to wire real redactor on module load
+_wire_real_redactor()
 
 
 def set_redactor(redactor: PiiRedactor) -> None:

@@ -100,3 +100,19 @@
       evidence_required: true
       fail_closed_if_unknown: true
       taxonomy_class: regression
+
+    - dimension_id: competencies_structure
+      description: >-
+        Competencies section must have exactly 6 category lines in the form
+        "Category Name: phrase 1, phrase 2, phrase 3[, 4, 5]" covering the
+        required engineering/platform labels: Engineering & Platform,
+        AI & Data Architecture, Innovation & Strategy, Governance & Compliance,
+        Leadership & Delivery, Commercial & Partnerships. Flat noun phrases or
+        fewer than 6 categories is a structural failure.
+      weight: 0.10
+      grader_type: llm_as_judge
+      min_required_score: 0.60
+      evidence_required: false
+      fail_closed_if_unknown: true
+      taxonomy_class: capability
+      judge_prompt_ref: "rg::competencies_structure_judge::v1"

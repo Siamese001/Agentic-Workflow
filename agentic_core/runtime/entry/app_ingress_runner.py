@@ -110,6 +110,11 @@ class AppRuntimeProfile:
     # Signature: (payload: Mapping[str, Any]) -> RequestEnvelope | None
     parse: Callable[[Mapping[str, Any]], Any | None]
 
+    # ── Dispatch callable (optional — set by profile_builder; used by AppIngressRunner) ─
+    # Signature: (envelope: RequestEnvelope) -> X3Disposition
+    # When set, AppIngressRunner(profile=profile).run(payload) needs no separate dispatch= kwarg.
+    dispatch: Callable[[Any], Any] | None = None
+
     # ── Per-stage binding refs (optional — None → core default) ───────────
     u0:   Callable[..., Any] | None = None
     l1:   Callable[..., Any] | None = None
@@ -180,27 +185,23 @@ class AppIngressRunner:
     ) -> None:
         _STAGES = ("u0", "l1", "l0", "c0", "pa", "l2", "exit")
         if profile is not None:
-            # --- Profile path (W0.5B+): populate proof fields first, then derive
-            # legacy fields so the rest of the class needs no changes.
+            # --- Profile path (A.1+): populate proof fields first, then derive
+            # dispatch from profile.dispatch — no separate dispatch= kwarg needed.
             profile.profile_digest = _compute_profile_digest(profile)
             profile.binding_digest_map = {
                 s: _callable_digest(getattr(profile, s))  # type: ignore[arg-type]
                 for s in _STAGES
             }
             self._profile = profile
-            # apps_rg_dispatch is the canonical dispatch callable supplied via
-            # the profile's stage bindings; we need to delegate to it.  For now
-            # we rely on the dispatch kwarg supplied alongside the profile (W0.5C
-            # profile_builder passes it explicitly), or fall through to the stage
-            # bindings in a future wave.  This keeps W0.5B backward-compatible
-            # and avoids touching apps_rg_dispatch internals.
-            if dispatch is None:
+            # Prefer explicit dispatch= kwarg (legacy); fall back to profile.dispatch.
+            resolved_dispatch = dispatch if dispatch is not None else profile.dispatch
+            if resolved_dispatch is None:
                 raise ValueError(
-                    "AppIngressRunner(profile=...) requires dispatch= kwarg "
-                    "until the full profile-native dispatch bridge lands in W3. "
-                    "Pass dispatch=apps_rg_dispatch alongside profile=profile."
+                    "AppIngressRunner(profile=...) requires either dispatch= kwarg "
+                    "or profile.dispatch to be set. "
+                    "Set profile.dispatch in profile_builder.build_app_runtime_contract()."
                 )
-            self._dispatch = dispatch
+            self._dispatch = resolved_dispatch
             self._parse = profile.parse
             self._required = profile.required_fields
         else:

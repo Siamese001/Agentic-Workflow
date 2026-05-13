@@ -159,3 +159,64 @@ judge_prompts:
     do_not_penalize:
       - "Early career / actuarial role with limited available metrics"
       - "Consulting roles where client names are confidential"
+
+
+  # ── Competencies Structure (deterministic format check + LLM grounding) ───────
+  # Enforces the 6-category engineering/platform format introduced in rg_prompt_profile.yaml
+  # rigor_rules: "Output EXACTLY 6 category lines; Category: phrase, phrase, phrase."
+  competencies_structure:
+    judge_ref: "rg::competencies_structure_judge::v1"
+    provider_profile_ref: "local_qwen_generator"
+    model_note: "Qwen/Qwen2.5-32B-Instruct-AWQ at temperature=0.0 for deterministic scoring."
+    system_prompt: >
+      You are a resume competencies quality evaluator. Your task is to score whether
+      the provided competencies section follows the required 6-category engineering and
+      platform leadership format.
+
+      The required format is:
+        Category Name: capability phrase 1, capability phrase 2, capability phrase 3[, 4, 5]
+
+      The 6 required category labels (must appear in exactly this form):
+        1. Engineering & Platform
+        2. AI & Data Architecture
+        3. Innovation & Strategy
+        4. Governance & Compliance
+        5. Leadership & Delivery
+        6. Commercial & Partnerships
+
+      Scoring rules:
+      - Each of the 6 required categories must be present as a line beginning with that exact label.
+      - Each category must have 3-5 capability phrases after the colon, separated by commas.
+      - Phrases must be grounded in engineering, platform, or leadership capabilities — NOT generic nouns.
+      - Flat noun phrases alone (e.g. "Python", "Leadership") without category grouping are WRONG format.
+      - Generic filler phrases (e.g. "team player", "results-oriented") are a quality failure.
+
+      Output JSON only: {"score": <0.0-1.0>, "rationale": "<one sentence>", "missing_categories": [<absent labels>], "format_violations": [<items with wrong format>]}
+
+    user_prompt_template: >
+      TARGET ROLE: {target_role} at {target_company} (level: {target_level})
+
+      COMPETENCIES SECTION TO EVALUATE:
+      {competencies_list}
+
+      SCORING CRITERIA (answer each — YES=pass, NO=gap):
+      1. Are exactly 6 lines present, each starting with one of the required category labels?
+      2. Does "Engineering & Platform" have 3-5 specific platform/infrastructure capability phrases?
+      3. Does "AI & Data Architecture" have 3-5 specific AI/data system capability phrases?
+      4. Are all 6 required category labels present (Engineering & Platform, AI & Data Architecture, Innovation & Strategy, Governance & Compliance, Leadership & Delivery, Commercial & Partnerships)?
+      5. Are sub-phrases substantive capability descriptions — NOT flat nouns like "Python" or generic filler?
+
+      Score 0.2 per YES. Output JSON: {"score": <sum>, "rationale": "<one sentence>", "missing_categories": [<absent labels>], "format_violations": [<items in wrong format>]}
+
+    score_anchors:
+      "1.0": "All 6 categories present with correct format and substantive phrases."
+      "0.8": "5 of 6 criteria met. Minor sub-phrase quality gap."
+      "0.6": "4 of 5. Category present but sub-phrases are generic or count is wrong."
+      "0.4": "2-3 categories correct. Others missing or in flat-noun format."
+      "0.2": "Flat noun phrases only — wrong format throughout."
+      "0.0": "No competencies section or completely malformed."
+
+    do_not_penalize:
+      - "Phrase ordering within a category"
+      - "Minor synonym variation in category label if meaning is identical"
+      - "4 vs 5 sub-phrases when all 3-minimum are substantive"

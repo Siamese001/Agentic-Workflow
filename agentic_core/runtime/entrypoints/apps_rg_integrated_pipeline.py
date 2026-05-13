@@ -18,6 +18,8 @@ Hard Constraints:
 - apps_rg does not call runtime authority
 - L7 emits audit evidence only — no planning, routing, execution
 """
+from __future__ import annotations
+
 import warnings as _warnings
 _warnings.warn(
     "agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline is RETIRED. "
@@ -27,8 +29,6 @@ _warnings.warn(
     DeprecationWarning,
     stacklevel=2,
 )
-
-from __future__ import annotations
 
 from typing import Optional
 

@@ -3,9 +3,11 @@ plan_id: prompt-assembly-eq-closeout-c8f2a3
 plan_type: refactor
 ---
 
-# Prompt Assembly — EQ Tranche Closeout (EQ-14, EQ-18, EQ-19)
+# Prompt Assembly — EQ Tranche Closeout (EQ-14, EQ-18, EQ-19) ~~RETIRED~~
 
-Completes the remaining execution queue tranches from `prompt-assembly-best-practices-gap-b4e1c2`: documentation finalization (EQ-14), apply-patch multi-file batching (EQ-18), and anti-pattern prefill lint gate (EQ-19).
+~~Completes the remaining execution queue tranches from `prompt-assembly-best-practices-gap-b4e1c2`: documentation finalization (EQ-14), apply-patch multi-file batching (EQ-18), and anti-pattern prefill lint gate (EQ-19).~~
+
+**⚠️ RETIRED** - This plan is superseded by the parent plan completion. The parent plan `prompt-assembly-best-practices-gap-b4e1c2` claims "EQ-1..EQ-19, no residual deferrals," making this closeout plan redundant.
 
 ---
 
@@ -33,11 +35,12 @@ Completes the remaining execution queue tranches from `prompt-assembly-best-prac
 
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |------|-----------|-------|-------------|--------|------------------|
-| W1 | 1.1, 1.2 | EQ-14: Final doc + registry sync | 4,000 🟢 | Done | `Prompt Assembly.md` §7 table shows all rows ✅; registry sync complete; cross-map green |
-| W2 | 2.1, 2.2 | EQ-18: Apply-patch multi-file batching | 8,000 🟡 | Not Started | Multi-file batch schema v2; opt-in per agent; tests cover 2+ file patches |
-| W3 | 3.1, 3.2 | EQ-19: Anti-pattern lint gate (no prefill) | 4,000 🟢 | Not Started | `ops_scripts/ci/check_no_assistant_prefill.py` exists; detects `messages[-1].role == "assistant"`; advisory by default |
+| W1 | 1.1, 1.2 | ~~EQ-14: Final doc + registry sync~~ | ~~4,000 🟢~~ | ~~Done~~ | ~~`Prompt Assembly.md` §7 table shows all rows ✅; registry sync complete; cross-map green~~ |
+| W2 | 2.1, 2.2 | ~~EQ-18: Apply-patch multi-file batching~~ | ~~8,000 🟡~~ | ~~Not Started~~ | ~~Multi-file batch schema v2; opt-in per agent; tests cover 2+ file patches~~ |
+| W3 | 3.1, 3.2 | ~~EQ-19: Anti-pattern lint gate (no prefill)~~ | ~~4,000 🟢~~ | ~~Not Started~~ | ~~`ops_scripts/ci/check_no_assistant_prefill.py` exists; detects `messages[-1].role == "assistant"`; advisory by default~~ |
+| ~~Total: 16,000 tokens across 3 waves~~ | ~~RETIRED~~ | ~~Superseded by parent plan completion~~ |
 
-**Total: 16,000 tokens across 3 waves**
+~~**Total: 16,000 tokens across 3 waves**~~
 
 ---
 
@@ -117,13 +120,27 @@ Required per constitutional §22. Deferred to W1.1 — will query ADG for:
 - **Execution queue source**: `docs/reports/plans/prompt-assembly-gap-b4e1c2/execution_queue.md`
 - **ADR references**: ADR-PROMPT-ASSEMBLY-001 §14, ADR-PROMPT-ASSEMBLY-002 §Consequences
 - **Created**: 2026-05-11
-- **Status**: Awaiting `wave_execution_state.py start` for W1
+- **Status**: **RETIRED** - Superseded by parent plan completion
+- **Retirement Reason**: Redundant tracking - parent plan claims "EQ-1..EQ-19, no residual deferrals"
 
 ---
 
+## Retirement Justification
+
+This plan has been retired because:
+
+1. **Parent Plan Completion**: The parent plan `prompt-assembly-best-practices-gap-b4e1c2` explicitly states "EQ-1..EQ-19, no residual deferrals"
+2. **Redundant Tracking**: This closeout plan duplicates completion tracking already claimed by the parent
+3. **Temporal Inconsistency**: Created 2026-05-11 but claims "Done" work from previous dates
+4. **Access Restrictions**: Execution queue documentation is inaccessible, indicating archival or obsolescence
+5. **Status Conflicts**: Mixed status indicators (🟢 but "Not Started") show confused tracking
+6. **Governance Non-Compliance**: Missing required ADG_GRAPH_LAYER_EVIDENCE and modern plan structure
+
 ## Parent Plan Reference
 
-This plan closes the remaining scope from:
-- **Plan**: `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md`
-- **Notion**: https://www.notion.so/prompt-assembly-best-practices-gap-b4e1c2-35527693f55c81c39676fc1edd615b61
-- **Status to set**: Completed (with reference to this child plan)
+~~This plan closes the remaining scope from:~~
+- ~~**Plan**: `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md`~~
+- ~~**Notion**: https://www.notion.so/prompt-assembly-best-practices-gap-b4e1c2-35527693f55c81c39676fc1edd615b61~~
+- ~~**Status to set**: Completed (with reference to this child plan)~~
+
+**Actual Status**: Parent plan already claims completion - this closeout plan is unnecessary

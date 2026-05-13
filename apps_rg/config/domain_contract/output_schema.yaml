@@ -7,10 +7,9 @@ status: active
 output_type: structured_record
 
 required_sections:
-  - header_block            # name, contact, location
-  - professional_summary
+  - executive_summary_block # opening narrative, SVP positioning
   - experience_block        # 1..N entries
-  - skills_block
+  - skills_block            # 6-category engineering/platform competencies
   - education_block
 
 optional_sections:

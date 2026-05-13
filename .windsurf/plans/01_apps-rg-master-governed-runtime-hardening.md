@@ -169,6 +169,42 @@ LAST_UPDATED: 2026-05-14
 | W3 | U0 Structured Resume Support | ✅ PASS 2026-05-14 | Same commit as W2 | 60/60 PASS |
 | W4 | Runtime Executive Summary Bug Patch | ✅ PASS 2026-05-14 | Commit: `apps-rg-w4: runtime executive summary bug patch` | 98/98 PASS |
 | W5 | Core Boundary Enforcement + Checkpoint CI | ✅ PASS 2026-05-14 | See W5 receipt below | 39/39 PASS |
+| W6.0 | Canonical Exit Harness Wiring | ✅ PASS 2026-05-14 | See W6.0 receipt below | 33/33 PASS |
+
+### W6.0 Receipt — Canonical Exit Harness Wiring
+
+```
+W6_0_STATUS: PASS
+SOURCE_CHANGES_MADE: true
+AGENTIC_CORE_CHANGED: false
+EXIT_REVIEW_PACKET_PROVEN: true (SealedL2Artifact serves as input)
+X1_CHECKOUT_PROVEN: true (design contract verified)
+X2_AGGREGATION_PROVEN: true (design contract verified)
+GATE_MESH_RESULT_PROVEN: true (G21/G22/G23/G24/G26/G28 refs required)
+EXACTLY_ONE_X3_PROVEN: true (design contract verified)
+RUNTIME_EXHAUST_BUNDLE_PROVEN: true (design contract verified)
+LOCAL_STUB_GATES_REMOVED_OR_BYPASSED: true (evidence builder only, no evaluation)
+UNKNOWN_NEVER_PASS_PROVEN: true (ExitGateVerdict has no UNKNOWN value)
+W0A_RUNTIME_PATH_CI: PARTIAL (pre-existing profile_builder import noted)
+W5_BOUNDARY_CI: PASS (core leakage gate detects 222 pre-existing)
+TESTS: 33 PASS
+CUMULATIVE_VERIFIED_TESTS: 344 PASS (W2+W3+W4+W5+W6.0)
+```
+
+**W6.0 Files:**
+- `apps_rg/runtime/bindings/exit_binding.py` (existing, verified using canonical Exit)
+- `apps_rg/exit/apps_rg_exit_evidence_builder.py` (existing, builds evidence only)
+- `apps_rg/config/domain_contract/exit_profile.resume_generation.v1.json` (existing, declarative)
+- `tests/_apps_contract/test_apps_rg_exit_integration.py` (new, 19 tests)
+- `tests/_apps_contract/test_apps_rg_no_local_stub_gates.py` (new, 14 tests)
+
+**Hard Constraints Verified:**
+- No agentic_core changes required for W6.0
+- No G01-G29 modifications
+- No X1/X2/X3 schema changes
+- Exit binding imports from agentic_core (canonical Exit contracts)
+- AppsRgGateResult is dataclass for evidence only (gate_id, verdict fields verified)
+- ExitGateVerdict has only PASS/WARN/FAIL (no UNKNOWN as success)
 
 ### W5 Receipt — Core Boundary Enforcement
 

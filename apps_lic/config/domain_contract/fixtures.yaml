@@ -1,3 +1,30 @@
+- fixture_id: afix::apps_lic::outreach_message::holdout_corpus_v1
+  app_id: apps_lic
+  task_class: outreach_message
+  fixture_type: holdout
+  version: "1.0.0"
+  status: active
+  corpus_ref: "apps_lic/evals/holdout/outreach_holdout_corpus.v1.jsonl"
+  schema_version: "outreach_holdout_corpus.v1"
+  item_count: 80
+  quality_distribution:
+    excellent: 20
+    decent: 20
+    flawed: 20
+    hard_negative: 20
+  tags: ["SYNTHETIC_SEED_ONLY", "outreach_quality_v1", "awaiting_human_labels"]
+  judge_dimensions:
+    - response_likelihood
+    - brand_voice
+    - personalization_quality
+    - ask_clarity_low_friction
+  created_at: "2026-05-11"
+  notes: >
+    80-item synthetic outreach holdout corpus balanced across quality tiers,
+    channels, recipient classes, outreach modes, and evidence postures.
+    Awaiting human labeling before judge calibration can proceed.
+    See apps_lic/evals/holdout/README.md for labeling workflow.
+
 - fixture_id: afix::apps_lic::outreach_message::golden_warm
   app_id: apps_lic
   task_class: outreach_message

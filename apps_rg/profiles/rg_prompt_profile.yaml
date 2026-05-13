@@ -68,13 +68,22 @@ format_constraints:
       Mirror JD keywords in bullet text — not just the competencies grid.
 
   competencies:
-    # 12-15 entries in 3-4 line grid (TechnCV 2026 best practice for SVP/C-suite)
-    # Recruiter-facing signal, not primary ATS vehicle — ATS keywords go in experience bullets
-    entry_count: 12
-    format: "short noun phrase (2-4 words)"
+    # 6 engineering/platform category blocks (TechnCV 2026 SVP/C-suite executive format)
+    # Each block: "Category Name: capability phrase 1, capability phrase 2, capability phrase 3 [, 4, 5]"
+    # Recruiter-facing signal — communicates depth of domain expertise, not just keyword presence
+    entry_count: 6
+    format: "Category Name: 3-5 supporting capability phrases (comma-separated)"
+    required_categories:
+      - "Engineering & Platform"
+      - "AI & Data Architecture"
+      - "Innovation & Strategy"
+      - "Governance & Compliance"
+      - "Leadership & Delivery"
+      - "Commercial & Partnerships"
     ats_note: >
-      Competencies section communicates to recruiter, not ATS.
-      Include JD-matched capabilities but do not rely on this section for ATS ranking.
+      Competencies section communicates domain depth to executive recruiters.
+      Each category line must contain 3-5 specific capability phrases grounded in the source resume.
+      Primary ATS keyword credit comes from experience bullets — this section reinforces signal depth.
 
 content_constraints:
   # AG-RGGOV-6a: Advisory duplicate similarity target
@@ -175,14 +184,17 @@ section_guidance:
 
   competencies:
     rigor_rules:
-      - "Each entry is a short noun phrase (2-4 words) — NOT a sentence."
-      - "Entries MUST be drawn from the source resume and/or directly match JD requirement language."
-      - "No redundant entries — each competency names a distinct capability domain."
-      - "Order by JD relevance: highest-match JD requirements first."
+      - "Output EXACTLY 6 category lines. Each line: 'Category Name: phrase 1, phrase 2, phrase 3[, 4, 5]'."
+      - "Required categories (use exactly these labels): Engineering & Platform, AI & Data Architecture, Innovation & Strategy, Governance & Compliance, Leadership & Delivery, Commercial & Partnerships."
+      - "Each category MUST contain 3-5 specific capability phrases grounded in the source resume — NOT generic filler."
+      - "Engineering & Platform must name concrete platform capabilities (e.g. distributed systems, cloud-native microservices, API governance, CI/CD, observability)."
+      - "AI & Data Architecture must name specific AI/data system capabilities (e.g. multi-agent orchestration, GraphRAG, vector retrieval, LLM governance, data pipelines)."
+      - "Phrases drawn from source resume evidence only — no invented capabilities."
+      - "No short noun phrases alone — every entry must be a 'Category: phrase, phrase, phrase' block."
     ats_rules:
-      - "Competency labels communicate to the recruiter scanner — embed full JD keyword phrases."
-      - "Primary ATS keyword credit comes from experience bullets, not this section alone."
-      - "Include at minimum: AI/data platform, enterprise architecture, innovation, technology strategy."
+      - "Category labels and sub-phrases communicate domain depth to executive recruiters."
+      - "Mirror JD language in sub-phrases: IT strategy, enterprise architecture, innovation, AI, data platforms, interoperability."
+      - "Primary ATS keyword credit comes from experience bullets — competencies reinforce signal depth."
 
 judge_guidance:
   # Consumed by apps_rg judge prompt builder (apps_rg/config/domain_contract/judge_prompts.yaml).

@@ -143,8 +143,7 @@ def _make_envelope() -> Any:
             "title": "SVP AI Solutions",
         },
         research_requirements={
-            "allow_research": True,
-            "research_evidence_types": ["company_brief", "lead_profile"],
+            "required_evidence_types": ["company_brief", "lead_profile"],
         },
     )
     return AppsLicRequestEnvelope(

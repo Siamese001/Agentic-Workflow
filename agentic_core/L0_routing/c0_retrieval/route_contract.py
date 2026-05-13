@@ -80,6 +80,41 @@ class L1PlanContract:
 
 
 @dataclass(frozen=True)
+class GraphTraversePolicy:
+    """Frozen graph traversal policy carrier — W3 graph policy plumbing.
+
+    Constructed by L0 from app-owned route profile ``graph_traverse`` block.
+    Carried on RouteContract as an opaque policy object; never executed by L0.
+    C0.3 is the future owner of graph execution (run_graph_traverse).
+
+    All fields default to safe/disabled values so existing callers are unaffected.
+    ``graph_adapter_ref`` is a dotted module path string (e.g.
+    ``apps_lic.integrations.c0_graph_adapter``) — carried but NOT imported or
+    resolved in W3.
+    """
+
+    graph_expansion_allowed: bool = False
+    max_hops: int = 1
+    max_nodes: int = 64
+    max_edges: int = 128
+    allowed_relation_types: tuple[str, ...] = ()
+    contradiction_scan_enabled: bool = False
+    supersession_scan_enabled: bool = False
+    graph_adapter_ref: str | None = None
+    acl_scope_ref: str | None = None
+    freshness_profile_ref: str | None = None
+    support_target: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.max_hops < 0:
+            raise ValueError("max_hops must be >= 0")
+        if self.max_nodes <= 0:
+            raise ValueError("max_nodes must be positive")
+        if self.max_edges <= 0:
+            raise ValueError("max_edges must be positive")
+
+
+@dataclass(frozen=True)
 class RouteContract:
     """L0's deterministic instruction to C0.
 
@@ -144,6 +179,14 @@ class RouteContract:
     # Frozen C0 policy set by L0. Downstream layers (C0, PA) MUST NOT override.
     c0_policy: C0Policy | None = None
 
+    # ----- Graph Traversal Policy (W3 chroma-graphrag-lic-rg-research-f4a2e9) -----
+    # Opaque graph policy carrier populated by L0 from app-owned route profile.
+    # L0 carries policy only — L0 MUST NOT invoke run_graph_traverse().
+    # C0.3 is the future owner of graph execution.
+    # None when route profile has no graph_traverse block or
+    # graph_expansion_allowed=false.
+    graph_traverse_policy: GraphTraversePolicy | None = None
+
     def __post_init__(self) -> None:
         if self.max_k <= 0:
             raise ValueError("max_k must be positive")
@@ -173,6 +216,7 @@ __all__ = [
     "C0DecisionSource",
     "C0Mode",
     "C0Policy",
+    "GraphTraversePolicy",
     "L1PlanContract",
     "RouteContract",
 ]

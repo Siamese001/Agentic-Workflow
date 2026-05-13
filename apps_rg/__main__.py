@@ -388,11 +388,10 @@ def main() -> int:
         return 0
 
     # Submit to AppIngressRunner (core runtime entry).
-    # W0.5C: profile-based constructor — AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).
-    # AppIngressRunner populates proof fields (profile_digest, binding_digest_map) before dispatch.
+    # A.1: profile-only constructor — AppIngressRunner(profile=profile).run(payload).
+    # profile.dispatch is set by build_app_runtime_contract(); no separate dispatch= needed.
     try:
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from apps_rg.runtime.dispatch import apps_rg_dispatch
         from apps_rg.runtime.profile_builder import build_app_runtime_contract
     except ImportError as exc:
         print(
@@ -403,10 +402,7 @@ def main() -> int:
         return 3
 
     profile = build_app_runtime_contract()
-    runner = AppIngressRunner(
-        profile=profile,
-        dispatch=apps_rg_dispatch,
-    )
+    runner = AppIngressRunner(profile=profile)
 
     try:
         result = runner.run(ingress_payload)

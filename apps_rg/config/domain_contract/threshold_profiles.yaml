@@ -21,6 +21,7 @@
     concision: 0.60
     format_compliance: 0.95
     no_fabrication: 0.99
+    competencies_structure: 0.60     # 6-category engineering/platform format required
   # W4.P3 (plan apps-eval-harness-parity-f8d4a2): dims listed here keep
   # min=0.0 deliberately — they remain in the weighted overall score but
   # are NOT gated per-dim. Their eval_rubric min_required_score still

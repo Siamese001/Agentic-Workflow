@@ -66,9 +66,11 @@ def render(resume_json: dict, output_path: Path, template_path: Path) -> None:
 
     # Executive Summary
     exec_summary = resume_json.get("executive_summary", {})
-    if isinstance(exec_summary, dict):
-        raw = exec_summary.get("content", [])
-        # Qwen may split into array-of-sentences; join into one paragraph
+    if isinstance(exec_summary, list):
+        # Qwen returns a list of sentence-strings; join into one paragraph
+        content_lines = [" ".join(str(s).strip() for s in exec_summary if str(s).strip())]
+    elif isinstance(exec_summary, dict):
+        raw = exec_summary.get("content", exec_summary.get("summary", ""))
         if isinstance(raw, list):
             content_lines = [" ".join(str(s).strip() for s in raw if str(s).strip())]
         else:

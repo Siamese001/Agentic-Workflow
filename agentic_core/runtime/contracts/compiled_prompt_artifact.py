@@ -66,6 +66,13 @@ class CompiledPromptArtifact:
     component_hash_map: Mapping[str, str] = field(default_factory=dict)
     replay_manifest_ref: str = ""
 
+    # Per-input hash map — distinct SHA-256 digests keyed by input name.
+    # Populated by apps_rg PA binding from ValidatedRequest.app_payload so
+    # Exit G24 can use real per-input hashes instead of an aggregate digest.
+    # Keys used by apps_rg: "jd_hash", "resume_hash", "target_role_spec_hash".
+    # Default empty dict — non-apps_rg producers are unaffected.
+    per_input_hash_map: Mapping[str, str] = field(default_factory=dict)
+
     # Identity extension
     tenant_id: str = ""  # W1: threaded from FinalEvidenceContract.tenant_id (D6)
 
