@@ -28,12 +28,22 @@ LAST_UPDATED: 2026-05-13
 
 ## Executive Recommendation
 
-**These 8 plans must not be executed literally as separate tracks.** They overlap, conflict on sequencing, and duplicate governance concerns. Execute instead as:
+**This Master Plan is the orchestration plan for the portfolio. It owns apps_rg-local sequencing and references Author-Gated generic core-enabling tracks. It does not itself authorize or implement core changes.**
 
-1. **This Master Plan** — 13 phases of apps_rg-local runtime hardening (Phases 0–13)
-2. **Core L5 Certification Packet Producer Plan** — Generic core-enabling work (Author-Gated)
-3. **Existing Core G29 Promotion Proof Plan** — Generic L6/promotion/L4 namespace parser (Author-Gated)
+These 8 plans must not be executed literally as separate tracks. They overlap, conflict on sequencing, and duplicate governance concerns. Execute instead as:
+
+1. **This Master Plan** — Orchestration plan with apps_rg-local sequencing and core-enabling references
+2. **Core L5 Certification Packet Producer Plan** — Generic core-enabling work Phase 4A (Author-Gated)
+3. **Existing Core G29 Promotion Proof Plan** — Generic L6/promotion/L4 namespace parser Phase 4B (Author-Gated)
 4. **Reference-Only Source Plans** — 8 source plans updated with consolidation banners
+
+### Track Split
+
+| Track | Phases | Description |
+|-------|--------|-------------|
+| apps_rg-local | 0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13 | apps_rg-owned implementation |
+| Author-Gated core-enabling | 4A, 4B | Separate Author-Gated plans only |
+| Phase 5 status | AUTHOR-GATED CORE-ENABLING OR NO-OP | Inspect before execution; if fields exist, Phase 5 is verification only |
 
 **Key Portfolio Conclusions:**
 - Direct semantic cache write removal is P0 (reachable UWG bypass)
@@ -55,9 +65,9 @@ LAST_UPDATED: 2026-05-13
 | **1** | L4 W1, L6 W1, L5 GAP-002 | Phase 0 | Remove direct semantic cache writes, replace with inert `SectionCacheWriteProposal`, surface through Exit only | P0 UWG bypass blocker | `apps_rg/runtime/section_agentic_pipeline.py`, `apps_rg/runtime/schemas/__init__.py`, `apps_rg/runtime/bindings/exit_binding.py`, `ops_scripts/ci/check_no_direct_semantic_cache_write.py`, `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` | `check_no_direct_semantic_cache_write.py` passes | Any runtime imports cache writer directly |
 | **2** | L4 W2, L6 W2, Structured W10 | Phase 1 | Delete/quarantine app-local L6 runtime, rename spans to section observation, prove zero importers | Duplicate L6 surface removal | `apps_rg/runtime/l6_shadow_learning.py`, `apps_rg/_quarantine/`, `apps_rg/runtime/schemas/__init__.py`, `apps_rg/runtime/section_agentic_pipeline.py`, `ops_scripts/ci/check_no_apps_rg_runtime_l6_engine.py`, `tests/governance/test_apps_rg_l6_surface_ownership.py` | Zero importers proven | Any L6/Shadow/Producer engine remains active |
 | **3** | L4 W3/W5/W6, Structured W8.3 | Phase 2 | L4 namespace manifest, durable write allowlists, Exit proposal-only path, Chroma readonly guard, filesystem write CI | Write boundary lockdown | `apps_rg/config/l4_namespace_manifest.yaml`, `apps_rg/config/l4_namespace_manifest.schema.json`, `apps_rg/runtime/bindings/exit_binding.py`, `ops_scripts/ci/check_apps_rg_l4_write_boundary.py`, `ops_scripts/ci/check_apps_rg_chroma_readonly.py`, `ops_scripts/ci/check_apps_rg_exit_no_direct_writes.py`, `tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py` | All CI gates pass | Exit writes files directly or Chroma mutations occur |
-| **4A** | L5 GAP-001/GAP-003 | Phase 3 | Generic `L5CertificationPacket` producer, child certifier aggregation, shared `l5_governance_context_digest`, egress receipt interface | Core-enabling work (Author-Gated) | `agentic_core/L5_safety/certification/l5_packet_producer.py`, `agentic_core/L5_safety/certification/egress_certifier.py`, `agentic_core/L5_safety/contracts/*`, `tests/unit/agentic_core/L5_safety/*` | Core receipt with Author-Gate PASS | No Author-Gate, producer contains app literals |
-| **4B** | Core G29 W4/W5 | Phase 3 | PromotionGauntlet.GATE_ID, L6GauntletResult.gate_id, FutureRunPromotionRequest proof fields, generic L4 namespace parser | Core-enabling work (Author-Gated) | `agentic_core/L6_learning/promotion_gauntlet.py`, `agentic_core/L6_learning/__init__.py`, `agentic_core/L4_state/contracts/l4_namespace_contract.py`, `tests/unit/agentic_core/L6_learning/test_promotion_gauntlet.py` | Core receipt with Author-Gate PASS | Parser has app-specific literals |
-| **5** | L1 W1-W4, L0 P1.3/P5.1 core parts | Phase 4A/4B complete | Generic L1/L0 contract field enablement, L1 refs/non-authority fields, route/provider refs | Contract foundation | `agentic_core/runtime/contracts/l1_plan_contract.py`, `agentic_core/runtime/contracts/route_contract.py`, `agentic_core/runtime/contracts/route_gate_receipt.py` | Contract tests pass | Contract fields contain app-specific enums |
+| **4A** | L5 GAP-001/GAP-003 | Phase 3 | Generic `L5CertificationPacket` producer, child certifier | Core-enabling work (Author-Gated) | `agentic_core/L5_safety/certification/l5_packet_producer.py`, `agentic_core/L5_safety/certification/egress_certifier.py`, `agentic_core/L5_safety/contracts/*`, `tests/unit/agentic_core/L5_safety/*` | Core receipt with Author-Gate PASS | Producer contains apps_rg literals |
+| **4B** | Core G29 W1-W3; apps_rg L6 W4/W5 are reference-only/downstream verification | Phase 0 + Author-Gate PASS; can run in parallel with Phases 1–3 | PromotionGauntlet.GATE_ID, L6GauntletResult.gate_id, FutureRunPromotionRequest proof fields, generic L4 namespace parser | Core-enabling work (Author-Gated) | `agentic_core/L6_learning/promotion_gauntlet.py`, `agentic_core/L6_learning/__init__.py`, `agentic_core/L4_state/contracts/l4_namespace_contract.py`, `tests/unit/agentic_core/L6_learning/test_promotion_gauntlet.py` | Core receipt with Author-Gate PASS | Parser has app-specific literals |
+| **5** | L1 W1-W4, L0 P1.3/P5.1 core parts | AUTHOR-GATED CORE-ENABLING OR NO-OP; inspect whether generic L1/L0 contract fields already exist before execution | Generic L1/L0 contract field enablement OR verification only if fields exist | Contract foundation | `agentic_core/runtime/contracts/l1_plan_contract.py`, `agentic_core/runtime/contracts/route_contract.py`, `agentic_core/runtime/contracts/route_gate_receipt.py` | Contract tests pass | Contract fields contain app-specific enums |
 | **6** | L1 W2-W5 apps-local | Phase 5 | U0 emits L1 planning profile ref/digest, L1 validates digest fail-closed, advisory work-shape hints | apps_rg L1 wiring | `apps_rg/runtime/u0/payload_synthesizer.py`, `apps_rg/runtime/bindings/l1_binding.py`, `apps_rg/profiles/rg_planning_profile.yaml`, `tests/_apps_contract/test_apps_rg_l1_profile_wiring.py`, `tests/_apps_contract/test_apps_rg_l1_work_shape.py`, `tests/_apps_contract/test_apps_rg_l1_non_authority.py` | All L1 tests pass | Missing profile silently passes |
 | **7** | L0 W1-W6 apps-local | Phase 5 | Canonical route profile path, fail-closed loader, route_family/execution_form/allowed_next_stage, typed gate receipts, cache bypass | apps_rg L0 wiring | `apps_rg/runtime/bindings/l0_binding.py`, `apps_rg/config/domain_contract/route_profiles.yaml`, `apps_rg/runtime/bindings/pa_binding.py`, `tests/_apps_contract/test_l0_gate_verdicts.py`, `tests/_apps_contract/test_l0_execution_form.py`, `tests/_apps_contract/test_l0_cache_bypass.py`, `tests/_apps_contract/test_l0_canonical_profile_path.py` | All L0 tests pass | L0 manufactures PASS from missing facts |
 | **8** | L5 GAP-001/GAP-003 app wiring | Phase 4A/6/7 | Wire apps_rg U0/L1/L0/C0/PA/L2/Exit to L5 packet refs, add egress receipts around ProviderGateway | L5 integration | `apps_rg/runtime/bindings/u0_binding.py`, `apps_rg/runtime/bindings/l1_binding.py`, `apps_rg/runtime/bindings/l0_binding.py`, `apps_rg/runtime/bindings/c0_binding.py`, `apps_rg/runtime/bindings/pa_binding.py`, `apps_rg/runtime/bindings/l2_binding.py`, `apps_rg/runtime/bindings/exit_binding.py`, `apps_rg/config/domain_contract/l5_governance_profile.yaml`, `tests/_apps_contract/test_apps_rg_l5_certification_packet.py`, `tests/_apps_contract/test_apps_rg_l2_egress_receipts.py` | L5 packet + egress receipts present | Provider call lacks EgressCertificationReceipt |
@@ -165,6 +175,18 @@ LAST_UPDATED: 2026-05-13
 ## Consolidated Implementation Runbook
 
 ### Phase 0 — Unified Baseline
+
+**Validation Commands (Plan-Only Scope):**
+```bash
+# Verify all 8 source plans have consolidation banners
+rg "PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER|PORTFOLIO_STATUS: MERGED_INTO_MASTER|PORTFOLIO_STATUS: ACTIVE_SEPARATE_CORE_PLAN|PORTFOLIO_STATUS: GAP_REPORT_REFERENCE" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
+
+# Verify only plan files changed
+git diff --name-only | rg -v "^\.windsurf/plans/" && exit 1 || true
+```
+
+**Stop Condition:**
+- Any source plan missing the consolidation banner blocks closeout
 
 **Commands to execute:**
 ```bash
@@ -296,7 +318,12 @@ rg "apps_rg" agentic_core/L4_state/contracts/ && exit 1 || true
 - Promotion request can pass gauntlet without eval/RCA/audit proof refs
 - G29 is not present or not populated
 
-### Phase 5 — Generic L1/L0 Contract Fields
+### Phase 5 — AUTHOR-GATED CORE-ENABLING OR NO-OP
+
+**Rule:** Before Phase 5, inspect whether the generic L1/L0 contract fields already exist. If they exist, Phase 5 is verification only. If absent, create or use a separate Author-Gated core contract-enablement plan. Do not implement Phase 5 inside the apps_rg master plan.
+
+**Stop Condition:**
+- Any attempt to edit `agentic_core/runtime/contracts/*` from the master plan without separate Author-Gated core plan stops execution
 
 **Commands:**
 ```bash
@@ -618,7 +645,7 @@ See per-phase runbook above for detailed stop conditions. Summary of key CI gate
 | DoD-7 | Only `.windsurf/plans` files modified (plan-only scope) | `git diff --name-only` confirms |
 | DoD-8 | No runtime/code implementation performed | No Python source edits outside plans |
 | DoD-9 | No `agentic_core` source files modified (plan-only) | `git diff agentic_core/` empty |
-| DoD-10 | Master plan registered in Notion Plans DB | `API-post-page` returns 200 with page ID |
+| DoD-10 OPTIONAL | Notion Plans DB registration, only if required by current project plan protocol. This is not a blocker for plan-file consolidation | `API-post-page` returns 200 with page ID (if required) |
 
 ### Verification-vs-Deferral
 
@@ -631,6 +658,36 @@ See per-phase runbook above for detailed stop conditions. Summary of key CI gate
 | Test file changes | Not implemented | Plan-only consolidation task |
 
 ---
+
+## Plan-Only Validation Commands
+
+Run after consolidation edits:
+
+```bash
+git diff -- .windsurf/plans
+git diff --name-only
+git diff --name-only | rg -v "^\.windsurf/plans/" && exit 1 || true
+git diff -- agentic_core apps_rg ops_scripts tests
+```
+
+**Expected:**
+- Only `.windsurf/plans/*` files changed
+- No `agentic_core/` source files changed
+- No `apps_rg/` source files changed
+- No `ops_scripts/` files changed
+- No `tests/` files changed
+- Runtime implementation is untouched
+
+## Open Verification Items
+
+Before marking this plan complete, verify:
+
+1. [ ] All 8 source plans contain banners with PORTFOLIO_STATUS and MASTER_PLAN_REF
+2. [ ] No non-plan files changed in the consolidation commit
+3. [ ] Phase 4A and 4B are separate Author-Gated plans, not implemented by master
+4. [ ] Phase 5 has separate Author-Gated plan if fields are missing (or marked NO-OP)
+5. [ ] Source plan W10 conflict is marked superseded in structured resume plan
+6. [ ] No external registration dependency (Notion is optional per DoD-10)
 
 ## Scope Expansion Authorization
 

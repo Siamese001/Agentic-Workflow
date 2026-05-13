@@ -72,35 +72,78 @@ CHECKPOINT: A
 
 **Phases**:
 - **W1.1** — Create `agentic_core/L5_safety/contracts/l5_certification_contracts.py` with base types | ~0.8K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** — Implement `L5CertificationPacket` dataclass with 8+ fields | ~0.9K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.2** — Implement `L5CertificationPacket` dataclass with full BaseContractEnvelope + spine contract fields | ~0.9K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W1.3** — Implement `EgressCertificationReceipt` dataclass with attestation fields | ~0.5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W1.4** — Implement `ChildCertifierReceipt` dataclass with digest sharing | ~0.3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
-**L5CertificationPacket Schema (W1.2)**:
+**L5CertificationPacket Schema (W1.2)** — Full spine contract compliance:
 ```python
 @dataclass(frozen=True)
 class L5CertificationPacket:
+    # BaseContractEnvelope fields
     schema_version: str = "1.0.0"
     producer: str = "agentic_core.L5_safety.certification.l5_packet_producer"
     packet_id: str  # UUID
     produced_at: str  # ISO8601 timestamp
     
+    # Certified object identity
+    certified_object_ref: str
+    certified_object_digest: str
+    
     # Governance context shared across all child certifiers
     l5_governance_context_digest: str  # 64-char SHA256
     
-    # Child certifier receipts (one per certifier that ran)
-    child_certifier_receipts: tuple[ChildCertifierReceipt, ...]
+    # Policy and blueprint references
+    policy_hash: str
+    blueprint_hash: str
+    registry_digest_set: tuple[str, ...]
+    
+    # Authority chain
+    principal_chain: tuple[str, ...]
+    capability_token_ref: str
+    sandbox_envelope_ref: str
+    origin_trust_manifest_ref: str
+    
+    # Certification evidence
+    child_certifier_results: tuple[ChildCertifierReceipt, ...]
+    child_certifier_count: int
     
     # Egress receipts around external provider calls
+    egress_certification_receipt_refs: tuple[str, ...]
     egress_receipts: tuple[EgressCertificationReceipt, ...]
     
-    # Certification status (advisory only — L3/L0 emit actual verdicts)
-    certification_status: str  # "L5_NOT_CERTIFIED" | "L5_CERTIFICATION_READY"
+    # HITL and replay
+    hitl_reclearance_receipt_ref: str | None
+    replay_envelope_ref: str
+    audit_manifest_ref: str
     
-    # Non-repudiation
-    packet_digest: str  # SHA256 of canonical serialization
-    prior_packet_digest: str | None  # Chain for re-execution
+    # Governance references
+    static_governance_refs: tuple[str, ...]
+    runtime_binding_refs: tuple[str, ...]
+    
+    # Digest validation
+    digest_equality_result: str  # "PASS" | "FAIL" | "UNKNOWN"
+    
+    # Certification status (advisory only — 00C Runtime Gates emit GateVerdict; Exit emits X3)
+    certification_status: str  # "L5_NOT_CERTIFIED" | "L5_CERTIFICATION_READY"
+    decisive_reason: str | None
+    
+    # Non-repudiation chain
+    packet_digest: str  # SHA256 of canonical packet serialization
+    prior_packet_digest: str | None  # Chain to previous packet for replay
 ```
+
+**Required Child Certifier Categories (must be covered by child_certifier_results):**
+- 00A.1 Safety Enforcement
+- 00A.2 Authority Context + Registry Binding
+- 00A.3 Origin Trust + Content Boundary
+- 00A.4 HITL Reclearance (when applicable)
+- 00A.5 Egress + Provider Governance (when applicable)
+- 00A.6 Replay / Audit / Certification Evidence
+- 00A.7 Static Governance + Structure Drift
+- 00A.8 Runtime Certification Binding
+
+**Rule:** Missing applicable child certifier result => L5_NOT_CERTIFIED with decisive_reason; L5 still does not emit GateVerdict or X3.
 
 **Acceptance**:
 - All three dataclasses exist with `frozen=True`
@@ -161,7 +204,7 @@ class L5PacketProducer:
 - `produce_packet()` returns frozen `L5CertificationPacket`
 - Governance context digest is consistent across all child receipts
 - Digest mismatch raises `L5CertificationError` (fail-closed)
-- Advisory status only — never "L5_CERTIFIED" (L3/L0 emit actual verdicts)
+- Advisory status only — never "L5_CERTIFIED" (00C Runtime Gates emit GateVerdict; Exit emits final X3)
 
 ---
 
@@ -191,8 +234,8 @@ class EgressCertificationReceipt:
     produced_at: str  # ISO8601 timestamp
     
     # Call attestation
-    provider_ref: str  # e.g., "openai/gpt-4o"
-    call_purpose: str  # Semantic purpose (not raw prompt)
+    provider_ref: str  # symbolic registry ref, e.g., "provider_family/model_tier" or "provider_ref://<registry-key>"
+    call_purpose_ref: str  # Semantic purpose ref, e.g., "call_purpose_ref://<semantic-purpose>"
     request_digest: str  # SHA256 of canonical request
     response_digest: str  # SHA256 of canonical response (excl PII)
     
@@ -245,6 +288,7 @@ CHECKPOINT: D
 8. `test_no_gate_verdict_emission` — L5 boundary respected
 9. `test_no_x3_commit_emission` — L5 boundary respected
 10. `test_no_l4_write` — L5 boundary respected
+11. `test_l5_packet_matches_spine_contract_required_fields` — spine contract compliance
 
 **Acceptance**:
 - 25+ unit tests pass, 0 failures
@@ -267,11 +311,15 @@ CHECKPOINT: E
 
 **Phases**:
 - **W5.1** — Register L5 safety tests in CI pipeline | ~0.3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W5.2** — Create `CoreAdditionAuthorGateReceipt` | ~0.4K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W5.2** — Capture final core closeout receipt and verify initial Author-Gate receipt was captured before W1 | ~0.4K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W5.3** — Final boundary verification and documentation | ~0.5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W5.4** — Core receipt capture and plan closeout | ~0.3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
-**Core Addition Author-Gate Receipt (W5.2)**:
+**Author-Gate Receipt Discipline:**
+- **W0.1** — Capture `CoreAdditionAuthorGateReceipt` before W1 code changes (initial authorization)
+- **W5.2** — Capture final core closeout receipt and verify initial Author-Gate receipt exists
+
+**Core Addition Author-Gate Receipt (captured at W0.1 and verified at W5.2)**:
 ```json
 {
   "receipt_type": "CoreAdditionAuthorGateReceipt",
@@ -309,7 +357,7 @@ CHECKPOINT: E
 
 1. **No apps_rg literals** — `agentic_core/L5_safety/` must contain zero references to apps_rg, resume, CV, or company-specific terms.
 
-2. **L5 does not emit GateVerdict** — Only L0/L3 layers emit `GateVerdict`. L5 produces advisory certification packets only.
+2. **L5 does not emit GateVerdict** — Only 00C Runtime Gates emit `GateVerdict`. L5 produces certification evidence only.
 
 3. **L5 does not emit X3** — Exit layer owns X3C commit protocol. L5 must not emit X3 directly.
 
@@ -349,14 +397,16 @@ CHECKPOINT: E
 
 ---
 
-## Downstream Integration
+## Downstream Integration Reference Only — Not Implemented By This Core Plan
 
-### apps_rg Wiring (Master Plan Phase 8)
+**This section is illustrative. No apps_rg files are modified by this core plan.**
+
+### apps_rg Wiring (Master Plan Phase 8) — Illustrative Only
 
 This core plan enables downstream wiring in `apps-rg-master-governed-runtime-hardening.md` Phase 8:
 
 ```python
-# apps_rg/runtime/bindings/l2_binding.py
+# apps_rg/runtime/bindings/l2_binding.py (illustrative — not modified by this plan)
 from agentic_core.L5_safety.certification.l5_packet_producer import L5PacketProducer
 from agentic_core.L5_safety.certification.egress_certifier import EgressCertifier
 
