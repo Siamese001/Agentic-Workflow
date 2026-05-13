@@ -24,6 +24,16 @@ CURRENT_WAVE: W0
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-05-13
 
+**CANONICAL_EXECUTION_SET:**
+- 01_apps-rg-master-governed-runtime-hardening.md
+- 02_apps-rg-structured-resume-refactor-f8c2a1.md
+- 03_apps-rg-l4-boundary-hardening-c8f2a1.md
+- 04_apps-rg-c0-architecture-analysis-f3d8b2.md
+
+**NON_PREFIXED_PLAN_FILES:**
+- Reference-only if still present
+- Do not execute unless explicitly re-promoted
+
 ---
 
 ## Executive Recommendation
@@ -664,12 +674,12 @@ python -m apps_rg --dry-run
 
 | # | Source Plan | Disposition | Master Phases | Retained Scope | Moved Scope | Deferred Scope |
 |---|-------------|-------------|---------------|----------------|-------------|----------------|
-| 1 | apps-rg-l4-boundary-hardening-c8f2a1.md | MERGED_INTO_MASTER | 0, 1, 2, 3, 13 | apps_rg-local L4 boundary, namespace manifest, CI gates | Generic L4 parser to Core G29 | None |
+| 1 | 03_apps-rg-l4-boundary-hardening-c8f2a1.md | MERGED_INTO_MASTER | 0, 1, 2, 3, 13 | apps_rg-local L4 boundary, namespace manifest, CI gates | Generic L4 parser to Core G29 | None |
 | 2 | core-l6-g29-promotion-proof-hardening-d9e3b2.md | ACTIVE_SEPARATE_CORE_PLAN | 4B, 12 | Core G29, promotion proof, L4 parser | apps_rg L6 handoff tests to Phase 12 | None |
 | 3 | apps-rg-l5-governance-gap-report-hardened-f8c2e1.md | GAP_REPORT_REFERENCE | 4A, 8, 13 | GAP-001/002/003 evidence, HITL as future | L5 producer to Core L5 plan, wiring to Phase 8 | HITL governance |
 | 4 | apps-rg-l6-shadow-learning-hardening-7e4c2f.md | MERGED_INTO_MASTER_WITH_CORE_SPLIT | 0, 1, 2, 12, 13 | Delete/quarantine L6, canonical handoff, ObserverLaw | G29/promotion proof to Core G29 plan | LLM judge calibration |
-| 5 | apps-rg-c0-architecture-analysis-f3d8b2.md | MERGED_INTO_MASTER_SPLIT_BY_PRIORITY | 9, 11 | Narrow C0, FEC, fact_vectors | Min safety to Phase 9, fact_vectors to Phase 11 | BM25/sparse, LLM claim verification |
-| 6 | apps-rg-structured-resume-refactor-f8c2a1.md | MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION | 0, 10, 11, 12 | Structured schema, tiered bullets, G21/G22 | Path inventory to Phase 0, L6 handoff to Phase 12 | LLM judges, benchmark calibration |
+| 5 | 04_apps-rg-c0-architecture-analysis-f3d8b2.md | MERGED_INTO_MASTER_SPLIT_BY_PRIORITY | 9, 11 | Narrow C0, FEC, fact_vectors | Min safety to Phase 9, fact_vectors to Phase 11 | BM25/sparse, LLM claim verification |
+| 6 | 02_apps-rg-structured-resume-refactor-f8c2a1.md | MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION | 0, 10, 11, 12 | Structured schema, tiered bullets, G21/G22 | Path inventory to Phase 0, L6 handoff to Phase 12 | LLM judges, benchmark calibration |
 | 7 | apps-rg-l0-critical-gaps-remediation-a3f8e1.md | MERGED_INTO_MASTER_WITH_CORE_SPLIT | 5, 7 | Canonical route profile, typed gates, cache bypass | Generic RouteContract to Phase 5, apps wiring to Phase 7 | Terminal RET hardening |
 | 8 | apps-rg-l1-contract-wiring-3e7f92.md | MERGED_INTO_MASTER_WITH_CORE_SPLIT | 5, 6 | Deterministic L1, profile refs, work-shape hints | Generic L1PlanContract to Phase 5, apps wiring to Phase 6 | L1 Qwen/vLLM invocation |
 
@@ -880,11 +890,11 @@ When scope is discovered during execution, follow the four-step discipline: DISC
 |------|----------|
 | core-l6-g29-promotion-proof-hardening-d9e3b2.md | Core-enabling work Phase 4B |
 | core-l5-certification-packet-producer-hardening.md | Core-enabling work Phase 4A (new) |
-| apps-rg-l4-boundary-hardening-c8f2a1.md | Merged Phase 0, 1, 2, 3, 13 |
+| 03_apps-rg-l4-boundary-hardening-c8f2a1.md | Merged Phase 0, 1, 2, 3, 13 |
 | apps-rg-l5-governance-gap-report-hardened-f8c2e1.md | Reference Phase 4A, 8, 13 |
 | apps-rg-l6-shadow-learning-hardening-7e4c2f.md | Merged Phase 0, 1, 2, 12, 13 |
-| apps-rg-c0-architecture-analysis-f3d8b2.md | Merged Phase 9, 11 |
-| apps-rg-structured-resume-refactor-f8c2a1.md | Merged Phase 0, 10, 11, 12 |
+| 04_apps-rg-c0-architecture-analysis-f3d8b2.md | Merged Phase 9, 11 |
+| 02_apps-rg-structured-resume-refactor-f8c2a1.md | Merged Phase 0, 10, 11, 12 |
 | apps-rg-l0-critical-gaps-remediation-a3f8e1.md | Merged Phase 5, 7 |
 | apps-rg-l1-contract-wiring-3e7f92.md | Merged Phase 5, 6 |
 
