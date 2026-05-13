@@ -33,6 +33,10 @@ This plan has been merged into the master consolidation with work split by prior
 - Phase 9: Minimum C0 safety (FEC completeness, briefing gates)
 - Phase 11: Product-quality foundation (fact_vectors, section retrieval, claim verification)
 
+**Resume Shipping Critical Path:**
+- Minimum C0 safety (Phase 9 subset) is part of the Resume Shipping Critical Path (Master Plan S7).
+- fact_vectors remains post-shipping product-quality foundation (Phase 11).
+
 ---
 
 # apps_rg C0 Architecture Analysis and Implementation Plan (Hardened)

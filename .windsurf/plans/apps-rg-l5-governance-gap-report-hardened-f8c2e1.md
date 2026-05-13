@@ -33,6 +33,10 @@ This gap report remains as evidence reference, not implementation plan. The iden
 - Phase 8 (Master plan): GAP-003 apps_rg L5 wiring and egress receipts
 - Phase 13 (Master plan): GAP-009 L5 cert ref CI gate
 
+**Resume Shipping Critical Path:**
+- GAP-001/GAP-002 block governed production, not local/dev resume generation.
+- Resume shipping requires cache writes disabled or proposal-only (S9), but not the full L5 packet producer.
+
 ---
 
 ## Executive Summary

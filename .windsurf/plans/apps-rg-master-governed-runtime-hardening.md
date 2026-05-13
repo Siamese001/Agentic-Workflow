@@ -57,6 +57,158 @@ These 8 plans must not be executed literally as separate tracks. They overlap, c
 
 ---
 
+## Resume Shipping Critical Path
+
+**Purpose:**
+Accelerate the work needed to generate and send high-quality resumes before completing the full governed-production hardening sequence.
+
+**Important distinction:**
+apps_rg may be used for local/dev resume generation after this lane passes. It must not be called L5-governed or production-governed until the governed-production blockers are closed.
+
+**Fast-track phases:**
+
+**S0 — Fast Runtime Path Inventory**
+- Source: Structured W0A, Master Phase 0 subset
+- Scope:
+  - Identify exactly one active generation path
+  - Confirm dispatch -> bindings -> U0/L1/L0/C0/PA/L2/Exit
+  - Confirm quarantined/legacy paths are not active
+  - Capture current generated output artifact
+- Exit gate:
+  - exactly one active generation path proven
+  - no active imports from quarantined paths
+
+**S1 — Structured Resume Schema and Ingestion**
+- Source: Structured W1/W3
+- Scope:
+  - source_resume_v2_structured.json
+  - normalized section IDs
+  - narrative vs bullets separation
+  - verbatim fields for education, certifications, early career
+  - backward-compatible flat text fallback
+- Exit gate:
+  - source resume parses into headline, exec_summary, Unify, IBM, InsurTech, EY, early_career, competencies, education, certifications
+
+**S2 — Section-by-Section Treatment Matrix**
+- Source: Structured section processing design
+- Scope:
+  - headline heavy
+  - exec summary heavy
+  - Unify narrative verbatim
+  - Unify bullets 1-3 heavy, 4-5 moderate, 6 light
+  - IBM narrative verbatim
+  - IBM bullets 1-2 moderate, 3-5 light
+  - InsurTech bullets moderate
+  - EY bullets light
+  - early career verbatim
+  - competencies JD-ranked 2-4 word noun phrases
+  - education/certifications verbatim
+- Exit gate:
+  - every section has treatment policy, rewrite budget, and preservation rule
+  - no generic fallthrough rewrite
+
+**S3 — PA Tiered Prompt Patching**
+- Source: Structured W2
+- Scope:
+  - provider-neutral prompt structure
+  - exact source-span first
+  - JD alignment field
+  - rewritten bullet field
+  - blocked_items field
+  - INSUFFICIENT_SOURCE_SUPPORT status
+  - anti-invention rules: no new metrics, clients, tools, domains, scope, titles, impacts without source support
+- Exit gate:
+  - each rewritten bullet has source_span, jd_alignment, rewritten_bullet, blocked_items, status
+
+**S4 — U0 Structured Resume Support**
+- Source: Structured W3
+- Scope:
+  - detect structured resume input
+  - preserve flat text fallback
+  - pass structured sections into PA
+  - preserve base resume + JD + briefing inputs
+- Exit gate:
+  - same CLI runs with structured JSON and legacy flat input
+
+**S5 — Runtime Executive Summary Display Fix**
+- Source: Structured W4
+- Scope:
+  - display live path as U0 -> L1 -> L0 -> C0 -> PA -> L2 -> Exit
+  - display L6 only as post-runtime
+  - display writeback as inert unless UWG receipt exists
+- Exit gate:
+  - no output claims L6 is in live generation path
+  - no output claims cache writes are durable without UWG
+
+**S6 — Deterministic Resume Exit Checks**
+- Source: Structured W6/G21/G22 subset
+- Scope:
+  - headline one-line check
+  - exec summary shape check
+  - bullet count checks
+  - verbatim hash checks for education/certs/early career
+  - unsupported claim/status checks
+  - UNKNOWN never PASS
+- Exit gate:
+  - resume is structurally sendable
+  - unsupported sections block automatic acceptance
+
+**S7 — Minimum C0 Safety**
+- Source: C0 Phase 9 subset
+- Scope:
+  - C0 dispatch proof when grounding_required=true
+  - FEC completeness check
+  - authoritative briefing freshness/authority
+  - weak support never promoted to PASS
+  - no company research lane inside apps_rg C0
+- Explicitly defer:
+  - fact_vectors
+  - ingest pipeline
+  - BM25
+  - LLM free-text claim verification
+- Exit gate:
+  - grounding-required route cannot bypass C0
+  - stale/unauthorized briefing cannot become PASS
+  - weak support stays WEAK
+
+**S8 — Manual Section Review Harness**
+- Source: new operational shipping layer
+- Scope:
+  - produce section review artifact with generated text, source support, issues, approve/edit/retry
+  - support headline, exec_summary, competencies, and each role section
+- Exit gate:
+  - human can approve or reject each section before sending
+  - review artifact is saved with generated resume
+
+**S9 — Resume-Shipping Cache Safety**
+- Source: Master Phase 1 minimum subset
+- Scope:
+  - either replace direct semantic cache write with inert proposal-only OR hard-disable semantic cache writes in resume-shipping mode
+- Exit gate:
+  - resume-shipping mode does not mutate semantic cache
+
+### Lane Requirements Table
+
+| Lane | Required before sending resumes? | Required before governed production? |
+|------|--------------------------------|--------------------------------------|
+| Resume Shipping Critical Path S0-S9 | Yes | Not sufficient |
+| Full L5CertificationPacket producer | No | Yes |
+| Core G29 / promotion proof | No | Yes |
+| Full UWG/L4 proposal lifecycle | No, except cache disabled/proposal-only | Yes |
+| fact_vectors | No | Later product-quality foundation |
+| L6 shadow learning | No | Later future-run learning |
+| LLM judges/benchmarks | No | Later calibration hardening |
+| HITL governance | No unless human edits re-enter runtime | Yes if human re-entry is enabled |
+
+### Master Sequence Note (Updated)
+
+- The original Phase 0-13 sequence remains the governed-production track.
+- The Resume Shipping Critical Path may execute before the full governed-production sequence.
+- Phase S9 must ensure no semantic cache durable mutation occurs during resume-shipping runs.
+- Do not market or label output as L5-governed until Phase 4A, Phase 8, and final governance gates are complete.
+
+---
+
 ## Proposed Master Sequence
 
 | Phase | Source Plan Waves | Dependency | Scope | Why Now | Files Likely Touched | Exit Gate | Stop Condition |

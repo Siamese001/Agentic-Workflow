@@ -41,6 +41,11 @@ This plan has been merged into the master consolidation with conflict resolution
 
 **CRITICAL**: W10 L6 Shadow Learning Repair is superseded by Master Phase 2 (delete/quarantine L6) and Phase 12 (canonical handoff verification). Do not implement W10 as originally written.
 
+**Resume Shipping Critical Path:**
+- W1-W6 are promoted into the Resume Shipping Critical Path (Master Plan S0-S6).
+- W9 judges remain inventory only and are not required before first resume sending.
+- W10 remains superseded and must not repair `l6_shadow_learning.py`.
+
 ---
 
 # Refactor apps_rg to Structured Resume with Tiered Customization
