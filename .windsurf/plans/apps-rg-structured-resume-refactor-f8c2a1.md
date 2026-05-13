@@ -166,7 +166,7 @@ CHECKPOINT: A0
 |------|-----------|
 | `apps_rg/runtime/bindings/*` | U0→L1→L0→C0→PA→L2→Exit spine bindings |
 | `apps_rg/runtime/runtime_executive_summary.py` | W4 bug patch for correct display |
-| `apps_rg/runtime/l6_shadow_learning.py` | W10 repair for future-run learning |
+| `apps_rg/runtime/l6_shadow_learning.py` | SUPERSEDED / REFERENCE ONLY — do not repair. Duplicate app-local L6 runtime must be deleted or quarantined unless live caller proof exists. Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff. |
 | `apps_rg/runtime/schemas/*` | App-specific schemas (SectionArtifact, etc.) |
 | `apps_rg/config/domain_contract/*` | App profiles, rubrics, thresholds |
 | `tests/_apps_contract/test_apps_rg_*.py` | App-specific test coverage |
@@ -202,7 +202,7 @@ CHECKPOINT: A0
 - **W7** — C0 Evidence Trust & Retrieval Safety | ~600 tokens | STATUS: Not Started
 - **W8** — Identity, Budget, L6 Firewall + Inert Writeback | ~600 tokens | STATUS: Not Started
 - **W9** — Judge Surface Consolidation (Inventory First) | ~1000 tokens | STATUS: Not Started
-- **W10** — L6 Shadow Learning Repair (Future-Run Only) | ~600 tokens | STATUS: Not Started
+- **W10** — SUPERSEDED / REFERENCE ONLY: Canonical L6 Handoff Verification Only | ~600 tokens | STATUS: Not Started
 
 ---
 
@@ -221,7 +221,7 @@ CHECKPOINT: A0
 | W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | Not Started |
 | W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | Not Started |
 | W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | Not Started |
-| W10 | W10.1, W10.2 | Repair l6_shadow_learning.py (future-run only) | ~600 | Not Started |
+| W10 | W10.1, W10.2 | SUPERSEDED / REFERENCE ONLY — do not repair l6_shadow_learning.py; verify canonical Exit -> RuntimeExhaustBundle handoff only | ~600 | Not Started |
 
 ---
 
@@ -251,8 +251,8 @@ CHECKPOINT: A0
 | W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | Not Started |
 | W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | Not Started |
 | W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | Not Started |
-| W10.1 | Extend RuntimeExhaustBundle | `l6_shadow_learning.py` exhaust refs | ~300 | Not Started |
-| W10.2 | Repair ProposalPacket Future-Run | Gauntlet/UWG/L4 promotion path | ~300 | Not Started |
+| W10.1 | SUPERSEDED — no l6_shadow_learning.py changes | Reference only; canonical handoff owned by master Phase 12 | ~300 | Not Started |
+| W10.2 | SUPERSEDED — no ProposalPacket repair in apps_rg | Reference only; G29/promotion proof owned by Core G29 plan | ~300 | Not Started |
 
 ---
 
@@ -749,7 +749,15 @@ Calibration requirements:
 
 ---
 
-## Wave 10 — L6 Shadow Learning Repair (Future-Run Only)
+STATUS: SUPERSEDED_BY_MASTER
+MASTER_PHASES: Phase 2 and Phase 12
+RESOLUTION:
+- Do not repair apps_rg/runtime/l6_shadow_learning.py.
+- Delete or quarantine duplicate app-local L6 runtime unless live caller proof exists.
+- Structured resume scope may only verify canonical Exit -> RuntimeExhaustBundle handoff.
+- G29 and promotion proof fields remain owned by the separate Core G29 plan.
+
+## Wave 10 — SUPERSEDED / REFERENCE ONLY: Canonical L6 Handoff Verification Only
 
 **Critical Reframe**: L6 is strictly shadow/future-run. Never part of live generation.
 

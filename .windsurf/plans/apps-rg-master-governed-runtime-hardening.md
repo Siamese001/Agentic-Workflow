@@ -78,6 +78,19 @@ apps_rg may be used for local/dev resume generation after this lane passes. It m
   - exactly one active generation path proven
   - no active imports from quarantined paths
 
+**S0.5 — Resume-Shipping Cache Safety Guard**
+- Source: Master Phase 1 minimum subset, L5 GAP-002
+- Scope:
+  - before any full end-to-end resume generation run, either:
+    1. replace direct semantic cache write with inert proposal-only, OR
+    2. hard-disable semantic cache writes in resume-shipping mode
+  - no semantic cache durable mutation during resume-shipping runs
+- Exit gate:
+  - resume-shipping mode does not mutate semantic cache
+  - direct cache writes are disabled or proposal-only before any smoke run that executes section generation
+- Stop condition:
+  - any runtime path can call write_section_to_semantic_cache during resume-shipping mode
+
 **S1 — Structured Resume Schema and Ingestion**
 - Source: Structured W1/W3
 - Scope:
@@ -180,12 +193,9 @@ apps_rg may be used for local/dev resume generation after this lane passes. It m
   - human can approve or reject each section before sending
   - review artifact is saved with generated resume
 
-**S9 — Resume-Shipping Cache Safety**
-- Source: Master Phase 1 minimum subset
-- Scope:
-  - either replace direct semantic cache write with inert proposal-only OR hard-disable semantic cache writes in resume-shipping mode
-- Exit gate:
-  - resume-shipping mode does not mutate semantic cache
+**S9 — Resume-Shipping Cache Safety Closeout**
+- Confirms S0.5 remains enforced after S1-S8 changes
+- Re-runs cache mutation checks before first sendable resume is approved
 
 ### Lane Requirements Table
 
@@ -194,7 +204,7 @@ apps_rg may be used for local/dev resume generation after this lane passes. It m
 | Resume Shipping Critical Path S0-S9 | Yes | Not sufficient |
 | Full L5CertificationPacket producer | No | Yes |
 | Core G29 / promotion proof | No | Yes |
-| Full UWG/L4 proposal lifecycle | No, except cache disabled/proposal-only | Yes |
+| Full UWG/L4 proposal lifecycle | No, but S0.5 cache-disable/proposal-only guard is required before resume-shipping smoke runs | Yes |
 | fact_vectors | No | Later product-quality foundation |
 | L6 shadow learning | No | Later future-run learning |
 | LLM judges/benchmarks | No | Later calibration hardening |
@@ -204,7 +214,8 @@ apps_rg may be used for local/dev resume generation after this lane passes. It m
 
 - The original Phase 0-13 sequence remains the governed-production track.
 - The Resume Shipping Critical Path may execute before the full governed-production sequence.
-- Phase S9 must ensure no semantic cache durable mutation occurs during resume-shipping runs.
+- S0.5 must be complete before any full end-to-end resume generation smoke run or sendable resume artifact is produced.
+- Phase S9 confirms S0.5 remains enforced; re-runs cache mutation checks before first sendable resume is approved.
 - Do not market or label output as L5-governed until Phase 4A, Phase 8, and final governance gates are complete.
 
 ---
