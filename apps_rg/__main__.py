@@ -388,28 +388,24 @@ def main() -> int:
         return 0
 
     # Submit to AppIngressRunner (core runtime entry).
-    # Per plan apps-rg-runtime-wiring-completion-d4e8a1 W2/W4: instantiate with
-    # apps_rg-specific dispatch/parse/required_fields callables, call .run().
-    # W2G: Updated to use app-owned dispatch at apps_rg.runtime.dispatch
+    # W0.5C: profile-based constructor — AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).
+    # AppIngressRunner populates proof fields (profile_digest, binding_digest_map) before dispatch.
     try:
         from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-        from apps_rg.runtime.dispatch import (
-            APPS_RG_REQUIRED_FIELDS,
-            apps_rg_dispatch,
-            apps_rg_parse,
-        )
+        from apps_rg.runtime.dispatch import apps_rg_dispatch
+        from apps_rg.runtime.profile_builder import build_app_runtime_contract
     except ImportError as exc:
         print(
             "ERROR: Core runtime entry not importable. "
-            f"Cannot proceed without AppIngressRunner + apps_rg dispatch: {exc}",
+            f"Cannot proceed without AppIngressRunner + apps_rg profile: {exc}",
             file=sys.stderr,
         )
         return 3
 
+    profile = build_app_runtime_contract()
     runner = AppIngressRunner(
+        profile=profile,
         dispatch=apps_rg_dispatch,
-        parse=apps_rg_parse,
-        required_fields=APPS_RG_REQUIRED_FIELDS,
     )
 
     try:

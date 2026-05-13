@@ -1,12 +1,16 @@
-"""Apps Rg Integrated Pipeline — AG-RGGOV-W6/W7 Core Contract
+"""RETIRED — agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline (Bundle A tombstone)
 
-Internal implementation detail orchestrating the full core consumption flow.
-Called by AppIngressRunner — NOT a public entrypoint.
+This module is retired as part of plan kill-shadow-pipelines-a7f3c2 Bundle A (W2).
+The canonical dispatch path is apps_rg.runtime.dispatch.apps_rg_dispatch consumed
+via AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload).
 
-Contract Chain:
-    U0 (ValidatedRequest) → L1 (L1PlanContract) → L0 (RouteContract) →
-    C0 (FinalEvidenceContract if grounding) → Prompt (CompiledPromptArtifact if generation) →
-    L2 (SealedL2Artifact) → Exit (X3Disposition) → L7 (Audit Trace)
+This class is preserved temporarily to avoid breaking test_w7_l7_runtime_auditability.py
+which has 28 call sites using execute_with_audit(). Those tests will be retargeted in
+Bundle B. DO NOT add new imports of this class to production code.
+
+Original docstring:
+    Internal implementation detail orchestrating the full core consumption flow.
+    Called by AppIngressRunner — NOT a public entrypoint.
 
 Hard Constraints:
 - Core owns all runtime contract emission
@@ -14,6 +18,15 @@ Hard Constraints:
 - apps_rg does not call runtime authority
 - L7 emits audit evidence only — no planning, routing, execution
 """
+import warnings as _warnings
+_warnings.warn(
+    "agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline is RETIRED. "
+    "Use apps_rg.runtime.dispatch.apps_rg_dispatch via "
+    "AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload). "
+    "This module will be deleted in Bundle B.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from __future__ import annotations
 

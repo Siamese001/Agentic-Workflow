@@ -32,7 +32,17 @@ Hard constraints:
 
 from __future__ import annotations
 
+import warnings
+
 import pytest
+
+# Bundle A tombstone: suppress DeprecationWarning from retired apps_rg_integrated_pipeline.
+# Tests will be retargeted to the canonical dispatch path in Bundle B.
+warnings.filterwarnings(
+    "ignore",
+    message="agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline is RETIRED",
+    category=DeprecationWarning,
+)
 
 from agentic_core.runtime.audit.l7_audit_contracts import (
     AuditStatus,

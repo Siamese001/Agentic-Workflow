@@ -56,9 +56,6 @@ from agentic_core.L0_routing.c0_evidence_contract import C0EvidenceCollector
 from agentic_core.L2_execution.prompt_assembly_contract import PromptAssembler
 from agentic_core.L2_execution.l2_execution_contract import L2Executor
 from agentic_core.runtime.exit.x3_disposition import ExitDispositionEmitter
-from agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline import (
-    AppsRgIntegratedPipeline,
-)
 
 
 class TestW6ContractEmissionChain:
@@ -214,8 +211,20 @@ class TestW6ContractEmissionChain:
             target_role="Engineering Manager",
         )
 
-        pipeline = AppsRgIntegratedPipeline()
-        disposition = pipeline.execute(payload)
+        u0 = U0IntakeValidator()
+        validated = u0.validate(payload)
+        l1 = L1Planner()
+        plan = l1.plan(validated)
+        l0 = L0Router()
+        route = l0.route(plan)
+        c0 = C0EvidenceCollector()
+        evidence = c0.collect(validated, route)
+        assembler = PromptAssembler()
+        prompt_artifact = assembler.assemble(evidence, route)
+        l2 = L2Executor()
+        sealed = l2.execute(validated, prompt_artifact)
+        exit_emitter = ExitDispositionEmitter()
+        disposition = exit_emitter.emit(sealed)
 
         # Exit emits exactly one X3Disposition
         assert disposition is not None
@@ -241,8 +250,20 @@ class TestW6FullPipelineIntegration:
             source_resume_ref="/path/to/resume.json",
         )
 
-        pipeline = AppsRgIntegratedPipeline()
-        disposition = pipeline.execute(payload)
+        u0 = U0IntakeValidator()
+        validated = u0.validate(payload)
+        l1 = L1Planner()
+        plan = l1.plan(validated)
+        l0 = L0Router()
+        route = l0.route(plan)
+        c0 = C0EvidenceCollector()
+        evidence = c0.collect(validated, route)
+        assembler = PromptAssembler()
+        prompt_artifact = assembler.assemble(evidence, route)
+        l2 = L2Executor()
+        sealed = l2.execute(validated, prompt_artifact)
+        exit_emitter = ExitDispositionEmitter()
+        disposition = exit_emitter.emit(sealed)
 
         assert disposition is not None
         assert disposition.exit_status in {"success", "abstain", "error"}

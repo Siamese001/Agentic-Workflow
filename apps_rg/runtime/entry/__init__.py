@@ -1,17 +1,11 @@
-"""apps_rg runtime entrypoints.
+"""RETIRED — apps_rg.runtime.entry package (Bundle A tombstone).
 
-Contains app-specific dispatch callables for AppIngressRunner.
+This package is retired. Use apps_rg.runtime.dispatch for the canonical
+dispatch callables and apps_rg.runtime.profile_builder for the
+AppRuntimeProfile constructor.
+
+Importing apps_rg.runtime.entry.dispatch raises RuntimeError (quarantine guard).
 """
 from __future__ import annotations
 
-from apps_rg.runtime.entry.dispatch import (
-    apps_rg_parse,
-    apps_rg_dispatch,
-    APPS_RG_REQUIRED_FIELDS,
-)
-
-__all__ = [
-    "apps_rg_parse",
-    "apps_rg_dispatch",
-    "APPS_RG_REQUIRED_FIELDS",
-]
+__all__: list[str] = []

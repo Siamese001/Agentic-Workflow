@@ -218,7 +218,7 @@ def check_live_path_consumption(rec: CheckRecorder) -> None:
     from agentic_core.L1_cognition.apps_rg_l1_binding import l1_plan_apps_rg
     from agentic_core.prompt_governance.apps_rg_pa_binding import pa_compose_apps_rg
     from agentic_core.runtime.c0.apps_rg_c0_binding import c0_retrieve_apps_rg
-    from apps_rg.runtime.entry.dispatch import apps_rg_parse
+    from apps_rg.runtime.dispatch import apps_rg_parse
     from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
 
     envelope = apps_rg_parse(_live_thin_payload())
