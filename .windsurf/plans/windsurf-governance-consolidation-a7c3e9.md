@@ -580,9 +580,11 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 
 ---
 
-### 9.3 W2: Hook Consolidation (Notion First) — ⛔ BLOCKED
+### 9.3 W2: Hook Consolidation (Notion First) — ✅ COMPLETE
 
-**W2 STATUS**: **P0=COMPLETE** / **P1=COMPLETE** / **P1C=COMPLETE** / **P2=COMPLETE** / **P3-P5=BLOCKED**
+**W2 STATUS**: **P0=COMPLETE** / **P1=COMPLETE** / **P1C=COMPLETE** / **P2=COMPLETE** / **P3=COMPLETE** / **P4=COMPLETE** / **P5=COMPLETE** / **FINAL=COMPLETE**
+
+> **RECONCILIATION NOTE (2026-05-12)**: W2 completed under W1C R4 waiver — B6B 14-day requirement was formally replaced by C1-C6 phase-local controls before W2.P0 GO. See `artifacts/b6b/w2_b6b_reconciliation_index.md`. Any further hook reduction beyond this scope (59→20 target) is NEW scope requiring a fresh plan + Author-Gate.
 
 **Controls Active**: C1-C6 (Replacement Population, Receipt Matching, Before/After Validation, Shadow Hook Handling, Deprecation Timing, Mismatch Stoppage)
 
@@ -912,16 +914,17 @@ Apply for W1 helpers, W5 gates.
 ---
 
 **PLAN_UPDATED**: windsurf-governance-consolidation-a7c3e9  
-**STATUS**: W5 COMPLETE 🏁 — W0 REBASED ✅ | W1 COMPLETE ✅ | W1A COMPLETE ✅ | **W3 COMPLETE** ✅ | **W4 COMPLETE** ✅ | **W5 COMPLETE** ✅ | **B6A COMPLETE** ✅ | **B6 OPEN 🔲** | **W2 BLOCKED ⛔** | **NO W5.P4** ⏹️  
+**STATUS**: W5 COMPLETE 🏁 — W0 REBASED ✅ | W1 COMPLETE ✅ | W1A COMPLETE ✅ | **W3 COMPLETE** ✅ | **W4 COMPLETE** ✅ | **W5 COMPLETE** ✅ | **B6A COMPLETE** ✅ | **B6B WAIVED (W1C R4)** ✅ | **W2 COMPLETE** ✅ | **NO W5.P4** ⏹️  
 **WAVES**: 6 (W0-W5)  
 **PHASES**: 28 (including repairs)  
 **ESTIMATED_TOKENS**: ~52K  
 **PRIMARY_METRIC**: Zero enforcement loss (equivalence proven)  
 **SECONDARY_METRIC**: Compression (30% rules, 70% hooks, 40% skills)  
-**BLOCKERS**: B1-B5, B6A, B7 CLOSED | B6B, OP-1 OPEN (W2 gated)  
-**W2_UNBLOCK_REQUIRES**: B6B shadow mode (14+ days) + harness fix + OP-1 resolution  
+**BLOCKERS**: B1-B5, B6A, B6B, B7, OP-1 ALL CLOSED  
+**W2_COMPLETED_UNDER**: W1C R4 waiver + C1-C6 phase-local controls (B6B 14-day global blocker waived 2026-05-12T09:30Z)  
+**W2_FURTHER_SCOPE**: BLOCKED — 59→20 reduction target not executed; requires new plan + Author-Gate  
 **W5_DELIVERED**: 3 scripts, 2 CI gates, 43 total gates, no RULES_INDEX.md refresh  
-**DEFERRED_TO**: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2 (W2 scope)
+**DEFERRED_TO**: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2 (RETIRED — stale premise; see `artifacts/b6b/deferred_plan_retirement_receipt.md`)
 
 ---
 

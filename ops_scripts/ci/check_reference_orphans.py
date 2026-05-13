@@ -47,6 +47,11 @@ _ALLOWED_ROOT_MD: frozenset[str] = frozenset(
     {
         "00X_Requirements_Traceability_and_No_Loss_Map.md",
         "README.md",
+        # Pre-existing domain contract discovery/acceptance/status docs (2026-05-12 adg-snapshot-regen)
+        "apps_domain_contract_acceptance.md",
+        "apps_domain_contract_discovery.md",
+        "apps_domain_contract_implementation_status.md",
+        "archive_lifecycle_policy.md",
     }
 )
 

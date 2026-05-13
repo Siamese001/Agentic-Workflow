@@ -36,6 +36,7 @@ from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_RETRIEVAL
 
 
 # -----------------------------------------------------------------------------
@@ -148,19 +149,20 @@ def _derive_route_family(
 def _derive_cache_eligibility(
     task_spec: Mapping[str, Any],
     query_spec: Mapping[str, Any],
-) -> CacheEligibility:
+) -> Mapping[str, bool]:
     """Determine cache eligibility from L1 projections.
 
     Resumes are cacheable by design — R5 provides semantic fallback.
+    Returns a dict mapping cache types to boolean eligibility.
     """
     generation_mode = task_spec.get("generation_mode", "")
 
     # Research modes bypass cache (always fresh research)
     if generation_mode in _GENERATION_MODES_REQUIRING_RESEARCH:
-        return CacheEligibility.BYPASS
+        return {"r1a_exact": False, "r1b_semantic": False, "r3_grounded": False}
 
     # Standard modes are cache candidates
-    return CacheEligibility.EXACT_MATCH_CANDIDATE
+    return {"r1a_exact": True, "r1b_semantic": True, "r3_grounded": True}
 
 
 def _derive_hitl_posture(
@@ -244,8 +246,6 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     # Derive routing decisions from L1 projections
     route_family = _derive_route_family(task_spec, support_expectation)
     cache_eligibility = _derive_cache_eligibility(task_spec, query_spec)
-    hitl_posture = _derive_hitl_posture(task_spec, support_expectation)
-    fallback_route_id = _derive_fallback_route_id(route_family, task_spec)
 
     # Determine primary route ID
     if route_family == RouteFamily.R5_SEMANTIC_REFRESH:
@@ -253,34 +253,21 @@ def l0_route_apps_rg(l1_plan: L1PlanContract) -> RouteContract:
     else:
         route_id = APPS_RG_ROUTE_ID
 
-    # Read route profile digest for tamper detection
-    profile_digest = _read_profile_digest(_resolve_repo_root())
-
-    # Build routing metadata from L1 projections
-    routing_metadata: dict[str, Any] = {
-        "generation_mode": task_spec.get("generation_mode"),
-        "jd_hash": query_spec.get("jd_hash"),
-        "target": query_spec.get("target", {}),
-        "capability_requirements": task_spec.get("capability_requirements", []),
-        "grounding_required": l1_plan.grounding_required,
-        "model_generation_required": l1_plan.model_generation_required,
-    }
-
     return RouteContract(
         request_id=l1_plan.request_id,
         run_id=l1_plan.run_id,
         app_id=l1_plan.app_id,
         trace_id=l1_plan.trace_id,
-        tenant_id=l1_plan.tenant_id,
-        route_family=route_family,
         route_id=route_id,
+        l3_required=True,
+        grounding_required=l1_plan.grounding_required,
+        model_generation_required=l1_plan.model_generation_required,
+        write_authority_present=False,
+        tenant_id=l1_plan.tenant_id,
+        route_family=route_family.value if isinstance(route_family, Enum) else route_family,
         cache_eligibility=cache_eligibility,
-        hitl_posture=hitl_posture,
-        fallback_route_id=fallback_route_id,
-        routing_metadata=routing_metadata,
-        profile_manifest_digest=profile_digest,
+        posture=POSTURE_RETRIEVAL,
         l5_certification_ref=APPS_RG_L0_CERT_REF,
-        planning_timestamp=datetime.now(timezone.utc).isoformat(),
         schema_version="AG-2.b3a449",
         replay_key=l1_plan.replay_key,
     )

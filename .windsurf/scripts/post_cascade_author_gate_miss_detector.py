@@ -12,6 +12,8 @@ Signals (any one is a candidate; count must exceed threshold to flag):
       "bare except", "subprocess", "cross-layer", "blast radius")
     - structural-reasoning SR_PLAN markers without SR_APPROVAL / DECISION_CAPTURED
     - plan files created/modified under .windsurf/plans/
+    - prose options menus (bold **Option A/B/C**, "Recommended Next Phase" + sibling)
+      without any DECISION_CAPTURED / AUTHOR_GATE_PACKET anti-signal
 
 Anti-signals (presence of any = NOT a miss):
     - DECISION_CAPTURED: marker line
@@ -100,6 +102,19 @@ _USER_DIRECTIVE = re.compile(
     re.IGNORECASE,
 )
 
+# Prose-options-menu signal — detects bold/labelled option menus that bypass
+# the Author-Gate pipeline.  Fires when ≥2 of these patterns appear in the
+# response AND no completion marker (DECISION_CAPTURED / *_PACKET) is present.
+# Weight: +3 (single-signal is enough to exceed threshold=2).
+_PROSE_OPTIONS_PATTERNS = (
+    re.compile(r"\*\*Option\s+[A-D\d]\b", re.IGNORECASE),
+    re.compile(r"^#+\s*Option\s+[A-D\d]\s*[\u2014\-:]", re.MULTILINE | re.IGNORECASE),
+    re.compile(r"\bOption\s+[A-D]\s*[\u2014\-\u2013]\s+\w", re.IGNORECASE),
+    re.compile(r"\bOption\s+[A-D]\s*\(", re.IGNORECASE),
+    re.compile(r"^\*\*[A-D]\.\s+\w", re.MULTILINE | re.IGNORECASE),
+    re.compile(r"Recommended\s+Next\s+(?:Phase|Step|Wave|Action)\b", re.IGNORECASE),
+)
+
 # Threshold: miss_score >= this counts as a suspected miss.
 # Lowered from 3 to 2 (2026-04-28) so a non-AG-10 decision question alone
 # (which scores 2 from keywords) is sufficient to log a violation.
@@ -127,6 +142,42 @@ def _has_capture_marker(text: str) -> list[str]:
         if pat.search(text):
             hits.append(pat.pattern)
     return hits
+
+
+def _has_author_gate_completion_marker(text: str) -> bool:
+    """Return True when any durable Author-Gate completion anti-signal is present.
+
+    Covers:
+      - DECISION_CAPTURED: marker (decision was logged to ledger)
+      - AUTHOR_GATE_PACKET: block (canonical emitter was invoked)
+      - HITL_PACKET: legacy alias
+      - ask_user_question WITH AG-10 compliant shape (header + gold-star)
+    """
+    if _has_capture_marker(text):
+        return True
+    if _ASK_INVOKE_RE.search(text):
+        if _AG10_HEADER_RE.search(text) and _AG10_GOLD_STAR_RE.search(text):
+            return True
+    return False
+
+
+def _has_prose_options_menu(text: str) -> bool:
+    """Return True when ≥2 prose-option-menu occurrences are found in the response.
+
+    A prose options menu is a set of bold/labelled Markdown options presented
+    outside the ask_user_question pipeline — e.g. ``**Option A — Continue G2**``.
+
+    Counts the total number of distinct label matches across ALL patterns (using
+    findall on each pattern and summing), so that two occurrences of the same
+    pattern (e.g. "Option A (...)" and "Option B (...)") both contribute to the
+    required minimum of 2.  Avoids false-positives on single incidental references.
+    """
+    total_hits = 0
+    for pat in _PROSE_OPTIONS_PATTERNS:
+        total_hits += len(pat.findall(text))
+        if total_hits >= 2:
+            return True
+    return False
 
 
 def _decision_keywords_hit(text: str) -> list[str]:
@@ -165,6 +216,13 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
         if "SR_APPROVAL: APPROVED" not in text:
             score += 1
             positive_signals.append("sr_plan_without_approval")
+
+    # Signal 5: prose options menu without any Author-Gate completion marker.
+    # Weight +3 — a single hit exceeds MISS_SCORE_THRESHOLD (2) alone.
+    # Check anti-signal first so we never double-penalise a correct pipeline.
+    if _has_prose_options_menu(text) and not _has_author_gate_completion_marker(text):
+        score += 3
+        positive_signals.append("prose_options_menu")
 
     # Anti-signals — capture markers (DECISION_CAPTURED / AUTHOR_GATE_PACKET /
     # HITL_PACKET) prove a refactor-class decision was logged, so clear score.

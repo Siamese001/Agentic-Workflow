@@ -1,0 +1,21 @@
+CI Probe Role at CI-Probe-Co
+
+About the Role:
+We are seeking a talented Software Engineer to join our CI testing team. This is a critical role responsible for building and maintaining automated testing systems.
+
+Required Skills:
+- Python programming
+- Software testing methodologies
+- CI/CD pipeline development
+
+Preferred Skills:
+- Experience with pytest
+- Knowledge of smoke testing patterns
+
+Responsibilities:
+- Design and implement smoke tests
+- Validate CI gate implementations
+- Ensure runtime contract compliance
+- Debug failing E2E tests
+
+This is a minimal job description for CI smoke testing purposes. The ideal candidate will be detail-oriented and understand that test fixtures must be complete and valid.

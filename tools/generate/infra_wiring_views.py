@@ -141,6 +141,8 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     "apps_qna/engines/judges/interview_card_quality_judge.py",  # Judge adapter — anthropic
     "apps_research/engines/integration/chroma_research_store.py",  # ChromaDB store — persistent vector store
     "apps_underwriting_ai/engines/judges/rationale_quality_judge.py",  # Judge adapter — anthropic
+    # 2026-05-12 adg-snapshot-regen-check-rg-chroma-e2f8b1 — C0 binding already in file-scan allowlist
+    "apps_rg/runtime/bindings/c0_binding.py",  # C0 ChromaDB binding — receipted in W4 of apps-rg-chroma-ingestion-wiring-c7f2d9; peer of chroma_research_store.py
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps

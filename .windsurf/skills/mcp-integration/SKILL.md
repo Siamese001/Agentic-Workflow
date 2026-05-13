@@ -484,64 +484,15 @@ Only these survive `mem_cleanup_stale`:
 
 ## §13 — Task Manager MCP
 
-**In-house.** **Selective use only.** For durable, queryable task state — not ordinary planning.
-
-### When To Use
-
-| Intent | Use? | Alternative |
-|--------|------|-------------|
-| "Track this as tasks" | ✅ Yes | — |
-| "Decompose into subtasks" across sessions | ✅ Yes | — |
-| Long-horizon multi-session epic | ✅ Yes | — |
-| In-session multi-step work | ❌ No | `structured-reasoning` (SR_PLAN) |
-| Plan-file work | ❌ No | `.windsurf/plans/*.md` |
-
-### Tool Routing
-
-| Goal | Tool |
-|------|------|
-| Create task | `create_task` |
-| Decompose | `decompose_task` |
-| Get details | `task_info` |
-| Update status | `update_task` |
-
-### Hard Rules
-1. **Decomposition mandatory** for complexity above `low` (`decompose_task` first)
-2. **Status discipline** — `in-progress` before executing, `done`/`failed` when finished
-3. **Parallelizable subtasks share `sequenceOrder`**
-4. **MCP serialization (§25)**
-5. **Don't replicate plan-file content**
-
----
+**In-house. Selective use only.** For durable, queryable task state — not ordinary planning.
+Use when user explicitly requests tracked multi-step work across sessions ("track this as tasks", "decompose into subtasks"). ❌ Not for in-session work (use `structured-reasoning`) or plan-file work.
+Tools: `create_task`, `decompose_task`, `task_info`, `update_task`. Decompose before executing tasks above `low` complexity. MCP serialization (§25) applies.
+> Full routing tables: `SUPPORTING.md §13`
 
 ## Appendix: Constitutional §25 — MCP Serialization
 
 > ⛔ **Remote MCP tool calls MUST be isolated: one remote-MCP call per response.**
 
-**Remote MCPs**: `notion`, `tavily`, `deepwiki`, `context7`, `GitKraken`. One call per block, no siblings.
-
-**Local MCPs**: `adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `playwright`. Batch freely.
-
-**Bypass**: `MCP_SERIAL_BYPASS=1` — logged to violations.
-
----
-
-## Redirects
-
-Individual MCP guide skills redirect here:
-
-| Old Skill | Redirects To |
-|-----------|--------------|
-| `filesystem-mcp` | §1 |
-| `redis-cache` | §2 |
-| `deepwiki` | §3 |
-| `context7` | §4 |
-| `playwright` | §5 |
-| `vector-db` | §6 |
-| `notion` | §7 |
-| `tavily-research` | §8 |
-| `otel-telemetry` | §9 |
-| `pytest-mcp` | §10 |
-| `gitkraken` | §11 |
-| `memory-mcp` | §12 |
-| `task-manager-mcp` | §13 |
+**Remote MCPs** (one per block): `notion`, `tavily`, `deepwiki`, `context7`, `GitKraken`.
+**Local MCPs** (batch freely): `adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `playwright`.
+**Bypass**: `MCP_SERIAL_BYPASS=1` — logged. Redirect table: `SUPPORTING.md §Redirects`

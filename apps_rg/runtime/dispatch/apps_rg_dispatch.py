@@ -45,11 +45,29 @@ from apps_rg.runtime.bindings.u0_binding import (
     APPS_RG_TASK_CLASS,
     u0_validate_apps_rg,
 )
-from apps_rg.runtime.bindings.exit_binding import (
-    exit_finalize_apps_rg,
-    _resolve_repo_root as _exit_resolve_repo_root,
-    _safe_run_dirname,
-)
+from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
+
+# W5: Per-section full agentic pipeline (optional execution mode)
+try:
+    from apps_rg.runtime.section_agentic_pipeline import (
+        execute_all_sections_full_pipeline,
+        SectionAgenticResult,
+    )
+    SECTION_PIPELINE_AVAILABLE = True
+except ImportError:
+    SECTION_PIPELINE_AVAILABLE = False
+
+# Runtime executive summary generator
+try:
+    from apps_rg.runtime.runtime_executive_summary import (
+        generate_runtime_executive_summary,
+        write_runtime_summary_to_runs,
+        display_runtime_summary_inline,
+    )
+    RUNTIME_SUMMARY_AVAILABLE = True
+except ImportError:
+    RUNTIME_SUMMARY_AVAILABLE = False
+
 from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
     install_bridge,
     get_bridge,
@@ -137,7 +155,7 @@ def apps_rg_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
 def _ensure_run_dir(run_id: str, timestamp_iso: str) -> Path:
     """Create and return the run directory for stage outputs."""
     repo_root = _exit_resolve_repo_root()
-    dirname = _safe_run_dirname(run_id, timestamp_iso)
+    dirname = f"{run_id}_{timestamp_iso.replace(':', '_')}"
     # MIGRATED: Use direct path construction instead of external constant
     run_dir = repo_root / "artifacts" / "apps_rg" / "runs" / dirname
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -366,6 +384,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(c0_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="dispatch-error-c0-retrieval",
             )
 
     # ----------------------------------------------------------------- PA (conditional)
@@ -431,6 +450,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(pa_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="dispatch-error-pa-assembly",
             )
 
     # ----------------------------------------------------------------- L2
@@ -485,16 +505,25 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     # exit_finalize_apps_rg handles None gracefully (factual_grounding stays absent).
     # Note: exit_finalize_apps_rg signature simplified in W2EFG migration.
     try:
-        disposition = exit_finalize_apps_rg(
+        _app_payload = validated_request.app_payload
+        if isinstance(_app_payload, dict):
+            # Target info is nested under "target" dict: target.company, target.role
+            _target = _app_payload.get("target", {})
+            target_company = _target.get("company", "") if isinstance(_target, dict) else ""
+            target_role = _target.get("role", "") if isinstance(_target, dict) else ""
+        else:
+            target_company = getattr(_app_payload, "target_company", "")
+            target_role = getattr(_app_payload, "target_role", "")
+        exit_result = exit_finalize_apps_rg(
             sealed=sealed,
-            target_company=validated_request.app_payload.target_company,
-            target_role=validated_request.app_payload.target_role,
+            target_company=target_company,
+            target_role=target_role,
             output_directory=None,
             writeback_policy=None,
         )
         _emit_stage_span("Exit_finalize", envelope.trace_id, "OK")
-        _save_stage_output(run_dir, "07_Exit_disposition", disposition)
-        return disposition
+        _save_stage_output(run_dir, "07_Exit_disposition", exit_result.disposition)
+        return exit_result.disposition
     except (TypeError, ValueError, OSError) as exit_err:
         return X3Disposition(
             request_id=route.request_id,
@@ -515,8 +544,182 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
         )
 
 
+def apps_rg_dispatch_section_pipeline(
+    envelope: RequestEnvelope,
+    validated_request: ValidatedRequest,
+    run_dir: Path,
+    dry_run: bool = False,
+) -> X3Disposition:
+    """Execute apps_rg using PER-SECTION full U0-L6 agentic pipeline.
+    
+    User directive 2026-05-12: Each subsection (headline, exec_summary, 
+    Unify, IBM, InsurTech, EY, competencies, etc.) runs through FULL 
+    agentic spine with shadow learning and semantic cache writeback.
+    
+    Args:
+        envelope: Original request envelope
+        validated_request: U0 validated request
+        run_dir: Output directory for artifacts
+        dry_run: If True, skip actual L2 execution
+    
+    Returns:
+        X3Disposition aggregating all section results
+    """
+    from apps_rg.runtime.section_planner import build_section_plan, SectionPlan
+    
+    trace_id = envelope.trace_id
+    _emit_stage_span("section_pipeline_start", trace_id, "OK")
+    
+    # Extract context for sections
+    app_payload = validated_request.app_payload or {}
+    target = app_payload.get("target", {}) if isinstance(app_payload, dict) else {}
+    
+    shared_context = {
+        "target_company": target.get("company", "") if isinstance(target, dict) else "",
+        "target_role": target.get("role", "") if isinstance(target, dict) else "",
+        "target_level": target.get("level", "") if isinstance(target, dict) else "",
+        "master_resume": app_payload.get("master_resume", {}) if isinstance(app_payload, dict) else {},
+        "jd_text": app_payload.get("jd_text", "") if isinstance(app_payload, dict) else "",
+        "manual_brief_text": app_payload.get("manual_brief_text", "") if isinstance(app_payload, dict) else "",
+    }
+    
+    # Build section plan
+    try:
+        from apps_rg.runtime.section_planner import (
+            SectionPlanner, create_target_role_profile, ResumeGenerationPlan
+        )
+        
+        planner = SectionPlanner()
+        target_profile = create_target_role_profile(
+            target_company=shared_context["target_company"],
+            target_role=shared_context["target_role"],
+            target_level=shared_context["target_level"],
+        )
+        section_plan: ResumeGenerationPlan = planner.create_plan(
+            run_id=trace_id,
+            target_role_profile=target_profile,
+        )
+        _emit_stage_span("section_plan_build", trace_id, "OK", 
+                        {"section_count": len(section_plan.section_plans)})
+    except Exception as e:
+        _emit_stage_span("section_plan_build", trace_id, "ERROR")
+        return X3Disposition(
+            request_id=validated_request.request_id,
+            run_id=trace_id,
+            app_id="apps_rg",
+            trace_id=trace_id,
+            tenant_id="apps_rg",
+            exit_status="failure",
+            outcome_authorized=False,
+            final_output={
+                "stage": "SECTION_PLAN",
+                "rejection_reason": "section_plan_build_error",
+                "detail": str(e),
+            },
+            exit_timestamp=datetime.now(timezone.utc).isoformat(),
+            l5_certification_ref="dispatch-error-section-plan",
+        )
+    
+    # Execute all sections through full U0-L6 pipeline
+    if SECTION_PIPELINE_AVAILABLE:
+        try:
+            section_results = execute_all_sections_full_pipeline(
+                section_specs=section_plan.section_plans,
+                shared_context=shared_context,
+                parent_trace_id=trace_id,
+                dry_run=dry_run,
+            )
+            
+            _emit_stage_span("section_pipeline_complete", trace_id, "OK",
+                            {"completed_sections": len(section_results)})
+            
+            # =================================================================
+            # RUNTIME EXECUTIVE SUMMARY (mandatory inline display)
+            # =================================================================
+            if RUNTIME_SUMMARY_AVAILABLE:
+                try:
+                    runtime_summary = generate_runtime_executive_summary(
+                        section_results=section_results,
+                        shared_context=shared_context,
+                        parent_trace_id=trace_id,
+                        run_dir=run_dir,
+                    )
+                    
+                    # Write to runs/ folder (JSON + Markdown)
+                    summary_md_path = write_runtime_summary_to_runs(
+                        runtime_summary,
+                        run_dir,
+                    )
+                    
+                    # Display inline in Cascade (MANDATORY output)
+                    inline_display = display_runtime_summary_inline(runtime_summary)
+                    print("\n" + inline_display + "\n")
+                    
+                    _DISPATCH_LOGGER.info(
+                        "[apps_rg Dispatch] Runtime executive summary written to %s",
+                        summary_md_path
+                    )
+                    
+                except Exception as e:
+                    _DISPATCH_LOGGER.warning(
+                        "[apps_rg Dispatch] Failed to generate runtime summary: %s", e
+                    )
+            # =================================================================
+            
+            # Aggregate section results into final disposition
+            section_outputs = {
+                r.section_id: {
+                    "content": r.artifact.generated_content if r.artifact else None,
+                    "cache_key": r.writeback_key,
+                    "status": r.disposition.exit_status if r.disposition else "unknown",
+                }
+                for r in section_results
+            }
+            
+            return X3Disposition(
+                request_id=validated_request.request_id,
+                run_id=trace_id,
+                app_id="apps_rg",
+                trace_id=trace_id,
+                tenant_id="apps_rg",
+                exit_status="success",
+                outcome_authorized=True,
+                final_output={
+                    "execution_mode": "per_section_u0_l6_pipeline",
+                    "sections": section_outputs,
+                    "section_count": len(section_results),
+                },
+                exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="section-pipeline-complete",
+            )
+            
+        except Exception as e:
+            _emit_stage_span("section_pipeline_execute", trace_id, "ERROR")
+            return X3Disposition(
+                request_id=validated_request.request_id,
+                run_id=trace_id,
+                app_id="apps_rg",
+                trace_id=trace_id,
+                tenant_id="apps_rg",
+                exit_status="failure",
+                outcome_authorized=False,
+                final_output={
+                    "stage": "SECTION_PIPELINE",
+                    "rejection_reason": "section_pipeline_execution_error",
+                    "detail": str(e),
+                },
+                exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="dispatch-error-section-pipeline",
+            )
+    else:
+        # Section pipeline not available, fall back to monolithic
+        _emit_stage_span("section_pipeline_unavailable", trace_id, "WARNING")
+        raise RuntimeError("Section pipeline unavailable but was requested")
+
+
 __all__ = [
     "APPS_RG_REQUIRED_FIELDS",
     "apps_rg_parse",
     "apps_rg_dispatch",
+    "apps_rg_dispatch_section_pipeline",
 ]

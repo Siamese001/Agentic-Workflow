@@ -225,6 +225,12 @@ AUTHORIZATION_STATUS: <NOT_REQUIRED|REQUIRED|GRANTED|DENIED>
 CHECKPOINT: <A|B|C|...>
 ```
 
+> **Auto-maintained**: `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`,
+> and DoD `- Status:` fields are updated automatically by
+> `post_cascade_wave_lifecycle_capture.py` when `WAVE_COMPLETE:` / `PHASE_COMPLETE:` /
+> `PLAN_COMPLETE:` markers are emitted. Manual edits are only needed if a marker was
+> never emitted or the hook was bypassed (`WAVE_TABLE_UPDATE_BYPASS=1`).
+
 ### Required Per-Phase Markers (inline)
 
 ```

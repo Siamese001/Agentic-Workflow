@@ -153,6 +153,7 @@ SANCTIONED_ADAPTER_FILES = {
     "interview_card_quality_judge.py",  # apps_qna judge adapter — anthropic lazy-imported inside try/except; LLM-as-judge boundary; peer of narrative_judge_scorer.py
     "chroma_research_store.py",  # apps_research ChromaDB store — chromadb lazy-imported inside try/except in factory method; persistent vector store boundary; peer of chroma_client.py
     "rationale_quality_judge.py",  # apps_underwriting_ai judge adapter — anthropic lazy-imported in _get_client(); LLM-as-judge boundary; peer of frontier_rationale_judge.py
+    "c0_binding.py",  # apps_rg C0 retrieval binding — chromadb import for ChromaResearchStore wiring; W4 receipted in artifacts/apps_rg/retrieval/ingestion_receipts/w4_c0_binding_receipt.json; peer of chroma_research_store.py
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling

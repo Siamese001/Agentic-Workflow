@@ -55,6 +55,11 @@ root_directories:
   - .backup
   - .vscode
   - .windsurf
+  - .locks           # git-lfs / xet lock directory (runtime artifact)
+  # Model cache directories (HuggingFace sentence-transformers downloads)
+  - models--BAAI--bge-m3
+  # git-xet extension working directory
+  - xet
 
 # --- Root-level allowed file patterns ---
 # Files at root must match one of these globs.
@@ -72,6 +77,7 @@ root_file_patterns:
   - "*.csv"
   - "*.lock"        # uv.lock, poetry.lock, package-lock.json equivalents
   - "CODEOWNERS"    # GitHub governance file (no extension by convention)
+  - "CACHEDIR.TAG"  # pip/pytest cache tag marker (no extension; pre-existing artifact)
   - ".*"            # dotfiles (.gitignore, .env, etc.)
 
 # --- Layer structure ---

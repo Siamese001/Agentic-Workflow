@@ -52,6 +52,24 @@ from _notion_constants import (  # noqa: E402
     WAVE_PHASE_DATA_SOURCE_ID,
 )
 
+# Inline-field drift scan helpers (plan-wave-inline-status-sync-8b4d2f)
+sys.path.insert(0, str(REPO_ROOT / "tools" / "windsurf"))
+try:
+    from _plan_wave_table_updater import _strip_fenced_blocks as _strip_fences  # noqa: E402
+except ImportError:
+    def _strip_fences(text: str):  # type: ignore[misc]
+        return text, []
+
+# Inline field scan regexes and open-value set
+_INLINE_OPEN_VALUES = {"todo", "no", "in_progress", "in progress", "blocked"}
+_INLINE_SCAN_RES = [
+    ("wave_status",    re.compile(r"^WAVE_STATUS:\s*(\S+)", re.MULTILINE)),
+    ("wave_complete",  re.compile(r"^WAVE_COMPLETE:\s*(\S+)", re.MULTILINE)),
+    ("phase_status",   re.compile(r"\bPHASE_STATUS:\s*(\S+)")),
+    ("phase_complete", re.compile(r"\bPHASE_COMPLETE:\s*(\S+)")),
+    ("dod_status",     re.compile(r"^- Status:\s*(\S+)", re.MULTILINE)),
+]
+
 # Status vocabulary — case-insensitive substring match
 DONE_STATUSES = {
     "done",
@@ -87,6 +105,7 @@ class PlanStatus:
     header_status: str | None = None  # top-level "Status:" line
     wave_status: dict[str, str] = field(default_factory=dict)  # wave_id → status
     phase_status: dict[str, str] = field(default_factory=dict)  # phase_id → status
+    inline_open_fields: list[str] = field(default_factory=list)  # open prose inline fields
 
 
 # ---------------------------------------------------------------------------
@@ -194,6 +213,19 @@ def parse_plan_file(path: Path) -> PlanStatus:
                                 status.phase_status.setdefault(p, norm)
             j += 1
         i = j
+
+    # ── Inline field drift scan (plan-wave-inline-status-sync-8b4d2f) ──────────
+    # Scans WAVE_STATUS, WAVE_COMPLETE, PHASE_STATUS, PHASE_COMPLETE, - Status:
+    # fields that remain open when PLAN_STATUS says COMPLETED.
+    stripped_text, _ = _strip_fences(text)
+    open_inline: list[str] = []
+    for field_name, pattern in _INLINE_SCAN_RES:
+        for m in pattern.finditer(stripped_text):
+            val = m.group(1).strip().lower().rstrip(".,")
+            if val in _INLINE_OPEN_VALUES:
+                open_inline.append(f"{field_name}={m.group(1).strip()!r}")
+    if open_inline:
+        status.inline_open_fields = open_inline
 
     return status
 
@@ -358,14 +390,16 @@ def reconcile(
             hs = _normalize_status(plan.header_status)
             has_open_rows = any(v == "open" for v in plan.phase_status.values())
             has_open_waves = any(v == "open" for v in plan.wave_status.values())
+            has_inline_open = bool(plan.inline_open_fields)
             if hs == "done":
-                if has_open_rows or has_open_waves:
-                    # Three-way drift: header says done, tables say open
+                if has_open_rows or has_open_waves or has_inline_open:
+                    # Three-way drift: header says done, tables or inline fields say open
                     warnings.append(
                         {
-                            "kind": "plan_header_table_drift",
+                            "kind": "plan_header_inline_drift",
                             "plan_file": plan_file,
                             "header": plan.header_status,
+                            "open_inline_fields": plan.inline_open_fields[:20],
                             "open_phases": [k for k, v in plan.phase_status.items() if v == "open"],
                             "open_waves": [k for k, v in plan.wave_status.items() if v == "open"],
                         }
@@ -385,6 +419,32 @@ def reconcile(
                     source=source,
                     plan_status=plan_status_cell,
                 )
+            )
+
+    # Second pass: scan ALL plans for header-vs-inline drift, regardless of open_rows.
+    # This ensures stale plans are flagged even when Notion has no matching open rows.
+    already_warned = {w["plan_file"] for w in warnings if w.get("kind") == "plan_header_inline_drift"}
+    for plan_file, plan in plans.items():
+        if plan_file in already_warned:
+            continue
+        if not plan.header_status:
+            continue
+        hs = _normalize_status(plan.header_status)
+        if hs != "done":
+            continue
+        has_open_rows = any(v == "open" for v in plan.phase_status.values())
+        has_open_waves = any(v == "open" for v in plan.wave_status.values())
+        has_inline_open = bool(plan.inline_open_fields)
+        if has_open_rows or has_open_waves or has_inline_open:
+            warnings.append(
+                {
+                    "kind": "plan_header_inline_drift",
+                    "plan_file": plan_file,
+                    "header": plan.header_status,
+                    "open_inline_fields": plan.inline_open_fields[:20],
+                    "open_phases": [k for k, v in plan.phase_status.items() if v == "open"],
+                    "open_waves": [k for k, v in plan.wave_status.items() if v == "open"],
+                }
             )
 
     return candidates, warnings
@@ -436,11 +496,14 @@ def main() -> int:
         print(f"  {src}: {n}")
 
     if args.show_drift and warnings:
-        print(f"\nPlan-header-vs-table drift ({len(warnings)} plans):")
+        print(f"\nPlan-header drift ({len(warnings)} plans):")
         for w in warnings[:20]:
             print(f"  {w['plan_file']}")
             print(f"    header says: {w['header']!r}")
-            print(f"    open phases: {w['open_phases'][:5]}{' ...' if len(w['open_phases']) > 5 else ''}")
+            if w.get("open_inline_fields"):
+                print(f"    open inline: {w['open_inline_fields'][:5]}{' ...' if len(w['open_inline_fields']) > 5 else ''}")
+            if w.get("open_phases"):
+                print(f"    open phases: {w['open_phases'][:5]}{' ...' if len(w['open_phases']) > 5 else ''}")
 
     if candidates:
         print(f"\nFirst 20 close candidates:")

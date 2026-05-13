@@ -50,6 +50,19 @@ Required: `type`, `repo_area`, `selected`, `outcome`. Plain text only, own line,
 
 Execute continuously WITHOUT stopping UNLESS a genuine Author-Gate decision point is reached. FORBIDDEN: stopping after tool calls, asking permission for deterministic actions, presenting options when there's one correct path.
 
+### Prose Options Menu — Explicit Prohibition
+
+> ⛔ **Presenting options as Markdown prose is FORBIDDEN.** The following patterns are NOT Author-Gate and MUST NOT be used to present decisions to the user:
+> - Bold-labeled options: `**Option A —**`, `**Option B —**`, `**A. Continue...**`
+> - Markdown tables of options without `ask_user_question`
+> - "Recommended Next Phase/Step/Wave/Action" menus in prose
+>
+> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cascade making the decision unilaterally.
+>
+> **Correct path**: If a genuine decision point exists → invoke the full pipeline: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question`. If no genuine decision exists → continue execution per the Continuous Execution Invariant above.
+>
+> **Detection**: `post_cascade_author_gate_miss_detector.py` Signal 5 (`prose_options_menu`, weight +3) fires when ≥2 option-menu patterns appear without `DECISION_CAPTURED` or `AUTHOR_GATE_PACKET`.
+
 ## Bypass conditions (no Author-Gate needed)
 
 Typos/whitespace/formatting · single correct solution (syntax/import error) · explicit unambiguous user directive · emergency rollback · auto-fixable lint.

@@ -43,7 +43,6 @@ from agentic_core.runtime.entry.u0_apps_rg_binding import (
 from agentic_core.runtime.exit.apps_rg_exit_binding import (
     exit_finalize_apps_rg,
     _resolve_repo_root as _exit_resolve_repo_root,
-    _safe_run_dirname,
     _ARTIFACT_BASE_DIR_RELPATH,
 )
 from agentic_core.runtime.contracts.otel_lifecycle_bridge import (
@@ -133,7 +132,7 @@ def apps_rg_parse(payload: Mapping[str, Any]) -> RequestEnvelope | None:
 def _ensure_run_dir(run_id: str, timestamp_iso: str) -> Path:
     """Create and return the run directory for stage outputs."""
     repo_root = _exit_resolve_repo_root()
-    dirname = _safe_run_dirname(run_id, timestamp_iso)
+    dirname = f"{run_id}_{timestamp_iso.replace(':', '_')}"
     run_dir = repo_root / _ARTIFACT_BASE_DIR_RELPATH / dirname
     run_dir.mkdir(parents=True, exist_ok=True)
     return run_dir
@@ -361,6 +360,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(c0_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="dispatch-error-c0-retrieval",
             )
 
     # ----------------------------------------------------------------- PA (conditional)
@@ -426,6 +426,7 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
                     "detail": str(pa_err),
                 },
                 exit_timestamp=datetime.now(timezone.utc).isoformat(),
+                l5_certification_ref="dispatch-error-pa-assembly",
             )
 
     # ----------------------------------------------------------------- L2
@@ -479,10 +480,18 @@ def apps_rg_dispatch(envelope: RequestEnvelope) -> X3Disposition:
     # can be computed.  fec is None when grounding_required=False (generate_scratch);
     # exit_finalize_apps_rg handles None gracefully (factual_grounding stays absent).
     try:
-        disposition = exit_finalize_apps_rg(sealed, prompt_artifact, fec=fec)
+        # Extract target company/role from envelope for DOCX filename
+        # envelope.payload is AppsRgIngressPayload object with target_company/target_role attributes
+        target_company = getattr(envelope.payload, "target_company", "") or ""
+        target_role = getattr(envelope.payload, "target_role", "") or ""
+        exit_result = exit_finalize_apps_rg(
+            sealed, prompt_artifact, fec=fec,
+            target_company=target_company,
+            target_role=target_role
+        )
         _emit_stage_span("Exit_finalize", envelope.trace_id, "OK")
-        _save_stage_output(run_dir, "07_Exit_disposition", disposition)
-        return disposition
+        _save_stage_output(run_dir, "07_Exit_disposition", exit_result.disposition)
+        return exit_result.disposition
     except (TypeError, ValueError, OSError) as exit_err:
         return X3Disposition(
             request_id=route.request_id,

@@ -34,6 +34,10 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelo
 
 _REPO_ROOT: Path = Path(__file__).resolve().parents[3]
 
+# SSOT: Canonical master resume JSON path (one-time ingested from DOCX/PDF)
+# All PDF/DOCX resume paths auto-resolve to this JSON
+_CANONICAL_SOURCE_RESUME: str = "ops_scripts/apps_rg/source_resume_2026_05_12.json"
+
 
 # ---------------------------------------------------------------------------
 # Default policy refs — paths to existing apps_rg/config files.
@@ -100,6 +104,10 @@ def _resolve_text(ref: str | None, inline: str | None, *, field_name: str = "ref
     empty string only when both inputs are missing.
     Handles .docx and .pdf files via python-docx and PyPDF2 respectively.
 
+    SSOT RULE: PDF/DOCX resume paths are auto-resolved to the canonical JSON
+    master resume. The JSON is the single source of truth after one-time
+    ingestion via --ingest-master-resume.
+
     Raises FileNotFoundError when a non-empty ref points to a path that does
     not exist on disk, so callers receive an actionable error rather than a
     silent ``"<empty>"`` placeholder in the synthesized contract.
@@ -109,6 +117,44 @@ def _resolve_text(ref: str | None, inline: str | None, *, field_name: str = "ref
         return inline
     if not ref:
         return ""
+
+    # SSOT: Auto-resolve PDF/DOCX resume paths to canonical JSON
+    # The canonical JSON is the single source of truth after one-time ingestion
+    ref_lower = ref.lower()
+    if field_name == "resume" and (ref_lower.endswith(".pdf") or ref_lower.endswith(".docx")):
+        _logger.info(
+            "[U0 Synthesizer] Auto-resolving PDF/DOCX resume path to canonical JSON: %s -> %s",
+            ref,
+            _CANONICAL_SOURCE_RESUME,
+        )
+        # Redirect to canonical JSON
+        canonical_path = _REPO_ROOT / _CANONICAL_SOURCE_RESUME
+        if canonical_path.exists():
+            try:
+                import json as _json
+                data = _json.loads(canonical_path.read_text(encoding="utf-8"))
+                # Extract the source_resume_text from the canonical JSON structure
+                if isinstance(data, dict):
+                    # Handle both direct text and nested structure
+                    if "source_resume_text" in data:
+                        return data["source_resume_text"]
+                    if "master_resume" in data and isinstance(data["master_resume"], dict):
+                        master = data["master_resume"]
+                        if "source_resume_text" in master:
+                            return master["source_resume_text"]
+                _logger.warning(
+                    "[U0 Synthesizer] Canonical JSON missing expected structure, falling back to text extraction"
+                )
+            except (OSError, UnicodeDecodeError, ValueError) as exc:
+                _logger.warning(
+                    "[U0 Synthesizer] Failed to load canonical JSON, falling back to text extraction: %s",
+                    exc,
+                )
+        else:
+            _logger.warning(
+                "[U0 Synthesizer] Canonical JSON not found at %s, falling back to text extraction",
+                canonical_path,
+            )
     path = Path(ref)
     if not path.is_absolute():
         path = _REPO_ROOT / ref

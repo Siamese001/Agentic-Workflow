@@ -40,7 +40,7 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
 )
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
+from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
 from agentic_core.runtime.entry.u0_apps_rg_binding import u0_validate_apps_rg
 
 

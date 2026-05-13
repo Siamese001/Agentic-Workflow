@@ -355,25 +355,87 @@ def _build_system_preamble(
     fmt: dict[str, object] | None = None,
     section_guidance: dict[str, dict[str, list[str]]] | None = None,
 ) -> str:
-    """Compose the system preamble carrying style + role guidance."""
+    """Compose the system preamble carrying style + role guidance.
+
+    Provider-neutral: Compatible with Qwen vLLM, local inference, and future
+    provider lanes. Contains no provider-specific wording or capabilities.
+    """
     parts: list[str] = [
-        "You are a senior resume writer producing a tailored executive resume for an SVP/C-suite candidate.",
-        "Write in the third person voice of the candidate. Every factual claim MUST be grounded in the supplied source materials — no fabrication, no rounding, no inference.",
-        "Output a JSON document matching the resume schema. No prose outside JSON.",
+        "You are an executive resume writer producing tailored SVP/C-suite resumes.",
+        "Write in third person voice of the candidate. Ground every claim in supplied source materials only.",
+        "No fabrication, no rounding, no inference beyond provided inputs.",
+        "Output JSON matching schema. No prose outside JSON.",
         _build_format_block(fmt),
     ]
     rigor_block = _build_section_rigor_block(section_guidance or {})
     if rigor_block:
         parts.append(rigor_block)
     if power:
-        parts.append("Prefer power verbs such as: " + ", ".join(power[:10]) + ".")
+        parts.append("Preferred verbs: " + ", ".join(power[:10]) + ".")
     if forbidden:
         parts.append(
-            "Avoid weak phrasing such as: "
+            "Avoid: "
             + ", ".join(f'"{p}"' for p in forbidden)
             + "."
         )
     return "\n".join(parts)
+
+
+def _build_bullet_rewrite_prompt(
+    source_resume_text: str,
+    jd_text: str,
+    target_company: str,
+    target_role: str,
+) -> str:
+    """Build provider-neutral bullet-rewrite prompt with strict anti-invention rules.
+
+    This prompt is model-agnostic and compatible with Qwen vLLM, local inference,
+    and future provider lanes. It contains no Claude-specific wording, no retrieval
+    implications, and no C0 dependency.
+
+    Requirements:
+    - Exact source-span extraction from U0-supplied inputs only
+    - JSON output with source_spans, jd_alignment, rewritten_bullet, blocked_items
+    - Anti-invention: no new metrics, clients, tools, domains, scope, title, or impact claims
+    - INSUFFICIENT_SOURCE_SUPPORT emitted when evidence is inadequate
+    """
+    # Build prompt with user inputs interpolated
+    # JSON template uses double braces to escape for Python string formatting
+    json_template = """{\n  "rewritten_bullets": [\n    {\n      "bullet_index": <int>,\n      "source_span": "<exact verbatim source text being rewritten>",\n      "jd_alignment": ["<jd_requirement_1>", "<jd_requirement_2>"],\n      "rewritten_bullet": "<rewritten bullet text>",\n      "blocked_items": ["<invention_blocked_due_to_no_source_support>"],\n      "status": "SUCCESS|INSUFFICIENT_SOURCE_SUPPORT|PRESERVED_VERBATIM"\n    }\n  ]\n}"""
+    
+    return (
+        f"<task>\n"
+        f"Rewrite executive resume bullets from supplied source materials only.\n"
+        f"Target: {target_company} — {target_role}\n"
+        f"</task>\n\n"
+        f"<source_materials>\n"
+        f"{source_resume_text}\n"
+        f"</source_materials>\n\n"
+        f"<job_description>\n"
+        f"{jd_text}\n"
+        f"</job_description>\n\n"
+        f"<instructions>\n"
+        f"For EACH bullet to rewrite:\n"
+        f"1. EXACT SOURCE-SPAN EXTRACTION: Quote verbatim the source bullet text being rewritten.\n"
+        f"2. JD ALIGNMENT ANALYSIS: Identify which JD requirements this bullet supports.\n"
+        f"3. REWRITE: Produce revised bullet using STAR method (Situation, Task, Action, Result).\n"
+        f"4. BLOCKED ITEMS: List any requested changes that were rejected due to source support gaps.\n\n"
+        f"ANTI-INVENTION RULES (strict — no exceptions):\n"
+        f"- NO new metrics not present in source materials\n"
+        f"- NO new client names not present in source materials\n"
+        f"- NO new tools/technologies not present in source materials\n"
+        f"- NO new domains/industries not present in source materials\n"
+        f"- NO expanded scope beyond what source materials support\n"
+        f"- NO title claims beyond verified source material\n"
+        f"- NO impact claims without source material backing\n\n"
+        f"If source support is insufficient for a requested change, emit INSUFFICIENT_SOURCE_SUPPORT\n"
+        f"and preserve the original bullet verbatim.\n"
+        f"</instructions>\n\n"
+        f"<output_format>\n"
+        f"JSON only — no markdown, no prose preamble.\n\n"
+        f"{json_template}\n"
+        f"</output_format>"
+    )
 
 
 def _build_u0_task_block(
@@ -425,22 +487,67 @@ def _build_u0_task_block(
     is_grounded = generation_mode in _GROUNDED_MODES
 
     if is_grounded:
+        # Provider-neutral prompt structure using XML-style sections
+        # Compatible with Qwen vLLM, local inference, and future provider lanes
+        # No Claude-specific wording, no retrieval implications, C0-free path
         header_instruction = (
             f"\n"
-            f"HEADER SECTION — MANDATORY FOR GROUNDED RUNS:\n"
-            f"Extract candidate identity fields verbatim from the source resume. "
-            f"Do NOT invent or modify any field. Emit a top-level \"header\" key with "
-            f"this exact schema:\n"
-            f"  {{\"name\": \"<full name from resume>\", "
-            f"\"phone\": \"<phone or null>\", "
-            f"\"email\": \"<email or null>\", "
-            f"\"linkedin\": \"<linkedin URL or null>\", "
-            f"\"github\": \"<github URL or null>\", "
-            f"\"location\": \"<city, state or null>\"}}\n"
-            f"If a field is absent in the source resume, set it to null. "
-            f"Do NOT substitute target_company or target_role values."
+            f"<system_role>\n"
+            f"You are an executive resume writer producing tailored SVP/C-suite resumes.\n"
+            f"Write in third person voice of the candidate. Ground every claim in supplied source materials.\n"
+            f"</system_role>\n\n"
+            f"<verbatim_fields>\n"
+            f"Copy exactly from source resume — no modification:\n"
+            f"  - header.name, header.phone, header.email, header.linkedin\n"
+            f"  - education[], certifications[]\n"
+            f"</verbatim_fields>\n\n"
+            f"<section_headline>\n"
+            f"Format: X|Y|Z (Descriptor | Function | Domain)\n"
+            f"Tailor keywords to JD subject matter. Preserve candidate identity.\n"
+            f"</section_headline>\n\n"
+            f"<section_executive_summary>\n"
+            f"Structure: 4-5 sentences as one paragraph\n"
+            f"Each sentence must contain: (a) metric, OR (b) technical term, OR (c) scope descriptor\n"
+            f"</section_executive_summary>\n\n"
+            f"<section_experience>\n"
+            f"Provider-neutral bullet rewrite from supplied source materials only:\n\n"
+            f"For each role, use this structured process:\n\n"
+            f"STEP 1 — EXACT SOURCE-SPAN IDENTIFICATION:\n"
+            f"  Quote verbatim from source resume the bullet being rewritten.\n"
+            f"  No paraphrasing. No summarization. Exact source span only.\n\n"
+            f"STEP 2 — JD ALIGNMENT SCORING:\n"
+            f"  Score source bullet against JD requirements:\n"
+            f"    - JD keyword overlap\n"
+            f"    - Leadership scope alignment\n"
+            f"    - Metric impressiveness\n\n"
+            f"STEP 3 — TIERED REWRITE ASSIGNMENT:\n"
+            f"  Top 3 bullets by score: HEAVY REWRITE — STAR method, JD keyword integration\n"
+            f"  Bullets 4-5: MODERATE REFRAME — light JD alignment, preserve core\n"
+            f"  Bullet 6+: PRESERVE VERBATIM — minimal changes only\n\n"
+            f"ANTI-INVENTION RULES (strict enforcement):\n"
+            f"  - NO metrics not in source materials\n"
+            f"  - NO client names not in source materials\n"
+            f"  - NO tools/tech not in source materials\n"
+            f"  - NO scope expansion beyond source support\n"
+            f"  - NO title/impact claims without source backing\n"
+            f"  - If support insufficient: emit INSUFFICIENT_SOURCE_SUPPORT\n\n"
+            f"OUTPUT FORMAT for each bullet:\n"
+            f'  {{"source_span": "<verbatim source>", "jd_alignment": ["<req>"], '
+            f'"rewritten_bullet": "<text>", "blocked_items": ["<invention blocked>"], '
+            f'"status": "SUCCESS|INSUFFICIENT_SOURCE_SUPPORT"}}\n'
+            f"</section_experience>\n\n"
+            f"<section_competencies>\n"
+            f"12 entries ranked by JD relevance. Short noun phrases (2-4 words).\n"
+            f"</section_competencies>\n\n"
+            f"<validation_checklist>\n"
+            f"Before output, verify:\n"
+            f"  [ ] All rewritten bullets have exact source_span citations\n"
+            f"  [ ] No invented metrics, clients, or tools\n"
+            f"  [ ] INSUFFICIENT_SOURCE_SUPPORT emitted where appropriate\n"
+            f"  [ ] Output is valid JSON only\n"
+            f"</validation_checklist>"
         )
-        sections_str = "header, executive_summary, experience, skills, education, certifications"
+        sections_str = "header, headline, executive_summary, experience, skills, education, certifications"
     else:
         header_instruction = ""
         sections_str = "executive_summary, experience, skills, education, certifications"

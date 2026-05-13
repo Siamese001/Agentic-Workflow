@@ -120,6 +120,12 @@ VIOLATION_REMEDIATION: dict[str, str] = {
         "AUTHOR_GATE_PACKET block in the response. "
         "REQUIRED: invoke the full Author-Gate pipeline for EVERY decision point."
     ),
+    "prose_options_menu": (
+        "Markdown prose option menus are not Author-Gate. "
+        "Use refactor-decision-memory -> author-gate-packet-builder -> "
+        "author-gate-ui-renderer -> ask_user_question, or continue execution "
+        "if no genuine decision exists."
+    ),
 }
 
 

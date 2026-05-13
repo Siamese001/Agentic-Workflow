@@ -129,7 +129,23 @@ def _update_plan_files(markers: list[Any]) -> None:
         wave = marker.wave  # may be None for plan_complete / phase_complete
 
         if kind == "phase_complete":
-            continue  # phase rows are not in the wave table
+            # Phase inline field updates (PHASE_STATUS, PHASE_COMPLETE in prose)
+            phase_id = marker.phase or ""
+            if not phase_id:
+                _log({"event": "phase_complete_no_phase_id", "slug": slug})
+                continue
+            try:
+                ok, msg = updater._update_phase_in_plan(REPO_ROOT, slug, phase_id, kind)
+            except Exception as exc:  # noqa: BLE001
+                _log({"event": "phase_table_update_error", "slug": slug, "phase": phase_id, "error": repr(exc)})
+                continue
+            _log({"event": "phase_table_update", "slug": slug, "phase": phase_id, "ok": ok, "msg": msg})
+            if not ok:
+                print(
+                    f"[wave_lifecycle_capture] plan-file update failed slug={slug} phase={phase_id}: {msg}",
+                    file=sys.stderr,
+                )
+            continue
 
         # plan_complete: wave=None signals "mark all remaining as done"
         effective_wave = wave if wave is not None else -1

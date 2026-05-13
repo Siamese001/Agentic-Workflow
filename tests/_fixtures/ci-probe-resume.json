@@ -1,0 +1,25 @@
+{
+  "schema_version": "master_resume_v2.16",
+  "candidate_name": "CI Probe Candidate",
+  "contact": {
+    "email": "ci@test.local",
+    "phone": "555-CI-TEST"
+  },
+  "summary": "Minimal resume for CI smoke testing. This is a test fixture.",
+  "experience": [
+    {
+      "company": "Test Corp",
+      "title": "Software Engineer",
+      "duration": "2020-2024",
+      "highlights": ["Built test systems", "Validated CI gates"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Test University",
+      "degree": "BS Computer Science",
+      "year": 2020
+    }
+  ],
+  "skills": ["Python", "Testing", "CI/CD"]
+}

@@ -177,7 +177,7 @@ def main() -> int:
     parser.add_argument(
         "--source-resume",
         type=str,
-        help="Path to source resume file",
+        help="Path to source resume file. PDF/DOCX paths auto-resolve to canonical JSON (SSOT)",
     )
     parser.add_argument(
         "--source-resume-text",
@@ -235,7 +235,40 @@ def main() -> int:
         action="store_true",
         help="Sentinel mode for Cascade: write prompt sentinel + exit 7 instead of launching TTY wizard",
     )
+    parser.add_argument(
+        "--ingest-master-resume",
+        action="store_true",
+        help="Ingest DOCX template and save as JSON master resume (one-time operation)",
+    )
     args = parser.parse_args()
+
+    # Ingest master resume from DOCX template (one-time operation)
+    if getattr(args, 'ingest_master_resume', False):
+        # DOCX template path (per user directive)
+        docx_template_path = Path("C:/Users/amita/Documents/Resumes/SVP Engineering Resume_Ayer.docx")
+        if not docx_template_path.exists():
+            print(f"ERROR: DOCX template not found: {docx_template_path}", file=sys.stderr)
+            return 1
+
+        # Master resume JSON output path
+        repo_root = Path(__file__).parent.parent
+        master_resume_path = repo_root / "artifacts" / "apps_rg" / "master_resume.json"
+
+        from apps_rg.runtime.bindings.exit_binding import _ingest_docx_to_master_resume
+        master_resume = _ingest_docx_to_master_resume(docx_template_path, master_resume_path)
+
+        if master_resume:
+            print("=" * 60)
+            print("Master resume ingested successfully")
+            print("=" * 60)
+            print(f"Source: {docx_template_path}")
+            print(f"Output: {master_resume_path}")
+            print(f"Name: {master_resume.get('header', {}).get('name', 'N/A')}")
+            print(f"Experience entries: {len(master_resume.get('experience', []))}")
+            return 0
+        else:
+            print("ERROR: Failed to ingest master resume", file=sys.stderr)
+            return 1
 
     # Cascade sentinel mode: when --cascade-prompts is set, require both
     # target_company and target_role to be explicitly supplied; exit 7 if either

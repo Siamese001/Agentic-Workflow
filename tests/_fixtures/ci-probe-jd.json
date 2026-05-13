@@ -1,0 +1,12 @@
+{
+  "schema_version": "jd_v1",
+  "job_title": "CI Probe Role",
+  "company": "CI-Probe-Co",
+  "level": "Senior",
+  "required_skills": ["Python", "Testing"],
+  "preferred_skills": ["CI/CD"],
+  "responsibilities": ["Run smoke tests", "Validate gates"],
+  "description": "Minimal job description for CI smoke testing. This is a test fixture.",
+  "location": "Remote",
+  "employment_type": "Full-time"
+}
