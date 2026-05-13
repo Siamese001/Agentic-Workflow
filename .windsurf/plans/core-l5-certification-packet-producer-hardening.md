@@ -30,7 +30,7 @@ LAST_UPDATED: 2026-05-13
 
 - **Situation** — The L5 safety layer requires a standardized certification packet for governed releases. Multiple apps_* (including apps_rg) need L5 certification, but no generic producer exists in `agentic_core`. Each app currently would need to implement its own L5 packet construction, leading to duplication and inconsistency.
 
-- **Complication** — L5 is a critical safety boundary: it must aggregate child certifier receipts, produce a shared governance context digest, and emit egress receipts around external provider calls. However, L5 must NOT emit GateVerdict (L0/L3 responsibility), X3 commits (Exit responsibility), or write to L4 durable surfaces (UWG responsibility). The producer must be app-agnostic and fail-closed.
+- **Complication** — L5 is a critical safety boundary: it must aggregate child certifier receipts, produce a shared governance context digest, and emit egress receipts around external provider calls. However, L5 must NOT emit GateVerdict. 00C Runtime Gates emit GateVerdict; layer owners act within their authority; Exit emits final X3. L5 must not write to L4 durable surfaces (UWG responsibility). The producer must be app-agnostic and fail-closed.
 
 - **Question** — How do we build a generic L5 certification packet producer in `agentic_core` that serves all apps_* without hardcoding app-specific literals, while respecting the L5 safety boundary constraints?
 
@@ -148,7 +148,7 @@ class L5CertificationPacket:
 **Acceptance**:
 - All three dataclasses exist with `frozen=True`
 - `l5_governance_context_digest` is 64-char hex string
-- `child_certifier_receipts` is tuple type (immutable)
+- `child_certifier_results` is tuple type (immutable)
 - `egress_receipts` is tuple type (immutable)
 - `certification_status` vocabulary is limited to two values
 - Schema version follows semver
@@ -253,7 +253,7 @@ class EgressCertificationReceipt:
 - `EgressCertifier` interface exists in `agentic_core/L5_safety/certification/egress_certifier.py`
 - `certify_egress()` returns `EgressCertificationReceipt`
 - Provider refs are symbolic, not hardcoded model IDs
-- Call purpose is semantic (e.g., "resume_generation"), not raw prompt
+- Call purpose is a semantic ref (e.g., "call_purpose_ref://<semantic-purpose>"), not a raw prompt and not app-specific
 - Response digest excludes PII (hashed after redaction)
 
 ---

@@ -11,7 +11,7 @@ dod_exempt: false
 ---
 
 > [!IMPORTANT]
-> PORTFOLIO_STATUS: ACTIVE_SEPARATE_CORE_PLAN
+> PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
 > MASTER_PLAN_REF: .windsurf/plans/apps-rg-master-governed-runtime-hardening.md
 > DISPOSITION: ACTIVE_SEPARATE_CORE_PLAN
 > SUPERSEDED_BY_PHASES: Phase 4B and downstream Phase 12 verification

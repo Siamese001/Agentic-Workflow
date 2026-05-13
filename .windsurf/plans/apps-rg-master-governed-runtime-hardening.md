@@ -65,7 +65,7 @@ These 8 plans must not be executed literally as separate tracks. They overlap, c
 | **1** | L4 W1, L6 W1, L5 GAP-002 | Phase 0 | Remove direct semantic cache writes, replace with inert `SectionCacheWriteProposal`, surface through Exit only | P0 UWG bypass blocker | `apps_rg/runtime/section_agentic_pipeline.py`, `apps_rg/runtime/schemas/__init__.py`, `apps_rg/runtime/bindings/exit_binding.py`, `ops_scripts/ci/check_no_direct_semantic_cache_write.py`, `tests/governance/test_apps_rg_uwg_cache_write_sovereignty.py` | `check_no_direct_semantic_cache_write.py` passes | Any runtime imports cache writer directly |
 | **2** | L4 W2, L6 W2, Structured W10 | Phase 1 | Delete/quarantine app-local L6 runtime, rename spans to section observation, prove zero importers | Duplicate L6 surface removal | `apps_rg/runtime/l6_shadow_learning.py`, `apps_rg/_quarantine/`, `apps_rg/runtime/schemas/__init__.py`, `apps_rg/runtime/section_agentic_pipeline.py`, `ops_scripts/ci/check_no_apps_rg_runtime_l6_engine.py`, `tests/governance/test_apps_rg_l6_surface_ownership.py` | Zero importers proven | Any L6/Shadow/Producer engine remains active |
 | **3** | L4 W3/W5/W6, Structured W8.3 | Phase 2 | L4 namespace manifest, durable write allowlists, Exit proposal-only path, Chroma readonly guard, filesystem write CI | Write boundary lockdown | `apps_rg/config/l4_namespace_manifest.yaml`, `apps_rg/config/l4_namespace_manifest.schema.json`, `apps_rg/runtime/bindings/exit_binding.py`, `ops_scripts/ci/check_apps_rg_l4_write_boundary.py`, `ops_scripts/ci/check_apps_rg_chroma_readonly.py`, `ops_scripts/ci/check_apps_rg_exit_no_direct_writes.py`, `tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py` | All CI gates pass | Exit writes files directly or Chroma mutations occur |
-| **4A** | L5 GAP-001/GAP-003 | Phase 3 | Generic `L5CertificationPacket` producer, child certifier | Core-enabling work (Author-Gated) | `agentic_core/L5_safety/certification/l5_packet_producer.py`, `agentic_core/L5_safety/certification/egress_certifier.py`, `agentic_core/L5_safety/contracts/*`, `tests/unit/agentic_core/L5_safety/*` | Core receipt with Author-Gate PASS | Producer contains apps_rg literals |
+| **4A** | L5 GAP-001/GAP-003 | Phase 0 + Author-Gate PASS; can run in parallel with Phases 1–3 | Generic `L5CertificationPacket` producer, child certifier aggregation, shared `l5_governance_context_digest`, generic egress receipt producer/interface | Core-enabling work (Author-Gated) | `agentic_core/L5_safety/certification/l5_packet_producer.py`, `agentic_core/L5_safety/certification/egress_certifier.py`, `agentic_core/L5_safety/contracts/*`, `tests/unit/agentic_core/L5_safety/*` | Core receipt with Author-Gate PASS | Producer contains apps_rg literals |
 | **4B** | Core G29 W1-W3; apps_rg L6 W4/W5 are reference-only/downstream verification | Phase 0 + Author-Gate PASS; can run in parallel with Phases 1–3 | PromotionGauntlet.GATE_ID, L6GauntletResult.gate_id, FutureRunPromotionRequest proof fields, generic L4 namespace parser | Core-enabling work (Author-Gated) | `agentic_core/L6_learning/promotion_gauntlet.py`, `agentic_core/L6_learning/__init__.py`, `agentic_core/L4_state/contracts/l4_namespace_contract.py`, `tests/unit/agentic_core/L6_learning/test_promotion_gauntlet.py` | Core receipt with Author-Gate PASS | Parser has app-specific literals |
 | **5** | L1 W1-W4, L0 P1.3/P5.1 core parts | AUTHOR-GATED CORE-ENABLING OR NO-OP; inspect whether generic L1/L0 contract fields already exist before execution | Generic L1/L0 contract field enablement OR verification only if fields exist | Contract foundation | `agentic_core/runtime/contracts/l1_plan_contract.py`, `agentic_core/runtime/contracts/route_contract.py`, `agentic_core/runtime/contracts/route_gate_receipt.py` | Contract tests pass | Contract fields contain app-specific enums |
 | **6** | L1 W2-W5 apps-local | Phase 5 | U0 emits L1 planning profile ref/digest, L1 validates digest fail-closed, advisory work-shape hints | apps_rg L1 wiring | `apps_rg/runtime/u0/payload_synthesizer.py`, `apps_rg/runtime/bindings/l1_binding.py`, `apps_rg/profiles/rg_planning_profile.yaml`, `tests/_apps_contract/test_apps_rg_l1_profile_wiring.py`, `tests/_apps_contract/test_apps_rg_l1_work_shape.py`, `tests/_apps_contract/test_apps_rg_l1_non_authority.py` | All L1 tests pass | Missing profile silently passes |
@@ -150,6 +150,8 @@ These 8 plans must not be executed literally as separate tracks. They overlap, c
               └──────────────────────────────┘
 ```
 
+**Note:** Phase 4A and Phase 4B are parallel Author-Gated core-enabling tracks after Phase 0. They are not blocked by apps_rg-local Phases 1–3. Phase 8 depends on Phase 4A. Phase 12 depends on Phase 4B.
+
 ---
 
 ## Overlap and Redundancy Inventory
@@ -178,8 +180,11 @@ These 8 plans must not be executed literally as separate tracks. They overlap, c
 
 **Validation Commands (Plan-Only Scope):**
 ```bash
-# Verify all 8 source plans have consolidation banners
-rg "PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER|PORTFOLIO_STATUS: MERGED_INTO_MASTER|PORTFOLIO_STATUS: ACTIVE_SEPARATE_CORE_PLAN|PORTFOLIO_STATUS: GAP_REPORT_REFERENCE" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
+# Verify all 8 source plans have consolidation banners (strict: only CONSOLIDATED_UNDER_MASTER in PORTFOLIO_STATUS)
+rg "PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
+
+# Verify dispositions are specific and correct
+rg "DISPOSITION: (ACTIVE_SEPARATE_CORE_PLAN|MERGED_INTO_MASTER|MERGED_INTO_MASTER_WITH_CORE_SPLIT|MERGED_INTO_MASTER_SPLIT_BY_PRIORITY|MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION|GAP_REPORT_REFERENCE|SUPERSEDED_REFERENCE_ONLY)" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
 
 # Verify only plan files changed
 git diff --name-only | rg -v "^\.windsurf/plans/" && exit 1 || true

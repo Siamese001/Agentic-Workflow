@@ -6,7 +6,7 @@ final: true
 ---
 
 > [!IMPORTANT]
-> PORTFOLIO_STATUS: MERGED_INTO_MASTER_WITH_CORE_SPLIT
+> PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
 > MASTER_PLAN_REF: .windsurf/plans/apps-rg-master-governed-runtime-hardening.md
 > DISPOSITION: MERGED_INTO_MASTER_WITH_CORE_SPLIT
 > SUPERSEDED_BY_PHASES: Phase 0, Phase 1, Phase 2, Phase 12, Phase 13
