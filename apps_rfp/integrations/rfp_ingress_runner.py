@@ -1,28 +1,38 @@
-"""Ingress-wired runner factory for ``apps_rfp``.
+"""Ingress-wired runner factory for ``apps_rfp`` — TOMBSTONED (W2, 2026-05-14).
 
-Closes W8.5. See ``agentic_core/runtime/entry/app_ingress_runner.py``.
+TOMBSTONE: make_rfp_ingress_runner() is the pre-profile dispatch= factory pattern
+eliminated by the one-spine migration (W0 design question 7 / W2.P3).
+
+The caller-supplied dispatch= parameter is the anti-pattern the one-spine law
+removes. Post-W2, apps_rfp uses AppRuntimeProfile via profile_builder.py:
+
+    from apps_rfp.runtime.profile_builder import build_app_runtime_contract
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+    result = runner.run(payload)
+
+NC-4: grep confirms this factory is NOT called from apps_rfp/__main__.py
+or any product path post-migration.
+
+Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W2.P3
 """
 
 from __future__ import annotations
 
-from typing import Any, Callable
-
-from agentic_core.L5_safety.enforcement.ingress_envelope_check import IngressEnvelopeCheck
-from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
-
 RFP_REQUIRED_FIELDS: tuple[str, ...] = ("rfp_id", "proposal_type", "deadline")
 
 
-def make_rfp_ingress_runner(
-    dispatch: Callable[[dict[str, Any]], Any],
-    *,
-    gate: IngressEnvelopeCheck | None = None,
-) -> AppIngressRunner:
-    return AppIngressRunner(
-        dispatch=dispatch,
-        parse=lambda payload: payload,
-        required_fields=RFP_REQUIRED_FIELDS,
-        gate=gate,
+def make_rfp_ingress_runner(*args, **kwargs):  # type: ignore[no-untyped-def]
+    """TOMBSTONED — raises RuntimeError unconditionally.
+
+    Use build_app_runtime_contract() + AppIngressRunner(profile=profile) instead.
+    """
+    raise RuntimeError(
+        "make_rfp_ingress_runner() is TOMBSTONED (W2 one-spine migration, 2026-05-14). "
+        "Use: apps_rfp.runtime.profile_builder.build_app_runtime_contract() + "
+        "agentic_core.runtime.entry.app_ingress_runner.AppIngressRunner(profile=profile). "
+        "The dispatch= factory pattern is forbidden post-migration."
     )
 
 

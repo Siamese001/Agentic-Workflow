@@ -254,6 +254,49 @@ def _add_build_args(target: argparse.ArgumentParser) -> None:
 
 
 def _run_build(args: argparse.Namespace) -> int:
+    """Build a card pack from assembled Interview input.
+
+    W1 corrective patch — disposition: EXEMPT_DOCUMENTED (amended from MUST_ROUTE).
+
+    Rationale (one-spine law compliance):
+    - NOT a governed slug runtime path: this function operates on a fully-
+      assembled ``Interview`` typed object, not a slug-keyed ``RequestEnvelope``.
+      It is a build-time compiler path that produces a static card pack artifact.
+      The AppIngressRunner contract requires a ``RequestEnvelope`` with an
+      ``interview_slug`` key that the runner resolves through U0→L1→L0→…→Exit.
+      Forcing an already-assembled Interview through that chain would require
+      fabricating a slug round-trip — that is contract theater, not routing.
+
+    - NOT reachable as a current-run authority from ``apps_qna/__main__.py``:
+      ``__main__._is_product_build_mode()`` returns True for the default and
+      'build' subcommand, routing them through ``AppIngressRunner`` directly.
+      ``__main__`` only delegates to ``run_qna.main()`` for auxiliary subcommands
+      (lint / self-eval / route / init / feedback). ``_run_build`` is the default
+      path inside ``run_qna.main()`` but is never the product entrypoint.
+
+    - One-spine guard: ``_run_build`` calls ``build_pack_via_spine`` which
+      wraps ``CardPackBuilder.build()`` in a ``ValidatedRequest`` envelope for
+      intake-validation evidence. It does NOT sequence L0→L1→L2→Exit stages.
+      No symbols from agentic_core are imported in this module.
+
+    - What prevents AppIngressRunner bypass for product/live runtime:
+      ``apps_qna/__main__.py`` unconditionally routes product-build and
+      live-interview modes through ``AppIngressRunner(profile=profile).run()``.
+      Those paths never reach ``run_qna.main()`` or ``_run_build``. Tests in
+      ``tests/_apps_contract/test_w1_qna_spine_migration.py`` (classes
+      ``TestMainEntrypointUsesAppIngressRunner`` and
+      ``TestRunBuildExemptDocumented``) assert this structurally via AST analysis.
+
+    - Direct invocation guard: calling ``python -m apps_qna.scripts.run_qna``
+      directly produces a build-time artifact path, not a governed runtime path.
+      This is equivalent to a build tool (analogous to ``sphinx-build`` or
+      ``mkdocs build``) — it does not produce the contract chain required for
+      governed runtime routes declared in ``apps_qna/spine_manifest.yaml``.
+
+    Structural cleanliness: no agentic_core stage-prefixed symbols are imported
+    or called here, and no shadow-dispatch result types are referenced. AST tests
+    in ``TestRunBuildExemptDocumented`` verify these properties automatically.
+    """
     try:
         interview, extra_context = _assemble_interview(args)
     except FileNotFoundError as exc:

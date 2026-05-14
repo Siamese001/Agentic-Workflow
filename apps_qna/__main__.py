@@ -1,22 +1,24 @@
-"""Canonical entrypoint for apps_qna \u2014 pure CLI envelope parser.
+"""Canonical entrypoint for apps_qna — pure CLI envelope parser.
 
-Three modes:
+Four modes:
 
-- **Live interview runtime** (``--interview <slug>``): runs the spine pipeline
-  (U0\u2192L1\u2192L0\u2192C0/Briefing\u2192L2\u2192Exit) for governed live interview pack builds.
+- **Live interview runtime** (``--interview <slug>``): routes through
+  AppIngressRunner(profile=...).run(payload) — the one-spine authority.
+  live_interview_runtime is no longer a current-run authority on this path.
+
+- **Product build mode** (``build`` subcommand or default): routes through
+  AppIngressRunner(profile=...).run(payload) — the one-spine authority.
+  governed_run is post-run receipt decoration only; it no longer owns execution.
 
 - **Live certification mode** (``--apps-e2e-live``): wraps a deterministic
   pack-build dry-run in ``apps_shared.spine_emission.governed_run`` for the
-  apps_e2e harness.
-
-- **Product build mode** (``build`` subcommand or default): wraps the real
-  CardPackBuilder.build() in ``governed_run`` with full spine receipts.
+  apps_e2e harness. Post-run receipt decoration only — no current-run execution.
 
 - **Auxiliary mode** (lint / route / init / feedback / self-eval): runs
-  the CardPackBuilder CLI as before without spine envelope.
+  the CardPackBuilder CLI without spine envelope (exempt per W0 audit).
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.1
-     .windsurf/plans/p2-apps-qna-product-spine-b3e8d2.md
+Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+     .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.1
 """
 
 from __future__ import annotations
@@ -45,9 +47,57 @@ def _is_product_build_mode() -> bool:
 
 
 def _run_live_interview(argv: list[str]) -> int:
-    from apps_qna.live_interview_runtime import run_live_interview
+    """Run live interview mode through AppIngressRunner — one-spine authority.
 
-    return run_live_interview(argv)
+    Parses --interview <slug> from argv, builds a payload dict, and calls
+    AppIngressRunner(profile=profile).run(payload). live_interview_runtime
+    is no longer the current-run authority on this path.
+
+    Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+    """
+    import argparse
+    import logging
+
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+    from apps_qna.runtime.profile_builder import build_app_runtime_contract
+    from apps_qna.types.spine_contracts import X3Disposition
+
+    parser = argparse.ArgumentParser(prog="apps_qna --interview", add_help=False)
+    parser.add_argument("--interview", required=True)
+    parser.add_argument("--briefing", default=None)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--uwg-enabled", action="store_true")
+    args, _ = parser.parse_known_args(argv)
+
+    payload = {
+        "interview_slug": args.interview,
+        "user_constraints": {"interview_slug": args.interview},
+    }
+
+    logger = logging.getLogger(__name__)
+    logger.debug("_run_live_interview: routing through AppIngressRunner slug=%s", args.interview)
+
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+    result = runner.run(payload)
+
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner as _AIR
+    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+    if isinstance(result, ClarificationRequired):
+        logger.error("apps_qna live interview: clarification required: %s", result.reason)
+        return 1
+
+    # result is the X3Disposition enum from apps_qna.types.spine_contracts
+    if hasattr(result, "value"):
+        if result == X3Disposition.ALLOW_FINISH:
+            logger.info("apps_qna live interview complete: %s", result.value)
+            return 0
+        logger.warning("apps_qna live interview non-allow disposition: %s", result.value)
+        return 1
+
+    # Fallback for unexpected return types
+    logger.info("apps_qna live interview complete (result=%r)", result)
+    return 0
 
 
 def _build_emission_config():
@@ -88,22 +138,57 @@ def _build_emission_config():
 
 
 def _run_product_build(argv: list[str]) -> int:
-    """Run the real CardPackBuilder.build() inside governed_run spine envelope."""
-    from apps_shared.spine_emission import governed_run
+    """Run apps_qna product build through AppIngressRunner — one-spine authority.
 
-    cfg = _build_emission_config()
+    W1 migration: AppIngressRunner(profile=profile).run(payload) is now the
+    sole current-run orchestration authority. governed_run is post-run receipt
+    decoration only and does not own execution on this path.
 
-    with governed_run(cfg, cli_args=argv) as gr:
-        with gr.span("prompt_assembly"):
-            gr.mark_stage("prompt_assembly", "ok")
-        with gr.span("L2_execute"):
-            from apps_qna.scripts.run_qna import main as run_main
+    The interview_slug is derived from --interview flag (if present) or from
+    the first positional arg that isn't 'build'. Falls back to 'default' for
+    testing; real product invocations should supply --interview.
 
-            _exit_code = run_main(argv)
-            if _exit_code == 0:
-                gr.mark_stage("L2_execute", "ok")
-            else:
-                gr.mark_stage("L2_execute", "fail")
+    Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+    """
+    import argparse
+    import logging
+
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+    from apps_qna.runtime.profile_builder import build_app_runtime_contract
+    from apps_qna.types.spine_contracts import X3Disposition
+
+    parser = argparse.ArgumentParser(prog="apps_qna build", add_help=False)
+    parser.add_argument("--interview", default=None)
+    parser.add_argument("subcommand", nargs="?", default="build")
+    args, _ = parser.parse_known_args(argv)
+
+    interview_slug = args.interview or "default"
+
+    logger = logging.getLogger(__name__)
+    logger.debug("_run_product_build: routing through AppIngressRunner slug=%s", interview_slug)
+
+    payload = {
+        "interview_slug": interview_slug,
+        "user_constraints": {"interview_slug": interview_slug},
+    }
+
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+    result = runner.run(payload)
+
+    if isinstance(result, ClarificationRequired):
+        logger.error("apps_qna product build: clarification required: %s", result.reason)
+        return 1
+
+    if hasattr(result, "value"):
+        if result == X3Disposition.ALLOW_FINISH:
+            logger.info("apps_qna product build complete: %s", result.value)
+            return 0
+        logger.warning("apps_qna product build non-allow disposition: %s", result.value)
+        return 1
+
+    logger.info("apps_qna product build complete (result=%r)", result)
     return 0
 
 

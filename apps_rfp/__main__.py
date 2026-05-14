@@ -373,6 +373,69 @@ def _maybe_run_exit_hook() -> None:
         _log.warning("[apps_rfp] Exit hook raised %s: %s", type(exc).__name__, exc)
 
 
+def _run_product_build(argv: list[str]) -> int:
+    """Route the apps_rfp product path through AppIngressRunner.
+
+    W2 one-spine migration: RfpOrchestrator is now a private implementation
+    detail of the l2_binding. This function is the sole current-run authority
+    for apps_rfp product execution. governed_rfp_run is POST_RUN_RECEIPT only.
+
+    TOMBSTONE NOTE: apps_rfp.integrations.rfp_ingress_runner.make_rfp_ingress_runner
+    is the old dispatch-factory pattern and MUST NOT be used here. That factory
+    passes dispatch= externally — the pattern the one-spine law eliminates.
+    NC-4: grep must find zero governed_run / governed_rfp_run / dispatch( calls
+    in this function post-migration.
+
+    Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W2.P3
+    """
+    import argparse
+
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+    from apps_rfp.runtime.profile_builder import build_app_runtime_contract
+
+    parser = argparse.ArgumentParser(
+        description="apps_rfp proposal generator (one-spine path)",
+        add_help=True,
+    )
+    parser.add_argument("--rfp-document", dest="rfp_document_path", default="", help="Path to RFP document")
+    parser.add_argument("--target-company", dest="target_company", default="", help="Target company name")
+    parser.add_argument("--industry", default="technology", help="Industry vertical")
+    parser.add_argument("--posture", dest="architecture_posture", default="cloud-first", help="Architecture posture")
+    parser.add_argument("--weeks", dest="delivery_timeline_weeks", type=int, default=0, help="Delivery timeline weeks")
+    parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="Dry run mode")
+    parser.add_argument("--out", default="", help="Output directory (passed to profile; ignored by binding)")
+
+    known, _ = parser.parse_known_args(argv)
+
+    payload = {
+        "rfp_document_path": known.rfp_document_path or "",
+        "target_company": known.target_company or "",
+        "industry": known.industry,
+        "architecture_posture": known.architecture_posture,
+        "delivery_timeline_weeks": known.delivery_timeline_weeks,
+        "dry_run": known.dry_run,
+    }
+
+    if not payload["rfp_document_path"] and not payload["target_company"]:
+        _log.error(
+            "apps_rfp requires --rfp-document or --target-company. "
+            "Usage: python -m apps_rfp --rfp-document <path> [--target-company <name>]"
+        )
+        return 1
+
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+
+    try:
+        result = runner.run(payload)
+        disposition = getattr(result, "disposition", None) or str(result)
+        _log.info("[apps_rfp] AppIngressRunner completed: disposition=%s", disposition)
+        return 0 if str(disposition) in ("complete", "dry_run") else 1
+    except (ValueError, RuntimeError, TypeError, KeyError, OSError, AttributeError) as exc:
+        _log.error("[apps_rfp] AppIngressRunner failed: %s: %s", type(exc).__name__, exc)
+        return 1
+
+
 def main() -> None:
     # Live certification path — emits real spine receipts and exits 0.
     if _is_live_cert_mode():
@@ -382,9 +445,10 @@ def main() -> None:
     from apps_shared._apps_e2e_dry_run import maybe_short_circuit
     maybe_short_circuit("apps_rfp")
     _adg_bootstrap()
-    from apps_rfp.scripts.run_rfp import main as _run
-
-    sys.exit(_run())
+    # W2 one-spine migration: product path now routes through AppIngressRunner.
+    # RfpOrchestrator is a private l2_binding implementation detail.
+    # NC-4: no governed_rfp_run / dispatch( invoked here as current-run authority.
+    sys.exit(_run_product_build(list(sys.argv[1:])))
 
 
 if __name__ == "__main__":
