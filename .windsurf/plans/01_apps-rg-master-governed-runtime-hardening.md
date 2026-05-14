@@ -170,6 +170,7 @@ LAST_UPDATED: 2026-05-14
 | W4 | Runtime Executive Summary Bug Patch | ✅ PASS 2026-05-14 | Commit: `apps-rg-w4: runtime executive summary bug patch` | 98/98 PASS |
 | W5 | Core Boundary Enforcement + Checkpoint CI | ✅ PASS 2026-05-14 | See W5 receipt below | 39/39 PASS |
 | W6.0 | Canonical Exit Harness Wiring | ✅ PASS 2026-05-14 | See W6.0 receipt below | 47/47 PASS |
+| W6-W8 | Exit Evidence, C0 Trust, Inert Writeback, L6 Firewall | ✅ PASS 2026-05-14 | See W6-W8 receipt below | 76/76 PASS |
 
 ### W6.0 Receipt — Canonical Exit Harness Wiring
 
@@ -211,6 +212,92 @@ TESTS: 47 PASS
 - Exit binding imports SealedL2Artifact from agentic_core.runtime.contracts
 - AppsRgGateResult is dataclass with gate_id, verdict fields (evidence only)
 - ExitGateVerdict has PASS/WARN/FAIL (no UNKNOWN; material UNKNOWN→WARN/FAIL)
+
+### W6+W7+W8 Bundle Receipt — Exit Evidence, C0 Trust, Inert Writeback, L6 Firewall
+
+```
+BUNDLE_W6_W8_STATUS: PASS
+AGENTIC_CORE_CHANGED: false
+CANONICAL_GATES_CHANGED: false
+X_SCHEMAS_CHANGED: false
+
+G21_G22_APP_EVIDENCE_PROVEN: true
+- AppsRgSectionValidationReceipt: headline X|Y|Z, section/bullet counts
+- AppsRgMetricPreservationEnvelope: no invented metrics
+- AppsRgVerbatimIntegrityReceipt: education/cert/early_career hash match
+- AppsRgClaimSupportMap: claim refs, support status, blocked claims
+
+METRIC_PRESERVATION_PROVEN: true
+- test_apps_rg_metric_preservation.py: 12 tests PASS
+- Invention detection: has_invention property
+- Preservation rate tracking
+
+VERBATIM_HASH_PROVEN: true
+- test_apps_rg_verbatim_integrity.py: 10 tests PASS
+- Per-section hash comparison
+- Mutation detection for education, certifications, early_career
+
+C0_EVIDENCE_TRACE_PROVEN: true
+- AppsRgEvidenceTraceMap: per-section evidence tracking
+- SectionEvidenceTrace: source_resume_hash, jd_hash, briefing_hash
+- Retrieved chunk refs and hashes
+- Source span refs, claim refs, blocked claims
+- Injection risk assessment, support status
+
+C0_NO_ANSWER_GENERATION_PROVEN: true
+- test_c0_no_answer_generation.py: 8 tests PASS
+- No answer generation patterns
+- No prompt assembly
+- No LLM direct calls
+
+C0_NO_L4_WRITE_PROVEN: true
+- test_c0_no_direct_l4_write.py: 10 tests PASS
+- No L4 safety imports
+- No L4 write calls
+- Read-only Chroma queries
+- FEC output to PA (not L4)
+
+INERT_WRITEBACK_PROVEN: true
+- AppsRgInertWritebackCandidate: CANDIDATE until UWG receipt
+- durable_commit_occurred: false until COMMITTED with uwg_receipt_ref
+- WritebackCommitStatus: separates inert vs committed
+- RuntimeExecutiveSummary: inert_writeback_candidates vs uwg_committed_writes
+
+L6_FIREWALL_PROVEN: true
+- L6ShadowHandoff: FUTURE_ONLY applicable_run
+- can_mutate_current_run: False (enforced in __post_init__)
+- can_rescue_current_run: False (enforced in __post_init__)
+- L6_FIREWALL_INVARIANTS: all True
+
+W6_0_REGRESSION: PASS (14/14)
+W0A_RUNTIME_PATH_CI: PASS (15 active paths)
+W5_BOUNDARY_CI: PASS (222 pre-existing baseline)
+TESTS: 76 PASS (32 W6 evidence + 44 W7/W8 trust/firewall)
+CUMULATIVE_VERIFIED_TESTS: 434 PASS (W2+W3+W4+W5+W6.0+W6-W8)
+```
+
+**W6-W8 Files:**
+- `apps_rg/runtime/bindings/exit_evidence_receipts.py` (new, G21/G22 evidence types)
+- `apps_rg/runtime/bindings/c0_evidence_trace_map.py` (new, C0 evidence trust)
+- `apps_rg/runtime/bindings/inert_writeback_types.py` (new, W8 identity/budget/L6 firewall)
+- `tests/_apps_contract/test_apps_rg_section_validation_receipt.py` (new, 10 tests)
+- `tests/_apps_contract/test_apps_rg_metric_preservation.py` (new, 12 tests)
+- `tests/_apps_contract/test_apps_rg_verbatim_integrity.py` (new, 10 tests)
+- `tests/_apps_contract/test_apps_rg_evidence_trace_map.py` (new, 16 tests)
+- `tests/_apps_contract/test_c0_no_answer_generation.py` (new, 8 tests)
+- `tests/_apps_contract/test_c0_no_direct_l4_write.py` (new, 10 tests)
+- `tests/_apps_contract/test_apps_rg_inert_writeback_candidate.py` (new, 14 tests)
+- `tests/_apps_contract/test_runtime_summary_inert_vs_committed.py` (new, 14 tests)
+
+**Hard Constraints Verified:**
+- No agentic_core changes
+- No G01-G29 modifications
+- No X1/X2/X3 schema changes
+- No judge runtime created
+- No l6_shadow_learning.py repair or use
+- C0 retrieves evidence only (no answers, no prompts, no L4 writes)
+- Durable writes require Exit X3C + UWG receipt
+- L6 is future-run only
 
 ### W5 Receipt — Core Boundary Enforcement
 
