@@ -22,14 +22,45 @@ except ImportError:
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
-from agentic_core.L1_cognition.c0_package_driven_grounding import FinalEvidenceContract
-from agentic_core.runtime.contracts.compiled_prompt_artifact import (
-    CompiledPromptArtifact,
-    PromptEnvelope,
-    SlotContent,
-    ProviderRenderManifest,
-    ReplayManifest,
-)
+from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
+from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
+
+
+@dataclass(frozen=True)
+class SlotContent:
+    """Content for a single prompt slot."""
+    slot_id: str
+    content: str
+    content_hash: str
+    source_ref: str
+    template_ref: str
+
+
+@dataclass(frozen=True)
+class ProviderRenderManifest:
+    """Manifest describing how to render the prompt for a provider."""
+    format: str
+    message_roles: tuple
+    response_format: str
+    slot_order: tuple
+
+
+@dataclass(frozen=True)
+class ReplayManifest:
+    """Manifest for deterministic replay."""
+    template_refs: list
+    evidence_digest: str
+    output_schema_ref: str
+    slot_ids_used: list
+
+
+@dataclass(frozen=True)
+class PromptEnvelope:
+    """Assembled prompt broken into provider-facing sections."""
+    system_content: str
+    user_content: str
+    evidence_context: str
+    response_schema: str
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -477,48 +508,44 @@ def pa_assemble_prompt_package_driven(
     all_hashes = "".join(sorted(component_hash_map.values()))
     prompt_hash = _compute_hash(all_hashes)
     
-    # Build provider render manifest
+    # Build provider render manifest (local dataclass)
     render_manifest = ProviderRenderManifest(
         format="chat_completions_api",
-        message_roles=["system", "user"],
+        message_roles=("system", "user"),
         response_format="json_object",
-        schema_bound=True,
-        temperature=0.3,
+        slot_order=tuple(slots.keys()),
     )
     
-    # Build replay manifest
+    # Build replay manifest (local dataclass)
     replay_manifest = ReplayManifest(
         template_refs=[slot.source_ref for slot in slots.values()],
-        evidence_digest=final_evidence.final_evidence_digest,
+        evidence_digest=final_evidence.final_evidence_digest if final_evidence else "",
         output_schema_ref=schema_ref or "",
-        slot_hashes=component_hash_map,
+        slot_ids_used=list(slots.keys()),
     )
     
-    # Build prompt envelope
-    envelope = PromptEnvelope(
-        system_content="\n\n".join([
-            slots.get("S0", SlotContent("", "", "", "", "")).content,
-            slots.get("D0", SlotContent("", "", "", "", "")).content,
-            slots.get("I0", SlotContent("", "", "", "", "")).content,
-        ]),
-        user_content=slots.get("U0", SlotContent("", "", "", "", "")).content,
-        evidence_context=slots.get("C0", SlotContent("", "", "", "", "")).content,
-        response_schema=slots.get("R0", SlotContent("", "", "", "", "")).content,
-    )
-    
-    # Build compiled prompt artifact
+    # Build compiled prompt artifact — map to actual CompiledPromptArtifact fields
+    _empty_slot = SlotContent("", "", "", "", "")
+    system_preamble = "\n\n".join(filter(None, [
+        slots.get("S0_system", _empty_slot).content,
+        slots.get("D0_fences", _empty_slot).content,
+        slots.get("I0_instructions", _empty_slot).content,
+    ]))
+    user_instruction = slots.get("U0_neutralized_user_task", _empty_slot).content
     artifact = CompiledPromptArtifact(
         request_id=l1_plan.request_id,
         run_id=l1_plan.run_id,
         app_id=l1_plan.app_id,
-        task_class=l1_plan.task_class,
-        prompt_hash=prompt_hash,
+        trace_id=getattr(l1_plan, 'trace_id', ''),
+        tenant_id=getattr(l1_plan, 'tenant_id', ''),
+        system_preamble=system_preamble,
+        user_instruction=user_instruction,
+        compilation_hash=prompt_hash,
+        evidence_digest=final_evidence.final_evidence_digest if final_evidence else "",
         component_hash_map=component_hash_map,
         slot_lineage_map=slot_lineage,
-        envelope=envelope,
-        provider_render_manifest=render_manifest,
-        replay_manifest=replay_manifest,
         schema_version="AG9.PA.CPA.1",
+        l5_certification_ref="pa-package-driven-v1",
     )
     
     # Build boundary receipt

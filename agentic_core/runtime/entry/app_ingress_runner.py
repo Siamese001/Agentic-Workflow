@@ -110,11 +110,6 @@ class AppRuntimeProfile:
     # Signature: (payload: Mapping[str, Any]) -> RequestEnvelope | None
     parse: Callable[[Mapping[str, Any]], Any | None]
 
-    # ── Dispatch callable (optional — set by profile_builder; used by AppIngressRunner) ─
-    # Signature: (envelope: RequestEnvelope) -> X3Disposition
-    # When set, AppIngressRunner(profile=profile).run(payload) needs no separate dispatch= kwarg.
-    dispatch: Callable[[Any], Any] | None = None
-
     # ── Per-stage binding refs (optional — None → core default) ───────────
     u0:   Callable[..., Any] | None = None
     l1:   Callable[..., Any] | None = None
@@ -131,24 +126,6 @@ class AppRuntimeProfile:
     policy_hash:         str | None             = None
     blueprint_hash:      str | None             = None
     registry_digest_set: frozenset | None       = None
-
-    def _make_dispatch(self) -> Callable[[Any], Any]:
-        """Internal bridge: returns a dispatch callable from bound stage refs.
-
-        NOT app-callable. Exists only to feed the legacy constructor bridge
-        during the migration period (W0.5C–W4). Removed after W5.
-        """
-        _STAGES = ("u0", "l1", "l0", "c0", "pa", "l2", "exit")
-        stage_fns = {s: getattr(self, s) for s in _STAGES}
-
-        def _dispatch(envelope: Any) -> Any:
-            raise NotImplementedError(
-                "AppRuntimeProfile._make_dispatch() bridge is not implemented. "
-                "AppIngressRunner uses profile.parse + individual stage refs directly. "
-                "Do not call _make_dispatch() outside AppIngressRunner.__init__."
-            )
-
-        return _dispatch
 
 
 __all_profile__ = ["AppRuntimeProfile"]
@@ -185,27 +162,20 @@ class AppIngressRunner:
     ) -> None:
         _STAGES = ("u0", "l1", "l0", "c0", "pa", "l2", "exit")
         if profile is not None:
-            # --- Profile path (A.1+): populate proof fields first, then derive
-            # dispatch from profile.dispatch — no separate dispatch= kwarg needed.
+            # --- Profile path (A.1+): populate proof fields; stage refs drive run().
+            # No dispatch= kwarg needed — AppIngressRunner sequences profile.u0..exit.
             profile.profile_digest = _compute_profile_digest(profile)
             profile.binding_digest_map = {
                 s: _callable_digest(getattr(profile, s))  # type: ignore[arg-type]
                 for s in _STAGES
             }
             self._profile = profile
-            # Prefer explicit dispatch= kwarg (legacy); fall back to profile.dispatch.
-            resolved_dispatch = dispatch if dispatch is not None else profile.dispatch
-            if resolved_dispatch is None:
-                raise ValueError(
-                    "AppIngressRunner(profile=...) requires either dispatch= kwarg "
-                    "or profile.dispatch to be set. "
-                    "Set profile.dispatch in profile_builder.build_app_runtime_contract()."
-                )
-            self._dispatch = resolved_dispatch
             self._parse = profile.parse
             self._required = profile.required_fields
+            # Legacy _dispatch not used on profile path — set to None sentinel.
+            self._dispatch: Callable[[Any], Any] | None = None
         else:
-            # --- Legacy path (old constructor): unchanged
+            # --- Legacy path (old constructor): dispatch= required.
             if dispatch is None or parse is None or required_fields is None:
                 raise TypeError(
                     "AppIngressRunner requires either profile= OR all of "
@@ -248,6 +218,11 @@ class AppIngressRunner:
         CLI/wizard input), validates required fields, parses to a typed domain
         request, and dispatches.
 
+        Profile path (A.1): sequences profile.u0 → l1 → l0 → [c0] → [pa] → l2 → exit
+        directly.  No apps_rg_dispatch involved.
+
+        Legacy path: calls self._dispatch (unchanged).
+
         Returns:
             - The dispatched domain result on the happy path
             - ClarificationRequired when payload is incomplete or unparseable
@@ -278,8 +253,8 @@ class AppIngressRunner:
                 suggested_followups=(f"Provide non-empty string values for: {', '.join(missing)}.",),
             )
 
-        domain_request = self._parse(dict(payload))
-        if domain_request is None:
+        envelope = self._parse(dict(payload))
+        if envelope is None:
             return ClarificationRequired(
                 request_id=request_id,
                 trace_root=trace_root,
@@ -287,7 +262,132 @@ class AppIngressRunner:
                 suggested_followups=(f"Verify types/values for required fields: {', '.join(self._required)}.",),
             )
 
-        return self._dispatch(domain_request)
+        # Profile path: AppIngressRunner owns the stage sequencing.
+        if self._profile is not None:
+            return self._run_profile_stages(envelope)
+
+        # Legacy path: single dispatch callable.
+        assert self._dispatch is not None, "Legacy path requires dispatch callable"
+        return self._dispatch(envelope)
+
+    def _run_profile_stages(self, envelope: Any) -> Any:
+        """Sequence profile.u0 → l1 → l0 → [c0] → [pa] → l2 → exit.
+
+        Each stage callable is sourced from self._profile.<stage>.
+        All stage refs are required on the profile path (set by profile_builder).
+        If a stage ref is None, raises RuntimeError — profile_builder is
+        responsible for wiring all stage refs before handoff.
+
+        This method is the ONLY orchestrator on the profile path.
+        apps_rg_dispatch is NOT involved.
+        """
+        p = self._profile
+        assert p is not None
+
+        def _require(name: str) -> Any:
+            fn = getattr(p, name, None)
+            if fn is None:
+                raise RuntimeError(
+                    f"AppIngressRunner._run_profile_stages: profile.{name} is None. "
+                    f"profile_builder must set all stage refs before handoff. "
+                    f"app_id={p.app_id!r}"
+                )
+            return fn
+
+        u0_fn   = _require("u0")
+        l1_fn   = _require("l1")
+        l0_fn   = _require("l0")
+        c0_fn   = _require("c0")
+        pa_fn   = _require("pa")
+        l2_fn   = _require("l2")
+        exit_fn = _require("exit")
+
+        # U0
+        validated = u0_fn(envelope)
+
+        # L1
+        l1_plan = l1_fn(validated)
+
+        # L0
+        route = l0_fn(l1_plan)
+
+        # C0 (conditional)
+        fec = None
+        if getattr(route, "grounding_required", False):
+            fec = c0_fn(route, validated)
+
+        # PA (conditional)
+        prompt_artifact = None
+        if getattr(route, "model_generation_required", False):
+            if fec is None:
+                # Build empty FEC when grounding not required but model gen is
+                from agentic_core.runtime.contracts.final_evidence_contract import (
+                    FinalEvidenceContract as _FEC,
+                )
+                from datetime import datetime, timezone as _tz
+                fec = _FEC(
+                    request_id=route.request_id,
+                    run_id=route.run_id,
+                    app_id=route.app_id,
+                    trace_id=route.trace_id,
+                    evidence_collection_timestamp=datetime.now(_tz.utc).isoformat(),
+                    schema_version="W3.P4",
+                    l5_certification_ref=getattr(validated, "l5_certification_ref", ""),
+                )
+            prompt_artifact = pa_fn(route, l1_plan, fec, validated)
+
+        # L2 (conditional)
+        if prompt_artifact is None:
+            return self._no_gen_disposition(route, validated)
+        sealed = l2_fn(prompt_artifact)
+
+        # Exit
+        exit_result = exit_fn(
+            sealed=sealed,
+            target_company=self._target_company(validated),
+            target_role=self._target_role(validated),
+            output_directory=None,
+            writeback_policy=None,
+        )
+        return exit_result.disposition
+
+    # ------------------------------------------------------------------ helpers
+    @staticmethod
+    def _target_company(validated: Any) -> str:
+        app_payload = getattr(validated, "app_payload", None) or {}
+        if isinstance(app_payload, dict):
+            target = app_payload.get("target", {})
+            return (target.get("company", "") if isinstance(target, dict) else "") or ""
+        return getattr(app_payload, "target_company", "") or ""
+
+    @staticmethod
+    def _target_role(validated: Any) -> str:
+        app_payload = getattr(validated, "app_payload", None) or {}
+        if isinstance(app_payload, dict):
+            target = app_payload.get("target", {})
+            return (target.get("role", "") if isinstance(target, dict) else "") or ""
+        return getattr(app_payload, "target_role", "") or ""
+
+    @staticmethod
+    def _no_gen_disposition(route: Any, validated: Any) -> Any:
+        from datetime import datetime, timezone as _tz
+        from agentic_core.runtime.contracts.x3_disposition import X3Disposition
+        return X3Disposition(
+            request_id=route.request_id,
+            run_id=route.run_id,
+            app_id=route.app_id,
+            trace_id=route.trace_id,
+            tenant_id=getattr(route, "tenant_id", None),
+            exit_status="success",
+            outcome_authorized=True,
+            final_output={
+                "stage": "U0_L1_L0_C0_PASSED_NO_GEN",
+                "task_class": getattr(validated, "task_class", ""),
+                "note": "model_generation_required=false — L2/Exit skipped",
+            },
+            exit_timestamp=datetime.now(_tz.utc).isoformat(),
+            l5_certification_ref=getattr(validated, "l5_certification_ref", ""),
+        )
 
     # ------------------------------------------------------------------ shared
     def _dispatch_or_clarify(self, stamped: StampedRequest) -> Any | ClarificationRequired:

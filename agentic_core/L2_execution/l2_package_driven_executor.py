@@ -23,7 +23,7 @@ except ImportError:
 
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
-from agentic_core.L1_cognition.c0_package_driven_grounding import FinalEvidenceContract
+from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceContract
 from agentic_core.prompt_governance.pa_package_driven_binding import CompiledPromptArtifact
 
 _LOGGER = logging.getLogger(__name__)
@@ -199,16 +199,23 @@ def _freeze_execution_context(
     provider_profile_ref: str,
     repair_profile_ref: str,
 ) -> FrozenExecutionContext:
-    """Create frozen execution context."""
+    """Create frozen execution context.
+
+    W4 remediation: route_contract and final_evidence may be None when called
+    from a binding that only receives CompiledPromptArtifact (runner convention).
+    Falls back to compiled_prompt fields in that case.
+    """
+    _rc = route_contract
+    _fe = final_evidence
     return FrozenExecutionContext(
-        request_id=route_contract.request_id,
-        run_id=route_contract.run_id,
-        app_id=route_contract.app_id,
-        task_class=route_contract.task_class,
-        tenant_id=route_contract.tenant_id,
-        trace_id=route_contract.trace_id,
-        route_contract_hash=_compute_hash(str(route_contract)),
-        evidence_digest=final_evidence.final_evidence_digest,
+        request_id=_rc.request_id if _rc else compiled_prompt.request_id,
+        run_id=_rc.run_id if _rc else compiled_prompt.run_id,
+        app_id=_rc.app_id if _rc else compiled_prompt.app_id,
+        task_class=getattr(_rc, 'task_class', None) or getattr(compiled_prompt, 'task_class', ''),
+        tenant_id=_rc.tenant_id if _rc else compiled_prompt.tenant_id,
+        trace_id=_rc.trace_id if _rc else compiled_prompt.trace_id,
+        route_contract_hash=_compute_hash(str(_rc)) if _rc else '',
+        evidence_digest=_fe.final_evidence_digest if _fe else compiled_prompt.evidence_digest,
         prompt_hash=compiled_prompt.prompt_hash,
         l2_execution_profile_ref=l2_profile_ref,
         provider_profile_ref=provider_profile_ref,
@@ -439,9 +446,10 @@ def l2_execute_package_driven(
         l2_execution_profile_ref, provider_profile_ref, repair_profile_ref,
     )
     
+    _req_id = route_contract.request_id if route_contract else compiled_prompt.request_id
     _LOGGER.info(
         "L2 execution starting: request=%s profile=%s",
-        route_contract.request_id,
+        _req_id,
         l2_execution_profile_ref,
     )
     
@@ -541,8 +549,9 @@ def l2_execute_package_driven(
         }
     
     # Compute seal hash
+    _req_id = route_contract.request_id if route_contract else compiled_prompt.request_id
     seal_content = json.dumps({
-        "request_id": route_contract.request_id,
+        "request_id": _req_id,
         "output_hash": _compute_hash(json.dumps(final_output)) if final_output else "",
         "prompt_hash": compiled_prompt.prompt_hash,
         "attempts": len(attempt_receipts),
@@ -551,19 +560,20 @@ def l2_execute_package_driven(
     
     _LOGGER.info(
         "L2 execution complete: request=%s status=%s attempts=%d repairs=%d",
-        route_contract.request_id,
+        _req_id,
         execution_status,
         len(attempt_receipts),
         len(heal_receipts),
     )
     
+    _rc = route_contract
     return SealedL2Artifact(
-        request_id=route_contract.request_id,
-        run_id=route_contract.run_id,
-        app_id=route_contract.app_id,
-        task_class=route_contract.task_class,
-        tenant_id=route_contract.tenant_id,
-        trace_id=route_contract.trace_id,
+        request_id=_rc.request_id if _rc else compiled_prompt.request_id,
+        run_id=_rc.run_id if _rc else compiled_prompt.run_id,
+        app_id=_rc.app_id if _rc else compiled_prompt.app_id,
+        task_class=getattr(_rc, 'task_class', None) or getattr(compiled_prompt, 'task_class', ''),
+        tenant_id=_rc.tenant_id if _rc else compiled_prompt.tenant_id,
+        trace_id=_rc.trace_id if _rc else compiled_prompt.trace_id,
         sealed_at=datetime.now(timezone.utc).isoformat(),
         seal_hash=seal_hash,
         route_contract_hash=frozen_context.route_contract_hash,

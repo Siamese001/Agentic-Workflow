@@ -53,13 +53,20 @@ SUPPORT_STATUS_CONFLICTED = "CONFLICTED"
 #: not zero.  MUST NOT silently become PASS.
 SUPPORT_STATUS_WEAK = "WEAK"
 
+#: Sentinel: support_status value indicating support is present but below
+#: threshold — replaces former WEAK alias.  MUST NOT silently become PASS.
+#: W2: PARTIAL is not in the canonical six-value enum and is forbidden.
+SUPPORT_STATUS_WEAK_WITH_CAVEATS = "WEAK_WITH_CAVEATS"
+
 #: Sentinel: support_status value indicating evidence meets the support
-#: target.  Only this value (and ``PARTIAL``) may be treated as PASS by
-#: downstream gates.
+#: target.  Only this value may be treated as PASS by downstream gates.
+#: W2: PARTIAL removed — not in canonical enum (PASS, WEAK_WITH_CAVEATS,
+#: CONFLICTED, EMPTY, BLOCKED, UNKNOWN).
 SUPPORT_STATUS_PASS = "PASS"
 
-#: Sentinel: support_status value indicating partial support that meets the
-#: contract's partial-support target.
+#: PARTIAL is NOT in the canonical six-value enum and is not a passing value.
+#: The W2 extractor coerces PARTIAL → WEAK_WITH_CAVEATS before it reaches
+#: any gate.  This constant is retained for backward-compat imports only.
 SUPPORT_STATUS_PARTIAL = "PARTIAL"
 
 #: Sentinel: per the AG-4 invariant, retrieved evidence is data-only — never
@@ -68,11 +75,10 @@ SUPPORT_STATUS_PARTIAL = "PARTIAL"
 ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY = "C0_EVIDENCE_DATA_ONLY"
 
 #: Set of support_status values that downstream gates MAY treat as PASS.
-#: Any value not in this set (including UNKNOWN, EMPTY, BLOCKED, CONFLICTED,
-#: WEAK, NOT_APPLICABLE) MUST NOT pass.
+#: W2 invariant: ONLY "PASS" is a passing value.  PARTIAL is forbidden per
+#: W2 §4 — the extractor coerces it to WEAK_WITH_CAVEATS before reaching here.
 SUPPORT_STATUS_PASSING_VALUES = frozenset({
     SUPPORT_STATUS_PASS,
-    SUPPORT_STATUS_PARTIAL,
 })
 
 

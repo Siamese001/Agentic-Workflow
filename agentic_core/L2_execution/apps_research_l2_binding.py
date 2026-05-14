@@ -28,36 +28,33 @@ APPS_RESEARCH_L2_CERT_REF: str = "l2-apps-research-company-brief-v1"
 
 
 def l2_execute_apps_research(
-    route_contract: RouteContract,
-    final_evidence: FinalEvidenceContract,
     compiled_prompt: CompiledPromptArtifact,
 ) -> SealedL2Artifact:
-    """
-    apps_research L2 execution that delegates to generic package-driven executor.
-    
-    Consumes app-owned L2 execution, provider, and repair profiles.
-    All execution policy declared in apps_research/config/domain_contract/.
-    
-    Args:
-        route_contract: RouteContract from L0
-        final_evidence: FinalEvidenceContract from C0
-        compiled_prompt: CompiledPromptArtifact from PA
-    
-    Returns:
-        SealedL2Artifact with full execution provenance
-    
+    """apps_research L2 binding — matches AppIngressRunner._run_profile_stages contract.
+
+    Called as: l2_fn(prompt_artifact) -> SealedL2Artifact
+
+    W4 remediation (bundle-c1-blocker-remediation-a4f9e2):
+    Runner calls l2_fn with only CompiledPromptArtifact. RouteContract and
+    FinalEvidenceContract are not forwarded to L2 by the runner; the executor
+    receives profile-ref defaults instead. App-owned profile refs supply all
+    execution policy without requiring route/evidence passthrough.
+
     Raises:
         TypeError: on bad input types
     """
-    # App-owned profile refs
+    if not isinstance(compiled_prompt, CompiledPromptArtifact):
+        raise TypeError(
+            f"l2_execute_apps_research: expected CompiledPromptArtifact, got {type(compiled_prompt)}"
+        )
+
     l2_execution_profile_ref = "apps_research/config/domain_contract/l2_execution_profile.company_brief.v1.yaml"
     provider_profile_ref = "apps_research/config/domain_contract/provider_profile.company_brief.v1.yaml"
     repair_profile_ref = "apps_research/config/domain_contract/repair_profile.company_brief.v1.yaml"
-    
-    # Delegate to generic package-driven executor
+
     return l2_execute_package_driven(
-        route_contract=route_contract,
-        final_evidence=final_evidence,
+        route_contract=None,
+        final_evidence=None,
         compiled_prompt=compiled_prompt,
         l2_execution_profile_ref=l2_execution_profile_ref,
         provider_profile_ref=provider_profile_ref,

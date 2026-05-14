@@ -1,33 +1,25 @@
-"""RETIRED — agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline (Bundle A tombstone)
+"""TOMBSTONE — agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline
 
-This module is retired as part of plan kill-shadow-pipelines-a7f3c2 Bundle A (W2).
-The canonical dispatch path is apps_rg.runtime.dispatch.apps_rg_dispatch consumed
-via AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload).
+This module is HARD-RETIRED as part of plan kill-shadow-pipelines-a7f3c2 W5.
+NC-2 negative control requires this module to be non-importable.
 
-This class is preserved temporarily to avoid breaking test_w7_l7_runtime_auditability.py
-which has 28 call sites using execute_with_audit(). Those tests will be retargeted in
-Bundle B. DO NOT add new imports of this class to production code.
+Previously preserved for test_w7_l7_runtime_auditability.py (Bundle B retarget).
+Audit confirmed: only reference remaining is a comment in
+tests/_apps_contract/sample_w7_l7_trace_output.py (not a live import).
+Hard tombstone applied 2026-05-14.
 
-Original docstring:
-    Internal implementation detail orchestrating the full core consumption flow.
-    Called by AppIngressRunner — NOT a public entrypoint.
-
-Hard Constraints:
-- Core owns all runtime contract emission
-- apps_rg does not emit runtime contracts
-- apps_rg does not call runtime authority
-- L7 emits audit evidence only — no planning, routing, execution
+Canonical dispatch path:
+    apps_rg.runtime.dispatch.apps_rg_dispatch consumed via
+    AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload)
 """
 from __future__ import annotations
 
-import warnings as _warnings
-_warnings.warn(
-    "agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline is RETIRED. "
+raise ImportError(
+    "TOMBSTONE (kill-shadow-pipelines-a7f3c2 W5 NC-2): "
+    "agentic_core.runtime.entrypoints.apps_rg_integrated_pipeline is retired. "
     "Use apps_rg.runtime.dispatch.apps_rg_dispatch via "
     "AppIngressRunner(profile=profile, dispatch=apps_rg_dispatch).run(payload). "
-    "This module will be deleted in Bundle B.",
-    DeprecationWarning,
-    stacklevel=2,
+    "Tombstoned 2026-05-14 — no live callers confirmed."
 )
 
 from typing import Optional

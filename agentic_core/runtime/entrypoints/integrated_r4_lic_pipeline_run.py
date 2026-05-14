@@ -237,7 +237,6 @@ def _build_lic_envelope(
     # Use profile-driven defaults (fail-closed: empty string if no profile)
     default_source_channel = defaults.get("source_channel", "")
     default_user_id = defaults.get("user_id_default", "")
-    default_declared_schema = defaults.get("declared_schema", "")
     
     return RawIngressEnvelope(
         transport=str(raw_request.get("transport", "cli")),
@@ -247,13 +246,6 @@ def _build_lic_envelope(
         claimed_tenant_id=raw_request.get("tenant_id"),
         claimed_user_id=str(raw_request.get("user_id", default_user_id)),
         body_text=body_text,
-        body_bytes=None,
-        declared_schema=str(
-            raw_request.get("declared_schema", default_declared_schema)
-        ),
-        declared_content_length=len(body_text.encode()),
-        attachments=None,
-        modality_manifest=None,
     )
 
 
