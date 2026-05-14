@@ -33,7 +33,8 @@ LAST_UPDATED: 2026-05-14
 - AGENTIC_CORE_CHANGED: false
 - MISSION_CRITICAL_BLOCKERS_REMAINING: 0
 - APPS_RG_GO_STATUS: GO for governed runtime certification
-- Certification Receipt: `artifacts/certification/apps_rg_gap001_go_receipt.md`
+- COMMIT_HASH: `85c452aed2`
+- Certification Receipt: `artifacts/certification/apps_rg_gap001_go_receipt.md` (gitignored; data captured in this plan)
 
 **COMPLETED_PHASES:**
 - S0 — Fast Runtime Path Inventory: S0 BLOCKED (stop conditions documented) → receipt: artifacts/governance/apps_rg_resume_shipping_s0_runtime_path_inventory.md
@@ -401,6 +402,11 @@ python ops_scripts/ci/run_contract_gates.py
 - ✅ All commit candidates are inert (mutation_candidate_inert=True, proposal_status=PENDING_UWG)
 - ✅ User-visible resume output is preserved without requiring durable writes
 - ✅ No agentic_core files modified
+
+**Closeout Metadata:**
+- COMMIT_HASH: `85c452aed2`
+- Certification Receipt: `artifacts/certification/apps_rg_gap001_go_receipt.md` (gitignored; certification data captured in this plan)
+- run_contract_gates.py: GAP-001 gate ✅ passed; unrelated pre-existing ADG_GRAPH_LAYER_EVIDENCE failures from other plans (not GAP-001)
 
 **Remaining Items (All Non-Blocking):**
 - L6 quarantine missing → DEAD_CODE_ONLY (path unreachable via S0.5 guard)
