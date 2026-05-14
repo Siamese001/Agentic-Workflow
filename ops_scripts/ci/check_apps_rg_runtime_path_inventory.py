@@ -33,6 +33,7 @@ class PathClassification:
 # Canonical ACTIVE paths - these are allowed to be imported by __main__
 CANONICAL_ACTIVE_PATHS: set[str] = {
     "apps_rg/runtime/dispatch/apps_rg_dispatch.py",
+    "apps_rg/runtime/profile_builder.py",  # Bundle A: profile constructor for AppIngressRunner
     "apps_rg/runtime/bindings/u0_binding.py",
     "apps_rg/runtime/bindings/l1_binding.py",
     "apps_rg/runtime/bindings/l0_binding.py",
@@ -290,6 +291,7 @@ def run_inventory_check(repo_root: Path) -> dict[str, Any]:
                 # Skip if it's an allowed import
                 if any(allowed in line for allowed in [
                     "runtime.dispatch",
+                    "runtime.profile_builder",  # Bundle A: profile constructor
                     "runtime.bindings",
                     "tools.__init__",
                 ]):
@@ -308,7 +310,7 @@ def run_inventory_check(repo_root: Path) -> dict[str, Any]:
                 "file": "apps_rg/__main__.py",
                 "imports": disallowed_imports,
                 "severity": "ERROR",
-                "message": "__main__.py must only import from runtime.dispatch, runtime.bindings, or tools.__init__",
+                "message": "__main__.py must only import from runtime.dispatch, runtime.profile_builder, runtime.bindings, or tools.__init__",
             })
             results["status"] = "FAIL"
     
