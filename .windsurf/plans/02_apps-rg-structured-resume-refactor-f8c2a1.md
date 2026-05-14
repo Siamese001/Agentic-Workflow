@@ -57,9 +57,9 @@ Refactor the apps_rg resume generation pipeline to use a structured source resum
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: Consolidated to Master (W0A-W8 Complete)
-CURRENT_WAVE: W9
-LAST_COMPLETED_WAVE: W8
+PLAN_STATUS: Consolidated to Master (W0A-W9 Complete)
+CURRENT_WAVE: W10 (SUPERSEDED)
+LAST_COMPLETED_WAVE: W9
 LAST_UPDATED: 2026-05-14
 
 ---
@@ -205,7 +205,7 @@ LAST_UPDATED: 2026-05-14
 | W6 | W6.1, W6.2, W6.3 | Exit G21/G22 payload extensions | ~800 | **Completed** (via Master) |
 | W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | **Completed** (via Master) |
 | W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | **Completed** (via Master) |
-| W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | Not Started |
+| W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | **Completed** |
 | W10 | — | SUPERSEDED: Canonical L6 handoff owned by Master Phase 12 | ~0 | Superseded |
 
 ---
@@ -234,8 +234,8 @@ LAST_UPDATED: 2026-05-14
 | W8.1 | Identity & Isolation | `u0_binding.py` caller/session binding | ~200 | **Completed** (via Master) |
 | W8.2 | Budget & L6 Firewall | Token/cost caps, learning-only mode | ~200 | **Completed** (via Master) |
 | W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | **Completed** (via Master) |
-| W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | Not Started |
-| W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | Not Started |
+| W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | **Completed** |
+| W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | **Completed** |
 | W10.1 | SUPERSEDED | No extension of l6_shadow_learning.py RuntimeExhaustBundle — canonical handoff owned by Master Phase 12 | ~0 | Superseded |
 | W10.2 | SUPERSEDED | No repair of ProposalPacket — G29 work owned by Core G29 plan | ~0 | Superseded |
 
