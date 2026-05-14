@@ -733,7 +733,7 @@ class TestW4TupleFieldsMutability:
 
     def test_packet_evidence_refs_tuple(self):
         p = _make_packet(
-            certification_status="L5_CERTIFIED",
+            "L5_CERTIFIED",
             evidence_refs=(_GOOD_DIGEST,),
         )
         assert isinstance(p.evidence_refs, tuple)

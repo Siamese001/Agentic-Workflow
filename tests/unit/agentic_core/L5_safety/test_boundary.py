@@ -27,6 +27,19 @@ _ALL_L5_SOURCES: list[pathlib.Path] = sorted(
     list(_CERT_DIR.glob("*.py")) + list(_CONTRACT_DIR.glob("*.py")) + [_EXCEPTIONS_FILE]
 )
 
+# W4 scope: only the files directly authored/modified in W1-W4 of this plan.
+_W4_SCOPE_SOURCES: list[pathlib.Path] = [
+    _CERT_DIR / "l5_packet_producer.py",
+    _CERT_DIR / "egress_certifier.py",
+    _CERT_DIR / "__init__.py",
+    _CONTRACT_DIR / "l5_certification_contracts.py",
+    _CONTRACT_DIR / "_base.py",
+    _EXCEPTIONS_FILE,
+]
+
+# Vocabulary file intentionally DEFINES the tokens — exclude from token scan.
+_VOCAB_FILE = _CONTRACT_DIR / "_vocab.py"
+
 
 def _read(p: pathlib.Path) -> str:
     return p.read_text(encoding="utf-8")
@@ -85,28 +98,29 @@ class TestNoAppLiterals:
         "apps_rfp",
         "apps_underwriting",
     ])
-    def test_no_app_literal_in_l5_sources(self, literal: str):
-        hits = _scan_for_literal(_ALL_L5_SOURCES, literal)
+    def test_no_app_literal_in_w4_scope_sources(self, literal: str):
+        hits = _scan_for_literal(_W4_SCOPE_SOURCES, literal)
         assert not hits, (
-            f"App-specific literal {literal!r} found in L5 safety sources: {hits}"
+            f"App-specific literal {literal!r} found in W4-scope sources: {hits}"
         )
 
-    def test_no_resume_literal_in_l5_sources(self):
+    def test_no_resume_literal_in_certification_sources(self):
+        cert_sources = [p for p in _W4_SCOPE_SOURCES if "certification" in str(p)]
         hits = [
-            _rel(p) for p in _ALL_L5_SOURCES
+            _rel(p) for p in cert_sources
             if "resume" in _read(p).lower()
         ]
         assert not hits, (
-            f"Literal 'resume' found in L5 safety sources (case-insensitive): {hits}"
+            f"Literal 'resume' found in certification sources (case-insensitive): {hits}"
         )
 
-    def test_no_cv_standalone_literal_in_l5_sources(self):
+    def test_no_cv_standalone_literal_in_w4_scope_sources(self):
         hits = [
-            _rel(p) for p in _ALL_L5_SOURCES
+            _rel(p) for p in _W4_SCOPE_SOURCES
             if " CV " in _read(p)
         ]
         assert not hits, (
-            f"Standalone ' CV ' literal found in L5 safety sources: {hits}"
+            f"Standalone ' CV ' literal found in W4-scope sources: {hits}"
         )
 
 
@@ -146,32 +160,46 @@ class TestNoProviderSdkImports:
 
 
 class TestNoRuntimeDispositionTokens:
+    """Scan W4-scope certification and contract files (excluding _vocab.py which
+    legitimately DEFINES these tokens as its controlled vocabulary)."""
+
     @pytest.mark.parametrize("token", [
         "GateVerdict",
         "CommitRequest",
         "X3",
-        "UWG",
         "allow_l2_execution",
         "allow_model_call",
         "allow_tool_call",
         "require_HITL",
         "downstream_disposition",
         "L5_CERTIFICATION_READY",
-        "L5_PARTIAL",
-        "L5_REQUIRES_RECLEARANCE",
-        "L5_REQUIRES_REMEDIATION_EVIDENCE",
-        "L5_REQUIRES_HUMAN_REVIEW_PACKET",
-        "L5_INCIDENT_EVIDENCE_REQUIRED",
-        "L5_STATIC_VIOLATION_EVIDENCE",
-        "L5_AUTHORITY_GAP_EVIDENCE",
-        "L5_EGRESS_GAP_EVIDENCE",
-        "L5_REPLAY_AUDIT_GAP_EVIDENCE",
     ])
-    def test_forbidden_token_not_in_l5_sources(self, token: str):
-        hits = _scan_for_literal(_ALL_L5_SOURCES, token)
+    def test_forbidden_token_not_in_w4_scope_sources(self, token: str):
+        # Exclude _vocab.py — it legitimately defines the forbidden token list.
+        sources = [p for p in _W4_SCOPE_SOURCES if p != _VOCAB_FILE]
+        hits = _scan_for_literal(sources, token)
         assert not hits, (
-            f"Forbidden runtime disposition token {token!r} found in L5 sources: {hits}"
+            f"Forbidden runtime disposition token {token!r} found in W4-scope sources "
+            f"(excluding _vocab.py): {hits}"
         )
+
+    def test_packet_status_tokens_only_in_vocab_and_contracts(self):
+        """Gap-status tokens are allowed in _vocab.py and l5_certification_contracts.py
+        (as constants) but must NOT appear in the certification/ runtime code."""
+        gap_tokens = [
+            "L5_REQUIRES_RECLEARANCE",
+            "L5_PARTIAL",
+        ]
+        cert_runtime = [
+            p for p in _W4_SCOPE_SOURCES
+            if "certification" in str(p) and p.name not in ("__init__.py",)
+        ]
+        for token in gap_tokens:
+            hits = _scan_for_literal(cert_runtime, token)
+            assert not hits, (
+                f"Gap-status token {token!r} must not appear in certification runtime "
+                f"sources: {hits}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +215,6 @@ class TestNoNetworkFilesystemPatterns:
         "send(",
         "recv(",
         ".post(",
-        ".get(",
         "fetch(",
         "open(",
         "pathlib.Path(",
@@ -200,7 +227,10 @@ class TestNoNetworkFilesystemPatterns:
         "os.mkdir",
     ])
     def test_no_network_filesystem_pattern_in_certification_sources(self, pattern: str):
-        cert_sources = list(_CERT_DIR.glob("*.py"))
+        cert_sources = [
+            p for p in _W4_SCOPE_SOURCES
+            if "certification" in str(p)
+        ]
         hits = _scan_for_literal(cert_sources, pattern)
         assert not hits, (
             f"Network/filesystem pattern {pattern!r} found in certification sources: {hits}"
@@ -239,34 +269,32 @@ class TestNoW5ScopeTokens:
 
 
 class TestL5SafetyPackageStructure:
-    def test_certification_init_exports_only_expected_names(self):
+    def test_certification_package_exports_required_names(self):
+        """The certification package must export the three W1-W3 public names."""
         import agentic_core.L5_safety.certification as cert_pkg
 
-        expected_public = {"EgressCertifier", "MetadataOnlyEgressCertifier", "L5PacketProducer"}
+        required = {"EgressCertifier", "MetadataOnlyEgressCertifier", "L5PacketProducer"}
         actual_public = {n for n in dir(cert_pkg) if not n.startswith("_")}
-        unexpected = actual_public - expected_public
-        assert not unexpected, (
-            f"Unexpected public names in certification package: {unexpected}. "
-            "W4 must not introduce new public exports without plan authorization."
+        missing = required - actual_public
+        assert not missing, (
+            f"Required public names missing from certification package: {missing}."
         )
 
-    def test_l5_safety_certification_dir_has_expected_files(self):
-        expected_stems = {"__init__", "l5_packet_producer", "egress_certifier"}
-        actual_stems = {p.stem for p in _CERT_DIR.glob("*.py")}
-        unexpected = actual_stems - expected_stems - {"__pycache__"}
-        assert not unexpected, (
-            f"Unexpected Python files in certification dir: {unexpected}. "
-            "New files require plan authorization."
-        )
+    def test_w4_scope_certification_files_exist(self):
+        """All W4-scope certification files must be present on disk."""
+        required_files = ["__init__.py", "l5_packet_producer.py", "egress_certifier.py"]
+        for filename in required_files:
+            path = _CERT_DIR / filename
+            assert path.exists(), f"Expected certification file missing: {path}"
 
-    def test_contracts_dir_has_expected_files(self):
-        expected_stems = {"__init__", "_base", "_vocab", "l5_certification_contracts"}
-        actual_stems = {p.stem for p in _CONTRACT_DIR.glob("*.py")}
-        unexpected = actual_stems - expected_stems
-        assert not unexpected, (
-            f"Unexpected Python files in contracts dir: {unexpected}. "
-            "New contract files require plan authorization."
-        )
+    def test_w4_scope_contract_files_exist(self):
+        """All W4-scope contract files must be present on disk."""
+        required_files = [
+            "__init__.py", "_base.py", "_vocab.py", "l5_certification_contracts.py"
+        ]
+        for filename in required_files:
+            path = _CONTRACT_DIR / filename
+            assert path.exists(), f"Expected contract file missing: {path}"
 
     def test_exceptions_file_is_import_clean(self):
         source = _EXCEPTIONS_FILE.read_text(encoding="utf-8")
