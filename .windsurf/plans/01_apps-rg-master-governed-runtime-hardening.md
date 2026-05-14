@@ -171,6 +171,10 @@ LAST_UPDATED: 2026-05-14
 | W5 | Core Boundary Enforcement + Checkpoint CI | ✅ PASS 2026-05-14 | See W5 receipt below | 39/39 PASS |
 | W6.0 | Canonical Exit Harness Wiring | ✅ PASS 2026-05-14 | See W6.0 receipt below | 47/47 PASS |
 | W6-W8 | Exit Evidence, C0 Trust, Inert Writeback, L6 Firewall | ✅ PASS 2026-05-14 | See W6-W8 receipt below | 76/76 PASS |
+| W9 | Judge Surface Consolidation Inventory | ✅ PASS 2026-05-14 | See W9 receipt below | 33/33 PASS |
+| W10 | L6 Shadow Learning / Shadow Pipeline | ⚪ SUPERSEDED 2026-05-14 | Reference only - no l6_shadow_learning.py repair | N/A |
+
+**Structured Resume Refactor Waves W0A-W9: COMPLETE**
 
 ### W6.0 Receipt — Canonical Exit Harness Wiring
 
@@ -298,6 +302,40 @@ CUMULATIVE_VERIFIED_TESTS: 434 PASS (W2+W3+W4+W5+W6.0+W6-W8)
 - C0 retrieves evidence only (no answers, no prompts, no L4 writes)
 - Durable writes require Exit X3C + UWG receipt
 - L6 is future-run only
+
+### W9 Receipt — Judge Surface Consolidation Inventory
+
+```
+W9_STATUS: PASS
+AGENTIC_CORE_CHANGED: false
+NEW_JUDGE_RUNTIME_CREATED: false
+JUDGE_SURFACE_INVENTORY_CREATED: true
+ACTIVE_CONFIG_WRAP_DECISION: true
+QUARANTINED_CODE_REMAINS_QUARANTINED: true
+JUDGES_X1D_ONLY_PROVEN: true
+NO_GATE_VERDICT_FROM_JUDGES_PROVEN: true
+NO_X3_FROM_JUDGES_PROVEN: true
+UNCALIBRATED_ADVISORY_ONLY_PROVEN: true
+COPY_VERBATIM_NO_JUDGES_PROVEN: true
+W0A_RUNTIME_PATH_CI: PASS
+W5_BOUNDARY_CI: PASS
+TESTS: 33 PASS
+```
+
+**W9 Inventory Summary:**
+- **ACTIVE_CONFIG (3):** judge_profile, judge_prompts, grader_roster → WRAP
+- **QUARANTINED_CODE (5):** engines/judges/, online_judges.py, hops/*judge* → KEEP_QUARANTINED
+- **LEGACY (2):** _ensemble_runner.py, _role_bullet_runner.py → DEPRECATE_FURTHER
+- **OUT_OF_SCOPE (2):** apps_eval rubrics, eval pipeline → REFERENCE_ONLY
+
+**W9 Files:**
+- `artifacts/apps_rg/judge_surface_inventory_w9.json` (new, inventory artifact)
+- `tests/_apps_contract/test_judge_produces_x1d_only.py` (new, 7 tests)
+- `tests/_apps_contract/test_judge_no_gate_verdict.py` (new, 6 tests)
+- `tests/_apps_contract/test_uncalibrated_advisory_only.py` (new, 7 tests)
+- `tests/_apps_contract/test_copy_verbatim_no_judges.py` (new, 6 tests)
+
+**Cumulative Verified Tests:** 467 PASS (W2+W3+W4+W5+W6.0+W6-W8+W9)
 
 ### W5 Receipt — Core Boundary Enforcement
 
