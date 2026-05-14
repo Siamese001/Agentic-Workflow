@@ -57,10 +57,10 @@ Refactor the apps_rg resume generation pipeline to use a structured source resum
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: In Progress
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
-LAST_UPDATED: 2026-05-13
+PLAN_STATUS: Consolidated to Master (W0A-W8 Complete)
+CURRENT_WAVE: W9
+LAST_COMPLETED_WAVE: W8
+LAST_UPDATED: 2026-05-14
 
 ---
 
@@ -197,14 +197,14 @@ LAST_UPDATED: 2026-05-13
 |------|-----------|-------|-------------|--------|
 | W0A | W0A.1, W0A.2 | Runtime path inventory + classification + CI gate | ~400 | **Completed** |
 | W1 | W1.1, W1.2 | Structured JSON schema + exit binding ingestion | ~800 | **Completed** |
-| W2 | W2.1, W2.2 | Patch pa_binding.py with role-aware tiering | ~800 | Not Started |
-| W3 | W3.1, W3.2 | U0 payload synthesizer structured support | ~600 | Not Started |
-| W4 | W4.1 | Bug patch runtime_executive_summary.py display | ~400 | Not Started |
-| W5 | W5.1, W5.2 | CI gates + core boundary enforcement tests | ~600 | Not Started |
-| W6.0 | W6.0 | Canonical Exit harness wiring | ~600 | Not Started |
-| W6 | W6.1, W6.2, W6.3 | Exit G21/G22 payload extensions | ~800 | Not Started |
-| W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | Not Started |
-| W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | Not Started |
+| W2 | W2.1, W2.2 | Patch pa_binding.py with role-aware tiering | ~800 | **Completed** (via Master) |
+| W3 | W3.1, W3.2 | U0 payload synthesizer structured support | ~600 | **Completed** (via Master) |
+| W4 | W4.1 | Bug patch runtime_executive_summary.py display | ~400 | **Completed** (via Master) |
+| W5 | W5.1, W5.2 | CI gates + core boundary enforcement tests | ~600 | **Completed** (via Master) |
+| W6.0 | W6.0 | Canonical Exit harness wiring | ~600 | **Completed** (via Master) |
+| W6 | W6.1, W6.2, W6.3 | Exit G21/G22 payload extensions | ~800 | **Completed** (via Master) |
+| W7 | W7.1, W7.2 | C0 evidence trust + retrieval safety | ~600 | **Completed** (via Master) |
+| W8 | W8.1, W8.2, W8.3 | Identity + budget + L6 firewall + inert writeback envelope | ~600 | **Completed** (via Master) |
 | W9 | W9.1, W9.2 | Judge surface inventory + consolidation decision | ~800 | Not Started |
 | W10 | — | SUPERSEDED: Canonical L6 handoff owned by Master Phase 12 | ~0 | Superseded |
 
@@ -218,22 +218,22 @@ LAST_UPDATED: 2026-05-13
 | W0A.2 | CI Gate + Classification Enforcement | `check_apps_rg_runtime_path_inventory.py` | ~200 | **Completed** |
 | W1.1 | Define Structured Resume Schema | `source_resume_v2_structured.json` schema doc | ~400 | **Completed** |
 | W1.2 | Update Exit Binding Ingestion | `exit_binding.py:produce_structured_resume_from_docx()` | ~400 | **Completed** |
-| W2.1 | Patch PA Binding Role-Aware Tiering | `pa_binding.py` section detection + tiering | ~400 | Not Started |
-| W2.2 | PA Provider-Neutral Prompt Polish | `pa_binding.py` XML structure, anti-invention | ~400 | Not Started |
-| W3.1 | U0 Structured Resume Detection | `payload_synthesizer.py`, `u0_binding.py` | ~300 | Not Started |
-| W3.2 | Backward Compatibility | Flat text fallback | ~300 | Not Started |
-| W4.1 | Patch Runtime Summary Display | `runtime_executive_summary.py` bug fixes | ~400 | Not Started |
-| W5.1 | Core Boundary CI Gate | `check_apps_rg_core_boundary.py` | ~300 | Not Started |
-| W5.2 | Core Diff Prevention Tests | Tests for no core modification | ~300 | Not Started |
-| W6.0 | Canonical Exit Harness Wiring | `apps_rg/runtime/bindings/exit_binding.py` | ~600 | Not Started |
-| W6.1 | Exit G21 Schema Gates | `exit_binding.py` headline/bullet count | ~300 | Not Started |
-| W6.2 | Exit G22 Quality Gates | Metric preservation, hash compare | ~250 | Not Started |
-| W6.3 | Exit G22 Verbatim Integrity | Hash-based proof for education, certifications, early career | ~250 | Not Started |
-| W7.1 | C0 Evidence Scoping | `c0_binding.py` per-section profiles | ~300 | Not Started |
-| W7.2 | Retrieved Content Trust | Injection risk detection | ~300 | Not Started |
-| W8.1 | Identity & Isolation | `u0_binding.py` caller/session binding | ~200 | Not Started |
-| W8.2 | Budget & L6 Firewall | Token/cost caps, learning-only mode | ~200 | Not Started |
-| W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | Not Started |
+| W2.1 | Patch PA Binding Role-Aware Tiering | `pa_binding.py` section detection + tiering | ~400 | **Completed** (via Master) |
+| W2.2 | PA Provider-Neutral Prompt Polish | `pa_binding.py` XML structure, anti-invention | ~400 | **Completed** (via Master) |
+| W3.1 | U0 Structured Resume Detection | `payload_synthesizer.py`, `u0_binding.py` | ~300 | **Completed** (via Master) |
+| W3.2 | Backward Compatibility | Flat text fallback | ~300 | **Completed** (via Master) |
+| W4.1 | Patch Runtime Summary Display | `runtime_executive_summary.py` bug fixes | ~400 | **Completed** (via Master) |
+| W5.1 | Core Boundary CI Gate | `check_apps_rg_core_boundary.py` | ~300 | **Completed** (via Master) |
+| W5.2 | Core Diff Prevention Tests | Tests for no core modification | ~300 | **Completed** (via Master) |
+| W6.0 | Canonical Exit Harness Wiring | `apps_rg/runtime/bindings/exit_binding.py` | ~600 | **Completed** (via Master) |
+| W6.1 | Exit G21 Schema Gates | `exit_binding.py` headline/bullet count | ~300 | **Completed** (via Master) |
+| W6.2 | Exit G22 Quality Gates | Metric preservation, hash compare | ~250 | **Completed** (via Master) |
+| W6.3 | Exit G22 Verbatim Integrity | Hash-based proof for education, certifications, early career | ~250 | **Completed** (via Master) |
+| W7.1 | C0 Evidence Scoping | `c0_binding.py` per-section profiles | ~300 | **Completed** (via Master) |
+| W7.2 | Retrieved Content Trust | Injection risk detection | ~300 | **Completed** (via Master) |
+| W8.1 | Identity & Isolation | `u0_binding.py` caller/session binding | ~200 | **Completed** (via Master) |
+| W8.2 | Budget & L6 Firewall | Token/cost caps, learning-only mode | ~200 | **Completed** (via Master) |
+| W8.3 | Inert Writeback Envelope | `AppsRgInertWritebackCandidate` with X3C/UWG requirements | ~200 | **Completed** (via Master) |
 | W9.1 | Judge Surface Inventory | `engines/judges/`, `integrations/gates/`, config files | ~400 | Not Started |
 | W9.2 | Judge Consolidation Decision | Migrate/wrap/replace analysis | ~400 | Not Started |
 | W10.1 | SUPERSEDED | No extension of l6_shadow_learning.py RuntimeExhaustBundle — canonical handoff owned by Master Phase 12 | ~0 | Superseded |
