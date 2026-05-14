@@ -1,11 +1,28 @@
+# apps_rg Prompt Assembly Bill of Materials (BOM)
+# Schema: 8-slot PA authority model per ADR-023 and AG-RGGOV-6
+# Ownership: apps_rg owns this BOM; agentic_core must never modify.
+
 schema_version: "1.0"
-app: apps_rg
-bom_id: apps_rg_prompt_bom_v1
-owner: apps_rg.prompt_assembly
-purpose: >
-  Defines canonical Prompt Assembly slots for governed resume generation,
-  resume tailoring, resume enhancement, fact checking, unsupported claim omission,
-  bullet diversity repair, and DOCX artifact manifest generation.
+bom_id: "bom::apps_rg::resume_generation::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+# =============================================================================
+# 8-Slot Authority Model
+# =============================================================================
+# S0: SYSTEM_AUTHORITY — Immutable governance, no-fabrication oath
+# D0: BINDING_AUTHORITY — Security fences, injection boundaries  
+# I0: GOVERNED_AUTHORITY — App-owned domain instructions
+# E0: EXAMPLE_AUTHORITY — Few-shot approved examples
+# C0: INFORMATIONAL_AUTHORITY — Retrieved evidence (candidate facts, JD data)
+# M0: PROVIDER_RENDER_CONTROL — Model/provider selection, token budgets
+# U0: ZERO_AUTHORITY — Neutralized user task (target company/role/level)
+# H0: REPAIR_HINTS — Bounded healing guidance
+# R0: SCHEMA_AUTHORITY — Output format contract
+# Y0: STYLE_AUTHORITY — Synthesis preferences, tone, forbidden phrases
+
 required_slots:
   - S0
   - I0
@@ -15,53 +32,103 @@ required_slots:
   - E0
   - Y0
   - R0
-slot_definitions:
+
+optional_slots:
+  - H0
+  - M0
+
+# =============================================================================
+# Slot Definitions
+# =============================================================================
+slots:
   S0:
-    name: system_and_governance
-    authority: system_governance
+    slot_id: S0
+    slot_name: S0_SYSTEM_PREAMBLE
+    authority_class: SYSTEM_AUTHORITY
+    description: Immutable governance including no-fabrication oath
     required: true
-    description: Governing spine, safety, authority, no-fabrication, and execution-boundary instructions.
-  I0:
-    name: resume_generation_rules
-    authority: app_instruction
-    required: true
-    description: apps_rg resume writing, tailoring, evidence, and claim-use rules.
-  C0:
-    name: verified_resume_context
-    authority: data_only
-    required: true
-    description: Preloaded JD, master resume, company brief, claim-source map, and local evidence contract.
-  U0:
-    name: user_resume_request
-    authority: user_intent_only
-    required: true
-    description: User request, target role, target company, and selected resume generation mode.
+    data_boundary: SYSTEM_INTERNAL
+    
   D0:
-    name: origin_and_injection_fences
-    authority: security_boundary
+    slot_id: D0
+    slot_name: D0_ORIGIN_BOUNDARY
+    authority_class: BINDING_AUTHORITY
+    description: Security fences and injection boundaries
     required: true
-    description: Origin labels and instruction/data boundary rules for JD, resume, company brief, prior artifacts, and user text.
+    data_boundary: SECURITY_BOUNDARY
+    fence_markers:
+      opening: "<untrusted_data>"
+      closing: "</untrusted_data>"
+    
+  I0:
+    slot_id: I0
+    slot_name: I0_INSTRUCTIONS
+    authority_class: GOVERNED_AUTHORITY
+    description: App-owned domain instructions for resume generation
+    required: true
+    data_boundary: APP_INSTRUCTION
+    
+  C0:
+    slot_id: C0
+    slot_name: C0_EVIDENCE_DATA
+    authority_class: INFORMATIONAL_AUTHORITY
+    description: Retrieved evidence — candidate facts, JD requirements, company brief
+    required: true
+    data_boundary: VERIFIED_EVIDENCE
+    source_separation_required: true
+    
+  U0:
+    slot_id: U0
+    slot_name: U0_USER_TASK
+    authority_class: ZERO_AUTHORITY
+    description: Neutralized user intent — target company, role, level
+    required: true
+    data_boundary: USER_INTENT_ONLY
+    
   E0:
-    name: approved_examples_optional
-    authority: approved_example_data
-    required: false
-    description: Approved resume examples or prior patterns if freshness and policy compatible.
+    slot_id: E0
+    slot_name: E0_APPROVED_EXAMPLES
+    authority_class: EXAMPLE_AUTHORITY
+    description: Few-shot approved examples (golden resumes)
+    required: true
+    data_boundary: APPROVED_EXAMPLE_DATA
+    
   Y0:
-    name: approved_resume_style_preferences
-    authority: approved_user_style
+    slot_id: Y0
+    slot_name: Y0_STYLE_PREFERENCES
+    authority_class: STYLE_AUTHORITY
+    description: Synthesis preferences, tone, forbidden phrases, power verbs
     required: true
-    description: Resume tone, positioning, and external-writing constraints.
+    data_boundary: APPROVED_USER_STYLE
+    advisory_only: true
+    
   R0:
-    name: output_schema_and_provenance_contract
-    authority: schema_contract
+    slot_id: R0
+    slot_name: R0_RESPONSE_SCHEMA
+    authority_class: SCHEMA_AUTHORITY
+    description: Output format contract with section-level constraints
     required: true
-    description: GeneratedResume schema, claim-source requirements, provenance requirements, and artifact restrictions.
-hash_fields:
-  - schema_version
-  - bom_id
-  - required_slots
-  - slot_definitions
-  - template_registry_refs
+    data_boundary: SCHEMA_CONTRACT
+    
+  H0:
+    slot_id: H0
+    slot_name: H0_HEALING_PROPOSAL
+    authority_class: REPAIR_HINTS
+    description: Bounded healing guidance for E4 HOP stages
+    required: false
+    data_boundary: INTERNAL_POLICY
+    
+  M0:
+    slot_id: M0
+    slot_name: M0_PROVIDER_CONTROL
+    authority_class: PROVIDER_RENDER_CONTROL
+    description: Model/provider selection and token budgets
+    required: false
+    data_boundary: SYSTEM_INTERNAL
+
+# =============================================================================
+# Template Registry References
+# =============================================================================
 template_registry_refs:
   - strategic_tailor_v1
   - tailor_existing_v1
@@ -70,4 +137,43 @@ template_registry_refs:
   - resume_fact_check_v1
   - unsupported_claim_omission_v1
   - bullet_diversity_repair_v1
+  - unify_v1
   - docx_manifest_v1
+
+# =============================================================================
+# Hash Fields for Determinism
+# =============================================================================
+hash_fields:
+  - bom_id
+  - app_id
+  - task_class
+  - version
+  - required_slots
+  - slot_authority_ordering
+
+# =============================================================================
+# Origin Label Map (Slot → Origin Classification)
+# =============================================================================
+origin_label_map:
+  S0: system_governance
+  D0: security_boundary
+  I0: app_instruction
+  C0: data_only
+  U0: user_intent_only
+  E0: approved_example_data
+  Y0: approved_user_style
+  R0: schema_contract
+  H0: internal_policy
+  M0: system_internal
+
+# =============================================================================
+# Compilation Constraints
+# =============================================================================
+compilation_constraints:
+  max_total_tokens: 4000
+  max_prompt_tokens: 3800
+  max_response_tokens: 200
+  require_slot_fencing: true
+  require_origin_labels: true
+  require_source_separation_in_c0: true
+  require_no_fabrication_oath_in_s0: true

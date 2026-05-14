@@ -1,7 +1,2 @@
-"""apps_rg runtime package.
-
-Contains app-owned runtime dispatch and entrypoint logic.
-"""
+"""apps_rg runtime subpackage."""
 from __future__ import annotations
-
-__all__ = []

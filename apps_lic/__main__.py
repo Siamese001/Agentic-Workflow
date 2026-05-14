@@ -398,36 +398,44 @@ def main() -> int:
         _interactive_wizard(args)
 
     raw_request = _build_raw_request(args)
-    
+
+    # Bundle C migration BLOCKED for apps_lic:
+    # apps_lic_u0_adapt expects raw apps_lic ingress JSON (transport/campaign/
+    # forbidden_send_modes structure), but _run_profile_stages passes a RequestEnvelope.
+    # An adapter shim or a U0 binding that bridges RequestEnvelope → apps_lic_u0_adapt
+    # is required before apps_lic can use AppRuntimeProfile.
+    # Profile builder registered (apps_lic/runtime/profile_builder.py) with real
+    # bindings wired, but U0 signature mismatch blocks valid-payload execution.
+    # Tracked blocker: Bundle-C-apps_lic-u0-signature-mismatch.
+    #
     # Run through canonical R4 pipeline — core resolves L2 recipe internally
     try:
         from agentic_core.runtime.entrypoints.integrated_r4_lic_pipeline_run import (
             run_integrated_r4_lic_pipeline,
             LicR4RunResult,
         )
-        
+
         artifact_dir = Path(args.artifact_dir) if args.artifact_dir else None
-        
+
         result: LicR4RunResult = run_integrated_r4_lic_pipeline(
             raw_request=raw_request,
-            app_name="apps_lic",  # Core resolves L2 recipe internally
+            app_name="apps_lic",
             artifact_dir=artifact_dir,
         )
-        
+
         _log.info(
             "[apps_lic] Run complete: run_id=%s x3_disposition=%s terminal_r5=%s",
             result.run_id,
             result.x3_disposition,
             result.terminal_r5,
         )
-        
+
         if result.terminal_r5:
             return 1
         return 0
-        
+
     except Exception as exc:
         _log.error("[apps_lic] Pipeline execution failed: %s", exc)
-        # Unexpected errors also go through Exit V6
         _emit_r5_terminal_via_exit(
             reason_code="PIPELINE_EXECUTION_FAILED",
             detail=str(exc),

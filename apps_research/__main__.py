@@ -236,17 +236,18 @@ def _maybe_run_exit_hook(fec: dict | None) -> None:
 
 
 def _run_spine_dispatch(argv: list[str]) -> int:
-    """Run apps_research via the agentic_core spine dispatch (AG-9 path).
+    """Run apps_research via the AppRuntimeProfile spine path (Bundle C).
 
     Parses --target-company, --target-role, --depth from argv.
     Supports --dry-run (sets APPS_RESEARCH_L2_FORCE_STUB=1).
+    No dispatch callable — AppIngressRunner owns stage sequencing.
     """
     import argparse
     import os
 
     parser = argparse.ArgumentParser(
         prog="python -m apps_research --spine",
-        description="apps_research via agentic_core spine dispatch",
+        description="apps_research via agentic_core spine (profile path)",
     )
     parser.add_argument("--target-company", default=None)
     parser.add_argument("--target-role", default=None)
@@ -261,10 +262,9 @@ def _run_spine_dispatch(argv: list[str]) -> int:
         _log.info("[apps_research] DRY RUN — L2 stub fallback enabled")
         sys.stdout.write("DRY RUN\n")
 
-    from apps_research.runtime.entry.dispatch import (  # noqa: PLC0415
-        apps_research_parse,
-        apps_research_dispatch,
-    )
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
+    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired  # noqa: PLC0415
+    from apps_research.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
 
     payload: dict = {
         "target_company": args.target_company,
@@ -272,20 +272,22 @@ def _run_spine_dispatch(argv: list[str]) -> int:
         "depth": args.depth,
         "manual_brief_path": args.manual_brief_path,
     }
-    envelope = apps_research_parse(payload)
-    if envelope is None:
-        _log.error("[apps_research spine] Could not build request envelope — "
-                   "provide --target-company")
+
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
+    result = runner.run(payload)
+
+    if isinstance(result, ClarificationRequired):
+        _log.error("[apps_research spine] ClarificationRequired: %s", result.reason)
         return 1
 
-    disposition = apps_research_dispatch(envelope)
     _log.info(
         "[apps_research spine] exit_status=%s outcome_authorized=%s artifact=%s",
-        disposition.exit_status,
-        disposition.outcome_authorized,
-        disposition.output_artifact_path,
+        getattr(result, "exit_status", "unknown"),
+        getattr(result, "outcome_authorized", False),
+        getattr(result, "output_artifact_path", None),
     )
-    return 0 if disposition.exit_status == "success" else 1
+    return 0 if getattr(result, "exit_status", "") == "success" else 1
 
 
 def main() -> int:

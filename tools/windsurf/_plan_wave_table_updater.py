@@ -76,12 +76,12 @@ _ROW_RE = re.compile(
     re.MULTILINE,
 )
 
-# Phase-level summary table row: first cell is Phase ID like W<N>, W<N>.P<M>, W<N>.5
-# Captures: phase_id (e.g., W1, W1.P1, W5.P8, W10.P12) and status cell
+# Phase-level summary table row: first cell is Phase ID like W<N>, W<N>.P<M>, W<N>.5, S<N>, S<N>.5
+# Captures: phase_id (e.g., W1, W1.P1, W5.P8, S0, S0.5, S1) and status cell
 _PHASE_ROW_RE = re.compile(
     r"^(?P<row_prefix>"
     r"\|\s*"
-    r"(?P<phase_id>W\d+(?:\.\d+)?(?:\.P\d+)?)"
+    r"(?P<phase_id>[WS]\d+(?:\.\d+)?(?:\.P\d+)?)"
     r"\s*"
     r"(?:\|[^|\n]*){1,4}"
     r"\|\s*)"
@@ -318,10 +318,43 @@ def _update_inline_fields_in_plan(
 
 
 def _find_plan_file(repo_root: Path, slug: str) -> Path | None:
-    """Resolve slug -> .windsurf/plans/<slug>.md. Return None if not found."""
-    candidate = repo_root / ".windsurf" / "plans" / f"{slug}.md"
+    """Resolve slug -> plan .md file. Return None if not found.
+
+    Resolution order:
+    1. Exact match: .windsurf/plans/<slug>.md
+    2. Numeric-prefix match: .windsurf/plans/NN_<slug>.md (e.g. 01_<slug>.md)
+    3. Frontmatter scan: any .windsurf/plans/*.md whose ``plan_id:`` value
+       matches slug (exact) or whose filename stem (strip numeric prefix) matches.
+    """
+    plans_dir = repo_root / ".windsurf" / "plans"
+
+    # 1. Exact match
+    candidate = plans_dir / f"{slug}.md"
     if candidate.is_file():
         return candidate
+
+    # 2. Numeric-prefix scan (NN_<slug>.md or NN-<slug>.md)
+    import glob as _glob
+    for path in sorted(plans_dir.glob("*.md")):
+        stem = path.stem
+        # Strip leading digits + separator (e.g. "01_", "02-")
+        bare = re.sub(r"^\d+[_-]", "", stem)
+        if bare == slug:
+            return path
+
+    # 3. Frontmatter plan_id: <slug> scan (handles slugs without 6-hex suffix)
+    _PLAN_ID_RE = re.compile(r"^plan_id:\s*(\S+)", re.MULTILINE)
+    for path in sorted(plans_dir.glob("*.md")):
+        if path.name.startswith("_"):  # skip archive/orphan subdirs
+            continue
+        try:
+            head = path.read_text(encoding="utf-8", errors="ignore")[:1024]
+        except OSError:
+            continue
+        m = _PLAN_ID_RE.search(head)
+        if m and m.group(1).strip() == slug:
+            return path
+
     return None
 
 
@@ -574,3 +607,143 @@ def _update_phase_in_plan(
     return True, (
         f"updated {table_changed_count} table row(s) phase={phase} kind={kind}; {inline_msg}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Note-column update (Tests Added / Files Changed from WAVE_COMPLETE note=)
+# ---------------------------------------------------------------------------
+
+_TESTS_RE = re.compile(r"\+(\d+)\s*tests?", re.IGNORECASE)
+_FILES_RE = re.compile(r"(\d+)\s*files?\s*(?:changed|modified)?", re.IGNORECASE)
+_NUMERIC_RE = re.compile(r"^\d+$")
+
+# Placeholder values that should be filled/overwritten unconditionally.
+_EMPTY_PLACEHOLDERS = frozenset({"—", "-", "", "—"})
+
+# Matches a wave table row that has AT LEAST 5 pipe-delimited columns.
+# Format expected: | W<N> | Focus | Status | Tests Added | Files Changed |
+_NOTE_ROW_RE = re.compile(
+    r"^(?P<start>\|\s*\*{0,2}(?P<wave_label>W\d+(?:[A-Za-z])?(?:\.\d+)?)\*{0,2}\s*"
+    r"(?:\|[^|\n]*)?"  # Focus column (optional, may be empty)
+    r"\|[^|\n]*"       # Status column
+    r"\|)\s*(?P<tests>[^|\n]*?)\s*(?P<mid>\|)\s*(?P<files>[^|\n]*?)\s*(?P<tail>\|[^\n]*)",
+    re.MULTILINE,
+)
+
+
+def _resolve_note_cell(
+    new_val: str | None,
+    cur_val: str,
+    col_name: str,
+    warnings: list[str],
+) -> str:
+    """Decide what to write into a note column cell.
+
+    Rules:
+    1. No new value supplied by marker → keep cur_val unchanged.
+    2. cur_val is a placeholder (empty / "—" / "-") → overwrite with new_val.
+    3. cur_val is purely numeric → overwrite with new_val (marker explicitly supplies).
+    4. cur_val is nonnumeric manual text → keep cur_val unchanged, append warning.
+    """
+    if new_val is None:
+        return cur_val
+    if cur_val in _EMPTY_PLACEHOLDERS:
+        return new_val
+    if _NUMERIC_RE.match(cur_val):
+        return new_val
+    # nonnumeric manual text — preserve, warn
+    warnings.append(
+        f"[wave_lifecycle_capture] note-column WARN: {col_name} cell has "
+        f"nonnumeric manual text {cur_val!r}; keeping as-is (new={new_val!r})"
+    )
+    return cur_val
+
+
+def update_wave_note_columns(
+    repo_root: Path,
+    slug: str,
+    wave: int,
+    note: str,
+) -> tuple[bool, str]:
+    """Update Tests Added / Files Changed columns in the wave table row from note text.
+
+    Parses the note string for patterns like:
+        "+8 tests, 3 files"   -> tests_added=8, files_changed=3
+        "+12 tests"           -> tests_added=12 (files_changed unchanged)
+        "3 files changed"     -> files_changed=3 (tests_added unchanged)
+
+    Overwrite rules for each cell:
+    - Placeholder ("—", "-", "")  → always fill.
+    - Numeric string              → overwrite with new explicit value.
+    - Nonnumeric manual text      → preserve unchanged, emit stderr WARN.
+
+    If note contains no parseable counts, returns ok=True with a no-op message.
+    Never raises. Fail-open.
+    """
+    if os.environ.get("WAVE_TABLE_UPDATE_BYPASS") == "1":
+        return True, "bypassed"
+
+    if not note:
+        return True, "no note — nothing to parse"
+
+    tests_m = _TESTS_RE.search(note)
+    files_m = _FILES_RE.search(note)
+
+    if not tests_m and not files_m:
+        return True, f"no test/file counts found in note={note!r}"
+
+    tests_val = tests_m.group(1) if tests_m else None
+    files_val = files_m.group(1) if files_m else None
+
+    plan_file = _find_plan_file(repo_root, slug)
+    if plan_file is None:
+        return False, f"plan file not found for slug={slug}"
+
+    try:
+        original = plan_file.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, f"read failed: {exc}"
+
+    lines = original.splitlines(keepends=True)
+    changed_count = 0
+    new_lines: list[str] = []
+    all_warnings: list[str] = []
+
+    for line in lines:
+        stripped = line.rstrip("\n").rstrip("\r")
+        m = _NOTE_ROW_RE.match(stripped)
+        if m and _wave_label_matches(m.group("wave_label"), wave):
+            cur_tests = m.group("tests").strip()
+            cur_files = m.group("files").strip()
+            cell_warnings: list[str] = []
+            new_tests = _resolve_note_cell(tests_val, cur_tests, "Tests Added", cell_warnings)
+            new_files = _resolve_note_cell(files_val, cur_files, "Files Changed", cell_warnings)
+            all_warnings.extend(cell_warnings)
+            if new_tests != cur_tests or new_files != cur_files:
+                new_stripped = (
+                    m.group("start")
+                    + " " + new_tests + " "
+                    + m.group("mid")
+                    + " " + new_files + " "
+                    + m.group("tail")
+                )
+                eol = line[len(stripped):]
+                new_lines.append(new_stripped + eol)
+                changed_count += 1
+                continue
+        new_lines.append(line)
+
+    # Emit collected warnings to stderr
+    for w in all_warnings:
+        print(w, file=sys.stderr)
+
+    if changed_count == 0:
+        return True, f"no note-column rows updated for wave={wave}"
+
+    new_content = _refresh_last_updated("".join(new_lines))
+    try:
+        plan_file.write_text(new_content, encoding="utf-8")
+    except OSError as exc:
+        return False, f"write failed: {exc}"
+
+    return True, f"updated note columns for wave={wave}: tests={tests_val} files={files_val}"

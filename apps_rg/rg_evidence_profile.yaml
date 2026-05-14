@@ -1,0 +1,345 @@
+# apps_rg Evidence Profile — Extraction and Verification Rules
+# Purpose: Evidence extraction patterns and C0 slot population rules
+# Authority: EVIDENCE_DATA (C0 slot)
+# Ownership: apps_rg owns this profile; agentic_core must never reference it.
+
+schema_version: "1.0"
+profile_id: "prof::apps_rg::evidence::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+profile_metadata:
+  advisory_only: true
+  description: "Evidence extraction rules and C0 evidence slot population guidance"
+  last_updated: "2026-05-14"
+
+# =============================================================================
+# Extraction Rules — Pattern-Based Evidence Recognition
+# =============================================================================
+extraction_rules:
+  # ---------------------------------------------------------------------------
+  # Metric Patterns (Currency, Percentages, Numbers)
+  # ---------------------------------------------------------------------------
+  metrics_patterns:
+    currency:
+      pattern: '\$[\d,]+(?:\.\d{2})?(?:\s*[KMB])?'
+      examples:
+        - "$1.2M"
+        - "$50K"
+        - "$5,000"
+      units: [USD, implicit]
+      
+    percentages:
+      pattern: '\d{1,3}%(?:\s*(?:increase|decrease|improvement|reduction))?'
+      examples:
+        - "40%"
+        - "40% reduction"
+        - "increased by 30%"
+      requires_baseline: preferred
+      
+    counts:
+      pattern: '\d+(?:,\d{3})*(?:\s*(?:users|customers|requests|transactions|nodes))?'
+      examples:
+        - "50,000 users"
+        - "1M requests/day"
+        - "12 team members"
+      scale_context: required
+      
+    time_durations:
+      pattern: '(\d+)\s*(ms|s|sec|min|hr|hour|day|week|month|year)'
+      examples:
+        - "200ms"
+        - "5 minutes"
+        - "2 weeks"
+      normalized_unit: preferred
+      
+  # ---------------------------------------------------------------------------
+  # Date Patterns
+  # ---------------------------------------------------------------------------
+  date_patterns:
+    employment_periods:
+      - pattern: '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s*[-–—]\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?\s*\d{4}|Present|Current'
+      - pattern: '\d{1,2}/\d{4}\s*[-–—]\s*\d{1,2}/\d{4}|Present|Current'
+      - pattern: '\d{4}\s*[-–—]\s*\d{4}|Present|Current'
+      
+    graduation_dates:
+      - pattern: '(Class of\s+)?\d{4}'
+      
+    project_dates:
+      - pattern: '\d{4}(?:\s*[-–—]\s*(?:\d{4}|Present|Ongoing))?'
+      
+  # ---------------------------------------------------------------------------
+  # Employment Pattern Recognition
+  # ---------------------------------------------------------------------------
+  employment_patterns:
+    title_indicators:
+      - "Engineer"
+      - "Developer"
+      - "Manager"
+      - "Director"
+      - "VP"
+      - "CTO"
+      - "CEO"
+      - "Lead"
+      - "Architect"
+      - "Analyst"
+      - "Designer"
+      - "Consultant"
+      
+    company_indicators:
+      - Inc
+      - LLC
+      - Corp
+      - Corporation
+      - Company
+      - Co.
+      - Ltd
+      - Limited
+      - GmbH
+      - AG
+      - ".com"
+      
+    location_indicators:
+      - ", NY"
+      - ", CA"
+      - ", TX"
+      - "Remote"
+      - "San Francisco"
+      - "New York"
+      - "Seattle"
+
+  # ---------------------------------------------------------------------------
+  # Skill/Tech Pattern Recognition
+  # ---------------------------------------------------------------------------
+  tech_patterns:
+    programming_languages:
+      - Python
+      - JavaScript
+      - TypeScript
+      - Java
+      - Go
+      - Rust
+      - C\+\+
+      - C#
+      - Ruby
+      - PHP
+      - Swift
+      - Kotlin
+      - Scala
+      - R
+      - MATLAB
+      
+    frameworks:
+      - React
+      - Angular
+      - Vue
+      - Django
+      - Flask
+      - FastAPI
+      - Spring
+      - Rails
+      - Express
+      - Next\.js
+      - TensorFlow
+      - PyTorch
+      
+    cloud_platforms:
+      - AWS
+      - GCP
+      - Azure
+      - Heroku
+      - Vercel
+      - DigitalOcean
+      
+    databases:
+      - PostgreSQL
+      - MySQL
+      - MongoDB
+      - Redis
+      - Cassandra
+      - DynamoDB
+      - BigQuery
+      - Snowflake
+
+# =============================================================================
+# Content Constraints — What Counts as Evidence
+# =============================================================================
+content_constraints:
+  # ---------------------------------------------------------------------------
+  # Supported vs Unsupported Claims
+  # ---------------------------------------------------------------------------
+  supported_claim_types:
+    - explicit_employment  # Named employer, title, dates
+    - quantified_metric  # Number with context
+    - named_project  # Project name with deliverable
+    - certified_skill  # Skill with demonstration
+    - verified_education  # Institution, degree, date
+    
+  unsupported_claim_indicators:
+    - vague_action_without_scope  # "improved things"
+    - metric_without_context  # "40%" without what
+    - skill_without_demonstration  # Technology name only
+    - implied_responsibility  # "involved in" without role
+    
+  # ---------------------------------------------------------------------------
+  # Quality Thresholds
+  # ---------------------------------------------------------------------------
+  quality_thresholds:
+    min_quality_target: 0.70
+    pass_gate_threshold: 0.80
+    threshold_semantics: target_gate
+    
+  # ---------------------------------------------------------------------------
+  # Duplicate Detection
+  # ---------------------------------------------------------------------------
+  duplicate_detection:
+    enabled: true
+    similarity_threshold: 0.85
+    duplicate_similarity_target: 0.85
+    advisory_semantics: true
+
+# =============================================================================
+# Scoring Dimensions (Advisory Weights)
+# =============================================================================
+scoring_dimensions:
+  advisory_weighting: true
+  
+  dimensions:
+    factual_grounding:
+      weight: 0.30
+      description: "Claims supported by evidence"
+      
+    role_alignment:
+      weight: 0.20
+      description: "Experience matches target role level"
+      
+    specificity:
+      weight: 0.15
+      description: "Concrete details vs vague language"
+      
+    metric_density:
+      weight: 0.15
+      description: "Quantified outcomes per section"
+      
+    concision:
+      weight: 0.10
+      description: "Information density, no fluff"
+      
+    format_compliance:
+      weight: 0.10
+      description: "Adherence to R0 schema"
+
+# =============================================================================
+# Freshness Profile — Evidence Age Limits
+# =============================================================================
+freshness_profile:
+  max_age_hours:
+    candidate_profile: 168  # 7 days
+    project_evidence: 168
+    approved_examples: 720  # 30 days
+    rubrics: 720
+    governance_docs: 720
+    receipts: 168
+
+# =============================================================================
+# Citation Requirements
+# =============================================================================
+citation_requirement:
+  required: true
+  
+  citation_format: "[source: {fact_id}]"
+  
+  # When citations are required
+  citation_triggers:
+    - metric_claims  # Any quantified statement
+    - employment_facts  # Dates, titles, employers
+    - project_outcomes  # Deliverables, scope
+    - tool_technology  # Tech stack claims
+    
+  # Exceptions (low-sensitivity claims)
+  citation_optional:
+    - implied_skills_from_project  # Inferred from context
+    - standard_practices  # "agile methodology" etc.
+    - soft_skills  # "collaborated with team" (unless specific outcome)
+
+# =============================================================================
+# Contradiction Detection
+# =============================================================================
+contradiction_detection:
+  enabled: true
+  
+  contradiction_types:
+    date_overlap:
+      severity: error
+      description: "Employment periods overlap impossibly"
+      
+    title_inflation:
+      severity: warning
+      description: "Title progression inconsistent with timeline"
+      
+    metric_inconsistency:
+      severity: warning
+      description: "Same metric with different values in different contexts"
+      
+    scope_inflation:
+      severity: warning
+      description: "Scope claims increase without timeline support"
+
+# =============================================================================
+# Source Separation (C0 Slot Population)
+# =============================================================================
+source_separation:
+  required: true
+  
+  sources:
+    candidate_facts:
+      slot_tag: "<candidate_facts>"
+      authority: TRUTH
+      confidence: 1.0
+      description: "Master resume and candidate-provided evidence"
+      
+    jd_requirements:
+      slot_tag: "<jd_requirements>"
+      authority: TARGET_CONTEXT
+      confidence: 1.0
+      description: "Job description requirements — NOT proof of experience"
+      
+    company_brief:
+      slot_tag: "<company_brief>"
+      authority: RESEARCH_CONTEXT
+      confidence: "variable"
+      description: "Company research — advisory context only"
+      
+    alignment_map:
+      slot_tag: "<alignment_map>"
+      authority: L1_PLANNING
+      confidence: 0.8
+      description: "L1 mapping of JD requirements to candidate facts"
+
+# =============================================================================
+# Gap Handling — Missing Evidence
+# =============================================================================
+gap_handling:
+  unsupported_claim_policy:
+    default_action: omit_with_flag
+    
+    actions:
+      omit:
+        description: "Remove claim entirely"
+        use_when: "No supporting evidence"
+        
+      flag_with_gap_marker:
+        description: "Include [Gap: reason] marker"
+        use_when: "Partial evidence exists"
+        
+      request_clarification:
+        description: "Surface gap for user input"
+        use_when: "Interactive mode available"
+        
+    prohibited_actions:
+      - generalize
+      - approximate
+      - infer_from_context
+      - fabricate_to_match

@@ -1,0 +1,131 @@
+{
+  "base_scenario_id": "RC-R1B",
+  "deterministic_digest": "blake2b:3ea028439fba271566f95ddf0b1b5d0d",
+  "evidence_contract_ref": null,
+  "exit_disposition_ref": "blake2b:0b096aca7156565b94c17bb6acc3e556",
+  "fixture_description": "semantic cache terminal route",
+  "fixture_id": "F2",
+  "gate_verdict_refs": [
+    {
+      "gate": "X1",
+      "status": "PASS"
+    }
+  ],
+  "l6_eval_ref": "blake2b:8bcb91f55c1c19a9755c6b61c853178b",
+  "layer_contract_refs": {
+    "ExitReviewPacket": "blake2b:20fff5af5a05be97df8e97f872e63542",
+    "L1PlanContract": "blake2b:dd81c138c67cabb5bb2f0bd3cf1daceb",
+    "RouteContract": "blake2b:471425c1dd19f4dc219321acf22421b0",
+    "RuntimeExhaustBundle": "blake2b:8bcb91f55c1c19a9755c6b61c853178b",
+    "SealedL2Artifact": "blake2b:c3e6e8f2a899d59c1346b7475d4a645e",
+    "ValidatedRequest": "blake2b:e5f5219b37d62a4413acd581595347ef",
+    "X3DispositionReceipt": "blake2b:0b096aca7156565b94c17bb6acc3e556"
+  },
+  "no_bypass_receipt": {
+    "checked_surfaces": [
+      "ExitReviewPacket",
+      "L1PlanContract",
+      "RouteContract",
+      "RuntimeExhaustBundle",
+      "SealedL2Artifact",
+      "ValidatedRequest",
+      "X3DispositionReceipt"
+    ],
+    "prohibited_spans_absent": [
+      "c0.fetch",
+      "prompt_assembly.emit_artifact",
+      "l2.e3.exec",
+      "uwg.commit"
+    ],
+    "proof_status": "PASS",
+    "violations": []
+  },
+  "overlay_payload": {
+    "contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X3DispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "route_id": "R1B_SEMANTIC_CACHE",
+    "scenario_id": "RC-R1B",
+    "span_count": 10
+  },
+  "prompt_envelope_ref": null,
+  "replay_comparison_ref": {
+    "blueprint_hash": "blueprint:fff3faf3",
+    "environment_digest": "env:7e089d19",
+    "evidence_contract_hash": null,
+    "execution_digest": "blake2b:c3e6e8f2a899d59c1346b7475d4a645e",
+    "input_hash": "blake2b:034e26757d3d854079e88618c500e42b",
+    "model_registry_digest": "models:2f3772ec",
+    "normalized_request_hash": "blake2b:de74e687c19f012ea0738ff0b47eee6c",
+    "policy_hash": "policy:d39516da",
+    "prompt_hash": null,
+    "provider_lane": "provider:lane-A",
+    "replay_key": "replay-0721d3f0",
+    "route_digest": "blake2b:f2a585838753476443a64d2ae4571126",
+    "snapshot_manifest": "snapshot:b6868ff6",
+    "tool_registry_digest": "tools:1e4bb59c"
+  },
+  "request_id": "req-894e7ccc",
+  "run_id": "run-5096554c",
+  "sealed_l2_artifact_ref": "blake2b:c3e6e8f2a899d59c1346b7475d4a645e",
+  "span_tree_ref": [
+    {
+      "name": "intake.validate_envelope",
+      "parent_span_id": null,
+      "span_id": "span-fee4cbe2"
+    },
+    {
+      "name": "intake.bind_identity_session",
+      "parent_span_id": "span-fee4cbe2",
+      "span_id": "span-d1db45d1"
+    },
+    {
+      "name": "l1.parse_intent",
+      "parent_span_id": "span-fee4cbe2",
+      "span_id": "span-2d1b1e04"
+    },
+    {
+      "name": "l1.emit_plan_contract",
+      "parent_span_id": "span-2d1b1e04",
+      "span_id": "span-d110e81f"
+    },
+    {
+      "name": "l0.route.select",
+      "parent_span_id": "span-d110e81f",
+      "span_id": "span-1fbe374e"
+    },
+    {
+      "name": "l0.route.emit_contract",
+      "parent_span_id": "span-1fbe374e",
+      "span_id": "span-3fdfd927"
+    },
+    {
+      "name": "exit.normalize",
+      "parent_span_id": "span-3fdfd927",
+      "span_id": "span-bf550d8a"
+    },
+    {
+      "name": "exit.evaluate",
+      "parent_span_id": "span-bf550d8a",
+      "span_id": "span-4504713a"
+    },
+    {
+      "name": "exit.disposition",
+      "parent_span_id": "span-4504713a",
+      "span_id": "span-6f2d2873"
+    },
+    {
+      "name": "l6.ingest",
+      "parent_span_id": "span-6f2d2873",
+      "span_id": "span-b9e5f7cc"
+    }
+  ],
+  "trace_root": "trace-14507399",
+  "uwg_receipt_ref": null
+}

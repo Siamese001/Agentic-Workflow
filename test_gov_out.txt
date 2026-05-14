@@ -1,0 +1,89 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 62 items
+
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory1NoAppSpecificLiteralsInAgenticCore::test_no_apps_rg_impl_in_agentic_core_c0 PASSED [  1%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory1NoAppSpecificLiteralsInAgenticCore::test_no_apps_rg_impl_in_agentic_core_contracts PASSED [  3%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory2AppsRgProfileOwnsRequiredSourceClasses::test_retrieval_requirements_profile_exists PASSED [  4%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory2AppsRgProfileOwnsRequiredSourceClasses::test_profile_declares_required_source_classes PASSED [  6%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory2AppsRgProfileOwnsRequiredSourceClasses::test_required_source_classes_are_strings PASSED [  8%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory2AppsRgProfileOwnsRequiredSourceClasses::test_retrieval_requirements_module_in_apps_rg PASSED [  9%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory3ExtractorZeroAppsRgImports::test_extractor_has_no_apps_rg_imports PASSED [ 11%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory3ExtractorZeroAppsRgImports::test_extractor_documents_zero_apps_imports_invariant PASSED [ 12%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory3ExtractorZeroAppsRgImports::test_c0_package_driven_grounding_no_apps_rg_logic PASSED [ 14%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_exit_binding_exports_blocking_statuses_constant PASSED [ 16%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_exit_binding_exports_evaluate_gates_function PASSED [ 17%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_blocks_on_unknown PASSED [ 19%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_blocks_on_empty PASSED [ 20%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_blocks_on_blocked PASSED [ 22%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_blocks_on_conflicted PASSED [ 24%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_pass_not_blocking PASSED [ 25%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_weak_with_caveats_not_blocking PASSED [ 27%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_evaluate_gates_none_fec_not_blocking PASSED [ 29%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory4ExitRejectsBlockingStatus::test_exit_gate_logic_lives_in_apps_rg_not_agentic_core PASSED [ 30%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_canonical_set_contains_exactly_six_values PASSED [ 32%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_partial_not_in_canonical_set PASSED [ 33%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[PASS] PASSED [ 35%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[WEAK_WITH_CAVEATS] PASSED [ 37%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[CONFLICTED] PASSED [ 38%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[EMPTY] PASSED [ 40%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[BLOCKED] PASSED [ 41%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_preserves_canonical_status[UNKNOWN] PASSED [ 43%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_build_c0_metrics_coerces_partial_to_weak_with_caveats PASSED [ 45%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_c0_metrics_fixture_has_canonical_status PASSED [ 46%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory5CanonicalSupportStatusEnum::test_fec_canonical_constants_match_internal_set PASSED [ 48%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_degrades_outcome_authorized[UNKNOWN] PASSED [ 50%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_degrades_outcome_authorized[EMPTY] PASSED [ 51%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_degrades_outcome_authorized[BLOCKED] PASSED [ 53%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_degrades_outcome_authorized[CONFLICTED] PASSED [ 54%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_pass_status_does_not_degrade PASSED [ 56%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_weak_with_caveats_does_not_degrade PASSED [ 58%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_recorded_in_run_metadata[UNKNOWN] PASSED [ 59%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_recorded_in_run_metadata[EMPTY] PASSED [ 61%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_recorded_in_run_metadata[BLOCKED] PASSED [ 62%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory6BlockingStatusCannotPassExit::test_blocking_status_recorded_in_run_metadata[CONFLICTED] PASSED [ 64%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory7DigestReplayStability::test_same_fec_produces_same_digest PASSED [ 66%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory7DigestReplayStability::test_different_evidence_produces_different_digest PASSED [ 67%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory7DigestReplayStability::test_artifact_written_digest_matches_build_digest PASSED [ 69%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory7DigestReplayStability::test_digest_is_non_empty_sha256_hex PASSED [ 70%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory8NoDirectC0ToL4Write::test_c0_binding_no_durable_write_text PASSED [ 72%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory8NoDirectC0ToL4Write::test_c0_binding_no_direct_os_makedirs PASSED [ 74%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory8NoDirectC0ToL4Write::test_inert_candidate_has_mutation_candidate_inert_true PASSED [ 75%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory8NoDirectC0ToL4Write::test_exit_binding_inert_candidates_not_durable PASSED [ 77%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory9NoL6CurrentRunRescue::test_c0_binding_no_l6_rescue PASSED [ 79%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory9NoL6CurrentRunRescue::test_exit_binding_no_l6_rescue PASSED [ 80%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory9NoL6CurrentRunRescue::test_future_run_promotion_not_imported_in_exit PASSED [ 82%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_rg_w1_retrieval_requirements_profile] PASSED [ 83%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_rg_w2_c0_metrics_extractor] PASSED [ 85%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_rg_w3_c0_metrics_artifact] PASSED [ 87%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_apps_rg_c0_minimum_safety] PASSED [ 88%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_rg_w4_exit_binding] PASSED [ 90%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_prior_wave_test_module_importable[tests._apps_contract.test_rg_w5_briefing_path_proof] PASSED [ 91%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_c0_metrics_writer_module_importable PASSED [ 93%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_briefing_mode_classifier_module_importable PASSED [ 95%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_c0_binding_module_importable PASSED [ 96%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_exit_binding_module_importable PASSED [ 98%]
+tests/_apps_contract/test_rg_retrieval_metrics_governance.py::TestCategory10RegressionGuard::test_retrieval_requirements_module_importable PASSED [100%]
+
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 62 passed, 3 warnings in 0.75s ========================

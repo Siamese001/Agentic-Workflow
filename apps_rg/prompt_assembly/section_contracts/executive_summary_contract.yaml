@@ -1,0 +1,47 @@
+version: "1.0"
+section: executive_summary
+description: >
+  Declarative contract for the executive_summary section.
+  All fields encode prompt-level guidance for the model.
+  No compile-time semantic enforcement — runtime enforcement deferred to W11/Exit.
+
+structure:
+  lead_with_seniority: required
+  lead_clause_note: >
+    Open with seniority/operating identity as first clause.
+    Do NOT open with: Seasoned, Dynamic, Proven, Passionate, Dedicated, Results-driven,
+    Innovative, Accomplished, Visionary, Detail-oriented, Strategic, Forward-thinking.
+
+proof_points:
+  min: 1
+  max: 2
+  source: candidate_facts_only
+  note: >
+    Every proof point must map to a candidate_facts entry.
+    Do NOT draw proof from jd_requirements or company_brief.
+
+length:
+  max_lines: 4
+  max_words: 60
+
+naturalness_guidance_ref: "forbidden_ai_phrases.yaml#generic_openers"
+naturalness_note: >
+  These phrases are declared as discouraged in the prompt — prompt-level guidance,
+  not compile-time blocks.
+
+discouraged_adjectives:
+  - proven
+  - accomplished
+  - seasoned
+  - dynamic
+  - results-driven
+  - passionate
+  - dedicated
+
+pre_output_checklist_required: true
+citation_required: true
+
+jd_mirror_guidance_fraction: 0.20
+jd_mirror_note: >
+  Prompt instructs model to keep JD phrasing below ~20% of sentence content.
+  Not a compile-time gate.

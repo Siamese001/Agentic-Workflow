@@ -354,7 +354,10 @@ class TestUpdatePlanFilesIntegration:
             return True, "ok"
 
         fake_updater = type(
-            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(fake_update)}
+            "FakeUpdater", (), {
+                "update_wave_in_plan": staticmethod(fake_update),
+                "_find_plan_file": staticmethod(lambda repo, slug: None),
+            }
         )
 
         def fake_emit(text, *, dry_run=False):
@@ -407,7 +410,10 @@ class TestUpdatePlanFilesIntegration:
             raise RuntimeError("disk full")
 
         fake_updater = type(
-            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(boom)}
+            "FakeUpdater", (), {
+                "update_wave_in_plan": staticmethod(boom),
+                "_find_plan_file": staticmethod(lambda repo, slug: None),
+            }
         )
 
         def fake_emit(text, *, dry_run=False):
@@ -439,7 +445,10 @@ class TestUpdatePlanFilesIntegration:
             return True, "ok"
 
         fake_updater = type(
-            "FakeUpdater", (), {"update_wave_in_plan": staticmethod(track_update)}
+            "FakeUpdater", (), {
+                "update_wave_in_plan": staticmethod(track_update),
+                "_find_plan_file": staticmethod(lambda repo, slug: None),
+            }
         )
 
         def fake_emit(text, *, dry_run=False):

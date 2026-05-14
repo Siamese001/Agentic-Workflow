@@ -299,11 +299,74 @@ def pa_compose_underwriting(
     }
 
 
+def pa_compose_underwriting_profile(
+    route: Any,
+    l1_plan: Any,
+    fec: Any,
+    validated: ValidatedUnderwritingRequest,
+) -> dict[str, Any]:
+    """Profile-compatible PA wrapper called by AppIngressRunner.
+
+    AppIngressRunner calls pa_fn(route, l1_plan, fec, validated).
+    Adapts to the existing pa_compose_underwriting(validated, decision_packet,
+    final_evidence_contract) signature.
+
+    The UWEvidenceResult carried in `fec` (from c0_run_underwriting) provides
+    the decision_candidate and fec_dict. The compiled prompt dict is extended
+    with a _evidence_result_snapshot so l2_execute_underwriting can read all
+    pipeline state without additional arguments.
+
+    Args:
+        route: UWRoute from L0 binding (provides routing metadata).
+        l1_plan: UWL1Plan from L1 binding (carries validated request).
+        fec: UWEvidenceResult from C0 binding.
+        validated: ValidatedUnderwritingRequest from U0.
+
+    Returns:
+        CompiledPromptArtifact dict extended with _evidence_result_snapshot.
+    """
+    from apps_underwriting_ai.runtime.bindings.c0_binding import UWEvidenceResult  # noqa: PLC0415
+
+    if isinstance(fec, UWEvidenceResult):
+        decision_packet = fec.decision_candidate
+        fec_dict = fec.fec_dict
+    else:
+        decision_packet = {}
+        fec_dict = fec if isinstance(fec, dict) else {}
+
+    compiled = pa_compose_underwriting(
+        validated_request=validated,
+        decision_packet=decision_packet,
+        final_evidence_contract=fec_dict,
+    )
+
+    if isinstance(fec, UWEvidenceResult):
+        compiled["_evidence_result_snapshot"] = {
+            "verdict": fec.verdict,
+            "aggregate_score": fec.aggregate_score,
+            "reason_codes": fec.reason_codes,
+            "dim_scores": fec.dim_scores,
+            "c0_state": fec.c0_state,
+            "support_score": fec.support_score,
+            "contradiction_flags": fec.contradiction_flags,
+            "missing_evidence_flags": fec.missing_evidence_flags,
+            "hitl_posture": fec.hitl_posture,
+            "stage_receipts": fec.stage_receipts,
+            "fec_dict": fec.fec_dict,
+            "decision_candidate": fec.decision_candidate,
+            "run_context": fec.run_context,
+        }
+        compiled["l5_certification_ref"] = fec.l5_certification_ref
+
+    return compiled
+
+
 __all__ = [
     "UW_PA_CERT_REF",
     "UW_PA_TARGET_MODEL",
     "UW_PA_TARGET_PROVIDER",
     "pa_compose_underwriting",
+    "pa_compose_underwriting_profile",
     "_build_system_preamble",
     "_build_user_instruction",
     "_build_evidence_citation_map",

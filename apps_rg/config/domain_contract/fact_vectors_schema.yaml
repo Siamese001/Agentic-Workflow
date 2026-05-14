@@ -1,0 +1,60 @@
+# W2: fact_vectors schema definition
+# Only candidate_profile and project_evidence source classes allowed
+
+schema_version: "1.0"
+collection_name: fact_vectors
+description: Candidate-owned fact embeddings for apps_rg resume_generation
+
+allowed_source_classes:
+  - candidate_profile
+  - project_evidence
+
+rejected_source_classes:
+  - rubrics
+  - governance_docs
+  - approved_examples
+  - receipts
+  - company_research
+  - process_docs
+
+metadata_schema:
+  app:
+    type: string
+    required: true
+    allowed_values: [apps_rg]
+  
+  source_class:
+    type: string
+    required: true
+    allowed_values: [candidate_profile, project_evidence]
+  
+  source_document_id:
+    type: string
+    required: true
+  
+  source_version_hash:
+    type: string
+    required: true
+  
+  ingestion_timestamp:
+    type: string
+    format: iso8601
+    required: true
+  
+  skills_mentioned:
+    type: array
+    item_type: string
+    required: false
+  
+  section_type:
+    type: string
+    required: false
+    allowed_values: [experience, skills, summary, education, projects, certifications, general, project]
+
+embedding:
+  model: sentence-transformers/all-MiniLM-L6-v2
+  dimensions: 384
+  
+chunking:
+  max_tokens: 512
+  overlap_tokens: 50

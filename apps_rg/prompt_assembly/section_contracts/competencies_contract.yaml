@@ -1,0 +1,31 @@
+version: "1.0"
+section: competencies
+description: >
+  Declarative contract for the competencies/skills section.
+  All fields encode prompt-level guidance — not compile-time enforcement.
+
+evidence:
+  evidence_required: candidate_facts_only
+  note: >
+    Every listed competency must be supported by at least one candidate_facts entry.
+    No JD-only terms without a gap marker.
+
+gap_marking:
+  jd_gap_marking: required
+  gap_marker_format: "[Gap: {jd_skill} -- no supporting evidence]"
+  note: >
+    Any JD skill absent from candidate_facts must use the gap marker format above.
+    Never list silently.
+
+ordering:
+  cluster_ordering: jd_priority
+  note: >
+    Reorder skill categories so highest-JD-weight categories appear first.
+    Advisory ordering — not a compile-time reorder gate.
+
+forbidden:
+  - jd_only_skills_unlabeled
+  - keyword_stuffing
+  - unsupported_trendy_terms
+
+naturalness_guidance_ref: "forbidden_ai_phrases.yaml"

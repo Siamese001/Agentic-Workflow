@@ -1,0 +1,57 @@
+# W5: Metadata filter profile
+# Exact metadata filtering for fact_vectors
+
+schema_version: "1.0"
+enabled: true
+
+collection: fact_vectors
+
+filterable_fields:
+  - field_name: employer
+    display_name: Employer
+    query_sources:
+      - jd_payload.target_company
+    match_type: exact_case_insensitive
+    
+  - field_name: title
+    display_name: Job Title
+    query_sources:
+      - jd_payload.target_role
+    match_type: exact_case_insensitive
+    
+  - field_name: certification
+    display_name: Certification
+    query_sources:
+      - jd_payload.required_certifications
+    match_type: exact_case_insensitive
+    
+  - field_name: year
+    display_name: Year/Date Range
+    query_sources:
+      - jd_payload.date_range
+    match_type: range_overlap
+
+rejected_source_classes:
+  - company_research
+  - rubrics
+  - governance_docs
+  - approved_examples
+  - receipts
+  - process_docs
+
+score_separation:
+  dense_score_field: confidence_score
+  metadata_score_field: metadata_match_score
+  combined_score_field: null  # Never merge — keep separate
+  evidence_item_fields:
+    - confidence_score
+    - metadata_match_score
+
+claim_verification:
+  deterministic_only: true
+  supported_claim_types:
+    - employer_match
+    - certification_match
+    - year_in_range
+    - title_match
+  unsupported_downgrade: WEAK_WITH_CAVEATS

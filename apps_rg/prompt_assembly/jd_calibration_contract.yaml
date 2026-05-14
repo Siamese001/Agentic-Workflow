@@ -1,0 +1,46 @@
+version: "1.0"
+description: >
+  JD overfitting calibration guidance. Rationale: industry surveys indicate resumes
+  perceived as JD-mirrored tend to be rejected for low personalization; keyword
+  integration in narrative context is preferred over keyword frequency.
+  All thresholds are declarative model guidance targets, not compile-time gates.
+  enforcement_layer: prompt_declaration — runtime enforcement deferred to W11/Exit.
+
+overfitting_definition: >
+  A resume is JD-overfit when bullet content mirrors JD phrasing verbatim or
+  near-verbatim at high density, OR when keywords appear as disconnected lists
+  rather than embedded in real experience narratives.
+
+thresholds:
+  max_jd_mirror_fraction:
+    value: 0.15
+    description: "Guidance target: keep JD-mirrored phrasing below ~15% of total bullet words"
+    enforcement: prompt_declaration
+    test_use: static fixture annotation and example validation only
+  max_skills_jd_only:
+    value: 0
+    description: "Any JD skill absent from candidate_facts must use gap marker -- never list silently"
+    enforcement: prompt_declaration
+  keyword_integration_required:
+    value: true
+    description: "Guidance: keywords should appear in experience narrative context, not disconnected lists"
+    enforcement: prompt_declaration
+
+calibration_instructions_for_i0: |
+  JD_CALIBRATION_CHECK:
+    DO: Use JD requirements as targeting guidance to SELECT which candidate_facts to foreground
+    DO: Integrate JD-relevant terms naturally within experience narrative sentences
+    DO: Let candidate experience language lead -- do not restate JD requirements as achievements
+    DO NOT: Mirror JD bullet points as candidate achievements
+    DO NOT: Use more than 15% JD-derived phrasing in any section's total word count
+    DO NOT: List JD-required skills the candidate does not have without a gap marker
+    DO NOT: Inflate scope to match JD by removing qualifications or adding implied experience
+    CALIBRATION TEST: Would a recruiter reading both the JD and resume notice the resume reads like
+    the JD rewritten in first person? If yes, revise.
+
+authenticity_signals_to_preserve:
+  - Candidate's actual job titles (do not elevate to match JD title)
+  - Candidate's actual metric values (do not round up to match JD expectations)
+  - Candidate's actual technology names (do not substitute with JD synonyms)
+  - Candidate's actual dates (do not reframe tenure to minimize gaps)
+  - Candidate's actual scope of responsibility (do not expand to match JD scope)

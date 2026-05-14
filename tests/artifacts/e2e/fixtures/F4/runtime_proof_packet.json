@@ -1,0 +1,171 @@
+{
+  "base_scenario_id": "RC-R4",
+  "deterministic_digest": "blake2b:95a658329988855133b85a7e3f8ffd83",
+  "evidence_contract_ref": null,
+  "exit_disposition_ref": "blake2b:5cb7d08f8399557e700dba9746cea28a",
+  "fixture_description": "single action no durable write",
+  "fixture_id": "F4",
+  "gate_verdict_refs": [
+    {
+      "gate": "X1",
+      "status": "PASS"
+    }
+  ],
+  "l6_eval_ref": "blake2b:8de1eb29bd6a298dfe6d476500ae05fb",
+  "layer_contract_refs": {
+    "ExitReviewPacket": "blake2b:02b594f5a4c3e8558bffa715b85e0125",
+    "L1PlanContract": "blake2b:5bec9add1b9a9cde84a23cb10fd79285",
+    "L2ExecutionRequest": "blake2b:efd00db840ddda3fa773ab61613030e6",
+    "PromptEnvelope": "blake2b:ac941d7effd81b48598a036f4a92a84d",
+    "RouteContract": "blake2b:aeb3c884530c2d35729823c1781d2772",
+    "RuntimeExhaustBundle": "blake2b:8de1eb29bd6a298dfe6d476500ae05fb",
+    "SealedL2Artifact": "blake2b:0b63e39a3472e49a5432e03e8809ce37",
+    "ValidatedRequest": "blake2b:45b888aa54702988c26eea9ec643ef98",
+    "X3DispositionReceipt": "blake2b:5cb7d08f8399557e700dba9746cea28a"
+  },
+  "no_bypass_receipt": {
+    "checked_surfaces": [
+      "ExitReviewPacket",
+      "L1PlanContract",
+      "L2ExecutionRequest",
+      "PromptEnvelope",
+      "RouteContract",
+      "RuntimeExhaustBundle",
+      "SealedL2Artifact",
+      "ValidatedRequest",
+      "X3DispositionReceipt"
+    ],
+    "prohibited_spans_absent": [
+      "l3.workflow.build",
+      "l3.step.dispatch",
+      "uwg.commit"
+    ],
+    "proof_status": "PASS",
+    "violations": []
+  },
+  "overlay_payload": {
+    "contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "PromptEnvelope",
+      "L2ExecutionRequest",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X3DispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "route_id": "R4_SINGLE_ACTION",
+    "scenario_id": "RC-R4",
+    "span_count": 17
+  },
+  "prompt_envelope_ref": "blake2b:ac941d7effd81b48598a036f4a92a84d",
+  "replay_comparison_ref": {
+    "blueprint_hash": "blueprint:fff3faf3",
+    "environment_digest": "env:7e089d19",
+    "evidence_contract_hash": null,
+    "execution_digest": "blake2b:0b63e39a3472e49a5432e03e8809ce37",
+    "input_hash": "blake2b:e726398db8a865c78dbd9f11cb1eb13d",
+    "model_registry_digest": "models:2f3772ec",
+    "normalized_request_hash": "blake2b:de74e687c19f012ea0738ff0b47eee6c",
+    "policy_hash": "policy:d39516da",
+    "prompt_hash": "blake2b:d3d7c014a7f0b760f702f616275ac3e6",
+    "provider_lane": "provider:lane-A",
+    "replay_key": "replay-18247ef2",
+    "route_digest": "blake2b:9863229b9f44f90bef16a0fb09582fee",
+    "snapshot_manifest": "snapshot:b6868ff6",
+    "tool_registry_digest": "tools:1e4bb59c"
+  },
+  "request_id": "req-43d4830b",
+  "run_id": "run-c1da88e9",
+  "sealed_l2_artifact_ref": "blake2b:0b63e39a3472e49a5432e03e8809ce37",
+  "span_tree_ref": [
+    {
+      "name": "intake.validate_envelope",
+      "parent_span_id": null,
+      "span_id": "span-6c75a536"
+    },
+    {
+      "name": "intake.bind_identity_session",
+      "parent_span_id": "span-6c75a536",
+      "span_id": "span-89356a00"
+    },
+    {
+      "name": "l1.parse_intent",
+      "parent_span_id": "span-6c75a536",
+      "span_id": "span-3da61be5"
+    },
+    {
+      "name": "l1.emit_plan_contract",
+      "parent_span_id": "span-3da61be5",
+      "span_id": "span-2dffbf19"
+    },
+    {
+      "name": "l0.route.select",
+      "parent_span_id": "span-2dffbf19",
+      "span_id": "span-c337de2c"
+    },
+    {
+      "name": "l0.route.emit_contract",
+      "parent_span_id": "span-c337de2c",
+      "span_id": "span-deb148df"
+    },
+    {
+      "name": "prompt_assembly.load_bom",
+      "parent_span_id": "span-deb148df",
+      "span_id": "span-3f2fa08d"
+    },
+    {
+      "name": "prompt_assembly.compose_slots",
+      "parent_span_id": "span-deb148df",
+      "span_id": "span-b83a906a"
+    },
+    {
+      "name": "prompt_assembly.emit_artifact",
+      "parent_span_id": "span-deb148df",
+      "span_id": "span-a404e7cd"
+    },
+    {
+      "name": "l2.e1.prep",
+      "parent_span_id": "span-a404e7cd",
+      "span_id": "span-900aeff3"
+    },
+    {
+      "name": "l2.e2.valid",
+      "parent_span_id": "span-900aeff3",
+      "span_id": "span-eb4796be"
+    },
+    {
+      "name": "l2.e3.exec",
+      "parent_span_id": "span-eb4796be",
+      "span_id": "span-33529a4b"
+    },
+    {
+      "name": "l2.e5.seal",
+      "parent_span_id": "span-33529a4b",
+      "span_id": "span-4d0d5b6f"
+    },
+    {
+      "name": "exit.normalize",
+      "parent_span_id": "span-4d0d5b6f",
+      "span_id": "span-fe7e078f"
+    },
+    {
+      "name": "exit.evaluate",
+      "parent_span_id": "span-fe7e078f",
+      "span_id": "span-09744e56"
+    },
+    {
+      "name": "exit.disposition",
+      "parent_span_id": "span-09744e56",
+      "span_id": "span-57313bee"
+    },
+    {
+      "name": "l6.ingest",
+      "parent_span_id": "span-57313bee",
+      "span_id": "span-a53c05f7"
+    }
+  ],
+  "trace_root": "trace-a39a6d16",
+  "uwg_receipt_ref": null
+}

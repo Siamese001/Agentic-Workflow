@@ -1,0 +1,356 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "apps_rg Resume Generation Output Schema",
+  "description": "Schema contract for R0 slot resume generation output",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "candidate_name",
+    "target_role",
+    "target_company",
+    "generated_at",
+    "sections",
+    "citations",
+    "gaps",
+    "metadata"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["master_resume_v2.16"],
+      "description": "Schema version for compatibility checking"
+    },
+    "candidate_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Candidate's full name from candidate_facts"
+    },
+    "target_role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Target job role from U0"
+    },
+    "target_company": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Target company from U0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 timestamp of generation"
+    },
+    "sections": {
+      "type": "object",
+      "required": ["summary", "experience", "skills", "education"],
+      "properties": {
+        "summary": {
+          "type": "object",
+          "required": ["text", "word_count"],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 500,
+              "description": "Professional summary text (2-4 lines)"
+            },
+            "word_count": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 60,
+              "description": "Word count for validation"
+            }
+          }
+        },
+        "experience": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "description": "Professional experience roles (chronological)",
+          "items": {
+            "type": "object",
+            "required": ["title", "company", "dates", "bullets"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 2
+              },
+              "company": {
+                "type": "string",
+                "minLength": 2
+              },
+              "location": {
+                "type": "string",
+                "description": "City, State or 'Remote'"
+              },
+              "dates": {
+                "type": "string",
+                "pattern": "^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{4}\\s*[-–—]\\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)?\\s*(\\d{4}|Present|Current)$|^\\d{4}\\s*[-–—]\\s*(\\d{4}|Present|Current)$",
+                "description": "Employment period (e.g., 'Jan 2020 – Mar 2022')"
+              },
+              "bullets": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 5,
+                "description": "Achievement bullets per role",
+                "items": {
+                  "type": "object",
+                  "required": ["text"],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 250,
+                      "description": "Bullet text (one achievement)"
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "description": "Reference to C0 fact_id (optional but preferred)"
+                    },
+                    "has_metric": {
+                      "type": "boolean",
+                      "description": "Whether bullet contains quantified outcome"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "projects": {
+          "type": "array",
+          "maxItems": 3,
+          "description": "Significant projects (optional but recommended)",
+          "items": {
+            "type": "object",
+            "required": ["name", "role"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 2
+              },
+              "role": {
+                "type": "string",
+                "minLength": 2
+              },
+              "dates": {
+                "type": "string",
+                "description": "Project duration (optional)"
+              },
+              "tech_stack": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Technologies used"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 300,
+                "description": "Project outcome description"
+              },
+              "source_id": {
+                "type": "string",
+                "description": "Reference to C0 project_evidence"
+              }
+            }
+          }
+        },
+        "skills": {
+          "type": "object",
+          "required": ["categories"],
+          "properties": {
+            "categories": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "type": "object",
+                "required": ["name", "items"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": ["Languages", "Frameworks", "Cloud & Infrastructure", "Data & ML", "Tools & Platforms", "Databases", "Mobile", "DevOps", "Other"]
+                  },
+                  "items": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "items": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "education": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["degree", "institution"],
+            "properties": {
+              "degree": {
+                "type": "string",
+                "minLength": 2
+              },
+              "major": {
+                "type": "string"
+              },
+              "institution": {
+                "type": "string",
+                "minLength": 2
+              },
+              "location": {
+                "type": "string"
+              },
+              "year": {
+                "type": "string",
+                "pattern": "^\\d{4}$"
+              },
+              "gpa": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 4.0
+              },
+              "relevant_coursework": {
+                "type": "array",
+                "maxItems": 3,
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "certifications": {
+          "type": "array",
+          "description": "Professional certifications (optional)",
+          "items": {
+            "type": "object",
+            "required": ["name", "issuer"],
+            "properties": {
+              "name": { "type": "string" },
+              "issuer": { "type": "string" },
+              "date": { "type": "string" },
+              "expires": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "citations": {
+      "type": "array",
+      "description": "Source citations for material claims",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "section", "claim_text"],
+        "properties": {
+          "fact_id": { "type": "string" },
+          "section": {
+            "type": "string",
+            "enum": ["summary", "experience", "projects", "skills", "education"]
+          },
+          "claim_text": {
+            "type": "string",
+            "description": "The specific claim being cited"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "description": "JD requirements not supported by candidate facts",
+      "items": {
+        "type": "object",
+        "required": ["requirement", "reason"],
+        "properties": {
+          "requirement": { "type": "string" },
+          "reason": {
+            "type": "string",
+            "enum": ["no_evidence", "insufficient_evidence", "skill_not_demonstrated", "experience_level_mismatch"]
+          },
+          "suggested_action": {
+            "type": "string",
+            "enum": ["omit", "user_confirm", "add_evidence"]
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["generation_mode", "template_id", "slot_fingerprints"],
+      "properties": {
+        "generation_mode": {
+          "type": "string",
+          "enum": ["strategic_tailor", "tailor_existing", "generate_scratch", "enhance_current"]
+        },
+        "template_id": { "type": "string" },
+        "template_version": { "type": "string" },
+        "slot_fingerprints": {
+          "type": "object",
+          "description": "Hash of each slot for replay/verification",
+          "properties": {
+            "S0": { "type": "string" },
+            "I0": { "type": "string" },
+            "C0": { "type": "string" },
+            "U0": { "type": "string" },
+            "Y0": { "type": "string" },
+            "R0": { "type": "string" }
+          }
+        },
+        "quality_scores": {
+          "type": "object",
+          "properties": {
+            "factual_grounding": { "type": "number" },
+            "role_alignment": { "type": "number" },
+            "ats_compatibility": { "type": "number" },
+            "metric_density": { "type": "number" }
+          }
+        },
+        "buzzword_count": {
+          "type": "integer",
+          "maximum": 2
+        },
+        "weak_descriptor_count": {
+          "type": "integer"
+        },
+        "metric_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of bullets with metrics"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  
+  "definitions": {
+    "section_constraints": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "min_lines": 2,
+          "max_lines": 4,
+          "max_words": 60,
+          "required_elements": ["years_experience_or_level", "primary_domains", "key_achievement"]
+        },
+        "experience": {
+          "max_roles": 5,
+          "bullets_per_role": { "min": 3, "max": 5 },
+          "metric_percentage_min": 60,
+          "bullet_pattern": "PowerVerb + Action + Metric + Scope"
+        },
+        "projects": {
+          "max_projects": 3,
+          "required_fields": ["name", "role"]
+        },
+        "skills": {
+          "max_total": 25,
+          "max_per_category": 8
+        }
+      }
+    }
+  }
+}

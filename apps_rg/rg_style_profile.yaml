@@ -1,0 +1,315 @@
+# apps_rg Style Profile — Voice, Tone, and Anti-Pattern Rules
+# Purpose: Advisory voice/tone guidance and anti-pattern detection
+# Authority: STYLE_AUTHORITY (Y0 slot)
+# Ownership: apps_rg owns this profile; agentic_core must never reference it.
+
+schema_version: "1.0"
+profile_id: "prof::apps_rg::style::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+profile_metadata:
+  advisory_only: true
+  description: "Voice, tone, and anti-pattern style guidance for resume generation"
+  last_updated: "2026-05-14"
+
+# =============================================================================
+# Voice and Tone
+# =============================================================================
+voice_and_tone:
+  # Primary voice register
+  register: neutral_professional
+  
+  # Tone characteristics
+  tone_guidance: |
+    Professional yet energetic. Emphasize outcomes over responsibilities.
+    Lead with impact, support with scope. Avoid corporate buzzwords.
+    
+  # Tone bounds (per ADR-023 SPEC-001)
+  max_persona_tokens: 600
+  
+  # Forbidden tone elements
+  forbidden_tone_elements:
+    - flattery  # "impressed by your company's mission"
+    - fake_intimacy  # "I feel we'd be a great fit"
+    - mimicry_of_user_phrasing  # Copying user's informal language
+    - inflated_certainty  # "guaranteed to exceed expectations"
+    - decorative_apology  # "unfortunately I don't have..."
+    - hedging_filler  # "I think", "maybe", "possibly"
+    
+  # Tone by seniority
+  tone_by_seniority:
+    executive:
+      register: strategic_authoritative
+      emphasis: business_outcomes
+      voice: third_person_implied
+      
+    senior:
+      register: confident_competent
+      emphasis: system_impact
+      voice: third_person_implied
+      
+    mid:
+      register: professional_capable
+      emphasis: execution_quality
+      voice: third_person_implied
+      
+    junior:
+      register: professional_eager
+      emphasis: growth_potential
+      voice: third_person_implied
+
+# =============================================================================
+# Avoid Patterns — Passive and Weak Language
+# =============================================================================
+avoid:
+  # ---------------------------------------------------------------------------
+  # Passive Phrases (Replace with active voice)
+  # ---------------------------------------------------------------------------
+  passive_phrases:
+    - "was responsible for"
+    - "was tasked with"
+    - "was involved in"
+    - "was asked to"
+    - "was assigned to"
+    - "had responsibility for"
+    - "duties included"
+    - "role entailed"
+    
+  # ---------------------------------------------------------------------------
+  # Weak Descriptors (Count-limited)
+  # ---------------------------------------------------------------------------
+  weak_descriptors:
+    - "some"
+    - "various"
+    - "several"
+    - "many"
+    - "a few"
+    - "numerous"
+    - "multiple"
+    - "different"
+    
+  # ---------------------------------------------------------------------------
+  # Generic Responsibility Phrases
+  # ---------------------------------------------------------------------------
+  generic_responsibility_phrases:
+    - "responsible for"
+    - "duties included"
+    - "accountable for"
+    - "in charge of"
+    - "oversaw"
+    - "handled"
+    - "took care of"
+    - "dealt with"
+    
+  # ---------------------------------------------------------------------------
+  # Collaboration Minimizers
+  # ---------------------------------------------------------------------------
+  collaboration_minimizers:
+    - "helped with"
+    - "assisted with"
+    - "supported"
+    - "aided"
+    - "backed up"
+    - "lent a hand"
+    
+  # ---------------------------------------------------------------------------
+  # Vague Action Phrases
+  # ---------------------------------------------------------------------------
+  vague_action_phrases:
+    - "worked on"
+    - "participated in"
+    - "involved in"
+    - "engaged with"
+    - "contributed to"  # Without specific contribution
+    - "played a role in"
+
+# =============================================================================
+# Prefer Patterns — Strong Alternatives
+# =============================================================================
+prefer:
+  # Strong alternatives to weak phrases
+  alternatives:
+    "responsible for maintaining": "Maintained"
+    "helped implement": "Collaborated to implement"
+    "assisted with deployment": "Supported deployment"
+    "worked on developing": "Developed"
+    "participated in project": "Contributed [specific deliverable] to project"
+    "was involved in migration": "Participated in migration"
+    "duties included coding": "Coded"
+    "handled customer issues": "Resolved customer issues"
+    "managed the team": "Led team of [N]"
+    
+  # Achievement pattern preference
+  achievement_pattern: "[PowerVerb] [Action] [Context] resulting in [Metric] across [Scope]"
+  
+  # Metric-first preference
+  metric_first: true  # "Reduced latency by 40%..." vs "Developed system that reduced..."
+
+# =============================================================================
+# Anti-Patterns — Detect and Eliminate
+# =============================================================================
+anti_patterns:
+  # ---------------------------------------------------------------------------
+  # Generic Professional Descriptors (Zero tolerance in summary)
+  # ---------------------------------------------------------------------------
+  generic_professional_descriptors:
+    pattern_type: ban
+    severity: high
+    phrases:
+      - "Results-driven professional"
+      - "Team player"
+      - "Detail-oriented"
+      - "Hard worker"
+      - "Self-motivated"
+      - "Passionate about technology"
+      - "Love to code"
+      - "Dedicated employee"
+      
+  # ---------------------------------------------------------------------------
+  # Corporate Buzzwords (Max 2 per resume)
+  # ---------------------------------------------------------------------------
+  corporate_buzzwords:
+    pattern_type: limit
+    max_per_resume: 2
+    severity: medium
+    phrases:
+      - "synergy"
+      - "leverage"
+      - "paradigm"
+      - "disruptive"
+      - "innovative"  # Unless specific innovation described
+      - "scalable"  # Unless scale metrics provided
+      - "robust"
+      - "cutting-edge"
+      - "world-class"
+      - "best-in-class"
+      - "thought leader"
+      - "game-changing"
+      
+  # ---------------------------------------------------------------------------
+  # Age/Relevance Markers (Avoid)
+  # ---------------------------------------------------------------------------
+  age_markers:
+    pattern_type: avoid
+    severity: medium
+    phrases:
+      - "X years of experience"  # Let facts speak; don't lead with age
+      - "seasoned professional"
+      - "veteran"
+      - "young and energetic"
+      - "fresh out of college"
+      
+  # ---------------------------------------------------------------------------
+  # Salary/Benefit References (Prohibited)
+  # ---------------------------------------------------------------------------
+  salary_references:
+    pattern_type: ban
+    severity: high
+    phrases:
+      - "seeking $X salary"
+      - "current compensation"
+      - "benefits requirements"
+      - "flexible on salary"
+
+# =============================================================================
+# Section-Specific Style Rules
+# =============================================================================
+section_style:
+  summary:
+    max_lines: 4
+    max_words: 60
+    forbidden:
+      - first_person  # No "I", "my", "me"
+      - generic_descriptors
+      - objective_statement  # "Seeking position..."
+    required:
+      - years_experience_or_level  # Explicit or implied
+      - primary_domains  # 2-3 areas
+      - key_achievement  # At least 1 metric
+      
+  experience:
+    bullet_structure: "Outcome → Action → Scope"
+    max_bullets_per_role: 5
+    min_bullets_per_role: 3
+    metric_percentage_target: 60
+    active_voice_target: 100
+    
+  projects:
+    max_projects: 3
+    required_per_project:
+      - name
+      - your_role
+      - tech_stack
+      - outcome_or_deliverable
+    optional:
+      - challenge_faced
+      - team_size
+      - duration
+      
+  skills:
+    organization: grouped_by_category
+    categories:
+      - Languages
+      - Frameworks
+      - Cloud_Infrastructure
+      - Data_ML  # If applicable
+      - Tools_Platforms
+    ordering: by_relevance_to_jd
+    
+  education:
+    format: "Degree, Major | Institution | Location | Year"
+    optional_elements:
+      - relevant_coursework  # Max 3
+      - gpa  # Only if >3.5 and recent
+      - honors  # Dean's List, etc.
+    prohibited:
+      - high_school  # Unless no higher education
+      - irrelevant_coursework
+
+# =============================================================================
+# Synthesis Preferences
+# =============================================================================
+synthesis:
+  # How to combine multiple facts
+  fact_synthesis:
+    prefer: integrated_bullets  # "Built X and optimized Y" vs separate bullets
+    avoid: bullet_stuffing  # Adding unrelated facts to same bullet
+    
+  # Seniority calibration
+  seniority_language:
+    executive:
+      scope_emphasis: org_scale
+      outcome_emphasis: business_metrics  # revenue, margin, market share
+      
+    senior:
+      scope_emphasis: system_scale
+      outcome_emphasis: technical_metrics  # latency, throughput, reliability
+      
+    mid:
+      scope_emphasis: feature_scope
+      outcome_emphasis: delivery_quality  # on-time, spec adherence
+      
+    junior:
+      scope_emphasis: learning_velocity
+      outcome_emphasis: contribution_quality  # code quality, review feedback
+
+# =============================================================================
+# Output Validation Preferences (Advisory)
+# =============================================================================
+output_validation:
+  readability_target:
+    flesch_kincaid_grade: 12-14  # Professional level
+    avg_sentence_length: 15-20_words
+    
+  density_targets:
+    max_buzzwords_per_100_words: 1
+    max_weak_descriptors_per_section: 1
+    min_power_verbs_per_bullet: 1
+    
+  consistency_checks:
+    verb_tense: consistent_within_section
+    formatting: parallel_structure
+    punctuation: consistent_oxford_comma

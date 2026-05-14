@@ -1076,24 +1076,6 @@
         "replacement_for": []
       },
       {
-        "command": "python .windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
-        "show_output": false,
-        "hook_id": "post_cascade_notion_plan_identity_audit",
-        "lifecycle_stage": "post_cascade_response",
-        "priority": 350,
-        "entrypoint": {
-          "type": "python_script",
-          "path": ".windsurf/scripts/post_cascade_notion_plan_identity_audit.py",
-          "subcommand": null
-        },
-        "blocking_mode": "advisory",
-        "bypass_env_var": "CASCADE_NOTION_PLAN_IDENTITY_AUDIT_BYPASS",
-        "emits_receipt": true,
-        "owner_rule_ref": "notion-plans-taxonomy.md",
-        "replacement_for": []
-      },
-      {
         "command": "python .windsurf/scripts/post_cascade_wave_completion_audit.py",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": false,

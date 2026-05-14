@@ -53,7 +53,12 @@ _FLIPPABLE_TO_IN_PROGRESS: frozenset[str] = frozenset({STATUS_NOT_STARTED, STATU
 # Slug / property name constants
 # ---------------------------------------------------------------------------
 
-SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*-[0-9a-f]{6}$")
+# Canonical slug: ends in exactly 6 hex chars (e.g. foo-bar-abc123)
+# Relaxed slug: any kebab-case alphanum string ≥4 chars (covers master plans,
+# numerically-prefixed plans like 01_apps-rg-..., and plans without hex suffix)
+SLUG_RE = re.compile(
+    r"^[a-z0-9_][a-z0-9_-]{3,}$"
+)
 
 PROP_SLUG = "Slug"
 PROP_STATUS = "Status"

@@ -1,0 +1,132 @@
+version: "1.0"
+section: executive_summary
+description: >
+  Multishot examples for the executive_summary section.
+  All examples are wrapped in XML tags per XML-structured prompt best practice.
+  Positive examples demonstrate recruiter-trust naturalness signals.
+  Negative examples show AI-giveaway markers for contrast.
+  Repair examples show before/after corrections.
+
+examples:
+  - id: exec_summary_pos_001
+    category: positive
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Technology executive with 18 years leading enterprise AI programs across
+      financial services and insurance verticals. Cut cloud spend by $2.1M in
+      FY2023 [source: fact_003]. Delivered 40% ops-efficiency gain via ML
+      pipeline modernization serving 12 business units [source: fact_007].
+    citation_preserved: true
+    annotation: >
+      Leads with role identity + years, no generic opener, 2 candidate_facts
+      proof points with citations, no em dash, varied sentence structure.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_pioneered_orchestrated: true
+      no_corporate_buzzwords: true
+      voice_variation_score: high
+
+  - id: exec_summary_pos_002
+    category: positive
+    section: executive_summary
+    seniority_band: SENIOR
+    xml_wrapped: true
+    before: null
+    after: |
+      Engineering leader with 12 years building distributed systems at scale.
+      Grew platform from 500K to 8M daily active users while maintaining
+      99.97% uptime [source: fact_011]. Built and retained a 45-person
+      engineering org through two acquisitions [source: fact_019].
+    citation_preserved: true
+    annotation: >
+      Concrete scale metrics, org-leadership evidence, natural prose, no
+      discouraged openers, no buzzwords.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_pioneered_orchestrated: true
+      no_corporate_buzzwords: true
+      voice_variation_score: high
+
+  - id: exec_summary_neg_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Seasoned executive -- bringing 18+ years of cross-functional synergies and
+      dynamic leadership to enterprise AI transformations. Passionate about
+      fostering innovation across diverse, high-performing teams.
+    annotation: >
+      VIOLATION: opens with discouraged opener "Seasoned executive", uses double
+      hyphen substituting em dash, "cross-functional synergies" corporate
+      buzzword, "Passionate about" generic opener, no citations, JD keyword
+      mirror, no concrete metrics.
+    ai_giveaway_markers:
+      - generic_opener
+      - corporate_buzzwords
+      - no_citation
+      - keyword_mirror
+    anti_ai_compliance:
+      no_em_dash: false
+      no_pioneered_orchestrated: false
+      no_corporate_buzzwords: false
+      voice_variation_score: low
+
+  - id: exec_summary_neg_002
+    category: negative
+    section: executive_summary
+    seniority_band: SENIOR
+    xml_wrapped: true
+    before: null
+    after: |
+      Results-driven technology leader who is passionate about leveraging
+      synergies to drive meaningful impact across the dynamic landscape of
+      modern enterprise software. Proven track record of delivering value.
+    annotation: >
+      VIOLATION: "Results-driven" generic opener, "passionate about", "leveraging
+      synergies", "dynamic landscape", "drive meaningful impact", "Proven track
+      record" -- all AI-pattern phrases. Zero concrete evidence or citations.
+    ai_giveaway_markers:
+      - generic_opener
+      - corporate_buzzwords
+      - no_citation
+      - no_metrics
+    anti_ai_compliance:
+      no_em_dash: true
+      no_pioneered_orchestrated: false
+      no_corporate_buzzwords: false
+      voice_variation_score: low
+
+  - id: exec_summary_repair_001
+    category: repair
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: |
+      Visionary CTO -- pioneering AI transformation across enterprise clients
+      with a holistic approach to robust solution delivery. Spearheaded
+      cross-functional synergies resulting in paradigm-shifting outcomes.
+    after: |
+      CTO with 14 years building AI platforms for Fortune 500 clients.
+      Delivered $3.8M ARR growth through platform consolidation in 2022
+      [source: fact_004]. Scaled engineering org from 12 to 60 across
+      three acquisitions [source: fact_012].
+    repair_actions:
+      - Removed "Visionary" generic opener
+      - Removed em dash (--) and replaced sentence structure
+      - Replaced "pioneering AI transformation" with concrete role + years
+      - Removed "holistic approach", "robust solution", "cross-functional synergies", "paradigm-shifting"
+      - Added two candidate_facts citations with source IDs
+      - Grounded claims in specific metrics
+    annotation: >
+      Repair converts AI-pattern opener + buzzword density into concrete,
+      cited, natural prose with seniority identity lead.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_pioneered_orchestrated: true
+      no_corporate_buzzwords: true
+      voice_variation_score: high

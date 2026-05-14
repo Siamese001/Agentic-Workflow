@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "apps_rg.c0_metrics.v1",
+  "title": "apps_rg C0 Metrics Artifact",
+  "description": "Schema for the c0_metrics.json artifact produced by apps_rg per run.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "route_id",
+    "retrieval_mode",
+    "briefing_source_type",
+    "company_brief_provenance",
+    "source_class_coverage",
+    "support_status",
+    "support_target_met",
+    "evidence_counts",
+    "retrieval_sources",
+    "excluded_evidence_refs",
+    "blocked_source_refs",
+    "freshness_receipts",
+    "citation_map",
+    "support_score_profile",
+    "final_evidence_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "c0_metrics.v1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "route_id": {
+      "type": "string"
+    },
+    "retrieval_mode": {
+      "type": "string",
+      "enum": ["UPLOADED_BRIEFING", "DELEGATED_APPS_RESEARCH", "NATIVE_C0", "NONE", "UNKNOWN"]
+    },
+    "briefing_source_type": {
+      "type": "string"
+    },
+    "company_brief_provenance": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object"}
+      ]
+    },
+    "source_class_coverage": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"}
+    },
+    "support_status": {
+      "type": "string",
+      "enum": ["PASS", "WEAK_WITH_CAVEATS", "CONFLICTED", "EMPTY", "BLOCKED", "UNKNOWN"]
+    },
+    "support_target_met": {
+      "type": "boolean"
+    },
+    "evidence_counts": {
+      "type": "object",
+      "required": ["total", "excluded", "blocked"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "retrieval_sources": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "excluded_evidence_refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "blocked_source_refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "freshness_receipts": {
+      "type": "array",
+      "items": {}
+    },
+    "citation_map": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "support_score_profile": {
+      "type": "object"
+    },
+    "final_evidence_digest": {
+      "type": "string"
+    },
+    "coercion_warnings": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": true
+}

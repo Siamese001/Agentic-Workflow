@@ -1,0 +1,58 @@
+allowlist_id: apps_rg_runtime_filesystem_write_allowlist
+version: "2026-05-14"
+description: >
+  Categorizes filesystem write patterns found in apps_rg/ by type.
+  The CI gate check_no_direct_filesystem_durable_writes.py uses this allowlist
+  to distinguish forbidden durable runtime writes from sanctioned writes.
+  Any write pattern found outside an allowlisted category is a violation.
+
+categories:
+  sandbox_temp:
+    description: Writes to temp/staging directories — session-scoped, non-L4
+    patterns:
+      - "temp/"
+      - "staging/"
+      - "/tmp/"
+      - "tmpdir"
+      - "TemporaryDirectory"
+      - "tempfile."
+
+  test_fixtures:
+    description: Writes inside test functions/fixtures — not runtime production
+    paths:
+      - "tests/"
+
+  ci_output:
+    description: Writes to CI artifact directories by CI gate scripts
+    paths:
+      - "artifacts/ci/"
+      - "artifacts/windsurf/"
+      - "artifacts/governance/"
+
+  uwg_implementation:
+    description: >
+      Writes in the UWG implementation itself (agentic_core/L4_state/uwg/).
+      apps_rg must NOT import these — this category is for the core's own use.
+    paths:
+      - "agentic_core/L4_state/uwg/"
+
+  docs_plans:
+    description: Writes to documentation and plan files — not runtime production
+    paths:
+      - ".windsurf/plans/"
+      - "docs/"
+      - "artifacts/governance/"
+
+forbidden_runtime_paths:
+  description: >
+    Paths that MUST NOT contain durable write calls (write_text, write_bytes,
+    open with 'w', json.dump to file, pickle.dump, shutil.copy, sqlite3.connect
+    with non-temp paths). Violations are P0.
+  paths:
+    - "apps_rg/runtime/"
+    - "apps_rg/cache/"
+    - "apps_rg/providers/"
+    - "apps_rg/runtime/bindings/"
+    - "apps_rg/runtime/dispatch/"
+    - "apps_rg/runtime/exit/"
+    - "apps_rg/runtime/u0/"

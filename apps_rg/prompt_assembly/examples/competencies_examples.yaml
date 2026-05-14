@@ -1,0 +1,105 @@
+version: "1.0"
+section: competencies
+description: >
+  Multishot examples for the competencies/skills section.
+  Demonstrates correct gap-marking, cluster ordering, and evidence requirement.
+  All examples wrapped in XML tags per XML-structured prompt best practice.
+
+examples:
+  - id: competencies_pos_001
+    category: positive
+    section: competencies
+    xml_wrapped: true
+    before: null
+    after: |
+      AI/ML Engineering: PyTorch, TensorFlow, MLflow, Kubeflow [source: fact_021]
+      Cloud Infrastructure: AWS (EKS, Lambda, S3), Terraform [source: fact_018]
+      Data Engineering: Spark, Kafka, Airflow, dbt [source: fact_019]
+      Leadership: Engineering org 40+ engineers, executive stakeholder mgmt [source: fact_025]
+      [Gap: Databricks -- required by JD, no supporting evidence]
+    annotation: >
+      Clusters ordered by JD priority. Every listed skill grounded in
+      candidate_facts with citations. JD-only skill (Databricks) correctly
+      marked as gap rather than silently omitted or silently included.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true
+
+  - id: competencies_pos_002
+    category: positive
+    section: competencies
+    xml_wrapped: true
+    before: null
+    after: |
+      Technical Leadership: System design, architecture review, roadmap ownership [source: fact_031]
+      Backend Engineering: Python, Go, gRPC, PostgreSQL [source: fact_022]
+      [Gap: Rust -- required by JD, no supporting evidence]
+      [Gap: Real-time systems -- required by JD, limited evidence]
+    annotation: >
+      Multiple gap markers used correctly. Supported skills cited. No JD
+      synonym substitution or inferred skills.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true
+
+  - id: competencies_neg_001
+    category: negative
+    section: competencies
+    xml_wrapped: true
+    before: null
+    after: |
+      AI/ML: Machine Learning, Deep Learning, Neural Networks, LLMs, Generative AI,
+             Transformers, RAG, Vector DBs, Embeddings, Fine-tuning, RLHF
+      Cloud: AWS, Azure, GCP, Kubernetes, Docker, Terraform, Helm
+    annotation: >
+      VIOLATION: Keyword stuffing -- too many unsupported terms listed without
+      candidate_facts evidence. JD-required skills (Databricks, Kubeflow) silently
+      included without evidence. No citations. No gap markers for absent skills.
+    ai_giveaway_markers:
+      - keyword_stuffing
+      - no_citation
+      - jd_only_skills_unlabeled
+
+  - id: competencies_neg_002
+    category: negative
+    section: competencies
+    xml_wrapped: true
+    before: null
+    after: |
+      Core Competencies: Strategic thinking, thought leadership, change management,
+                         stakeholder engagement, cross-functional collaboration,
+                         driving meaningful impact, fostering innovation
+    annotation: >
+      VIOLATION: Pure corporate buzzword list with no concrete skills, no
+      candidate_facts grounding, no citations. "Thought leadership", "stakeholder
+      engagement", "fostering innovation" are AI-signal phrases.
+    ai_giveaway_markers:
+      - corporate_buzzwords
+      - no_citation
+      - no_concrete_skills
+
+  - id: competencies_repair_001
+    category: repair
+    section: competencies
+    xml_wrapped: true
+    before: |
+      Skills: Python, AWS, Leadership, Kubernetes, Terraform, Databricks,
+              Azure Synapse, dbt, Spark, Flink, Iceberg, Delta Lake
+    after: |
+      Data Engineering: Spark, dbt, Kafka [source: fact_019]
+      Cloud: AWS (S3, Glue, EMR), Terraform [source: fact_018]
+      Languages: Python, SQL [source: fact_022]
+      [Gap: Databricks -- required by JD, no candidate_facts entry]
+      [Gap: Azure Synapse -- required by JD, no candidate_facts entry]
+      [Gap: Apache Flink -- required by JD, no candidate_facts entry]
+    repair_actions:
+      - Removed unsupported Databricks, Azure Synapse, Flink, Iceberg, Delta Lake
+      - Grouped remaining skills by cluster
+      - Added source citations to each cluster
+      - Added gap markers for all JD-required skills not in candidate_facts
+    annotation: >
+      Repair removes unsupported JD-derived terms, adds citations, groups
+      by cluster, and correctly marks genuine gaps.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true

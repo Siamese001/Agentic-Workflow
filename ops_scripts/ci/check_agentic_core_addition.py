@@ -904,7 +904,10 @@ def _validate_plan_and_receipt(
         )
         return errors
 
-    receipt_path = REPO_ROOT / receipt_ref
+    # CORE_ADDITION_RECEIPT_PATH lets tests redirect to a temp copy without
+    # touching the canonical governance receipt on disk.
+    _receipt_override = os.environ.get("CORE_ADDITION_RECEIPT_PATH", "").strip()
+    receipt_path = Path(_receipt_override) if _receipt_override else REPO_ROOT / receipt_ref
     if not receipt_path.exists():
         errors.append(f"author_gate_receipt_ref path does not exist: {receipt_ref!r}")
         return errors

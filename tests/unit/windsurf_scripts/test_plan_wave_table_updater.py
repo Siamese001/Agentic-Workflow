@@ -8,10 +8,13 @@ content after calling update_wave_in_plan.
 """
 from __future__ import annotations
 
+import io
 import os
 import re
 import sys
+import textwrap
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -26,8 +29,10 @@ from tools.windsurf._plan_wave_table_updater import (  # noqa: E402
     STATUS_DONE,
     STATUS_IN_PROGRESS,
     STATUS_TODO,
+    _find_plan_file,
     _update_phase_in_plan,
     update_wave_in_plan,
+    update_wave_note_columns,
 )
 
 # ---------------------------------------------------------------------------
@@ -712,3 +717,352 @@ def test_blocked_phase_not_flipped(tmp_path: Path) -> None:
     result = plan_file.read_text(encoding="utf-8")
     # BLOCKED status preserved
     assert "| W1.P1 | Test | file.py | ~600 | ❌ BLOCKED |" in result
+
+
+# ===========================================================================
+# NEW TESTS — plan-update-enforcement-template-fix-e7a3c1
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Slug resolution: no trailing 6-hex suffix
+# ---------------------------------------------------------------------------
+
+SLUG_NO_HEX = "apps-rg-master-governed-runtime-hardening"
+
+
+def test_find_plan_file_exact_match(tmp_path: Path) -> None:
+    """_find_plan_file resolves exact-match slugs (canonical case)."""
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    plan_file = plans_dir / f"{SLUG_NO_HEX}.md"
+    plan_file.write_text("# plan", encoding="utf-8")
+    found = _find_plan_file(tmp_path, SLUG_NO_HEX)
+    assert found == plan_file
+
+
+def test_find_plan_file_no_hex_suffix_exact(tmp_path: Path) -> None:
+    """Slug without trailing 6-char hex suffix resolves if file name matches exactly."""
+    slug = "my-long-plan-name-without-hex"
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    (plans_dir / f"{slug}.md").write_text("# plan", encoding="utf-8")
+    assert _find_plan_file(tmp_path, slug) is not None
+
+
+# ---------------------------------------------------------------------------
+# Slug resolution: numeric-prefixed filename
+# ---------------------------------------------------------------------------
+
+
+def test_find_plan_file_numeric_prefix_underscore(tmp_path: Path) -> None:
+    """01_<slug>.md resolves when slug=<slug> (no numeric prefix)."""
+    slug = "apps-rg-master-governed-runtime-hardening"
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    (plans_dir / f"01_{slug}.md").write_text("# plan", encoding="utf-8")
+    found = _find_plan_file(tmp_path, slug)
+    assert found is not None
+    assert found.name == f"01_{slug}.md"
+
+
+def test_find_plan_file_numeric_prefix_dash(tmp_path: Path) -> None:
+    """02-<slug>.md resolves when slug=<slug>."""
+    slug = "some-plan-abc123"
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    (plans_dir / f"02-{slug}.md").write_text("# plan", encoding="utf-8")
+    found = _find_plan_file(tmp_path, slug)
+    assert found is not None
+    assert found.name == f"02-{slug}.md"
+
+
+# ---------------------------------------------------------------------------
+# Slug resolution: frontmatter plan_id
+# ---------------------------------------------------------------------------
+
+
+def test_find_plan_file_frontmatter_plan_id(tmp_path: Path) -> None:
+    """File with plan_id: <slug> in frontmatter resolves even if filename differs."""
+    slug = "custom-slug-no-hex"
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    content = "---\nplan_id: custom-slug-no-hex\n---\n# plan"
+    (plans_dir / "01_different-filename.md").write_text(content, encoding="utf-8")
+    found = _find_plan_file(tmp_path, slug)
+    assert found is not None
+    assert found.name == "01_different-filename.md"
+
+
+def test_find_plan_file_missing_returns_none(tmp_path: Path) -> None:
+    """Returns None when no plan file can be resolved for the slug."""
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    assert _find_plan_file(tmp_path, "no-such-plan-xyz") is None
+
+
+# ---------------------------------------------------------------------------
+# S-series phase row update
+# ---------------------------------------------------------------------------
+
+SAMPLE_S_SERIES_PHASES = (
+    "---\n"
+    "plan_id: test-plan-aabbcc\n"
+    "last_updated: 2026-05-01T10:00Z\n"
+    "---\n\n"
+    "## Phase Progress\n\n"
+    "| Phase | Title | Status |\n"
+    "|-------|-------|--------|\n"
+    "| S0 | Fast Runtime Path Inventory | 🔲 TODO |\n"
+    "| S0.5 | Cache Safety Guard | 🔲 TODO |\n"
+    "| S1 | Structured Resume Schema | 🔄 IN PROGRESS |\n"
+    "| S9 | Closeout | 🔲 TODO |\n"
+)
+
+
+def test_s_series_phase_complete_flips_todo(tmp_path: Path) -> None:
+    """S0 phase row flips from 🔲 TODO to ✅ DONE via phase_complete."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_S_SERIES_PHASES)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="S0", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| S0 | Fast Runtime Path Inventory | ✅ DONE |" in result
+    assert "| S0.5 | Cache Safety Guard | 🔲 TODO |" in result  # unaffected
+
+
+def test_s_series_decimal_phase_complete(tmp_path: Path) -> None:
+    """S0.5 phase row (decimal suffix) flips to ✅ DONE."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_S_SERIES_PHASES)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="S0.5", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| S0.5 | Cache Safety Guard | ✅ DONE |" in result
+
+
+def test_s_series_in_progress_phase_complete(tmp_path: Path) -> None:
+    """S1 in 🔄 IN PROGRESS flips to ✅ DONE via phase_complete."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_S_SERIES_PHASES)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="S1", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| S1 | Structured Resume Schema | ✅ DONE |" in result
+
+
+def test_s_series_last_phase(tmp_path: Path) -> None:
+    """S9 (high single-digit) resolves and flips correctly."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_S_SERIES_PHASES)
+    ok, msg = _update_phase_in_plan(tmp_path, SLUG, phase="S9", kind="phase_complete")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| S9 | Closeout | ✅ DONE |" in result
+
+
+# ---------------------------------------------------------------------------
+# Note-column: fill empty / dash / em-dash placeholders
+# ---------------------------------------------------------------------------
+
+SAMPLE_NOTE_TABLE = (
+    "---\nplan_id: test-plan-aabbcc\n---\n\n"
+    "## Wave Progress\n\n"
+    "| Wave | Focus | Status | Tests Added | Files Changed |\n"
+    "|------|-------|--------|-------------|---------------|\n"
+    "| W1 | Slug fixes | ✅ DONE | — | — |\n"
+    "| W2 | Template | 🔲 TODO | — | — |\n"
+    "| W3 | Hook | 🔲 TODO | — | — |\n"
+)
+
+
+def test_note_column_fills_em_dash(tmp_path: Path) -> None:
+    """note='+8 tests, 3 files' fills '—' cells in W1 row."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_NOTE_TABLE)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+8 tests, 3 files")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W1 | Slug fixes | ✅ DONE | 8 | 3 |" in result
+    # Other rows untouched
+    assert "| W2 | Template | 🔲 TODO | — | — |" in result
+
+
+def test_note_column_fills_plain_dash(tmp_path: Path) -> None:
+    """Cells containing literal '-' (ASCII dash) are treated as placeholder."""
+    content = SAMPLE_NOTE_TABLE.replace("| W1 | Slug fixes | ✅ DONE | — | — |",
+                                        "| W1 | Slug fixes | ✅ DONE | - | - |")
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+5 tests, 2 files")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W1 | Slug fixes | ✅ DONE | 5 | 2 |" in result
+
+
+def test_note_column_fills_empty_cell(tmp_path: Path) -> None:
+    """Empty cells (whitespace only) are treated as placeholder."""
+    content = SAMPLE_NOTE_TABLE.replace("| W1 | Slug fixes | ✅ DONE | — | — |",
+                                        "| W1 | Slug fixes | ✅ DONE |  |  |")
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+3 tests, 1 file")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "3" in result and "1" in result
+
+
+# ---------------------------------------------------------------------------
+# Note-column: overwrite numeric cells with explicit new value
+# ---------------------------------------------------------------------------
+
+
+def test_note_column_overwrites_existing_numeric(tmp_path: Path) -> None:
+    """If cell already has numeric value, a new explicit marker overwrites it."""
+    content = SAMPLE_NOTE_TABLE.replace("| W1 | Slug fixes | ✅ DONE | — | — |",
+                                        "| W1 | Slug fixes | ✅ DONE | 5 | 3 |")
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+12 tests, 4 files")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    assert "| W1 | Slug fixes | ✅ DONE | 12 | 4 |" in result
+
+
+# ---------------------------------------------------------------------------
+# Note-column: preserve nonnumeric manual text and warn
+# ---------------------------------------------------------------------------
+
+
+def test_note_column_preserves_nonnumeric_manual_text(tmp_path: Path, capsys) -> None:
+    """Nonnumeric manual text ('infra only') is preserved; WARN emitted to stderr."""
+    content = SAMPLE_NOTE_TABLE.replace("| W1 | Slug fixes | ✅ DONE | — | — |",
+                                        "| W1 | Slug fixes | ✅ DONE | infra only | — |")
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+8 tests, 3 files")
+    assert ok, msg
+    result = plan_file.read_text(encoding="utf-8")
+    # nonnumeric text preserved
+    assert "infra only" in result
+    # Files Changed filled (it was —)
+    assert "| W1 | Slug fixes | ✅ DONE | infra only | 3 |" in result
+    # Warning emitted to stderr
+    captured = capsys.readouterr()
+    assert "nonnumeric manual text" in captured.err
+    assert "infra only" in captured.err
+
+
+# ---------------------------------------------------------------------------
+# Note-column: invalid/prose note does not modify cells
+# ---------------------------------------------------------------------------
+
+
+def test_note_column_invalid_prose_leaves_cells_unchanged(tmp_path: Path) -> None:
+    """A note with no parseable +N tests / N files pattern leaves cells unchanged."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_NOTE_TABLE)
+    original = plan_file.read_text(encoding="utf-8")
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="scope=summary-signal")
+    assert ok, msg
+    assert "no test/file counts found" in msg
+    assert plan_file.read_text(encoding="utf-8") == original
+
+
+def test_note_column_empty_note_is_noop(tmp_path: Path) -> None:
+    """Empty note string → no-op, file unchanged."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_NOTE_TABLE)
+    original = plan_file.read_text(encoding="utf-8")
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="")
+    assert ok, msg
+    assert plan_file.read_text(encoding="utf-8") == original
+
+
+# ---------------------------------------------------------------------------
+# Idempotency: same marker run twice
+# ---------------------------------------------------------------------------
+
+
+def test_wave_complete_idempotent(tmp_path: Path) -> None:
+    """Running wave_complete twice on the same wave is idempotent."""
+    plan_file = _make_plan(tmp_path, SAMPLE_WAVE_TABLE)
+    ok1, _ = update_wave_in_plan(tmp_path, SLUG, wave=1, kind="wave_complete")
+    content_after_first = plan_file.read_text(encoding="utf-8")
+    ok2, _ = update_wave_in_plan(tmp_path, SLUG, wave=1, kind="wave_complete")
+    content_after_second = plan_file.read_text(encoding="utf-8")
+    assert ok1 and ok2
+    # Status cell identical after both runs (only last_updated may differ)
+    assert "| W1 | Discovery | Read-only | ✅ DONE |" in content_after_first
+    assert "| W1 | Discovery | Read-only | ✅ DONE |" in content_after_second
+
+
+def test_phase_complete_idempotent(tmp_path: Path) -> None:
+    """Running phase_complete twice on the same phase is idempotent."""
+    content = (
+        "---\nplan_id: test-plan-aabbcc\nlast_updated: 2026-05-01T00:00Z\n---\n\n"
+        "## Phase-Level Summary\n\n"
+        "| Phase ID | Title | Scope | Est. Tokens | Status |\n"
+        "|----------|-------|-------|-------------|--------|\n"
+        "| W2.P3 | Some phase | file.py | ~400 | 🔲 TODO |\n"
+    )
+    plan_file = _make_plan_with_phase_table(tmp_path, content)
+    ok1, _ = _update_phase_in_plan(tmp_path, SLUG, phase="W2.P3", kind="phase_complete")
+    result1 = plan_file.read_text(encoding="utf-8")
+    ok2, _ = _update_phase_in_plan(tmp_path, SLUG, phase="W2.P3", kind="phase_complete")
+    result2 = plan_file.read_text(encoding="utf-8")
+    assert ok1 and ok2
+    assert "| W2.P3 | Some phase | file.py | ~400 | ✅ DONE |" in result1
+    assert "| W2.P3 | Some phase | file.py | ~400 | ✅ DONE |" in result2
+
+
+def test_note_column_idempotent(tmp_path: Path) -> None:
+    """Running update_wave_note_columns twice with same note is idempotent."""
+    plan_file = _make_plan_with_phase_table(tmp_path, SAMPLE_NOTE_TABLE)
+    ok1, _ = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+8 tests, 3 files")
+    result1 = plan_file.read_text(encoding="utf-8")
+    ok2, _ = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+8 tests, 3 files")
+    result2 = plan_file.read_text(encoding="utf-8")
+    assert ok1 and ok2
+    # Both runs produce the same cell values
+    assert "| W1 | Slug fixes | ✅ DONE | 8 | 3 |" in result1
+    assert "| W1 | Slug fixes | ✅ DONE | 8 | 3 |" in result2
+
+
+# ---------------------------------------------------------------------------
+# Unresolvable slug: update_wave_note_columns returns False, not raises
+# ---------------------------------------------------------------------------
+
+
+def test_note_columns_missing_plan_returns_false(tmp_path: Path) -> None:
+    """update_wave_note_columns returns (False, msg) when plan file not found."""
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+5 tests, 2 files")
+    assert ok is False
+    assert "not found" in msg
+
+
+# ---------------------------------------------------------------------------
+# Hook: _warn_unresolvable_slugs emits WARN to stderr and logs event
+# ---------------------------------------------------------------------------
+
+
+def test_warn_unresolvable_slug_emits_stderr(tmp_path: Path, capsys) -> None:
+    """_warn_unresolvable_slugs writes a WARN line to stderr for unknown slugs."""
+    import importlib.util
+    import io
+    import sys
+
+    REPO_ROOT_LOCAL = Path(__file__).resolve().parents[3]
+    hook_path = REPO_ROOT_LOCAL / ".windsurf" / "scripts" / "post_cascade_wave_lifecycle_capture.py"
+    spec = importlib.util.spec_from_file_location("_wlc_warn_test", hook_path)
+    mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+
+    # Build a minimal marker dataclass-like object
+    from tools.notion._wave_lifecycle_helpers import WaveLifecycleMarker
+    marker = WaveLifecycleMarker(kind="wave_complete", slug="no-such-plan-xyz", wave=1)
+
+    # Override REPO_ROOT inside the module to point at tmp_path so no real file is found
+    orig = mod.REPO_ROOT
+    mod.REPO_ROOT = tmp_path
+    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir.mkdir(parents=True)
+    try:
+        mod._warn_unresolvable_slugs([marker])
+    finally:
+        mod.REPO_ROOT = orig
+
+    captured = capsys.readouterr()
+    assert "WARN" in captured.err
+    assert "no-such-plan-xyz" in captured.err
+    assert "wave_complete" in captured.err

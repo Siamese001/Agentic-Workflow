@@ -1,80 +1,289 @@
+# apps_rg Prompt Template Registry
+# Maps flow_routes to template files with slot bindings
+# Ownership: apps_rg owns this registry; agentic_core must never modify.
+
 schema_version: "1.0"
-app: apps_rg
-registry_id: apps_rg_prompt_registry_v1
-owner: apps_rg.prompt_assembly
+registry_id: "reg::apps_rg::resume_generation::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+# =============================================================================
+# E3 Execution Templates (Primary Generation Flows)
+# =============================================================================
 templates:
   strategic_tailor_v1:
-    path: apps_rg/prompt_assembly/templates/strategic_tailor_v1.yaml
-    required_slots: [S0, I0, C0, U0, D0, E0, Y0, R0]
-    output_contract: GeneratedResume
+    template_id: strategic_tailor_v1
+    description: Strategic tailoring for executive/senior roles with deep JD alignment
+    path: templates/strategic_tailor_v1.yaml
+    version: "1.0"
     allowed_stage: E3_EXEC
-    required_for_steps:
-      - hop_4_generate_resume
-    required_for_modes:
-      - strategic_tailor
-
+    section_contract_refs:
+      executive_summary: section_contracts/executive_summary_contract.yaml
+      competencies: section_contracts/competencies_contract.yaml
+      unify: section_contracts/unify_contract.yaml
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - E0
+      - Y0
+      - R0
+    optional_slots:
+      - H0
+      - M0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - summary
+        - experience
+        - projects
+        - skills
+        - education
+    
   tailor_existing_v1:
-    path: apps_rg/prompt_assembly/templates/tailor_existing_v1.yaml
-    required_slots: [S0, I0, C0, U0, D0, E0, Y0, R0]
-    output_contract: GeneratedResume
+    template_id: tailor_existing_v1
+    description: Tailor existing resume for target role with minimal restructuring
+    path: templates/tailor_existing_v1.yaml
+    version: "1.0"
     allowed_stage: E3_EXEC
-    required_for_steps:
-      - hop_4_generate_resume
-    required_for_modes:
-      - tailor_existing
-
+    section_contract_refs:
+      executive_summary: section_contracts/executive_summary_contract.yaml
+      competencies: section_contracts/competencies_contract.yaml
+      unify: section_contracts/unify_contract.yaml
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - Y0
+      - R0
+    optional_slots:
+      - E0
+      - H0
+      - M0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - summary
+        - experience
+        - projects
+        - skills
+        - education
+    
   generate_scratch_v1:
-    path: apps_rg/prompt_assembly/templates/generate_scratch_v1.yaml
-    required_slots: [S0, I0, C0, U0, D0, E0, Y0, R0]
-    output_contract: GeneratedResume
+    template_id: generate_scratch_v1
+    description: Generate resume from raw candidate facts without existing resume structure
+    path: templates/generate_scratch_v1.yaml
+    version: "1.0"
     allowed_stage: E3_EXEC
-    required_for_steps:
-      - hop_4_generate_resume
-    required_for_modes:
-      - generate_scratch
-
+    section_contract_refs:
+      executive_summary: section_contracts/executive_summary_contract.yaml
+      competencies: section_contracts/competencies_contract.yaml
+      unify: section_contracts/unify_contract.yaml
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - E0
+      - Y0
+      - R0
+    optional_slots:
+      - H0
+      - M0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - summary
+        - experience
+        - projects
+        - skills
+        - education
+    
   enhance_current_v1:
-    path: apps_rg/prompt_assembly/templates/enhance_current_v1.yaml
-    required_slots: [S0, I0, C0, U0, D0, E0, Y0, R0]
-    output_contract: GeneratedResume
+    template_id: enhance_current_v1
+    description: Enhance current resume with improved language while preserving structure
+    path: templates/enhance_current_v1.yaml
+    version: "1.0"
     allowed_stage: E3_EXEC
-    required_for_steps:
-      - hop_4_generate_resume
-    required_for_modes:
-      - enhance_current
+    section_contract_refs:
+      executive_summary: section_contracts/executive_summary_contract.yaml
+      competencies: section_contracts/competencies_contract.yaml
+      unify: section_contracts/unify_contract.yaml
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - Y0
+      - R0
+    optional_slots:
+      - E0
+      - H0
+      - M0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - summary
+        - experience
+        - projects
+        - skills
+        - education
 
+  # =============================================================================
+  # E4 Healing Templates (Heal-Stage Prompts)
+  # =============================================================================
   resume_fact_check_v1:
-    path: apps_rg/prompt_assembly/templates/resume_fact_check_v1.yaml
-    required_slots: [S0, I0, C0, D0, R0]
-    output_contract: ResumeFactCheckReport
+    template_id: resume_fact_check_v1
+    description: Fact-check resume against candidate evidence (E4 HOP)
+    path: templates/resume_fact_check_v1.yaml
+    version: "1.0"
     allowed_stage: E4_HEAL
-    required_for_steps:
-      - fact_check_generated_resume
-
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - R0
+    optional_slots:
+      - H0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - verification_report
+        - unsupported_claims
+        - suggested_corrections
+    
   unsupported_claim_omission_v1:
-    path: apps_rg/prompt_assembly/templates/unsupported_claim_omission_v1.yaml
-    required_slots: [S0, I0, C0, D0, R0]
-    output_contract: UnsupportedClaimOmissionRepair
+    template_id: unsupported_claim_omission_v1
+    description: Remove or flag claims not supported by C0 evidence (E4 HOP)
+    path: templates/unsupported_claim_omission_v1.yaml
+    version: "1.0"
     allowed_stage: E4_HEAL
-    required_for_steps:
-      - omit_unsupported_resume_claims
-
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - R0
+    optional_slots:
+      - H0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - corrected_resume
+        - omitted_claims
+        - gap_notes
+    
   bullet_diversity_repair_v1:
-    path: apps_rg/prompt_assembly/templates/bullet_diversity_repair_v1.yaml
-    required_slots: [S0, I0, C0, D0, Y0, R0]
-    output_contract: BulletDiversityRepair
+    template_id: bullet_diversity_repair_v1
+    description: Repair bullet diversity and action verb variety (E4 HOP)
+    path: templates/bullet_diversity_repair_v1.yaml
+    version: "1.0"
     allowed_stage: E4_HEAL
-    required_for_steps:
-      - repair_bullet_diversity
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - Y0
+      - D0
+      - R0
+    optional_slots:
+      - H0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - repaired_resume
+        - diversity_report
 
+  unify_v1:
+    template_id: unify_v1
+    description: Unify terminology, resolve contradictions, and de-duplicate across resume sections (E4 HOP)
+    path: templates/unify_v1.yaml
+    version: "1.0"
+    allowed_stage: E4_HEAL
+    section_contract_refs:
+      unify: section_contracts/unify_contract.yaml
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - R0
+    optional_slots:
+      - Y0
+      - E0
+      - H0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - unified_resume
+        - unify_report
+        - preservation_check
+
+  # =============================================================================
+  # E5 Export Templates (Exit-Stage Prompts)
+  # =============================================================================
   docx_manifest_v1:
-    path: apps_rg/prompt_assembly/templates/docx_manifest_v1.yaml
-    required_slots: [S0, C0, D0, R0]
-    output_contract: DocxArtifactManifest
-    allowed_stage: E5_SEAL
-    required_for_steps:
-      - hop_6_docx_export
-hash_fields:
-  - schema_version
-  - registry_id
-  - templates
+    template_id: docx_manifest_v1
+    description: Generate DOCX export manifest with formatting directives (E5 EXIT)
+    path: templates/docx_manifest_v1.yaml
+    version: "1.0"
+    allowed_stage: E5_EXIT
+    required_slots:
+      - S0
+      - I0
+      - C0
+      - U0
+      - D0
+      - R0
+    optional_slots:
+      - M0
+    output_contract:
+      format: json
+      schema_ref: rg_output_schema.json
+      sections:
+        - docx_manifest
+        - formatting_directives
+
+# =============================================================================
+# Default Template Resolution
+# =============================================================================
+default_templates:
+  senior: strategic_tailor_v1
+  staff: strategic_tailor_v1
+  principal: strategic_tailor_v1
+  mid: tailor_existing_v1
+  junior: generate_scratch_v1
+  executive: strategic_tailor_v1
+
+# =============================================================================
+# Template Selection Rules
+# =============================================================================
+selection_rules:
+  - condition: seniority_band in [senior, staff, principal, executive]
+    template: strategic_tailor_v1
+  - condition: has_existing_resume and not requires_restructuring
+    template: tailor_existing_v1
+  - condition: not has_existing_resume
+    template: generate_scratch_v1
+  - condition: requires_enhancement_only
+    template: enhance_current_v1

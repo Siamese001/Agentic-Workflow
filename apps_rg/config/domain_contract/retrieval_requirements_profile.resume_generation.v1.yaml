@@ -1,0 +1,103 @@
+# apps_rg retrieval requirements profile — resume_generation v1
+# Plan: apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan W1
+# Ownership: apps_rg owns this profile; agentic_core must never reference it.
+
+schema_version: "1.0"
+profile_id: "rrp::apps_rg::resume_generation::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+# Required input source classes — apps_rg declares these; agentic_core does not.
+required_source_classes:
+  - jd_payload
+  - resume_payload
+  - candidate_profile
+  - project_evidence
+  - approved_examples
+  - rubrics
+  - governance_docs
+  - receipts
+
+optional_source_classes:
+  - company_brief
+  - market_context
+
+# Support target — prefixes that must be present for target to be met.
+support_target:
+  label: apps_rg_default
+  required_inputs:
+    - jd_payload
+    - resume_payload
+    - master_resume
+  optional_inputs:
+    - briefing
+
+# All four canonical briefing source types must be declared here.
+briefing_source_types:
+  - UPLOADED_BRIEFING
+  - DELEGATED_APPS_RESEARCH
+  - NATIVE_C0
+  - NONE
+
+default_briefing_source_type: NONE
+
+# All four canonical briefing modes must be declared here.
+briefing_modes:
+  - UPLOADED_BRIEFING
+  - DELEGATED_APPS_RESEARCH
+  - NATIVE_C0
+  - NONE
+
+# Normative source classes for support scoring.
+normative_source_classes:
+  - candidate_profile
+  - project_evidence
+  - approved_examples
+  - rubrics
+  - governance_docs
+  - receipts
+
+# JD requirement policy
+jd_requirement_policy:
+  required: true
+  coverage_floor: 0.7
+
+# Candidate fact policy
+candidate_fact_policy:
+  source_resume_required: true
+  master_resume_required: true
+
+# Minimum grounding thresholds per normative source class
+minimum_grounding_thresholds:
+  candidate_profile: 0.6
+  project_evidence: 0.5
+  approved_examples: 0.4
+  rubrics: 0.4
+  governance_docs: 0.3
+  receipts: 0.3
+
+# Overfit threshold — mimicry guard
+overfit_threshold:
+  mimicry_max: 0.85
+
+# Company brief provenance policy
+company_brief_provenance_policy:
+  required_fields_when_present:
+    - source
+    - fetched_at
+
+# Freshness profile — max age in hours per normative source class
+freshness_profile:
+  max_age_hours:
+    candidate_profile: 168
+    project_evidence: 168
+    approved_examples: 720
+    rubrics: 720
+    governance_docs: 720
+    receipts: 168
+
+# Citation requirement
+citation_requirement:
+  required: true

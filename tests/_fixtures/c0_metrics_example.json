@@ -1,0 +1,43 @@
+{
+  "schema_version": "c0_metrics.v1",
+  "run_id": "run_20260514_120000_example",
+  "route_id": "R2_GROUNDED_DRAFT",
+  "retrieval_mode": "NATIVE_C0",
+  "source_class_coverage": {
+    "candidate_profile": true,
+    "project_evidence": true,
+    "approved_examples": false,
+    "rubrics": false,
+    "governance_docs": false,
+    "receipts": false
+  },
+  "support_status": "PASS",
+  "support_target_met": true,
+  "evidence_counts": {
+    "total": 4,
+    "excluded": 0,
+    "blocked": 0
+  },
+  "retrieval_sources": [
+    "jd_payload:jd_text",
+    "resume_payload:resume_text",
+    "candidate_profile:cp_001",
+    "project_evidence:pe_042"
+  ],
+  "excluded_evidence_refs": [],
+  "blocked_source_refs": [],
+  "freshness_receipts": [
+    "freshness:candidate_profile:2026-05-14T12:00:00Z"
+  ],
+  "citation_map": [
+    ["candidate_profile:cp_001", "§2.1"],
+    ["project_evidence:pe_042", "§3.4"]
+  ],
+  "support_score_profile": {
+    "candidate_profile": 1,
+    "project_evidence": 1
+  },
+  "final_evidence_digest": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+  "briefing_source_type": "NONE",
+  "company_brief_provenance": null
+}

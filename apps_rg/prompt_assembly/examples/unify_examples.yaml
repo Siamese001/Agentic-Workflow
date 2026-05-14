@@ -1,0 +1,92 @@
+version: "1.0"
+section: unify
+description: >
+  Multishot examples for the unify pass.
+  Shows correct contradiction removal and consistency enforcement.
+  All examples wrapped in XML tags per XML-structured prompt best practice.
+
+examples:
+  - id: unify_pos_001
+    category: positive
+    section: unify
+    xml_wrapped: true
+    before: null
+    after: |
+      Summary: "Led 45-person engineering org delivering $4M cost reduction"
+      Experience bullet: "Led 45-person eng org, cut cloud costs by $4M [source: fact_012]"
+      Competency: "Team leadership, cloud cost optimization"
+    annotation: >
+      Summary claim is grounded in experience bullet with matching metric.
+      Competency reflects same evidence. No contradiction.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true
+
+  - id: unify_pos_002
+    category: positive
+    section: unify
+    xml_wrapped: true
+    before: null
+    after: |
+      Removed summary sentence: "Delivered 10x revenue growth" -- no supporting
+      evidence in experience bullets for this magnitude of claim.
+      Retained: "Grew platform ARR from $2M to $8M in 18 months [source: fact_007]"
+    annotation: >
+      Unify pass correctly omits summary claim unsupported by experience evidence,
+      preserves the grounded version with citation.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true
+
+  - id: unify_neg_001
+    category: negative
+    section: unify
+    xml_wrapped: true
+    before: null
+    after: |
+      Summary: "20-year technology executive"
+      Experience: first role starts 2010, total span = 14 years
+      Competency: "AWS certified" -- no AWS certification in candidate_facts
+    annotation: >
+      VIOLATION: Summary tenure contradicts experience dates. Competency lists
+      AWS certification not present in candidate_facts. Unify must flag both.
+    ai_giveaway_markers:
+      - date_contradiction
+      - unsupported_competency
+
+  - id: unify_neg_002
+    category: negative
+    section: unify
+    xml_wrapped: true
+    before: null
+    after: |
+      Summary: "P&L owner driving $50M business unit"
+      Experience bullets: no mention of P&L ownership or $50M revenue scope
+    annotation: >
+      VIOLATION: Summary scope claim has no supporting evidence in experience
+      section. Unify must remove or replace with gap marker.
+    ai_giveaway_markers:
+      - scope_inflation
+      - unsupported_summary_claim
+
+  - id: unify_repair_001
+    category: repair
+    section: unify
+    xml_wrapped: true
+    before: |
+      Summary: "Scaled engineering teams from 10 to 100+"
+      Experience (2021-2022 role): "Grew team from 8 to 22 engineers"
+      Experience (2019-2020 role): "Managed team of 15"
+    after: |
+      Summary: "Grew engineering teams progressively from 8 to 22 engineers
+      (2019-2022) [source: fact_015]"
+    repair_actions:
+      - Removed unsupported "100+" claim -- maximum supported is 22
+      - Combined accurate tenure reference from experience bullets
+      - Added source citation tracing to candidate_facts
+    annotation: >
+      Repair corrects scope inflation in summary to match grounded experience
+      evidence while preserving the genuine growth narrative.
+    anti_ai_compliance:
+      no_em_dash: true
+      no_corporate_buzzwords: true

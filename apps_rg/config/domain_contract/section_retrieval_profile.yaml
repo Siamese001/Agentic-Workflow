@@ -1,0 +1,91 @@
+# W4: Section retrieval profile
+# Declarative section-level retrieval configuration
+
+schema_version: "1.0"
+enabled: true
+
+collection: fact_vectors
+
+fact_vectors_constraints:
+  collection_name: fact_vectors
+  allowed_source_classes_only:
+    - candidate_profile
+    - project_evidence
+
+global_constraints:
+  max_total_evidence_items: 15
+  max_sections_to_query: 5
+  max_query_budget_ms: 5000
+
+sections:
+  - section_id: professional_summary
+    display_name: Professional Summary
+    max_k: 3
+    source_class_allowlist:
+      - candidate_profile
+    support_target: high
+    query_fields:
+      - resume_payload.summary
+      - resume_payload.professional_summary
+    fallback_queries:
+      - "professional summary senior software engineer"
+
+  - section_id: technical_skills
+    display_name: Technical Skills
+    max_k: 5
+    source_class_allowlist:
+      - candidate_profile
+      - project_evidence
+    support_target: high
+    query_fields:
+      - resume_payload.skills
+      - resume_payload.technical_skills
+    fallback_queries:
+      - "Python AWS Kubernetes machine learning"
+
+  - section_id: professional_experience
+    display_name: Professional Experience
+    max_k: 5
+    source_class_allowlist:
+      - candidate_profile
+      - project_evidence
+    support_target: high
+    query_fields:
+      - resume_payload.experience
+      - resume_payload.professional_experience
+    fallback_queries:
+      - "senior software engineer experience"
+
+  - section_id: projects
+    display_name: Projects
+    max_k: 3
+    source_class_allowlist:
+      - project_evidence
+    support_target: medium
+    query_fields:
+      - resume_payload.projects
+    fallback_queries:
+      - "significant projects contributions"
+
+  - section_id: education
+    display_name: Education
+    max_k: 2
+    source_class_allowlist:
+      - candidate_profile
+    support_target: medium
+    query_fields:
+      - resume_payload.education
+    fallback_queries:
+      - "education degree university"
+
+unavailability_behavior:
+  support_status: WEAK_WITH_CAVEATS
+  reason: "fact_vectors collection unavailable for section retrieval"
+
+rejected_source_classes:
+  - company_research
+  - rubrics
+  - governance_docs
+  - approved_examples
+  - receipts
+  - process_docs

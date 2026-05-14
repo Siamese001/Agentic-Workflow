@@ -1,9 +1,9 @@
-"""apps_underwriting_ai CLI entrypoint — pure shim.
+"""apps_underwriting_ai CLI entrypoint — profile-only runtime.
 
-Parses CLI arguments and delegates all execution to the agentic_core
-dispatch chain via the U0 binding. This module must not import
-underwriting engines, C0 adapters, PA compilers, L2 adapters,
-output renderers, or provider SDKs.
+Parses CLI arguments and delegates all execution to
+AppIngressRunner(profile=build_app_runtime_contract()).run(payload).
+No dispatch callable. No legacy orchestrator. AppIngressRunner owns
+the stage sequencing: U0 → L1 → L0 → C0 → PA → L2 → Exit.
 
 Usage::
 
@@ -12,14 +12,12 @@ Usage::
     python -m apps_underwriting_ai --apps-e2e-live
 
 The ``--demo`` flag runs a synthetic underwriting request through the
-U0 binding, printing the validated runtime_customization_package summary.
+full profile-sequenced pipeline and prints the UWExitResult.
 The ``--apps-e2e-live`` flag emits the 9 required runtime receipts under
 ``artifacts/apps_underwriting_ai/runs/<ts>/`` for the apps_e2e harness.
 
-Dispatch chain: U0 → L1 → L0 → C0 → PA → L2 → Exit
-  (L1–Exit are TODO stubs wired in plan a3f7e2 W3+; U0 is LIVE)
-
-Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W3.
+Bundle B — shadow pipeline fully removed. Profile-only runtime.
+Plan: apps-underwriting-ai-profile-migration (Bundle B).
 """
 
 from __future__ import annotations
@@ -29,13 +27,10 @@ import sys
 
 from scripts.proof.otel_bootstrap import setup_tracer as _otel_setup
 
-from apps_underwriting_ai.runtime.bindings.u0_binding import (
-    U0ValidationError,
-    u0_validate_underwriting,
-)
-from apps_underwriting_ai.runtime.contracts.underwriting_ingress_payload import (
-    UnderwritingIngressEnvelope,
-)
+from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner
+from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired
+from apps_underwriting_ai.runtime.bindings.u0_binding import U0ValidationError
+from apps_underwriting_ai.runtime.profile_builder import build_app_runtime_contract
 
 
 _DEMO_REQUEST_ID = "demo-0001"
@@ -170,44 +165,45 @@ def _build_cert_receipts(request_id: str) -> dict:
 
 
 def _run_demo() -> int:
-    """Run a synthetic underwriting demo through the full dispatch chain.
+    """Run a synthetic underwriting demo through the full profile-sequenced pipeline.
 
-    Builds a synthetic UnderwritingIngressEnvelope, runs U0 validation,
-    then dispatches through C0 → L2(×5) → PA → Exit and prints the result.
+    Builds a payload dict, calls AppIngressRunner(profile=...).run(payload),
+    and prints the UWExitResult. AppIngressRunner owns stage sequencing:
+    U0 → L1 → L0 → C0(+5×L2+HITL) → PA → L2(LLM) → Exit.
 
     Set UW_DISPATCH_SKIP_LLM=1 to skip Qwen inference (deterministic stub).
-    Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W4.
+    Bundle B — profile-only runtime.
     """
     print(
         "PUBLIC DEMO NOTICE: This app uses synthetic applicants and synthetic documents. "
         "It is not a production credit decisioning system."
     )
-    envelope = UnderwritingIngressEnvelope(
-        request_id=_DEMO_REQUEST_ID,
-        applicant_id="demo-applicant-001",
-        product_class="small_business_loan",
-        documents=(
+    payload = {
+        "request_id": _DEMO_REQUEST_ID,
+        "applicant_id": "demo-applicant-001",
+        "product_class": "small_business_loan",
+        "documents": [
             {"document_class": "BANK_STATEMENT", "average_monthly_balance": 8500, "account_tenure_months": 36},
             {"document_class": "TAX_RETURN", "annual_gross_income": 120000, "tax_year": 2024},
             {"document_class": "CREDIT_REPORT", "credit_score": 720, "derogatory_mark_count": 0},
-        ),
-        metadata={"source": "demo", "data_mode": "SYNTHETIC_DEMO_ONLY"},
-        trace_id="demo-trace-0001",
-    )
+        ],
+        "metadata": {"source": "demo", "data_mode": "SYNTHETIC_DEMO_ONLY"},
+        "trace_id": "demo-trace-0001",
+    }
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
     try:
-        validated = u0_validate_underwriting(envelope)
+        result = runner.run(payload)
     except U0ValidationError as exc:
         print(f"U0 validation failed: {exc}", file=sys.stderr)
         return 5
 
-    from apps_underwriting_ai.runtime.dispatch.underwriting_dispatch import (  # noqa: PLC0415
-        run_underwriting_dispatch,
-    )
-
-    result = run_underwriting_dispatch(validated)
+    if isinstance(result, ClarificationRequired):
+        print(f"ClarificationRequired: {result.reason}", file=sys.stderr)
+        return 4
 
     print(
-        f"[apps_underwriting_ai demo] dispatch complete\n"
+        f"[apps_underwriting_ai demo] pipeline complete\n"
         f"  request_id       = {result.request_id}\n"
         f"  applicant_id     = {result.applicant_id}\n"
         f"  product_class    = {result.product_class}\n"
@@ -226,7 +222,8 @@ def _run_demo() -> int:
     # ── L6 Shadow Learning (post-Exit, read-only, fail-soft) ──────────────
     from apps_underwriting_ai.runtime.l6_shadow import run_l6_shadow  # noqa: PLC0415
 
-    l6 = run_l6_shadow(result, validated.runtime_customization_package)
+    u0_package = result.exit_bundle.get("runtime_customization_package") or {}
+    l6 = run_l6_shadow(result, u0_package)
     print(
         f"\n[apps_underwriting_ai demo] L6 shadow complete\n"
         f"  l6_success               = {l6.success}\n"
@@ -244,13 +241,14 @@ def _run_demo() -> int:
 
 
 def _run_from_file(request_path: str, artifact_dir: str | None) -> int:  # noqa: ARG001
-    """Run an underwriting request from file through the full dispatch chain.
+    """Run an underwriting request from file through the full profile-sequenced pipeline.
 
     Reads request_id/applicant_id/product_class/documents from the YAML/JSON
-    file, builds an UnderwritingIngressEnvelope, runs U0 → dispatch → Exit.
+    file and calls AppIngressRunner(profile=...).run(payload). AppIngressRunner
+    owns the stage sequencing (U0 → L1 → L0 → C0 → PA → L2 → Exit).
 
     Set UW_DISPATCH_SKIP_LLM=1 to skip Qwen inference.
-    Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W4.
+    Bundle B — profile-only runtime.
     """
     import json  # noqa: PLC0415
     from pathlib import Path  # noqa: PLC0415
@@ -287,28 +285,20 @@ def _run_from_file(request_path: str, artifact_dir: str | None) -> int:  # noqa:
             )
             return 2
 
-    envelope = UnderwritingIngressEnvelope(
-        request_id=str(payload["request_id"]),
-        applicant_id=str(payload["applicant_id"]),
-        product_class=str(payload["product_class"]),
-        documents=tuple(payload.get("documents", ())),
-        metadata=payload.get("metadata") or {},
-        trace_id=str(payload.get("trace_id", "") or ""),
-    )
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
     try:
-        validated = u0_validate_underwriting(envelope)
+        result = runner.run(payload)
     except U0ValidationError as exc:
         print(f"U0 validation failed: {exc}", file=sys.stderr)
         return 5
 
-    from apps_underwriting_ai.runtime.dispatch.underwriting_dispatch import (  # noqa: PLC0415
-        run_underwriting_dispatch,
-    )
-
-    result = run_underwriting_dispatch(validated)
+    if isinstance(result, ClarificationRequired):
+        print(f"ClarificationRequired: {result.reason}", file=sys.stderr)
+        return 4
 
     print(
-        f"[apps_underwriting_ai] dispatch complete\n"
+        f"[apps_underwriting_ai] pipeline complete\n"
         f"  request_id       = {result.request_id}\n"
         f"  applicant_id     = {result.applicant_id}\n"
         f"  product_class    = {result.product_class}\n"
@@ -326,7 +316,8 @@ def _run_from_file(request_path: str, artifact_dir: str | None) -> int:  # noqa:
     # ── L6 Shadow Learning (post-Exit, read-only, fail-soft) ──────────────
     from apps_underwriting_ai.runtime.l6_shadow import run_l6_shadow  # noqa: PLC0415
 
-    l6 = run_l6_shadow(result, validated.runtime_customization_package)
+    u0_package = result.exit_bundle.get("runtime_customization_package") or {}
+    l6 = run_l6_shadow(result, u0_package)
     print(
         f"\n[apps_underwriting_ai] L6 shadow complete\n"
         f"  l6_success               = {l6.success}\n"

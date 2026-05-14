@@ -1,0 +1,15 @@
+NO_SHADOW_SPINE: scanned 1021 files ΓÇö 0 errors, 17 warnings
+  Deferred (excluded from pass/fail): ['apps_qna', 'apps_rfp']
+  WARNINGS:
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:18 ΓÇö DispatchResult reference in production: DispatchResult is wired into FinalEvidenceContract via the ``provider_dispatch``
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:81 ΓÇö DispatchResult reference in production: class DispatchResult:
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:200 ΓÇö DispatchResult reference in production: a DispatchResult that can be wired into FinalEvidenceContract.
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:210 ΓÇö DispatchResult reference in production: ) -> DispatchResult:
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:211 ΓÇö DispatchResult reference in production: """Dispatch a query and return a DispatchResult.
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:219 ΓÇö DispatchResult reference in production: return DispatchResult(
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:227 ΓÇö DispatchResult reference in production: return DispatchResult(
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:256 ΓÇö DispatchResult reference in production: return DispatchResult(
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:276 ΓÇö DispatchResult reference in production: return DispatchResult(
+    [SS-4] apps_qna\engines\dispatch\provider_dispatch.py:296 ΓÇö DispatchResult reference in production: ) -> DispatchResult:
+    ... and 7 more
+OK: no shadow-spine violations detected in scoped apps

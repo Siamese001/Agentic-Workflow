@@ -1,0 +1,978 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collected 225 items
+
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py .FF..F [  2%]
+FFFFFFFFFFFFFFF.......EEEE....FFFFF                                      [ 18%]
+tests\_apps_contract\test_rg_w2_c0_metrics_extractor.py ................ [ 25%]
+...........                                                              [ 30%]
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py FFFFFFFFFFFFFFFFF [ 37%]
+FFFFFFFFFFFFFFFFFFFFFFF.F....FF....                                      [ 53%]
+tests\_apps_contract\test_rg_w4_exit_binding.py ........................ [ 64%]
+.................                                                        [ 71%]
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py ...........FFFFFF [ 79%]
+FFFFFFFFFFFFFFFFFF.....FFFFFFFFFF.FFF..........                          [100%]
+
+=================================== ERRORS ====================================
+_ ERROR at setup of TestNormativeSourceClasses.test_loader_get_normative_source_classes_returns_tuple _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:81: in loader
+    mod.load_retrieval_requirements_profile.cache_clear()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'apps_rg.runtime.profiles.retrieval_requirements' has no attribute 'load_retrieval_requirements_profile'
+_ ERROR at setup of TestNormativeSourceClasses.test_loader_normative_classes_match_expected _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:81: in loader
+    mod.load_retrieval_requirements_profile.cache_clear()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'apps_rg.runtime.profiles.retrieval_requirements' has no attribute 'load_retrieval_requirements_profile'
+_ ERROR at setup of TestNormativeSourceClasses.test_c0_binding_normative_classes_derived_from_profile _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:81: in loader
+    mod.load_retrieval_requirements_profile.cache_clear()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'apps_rg.runtime.profiles.retrieval_requirements' has no attribute 'load_retrieval_requirements_profile'
+_ ERROR at setup of TestNormativeSourceClasses.test_hardcoded_fallback_matches_profile _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:81: in loader
+    mod.load_retrieval_requirements_profile.cache_clear()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'apps_rg.runtime.profiles.retrieval_requirements' has no attribute 'load_retrieval_requirements_profile'
+================================== FAILURES ===================================
+__________ TestProfileStructure.test_required_top_level_keys_present __________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:114: in test_required_top_level_keys_present
+    assert not missing, f"Profile missing keys: {sorted(missing)}"
+E   AssertionError: Profile missing keys: ['briefing_source_types', 'candidate_fact_policy', 'citation_requirement', 'company_brief_provenance_policy', 'default_briefing_source_type', 'freshness_profile', 'jd_requirement_policy', 'minimum_grounding_thresholds', 'optional_source_classes', 'overfit_threshold', 'profile_id', 'status', 'support_target', 'version']
+E   assert not {'briefing_source_types', 'candidate_fact_policy', 'citation_requirement', 'company_brief_provenance_policy', 'default_briefing_source_type', 'freshness_profile', ...}
+_________________ TestProfileStructure.test_profile_id_format _________________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:117: in test_profile_id_format
+    assert profile["profile_id"] == "rrp::apps_rg::resume_generation::v1"
+           ^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'profile_id'
+_________________ TestProfileStructure.test_status_is_active __________________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:126: in test_status_is_active
+    assert profile["status"] == "active"
+           ^^^^^^^^^^^^^^^^^
+E   KeyError: 'status'
+______ TestRequiredInputsDeclaration.test_jd_payload_in_required_inputs _______
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:135: in test_jd_payload_in_required_inputs
+    required = set(profile["support_target"].get("required_inputs", []))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'support_target'
+____ TestRequiredInputsDeclaration.test_resume_payload_in_required_inputs _____
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:139: in test_resume_payload_in_required_inputs
+    required = set(profile["support_target"].get("required_inputs", []))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'support_target'
+_____ TestRequiredInputsDeclaration.test_master_resume_in_required_inputs _____
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:143: in test_master_resume_in_required_inputs
+    required = set(profile["support_target"].get("required_inputs", []))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'support_target'
+__ TestRequiredInputsDeclaration.test_all_expected_required_inputs_declared ___
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:147: in test_all_expected_required_inputs_declared
+    declared = set(profile["support_target"].get("required_inputs", []))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'support_target'
+____ TestRequiredInputsDeclaration.test_briefing_is_optional_not_required _____
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:152: in test_briefing_is_optional_not_required
+    optional = set(profile["support_target"].get("optional_inputs", []))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'support_target'
+_ TestRequiredInputsDeclaration.test_jd_requirement_policy_declares_required __
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:158: in test_jd_requirement_policy_declares_required
+    assert profile["jd_requirement_policy"]["required"] is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'jd_requirement_policy'
+_ TestRequiredInputsDeclaration.test_candidate_fact_policy_declares_source_resume_required _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:161: in test_candidate_fact_policy_declares_source_resume_required
+    assert profile["candidate_fact_policy"]["source_resume_required"] is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'candidate_fact_policy'
+_ TestRequiredInputsDeclaration.test_candidate_fact_policy_declares_master_resume_required _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:164: in test_candidate_fact_policy_declares_master_resume_required
+    assert profile["candidate_fact_policy"]["master_resume_required"] is True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'candidate_fact_policy'
+__________ TestBriefingModes.test_exactly_four_briefing_source_types __________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:173: in test_exactly_four_briefing_source_types
+    declared = set(profile["briefing_source_types"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+____ TestBriefingModes.test_briefing_mode_present[DELEGATED_APPS_RESEARCH] ____
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:182: in test_briefing_mode_present
+    assert mode in profile["briefing_source_types"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+___________ TestBriefingModes.test_briefing_mode_present[NATIVE_C0] ___________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:182: in test_briefing_mode_present
+    assert mode in profile["briefing_source_types"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+_____________ TestBriefingModes.test_briefing_mode_present[NONE] ______________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:182: in test_briefing_mode_present
+    assert mode in profile["briefing_source_types"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+_______ TestBriefingModes.test_briefing_mode_present[UPLOADED_BRIEFING] _______
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:182: in test_briefing_mode_present
+    assert mode in profile["briefing_source_types"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+________ TestBriefingModes.test_default_briefing_source_type_is_valid _________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:185: in test_default_briefing_source_type_is_valid
+    default = profile["default_briefing_source_type"]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'default_briefing_source_type'
+_______________ TestBriefingModes.test_no_extra_briefing_modes ________________
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:191: in test_no_extra_briefing_modes
+    declared = set(profile["briefing_source_types"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'briefing_source_types'
+_ TestThresholdsAndPolicies.test_minimum_grounding_thresholds_are_floats_in_range _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:340: in test_minimum_grounding_thresholds_are_floats_in_range
+    thresholds = profile["minimum_grounding_thresholds"]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'minimum_grounding_thresholds'
+____ TestThresholdsAndPolicies.test_overfit_threshold_mimicry_max_in_range ____
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:346: in test_overfit_threshold_mimicry_max_in_range
+    ot = profile["overfit_threshold"]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'overfit_threshold'
+_ TestThresholdsAndPolicies.test_jd_requirement_policy_coverage_floor_in_range _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:351: in test_jd_requirement_policy_coverage_floor_in_range
+    floor = float(profile["jd_requirement_policy"]["coverage_floor"])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'jd_requirement_policy'
+_ TestThresholdsAndPolicies.test_company_brief_provenance_policy_required_fields_non_empty _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:355: in test_company_brief_provenance_policy_required_fields_non_empty
+    fields = profile["company_brief_provenance_policy"]["required_fields_when_present"]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'company_brief_provenance_policy'
+_ TestThresholdsAndPolicies.test_freshness_profile_has_max_age_hours_per_source_class _
+tests\_apps_contract\test_rg_w1_retrieval_requirements_profile.py:359: in test_freshness_profile_has_max_age_hours_per_source_class
+    ages = profile["freshness_profile"]["max_age_hours"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'freshness_profile'
+__________ TestSchemaStructure.test_required_keys_present_native_c0 ___________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:103: in test_required_keys_present_native_c0
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______________ TestSchemaStructure.test_schema_version_constant _______________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:112: in test_schema_version_constant
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______________ TestSchemaStructure.test_evidence_counts_sub_keys ______________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:117: in test_evidence_counts_sub_keys
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+____________ TestSchemaStructure.test_evidence_counts_non_negative ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:123: in test_evidence_counts_non_negative
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+__________________ TestSchemaStructure.test_run_id_preserved __________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:131: in test_run_id_preserved
+    fec = _make_fec(run_id="run_xyz_789")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_________________ TestSchemaStructure.test_route_id_preserved _________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:136: in test_route_id_preserved
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+___________ TestSchemaStructure.test_citation_map_is_list_of_pairs ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:141: in test_citation_map_is_list_of_pairs
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______ TestSchemaStructure.test_company_brief_provenance_null_by_default ______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:148: in test_company_brief_provenance_null_by_default
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_________ TestSchemaStructure.test_company_brief_provenance_populated _________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:153: in test_company_brief_provenance_populated
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_ TestSupportStatusEnum.test_canonical_statuses_pass_through[WEAK_WITH_CAVEATS] _
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______ TestSupportStatusEnum.test_canonical_statuses_pass_through[EMPTY] ______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____ TestSupportStatusEnum.test_canonical_statuses_pass_through[UNKNOWN] _____
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______ TestSupportStatusEnum.test_canonical_statuses_pass_through[PASS] _______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+___ TestSupportStatusEnum.test_canonical_statuses_pass_through[CONFLICTED] ____
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____ TestSupportStatusEnum.test_canonical_statuses_pass_through[BLOCKED] _____
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:171: in test_canonical_statuses_pass_through
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+____________ TestSupportStatusEnum.test_partial_coerced_to_unknown ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:180: in test_partial_coerced_to_unknown
+    fec = _make_fec(support_status="PASS")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_______ TestSupportStatusEnum.test_output_support_status_never_partial ________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:204: in test_output_support_status_never_partial
+    fec = _make_fec(support_status=status)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____ TestSupportStatusEnum.test_c0_minimum_safety_no_partial_in_passing ______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:209: in test_c0_minimum_safety_no_partial_in_passing
+    from apps_rg.runtime.bindings import c0_minimum_safety
+E   ImportError: cannot import name 'c0_minimum_safety' from 'apps_rg.runtime.bindings' (C:\Git\Agentic-Workflow-FRESH\apps_rg\runtime\bindings\__init__.py)
+______ TestRetrievalModes.test_valid_retrieval_modes[UPLOADED_BRIEFING] _______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:230: in test_valid_retrieval_modes
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+___ TestRetrievalModes.test_valid_retrieval_modes[DELEGATED_APPS_RESEARCH] ____
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:230: in test_valid_retrieval_modes
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+__________ TestRetrievalModes.test_valid_retrieval_modes[NATIVE_C0] ___________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:230: in test_valid_retrieval_modes
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____________ TestRetrievalModes.test_valid_retrieval_modes[NONE] _____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:230: in test_valid_retrieval_modes
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+___________ TestRetrievalModes.test_valid_retrieval_modes[UNKNOWN] ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:230: in test_valid_retrieval_modes
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+____________ TestRetrievalModes.test_none_mode_uses_make_empty_fec ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:235: in test_none_mode_uses_make_empty_fec
+    fec = make_empty_fec("run_none_001", support_status="EMPTY")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: make_empty_fec() got an unexpected keyword argument 'support_status'
+________________ TestRetrievalModes.test_blocked_mode_explicit ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:245: in test_blocked_mode_explicit
+    fec = make_empty_fec("run_blocked", support_status="BLOCKED")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: make_empty_fec() got an unexpected keyword argument 'support_status'
+________________ TestRetrievalModes.test_unknown_mode_explicit ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:254: in test_unknown_mode_explicit
+    fec = make_empty_fec("run_unknown", support_status="UNKNOWN")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: make_empty_fec() got an unexpected keyword argument 'support_status'
+___________ TestRetrievalModes.test_unknown_retrieval_mode_coerced ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:263: in test_unknown_retrieval_mode_coerced
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____________ TestRetrievalModes.test_none_retrieval_mode_coerced _____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:268: in test_none_retrieval_mode_coerced
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+____________ TestSupportTargetMet.test_both_prefixes_present_true _____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:281: in test_both_prefixes_present_true
+    fec = _make_fec(
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_______________ TestSupportTargetMet.test_missing_resume_false ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:289: in test_missing_resume_false
+    fec = _make_fec(
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+________________ TestSupportTargetMet.test_empty_sources_false ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:308: in test_empty_sources_false
+    fec = make_empty_fec("r", support_status="EMPTY")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: make_empty_fec() got an unexpected keyword argument 'support_status'
+________________ TestFinalEvidenceDigest.test_digest_non_empty ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:321: in test_digest_non_empty
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______________ TestFinalEvidenceDigest.test_digest_deterministic ______________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:327: in test_digest_deterministic
+    fec = _make_fec(run_id="run_det")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+_____ TestFinalEvidenceDigest.test_digest_differs_for_different_evidence ______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:333: in test_digest_differs_for_different_evidence
+    fec1 = _make_fec(run_id="r1")
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+______ TestFinalEvidenceDigest.test_empty_fec_digest_is_sha256_of_empty _______
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:346: in test_empty_fec_digest_is_sha256_of_empty
+    assert result["final_evidence_digest"] == expected
+E   AssertionError: assert '4f53cda18c2b...f11161202b945' == 'e3b0c44298fc...5991b7852b855'
+E     
+E     - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+E     + 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+__________________ TestArtifactWriter.test_writes_to_run_dir __________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:357: in test_writes_to_run_dir
+    fec = _make_fec(run_id="run_write_001")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+____________ TestArtifactWriter.test_written_content_is_valid_json ____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:371: in test_written_content_is_valid_json
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+__________ TestArtifactWriter.test_written_content_has_required_keys __________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:378: in test_written_content_has_required_keys
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+________________ TestArtifactWriter.test_fail_soft_on_bad_path ________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:388: in test_fail_soft_on_bad_path
+    fec = _make_fec()
+          ^^^^^^^^^^^
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:82: in _make_fec
+    return FinalEvidenceContract(
+<string>:46: in __init__
+    ???
+agentic_core\runtime\contracts\final_evidence_contract.py:361: in __post_init__
+    raise ValueError(
+E   ValueError: FinalEvidenceContract: missing or invalid l5_certification_ref=None (AG-W0-5=fail_closed)
+__________ TestArtifactWriter.test_empty_mode_writes_explicit_empty ___________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:396: in test_empty_mode_writes_explicit_empty
+    fec = make_empty_fec("run_empty_001", support_status="EMPTY")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: make_empty_fec() got an unexpected keyword argument 'support_status'
+________________ TestFixtureAndSchema.test_schema_file_exists _________________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:420: in test_schema_file_exists
+    assert _SCHEMA_PATH.exists(), f"Missing schema: {_SCHEMA_PATH}"
+E   AssertionError: Missing schema: C:\Git\Agentic-Workflow-FRESH\apps_rg\runtime\schemas\c0_metrics.schema.json
+E   assert False
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Git/Agentic-Workflow-FRESH/apps_rg/runtime/schemas/c0_metrics.schema.json').exists
+____________ TestFixtureAndSchema.test_schema_required_keys_match _____________
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:440: in test_schema_required_keys_match
+    schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\runtime\\schemas\\c0_metrics.schema.json'
+__ TestFixtureAndSchema.test_fixture_validates_against_schema_required_keys ___
+tests\_apps_contract\test_rg_w3_c0_metrics_artifact.py:445: in test_fixture_validates_against_schema_required_keys
+    schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\runtime\\schemas\\c0_metrics.schema.json'
+___ TestProvenancePreservation.test_uploaded_provenance_has_source_and_path ___
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:224: in test_uploaded_provenance_has_source_and_path
+    assert decision.company_brief_provenance["source"] == "uploaded_brief"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: string indices must be integers, not 'str'
+_____ TestProvenancePreservation.test_uploaded_provenance_has_fetched_at ______
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:234: in test_uploaded_provenance_has_fetched_at
+    assert "fetched_at" in prov
+E   AssertionError: assert 'fetched_at' in 'uploaded:/tmp/brief.json@2026-05-01T00:00:00Z'
+____ TestProvenancePreservation.test_uploaded_provenance_has_freshness_ttl ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:243: in test_uploaded_provenance_has_freshness_ttl
+    assert prov.get("freshness_ttl_days") == 7
+           ^^^^^^^^
+E   AttributeError: 'str' object has no attribute 'get'
+_____ TestProvenancePreservation.test_delegated_provenance_marks_delegate _____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:252: in test_delegated_provenance_marks_delegate
+    assert prov["source"] == "delegated_apps_research"
+           ^^^^^^^^^^^^^^
+E   TypeError: string indices must be integers, not 'str'
+___ TestProvenancePreservation.test_delegated_provenance_not_apps_rg_owned ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:263: in test_delegated_provenance_not_apps_rg_owned
+    assert prov["source"] != "apps_rg_research"
+           ^^^^^^^^^^^^^^
+E   TypeError: string indices must be integers, not 'str'
+________ TestProvenancePreservation.test_native_c0_provenance_is_none _________
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:271: in test_native_c0_provenance_is_none
+    assert decision.company_brief_provenance is None
+E   AssertionError: assert 'native_c0:/data/chroma' is None
+E    +  where 'native_c0:/data/chroma' = BriefingModeDecision(retrieval_mode='NATIVE_C0', briefing_source_type='NATIVE_C0', company_brief_provenance='native_c0:/data/chroma').company_brief_provenance
+________ TestProvenancePreservation.test_none_mode_provenance_is_none _________
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:278: in test_none_mode_provenance_is_none
+    assert decision.company_brief_provenance is None
+E   AssertionError: assert 'none' is None
+E    +  where 'none' = BriefingModeDecision(retrieval_mode='NONE', briefing_source_type='NONE', company_brief_provenance='none').company_brief_provenance
+_ TestFourModesInArtifact.test_mode_preserved_in_build_c0_metrics[UPLOADED_BRIEFING-UPLOADED_BRIEFING] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:296: in test_mode_preserved_in_build_c0_metrics
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestFourModesInArtifact.test_mode_preserved_in_build_c0_metrics[DELEGATED_APPS_RESEARCH-DELEGATED_APPS_RESEARCH] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:296: in test_mode_preserved_in_build_c0_metrics
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestFourModesInArtifact.test_mode_preserved_in_build_c0_metrics[NATIVE_C0-NATIVE_C0] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:296: in test_mode_preserved_in_build_c0_metrics
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestFourModesInArtifact.test_mode_preserved_in_build_c0_metrics[NONE-NONE] __
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:296: in test_mode_preserved_in_build_c0_metrics
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+___ TestFourModesInArtifact.test_all_four_modes_produce_distinct_artifacts ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:316: in test_all_four_modes_produce_distinct_artifacts
+    result = build_c0_metrics(fec=fec, run_id="r", route_id="R0", retrieval_mode=mode)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_____ TestFourModesInArtifact.test_none_mode_artifact_not_silent_success ______
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:323: in test_none_mode_artifact_not_silent_success
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestFourModesInArtifact.test_uploaded_mode_preserves_provenance_in_artifact _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:337: in test_uploaded_mode_preserves_provenance_in_artifact
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestFourModesInArtifact.test_delegated_mode_preserves_provenance_in_artifact _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:350: in test_delegated_mode_preserves_provenance_in_artifact
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_____ TestFourModesInArtifact.test_native_c0_provenance_null_in_artifact ______
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:361: in test_native_c0_provenance_null_in_artifact
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_____ TestFourModesInArtifact.test_none_mode_provenance_null_in_artifact ______
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:372: in test_none_mode_provenance_null_in_artifact
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestWritePathPerMode.test_artifact_written_to_correct_run_dir[UPLOADED_BRIEFING] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:413: in test_artifact_written_to_correct_run_dir
+    data = self._write_and_read(mode, f"run_{mode.lower()}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:393: in _write_and_read
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestWritePathPerMode.test_artifact_written_to_correct_run_dir[DELEGATED_APPS_RESEARCH] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:413: in test_artifact_written_to_correct_run_dir
+    data = self._write_and_read(mode, f"run_{mode.lower()}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:393: in _write_and_read
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+__ TestWritePathPerMode.test_artifact_written_to_correct_run_dir[NATIVE_C0] ___
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:413: in test_artifact_written_to_correct_run_dir
+    data = self._write_and_read(mode, f"run_{mode.lower()}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:393: in _write_and_read
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_____ TestWritePathPerMode.test_artifact_written_to_correct_run_dir[NONE] _____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:413: in test_artifact_written_to_correct_run_dir
+    data = self._write_and_read(mode, f"run_{mode.lower()}")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:393: in _write_and_read
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestWritePathPerMode.test_none_mode_artifact_has_explicit_none_not_unknown __
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:419: in test_none_mode_artifact_has_explicit_none_not_unknown
+    data = self._write_and_read(BRIEFING_MODE_NONE, "run_none_explicit")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:393: in _write_and_read
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_________ TestWritePathPerMode.test_uploaded_mode_artifact_roundtrip __________
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:426: in test_uploaded_mode_artifact_roundtrip
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+__________________ TestWritePathPerMode.test_run_id_in_path ___________________
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:443: in test_run_id_in_path
+    path = write_c0_metrics(
+E   TypeError: write_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+___ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[UNKNOWN] ___
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'UNKNOWN' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'UNKNOWN' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+___ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[PARTIAL] ___
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'PARTIAL' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'PARTIAL' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+_ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[uploaded_briefing] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'uploaded_briefing' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'uploaded_briefing' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+___ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[native] ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'native' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'native' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+____ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[none] _____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'none' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'none' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+______ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[] _______
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode '' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode '' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+_ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[APPS_RESEARCH] _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'APPS_RESEARCH' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'APPS_RESEARCH' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+__ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[DELEGATED] __
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'DELEGATED' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'DELEGATED' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+____ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[BRIEF] ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'BRIEF' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'BRIEF' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+___ TestCanonicalModeEnforcement.test_non_canonical_modes_rejected[MANUAL] ____
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:479: in test_non_canonical_modes_rejected
+    assert_mode_is_canonical(bad_mode)
+apps_rg\runtime\bindings\briefing_mode_classifier.py:144: in assert_mode_is_canonical
+    raise ValueError(
+E   ValueError: briefing mode 'MANUAL' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']
+
+During handling of the above exception, another exception occurred:
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:478: in test_non_canonical_modes_rejected
+    with pytest.raises(ValueError, match="Non-canonical briefing mode"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'Non-canonical briefing mode'
+E     Actual message: "briefing mode 'MANUAL' is not canonical; valid values: ['DELEGATED_APPS_RESEARCH', 'NATIVE_C0', 'NONE', 'UPLOADED_BRIEFING']"
+___ TestCanonicalModeEnforcement.test_build_c0_metrics_coerces_unknown_mode ___
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:498: in test_build_c0_metrics_coerces_unknown_mode
+    result = build_c0_metrics(
+E   TypeError: build_c0_metrics() got an unexpected keyword argument 'retrieval_mode'
+_ TestDelegatedEvidenceOwnership.test_delegated_source_is_delegate_not_apps_rg _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:518: in test_delegated_source_is_delegate_not_apps_rg
+    assert "apps_research" in prov["delegate"]
+                              ^^^^^^^^^^^^^^^^
+E   TypeError: string indices must be integers, not 'str'
+_ TestDelegatedEvidenceOwnership.test_delegated_mode_classified_from_signal_not_inferred _
+tests\_apps_contract\test_rg_w5_briefing_path_proof.py:527: in test_delegated_mode_classified_from_signal_not_inferred
+    assert "apps_research" in decision.classified_from.lower()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'BriefingModeDecision' object has no attribute 'classified_from'
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestProfileStructure::test_required_top_level_keys_present
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestProfileStructure::test_profile_id_format
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestProfileStructure::test_status_is_active
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_jd_payload_in_required_inputs
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_resume_payload_in_required_inputs
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_master_resume_in_required_inputs
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_all_expected_required_inputs_declared
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_briefing_is_optional_not_required
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_jd_requirement_policy_declares_required
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_candidate_fact_policy_declares_source_resume_required
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestRequiredInputsDeclaration::test_candidate_fact_policy_declares_master_resume_required
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_exactly_four_briefing_source_types
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_briefing_mode_present[DELEGATED_APPS_RESEARCH]
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_briefing_mode_present[NATIVE_C0]
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_briefing_mode_present[NONE]
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_briefing_mode_present[UPLOADED_BRIEFING]
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_default_briefing_source_type_is_valid
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestBriefingModes::test_no_extra_briefing_modes
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestThresholdsAndPolicies::test_minimum_grounding_thresholds_are_floats_in_range
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestThresholdsAndPolicies::test_overfit_threshold_mimicry_max_in_range
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestThresholdsAndPolicies::test_jd_requirement_policy_coverage_floor_in_range
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestThresholdsAndPolicies::test_company_brief_provenance_policy_required_fields_non_empty
+FAILED tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestThresholdsAndPolicies::test_freshness_profile_has_max_age_hours_per_source_class
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_required_keys_present_native_c0
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_schema_version_constant
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_evidence_counts_sub_keys
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_evidence_counts_non_negative
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_run_id_preserved
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_route_id_preserved
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_citation_map_is_list_of_pairs
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_company_brief_provenance_null_by_default
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSchemaStructure::test_company_brief_provenance_populated
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[WEAK_WITH_CAVEATS]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[EMPTY]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[UNKNOWN]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[PASS]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[CONFLICTED]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_canonical_statuses_pass_through[BLOCKED]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_partial_coerced_to_unknown
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_output_support_status_never_partial
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportStatusEnum::test_c0_minimum_safety_no_partial_in_passing
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_valid_retrieval_modes[UPLOADED_BRIEFING]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_valid_retrieval_modes[DELEGATED_APPS_RESEARCH]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_valid_retrieval_modes[NATIVE_C0]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_valid_retrieval_modes[NONE]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_valid_retrieval_modes[UNKNOWN]
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_none_mode_uses_make_empty_fec
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_blocked_mode_explicit
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_unknown_mode_explicit
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_unknown_retrieval_mode_coerced
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestRetrievalModes::test_none_retrieval_mode_coerced
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportTargetMet::test_both_prefixes_present_true
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportTargetMet::test_missing_resume_false
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestSupportTargetMet::test_empty_sources_false
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFinalEvidenceDigest::test_digest_non_empty
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFinalEvidenceDigest::test_digest_deterministic
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFinalEvidenceDigest::test_digest_differs_for_different_evidence
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFinalEvidenceDigest::test_empty_fec_digest_is_sha256_of_empty
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestArtifactWriter::test_writes_to_run_dir
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestArtifactWriter::test_written_content_is_valid_json
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestArtifactWriter::test_written_content_has_required_keys
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestArtifactWriter::test_fail_soft_on_bad_path
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestArtifactWriter::test_empty_mode_writes_explicit_empty
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFixtureAndSchema::test_schema_file_exists
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFixtureAndSchema::test_schema_required_keys_match
+FAILED tests/_apps_contract/test_rg_w3_c0_metrics_artifact.py::TestFixtureAndSchema::test_fixture_validates_against_schema_required_keys
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_uploaded_provenance_has_source_and_path
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_uploaded_provenance_has_fetched_at
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_uploaded_provenance_has_freshness_ttl
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_delegated_provenance_marks_delegate
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_delegated_provenance_not_apps_rg_owned
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_native_c0_provenance_is_none
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestProvenancePreservation::test_none_mode_provenance_is_none
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_mode_preserved_in_build_c0_metrics[UPLOADED_BRIEFING-UPLOADED_BRIEFING]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_mode_preserved_in_build_c0_metrics[DELEGATED_APPS_RESEARCH-DELEGATED_APPS_RESEARCH]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_mode_preserved_in_build_c0_metrics[NATIVE_C0-NATIVE_C0]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_mode_preserved_in_build_c0_metrics[NONE-NONE]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_all_four_modes_produce_distinct_artifacts
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_none_mode_artifact_not_silent_success
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_uploaded_mode_preserves_provenance_in_artifact
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_delegated_mode_preserves_provenance_in_artifact
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_native_c0_provenance_null_in_artifact
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestFourModesInArtifact::test_none_mode_provenance_null_in_artifact
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_artifact_written_to_correct_run_dir[UPLOADED_BRIEFING]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_artifact_written_to_correct_run_dir[DELEGATED_APPS_RESEARCH]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_artifact_written_to_correct_run_dir[NATIVE_C0]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_artifact_written_to_correct_run_dir[NONE]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_none_mode_artifact_has_explicit_none_not_unknown
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_uploaded_mode_artifact_roundtrip
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestWritePathPerMode::test_run_id_in_path
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[UNKNOWN]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[PARTIAL]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[uploaded_briefing]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[native]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[none]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[APPS_RESEARCH]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[DELEGATED]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[BRIEF]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_non_canonical_modes_rejected[MANUAL]
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestCanonicalModeEnforcement::test_build_c0_metrics_coerces_unknown_mode
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestDelegatedEvidenceOwnership::test_delegated_source_is_delegate_not_apps_rg
+FAILED tests/_apps_contract/test_rg_w5_briefing_path_proof.py::TestDelegatedEvidenceOwnership::test_delegated_mode_classified_from_signal_not_inferred
+ERROR tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestNormativeSourceClasses::test_loader_get_normative_source_classes_returns_tuple
+ERROR tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestNormativeSourceClasses::test_loader_normative_classes_match_expected
+ERROR tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestNormativeSourceClasses::test_c0_binding_normative_classes_derived_from_profile
+ERROR tests/_apps_contract/test_rg_w1_retrieval_requirements_profile.py::TestNormativeSourceClasses::test_hardcoded_fallback_matches_profile
+============ 103 failed, 118 passed, 3 warnings, 4 errors in 1.67s ============

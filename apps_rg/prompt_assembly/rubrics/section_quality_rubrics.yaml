@@ -1,0 +1,83 @@
+version: "1.0"
+description: >
+  Section quality rubrics for apps_rg resume generation evaluation.
+  7 dimensions. Weights per section sum to 1.0.
+  These are static scoring declarations used by tests against fixture outputs.
+  They are NOT runtime gates -- no output is blocked at compile time.
+  voice_naturalness severity: soft_fail means the rubric labels it advisory;
+  tests assert the label is present, not that output is blocked.
+
+dimensions:
+  evidence_support:
+    weight_executive_summary: 0.25
+    pass_gate: 0.90
+    definition: >
+      Fraction of claims backed by candidate_facts with [source: X] citations.
+    severity: hard_fail
+    note: Primary factual integrity dimension.
+
+  target_relevance:
+    weight_executive_summary: 0.15
+    pass_gate: 0.60
+    definition: >
+      Fraction of content mapped to JD requirements.
+    severity: hard_fail
+    note: Ensures role-alignment without JD mimicry.
+
+  specificity:
+    weight_executive_summary: 0.20
+    pass_gate: 0.80
+    definition: >
+      Concrete metrics/tools present; vague descriptors absent.
+    severity: hard_fail
+    note: >
+      Measured by presence of quantified outcomes and absence of
+      vague qualifiers (some, various, several, many).
+
+  non_generic_language:
+    weight_executive_summary: 0.20
+    pass_gate: 0.95
+    definition: >
+      Forbidden openers and phrases from forbidden_ai_phrases.yaml absent.
+    ref: apps_rg/prompt_assembly/forbidden_ai_phrases.yaml
+    severity: hard_fail
+    note: >
+      Tests check example YAML compliance. No runtime phrase scanner.
+
+  section_consistency:
+    weight_executive_summary: 0.10
+    pass_gate: 0.85
+    definition: >
+      Summary claims consistent with experience section entries.
+    severity: hard_fail
+    note: Checked in unify pass and by unify_examples.yaml negative cases.
+
+  citation_preservation:
+    weight_executive_summary: 0.05
+    pass_gate: 0.90
+    definition: >
+      [source: X] IDs preserved from C0 candidate_facts input.
+    severity: hard_fail
+    note: Every material claim must carry its fact_id citation.
+
+  voice_naturalness:
+    weight_executive_summary: 0.05
+    pass_gate: 0.75
+    definition: >
+      No em dash; varied sentence openers; no more than 3 bullets start with
+      same verb root per section; no unnaturally parallel structure across all
+      bullets; no corporate buzzwords.
+    severity: soft_fail
+    soft_fail_note: >
+      soft_fail means this rubric dimension is advisory. No runtime output
+      blocking occurs when this dimension fails. Tests assert the label
+      'soft_fail' is present and example YAML compliance is verified
+      against fixture outputs only.
+    ref: apps_rg/prompt_assembly/forbidden_ai_phrases.yaml
+
+weight_sums:
+  executive_summary: 1.00
+  note: >
+    All 7 dimension weights for executive_summary sum to 1.00.
+    Other sections inherit the same dimensions with potentially
+    different weights -- extend this file per section as needed.

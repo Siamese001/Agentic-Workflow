@@ -1,0 +1,298 @@
+# apps_rg Prompt Profile — Style Constraints and Power Verbs
+# Purpose: Advisory style guidance for resume generation
+# Authority: DOMAIN_INSTRUCTION (Y0 slot)
+# Ownership: apps_rg owns this profile; agentic_core must never reference it.
+
+schema_version: "1.0"
+profile_id: "prof::apps_rg::prompt::v1"
+app_id: apps_rg
+task_class: resume_generation
+version: "1"
+status: active
+
+profile_metadata:
+  advisory_only: true
+  description: "Advisory style constraints and vocabulary preferences for resume generation"
+  last_updated: "2026-05-14"
+
+# =============================================================================
+# Style Constraints — Forbidden and Preferred Patterns
+# =============================================================================
+style_constraints:
+  # ---------------------------------------------------------------------------
+  # Forbidden Phrases (Generic/Weak Language)
+  # ---------------------------------------------------------------------------
+  forbidden_phrases:
+    - "responsible for"
+    - "duties included"
+    - "helped with"
+    - "assisted with"
+    - "worked on"
+    - "participated in"
+    - "involved in"
+    - "contributed to"  # Weak without specific contribution
+    - "supported"
+    - "handled"
+    - "managed"  # Weak without scope
+    
+  # ---------------------------------------------------------------------------
+  # Generic Openers (Banned from Professional Summary)
+  # ---------------------------------------------------------------------------
+  generic_openers:
+    - "Results-driven professional"
+    - "Results oriented professional"
+    - "Team player"
+    - "Detail-oriented"
+    - "Detail oriented"
+    - "Passionate about"
+    - "Dynamic leader"
+    - "Proven track record"
+    - "Highly motivated"
+    - "Self-starter"
+    - "Go-getter"
+    - "Hard worker"
+    - "Dedicated professional"
+    - "Seasoned professional"
+    - "Expert in"
+    - "Guru"
+    - "Ninja"
+    - "Rockstar"
+    - "Wizard"
+    - "Thought leader"
+    
+  # ---------------------------------------------------------------------------
+  # Weak Descriptors (Count-limited per resume)
+  # ---------------------------------------------------------------------------
+  weak_descriptors:
+    - "some"
+    - "various"
+    - "several"
+    - "many"
+    - "a few"
+    - "numerous"
+    - "multiple"
+    - "different"
+    - "certain"
+    - "specific"  # When used vaguely ("specific projects")
+    
+  weak_descriptor_limits:
+    per_resume: 2
+    per_section:
+      summary: 0
+      experience: 1
+      projects: 1
+      
+  # ---------------------------------------------------------------------------
+  # Passive Phrases (Prefer active voice)
+  # ---------------------------------------------------------------------------
+  passive_phrases:
+    - "was responsible for"
+    - "was tasked with"
+    - "was involved in"
+    - "was asked to"
+    - "was assigned to"
+    - "had to"
+    - "needed to"
+    
+  # ---------------------------------------------------------------------------
+  # Hedging Language (Avoid uncertainty)
+  # ---------------------------------------------------------------------------
+  hedging_phrases:
+    - "attempted to"
+    - "tried to"
+    - "worked on improving"
+    - "helped to reduce"
+    - "aimed to"
+    - "sought to"
+
+# =============================================================================
+# Vocabulary — Power Verbs by Seniority
+# =============================================================================
+vocabulary:
+  style_preference: true
+  
+  # Executive-level (VP, Director, C-level)
+  power_verbs_executive:
+    - Architected
+    - Transformed
+    - Pioneered
+    - Negotiated
+    - Orchestrated
+    - Spearheaded
+    - Championed
+    - Drove
+    - Strategized
+    - Capitalized
+    - Monetized
+    - Scaled
+    - Acquired
+    - Divested
+    - Restructured
+    
+  # Senior-level (Staff, Principal, Senior)
+  power_verbs_senior:
+    - Led
+    - Engineered
+    - Delivered
+    - Scaled
+    - Optimized
+    - Architected
+    - Designed
+    - Implemented
+    - Launched
+    - Deployed
+    - Automated
+    - Streamlined
+    - Reduced
+    - Increased
+    - Improved
+    
+  # Mid-level
+  power_verbs_mid:
+    - Built
+    - Implemented
+    - Developed
+    - Launched
+    - Improved
+    - Created
+    - Established
+    - Managed
+    - Coordinated
+    - Executed
+    - Maintained
+    - Supported
+    - Collaborated
+    - Contributed
+    - Participated
+    
+  # Junior/IC-level
+  power_verbs_junior:
+    - Assisted
+    - Supported
+    - Learned
+    - Shadowed
+    - Updated
+    - Tested
+    - Debugged
+    - Documented
+    - Researched
+    - Analyzed
+    
+  verb_guidance: |
+    Prefer power verbs from the appropriate seniority list. 
+    Advisory only — not a hard constraint. S0 no-fabrication oath 
+    and I0 section rules take precedence over verb preferences.
+
+# =============================================================================
+# ATS Compatibility Rules
+# =============================================================================
+ats_compatibility:
+  # Standard section headers (avoid creative naming)
+  standard_headers:
+    - "Professional Summary"  # Not "About Me"
+    - "Professional Experience"  # Not "Career Journey"
+    - "Technical Skills"  # Not "Tech Stack"
+    - "Projects"  # Not "Cool Stuff I Built"
+    - "Education"  # Not "Learning"
+    - "Certifications"  # Not "Badges"
+    
+  # Standard date formats
+  date_formats:
+    preferred: "Month Year – Month Year"  # e.g., "Jan 2020 – Mar 2022"
+    acceptable:
+      - "MM/YYYY – MM/YYYY"
+      - "YYYY – YYYY"
+    avoid:
+      - "Present"  # Use "Current" or specific date
+      - "Ongoing"
+      - "To Date"
+      
+  # Location format
+  location_format: '"City, State" or "Remote"'
+  
+  # Contact section standard
+  contact_fields:
+    required:
+      - name
+      - email
+      - phone
+    optional:
+      - linkedin
+      - portfolio
+      - github
+    avoid_in_header:
+      - photo
+      - age
+      - marital status
+      - salary expectations
+
+# =============================================================================
+# Truthfulness Markers
+# =============================================================================
+truthfulness_markers:
+  # How to flag uncertain information
+  uncertainty_markers:
+    low_confidence: "[low_confidence: {reason}]"
+    unclear: "[unclear: {description}]"
+    estimated: "[estimated: {basis}]"
+    gap: "[Gap: {requirement} — insufficient evidence]"
+    
+  # Citation format
+  citation_format: "[source: {fact_id}]"
+  
+  # Unsupported claim handling
+  unsupported_claim_policy:
+    default_action: omit
+    alternatives:
+      - mark_with_gap_flag
+      - request_clarification  # If interactive mode available
+    prohibited:
+      - generalize
+      - approximate
+      - infer_from_jd
+      - fabricate_to_match
+
+# =============================================================================
+# Quality Thresholds (Advisory Targets)
+# =============================================================================
+quality_thresholds:
+  min_quality_target: 0.70
+  pass_gate_threshold: 0.80
+  threshold_semantics: target_gate
+  
+  section_targets:
+    summary:
+      min_achievement_mentions: 1
+      max_buzzwords: 0
+      max_weak_descriptors: 0
+      
+    experience:
+      min_metric_percentage: 60
+      max_bullets_per_role: 5
+      min_power_verbs_percentage: 80
+      
+    skills:
+      max_total: 25
+      max_per_category: 8
+      
+    projects:
+      max_projects: 3
+      min_outcome_mentioned: 1
+
+# =============================================================================
+# Anti-Mimicry Rules
+# =============================================================================
+anti_mimicry:
+  # Prevent copying JD language
+  max_verbatim_words_from_jd: 5
+  prohibited_mimicry:
+    - copying_exact_job_title_if_not_historical
+    - adopting_jd_certifications_not_held
+    - mirroring_jd_phraseology_in_summary
+    
+  # JD alignment without mimicry
+  alignment_strategy:
+    - map_skills_naturally
+    - emphasize_existing_relevant_experience
+    - use_industry_terminology_not_jd_copy
+    - demonstrate_through_achievements_not_keywords

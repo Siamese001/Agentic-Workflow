@@ -1,0 +1,194 @@
+{
+  "base_scenario_id": "GP-001",
+  "deterministic_digest": "blake2b:10181fabdece8200dd80f5b3af57977b",
+  "evidence_contract_ref": "blake2b:f2a88ff5224e554a9095220170fa483a",
+  "exit_disposition_ref": "blake2b:9b4099e41e80a9867451a7be69314b25",
+  "fixture_description": "simple grounded read",
+  "fixture_id": "F3",
+  "gate_verdict_refs": [
+    {
+      "gate": "X1",
+      "status": "PASS"
+    }
+  ],
+  "l6_eval_ref": "blake2b:87b4e811c4e2873d8c232764f0a8d6ec",
+  "layer_contract_refs": {
+    "ExitReviewPacket": "blake2b:a6b290cc1f9d3432a321bc592931f609",
+    "FinalEvidenceContract": "blake2b:f2a88ff5224e554a9095220170fa483a",
+    "L1PlanContract": "blake2b:3f82d76a97d4023580320978caebdee1",
+    "L2ExecutionRequest": "blake2b:fbbaaf5256e45372d9094430cbe3f7fd",
+    "PromptEnvelope": "blake2b:574b18d6d2fc43bf98e659d91bcc0b8e",
+    "RouteContract": "blake2b:b1ffb37f045c8eee21028dfae3c088bb",
+    "RuntimeExhaustBundle": "blake2b:87b4e811c4e2873d8c232764f0a8d6ec",
+    "SealedL2Artifact": "blake2b:e9db59fbc88a54a588bcd80daa9cea21",
+    "ValidatedRequest": "blake2b:44cd74b4c7ce52b71cd1c405a7999be4",
+    "X3DispositionReceipt": "blake2b:9b4099e41e80a9867451a7be69314b25"
+  },
+  "no_bypass_receipt": {
+    "checked_surfaces": [
+      "ExitReviewPacket",
+      "FinalEvidenceContract",
+      "L1PlanContract",
+      "L2ExecutionRequest",
+      "PromptEnvelope",
+      "RouteContract",
+      "RuntimeExhaustBundle",
+      "SealedL2Artifact",
+      "ValidatedRequest",
+      "X3DispositionReceipt"
+    ],
+    "prohibited_spans_absent": [
+      "l3.workflow.build",
+      "l3.step.dispatch",
+      "uwg.commit"
+    ],
+    "proof_status": "PASS",
+    "violations": []
+  },
+  "overlay_payload": {
+    "contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "L2ExecutionRequest",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X3DispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "route_id": "R3_SIMPLE_GROUNDED_READ",
+    "scenario_id": "GP-001",
+    "span_count": 21
+  },
+  "prompt_envelope_ref": "blake2b:574b18d6d2fc43bf98e659d91bcc0b8e",
+  "replay_comparison_ref": {
+    "blueprint_hash": "blueprint:fff3faf3",
+    "environment_digest": "env:7e089d19",
+    "evidence_contract_hash": "blake2b:8e3214f2bd2529bfa14f7b44d972412a",
+    "execution_digest": "blake2b:e9db59fbc88a54a588bcd80daa9cea21",
+    "input_hash": "blake2b:80d7d28a5356b8d715660c15ff4c0881",
+    "model_registry_digest": "models:2f3772ec",
+    "normalized_request_hash": "blake2b:de74e687c19f012ea0738ff0b47eee6c",
+    "policy_hash": "policy:d39516da",
+    "prompt_hash": "blake2b:efb4f69e4b92d443bb87bb917968198f",
+    "provider_lane": "provider:lane-A",
+    "replay_key": "replay-a3ddcb83",
+    "route_digest": "blake2b:ce752c6aa04675910c540e12414d6fce",
+    "snapshot_manifest": "snapshot:b6868ff6",
+    "tool_registry_digest": "tools:1e4bb59c"
+  },
+  "request_id": "req-80ef4ecc",
+  "run_id": "run-06d7c141",
+  "sealed_l2_artifact_ref": "blake2b:e9db59fbc88a54a588bcd80daa9cea21",
+  "span_tree_ref": [
+    {
+      "name": "intake.validate_envelope",
+      "parent_span_id": null,
+      "span_id": "span-224585f0"
+    },
+    {
+      "name": "intake.bind_identity_session",
+      "parent_span_id": "span-224585f0",
+      "span_id": "span-99751c02"
+    },
+    {
+      "name": "l1.parse_intent",
+      "parent_span_id": "span-224585f0",
+      "span_id": "span-73a2513c"
+    },
+    {
+      "name": "l1.emit_plan_contract",
+      "parent_span_id": "span-73a2513c",
+      "span_id": "span-5cbd7027"
+    },
+    {
+      "name": "l0.route.select",
+      "parent_span_id": "span-5cbd7027",
+      "span_id": "span-9b816d13"
+    },
+    {
+      "name": "l0.route.emit_contract",
+      "parent_span_id": "span-9b816d13",
+      "span_id": "span-63eb6fbd"
+    },
+    {
+      "name": "c0.plan",
+      "parent_span_id": "span-63eb6fbd",
+      "span_id": "span-7dbbbe38"
+    },
+    {
+      "name": "c0.fetch",
+      "parent_span_id": "span-63eb6fbd",
+      "span_id": "span-6929e083"
+    },
+    {
+      "name": "c0.shape",
+      "parent_span_id": "span-63eb6fbd",
+      "span_id": "span-f8a59129"
+    },
+    {
+      "name": "c0.contract",
+      "parent_span_id": "span-63eb6fbd",
+      "span_id": "span-dd73211a"
+    },
+    {
+      "name": "prompt_assembly.load_bom",
+      "parent_span_id": "span-dd73211a",
+      "span_id": "span-b3e92add"
+    },
+    {
+      "name": "prompt_assembly.compose_slots",
+      "parent_span_id": "span-dd73211a",
+      "span_id": "span-9bb46b03"
+    },
+    {
+      "name": "prompt_assembly.emit_artifact",
+      "parent_span_id": "span-dd73211a",
+      "span_id": "span-4b83d046"
+    },
+    {
+      "name": "l2.e1.prep",
+      "parent_span_id": "span-4b83d046",
+      "span_id": "span-d4c2f5f4"
+    },
+    {
+      "name": "l2.e2.valid",
+      "parent_span_id": "span-d4c2f5f4",
+      "span_id": "span-e6812bd7"
+    },
+    {
+      "name": "l2.e3.exec",
+      "parent_span_id": "span-e6812bd7",
+      "span_id": "span-7ab1f6f3"
+    },
+    {
+      "name": "l2.e5.seal",
+      "parent_span_id": "span-7ab1f6f3",
+      "span_id": "span-bedc0b34"
+    },
+    {
+      "name": "exit.normalize",
+      "parent_span_id": "span-bedc0b34",
+      "span_id": "span-b72fb106"
+    },
+    {
+      "name": "exit.evaluate",
+      "parent_span_id": "span-b72fb106",
+      "span_id": "span-0d178b23"
+    },
+    {
+      "name": "exit.disposition",
+      "parent_span_id": "span-0d178b23",
+      "span_id": "span-50d2dda8"
+    },
+    {
+      "name": "l6.ingest",
+      "parent_span_id": "span-50d2dda8",
+      "span_id": "span-514bc1f3"
+    }
+  ],
+  "trace_root": "trace-1cf8b1fe",
+  "uwg_receipt_ref": null
+}

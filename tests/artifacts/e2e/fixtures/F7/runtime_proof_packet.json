@@ -1,0 +1,206 @@
+{
+  "base_scenario_id": "RC-UWG",
+  "deterministic_digest": "blake2b:3c7b523e4b23d8001b779234f4fcdef2",
+  "evidence_contract_ref": "blake2b:9047d1015b539d0610f00afe94252593",
+  "exit_disposition_ref": "blake2b:4ade5e3209f2532477e12f29d8554e6d",
+  "fixture_description": "proposed_state_diff -> UWG commit",
+  "fixture_id": "F7",
+  "gate_verdict_refs": [
+    {
+      "gate": "X1",
+      "status": "PASS"
+    }
+  ],
+  "l6_eval_ref": "blake2b:dc74b4ab2a3469ecffd5a71b8df0a34e",
+  "layer_contract_refs": {
+    "CommitRequest": "blake2b:8cb96faa866bce98788f03c4d93adabb",
+    "ExitReviewPacket": "blake2b:9dd212ab44b2c439503e81d6bb33d2ed",
+    "FinalEvidenceContract": "blake2b:9047d1015b539d0610f00afe94252593",
+    "L1PlanContract": "blake2b:b73b435a5634e788ce2f67f20ab3ea37",
+    "L2ExecutionRequest": "blake2b:97acce5db6e4bfb474b24005820db236",
+    "PromptEnvelope": "blake2b:273b4cf875624fecd164afdd72c8b22d",
+    "RouteContract": "blake2b:18243276df1e541f0bbff5cb2afce7ac",
+    "RuntimeExhaustBundle": "blake2b:dc74b4ab2a3469ecffd5a71b8df0a34e",
+    "SealedL2Artifact": "blake2b:3200a0e496545531317b38c48de055c4",
+    "UWGCommitReceipt": "blake2b:0bb6f8775ce8d1c52cdba58b2d6c5bca",
+    "ValidatedRequest": "blake2b:9b84381da7bde2eff82975d0a20d738a",
+    "X3DispositionReceipt": "blake2b:4ade5e3209f2532477e12f29d8554e6d"
+  },
+  "no_bypass_receipt": {
+    "checked_surfaces": [
+      "CommitRequest",
+      "ExitReviewPacket",
+      "FinalEvidenceContract",
+      "L1PlanContract",
+      "L2ExecutionRequest",
+      "PromptEnvelope",
+      "RouteContract",
+      "RuntimeExhaustBundle",
+      "SealedL2Artifact",
+      "UWGCommitReceipt",
+      "ValidatedRequest",
+      "X3DispositionReceipt"
+    ],
+    "prohibited_spans_absent": [],
+    "proof_status": "PASS",
+    "violations": []
+  },
+  "overlay_payload": {
+    "contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "PromptEnvelope",
+      "L2ExecutionRequest",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X3DispositionReceipt",
+      "CommitRequest",
+      "UWGCommitReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "route_id": "UWG_COMMIT_PATH",
+    "scenario_id": "RC-UWG",
+    "span_count": 23
+  },
+  "prompt_envelope_ref": "blake2b:273b4cf875624fecd164afdd72c8b22d",
+  "replay_comparison_ref": {
+    "blueprint_hash": "blueprint:fff3faf3",
+    "environment_digest": "env:7e089d19",
+    "evidence_contract_hash": "blake2b:29cb35f3cc5ac9bd1a56fdf4805be902",
+    "execution_digest": "blake2b:3200a0e496545531317b38c48de055c4",
+    "input_hash": "blake2b:10f53d4e641b7fbfea316f52acef7ce5",
+    "model_registry_digest": "models:2f3772ec",
+    "normalized_request_hash": "blake2b:de74e687c19f012ea0738ff0b47eee6c",
+    "policy_hash": "policy:d39516da",
+    "prompt_hash": "blake2b:2e2cfc8f7bbbc2019d699a3ef457f163",
+    "provider_lane": "provider:lane-A",
+    "replay_key": "replay-322a1313",
+    "route_digest": "blake2b:feaf0823aec8fd93227abfe3741f0d53",
+    "snapshot_manifest": "snapshot:b6868ff6",
+    "tool_registry_digest": "tools:1e4bb59c"
+  },
+  "request_id": "req-19a25658",
+  "run_id": "run-46b27768",
+  "sealed_l2_artifact_ref": "blake2b:3200a0e496545531317b38c48de055c4",
+  "span_tree_ref": [
+    {
+      "name": "intake.validate_envelope",
+      "parent_span_id": null,
+      "span_id": "span-95b8087f"
+    },
+    {
+      "name": "intake.bind_identity_session",
+      "parent_span_id": "span-95b8087f",
+      "span_id": "span-2ee19c53"
+    },
+    {
+      "name": "l1.parse_intent",
+      "parent_span_id": "span-95b8087f",
+      "span_id": "span-148ec891"
+    },
+    {
+      "name": "l1.emit_plan_contract",
+      "parent_span_id": "span-148ec891",
+      "span_id": "span-2da49ed6"
+    },
+    {
+      "name": "l0.route.select",
+      "parent_span_id": "span-2da49ed6",
+      "span_id": "span-28e5dd70"
+    },
+    {
+      "name": "l0.route.emit_contract",
+      "parent_span_id": "span-28e5dd70",
+      "span_id": "span-15f8f62d"
+    },
+    {
+      "name": "c0.plan",
+      "parent_span_id": "span-15f8f62d",
+      "span_id": "span-d2b8e4bb"
+    },
+    {
+      "name": "c0.fetch",
+      "parent_span_id": "span-15f8f62d",
+      "span_id": "span-b533fe98"
+    },
+    {
+      "name": "c0.shape",
+      "parent_span_id": "span-15f8f62d",
+      "span_id": "span-c986a295"
+    },
+    {
+      "name": "c0.contract",
+      "parent_span_id": "span-15f8f62d",
+      "span_id": "span-71a39d6c"
+    },
+    {
+      "name": "prompt_assembly.load_bom",
+      "parent_span_id": "span-71a39d6c",
+      "span_id": "span-adf3d021"
+    },
+    {
+      "name": "prompt_assembly.compose_slots",
+      "parent_span_id": "span-71a39d6c",
+      "span_id": "span-881d07f8"
+    },
+    {
+      "name": "prompt_assembly.emit_artifact",
+      "parent_span_id": "span-71a39d6c",
+      "span_id": "span-ee6e2d62"
+    },
+    {
+      "name": "l2.e1.prep",
+      "parent_span_id": "span-ee6e2d62",
+      "span_id": "span-16100c4b"
+    },
+    {
+      "name": "l2.e2.valid",
+      "parent_span_id": "span-16100c4b",
+      "span_id": "span-734ba696"
+    },
+    {
+      "name": "l2.e3.exec",
+      "parent_span_id": "span-734ba696",
+      "span_id": "span-1d41c0bc"
+    },
+    {
+      "name": "l2.e5.seal",
+      "parent_span_id": "span-1d41c0bc",
+      "span_id": "span-8f49d2bc"
+    },
+    {
+      "name": "exit.normalize",
+      "parent_span_id": "span-8f49d2bc",
+      "span_id": "span-b334fcff"
+    },
+    {
+      "name": "exit.evaluate",
+      "parent_span_id": "span-b334fcff",
+      "span_id": "span-6dc1fd66"
+    },
+    {
+      "name": "exit.disposition",
+      "parent_span_id": "span-6dc1fd66",
+      "span_id": "span-6d9450a7"
+    },
+    {
+      "name": "uwg.validate",
+      "parent_span_id": "span-6d9450a7",
+      "span_id": "span-9838423d"
+    },
+    {
+      "name": "uwg.commit",
+      "parent_span_id": "span-9838423d",
+      "span_id": "span-1fef9957"
+    },
+    {
+      "name": "l6.ingest",
+      "parent_span_id": "span-6d9450a7",
+      "span_id": "span-d4a12153"
+    }
+  ],
+  "trace_root": "trace-50d1601e",
+  "uwg_receipt_ref": "blake2b:0bb6f8775ce8d1c52cdba58b2d6c5bca"
+}

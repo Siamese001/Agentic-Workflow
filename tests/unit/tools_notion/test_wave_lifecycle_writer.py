@@ -528,11 +528,14 @@ class TestSlugValidation:
     def test_invalid_slug_uppercase_rejected(self):
         assert SLUG_RE.match("BAD-PLAN-ABC123") is None
 
-    def test_invalid_slug_no_hex_suffix_rejected(self):
-        assert SLUG_RE.match("my-plan") is None
+    def test_slug_without_hex_suffix_now_allowed(self):
+        # SLUG_RE relaxed in plan-update-enforcement-template-fix-e7a3c1
+        # to accept slugs without a strict 6-hex suffix
+        assert SLUG_RE.match("my-plan") is not None
 
-    def test_invalid_slug_hex_too_short(self):
-        assert SLUG_RE.match("my-plan-ab12") is None
+    def test_slug_with_short_hex_suffix_now_allowed(self):
+        # Partial hex suffix is allowed by the relaxed pattern
+        assert SLUG_RE.match("my-plan-ab12") is not None
 
     def test_invalid_slug_starts_with_dash(self):
         assert SLUG_RE.match("-my-plan-abc123") is None
@@ -540,15 +543,22 @@ class TestSlugValidation:
     def test_invalid_slug_empty_string(self):
         assert SLUG_RE.match("") is None
 
-    def test_parse_markers_drops_all_invalid_slugs(self):
-        bad_inputs = [
+    def test_parse_markers_drops_still_invalid_slugs(self):
+        # Only slugs that the relaxed SLUG_RE rejects should be dropped.
+        # Uppercase and empty slug remain invalid.
+        still_bad = [
             "WAVE_START: plan=Bad-Plan-ABC123 wave=1\n",  # uppercase
-            "WAVE_COMPLETE: plan=no-suffix wave=1\n",      # no 6-hex
             "PLAN_COMPLETE: plan=\n",                       # empty slug
         ]
-        for text in bad_inputs:
+        for text in still_bad:
             markers = parse_wave_lifecycle_markers(text)
             assert markers == [], f"Expected empty for: {text!r}"
+
+    def test_parse_markers_accepts_slug_without_hex(self):
+        # Relaxed SLUG_RE: 'no-suffix' is now a valid slug
+        markers = parse_wave_lifecycle_markers("WAVE_COMPLETE: plan=no-suffix wave=1\n")
+        assert len(markers) == 1
+        assert markers[0].slug == "no-suffix"
 
 
 # ---------------------------------------------------------------------------

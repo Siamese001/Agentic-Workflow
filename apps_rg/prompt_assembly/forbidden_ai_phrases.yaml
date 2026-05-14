@@ -1,0 +1,112 @@
+version: "1.0"
+description: >
+  Naturalness phrase-guidance list for recruiter-trust signal hardening.
+  Sourced from industry survey rationale (Resume.io 2025, Forbes 2024, LinkedIn recruiter
+  reports 2025) as motivation for the declarative prompt constraints encoded here.
+  HARD_BLOCK / SOFT_WARN are prompt instruction-severity labels — not compile gates.
+  Referenced by all E3/E4 template naturalness_guidance blocks.
+
+typography:
+  em_dash:
+    char: "\u2014"
+    replacement: ", or restructure sentence"
+    severity: HARD_BLOCK
+    enforcement_layer: prompt_declaration
+    reason: "Commonly flagged as AI typography marker in recruiter surveys"
+
+power_verbs_out_of_register:
+  description: >
+    These verbs appear unnaturally formal/elevated when used repeatedly or without
+    concrete evidence. AI uses them as default resume power verbs; human writers
+    reserve them for genuine exceptional achievements.
+  severity: SOFT_WARN
+  words:
+    - Pioneered
+    - Orchestrated
+    - Championed
+    - Spearheaded
+    - Transformed
+    - Revolutionized
+    - Propelled
+    - Catapulted
+    - Galvanized
+  exception: "may use if accompanied by concrete metric from candidate_facts with [source: X]"
+
+generic_openers:
+  description: "Forbidden as the first clause of executive_summary"
+  severity: HARD_BLOCK
+  phrases:
+    - "Seasoned"
+    - "Dynamic"
+    - "Proven"
+    - "Passionate"
+    - "Dedicated"
+    - "Results-driven"
+    - "Innovative"
+    - "Forward-thinking"
+    - "Strategic"
+    - "Accomplished"
+    - "Visionary"
+    - "Detail-oriented"
+    - "Team player"
+    - "Self-starter"
+    - "Go-getter"
+
+corporate_buzzwords:
+  description: "Phrases that signal AI generation and reduce recruiter trust"
+  severity: HARD_BLOCK
+  phrases:
+    - "dynamic landscape"
+    - "fostering innovation"
+    - "cross-functional synergies"
+    - "value proposition"
+    - "stakeholder engagement"
+    - "leveraging synergies"
+    - "driving meaningful impact"
+    - "thought leader"
+    - "change agent"
+    - "best-in-class"
+    - "move the needle"
+    - "deep dive"
+    - "bandwidth"
+    - "circle back"
+    - "paradigm shift"
+    - "low-hanging fruit"
+    - "bleeding edge"
+    - "holistic approach"
+    - "robust solution"
+
+structural_ai_signals:
+  description: "Structural patterns that AI detection systems flag"
+  severity: SOFT_WARN
+  patterns:
+    - id: sentence_starting_with_by
+      rule: "No more than 1 bullet per section may start with 'By'"
+      reason: "AI structural pattern identified in Forbes 2024 recruiter survey"
+    - id: uniform_bullet_parallelism
+      rule: "Not all bullets in a section should start with the same verb type"
+      reason: "Unnaturally perfect parallel structure is an AI signal"
+    - id: zero_typos_unnaturally_polished
+      rule: "Minor natural phrasing variation is preferred over uniform polish"
+      reason: "AI-detection tools flag spotless prose as machine-generated"
+    - id: repeated_verb_openers
+      rule: "Max 3 bullets in any section may open with the same verb root"
+      reason: "Human writers naturally vary; AI defaults to patterns"
+
+ai_fluency_words:
+  description: "Words overused by AI that feel robotic in resume context"
+  severity: SOFT_WARN
+  words:
+    - "Meticulous"
+    - "Intricate"
+    - "Multifaceted"
+    - "Nuanced"
+    - "Realm"
+    - "Leverage (as verb)"
+    - "Utilize (prefer use)"
+    - "Facilitate"
+    - "Interface (as verb)"
+    - "Impactful"
+    - "Actionable"
+    - "Seamlessly"
+    - "Robust"

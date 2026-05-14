@@ -359,12 +359,13 @@ class TestSupportStatusPolicy(unittest.TestCase):
         self.assertIn(result.verdict, ("PASS", "WARN"))
         self.assertTrue(result.safe_to_continue_to_pa)
 
-    def test_partial_support_status_passes(self) -> None:
+    def test_partial_support_status_not_pass(self) -> None:
         from apps_rg.runtime.bindings.c0_minimum_safety import run_c0_minimum_safety
         fec = _minimal_valid_fec(support_status="PARTIAL")
         result = run_c0_minimum_safety(grounding_required=True, fec=fec)
-        self.assertIn(result.verdict, ("PASS", "WARN"))
-        self.assertTrue(result.safe_to_continue_to_pa)
+        self.assertNotIn(str(result.verdict), ("PASS", "WARN"), (
+            "PARTIAL is not a canonical support_status and must not produce PASS/WARN"
+        ))
 
     def test_pass_with_empty_evidence_items_fails(self) -> None:
         from apps_rg.runtime.bindings.c0_minimum_safety import run_c0_minimum_safety

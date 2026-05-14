@@ -1,0 +1,205 @@
+{
+  "base_scenario_id": "RC-R3R4-MANAGED",
+  "deterministic_digest": "blake2b:2c2508b494a38e70154b1d1a7ea41cdd",
+  "evidence_contract_ref": "blake2b:35575f05513c97ac58017e77808f109b",
+  "exit_disposition_ref": "blake2b:170d9762ddcbce03b420f27a42f6fd43",
+  "fixture_description": "managed workflow",
+  "fixture_id": "F5",
+  "gate_verdict_refs": [
+    {
+      "gate": "X1",
+      "status": "PASS"
+    }
+  ],
+  "l6_eval_ref": "blake2b:34517754ea6356905335878ef17935eb",
+  "layer_contract_refs": {
+    "ExitReviewPacket": "blake2b:397d3939be3e4fcba73871ffa44bbce1",
+    "FinalEvidenceContract": "blake2b:35575f05513c97ac58017e77808f109b",
+    "L1PlanContract": "blake2b:9e0486564e06614238843d664222c5b4",
+    "L2ExecutionRequest": "blake2b:bb5cac4f402a08509272a85e2fb8f159",
+    "L3WorkflowContract": "blake2b:84ec0612db68a4ea22cce59bd801678a",
+    "PromptEnvelope": "blake2b:aaae84c2e65574deb5a2c40b7667b1d4",
+    "RouteContract": "blake2b:05ae5407e64b299bc0c55ad101f4d560",
+    "RuntimeExhaustBundle": "blake2b:34517754ea6356905335878ef17935eb",
+    "SealedL2Artifact": "blake2b:336fe600d3d9a308877fe6d10b09553f",
+    "ValidatedRequest": "blake2b:8ccc3659a6df32839689cc19fc022cc5",
+    "X3DispositionReceipt": "blake2b:170d9762ddcbce03b420f27a42f6fd43"
+  },
+  "no_bypass_receipt": {
+    "checked_surfaces": [
+      "ExitReviewPacket",
+      "FinalEvidenceContract",
+      "L1PlanContract",
+      "L2ExecutionRequest",
+      "L3WorkflowContract",
+      "PromptEnvelope",
+      "RouteContract",
+      "RuntimeExhaustBundle",
+      "SealedL2Artifact",
+      "ValidatedRequest",
+      "X3DispositionReceipt"
+    ],
+    "prohibited_spans_absent": [
+      "uwg.commit"
+    ],
+    "proof_status": "PASS",
+    "violations": []
+  },
+  "overlay_payload": {
+    "contracts": [
+      "ValidatedRequest",
+      "L1PlanContract",
+      "RouteContract",
+      "FinalEvidenceContract",
+      "L3WorkflowContract",
+      "PromptEnvelope",
+      "L2ExecutionRequest",
+      "SealedL2Artifact",
+      "ExitReviewPacket",
+      "X3DispositionReceipt",
+      "RuntimeExhaustBundle"
+    ],
+    "route_id": "R3R4_MANAGED_WORKFLOW",
+    "scenario_id": "RC-R3R4-MANAGED",
+    "span_count": 23
+  },
+  "prompt_envelope_ref": "blake2b:aaae84c2e65574deb5a2c40b7667b1d4",
+  "replay_comparison_ref": {
+    "blueprint_hash": "blueprint:fff3faf3",
+    "environment_digest": "env:7e089d19",
+    "evidence_contract_hash": "blake2b:b67bf4091381f742608489d7549d6695",
+    "execution_digest": "blake2b:336fe600d3d9a308877fe6d10b09553f",
+    "input_hash": "blake2b:7f8521c2d2450975efb83d6edb4c8340",
+    "model_registry_digest": "models:2f3772ec",
+    "normalized_request_hash": "blake2b:de74e687c19f012ea0738ff0b47eee6c",
+    "policy_hash": "policy:d39516da",
+    "prompt_hash": "blake2b:4c0b83ceae671454f412c19e44ae51cb",
+    "provider_lane": "provider:lane-A",
+    "replay_key": "replay-d2357308",
+    "route_digest": "blake2b:71583161e8b7b3e5a5a8ea20c510f012",
+    "snapshot_manifest": "snapshot:b6868ff6",
+    "tool_registry_digest": "tools:1e4bb59c"
+  },
+  "request_id": "req-fe215c97",
+  "run_id": "run-1be1cc10",
+  "sealed_l2_artifact_ref": "blake2b:336fe600d3d9a308877fe6d10b09553f",
+  "span_tree_ref": [
+    {
+      "name": "intake.validate_envelope",
+      "parent_span_id": null,
+      "span_id": "span-c3ee23b6"
+    },
+    {
+      "name": "intake.bind_identity_session",
+      "parent_span_id": "span-c3ee23b6",
+      "span_id": "span-2e841280"
+    },
+    {
+      "name": "l1.parse_intent",
+      "parent_span_id": "span-c3ee23b6",
+      "span_id": "span-07e96954"
+    },
+    {
+      "name": "l1.emit_plan_contract",
+      "parent_span_id": "span-07e96954",
+      "span_id": "span-a0c4f7d0"
+    },
+    {
+      "name": "l0.route.select",
+      "parent_span_id": "span-a0c4f7d0",
+      "span_id": "span-837957c1"
+    },
+    {
+      "name": "l0.route.emit_contract",
+      "parent_span_id": "span-837957c1",
+      "span_id": "span-2acdb009"
+    },
+    {
+      "name": "c0.plan",
+      "parent_span_id": "span-2acdb009",
+      "span_id": "span-ed2decd3"
+    },
+    {
+      "name": "c0.fetch",
+      "parent_span_id": "span-2acdb009",
+      "span_id": "span-450fb371"
+    },
+    {
+      "name": "c0.shape",
+      "parent_span_id": "span-2acdb009",
+      "span_id": "span-dd6b9128"
+    },
+    {
+      "name": "c0.contract",
+      "parent_span_id": "span-2acdb009",
+      "span_id": "span-6df6aec2"
+    },
+    {
+      "name": "l3.workflow.build",
+      "parent_span_id": "span-2acdb009",
+      "span_id": "span-17d63f81"
+    },
+    {
+      "name": "l3.step.dispatch",
+      "parent_span_id": "span-17d63f81",
+      "span_id": "span-226dc269"
+    },
+    {
+      "name": "prompt_assembly.load_bom",
+      "parent_span_id": "span-6df6aec2",
+      "span_id": "span-e461ca5a"
+    },
+    {
+      "name": "prompt_assembly.compose_slots",
+      "parent_span_id": "span-6df6aec2",
+      "span_id": "span-9551296a"
+    },
+    {
+      "name": "prompt_assembly.emit_artifact",
+      "parent_span_id": "span-6df6aec2",
+      "span_id": "span-d6476ed6"
+    },
+    {
+      "name": "l2.e1.prep",
+      "parent_span_id": "span-d6476ed6",
+      "span_id": "span-2909902c"
+    },
+    {
+      "name": "l2.e2.valid",
+      "parent_span_id": "span-2909902c",
+      "span_id": "span-d3a9ef02"
+    },
+    {
+      "name": "l2.e3.exec",
+      "parent_span_id": "span-d3a9ef02",
+      "span_id": "span-a419de78"
+    },
+    {
+      "name": "l2.e5.seal",
+      "parent_span_id": "span-a419de78",
+      "span_id": "span-170765f5"
+    },
+    {
+      "name": "exit.normalize",
+      "parent_span_id": "span-170765f5",
+      "span_id": "span-6b19a65c"
+    },
+    {
+      "name": "exit.evaluate",
+      "parent_span_id": "span-6b19a65c",
+      "span_id": "span-2e72c0b7"
+    },
+    {
+      "name": "exit.disposition",
+      "parent_span_id": "span-2e72c0b7",
+      "span_id": "span-7da1671d"
+    },
+    {
+      "name": "l6.ingest",
+      "parent_span_id": "span-7da1671d",
+      "span_id": "span-0b508130"
+    }
+  ],
+  "trace_root": "trace-431ebb1b",
+  "uwg_receipt_ref": null
+}

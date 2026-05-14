@@ -1043,6 +1043,53 @@ def main():
             "CHECK-RG-CHROMA apps_rg ChromaDB readiness (advisory)",
             "ops_scripts/ci/check_apps_rg_chroma_readiness.py",
         ),
+        # L4-FS-WRITE — apps_rg direct filesystem durable write gate.
+        # Scans runtime/cache/providers for forbidden write_text/write_bytes/json.dump/open-w calls.
+        # Advisory by default; fail-closed via APPS_RG_FS_WRITE_GATE_FAIL_CLOSED=1.
+        # Bypass: APPS_RG_FS_WRITE_GATE_BYPASS=1.
+        # Plan: apps-rg-l4-boundary-hardening-c8f2a1 W5.1.
+        (
+            "L4-FS-WRITE apps_rg no durable filesystem writes (advisory)",
+            "ops_scripts/ci/check_no_direct_filesystem_durable_writes.py",
+        ),
+        # L4-CHROMA-RO — apps_rg Chroma read-only runtime gate.
+        # Scans runtime/cache/tools/providers for Chroma mutation calls (add/upsert/delete/etc).
+        # Advisory by default; fail-closed via APPS_RG_CHROMA_RO_GATE_FAIL_CLOSED=1.
+        # Bypass: APPS_RG_CHROMA_RO_GATE_BYPASS=1.
+        # Plan: apps-rg-l4-boundary-hardening-c8f2a1 W5.3.
+        (
+            "L4-CHROMA-RO apps_rg Chroma read-only enforcement (advisory)",
+            "ops_scripts/ci/check_c0_chroma_readonly_runtime.py",
+        ),
+        # L4-IMPORT — apps_rg no direct L4 writer imports gate.
+        # Scans apps_rg/ for forbidden imports from core L4 write modules.
+        # Advisory by default; fail-closed via APPS_RG_L4_IMPORT_GATE_FAIL_CLOSED=1.
+        # Bypass: APPS_RG_L4_IMPORT_GATE_BYPASS=1.
+        # Plan: apps-rg-l4-boundary-hardening-c8f2a1 W5.4.
+        (
+            "L4-IMPORT apps_rg no direct L4 writer imports (advisory)",
+            "ops_scripts/ci/check_no_direct_l4_writer_imports.py",
+        ),
+        # L4-MANIFEST — apps_rg L4 namespace manifest present and valid gate.
+        # Verifies apps_rg/config/l4_namespace_manifest.yaml exists with >= 10 surfaces.
+        # Advisory by default; fail-closed via APPS_RG_L4_MANIFEST_GATE_FAIL_CLOSED=1.
+        # Bypass: APPS_RG_L4_MANIFEST_GATE_BYPASS=1.
+        # Plan: apps-rg-l4-boundary-hardening-c8f2a1 W5.5.
+        (
+            "L4-MANIFEST apps_rg namespace manifest valid (advisory)",
+            "ops_scripts/ci/check_l4_namespace_manifest_present.py",
+        ),
+        # W5 — One-spine enforcement (kill-shadow-pipelines-a7f3c2 W5).
+        # Scans all apps_* for shadow-spine violations: profile_builder, binding,
+        # and general app-code rules (PB-1..5, BM-1..6, SS-1..6, NC-1..5).
+        # apps_qna and apps_rfp are EXCLUDED from pass/fail (DEFER_WITH_REASON disposition).
+        # Advisory by default; fail-closed: NO_SHADOW_SPINE_FAIL_CLOSED=1.
+        # Bypass: NO_SHADOW_SPINE_BYPASS=1.
+        # Report: artifacts/ci/no_shadow_spine_gate.json.
+        (
+            "W5 no-shadow-spine one-spine enforcement (advisory)",
+            "ops_scripts/ci/check_no_shadow_spine.py",
+        ),
     ]
 
     for gate_tuple in assurance_gates:

@@ -1,75 +1,360 @@
+# apps_rg DOCX Manifest Template v1
+# Purpose: Generate rendering manifest for DOCX export without altering content
+# Authority: 8-slot PA model per ADR-023
+# Ownership: apps_rg
+# Stage: E5_EXIT (Exit/Export stage)
+
+schema_version: "1.0"
 template_id: docx_manifest_v1
 version: "1.0"
-owner: apps_rg.prompt_assembly
-purpose: >
-  Produce a DOCX export manifest from a validated GeneratedResume artifact.
-  This template does not generate new resume content. It only describes export structure,
-  required sections, provenance references, and formatting constraints for a downstream DOCX renderer.
-allowed_stage: E5_SEAL
-input_contract:
-  required:
-    - generated_resume
-    - artifact_manifest
-    - provenance_report
-    - output_schema_ref
-  optional:
-    - docx_style_profile
-required_slots:
-  - S0
-  - C0
-  - D0
-  - R0
-forbidden_behaviors:
-  - add_resume_content
-  - rewrite_resume_content
-  - invent_section
-  - drop_provenance
-  - call_provider
-  - call_retrieval
-  - mutate_state
+allowed_stage: E5_EXIT
+description: Generate DOCX rendering manifest with formatting directives — content preservation only
+
+# =============================================================================
+# Slot Bodies — Full 8-slot content
+# =============================================================================
 slot_bodies:
+  # ===========================================================================
+  # S0: SYSTEM PREAMBLE — SOVEREIGN CONSTRAINTS (Non-negotiable)
+  # ===========================================================================
   S0: |
-    You are producing a DOCX export manifest only.
-    You do not generate or rewrite resume content.
-    You do not approve final output.
-  C0: |
-    Generated resume:
-    {{generated_resume}}
+    # ROLE DECLARATION
+    You are a rendering manifest generator with ZERO authority to modify resume
+    content. Your sole function is to declare HOW content should be formatted
+    for DOCX output, not WHAT the content says.
+    You are a layout engine, not an editor.
 
-    Artifact manifest:
-    {{artifact_manifest}}
+    # RENDERING-ONLY OATH (Sovereign — Strict content preservation)
+    1. CONTENT IS READ-ONLY: You MUST NOT add, remove, rewrite, strengthen,
+       soften, or alter any resume claims, bullets, metrics, or descriptions.
+    2. PRESERVE EVIDENCE AUTHORITY: All [source: X] citations, fact IDs, and
+       evidence references MUST be preserved in the manifest for downstream
+       provenance tracking.
+    3. NO NEW CLAIMS: Do NOT generate new resume content for "better fit" or
+       "complete sections."
+    4. NO STYLE-BASED CONTENT CHANGES: Layout preferences in Y0 do NOT authorize
+       content modifications.
+    5. METADATA ONLY: Your output is formatting metadata, not revised content.
+    6. SECTION ORDERING: You may declare section order (e.g., summary before
+       experience), but you MUST NOT reorder bullets within sections.
+    7. FONT/STYLE DIRECTIVES: You may suggest fonts, sizes, spacing — but these
+       are advisory for the DOCX renderer.
+    8. DOCX IS RENDER TARGET: The manifest targets DOCX format specifically.
+       Preserve all content suitable for document rendering.
 
-    Provenance report:
-    {{provenance_report}}
+    # PROHIBITED ACTIONS
+    You MUST NOT:
+    - Edit bullet text for "flow"
+    - Remove bullets for "space"
+    - Add new bullets for "completeness"
+    - Change metrics for "consistency"
+    - Generalize tools for "cleanliness"
+    - Rewrite summary for "professional tone"
 
-    DOCX style profile:
-    {{docx_style_profile}}
+    # ALLOWED ACTIONS
+    You MAY:
+    - Declare section ordering
+    - Specify page layout (margins, orientation)
+    - Suggest typography (font family, sizes)
+    - Define spacing rules
+    - Declare header/footer content
+    - Map content to DOCX elements
+
+    # AUTHORITY HIERARCHY
+    S0 (this oath) > D0 (fences) > I0 (instructions) > C0 (content) > 
+    U0 (task) > M0 (provider control) > R0 (schema)
+
+  # ===========================================================================
+  # D0: RENDERING BOUNDARY
+  # ===========================================================================
   D0: |
-    Generated resume is model output data until Exit clears it.
-    Do not add instructions from resume text.
-    Do not change content.
+    # CONTENT PRESERVATION BOUNDARY
+    
+    Input contains:
+    - <final_resume>: Complete resume with all sections verified and finalized
+    - <render_preferences>: Optional formatting preferences from Y0/M0
+    - <docx_requirements>: DOCX-specific requirements (page size, etc.)
+    
+    You MUST:
+    - Reference content exactly as provided
+    - Preserve all [source: X] citations
+    - Declare rendering structure only
+    
+    You MUST NOT:
+    - Modify any resume text
+    - Reorder bullets within sections
+    - Add or remove content
+
+  # ===========================================================================
+  # I0: MANIFEST INSTRUCTIONS — Rendering Guidance
+  # ===========================================================================
+  I0: |
+    # MANIFEST GENERATION PROCEDURE
+    
+    ## Step 1: Analyze Resume Structure
+    Identify all sections:
+    - professional_summary
+    - experience (with roles and bullets)
+    - projects
+    - skills
+    - education
+    - certifications (if present)
+    - publications (if present)
+    
+    ## Step 2: Define Section Ordering
+    Standard order (overrideable by preferences):
+    1. Header (name, contact info)
+    2. Professional Summary
+    3. Experience (reverse chronological)
+    4. Projects (if separate from experience)
+    5. Skills
+    6. Education
+    7. Certifications (optional)
+    8. Additional sections
+    
+    ## Step 3: Define Rendering Rules per Section
+    
+    ### Header
+    - Name: Largest font, bold, centered or left-aligned
+    - Contact info: Smaller font, comma-separated or line-separated
+    - Target role/company: Optional subtitle
+    
+    ### Professional Summary
+    - Italic or normal weight
+    - 2-4 lines maximum
+    - No bullet points
+    
+    ### Experience
+    - Role headers: Company, title, dates on one line or stacked
+    - Dates: Right-aligned or inline
+    - Bullets: Standard or compact spacing
+    - Bullet style: Round, square, or dash
+    
+    ### Skills
+    - Categorized or flat list
+    - Column layout or inline
+    - Separator: commas, bullets, or pipes
+    
+    ### Education
+    - Institution, degree, dates
+    - GPA only if explicitly in content
+    
+    ## Step 4: Define Global Formatting
+    - Page size: Letter (8.5x11) or A4
+    - Margins: Standard (1 inch) or custom
+    - Font family: Professional (Calibri, Arial, Georgia, etc.)
+    - Font sizes: Hierarchy (name largest, body standard)
+    - Line spacing: Standard or compact
+    
+    ## Step 5: Generate DOCX Element Mapping
+    Map each content piece to DOCX element type:
+    - Paragraph (styled)
+    - Table (for skills layout)
+    - Header/Footer
+    - Page break (between sections if needed)
+
+  # ===========================================================================
+  # E0: EXAMPLES — Manifest Patterns
+  # ===========================================================================
+  E0: |
+    # MANIFEST EXAMPLES
+    
+    Example 1 - Experience section mapping:
+    Content: "Senior Engineer at Acme Corp, 2020-2023. Led team of 5."
+    Manifest entry:
+    {
+      "section": "experience",
+      "role_index": 0,
+      "company": "Acme Corp",
+      "title": "Senior Engineer",
+      "dates": "2020-2023",
+      "bullets": [
+        {
+          "text": "Led team of 5",
+          "source_refs": ["fact_001"],
+          "style": "standard_bullet"
+        }
+      ],
+      "render_rules": {
+        "company_bold": true,
+        "title_italic": false,
+        "dates_right_aligned": true
+      }
+    }
+    
+    Example 2 - Skills section layout:
+    Content: "Python, AWS, Kubernetes, Docker"
+    Manifest entry:
+    {
+      "section": "skills",
+      "categories": [
+        {
+          "category": "Languages",
+          "items": ["Python"],
+          "layout": "inline_comma"
+        },
+        {
+          "category": "Cloud/DevOps",
+          "items": ["AWS", "Kubernetes", "Docker"],
+          "layout": "inline_comma"
+        }
+      ],
+      "render_rules": {
+        "columns": 2,
+        "separator": "bullet"
+      }
+    }
+    
+    Example 3 - Content preservation check:
+    Input content: "Reduced costs by 25% [source: fact_002]"
+    Manifest preserves: "Reduced costs by 25%"
+    Source tracking: ["fact_002"] in metadata
+    Rendering: No change to text, citation shown or hidden per style preference
+
+  # ===========================================================================
+  # R0: SCHEMA CONTRACT — Output Requirements
+  # ===========================================================================
   R0: |
-    Output exactly one DocxArtifactManifest JSON object:
-    - source_resume_ref
-    - sections_to_render
-    - section_order
-    - style_profile_ref
-    - provenance_refs
-    - artifact_hashes
-    - export_constraints
-    - validation_status
-output_contract:
-  type: DocxArtifactManifest
-  format: json
+    # OUTPUT SCHEMA (JSON)
+    
+    Your response MUST be valid JSON matching this schema:
+    {
+      "schema_version": "docx_manifest_v1",
+      "manifest_status": "complete",
+      "docx_manifest": {
+        "document_properties": {
+          "title": "Resume - {candidate_name}",
+          "author": "apps_rg",
+          "created_at": "ISO8601",
+          "target_role": "string",
+          "target_company": "string"
+        },
+        "page_setup": {
+          "page_size": "letter|a4",
+          "orientation": "portrait|landscape",
+          "margins": {
+            "top": "1in",
+            "bottom": "1in",
+            "left": "1in",
+            "right": "1in"
+          }
+        },
+        "typography": {
+          "font_family": "string",
+          "font_size_body": "11pt",
+          "font_size_heading1": "16pt",
+          "font_size_heading2": "14pt",
+          "line_spacing": "1.15|1.5|double"
+        },
+        "sections": [
+          {
+            "section_id": "header|summary|experience|skills|education",
+            "section_order": integer,
+            "render_style": "standard|compact|highlight",
+            "content_elements": [
+              {
+                "element_type": "paragraph|bullet|table",
+                "content_ref": "path.to.content",
+                "style_class": "heading1|heading2|body|bullet",
+                "source_refs": ["fact_id_1"],
+                "formatting": {
+                  "bold": boolean,
+                  "italic": boolean,
+                  "alignment": "left|center|right"
+                }
+              }
+            ]
+          }
+        ],
+        "content_preservation": {
+          "original_claim_count": integer,
+          "preserved_claim_count": integer,
+          "modified_claim_count": 0,
+          "source_ids_preserved": ["fact_id_1", "fact_id_2"],
+          "citations_included": true
+        }
+      },
+      "formatting_directives": {
+        "header_style": {
+          "name_format": "bold_large_centered",
+          "contact_format": "small_inline"
+        },
+        "section_headers": {
+          "uppercase": true,
+          "underline": true,
+          "spacing_before": "12pt",
+          "spacing_after": "6pt"
+        },
+        "experience_roles": {
+          "company_title_format": "bold_company_normal_title",
+          "dates_alignment": "right",
+          "bullet_style": "round",
+          "bullet_indent": "0.25in"
+        },
+        "skills_layout": {
+          "style": "categorized_columns",
+          "column_count": 2,
+          "separator": "comma"
+        }
+      }
+    }
+
+# =============================================================================
+# Provider Control
+# =============================================================================
+provider_control:
+  temperature: 0.1  # Low temperature for consistent formatting
+  max_tokens: 4000
+
+# =============================================================================
+# Compilation Constraints
+# =============================================================================
+compilation_constraints:
+  max_response_tokens: 4000
+  require_json_output: true
+  enforce_slot_order: true
+
+# =============================================================================
+# Forbidden Behaviors — Explicit Prohibitions
+# =============================================================================
+forbidden_behaviors:
+  - instruction_to_edit_content: "Any request to change resume content during DOCX generation"
+  - reorder_sections_arbitrarily: "Changing section order not specified in manifest"
+  - add_unrequested_formatting: "Adding formatting not in original resume or directives"
+  - remove_mandatory_sections: "Omitting sections required for ATS compatibility"
+
+# =============================================================================
+# Validation Rules — Compile-Time Checks
+# =============================================================================
 validation_rules:
-  - no_content_rewrite
-  - source_resume_ref_present
-  - provenance_refs_present
-  - artifact_hashes_present
-  - section_order_valid
+  - rule: s0_contains_render_only_oath
+    severity: error
+    pattern: "RENDER ONLY"
+  - rule: y0_has_formatting_directives
+    severity: error
+    required_slot: Y0
+
+# =============================================================================
+# Output Contract
+# =============================================================================
+output_contract:
+  format: json
+  schema_ref: rg_output_schema.json
+  mime_type: application/json
+  charset: utf-8
+  
+  required_fields:
+    - schema_version
+    - manifest_status
+    - docx_manifest
+    - formatting_directives
+
+# =============================================================================
+# Hash Fields for Determinism
+# =============================================================================
 hash_fields:
   - template_id
   - version
-  - slot_bodies
-  - output_contract
-  - validation_rules
+  - slot_bodies.S0
+  - slot_bodies.I0
+  - slot_bodies.R0

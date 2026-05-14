@@ -163,6 +163,44 @@ def _update_plan_files(markers: list[Any]) -> None:
                 file=sys.stderr,
             )
 
+        # Auto-capture test/scope delta from note= into wave table columns
+        if kind == "wave_complete" and wave is not None and getattr(marker, "note", None):
+            try:
+                note_ok, note_msg = updater.update_wave_note_columns(REPO_ROOT, slug, wave, marker.note)
+            except Exception as exc:  # noqa: BLE001
+                _log({"event": "note_column_update_error", "slug": slug, "wave": wave, "error": repr(exc)})
+                continue
+            _log({"event": "note_column_update", "slug": slug, "wave": wave, "ok": note_ok, "msg": note_msg})
+
+
+def _warn_unresolvable_slugs(markers: list[Any]) -> None:
+    """Emit a loud stderr warning for any marker whose slug can't resolve to a plan file.
+
+    This makes silent misses visible — previously markers were dropped silently
+    when the slug didn't match the exact filename (e.g. numeric-prefix plans,
+    non-hex-suffix master plans).
+    """
+    updater = _load_updater()
+    if updater is None:
+        return
+    seen: set[str] = set()
+    for marker in markers:
+        slug = marker.slug
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+        plan_file = updater._find_plan_file(REPO_ROOT, slug)
+        if plan_file is None:
+            msg = (
+                f"[wave_lifecycle_capture] WARN: slug '{slug}' in marker "
+                f"kind={marker.kind} could not be resolved to a plan file under "
+                f".windsurf/plans/. The wave/phase status table was NOT updated. "
+                f"Check that the plan_id: frontmatter or filename matches the slug "
+                f"used in the WAVE_COMPLETE:/PHASE_COMPLETE: marker."
+            )
+            print(msg, file=sys.stderr)
+            _log({"event": "unresolvable_slug", "slug": slug, "kind": marker.kind})
+
 
 def main() -> int:
     if os.environ.get("WAVE_LIFECYCLE_CAPTURE_BYPASS") == "1":
@@ -223,6 +261,7 @@ def main() -> int:
     # Update on-disk plan .md wave tables.
     if markers:
         _update_plan_files(markers)
+        _warn_unresolvable_slugs(markers)
 
     if not rows:
         return 0

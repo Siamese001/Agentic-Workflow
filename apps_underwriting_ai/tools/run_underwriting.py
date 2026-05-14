@@ -1,7 +1,7 @@
-"""Thin CLI wrapper over the apps_underwriting_ai dispatch chain.
+"""Thin CLI wrapper over the apps_underwriting_ai profile-sequenced pipeline.
 
-Previously drove the deleted parallel pipeline. Now delegates to U0 →
-dispatch → Exit via apps_underwriting_ai.__main__._run_from_file.
+Delegates to AppIngressRunner(profile=build_app_runtime_contract()).run(payload).
+No dispatch callable. AppIngressRunner owns stage sequencing.
 
 Usage::
 
@@ -9,7 +9,7 @@ Usage::
     python -m apps_underwriting_ai.tools.run_underwriting --request path.json --format json
     python -m apps_underwriting_ai.tools.run_underwriting --request path.yaml --out artifacts/
 
-Plan: apps-underwriting-ai-kill-parallel-pipelines-a3f7e2 W4.
+Bundle B — shadow pipeline removed. Profile-only runtime.
 """
 from __future__ import annotations
 
@@ -56,33 +56,23 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: request file missing required field: {required}", file=sys.stderr)
             return 2
 
-    from apps_underwriting_ai.runtime.bindings.u0_binding import (  # noqa: PLC0415
-        U0ValidationError,
-        u0_validate_underwriting,
-    )
-    from apps_underwriting_ai.runtime.contracts.underwriting_ingress_payload import (  # noqa: PLC0415
-        UnderwritingIngressEnvelope,
-    )
-    from apps_underwriting_ai.runtime.dispatch.underwriting_dispatch import (  # noqa: PLC0415
-        run_underwriting_dispatch,
-    )
+    from agentic_core.runtime.entry.app_ingress_runner import AppIngressRunner  # noqa: PLC0415
+    from agentic_core.L5_safety.enforcement.ingress_envelope_check import ClarificationRequired  # noqa: PLC0415
+    from apps_underwriting_ai.runtime.bindings.u0_binding import U0ValidationError  # noqa: PLC0415
+    from apps_underwriting_ai.runtime.profile_builder import build_app_runtime_contract  # noqa: PLC0415
 
-    envelope = UnderwritingIngressEnvelope(
-        request_id=str(payload["request_id"]),
-        applicant_id=str(payload["applicant_id"]),
-        product_class=str(payload["product_class"]),
-        documents=tuple(payload.get("documents") or ()),
-        metadata=payload.get("metadata") or {},
-        trace_id=str(payload.get("trace_id") or ""),
-    )
+    os.environ.setdefault("UW_DISPATCH_SKIP_LLM", "1")
+    profile = build_app_runtime_contract()
+    runner = AppIngressRunner(profile=profile)
     try:
-        validated = u0_validate_underwriting(envelope)
+        result = runner.run(payload)
     except U0ValidationError as exc:
         print(f"error: U0 validation failed: {exc}", file=sys.stderr)
         return 5
 
-    os.environ.setdefault("UW_DISPATCH_SKIP_LLM", "1")
-    result = run_underwriting_dispatch(validated)
+    if isinstance(result, ClarificationRequired):
+        print(f"error: ClarificationRequired: {result.reason}", file=sys.stderr)
+        return 4
 
     if args.format == "json":
         out_dict = {

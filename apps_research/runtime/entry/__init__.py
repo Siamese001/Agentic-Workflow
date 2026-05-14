@@ -1,17 +1,10 @@
-"""apps_research runtime entrypoints.
+"""apps_research runtime entrypoints — Bundle C profile migration.
 
-Contains app-specific dispatch callables for AppIngressRunner.
+apps_research_parse and apps_research_dispatch are RETIRED.
+Use profile_builder instead:
+    from apps_research.runtime.profile_builder import build_app_runtime_contract
+    AppIngressRunner(profile=build_app_runtime_contract()).run(payload)
 """
 from __future__ import annotations
 
-from apps_research.runtime.entry.dispatch import (
-    apps_research_parse,
-    apps_research_dispatch,
-    APPS_RESEARCH_REQUIRED_FIELDS,
-)
-
-__all__ = [
-    "apps_research_parse",
-    "apps_research_dispatch",
-    "APPS_RESEARCH_REQUIRED_FIELDS",
-]
+__all__: list[str] = []

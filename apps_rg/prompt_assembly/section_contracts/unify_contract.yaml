@@ -1,0 +1,27 @@
+version: "1.0"
+section: unify
+description: >
+  Declarative contract for the unify pass.
+  Encodes consistency and de-duplication rules as prompt-level guidance.
+
+integrity_rules:
+  no_new_claims: required
+  remove_contradictions: required
+  contradiction_types:
+    - date_overlap
+    - title_inflation
+    - metric_inconsistency
+    - scope_inflation
+  summary_claims_must_appear_in_experience: required
+  no_filler_for_removed_content: required
+
+de_duplication:
+  collapse_repeated_achievements: true
+  preserve_highest_specificity_instance: true
+  merge_strategy: keep_most_specific_with_citation
+
+consistency_checks:
+  date_integrity: required
+  title_consistency: required
+  metric_consistency: required
+  scope_consistency: required

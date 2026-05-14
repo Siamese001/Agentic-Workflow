@@ -1,16 +1,13 @@
 {
-  "plan_type": "platform_core_change",
-  "author_gate_receipt_ref": "artifacts/apps_rg/w2e_sovereign_base_agent_generic_repair_receipt.md",
-  "plan_slug": "apps-rg-golden-state-section-generation-a4f9e1",
-  "wave": "W2E",
-  "rationale": "generic_import_chain_repair",
-  "files_changed": [
-    "agentic_core/base_agents/SovereignBaseAgent.py"
-  ],
-  "classification": "GENERIC_IMPORT_CHAIN_REPAIR",
-  "apps_rg_specific": false,
-  "g22_changed": false,
-  "gate_changes": false,
-  "section_generation": false,
-  "timestamp": "2026-05-12T11:30:00-04:00"
+  "active_plan": {
+    "plan_type": "platform_core_change",
+    "plan_id": "core-l5-certification-packet-producer-hardening",
+    "plan_slug": "p2.1_core-l5-certification-packet-producer-hardening",
+    "touches_agentic_core": true,
+    "core_addition_author_gate_required": true,
+    "author_gate_receipt_ref": "artifacts/governance/core_l5_producer_author_gate_receipt.json",
+    "wave": "W0",
+    "rationale": "L5 certification packet producer — W0 baseline preflight",
+    "timestamp": "2026-05-14T13:28:00-04:00"
+  }
 }
