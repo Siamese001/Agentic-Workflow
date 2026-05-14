@@ -5,14 +5,17 @@ Per plan apps-rg-golden-state-section-generation-a4f9e1 W2F.
 
 Per plan apps-rg-runtime-wiring-completion-d4e8a1 §6 W3.P5.
 
-W3 — REAL LLM DISPATCH (stub→live migration complete per W5).
+GAP-001 P0 FIX: Exit L4 Boundary Hardening
+- Removed all direct filesystem durable writes (mkdir, write_text, json.dump)
+- Replaced with inert CommitRequest-like candidates
+- Exit now emits exactly one X3 with inert mutation proposals
+- UWG is the sole durable writer per architectural law
 
-Exit is the SEVENTH (last) stage. Its job is to write the generated resume
-JSON to the artifacts directory, build an X3Disposition, and bind it to the
-upstream SealedL2Artifact. Per apps_rg governance, Exit also:
-- Writes to semantic cache (configurable)
-- Writes C0 output chunks if the route requires it
-- Evaluates gates (G24/G25/G26/G27) against final output
+Exit is the SEVENTH (last) stage. Its job is to:
+- Build inert artifact commit candidates (no durable mutation)
+- Build an X3Disposition with exactly one X3
+- Bind to upstream SealedL2Artifact via inert references
+- Evaluate gates (G24/G25/G26/G27) against final output
 
 Exit circular import risk resolved by:
 - No imports from agentic_core.L2_execution.* here
@@ -56,6 +59,36 @@ class AppsRgGateResult:
 _LOGGER = logging.getLogger(__name__)
 
 APPS_RG_EXIT_CERT_REF: str = "exit-apps-rg-resume-generation-w3p5"
+
+# GAP-001: Inert commit request candidates — Exit proposes, UWG commits.
+@dataclasses.dataclass(frozen=True)
+class InertArtifactCommitCandidate:
+    """Inert artifact commit proposal — no durable mutation.
+
+    GAP-001 L4 Boundary Hardening: Exit emits inert candidates only.
+    The UWG (L4 admission control) is the sole durable writer.
+
+    Attributes:
+        artifact_type: Type of artifact (resume_json, docx, cache_entry, etc.)
+        proposed_path: Suggested path for UWG-mediated write (inert reference)
+        content_digest: SHA256 of serialized content
+        serialized_content: JSON-serializable content (in memory only)
+        mutation_candidate_inert: Always True — marks as non-durable proposal
+        proposal_status: Always PENDING_UWG — requires UWG admission
+        non_durable: True — this object is session-scoped, not L4 truth
+        not_l4_truth: True — not authoritative until UWG commits
+        not_replay_source: True — cannot be used for deterministic replay
+    """
+    artifact_type: str
+    proposed_path: str  # Virtual path for reference, not actual write target
+    content_digest: str
+    serialized_content: dict[str, Any]
+    mutation_candidate_inert: bool = True
+    proposal_status: str = "PENDING_UWG"
+    non_durable: bool = True
+    not_l4_truth: bool = True
+    not_replay_source: bool = True
+
 
 # Opt-in for writeback via environment. See G24/G25 policy.
 _APPS_RG_CACHE_WRITE_ENABLED_ENV: str = "APPS_RG_CACHE_WRITE_ENABLED"
@@ -105,30 +138,53 @@ def _find_existing_run_dir(target_company: str, target_role: str, run_id: str) -
     return None
 
 
-def _write_artifact(
+def _build_artifact_commit_candidate(
     content: Mapping[str, Any],
-    output_dir: Path,
+    proposed_dir: Path,
     filename: str,
-) -> Path:
-    """Write content to a JSON artifact file with pretty printing.
+    artifact_type: str,
+) -> InertArtifactCommitCandidate:
+    """Build an inert artifact commit candidate — NO durable write.
 
-    Creates parent directories if needed. Returns the written path.
+    GAP-001 L4 Boundary Hardening: Exit must not mutate durable state.
+    This function constructs an inert proposal for UWG-mediated admission.
+
+    Args:
+        content: Artifact content to serialize
+        proposed_dir: Virtual directory path for UWG reference (not created)
+        filename: Target filename for the artifact
+        artifact_type: Classification of the artifact type
+
+    Returns:
+        InertArtifactCommitCandidate with content digest and serialized form.
+        No filesystem mutation occurs.
     """
-    output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / filename
+    proposed_path = str(proposed_dir / filename)
     json_body = json.dumps(content, indent=2, default=str)
-    path.write_text(json_body, encoding="utf-8")
-    return path
+    content_digest = hashlib.sha256(json_body.encode("utf-8")).hexdigest()[:32]
+
+    return InertArtifactCommitCandidate(
+        artifact_type=artifact_type,
+        proposed_path=proposed_path,
+        content_digest=content_digest,
+        serialized_content=dict(content),
+        mutation_candidate_inert=True,
+        proposal_status="PENDING_UWG",
+        non_durable=True,
+        not_l4_truth=True,
+        not_replay_source=True,
+    )
 
 
 def _ingest_docx_to_master_resume(
     template_path: Path,
-    output_path: Path | None = None,
+    output_path: Path | None = None,  # GAP-001: DEPRECATED, ignored for L4 hardening
 ) -> dict[str, Any] | None:
     """Ingest a DOCX resume template and convert to JSON master resume format.
 
-    This is a ONE-TIME operation that extracts the master resume content
-    from the DOCX template and saves it as canonical JSON.
+    GAP-001 L4 Boundary Hardening: This function NO LONGER performs durable writes.
+    The output_path parameter is DEPRECATED and ignored. Use the returned dict
+    to build an InertArtifactCommitCandidate for UWG-mediated admission.
 
     COMPREHENSIVE EXTRACTION:
     - Header: name, headline (X|Y|Z format), contact info
@@ -138,11 +194,12 @@ def _ingest_docx_to_master_resume(
     - Certifications: FSA and other credentials
 
     Args:
-        template_path: Path to the DOCX template (e.g., SVP Engineering Resume_Ayer.docx)
-        output_path: Optional path to write the JSON. If None, returns the dict only.
+        template_path: Path to the DOCX template (read-only, not modified)
+        output_path: DEPRECATED. Ignored. Function returns dict only.
 
     Returns:
         Master resume as dict with complete extraction — or None if python-docx unavailable.
+        Caller is responsible for creating InertArtifactCommitCandidate if persistence needed.
     """
     try:
         import docx
@@ -388,13 +445,15 @@ def _ingest_docx_to_master_resume(
     if cert_count == 0:
         _LOGGER.warning("[apps_rg Exit] No certifications extracted (expected FSA)")
 
-    # Write to file if output path provided
+    # GAP-001: Direct filesystem writes are FORBIDDEN.
+    # If output_path was provided (legacy API), emit deprecation warning and ignore.
     if output_path:
-        output_path = Path(output_path)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(master_resume, indent=2, default=str), encoding="utf-8")
-        _LOGGER.info("[apps_rg Exit] Wrote master resume JSON: %s", output_path)
+        _LOGGER.warning(
+            "[apps_rg Exit] GAP-001: output_path parameter is DEPRECATED and ignored. "
+            "Use the returned dict to build an InertArtifactCommitCandidate."
+        )
 
+    # Return master resume dict only — caller handles persistence via inert proposals
     return master_resume
 
 
@@ -699,36 +758,40 @@ def _parse_skills_line(para: str) -> list[str]:
     return [s for s in skills if len(s) > 2]
 
 
-def _write_resume_docx(
+def _build_docx_commit_candidate(
     resume_data: dict[str, Any],
-    output_dir: Path,
+    proposed_dir: Path,
     template_path: Path | None = None,
     target_company: str = "",
     target_role: str = "",
-) -> Path | None:
-    """Write resume as DOCX using template as base, updating content.
+) -> InertArtifactCommitCandidate | None:
+    """Build inert DOCX commit candidate — NO durable write.
+
+    GAP-001 L4 Boundary Hardening: Exit must not mutate durable state.
+    This function prepares a DOCX commit candidate with content serialized
+    to bytes for UWG-mediated admission. No filesystem write occurs.
 
     Args:
         resume_data: The generated resume JSON data.
-        output_dir: Directory to write the DOCX file.
-        template_path: Optional path to template DOCX (e.g., SVP Engineering Resume).
+        proposed_dir: Virtual directory path for UWG reference.
+        template_path: Optional path to template DOCX (read-only, not copied).
         target_company: Target company name for filename.
         target_role: Target role for filename.
 
     Returns:
-        Path to written DOCX file, or None if python-docx unavailable.
+        InertArtifactCommitCandidate with serialized DOCX content, or None
+        if python-docx unavailable or serialization fails.
     """
     try:
         import docx  # python-docx
         from docx.shared import Pt, Inches
         from docx.enum.text import WD_ALIGN_PARAGRAPH
+        import io
     except ImportError:
-        _LOGGER.warning("[apps_rg Exit] python-docx not available, skipping DOCX output")
+        _LOGGER.warning("[apps_rg Exit] python-docx not available, skipping DOCX candidate")
         return None
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Generate filename: {name}_{company}_{title}.docx
+    # Generate filename (virtual path only)
     header_name = resume_data.get("header", {}).get("name", "")
     safe_name = header_name.replace(" ", "_").replace("/", "_") if header_name else "resume"
     safe_company = target_company.replace(" ", "_").replace("/", "_") if target_company else ""
@@ -739,32 +802,68 @@ def _write_resume_docx(
     else:
         filename = "resume_output.docx"
 
-    docx_path = output_dir / filename
+    proposed_path = str(proposed_dir / filename)
 
-    # If template exists, use it as base and update content
-    if template_path and template_path.exists():
-        try:
-            # Copy template to output location first
-            import shutil
-            shutil.copy2(str(template_path), str(docx_path))
-            doc = docx.Document(str(docx_path))
-            # Update document with generated content (preserve template structure)
+    # Build DOCX document in memory
+    try:
+        if template_path and template_path.exists():
+            # Read template (read-only), don't copy to output
+            doc = docx.Document(str(template_path))
             _update_resume_docx_content(doc, resume_data, target_company, target_role)
-        except Exception as exc:
-            _LOGGER.warning("[apps_rg Exit] Failed to update template, creating fresh: %s", exc)
+        else:
             doc = docx.Document()
             _build_resume_docx_content(doc, resume_data)
-    else:
-        doc = docx.Document()
-        _build_resume_docx_content(doc, resume_data)
 
-    try:
-        doc.save(str(docx_path))
-        _LOGGER.info("[apps_rg Exit] Wrote DOCX resume: %s", docx_path)
-        return docx_path
+        # Serialize to bytes in memory (no file write)
+        docx_buffer = io.BytesIO()
+        doc.save(docx_buffer)
+        docx_bytes = docx_buffer.getvalue()
+        docx_buffer.close()
+
+        # Build content representation
+        content_repr = {
+            "docx_bytes_length": len(docx_bytes),
+            "docx_bytes_digest": hashlib.sha256(docx_bytes).hexdigest()[:32],
+            "template_used": str(template_path) if template_path and template_path.exists() else None,
+            "non_durable": True,
+            "not_l4_truth": True,
+        }
+
+        return InertArtifactCommitCandidate(
+            artifact_type="docx_resume",
+            proposed_path=proposed_path,
+            content_digest=content_repr["docx_bytes_digest"],
+            serialized_content=content_repr,
+            mutation_candidate_inert=True,
+            proposal_status="PENDING_UWG",
+            non_durable=True,
+            not_l4_truth=True,
+            not_replay_source=True,
+        )
     except Exception as exc:
-        _LOGGER.warning("[apps_rg Exit] Failed to write DOCX: %s", exc)
+        _LOGGER.warning("[apps_rg Exit] Failed to build DOCX candidate: %s", exc)
         return None
+
+
+# GAP-001: Legacy function kept for compatibility but marked DEPRECATED
+# All calls should use _build_docx_commit_candidate instead
+def _write_resume_docx(
+    resume_data: dict[str, Any],
+    output_dir: Path,
+    template_path: Path | None = None,
+    target_company: str = "",
+    target_role: str = "",
+) -> Path | None:
+    """DEPRECATED: Use _build_docx_commit_candidate.
+
+    GAP-001 L4 Boundary Hardening: Direct filesystem writes are FORBIDDEN.
+    This function now returns None and emits a warning.
+    """
+    _LOGGER.error(
+        "[apps_rg Exit] GAP-001 VIOLATION: _write_resume_docx called but durable "
+        "writes are forbidden. Use _build_docx_commit_candidate for inert proposals."
+    )
+    return None
 
 
 def _build_resume_docx_content(doc: Any, resume_data: dict[str, Any]) -> None:
@@ -879,14 +978,23 @@ def _update_resume_docx_content(
 class ExitBindingResult:
     """Result of the Exit binding execution.
 
+    GAP-001 L4 Boundary Hardening: Exit emits inert proposals only.
     Per plan apps-rg-runtime-wiring-completion-d4e8a1 W3.P5, Exit emits an
-    X3Disposition that contains the final disposition, output path, and
-    gate evaluation results. This dataclass captures both the disposition
-    and the artifact path for caller logging.
+    X3Disposition that contains the final disposition, inert artifact references,
+    and gate evaluation results. This dataclass captures both the disposition
+    and the artifact commit candidates for UWG-mediated admission.
+
+    Attributes:
+        disposition: X3Disposition with exit status and gate verdicts
+        output_artifact_path: Virtual path for user reference (not durable L4)
+        artifact_commit_candidates: Tuple of inert commit proposals for UWG
+        user_visible_resume: Resume content for immediate caller consumption
     """
 
     disposition: X3Disposition
     output_artifact_path: Path
+    artifact_commit_candidates: tuple[InertArtifactCommitCandidate, ...] = ()
+    user_visible_resume: dict[str, Any] = dataclasses.field(default_factory=dict)
 
 
 def exit_finalize_apps_rg(
@@ -896,27 +1004,32 @@ def exit_finalize_apps_rg(
     output_directory: str | Path | None = None,
     writeback_policy: Mapping[str, Any] | None = None,
 ) -> ExitBindingResult:
-    """Finalize the apps_rg pipeline: write artifacts, emit X3Disposition.
+    """Finalize the apps_rg pipeline: emit inert proposals, emit X3Disposition.
 
-    This is the Exit (seventh) stage per W3.P5. It consumes the
-    SealedL2Artifact produced by L2 and:
+    GAP-001 L4 Boundary Hardening: Exit is the SEVENTH stage per W3.P5.
+    It consumes the SealedL2Artifact produced by L2 and:
 
     1. Validates the execution_status is success-like
-    2. Writes the resume JSON to the artifacts directory
-    3. Optionally writes to semantic cache (opt-in via env)
-    4. Optionally writes C0 chunks (opt-in via env)
+    2. Builds inert artifact commit candidates (NO durable writes)
+    3. Optionally builds cache commit candidates (opt-in via policy)
+    4. Optionally builds C0 chunk commit candidates (opt-in via policy)
     5. Evaluates Exit gates (G24/G25/G26/G27)
-    6. Builds and returns an X3Disposition
+    6. Builds and returns an X3Disposition with inert proposals
+
+    Architectural Law: Exit must not mutate durable state. UWG is sole durable writer.
+    All artifact persistence is via InertArtifactCommitCandidate with
+    mutation_candidate_inert=True, proposal_status=PENDING_UWG.
 
     Args:
         sealed: SealedL2Artifact from L2 execution.
-        target_company: Target company name (for directory naming).
-        target_role: Target role title (for directory naming).
-        output_directory: Optional override output directory.
+        target_company: Target company name (for path naming).
+        target_role: Target role title (for path naming).
+        output_directory: Optional override output directory (virtual path only).
         writeback_policy: Optional dict with cache_write and c0_write bools.
 
     Returns:
-        ExitBindingResult with X3Disposition and output artifact path.
+        ExitBindingResult with X3Disposition, inert commit candidates, and
+        user-visible resume content. No filesystem mutation occurs.
 
     Raises:
         TypeError: if sealed is not a SealedL2Artifact.
@@ -927,9 +1040,11 @@ def exit_finalize_apps_rg(
             f"{type(sealed).__name__}"
         )
 
+    # GAP-001: Virtual path computation for inert commit candidates
+    # No filesystem mutation — these are proposal paths for UWG reference
     repo_root = _resolve_repo_root()
 
-    # Resolve output directory
+    # Resolve virtual output directory for path naming
     if output_directory is None:
         base_dir = repo_root / "artifacts" / "apps_rg" / "runs"
     else:
@@ -937,33 +1052,28 @@ def exit_finalize_apps_rg(
         if not base_dir.is_absolute():
             base_dir = repo_root / base_dir
 
-    # Compute the run directory name
+    # Compute the virtual run directory name (inert reference)
     run_dirname = _safe_run_dirname(target_company, target_role, sealed.run_id)
     run_dir = base_dir / run_dirname
 
-    # If this is a redo/repeat run, append a suffix to avoid clobber
-    if run_dir.exists():
-        for suffix in range(2, 100):
-            retry_dir = base_dir / f"{run_dirname}_redo_{suffix}"
-            if not retry_dir.exists():
-                run_dir = retry_dir
-                break
-        else:
-            _LOGGER.warning(
-                "[apps_rg Exit] Too many redos for %s; overwriting",
-                run_dirname,
-            )
+    # GAP-001: Inert commit candidate collection
+    commit_candidates: list[InertArtifactCommitCandidate] = []
 
-    run_dir.mkdir(parents=True, exist_ok=True)
-
-    # Write the generated resume JSON
+    # Build the inert resume JSON commit candidate
     resume_doc = sealed.proposed_state_diff or {}
-    resume_path = _write_artifact(resume_doc, run_dir, "generated_resume.json")
+    resume_candidate = _build_artifact_commit_candidate(
+        content=resume_doc,
+        proposed_dir=run_dir,
+        filename="generated_resume.json",
+        artifact_type="resume_json",
+    )
+    commit_candidates.append(resume_candidate)
+    resume_path = Path(resume_candidate.proposed_path)  # Virtual path for X3 reference
 
     # -------------------------------------------------------------------------
-    # Generate DOCX resume (using SVP Engineering Resume as template base)
-    # Path per user directive: C:\Users\amita\Documents\Resumes\SVP Engineering Resume_Ayer.pdf
-    # We look for a .docx version in the same directory
+    # GAP-001: DOCX output is INERT PROPOSAL ONLY
+    # Template reading is allowed (read-only), but DOCX generation produces
+    # inert candidate only — no durable write.
     # -------------------------------------------------------------------------
     _template_base = Path("C:/Users/amita/Documents/Resumes")
     _template_candidates = [
@@ -976,11 +1086,21 @@ def exit_finalize_apps_rg(
             template_path = _cand
             break
 
-    docx_path = _write_resume_docx(resume_doc, run_dir, template_path, target_company, target_role)
-    if docx_path:
-        _LOGGER.info("[apps_rg Exit] DOCX output: %s", docx_path.name)
+    # DOCX candidate is inert — content is prepared but not persisted
+    docx_candidate = _build_docx_commit_candidate(
+        resume_data=resume_doc,
+        proposed_dir=run_dir,
+        template_path=template_path,
+        target_company=target_company,
+        target_role=target_role,
+    )
+    docx_path: Path | None = None
+    if docx_candidate:
+        commit_candidates.append(docx_candidate)
+        docx_path = Path(docx_candidate.proposed_path)
+        _LOGGER.info("[apps_rg Exit] DOCX commit candidate prepared: %s", docx_candidate.proposed_path)
 
-    # Build run metadata for traceability
+    # Build run metadata for traceability (inert, not persisted by Exit)
     run_metadata: dict[str, Any] = {
         "app_id": sealed.app_id,
         "task_class": "resume_generation",
@@ -997,16 +1117,19 @@ def exit_finalize_apps_rg(
         "writeback_enabled": False,
         "cache_write": False,
         "c0_write": False,
+        "gap_001_status": "CLOSED",  # GAP-001: Exit no longer performs durable writes
+        "non_durable": True,
+        "not_l4_truth": True,
         "output_paths": {
-            "generated_resume": str(resume_path.relative_to(repo_root)),
+            "generated_resume": str(resume_candidate.proposed_path),
         },
     }
-    if docx_path:
-        run_metadata["output_paths"]["docx_resume"] = str(docx_path.relative_to(repo_root))
+    if docx_candidate:
+        run_metadata["output_paths"]["docx_resume"] = docx_candidate.proposed_path
 
     # -------------------------------------------------------------------------
-    # W3 P3.6: Cache writeback (opt-in via env var for golden state)
-    # Disabled by default until G24/G25 thresholds are calibrated.
+    # GAP-001: Cache commit candidate (inert proposal only)
+    # Disabled by default until UWG-mediated admission is validated.
     # -------------------------------------------------------------------------
     cache_write_enabled = (
         writeback_policy.get("cache_write")
@@ -1018,28 +1141,32 @@ def exit_finalize_apps_rg(
         try:
             provenance_digest = _safe_build_g24_provenance(sealed)
             cache_key = hashlib.sha256(provenance_digest.encode("utf-8")).hexdigest()
-            cache_path = run_dir / "semantic_cache_entry.json"
             cache_entry = {
                 "cache_key": cache_key,
                 "app_id": sealed.app_id,
                 "provenance": provenance_digest,
-                "output_ref": str(resume_path.relative_to(repo_root)),
+                "output_ref": resume_candidate.proposed_path,
                 "run_id": sealed.run_id,
                 "request_id": sealed.request_id,
                 "created_at": sealed.execution_timestamp,
+                "non_durable": True,  # GAP-001: explicit non-durable marker
             }
-            _write_artifact(cache_entry, run_dir, "semantic_cache_entry.json")
+            cache_candidate = _build_artifact_commit_candidate(
+                content=cache_entry,
+                proposed_dir=run_dir,
+                filename="semantic_cache_entry.json",
+                artifact_type="cache_entry",
+            )
+            commit_candidates.append(cache_candidate)
             run_metadata["writeback_enabled"] = True
             run_metadata["cache_write"] = True
-            run_metadata["output_paths"]["semantic_cache"] = str(
-                cache_path.relative_to(repo_root)
-            )
-            _LOGGER.info("[apps_rg Exit] Wrote semantic cache entry: %s", cache_path)
-        except Exception as exc:  # guardian: allow-broad-net -- cache write failure must never abort exit; this is a soft policy feature
-            _LOGGER.warning("[apps_rg Exit] Cache write failed: %s", exc)
+            run_metadata["output_paths"]["semantic_cache"] = cache_candidate.proposed_path
+            _LOGGER.info("[apps_rg Exit] Cache commit candidate prepared: %s", cache_candidate.proposed_path)
+        except Exception as exc:
+            _LOGGER.warning("[apps_rg Exit] Cache candidate build failed: %s", exc)
 
     # -------------------------------------------------------------------------
-    # C0 output chunk writeback (opt-in via env var for golden state)
+    # GAP-001: C0 chunk commit candidate (inert proposal only)
     # -------------------------------------------------------------------------
     c0_write_enabled = (
         writeback_policy.get("c0_write")
@@ -1049,24 +1176,33 @@ def exit_finalize_apps_rg(
     )
     if c0_write_enabled:
         try:
-            # Placeholder: C0 chunk schema not yet wired (deferred to W4)
-            c0_path = run_dir / "c0_output_chunks.json"
             c0_entry = {
                 "chunk_refs": [],
                 "context_digest": sealed.compilation_hash,
                 "run_id": sealed.run_id,
+                "non_durable": True,  # GAP-001: explicit non-durable marker
             }
-            _write_artifact(c0_entry, run_dir, "c0_output_chunks.json")
-            run_metadata["c0_write"] = True
-            run_metadata["output_paths"]["c0_chunks"] = str(
-                c0_path.relative_to(repo_root)
+            c0_candidate = _build_artifact_commit_candidate(
+                content=c0_entry,
+                proposed_dir=run_dir,
+                filename="c0_output_chunks.json",
+                artifact_type="c0_chunks",
             )
-            _LOGGER.info("[apps_rg Exit] Wrote C0 chunks: %s", c0_path)
-        except Exception as exc:  # guardian: allow-broad-net -- C0 write failure must never abort exit; this is a soft policy feature
-            _LOGGER.warning("[apps_rg Exit] C0 write failed: %s", exc)
+            commit_candidates.append(c0_candidate)
+            run_metadata["c0_write"] = True
+            run_metadata["output_paths"]["c0_chunks"] = c0_candidate.proposed_path
+            _LOGGER.info("[apps_rg Exit] C0 chunk candidate prepared: %s", c0_candidate.proposed_path)
+        except Exception as exc:
+            _LOGGER.warning("[apps_rg Exit] C0 candidate build failed: %s", exc)
 
-    # Write run metadata
-    _write_artifact(run_metadata, run_dir, "run_metadata.json")
+    # Build run metadata commit candidate (inert proposal)
+    metadata_candidate = _build_artifact_commit_candidate(
+        content=run_metadata,
+        proposed_dir=run_dir,
+        filename="run_metadata.json",
+        artifact_type="run_metadata",
+    )
+    commit_candidates.append(metadata_candidate)
 
     # -------------------------------------------------------------------------
     # Gate evaluation (G24/G25/G26/G27)
@@ -1166,13 +1302,21 @@ def exit_finalize_apps_rg(
     )
 
     _LOGGER.info(
-        "[apps_rg Exit] Finalized run %s: exit_status=%s verdict=%s",
+        "[apps_rg Exit] Finalized run %s: exit_status=%s verdict=%s candidates=%d",
         sealed.run_id,
         disposition.exit_status,
         overall_verdict.value,
+        len(commit_candidates),
     )
 
-    return ExitBindingResult(disposition=disposition, output_artifact_path=resume_path)
+    # GAP-001: Return ExitBindingResult with inert commit candidates
+    # No filesystem mutation has occurred — all proposals are PENDING_UWG
+    return ExitBindingResult(
+        disposition=disposition,
+        output_artifact_path=resume_path,
+        artifact_commit_candidates=tuple(commit_candidates),
+        user_visible_resume=resume_doc,
+    )
 
 
 def build_apps_rg_exit_harness(
@@ -1427,8 +1571,10 @@ def produce_structured_resume_from_docx(
 __all__ = [
     "APPS_RG_EXIT_CERT_REF",
     "ExitBindingResult",
+    "InertArtifactCommitCandidate",
     "build_apps_rg_exit_harness",
     "exit_finalize_apps_rg",
     "extract_apps_rg_exit_gate_policy",
     "produce_structured_resume_from_docx",
+    "_build_artifact_commit_candidate",  # GAP-001: exposed for testing
 ]

@@ -918,6 +918,15 @@ def main():
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
         ),
+        # GAP-001 — Exit L4 Boundary Hardening gate.
+        # Blocks direct filesystem durable writes in apps_rg Exit binding.
+        # Verifies Exit only produces inert CommitRequest candidates.
+        # Advisory by default; fail-closed via APPS_RG_EXIT_NO_DIRECT_WRITES_FAIL_CLOSED=1.
+        # Bypass: APPS_RG_EXIT_NO_DIRECT_WRITES_BYPASS=1.
+        (
+            "GAP001-EXIT apps_rg Exit no direct writes (advisory)",
+            "ops_scripts/ci/check_gap001_exit_no_direct_writes.py",
+        ),
         # EC-UI — Enriched Choice UI invariants gate.
         # Validates ask_user_question calls use enriched format (confidence prefix,
         # trade-off segment, star marker) per consolidated plan a1e3f7.
