@@ -1,7 +1,7 @@
 """L6 shadow learning wiring for apps_underwriting_ai.
 
 Called AFTER the full dispatch chain completes (post-Exit). Builds a
-RuntimeExhaustBundle from the DispatchResult and runs it through the
+RuntimeExhaustBundle from the completed dispatch result and runs it through the
 agentic_core PackageDrivenL6Binding to produce:
 
   - CompletedEvalRecord  — learning observations from this run
@@ -66,10 +66,10 @@ def run_l6_shadow(
     dispatch_result: Any,
     u0_package: dict[str, Any],
 ) -> L6ShadowResult:
-    """Run L6 shadow learning on a completed DispatchResult.
+    """Run L6 shadow learning on a completed underwriting dispatch result.
 
     Args:
-        dispatch_result: DispatchResult from run_underwriting_dispatch().
+        dispatch_result: result object from run_underwriting_dispatch().
         u0_package: runtime_customization_package from ValidatedUnderwritingRequest.
 
     Returns:
