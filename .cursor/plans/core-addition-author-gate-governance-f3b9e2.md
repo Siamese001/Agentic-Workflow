@@ -16,20 +16,20 @@ Harden the `agentic_core` / `apps_*` boundary with a formal static-analysis + pr
 
 ---
 
-## Design Recommendation: Why NOT Cascade HITL Author-Gate
+## Design Recommendation: Why NOT Cursor Agent HITL Author-Gate
 
 > This section answers the user's direct question: *"Plan says Author Gate but I am not convinced."*
 
 **The prompt's use of "Author-Gate" means author-time governance — static, pre-commit, pre-write.
-It does NOT mean the Cascade Author-Gate HITL packet flow (ask_user_question + DECISION_CAPTURED).**
+It does NOT mean the Cursor Agent Author-Gate HITL packet flow (ask_user_question + DECISION_CAPTURED).**
 
 ### Decision Table
 
 | Mechanism | Good for | Bad for | Verdict |
 |---|---|---|---|
-| **Cascade Author-Gate (HITL packet)** | Ambiguous design decisions where human judgment resolves genuine uncertainty (e.g., refactor scope, deletion strategy) | Deterministic policy violations that have one correct answer | ❌ Wrong tool — boundary violations have zero ambiguity |
-| **always_on Rule** | Guiding Cascade behavior in every turn | Enforcing repo state — Cascade can be bypassed or hallucinated | ⚠️ Necessary but not sufficient |
-| **pre_write hook (Windsurf)** | Blocking writes at the moment Cascade attempts them | Git CLI or IDE direct edits that bypass Cascade | ✅ Best first-defense for AI-authored code |
+| **Cursor Agent Author-Gate (HITL packet)** | Ambiguous design decisions where human judgment resolves genuine uncertainty (e.g., refactor scope, deletion strategy) | Deterministic policy violations that have one correct answer | ❌ Wrong tool — boundary violations have zero ambiguity |
+| **always_on Rule** | Guiding Cursor Agent behavior in every turn | Enforcing repo state — Cursor Agent can be bypassed or hallucinated | ⚠️ Necessary but not sufficient |
+| **pre_write hook (Windsurf)** | Blocking writes at the moment Cursor Agent attempts them | Git CLI or IDE direct edits that bypass Cursor Agent | ✅ Best first-defense for AI-authored code |
 | **Pre-commit gate (.pre-commit-config.yaml)** | Blocking human + AI commits with git history as enforcement surface | Rapid iteration speed (adds latency) | ✅ Best backstop for all authors |
 | **CI scanner (GitHub Actions)** | Drift detection, advisory reporting, audit trail | Blocking force-pushes or already-merged leakage | ✅ Best audit surface + golden signal |
 | **JSON receipt schema** | Machine-verifiable proof that a human reviewed a platform-core change | Lightweight refactors that don't need ceremony | ✅ Required ONLY for `platform_core_change` plan type |
@@ -40,10 +40,10 @@ It does NOT mean the Cascade Author-Gate HITL packet flow (ask_user_question + D
 Author intent
     │
     ▼
-[1] always_on RULE — guides Cascade, loads on every turn
+[1] always_on RULE — guides Cursor Agent, loads on every turn
     │  (cognitive pre-flight: classify before edit)
     ▼
-[2] pre_write hook — blocks Cascade writes to agentic_core/ unless
+[2] pre_write hook — blocks Cursor Agent writes to agentic_core/ unless
     │  CoreAdditionAuthorGateReceipt exists + is PASS
     ▼
 [3] pre-commit gate (check_agentic_core_addition.py) — blocks git commit
@@ -59,7 +59,7 @@ PASS: agentic_core edit with valid receipt + clean scan
 FAIL: any layer catches violation → block + diagnostic
 ```
 
-**Why not Cascade Author-Gate?** Because a boundary violation is not an ambiguous decision — it has one correct answer: move the app-specific logic to `apps_*/config/domain_contract/`. The Author-Gate HITL packet is designed for *genuine design ambiguity*, not for *catching policy violations*. Static checks (hooks + CI) are faster, cheaper, bypass-resistant, and auditable via git history.
+**Why not Cursor Agent Author-Gate?** Because a boundary violation is not an ambiguous decision — it has one correct answer: move the app-specific logic to `apps_*/config/domain_contract/`. The Author-Gate HITL packet is designed for *genuine design ambiguity*, not for *catching policy violations*. Static checks (hooks + CI) are faster, cheaper, bypass-resistant, and auditable via git history.
 
 **What Author-Gate IS used for here (narrowly)**: When a developer believes a proposed core addition *genuinely is* generic spine infrastructure and wants to claim `plan_type=platform_core_change`, they invoke the Author-Gate decision flow to produce the `CoreAdditionAuthorGateReceipt`. That receipt is then consumed by the static checks. The Author-Gate produces the receipt; it does not *replace* the static checks.
 
@@ -68,7 +68,7 @@ FAIL: any layer catches violation → block + diagnostic
 ## Context (SCQA)
 
 - **Situation** — `agentic_core/` is the spine substrate for all apps. Rules `agentic-core-static.md`, `boundary-audit-required.md`, `agentic-core-glob-lock.md`, CI gate `check_agentic_core_static_boundary.py`, and governance test `test_agentic_core_static_boundary.py` exist. The pre-write hook (`pre_write_gate.py`) exists but does NOT check for app leakage or CoreAdditionAuthorGateReceipt.
-- **Complication** — The current enforcement is advisory or model-guided only. A developer (or Cascade) can claim "this is generic" and write app-specific meaning into core without any machine-verifiable proof. The `check_agentic_core_static_boundary.py` gate has an advisory sunset and wraps pytest, but there is no pre-write blocking, no receipt schema, no plan-type validation, and no plug-in proof requirement.
+- **Complication** — The current enforcement is advisory or model-guided only. A developer (or Cursor Agent) can claim "this is generic" and write app-specific meaning into core without any machine-verifiable proof. The `check_agentic_core_static_boundary.py` gate has an advisory sunset and wraps pytest, but there is no pre-write blocking, no receipt schema, no plan-type validation, and no plug-in proof requirement.
 - **Question** — How do we make it mechanically impossible to add app-specific meaning to `agentic_core/` at author time, without slowing down legitimate generic core improvements?
 - **Answer** — Layer five enforcement tiers: an updated always_on rule, a pre-write hook that checks receipt presence, a plan-metadata validator, a receipt JSON schema, and a hardened CI gate — all feeding from a single `CoreAdditionAuthorGateReceipt` proof object.
 
@@ -78,15 +78,15 @@ FAIL: any layer catches violation → block + diagnostic
 
 | Asset | Location | Status | Gap |
 |---|---|---|---|
-| Core arch law rule | `.windsurf/rules/agentic-core-static.md` | ✅ exists, always_on | Missing formal `Core Addition Author-Gate` section |
-| Glob-lock rule | `.windsurf/rules/agentic-core-glob-lock.md` | ✅ exists, model_decision | No pre-write hook enforcement of receipt |
-| Boundary audit rule | `.windsurf/rules/boundary-audit-required.md` | ✅ exists | No plan_type metadata validation |
-| Pre-write hook | `.windsurf/scripts/pre_write_gate.py` | ✅ exists + extended (W3) | `check_core_addition_receipt()` added; 27 tests green |
+| Core arch law rule | `.cursor/rules/agentic-core-static.md` | ✅ exists, always_on | Missing formal `Core Addition Author-Gate` section |
+| Glob-lock rule | `.cursor/rules/agentic-core-glob-lock.md` | ✅ exists, model_decision | No pre-write hook enforcement of receipt |
+| Boundary audit rule | `.cursor/rules/boundary-audit-required.md` | ✅ exists | No plan_type metadata validation |
+| Pre-write hook | `.cursor/scripts/pre_write_gate.py` | ✅ exists + extended (W3) | `check_core_addition_receipt()` added; 27 tests green |
 | Boundary CI gate | `ops_scripts/ci/check_agentic_core_static_boundary.py` | ✅ exists (advisory) | Advisory only; no receipt proof; sunset 2026-06-15 |
 | Governance test | `tests/governance/test_agentic_core_static_boundary.py` | ✅ exists | Missing plug-in proof, negative controls for plan_type |
-| Plan template | `.windsurf/templates/execution-plan-template.md` | ✅ updated (W1) | `touches_agentic_core`, `core_addition_author_gate_required`, `author_gate_receipt_ref` added |
-| Receipt schema | `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json` | ✅ created (W2) | 19 schema validation tests green |
-| SSOT folder check | `.windsurf/scripts/_ssot_folder_check.py` | ✅ exists | Not applicable |
+| Plan template | `.cursor/templates/execution-plan-template.md` | ✅ updated (W1) | `touches_agentic_core`, `core_addition_author_gate_required`, `author_gate_receipt_ref` added |
+| Receipt schema | `.cursor/schemas/CoreAdditionAuthorGateReceipt.schema.json` | ✅ created (W2) | 19 schema validation tests green |
+| SSOT folder check | `.cursor/scripts/_ssot_folder_check.py` | ✅ exists | Not applicable |
 | App literal list | `tests/governance/test_agentic_core_static_boundary.py` | ✅ partial | Missing newer literals (company_brief, interview_card, recruiter, etc.) |
 
 ---
@@ -112,9 +112,9 @@ FAIL: any layer catches violation → block + diagnostic
 |---|---|---|---|---|---|
 | W1.P1 | Rule: Core Addition Author-Gate section | `agentic-core-static.md` | Must not exceed always_on token budget (§33) | ~400 | ✅ DONE |
 | W1.P2 | Plan template: new metadata fields | `execution-plan-template.md` | Backward compat with 400+ existing plans | ~400 | ✅ DONE |
-| W2.P1 | Receipt schema definition | `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json` | Field coverage without redundancy to glob-lock receipt | ~300 | ✅ DONE |
+| W2.P1 | Receipt schema definition | `.cursor/schemas/CoreAdditionAuthorGateReceipt.schema.json` | Field coverage without redundancy to glob-lock receipt | ~300 | ✅ DONE |
 | W2.P2 | Schema validation + negative control tests | `tests/governance/test_core_addition_receipt_schema.py` | JSON Schema draft-7 vs draft-2020 compatibility | ~300 | ✅ DONE |
-| W3.P1 | Pre-write hook: agentic_core receipt check | `.windsurf/scripts/pre_write_gate.py` (extend) | Hook already has multiple checks; must not regress | ~400 | ✅ DONE |
+| W3.P1 | Pre-write hook: agentic_core receipt check | `.cursor/scripts/pre_write_gate.py` (extend) | Hook already has multiple checks; must not regress | ~400 | ✅ DONE |
 | W3.P2 | Hook fail-closed tests | `tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` | Must test malformed/missing/expired receipt paths | ~300 | ✅ DONE |
 | W4.P1 | Extend forbidden literal list | `tests/governance/test_agentic_core_static_boundary.py` | Add ~12 missing literals; validate allowlist still works | ~300 | ✅ DONE |
 | W4.P2 | GOV-3 CI gate (hardened, fail-closed capable) | `ops_scripts/ci/check_agentic_core_addition.py` (NEW) | Replaces advisory wrapper; emits JSON artifact | ~300 | ✅ DONE |
@@ -127,28 +127,28 @@ FAIL: any layer catches violation → block + diagnostic
 ## Target Files
 
 ### Inspect (read-only during W0)
-- `.windsurf/rules/agentic-core-static.md`
-- `.windsurf/rules/agentic-core-glob-lock.md`
-- `.windsurf/rules/boundary-audit-required.md`
-- `.windsurf/scripts/pre_write_gate.py`
-- `.windsurf/scripts/_ssot_folder_check.py` (pattern reference)
+- `.cursor/rules/agentic-core-static.md`
+- `.cursor/rules/agentic-core-glob-lock.md`
+- `.cursor/rules/boundary-audit-required.md`
+- `.cursor/scripts/pre_write_gate.py`
+- `.cursor/scripts/_ssot_folder_check.py` (pattern reference)
 - `ops_scripts/ci/check_agentic_core_static_boundary.py`
 - `tests/governance/test_agentic_core_static_boundary.py`
-- `.windsurf/templates/execution-plan-template.md`
-- `.windsurf/hooks.json`
+- `.cursor/templates/execution-plan-template.md`
+- `.cursor/hooks.json`
 - `ops_scripts/ci/run_contract_gates.py`
 - `.pre-commit-config.yaml` — pre-commit hook registration target for GOV-3 gate
 
 ### Modify
-- `.windsurf/rules/agentic-core-static.md` — add `## Core Addition Author-Gate` section
-- `.windsurf/templates/execution-plan-template.md` — add `plan_type`, `touches_agentic_core`, `core_addition_author_gate_required`, `author_gate_receipt_ref` fields
-- `.windsurf/scripts/pre_write_gate.py` — extend with `check_core_addition_receipt()`
+- `.cursor/rules/agentic-core-static.md` — add `## Core Addition Author-Gate` section
+- `.cursor/templates/execution-plan-template.md` — add `plan_type`, `touches_agentic_core`, `core_addition_author_gate_required`, `author_gate_receipt_ref` fields
+- `.cursor/scripts/pre_write_gate.py` — extend with `check_core_addition_receipt()`
 - `tests/governance/test_agentic_core_static_boundary.py` — extend literal list
 - `ops_scripts/ci/run_contract_gates.py` — register GOV-3 gate
 - `.pre-commit-config.yaml` — add `check_agentic_core_addition.py` as pre-commit hook (fail-closed, runs on `agentic_core/**` diffs)
 
 ### Create (New Files)
-- `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json`
+- `.cursor/schemas/CoreAdditionAuthorGateReceipt.schema.json`
 - `ops_scripts/ci/check_agentic_core_addition.py` — GOV-3 CI gate (replaces advisory wrapper)
 - `tests/governance/test_core_addition_receipt_schema.py` — schema validation tests
 - `tests/governance/test_core_addition_negative_controls.py` — 20 negative control tests
@@ -195,8 +195,8 @@ Plans that `touches_agentic_core: true` MUST declare:
 
 | Layer | Component | Blocks |
 |---|---|---|
-| 1 | this rule (always_on) | Cascade edits |
-| 2 | `pre_write_gate.py` `check_core_addition_receipt()` | Cascade writes |
+| 1 | this rule (always_on) | Cursor Agent edits |
+| 2 | `pre_write_gate.py` `check_core_addition_receipt()` | Cursor Agent writes |
 | 3 | `check_agentic_core_addition.py` (GOV-3) | git commits (pre-commit + CI) |
 | 4 | `test_core_addition_negative_controls.py` | CI test suite |
 ```
@@ -224,7 +224,7 @@ Existing plan_type values are preserved. The three new fields default to `false`
 
 ### CoreAdditionAuthorGateReceipt Schema
 
-File: `.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json`
+File: `.cursor/schemas/CoreAdditionAuthorGateReceipt.schema.json`
 
 ```json
 {
@@ -456,7 +456,7 @@ def check_core_addition_receipt(file_path: str, new_string: str) -> str | None:
 
 Integrate into `_check_new_content()` pipeline immediately before the `return None` exit.
 
-**Bypass**: `CORE_ADDITION_GATE_BYPASS=1` — logged to `artifacts/windsurf/core_addition_gate_violations.jsonl`.
+**Bypass**: `CORE_ADDITION_GATE_BYPASS=1` — logged to `artifacts/cursor/core_addition_gate_violations.jsonl`.
 
 ### W3 vs W4/W7 Digest Validation Split
 
@@ -521,7 +521,7 @@ Emits: `artifacts/ci/agentic_core_addition_gate.json`
 
 Modes: **fail-closed by default** for any diff that touches `agentic_core/`. Advisory mode is opt-in for local/dev environments only via `CORE_ADDITION_GATE_ADVISORY=1`. CI MUST NOT set this variable.
 
-Bypass: `CORE_ADDITION_GATE_BYPASS=1` — local writes only. Writes an audit JSONL event to `artifacts/windsurf/core_addition_gate_violations.jsonl`. CI fails if bypass evidence exists in that JSONL without a matching `emergency_approval_receipt_ref` field on the bypass event.
+Bypass: `CORE_ADDITION_GATE_BYPASS=1` — local writes only. Writes an audit JSONL event to `artifacts/cursor/core_addition_gate_violations.jsonl`. CI fails if bypass evidence exists in that JSONL without a matching `emergency_approval_receipt_ref` field on the bypass event.
 
 ### Extended Forbidden Literal List (W4.P1)
 
@@ -869,7 +869,7 @@ python ops_scripts/ci/run_contract_gates.py
 | # | Criterion | Type |
 |---|---|---|
 | DoD-1 | `pytest tests/governance/test_core_addition_negative_controls.py` — all 20 pass | Functional |
-| DoD-2 | `python -c "import json; json.load(open('.windsurf/schemas/CoreAdditionAuthorGateReceipt.schema.json'))"` exits 0 | Smoke-run |
+| DoD-2 | `python -c "import json; json.load(open('.cursor/schemas/CoreAdditionAuthorGateReceipt.schema.json'))"` exits 0 | Smoke-run |
 | DoD-3 | `pytest tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py` — all 27 pass | Tests |
 | DoD-4 | `python ops_scripts/ci/check_agentic_core_addition.py` exits 0 (fail-closed mode, zero findings on clean repo) | CI gate |
 | DoD-5 | `python ops_scripts/ci/check_always_on_token_budget.py` exits 0 after W1.P1 | Budget |
@@ -895,6 +895,6 @@ Before beginning W1 execution:
 - [ ] `check_always_on_token_budget.py` baseline run recorded
 - [ ] `pytest tests/governance/test_agentic_core_static_boundary.py` passes (baseline)
 - [ ] `pre_write_gate.py` regression suite passes (baseline)
-- [ ] Author confirms design recommendation (static enforcement stack, NOT Cascade HITL Author-Gate) — **see §"Design Recommendation" above**
+- [ ] Author confirms design recommendation (static enforcement stack, NOT Cursor Agent HITL Author-Gate) — **see §"Design Recommendation" above**
 
 **GO** when all 5 checked. **NO-GO** if any fail.

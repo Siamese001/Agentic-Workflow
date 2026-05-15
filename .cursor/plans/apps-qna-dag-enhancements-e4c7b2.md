@@ -133,7 +133,7 @@ Every new router touchpoint must emit `ROUTER_DECISION:` marker + `emit_pack_lif
 | W3.2 | `apps_qna_intent_llm` | L0 | `route_select_llm_fallback` |
 | W4.2 | `apps_qna_rehearsal_cache` | L6 | `cache_hit` / `cache_miss` |
 
-All must be captured by `post_cascade_router_decision_audit.py`.
+All must be captured by `post_cursor_agent_router_decision_audit.py`.
 
 ## Out of Scope (explicit)
 
@@ -168,7 +168,7 @@ Rollback = revert the wave's commits; no schema migration, no data loss.
 - `pytest apps_qna/` green.
 - `python -m apps_qna lint <pack>` exits 0 on all existing canaries.
 - Paraphrase-robustness metric (W5.2) reports ≥ 0.80 route-stability across 20-question perturbation sample.
-- `post_cascade_router_decision_audit.py` shows zero §29 emission violations across all new router touchpoints.
+- `post_cursor_agent_router_decision_audit.py` shows zero §29 emission violations across all new router touchpoints.
 - Notion row for this plan updated to 🔵 Completed with on-disk commit SHA referenced.
 
 ## References

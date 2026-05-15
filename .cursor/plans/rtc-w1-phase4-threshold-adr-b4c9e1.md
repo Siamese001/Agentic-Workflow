@@ -166,7 +166,7 @@ reads `notes` for the caveat.
 ## Files Touched
 
 **New (14)**:
-- `.windsurf/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md` (this file)
+- `.cursor/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md` (this file)
 - `tools/certification/evidence/probe_threshold_sweep.py`
 - `scripts/generate_threshold_adr.py`
 - `artifacts/certification/threshold_sweep_results.json`

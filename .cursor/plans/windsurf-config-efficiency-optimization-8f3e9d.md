@@ -43,7 +43,7 @@
 | `pre_mcp_tool_use` | 1 | Low — necessary |
 | `pre_run_command` | 1 | Low — necessary |
 | `pre_read_code` | 1 | Low — necessary |
-| `post_cascade_response` | 25 | **CRITICAL** — 25 hooks fire every response |
+| `post_cursor_agent_response` | 25 | **CRITICAL** — 25 hooks fire every response |
 | `post_write_code` | 4 | Moderate |
 | `post_run_command` | 1 | Low |
 | `post_mcp_tool_use` | 1 | Low |
@@ -65,22 +65,22 @@
 ## 2. Gap Register
 
 ### Gap 1: Author-Gate Rule Budget Spike
-- **Location**: `.windsurf/rules/author-gate-enforcement.md`
+- **Location**: `.cursor/rules/author-gate-enforcement.md`
 - **Size**: 9,741 bytes (20.6% of budget)
 - **Gap**: Recently promoted from `model_decision` to `always_on` on 2026-05-09 per plan `always-on-budget-compression-ds2-c7f4a3`. Contains procedural detail (lines 65-75 "Required pipeline", lines 109-123 "Where the procedural detail lives" table) that could be referenced rather than inline.
 - **Impact**: Single rule consumes 1/5 of always-on budget
 
 ### Gap 2: Scope-Containment Procedural Bloat
-- **Location**: `.windsurf/rules/scope-containment.md`
+- **Location**: `.cursor/rules/scope-containment.md`
 - **Size**: 5,280 bytes
 - **Gap**: Lines 68-78 "Enforcement" table duplicates hook references. Lines 61-66 "Escape Hatches" detail could move to skill. The "Summarize-Before-Return" behavioral guidance is verbose.
 - **Impact**: 11.2% of budget; procedural detail that belongs in skill
 
-### Gap 3: Post-Cascade Hook Chain Overhead
-- **Location**: `.windsurf/hooks.json` → `post_cascade_response`
+### Gap 3: Post-Cursor-Agent Hook Chain Overhead
+- **Location**: `.cursor/hooks.json` → `post_cursor_agent_response`
 - **Count**: 25 hooks
-- **Gap**: Many hooks are audit-only (`show_output=false`) but still consume process spawn overhead on every response. No consolidation layer exists. Hooks like `post_cascade_author_gate_*` (4 hooks) could be merged.
-- **Impact**: Latency on every Cascade response
+- **Gap**: Many hooks are audit-only (`show_output=false`) but still consume process spawn overhead on every response. No consolidation layer exists. Hooks like `post_cursor_agent_author_gate_*` (4 hooks) could be merged.
+- **Impact**: Latency on every Cursor Agent response
 
 ### Gap 4: Model_Decision Rules Approaching Limit
 - **Files**: `adg-hotspot-enforcement.md` (11,714 bytes), `adg-graph-layer-enforcement.md` (11,519 bytes)
@@ -95,7 +95,7 @@
 - **Impact**: ~500 bytes duplicated; risk of drift between sources
 
 ### Gap 6: Pre-User-Prompt Hook Consolidation
-- **Location**: `.windsurf/hooks.json` → `pre_user_prompt`
+- **Location**: `.cursor/hooks.json` → `pre_user_prompt`
 - **Count**: 10 hooks
 - **Gap**: `pre_user_prompt_author_gate_reminder.py`, `pre_user_prompt_ag_queue_surface.py`, `pre_user_prompt_plan_registration_surface.py` all related to Author-Gate pipeline. Could be unified.
 - **Impact**: 3 separate Python process spawns per prompt
@@ -155,7 +155,7 @@
 
 - All existing CI gates must pass (`run_contract_gates.py`)
 - `check_always_on_token_budget.py` must show PASS with >15% headroom
-- Hook chain must fire successfully (verified via `post_cascade_heartbeat.py`)
+- Hook chain must fire successfully (verified via `post_cursor_agent_heartbeat.py`)
 - No behavioral change — only structural optimization
 
 ---
@@ -184,7 +184,7 @@
 ## 8. References
 
 - **Constitutional §33**: Two-tier compliance (Anthropic) — `trigger: always_on` rules MUST sum ≤51,200 bytes
-- **Rule**: `.windsurf/rules/constitutional.md` lines 50-52
+- **Rule**: `.cursor/rules/constitutional.md` lines 50-52
 - **CI Gate**: `ops_scripts/ci/check_always_on_token_budget.py`
-- **RULES_INDEX**: `.windsurf/RULES_INDEX.md` — two-tier model operating principles
+- **RULES_INDEX**: `.cursor/RULES_INDEX.md` — two-tier model operating principles
 - **Notion Plan**: `windsurf-config-efficiency-optimization-8f3e9d` (this plan)

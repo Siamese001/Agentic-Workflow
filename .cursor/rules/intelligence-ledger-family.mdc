@@ -102,7 +102,7 @@ context window and defeat the W0 design goal of a lean recall layer.
 Every `LedgerSpec` in `tools/ledgers/schema_registry.py` declares an
 observable `sunset_criterion`. When that condition holds for the stated
 duration, the ledger retires via the same lifecycle as the
-`mcp-serialization.md` TTL pattern:
+ledger TTL config pattern:
 
 1. Operator writes `.cursor/config/ledger_ttl_<name>.json` with
    `{retired_after: "<UTC-date>", evidence: "...", verified_by: "..."}`.

@@ -353,7 +353,7 @@ This plan enters `architecture_choice` / `test_strategy` / `error_handling` trig
 - **Alternative**: Composite multi-provider attestation (rejected: scope creep beyond W2b goal)
 
 Packet must include:
-- Precedent from `artifacts/windsurf/author_gate_precedent.json` (W1p5 + W2 set the pattern)
+- Precedent from `artifacts/cursor/author_gate_precedent.json` (W1p5 + W2 set the pattern)
 - `DECISION_CAPTURED:` marker emitted on resolution
 - `ROUTER_DECISION:` markers emitted per constitutional §29 for each `LLMJudgeVeto.evaluate()` call in the P3 rewrite
 
@@ -402,4 +402,4 @@ Execution blocked until:
 1. Plan approved for scaffolding into executable phases
 2. Provider order explicitly confirmed (`local_qwen` first, `anthropic_haiku` second) — DONE per user directive 2026-05-01
 3. Non-negotiables explicitly confirmed — DONE per user directive 2026-05-01
-4. Author-Gate surfaced with options packet per `.windsurf/rules/author-gate-enforcement.md`
+4. Author-Gate surfaced with options packet per `.cursor/rules/author-gate-enforcement.md`

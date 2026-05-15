@@ -2,7 +2,7 @@
 
 **Slug:** `plan-notion-registration-enforcement-c8f3a1`
 **Status:** ✅ DONE (2026-05-03, single session)
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Created:** 2026-05-03
 **Constitutional anchor:** new §36 (proposed) · siblings §24, §25, §31, §35
 **Parent doctrine:** `AGENTS.md` auto-routing rule "On new plan file creation … create Plans row"
@@ -13,10 +13,10 @@
 
 Two distinct failure modes occurred in the same session (2026-05-03):
 
-1. **False-negative claim.** Cascade told the user a plan was "not registered in Notion" without actually querying the Plans DB. The plan **was** registered (`35527693-f55c-8188-8cc2-db4d69806b3c`, Status=Live, AI Summary populated). Root cause: answered from session memory instead of querying the authoritative source.
+1. **False-negative claim.** Cursor Agent told the user a plan was "not registered in Notion" without actually querying the Plans DB. The plan **was** registered (`35527693-f55c-8188-8cc2-db4d69806b3c`, Status=Live, AI Summary populated). Root cause: answered from session memory instead of querying the authoritative source.
 2. **Historical drift risk.** The AGENTS.md auto-routing rule for `new plan file → Plans DB row` is advisory only — no hook, gate, or CI check enforces it. A future plan authored mid-wave can silently skip registration, and nothing detects the drift until a human asks.
 
-Both modes share a common root: **Notion Plans DB registration has no deterministic enforcement layer.** Cascade is trusted to do the right thing; when it doesn't (either by omission or by false claim), nothing catches it.
+Both modes share a common root: **Notion Plans DB registration has no deterministic enforcement layer.** Cursor Agent is trusted to do the right thing; when it doesn't (either by omission or by false claim), nothing catches it.
 
 ## 2. Goal
 
@@ -24,14 +24,14 @@ Make Plan↔Notion registration a **mechanically enforced invariant**, not a beh
 
 - Every `.windsurf/plans/<slug>-<6hex>.md` that exists on disk with no Archived/Retired status MUST have a corresponding Notion Plans row with non-empty `AI Summary `.
 - Wave execution (`wave_execution_state.py start`) MUST be blocked on unregistered plans.
-- Cascade MUST query the Plans DB (never guess) before making any claim about a plan's registration status.
+- Cursor Agent MUST query the Plans DB (never guess) before making any claim about a plan's registration status.
 - Drift (on-disk without Notion, or Notion Live without on-disk) is detected within one commit cycle.
 
 ## 3. Non-Goals
 
 - Retroactive backfill of historical plans (existing 220 plan files are assumed registered; a one-shot audit is a deferred item, not part of this plan).
 - Replacing or weakening the existing NP1 `check_notion_plans_ai_summary.py` gate — this plan extends it, does not duplicate.
-- Auto-generating AI Summary content — Cascade still authors the summary from the plan file; enforcement only verifies presence.
+- Auto-generating AI Summary content — Cursor Agent still authors the summary from the plan file; enforcement only verifies presence.
 - Changing the Plans DB schema.
 
 ## 4. Files In Scope
@@ -116,7 +116,7 @@ Bypass: PLAN_REGISTRATION_BYPASS=1
 | Rule | `§36` + `plan-registration-enforcement.md` | Always-on | No (advisory) |
 | Marker | `PLAN_CREATED:` | Plan file write | No |
 | Helper | `_plan_registration.py` | Called by hooks/gates | No |
-| Post-hook | `post_cascade_plan_registration_capture.py` | Cascade response | No (fail-soft) |
+| Post-hook | `post_cascade_plan_registration_capture.py` | Cursor Agent response | No (fail-soft) |
 | Pre-hook | `pre_user_prompt_plan_registration_surface.py` | Session/prompt start | No (surfaces) |
 | Pre-MCP gate | `pre_mcp_gate.check_plan_registration()` | Before `wave_execution_state start` | **Yes** |
 | Pre-commit | `check_plan_registration_freshness.py` (T7u) | New plan file staged | Configurable via `PLAN_REGISTRATION_FAIL_CLOSED=1` |
@@ -126,7 +126,7 @@ Bypass: PLAN_REGISTRATION_BYPASS=1
 
 Encoded in `plan-registration-enforcement.md` §"Query Before Claim":
 
-> Cascade MUST NOT assert that a plan is or is not registered in the Notion Plans DB without having called `API-query-data-source` against data source `ac53d31b-3068-4039-9ebe-856c12caab32` in the current response. Session memory and cached responses are not authoritative. If `NOTION_API_KEY` is unset or the call fails, Cascade MUST say "I cannot verify registration status right now" rather than guess.
+> Cursor Agent MUST NOT assert that a plan is or is not registered in the Notion Plans DB without having called `API-query-data-source` against data source `ac53d31b-3068-4039-9ebe-856c12caab32` in the current response. Session memory and cached responses are not authoritative. If `NOTION_API_KEY` is unset or the call fails, Cursor Agent MUST say "I cannot verify registration status right now" rather than guess.
 
 This is a behavioral rule with no hook (Notion is remote, §25-serialized; a pre-check hook would stall every turn). Enforced by:
 1. The rule text itself.
@@ -139,7 +139,7 @@ This is a behavioral rule with no hook (Notion is remote, §25-serialized; a pre
     MUST emit `PLAN_CREATED:` marker in the authoring response AND be posted as a Plans DB row
     (Status, Exists On Disk, Plan File Path, Summary, AI Summary) before any wave execution
     (`wave_execution_state.py start`). Wave-start is blocked on unregistered plans.
-    Cascade MUST NOT claim registration status without a live `API-query-data-source` call
+    Cursor Agent MUST NOT claim registration status without a live `API-query-data-source` call
     in the same response. SSOT helper: `_plan_registration.py`. Detail:
     `plan-registration-enforcement.md`. Bypass: `PLAN_REGISTRATION_BYPASS=1`.
 ```
@@ -154,7 +154,7 @@ Estimated size: ~600 bytes. Fits under §33 always-on budget.
 | `PLAN_CREATED:` marker forgotten | Low | Pre-commit gate T7u catches on next commit of the plan file |
 | Query-before-claim is behavioral only | Medium | No hook possible (remote-MCP serialization); mitigated by weekly report + rule text |
 | Existing 220 plans may have undetected drift | Low | One-shot audit deferred to follow-up plan (see §12) |
-| Wave-start block chokepoint assumes Cascade uses `wave_execution_state.py start` | Medium | Rule §36 reiterates this is the canonical entry; existing wave-deferral rule already depends on it |
+| Wave-start block chokepoint assumes Cursor Agent uses `wave_execution_state.py start` | Medium | Rule §36 reiterates this is the canonical entry; existing wave-deferral rule already depends on it |
 
 ## 12. Deferred Scope
 
@@ -201,7 +201,7 @@ Any ONE of these three reclaims more than the 570-byte overage on its own. No co
 - No enforcement regression (same CI gates green, same behavioral invariants).
 - The demoted procedural content lives in a conditional skill / rule that auto-loads on the same triggers the original rule served.
 
-**Ownership:** Cascade drafts as a T2 plan. Estimate ~4–6k tokens.
+**Ownership:** Cursor Agent drafts as a T2 plan. Estimate ~4–6k tokens.
 
 ## 13. Author-Gate Seeds
 
@@ -228,4 +228,4 @@ AG_QUEUE_SEED: plan=plan-notion-registration-enforcement-c8f3a1 id=AG-W6-always-
 - Rules: `ssot-folder-enforcement.md`, `author-gate-queue-drain.md`, `deferred-scope-capture.md`
 - AGENTS.md: Notion Workspace Map → Plans DB row · Auto-Routing Rules table
 - Sibling gate: `ops_scripts/ci/check_notion_plans_ai_summary.py` (NP1)
-- Incident: 2026-05-03 false-negative on `apps-runtime-domain-enforcement-a7e9d4` (plan **was** registered; Cascade claimed otherwise without querying)
+- Incident: 2026-05-03 false-negative on `apps-runtime-domain-enforcement-a7e9d4` (plan **was** registered; Cursor Agent claimed otherwise without querying)

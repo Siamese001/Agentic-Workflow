@@ -1,7 +1,7 @@
 """In-response DEFERRED_SCOPE capture helper.
 
 Bypass for Windsurf 2.0.67 bug where `post_cascade_response` hooks silently
-stop firing mid-session. Cascade invokes this directly via `run_command`
+stop firing mid-session. Cursor Agent invokes this directly via `run_command`
 in the same response that emits DEFERRED_SCOPE markers, guaranteeing
 capture without depending on the broken hook channel.
 

@@ -6,8 +6,8 @@
 
 ## Context (SCQA)
 
-- **Situation** — Plan `notion-integration-consistency-audit-b2c4d8` was created with Status="In Progress" instead of "Not Started". Root cause: Cascade (the AI) mistakenly used wrong status in `API-post-page` call. This is a recurring pattern — manual plan creation via MCP calls is error-prone.
-- **Complication** — Multiple paths can create plans: Cascade direct MCP calls, `wave_execution_state.py start`, retrospective plan creation, scripted batch creation. Each path has different status semantics. No automated validation exists to catch wrong initial status.
+- **Situation** — Plan `notion-integration-consistency-audit-b2c4d8` was created with Status="In Progress" instead of "Not Started". Root cause: Cursor Agent (the AI) mistakenly used wrong status in `API-post-page` call. This is a recurring pattern — manual plan creation via MCP calls is error-prone.
+- **Complication** — Multiple paths can create plans: Cursor Agent direct MCP calls, `wave_execution_state.py start`, retrospective plan creation, scripted batch creation. Each path has different status semantics. No automated validation exists to catch wrong initial status.
 - **Question** — How do we ensure EVERY new plan starts as "Not Started" regardless of creation path, with automated detection and correction if wrong?
 - **Answer** — Multi-layer defense: (1) Canonical creation helper that enforces correct status, (2) Pre-flight validation gate, (3) Post-creation audit hook, (4) CI gate for drift detection, (5) Documentation + template updates.
 
@@ -19,7 +19,7 @@
 
 | Creation Path | Current Behavior | Risk |
 |-------------|-----------------|------|
-| **Cascade direct MCP** | Manual `API-post-page` with hardcoded Status | High — developer (AI) can choose wrong value |
+| **Cursor Agent direct MCP** | Manual `API-post-page` with hardcoded Status | High — developer (AI) can choose wrong value |
 | **`wave_execution_state.py start`** | Flips to "In Progress" correctly | Low — designed for this |
 | **Retrospective plan (same-turn)** | Created "Completed" correctly | Low — special case handled |
 | **Scripted batch** | Depends on script implementation | Medium — may copy wrong pattern |
@@ -51,8 +51,8 @@ No **single canonical helper** exists for plan creation. Each caller constructs 
 | 1.1 | Create `tools/notion/plan_creation_helper.py` | New canonical helper | Must handle all creation patterns (new, retrospective, batch) | ~4K | 🔲 |
 | 1.2 | Add `_enforce_not_started_status()` validation | Helper internal validation | Reject any status other than "Not Started" at creation time | ~2K | 🔲 |
 | 1.3 | Create `pre_notion_plan_creation_gate.py` | Pre-flight hook | Block non-canonical plan creation attempts | ~3K | 🔲 |
-| 1.4 | Register gate in `hooks.json` | `.windsurf/hooks.json` | Ensure gate runs before any Notion MCP write | ~1K | 🔲 |
-| 2.1 | Create `post_cascade_plan_creation_audit.py` | Post-creation hook | Verify created plan has correct status | ~3K | 🔲 |
+| 1.4 | Register gate in `hooks.json` | `.cursor/hooks.json` | Ensure gate runs before any Notion MCP write | ~1K | 🔲 |
+| 2.1 | Create `post_cursor_agent_plan_creation_audit.py` | Post-creation hook | Verify created plan has correct status | ~3K | 🔲 |
 | 2.2 | Add auto-correction logic | Audit hook extension | If wrong status detected, emit correction patch | ~3K | 🔲 |
 | 2.3 | Add `PLAN_CREATED_MARKER:` validation | Hook enhancement | Ensure marker matches Notion row state | ~2K | 🔲 |
 | 2.4 | Create alert/logging for manual intervention | Audit hook | Log cases where auto-correction fails | ~2K | 🔲 |
@@ -85,7 +85,7 @@ def create_plan_in_notion(
     slug: str,
     summary: str,
     ai_summary: str,
-    plan_file_path: str = ".windsurf/plans/{slug}.md",
+    plan_file_path: str = ".cursor/plans/{slug}.md",
     # Optional: override for special cases (retrospective completed plans)
     force_status: Literal["Not Started", "Completed"] | None = None,
 ) -> dict:
@@ -106,7 +106,7 @@ Internal validation that raises `ValueError` if:
 
 **Phase 1.3 — Create `pre_notion_plan_creation_gate.py`**
 
-Pre-flight hook that intercepts Cascade responses containing `API-post-page` targeting Plans DB.
+Pre-flight hook that intercepts Cursor Agent responses containing `API-post-page` targeting Plans DB.
 
 Checks payload BEFORE Notion call:
 - If Status != "Not Started" → BLOCK with error message
@@ -119,9 +119,9 @@ Add to `pre_mcp_tool_use` or `pre_cascade_response` chain (depending on injectio
 
 ### Wave 2 — Post-Creation Audit + Auto-Correction
 
-**Phase 2.1 — Create `post_cascade_plan_creation_audit.py`**
+**Phase 2.1 — Create `post_cursor_agent_plan_creation_audit.py`**
 
-Post-cascade hook that:
+Post-cursor-agent hook that:
 1. Scans response for successful `API-post-page` to Plans DB
 2. Extracts created page ID and status from response
 3. Validates status is correct for creation context
@@ -130,7 +130,7 @@ Post-cascade hook that:
 
 If audit detects wrong status:
 - Immediately emit `API-patch-page` to correct status
-- Log correction to `artifacts/windsurf/plan_status_corrections.jsonl`
+- Log correction to `artifacts/cursor/plan_status_corrections.jsonl`
 - If correction fails, escalate to user notification
 
 **Phase 2.3 — `PLAN_CREATED_MARKER:` validation**
@@ -142,7 +142,7 @@ Ensure marker emission matches actual Notion state:
 **Phase 2.4 — Alert/logging**
 
 For cases where auto-correction fails (e.g., API error):
-- Log to `artifacts/windsurf/plan_creation_alerts.jsonl`
+- Log to `artifacts/cursor/plan_creation_alerts.jsonl`
 - Include payload, error, recommended manual fix
 
 ### Wave 3 — CI Gate for Drift Detection
@@ -201,7 +201,7 @@ Add to frontmatter guidance:
 
 Document canonical creation path:
 ```
-| Create new plan | `.windsurf/plans/<slug>.md` | Use `tools/notion/plan_creation_helper.py` — enforces Status="Not Started" |
+| Create new plan | `.cursor/plans/<slug>.md` | Use `tools/notion/plan_creation_helper.py` — enforces Status="Not Started" |
 ```
 
 ### Wave 5 — Rollout + Backfill

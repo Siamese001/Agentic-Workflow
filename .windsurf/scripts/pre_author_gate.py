@@ -79,7 +79,7 @@ STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
 SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
 VIOLATIONS_PATH = STATE_DIR / "author_gate_violations.jsonl"
 # W2.2 — precedent sidecar: cleared at gate-pass, written at gate-fire.
-# Cascade reads this file at packet-construction time and includes the matches
+# Cursor Agent reads this file at packet-construction time and includes the matches
 # in the AUTHOR-GATE DECISION header. Format: dict from lookup_refactor_decisions.
 PRECEDENT_SIDECAR_PATH = STATE_DIR / "author_gate_precedent.json"
 LOOKUP_SKILL_PATH = REPO_ROOT / ".windsurf" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
@@ -319,7 +319,7 @@ def _invoke_lookup(decision_type: str, normalized_intent: str, repo_area: str) -
 def _write_precedent_sidecar(matches: list[dict[str, Any]],
                              snap: ChangeSnapshot,
                              triggers: list[dict[str, Any]]) -> None:
-    """Persist precedent lookup result for Cascade to read when building the packet."""
+    """Persist precedent lookup result for Cursor Agent to read when building the packet."""
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -1097,7 +1097,7 @@ def main() -> int:
         return 0
 
     # W2 — consult the refactor-decision-memory ledger BEFORE surfacing.
-    # The sidecar file is read by Cascade at packet-construction time. This is
+    # The sidecar file is read by Cursor Agent at packet-construction time. This is
     # the closure of the meta-learning feedback loop: stored precedent -> new
     # packet. Emit a PRECEDENT_AVAILABLE banner on stderr so it is visible in
     # the hook output the model sees on the next turn.
@@ -1109,7 +1109,7 @@ def main() -> int:
             f"strongest={top.get('strength','?')} "
             f"decision_id={top.get('decision_id','?')} "
             f"sidecar={PRECEDENT_SIDECAR_PATH} "
-            f"(Cascade: include this precedent block in the AUTHOR-GATE DECISION header)",
+            f"(Cursor Agent: include this precedent block in the AUTHOR-GATE DECISION header)",
             file=sys.stderr,
         )
 

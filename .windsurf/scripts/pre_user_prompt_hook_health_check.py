@@ -139,7 +139,7 @@ def main() -> int:
             f"  {_HEARTBEAT_PATH}\n"
             "This is normal for a brand-new clone. If you have used this\n"
             "repo before, Windsurf may have skipped the post_cascade_response\n"
-            "hook chain in prior sessions. Run any Cascade response to\n"
+            "hook chain in prior sessions. Run any Cursor Agent response to\n"
             "reseed the heartbeat."
         )
     elif status == "stale":
@@ -152,7 +152,7 @@ def main() -> int:
             "captures may be missing. Review artifacts/windsurf/*.jsonl\n"
             "for gaps before relying on hook-captured state.\n"
             "\n"
-            "WORKAROUND (Windsurf 2.0.67 bug): Cascade should invoke\n"
+            "WORKAROUND (Windsurf 2.0.67 bug): Cursor Agent should invoke\n"
             ".windsurf/scripts/defer.py directly in the same response\n"
             "that emits DEFERRED_SCOPE markers, and use\n"
             "manual_post_cascade_replay.py --file/--clipboard for the\n"

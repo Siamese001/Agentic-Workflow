@@ -87,7 +87,7 @@ This is an apps-layer customization plan (L_APP not L0..L6 core). Graph-layer dr
 
 ## Execution Mode
 
-User directive: continuous execution through all four waves without check-ins. Cascade emits silent `DECISION_CAPTURED:` markers for refactor-class decisions and `DEFERRED_SCOPE:` markers at the end for deferred items.
+User directive: continuous execution through all four waves without check-ins. Cursor Agent emits silent `DECISION_CAPTURED:` markers for refactor-class decisions and `DEFERRED_SCOPE:` markers at the end for deferred items.
 
 
 ## ADG_GRAPH_LAYER_EVIDENCE

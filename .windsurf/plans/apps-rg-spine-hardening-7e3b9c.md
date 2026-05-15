@@ -5,7 +5,7 @@
 **Tier:** T3
 **Closed:** 2026-05-09
 **Type:** Boundary correction + best-practice hardening
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Authored:** 2026-05-09
 
 > Harden apps_rg prompt-injection architecture and documentation so it follows the canonical agentic_core spine. Non-renaming, non-parallel-system, behavior-preserving.

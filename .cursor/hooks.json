@@ -6,6 +6,14 @@
         "command": "python .cursor/hooks/before_submit_prompt.py"
       }
     ],
+    "afterAgentResponse": [
+      {
+        "command": "python .cursor/hooks/after_agent_adg_audit.py"
+      },
+      {
+        "command": "python .cursor/hooks/after_agent_notion_status_audit.py"
+      }
+    ],
     "beforeShellExecution": [
       {
         "command": "python .cursor/hooks/before_shell_execution.py"

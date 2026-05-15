@@ -16,7 +16,7 @@ Make the invariant **"every Backlog Items row links to a registered Plans DB row
 - `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` Plans DB (parent relation target).
 - `tools/notion/` scripts (backfill + audit family, already established in today's session).
 - `ops_scripts/ci/` CI gate (NP3-class, sibling of NP1/NP2).
-- `.windsurf/scripts/post_cascade_deferred_scope_capture.py` (already upgraded 2026-05-03; no further changes unless re-audit surfaces bugs).
+- `.cursor/scripts/post_cursor_agent_deferred_scope_capture.py` (already upgraded 2026-05-03; no further changes unless re-audit surfaces bugs).
 
 **Out of scope**
 - Re-authoring historical plan markdown files.
@@ -77,7 +77,7 @@ Link-gap arithmetic:
 | 4.2 | Author-Gate: accept Plan-derived overrides? | AG packet — replace scorer defaults with Plan data where present | Authoritative source per field (Plan vs scorer defaults) | 1k | Todo |
 | 4.3 | Execute override pass if approved | re-use `backfill_backlog_scores.py` with new inputs | — | 3k | Todo |
 | 5.1 | CI gate | `ops_scripts/ci/check_notion_backlog_plan_linkage.py` (new) | Offline CI must skip | 2.5k | Todo |
-| 5.2 | Rule + registry | `.windsurf/rules/notion-backlog-plan-linkage.md` (new) + `run_contract_gates.py` entry + AGENTS.md Notion-map note | Rule discoverability | 1.5k | Todo |
+| 5.2 | Rule + registry | `.cursor/rules/notion-backlog-plan-linkage.md` (new) + `run_contract_gates.py` entry + AGENTS.md Notion-map note | Rule discoverability | 1.5k | Todo |
 
 ## Waves — Detail
 
@@ -87,9 +87,9 @@ Link-gap arithmetic:
 
 - New file: `tools/notion/backfill_backlog_plan_relation.py`.
 - Paginate Backlog, filter rows where `Plan.relation = []` AND `Plan File != ""`.
-- For each: derive slug from `Plan File` (strip `.md`), call `_resolve_plan_page_id(slug, token)` from `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\post_cascade_deferred_scope_capture.py`.
+- For each: derive slug from `Plan File` (strip `.md`), call `_resolve_plan_page_id(slug, token)` from `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\post_cursor_agent_deferred_scope_capture.py`.
 - On hit: `API-patch-page` with `Plan = {relation: [{id: page_id}]}` + `Last Updated = today`.
-- On miss: log to `artifacts/windsurf/backlog_plan_linkage_misses.jsonl` for W2 triage.
+- On miss: log to `artifacts/cursor/backlog_plan_linkage_misses.jsonl` for W2 triage.
 - Progress bar via `tqdm`, throttle 0.35s per row (constitutional §16).
 - Dry-run flag; idempotent; fail-open per row.
 
@@ -101,7 +101,7 @@ Link-gap arithmetic:
 
 ### W2 — True-orphan catch-all (3 rows)
 
-- Create one Plans DB row: `slug=unlinked-backlog-orphan`, `Status=Draft`, Summary describing intent, Plan File Path `.windsurf/plans/_virtual/unlinked-backlog-orphan.md` (virtual sentinel, not a real file).
+- Create one Plans DB row: `slug=unlinked-backlog-orphan`, `Status=Draft`, Summary describing intent, Plan File Path `.cursor/plans/_virtual/unlinked-backlog-orphan.md` (virtual sentinel, not a real file).
 - Author-Gate AG-packet: decide between (A) reassign the 3 true orphans to catch-all, (B) delete them, (C) inspect each case individually.
 - Execute the selected path; Backlog goes to **0 unlinked rows**.
 
@@ -146,7 +146,7 @@ Three sub-probes:
 
 **Phase 5.2 — rule + docs**
 
-- New file: `.windsurf/rules/notion-backlog-plan-linkage.md` (conditional, not always_on — token budget).
+- New file: `.cursor/rules/notion-backlog-plan-linkage.md` (conditional, not always_on — token budget).
 - AGENTS.md Notion-map note: add Backlog → Plan linkage invariant to the MCP Registry section.
 - AG_QUEUE_SEED rows for each AG decision below.
 
@@ -186,7 +186,7 @@ N/A — see above. The work touches no production module, no agentic_core/apps_*
 
 - Target: Notion Backlog Items DB (518 rows) linkage to Plans DB.
 - Closes: Plan relation gap (44.2% → ≥99.4%), 3 true orphans, 32 misc outliers.
-- New files: `tools/notion/backfill_backlog_plan_relation.py`, `tools/notion/backfill_backlog_outliers.py`, `tools/notion/audit_backlog_plan_derived.py`, `ops_scripts/ci/check_notion_backlog_plan_linkage.py`, `.windsurf/rules/notion-backlog-plan-linkage.md`.
+- New files: `tools/notion/backfill_backlog_plan_relation.py`, `tools/notion/backfill_backlog_outliers.py`, `tools/notion/audit_backlog_plan_derived.py`, `ops_scripts/ci/check_notion_backlog_plan_linkage.py`, `.cursor/rules/notion-backlog-plan-linkage.md`.
 - Edits: `ops_scripts/ci/run_contract_gates.py` (+ NP3 entry), AGENTS.md Notion-map note.
 - Pattern source: `notion-plans-status-enforcement-7a1e2d` (NP1/NP2 gate family, advisory + fail-closed env var). 5 waves, ~19k tokens.
 - Non-goals: historical plan re-authoring, prose recovery from deleted MECE v2 columns, capture-hook fail-closed semantics.
@@ -197,8 +197,8 @@ N/A — see above. The work touches no production module, no agentic_core/apps_*
 - Constitutional §25 (MCP serialization — remote MCP isolation)
 - Constitutional §35 (Author-Gate queue drain)
 - Constitutional §36 (plan-registration enforcement — Plans DB SSOT)
-- `.windsurf/rules/notion-plans-taxonomy.md` (canonical Status values)
-- `.windsurf/plans/notion-plans-status-enforcement-7a1e2d.md` (NP1/NP2 pattern source)
+- `.cursor/rules/notion-plans-taxonomy.md` (canonical Status values)
+- `.cursor/plans/notion-plans-status-enforcement-7a1e2d.md` (NP1/NP2 pattern source)
 - `@c:\Git\Agentic-Workflow-FRESH\tools\notion\audit_backlog_fill_rates.py` (baseline measurement tool, created 2026-05-03)
 - `@c:\Git\Agentic-Workflow-FRESH\tools\notion\backfill_backlog_scores.py` (Impact Score backfill tool, created 2026-05-03 — pattern source for W1 and W3 scripts)
-- `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\post_cascade_deferred_scope_capture.py` (capture hook with `_resolve_plan_page_id` resolver, upgraded 2026-05-03)
+- `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\post_cursor_agent_deferred_scope_capture.py` (capture hook with `_resolve_plan_page_id` resolver, upgraded 2026-05-03)

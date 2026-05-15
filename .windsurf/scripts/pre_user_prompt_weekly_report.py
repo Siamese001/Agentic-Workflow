@@ -12,7 +12,7 @@ Operator-manual runs meant reports drifted; now they auto-run once per week.
 
 Behavior
 --------
-- Read stdin (Cascade passes JSON payload). Payload ignored — this is a
+- Read stdin (Cursor Agent passes JSON payload). Payload ignored — this is a
   cadence trigger, not a conditional one.
 - Compute current ISO year-week (YYYY-WNN).
 - If `.windsurf/state/weekly_report_<YYYY-Www>.flag` exists → no-op, exit 0.

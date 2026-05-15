@@ -3,12 +3,12 @@ plan_id: agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1
 plan_type: governance    # governance | gates, schemas, CI, rule changes
 # plan_type governs §22 ADG graph-layer-evidence gate:
 #   governance → SKIPPED (gates, schemas, CI, rule changes)
-# See: .windsurf/rules/adg-graph-layer-enforcement.md § "Plan Scope via Frontmatter"
+# See: .cursor/rules/adg-graph-layer-enforcement.md § "Plan Scope via Frontmatter"
 #
 # NOTION STATUS DISCIPLINE (§plan-location.md):
 #   - Plans MUST be created with Status="Not Started" (never "In Progress")
 #   - Use: from tools.notion.plan_creation_helper import create_plan_in_notion
-#   - See: .windsurf/rules/plan-location.md § "Notion Status Discipline"
+#   - See: .cursor/rules/plan-location.md § "Notion Status Discipline"
 ---
 
 # W8: Align Governance Scanner Taxonomy with W7 Phase 0 Classification
@@ -249,8 +249,8 @@ Based on P5.1-P5.2 findings:
 
 - W7 receipt: `artifacts/governance/agentic-core-governance-remediation-c4e8a2_w7_receipt.json`
 - W7 classification: `artifacts/governance/w7_phase0_classification.md`
-- Parent plan: `.windsurf/plans/agentic-core-governance-remediation-c4e8a2.md`
-- W7 plan: `.windsurf/plans/agentic-core-governance-w7-non-delegation-violations-d4e8a2.md`
+- Parent plan: `.cursor/plans/agentic-core-governance-remediation-c4e8a2.md`
+- W7 plan: `.cursor/plans/agentic-core-governance-w7-non-delegation-violations-d4e8a2.md`
 - Scanner: `tools/governance/core_leakage_scan.py`
 
 ---

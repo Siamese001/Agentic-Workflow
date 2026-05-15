@@ -4,11 +4,11 @@
 **Tier**: T3
 **Status**: Draft
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 **Parent**: `apps-l7-deferred-scope-followup-a1d9e3` (W1 completed)
 **Depends On**: `apps-l7-deferred-scope-followup-a1d9e3`
 
-PLAN_CREATED: slug=apps-l7-w2-w4-followup-a2e8f4 path=.windsurf/plans/apps-l7-w2-w4-followup-a2e8f4.md tier=T3
+PLAN_CREATED: slug=apps-l7-w2-w4-followup-a2e8f4 path=.cursor/plans/apps-l7-w2-w4-followup-a2e8f4.md tier=T3
 
 ## 1. Problem Statement
 

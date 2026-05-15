@@ -22,7 +22,7 @@ Captures all deferred scope items from the completed parent plan `author-gate-ui
 
 **Source:** Parent plan AGP-2 seed + W3 advisory-mode design.
 **What:** The AGP1 CI gate (`ops_scripts/ci/check_author_gate_pipeline_freshness.py`) is advisory by default. After ≥7 days of shadow-mode violation data with FP rate < 5%, flip to fail-closed by making `AG_PIPELINE_FAIL_CLOSED=1` the CI default.
-**Evidence required:** Tail `artifacts/windsurf/author_gate_pipeline_violations.jsonl` for ≥7 days. Compute FP rate (false violations / total). If < 5%, flip is safe.
+**Evidence required:** Tail `artifacts/cursor/author_gate_pipeline_violations.jsonl` for ≥7 days. Compute FP rate (false violations / total). If < 5%, flip is safe.
 **Earliest unblock date:** ~2026-05-16 (7 days from plan completion).
 **Files:** `ops_scripts/ci/check_author_gate_pipeline_freshness.py` (default mode change), `ops_scripts/ci/run_contract_gates.py` (update label from "advisory" to "fail-closed").
 **Estimated effort:** ~2k tokens.
@@ -32,15 +32,15 @@ Captures all deferred scope items from the completed parent plan `author-gate-ui
 **Source:** Sibling plan `author-gate-deferred-scope-b8c1d4` W2.
 **What:** Promote `author-gate-enforcement.md` trigger from `model_decision` → `always_on`. Currently demoted per Anthropic two-tier compliance (§33 — always-on rules must sum ≤51,200 bytes).
 **Prerequisite:** Run `python ops_scripts/ci/check_always_on_token_budget.py` and confirm headroom. DS-1 must be live first (avoid double-fire confusion).
-**Files:** `.windsurf/rules/author-gate-enforcement.md` (frontmatter trigger change).
+**Files:** `.cursor/rules/author-gate-enforcement.md` (frontmatter trigger change).
 **Estimated effort:** ~1k tokens.
 
 ### DS-3: Queue-Drain Integration for Pipeline Violations
 
 **Source:** Parent plan §3 non-goal (queue-drain pipeline is separate concern).
-**What:** When `post_cascade_author_gate_pipeline_audit.py` detects a packet-without-ask violation, optionally emit an `AG_QUEUE_PENDING:` marker so the AG queue drain (§35) can auto-surface a retry prompt in the next response.
+**What:** When `post_cursor_agent_author_gate_pipeline_audit.py` detects a packet-without-ask violation, optionally emit an `AG_QUEUE_PENDING:` marker so the AG queue drain (§35) can auto-surface a retry prompt in the next response.
 **Prerequisite:** DS-1 must be live (advisory data validates detection accuracy before wiring into queue drain).
-**Files:** `.windsurf/scripts/post_cascade_author_gate_pipeline_audit.py` (add queue marker), `.windsurf/scripts/_author_gate_queue.py` (accept pipeline-violation entries).
+**Files:** `.cursor/scripts/post_cursor_agent_author_gate_pipeline_audit.py` (add queue marker), `.cursor/scripts/_author_gate_queue.py` (accept pipeline-violation entries).
 **Estimated effort:** ~4k tokens.
 
 ### DS-4: HITL_PACKET Legacy Alias Deprecation Path
@@ -48,7 +48,7 @@ Captures all deferred scope items from the completed parent plan `author-gate-ui
 **Source:** Parent plan §3 non-goal (back-compat preserved, not cleaned up).
 **What:** The `HITL_PACKET:` legacy alias is still emitted alongside `AUTHOR_GATE_PACKET:` by `emit_packet.py` and detected by `_author_gate_pipeline_check.py`. Plan a deprecation timeline: (1) add deprecation warning to `emit_packet.py` stderr, (2) after N days, stop emitting the alias, (3) remove alias detection from all scanners.
 **Prerequisite:** Audit all scanners that key on `HITL_PACKET:` — ensure zero external consumers.
-**Files:** `.windsurf/skills/author-gate-packet-builder/emit_packet.py`, `.windsurf/scripts/_author_gate_pipeline_check.py`, `.windsurf/scripts/post_cascade_author_gate_pipeline_audit.py`, `.windsurf/scripts/post_cascade_author_gate_capture.py`.
+**Files:** `.cursor/skills/author-gate-packet-builder/emit_packet.py`, `.cursor/scripts/_author_gate_pipeline_check.py`, `.cursor/scripts/post_cursor_agent_author_gate_pipeline_audit.py`, `.cursor/scripts/post_cursor_agent_author_gate_capture.py`.
 **Estimated effort:** ~6k tokens.
 
 ### DS-5: Regex Strictness Refinement
@@ -57,7 +57,7 @@ Captures all deferred scope items from the completed parent plan `author-gate-ui
 **What:** The current regex for `AUTHOR_GATE_PACKET:` detection uses a quoted-mention exclusion heuristic (fenced code blocks, inline code, blockquotes). After ≥14 days of production data, review violation log for false positives caused by edge cases in the regex boundary logic. Tighten or loosen as empirical data suggests.
 **Evidence required:** Tail violation log, compute FP by category. If regex FP > 2%, refine boundary regex in `_author_gate_pipeline_check.py`.
 **Earliest unblock date:** ~2026-05-23 (14 days from plan completion).
-**Files:** `.windsurf/scripts/_author_gate_pipeline_check.py`, `tests/unit/windsurf_scripts/test_author_gate_pipeline_check.py`.
+**Files:** `.cursor/scripts/_author_gate_pipeline_check.py`, `tests/unit/windsurf_scripts/test_author_gate_pipeline_check.py`.
 **Estimated effort:** ~3k tokens.
 
 ---
@@ -78,7 +78,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 
 - Implementing any of these items now — this is a backlog capture plan only.
 - Modifying the four shape requirements (owned by plan c4d2a8).
-- Changing the `ask_user_question` IDE rendering (Cascade built-in, not modifiable).
+- Changing the `ask_user_question` IDE rendering (Cursor Agent built-in, not modifiable).
 - Expanding scope to other Author-Gate enforcement corners.
 
 ---
@@ -103,7 +103,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 |---|---|---|---|---|---|
 | DS-1 | AGP1 shadow→block flip | `check_author_gate_pipeline_freshness.py`, `run_contract_gates.py` | Need FP evidence from violation log | ~2k | ✅ DONE |
 | DS-2 | Rule always-on promotion | `author-gate-enforcement.md` | §33 budget gate dependency | ~1k | ✅ DONE |
-| DS-3 | Queue-drain integration | `post_cascade_author_gate_pipeline_audit.py`, `_author_gate_queue.py` | Queue drain is complex subsystem | ~4k | ✅ DONE |
+| DS-3 | Queue-drain integration | `post_cursor_agent_author_gate_pipeline_audit.py`, `_author_gate_queue.py` | Queue drain is complex subsystem | ~4k | ✅ DONE |
 | DS-4 | HITL_PACKET deprecation (phase 1) | `emit_packet.py` | Stop emitting alias; keep scanner detection | ~6k | ✅ DONE |
 | DS-5 | Regex refinement | `_author_gate_pipeline_check.py`, tests | Empirical data dependency | ~3k | ❌ BLOCKED |
 
@@ -114,7 +114,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 - Parent: `author-gate-ui-renderer-hardening-a7f3c2` (Completed 2026-05-09, commit ba0ad5e16d)
 - Sibling: `author-gate-deferred-scope-b8c1d4` (W1/W2 blocked on shadow data)
 - Constitutional §6, §30, §33, §35
-- `artifacts/windsurf/author_gate_pipeline_violations.jsonl` (evidence source for DS-1, DS-5)
+- `artifacts/cursor/author_gate_pipeline_violations.jsonl` (evidence source for DS-1, DS-5)
 
 ---
 

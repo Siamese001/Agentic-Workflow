@@ -200,7 +200,7 @@ P-views not directly applicable — this is `L_TOOLS` infrastructure, not produc
 
 ## 10. Predecessor Plans Archived
 
-The following 4 plans are archived 2026-05-06 with this plan as the consolidated successor. Disk: `git mv` to `.windsurf/plans/_archive/2026-orphaned/`. Notion: Status → `Archived`, AI Summary updated to point here.
+The following 4 plans are archived 2026-05-06 with this plan as the consolidated successor. Disk: `git mv` to `.cursor/plans/_archive/2026-orphaned/`. Notion: Status → `Archived`, AI Summary updated to point here.
 
 | Predecessor Slug | Reason for Archive | What Survived (in this plan) |
 |---|---|---|
@@ -214,8 +214,8 @@ The following 4 plans are archived 2026-05-06 with this plan as the consolidated
 ## 11. References
 
 - Constitutional §22 (graph-layer primary driver), §28 (ADG-first), §29 (fail-aggregating doctrine)
-- `.windsurf/rules/adg-graph-layer-enforcement.md`
-- `.windsurf/rules/adg-canonical-invariants.md`
+- `.cursor/rules/adg-graph-layer-enforcement.md`
+- `.cursor/rules/adg-canonical-invariants.md`
 - Predecessor plans (archived): see §10
 - Companion tool template: `tools/adg/adg_fanin_isolation_check.py`
 

@@ -1,7 +1,7 @@
 ---
 description: |
   Apply when invoking `python -m apps_rg` or discussing target-company/role/JD/briefing. Enforces Cursor Agent discipline complementing the in-app wizard and cross-company guard.
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/apps-rg-interactive-discipline.md`. Original Cursor trigger: `always_on`. -->

@@ -334,7 +334,7 @@ For each of the 13 target files, P0 must produce:
 
 ## Related
 
-- W8 Plan: `.windsurf/plans/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md`
+- W8 Plan: `.cursor/plans/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md`
 - W7 Phase 0: `artifacts/governance/w7_phase0_classification.md`
 - W8 P5 Receipt: `artifacts/governance/w8_p5_receipt.md`
 - W9 P0 Audit: `artifacts/governance/w9_p0_runtime_leakage_audit.md`
@@ -343,7 +343,7 @@ For each of the 13 target files, P0 must produce:
 - W9 P0 Audit Update (55→57): `artifacts/governance/w9_p0_audit_55_to_57_update.json`
 - W9 P4 CI Fix Task: `artifacts/governance/w9_p4_blocker_ci_fix_task.json`
 - **W9 P4/P5 Final Receipt: `artifacts/governance/w9_p4_p5_final_migration_receipt.json`** (12 files migrated, 57 findings eliminated)
-- Rule: `.windsurf/rules/agentic-core-static.md` (TEMPORARY_THIN_ADAPTER)
+- Rule: `.cursor/rules/agentic-core-static.md` (TEMPORARY_THIN_ADAPTER)
 - **W9 Status: ✅ P0-P5 COMPLETE — W8 UNBLOCKED**
 
 ## P3 Safety Gate (Pre-Implementation Checklist)

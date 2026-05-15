@@ -7,7 +7,7 @@ archived_date: 2026-05-09
 archived_reason: Rebaselined against 2026-05-09 repo state. W3 unit scaffold partially done; new split surface (apps_rg/profiles/tests/) discovered; file counts updated. See v2 plan.
 ---
 
-> ⚠️ **ARCHIVED** — Superseded by `.windsurf/plans/apps-test-surface-consolidation-11acd9-v2.md` (2026-05-09 rebaseline). All Author-Gate decisions (Q1–Q4), gap analysis, and SSOT file list carried forward unchanged into v2.
+> ⚠️ **ARCHIVED** — Superseded by `.cursor/plans/apps-test-surface-consolidation-11acd9-v2.md` (2026-05-09 rebaseline). All Author-Gate decisions (Q1–Q4), gap analysis, and SSOT file list carried forward unchanged into v2.
 
 # Apps_* Test-Surface Consolidation
 
@@ -18,7 +18,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 ## Context (SCQA)
 
 - **Situation** — Test files for `apps_*` packages live in 4+ inconsistent locations: `tests/_apps_contract/test_<app>_*.py` (cross-app contract, all apps), `tests/unit/<app>/` (5 of 10 apps populated), `tests/<app>/` (4 of 10 apps populated), AND legacy `apps_<app>/tests/` dirs inside the app packages (71 files across 8 apps). Plus `tests/governance/test_apps_*` (76 files, architecture-compliance) and a handful in `tests/integration/` / `tests/e2e/` / `tests/runtime/`. ADG snapshot `05052026_0722` (140743 nodes / 863353 edges) confirms 16 distinct SSOT folder-definition files reference apps_* paths.
-- **Complication** — Two roots for app tests (repo-rooted `tests/` + app-rooted `apps_<x>/tests/`) violate the user's "consistent testing surface" goal, fragment pytest collection, duplicate conftest fixtures, and confuse readers. The `.windsurf/rules/apps-folder-taxonomy.md` rule currently lists `tests/` as a legitimate app-internal subdir, perpetuating the split. Only `apps_rg` has all three repo-rooted surfaces populated.
+- **Complication** — Two roots for app tests (repo-rooted `tests/` + app-rooted `apps_<x>/tests/`) violate the user's "consistent testing surface" goal, fragment pytest collection, duplicate conftest fixtures, and confuse readers. The `.cursor/rules/apps-folder-taxonomy.md` rule currently lists `tests/` as a legitimate app-internal subdir, perpetuating the split. Only `apps_rg` has all three repo-rooted surfaces populated.
 - **Question** — How do we converge on a single canonical 3-surface test taxonomy (cross-app contract / unit / integration) for every `apps_*` package without breaking the governance suite, the AEH1 parity gate, or pytest collection?
 - **Answer** — Drop the `apps_<x>/tests/` 4th surface from the rule, `git mv` all 71 legacy files into `tests/<app>/`, leave `tests/governance/test_apps_*` in place (cross-cutting), scaffold missing `tests/unit/<app>/` + `tests/<app>/` dirs with `__init__.py` + `conftest.py`, update the 16 SSOT folder-definition files to reflect the canonical taxonomy, and add a new advisory CI gate `check_apps_test_surface_parity.py` to prevent regression.
 
@@ -28,7 +28,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/apps-folder-taxonomy.md` | Current rule lists `tests/` as legitimate app-internal subdir; must drop | 🔲 |
+| `.cursor/rules/apps-folder-taxonomy.md` | Current rule lists `tests/` as legitimate app-internal subdir; must drop | 🔲 |
 | `agentic_core/L0_routing/config/path_constants.py` | Primary path constants SSOT | 🔲 |
 | `agentic_core/interfaces/path_constants.py` | Interface-layer copy | 🔲 |
 | `agentic_core/L5_safety/config/structure_blueprint/{__init__,_constants,ssot,derived}.py` | Canonical blueprint SSOT package | 🔲 |
@@ -51,7 +51,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 | Wave 3 | Surface scaffolding | Missing `tests/<app>/` + `tests/unit/<app>/` dirs + `__init__.py` + `conftest.py` for 8 apps × 2 surfaces × 2 files = ~20–24 stubs | C | ~6K 🟢 |
 | Wave 4 | Legacy relocation | 71 `git mv apps_<app>/tests/* tests/<app>/`; rewrite app-relative imports inside moved files; remove empty `apps_<app>/tests/` dirs | D | ~25K 🟡 |
 | Wave 5 | Misplaced repo-test relocation | 6 `tests/integration/apps_*/` + `tests/integration/test_apps_*` → `tests/<app>/`; `tests/e2e/test_apps_research_live.py` + `tests/runtime/test_apps_rg_e2e_proof.py` stay (cross-cutting suites) | E | ~5K 🟢 |
-| Wave 6 | Enforcement | New rule `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory) + helper `.windsurf/scripts/_apps_test_surface_check.py` + CI gate `ops_scripts/ci/check_apps_test_surface_parity.py` (advisory; bypass `APPS_TEST_SURFACE_BYPASS=1`) + `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` | F | ~12K 🟢 |
+| Wave 6 | Enforcement | New rule `.cursor/rules/apps-test-surface-taxonomy.md` (always_on advisory) + helper `.cursor/scripts/_apps_test_surface_check.py` + CI gate `ops_scripts/ci/check_apps_test_surface_parity.py` (advisory; bypass `APPS_TEST_SURFACE_BYPASS=1`) + `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` | F | ~12K 🟢 |
 | Wave 7 | Verification | `pytest --collect-only` sanity, AEH1 gate green, governance gate green, tests/_apps_contract/ full pass | G | ~6K 🟢 |
 
 **Total: ~71K tokens across 7 waves, mostly GREEN with one YELLOW (Wave 4 relocation risk).**
@@ -99,8 +99,8 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 | 4.8 | Relocate apps_shared/tests/ (4) | `git mv … tests/apps_shared/` | GAP-5 | ~2K | 🔲 TODO |
 | 4.9 | Remove empty `apps_<x>/tests/` dirs | 8 dirs deleted | — | ~1K | 🔲 TODO |
 | 5.1 | Relocate `tests/integration/apps_*/` + filename-named misplaced tests | 6 files: `tests/integration/apps_eval/test_apps_eval_integration.py`, `tests/integration/apps_research/test_apps_research_integration.py`, `tests/integration/apps_rfp/test_apps_rfp_integration.py`, `tests/integration/apps_shared/test_apps_shared_integration.py`, `tests/integration/test_apps_qna_c0_retrieval.py`, `tests/_archived_obsolete/integration/apps_exec/...` (skip — archived) | GAP-6 | ~3K | 🔲 TODO |
-| 6.1 | New rule | `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | 🔲 TODO |
-| 6.2 | Helper | `.windsurf/scripts/_apps_test_surface_check.py` — pure `decide(app, fp) -> Violation \| None` | GAP-7 | ~3K | 🔲 TODO |
+| 6.1 | New rule | `.cursor/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | 🔲 TODO |
+| 6.2 | Helper | `.cursor/scripts/_apps_test_surface_check.py` — pure `decide(app, fp) -> Violation \| None` | GAP-7 | ~3K | 🔲 TODO |
 | 6.3 | CI gate | `ops_scripts/ci/check_apps_test_surface_parity.py` — registered in `run_contract_gates.py` after AEH1; advisory; bypass `APPS_TEST_SURFACE_BYPASS=1` | GAP-7 | ~3K | 🔲 TODO |
 | 6.4 | Tests | `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` — ≥30 cases | — | ~3K | 🔲 TODO |
 | 7.1 | Verification | `pytest --collect-only`; `python ops_scripts/ci/check_app_domain_harness_parity.py`; `python ops_scripts/ci/check_apps_folder_taxonomy.py`; `python ops_scripts/ci/check_apps_test_surface_parity.py`; full `pytest tests/_apps_contract/` | — | ~4K | 🔲 TODO |
@@ -112,11 +112,11 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 ## Gap Register
 
 **GAP-1: Rule lists `tests/` as legitimate apps_<x>/ subdir**
-- `.windsurf/rules/apps-folder-taxonomy.md` row 34 lists `tests/` as "App-local unit tests" inside an `apps_*` package, perpetuating the split-root problem.
+- `.cursor/rules/apps-folder-taxonomy.md` row 34 lists `tests/` as "App-local unit tests" inside an `apps_*` package, perpetuating the split-root problem.
 - Fix: drop the row; explicitly forbid `apps_<x>/tests/`; cross-link to new `apps-test-surface-taxonomy.md`.
 
 **GAP-2: Path-constant SSOT files have no apps_* test-surface constants**
-- Cascade and downstream tools have to re-derive `tests/<app>/`, `tests/unit/<app>/`, `tests/_apps_contract/test_<app>_*.py` glob ad hoc.
+- Cursor Agent and downstream tools have to re-derive `tests/<app>/`, `tests/unit/<app>/`, `tests/_apps_contract/test_<app>_*.py` glob ad hoc.
 - Fix: define `APPS_TEST_SURFACES = ("contract", "unit", "integration")`, `apps_test_unit_dir(app)`, `apps_test_integration_dir(app)`, `apps_contract_glob(app)` in `agentic_core/L0_routing/config/path_constants.py` + re-export from interface mirror + structure_blueprint package.
 
 **GAP-3: Blueprint package's apps-subfolder-map functions don't enforce 3-surface contract**
@@ -161,7 +161,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 
 **Scope**: this plan file + Plans DB row (Status=Not Started).
 
-**Acceptance**: `.windsurf/plans/apps-test-surface-consolidation-11acd9.md` exists; Notion Plans row created with `Slug`, `Status="Not Started"`, `Plan File Path`, `Summary`, `AI Summary `.
+**Acceptance**: `.cursor/plans/apps-test-surface-consolidation-11acd9.md` exists; Notion Plans row created with `Slug`, `Status="Not Started"`, `Plan File Path`, `Summary`, `AI Summary `.
 
 ### Phase 1.2 — Audit summary
 
@@ -175,7 +175,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 
 | # | File | Edit |
 |---|---|---|
-| 1 | `.windsurf/rules/apps-folder-taxonomy.md` | drop `tests/` row from app-internal subdir table; cross-link new rule |
+| 1 | `.cursor/rules/apps-folder-taxonomy.md` | drop `tests/` row from app-internal subdir table; cross-link new rule |
 | 2 | `agentic_core/L0_routing/config/path_constants.py` | add `APPS_TEST_SURFACES`, helper functions |
 | 3 | `agentic_core/interfaces/path_constants.py` | re-export new names |
 | 4 | `agentic_core/L5_safety/config/structure_blueprint/_constants.py` | add `APPS_TEST_SURFACE_DEFINITION` dict |
@@ -234,8 +234,8 @@ python tools/test_relocation/rewrite_imports.py --root tests/apps_qna --app apps
 
 **Files**:
 
-- `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory)
-- `.windsurf/scripts/_apps_test_surface_check.py` — `decide(app, fp) -> Violation | None`
+- `.cursor/rules/apps-test-surface-taxonomy.md` (always_on advisory)
+- `.cursor/scripts/_apps_test_surface_check.py` — `decide(app, fp) -> Violation | None`
 - `ops_scripts/ci/check_apps_test_surface_parity.py` — registered in `run_contract_gates.py`
 - `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` — ≥30 cases
 
@@ -296,7 +296,7 @@ python -m pytest tests/governance/ -k apps_ -q
 # (this plan + Notion registration)
 
 # Wave 2 (per file)
-# manual edits via Cascade edit tool
+# manual edits via Cursor Agent edit tool
 
 # Wave 3 (per app)
 mkdir -p tests/apps_<app> tests/unit/apps_<app>
@@ -348,7 +348,7 @@ If a wave breaks pytest collection or a CI gate:
 | pytest --collect-only whole-tree | succeeds | exit 0 |
 | SSOT files updated or no-op-verified | 16 / 16 | per-file checklist in Phase 2 |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Always-on rules stay lean — detailed enforcement procedures live in the helper + skill.
 - ADG SQLite is the audit primary source (already executed; results in `artifacts/_scratch/`).

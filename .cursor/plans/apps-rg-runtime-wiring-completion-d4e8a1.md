@@ -45,7 +45,7 @@ Subsequent inspection identified **6 distinct defects** declared resolved by W5/
 | D3 | `apps_rg/__main__.py` references `args.research_via` — argparse never defines `--research-via` | `apps_rg/__main__.py:216` (pre-fix) | This session |
 | D4 | `apps_rg/__main__.py` instantiates `AppIngressRunner()` with no kwargs — class requires `dispatch=`/`parse=`/`required_fields=` | `apps_rg/__main__.py:241` | This session |
 | D5 | `apps_rg/__main__.py` calls `runner.run(payload_dict)` — class exposes `handle_chat()`/`handle_http()` only | `apps_rg/__main__.py:233` | This session |
-| D6 | Wizard crashes with `EOFError` traceback in non-TTY contexts (e.g. all Cascade runs) | `apps_rg/__main__.py:_interactive_wizard` (pre-fix) | This session |
+| D6 | Wizard crashes with `EOFError` traceback in non-TTY contexts (e.g. all Cursor Agent runs) | `apps_rg/__main__.py:_interactive_wizard` (pre-fix) | This session |
 
 D1, D2, D3, D6 were patched ad-hoc this session. D4 and D5 are the architectural gaps — the W6/W7 work that was never landed.
 
@@ -195,8 +195,8 @@ This plan adds those.
 
 | Path | Role |
 |---|---|
-| `.windsurf/templates/execution-plan-template.md` | Add `## Definition of Done` mandatory section with smoke-test row |
-| `.windsurf/rules/plan-location.md` | Update DoD requirements |
+| `.cursor/templates/execution-plan-template.md` | Add `## Definition of Done` mandatory section with smoke-test row |
+| `.cursor/rules/plan-location.md` | Update DoD requirements |
 
 **Total:** 12 new files · 6 edits · 1 already-fixed file
 
@@ -236,9 +236,9 @@ This plan adds those.
 | P5.1 | E2E smoke test infrastructure | `tests/_apps_contract/test_apps_rg_e2e_resume_generation.py` | Fixture inputs (master_resume + JD); `pytest.mark.e2e`; runs against real vLLM Qwen 32B per memory `01483ea2`; skipped if VLLM_BASE_URL unset | ~3k | Not Started |
 | P5.2 | Brown & Brown smoke artifact | (one-time real run) | Produces `artifacts/apps_rg/runs/<ts>/generated_resume.json`; non-empty; passes AppsRgProfileManifest.output_schema validation | ~3k | Not Started |
 | P5.3 | Capability smoke tests | `tests/_apps_contract/test_apps_rg_smoke_capability.py`, `test_apps_rg_dry_run.py`, `test_apps_rg_runner_instantiable.py` | 4 positive-assertion tests; balance the 15 governance tests; mark as TIER1 must-pass | ~2k | Not Started |
-| P6.1 | Plan template DoD section | `.windsurf/templates/execution-plan-template.md` | Add `## Definition of Done` with required smoke-test row + verification-vs-deferral table | ~2k | Not Started |
+| P6.1 | Plan template DoD section | `.cursor/templates/execution-plan-template.md` | Add `## Definition of Done` with required smoke-test row + verification-vs-deferral table | ~2k | Not Started |
 | P6.2 | 3 new CI gates | `ops_scripts/ci/check_apps_package_importable.py`, `check_apps_dry_run_works.py`, `check_plan_completion_dod.py` + register in `run_contract_gates.py` | Advisory by default; bypass env vars; mirror existing gate patterns from c4d2a8 / 6e7e9afe | ~3k | Not Started |
-| P6.3 | Plan-location rule update | `.windsurf/rules/plan-location.md` | Add DoD requirements; cross-ref this plan slug | ~2k | Not Started |
+| P6.3 | Plan-location rule update | `.cursor/rules/plan-location.md` | Add DoD requirements; cross-ref this plan slug | ~2k | Not Started |
 
 ---
 
@@ -374,7 +374,7 @@ AG_QUEUE_SEED: plan=apps-rg-runtime-wiring-completion-d4e8a1 id=ARW-5 depends_on
 - Constitutional §6 (Author-Gate), §22 (graph-layer evidence), §32 (Fort Knox / DoD), §35 (queue drain), §36 (plan registration)
 - Memory `01483ea2` (vLLM Qwen 32B canonical topology — provider for L2 execution)
 - Memory `e24c888b` (apps_qna FEC producer wiring — pattern for apps_rg C0 binding)
-- Memory `aa3e66d1` (Cascade single-prompt template — applies to running this plan's E2E test)
+- Memory `aa3e66d1` (Cursor Agent single-prompt template — applies to running this plan's E2E test)
 
 ---
 

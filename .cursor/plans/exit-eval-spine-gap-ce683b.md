@@ -98,10 +98,10 @@ All items in §3 are **DIRECTLY OBSERVED** as absent (grep + file inspection). N
 | # | Gap | Severity | Surface | Best-Practice Source | Evidence (what is missing in repo) |
 |---|---|---|---|---|---|
 | G1 | **No trajectory metric suite at runtime exit.** v33 §6B mentions "tool order, retries, budget" prose only; no `trajectory_exact_match`/`in_order`/`any_order`/`precision`/`recall`/`single_tool_use` primitives emitted on the sealed-artifact path. | 🔴 | RT, SH | Google Vertex | `grep trajectory_*_match` → zero hits in `agentic_core/`, `apps_eval/`. |
-| G2 | **No typed `ExitDecision` schema.** §5 lists 4 dispositions in prose; there is no JSON-Schema / pydantic contract pinning disposition enum + reason_code + confidence + safety_flags + budget_fit + groundedness_score + trajectory_scores + escalation_packet_ref. | 🔴 | CONF | Industry + OpenAI trace-grade | No `decision_record.schema.json` equivalent for exit (only author-gate schema in `.windsurf/schemas/`). |
+| G2 | **No typed `ExitDecision` schema.** §5 lists 4 dispositions in prose; there is no JSON-Schema / pydantic contract pinning disposition enum + reason_code + confidence + safety_flags + budget_fit + groundedness_score + trajectory_scores + escalation_packet_ref. | 🔴 | CONF | Industry + OpenAI trace-grade | No `decision_record.schema.json` equivalent for exit (only author-gate schema in `.cursor/schemas/`). |
 | G3 | **Runtime trace-grading surface missing.** OpenAI mandates trace-grade before dataset-grade; repo has `scenario_runner.py` (dataset path) but no runtime trace grader that scores the live L2 sealed transcript before disposition. | 🔴 | RT | OpenAI | `apps_eval/` engines consume datasets; nothing runs at §5 on sealed runtime artifacts. |
 | G4 | **No exit-phase budget-fit check.** Ingress stamps request envelope; §5 has no named step validating token / latency / tool-call / $ budget consumed vs envelope before `allow/finish`. | 🔴 | RT, GATE | Anthropic + Industry | `eval_policies.yaml` has `latency_threshold_ms: 30000` for scenarios; no runtime per-request enforcement. |
-| G5 | **Escalation packet schema undefined.** `hitl_policy.py` has `HitlPolicy` dataclass (classes/timeouts/approvers) but no schema pinning the fields an L5 escalation packet **must** carry (trace_ref, severity_band, confidence, options_ledger, evidence_refs, deadline, tenant, blast_radius). | 🔴 | CONF | Industry + ADR-023 | `.windsurf/schemas/decision_record.schema.json` is for author-gate; no runtime counterpart. |
+| G5 | **Escalation packet schema undefined.** `hitl_policy.py` has `HitlPolicy` dataclass (classes/timeouts/approvers) but no schema pinning the fields an L5 escalation packet **must** carry (trace_ref, severity_band, confidence, options_ledger, evidence_refs, deadline, tenant, blast_radius). | 🔴 | CONF | Industry + ADR-023 | `.cursor/schemas/decision_record.schema.json` is for author-gate; no runtime counterpart. |
 | G6 | **Data-exhaust contract is prose.** v33 line 444 "Traces, Artifacts, Outcomes, reason codes, commit status" — no typed `EvalEvent` schema for the L6 ingest queue. | 🟡 | SH, CONF | Google + OpenAI | No schema at `config/schemas/` for exhaust events; §6A "Map telemetry" has no target shape. |
 | G7 | **No regression-suite gate before promotion (6D).** 6D "gated review" does not require capability→regression pass rate ≥ rubrics.yaml `regression.min_pass_rate_target: 0.98` before UWG commits a prompt/policy/rubric change. | 🔴 | GATE, SH | Anthropic | `regression_detector.py` exists but is not wired as a blocking precondition in §6D. |
 | G8 | **Judge-calibration cadence not gated.** `rubrics.yaml` defines `unknown_budget` but no rule/workflow enforces periodic (e.g. weekly) human recalibration; calibration ledger only contains `data/judge_calibration/` scaffolding. | 🟡 | SH, GATE | Anthropic | No cron / CI gate checks last-calibration timestamp. |
@@ -154,8 +154,8 @@ Rules of engagement:
 | W3.3 | Semantic equivalence policy | ADR §5 | Exact vs normalized tool-call comparison | 6k | Todo |
 | W4.1 | ADR — Budget Envelope | `docs/architecture/adr/ADR-NNN-budget-envelope.md` | Stamped at ingress E3; checked at §5 | 10k | Todo |
 | W4.2 | ADR — Output-Contract Validator | `docs/architecture/adr/ADR-NNN-output-contract-validator.md` | Schema-validates final answer against declared contract | 8k | Todo |
-| W5.1 | Rule — Regression pass before promotion | `.windsurf/rules/evaluation-promotion-gate.md` (new) | Ties to §6D + rubrics.yaml regression threshold | 5k | Todo |
-| W5.2 | Rule — Judge calibration cadence | `.windsurf/rules/judge-calibration-cadence.md` (new) | Weekly; unknown-budget watchdog | 5k | Todo |
+| W5.1 | Rule — Regression pass before promotion | `.cursor/rules/evaluation-promotion-gate.md` (new) | Ties to §6D + rubrics.yaml regression threshold | 5k | Todo |
+| W5.2 | Rule — Judge calibration cadence | `.cursor/rules/judge-calibration-cadence.md` (new) | Weekly; unknown-budget watchdog | 5k | Todo |
 | W5.3 | Trace→dataset flywheel spec | `docs/architecture/adr/ADR-NNN-eval-flywheel.md` | Failed/escalated traces auto-curated | 5k | Todo |
 | W6.1 | Hallucination vs Groundedness split | `config/judges/rubrics.yaml` doc delta + ADR | Vertex-style tool-grounded hallucination dim | 5k | Todo |
 | W6.2 | Cost-per-task default metric | `config/schemas/exit_decision.schema.json` (update) + scorecard spec | `cost_usd` always-on | 4k | Todo |
@@ -210,8 +210,8 @@ ADG Provenance: backend=sqlite, snapshot=artifacts/adg/adg_indexed_<latest>.sqli
 | W3.2 | Trajectory dataset README | `data/eval/golden/trajectory/README.md` | ✅ |
 | W4.1 | ADR-038 — Budget Envelope | `docs/architecture/adr/ADR-038-budget-envelope.md` | ✅ |
 | W4.2 | ADR-039 — Output-Contract Validator | `docs/architecture/adr/ADR-039-output-contract-validator.md` | ✅ |
-| W5.1 | Rule — Promotion Gate | `.windsurf/rules/evaluation-promotion-gate.md` | ✅ |
-| W5.2 | Rule — Judge Calibration Cadence | `.windsurf/rules/judge-calibration-cadence.md` | ✅ |
+| W5.1 | Rule — Promotion Gate | `.cursor/rules/evaluation-promotion-gate.md` | ✅ |
+| W5.2 | Rule — Judge Calibration Cadence | `.cursor/rules/judge-calibration-cadence.md` | ✅ |
 | W5.3 | ADR-040 — Eval Flywheel | `docs/architecture/adr/ADR-040-eval-flywheel.md` | ✅ |
 | W6.1 | Hallucination/Groundedness split (ADR + rubrics.yaml note) | `docs/architecture/adr/ADR-041-hallucination-groundedness-split.md` + `config/judges/rubrics.yaml` | ✅ |
 | W6.2 | Cost-per-task default metric | `config/schemas/exit_decision.schema.json` → `budget.cost_usd_*`; `config/schemas/eval_event.schema.json` → `cost.cost_usd` | ✅ encoded in schemas |
@@ -245,7 +245,7 @@ ADG Provenance: backend=sqlite, snapshot=artifacts/adg/adg_indexed_<latest>.sqli
 
 - `python -c "import json,yaml; ..."` — all 3 JSON schemas parse; both YAML rubrics parse (exit 0, 2026-04-23).
 - v33 §5 rewrite verified in-file (lines 389–419).
-- Rule files follow `.windsurf/rules/*.md` frontmatter convention (`trigger: model_decision`).
+- Rule files follow `.cursor/rules/*.md` frontmatter convention (`trigger: model_decision`).
 - Seven new ADRs follow the existing `ADR-NNN-kebab-title.md` naming pattern in `docs/architecture/adr/`.
 
 ### Explicit non-deliverables (per §6 Out of Scope)

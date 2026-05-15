@@ -4,7 +4,7 @@ post_cascade_plan_registration_capture.py — Capture PLAN_CREATED markers.
 
 Hook: post_cascade_response (show_output=false).
 
-Scans the Cascade response for ``PLAN_CREATED:`` markers and appends each
+Scans the Cursor Agent response for ``PLAN_CREATED:`` markers and appends each
 to ``.windsurf/state/plan_registration_queue.jsonl``. Idempotent — re-running
 on the same response does not create duplicates (enqueue is slug-keyed).
 

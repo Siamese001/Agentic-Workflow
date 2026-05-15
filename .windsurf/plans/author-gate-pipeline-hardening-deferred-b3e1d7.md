@@ -78,7 +78,7 @@ DS-5 (regex refinement, ~2026-05-23, independent)
 
 - Implementing any of these items now — this is a backlog capture plan only.
 - Modifying the four shape requirements (owned by plan c4d2a8).
-- Changing the `ask_user_question` IDE rendering (Cascade built-in, not modifiable).
+- Changing the `ask_user_question` IDE rendering (Cursor Agent built-in, not modifiable).
 - Expanding scope to other Author-Gate enforcement corners.
 
 ---

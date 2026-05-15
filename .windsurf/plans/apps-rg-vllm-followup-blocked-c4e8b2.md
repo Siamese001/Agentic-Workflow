@@ -34,7 +34,7 @@ When activated. Plan is capture-only.
 ## Non-Goals
 
 - Hook-based enforcement of wizard discipline (rejected during initial design)
-- Auto-detection of "user explicitly authorized" vs "Cascade inferred" (NLP-hard)
+- Auto-detection of "user explicitly authorized" vs "Cursor Agent inferred" (NLP-hard)
 - Real LLM-judge implementations (separate plan family — see memory `5ba9ca42`)
 - C0 FEC producer wiring for grounded apps (separate plan, blocker #4)
 - apps_underwriting_ai analyst attestation flip (out-of-scope; requires qualified-owner sign-off)

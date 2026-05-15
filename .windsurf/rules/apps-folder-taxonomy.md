@@ -63,7 +63,7 @@ When moving files under `apps_*/`:
 
 ## Enforcement layers
 
-1. **This rule** (trigger=model_decision) — loads when Cascade edits `apps_*/` content.
+1. **This rule** (trigger=model_decision) — loads when Cursor Agent edits `apps_*/` content.
 2. **CI gate `T7r`** — `ops_scripts/ci/check_apps_folder_taxonomy.py` runs pre-commit + CI.
 3. **Compat-shim exemption** — during the 2-week sunset window, files containing `ADR-082` + (`sys.modules[__name__]` | `DeprecationWarning` | `Compat shim`) are exempt.
 

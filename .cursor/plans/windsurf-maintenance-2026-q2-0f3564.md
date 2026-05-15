@@ -1,8 +1,8 @@
 ---
 plan_id: windsurf-maintenance-2026-q2-0f3564
 plan_type: tracker
-# Auto-scaffolded 2026-04-27 by .windsurf/scripts/post_cascade_deferred_scope_capture.py
-# from a DEFERRED_SCOPE marker. Cascade should expand this plan on the next
+# Auto-scaffolded 2026-04-27 by .cursor/scripts/post_cursor_agent_deferred_scope_capture.py
+# from a DEFERRED_SCOPE marker. Cursor Agent should expand this plan on the next
 # session before execution starts.
 ---
 
@@ -29,7 +29,7 @@ DEFERRED_SCOPE: plan=windsurf-maintenance-2026-q2-0f3564 wave=W1 phase=W1.1 laye
 
 | Waves | Metric | Scope | Checkpoint | Tokens |
 |-------|--------|-------|------------|--------|
-| W1 | AUTO-SCAFFOLD | TBD — Cascade to fill | A | ~500 🟡 |
+| W1 | AUTO-SCAFFOLD | TBD — Cursor Agent to fill | A | ~500 🟡 |
 
 ## Phase-Level Summary
 
@@ -47,6 +47,6 @@ DEFERRED_SCOPE: plan=windsurf-maintenance-2026-q2-0f3564 wave=W1 phase=W1.1 laye
 
 ## Next Action
 
-Cascade must expand this plan on the first session that picks it up. The
+Cursor Agent must expand this plan on the first session that picks it up. The
 authoritative backlog row lives in Notion Wave/Phase Convergence
 (``Plan File = "windsurf-maintenance-2026-q2-0f3564.md"``).

@@ -70,7 +70,7 @@ Replaces the thin passthrough adapters in `apps_rg/engines/hop_pipeline_adapters
 
 Per-wave. Thin adapters in HEAD remain the safe fallback until Wave 4 promotes substrate to primary.
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

@@ -1,7 +1,7 @@
 # Plan — `agentic_core` Evaluation/Control Pattern Audit
 
 - **Plan ID**: `agentic-core-eval-control-audit-b7d4a2`
-- **Owner**: Cascade (audit author)
+- **Owner**: Cursor Agent (audit author)
 - **Status**: Draft
 - **Tier**: T3 (read-only audit, repo-wide scope across all `agentic_core` layers + adjacent proof/test surfaces)
 - **Created**: 2026-05-02

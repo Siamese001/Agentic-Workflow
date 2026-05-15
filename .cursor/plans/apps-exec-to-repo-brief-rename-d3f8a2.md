@@ -260,4 +260,4 @@ Highest-impact node: `apps_exec.types.exec_types` — mitigation: P1 adds `apps_
 - Non-goals: broad unrelated refactors · blind rename · premature `apps_exec` deletion · C0 generating prose · PA retrieving · L2 or Exit writing L4 · L6 mutating current run · app HOPs bypassing canonical spine
 - Success: zero cross-app Python-import breaks · L0 emits canonical route · `template_only` never full board brief · authoritative FEC at C0 · P4 gate proves zero hard refs
 
-**PLAN_CREATED:** `.windsurf/plans/apps-exec-to-repo-brief-rename-d3f8a2.md`
+**PLAN_CREATED:** `.cursor/plans/apps-exec-to-repo-brief-rename-d3f8a2.md`

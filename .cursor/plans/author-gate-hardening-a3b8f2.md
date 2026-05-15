@@ -2,7 +2,7 @@
 
 **Plan ID:** `author-gate-hardening-a3b8f2`
 **Status:** � Completed — all 5 waves shipped 2026-05-03 (tests 9/9 green, smoke-tested end-to-end)
-**Owner:** Cascade (author-loop)
+**Owner:** Cursor Agent (author-loop)
 **Constitutional:** §6 (Author-Gate), §29 (closed-loop router), §30 (capture health), §17 (memory lifecycle)
 **Related:** `author-gate-enforcement.md`, `author-gate-decision-points.md`, `closed-loop-router-enforcement.md`, ADR-050 (intelligence-ledger-family)
 **Scope:** Architecture + mechanism design only. **No code changes in this plan** — this is a gap-analysis + implementation design document. Code waves are scaffolded but gated behind Author-Gate approval per §6.
@@ -13,8 +13,8 @@
 
 The Author-Gate (harness author-loop decision gate, distinct from runtime HITL per ADR-023) is operationally functional:
 
-- Packet emitter `.windsurf/skills/author-gate-packet-builder/emit_packet.py` produces AG-10 compliant packets with didactic fields.
-- Capture hook `.windsurf/scripts/post_cascade_author_gate_capture.py` drains `DECISION_CAPTURED:` markers into SQLite (`refactor_decision_ledger.sqlite`).
+- Packet emitter `.cursor/skills/author-gate-packet-builder/emit_packet.py` produces AG-10 compliant packets with didactic fields.
+- Capture hook `.cursor/scripts/post_cursor_agent_author_gate_capture.py` drains `DECISION_CAPTURED:` markers into SQLite (`refactor_decision_ledger.sqlite`).
 - Schema carries calibration seeds: `confidence_top`, `confidence_dominance_gap`, `override_vs_recommendation`, `selection_latency_ms`, `principle_at_stake`, `precedent_verdict`, `exit_criteria_json`.
 - Precedent injection via `refactor-decision-memory` skill is wired.
 
@@ -108,29 +108,29 @@ Total: ~57k tokens across 5 waves. No single wave exceeds 15k.
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P0.1 | Plan + Author-Gate approval | `.windsurf/plans/author-gate-hardening-a3b8f2.md`, Notion Plans row | Gate on §6 (no implementation before approval) | 8k | 🟡 |
-| P1.1 | Additive schema: `reason_code`, `adg_hotspot_rank`, `blast_radius_hops`, `surface_intersections_json`; new `decision_signals` table | `post_cascade_author_gate_capture.py` (DDL + idempotent ALTER), `tools/capture/queue_to_ledger.py` | SQLite lacks `ADD COLUMN IF NOT EXISTS` — must PRAGMA-probe; FTS5 content table re-sync | 5k | ⚪ |
+| P0.1 | Plan + Author-Gate approval | `.cursor/plans/author-gate-hardening-a3b8f2.md`, Notion Plans row | Gate on §6 (no implementation before approval) | 8k | 🟡 |
+| P1.1 | Additive schema: `reason_code`, `adg_hotspot_rank`, `blast_radius_hops`, `surface_intersections_json`; new `decision_signals` table | `post_cursor_agent_author_gate_capture.py` (DDL + idempotent ALTER), `tools/capture/queue_to_ledger.py` | SQLite lacks `ADD COLUMN IF NOT EXISTS` — must PRAGMA-probe; FTS5 content table re-sync | 5k | ⚪ |
 | P1.2 | Outcome writer `tools/capture/outcome_writer.py` + `DECISION_OUTCOME:` marker + Git post-commit hook | `tools/capture/outcome_writer.py` (new), `tools/capture/append_marker.py` (add OUTCOME prefix), `.githooks/post-commit.sample` | Commit → decision linkage via `decision_id` in commit trailer or branch-matching fallback | 4k | ⚪ |
-| P1.3 | Reason-code enum wired through `emit_packet.py` + capture regex | `.windsurf/skills/author-gate-packet-builder/emit_packet.py`, `post_cascade_author_gate_capture.py` | Back-compat for existing in-flight packets without `reason_code` | 3k | ⚪ |
+| P1.3 | Reason-code enum wired through `emit_packet.py` + capture regex | `.cursor/skills/author-gate-packet-builder/emit_packet.py`, `post_cursor_agent_author_gate_capture.py` | Back-compat for existing in-flight packets without `reason_code` | 3k | ⚪ |
 | P2.1 | Multi-signal confidence vector construction in `emit_packet.py` | `emit_packet.py`, `precedent_injector.py`, new `signal_collector.py` | Signals: verbalized, precedent_agreement (already via precedent_verdict), blast_radius_penalty (from ADG), hotspot_penalty (from ADG mv_hotspot_centrality), rule_violation_penalty (from rule registry) | 6k | ⚪ |
 | P2.2 | Isotonic calibrator `ops_scripts/calibration/author_gate_calibrator.py` fit nightly over `decision_outcomes` | `ops_scripts/calibration/author_gate_calibrator.py` (new) | Cold-start with uniform prior when n<30 per class; sklearn isotonic regression or hand-rolled; Brier/ECE metrics | 5k | ⚪ |
 | P2.3 | Calibrated score persisted as `decisions.confidence_calibrated` + per-class reliability diagram written to `artifacts/author_gate/reliability_<YYYY-Www>.json` | Schema migration + calibrator writeback | Versioning: calibrator version stamped on each row so historical analysis can re-fit | 4k | ⚪ |
-| P3.1 | Spine integration: emit `ROUTER_DECISION: layer=author_gate, ...` at packet-surface time + `emit_ledger_event` | `emit_packet.py`, `post_cascade_router_decision_audit.py` (register author_gate layer), `closed-loop-router-enforcement.md` (document) | Synthetic router: author_gate is not in the canonical 10; must be declared in the rule and the audit's allowlist | 5k | ⚪ |
-| P3.2 | New skill `author-gate-ui-renderer` — composes condensed card before `ask_user_question` | `.windsurf/skills/author-gate-ui-renderer/SKILL.md` (new), supporting template | Card fields: Recommended option, Confidence band (🟢≥0.85 / 🟡 0.72–0.85 / 🔴<0.72), Precedent verdict, "What would flip" top-2, 1-line principle-at-stake | 5k | ⚪ |
-| P4.1 | Meta-learning consumer `tools/meta_learning/author_gate_consumer.py` | New CLI analogous to `run_hitl_consumer.py`; scores ledger, updates per-class Thompson bandit at `.windsurf/state/refactor_decisions/bandit_state.json` | Bandit cell = (decision_type, reason_code); Beta posterior updated on outcome = promote_to_pattern OR regression_found | 6k | ⚪ |
+| P3.1 | Spine integration: emit `ROUTER_DECISION: layer=author_gate, ...` at packet-surface time + `emit_ledger_event` | `emit_packet.py`, `post_cursor_agent_router_decision_audit.py` (register author_gate layer), `closed-loop-router-enforcement.md` (document) | Synthetic router: author_gate is not in the canonical 10; must be declared in the rule and the audit's allowlist | 5k | ⚪ |
+| P3.2 | New skill `author-gate-ui-renderer` — composes condensed card before `ask_user_question` | `.cursor/skills/author-gate-ui-renderer/SKILL.md` (new), supporting template | Card fields: Recommended option, Confidence band (🟢≥0.85 / 🟡 0.72–0.85 / 🔴<0.72), Precedent verdict, "What would flip" top-2, 1-line principle-at-stake | 5k | ⚪ |
+| P4.1 | Meta-learning consumer `tools/meta_learning/author_gate_consumer.py` | New CLI analogous to `run_hitl_consumer.py`; scores ledger, updates per-class Thompson bandit at `.cursor/state/refactor_decisions/bandit_state.json` | Bandit cell = (decision_type, reason_code); Beta posterior updated on outcome = promote_to_pattern OR regression_found | 6k | ⚪ |
 | P4.2 | Weekly calibration report `ops_scripts/calibration/author_gate_weekly_report.py` → `docs/reports/author-gate/<YYYY-Www>.md` | New script; renders: decision counts by class, FP rate vs outcomes, Brier score trend, flip-readiness per class, top-5 overrides, precedent-agreement % | Zero-data weeks render "insufficient data" row, not crash | 5k | ⚪ |
 
 ---
 
 ## 6. Confidence-Score Design (G1 detail)
 
-**Current:** `confidence_score ∈ [0,1]` per candidate in packet JSON, hand-provided by Cascade.
+**Current:** `confidence_score ∈ [0,1]` per candidate in packet JSON, hand-provided by Cursor Agent.
 
 **Proposed vector** (per candidate, stored in `decision_signals` table, one row per signal):
 
 ```
 signals = {
-  verbalized:              <Cascade's own 0..1>,           # weight 0.15
+  verbalized:              <Cursor Agent's own 0..1>,           # weight 0.15
   precedent_agreement:     <0|0.5|1 from lookup>,         # weight 0.30
   blast_radius_penalty:    <1 - min(hops/5, 1)>,          # weight 0.20
   hotspot_penalty:         <1 - mv_hotspot_rank/top_N>,   # weight 0.15
@@ -204,7 +204,7 @@ CREATE TABLE decision_calibration_snapshots (
 
 Already in schema (§4 of capture hook) but zero-row. W1.P1.2 adds:
 
-- `DECISION_OUTCOME:` marker appended by Cascade at end of execution turn (or by post-commit hook matching branch→decision_id).
+- `DECISION_OUTCOME:` marker appended by Cursor Agent at end of execution turn (or by post-commit hook matching branch→decision_id).
 - Fields: `decision_id`, `execution_completed`, `tests_passed`, `regression_found`, `rollback_required`, `followup_decision_id`, `promote_to_pattern`, `outcome_notes`, `time_to_outcome_s`.
 - Outcome = **selected option landed without rollback AND tests_passed AND no regression for 7 days** → `promote_to_pattern=1`, fed to bandit.
 
@@ -219,7 +219,7 @@ Author-Gate is today a **parallel sidecar** to the 10 routers (§29). Integratin
 3. **`emit_ledger_event`** parallel to `ROUTER_DECISION:` per §29. New ledger: `intelligence_ledgers/author_gate_decision` (follows ADR-050 writer contract). Consulting skill: inherit from `ledger-consulter`.
 4. **Exit-gate criteria enforced at outcome time:** `exit_criteria_json` (already in schema) is a list of JSON-encoded testable conditions; `DECISION_OUTCOME:` is only emitted `promote_to_pattern=1` if ALL exit criteria verified.
 5. **Wilson-CI promotion (§6D parallel):** calibrator fit only runs on a class when n≥30 and Wilson-CI lower bound on outcome rate ≥ 0.60 (precedent from L6/promo).
-6. **Regret ledger (§29 L6/regret):** each Author-Gate override (`selected ≠ recommended`) emits a `regret_sample` when the outcome lands — measures whether the Cascade recommendation would have been better.
+6. **Regret ledger (§29 L6/regret):** each Author-Gate override (`selected ≠ recommended`) emits a `regret_sample` when the outcome lands — measures whether the Cursor Agent recommendation would have been better.
 
 ---
 
@@ -227,7 +227,7 @@ Author-Gate is today a **parallel sidecar** to the 10 routers (§29). Integratin
 
 **Problem:** `ask_user_question` accepts `options: [{label, description}]` max 4. User sees labels first, descriptions second. Confidence, precedent, and "what would flip" are dropped.
 
-**Proposal (P3.2):** Before calling `ask_user_question`, Cascade emits a **recommendation card** in the response body via the `author-gate-ui-renderer` skill:
+**Proposal (P3.2):** Before calling `ask_user_question`, Cursor Agent emits a **recommendation card** in the response body via the `author-gate-ui-renderer` skill:
 
 ```
 🎯 Recommended: <option.id> — <one-line thesis>
@@ -276,14 +276,14 @@ This keeps `ask_user_question` compatible (no new primitive) while surfacing the
 decisions + decision_outcomes + decision_signals
     → AuthorGateQualityEngine.score_ledger()
         → per-(decision_type, reason_code) Beta posterior (Thompson bandit)
-            → bandit_state.json persisted under .windsurf/state/refactor_decisions/
+            → bandit_state.json persisted under .cursor/state/refactor_decisions/
                 → precedent_injector reads bandit mean + CI
                     → next packet: precedent verdict includes prior strength
 ```
 
 **Bandit cell:** `(decision_type, reason_code)` — e.g. `(refactor_scope, override_recommendation)` has its own Beta(α,β) posterior reflecting "how often did overrides in this class land without regression?"
 
-**Write-back to precedent:** `precedent_injector.py` gains a `bandit_prior` field in the verdict block. A decision class with 40/50 successful overrides gets a `bandit_prior: 0.80 (n=50)` injection, telling Cascade "in this class, override-the-recommendation historically wins — don't anchor too hard on your own recommendation."
+**Write-back to precedent:** `precedent_injector.py` gains a `bandit_prior` field in the verdict block. A decision class with 40/50 successful overrides gets a `bandit_prior: 0.80 (n=50)` injection, telling Cursor Agent "in this class, override-the-recommendation historically wins — don't anchor too hard on your own recommendation."
 
 **Weekly report `<YYYY-Www>.md`** surfaces:
 
@@ -292,7 +292,7 @@ decisions + decision_outcomes + decision_signals
 3. Flip-readiness: fraction in 0.72–0.85 gap (rubric refinement signal)
 4. Top-5 overrides that led to promote_to_pattern=1 (learning candidates)
 5. Top-5 recommendations that led to rollback=1 (calibration failures)
-6. Precedent-agreement % (did Cascade's pick match historical winning pick?)
+6. Precedent-agreement % (did Cursor Agent's pick match historical winning pick?)
 
 ---
 
@@ -326,8 +326,8 @@ Net: treat Author-Gate as **the 11th router at the author-plane layer**, not a r
 
 1. **G1 closed:** ≥80% of new decisions carry a `confidence_calibrated` value drawn from isotonic fit after week 4.
 2. **G2 closed:** `decision_outcomes` row count ≥ `decisions` row count × 0.7 after week 4 (30% may legitimately be pending).
-3. **G3 closed:** `post_cascade_router_decision_audit.py` recognizes `layer=author_gate` and logs zero unknown-layer violations for it.
-4. **G4 closed:** Every `ask_user_question` call for an Author-Gate packet is preceded by a rendered card in the response body (audited by new post-cascade hook).
+3. **G3 closed:** `post_cursor_agent_router_decision_audit.py` recognizes `layer=author_gate` and logs zero unknown-layer violations for it.
+4. **G4 closed:** Every `ask_user_question` call for an Author-Gate packet is preceded by a rendered card in the response body (audited by new post-cursor-agent hook).
 5. **G5 closed:** Weekly report lands under `docs/reports/author-gate/` with non-zero rows; bandit state file present; precedent_injector emits `bandit_prior` field.
 6. **G6 closed:** `decision_signals` row count ≥ `decisions.count × candidates_per_decision × 5` (5 signals per candidate).
 7. **No regressions:** existing Author-Gate capture still exits 0; existing decisions readable unchanged; `check_decision_ledger_sqlite_freshness.py` still green.
@@ -365,10 +365,10 @@ The packet will be emitted in the same turn as this plan's Notion row creation, 
 - codeongrass.com — How to Build HITL Approval Gates for AI Coding Agents
 
 **Internal:**
-- `.windsurf/rules/author-gate-enforcement.md` · `.windsurf/rules/author-gate-decision-points.md`
-- `.windsurf/rules/closed-loop-router-enforcement.md` · `.windsurf/rules/intelligence-ledger-family.md`
-- `.windsurf/skills/author-gate-packet-builder/SKILL.md`
-- `.windsurf/scripts/post_cascade_author_gate_capture.py`
+- `.cursor/rules/author-gate-enforcement.md` · `.cursor/rules/author-gate-decision-points.md`
+- `.cursor/rules/closed-loop-router-enforcement.md` · `.cursor/rules/intelligence-ledger-family.md`
+- `.cursor/skills/author-gate-packet-builder/SKILL.md`
+- `.cursor/scripts/post_cursor_agent_author_gate_capture.py`
 - `tools/capture/append_marker.py` · `tools/capture/queue_to_ledger.py`
 - ADR-050 (intelligence-ledger-family) · ADR-080 (closed-loop routing)
 - Constitutional §6, §17, §29, §30

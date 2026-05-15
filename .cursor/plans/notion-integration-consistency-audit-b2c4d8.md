@@ -19,9 +19,9 @@
 |---|---|---|
 | `AGENTS.md` Notion Workspace Map | Canonical documentation of databases and write triggers | ✅ Just updated in fix-rules-notion-drift-c4e7b2 |
 | `AGENTS.md` Auto-Routing Rules | Documents expected Notion writes per event type | 🔲 Needs audit vs archived databases |
-| `.windsurf/hooks.json` | Registers all post-cascade and pre-user-prompt hooks | 🔲 Needs completeness check |
+| `.cursor/hooks.json` | Registers all post-cursor-agent and pre-user-prompt hooks | 🔲 Needs completeness check |
 | `ops_scripts/maintenance/notion_db_consolidation_2026_05_02.py` | Confirms which databases were archived 2026-05-02 | ✅ Read |
-| `.windsurf/scripts/` | Hook scripts inventory | ✅ Listed |
+| `.cursor/scripts/` | Hook scripts inventory | ✅ Listed |
 | `ops_scripts/ci/` | CI gates that check Notion consistency | ✅ Listed |
 | `ops_scripts/ci/run_contract_gates.py` | Gate registration status | 🔲 Verify all Notion gates registered |
 
@@ -51,8 +51,8 @@ The AGENTS.md Auto-Routing Rules table (line 92-102) lists write triggers that t
 
 ### Finding 3: Potential orphaned hooks (need verification)
 
-From `.windsurf/scripts/` list — these mention Notion but may lack working targets:
-- `post_cascade_adr_registry_capture.py` — ADR Registry was archived
+From `.cursor/scripts/` list — these mention Notion but may lack working targets:
+- `post_cursor_agent_adr_registry_capture.py` — ADR Registry was archived
 - MCP-related sync hooks may be orphaned
 
 ---
@@ -79,16 +79,16 @@ From `.windsurf/scripts/` list — these mention Notion but may lack working tar
 | 1.2 | Update Auto-Routing Rules for MCP Registry | `AGENTS.md` | Change to "No Notion write — filesystem SSOT" or remove | ~2K | 🔲 |
 | 1.3 | Update Auto-Routing Rules for SC/AP Backlog | `AGENTS.md` | Same pattern — remove or redirect to filesystem | ~2K | 🔲 |
 | 1.4 | Add Filesystem-SSOT clarity for all archived DBs | `AGENTS.md` | Reference archived DB consolidation decision | ~2K | 🔲 |
-| 2.1 | Audit hook scripts for orphaned targets | `.windsurf/scripts/post_cascade_*` | Identify hooks targeting archived DBs | ~3K | 🔲 |
-| 2.2 | Verify ADR registry hook status | `post_cascade_adr_registry_capture.py` | Check if still firing; decide archive or repurpose | ~2K | 🔲 |
+| 2.1 | Audit hook scripts for orphaned targets | `.cursor/scripts/post_cursor_agent_*` | Identify hooks targeting archived DBs | ~3K | 🔲 |
+| 2.2 | Verify ADR registry hook status | `post_cursor_agent_adr_registry_capture.py` | Check if still firing; decide archive or repurpose | ~2K | 🔲 |
 | 2.3 | Document orphaned hook disposition | `AGENTS.md` or new rule | Clear inventory of what's kept vs removed | ~2K | 🔲 |
-| 2.4 | Verify hook registration in hooks.json | `.windsurf/hooks.json` | Ensure active hooks registered; inactive removed | ~2K | 🔲 |
+| 2.4 | Verify hook registration in hooks.json | `.cursor/hooks.json` | Ensure active hooks registered; inactive removed | ~2K | 🔲 |
 | 3.1 | Inventory all Notion-related CI gates | `ops_scripts/ci/check_notion_*.py` | List all gates, their targets, status | ~3K | 🔲 |
 | 3.2 | Verify gate registration in run_contract_gates.py | `run_contract_gates.py` | Ensure all gates in assurance/wiring lists | ~2K | 🔲 |
 | 3.3 | Document gate bypass/fail-closed patterns | New or existing rule | Consistent env var naming | ~2K | 🔲 |
-| 4.1 | Audit rules for Notion references | `.windsurf/rules/*.md` grep for "notion|Notion" | Identify stale references | ~3K | 🔲 |
+| 4.1 | Audit rules for Notion references | `.cursor/rules/*.md` grep for "notion|Notion" | Identify stale references | ~3K | 🔲 |
 | 4.2 | Update notion-plans-taxonomy.md if needed | `notion-plans-taxonomy.md` | Ensure reflects current state | ~2K | 🔲 |
-| 4.3 | Add rule about archived DBs | `.windsurf/rules/notion-archived-databases.md` | Document what was archived and why | ~2K | 🔲 |
+| 4.3 | Add rule about archived DBs | `.cursor/rules/notion-archived-databases.md` | Document what was archived and why | ~2K | 🔲 |
 | 5.1 | End-to-end verification | All modified files | Run gates, verify no broken references | ~2K | 🔲 |
 | 5.2 | Notion registration + plan complete | Notion Plans DB | Register this plan, mark complete | ~2K | 🔲 |
 
@@ -126,14 +126,14 @@ After Auto-Routing Rules table, add:
 
 **Phase 2.1 — Audit hook scripts**
 
-Review each `post_cascade_*` hook that mentions Notion:
-- `post_cascade_adr_registry_capture.py` — ADR Registry archived, check status
+Review each `post_cursor_agent_*` hook that mentions Notion:
+- `post_cursor_agent_adr_registry_capture.py` — ADR Registry archived, check status
 - Any MCP registry sync hooks
 - Any SC/AP violation backlog hooks
 
 **Phase 2.2 — Verify ADR registry hook**
 
-Read `post_cascade_adr_registry_capture.py`:
+Read `post_cursor_agent_adr_registry_capture.py`:
 - If it still tries to write to archived DB, decide: repurpose for filesystem logging, or remove
 - Check if it's registered in hooks.json
 
@@ -142,7 +142,7 @@ Read `post_cascade_adr_registry_capture.py`:
 For each orphaned hook, document decision:
 - **Keep** — repurposed for filesystem logging
 - **Remove** — no longer needed, remove from hooks.json
-- **Archive** — move to `.windsurf/scripts/_archive/`
+- **Archive** — move to `.cursor/scripts/_archive/`
 
 **Phase 2.4 — Update hooks.json**
 
@@ -173,7 +173,7 @@ Ensure consistent env var naming:
 
 **Phase 4.1 — Grep rules for Notion references**
 
-Search all `.windsurf/rules/*.md` for "notion|Notion" references. Identify:
+Search all `.cursor/rules/*.md` for "notion|Notion" references. Identify:
 - Rules that correctly reference working integrations (Plans, Backlog)
 - Rules that incorrectly reference archived DBs
 
@@ -198,7 +198,7 @@ Run all modified gates:
 ```bash
 python ops_scripts/ci/check_rules_filesystem_integrity.py
 # Verify AGENTS.md syntax
-python -c "import json; json.load(open('.windsurf/hooks.json'))"
+python -c "import json; json.load(open('.cursor/hooks.json'))"
 ```
 
 **Phase 5.2 — Notion registration**
@@ -212,11 +212,11 @@ Create/update Plans DB row for this audit plan.
 | # | Criterion | Verification | Status |
 |---|---|---|---|
 | DoD-1 | AGENTS.md Auto-Routing Rules updated — no archived DB references | `grep -i "mcp registry\|sc/ap violation" AGENTS.md` returns 0 in Auto-Routing section | ✅ |
-| DoD-2 | Orphaned hooks identified and dispositioned | `post_cascade_adr_registry_capture.py` repurposed (filesystem-only); `post_write_mcp_config_sync.py` Notion block removed | ✅ |
-| DoD-3 | hooks.json updated — only working hooks registered | `python -c "import json; json.load(open('.windsurf/hooks.json'))"` passes | ✅ |
+| DoD-2 | Orphaned hooks identified and dispositioned | `post_cursor_agent_adr_registry_capture.py` repurposed (filesystem-only); `post_write_mcp_config_sync.py` Notion block removed | ✅ |
+| DoD-3 | hooks.json updated — only working hooks registered | `python -c "import json; json.load(open('.cursor/hooks.json'))"` passes | ✅ |
 | DoD-4 | CI gate inventory complete — all Notion gates registered | 17 `check_notion_*.py` gates registered as NP1–NP18+NP-GUARD in `run_contract_gates.py` | ✅ |
 | DoD-5 | Rules inventory complete — no stale Notion references | `memory-notion-writeback.md` and `mcp-config-ssot.md` fixed; all other rules clean | ✅ |
-| DoD-6 | New rule notion-archived-databases.md created | `.windsurf/rules/notion-archived-databases.md` exists | ✅ |
+| DoD-6 | New rule notion-archived-databases.md created | `.cursor/rules/notion-archived-databases.md` exists | ✅ |
 | DoD-7 | Plan registered in Notion | Plans DB row Status="Completed" | ✅ |
 
 ---
@@ -224,8 +224,8 @@ Create/update Plans DB row for this audit plan.
 ## Rollback Strategy
 
 1. Revert AGENTS.md: `git checkout AGENTS.md`
-2. Revert hooks.json: `git checkout .windsurf/hooks.json`
-3. Restore archived hooks if removed: `git checkout .windsurf/scripts/`
+2. Revert hooks.json: `git checkout .cursor/hooks.json`
+3. Restore archived hooks if removed: `git checkout .cursor/scripts/`
 4. Mark Notion plan Status="Retired" with reason
 
 ---

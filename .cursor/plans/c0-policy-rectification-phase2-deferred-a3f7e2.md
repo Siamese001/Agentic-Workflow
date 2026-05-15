@@ -181,6 +181,6 @@ as expected in production.
 ## Plan Metadata
 
 - **Created**: 2026-05-08
-- **Author**: Cascade (AI Assistant)
-- **Source**: `.windsurf/plans/c0-policy-rectification-deferred-f7b2a9.md` §16
+- **Author**: Cursor Agent (AI Assistant)
+- **Source**: `.cursor/plans/c0-policy-rectification-deferred-f7b2a9.md` §16
 - **Notion Page**: [To be created]

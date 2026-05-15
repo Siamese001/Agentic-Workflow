@@ -68,8 +68,8 @@ The Author-Gate pipeline adds **8 layers** not present in native `ask_user_quest
 - Adds latency to non-gated decisions ( detection overhead)
 
 **Files to Modify:**
-- `.windsurf/scripts/pre_ask_user_question_gate.py` (new — detection + routing)
-- `.windsurf/hooks.json` (add pre-hook for ask_user_question)
+- `.cursor/scripts/pre_ask_user_question_gate.py` (new — detection + routing)
+- `.cursor/hooks.json` (add pre-hook for ask_user_question)
 
 ---
 
@@ -177,7 +177,7 @@ ask_user_question (enriched)   ask_user_question (native)
 | Phase | Title | Scope | Pain Points | Est. Tokens | Status |
 |-------|-------|-------|-------------|-------------|--------|
 | W1.P1 | Context detection heuristics | `pre_ask_user_question_gate.py` core | False positive/negative tuning | 1k | Not Started |
-| W1.P2 | Pre-hook registration | `.windsurf/hooks.json` + `pre_ask_user_question_gate.py` | Hook ordering with other pre-hooks | 1k | Not Started |
+| W1.P2 | Pre-hook registration | `.cursor/hooks.json` + `pre_ask_user_question_gate.py` | Hook ordering with other pre-hooks | 1k | Not Started |
 | W2.P1 | emit_packet.py adapter | Bridge from detection to pipeline | Latency budget (≤100ms overhead) | 1.5k | Not Started |
 | W2.P2 | author-gate-ui-renderer integration | Ensure renderer output compatible with ask_user_question | UI invariant enforcement | 1.5k | Not Started |
 | W3.P1 | Backward compatibility tests | Non-gated decisions unchanged | Test matrix (simple, complex, Author-Gate) | 1k | Not Started |
@@ -225,8 +225,8 @@ ask_user_question (enriched)   ask_user_question (native)
 - **Rule:** `author-gate-enforcement.md` §"Canonical-emitter invariant"
 - **Skill:** `author-gate-packet-builder/emit_packet.py`
 - **Skill:** `author-gate-ui-renderer/render_card.py`
-- **Schema:** `.windsurf/schemas/author_gate_packet.schema.json`
-- **Hook:** `post_cascade_author_gate_ui_audit.py`
+- **Schema:** `.cursor/schemas/author_gate_packet.schema.json`
+- **Hook:** `post_cursor_agent_author_gate_ui_audit.py`
 
 ---
 

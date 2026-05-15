@@ -4,10 +4,10 @@
 **Tier**: T3 (cross-cutting; touches 3 L4 entrypoints + 1 shared spine emitter; affects 7 production apps)
 **Status**: Not Started
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 **Supersedes**: `apps-rg-l7-auditability-wireup-b3c7e1` (absorbed as W1)
 
-PLAN_CREATED: slug=apps-l7-coverage-spine-wide-c5e8d2 path=.windsurf/plans/apps-l7-coverage-spine-wide-c5e8d2.md tier=T3
+PLAN_CREATED: slug=apps-l7-coverage-spine-wide-c5e8d2 path=.cursor/plans/apps-l7-coverage-spine-wide-c5e8d2.md tier=T3
 
 ## 1. Problem Statement
 

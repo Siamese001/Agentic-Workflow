@@ -17,7 +17,7 @@ This plan was created to close two MEDIUM-severity gaps (LF-03, LF-27) identifie
 ## Context (SCQA)
 
 - **Situation** — `AppsRgIngressContractV1` is the U0 ingress boundary for apps_rg. The Oct–Dec 2025 audit identified 6 gaps; 2 were rated MEDIUM severity: LF-03 (JD source type) and LF-27 (per-section enforcement controls).
-- **Complication** — Cascade recommended patching both. Operator reviewed both recommendations and rejected them based on current usage constraints and best-practice policy.
+- **Complication** — Cursor Agent recommended patching both. Operator reviewed both recommendations and rejected them based on current usage constraints and best-practice policy.
 - **Question** — Should LF-03 and LF-27 be surfaced as new U0 fields?
 - **Answer** — No. Both are intentionally NOT patched. Rationale documented below under Architectural Decisions.
 
@@ -122,7 +122,7 @@ N/A — no code was changed.
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Contract is frozen + extra=forbid — always use `Optional[...] = None` or `str = Field(default="")` shapes for new optional fields.
 - Schema regeneration is deterministic (`--emit-schema` → stdout redirect) — not a hand-edit.

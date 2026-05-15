@@ -34,7 +34,7 @@ Enumerates every remaining gap between the current Fort Knox signoff claim (87/8
 | `artifacts/certification/integrated_runtime/{latest, mw_latest, r1a_latest, r5_latest, uwg_block_latest}/agentic_core_l7_route_family_coverage.json` | L7 plane certification state per chain | ✅ read |
 | `agentic_core/L7_auditability/coverage/route_family_l7_coverage.py` (9-family static catalog) | Route-family certification classifier | ✅ read |
 | `.github/workflows/runtime-certification.yml` + `.github/workflows/agentic-core-auditability.yml` | Per-PR regen surface; freshness driver | ✅ read |
-| `.windsurf/rules/fortknox-certification-discipline.md` + skill `fortknox-evidence` | Governing contract; hostile-verifier doctrine | 🔲 consult during execution |
+| `.cursor/rules/fortknox-certification-discipline.md` + skill `fortknox-evidence` | Governing contract; hostile-verifier doctrine | 🔲 consult during execution |
 
 ---
 
@@ -322,9 +322,9 @@ All waves use the existing integrity stack (`git_commit`, bundle merkle/sha256/s
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
-- This plan is `plan_type: governance`; ADG hotspot + graph-layer-evidence gates do not apply (per `.windsurf/rules/adg-graph-layer-enforcement.md` § "Plan Scope via Frontmatter").
+- This plan is `plan_type: governance`; ADG hotspot + graph-layer-evidence gates do not apply (per `.cursor/rules/adg-graph-layer-enforcement.md` § "Plan Scope via Frontmatter").
 - Every acceptance criterion is expressible as a deterministic JSON / sha256 check — no LLM rubric dependence in the gate path.
 - The plan does not widen to code authoring; each wave is an execution-plan *hook point* from which a child plan (or direct implementation) may proceed under normal author-gate discipline.
 - Fort Knox constitutional §32 authority preserved: compiler-is-only-status-authority, atomic assertions, mutation-rejection pairing, positive-control canary (`RTC-REQ-001`) stay intact; waves *grow* the surface, never relax it.

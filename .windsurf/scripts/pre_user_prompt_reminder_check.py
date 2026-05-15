@@ -4,7 +4,7 @@ pre_user_prompt_reminder_check.py — scan .windsurf/reminders/ for due items.
 
 Runs on every user prompt. Parses YAML frontmatter `due_date: YYYY-MM-DD` from
 each `.windsurf/reminders/*.md` file. If today >= due_date, prints a one-line
-reminder to stderr so Cascade sees it in the session context.
+reminder to stderr so Cursor Agent sees it in the session context.
 
 Silent when:
 - No reminders directory exists

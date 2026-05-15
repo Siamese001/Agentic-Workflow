@@ -680,7 +680,7 @@ The comprehensive L2 v4 envelope adoption plan has been created.
 
 ## Summary
 
-**Plan created:** `.windsurf/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1.md`
+**Plan created:** `.cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1.md`
 
 ### Key Elements
 

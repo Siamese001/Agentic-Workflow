@@ -16,7 +16,7 @@
 Status: **W0 + W1 ready to run; W2 is the decision gate**
 Last updated: 2026-05-01
 Created: 2026-05-01
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-portfolio-integrated-evaluation-7d3a91`
 
 ## Mission

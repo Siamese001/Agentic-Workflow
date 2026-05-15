@@ -5,7 +5,7 @@
 **Created**: 2026-05-08
 **Status**: Completed
 
-PLAN_CREATED: slug=apps-rg-l7-route-family-cert-fix-b8f3a1 path=.windsurf/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md
+PLAN_CREATED: slug=apps-rg-l7-route-family-cert-fix-b8f3a1 path=.cursor/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md
 
 ## Problem Statement
 
@@ -22,7 +22,7 @@ The mandatory L7 Route Family Coverage Matrix shows `0/9 CERTIFIED` after a succ
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|------------:|-------------|--------|------------------|
-| W1   | P1.1, P1.2 | Patch the 3 route_contract emission sites to include `request_id` + `trace_root` in payload | ~6k | Cascade may run R1A cache bypass to verify | ✅ DONE | All 3 sites emit `payload.request_id` + `payload.trace_root` |
+| W1   | P1.1, P1.2 | Patch the 3 route_contract emission sites to include `request_id` + `trace_root` in payload | ~6k | Cursor Agent may run R1A cache bypass to verify | ✅ DONE | All 3 sites emit `payload.request_id` + `payload.trace_root` |
 | W2   | P2.1, P2.2 | Run apps_rg with R1A cache bypass; verify fresh L7 matrix shows R4_SINGLE_ACTION CERTIFIED | ~4k | apps_rg is invocable end-to-end | ✅ DONE | Console L7 table shows `1/9 CERTIFIED` and R4_SINGLE_ACTION row marks `✅ CERTIFIED ✅ REAL_RUNTIME` |
 
 ## Phase-Level Summary

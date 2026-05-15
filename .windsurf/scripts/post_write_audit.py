@@ -15,7 +15,7 @@ Behavior (ADVISORY ONLY — always exits 0):
   - All other files: exit 0 immediately
   - Logs results to artifacts/windsurf/mcp_lint_audit.jsonl
 
-Fail policy: OPEN — any error → exit 0 silently (never breaks Cascade).
+Fail policy: OPEN — any error → exit 0 silently (never breaks Cursor Agent).
 Zero hardcoded paths — repo_root resolved from __file__.
 """
 

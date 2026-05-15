@@ -3,7 +3,7 @@
 Status: **W0–W10 Done. End-to-end pipeline + anti-overfit gate + lifecycle-emit boilerplate extraction.**
 Last updated: 2026-04-29 (W10 lifecycle-emit helper extraction — Author-Gate Option B)
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-rg-first-principles-refactor-7e9c4a`
 Predecessor concepts:
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`

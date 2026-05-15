@@ -255,7 +255,7 @@ these is detected:
 
 ### This plan's commit (W3.1.A — current turn)
 
-- Staged set: **only** `.windsurf/plans/runtime-cert-e1w3-cli-ux-975c93.md`
+- Staged set: **only** `.cursor/plans/runtime-cert-e1w3-cli-ux-975c93.md`
 - Subject: `plan(runtime_cert): E1.W3.1 CLI invocation UX`
 
 ### W3.1.B implementation commit (future, separate scoped prompt)

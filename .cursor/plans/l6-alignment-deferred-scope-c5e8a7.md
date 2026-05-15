@@ -98,11 +98,11 @@ The two new test files (`tests/unit/ops_scripts/ci/test_check_l6_*.py`) match ot
 
 ## 6. References
 
-- Parent (Completed): `.windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`
-- Sibling (Deprioritized): `.windsurf/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
+- Parent (Completed): `.cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md`
+- Sibling (Deprioritized): `.cursor/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
 - Mental model: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\_notes\L6_mental_model.md`
-- L6-OBS gate report: `artifacts/windsurf/l6_observer_law_violations.json`
-- L6-TAG gate report: `artifacts/windsurf/l6_layer_tag_violations.json`
+- L6-OBS gate report: `artifacts/cursor/l6_observer_law_violations.json`
+- L6-TAG gate report: `artifacts/cursor/l6_layer_tag_violations.json`
 
 ---
 

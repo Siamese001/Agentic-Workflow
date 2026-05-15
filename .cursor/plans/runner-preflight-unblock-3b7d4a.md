@@ -82,7 +82,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 
 - `agentic_core/` — DO NOT TOUCH
 - `apps_rg/runtime/bindings/c0_binding.py` — DO NOT TOUCH (W4 pre-existing working-tree changes)
-- `.windsurf/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
+- `.cursor/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
 
 ---
 
@@ -138,7 +138,7 @@ git diff --name-only HEAD (governance CI files only):
   M ops_scripts/ci/baselines/graph_layer_evidence_baseline.json  ← W1.3
   M ops_scripts/ci/executor_theater_gate.py                      ← W1.2
   M ops_scripts/ci/infra_wiring_scan.py                          ← W1.1
-  ?? .windsurf/plans/runner-preflight-unblock-3b7d4a.md          ← this plan doc
+  ?? .cursor/plans/runner-preflight-unblock-3b7d4a.md          ← this plan doc
 
 Also present in working tree (NOT attributed to this plan):
   M apps_rg/runtime/bindings/c0_binding.py  ← W4 pre-existing Chroma wiring diff;

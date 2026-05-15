@@ -265,8 +265,8 @@ Documented in `docs/adr/gate-promotion/AG-PURITY-advisory-to-strict.md`:
 
 ## References
 
-- Rule: `.windsurf/rules/agentic-core-static.md` §71-73 (triage categories)
-- Rule: `.windsurf/rules/adg-canonical-invariants.md` §4, §6
+- Rule: `.cursor/rules/agentic-core-static.md` §71-73 (triage categories)
+- Rule: `.cursor/rules/adg-canonical-invariants.md` §4, §6
 - Pattern: `ops_scripts/ci/adg_gates/gate_base.py` — ADGGateBase
 - Pattern: `ops_scripts/ci/adg_gates/gate_p0_capability_egress.py` — egress detection
 - Pattern: `ops_scripts/ci/check_agentic_core_static_boundary.py` — boundary gate

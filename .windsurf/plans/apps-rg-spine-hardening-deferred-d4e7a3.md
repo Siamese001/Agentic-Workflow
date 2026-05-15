@@ -4,7 +4,7 @@
 **Status:** Not Started
 **Tier:** T3
 **Type:** Follow-up scope from `apps-rg-spine-hardening-7e3b9c` completion
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Authored:** 2026-05-09
 **Parent plan:** `apps-rg-spine-hardening-7e3b9c` (Completed 2026-05-09)
 
@@ -95,7 +95,7 @@ Each app is its own self-contained sub-plan with its own slug. This plan is the 
 This plan is an **index**, not a single executable wave queue. Each item D1-D16 should be promoted to its own plan when scheduled, with its own slug, status, and Notion row. This plan exists so that:
 
 1. Deferred items have a single registered home in Notion (no orphan defer markers).
-2. Future Cascade sessions can query this plan to see what's parked.
+2. Future Cursor Agent sessions can query this plan to see what's parked.
 3. Prioritization happens against this consolidated view rather than scattered DEFERRED_SCOPE comments.
 
 ## 6. Acceptance Condition

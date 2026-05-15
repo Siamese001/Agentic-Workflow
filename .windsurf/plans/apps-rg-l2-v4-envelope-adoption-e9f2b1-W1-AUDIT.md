@@ -2,7 +2,7 @@
 
 **Plan:** apps-rg-l2-v4-envelope-adoption-e9f2b1  
 **Audit Date:** 2026-05-13  
-**Auditor:** Cascade (W1 Phase)  
+**Auditor:** Cursor Agent (W1 Phase)  
 **Status:** COMPLETE — PASS_WITH_GAPS
 
 ---

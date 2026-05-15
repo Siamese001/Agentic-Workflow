@@ -2,7 +2,7 @@
 
 - **Plan ID**: `author-gate-meta-learning-hardening-a8f2b1`
 - **Tier**: T3 (multiple scripts + hooks + CI gate + schema, single logical subsystem)
-- **Owner**: Cascade
+- **Owner**: Cursor Agent
 - **Created**: 2026-04-24
 - **Status**: Active
 - **Parent**: follow-up from `author-gate-meta-learning-outcome-wiring-c3e1f7`

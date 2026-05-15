@@ -1,4 +1,4 @@
-"""Post-Cascade dispatcher — single-process replacement for the 16-script chain.
+"""Post-Cursor Agent dispatcher — single-process replacement for the 16-script chain.
 
 Per W4 design notes in plan rules-hooks-memories-consolidation-48b4d6.md:
 - All 16 standalone post_cascade_*.py scripts read sys.stdin once

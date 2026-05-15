@@ -1,7 +1,7 @@
 # G-04 Identity Propagation — Implementation Plan (L5 v4)
 
 **Plan ID**: `l5-v4-g04-identity-propagation-0b9d22`
-**Parent**: `.windsurf/plans/l5-governance-best-practice-gap-4615ae.md` (ADR-049 accepted)
+**Parent**: `.cursor/plans/l5-governance-best-practice-gap-4615ae.md` (ADR-049 accepted)
 **Gap**: G-04 (Critical) — end-user identity propagation through MCP / A2A / backend tools
 **Tier**: T3 (cross-layer: L5 + L2 + L4 + L3 + L6 + infrastructure/)
 **ADG snapshot**: `adg_indexed_04242026_0607.sqlite` (76,022 nodes, 550,899 edges, healthy)
@@ -195,7 +195,7 @@ Each wave must produce:
 
 ## 11. References
 
-- Parent: `.windsurf/plans/l5-governance-best-practice-gap-4615ae.md`
+- Parent: `.cursor/plans/l5-governance-best-practice-gap-4615ae.md`
 - Spec: `docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md`
 - Schema: `docs/reference/00_L5_Policy_Plane/capability_token.schema.md`
 - Contract: `docs/contracts/identity_propagation.md`

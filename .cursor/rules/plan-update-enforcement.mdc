@@ -1,7 +1,7 @@
 ---
 description: |
   Core invariant only — Scope expansion authorization requires AUTHORIZATION_DECISION marker. Full procedures moved to plan-lifecycle-procedures.md (W3.P3 2026-05-12).
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/plan-update-enforcement.md`. Original Cursor trigger: `always_on`. -->

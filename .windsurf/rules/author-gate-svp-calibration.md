@@ -39,7 +39,7 @@ Red metrics are surface-level outage indicators; Yellow is acceptable but trendi
 
 ## Continuous Execution Mandate (cadence)
 
-Between Author-Gate decision points, Cascade MUST execute all deterministic steps without interruption:
+Between Author-Gate decision points, Cursor Agent MUST execute all deterministic steps without interruption:
 
 ```
 [Author-Gate] Select approach

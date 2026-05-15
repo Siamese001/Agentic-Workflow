@@ -236,7 +236,7 @@ for pd in persist_dirs:
 # Script: tools/analysis/apps_embedding_gap_analysis.py (created in W5)
 
 # Verification that no mutations occurred
-find artifacts/apps_embedding_gap_analysis/ -type f -name "*.json" -newer .windsurf/plans/apps-embedding-gap-analysis-8f7d2e.md 2>/dev/null | wc -l
+find artifacts/apps_embedding_gap_analysis/ -type f -name "*.json" -newer .cursor/plans/apps-embedding-gap-analysis-8f7d2e.md 2>/dev/null | wc -l
 ```
 
 **Acceptance**:
@@ -449,7 +449,7 @@ This is a read-only observational plan. No rollback needed.
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - ADG-first retrieval for dependency analysis (no grep for imports)
 - Evidence paths required for every claim

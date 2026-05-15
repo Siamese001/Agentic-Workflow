@@ -59,11 +59,15 @@ def render_card(packet: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
     top_score = float(top.get("confidence_score", 0))
     pill_top = _confidence_pill(top_score)
 
-    recommended_header = (
-        f"🎯 Recommended: {top.get('id')} — {_thesis(top)}"
-        if rule == "dominance_fires"
-        else f"⚠️ No recommendation — top score {top_score:.2f} (rule={rule}). User-decision required."
-    )
+    if top.get("is_recommended"):
+        recommended_header = f"🎯 Recommended: {top.get('id')} — {_thesis(top)}"
+    elif rule == "dominance_fires":
+        recommended_header = f"🎯 Recommended: {top.get('id')} — {_thesis(top)}"
+    else:
+        recommended_header = (
+            f"⚠️ Leading option (not dominant): {top.get('id')} — "
+            f"score {top_score:.2f} (rule={rule}). Pick in UI below."
+        )
     lines.append(recommended_header)
     lines.append(
         f"   Confidence:  {pill_top} {top_score:.2f} "
@@ -122,7 +126,7 @@ def render_card(packet: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
             # Legacy fallback path — pre-W1.P1 packets.
             s = float(opt.get("confidence_score", 0))
             pill = _confidence_pill(s)
-            is_rec = (i == 0 and rule == "dominance_fires")
+            is_rec = bool(opt.get("is_recommended")) or (i == 0)
             tag = "recommended · " if is_rec else ""
             flip_hint = ""
             wf = opt.get("what_would_flip")
@@ -132,7 +136,8 @@ def render_card(packet: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
                 flip_hint = f" · flip: {_one_line(wf, 40)}"
             prefix = opt.get("surface_description_prefix") or f"{pill} {s:.2f}"
             description = f"{prefix} · {tag}precedent: {precedent}{flip_hint}"
-        options.append({"label": _thesis(opt)[:90], "description": description[:240]})
+        label = opt.get("surface_label") or _thesis(opt)
+        options.append({"label": _one_line(label, 120), "description": description[:240]})
     return "\n".join(lines), options
 
 
@@ -156,8 +161,12 @@ def main() -> int:
         return 2
 
     card, options = render_card(packet)
+    decision_type = packet.get("decision_type") or "decision"
+    intent = _one_line(packet.get("normalized_intent") or packet.get("request_summary") or "", 100)
+    ask_q = f"Author-Gate ({decision_type}): {intent or 'select an approach'}"
     print(card)
     print()
+    print("ASK_PROMPT: " + ask_q)
     print("OPTIONS_JSON: " + json.dumps(options, ensure_ascii=False))
     return 0
 

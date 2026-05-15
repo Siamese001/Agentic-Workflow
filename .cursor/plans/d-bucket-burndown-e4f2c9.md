@@ -78,7 +78,7 @@ Remaining 114 D-bucket rows after mechanical pass 2. These represent real engine
 ## Files In Scope
 
 - Notion Backlog Items DB (data source `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7`)
-- Each plan file referenced above under `.windsurf/plans/`
+- Each plan file referenced above under `.cursor/plans/`
 - `tools/notion/burndown_d_bucket.py` — this driver
 
 ## ADG_GRAPH_LAYER_EVIDENCE

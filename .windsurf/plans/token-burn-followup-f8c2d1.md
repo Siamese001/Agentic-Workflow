@@ -5,7 +5,7 @@
 **Status:** Completed (all 3 waves shipped 2026-05-02; W2 closed as wall-clock-passive ongoing — does not gate plan closure)
 **Tier:** T2 (rule + script tweaks; no agentic_core changes)
 **Predecessor:** `windsurf-token-burn-augmentation-b7a3f1` (Completed 2026-05-02 — `35427693-f55c-8107-80d8-c832fb46f3e2`)
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Goal
 

@@ -5,7 +5,7 @@ post_cascade_author_gate_pipeline_audit.py — Pipeline-completion audit.
 Plan: author-gate-ui-renderer-hardening-a7f3c2 W2.P2.1.
 
 Detects ``AUTHOR_GATE_PACKET:`` (or legacy ``HITL_PACKET:``) emitted in a
-Cascade response WITHOUT a same-response ``ask_user_question`` tool call.
+Cursor Agent response WITHOUT a same-response ``ask_user_question`` tool call.
 This is the **packet-without-ask** direction — the reverse of the sibling
 ``post_cascade_ask_user_question_packet_audit.py`` (ask-without-packet).
 

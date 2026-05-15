@@ -4,7 +4,7 @@
 **Tier**: T3
 **Status**: Draft
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 **Parent**: `apps-l7-deferred-scope-followup-a1d9e3` (W1 completed)
 **Depends On**: `apps-l7-deferred-scope-followup-a1d9e3`
 

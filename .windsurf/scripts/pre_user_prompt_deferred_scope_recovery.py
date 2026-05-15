@@ -7,7 +7,7 @@ Runs on every user prompt. Scans
 (entries with kind in pending_no_token / post_*_error that have no later
 auto_posted / confirmed_by_receipt record for the same key).
 
-Prints a compact one-line summary to stderr so Cascade sees it at session start.
+Prints a compact one-line summary to stderr so Cursor Agent sees it at session start.
 Silent when no pendings. Does NOT auto-retry — that's
 `tools/reports/recover_deferred_scope_pendings.py --apply`.
 
@@ -92,7 +92,7 @@ def main() -> int:
     if not unresolved:
         return 0
 
-    # Compact summary — Cascade sees it in the prompt context
+    # Compact summary — Cursor Agent sees it in the prompt context
     count = len(unresolved)
     # Show up to 3 oldest by timestamp
     sorted_items = sorted(unresolved, key=lambda r: r.get("timestamp", ""))[:3]

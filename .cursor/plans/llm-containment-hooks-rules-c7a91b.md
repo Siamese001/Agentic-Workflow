@@ -12,10 +12,10 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 ## Context (SCQA)
 
-- **Situation** — `.windsurf/rules/` carries 15+ always_on rules and deterministic hooks cover pre-read/write/run/mcp + 13 post_cascade audits; however the repo has no `.codeiumignore`, no enforcement against unbounded `grep_search`/`code_search` calls, and no explicit scope-limitation rule. Cascade indexes `archives/`, `artifacts/`, `reports/`, `data/` on every session and is free to grep-bomb the whole tree.
+- **Situation** — `.cursor/rules/` carries 15+ always_on rules and deterministic hooks cover pre-read/write/run/mcp + 13 post_cascade audits; however the repo has no `.codeiumignore`, no enforcement against unbounded `grep_search`/`code_search` calls, and no explicit scope-limitation rule. Cursor Agent indexes `archives/`, `artifacts/`, `reports/`, `data/` on every session and is free to grep-bomb the whole tree.
 - **Complication** — Web research (Cursor, Windsurf docs, Augment Intent, Anthropic skills, MintMCP, Addy Osmani) converges on three control points: (a) shrink what the agent can see, (b) cap how many text-search shots per response, (c) hard-rule scope drift. Without these, the agent reviews the entire codebase on every run and scope creeps silently.
 - **Question** — How do we add the highest-ROI containment controls (ignore file + grep audit + scope rule) without breaking existing workflows or hook chain?
-- **Answer** — Add `.codeiumignore` (indexing shrink), `post_cascade_grep_budget_audit.py` (advisory post-hook, ≤3 grep_search/code_search per response, logs violations, fail-open), and `.windsurf/rules/scope-containment.md` (always_on, codifies "no gold plating / one task in progress / changes outside scope EXPRESSLY PROHIBITED"). Wire the new audit into `post_cascade_response` chain after `post_cascade_adg_audit.py`.
+- **Answer** — Add `.codeiumignore` (indexing shrink), `post_cursor_agent_grep_budget_audit.py` (advisory post-hook, ≤3 grep_search/code_search per response, logs violations, fail-open), and `.cursor/rules/scope-containment.md` (always_on, codifies "no gold plating / one task in progress / changes outside scope EXPRESSLY PROHIBITED"). Wire the new audit into `post_cursor_agent_response` chain after `post_cursor_agent_adg_audit.py`.
 
 ---
 
@@ -23,8 +23,8 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/hooks.json` | wire the new post-hook script | ✅ read |
-| `.windsurf/scripts/post_cascade_adg_audit.py` | pattern reference for post-response audits | ✅ located |
+| `.cursor/hooks.json` | wire the new post-hook script | ✅ read |
+| `.cursor/scripts/post_cursor_agent_adg_audit.py` | pattern reference for post-response audits | ✅ located |
 | `docs.windsurf.com/windsurf/cascade/hooks` schema | entries MUST be `command`+`working_directory`+`show_output` only (§27) | ✅ verified |
 | Tavily web research (Cursor, Augment, Anthropic) | best-practice source | ✅ complete |
 | PBI agent rules gist (boxabirds) | scope-limitation canonical text | ✅ reviewed |
@@ -47,9 +47,9 @@ Implement three highest-ROI containment controls from web-research review: repo-
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
 | 1.1 | Create `.codeiumignore` | repo-root `.codeiumignore` | PP-1 unbounded indexing | ~2K | ✅ DONE |
-| 1.2 | Author grep-budget post-hook audit | `.windsurf/scripts/post_cascade_grep_budget_audit.py` | PP-2 shotgun grep | ~3K | ✅ DONE |
-| 1.3 | Author `scope-containment.md` rule | `.windsurf/rules/scope-containment.md` | PP-3 silent scope creep | ~2K | ✅ DONE |
-| 1.4 | Wire hook into `post_cascade_response` chain | `.windsurf/hooks.json` | integration | ~1K | ✅ DONE |
+| 1.2 | Author grep-budget post-hook audit | `.cursor/scripts/post_cursor_agent_grep_budget_audit.py` | PP-2 shotgun grep | ~3K | ✅ DONE |
+| 1.3 | Author `scope-containment.md` rule | `.cursor/rules/scope-containment.md` | PP-3 silent scope creep | ~2K | ✅ DONE |
+| 1.4 | Wire hook into `post_cursor_agent_response` chain | `.cursor/hooks.json` | integration | ~1K | ✅ DONE |
 | 2.1 | Smoke-test audit script (run manually on a synthetic response) | — | verify fail-open | ~1K | ✅ DONE |
 | 2.2 | Notion writeback: Plans DB row | Notion MCP | durable record | ~2K | ✅ DONE |
 
@@ -64,12 +64,12 @@ Implement three highest-ROI containment controls from web-research review: repo-
 - Impact: slower indexing, noisier Fast Context results, larger effective context per session start.
 
 **GAP-2: No grep-budget enforcement**
-- `grep_search` and `code_search` are native Cascade tools with NO pre-execution hook (per `global_rules.md` ADG-First section). Only retroactive detection is possible.
-- Impact: without an audit, Cascade can issue unlimited text searches — an attention-tax behavior and a proxy for "reviewing entire codebase every run" that the user is trying to contain.
+- `grep_search` and `code_search` are native Cursor Agent tools with NO pre-execution hook (per `global_rules.md` ADG-First section). Only retroactive detection is possible.
+- Impact: without an audit, Cursor Agent can issue unlimited text searches — an attention-tax behavior and a proxy for "reviewing entire codebase every run" that the user is trying to contain.
 
 **GAP-3: No explicit scope-containment rule**
 - Constitutional §18 says "no hidden scope expansion" but is silent on gold-plating, one-task-in-progress, and the "EXPRESSLY PROHIBITED" framing that the PBI canonical rule set uses.
-- Impact: rules are advisory-too-soft on scope drift; Cascade will still volunteer out-of-scope edits.
+- Impact: rules are advisory-too-soft on scope drift; Cursor Agent will still volunteer out-of-scope edits.
 
 ---
 
@@ -83,36 +83,36 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 **Acceptance**: file exists at `c:\Git\Agentic-Workflow-FRESH\.codeiumignore`; Windsurf re-index respects it (verified next session start via reduced index size).
 
-### Phase 1.2 — `post_cascade_grep_budget_audit.py`
+### Phase 1.2 — `post_cursor_agent_grep_budget_audit.py`
 
-**Scope**: new post-response audit script in `.windsurf/scripts/`.
+**Scope**: new post-response audit script in `.cursor/scripts/`.
 
 **Behavior**:
-- Reads the Cascade response text (same input-mechanism as sibling post-hooks).
+- Reads the Cursor Agent response text (same input-mechanism as sibling post-hooks).
 - Counts `grep_search` and `code_search` tool invocations in the response.
-- Soft-cap: **3 combined per response**. Above cap → append JSONL row to `artifacts/windsurf/grep_budget_violations.jsonl` with `{timestamp, response_id, grep_count, code_search_count, total, cap, bypass}`.
+- Soft-cap: **3 combined per response**. Above cap → append JSONL row to `artifacts/cursor/grep_budget_violations.jsonl` with `{timestamp, response_id, grep_count, code_search_count, total, cap, bypass}`.
 - Bypass env var: `GREP_BUDGET_BYPASS=1` — logs row with `bypass=true`, still permitted (advisory).
-- Fail-open: any internal error → exit 0 and log to stderr (mirrors `post_cascade_adg_audit.py` pattern).
+- Fail-open: any internal error → exit 0 and log to stderr (mirrors `post_cursor_agent_adg_audit.py` pattern).
 
 **Acceptance**: script exits 0 on all inputs; violations file format matches sibling audits.
 
 ### Phase 1.3 — `scope-containment.md` rule
 
-**Scope**: new always_on rule at `.windsurf/rules/scope-containment.md`.
+**Scope**: new always_on rule at `.cursor/rules/scope-containment.md`.
 
 **Content (summarized)**:
 - Scope is what the current plan's `Files In Scope` names + what the user explicitly asked for — nothing more.
-- No gold-plating, no "while I'm here" edits, no refactors Cascade "noticed needed doing".
+- No gold-plating, no "while I'm here" edits, no refactors Cursor Agent "noticed needed doing".
 - Improvements outside scope → emit `NEXT_STEP:` marker, DO NOT implement in current response.
 - One active task at a time; concurrent scopes require explicit user approval.
 - Cross-references constitutional §18 (no hidden scope expansion) and `next-step-capture.md`.
-- Keeps rule body lean per Cascade alignment (procedural detail lives in the skill, not the rule).
+- Keeps rule body lean per Cursor Agent alignment (procedural detail lives in the skill, not the rule).
 
 **Acceptance**: rule file valid, frontmatter `trigger: always_on`, passes `check_windsurf_config_schema.py` if it runs over rules (it doesn't — rules are free-form md).
 
 ### Phase 1.4 — hooks.json wiring
 
-**Scope**: insert one entry in `post_cascade_response` chain, positioned after `post_cascade_adg_audit.py` (grep audit is thematically adjacent to ADG-first enforcement).
+**Scope**: insert one entry in `post_cursor_agent_response` chain, positioned after `post_cursor_agent_adg_audit.py` (grep audit is thematically adjacent to ADG-first enforcement).
 
 **Acceptance**: JSON remains schema-valid (`command` + `working_directory` + `show_output` only per constitutional §27); `check_windsurf_config_schema.py` passes.
 
@@ -120,7 +120,7 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 **Scope**: run the grep-budget audit against `/dev/null`-equivalent input and a synthetic response string containing 5 mock grep calls. Verify:
 - Empty input → exit 0, no violations file row.
-- 5 grep calls → exit 0, one row in `artifacts/windsurf/grep_budget_violations.jsonl`.
+- 5 grep calls → exit 0, one row in `artifacts/cursor/grep_budget_violations.jsonl`.
 - `GREP_BUDGET_BYPASS=1` → exit 0, row logged with `bypass=true`.
 
 ### Phase 2.2 — Notion writeback
@@ -133,8 +133,8 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 - Hooks/MCP-config schema purity (constitutional §27).
 - MCP serialization (§25): one MCP call per response.
-- SSOT folder routing (§31): scripts into `.windsurf/scripts/`, plan into `.windsurf/plans/`.
-- Plan location (`plan-location.md`): SSOT `.windsurf/plans/<slug>-<6hex>.md`.
+- SSOT folder routing (§31): scripts into `.cursor/scripts/`, plan into `.cursor/plans/`.
+- Plan location (`plan-location.md`): SSOT `.cursor/plans/<slug>-<6hex>.md`.
 - No deletion of existing hooks; additive only.
 
 ---
@@ -142,9 +142,9 @@ Implement three highest-ROI containment controls from web-research review: repo-
 ## Success Criteria
 
 - [x] `.codeiumignore` exists and excludes `archives/`, `reports/`, `data/`, and most of `artifacts/`
-- [x] `post_cascade_grep_budget_audit.py` authored, fail-open, bypass honored
+- [x] `post_cursor_agent_grep_budget_audit.py` authored, fail-open, bypass honored
 - [x] `scope-containment.md` rule authored, always_on, lean
-- [x] `hooks.json` wires the new audit in `post_cascade_response`
+- [x] `hooks.json` wires the new audit in `post_cursor_agent_response`
 - [x] Smoke test passes (empty=rc0, over-cap=rc0 + stderr warning + JSONL row, bypass=rc0 + JSONL row with bypass=true) — verified 2026-05-02
 - [x] Notion Plans DB row created (page `35327693-f55c-81c1-8f7f-d51979ceb51c`)
 
@@ -177,7 +177,7 @@ These are backlog for future work — do NOT silently expand scope of the curren
 
 - Item 3: `pre_write_code` plan-scope guard (reject writes outside plan's `Files In Scope`) — larger, touches the authoring gate
 - Item 5: audit always_on rules, demote 3-4 to `agent_requested`
-- Item 6: `post_cascade_scope_drift_detector.py` — files-touched-vs-plan-manifest comparison
+- Item 6: `post_cursor_agent_scope_drift_detector.py` — files-touched-vs-plan-manifest comparison
 - Item 7: `OUT_OF_SCOPE:` section in execution plan template
 - Item 8: `pytest`-without-`-k` blocker in `pre_run_gate`
 
@@ -185,7 +185,7 @@ A follow-up `NEXT_STEP:` marker will capture these for the Wave/Phase Convergenc
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

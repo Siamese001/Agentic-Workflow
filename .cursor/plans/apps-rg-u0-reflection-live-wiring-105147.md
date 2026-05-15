@@ -6,13 +6,13 @@ completed: 2026-05-10
 slug: apps-rg-u0-reflection-live-wiring-105147
 exists_on_disk: true
 related:
-  - .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md  # the sidecar harness this wires live
+  - .cursor/plans/apps-rg-u0-reflection-harness-79d032.md  # the sidecar harness this wires live
   - docs/architecture/apps-rg-restoration-decisions-2026-05-10.md  # AG-1.d
 ---
 
 # apps_rg U0 Reflection — Live Runtime Wiring (AG-1.d follow-up)
 
-PLAN_CREATED: plan=apps-rg-u0-reflection-live-wiring-105147 path=.windsurf/plans/apps-rg-u0-reflection-live-wiring-105147.md status=in-progress
+PLAN_CREATED: plan=apps-rg-u0-reflection-live-wiring-105147 path=.cursor/plans/apps-rg-u0-reflection-live-wiring-105147.md status=in-progress
 
 PLAN_COMPLETE: plan=apps-rg-u0-reflection-live-wiring-105147 note="6 files; 52/52 new tests pass (19 sidecar + 11 downstream + 13 live wiring + 9 threading); CI gate passes 17/17 checks; apps_rg --dry-run prints reflection receipt with pass_status=True before L1; 297 pre-existing _apps_contract failures unrelated to this plan (CommitRequest l5_certification_ref errors)"
 

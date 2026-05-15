@@ -2,7 +2,7 @@
 
 - **Goal**: Bind the remaining 193 NEEDS_PROOF rows in `docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger.csv` to commits via the proven W4d-4/W4d-5 binding loop.
 - **Status**: Active — Wave 1 in progress.
-- **SSOT**: `.windsurf/plans/10c-binding-wave-sweep-a3f2e7.md` (this file).
+- **SSOT**: `.cursor/plans/10c-binding-wave-sweep-a3f2e7.md` (this file).
 - **Substrate**: W4d-5 binding pipeline is fixed and gated. Reusable: `PILOT_BINDING_SCOPE` (renamed `CRITICAL_BINDING_SCOPE` in Wave 1), `emit_proof_bundles.py` with content-hash tamper-check, `validate_10c_proof_ledger.py:_validate_bundle_binding`, `update_pilot_ledger.py --mode=bound`, plugin-isolated pytest invocation.
 - **Scope hazard**: Single-session full completion is **not feasible** at ~64k output tokens/generation vs ~19,000 lines of test code at full depth. **Wave-by-wave execution is mandatory.**
 

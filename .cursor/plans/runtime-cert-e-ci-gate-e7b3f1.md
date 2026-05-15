@@ -29,8 +29,8 @@ plan_type: governance
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/ssot-folder-enforcement.md` (§31) | `check_*` / `*_gate.py` must land in `ops_scripts/ci/` | ✅ read |
-| `.windsurf/rules/fortknox-certification-discipline.md` (§32) | cert claims emerge ONLY from compile_requirement_signoff.py — gate must NOT assert certification, only threshold compliance | 🔲 re-read at D5.W1 approval time |
+| `.cursor/rules/ssot-folder-enforcement.md` (§31) | `check_*` / `*_gate.py` must land in `ops_scripts/ci/` | ✅ read |
+| `.cursor/rules/fortknox-certification-discipline.md` (§32) | cert claims emerge ONLY from compile_requirement_signoff.py — gate must NOT assert certification, only threshold compliance | 🔲 re-read at D5.W1 approval time |
 | `docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md` §11 + §7 + §4 non-goals | Primary design anchor; Phase F boundary | ✅ read |
 | `docs/reports/runtime_cert/phase_d_closeout/2026-W18.md` §5.12 | Phase E/F boundary statement (verbatim) | ✅ read |
 | `tools/runtime_cert/decisions/cert_decision_evaluator.py` | D.2 public surface: `evaluate_phase_c_closeout(report, history=(), *, closeout_report_id=None, closeout_report_hash=None)` | 🔲 inspect before E.P1 |

@@ -12,7 +12,7 @@ Completes the Notion writeback that MCP serialization (constitutional §25) prev
 ## Context (SCQA)
 
 - **Situation** — Plan `apps-hop-substrate-f7751b` completed all engineering waves (substrate module, apps_lic port, apps_rg adoption, apps_underwriting_ai adoption, CI gate, ADR-081). ADR-081 was posted to the Notion ADR Registry on 2026-05-01 at `https://app.notion.com/p/35327693f55c816a9455d01d7c6077d4`.
-- **Complication** — Constitutional §25 limits Cascade to one MCP call per response. The parent plan's Wave 4.3 called for 3+ Notion rows (ADR Registry + Plans + Wave/Phase Convergence); only the ADR row landed in the final session.
+- **Complication** — Constitutional §25 limits Cursor Agent to one MCP call per response. The parent plan's Wave 4.3 called for 3+ Notion rows (ADR Registry + Plans + Wave/Phase Convergence); only the ADR row landed in the final session.
 - **Question** — What Notion writes are still owed, and in what priority?
 - **Answer** — Two remaining posts. This plan is a lightweight tracker of those posts so they don't fall off the ledger.
 
@@ -61,7 +61,7 @@ Post Plans rows for `apps-lic-hop-domain-logic-b8c4c4` and `apps-rg-substrate-de
 
 Notion rows are append-only from this plan's perspective; no rollback needed beyond archiving misposted rows via `API-patch-page` `in_trash=true`.
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

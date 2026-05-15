@@ -72,7 +72,7 @@ Tests need deterministic `created_time` injection. Use `freezegun` or timestamp 
 | DoD-2 | Gate emits `NEW_PLAN_WRONG_STATUS` when status != "Not Started" AND created within 24h | Unit test with mocked Notion response |
 | DoD-3 | Gate skips rows where created > 24h ago (allows intentional "Deferred") | Unit test with old timestamp |
 | DoD-4 | Registered as "NP6 Notion Plans new-plan status (advisory)" in `run_contract_gates.py` | Line present in assurance_gates list |
-| DoD-5 | Rule `.windsurf/rules/notion-plans-taxonomy.md` cross-references NP6 | Section added with gate invocation |
+| DoD-5 | Rule `.cursor/rules/notion-plans-taxonomy.md` cross-references NP6 | Section added with gate invocation |
 
 **Verification vs Deferral:**
 | Check | Verified | Deferred |
@@ -122,7 +122,7 @@ Add after NP5:
 ```
 
 ### W2.P2 — Rule Cross-Reference
-**Scope:** Edit `.windsurf/rules/notion-plans-taxonomy.md`
+**Scope:** Edit `.cursor/rules/notion-plans-taxonomy.md`
 
 Add to "Status Taxonomy" section:
 > New plans MUST use "Not Started". Enforced by NP6 gate (`check_notion_plans_new_status.py`).
@@ -143,4 +143,4 @@ Add to "Status Taxonomy" section:
 
 ---
 
-PLAN_CREATED: slug=notion-plans-new-status-enforcement-c9f2a3 path=.windsurf/plans/notion-plans-new-status-enforcement-c9f2a3.md status=Not Started tier=T2 layer=L_OPS
+PLAN_CREATED: slug=notion-plans-new-status-enforcement-c9f2a3 path=.cursor/plans/notion-plans-new-status-enforcement-c9f2a3.md status=Not Started tier=T2 layer=L_OPS

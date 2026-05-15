@@ -32,7 +32,6 @@
 1. **Decomposition mandatory** for complexity above `low` (`decompose_task` first)
 2. **Status discipline** — `in-progress` before executing, `done`/`failed` when finished
 3. **Parallelizable subtasks share `sequenceOrder`**
-4. **MCP serialization (§25)**
 5. **Don't replicate plan-file content**
 
 ---

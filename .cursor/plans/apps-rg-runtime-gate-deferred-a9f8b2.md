@@ -65,7 +65,7 @@ Items explicitly excluded as non-goals during W0-W8 implementation:
 
 ## 4. Related Documentation
 
-- Parent Plan: `.windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md`
+- Parent Plan: `.cursor/plans/apps-rg-runtime-gate-catalog-c4d7e1.md`
 - Commit: `d7585d0d2f` — feat(apps_rg): implement W0-W8 runtime gate hardening (206 tests)
 - Location: `apps_rg/integrations/gates/` (6 modules, 28 gates)
 - Tests: `tests/_apps_contract/test_w*.py` (9 files, 206 tests)

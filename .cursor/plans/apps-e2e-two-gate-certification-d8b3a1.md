@@ -367,7 +367,7 @@ Consumer of the manifest contract: existing `proof_bundle.py` builds `run_info.a
 | `tests/unit/apps_e2e/test_required_receipts.py` | Unit tests for receipt resolver | ~80 |
 | `tests/unit/apps_e2e/test_waivers.py` | Unit tests for waiver validity + expiry | ~60 |
 | `tests/runtime/test_apps_e2e_two_gate_negative_controls.py` | Negative-control suite (§9) | ~250 |
-| `.windsurf/schemas/apps_e2e_verifier_report.schema.json` | Schema for `verifier_report.json` | ~80 |
+| `.cursor/schemas/apps_e2e_verifier_report.schema.json` | Schema for `verifier_report.json` | ~80 |
 
 ### 7.2 MODIFY
 
@@ -377,8 +377,8 @@ Consumer of the manifest contract: existing `proof_bundle.py` builds `run_info.a
 | `tools/certification/apps_e2e/shared_verifier.py` | Replace `_required_runtime_refs` with `required_receipts`; add `--mode` CLI; integrate level computation |
 | `tools/certification/apps_e2e/proof_bundle.py` | Emit `certification_level` and `runtime_mode_classification` fields into bundle |
 | `tools/certification/apps_e2e/matrix_builder.py` | Add `certification_level` column + level-breakdown totals |
-| `.windsurf/schemas/apps_e2e_proof_bundle.schema.json` | Add `certification_level` (enum) + `runtime_mode_classification` |
-| `.windsurf/schemas/apps_e2e_matrix.schema.json` | Add per-row `certification_level` + level-breakdown totals |
+| `.cursor/schemas/apps_e2e_proof_bundle.schema.json` | Add `certification_level` (enum) + `runtime_mode_classification` |
+| `.cursor/schemas/apps_e2e_matrix.schema.json` | Add per-row `certification_level` + level-breakdown totals |
 | `ops_scripts/ci/check_apps_e2e_harness.py` | Deprecation shim — delegates to `bundle_emission` gate; emits warning |
 | `.github/workflows/apps-e2e-harness-nightly.yml` | Add 2 new jobs: `bundle-emission` (must pass) + `spine-certification` (informational until critical mass) |
 | `docs/runbooks/apps_e2e_harness.md` | Document modes, levels, two-gate model, waivers |

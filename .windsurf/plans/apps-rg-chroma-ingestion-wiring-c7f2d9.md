@@ -166,7 +166,7 @@ W2_4_RECEIPT: artifacts/apps_rg/retrieval/ingestion_receipts/w2_approved_example
 
 > ⛔ **AUTHORIZATION_REQUIRED + MUTATION BOUNDARY** — Wave 2 executes `--execute` flag on `chroma_ingest_pipeline.py`. Permanently writes vectors to ChromaDB. User must issue explicit approval in chat before any phase runs.
 >
-> **Hard preflight guard**: Before any `--execute` invocation, run `python tools/ingestion/chroma_ingest_pipeline.py --preflight-check --input <file>`. This must exit 0 and confirm `OPERATOR_APPROVAL_CONFIRMED=true` in env or fail with `MutationNotAuthorizedError`. Cascade MUST NOT issue `--execute` without user's explicit same-turn approval.
+> **Hard preflight guard**: Before any `--execute` invocation, run `python tools/ingestion/chroma_ingest_pipeline.py --preflight-check --input <file>`. This must exit 0 and confirm `OPERATOR_APPROVAL_CONFIRMED=true` in env or fail with `MutationNotAuthorizedError`. Cursor Agent MUST NOT issue `--execute` without user's explicit same-turn approval.
 
 **Phases**:
 - **W2.1** — Ingest `governance_docs` corpus | PHASE_STATUS: DONE | PHASE_COMPLETE: YES | chunks: 363
@@ -303,7 +303,7 @@ These are hard invariants — any test or probe result violating them is a **blo
 3. **Missing `citation_anchor` blocks READY verdict** — if a chunk has no `citation_anchor` metadata field, the READY verdict for that corpus is blocked; the chunk is added to `excluded_evidence_refs`, not silently included.
 4. **Missing `EMBEDDING_ENABLED` blocks Chroma retrieval** — `EMBEDDING_ENABLED` not set to `"true"` raises `C0EvidenceGapError` on the Chroma path; it never silently returns empty results.
 5. **`UNKNOWN` is never PASS** — `support_status_is_passing()` (from `final_evidence_contract.py`) returns `False` for `UNKNOWN`; no downstream gate may treat `UNKNOWN` as a success.
-6. **`--execute` without approval raises `MutationNotAuthorizedError`** — preflight guard in `chroma_ingest_pipeline.py` fails if `OPERATOR_APPROVAL_CONFIRMED` is not set; Cascade may not bypass this.
+6. **`--execute` without approval raises `MutationNotAuthorizedError`** — preflight guard in `chroma_ingest_pipeline.py` fails if `OPERATOR_APPROVAL_CONFIRMED` is not set; Cursor Agent may not bypass this.
 
 ---
 
@@ -454,7 +454,7 @@ DoD-5: Gap report verdict updated to READY or PARTIAL; audit receipt updated wit
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

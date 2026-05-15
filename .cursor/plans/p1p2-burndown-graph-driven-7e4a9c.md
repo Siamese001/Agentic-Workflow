@@ -154,6 +154,6 @@ Rollback: any wave that fails `py_compile` or drops test count is reverted via g
 
 ## References
 
-- Rule: `.windsurf/rules/adg-graph-layer-enforcement.md` (Constitutional §22)
-- Rule: `.windsurf/rules/adg-hotspot-enforcement.md` (Constitutional §5)
+- Rule: `.cursor/rules/adg-graph-layer-enforcement.md` (Constitutional §22)
+- Rule: `.cursor/rules/adg-hotspot-enforcement.md` (Constitutional §5)
 - Intel source: Graph-layer MVs on snapshot `adg_indexed_04192026_2048.sqlite`

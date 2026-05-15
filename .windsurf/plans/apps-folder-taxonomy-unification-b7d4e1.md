@@ -1,7 +1,7 @@
 # Apps Folder Taxonomy Unification — Plan
 
 > **Status**: Draft
-> **Author**: Cascade (2026-05-01)
+> **Author**: Cursor Agent (2026-05-01)
 > **Tier**: T3 (cross-app, cross-layer, ~dozens of files per app, import rewrites)
 > **Execution**: Plan-only this session. No code changes until waves are dispatched.
 > **SSOT location**: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`

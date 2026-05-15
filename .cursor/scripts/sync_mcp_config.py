@@ -107,7 +107,7 @@ server_rows = [
         "pytest-mcp",
     ),
     (
-        "io.cursor/mcp-playwright",
+        "playwright",
         "Browser automation, accessibility snapshots, end-to-end UI verification",
         "browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot",
         "Official Microsoft @playwright/mcp thin npx wrapper. Use for live UI/E2E checks, not for static HTML fetching (use direct httpx in code or read_url_content for one-off fetches). Output lands in repo-root .playwright-mcp/ (gitignored). Always close tabs after use.",
@@ -117,7 +117,7 @@ server_rows = [
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
-        "Use for Plans DB, Backlog Items, and Anti-Pattern Burndown. MCP Registry, ADR Registry, Constitutional Rules Registry, SC/AP Violation Backlog, and Author-Gate Decision Ledger are **archived** — filesystem SSOT only.",
+        "Use for **Plans DB** and **Backlog Items** only. Anti-Pattern Burndown Notion DB is **archived** (see `.cursor/rules/notion-archived-databases.mdc`) — burndown SSOT is under `artifacts/adg/`. MCP Registry, ADR Registry, Constitutional Rules Registry, SC/AP Violation Backlog, and Author-Gate Decision Ledger are **archived** — filesystem SSOT only. Auth: canonical ``NOTION_TOKEN``; ``NOTION_API_KEY`` is accepted as a legacy alias (see `tools/notion/notion_bearer_token.py`).",
         "notion",
     ),
     (
@@ -186,7 +186,10 @@ def generate_agents_quick_reference() -> str:
     lines.append("## MCP Quick Reference")
     lines.append("")
     lines.append(
-        "> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json`. Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session."
+        "> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json` (Cursor project SSOT). "
+        "Windsurf mirror: `.windsurf/mcp_config.json`. Live tool prefixes like `mcp0_`, `mcp1_`, "
+        "and so on can shift when server order changes. Resolve the live prefix from the "
+        "current tool list in-session."
     )
     lines.append("")
     lines.append("<!-- MCP-QUICK-REFERENCE:START -->")

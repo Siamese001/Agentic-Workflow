@@ -273,7 +273,7 @@ AG-4 acceptance: `artifacts/apps_embedding_gap_analysis/ag4_acceptance_evidence.
 - Created: 2026-05-10
 - Slug: ag5-exit-x1-evaluator-wiring-d8e4a2
 - Status: In Progress
-- Author: Cascade
+- Author: Cursor Agent
 - Estimated Waves: 9
 - Estimated Tokens: ~60k
 

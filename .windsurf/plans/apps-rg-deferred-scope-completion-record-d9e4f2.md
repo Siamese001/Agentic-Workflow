@@ -127,6 +127,6 @@ The following remain **explicitly out of scope** and require separate authorizat
 ---
 
 **Plan File Path:** `.windsurf/plans/apps-rg-deferred-scope-completion-record-d9e4f2.md`
-**Created By:** Cascade (AI Assistant)
+**Created By:** Cursor Agent (AI Assistant)
 **Completion Date:** 2026-05-09
 **Archive Status:** PERMANENT RECORD

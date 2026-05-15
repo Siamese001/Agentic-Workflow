@@ -5,7 +5,7 @@ tier: 1
 description: |
   Before editing any file under agentic_core/, require generic justification 
   and boundary receipt. This is a model-decision rule that activates when 
-  Cascade detects agentic_core files changed.
+  Cursor Agent detects agentic_core files changed.
 ---
 
 # agentic_core Editing Guard

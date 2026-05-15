@@ -21,7 +21,7 @@ metadata:
 
 **PREREQUISITE:** `TAVILY_API_KEY` must be set as a Windows OS environment variable (`setx TAVILY_API_KEY tvly-...` then restart Windsurf). `pre_mcp_gate.py` blocks every Tavily call with an actionable message until the key is present — the skill itself does not need to verify the key.
 
-This skill is the Windsurf-native adaptation of [Tavily's Agent Skills](https://docs.tavily.com/documentation/agent-skills). The upstream skills are designed for Claude Code's `npx skills add` framework; this skill maps the same five capabilities onto the Tavily MCP tool surface that Cascade actually invokes.
+This skill is the Windsurf-native adaptation of [Tavily's Agent Skills](https://docs.tavily.com/documentation/agent-skills). The upstream skills are designed for Claude Code's `npx skills add` framework; this skill maps the same five capabilities onto the Tavily MCP tool surface that Cursor Agent actually invokes.
 
 **Decision tree:** see [`tool_decision_tree.md`](./tool_decision_tree.md) in this skill directory for a step-by-step routing flowchart and a latency/credit budget cheat sheet.
 
@@ -80,7 +80,7 @@ This skill is the Windsurf-native adaptation of [Tavily's Agent Skills](https://
 2. **Check API key state** — if `pre_mcp_gate` blocks, surface its actionable message and stop. Do NOT attempt curl/grep workarounds.
 3. **Pick parameters** — use the topic/time-range/domain matrix; default to fast cost-conscious params unless the user asked for `advanced` or `pro`.
 4. **Invoke ONE Tavily tool** in its own response (constitutional §25 — no other MCP call in the same response).
-5. **Cite sources** — every web-derived fact in Cascade's response must include the source URL inline so the user can verify.
+5. **Cite sources** — every web-derived fact in Cursor Agent's response must include the source URL inline so the user can verify.
 6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into Memory MCP as a `ProceduralPattern` entity (see `memory-notion-writeback.md`).
 
 ## Explicit Slash-Command UX (matches upstream Tavily Skills)

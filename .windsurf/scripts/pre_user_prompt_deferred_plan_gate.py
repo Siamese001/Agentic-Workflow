@@ -2,7 +2,7 @@
 """
 pre_user_prompt_deferred_plan_gate.py — Surface blocked deferred-scope plans.
 
-Hook: pre_user_prompt (show_output=true, so Cascade sees the output).
+Hook: pre_user_prompt (show_output=true, so Cursor Agent sees the output).
 
 Scans .windsurf/plans/*.md for files that carry a DO_NOT_IMPLEMENT_GUARD:
 marker, meaning the plan was explicitly written as a deferred-scope holding
@@ -12,22 +12,22 @@ When such plans exist, emits one line per plan:
 
     DEFERRED_PLAN_BLOCKED: plan=<slug> reason=<short>
 
-Cascade MUST treat this signal as an execution block — it must NOT call
+Cursor Agent MUST treat this signal as an execution block — it must NOT call
 wave_execution_state.py start or begin implementing waves for a blocked plan
 without first surfacing an Author-Gate decision to the user.
 
 Fail policy: OPEN. Never blocks the turn itself. The output is a soft signal
-that Cascade reads at the top of its context. The hard enforcement is the
+that Cursor Agent reads at the top of its context. The hard enforcement is the
 Author-Gate pipeline (constitutional §6, §35).
 
 Bypass: DEFERRED_PLAN_GATE_BYPASS=1.
 
 Root cause this addresses (RCA 2026-05-10): plan
 notion-test-hardening-deferred-scope-a7b4c9 contained explicit "do not
-implement without Author-Gate" prose. Cascade ignored it, executed waves
+implement without Author-Gate" prose. Cursor Agent ignored it, executed waves
 W1/W2/W7 without calling wave_execution_state.py start, leaving Notion at
 Not Started. Machine-readable guard markers + this hook make the block
-visible at every turn instead of relying on prose Cascade can skip.
+visible at every turn instead of relying on prose Cursor Agent can skip.
 """
 
 from __future__ import annotations

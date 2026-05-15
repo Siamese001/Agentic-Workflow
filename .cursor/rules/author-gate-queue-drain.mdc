@@ -1,7 +1,7 @@
 ---
 description: |
   Converted from Cursor rule author-gate-queue-drain.md
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/author-gate-queue-drain.md`. Original Cursor trigger: `always_on`. -->

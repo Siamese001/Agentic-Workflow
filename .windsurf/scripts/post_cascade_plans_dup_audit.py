@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_cascade_plans_dup_audit.py — advisory duplicate-POST detector.
 
-Scans Cascade response text for any ``API-post-page`` targeting the Plans
+Scans Cursor Agent response text for any ``API-post-page`` targeting the Plans
 DB whose Slug already maps to one or more active rows in the local
 plan_registration_cache.json snapshot.
 

@@ -4,7 +4,7 @@ post_cascade_wave_lifecycle_capture.py — Capture wave-lifecycle markers.
 
 Hook: post_cascade_response (show_output=false).
 
-Scans the Cascade response for ``WAVE_START:`` / ``WAVE_COMPLETE:`` /
+Scans the Cursor Agent response for ``WAVE_START:`` / ``WAVE_COMPLETE:`` /
 ``PHASE_COMPLETE:`` / ``PLAN_COMPLETE:`` markers and applies each as a
 direct-HTTP Notion patch via ``tools.notion.wave_lifecycle_writer``. The
 writer bypasses the MCP layer entirely — no ``<invoke name="mcp*_API-*">``

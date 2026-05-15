@@ -22,7 +22,7 @@
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1 | Memory MCP schema extraction | tools/memory/, .windsurf/schemas/ | Inline schema, no versioning | ~4k | ✅ DONE |
+| P1 | Memory MCP schema extraction | tools/memory/, .cursor/schemas/ | Inline schema, no versioning | ~4k | ✅ DONE |
 | P2 | ADG generator path consolidation | docs/, tools/adg/, tools/generate/ | Path drift, stale docs | ~2k | ✅ DONE |
 | P3 | Vector DB cache layout | agentic_core/L4_state/cache/ | Dual backends, no SSOT | ~4k | ✅ DONE |
 | P4 | Redis Sentinel migration | tools/adg/cache/, docker-compose.redis.yml | Single-node prod, test-only Sentinel | ~6k | ⏸️ DEFERRED |
@@ -35,8 +35,8 @@
 **Commit:** `e3c453f168`
 
 **Deliverables:**
-- `.windsurf/schemas/knowledge_graph.schema.sql` - Canonical schema
-- `.windsurf/schemas/knowledge_graph_migrations.sql` - Migrations
+- `.cursor/schemas/knowledge_graph.schema.sql` - Canonical schema
+- `.cursor/schemas/knowledge_graph_migrations.sql` - Migrations
 - `tools/memory/sqlite_memory_store.py` - Updated to load from file
 - `ops_scripts/ci/check_memory_schema_sync.py` - CI gate
 - `tests/unit/tools/memory/test_schema_versioning.py` - 9 tests
@@ -124,6 +124,6 @@
 
 ## References
 
-- Analysis Plan: `.windsurf/plans/adg-config-ssot-deferred-d7e3a1.md`
-- Grandparent Plan: `.windsurf/plans/adg-config-ssot-audit-c7e4a2.md`
+- Analysis Plan: `.cursor/plans/adg-config-ssot-deferred-d7e3a1.md`
+- Grandparent Plan: `.cursor/plans/adg-config-ssot-audit-c7e4a2.md`
 - Constitutional: §22, §31, §23

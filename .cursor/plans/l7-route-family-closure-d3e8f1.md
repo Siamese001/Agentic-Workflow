@@ -1,11 +1,11 @@
 # L7 Route-Family Closure — Certify Remaining 8/9 Families
 
 > **Plan slug**: `l7-route-family-closure-d3e8f1`
-> **Plan path**: `.windsurf/plans/l7-route-family-closure-d3e8f1.md`
+> **Plan path**: `.cursor/plans/l7-route-family-closure-d3e8f1.md`
 > **Parent plan**: `agentic-core-signoff-hardening-b8e2c4` (AUTHORITY.md §4 deferral)
 > **Status**: Completed — 2026-05-03
 
-PLAN_CREATED: slug=l7-route-family-closure-d3e8f1 path=.windsurf/plans/l7-route-family-closure-d3e8f1.md
+PLAN_CREATED: slug=l7-route-family-closure-d3e8f1 path=.cursor/plans/l7-route-family-closure-d3e8f1.md
 
 ## 1. Background
 

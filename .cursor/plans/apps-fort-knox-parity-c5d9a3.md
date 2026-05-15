@@ -2,7 +2,7 @@
 
 **Plan ID**: `apps-fort-knox-parity-c5d9a3`
 **Status**: **Completed** — W1–W7 SHIPPED 2026-05-02; W8–W10 (open-scope closure) SHIPPED 2026-05-02 UTC-04:00 same session. Apps_e2e Fort Knox track at SIGNED_PROOF parity with agentic_core; FINAL_SIGNED_CERTIFICATION code paths + CI workflow shipped (closes on next tagged release).
-**Author**: Cascade
+**Author**: Cursor Agent
 **Tier**: T3 (5+ files, multi-layer, governance-critical, multi-wave)
 **Related plans**:
 - Predecessor (DONE): `apps-e2e-spine-cert-wireup-e1c4d7` — 8 of 8 apps SPINE_COMPLETE_CERTIFIED via shared spine emission
@@ -82,7 +82,7 @@ Lift the `apps_*` family from `SPINE_COMPLETE_CERTIFIED` (which is "the verifier
 | W6.1 | Consolidator | `tools/certification/generate_apps_100pct_runtime_proof.py` | Determinism; cross-tool exit-code capture | ~2k | Draft |
 | W6.2 | Consolidator tests | Integration test that calls all 6 prior phases on golden input → asserts the consolidated proof shape | None | ~1k | Draft |
 | W7.1 | CI gate flip | `ops_scripts/ci/check_apps_e2e_spine_certification.py` rewrite | Backward compat — old verifier still callable for fast path | ~2k | Draft |
-| W7.2 | Constitutional §32 update | `.windsurf/rules/constitutional.md` §32 producer-allowlist amendment | Tight regex change; CI gate that proves the amendment | ~1k | Draft |
+| W7.2 | Constitutional §32 update | `.cursor/rules/constitutional.md` §32 producer-allowlist amendment | Tight regex change; CI gate that proves the amendment | ~1k | Draft |
 
 ## 6. Files In Scope
 
@@ -103,7 +103,7 @@ Lift the `apps_*` family from `SPINE_COMPLETE_CERTIFIED` (which is "the verifier
 
 **Modified**:
 - `ops_scripts/ci/check_apps_e2e_spine_certification.py`
-- `.windsurf/rules/constitutional.md` §32 (producer allowlist)
+- `.cursor/rules/constitutional.md` §32 (producer allowlist)
 - `.pre-commit-config.yaml` (T7r-apps gate)
 
 **Output artifacts** (all in `artifacts/certification/`):
@@ -277,7 +277,7 @@ W3 — `scripts/compile_apps_e2e_signoff.py`. Consumes the W1 catalog + W2 JSONL
 |---|---|---|
 | Report schema | `certification/schemas/apps_e2e_signoff_report.schema.json` | JSON-Schema for the compiled signoff envelope; adds `SIGNED_OFF_WITH_WAIVER` row status + `SIGNED_OFF_WITH_WAIVERS` trust level distinct from agentic_core |
 | Compiler | `scripts/compile_apps_e2e_signoff.py` | Hostile verifier; catalog-self-consistency canary; app-keyed row-specificity guard; producer allowlist; per-row digest; Merkle tree; schema-validates its own output |
-| SSOT allowlist update | `.windsurf/scripts/_ssot_folder_check.py` | Added `compile_*_signoff.py` archetype so the W3 compiler (and existing `compile_requirement_signoff.py`) land in `scripts/` without bypass |
+| SSOT allowlist update | `.cursor/scripts/_ssot_folder_check.py` | Added `compile_*_signoff.py` archetype so the W3 compiler (and existing `compile_requirement_signoff.py`) land in `scripts/` without bypass |
 | Tests | `tests/unit/apps_e2e/test_compile_apps_e2e_signoff.py` | 14 tests: canary self-consistency invariants (5), end-to-end compile with synthetic workspace (5), producer allowlist enforcement (1), Merkle stability + sensitivity (2), live compile smoke (1 skipped if jsonl absent) |
 | Signoff output (live) | `artifacts/certification/apps_e2e/apps_e2e_signoff_report.json` + `.sha256` + `.merkle.json` | 33 rows: 28 SIGNED_OFF + 2 SIGNED_OFF_WITH_WAIVER + 3 BLOCKED (APPS-REQ-018/019/020 honestly pending W4 mutation driver); canary PASS; trust_level=DEVELOPMENT_PROOF |
 
@@ -313,7 +313,7 @@ W3 — `scripts/compile_apps_e2e_signoff.py`. Consumes the W1 catalog + W2 JSONL
 - ADDED: `certification/schemas/apps_e2e_signoff_report.schema.json` (~3.8 KB)
 - ADDED: `scripts/compile_apps_e2e_signoff.py` (~22 KB)
 - ADDED: `tests/unit/apps_e2e/test_compile_apps_e2e_signoff.py` (~13 KB, 14 tests)
-- MODIFIED: `.windsurf/scripts/_ssot_folder_check.py` (+1 regex in `_SCRIPTS_ALLOW`)
+- MODIFIED: `.cursor/scripts/_ssot_folder_check.py` (+1 regex in `_SCRIPTS_ALLOW`)
 - MODIFIED: `tools/cert/apps_e2e/emit_apps_evidence_assertions.py` (W2 waiver-pointer fix)
 - GENERATED (live compile): `artifacts/certification/apps_e2e/apps_e2e_signoff_report.json` + `.sha256` + `.merkle.json`
 
@@ -509,7 +509,7 @@ W7 \u2014 see §19 below. **Plan complete after W7.**
 |---|---|---|
 | CI gate | `ops_scripts/ci/check_apps_fortknox_signed_proof.py` | T7s.4 pre-commit hook \u2014 re-runs W6 generator, reads `APPS_HUNDRED_PERCENT_RUNTIME_PROOF.json`, asserts `all_gates_pass=true`. Per-gate failure surfacing (canary/trust/signature/mutation/blocked/not_verified/live_re_verify). Bypass `FORTKNOX_DISCIPLINE_BYPASS=1` shared with T7s.1/2/3 |
 | Pre-commit registration | `.pre-commit-config.yaml` | T7s.4 entry added after T7s.3, follows shared schema (`always_run`, `require_serial`) |
-| Constitutional amendment | `.windsurf/rules/constitutional.md` \u00a732 | Two-arm rule: agentic_core (`compile_requirement_signoff.py` + `RTC-REQ-001`) AND apps_e2e (`compile_apps_e2e_signoff.py` + `APPS-REQ-001` + W6 consolidator + T7s.4 gate). Plan SSOT cross-link added. Producer allowlists are arm-specific |
+| Constitutional amendment | `.cursor/rules/constitutional.md` \u00a732 | Two-arm rule: agentic_core (`compile_requirement_signoff.py` + `RTC-REQ-001`) AND apps_e2e (`compile_apps_e2e_signoff.py` + `APPS-REQ-001` + W6 consolidator + T7s.4 gate). Plan SSOT cross-link added. Producer allowlists are arm-specific |
 | Tests | `tests/unit/apps_e2e/test_check_apps_fortknox_signed_proof.py` | 8 tests: live gate run (1), bypass env (1), 5 verdict-failure scenarios (canary, signature, mutation, blocked, trust), pre-commit registration smoke (1) |
 
 ### Test result: **8/8 W7** + 11 W6 + 12 W5 + 10 W4 + 14 W3 + 13 W2 + 19 W1 + 133 pre-existing apps_e2e + 43 SSOT = **283/283 green** (1.85s) · live gate exit 0
@@ -603,7 +603,7 @@ User asked for "finish P3"; investigation revealed my initial framing of "delete
 
 ### Capture surface
 
-- **DEFERRED_SCOPE markers**: emitted in the response that closed W7 (per constitutional \u00a724); priority auto-scored by `post_cascade_deferred_scope_capture.py`; auto-posted to the Wave/Phase Convergence DB (Notion). Two markers paired (OPEN-1, OPEN-2) because each waived app is a distinct row.
+- **DEFERRED_SCOPE markers**: emitted in the response that closed W7 (per constitutional \u00a724); priority auto-scored by `post_cursor_agent_deferred_scope_capture.py`; auto-posted to the Wave/Phase Convergence DB (Notion). Two markers paired (OPEN-1, OPEN-2) because each waived app is a distinct row.
 - **Notion Plans DB row**: `apps-fort-knox-parity-c5d9a3` is `Status=Completed` but the Summary references this section so future readers can find the open items without scanning the full plan body.
 - **Constitutional \u00a732**: the apps_e2e arm is now formally part of the rule, so any future amendment to either arm carries forward the open items via the rule's plan SSOT cross-link.
 

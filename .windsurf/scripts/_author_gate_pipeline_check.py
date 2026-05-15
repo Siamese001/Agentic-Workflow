@@ -8,7 +8,7 @@ Pure logic. No I/O at import. Safe to import from the post-cascade audit hook
 (`.windsurf/scripts/post_cascade_author_gate_pipeline_audit.py`) and from the
 CI freshness gate (`ops_scripts/ci/check_author_gate_pipeline_freshness.py`).
 
-Single responsibility: given a Cascade response text, detect whether an
+Single responsibility: given a Cursor Agent response text, detect whether an
 ``AUTHOR_GATE_PACKET:`` (or legacy ``HITL_PACKET:``) block was emitted
 WITHOUT a corresponding ``ask_user_question`` invocation in the same response.
 
@@ -73,7 +73,7 @@ _INLINE_CODE_RE = re.compile(r"`[^`]+`")
 # Pattern 3: blockquote lines starting with >
 _BLOCKQUOTE_LINE_RE = re.compile(r"^>.*$", re.MULTILINE)
 
-# ask_user_question invocation — the XML tool-call form Cascade uses.
+# ask_user_question invocation — the XML tool-call form Cursor Agent uses.
 _ASK_INVOKE_RE = re.compile(r'<invoke\s+name="ask_user_question">')
 
 # Fallback: also accept the function-call JSON form used in some contexts.

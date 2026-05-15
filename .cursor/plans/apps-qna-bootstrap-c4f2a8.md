@@ -22,8 +22,8 @@ Bootstrap a new `apps_qna` module that generates parameterized, ChatGPT-5.5-Thin
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/plan-location.md` | plan SSOT path + format invariants | ✅ |
-| `.windsurf/rules/author-gate-enforcement.md` | architecture decision captured | ✅ |
+| `.cursor/rules/plan-location.md` | plan SSOT path + format invariants | ✅ |
+| `.cursor/rules/author-gate-enforcement.md` | architecture decision captured | ✅ |
 | `apps_research/` (README, __main__, structure) | apps_* contract template | ✅ |
 | `C:\Users\amita\Documents\Dentsu\Drew Clements - 4.29.2026\01_ROUTING_MANIFEST.md` | routing pattern source | ✅ |
 | `C:\Users\amita\Documents\Dentsu\Drew Clements - 4.29.2026\00_RUNTIME_ROOT.md` | runtime root pattern source | ✅ |
@@ -194,7 +194,7 @@ pytest apps_qna/tests/test_drew_canary.py -v
 ## Rollback Strategy
 
 If things go wrong:
-1. `apps_qna` is a brand-new module — rollback is `rm -rf apps_qna && git checkout -- .windsurf/plans/apps-qna-bootstrap-c4f2a8.md`.
+1. `apps_qna` is a brand-new module — rollback is `rm -rf apps_qna && git checkout -- .cursor/plans/apps-qna-bootstrap-c4f2a8.md`.
 2. No existing apps_* are modified by this plan; integration adapters in Wave 4 are read-only against existing apps' artifacts.
 3. No CI gates added; if a wave fails, halt at the wave boundary, fix-or-revert, do not proceed to the next wave.
 
@@ -225,9 +225,9 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
-- Plan saved at SSOT: `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md`.
+- Plan saved at SSOT: `.cursor/plans/apps-qna-bootstrap-c4f2a8.md`.
 - plan_type=infra → §22 ADG graph-layer-evidence gate is correctly skipped (no refactor; new module bootstrap).
 - Author-Gate emitted with confidence=0.88, gap=0.10, principle=runtime cards are the deliverable not the engine, precedent=none.
 - Folder naming `apps_qna` (snake_case) enforced — `&` shell-hostility documented inline.

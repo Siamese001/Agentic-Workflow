@@ -2,7 +2,7 @@
 
 **Plan ID**: `apps-e2e-spine-cert-wireup-e1c4d7`
 **Status**: **Completed** (all 7 waves shipped 2026-05-02 UTC-04:00 — 8 of 8 apps PASS strict; CI gate flipped BLOCKING)
-**Author**: Cascade
+**Author**: Cursor Agent
 **Opened**: 2026-05-02 12:12 UTC
 **Tier**: T3 (5 apps × multi-layer × governance-critical)
 **Related plans**:
@@ -250,7 +250,7 @@ This plan touches the agentic_core L0–L6 spine surface via apps_*/integrations
 |---|---|---|---|
 | R1 | Some apps may not currently have a functional live-run entry point — the `--apps-e2e-dry-run` flag is there precisely because live run timed out historically | Plan slips 1–2 waves | Per-wave spike: run app for 60s with heavy fixture, capture where it hangs, add bounded fixture input. Timebox: if any single app's live-run cannot be bounded in ≤30 s without mocks, the app gets a **time-bounded-live** waiver (new waiver category) — NOT a skeleton waiver |
 | R2 | C0 grounding is expensive — real embedding call + vector DB hit per run | Nightly runs >10 min | W3.1/W4.1/W5.1 use a **fixed-seed deterministic C0 fixture corpus** so embedding is cached, but the call is still real |
-| R3 | apps_lic managed-workflow path may cross infrastructure Cascade cannot stand up locally (external APIs, Azure, etc.) | W6 blocks | Inspect apps_lic pipeline BEFORE W1 (new sub-phase W1.0) — if external-API gating is required, apps_lic gets a **`time_bounded_live` waiver** with a 90-day expiry and is surfaced separately; plan still ships 4 of 5 apps |
+| R3 | apps_lic managed-workflow path may cross infrastructure Cursor Agent cannot stand up locally (external APIs, Azure, etc.) | W6 blocks | Inspect apps_lic pipeline BEFORE W1 (new sub-phase W1.0) — if external-API gating is required, apps_lic gets a **`time_bounded_live` waiver** with a 90-day expiry and is surfaced separately; plan still ships 4 of 5 apps |
 | R4 | Bundle-hash instability — real spine runs produce timestamps/UUIDs that mutate the hash every run | Negative controls N10/N11 would fire | Emission builders normalize timestamps to `run_started_at_utc`-relative deltas where possible; hash is bound to receipt CONTENT not emission wall-clock. apps_rg already solves this — W1 inherits the pattern |
 | R5 | Adding `--apps-e2e-live` flag + new fixture packs expands each app's `__main__.py` surface — risks pulling in agentic_core modules that were previously not imported by the app | Import-time regression on strict-mode smoke | W2.1 first app is the canary; if import-graph explodes, W1 refactors to a lazy-import boundary |
 | R6 | The strict gate, once flipped blocking (W7.1), can red-line the repo if any single app regresses | Repo blocked on a transient nightly failure | W7.1 flip is gated on **3 consecutive green nightlies**. Emergency bypass = `APPS_E2E_SPINE_STRICT_BYPASS=1` (logged to violations ledger) — same pattern as other constitutional §25/§28/§31 bypasses |
@@ -303,7 +303,7 @@ Packet precedent lookup is via `refactor-decision-memory` skill before each wave
 **ALL SCOPE COMPLETE 2026-05-02 UTC-04:00.** 7-wave plan fully shipped.
 All 5 previously-failing runtime apps reach SPINE_COMPLETE_CERTIFIED.
 Strict gate flipped BLOCKING in `.github/workflows/apps-e2e-harness-nightly.yml`.
-226 tests pass / 1 skip / 0 fail. Plan SSOT: `.windsurf/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` §13.
+226 tests pass / 1 skip / 0 fail. Plan SSOT: `.cursor/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` §13.
 
 ### Results
 
@@ -354,7 +354,7 @@ Nothing in-plan. Operational follow-ups (not part of this plan):
 
 ### Plan SSOT
 
-`.windsurf/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` §13.
+`.cursor/plans/apps-e2e-spine-cert-wireup-e1c4d7.md` §13.
 
 ---
 

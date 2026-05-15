@@ -2,7 +2,7 @@
 """
 post_cascade_deferred_scope_capture.py — Windsurf post_cascade_response hook.
 
-Parses DEFERRED_SCOPE markers in Cascade's response, scores each to a P1..P5
+Parses DEFERRED_SCOPE markers in Cursor Agent's response, scores each to a P1..P5
 priority band via tools.priority.deferred_scope_scorer, and either confirms
 a matching Notion writeback happened in the same response (via WRITEBACK:
 receipt) or auto-posts a Wave/Phase Convergence row.
@@ -274,7 +274,7 @@ def _build_notion_payload(fields: dict[str, str], band: str, impact: float, toke
     # Items, Dependencies) into one authoritative outcome string.
     evidence = (
         f"Success: Auto-captured from DEFERRED_SCOPE marker {_utc_today_iso()} "
-        f"— Cascade to fill on execution. "
+        f"— Cursor Agent to fill on execution. "
         f"| Blocking: {reason}. Layer={layer}, fan_in={fan_in}, surface={surface}, "
         f"coverage_gap_pct={gap}. Priority impact score: {impact}. "
         f"| Deps: pending review (auto-captured)."
@@ -498,7 +498,7 @@ def _process_marker(
         "impact_score": result.impact_score,
     }
 
-    # Cascade already wrote to Notion — just record the confirmation
+    # Cursor Agent already wrote to Notion — just record the confirmation
     if has_receipt:
         return {**base_record, "kind": "confirmed_by_receipt"}
 
@@ -573,7 +573,7 @@ def main() -> int:
         print(
             "[deferred_scope_capture] no stdin payload (TTY detected) — "
             "exiting 0. This script is a post_cascade_response hook and "
-            "expects Cascade's response JSON on stdin.",
+            "expects Cursor Agent's response JSON on stdin.",
             file=sys.stderr,
         )
         return 0

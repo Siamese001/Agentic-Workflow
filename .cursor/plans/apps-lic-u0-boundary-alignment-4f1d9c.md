@@ -257,7 +257,7 @@ Get-ChildItem -Path agentic_core/L5_safety -Recurse -Filter "apps_lic*"
 ### W0 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only audit — zero source file modifications)
+**Executed by:** Cursor Agent (read-only audit — zero source file modifications)
 
 ```
 W0_STATUS: PASS
@@ -378,7 +378,7 @@ Get-ChildItem -Path agentic_core -Recurse -Include "*.py" |
 ### W1 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only golden-template extraction — zero source file modifications)
+**Executed by:** Cursor Agent (read-only golden-template extraction — zero source file modifications)
 
 ```
 W1_STATUS: PASS
@@ -616,7 +616,7 @@ Each gap has a **post-remediation command** and **expected result**. These super
 ### W2 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only boundary/gap audit — zero source file modifications)
+**Executed by:** Cursor Agent (read-only boundary/gap audit — zero source file modifications)
 
 ```
 W2_STATUS: PASS
@@ -852,7 +852,7 @@ IMPLEMENTATION_WAVES_BLOCKED: W3-W6 implementation remains blocked.
     Option B — Stash or revert pre-existing diffs.
     Option C — Baseline under a separate plan if in-flight work requires it.
   After resolution, re-run: git diff --name-only HEAD
-  Expected result: empty (or only .windsurf/plans/* as untracked/modified).
+  Expected result: empty (or only .cursor/plans/* as untracked/modified).
 ```
 
 ---
@@ -968,7 +968,7 @@ Select-String -Path agentic_core/L2_execution/types/agent_taxonomy_registry.py -
 ### W3 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (planning-only migration design — zero source file modifications)
+**Executed by:** Cursor Agent (planning-only migration design — zero source file modifications)
 
 ```
 W3_STATUS: PASS
@@ -1475,7 +1475,7 @@ Select-String -Path agentic_core/L3_orchestration/apps_lic_l3_binding.py -Patter
 ### W4 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (planning-only alignment review — zero source file modifications)
+**Executed by:** Cursor Agent (planning-only alignment review — zero source file modifications)
 
 ```
 W4_STATUS: PASS
@@ -1850,7 +1850,7 @@ W4 source changes made: ZERO
 **Allowed exceptions (scanner must skip):**
 - `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` — contains string literals `"from apps_lic"` and `"import apps_lic"` as analysis-only patterns. Excluded from content-identity checks by filename allowlist.
 - `agentic_core/runtime/u0/apps_lic_u0_adapter.py` — **only if it has been deleted** as part of migration (file absence is the correct post-migration state). If still present post-migration, it IS a violation.
-- Plan files (`.windsurf/plans/`) — never scanned.
+- Plan files (`.cursor/plans/`) — never scanned.
 - This scanner's own source file.
 
 **Pass condition:** Zero ERROR-level findings across all path + content checks.
@@ -2104,7 +2104,7 @@ This plan is a planning-only hardening pass. The following commands MUST return 
 ```powershell
 # 1. Git status — must show no modified tracked files (plan file itself is the only new file)
 git -C C:\Git\Agentic-Workflow-FRESH status --short
-# Expected: only the plan file listed (M or ?? for .windsurf/plans/apps-lic-u0-boundary-alignment-4f1d9c.md)
+# Expected: only the plan file listed (M or ?? for .cursor/plans/apps-lic-u0-boundary-alignment-4f1d9c.md)
 # Must NOT show: any *.py, *.sql, *.yaml, *.json modification
 
 # 2. Git diff — must show zero changes to any source file
@@ -2121,7 +2121,7 @@ git -C C:\Git\Agentic-Workflow-FRESH diff HEAD --name-only | Select-String "agen
 
 # 5. Plan file is the only changed artifact
 git -C C:\Git\Agentic-Workflow-FRESH diff HEAD --name-only
-# Expected: at most .windsurf/plans/apps-lic-u0-boundary-alignment-4f1d9c.md
+# Expected: at most .cursor/plans/apps-lic-u0-boundary-alignment-4f1d9c.md
 ```
 
 **Interpretation:** If any of commands 2–5 return non-empty output pointing to `.py` / `.sql` / `.yaml` files, a code change was made during this planning pass and the plan has violated its own scope. Block the implementation wave until confirmed clean.
@@ -2149,7 +2149,7 @@ git -C C:\Git\Agentic-Workflow-FRESH log --oneline -1 -- `
   ops_scripts/ci/run_contract_gates.py `
   tests/_apps_contract/test_apps_rg_app_payload_consumption.py
 # Expected: b8f365d7a9 feat(ci): AG-PURITY W4 CI registration...
-# This hardening plan's only artifact is .windsurf/plans/apps-lic-u0-boundary-alignment-4f1d9c.md
+# This hardening plan's only artifact is .cursor/plans/apps-lic-u0-boundary-alignment-4f1d9c.md
 ```
 
 ### Excluded File Inventory

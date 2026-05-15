@@ -1,7 +1,7 @@
 # Per-Module Audit Follow-Up — agentic_core Evaluation / Control Pattern
 
 **Slug**: `agentic-core-eval-control-audit-per-module-followup-c8e3f1`
-**Parent**: `.windsurf/plans/agentic-core-eval-control-audit-b7d4a2.md`
+**Parent**: `.cursor/plans/agentic-core-eval-control-audit-b7d4a2.md`
 **Parent report**: `docs/reports/agentic_core_eval_control_audit/2026-05-02.md`
 **Date created**: 2026-05-02
 **Tier**: T3 read-only (same as parent)
@@ -109,12 +109,12 @@ The 13th column (`divergence_from_parent_group`) is new vs parent: `yes` when th
 - Use `list_dir` first per directory to get the module list without symbol-level noise.
 - Use `read_file` with `limit=40` per module to confirm role from docstring + imports — do NOT read full files unless role is ambiguous after the first 40 lines.
 - ADG MCP (`adg_nodes_by_file`, `adg_edge_fanin`) is the canonical fan-in authority when a module's role is unclear from source.
-- `.codeiumignore` blocks `docs/reports/` for Cascade's native `write_to_file`. Parent used the workaround: stage at repo-root, then `cmd /c move` to final path. Reuse.
+- `.codeiumignore` blocks `docs/reports/` for Cursor Agent's native `write_to_file`. Parent used the workaround: stage at repo-root, then `cmd /c move` to final path. Reuse.
 - Per MCP serialization rule §25, any Notion writeback (Plans row for this plan; row update on completion) must be its own response.
 
 ## 12. Dependencies
 
-- Parent plan `.windsurf/plans/agentic-core-eval-control-audit-b7d4a2.md` — must remain authoritative. This plan refines, does not replace.
+- Parent plan `.cursor/plans/agentic-core-eval-control-audit-b7d4a2.md` — must remain authoritative. This plan refines, does not replace.
 - Parent report `docs/reports/agentic_core_eval_control_audit/2026-05-02.md` — grouped rows 67, 110, 113, 120 are the inputs.
 - ADG snapshot `artifacts/adg/adg_indexed_04292026_0654.sqlite` or later.
 

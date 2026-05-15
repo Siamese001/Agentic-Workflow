@@ -248,13 +248,13 @@ Acceptance:
 
 ## References
 
-- Source plan (W0–W4 implementation): `.windsurf/plans/adg-ci-agentic-core-purity-a7c3e9.md`
+- Source plan (W0–W4 implementation): `.cursor/plans/adg-ci-agentic-core-purity-a7c3e9.md`
 - Gate implementation: `ops_scripts/ci/adg_gates/gate_agentic_core_purity.py`
 - Baseline artifact: `artifacts/ci/agentic_core_purity_baseline.json`
 - Promotion criteria: `docs/adr/gate-promotion/AG-PURITY-advisory-to-strict.md`
 - Thin adapter receipts: `artifacts/governance/migration_receipts/`
-- Constitutional rule: `.windsurf/rules/agentic-core-static.md`
-- Constitutional rule: `.windsurf/rules/adg-canonical-invariants.md`
+- Constitutional rule: `.cursor/rules/agentic-core-static.md`
+- Constitutional rule: `.cursor/rules/adg-canonical-invariants.md`
 
 ---
 

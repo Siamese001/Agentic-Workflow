@@ -10,13 +10,13 @@ Reduce organizational debt across `.windsurf/`, `scripts/`, `tools/`, `docs/repo
 
 ## Files In Scope
 
-- `.windsurf/plans/` — 333 .md files (many Completed in Notion but on-disk)
+- `.cursor/plans/` — 333 .md files (many Completed in Notion but on-disk)
 - `docs/reports/plans/` — 146 parallel plan-reports
 - `tools/archive/` — 1,217 files / 10.68 MB
 - `archives/` — 533 files / 4.47 MB
 - `scripts/` — 22 misrouted files (per SSOT allowlist)
-- `.windsurf/skills/ledger-consulter-*/` — 24 duplicate sibling skills
-- `.windsurf/rules/` — 2 deprecated shims + potential consolidations
+- `.cursor/skills/ledger-consulter-*/` — 24 duplicate sibling skills
+- `.cursor/rules/` — 2 deprecated shims + potential consolidations
 - `docs/reports/rcas/` + `docs/reports/rca/` — duplicate RCA folders
 - `docs/reports/runtime_cert/` + `runtime_certification/` — duplicate folders
 
@@ -25,7 +25,7 @@ Reduce organizational debt across `.windsurf/`, `scripts/`, `tools/`, `docs/repo
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
 | W1 | A | Trivial dedup: deprecated rules, RCA folders, runtime_cert folders | ~2k | Zero callers to update | Pending | 13 files moved/deleted, 2 rules gone |
-| W2 | B | Archive completed/retired plans from `.windsurf/plans/` | ~4k | Notion Plans cache queryable | Pending | ~180 files moved to `_archive/` |
+| W2 | B | Archive completed/retired plans from `.cursor/plans/` | ~4k | Notion Plans cache queryable | Pending | ~180 files moved to `_archive/` |
 | W3 | C | Consolidate `tools/archive/` + `archives/` | ~6k | `archives/` is canonical per §12 | Pending | 1,750 files under single root |
 | W4 | D | Move 22 misrouted `scripts/` files to canonical folders | ~8k | All callers identifiable via grep | Pending | 22 files moved, constitutional §32 updated, CI green |
 | W5 | E | Collapse 24 `ledger-consulter-*` skills to parent + registry | ~5k | No external references to skill paths | Pending | 23 skills deleted, 1 parent skill updated |
@@ -36,7 +36,7 @@ Reduce organizational debt across `.windsurf/`, `scripts/`, `tools/`, `docs/repo
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | A | Trivial dedup sweep | 13 files, 2 deprecated rules | Folder renames, rule deletions | 2k | Pending |
-| B | Plans archive wave | `.windsurf/plans/*.md` filtered by Notion status | Bulk move, path preservation | 4k | Pending |
+| B | Plans archive wave | `.cursor/plans/*.md` filtered by Notion status | Bulk move, path preservation | 4k | Pending |
 | C | Archive root consolidation | `tools/archive/*` → `archives/` | 1,750 files, verify zero importers | 6k | Pending |
 | D | Scripts SSOT routing | 22 files from `scripts/` to `tools/cert/`, `ops_scripts/ci/`, `ops_scripts/maintenance/` | Caller updates, constitutional §32 edit | 8k | Pending |
 | E | Ledger-consulter collapse | 24 skills → 1 parent + registry | Skill index rebuild, content merge | 5k | Pending |
@@ -56,7 +56,7 @@ Reduce organizational debt across `.windsurf/`, `scripts/`, `tools/`, `docs/repo
 | Caller path string missed in grep | Use `rg -F` with every old path; CI dry-run before push |
 | Constitutional §32 path references | Include in Phase D grep-replace; gate blocks on mismatch |
 | Notion Plans cache stale | `check_plan_registration_freshness.py --refresh` before Phase B |
-| External skill references to `ledger-consulter-*` | Phase E starts with `rg "ledger-consulter-" .windsurf/skills/ --include "*.md"` |
+| External skill references to `ledger-consulter-*` | Phase E starts with `rg "ledger-consulter-" .cursor/skills/ --include "*.md"` |
 
 ## Success Criteria
 

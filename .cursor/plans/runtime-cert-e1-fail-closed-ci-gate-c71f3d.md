@@ -8,7 +8,7 @@
 - **Predecessors** (all complete on this branch):
   - **D.1** schema — `tools/runtime_cert/decisions/cert_decision_record.py` (54 tests)
   - **D.2** evaluator — `tools/runtime_cert/decisions/cert_decision_evaluator.py` (50 tests)
-  - **D.3** ledger writer — `tools/runtime_cert/decisions/cert_decision_ledger.py` + `.windsurf/schemas/cert_decision_ledger.schema.sql` (35 tests)
+  - **D.3** ledger writer — `tools/runtime_cert/decisions/cert_decision_ledger.py` + `.cursor/schemas/cert_decision_ledger.schema.sql` (35 tests)
   - **D.4** smoke harness — `tools/runtime_cert/smoke/cert_decision_smoke.py` restored at commit `26ffc52791` (27 tests)
   - **D.5** closeout report — `docs/reports/runtime_cert/phase_d_closeout/2026-W18.md` restored at commit `40ef8da391`; ADR-080 §11 D.5 ✅ and binding matrix D.5 row restored at commit `bdbefa29c2`
   - Combined test sweep: **191 passing** (`tests/unit/tools/runtime_cert/decisions/` + `tests/unit/tools/runtime_cert/smoke/`)
@@ -52,7 +52,7 @@
 
 ### Provenance
 
-- Plan file: `.windsurf/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md` (this file)
+- Plan file: `.cursor/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md` (this file)
 - Plan commit: `ed65def950` — `plan(runtime_cert): Phase E fail-closed CI gate`
 - Phase D state at approval time: D.1 through D.5 all ✅ on this branch; 191/191 combined decisions + smoke tests passing
 - Approval turn: 2026-05-01 ~08:39 UTC-04:00
@@ -109,7 +109,7 @@ The gate is built against the following existing artifacts. Each has been inspec
 | `tools/runtime_cert/decisions/cert_decision_record.py` | Hydrate rows read back from the ledger into `CertificationDecisionRecord`; construct new records for "would-have-been" verdict checks | `CertificationDecisionRecord`, `NOT_CERTIFIED`, `VERDICT_*`, `EVIDENCE_KIND_*`, `compute_decision_id`, `make_certification_decision_record`, `to_dict`, `to_json` |
 | `tools/runtime_cert/decisions/cert_decision_evaluator.py` | Pure evaluator. Gate calls `evaluate_phase_c_closeout(report, history)` to compute the current-week verdict without writing | `evaluate_phase_c_closeout`, `wilson_lower_bound`, `derive_closeout_report_hash`, closed 12-reason failure ontology, ADR-080 §7 thresholds |
 | `tools/runtime_cert/decisions/cert_decision_ledger.py` | Read-only consumer: `read_cert_decision_records(app_name, repo_root=...)` per app; no write path invoked | `CertDecisionLedgerWriteResult` (as type hint only), `ledger_path_for_app`, `read_cert_decision_records` |
-| `.windsurf/schemas/cert_decision_ledger.schema.sql` | Schema constraint reference; gate does **not** run DDL | DDL not executed by gate |
+| `.cursor/schemas/cert_decision_ledger.schema.sql` | Schema constraint reference; gate does **not** run DDL | DDL not executed by gate |
 | `tools/runtime_cert/smoke/cert_decision_smoke.py` | **Reference only.** The smoke harness is the proof-of-wiring for D.2 → D.3 → read-back. The gate reuses the same read-back path but does not call the smoke harness | `run_cert_decision_smoke`, `CertDecisionSmokeReport` — not invoked by the gate; cited as the contract reference |
 | `docs/reports/runtime_cert/phase_d_closeout/2026-W18.md` | Handoff doc; informs gate design | Human-readable; not parsed by the gate |
 | `docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md` | Source of truth for thresholds (§7), non-promotion invariants, and Phase E scope (§11) | No code dependency |

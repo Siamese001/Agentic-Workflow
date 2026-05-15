@@ -1,7 +1,7 @@
 ---
 description: |
   Core invariant only — No Notion MCP calls during multi-wave execution. Full protocol moved to plan-lifecycle-procedures.md (W3.P3 2026-05-12).
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/notion-plan-wave-deferral.md`. Original Cursor trigger: `always_on`. -->

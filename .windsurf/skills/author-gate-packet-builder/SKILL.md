@@ -33,7 +33,7 @@ Invoke BEFORE `ask_user_question` whenever the decision matches any §AG-1 class
 
 Do NOT invoke for T0/T1 edits, pure lints, or formatting-only changes.
 
-> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Cascade response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_cascade_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
+> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Cursor Agent response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_cascade_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
 
 ## Files
 
@@ -135,6 +135,6 @@ writing. Invalid packets are rejected with a structured error to stderr and exit
 ## Progressive Disclosure
 
 - `SKILL.md` (this file): when to invoke, high-level shape
-- `packet_template.md`: full AG-10 option shape with didactic field semantics (Cascade reads on demand)
+- `packet_template.md`: full AG-10 option shape with didactic field semantics (Cursor Agent reads on demand)
 - `emit_packet.py`: deterministic emission + schema validation
 - `precedent_injector.py`: isolated precedent lookup used by emit_packet and standalone

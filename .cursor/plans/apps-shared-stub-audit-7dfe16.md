@@ -6,8 +6,8 @@
 **Driver:** DEFERRED_SCOPE row from `apps-completeness-followups-287d2a` (completed 2026-05-02)
 **Status:** Completed (2026-05-02)
 **Predecessors:**
-- `.windsurf/plans/apps-completeness-followups-287d2a.md` (Completed 2026-05-02)
-- `.windsurf/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02)
+- `.cursor/plans/apps-completeness-followups-287d2a.md` (Completed 2026-05-02)
+- `.cursor/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02)
 
 ## Goal
 
@@ -115,7 +115,7 @@ No concurrent plans touch `apps_shared`. Safe to execute whenever scheduled.
 
 ## References
 
-- Predecessor plan: `.windsurf/plans/apps-completeness-followups-287d2a.md`
+- Predecessor plan: `.cursor/plans/apps-completeness-followups-287d2a.md`
 - Canonical stub convention: `apps_lic/RUNBOOK.md` §"Heal-Method NotImpl Convention" (established 2026-05-02)
 - Scanner: `tools/analysis/_apps_completeness_review2.py`
 - Constitutional §22 (graph-layer primary), §28 (ADG over grep)

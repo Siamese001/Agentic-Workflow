@@ -1,6 +1,6 @@
 """Post-cascade heartbeat writer (W7.1 observability gap).
 
-Writes a single heartbeat record per Cascade response to
+Writes a single heartbeat record per Cursor Agent response to
 ``artifacts/windsurf/post_cascade_heartbeat.jsonl``.
 
 The companion session-start script
@@ -35,7 +35,7 @@ def _previous_timestamp() -> float | None:
 
     P5 (2026-04-28) — latency telemetry. The gap between the current
     heartbeat and the prior one approximates the end-to-end duration of
-    the preceding Cascade turn (including the full post-cascade hook
+    the preceding Cursor Agent turn (including the full post-cascade hook
     chain). When this gap drifts above the 500 ms budget documented in
     the industry best-practice article (Kumar), the weekly calibration
     report surfaces the regression.

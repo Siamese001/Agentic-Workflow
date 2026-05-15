@@ -215,6 +215,6 @@ Monitoring for C0 policy enforcement in production.
 
 ## 7. References
 
-- Parent Plan: `.windsurf/plans/c0-policy-rectification-f7b2a9.md`
+- Parent Plan: `.cursor/plans/c0-policy-rectification-f7b2a9.md`
 - Commit: `9dc8317c21` (c0-policy-rectification-f7b2a9: Single authoritative C0 policy path)
 - Notion Parent: https://www.notion.so/c0-policy-rectification-f7b2a9-35a27693f55c81b3aaebcf61b7661395

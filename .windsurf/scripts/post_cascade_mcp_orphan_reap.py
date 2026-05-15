@@ -14,10 +14,10 @@ survive:
        notion, task_manager) cannot self-guard.
     4. A's node processes linger until this hook reaps them.
 
-This hook runs after every Cascade response. It shells out to the shared
+This hook runs after every Cursor Agent response. It shells out to the shared
 detector at ``tools/debug/check_orphan_mcp_processes.py --kill`` with the
 existing cohort-gap and stale-min defaults, so behavior is identical to a
-manual invocation. It NEVER blocks Cascade: on any failure the hook logs
+manual invocation. It NEVER blocks Cursor Agent: on any failure the hook logs
 and exits 0.
 
 Bypass: set ``MCP_ORPHAN_REAP_BYPASS=1`` in the environment.
@@ -121,7 +121,7 @@ def main() -> int:
             for o in parsed["orphans"]
         ]
     _log(record)
-    # Always succeed — we must never block Cascade.
+    # Always succeed — we must never block Cursor Agent.
     return 0
 
 

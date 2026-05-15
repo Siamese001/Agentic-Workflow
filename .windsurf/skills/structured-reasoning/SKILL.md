@@ -25,7 +25,7 @@ Four layers — keep them separated at all times:
 
 | Layer | What happens here | Allowed tools |
 |-------|------------------|---------------|
-| **Reasoning** | Goal normalization, decomposition, branch analysis | Native Cascade reasoning only |
+| **Reasoning** | Goal normalization, decomposition, branch analysis | Native Cursor Agent reasoning only |
 | **Routing** | Tool selection, MCP health check, fallback planning | `adg_health` (server: `adg_sqlite`), `create_task` (server: `task_manager`) |
 | **Execution** | Edits, writes, commands | All tools — only after APPROVED |
 | **Verification** | Tests, health checks, diff review | `run_tests` (server: `pytest_mcp`), `git_status` (server: `GitKraken`) |

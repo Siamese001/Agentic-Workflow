@@ -50,7 +50,6 @@ In-house. Prefer over raw `pytest` CLI when the operation maps cleanly onto an M
 1. **No `pytest.mark.skip` without `strict=True`.** Constitutional §1.
 2. **No weakened assertions / `xfail` workarounds.** Constitutional §1.
 3. **ADG-backed scope selection for T2/T3 changes.** Use `adg_sqlite` to compute blast radius, then run only affected tests. (See `testing-framework/SKILL.md`.)
-4. **MCP serialization (§25):** One MCP call per response.
 5. **Timeouts:** Always set `timeout` parameter for runs that may stall (default 60s).
 
 ## Common Workflows

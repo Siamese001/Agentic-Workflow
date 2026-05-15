@@ -120,7 +120,7 @@ STATUS: DEFERRED (tracker only — no execution waves)
 PARENT_PLAN: windsurf-governance-consolidation-a7c3e9
 RETIRED_PLAN: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2
 CREATED: 2026-05-12
-AUTHOR: Cascade
+AUTHOR: Cursor Agent
 DS_1_STATUS: DEFERRED — needs scoped Author-Gate plan
 DS_2_STATUS: DEFERRED — ready to run; observational only
 DS_3_STATUS: DEFERRED — gated on DS-2 ≥14 days + new plan + Author-Gate

@@ -4,7 +4,7 @@
 **Created:** 2026-05-02
 **Status:** Live
 **Tier:** T3 (multi-file, cross-cutting, hook + rule + script)
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Predecessor:** none — net-new
 **Source review:** chat 2026-05-02 (web research synthesis: Anthropic Engineering, Cursor, Morph, LangChain)
 

@@ -373,7 +373,7 @@ The composer change is the only "irreversible-feeling" edit. Mitigated by:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - ✅ Plan-first; no code in this step.
 - ✅ Plan saved to repo SSOT `.windsurf/plans/<slug>-<6hex>.md`.

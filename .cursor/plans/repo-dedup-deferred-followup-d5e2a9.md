@@ -16,7 +16,7 @@ Address deferred cleanup items identified during W1-W6 execution that were out o
 ## Deferred Scope Register
 
 ### DS1: Orphan Plan Analysis (P2)
-**Source:** W2 gap — 257 files remain in `.windsurf/plans/` but only 4 are "live" per Notion
+**Source:** W2 gap — 257 files remain in `.cursor/plans/` but only 4 are "live" per Notion
 
 - **Count:** ~253 potentially orphaned plan files
 - **Condition:** Files exist on disk but Notion shows no corresponding row, or status is stale
@@ -24,8 +24,8 @@ Address deferred cleanup items identified during W1-W6 execution that were out o
 - **Remediation approach:**
   1. Cross-reference all 257 files against Notion Plans DB
   2. Identify true orphans (file exists, no DB row OR file exists, DB shows Retired/Archived without archive folder)
-  3. Batch move confirmed orphans to `.windsurf/plans/_orphan_review/` for human triage
-  4. After 30-day grace period, move to `.windsurf/plans/_archive/2026-orphaned/`
+  3. Batch move confirmed orphans to `.cursor/plans/_orphan_review/` for human triage
+  4. After 30-day grace period, move to `.cursor/plans/_archive/2026-orphaned/`
 
 **Deferred reason:** W2 scope limited to Notion-verified Completed/Retired/Archived only
 
@@ -75,7 +75,7 @@ Address deferred cleanup items identified during W1-W6 execution that were out o
 **Source:** W5 collapse — 24 child skills deleted, but references may persist
 
 - **Action:** Search for lingering references to deleted skill paths
-  - `.windsurf/skills/ledger-consulter-*/` (24 patterns)
+  - `.cursor/skills/ledger-consulter-*/` (24 patterns)
   - In rules, workflows, and scripts
 - **Remediation:** Update any hardcoded references to point to parent skill
 

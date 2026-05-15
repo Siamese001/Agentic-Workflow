@@ -2,7 +2,7 @@
 
 **ID**: `mcp-serial-defense-l2l5-7d4f1a`
 **Status**: Draft (not implemented)
-**Owner**: Cascade harness team
+**Owner**: Cursor Agent harness team
 **Created**: 2026-04-25
 **Tier**: T2 — multi-file, single concern (instrumentation), no cross-layer architectural change
 **Related**: Layer 1 already shipped (`_serialization_sentinel.py` + 4 pre-* gates, see Notion MCP Registry entry `34d27693-f55c-816d-84d7-ccd9a62b78dc`)
@@ -22,7 +22,7 @@ Layer 1 (deterministic, dispatch-time block) covers the high-probability cases: 
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| **W1** | L2.1 | Layer 2 — SR_MANDATE injection (pre-prompt) | ~3000 | `pre_prompt_classifier.py` MCP-intent detector already exists | Todo | Cascade emits `MCP_SERIAL_MANDATE:` in SR block when MCP intent present; unit test passes |
+| **W1** | L2.1 | Layer 2 — SR_MANDATE injection (pre-prompt) | ~3000 | `pre_prompt_classifier.py` MCP-intent detector already exists | Todo | Cursor Agent emits `MCP_SERIAL_MANDATE:` in SR block when MCP intent present; unit test passes |
 | **W2** | L3.1, L3.2 | Layer 3 — MCP response reminder wrapper | ~9000 | All 12 MCP servers use FastMCP `@mcp.tool()` decorators | Todo | Every MCP tool result begins with `[MCP_SERIAL_REMINDER]`; integration smoke pass; <20-token overhead per response |
 | **W3** | L4.1 | Layer 4 — Hang auto-recovery watchdog | ~4000 | `mcp_invocation_ledger.sqlite` has p99 latency per server (ADR-050) | Todo | Watchdog injects `MCP_HANG_SUSPECTED:` marker in next pre-prompt when prior turn exceeded p99×3 |
 | **W4** | L5.1 | Layer 5 — Session-start violations surfacer | ~2000 | `mcp_serialization_violations.jsonl` already maintained by Layer 0 audit | Todo | Banner appears in pre-prompt when ≥1 violation in last 24h; suppressed when zero |
@@ -36,13 +36,13 @@ Layer 1 (deterministic, dispatch-time block) covers the high-probability cases: 
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| **L2.1** | Inject `MCP_SERIAL_MANDATE` into SR-block on MCP intent | `.windsurf/scripts/pre_prompt_classifier.py` (modify; ~30 LOC) + `tests/unit/ops_scripts/hooks/windsurf/test_pre_prompt_classifier.py` (extend) | Existing classifier already complex; injection point must not collide with ADG-first mandate or other SR-step-0 directives | 3000 | Todo |
+| **L2.1** | Inject `MCP_SERIAL_MANDATE` into SR-block on MCP intent | `.cursor/scripts/pre_prompt_classifier.py` (modify; ~30 LOC) + `tests/unit/ops_scripts/hooks/windsurf/test_pre_prompt_classifier.py` (extend) | Existing classifier already complex; injection point must not collide with ADG-first mandate or other SR-step-0 directives | 3000 | Todo |
 | **L3.1** | Build shared `_response_reminder.py` decorator | `tools/mcp/_response_reminder.py` (NEW; ~80 LOC) + `tests/unit/tools/mcp/test_response_reminder.py` (NEW; ~10 tests) | FastMCP return-type semantics (str vs dict); decorator must preserve type contract; bypass via env var | 4000 | Todo |
 | **L3.2** | Apply decorator to all 12 MCP server entry points | `tools/mcp/{adg_sqlite,memory,vector_db,redis,otel,pytest_mcp,task_manager,enhanced_http,deepwiki,filesystem_launcher}_server.py` + GitKraken + Notion wrappers (each: ~2-line import + 1 decoration) | Some servers wrap responses in TextContent objects; some use json.dumps; need per-server smoke test | 5000 | Todo |
-| **L4.1** | Watchdog + pre-prompt marker injection | `.windsurf/scripts/mcp_hang_watchdog.py` (NEW; ~120 LOC) + extend `pre_prompt_classifier.py` (~10 LOC) + tests | Requires reading the existing `artifacts/ledgers/mcp_invocation.sqlite` p99 column; must fail-open if ledger missing | 4000 | Todo |
-| **L5.1** | Session-start violations banner | `.windsurf/scripts/pre_user_prompt_hook_health_check.py` (modify; ~25 LOC) + tests | Banner must not exceed 5 lines; must be suppressed when count is zero to avoid noise | 2000 | Todo |
+| **L4.1** | Watchdog + pre-prompt marker injection | `.cursor/scripts/mcp_hang_watchdog.py` (NEW; ~120 LOC) + extend `pre_prompt_classifier.py` (~10 LOC) + tests | Requires reading the existing `artifacts/ledgers/mcp_invocation.sqlite` p99 column; must fail-open if ledger missing | 4000 | Todo |
+| **L5.1** | Session-start violations banner | `.cursor/scripts/pre_user_prompt_hook_health_check.py` (modify; ~25 LOC) + tests | Banner must not exceed 5 lines; must be suppressed when count is zero to avoid noise | 2000 | Todo |
 | **V1** | Combined unit + integration suite | All test files from W1–W4 | Layer interactions: e.g. Layer 5 banner shouldn't fire when Layer 4 marker is also fresh — define precedence | 1500 | Todo |
-| **V2** | Sunset proof — TTL flag flips all layers off | `.windsurf/config/mcp_serialization_ttl.json` (test fixture only) + smoke run | Each layer must independently honor `_is_retired()`; centralize the check in `_serialization_sentinel.py` (already exported) | 1500 | Todo |
+| **V2** | Sunset proof — TTL flag flips all layers off | `.cursor/config/mcp_serialization_ttl.json` (test fixture only) + smoke run | Each layer must independently honor `_is_retired()`; centralize the check in `_serialization_sentinel.py` (already exported) | 1500 | Todo |
 
 ---
 
@@ -59,7 +59,7 @@ MCP_SERIAL_MANDATE: every mcp*_ call MUST be alone in its <function_calls> block
 **Why**: Maximum-recency placement (per OpenDev §3.2 finding that system-prompt rules decay after 15+ tool calls). The graph-analysis skill solved a similar prompt-drift problem with the same pattern (memory `3064a042`).
 
 **Files**:
-- `@c:/Git/Agentic-Workflow/.windsurf/scripts/pre_prompt_classifier.py` — add `_MCP_SERIAL_MANDATE` constant, inject inside the SR-step-0 block when any MCP intent flag is true
+- `@c:/Git/Agentic-Workflow/.cursor/scripts/pre_prompt_classifier.py` — add `_MCP_SERIAL_MANDATE` constant, inject inside the SR-step-0 block when any MCP intent flag is true
 - `@c:/Git/Agentic-Workflow/tests/unit/ops_scripts/hooks/windsurf/test_pre_prompt_classifier.py` — assert mandate appears for MCP-intent prompts and is absent for non-MCP prompts
 
 **Success Criteria**:
@@ -131,10 +131,10 @@ MCP_HANG_SUSPECTED: previous MCP turn exceeded p99×3 latency for server=<name>.
 ```
 
 **Files**:
-- `@c:/Git/Agentic-Workflow/.windsurf/scripts/mcp_hang_watchdog.py` (NEW)
+- `@c:/Git/Agentic-Workflow/.cursor/scripts/mcp_hang_watchdog.py` (NEW)
   - Reads ledger; computes p99 from the last 50 invocations per server
   - Returns marker text or empty string
-- `@c:/Git/Agentic-Workflow/.windsurf/scripts/pre_prompt_classifier.py` — call watchdog, inject marker
+- `@c:/Git/Agentic-Workflow/.cursor/scripts/pre_prompt_classifier.py` — call watchdog, inject marker
 - `@c:/Git/Agentic-Workflow/tests/unit/ops_scripts/hooks/windsurf/test_mcp_hang_watchdog.py` (NEW)
 
 **Pain Point**: Requires the `mcp_invocation` ledger to be populated. Per ADR-050 it should be live, but check on-disk before assuming.
@@ -149,16 +149,16 @@ MCP_HANG_SUSPECTED: previous MCP turn exceeded p99×3 latency for server=<name>.
 
 ### L5.1 — Session-Start Violations Banner
 
-**What**: Extend `pre_user_prompt_hook_health_check.py` to read `artifacts/windsurf/mcp_serialization_violations.jsonl`, count last-24h entries, and emit a banner when count ≥ 1:
+**What**: Extend `pre_user_prompt_hook_health_check.py` to read `artifacts/cursor/mcp_serialization_violations.jsonl`, count last-24h entries, and emit a banner when count ≥ 1:
 
 ```
 [MCP_SERIAL_RECENT] N serialization violation(s) recorded in the last 24h.
-Review .windsurf/rules/mcp-serialization.md before next MCP call.
+Review .cursor/rules/mcp-serialization.md before next MCP call.
 Most recent: <timestamp> — <violation_type>
 ```
 
 **Files**:
-- `@c:/Git/Agentic-Workflow/.windsurf/scripts/pre_user_prompt_hook_health_check.py` — add violations counter
+- `@c:/Git/Agentic-Workflow/.cursor/scripts/pre_user_prompt_hook_health_check.py` — add violations counter
 - `@c:/Git/Agentic-Workflow/tests/unit/ops_scripts/hooks/windsurf/test_pre_user_prompt_hook_health_check.py` — extend
 
 **Success Criteria**:
@@ -199,7 +199,7 @@ Most recent: <timestamp> — <violation_type>
 | Layer 3 decorator breaks FastMCP introspection on some servers | Per-server smoke test in L3.2; rollback plan per-file |
 | Layer 3 perf overhead on hot tools (e.g., `adg_node`) | Reminder prepend is a string op (~12 tokens); benchmark before/after; reject if >5% latency |
 | Layer 4 false positives during cold-start (first 50 invocations have no p99) | Watchdog requires ≥50 samples per server before activating |
-| Reminder fatigue — Cascade ignores `[MCP_SERIAL_REMINDER]` after seeing it 100×/session | Layer 1 dispatch block remains the deterministic floor; reminders are reinforcement only |
+| Reminder fatigue — Cursor Agent ignores `[MCP_SERIAL_REMINDER]` after seeing it 100×/session | Layer 1 dispatch block remains the deterministic floor; reminders are reinforcement only |
 | Adding TTL file unsafely retires layers while race still exists | Operator gate in retirement procedure (Step 1: verify upstream changelog); 7-day soak before file deletion |
 
 ---

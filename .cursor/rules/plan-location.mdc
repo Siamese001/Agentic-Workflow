@@ -1,7 +1,7 @@
 ---
 description: |
   Converted from Cursor rule plan-location.md
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/plan-location.md`. Original Cursor trigger: `always_on`. -->

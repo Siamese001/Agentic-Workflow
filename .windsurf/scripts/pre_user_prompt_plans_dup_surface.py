@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """pre_user_prompt_plans_dup_surface.py — surface unacknowledged Plans-DB
-duplicate violations at the start of each Cascade prompt.
+duplicate violations at the start of each Cursor Agent prompt.
 
 When ``post_cascade_plans_dup_audit.py`` detected a duplicate Plans-DB POST
 in the previous response and logged it to

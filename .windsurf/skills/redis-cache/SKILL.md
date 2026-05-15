@@ -23,7 +23,7 @@ metadata:
 | Verify TTL on a key | ✅ Yes |
 | Bounded namespace invalidation | ✅ Yes |
 | Read a specific cached value | ✅ Yes |
-| Modify cache contents | ❌ No — Redis is read-only-from-Cascade; mutations happen via `tools/adg/adg_redis_ingest.py` |
+| Modify cache contents | ❌ No — Redis is read-only-from-Cursor Agent; mutations happen via `tools/adg/adg_redis_ingest.py` |
 | Persistent agent memory | ❌ No | `memory` MCP |
 
 ## Tool Routing

@@ -32,7 +32,7 @@ Complexity vs value — rare edge case; current fail-closed behavior is acceptab
 Add explicit `timeout` parameter to ADG query functions, implement 1-retry with exponential backoff, log retry events to `author_gate_violations.jsonl`.
 
 **Files Affected:**  
-- `.windsurf/scripts/pre_author_gate.py` (lines 464-561)
+- `.cursor/scripts/pre_author_gate.py` (lines 464-561)
 
 **Estimated Effort:** 800 tokens
 
@@ -54,7 +54,7 @@ Test coverage shows current normalization works for standard cases; edge cases (
 Add comprehensive Windows path test fixtures, verify `fnmatch` behavior on Windows CI runners, add path normalization unit tests.
 
 **Files Affected:**  
-- `.windsurf/scripts/pre_author_gate.py` (lines 405-429)
+- `.cursor/scripts/pre_author_gate.py` (lines 405-429)
 - `tests/unit/windsurf_scripts/test_pre_author_gate.py` (new test class)
 
 **Estimated Effort:** 600 tokens
@@ -78,7 +78,7 @@ Implement SQLite WAL mode for ADG artifacts, add retry-with-backoff (max 3 attem
 
 **Files Affected:**  
 - `tools/generate/graph_projection.py` (WAL mode setting)
-- `.windsurf/scripts/pre_author_gate.py` (retry logic)
+- `.cursor/scripts/pre_author_gate.py` (retry logic)
 
 **Estimated Effort:** 1,000 tokens
 

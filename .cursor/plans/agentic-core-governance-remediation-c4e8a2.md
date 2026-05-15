@@ -141,7 +141,7 @@ Two CORE_APP_SPECIFIC_LEAKAGE files remain and must be migrated:
 1. `agentic_core/runtime/delegation/cross_app_payload_validator.py` (8 violations)
 2. `agentic_core/runtime/delegation/package_driven_delegation_broker.py` (7 violations)
 
-**W6 Plan:** `.windsurf/plans/agentic-core-governance-w6-core-migration-d4e8a2.md`
+**W6 Plan:** `.cursor/plans/agentic-core-governance-w6-core-migration-d4e8a2.md`
 
 ### Artifacts Created
 
@@ -709,7 +709,7 @@ If CI gates are too noisy:
 
 ```bash
 # W1: Create CI gates
-python .windsurf/scripts/pre_write_gate.py --check ops_scripts/ci/check_no_app_specific_literals_in_core.py
+python .cursor/scripts/pre_write_gate.py --check ops_scripts/ci/check_no_app_specific_literals_in_core.py
 
 # W2: Fix tests
 python tests/governance/test_no_app_specific_literals_in_core.py
@@ -727,7 +727,7 @@ python ops_scripts/ci/run_contract_gates.py
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - All new files follow SSOT routing (§31): `ops_scripts/ci/check_*.py`
 - All edits follow pre-write hook discipline

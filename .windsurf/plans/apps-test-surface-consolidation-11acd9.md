@@ -116,7 +116,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 - Fix: drop the row; explicitly forbid `apps_<x>/tests/`; cross-link to new `apps-test-surface-taxonomy.md`.
 
 **GAP-2: Path-constant SSOT files have no apps_* test-surface constants**
-- Cascade and downstream tools have to re-derive `tests/<app>/`, `tests/unit/<app>/`, `tests/_apps_contract/test_<app>_*.py` glob ad hoc.
+- Cursor Agent and downstream tools have to re-derive `tests/<app>/`, `tests/unit/<app>/`, `tests/_apps_contract/test_<app>_*.py` glob ad hoc.
 - Fix: define `APPS_TEST_SURFACES = ("contract", "unit", "integration")`, `apps_test_unit_dir(app)`, `apps_test_integration_dir(app)`, `apps_contract_glob(app)` in `agentic_core/L0_routing/config/path_constants.py` + re-export from interface mirror + structure_blueprint package.
 
 **GAP-3: Blueprint package's apps-subfolder-map functions don't enforce 3-surface contract**
@@ -296,7 +296,7 @@ python -m pytest tests/governance/ -k apps_ -q
 # (this plan + Notion registration)
 
 # Wave 2 (per file)
-# manual edits via Cascade edit tool
+# manual edits via Cursor Agent edit tool
 
 # Wave 3 (per app)
 mkdir -p tests/apps_<app> tests/unit/apps_<app>
@@ -348,7 +348,7 @@ If a wave breaks pytest collection or a CI gate:
 | pytest --collect-only whole-tree | succeeds | exit 0 |
 | SSOT files updated or no-op-verified | 16 / 16 | per-file checklist in Phase 2 |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Always-on rules stay lean — detailed enforcement procedures live in the helper + skill.
 - ADG SQLite is the audit primary source (already executed; results in `artifacts/_scratch/`).

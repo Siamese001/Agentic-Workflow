@@ -5,7 +5,7 @@ Canonical wave detail lives in the Notion Plans DB page
 page ID `35427693-f55c-81cd-916c-dda8d0fe9804`). This on-disk file exists
 to satisfy the Plans-DB invariant (`Status=Live` requires
 `Exists On Disk=true`) and to carry the two tables required by
-`.windsurf/rules/plan-location.md` (Wave Structure + Phase-Level
+`.cursor/rules/plan-location.md` (Wave Structure + Phase-Level
 Summary).
 
 ## Charter
@@ -34,12 +34,12 @@ Score=0.90, dominance gap=0.15). Existing surfaces reused as-is:
 
 ## Source Artifacts
 
-- Audit tables (Cascade response 2026-05-02)
+- Audit tables (Cursor Agent response 2026-05-02)
 - Qwen-32B leverage addendum (same date)
 - Constitutional §29 (closed-loop router enforcement)
-- `.windsurf/rules/local-llm-wsl2-gpu.md`
-- `.windsurf/rules/judge-calibration-cadence.md`
-- `.windsurf/rules/author-gate-decision-points.md`
+- `.cursor/rules/local-llm-wsl2-gpu.md`
+- `.cursor/rules/judge-calibration-cadence.md`
+- `.cursor/rules/author-gate-decision-points.md`
 
 ## Wave Structure
 

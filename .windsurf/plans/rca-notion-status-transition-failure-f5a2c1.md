@@ -51,7 +51,7 @@ python tools/windsurf/wave_execution_state.py complete --plan <slug>
 
 ### RC2: Missing WAVE_START/WAVE_COMPLETE Markers
 
-Per §35, Cascade should emit markers:
+Per §35, Cursor Agent should emit markers:
 ```
 WAVE_COMPLETE: plan=notion-sync-enforcement-hardening-f5a2c1 wave=1 note="property validator + NP11 gate"
 ```
@@ -100,9 +100,9 @@ Used `API-patch-page` directly instead of `wave_execution_state.py complete`, by
 
 | Action | Implementation | Owner |
 |--------|---------------|-------|
-| Pre-flight lifecycle call | `wave_execution_state.py start` before W1 | Cascade |
-| Per-wave markers | Emit `WAVE_COMPLETE:` with note after tests pass | Cascade |
-| Verification step | Query Notion API to confirm "In Progress" before W2 | Cascade |
+| Pre-flight lifecycle call | `wave_execution_state.py start` before W1 | Cursor Agent |
+| Per-wave markers | Emit `WAVE_COMPLETE:` with note after tests pass | Cursor Agent |
+| Verification step | Query Notion API to confirm "In Progress" before W2 | Cursor Agent |
 | Hook automation | Consider `pre_user_prompt` gate to warn if plan active but status dormant | CI |
 
 ### Tooling Improvements

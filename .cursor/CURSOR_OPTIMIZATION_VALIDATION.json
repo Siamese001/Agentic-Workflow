@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "commands": {
+    "python .cursor/scripts/check_cursor_optimized_config.py --strict": "PASS",
+    "python .cursor/scripts/check_cursor_native_config.py --strict": "PASS",
+    "python -m json.tool .cursor/mcp.json": "PASS",
+    "python -m json.tool .cursor/hooks.json": "PASS",
+    "python -m py_compile .cursor/hooks/lib/cursor_hook_common.py .cursor/hooks/*.py": "PASS"
+  },
+  "hook_smoke": {
+    "allow_cursor_validation_command": "PASS",
+    "block_archived_legacy_execution_command": "PASS",
+    "allow_stop_pass_with_proof": "PASS",
+    "block_stop_missing_status": "PASS"
+  }
+}

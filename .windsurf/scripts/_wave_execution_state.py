@@ -3,7 +3,7 @@ _wave_execution_state.py — Shared state helper for multi-wave plan execution.
 
 Purpose
 -------
-Cascade marks a multi-wave plan as "in-progress" at the start of Wave 1 and
+Cursor Agent marks a multi-wave plan as "in-progress" at the start of Wave 1 and
 clears the mark after the final wave completes. While the mark is set,
 pre_mcp_gate.py blocks Notion MCP calls so all Notion plan/backlog writes
 are batched at the end of the plan instead of stalling between waves.

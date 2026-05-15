@@ -10,7 +10,7 @@
 - `apps-eval-harness-deferred-e4a1b7.md` (Completed)
 - `apps-eval-harness-residual-a2d9c7.md` (Completed)
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 
@@ -68,5 +68,5 @@ None — all mechanical follow-through.
 
 ## 8. Metadata
 
-- Plan file path: `.windsurf/plans/apps-eval-harness-final-8f3e21.md`
+- Plan file path: `.cursor/plans/apps-eval-harness-final-8f3e21.md`
 - Notion Plans row: create on W5 completion

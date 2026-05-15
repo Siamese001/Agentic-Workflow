@@ -2,7 +2,7 @@
 """
 post_cascade_plan_creation_audit.py — Post-creation audit with auto-correction.
 
-Scans Cascade responses for successful plan creation, validates status is correct,
+Scans Cursor Agent responses for successful plan creation, validates status is correct,
 and auto-corrects wrong status immediately.
 
 Defense in depth for holistic-plan-status-discipline-d4e8a1 (W2).
@@ -16,7 +16,7 @@ Functions:
 
 Integration:
 - Registered in .windsurf/hooks.json under post_cascade_response
-- Runs after every Cascade response
+- Runs after every Cursor Agent response
 - Fail-soft: audit errors don't block, they log
 """
 from __future__ import annotations
@@ -97,7 +97,7 @@ def _log_alert(event: AlertEvent):
 
 def _extract_plan_creation_from_response(response_text: str) -> list[dict[str, Any]]:
     """
-    Extract successful plan creation events from Cascade response.
+    Extract successful plan creation events from Cursor Agent response.
     
     Looks for:
     - API-post-page responses with success
@@ -334,7 +334,7 @@ def main() -> int:
         print("[post-creation-audit] BYPASS", file=sys.stderr)
         return 0
     
-    # Read input (Cascade hook contract - response text via stdin)
+    # Read input (Cursor Agent hook contract - response text via stdin)
     try:
         input_data = sys.stdin.read()
     except Exception:

@@ -30,7 +30,7 @@ dod_exempt: true
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | 1.1 | Anti-Pattern Burndown live status check | `AGENTS.md`, `notion-archived-databases.md` | — | ~1K | ✅ 404 confirmed; both files updated |
-| 2.1 | Audit remaining hook scripts for Notion writes | `.windsurf/scripts/*.py` | — | ~2K | ✅ All 10 Notion-writing hooks target active DBs only |
+| 2.1 | Audit remaining hook scripts for Notion writes | `.cursor/scripts/*.py` | — | ~2K | ✅ All 10 Notion-writing hooks target active DBs only |
 | 2.2 | Decide keep/retire per hook | n/a | — | ~0 | ✅ No dead writes found; no Author-Gate decisions needed |
 | 3.1 | Finalize repurpose vs delete | n/a | — | ~0 | ✅ Subsumed — W2 already clean |
 
@@ -54,12 +54,12 @@ dod_exempt: true
 ### DS-2 — Hook script deletion decisions (user approval per file)
 
 **Source**: `notion-integration-consistency-audit-b2c4d8` Verification-vs-Deferral table  
-**Issue**: W2 repurposed two hooks but did NOT delete any scripts. Several `.windsurf/scripts/` files may now be dead weight.  
+**Issue**: W2 repurposed two hooks but did NOT delete any scripts. Several `.cursor/scripts/` files may now be dead weight.  
 **Candidates to review** (not deleted in W2, need explicit per-file decision):
 
 | Script | Concern | Recommended Action |
 |---|---|---|
-| `post_cascade_adr_registry_capture.py` | Repurposed to filesystem-only log — still registered in hooks.json | Keep as-is (provides audit trail) |
+| `post_cursor_agent_adr_registry_capture.py` | Repurposed to filesystem-only log — still registered in hooks.json | Keep as-is (provides audit trail) |
 | Any script referencing `AUTHOR_GATE_LEDGER_DB_ID` | Author-Gate Ledger archived | Audit and remove Notion write paths |
 | Any script referencing `ADR_REGISTRY_DB_ID` | ADR Registry archived | Remove write paths (read-only ref OK) |
 
@@ -70,9 +70,9 @@ dod_exempt: true
 ### DS-3 — Hook repurposing decisions finalization
 
 **Source**: `notion-integration-consistency-audit-b2c4d8` Verification-vs-Deferral table  
-**Issue**: W2 made two repurposing decisions (`post_cascade_adr_registry_capture` → filesystem-only, `post_write_mcp_config_sync` → remove Notion block). Other hooks may have partial Notion writes that need the same treatment.  
+**Issue**: W2 made two repurposing decisions (`post_cursor_agent_adr_registry_capture` → filesystem-only, `post_write_mcp_config_sync` → remove Notion block). Other hooks may have partial Notion writes that need the same treatment.  
 **Action needed**:
-1. Run `grep -l "AUTHOR_GATE_LEDGER_DB_ID\|ADR_REGISTRY_DB_ID\|MCP_REGISTRY_DB_ID\|SCAP_VIOLATION_DB_ID" .windsurf/scripts/*.py`
+1. Run `grep -l "AUTHOR_GATE_LEDGER_DB_ID\|ADR_REGISTRY_DB_ID\|MCP_REGISTRY_DB_ID\|SCAP_VIOLATION_DB_ID" .cursor/scripts/*.py`
 2. For each hit: Author-Gate decision — repurpose to filesystem-only vs delete vs keep with guardian exemption
 
 ---
@@ -90,8 +90,8 @@ dod_exempt: true
 
 ## Rollback Strategy
 
-- Revert any hook script changes: `git checkout .windsurf/scripts/<name>.py`
-- Restore hooks.json registration: `git checkout .windsurf/hooks.json`
+- Revert any hook script changes: `git checkout .cursor/scripts/<name>.py`
+- Restore hooks.json registration: `git checkout .cursor/hooks.json`
 - This plan makes no CI gate or rule changes
 
 ---

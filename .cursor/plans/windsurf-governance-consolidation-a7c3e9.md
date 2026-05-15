@@ -3,7 +3,7 @@ title: Windsurf Governance Infrastructure Consolidation — Hardened
 slug: windsurf-governance-consolidation-a7c3e9
 created: 2026-05-12
 last_updated: 2026-05-12 16:15 UTC-04 (W5 COMPLETE — P1/P1-R/P2/P3/P3-R all done — 43 CI gates — NO W5.P4 — FINAL CLOSEOUT)
-author: Cascade
+author: Cursor Agent
 tier: T3
 status: In Progress
 dod_exempt: false
@@ -53,13 +53,13 @@ The Windsurf governance infrastructure has accrued redundancy (55 rules, 37 skil
 |----------|-------|-----------------|-------|
 | Always-on Rules | 7 | ~25KB | From `check_always_on_token_budget.py` |
 | On-demand Rules | 46 | ~180KB | 53 total - 7 always-on |
-| Skills | 33 | ~300KB | From `.windsurf/skills/` scan |
-| Workflows | 25 | ~100KB | From `.windsurf/workflows/` scan |
+| Skills | 33 | ~300KB | From `.cursor/skills/` scan |
+| Workflows | 25 | ~100KB | From `.cursor/workflows/` scan |
 | Hooks (lifecycle stages) | **59** | ~200KB | **REBASED from assumed 30** |
 | CI Gates (registered) | 42 | ~150KB | From `run_contract_gates.py` + scan |
 | CI Scripts (total) | 248 | ~400KB | All `check_*.py` + `*_gate.py` scripts |
 
-**W0 REBASE COMPLETE**: See `artifacts/windsurf/governance-baseline-2026-05-12/W0_MANIFEST.md`
+**W0 REBASE COMPLETE**: See `artifacts/cursor/governance-baseline-2026-05-12/W0_MANIFEST.md`
 
 ### 2.2 Overlap Clusters Identified
 
@@ -71,7 +71,7 @@ The Windsurf governance infrastructure has accrued redundancy (55 rules, 37 skil
 | Notion/Plans | 5 rules | ~25KB | Merge into Plan/Wave cluster |
 | Ledger Consulter | 11 skills | ~55KB | 2 skills (base + registry) |
 | MCP Guides | 15 skills | ~75KB | 1 skill (consolidated) |
-| Post-cascade Hooks | 29 hooks | ~150KB | 8 consolidated hooks |
+| Post-cursor-agent Hooks | 29 hooks | ~150KB | 8 consolidated hooks |
 
 ### 2.3 Compression Opportunities — Verbose Content
 
@@ -95,9 +95,9 @@ The Windsurf governance infrastructure has accrued redundancy (55 rules, 37 skil
 **Specific Overlaps**:
 | File | Size | Overlap With |
 |------|------|--------------|
-| `post_cascade_notion_plans_status_audit.py` | 19.7KB | `notion-plans-taxonomy.md` rule prose |
-| `post_cascade_notion_plan_identity_audit.py` | 8.9KB | `plan-registration-enforcement.md` |
-| `post_cascade_plan_registration_capture.py` | 3.5KB | `post_cascade_wave_lifecycle_capture.py` |
+| `post_cursor_agent_notion_plans_status_audit.py` | 19.7KB | `notion-plans-taxonomy.md` rule prose |
+| `post_cursor_agent_notion_plan_identity_audit.py` | 8.9KB | `plan-registration-enforcement.md` |
+| `post_cursor_agent_plan_registration_capture.py` | 3.5KB | `post_cursor_agent_wave_lifecycle_capture.py` |
 | `pre_notion_plan_creation_gate.py` | 9.1KB | `pre_notion_plan_write_gate.py` |
 | `pre_user_prompt_plan_registration_surface.py` | 2.5KB | `pre_user_prompt_plan_registration_refresh.py` |
 | `_notion_plans_status_check.py` | 12KB | `notion-plans-taxonomy.md` (duplicate Status tables) |
@@ -127,7 +127,7 @@ The Windsurf governance infrastructure has accrued redundancy (55 rules, 37 skil
 
 ### 3.1 W0.P1: Snapshot Current State
 
-Produce `artifacts/windsurf/governance-baseline-YYYY-MM-DD/`:
+Produce `artifacts/cursor/governance-baseline-YYYY-MM-DD/`:
 
 | Artifact | Purpose | Format |
 |----------|---------|--------|
@@ -149,8 +149,8 @@ Produce `artifacts/windsurf/governance-baseline-YYYY-MM-DD/`:
 
 **Matrix Row Format**:
 ```yaml
-- original: post_cascade_notion_plans_status_audit.py
-  consolidated: post_cascade_notion_audit.py
+- original: post_cursor_agent_notion_plans_status_audit.py
+  consolidated: post_cursor_agent_notion_audit.py
   subcommand: status
   test_coverage: tests/unit/test_notion_audit_status.py
   blocking_behavior_preserved: true
@@ -164,7 +164,7 @@ Produce `artifacts/windsurf/governance-baseline-YYYY-MM-DD/`:
 
 ```json
 {
-  "hook": "post_cascade_notion_plans_status_audit.py",
+  "hook": "post_cursor_agent_notion_plans_status_audit.py",
   "test_cases": {
     "valid_status": {"expected": "PASS", "emits": []},
     "stale_status": {"expected": "WARN", "emits": ["NOTION_PLANS_STATUS_VIOLATION"]},
@@ -358,7 +358,7 @@ Blockers B1-B6 are **mandatory** for W2 hook consolidation. No waiver, deferral,
 
 #### W0.P1: Snapshot Current State
 
-Create `artifacts/windsurf/governance-baseline-YYYY-MM-DD/` with:
+Create `artifacts/cursor/governance-baseline-YYYY-MM-DD/` with:
 
 1. **hooks.json.lifecycle_order.txt** — Current array order per lifecycle stage
 2. **hook_entrypoints.csv** — Hook → entrypoint mapping with subcommands
@@ -375,10 +375,10 @@ Create `artifacts/windsurf/governance-baseline-YYYY-MM-DD/` with:
 ```yaml
 matrix_version: 1.0
 hook_consolidation:
-  - original: post_cascade_notion_plans_status_audit.py
-    consolidated: post_cascade_notion_audit.py
+  - original: post_cursor_agent_notion_plans_status_audit.py
+    consolidated: post_cursor_agent_notion_audit.py
     subcommand: status
-    replacement_for: [post_cascade_notion_plans_status_audit.py]
+    replacement_for: [post_cursor_agent_notion_plans_status_audit.py]
     test_coverage: tests/unit/test_notion_audit_status.py
     blocking_behavior_preserved: true  # HL-1
     bypass_semantics_preserved: true   # HL-2
@@ -394,7 +394,7 @@ hook_consolidation:
 {
   "receipt_version": "1.0",
   "hooks": {
-    "post_cascade_notion_plans_status_audit.py": {
+    "post_cursor_agent_notion_plans_status_audit.py": {
       "test_cases": {
         "pass_valid": {
           "input": {"status": "In Progress", "options": [...]},
@@ -443,7 +443,7 @@ W0 originally assumed 30 hooks; actual count is **59 hooks**. Plan rebased to re
 
 #### W0.P1: Snapshot Current State — ✅ COMPLETE
 
-Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
+Produced `artifacts/cursor/governance-baseline-2026-05-12/`:
 
 | Artifact | Status | Purpose |
 |----------|--------|---------|
@@ -457,7 +457,7 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 
 **Rebased Counts**: 59 hooks, 53 rules, 33 skills, 25 workflows, 42 CI gates, 248 total scripts
 
-**W0_MANIFEST**: `artifacts/windsurf/governance-baseline-2026-05-12/W0_MANIFEST.md`
+**W0_MANIFEST**: `artifacts/cursor/governance-baseline-2026-05-12/W0_MANIFEST.md`
 
 #### W0.P2: Produce Equivalence Matrices — ✅ COMPLETE
 
@@ -500,13 +500,13 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 - [x] B1-B5, B7 closed; B6, OP-1 identified and assessed
 - [x] **W0_REBASE_COMPLETE** marker emitted
 
-**W0_REBASE_COMPLETE**: `artifacts/windsurf/governance-baseline-2026-05-12/W0_MANIFEST.md`
+**W0_REBASE_COMPLETE**: `artifacts/cursor/governance-baseline-2026-05-12/W0_MANIFEST.md`
 
 ---
 
 ### 9.2 W1: Shared Helper Substrate + Deterministic Hook Ordering
 
-**W1 COMPLETE** ✅ — See `artifacts/windsurf/governance-baseline-2026-05-12/W1_MANIFEST.md`
+**W1 COMPLETE** ✅ — See `artifacts/cursor/governance-baseline-2026-05-12/W1_MANIFEST.md`
 
 **Objective**: Create pure helper surfaces BEFORE consolidation; define deterministic hook ordering schema.
 
@@ -566,7 +566,7 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 - Zero behavior changes: All commands preserved
 - Backward compatible: v1 fields retained
 
-**W1A Status**: COMPLETE — See `artifacts/windsurf/governance-baseline-2026-05-12/W1A_MANIFEST.md`
+**W1A Status**: COMPLETE — See `artifacts/cursor/governance-baseline-2026-05-12/W1A_MANIFEST.md`
 
 **W1 Complete Criteria**:
 - [x] 4 shared helpers created, no new policy
@@ -575,8 +575,8 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 - [x] v2 metadata applied to hooks.json (W1A)
 - [x] **W1_COMPLETE** marker emitted
 
-**W1_COMPLETE**: `artifacts/windsurf/governance-baseline-2026-05-12/W1_MANIFEST.md`  
-**W1A_COMPLETE**: `artifacts/windsurf/governance-baseline-2026-05-12/W1A_MANIFEST.md`
+**W1_COMPLETE**: `artifacts/cursor/governance-baseline-2026-05-12/W1_MANIFEST.md`  
+**W1A_COMPLETE**: `artifacts/cursor/governance-baseline-2026-05-12/W1A_MANIFEST.md`
 
 ---
 
@@ -609,19 +609,19 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 **Files to Consolidate** (pending W2 unblock):
 | Current File | Size | Merged Into |
 |--------------|------|-------------|
-| `post_cascade_notion_plans_status_audit.py` | 19.7KB | `post_cascade_notion_audit.py` (status) |
-| `post_cascade_notion_plan_identity_audit.py` | 8.9KB | `post_cascade_notion_audit.py` (identity) |
+| `post_cursor_agent_notion_plans_status_audit.py` | 19.7KB | `post_cursor_agent_notion_audit.py` (status) |
+| `post_cursor_agent_notion_plan_identity_audit.py` | 8.9KB | `post_cursor_agent_notion_audit.py` (identity) |
 | ... (see full list in W2.P1-P5 below) | | |
 
 **Consolidated Structure**:
 
 ```
-.windsurf/scripts/
+.cursor/scripts/
 ├── pre_notion_plan_gate.py              # Was: creation + write gates
 │   └── subcommands: creation, write
-├── post_cascade_notion_audit.py          # Was: status + identity audits
+├── post_cursor_agent_notion_audit.py          # Was: status + identity audits
 │   └── subcommands: status, identity
-├── post_cascade_plan_lifecycle_audit.py  # Was: registration + wave capture
+├── post_cursor_agent_plan_lifecycle_audit.py  # Was: registration + wave capture
 │   └── subcommands: registration, wave
 ├── _notion_canonical.py                  # NEW: Single source for Status/options
 └── _plan_lifecycle.py                   # NEW: Single source for plan state machine
@@ -646,9 +646,9 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 |---------------------|-------------------------|------|
 | **Status taxonomy** | `CANONICAL_STATUSES` in `_notion_canonical.py` must match current | `test_notion_canonical_statuses()` |
 | **Stale equivalent mappings** | `STALE_EQUIVALENTS` must include all deprecated→canonical mappings | `test_stale_equivalent_resolution()` |
-| **Plan identity validation** | `post_cascade_notion_audit.py identity` subcommand must validate same fields | Golden receipt match |
-| **Plan registration capture** | `post_cascade_plan_lifecycle_audit.py registration` subcommand must capture same metadata | Golden receipt match |
-| **Wave lifecycle capture** | `post_cascade_plan_lifecycle_audit.py wave` subcommand must emit same markers | Golden receipt match |
+| **Plan identity validation** | `post_cursor_agent_notion_audit.py identity` subcommand must validate same fields | Golden receipt match |
+| **Plan registration capture** | `post_cursor_agent_plan_lifecycle_audit.py registration` subcommand must capture same metadata | Golden receipt match |
+| **Wave lifecycle capture** | `post_cursor_agent_plan_lifecycle_audit.py wave` subcommand must emit same markers | Golden receipt match |
 | **Creation/write gate semantics** | `pre_notion_plan_gate.py` must block on same conditions | Test: `test_creation_gate_blocks_invalid()` |
 | **Fail-closed behavior** | Missing/malformed input → ERROR, not PASS | Test: `test_fail_closed_malformed()` |
 | **Bypass warnings** | `*_BYPASS=1` must emit visible WARNING | Test: `test_bypass_emits_warning()` |
@@ -657,7 +657,7 @@ Produced `artifacts/windsurf/governance-baseline-2026-05-12/`:
 **Notion Consolidation Verification**:
 ```bash
 # 1. Golden receipts match
-python tests/validate_golden_receipts.py --hook=post_cascade_notion_audit --receipts=golden_governance_receipts.json
+python tests/validate_golden_receipts.py --hook=post_cursor_agent_notion_audit --receipts=golden_governance_receipts.json
 
 # 2. Anti-loss rules pass
 python tests/validate_hook_consolidation.py --rules=HL-1,HL-2,HL-3,HL-4,HL-5,HL-6,HL-7
@@ -666,19 +666,19 @@ python tests/validate_hook_consolidation.py --rules=HL-1,HL-2,HL-3,HL-4,HL-5,HL-
 python tests/validate_no_demotion.py --before=pre-consolidation --after=post-consolidation
 
 # 4. CLI compatibility
-python .windsurf/scripts/post_cascade_notion_audit.py status --help  # Must work
+python .cursor/scripts/post_cursor_agent_notion_audit.py status --help  # Must work
 ```
 
 #### W2.P2: Author-Gate Hook Merge
-Merge 8 author-gate related hooks into `post_cascade_author_gate_audit.py`:
-- `post_cascade_author_gate_capture.py`
-- `post_cascade_author_gate_ui_audit.py`
-- `post_cascade_author_gate_schema_audit.py`
-- `post_cascade_author_gate_pipeline_audit.py`
-- `post_cascade_author_gate_miss_detector.py`
-- `post_cascade_author_gate_suite.py` (wrapper)
-- `post_cascade_ask_user_question_packet_audit.py`
-- `post_cascade_ag_queue_drain_audit.py` (partial overlap)
+Merge 8 author-gate related hooks into `post_cursor_agent_author_gate_audit.py`:
+- `post_cursor_agent_author_gate_capture.py`
+- `post_cursor_agent_author_gate_ui_audit.py`
+- `post_cursor_agent_author_gate_schema_audit.py`
+- `post_cursor_agent_author_gate_pipeline_audit.py`
+- `post_cursor_agent_author_gate_miss_detector.py`
+- `post_cursor_agent_author_gate_suite.py` (wrapper)
+- `post_cursor_agent_ask_user_question_packet_audit.py`
+- `post_cursor_agent_ag_queue_drain_audit.py` (partial overlap)
 
 **Anti-Loss Verification**:
 - AG-WIRE-1: `pre_user_prompt` reminder present+visible
@@ -689,24 +689,24 @@ Merge 8 author-gate related hooks into `post_cascade_author_gate_audit.py`:
 Subcommand dispatch: `python script.py <subcommand>`
 
 #### W2.P3: Plan Lifecycle Hook Merge
-Merge 5 plan-related hooks into `post_cascade_plan_lifecycle_audit.py`:
-- `post_cascade_plan_creation_audit.py`
-- `post_cascade_plan_scope_audit.py`
-- `post_cascade_plan_complete_audit.py`
-- `post_cascade_plans_dup_audit.py`
-- `post_cascade_plan_evidence_gate.py`
+Merge 5 plan-related hooks into `post_cursor_agent_plan_lifecycle_audit.py`:
+- `post_cursor_agent_plan_creation_audit.py`
+- `post_cursor_agent_plan_scope_audit.py`
+- `post_cursor_agent_plan_complete_audit.py`
+- `post_cursor_agent_plans_dup_audit.py`
+- `post_cursor_agent_plan_evidence_gate.py`
 
 #### W2.P4: Resource Budget Hook Merge
-Merge 3 budget hooks into `post_cascade_resource_budget_audit.py`:
-- `post_cascade_grep_budget_audit.py`
-- `post_cascade_read_budget_audit.py`
-- `post_cascade_token_telemetry.py`
+Merge 3 budget hooks into `post_cursor_agent_resource_budget_audit.py`:
+- `post_cursor_agent_grep_budget_audit.py`
+- `post_cursor_agent_read_budget_audit.py`
+- `post_cursor_agent_token_telemetry.py`
 
 #### W2.P5: MCP Hygiene Hook Merge
-Merge 3 MCP hooks into `post_cascade_mcp_hygiene_audit.py`:
-- `post_cascade_mcp_serialization_audit.py`
-- `post_cascade_mcp_preflight_audit.py`
-- `post_cascade_mcp_orphan_reap.py`
+Merge 3 MCP hooks into `post_cursor_agent_mcp_hygiene_audit.py`:
+- `post_cursor_agent_mcp_serialization_audit.py`
+- `post_cursor_agent_mcp_preflight_audit.py`
+- `post_cursor_agent_mcp_orphan_reap.py`
 
 ### 9.4 W3: Rule Cluster Consolidation
 
@@ -793,11 +793,11 @@ Standardize remaining 22 skills to minimum 5-file structure:
 **Objective**: Automate index freshness and enforce consolidation discipline.
 
 #### W5.P1: Index Generator Script
-Create `.windsurf/scripts/generate_rules_index.py`:
-- Scan `.windsurf/rules/*.md` — extract frontmatter, categorize by trigger
-- Scan `.windsurf/skills/*/` — count files, check completeness
-- Scan `.windsurf/workflows/*.md` — extract purpose
-- Scan `.windsurf/scripts/` — count hooks by lifecycle stage
+Create `.cursor/scripts/generate_rules_index.py`:
+- Scan `.cursor/rules/*.md` — extract frontmatter, categorize by trigger
+- Scan `.cursor/skills/*/` — count files, check completeness
+- Scan `.cursor/workflows/*.md` — extract purpose
+- Scan `.cursor/scripts/` — count hooks by lifecycle stage
 - Generate `RULES_INDEX.md` with consistent formatting
 
 #### W5.P2: Index Drift CI Gate

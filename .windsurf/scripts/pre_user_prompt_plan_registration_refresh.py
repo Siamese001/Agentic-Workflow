@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """pre_user_prompt_plan_registration_refresh.py — async cache refresh.
 
-Runs at the start of every Cascade prompt. When
+Runs at the start of every Cursor Agent prompt. When
 ``.windsurf/state/plan_registration_cache.json`` is older than
 ``CACHE_TTL_SECONDS`` (1h), spawns a detached background subprocess to
 refresh it via ``ops_scripts/ci/check_plan_registration_freshness.py

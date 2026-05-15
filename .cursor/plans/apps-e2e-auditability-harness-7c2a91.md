@@ -108,9 +108,9 @@ Existing apps_rg fields confirmed (verbatim subset, sufficient base for shared s
 - `tools/apps_proof/adapters/apps_{rg,eval,exec,lic,qna,research,rfp}_adapter.py` — 7 thin adapters
 
 ### 4.3 NEW — schemas (canonical)
-- `.windsurf/schemas/apps_e2e_proof_bundle.schema.json`
-- `.windsurf/schemas/apps_e2e_static_l3_dag_proof.schema.json`
-- `.windsurf/schemas/apps_e2e_matrix.schema.json`
+- `.cursor/schemas/apps_e2e_proof_bundle.schema.json`
+- `.cursor/schemas/apps_e2e_static_l3_dag_proof.schema.json`
+- `.cursor/schemas/apps_e2e_matrix.schema.json`
 
 ### 4.4 NEW — tests (verifier surface)
 - `tests/runtime/test_apps_e2e_auditability_harness.py` — per-app fail-closed verifier
@@ -190,7 +190,7 @@ Existing `artifacts/certification/apps_rg_e2e/` is **migrated** in Wave 2 to `ap
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---:|---|
-| W1.1 | Lock proof schemas | 3 schemas in `.windsurf/schemas/` | Field roster must be additive over apps_rg | ~3k | **DONE** |
+| W1.1 | Lock proof schemas | 3 schemas in `.cursor/schemas/` | Field roster must be additive over apps_rg | ~3k | **DONE** |
 | W1.2 | Build shared core | 10 modules under `tools/certification/apps_e2e/` | run_id/trace_root invariant, hash-binding | ~6k | **DONE** |
 | W1.3 | Core unit tests | `tests/unit/apps_e2e/` (28 tests) | Pure-logic tests, no app run | ~3k | **DONE** |
 | W2.1 | AppSpec base + apps_rg spec | `app_specs.py` | Preserve apps_rg byte behavior | ~3k | **DONE** |
@@ -321,7 +321,7 @@ Not applicable — plan adds a new harness package; no hotspot-driven refactorin
 
 | Wave | Status | Evidence |
 |---|---|---|
-| W1 — Schema + Core | **DONE** | 3 schemas at `.windsurf/schemas/apps_e2e_*.schema.json`; 10 core modules at `tools/certification/apps_e2e/`; 28 unit tests at `tests/unit/apps_e2e/` |
+| W1 — Schema + Core | **DONE** | 3 schemas at `.cursor/schemas/apps_e2e_*.schema.json`; 10 core modules at `tools/certification/apps_e2e/`; 28 unit tests at `tests/unit/apps_e2e/` |
 | W2 — Reference (apps_rg) | **DONE** | Bundle at `artifacts/certification/apps_e2e/apps_rg/apps_rg_e2e_proof.json` shows `success=True, gaps=0`; legacy path migration via `migrate_legacy_paths.py` |
 | W3 — Expansion | **DONE** | All 8 specs registered (apps_rg, apps_eval, apps_exec, apps_lic, apps_qna, apps_research, apps_rfp, apps_underwriting_ai); honest fail-closed bundles for the 6 apps without spine receipts |
 | W4 — Matrix + Anti-cheat | **DONE** | `matrix_builder.py` generates `apps_e2e_matrix.json` from per-app bundles; 16 runtime tests (`test_apps_e2e_matrix.py` + `test_apps_e2e_anti_cheat.py`) |
@@ -380,7 +380,7 @@ CI gate `ops_scripts/ci/check_apps_e2e_harness` returns 0.
 
 ### 20.7 Files of record
 
-- **Plan SSOT**: `.windsurf/plans/apps-e2e-auditability-harness-7c2a91.md` (this file)
+- **Plan SSOT**: `.cursor/plans/apps-e2e-auditability-harness-7c2a91.md` (this file)
 - **Notion plan page**: `apps-e2e-auditability-harness-7c2a91` at `https://app.notion.com/p/apps-e2e-auditability-harness-7c2a91-35427693f55c814097d8ece4dd24cf1c`
 - **Runbook**: `docs/runbooks/apps_e2e_harness.md`
 - **Live-sweep findings**: `tools/certification/apps_e2e/live_sweep_findings.yaml`

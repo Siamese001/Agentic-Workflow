@@ -20,9 +20,9 @@ This plan captures all work intentionally descoped from the hardened zero-loss r
 
 | File | Classification | Why Deferred | Future Trigger |
 |------|----------------|--------------|----------------|
-| `.windsurf/workflows/antipattern-author-gate.md` | AUTHOR_GATE | Already references AG pipeline; needs canonical path example update | When antipattern workflow is next edited |
-| `.windsurf/skills/adg-sqlite/SKILL.md` | ENRICHED_CHOICE | Not in original active surface list; instructional only | When skill is updated for ADG query examples |
-| `.windsurf/skills/author-gate-ui-renderer/SKILL.md` | AUTHOR_GATE | Render-only skill; no decision prompts | If renderer adds configuration choices |
+| `.cursor/workflows/antipattern-author-gate.md` | AUTHOR_GATE | Already references AG pipeline; needs canonical path example update | When antipattern workflow is next edited |
+| `.cursor/skills/adg-sqlite/SKILL.md` | ENRICHED_CHOICE | Not in original active surface list; instructional only | When skill is updated for ADG query examples |
+| `.cursor/skills/author-gate-ui-renderer/SKILL.md` | AUTHOR_GATE | Render-only skill; no decision prompts | If renderer adds configuration choices |
 
 **Rationale:** These surfaces are either already compliant (AUTHOR_GATE paths) or are instructional-only markdown not in the active decision path.
 

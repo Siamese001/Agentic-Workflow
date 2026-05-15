@@ -9,7 +9,7 @@
 - `.windsurf/plans/apps-eval-harness-parity-f8d4a2.md` (Completed)
 - `.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md` (Completed)
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 

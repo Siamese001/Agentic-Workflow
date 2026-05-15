@@ -453,7 +453,7 @@ If pattern detection is too noisy:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Leverages ADG graph-layer primitives (mv_hotspot_centrality, v_p views) per §22
 - C0 retrieval over structured collections per R3_grounded_read pattern

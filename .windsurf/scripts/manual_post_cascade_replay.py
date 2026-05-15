@@ -5,7 +5,7 @@ silently stop firing mid-session (pre_user_prompt hooks continue to work).
 
 Usage
 -----
-    # From stdin (paste Cascade response text):
+    # From stdin (paste Cursor Agent response text):
     python .windsurf/scripts/manual_post_cascade_replay.py < response.txt
 
     # From clipboard (Windows / pyperclip):
@@ -116,7 +116,7 @@ def _run_hook(hook: dict, payload: str, dry_run: bool) -> tuple[int, str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     src = parser.add_mutually_exclusive_group()
-    src.add_argument("--file", help="Read Cascade response from this file.")
+    src.add_argument("--file", help="Read Cursor Agent response from this file.")
     src.add_argument("--clipboard", action="store_true", help="Read from clipboard.")
     parser.add_argument(
         "--dry-run",

@@ -6,7 +6,7 @@ Fires on every pre_user_prompt event. Two detection paths:
 
 PATH A — Prompt signals (proactive):
     Scans the incoming prompt text for Author-Gate context keywords. When ≥2
-    signals match, emits AUTHOR_GATE_PIPELINE_REMINDER so Cascade sees the
+    signals match, emits AUTHOR_GATE_PIPELINE_REMINDER so Cursor Agent sees the
     canonical pipeline before composing its response.
 
 PATH B — Recent violation replay (reactive):

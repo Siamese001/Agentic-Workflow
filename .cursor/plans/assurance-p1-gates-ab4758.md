@@ -19,7 +19,7 @@ Close the four highest-leverage gaps in the 16-axis agentic assurance model, on 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
 | W1 | W1.1, W1.2, W1.3 | Runtime trace proof gate | ~14000 | otel_mcp healthy; runtime ADG store reachable; canary route contract definable | Done | CI gate fails when canary span graph missing required spans/attributes |
-| W2 | W2.1, W2.2 | Negative-control library | ~10000 | Existing gates have identifiable fail-closed paths; pytest collects `tests/negative_controls/` | Done | One negative test per gate in `.windsurf/scripts/pre_*_gate.py` and `ops_scripts/ci/check_*.py`; all assert exit≠0 |
+| W2 | W2.1, W2.2 | Negative-control library | ~10000 | Existing gates have identifiable fail-closed paths; pytest collects `tests/negative_controls/` | Done | One negative test per gate in `.cursor/scripts/pre_*_gate.py` and `ops_scripts/ci/check_*.py`; all assert exit≠0 |
 | W3 | W3.1, W3.2 | Deterministic replay proof gate | ~12000 | Canary input deterministic; evidence digest schema stable | Done | Two replays produce identical `(route, gate_decisions, evidence_hash, disposition)` tuple |
 | W4 | W4.1, W4.2 | ADG ↔ requirements crosswalk | ~9000 | Tier metadata enumerable; ADG node IDs stable across snapshots | Done | Every obligation row has `adg_node_id` + `test_id`; CI fails on unmapped obligation |
 

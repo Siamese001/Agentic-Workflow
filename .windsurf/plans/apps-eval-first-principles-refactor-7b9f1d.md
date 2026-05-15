@@ -3,7 +3,7 @@
 Status: **Phase 0 + W1 done; W2+ gated on three-bucket completion**
 Last updated: 2026-04-29
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-eval-first-principles-refactor-7b9f1d`
 Predecessor concepts:
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`

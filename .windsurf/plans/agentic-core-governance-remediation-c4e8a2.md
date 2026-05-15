@@ -727,7 +727,7 @@ python ops_scripts/ci/run_contract_gates.py
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - All new files follow SSOT routing (§31): `ops_scripts/ci/check_*.py`
 - All edits follow pre-write hook discipline

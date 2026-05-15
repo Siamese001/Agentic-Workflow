@@ -38,9 +38,9 @@ This repo uses a **two-tier model**:
 
 > SSOT for the per-rule preamble that was duplicated across 19 always-on rules until 2026-05-01. Rules now reference this section by anchor instead of restating it.
 
-- **Cascade always-on discipline:** Keep each always-on rule lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards in the rule. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
-- **Cascade retrieval discipline:** When a rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
-- **Cascade enforcement split:** Advisory guidance lives in rule prose; deterministic blocking, fail-closed checks, and audit capture belong in hooks (`.windsurf/scripts/`) and CI gates (`ops_scripts/ci/`).
+- **Cursor Agent always-on discipline:** Keep each always-on rule lean and invariant-focused. Put durable boundaries, routing cues, and non-negotiable standards in the rule. Move long procedures, examples, templates, and execution playbooks into skills or workflows.
+- **Cursor Agent retrieval discipline:** When a rule affects research or synthesis, prefer local-first retrieval, exact or structural matches before broad semantic search, and evidence or quote extraction before final synthesis on high-risk tasks.
+- **Cursor Agent enforcement split:** Advisory guidance lives in rule prose; deterministic blocking, fail-closed checks, and audit capture belong in hooks (`.windsurf/scripts/`) and CI gates (`ops_scripts/ci/`).
 
 Rules with file-specific enforcement preambles (`fortknox-certification-discipline.md`, `mcp-serialization.md`, `deferred-scope-capture.md`, `scope-containment.md`) keep their custom preamble — it carries unique script references that must not be deduped per constitutional §21.
 
@@ -290,7 +290,7 @@ Use this order whenever a task is non-trivial:
 
 ## Conditional Rules (model_decision & glob triggers)
 
-All `model_decision` and `glob` rules require a `description` field in frontmatter for Cascade trigger mapping.
+All `model_decision` and `glob` rules require a `description` field in frontmatter for Cursor Agent trigger mapping.
 
 | Rule File | Trigger | Description |
 |---|---|---|
@@ -372,7 +372,7 @@ Include justification keywords in commit message:
 - 2026-04-09: **WINDSURF DRIFT CLEANUP** — Deleted `.windsurf/rules/.windsurfrules` (90KB aggregate, not a documented Windsurf rule artifact, preprocessor archived). Deleted `.windsurf/rules/_variables.yaml` (orphaned config for archived preprocessor). Relocated `pytest-optimization.md` from `.windsurf/` root to `docs/` (no activation path at root). Flattened `.windsurf/plans/plans/` and `.windsurf/plans/tasks/` subdirs into `.windsurf/plans/` per plan-location.md SSOT. Archived `_show_diffs.py` to `tools/archive/`. Updated RULES_INDEX.md: removed dead preprocessor workflow, corrected file count (9→13), fixed `.windsurfrules` status claim. All 7 `SKILL.md` files: moved non-standard frontmatter fields (`enforcement_layer`, `enforcement_timing`, `enforcement_type`) into `metadata:` block per Agent Skills spec.
 - 2026-04-08: **POWERSHELL-BAN CI GATE FIXED** — Root cause: `check_powershell_ban.py` had 20 over-broad regex patterns (`$var`, `|pipe|`, `if(){`) generating 7,244 false-positive violations per commit, overflowing Windsurf context and causing internal error `170ba0ebe0fc4955bb7b3ae6ada485f7`. Fix: replaced with 17 precise `\bVerb-Noun\b` patterns scoped to unambiguous PS cmdlets only. Also fixed `pre_run_gate.py` which blocked running the checker itself (substring match on script filename containing "powershell"). Now 0 violations. Committed: `8c1719c99a`.
 - 2026-04-08: **MCP ROSTER CLEANUP + GLOBAL CONFIG FIXES** — Deleted 5 redundant/broken MCP servers (Playwright, Figma, Brave Search, Fetch, GitHub MCP) dropping ~50 tools. Fixed Redis MCP env vars from bash `${VAR:-default}` syntax (broken on Windows) to literal values. Removed `disabledTools: [read_file]` from filesystem MCP. Removed web allowlist restriction (all sites now accessible). Added turbo allow/deny lists and global `files.exclude` patterns.
-- 2026-04-07: **SEQUENTIAL THINKING MCP RETIRED** — Permanently removed Sequential Thinking MCP from active roster. Root causes: stdio fragility on Windows, zombie node.exe processes, opaque tool surface, no reliable timeout, architectural mismatch. Replacement: native Cascade reasoning + compositional MCP pattern. New artifacts: `.windsurf/workflows/structured-reasoning.md`, `.windsurf/skills/structured-reasoning/SKILL.md` (+ checklist, plan-template, verification-template, failure-template), `docs/mcp/sequential-thinking-replacement.md`. Updated `mcp-failure-rca.md` STEP 6 to tombstone. Updated RULES_INDEX skills table with skill #6.
+- 2026-04-07: **SEQUENTIAL THINKING MCP RETIRED** — Permanently removed Sequential Thinking MCP from active roster. Root causes: stdio fragility on Windows, zombie node.exe processes, opaque tool surface, no reliable timeout, architectural mismatch. Replacement: native Cursor Agent reasoning + compositional MCP pattern. New artifacts: `.windsurf/workflows/structured-reasoning.md`, `.windsurf/skills/structured-reasoning/SKILL.md` (+ checklist, plan-template, verification-template, failure-template), `docs/mcp/sequential-thinking-replacement.md`. Updated `mcp-failure-rca.md` STEP 6 to tombstone. Updated RULES_INDEX skills table with skill #6.
 - 2026-04-04: **RCA FIX — WAVE/MICRO-WAVE PLAN MODEL NOT AUTO-EMPLOYED** — Root cause: §10 was reactive (validated existing plans) with no proactive trigger at plan-creation time; micro-wave discipline (≤15 modules/wave) was never codified in any rule file; template wave table columns mismatched §10.1 spec. Fix: Added Constitutional Rule #13 to `.windsurfrules` floor + §10.0 "Plan Creation Protocol" pre-draft trigger section (fires before any content is drafted) + same rule (#11) to `.windsurfrules.consolidated` + §10 section appended to consolidated file + template updated to §10.1 column spec with micro-wave sub-table example + RULES_INDEX updated with §10.0 entry.
 - 2026-04-03: **SKILLS CONSOLIDATION** — Archived 30 individual skills to `tools/archive/.windsurf/skills/`. Consolidated into 5 canonical skills per SVP Engineering principle: `graph-analysis` (replaces dependency-graph-analysis, scope-guard, dedup-guard), `boundary-enforcement` (replaces layer-boundary-guard, import-hygiene, shim-discipline), `operational-gates` (replaces rollback-gate, mcp-tool-verify), `testing-framework` (replaces test-rigor-enforcement, pytest-integrity), `artifact-management` (replaces evidence-bundle, ssot-write-gate, progress-display). Updated Skills table to show 5 consolidated skills. Coverage remains 100%.
 - 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
@@ -389,9 +389,9 @@ Include justification keywords in commit message:
   - Created `docs/rules/enforcement_architecture.md` canonical contract
   - Updated RULES_INDEX.md with Layer, Timing, Type columns
 
-## Cascade Alignment Map
+## Cursor Agent Alignment Map
 
-This index follows the Cascade split described in the briefing:
+This index follows the Cursor Agent split described in the briefing:
 
 - **Rules**: always-on invariants, routing cues, compact standards, and non-negotiable boundaries.
 - **Skills**: heavy reusable procedures, checklists, templates, and domain execution playbooks loaded only when relevant.

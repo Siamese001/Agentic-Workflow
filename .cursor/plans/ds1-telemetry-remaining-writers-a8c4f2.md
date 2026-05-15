@@ -38,7 +38,7 @@ Wire `log_plans_db_write` into the two remaining Notion PATCH writers that DS-1 
 |---|---|---|
 | `tools/notion/apply_plan_derived_status.py` | PATCH site at `_patch_page` success branch | ✅ Read |
 | `tools/notion/backfill_historical_plan_statuses.py` | PATCH site at `_req("PATCH", ...)` success branch | ✅ Read |
-| `tools/windsurf/wave_execution_state.py` | Confirmed calls `wlw.apply_spec` — telemetry already covered | ✅ Read |
+| `tools/plan_lifecycle/wave_execution_state.py` | Confirmed calls `wlw.apply_spec` — telemetry already covered | ✅ Read |
 
 ---
 

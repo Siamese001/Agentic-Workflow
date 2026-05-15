@@ -16,7 +16,7 @@ Mechanism (race-free by construction):
      forbidden (any pair where one side is "mcp"), it returns ``True`` (block).
 
 Both racing processes append before either reads, so both see each other's
-row. Both block. Cascade gets the error and self-corrects on the next turn.
+row. Both block. Cursor Agent gets the error and self-corrects on the next turn.
 
 Bypass: ``MCP_SERIAL_BYPASS=1`` (matches ``post_cascade_mcp_serialization_audit.py``).
 
@@ -39,8 +39,8 @@ from pathlib import Path
 
 # Time window for correlating sibling dispatches. Must be:
 #   - long enough to catch genuinely simultaneous dispatches in one block
-#     (Cascade pipeline = tens to low-hundreds of ms),
-#   - short enough not to cross response boundaries (Cascade typically takes
+#     (Cursor Agent pipeline = tens to low-hundreds of ms),
+#   - short enough not to cross response boundaries (Cursor Agent typically takes
 #     >2s between responses to compose).
 # 1.0s is the empirical sweet spot.
 WINDOW_SECONDS: float = float(os.environ.get("MCP_SERIAL_WINDOW_S", "1.0"))

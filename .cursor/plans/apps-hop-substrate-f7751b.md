@@ -22,8 +22,8 @@ Author-Gate (2026-05-01, `architecture_choice`, selected=`shared_substrate_hop_p
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/ssot-folder-enforcement.md` | new files must land in canonical folders | 🔲 |
-| `.windsurf/rules/adg-canonical-invariants.md` | layer gravity for apps_shared new module | 🔲 |
+| `.cursor/rules/ssot-folder-enforcement.md` | new files must land in canonical folders | 🔲 |
+| `.cursor/rules/adg-canonical-invariants.md` | layer gravity for apps_shared new module | 🔲 |
 | `apps_shared/integrations/governed_app_runner.py` | proven shared-substrate precedent to mirror | 🔲 |
 | `apps_rg/reasoning/RgResumeOrchestrator.py:226-458` | reference HOP walk + checkpoint recording pattern | 🔲 |
 | `apps_rg/config/agent_spec_config.py:282-380` | reference Pydantic stage-config shapes | 🔲 |
@@ -206,7 +206,7 @@ The substrate's L2 `authorize_and_execute` step needs to invoke `LicCampaignOrch
 
 #### Phase 4.2 — CI gate: `check_apps_hop_pipeline_location.py`
 
-**Scope**: `ops_scripts/ci/check_apps_hop_pipeline_location.py` (SSOT per `.windsurf/rules/ssot-folder-enforcement.md`).
+**Scope**: `ops_scripts/ci/check_apps_hop_pipeline_location.py` (SSOT per `.cursor/rules/ssot-folder-enforcement.md`).
 
 Rules the gate enforces per `apps_*/` with an inner DAG:
 
@@ -229,7 +229,7 @@ Wire into `.pre-commit-config.yaml` + `run_contract_gates.py`.
 - **Layer gravity**: `apps_shared/orchestration/` imports only from `agentic_core` and stdlib — no `apps_<name>/` imports. Enforced by `check_apps_shared_no_app_imports.py`.
 - **No grep for deps**: Wave 2.4 deletions consult ADG `adg_edge_fanin` on each symbol before removal (constitutional §22, §28).
 - **Author-Gate for Phase 2.4 deletions**: `HOPPipelineExecutor.py` deletion runs `/agent-deletion-gate` workflow. If the class name is deemed agent-adjacent, follow 90-day deprecation (shim in Phase 2.4, hard delete in a follow-up plan).
-- **SSOT folder routing**: new file locations follow `.windsurf/rules/ssot-folder-enforcement.md` (constitutional §31). CI gate auto-blocks drift.
+- **SSOT folder routing**: new file locations follow `.cursor/rules/ssot-folder-enforcement.md` (constitutional §31). CI gate auto-blocks drift.
 - **Parity tests mandatory for apps_rg migration**: no silent behavior change. Golden-output test must pass pre- and post-migration.
 - **Wave 2.1 under-specification risk**: if HOP stage semantics cannot be re-derived with high confidence, pause for Author-Gate (`architecture_choice`) on whether to descope apps_lic to a 4-stage minimum viable pipeline instead.
 
@@ -296,7 +296,7 @@ Per-wave rollback — waves are independent once merged.
 | New anti-pattern violations | 0 | `python tools/generate_full_adg.py` diff |
 | CI gate catches drift | true | intentional failing fixture → gate fails |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

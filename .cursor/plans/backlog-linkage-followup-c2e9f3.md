@@ -14,7 +14,7 @@ Close the last residual true-orphan Backlog rows (MCP-BACKLOG rows with no Plan 
 **In scope**
 - Backlog Items DB (`aa8d2507-101e-4384-81d9-60ea3fe33876`) — patch 3 true orphans.
 - `ops_scripts/ci/run_contract_gates.py` — update NP3 comment to reflect fail-closed readiness.
-- `.windsurf/rules/notion-backlog-plan-linkage.md` — update fill-rate table to reflect completion.
+- `.cursor/rules/notion-backlog-plan-linkage.md` — update fill-rate table to reflect completion.
 
 **Out of scope**
 - Authoring new plan markdown files for orphan rows.
@@ -38,7 +38,7 @@ Close the last residual true-orphan Backlog rows (MCP-BACKLOG rows with no Plan 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|------------:|--------|
 | 1.1 | Orphan patch | Notion API — Backlog Items patch (3 rows) | Identifying exact page IDs of orphans | 2k | Done |
-| 2.1 | NP3 fail-closed promotion | `ops_scripts/ci/run_contract_gates.py`, `.windsurf/rules/notion-backlog-plan-linkage.md` | None | 1k | Done |
+| 2.1 | NP3 fail-closed promotion | `ops_scripts/ci/run_contract_gates.py`, `.cursor/rules/notion-backlog-plan-linkage.md` | None | 1k | Done |
 
 ## Gap Register
 
@@ -64,14 +64,14 @@ N/A — see above.
 - Target: Notion Backlog Items DB — close 3 residual true-orphan rows + promote NP3 gate.
 - Closes: DEFERRED_SCOPE from backlog-plan-linkage-enforcement-a4b2f1 (3 orphans + NP3 fail-closed).
 - New files: none.
-- Edits: Notion API patch (3 rows), `ops_scripts/ci/run_contract_gates.py` comment, `.windsurf/rules/notion-backlog-plan-linkage.md`.
+- Edits: Notion API patch (3 rows), `ops_scripts/ci/run_contract_gates.py` comment, `.cursor/rules/notion-backlog-plan-linkage.md`.
 - Pattern source: backlog-plan-linkage-enforcement-a4b2f1. 2 waves, ~3k tokens.
 - Non-goals: no new scripts, no new gates, no app behavior changes.
 - Success: NP3 gate 0 violations; rule updated.
 
 ## References
 
-- Parent plan: `.windsurf/plans/backlog-plan-linkage-enforcement-a4b2f1.md`
+- Parent plan: `.cursor/plans/backlog-plan-linkage-enforcement-a4b2f1.md`
 - CI gate: `ops_scripts/ci/check_notion_backlog_plan_linkage.py`
-- Rule: `.windsurf/rules/notion-backlog-plan-linkage.md`
+- Rule: `.cursor/rules/notion-backlog-plan-linkage.md`
 - Catch-all plan page: `35527693-f55c-81f0-be31-dad3f36fa674`

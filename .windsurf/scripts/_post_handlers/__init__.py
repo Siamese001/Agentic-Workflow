@@ -1,4 +1,4 @@
-"""Post-Cascade dispatcher handlers.
+"""Post-Cursor Agent dispatcher handlers.
 
 Each handler is a callable taking a ParsedResponse + repo_root, returning None.
 Handlers MUST be fail-soft — never raise; log to stderr and continue.
@@ -16,7 +16,7 @@ from pathlib import Path
 
 @dataclass
 class ParsedResponse:
-    """Single-pass parse of the Cascade post-response payload.
+    """Single-pass parse of the Cursor Agent post-response payload.
 
     Each handler receives this and reads only the fields it cares about,
     so the response is parsed exactly once instead of N times.
@@ -29,7 +29,7 @@ class ParsedResponse:
     """Parsed JSON if Windsurf provided structured payload; None otherwise."""
 
     response_text: str = ""
-    """The Cascade response body (markers, prose, code blocks)."""
+    """The Cursor Agent response body (markers, prose, code blocks)."""
 
     tool_calls: list[dict] = field(default_factory=list)
     """List of tool-call objects extracted from the payload, if present."""

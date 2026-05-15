@@ -48,7 +48,7 @@ Design and prove a secondary veto stage for semantic-cache reuse that closes the
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md` | parent plan, dataset / probe contract | ✅ committed |
+| `.cursor/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md` | parent plan, dataset / probe contract | ✅ committed |
 | `data/certification/calibration_pairs.json` (v2, 100 pairs) | unchanged input — must not be modified | ✅ on disk |
 | `artifacts/certification/threshold_sweep_results.json` | baseline (no-veto) numbers per threshold | ✅ on disk |
 | `artifacts/certification/semantic_cache_threshold_adr.json` | confirms threshold pinned at 0.95 (`PROPOSED_NOT_APPLIED`) | ✅ on disk |
@@ -373,10 +373,10 @@ The composer change is the only "irreversible-feeling" edit. Mitigated by:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - ✅ Plan-first; no code in this step.
-- ✅ Plan saved to repo SSOT `.windsurf/plans/<slug>-<6hex>.md`.
+- ✅ Plan saved to repo SSOT `.cursor/plans/<slug>-<6hex>.md`.
 - ✅ Wave Structure + Phase-Level Summary tables present (mandatory for T2/T3).
 - ✅ Honest expected certification impact — no forced green claimed.
 - ✅ Author-Gate point identified at Wave A.3 (B vs C).

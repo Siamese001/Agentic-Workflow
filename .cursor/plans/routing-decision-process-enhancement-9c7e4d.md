@@ -13,7 +13,7 @@ Implement the ~48 enhancement opportunities surfaced across the 10 routing decis
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/constitutional.md` §22, §24 | ADG graph-layer + DEFERRED_SCOPE marker contracts | ✅ |
+| `.cursor/rules/constitutional.md` §22, §24 | ADG graph-layer + DEFERRED_SCOPE marker contracts | ✅ |
 | `agentic_core/L0_routing/reasoning/path_router.py:89-578` | Existing 5-route dispatch (R1A/R1B/R3/R4/R5) | ✅ |
 | `agentic_core/L0_routing/config/routing_calibration.py:1-234` | YAML-backed threshold SSOT loader | ✅ |
 | `agentic_core/L6_observability/routing_calibration_metrics.py:1-234` | Existing OTEL fail-soft counter surface | ✅ |
@@ -148,7 +148,7 @@ A decision row carries `policy_hash` but not `snapshot_id`, `calibration_version
 
 ## Success Criteria
 
-- [ ] Plan saved at `.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`
+- [ ] Plan saved at `.cursor/plans/routing-decision-process-enhancement-9c7e4d.md`
 - [ ] W1: `decision_events_schema.py` exists with idempotent DDL + tests passing
 - [ ] W2: `decision_outcome_backfill.py` exists with API + tests passing
 - [ ] W3: `decision_provenance.py` exists + PathRouter integration + tests passing
@@ -173,7 +173,7 @@ python -m pytest tests/unit/agentic_core/L6_observability/test_decision_provenan
 python -m pytest tests/unit/agentic_core/L0_routing/ -xvs -k "path_router"
 
 # Commit + sync
-git add .windsurf/plans/routing-decision-process-enhancement-9c7e4d.md \
+git add .cursor/plans/routing-decision-process-enhancement-9c7e4d.md \
         agentic_core/L6_observability/decision_events_schema.py \
         agentic_core/L6_observability/decision_outcome_backfill.py \
         agentic_core/L6_observability/decision_provenance.py \

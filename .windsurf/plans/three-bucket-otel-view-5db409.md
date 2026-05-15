@@ -3,7 +3,7 @@
 Status: **Complete (W1–W8)** — 2026-04-29
 Created: 2026-04-29
 Completed: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `three-bucket-otel-view-5db409`
 Predecessor: `.windsurf/plans/adg-three-bucket-authority-model-7e2a91.md` (W1–W4 advisory landed)
 

@@ -11,7 +11,7 @@ When solving a problem took >15 minutes (T2/T3 per constitutional Tier Classific
 
 ## Where to write — quick decision
 
-| Will Cascade need it next session? | Will a human audit it across days? | Target |
+| Will Cursor Agent need it next session? | Will a human audit it across days? | Target |
 |---|---|---|
 | ✅ | ❌ | **Memory MCP** only (`ProceduralPattern:*` / `ProjectContext:*`) |
 | ❌ | ✅ | **Notion MCP** only (specific database per AGENTS.md routing) |

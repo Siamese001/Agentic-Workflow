@@ -12,7 +12,7 @@ dod_exempt: false
 
 # Author-Gate Prose-Options Detection — Fix Prose Menu Miss
 
-Fix the root cause identified in RCA (2026-05-12): Cascade presented a multi-option next-phase decision as a Markdown prose menu ("Option A / B / C") without invoking the Author-Gate pipeline. The miss detector did not catch it because no multi-file edits occurred and keyword density was too low.
+Fix the root cause identified in RCA (2026-05-12): Cursor Agent presented a multi-option next-phase decision as a Markdown prose menu ("Option A / B / C") without invoking the Author-Gate pipeline. The miss detector did not catch it because no multi-file edits occurred and keyword density was too low.
 
 ---
 
@@ -85,7 +85,7 @@ This is a **prose options menu** presented as a Markdown table with bold headers
 
 | Violation | Rule |
 |-----------|------|
-| Options in prose, not `ask_user_question` | Cascade-clickable requirement (§7) |
+| Options in prose, not `ask_user_question` | Cursor Agent-clickable requirement (§7) |
 | No `AUTHOR_GATE_PACKET:` block | Canonical-emitter invariant |
 | No confidence prefix, no ⭐, no tradeoff segment | Four-requirement contract |
 | No `DECISION_CAPTURED:` marker emitted | Silent-marker invariant |
@@ -202,7 +202,7 @@ CHECKPOINT: B
 > - Markdown table of options without `ask_user_question`
 > - "Recommended Next Phase/Step/Action" menus in prose
 >
-> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cascade making the decision unilaterally.
+> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cursor Agent making the decision unilaterally.
 >
 > **Correct path**: If a genuine decision point exists → invoke the full pipeline: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question`. If no genuine decision exists → continue execution per the Continuous Execution Invariant.
 ```

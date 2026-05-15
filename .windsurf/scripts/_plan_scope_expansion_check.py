@@ -525,7 +525,7 @@ def check_scope_authorization(
     Args:
         plan_id: Plan slug (e.g., "foo-abc123")
         changed_files: List of file paths modified/created (relative or absolute)
-        markers: List of marker strings from Cascade response text
+        markers: List of marker strings from Cursor Agent response text
         now: Current timestamp (defaults to UTC now)
         strict: If True, treats missing/expired auth as blocking (not just advisory)
         recency_window_sec: Authorization validity window (default 300s)

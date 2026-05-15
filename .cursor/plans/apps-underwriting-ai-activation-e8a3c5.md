@@ -10,7 +10,7 @@
 
 - **Plan**: `apps-underwriting-ai-activation-e8a3c5`
 - **Created**: 2026-05-02
-- **Owner**: Cascade
+- **Owner**: Cursor Agent
 - **Predecessor**: `qwen-rollout-followup-burndown-d2a4f8` P5.1
 - **Status**: Completed (2026-05-02 session 2 — W3 sub-waves shipped, W4 retired as phantom scope)
 

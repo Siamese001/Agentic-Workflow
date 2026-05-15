@@ -124,7 +124,7 @@ Read the file, classify: does it contain live runtime hop calls, provider import
 **Commands**:
 ```bash
 # Read and inspect
-# (Cascade reads apps_rg/config/hop_pipeline.py)
+# (Cursor Agent reads apps_rg/config/hop_pipeline.py)
 
 # Baseline gate run
 python ops_scripts/ci/run_contract_gates.py 2>&1 | tail -20

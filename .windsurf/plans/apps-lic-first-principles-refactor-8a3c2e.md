@@ -3,7 +3,7 @@
 Status: **Phase 0 done; W1.1 done; W1.2 deferred (code-change phase); downstream gated on three-bucket**
 Last updated: 2026-04-29
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-lic-first-principles-refactor-8a3c2e`
 Predecessor concepts:
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`

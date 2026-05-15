@@ -11,7 +11,7 @@ This is the sibling of ``post_cascade_author_gate_miss_detector.py``:
     - next-step miss detector       → NEXT_STEP: markers   (THIS FILE)
     - deferred-scope miss detector  → DEFERRED_SCOPE: markers (captured inline)
 
-Root cause it exists to close (2026-04-24 RCA): Cascade can list follow-ups
+Root cause it exists to close (2026-04-24 RCA): Cursor Agent can list follow-ups
 in a prose bullet list ("## Follow-ups (not implemented)") and skip the
 rule's `NEXT_STEP:` marker, leaving no plan scaffold and no Notion row.
 The always-on rule fades after ~15 tool calls; a deterministic post-response

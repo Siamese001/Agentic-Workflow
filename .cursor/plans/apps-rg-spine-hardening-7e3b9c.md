@@ -5,7 +5,7 @@
 **Tier:** T3
 **Closed:** 2026-05-09
 **Type:** Boundary correction + best-practice hardening
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Authored:** 2026-05-09
 
 > Harden apps_rg prompt-injection architecture and documentation so it follows the canonical agentic_core spine. Non-renaming, non-parallel-system, behavior-preserving.
@@ -245,7 +245,7 @@ DEFERRED_SCOPE: ADR registry update for the boundary correction (ADR-NNN apps_rg
 ## 14. Plan Marker
 
 ```
-PLAN_CREATED: slug=apps-rg-spine-hardening-7e3b9c path=.windsurf/plans/apps-rg-spine-hardening-7e3b9c.md tier=T3 status=Not Started waves=6
+PLAN_CREATED: slug=apps-rg-spine-hardening-7e3b9c path=.cursor/plans/apps-rg-spine-hardening-7e3b9c.md tier=T3 status=Not Started waves=6
 ```
 
 ## 15. AI Summary

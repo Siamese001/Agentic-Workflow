@@ -35,7 +35,7 @@ FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Lower Priority", "Retired", 
 
 
 def _get_payload_from_stdin() -> dict[str, Any] | None:
-    """Parse JSON payload from stdin (Cascade hook contract)."""
+    """Parse JSON payload from stdin (Cursor Agent hook contract)."""
     try:
         data = sys.stdin.read()
         if not data:
@@ -49,7 +49,7 @@ def _extract_plans_creation_payload(
     response_text: str,
 ) -> list[dict[str, Any]]:
     """
-    Extract API-post-page payloads targeting Plans DB from Cascade response.
+    Extract API-post-page payloads targeting Plans DB from Cursor Agent response.
     
     Looks for:
     - <invoke name="mcp7_API-post-page"> blocks
@@ -216,7 +216,7 @@ def main() -> int:
     """
     Main entry point for hook.
     
-    Reads from stdin (Cascade hook contract), validates any plan creation
+    Reads from stdin (Cursor Agent hook contract), validates any plan creation
     payloads, exits with appropriate code.
     """
     # Check bypass

@@ -1,11 +1,11 @@
-# Qwen Confidence-Routing Hardening — Cascade Fallback + Primary-Path Adoption
+# Qwen Confidence-Routing Hardening — Cursor Agent Fallback + Primary-Path Adoption
 
 **Slug**: `qwen-confidence-routing-hardening-d4e7b1`
 **Tier**: T3 (cross-layer L0/L2/L3, multi-file, architecture decision)
 **ADG snapshot**: `artifacts/adg/adg_indexed_04252026_0843.sqlite`
 **ADG Provenance**: backend=sqlite, snapshot=adg_indexed_04252026_0843.sqlite
 **Created**: 2026-04-25
-**Owner**: Cascade (auto-execute approved per user "NO STOPPING 1M TOKENS")
+**Owner**: Cursor Agent (auto-execute approved per user "NO STOPPING 1M TOKENS")
 **Status**: In progress
 
 ## Problem
@@ -56,7 +56,7 @@ Total: ~90k tokens.
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | W1.1 | `vllm_health_probe.py` | new `agentic_core/L2_execution/healers/vllm_health_probe.py` | TTL cache; bounded HTTP timeout (1.5s); thread-safe | 8k | Todo |
-| W1.2 | Cascade fallback in `_dispatch_qwen` | patch `healing_router.py` `_dispatch_qwen` + new helper `_qwen_to_flash_fallback` | preserve existing public contract; structured `fallback_reason` field; opt-out env var `DISABLE_QWEN_FALLBACK` | 12k | Todo |
+| W1.2 | Cursor Agent fallback in `_dispatch_qwen` | patch `healing_router.py` `_dispatch_qwen` + new helper `_qwen_to_flash_fallback` | preserve existing public contract; structured `fallback_reason` field; opt-out env var `DISABLE_QWEN_FALLBACK` | 12k | Todo |
 | W1.3 | Wave 1 unit tests | new `tests/unit/agentic_core/L2_execution/healers/test_qwen_cascade_fallback.py` | cover health-up/down × Qwen-success/fail × fallback-on/off matrix | 10k | Todo |
 | W2.1 | `MAX_MODEL_LEN` SSOT | patch `model_registry.py` (add `MAX_MODEL_LEN`, env `VLLM_MAX_MODEL_LEN` default 16384) | additive; matches running 32B server | 4k | Todo |
 | W2.2 | Token-budget audit | grep callers of `32768`/`vllm_token_budget_types`; patch hardcoded 32k → SSOT import | many caller sites; only patch where 32k is hardcoded as model_len; preserve other 32k semantics (e.g. cache size) | 11k | Todo |
@@ -153,8 +153,8 @@ Per operational-gates skill — one commit per wave.
 
 ## References
 
-- `.windsurf/plans/routing-unification-qwen-abe735.md` (parent — completed)
-- `.windsurf/plans/qwen-adoption-waves-a7f3c2.md` (sibling — completed)
-- `.windsurf/plans/vllm-stack-consolidation-f6e95d.md` (sibling — completed)
+- `.cursor/plans/routing-unification-qwen-abe735.md` (parent — completed)
+- `.cursor/plans/qwen-adoption-waves-a7f3c2.md` (sibling — completed)
+- `.cursor/plans/vllm-stack-consolidation-f6e95d.md` (sibling — completed)
 - `artifacts/qwen_adoption_audit_20260425.txt` (audit evidence for this plan)
 - `docs/architecture/qwen-vllm-topology.md`

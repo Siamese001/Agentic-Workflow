@@ -66,7 +66,7 @@ Scope impact: the adapter refactor affects all 8 apps that use `apps_shared.spin
 | **W4** | P4.1, P4.2, P4.3, P4.4 | **`apps_shared/spine_emission/` → thin adapter over `agentic_core/runtime/entrypoints/`** | ~18k | `agentic_core.runtime.entrypoints.integrated_single_action_run` + `integrated_safe_reuse_run` are stable public APIs; `route_contract_v15`, `l2_v4_contracts`, Exit v6, runtime_gates, spine_proof_bundle are importable; other 7 apps can keep the deprecated shortcut path until their migration plan lands | 🟡 Draft | D-ADAPTER met; D4 spine-level spans emitted |
 | **W5** | P5.1, P5.2, P5.3 | apps_e2e Fort Knox cert arm wiring (evidence refs = real agentic_core receipts from W4) | ~14k | Constitutional §32 arm is canonical; patterned after sibling app's canary `APPS-REQ-001` producer | 🟡 Draft | D7 met |
 | **W6** | P6.1, P6.2, P6.3 | Output authenticity & DOCX fidelity + blocking HITL upgrade | ~14k | DOCX template `apps_shared/templates/svp_resume_template.docx` is canonical; `HITLApprovalGate.evaluate()` has stable public API; W4's replay_key available for reclearance audit | 🟡 Draft | D3, D8 met; ATS coverage ≥0.85 |
-| **W7** | P7.1 | Retroactive Author-Gate record-keeping for the 2026-05-03 session | ~3k | `.windsurf/state/author_gate_queue/<slug>.jsonl` is the SSOT per §35 | 🟡 Draft | 7 missed decisions on record |
+| **W7** | P7.1 | Retroactive Author-Gate record-keeping for the 2026-05-03 session | ~3k | `.cursor/state/author_gate_queue/<slug>.jsonl` is the SSOT per §35 | 🟡 Draft | 7 missed decisions on record |
 
 **Total estimated tokens: ~81k across 7 waves.** (Down from v2's ~117k.)
 
@@ -83,7 +83,7 @@ Scope impact: the adapter refactor affects all 8 apps that use `apps_shared.spin
 |----------|-------|---------------|-------------|-------------|--------|
 | **P1.1** | Wire apps_rg `HUMAN_REVIEW` → spine `mark_stage('provenance','fail')` | `apps_rg/__main__.py`, `apps_rg/scripts/narrative_pass.py`, `apps_rg/engines/resume_orchestrator_engine.py` (read-only) | Identifying the callsite where `status` is known AFTER orchestrator finishes but BEFORE `governed_run.__exit__` fires | ~3k | 🟡 Draft |
 | **P1.2** | RCA `provenance_report.valid=false / no_master_bullets` | `apps_rg/integrations/verbatim_provenance_gate.py`, master resume JSON loader, `apps_rg/scripts/generate_resume.py` | Real authenticity failure vs misconfigured fixture | ~5k | 🟡 Draft |
-| **P2.1** | Emit retroactive Author-Gate packets for 7 calibration decisions | `.windsurf/state/author_gate_queue/apps-rg-runtime-cert-hardening-a3f8c2.jsonl` | Scored A/B/C/D options per decision; preserve rationale | ~4k | 🟡 Draft |
+| **P2.1** | Emit retroactive Author-Gate packets for 7 calibration decisions | `.cursor/state/author_gate_queue/apps-rg-runtime-cert-hardening-a3f8c2.jsonl` | Scored A/B/C/D options per decision; preserve rationale | ~4k | 🟡 Draft |
 | **P2.2** | Resolve each calibration decision (revert+fix-prompt OR accept+ADR) | `apps_eval/config/rubrics/narrative_judge.yaml`, `apps_rg/integrations/anti_overfitting.py`, `apps_rg/integrations/hops/exec_summary_ensemble.py`, `apps_rg/integrations/hops/_role_bullet_runner.py`, `docs/architecture/adr/ADR-XXX-apps-rg-narrative-judge-calibration.md` (new) | Some thresholds defensibly relaxed for 1.5B model; others snap back. AG decision per-item. | ~7k | 🟡 Draft |
 | **P2.3** | Move `_SENIORITY_SKIP` + `DEFAULT_BUZZWORDS` + per-section caps to YAML | `apps_rg/integrations/ats_coverage.py`, `apps_rg/integrations/anti_overfitting.py`, `apps_eval/config/rubrics/narrative_judge.yaml` (extension) or new `apps_rg/config/anti_overfitting_overrides.yaml` | SSOT location — extend narrative_judge.yaml OR new overlay (AG decision). | ~3k | 🟡 Draft |
 | **P3.1** | Wrap each HOP-4 section in `gr.span("hop_4a_headline")` etc. | `apps_rg/scripts/narrative_pass.py::_run_narrative_pipeline` | Plumbing `gr` into a function that doesn't receive it | ~3k | 🟡 Draft |
@@ -99,7 +99,7 @@ Scope impact: the adapter refactor affects all 8 apps that use `apps_shared.spin
 | **P6.1** | Headline ensemble: natural SVP inclusion (revert SENIORITY_SKIP) | `apps_rg/integrations/hops/headline_ensemble.py`, `apps_rg/integrations/ats_coverage.py` | Prompt-engineering fix so ensemble produces headline with seniority token organically | ~4k | 🟡 Draft |
 | **P6.2** | ATS coverage 0.73 → ≥0.85 + DOCX re-seal helper | `apps_rg/integrations/hops/exec_summary_ensemble.py`, `apps_rg/integrations/hops/competencies_ensemble.py`, `apps_rg/outputs/docx_exporter.py`, `apps_shared/spine_emission/context.py` (`reseal_artifact()` API) | Missing 7 terms + post-run patch policy (AG decision) | ~6k | 🟡 Draft |
 | **P6.3** | **Blocking HITL via `HITLApprovalGate.evaluate(...)`** (supersedes W1.P1 cheap fix) | `apps_rg/__main__.py`, `agentic_core/L5_safety/hitl/__init__.py` (verify public API), `apps_rg/integrations/hitl_bridge.py` (new) | Uses W4's `replay_key` for reclearance audit. CLI fail-closed vs stdin-pause vs async-callback — AG decision. | ~4k | 🟡 Draft |
-| **P7.1** | Retroactive AG packets for 7 missed 2026-05-03 calibration decisions | `.windsurf/state/author_gate_queue/apps-rg-runtime-cert-hardening-a3f8c2.jsonl` | Pure record-keeping | ~3k | 🟡 Draft |
+| **P7.1** | Retroactive AG packets for 7 missed 2026-05-03 calibration decisions | `.cursor/state/author_gate_queue/apps-rg-runtime-cert-hardening-a3f8c2.jsonl` | Pure record-keeping | ~3k | 🟡 Draft |
 
 ## 5. Author-Gate decision points foreseen
 
@@ -157,7 +157,7 @@ AG_QUEUE_SEED: plan=apps-rg-runtime-cert-hardening-a3f8c2 id=AG-RG-012 depends_o
 
 Before starting Wave 1:
 - [x] Plan registered in Notion Plans DB (page `35527693-f55c-81ad-92cc-d2cc1737b517`)
-- [ ] `python tools/windsurf/wave_execution_state.py start --plan apps-rg-runtime-cert-hardening-a3f8c2` at W1 kickoff
+- [ ] `python tools/plan_lifecycle/wave_execution_state.py start --plan apps-rg-runtime-cert-hardening-a3f8c2` at W1 kickoff
 - [ ] Local Qwen vLLM container running and healthy (preflight from this session's fail-fast fix)
 - [ ] `artifacts/apps_rg/runs/20260503_135650/` retained as baseline for W4.P4 diff comparison
 

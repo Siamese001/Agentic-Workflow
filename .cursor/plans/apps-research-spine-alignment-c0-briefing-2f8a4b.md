@@ -69,7 +69,7 @@ role/company/use-case adaptive, evidence-backed briefing packets.
 | `apps_research/cert/fec_producer.py` | FEC shape to extend | ✅ read |
 | `apps_research/spine_manifest.yaml` | claimed_routes | ✅ read |
 | `apps_research/tests/` | existing test surface | ✅ read |
-| `.windsurf/templates/execution-plan-template.md` | plan format | ✅ read |
+| `.cursor/templates/execution-plan-template.md` | plan format | ✅ read |
 
 ---
 
@@ -839,7 +839,7 @@ C0 briefing-grade retrieval standard?
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Wave 1 edits documentation only — no code changes; safe to execute first.
 - Wave 2 creates YAML files only — no runtime impact; safe to execute before engine work.

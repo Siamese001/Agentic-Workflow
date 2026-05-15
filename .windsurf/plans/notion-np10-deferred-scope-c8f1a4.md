@@ -23,13 +23,13 @@ during implementation.
 ### DS-1 — Auto-patch for blank Waiting For
 
 **What**: When `post_cascade_notion_plans_status_audit.py` detects
-`WAITING_EMPTY_WAITING_FOR` in a Cascade response, attempt an auto-PATCH to
-prompt Cascade to re-issue the write with a populated value, similar to the
+`WAITING_EMPTY_WAITING_FOR` in a Cursor Agent response, attempt an auto-PATCH to
+prompt Cursor Agent to re-issue the write with a populated value, similar to the
 existing stale-status auto-patch logic (`_auto_patch_violation`).
 
 **Why deferred**: Auto-patching `Waiting For` requires knowing *what* the
 blocker actually is — unlike stale-status where the canonical replacement is
-deterministic. Requires a second Cascade response or an interactive prompt.
+deterministic. Requires a second Cursor Agent response or an interactive prompt.
 The audit logging + advisory error is sufficient for the first version.
 
 **Effort**: ~1k tokens. Complexity: low.
@@ -98,14 +98,14 @@ from ERROR to CRITICAL to force resolution.
 
 ### DS-5 — Notion UI reminder block on Waiting pages
 
-**What**: When Cascade creates a new Plans DB row with `Status=Waiting`, append
+**What**: When Cursor Agent creates a new Plans DB row with `Status=Waiting`, append
 a reminder block to the Notion page body:
 
 > ⚠️ **This plan is Waiting.** Please populate the `Waiting For` property above
 > with the specific blocker before leaving this page.
 
 **Why**: Belt-and-braces for human editors working directly in Notion (not via
-Cascade). The enforcement hooks only fire on Cascade writes.
+Cursor Agent). The enforcement hooks only fire on Cursor Agent writes.
 
 **Effort**: ~600 tokens. Complexity: low — add `API-patch-block-children` call
 in `_plan_registration.py` or `wave_execution_state.py` when status is Waiting.

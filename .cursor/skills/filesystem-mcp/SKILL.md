@@ -50,7 +50,6 @@ metadata:
 ## Hard Rules
 
 1. **Native first.** Reach for `read_file`/`edit`/`grep_search` before this MCP. The native tools have better integration with Cursor Agent's plan/edit cycle.
-2. **MCP serialization (§25):** One MCP call per response.
 3. **Allowed-directories sandbox:** All paths must be within `list_allowed_directories` output. The MCP enforces this.
 4. **`write_file` overwrites silently** — use `edit_file` for in-place modifications when possible.
 5. **`edit_file` supports `dryRun=true`** to preview a git-style diff without writing.

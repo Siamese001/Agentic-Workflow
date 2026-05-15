@@ -145,7 +145,7 @@ Each gap is scored by **impact** on C0 outcome quality and **reversibility**.
 
 **Anthropic**: long-horizon tasks need compaction (summarize-and-restart), tool-result clearing, and agent-written notes persisted outside the window.
 
-**Repo state**: no compaction stage in C0 spec; tool-result clearing not present in `evidence_contract_builder.py`. Memory MCP exists but is for Cascade's own cross-session recall — not agent runtime compaction inside an app loop.
+**Repo state**: no compaction stage in C0 spec; tool-result clearing not present in `evidence_contract_builder.py`. Memory MCP exists but is for Cursor Agent's own cross-session recall — not agent runtime compaction inside an app loop.
 
 ### G6 — Search/Retrieve granularity decoupling partial (TreeRAG pattern) **[P2, medium]**
 
@@ -180,7 +180,7 @@ Each gap is scored by **impact** on C0 outcome quality and **reversibility**.
 
 **RAGFlow/Theory Ventures 2025 thesis**: unify document RAG, dynamic memory, and tool/skill retrieval into one declarative Context Platform.
 
-**Repo state**: three stores are separate (knowledge/retrieval for docs, `memory` MCP for Cascade, MCP registry for tools). No declarative **ContextAssemblyManifest** that a caller can ship to say "give me context for task X" and have the platform decide the mix.
+**Repo state**: three stores are separate (knowledge/retrieval for docs, `memory` MCP for Cursor Agent, MCP registry for tools). No declarative **ContextAssemblyManifest** that a caller can ship to say "give me context for task X" and have the platform decide the mix.
 
 ### G11 — Contextual-retrieval ingest cost discipline (prompt cache on parent doc) **[P2, cost]**
 

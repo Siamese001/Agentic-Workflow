@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_cascade_notion_plan_identity_audit.py — Post-cascade audit for plan identity verification.
 
-Scans Cascade response text for mcp7_API-patch-page calls targeting the Plans DB,
+Scans Cursor Agent response text for mcp7_API-patch-page calls targeting the Plans DB,
 extracts intended plan slug from context and targeted page_id from the API call,
 queries Notion DB to verify the match, and logs any mismatches.
 
@@ -11,7 +11,7 @@ cannot see tool arguments per pre_mcp_gate.py:1042-1051.
 Contract
 --------
     audit_response(response_text: str, context_text: str) -> list[IdentityViolation]
-        response_text  — The full Cascade response text containing API calls
+        response_text  — The full Cursor Agent response text containing API calls
         context_text   — Prior context (plan slugs, file paths, etc.)
 
     Returns list of IdentityViolation objects for any detected mismatches.
@@ -28,7 +28,7 @@ Bypass
 Integration
 -----------
     Registered in .windsurf/hooks.json under post_cascade_response.
-    Triggered after every Cascade response.
+    Triggered after every Cursor Agent response.
 """
 
 from __future__ import annotations
@@ -139,7 +139,7 @@ def extract_notion_api_calls(response_text: str) -> list[dict]:
 
 
 def audit_response(response_text: str, context_text: str = "") -> list[IdentityViolation]:
-    """Audit a Cascade response for plan identity mismatches.
+    """Audit a Cursor Agent response for plan identity mismatches.
     
     Steps:
     1. Extract all mcp7_API-patch-page calls

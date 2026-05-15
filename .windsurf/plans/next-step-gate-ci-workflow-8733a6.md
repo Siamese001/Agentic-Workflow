@@ -2,7 +2,7 @@
 plan_id: next-step-gate-ci-workflow-8733a6
 plan_type: tracker
 # Auto-scaffolded 2026-04-24 by .windsurf/scripts/post_cascade_deferred_scope_capture.py
-# from a DEFERRED_SCOPE marker. Cascade should expand this plan on the next
+# from a DEFERRED_SCOPE marker. Cursor Agent should expand this plan on the next
 # session before execution starts.
 ---
 
@@ -29,7 +29,7 @@ DEFERRED_SCOPE: plan=next-step-gate-ci-workflow-8733a6 wave=W1 phase=W1.1 layer=
 
 | Waves | Metric | Scope | Checkpoint | Tokens |
 |-------|--------|-------|------------|--------|
-| W1 | AUTO-SCAFFOLD | TBD — Cascade to fill | A | ~5000 🟡 |
+| W1 | AUTO-SCAFFOLD | TBD — Cursor Agent to fill | A | ~5000 🟡 |
 
 ## Phase-Level Summary
 
@@ -47,6 +47,6 @@ DEFERRED_SCOPE: plan=next-step-gate-ci-workflow-8733a6 wave=W1 phase=W1.1 layer=
 
 ## Next Action
 
-Cascade must expand this plan on the first session that picks it up. The
+Cursor Agent must expand this plan on the first session that picks it up. The
 authoritative backlog row lives in Notion Wave/Phase Convergence
 (``Plan File = "next-step-gate-ci-workflow-8733a6.md"``).

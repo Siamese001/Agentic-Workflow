@@ -39,7 +39,7 @@ Deferred items from `notion-plan-identity-verification-enforcement-f2a9c1` that 
 **Problem:** Current detection only logs anomalies. Manual intervention required to rollback mis-targeted status changes.
 
 **Proposed Solution:** Automated rollback for HIGH severity anomalies (IDENTITY_MISMATCH):
-1. Detect mismatch via post-cascade audit
+1. Detect mismatch via post-cursor-agent audit
 2. Query Notion for status before change (version history)
 3. Revert to previous status with comment annotation
 4. Notify operator via log + optional Slack/email
@@ -54,7 +54,7 @@ Deferred items from `notion-plan-identity-verification-enforcement-f2a9c1` that 
 - Only auto-rollback if confidence > 0.95 (known mismatch pattern)
 - Skip rollback if plan has been modified since anomaly detected
 - Bypass: `NOTION_AUTO_ROLLBACK_BYPASS=1`
-- Log all rollback attempts to `artifacts/windsurf/auto_rollback.jsonl`
+- Log all rollback attempts to `artifacts/cursor/auto_rollback.jsonl`
 
 **Blocked until:** 30 days of NP8 gate data shows < 1% false positive rate
 
@@ -125,4 +125,4 @@ This deferred scope plan activates when ANY of:
 
 STATUS_FLIP: notion-plan-identity-deferred-scope-a3b7e2 notion_id=35c27693-f55c-8105-acc7-c121fe6860e4 from=Deferred to=In Progress at=2026-05-10T18:18:00Z reason="DS-3 and DS-4 completed, 2/4 deferred items done"
 
-PLAN_CREATED: slug=notion-plan-identity-deferred-scope-a3b7e2 notion_id=35c27693-f55c-8105-acc7-c121fe6860e4 path=.windsurf/plans/notion-plan-identity-deferred-scope-a3b7e2.md status=Not Started tier=T3 layer=L_OPS parent_plan=notion-plan-identity-verification-enforcement-f2a9c1
+PLAN_CREATED: slug=notion-plan-identity-deferred-scope-a3b7e2 notion_id=35c27693-f55c-8105-acc7-c121fe6860e4 path=.cursor/plans/notion-plan-identity-deferred-scope-a3b7e2.md status=Not Started tier=T3 layer=L_OPS parent_plan=notion-plan-identity-verification-enforcement-f2a9c1

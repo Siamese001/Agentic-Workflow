@@ -2,7 +2,7 @@
 """
 post_cascade_router_decision_audit.py — Closed-Loop Router enforcement post-hook.
 
-Reads the cascade response payload from stdin. Detects when Cascade has edited
+Reads the cascade response payload from stdin. Detects when Cursor Agent has edited
 or substantially referenced a router-implementing file but the response carries
 neither a `ROUTER_DECISION:` marker nor a paired `emit_ledger_event(ledger="router_..."`
 call. Logs violations to artifacts/windsurf/router_enforcement_violations.jsonl.
@@ -36,7 +36,7 @@ VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "router_enforcement_viol
 # Detection patterns
 # ---------------------------------------------------------------------------
 
-# Plain-text marker emitted by routers (or by Cascade when demonstrating a router):
+# Plain-text marker emitted by routers (or by Cursor Agent when demonstrating a router):
 #   ROUTER_DECISION: layer=L0 router=bandit decision_id=... trace_id=... ...
 _ROUTER_DECISION_RE = re.compile(
     r"ROUTER_DECISION:\s*"
@@ -68,7 +68,7 @@ _ROUTER_FILE_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"agentic_core/L6_observability/promotion_gates\.py", re.IGNORECASE),
 )
 
-# Edit-intent keywords: signals that Cascade is *editing* the file, not just
+# Edit-intent keywords: signals that Cursor Agent is *editing* the file, not just
 # referencing it in prose. We require at least one of these in the response
 # alongside a router-file path before flagging a missing-evidence violation.
 _EDIT_INTENT_RE = re.compile(

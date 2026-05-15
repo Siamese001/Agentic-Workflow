@@ -1275,7 +1275,7 @@ wc -l apps_lic/prompt_assembly/templates/*.yaml  # Should show substantial line 
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - **Scope containment**: This plan touches only entrypoint, registry, step adapter, and Prompt Assembly files. HOP agent internals are out of scope.
 - **ADG-first**: Before W1, query ADG for `adg_nodes_by_file` on `apps_lic/__main__.py` to verify no new outbound edges to HOP agents or prompt strings are introduced.

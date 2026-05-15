@@ -86,9 +86,9 @@ Collects all deferred scope, gaps, and aspirational success criteria from the pa
 
 ## References
 
-- Parent: `.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md` (Completed)
+- Parent: `.cursor/plans/apps-architect-pattern-hardening-d7e4f9.md` (Completed)
 - `apps_research/` — Canonical R3_grounded_read reference
-- `.windsurf/rules/adg-canonical-invariants.md` — ADG doctrine
+- `.cursor/rules/adg-canonical-invariants.md` — ADG doctrine
 - `docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md` — Route taxonomy
 
 ---

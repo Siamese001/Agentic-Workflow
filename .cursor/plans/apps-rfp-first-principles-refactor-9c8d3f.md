@@ -6,7 +6,7 @@
 Status: **W0+W1 done; W0.1 verification done in integrated plan; W2+ gated on three-bucket completion**
 Last updated: 2026-05-01
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-rfp-first-principles-refactor-9c8d3f`
 
 ## Phase B severity ranking

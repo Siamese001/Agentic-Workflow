@@ -63,6 +63,6 @@ These were declared out of scope for the parent plan and remain unaddressed:
 
 ## Rules
 
-- Do NOT implement any item in this document without a new plan at `.windsurf/plans/`.
+- Do NOT implement any item in this document without a new plan at `.cursor/plans/`.
 - Each item may require its own Author-Gate decision (especially GAP-7 which changes default behavior).
 - The parent plan is complete and closed. This document is a capture artifact only.

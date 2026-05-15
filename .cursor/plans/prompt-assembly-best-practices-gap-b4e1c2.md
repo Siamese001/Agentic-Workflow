@@ -2,7 +2,7 @@
 
 - **Plan slug**: `prompt-assembly-best-practices-gap-b4e1c2`
 - **Tier**: T3 (cross-layer, spans `agentic_core/prompt_governance/**`, `agentic_core/L0_routing/reasoning/assembly_stage.py`, `agentic_core/knowledge/retrieval/prompt_envelope.py`, `apps_shared/enforcement/**`, and reference docs)
-- **Status**: Design executed + **approved 2026-04-23**. EQ-1 child plan opened at `.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md`. All 5 previously-deferred items promoted to scheduled (EQ-15..EQ-19). Code-wave execution tracked in `docs/reports/plans/prompt-assembly-gap-b4e1c2/execution_queue.md` (EQ-1..EQ-19, no residual deferrals).
+- **Status**: Design executed + **approved 2026-04-23**. EQ-1 child plan opened at `.cursor/plans/eq1-compiled-artifact-schema-d9a3e7.md`. All 5 previously-deferred items promoted to scheduled (EQ-15..EQ-19). Code-wave execution tracked in `docs/reports/plans/prompt-assembly-gap-b4e1c2/execution_queue.md` (EQ-1..EQ-19, no residual deferrals).
 - **Authored against**: source docs from Anthropic (Claude 4 prompting best practices + XML tagging), OpenAI (GPT-4.1 prompting guide + long-context + agentic reminders), Google (Gemini 3 developer guide + prompt design strategies)
 - **Repo reference**: `@c:/Git/Agentic-Workflow/docs/reference/03_L0_Routing/Prompt Assembly/Prompt Assembly.md` and `@c:/Git/Agentic-Workflow/docs/reference/C5_Retrieval_Prompt_Assembly.md`
 
@@ -188,7 +188,7 @@ All waves are documentation + design first, then code. Every code wave will itse
 | 6.2 | Spec prompt-caching prefix discipline — stable S0+D0+I0 block ordering, document which boundaries are cache keys per provider | design doc | Claude vs OpenAI cache APIs differ; must not break either | 2 500 | Todo |
 | 7.1 | Design provider-matrix golden tests (one render per provider, diffed) | `tests/unit/prompt_governance/**` | `pytest_mcp` infra; avoid snapshot churn on cosmetic whitespace | 8 000 | Todo |
 | 7.2 | Design apply-patch convention test for code-editing agents | `tests/**/apps_rg/**` | Non-Python agents also need this — but Python-only scope for W7 | 4 000 | Todo |
-| 8.1 | Consolidated execution queue + rollback checkpoints | `.windsurf/plans/prompt-assembly-execution-<slug>-<6hex>.md` children | Order dependency: W2 before W4; W5 can parallel; W7 last | 6 000 | Todo |
+| 8.1 | Consolidated execution queue + rollback checkpoints | `.cursor/plans/prompt-assembly-execution-<slug>-<6hex>.md` children | Order dependency: W2 before W4; W5 can parallel; W7 last | 6 000 | Todo |
 
 ---
 

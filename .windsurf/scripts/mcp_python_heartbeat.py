@@ -21,7 +21,7 @@ prints a one-line remediation hint when any are dead. Exit code:
     2 - config unreadable
 
 This is ADVISORY only; it never kills or restarts anything. It is safe
-to run repeatedly and is intended to be invoked at Cascade session
+to run repeatedly and is intended to be invoked at Cursor Agent session
 start (or before any T2/T3 MCP-dependent work).
 
 Usage

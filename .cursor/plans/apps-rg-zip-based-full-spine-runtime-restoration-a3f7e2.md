@@ -5,7 +5,7 @@ plan_type: implementation
 status: IN_PROGRESS
 active_authority: true
 supersedes: apps-rg-w3-plus-managed-workflow-sequence
-supersedes_plan_file: .windsurf/plans/apps-rg-ensemble-judge-restoration-a7c4e2.md
+supersedes_plan_file: .cursor/plans/apps-rg-ensemble-judge-restoration-a7c4e2.md
 created: "2026-05-11"
 created_for: apps_rg
 rebaseline_id: apps_rg_runtime_restoration_rebaseline_after_w11

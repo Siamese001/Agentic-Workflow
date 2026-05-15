@@ -5,7 +5,7 @@
 **Tier:** T2 (multi-file, multi-app, bounded)
 **Driver:** Open + deferred items surfaced during `apps-completeness-remediation-907fac` (now Completed)
 **Status:** Completed (2026-05-02)
-**Predecessor:** `.windsurf/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02)
+**Predecessor:** `.cursor/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02)
 
 ## Goal
 
@@ -64,7 +64,7 @@ DEFERRED_SCOPE: title=`apps_shared 74-stub audit` reason=`74 stubs across 207 fi
 
 ## ADG_HOTSPOT_REPORT
 
-Skipped: this is a **completeness/gap-fill** plan, not a hotspot-driven refactor. Targets are determined by structural-completeness gaps already enumerated. Per `.windsurf/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
+Skipped: this is a **completeness/gap-fill** plan, not a hotspot-driven refactor. Targets are determined by structural-completeness gaps already enumerated. Per `.cursor/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 

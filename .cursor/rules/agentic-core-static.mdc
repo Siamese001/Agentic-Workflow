@@ -3,7 +3,7 @@ description: |
   Core architecture law: agentic_core is app-agnostic governed runtime.
   apps_* customize behavior through U0 runtime_customization_package and app-owned profile refs.
   This rule is always on — applies to every task.
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/agentic-core-static.md`. Original Cursor trigger: `always_on`. -->

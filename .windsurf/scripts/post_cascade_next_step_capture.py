@@ -2,7 +2,7 @@
 """post_cascade_next_step_capture.py — Windsurf post_cascade_response hook.
 
 Sibling to post_cascade_deferred_scope_capture.py. Parses `NEXT_STEP:`
-markers emitted by Cascade when suggesting follow-up work, scaffolds a plan
+markers emitted by Cursor Agent when suggesting follow-up work, scaffolds a plan
 file if requested (`plan=NEW:<slug>`), and auto-posts to the Wave/Phase
 Convergence Notion DB with a `[NEXT·P{n}]` Phase Title prefix so next-step
 rows are visually distinct from scored DEFERRED rows.
@@ -113,7 +113,7 @@ def _read_stdin_response() -> str:
     except (OSError, UnicodeDecodeError):
         return ""
     try:
-        # Reuse the shared Cascade payload extractor for tool_info.response nesting.
+        # Reuse the shared Cursor Agent payload extractor for tool_info.response nesting.
         from _post_cascade_payload import extract_response_text  # noqa: PLC0415
 
         return extract_response_text(payload)
@@ -211,7 +211,7 @@ def _build_notion_payload(fields: dict[str, str], plan_filename: str) -> dict[st
     # prose fields into one.
     phase_title = title
     evidence = (
-        f"Success: TBD — Cascade suggested follow-up; fill on execution start. "
+        f"Success: TBD — Cursor Agent suggested follow-up; fill on execution start. "
         f"| Blocking: {reason}. Priority={priority}. Auto-captured from NEXT_STEP "
         f"marker {_utc_today_iso()}. "
         f"| Deps: {depends_on}."
@@ -230,7 +230,7 @@ def _build_notion_payload(fields: dict[str, str], plan_filename: str) -> dict[st
         "Status": {"select": {"name": "Todo"}},
         "Est Tokens": {"number": est_tokens},
         # Files & outcome
-        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cascade to fill on execution start."}}]},
+        "Files In Scope": {"rich_text": [{"text": {"content": "TBD — Cursor Agent to fill on execution start."}}]},
         "Evidence": {"rich_text": [{"text": {"content": evidence}}]},
     }
     # MECE v2 RETIRED (stop writing): Sub-Wave, Parent Plan Summary, Blocking Items,

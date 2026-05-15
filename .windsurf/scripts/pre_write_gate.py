@@ -476,8 +476,8 @@ def main() -> int:
     if len(sys.argv) > 1:
         argv_path = sys.argv[1]
         argv_norm = argv_path.replace("\\", "/")
-        # Block .env writes — Cascade cannot read it (pre_read_gate blocks it), so any
-        # write from Cascade will be a blank overwrite that destroys real API keys.
+        # Block .env writes — Cursor Agent cannot read it (pre_read_gate blocks it), so any
+        # write from Cursor Agent will be a blank overwrite that destroys real API keys.
         if argv_norm.endswith("/.env") or argv_norm == ".env":
             print("[pre_write_gate] BLOCKED: .env writes are forbidden — edit manually in VS Code.", file=sys.stderr)
             return 2

@@ -288,7 +288,7 @@ Not applicable — this is a read-only audit plan. No code changes are made. Art
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

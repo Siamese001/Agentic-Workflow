@@ -100,4 +100,4 @@ dod_exempt: true
 ---
 
 DEFERRED_SCOPE: plan=w6-emit-contract-deferred-scope-c3f7a1 items=7 parent=w6-emit-contract-enrichment-d8b2a4
-PLAN_CREATED: slug=w6-emit-contract-deferred-scope-c3f7a1 path=.windsurf/plans/w6-emit-contract-deferred-scope-c3f7a1.md status=not_started tier=T0 layer=cross-cutting
+PLAN_CREATED: slug=w6-emit-contract-deferred-scope-c3f7a1 path=.cursor/plans/w6-emit-contract-deferred-scope-c3f7a1.md status=not_started tier=T0 layer=cross-cutting

@@ -13,7 +13,7 @@
 
 ## §1. Problem Statement
 
-Cascade MAY emit `AUTHOR_GATE_PACKET:` JSON blocks in chat without ever calling `ask_user_question`, leaving the user to manually copy/parse JSON instead of seeing the proper UI surface (options · ⭐ recommended · score · confidence · gap). The user has to call this out verbally — there is no deterministic enforcement that the **packet → render-card → `ask_user_question`** pipeline runs end-to-end.
+Cursor Agent MAY emit `AUTHOR_GATE_PACKET:` JSON blocks in chat without ever calling `ask_user_question`, leaving the user to manually copy/parse JSON instead of seeing the proper UI surface (options · ⭐ recommended · score · confidence · gap). The user has to call this out verbally — there is no deterministic enforcement that the **packet → render-card → `ask_user_question`** pipeline runs end-to-end.
 
 **Empirical incident (2026-05-09, this session):**
 - Turn N: emitted `AUTHOR_GATE_PACKET:` JSON for AG-RGGOV-W5-WIRING-GAP. NO `ask_user_question` call. User had to type "WHY is everything not routing through UI authorgate options STAR Confidence" to force re-route.
@@ -25,13 +25,13 @@ Cascade MAY emit `AUTHOR_GATE_PACKET:` JSON blocks in chat without ever calling 
 
 ## §2. Objective
 
-Make it **structurally impossible** for Cascade to emit `AUTHOR_GATE_PACKET:` without a same-response `ask_user_question` call, via a deterministic post-hook audit + CI freshness gate + rule prose update + skill flow update + test coverage.
+Make it **structurally impossible** for Cursor Agent to emit `AUTHOR_GATE_PACKET:` without a same-response `ask_user_question` call, via a deterministic post-hook audit + CI freshness gate + rule prose update + skill flow update + test coverage.
 
 ---
 
 ## §3. Non-Goals
 
-- Implement actual `ask_user_question` rendering improvements (UI itself is Cascade-built-in; we cannot modify the IDE's render of the question).
+- Implement actual `ask_user_question` rendering improvements (UI itself is Cursor Agent-built-in; we cannot modify the IDE's render of the question).
 - Modify the four shape requirements (already enforced by `post_cascade_author_gate_ui_audit.py` per plan c4d2a8).
 - Add new fields to AUTHOR_GATE_PACKET schema.
 - Modify the queue-drain pipeline (constitutional §35 — separate concern).
@@ -100,7 +100,7 @@ This is an **infrastructure-class plan** — the surface area is `.windsurf/scri
 | Author-Gate emit pipeline | `.windsurf/skills/author-gate-packet-builder/emit_packet.py` | infra/skill | HIGH (every Author-Gate decision touches it) | LOW (isolated emitter) | SAFETY_GATEKEEPER | Execution + Observability | HIGH — regressions cascade across every refactor decision |
 | UI render → ask flow | `.windsurf/skills/author-gate-ui-renderer/render_card.py` | infra/skill | HIGH (consumes every emitted packet) | MED | SAFETY_GATEKEEPER | Execution + Observability | HIGH — same blast radius as emitter |
 | Existing post-hook audits | `.windsurf/scripts/post_cascade_author_gate_ui_audit.py`, `.windsurf/scripts/post_cascade_ask_user_question_packet_audit.py` | infra/hook | LOW (only the orchestrator) | LOW | SAFETY_GATEKEEPER | Observability | MED — failures here = silent enforcement bypass |
-| Constitutional rule body | `.windsurf/rules/author-gate-enforcement.md` | infra/rule | EVERY task that hits an AG decision point | LOW | SAFETY_GATEKEEPER | Execution | HIGH — wording determines what Cascade enforces |
+| Constitutional rule body | `.windsurf/rules/author-gate-enforcement.md` | infra/rule | EVERY task that hits an AG decision point | LOW | SAFETY_GATEKEEPER | Execution | HIGH — wording determines what Cursor Agent enforces |
 
 The 5 Surfaces touched: **Execution** (the flow gates whether a decision proceeds), **Observability** (audit + violation logs), **Security** (governance integrity — bypassed AGs = governance erosion). Not touched: Write, State.
 

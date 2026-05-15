@@ -1,12 +1,12 @@
 # Artifact Provenance Discipline — Never Present a Wrong-Run Artifact
 
-> ⛔ Before presenting ANY JSON artifact as evidence for a specific run, Cascade MUST
+> ⛔ Before presenting ANY JSON artifact as evidence for a specific run, Cursor Agent MUST
 > verify the artifact's identity fields match the run under analysis. Substituting a
 > nearest-match artifact without explicit disclosure is FORBIDDEN.
 
 ## The Failure Pattern This Rule Prevents
 
-Cascade fetches artifact `X` (from run A) and presents it as evidence for run B without
+Cursor Agent fetches artifact `X` (from run A) and presents it as evidence for run B without
 checking `run_id`, `emitted_at`, or `request_id`. The user receives fabricated analysis
 that describes a different execution path entirely.
 

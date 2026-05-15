@@ -17,18 +17,18 @@
 |-----------|----------|--------|-------|
 | **Enriched Choice Builder** | `tools/decisions/enriched_choice_builder.py` | ✅ Complete | All UI invariants: confidence prefix, ⭐ star, trade-off segment |
 | **ASK_USER_QUESTION_PACKET Schema** | `tools/decisions/enriched_choice_builder.TelemetryPacket` | ✅ Complete | Returns packet; caller emits |
-| **Post-Cascade Audit** | `post_cascade_ask_user_question_packet_audit.py` | ✅ Complete | Vacuum-closure audit for ask_user_question without packet |
+| **Post-Cursor-Agent Audit** | `post_cursor_agent_ask_user_question_packet_audit.py` | ✅ Complete | Vacuum-closure audit for ask_user_question without packet |
 | **CI Gate** | `ops_scripts/ci/check_enriched_choice_ui_invariants.py` | ✅ Complete | AST-based scanner for UI invariant violations |
 | **CI Gate (AST)** | `ops_scripts/ci/check_enriched_choice_ui_invariants_ast.py` | ✅ Complete | Alternative AST-based implementation |
 | **Author-Gate Pipeline** | `emit_packet.py` → `render_card.py` | ✅ Complete | AUTHOR_GATE_PACKET + ROUTER_DECISION emission |
-| **Workflow: antipattern-author-gate** | `.windsurf/workflows/antipattern-author-gate.md` | ✅ Migrated | Uses canonical AUTHOR_GATE_PACKET path |
-| **Workflow: author-gate-decision-gate** | `.windsurf/workflows/author-gate-decision-gate.md` | ✅ Migrated | Uses canonical AUTHOR_GATE_PACKET path |
+| **Workflow: antipattern-author-gate** | `.cursor/workflows/antipattern-author-gate.md` | ✅ Migrated | Uses canonical AUTHOR_GATE_PACKET path |
+| **Workflow: author-gate-decision-gate** | `.cursor/workflows/author-gate-decision-gate.md` | ✅ Migrated | Uses canonical AUTHOR_GATE_PACKET path |
 
 ### 1.2 ⏳ PENDING (Remaining Work)
 
 | Component | Location | Gap | Effort |
 |-----------|----------|-----|--------|
-| **Structured-Reasoning Migration** | `.windsurf/skills/structured-reasoning/SKILL.md` | Lines 144-151 still use plain `ask_user_question` | 0.5k tokens |
+| **Structured-Reasoning Migration** | `.cursor/skills/structured-reasoning/SKILL.md` | Lines 144-151 still use plain `ask_user_question` | 0.5k tokens |
 | **Pre-Hook Harmonization** | `pre_ask_user_question_gate.py` (new) | Context detection + routing between AG and enriched paths | 2k tokens |
 | **Ledger Writeback for Non-Gated** | `refactor_decision_ledger.sqlite` extension | ASK_USER_QUESTION_PACKET decisions → ledger | 1k tokens |
 | **Universal Enricher Heuristics** | `heuristic_scorer.py` (new) | ADG blast radius, layer criticality scoring | 1.5k tokens |
@@ -49,7 +49,7 @@
 
 ### Wave 1: Structured-Reasoning Skill Migration (W1)
 
-**Files:** `.windsurf/skills/structured-reasoning/SKILL.md`
+**Files:** `.cursor/skills/structured-reasoning/SKILL.md`
 
 **Current State:** Lines 144-151 show plain `ask_user_question`:
 ```markdown
@@ -77,7 +77,7 @@ ask_user_question(
 
 **Purpose:** Route decisions through correct pipeline automatically.
 
-**New File:** `.windsurf/scripts/pre_ask_user_question_gate.py`
+**New File:** `.cursor/scripts/pre_ask_user_question_gate.py`
 
 **Responsibility:**
 1. Detect if ask_user_question context is Author-Gate-class (governance decisions)
@@ -94,7 +94,7 @@ AUTHOR_GATE_KEYWORDS = [
 ]
 ```
 
-**Integration:** Register in `.windsurf/hooks.json` as pre-hook.
+**Integration:** Register in `.cursor/hooks.json` as pre-hook.
 
 ---
 
@@ -175,9 +175,9 @@ Register `check_enriched_choice_ui_invariants.py` in `run_contract_gates.py` ass
 
 - **Superseded Plans:** d9e4f2, d9e5f2 (Notion), b8c3e1, a7e3d2
 - **Existing Implementation:** `tools/decisions/enriched_choice_builder.py`
-- **Post-Cascade Audit:** `.windsurf/scripts/post_cascade_ask_user_question_packet_audit.py`
+- **Post-Cursor-Agent Audit:** `.cursor/scripts/post_cursor_agent_ask_user_question_packet_audit.py`
 - **CI Gate:** `ops_scripts/ci/check_enriched_choice_ui_invariants.py`
-- **Rule:** `.windsurf/rules/author-gate-enforcement.md`
+- **Rule:** `.cursor/rules/author-gate-enforcement.md`
 
 ---
 

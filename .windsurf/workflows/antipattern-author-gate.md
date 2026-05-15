@@ -2,7 +2,7 @@
 description: Author-Gate prompt before introducing any new anti-pattern instance (except Exception, os.path.*, string path concat)
 ---
 
-> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cursor Agent workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
 ## Anti-Pattern Author-Gate Gate
 
@@ -108,7 +108,7 @@ python -m pre_commit run --files <modified_files> 2>&1
 
 Gate must pass (exit 0) before committing.
 
-### Trigger conditions (Cascade must invoke this workflow)
+### Trigger conditions (Cursor Agent must invoke this workflow)
 
 - Any new `try/except` block catching `Exception`, `BaseException`, or bare `except`
 - Any new `os.path.join`, `os.path.exists`, `os.path.isfile`, etc.

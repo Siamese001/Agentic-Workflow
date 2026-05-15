@@ -30,11 +30,11 @@ This plan incorporates 8 hardening corrections from review:
 
 | File | Line(s) | Current Pattern | Classification | Reason |
 |------|---------|-----------------|----------------|--------|
-| `.windsurf/skills/author-gate-packet-builder/emit_packet.py` | 1-575 | AUTHOR_GATE_PACKET emitter | AUTHOR_GATE | Canonical emitter; emits 4-invariant options |
-| `.windsurf/skills/author-gate-ui-renderer/render_card.py` | 43-136 | OPTIONS_JSON builder | AUTHOR_GATE | Renders enriched options from packet |
-| `.windsurf/scripts/post_cascade_author_gate_ui_audit.py` | 1-362 | UI invariant audit | AUTHOR_GATE | Validates AG 4 invariants only |
+| `.cursor/skills/author-gate-packet-builder/emit_packet.py` | 1-575 | AUTHOR_GATE_PACKET emitter | AUTHOR_GATE | Canonical emitter; emits 4-invariant options |
+| `.cursor/skills/author-gate-ui-renderer/render_card.py` | 43-136 | OPTIONS_JSON builder | AUTHOR_GATE | Renders enriched options from packet |
+| `.cursor/scripts/post_cursor_agent_author_gate_ui_audit.py` | 1-362 | UI invariant audit | AUTHOR_GATE | Validates AG 4 invariants only |
 
-**Authority Boundary:** `post_cascade_author_gate_ui_audit.py` stays AG-only. No extension for non-AG choices.
+**Authority Boundary:** `post_cursor_agent_author_gate_ui_audit.py` stays AG-only. No extension for non-AG choices.
 
 ---
 
@@ -42,8 +42,8 @@ This plan incorporates 8 hardening corrections from review:
 
 | File | Line(s) | Current Pattern | Classification | Reason | Planned Change |
 |------|---------|-----------------|----------------|--------|----------------|
-| `.windsurf/skills/structured-reasoning/SKILL.md` | 144-151 | Plain ask_user_question example | ENRICHED_CHOICE | Instruction doc pattern; branch decisions | Update example pattern to show enriched payload (instruction, not executable import) |
-| `.windsurf/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (label/description only) | ENRICHED_CHOICE | Decision-gate instructions | Update example to full enriched shape |
+| `.cursor/skills/structured-reasoning/SKILL.md` | 144-151 | Plain ask_user_question example | ENRICHED_CHOICE | Instruction doc pattern; branch decisions | Update example pattern to show enriched payload (instruction, not executable import) |
+| `.cursor/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (label/description only) | ENRICHED_CHOICE | Decision-gate instructions | Update example to full enriched shape |
 
 ---
 
@@ -51,7 +51,7 @@ This plan incorporates 8 hardening corrections from review:
 
 | File | Line(s) | Previous Classification | **Corrected Classification** | Reason |
 |------|---------|------------------------|------------------------------|--------|
-| `.windsurf/workflows/antipattern-author-gate.md` | 38-45 | ENRICHED_CHOICE | **AUTHOR_GATE** | Anti-pattern remediation changes governance posture: allows exceptions via `# guardian: allow-<category>`, affects ratchet counts, modifies policy enforcement. These are governance decisions, not lightweight choices. |
+| `.cursor/workflows/antipattern-author-gate.md` | 38-45 | ENRICHED_CHOICE | **AUTHOR_GATE** | Anti-pattern remediation changes governance posture: allows exceptions via `# guardian: allow-<category>`, affects ratchet counts, modifies policy enforcement. These are governance decisions, not lightweight choices. |
 
 **Migration:** `antipattern-author-gate.md` must use canonical Author-Gate pipeline (emit_packet.py), not lightweight enriched wrapper.
 
@@ -140,7 +140,7 @@ _EXEMPTIONS: dict[str, str] = {
     "apps_shared/cli/interactive_wizard.py": "data_collection_field_input",
     "tests/": "test_fixture",
     "docs/": "documentation_example",
-    ".windsurf/plans/": "plan_documentation",
+    ".cursor/plans/": "plan_documentation",
     # Any addition requires explicit reason and narrow path scope
 }
 ```
@@ -158,7 +158,7 @@ _EXEMPTIONS: dict[str, str] = {
 |-------|----------------|------------|
 | **Unit tests** | Builder formatting invariants (confidence prefix, star count, trade-off) | `tests/unit/tools/decisions/test_enriched_choice_builder.py` |
 | **Scanner** | Callsite discipline (AG pipeline or wrapper used) | `check_enriched_choice_ui_invariants.py` source scan |
-| **Runtime audit** | Emitted packet validation (if telemetry available) | `post_cascade_ask_user_question_packet_audit.py` (existing, extended) |
+| **Runtime audit** | Emitted packet validation (if telemetry available) | `post_cursor_agent_ask_user_question_packet_audit.py` (existing, extended) |
 
 ---
 
@@ -238,7 +238,7 @@ print("ASK_USER_QUESTION_PACKET: " + json.dumps(payload["telemetry_packet"]))
 
 ```bash
 # Build spec JSON with candidates A-D
-cat << 'EOF' | python .windsurf/skills/author-gate-packet-builder/emit_packet.py
+cat << 'EOF' | python .cursor/skills/author-gate-packet-builder/emit_packet.py
 {
   "decision_type": "anti_pattern",
   "normalized_intent": "anti-pattern remediation",
@@ -293,7 +293,7 @@ Use the emitted `OPTIONS_JSON` with `ask_user_question`.
 
 | # | Criterion | Verification |
 |---|-----------|--------------|
-| 1 | AG audit remains green | `post_cascade_author_gate_ui_audit.py` passes |
+| 1 | AG audit remains green | `post_cursor_agent_author_gate_ui_audit.py` passes |
 | 2 | New scanner is fail-closed in CI | `ENRICHED_CHOICE_UI_FAIL_CLOSED=1` default; exit 1 on violation |
 | 3 | Active decision prompts are AUTHOR_GATE or ENRICHED_CHOICE | Scanner passes on all active surfaces |
 | 4 | Exemptions narrow and reasoned | `_EXEMPTIONS` dict auditable |

@@ -61,7 +61,7 @@ The repository runs **two parallel ChromaDB stores** with **inconsistent embeddi
 |---|---|---|
 | `ingest_code.py:213,223,229` | Classes with ≥1 method; functions with ≥1 arg | **Zero-arg functions, argless async, classes with no methods** — discards ~10-15 % of ADG nodes including most validators and guard modules. |
 | `pipeline.py:66` | `--source-dir agentic_core` only | `apps_rg`, `apps_lic`, `apps_eval`, `apps_exec`, `apps_research`, `apps_rfp`, `apps_shared`, `apps_underwriting_ai`, `system_learning`, `infrastructure`, `tools`, `ops_scripts` — all excluded from code ingest. |
-| `ingest_docs.py` | `docs/` markdown | Does not ingest `AGENTS.md`, `.windsurf/rules/*`, `.windsurf/plans/*`, `.windsurf/skills/*`, ADR bodies under `docs/architecture/adr/` get ingested but without ADR-specific metadata extraction. |
+| `ingest_docs.py` | `docs/` markdown | Does not ingest `AGENTS.md`, `.cursor/rules/*`, `.cursor/plans/*`, `.cursor/skills/*`, ADR bodies under `docs/architecture/adr/` get ingested but without ADR-specific metadata extraction. |
 | `traces` collection | Empty | `data/corpus/healing_contexts_corpus.jsonl` is the declared source but the collection is `0` — ingest never succeeded or was wiped. |
 | `repo_adg_graph` | Corrupt | Compactor error on `count()` — not recoverable via `delete_collection` without forcing WAL clean. |
 
@@ -195,7 +195,7 @@ Consumers that read ChromaDB (ADG fan-in sample; non-exhaustive):
 - **Embedding truthfulness** — every stored chunk has `embedding_model="BAAI/bge-m3"` and `embedding_dim=1024`; collection metadata matches; validator gate passes.
 - **Zero silent corruption** — no zero-vector fallback; every embed failure raises.
 - **ADG joinability ≥ 90 %** — `adg_node_id` resolved for ≥ 90 % of code chunks under the current ADG snapshot.
-- **Coverage** — `code_chunks` count ≥ 0.9 × (ADG `Symbol` nodes in Python layers); `docs` covers `docs/`, `AGENTS.md`, `.windsurf/rules/`, ADRs.
+- **Coverage** — `code_chunks` count ≥ 0.9 × (ADG `Symbol` nodes in Python layers); `docs` covers `docs/`, `AGENTS.md`, `.cursor/rules/`, ADRs.
 - **Hybrid retrieval parity** — every primary collection has a BM25 sidecar.
 - **Idempotent ingest** — re-running the pipeline does not duplicate chunks (validated via count diff ≤ 1 %).
 

@@ -3,12 +3,12 @@
 Status: **Phase 0 + W1 done; W2+ gated on three-bucket completion**
 Last updated: 2026-04-29
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-eval-first-principles-refactor-7b9f1d`
 Predecessor concepts:
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`
 - `requirements/contracts/REQ-CROSS-APP-EVAL-RUBRIC-001.contract.yaml`
-- `.windsurf/plans/three-bucket-gap-remediation-069806.md` (gating dependency)
+- `.cursor/plans/three-bucket-gap-remediation-069806.md` (gating dependency)
 
 ## Phase B severity ranking
 

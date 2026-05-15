@@ -436,7 +436,7 @@ The future implementation turn MUST honor:
 
 ### 12.1 This plan's commit
 
-- Staged set: **only** `.windsurf/plans/runtime-cert-e1w2-gate-module-9a4b2e.md`
+- Staged set: **only** `.cursor/plans/runtime-cert-e1w2-gate-module-9a4b2e.md`
 - Commit subject: `plan(runtime_cert): E1.W2 advisory gate module`
 
 ---

@@ -1,7 +1,7 @@
 ---
 description: |
   Author-Gate enforcement — pipeline steps, four-requirement contract, canonical-emitter invariant, pipeline-completion invariant. Promoted from model_decision 2026-05-09 per DS-2 of plan always-on-budget-compression-ds2-c7f4a3.
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/author-gate-enforcement.md`. Original Cursor trigger: `always_on`. -->
@@ -26,7 +26,7 @@ When facing an author-gate decision point:
    - **Cursor Agent clickable** — options reach `ask_user_question` (not prose)
    - **Confidence prefix** — `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]`
    - **Tradeoff segment** — ` · trade-off: <≥20 chars>`
-   - **Dominance star** — `⭐` on exactly one option iff dominance fires
+   - **Leading-option star** — `⭐` on exactly one option (top surfaced score); label carries `⭐ Recommended —`
 
    **Pipeline Completion Invariant**: Every `AUTHOR_GATE_PACKET:` MUST be followed by `ask_user_question` in the **same response**. Enforced by `post_cursor_agent_author_gate_pipeline_audit.py` and `post_cursor_agent_ask_user_question_packet_audit.py`. **Forbidden**: packet without same-response ask; deferring to follow-up; relying on user manual trigger. **Bypass**: `AG_PIPELINE_AUDIT_BYPASS=1`.
 
@@ -99,9 +99,9 @@ When ADG burndown gate (`T3a`) detects new violations:
 ask_user_question(
     question=f"ADG detected {count} new anti-pattern violations. Select approach?",
     options=[
-        {"label": "Approve All", "description": "Accept all violations with guardian comments. Pros: Unblocks work. Cons: Adds debt. ⭐ RECOMMENDED if unavoidable and documented."},
-        {"label": "Reject All", "description": "Revert all changes. Pros: Zero debt. Cons: Work blocked. ⭐ RECOMMENDED if alternatives exist."},
-        {"label": "Review Details", "description": "Show breakdown before deciding. Pros: Informed. Cons: Slower. ⭐ RECOMMENDED for first-time violations."}
+        {"label": "⭐ Recommended — Approve All", "description": "[RECOMMENDED ⭐ confidence=0.82] · trade-off: Unblocks work quickly but adds guardian debt to the burndown ledger"},
+        {"label": "Reject All", "description": "[confidence=0.71] · trade-off: Zero new debt but blocks the current change set until reworked"},
+        {"label": "Review Details", "description": "[confidence=0.68] · trade-off: Informed breakdown before deciding but slows the current wave"}
     ]
 )
 ```

@@ -2,7 +2,7 @@
 
 - **Plan ID**: `docs-reference-tier-split-a3c9f1`
 - **Status**: Draft (awaiting user approval)
-- **Author**: Cascade
+- **Author**: Cursor Agent
 - **Created**: 2026-04-27
 - **Tier**: T2 (multi-file documentation reorganization, single layer = `docs/`)
 - **Type**: Documentation reorg (not code refactoring — no ADG impact)
@@ -58,11 +58,11 @@ Option 3 separates tiers via underscore-prefixed sub-folders (`_notes/`, `_prime
 | **P2.2** | Move 4 report files into `_notes/reports/` | `PARENT_THINNING_ZERO_LOSS_REPORT.md`, `WINDOWS_EXPLORER_SAFE_TEST_REPORT.md`, `ZIP_FINAL_VALIDATION.md`, `WINDOWS_PATH_MAP.md` | None | 1000 | Pending |
 | **P3.1** | Create `_primers/`; move root `*.md` primers | `Base Agent Hierarchy v2.md`, `Context Window Degradation.md`, `DuckDB.md`, `HITL v4.md`, `Import Flow.md`, `JIT Elevator Shaft v2.md`, `LLM as a Judge.md`, `MRO Mixins v2.md`, `nvm vs. npm vs. npx.md`, `Similarity Metrics and Use Cases.md`, `Telemetry Generation vs. Utilization.md`, `practices-for-governing-agentic-ai-systems.pdf` | None | 1500 | Pending |
 | **P3.2** | Move primer folders as units | `Python/`, `Testing/`, `Redis/`, `MCP/`, `Ingestion Pipeline/`, `prompting/`, `Transformer Templates/`, `CI/` | Folder names with spaces; verify `git mv` works | 1000 | Pending |
-| **P3.3** | Move `AST Dependency Graphs (ADG)/` (special case — heavily referenced) | `AST Dependency Graphs (ADG)/` | Many `.windsurf/rules/` and AGENTS.md references cite this path | 1000 | Pending |
+| **P3.3** | Move `AST Dependency Graphs (ADG)/` (special case — heavily referenced) | `AST Dependency Graphs (ADG)/` | Many `.cursor/rules/` and AGENTS.md references cite this path | 1000 | Pending |
 | **P4.1** | Extend `SKIP_DIRS` in `tools/build_parent_thinning_artifacts.py` | `tools/build_parent_thinning_artifacts.py` | None | 500 | Pending |
 | **P4.2** | Tighten `check_reference_orphans.py`: enforce root-level `.md` allowlist | `ops_scripts/ci/check_reference_orphans.py` | Need final allowlist (`README.md`, `MANIFEST.json`, `UPDATED_MANIFEST.json` are JSON not MD) | 1000 | Pending |
 | **P4.3** | Add tier-violation rule: nothing under `_notes/` or `_primers/` matching SSOT prefix patterns | `ops_scripts/ci/check_reference_orphans.py` | Prevents accidental Tier-A files leaking into Tier B/C | 1000 | Pending |
-| **P5.1** | Sweep cross-references | `.windsurf/rules/*.md`, `AGENTS.md`, `docs/reports/plans/*.md`, `tools/**/*.py` (grep `docs/reference/<moved-name>`) | Many ADG references; PDF link in primers | 1500 | Pending |
+| **P5.1** | Sweep cross-references | `.cursor/rules/*.md`, `AGENTS.md`, `docs/reports/plans/*.md`, `tools/**/*.py` (grep `docs/reference/<moved-name>`) | Many ADG references; PDF link in primers | 1500 | Pending |
 | **P5.2** | Run `run_contract_gates.py`; regenerate `UPDATED_MANIFEST.json`; verify counts | All gates | `MANIFEST.json` will still drift (external bundler) — acceptable, not in scope | 1500 | Pending |
 
 ## File-Level Move Manifest (preview — refined in P1.2)
@@ -101,14 +101,14 @@ Root: `00X_Requirements_Traceability_and_No_Loss_Map.md`, `README.md`, `MANIFEST
 | Cross-references break (rules cite `docs/reference/AST Dependency Graphs (ADG)/...`) | P5.1 grep + replace before merge; CI fails the doc-link checker if any |
 | External bundler re-drops Tier B files at root | P4.2 orphans gate fails CI; fix is forward — bundler ignores or we gitignore `MANIFEST.json` (deferred Step 3) |
 | Folder with spaces (`AST Dependency Graphs (ADG)/`) breaks `git mv` on PowerShell | Use `subprocess.run` argv form or quoted path; verify P3.3 first |
-| Plan files / ADRs hardcode old paths | Sweep `.windsurf/plans/`, `docs/architecture/adr/` in P5.1 |
+| Plan files / ADRs hardcode old paths | Sweep `.cursor/plans/`, `docs/architecture/adr/` in P5.1 |
 | Notion rows reference moved paths | Spot-check ADR Registry + Wave/Phase Convergence; Notion rows are non-blocking — fix forward |
 
 ## Gap Register
 
 | Gap | Owner | Resolution Phase |
 |---|---|---|
-| Final allowlist for `_ALLOWED_EXEC_FILES` after move | Cascade | P4.2 |
+| Final allowlist for `_ALLOWED_EXEC_FILES` after move | Cursor Agent | P4.2 |
 | Decision on `00Z_Source_Alignment_Best_Practices.md` tier | User | P1.2 |
 | Decision on `98_Contextual_Refinement_Model_Primers/` — looks like Tier C but uses Tier A numbering | User | P1.2 |
 | External `MANIFEST.json` bundler — gitignore vs reconfigure | User | Out of scope (Step 3 of RCA, deferred) |

@@ -114,7 +114,7 @@ W6 successfully cleaned `agentic_core/runtime/delegation` (zero app-specific lit
 - `agentic_core/adg/analysis/` - ModuleOwnership.py, ownership.py
 - `agentic_core/adg/applications/` - placement_advisor.py, placement_advisor_types.py
 - `agentic_core/adg/contracts/` - schema.py
-- `.windsurf/skills/` - Multiple skill files
+- `.cursor/skills/` - Multiple skill files
 
 **Classification will determine:**
 1. Which files are actual RUNTIME_POLICY_LEAKAGE (must migrate)
@@ -138,8 +138,8 @@ W6 successfully cleaned `agentic_core/runtime/delegation` (zero app-specific lit
 ## Related Artifacts
 
 - W6 receipt: `artifacts/governance/agentic-core-governance-remediation-c4e8a2_w6_receipt.json`
-- Parent plan: `.windsurf/plans/agentic-core-governance-remediation-c4e8a2.md`
-- W6 plan: `.windsurf/plans/agentic-core-governance-w6-core-migration-d4e8a2.md`
+- Parent plan: `.cursor/plans/agentic-core-governance-remediation-c4e8a2.md`
+- W6 plan: `.cursor/plans/agentic-core-governance-w6-core-migration-d4e8a2.md`
 - Scan reports: `artifacts/governance/scans/core_leakage_scan_*.json`
 
 ## Notes

@@ -103,7 +103,7 @@ DS-1 is independent. DS-2 must produce ≥14 days of data before DS-3 planning b
 ## Definition of Done
 
 DoD-1: All three deferred actions documented with prerequisites, constraints, and next steps.
-- Evidence: This file on disk at `.windsurf/plans/governance-deferred-scope-next-actions-f3b7c1.md`
+- Evidence: This file on disk at `.cursor/plans/governance-deferred-scope-next-actions-f3b7c1.md`
 - Status: DONE
 
 DoD-2: Plan registered in Notion Plans DB with Status=Deferred.
@@ -120,7 +120,7 @@ STATUS: DEFERRED (tracker only — no execution waves)
 PARENT_PLAN: windsurf-governance-consolidation-a7c3e9
 RETIRED_PLAN: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2
 CREATED: 2026-05-12
-AUTHOR: Cascade
+AUTHOR: Cursor Agent
 DS_1_STATUS: DEFERRED — needs scoped Author-Gate plan
 DS_2_STATUS: DEFERRED — ready to run; observational only
 DS_3_STATUS: DEFERRED — gated on DS-2 ≥14 days + new plan + Author-Gate

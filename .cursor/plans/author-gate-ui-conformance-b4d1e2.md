@@ -5,16 +5,16 @@ plan_type: governance
 
 # Author-Gate UI Conformance — Star + Confidence Discipline
 
-Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandatory on every surfaced option, and add a post-cascade + CI gate to enforce it.
+Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandatory on every surfaced option, and add a post-cursor-agent + CI gate to enforce it.
 
 ---
 
 ## Context (SCQA)
 
 - **Situation** — Author-Gate packets are produced by `@c:\Git\Agentic-Workflow-FRESH\.windsurf\skills\author-gate-packet-builder\emit_packet.py:286-305` which stars the highest-confidence surfaced option unconditionally. The ledger record carries `surface_label` and `surface_description_prefix` fields with confidence numbers and star glyphs.
-- **Complication** — Four doctrine sources disagree on when the star fires. Template + code + SVP calibration say "always star the top". The user's corrected packet (top=0.77, dominance did_not_fire) shows no star. Additionally, nothing enforces that `ask_user_question` descriptions mirror the packet's confidence prefix, so Cascade's prose drops the number on many turns.
+- **Complication** — Four doctrine sources disagree on when the star fires. Template + code + SVP calibration say "always star the top". The user's corrected packet (top=0.77, dominance did_not_fire) shows no star. Additionally, nothing enforces that `ask_user_question` descriptions mirror the packet's confidence prefix, so Cursor Agent's prose drops the number on many turns.
 - **Question** — How do we make the Author-Gate UI (star + confidence prefix) match a single, unambiguous rule on every turn?
-- **Answer** — Adopt "star iff `routing.rule_applied == dominance_fires`", make `[confidence=0.NN]` mandatory on every surfaced option, and add a post-cascade UI audit + CI twin that fails on drift.
+- **Answer** — Adopt "star iff `routing.rule_applied == dominance_fires`", make `[confidence=0.NN]` mandatory on every surfaced option, and add a post-cursor-agent UI audit + CI twin that fails on drift.
 
 ---
 
@@ -45,7 +45,7 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 
 - Changing the surface_threshold (0.72) or dominance parameters (0.85 / 0.12).
 - Refactoring the packet schema at `@c:\Git\Agentic-Workflow-FRESH\.windsurf\schemas\decision_record.schema.json`.
-- Changes to `post_cascade_author_gate_capture.py` or `post_cascade_author_gate_miss_detector.py`.
+- Changes to `post_cursor_agent_author_gate_capture.py` or `post_cursor_agent_author_gate_miss_detector.py`.
 - Ledger migration or backfill — pre-existing decisions keep their recorded star state.
 
 ---
@@ -56,7 +56,7 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 |----------|-------|---------------|-------------|-------------|--------|
 | 1.1 | Doctrine lock-in — star = dominance only | `packet_template.md`, `author-gate-svp-calibration.md`, `author-gate-enforcement.md` | GAP-1 | ~1.5K | ✅ DONE |
 | 1.2 | Code gate — `emit_packet.py` only stars on `dominance_fires` | `emit_packet.py` | GAP-2 | ~1K | ✅ DONE |
-| 1.3 | Post-cascade UI audit hook | `.windsurf/scripts/post_cascade_author_gate_ui_audit.py` (NEW), `.windsurf/hooks.json` | GAP-3 | ~2K | ✅ DONE |
+| 1.3 | Post-cursor-agent UI audit hook | `.cursor/scripts/post_cursor_agent_author_gate_ui_audit.py` (NEW), `.cursor/hooks.json` | GAP-3 | ~2K | ✅ DONE |
 | 1.4 | CI twin + tests | `ops_scripts/ci/author_gate/check_ui_conformance.py` (NEW), `tests/unit/author_gate/test_author_gate_ui_audit.py` (NEW), `.pre-commit-config.yaml` | GAP-3 | ~1.5K | ✅ DONE |
 
 ---
@@ -66,7 +66,7 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 **GAP-1: Doctrine split on star-firing condition**
 - Template + SVP calibration table + code treat star as "always top surfaced".
 - User's corrected packet (top=0.77, did_not_fire) treats star as "dominance only".
-- Cascade picks per-turn, producing inconsistent UI.
+- Cursor Agent picks per-turn, producing inconsistent UI.
 
 **GAP-2: Code follows the wrong doctrine**
 - `emit_packet.py` `build_packet()` sets `is_recommended=True` on `surfaced_sorted[0]` unconditionally.
@@ -91,18 +91,18 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 
 **Acceptance**: unit test emits a packet with top=0.77/second=0.74 and verifies no option has `is_recommended=True`.
 
-### Phase 1.3 — Post-cascade UI audit hook
-**Scope**: New `post_cascade_author_gate_ui_audit.py` in `.windsurf/scripts/`. Scans the turn response for `ask_user_question` calls. For each option, validates:
+### Phase 1.3 — Post-cursor-agent UI audit hook
+**Scope**: New `post_cursor_agent_author_gate_ui_audit.py` in `.cursor/scripts/`. Scans the turn response for `ask_user_question` calls. For each option, validates:
 1. Description matches `^\[(RECOMMENDED ⭐ )?confidence=0\.\d\d\]`.
 2. At most one option per packet has the ⭐ prefix.
 3. Star presence matches routing verdict: if most recent `AUTHOR_GATE_PACKET:` in the turn has `routing.rule_applied == "dominance_fires"`, exactly one star is required; otherwise zero.
-Violations append to `artifacts/windsurf/author_gate_ui_violations.jsonl`. Bypass env `AUTHOR_GATE_UI_BYPASS=1` logs `reason: "bypass"` and passes.
-Wire into `.windsurf/hooks.json` under `post_cascade_end_of_turn` (follow existing `post_cascade_author_gate_capture.py` entry as the shape model).
+Violations append to `artifacts/cursor/author_gate_ui_violations.jsonl`. Bypass env `AUTHOR_GATE_UI_BYPASS=1` logs `reason: "bypass"` and passes.
+Wire into `.cursor/hooks.json` under `post_cursor_agent_end_of_turn` (follow existing `post_cursor_agent_author_gate_capture.py` entry as the shape model).
 
 **Acceptance**: hook script runs standalone with a crafted input fixture and emits the expected violation rows.
 
 ### Phase 1.4 — CI twin + tests
-**Scope**: New `ops_scripts/ci/author_gate/check_ui_conformance.py` that tails `artifacts/windsurf/author_gate_ui_violations.jsonl` and fails if unresolved entries exist within a 7-day staleness window (follow `check_capture_queue_freshness.py` shape). Wire as a pre-commit hook id `author-gate-ui-conformance` under tier T7-equivalent.
+**Scope**: New `ops_scripts/ci/author_gate/check_ui_conformance.py` that tails `artifacts/cursor/author_gate_ui_violations.jsonl` and fails if unresolved entries exist within a 7-day staleness window (follow `check_capture_queue_freshness.py` shape). Wire as a pre-commit hook id `author-gate-ui-conformance` under tier T7-equivalent.
 New tests at `tests/unit/author_gate/test_author_gate_ui_audit.py` covering:
 - dominance_fires → one star required, pass/fail cases
 - surface_top_N → zero stars required, pass/fail cases
@@ -127,7 +127,7 @@ New tests at `tests/unit/author_gate/test_author_gate_ui_audit.py` covering:
 
 - [x] All four doctrine sources state the same star rule (dominance-only).
 - [x] `emit_packet.py` gates `is_recommended` on `routing["rule_applied"] == "dominance_fires"`.
-- [x] Post-cascade hook produces violations on crafted mismatch, passes on crafted match.
+- [x] Post-cursor-agent hook produces violations on crafted mismatch, passes on crafted match.
 - [x] CI gate integrates with pre-commit and fails on stale unresolved violations.
 - [x] Full unit-test suite for audit + emit_packet passes (11/11).
 
@@ -136,8 +136,8 @@ New tests at `tests/unit/author_gate/test_author_gate_ui_audit.py` covering:
 ## Rollback Strategy
 
 1. Revert the commit; the prior unconditional-star behavior resumes automatically.
-2. Delete `artifacts/windsurf/author_gate_ui_violations.jsonl` if populated during rollout.
-3. Un-wire the hook from `.windsurf/hooks.json` and the CI entry from `.pre-commit-config.yaml`.
+2. Delete `artifacts/cursor/author_gate_ui_violations.jsonl` if populated during rollout.
+3. Un-wire the hook from `.cursor/hooks.json` and the CI entry from `.pre-commit-config.yaml`.
 
 ---
 
@@ -147,11 +147,11 @@ New tests at `tests/unit/author_gate/test_author_gate_ui_audit.py` covering:
 |---|---|---|
 | Doctrine sources aligned | 4 / 4 | grep for "star" / "⭐" in the four files; all say dominance-only |
 | `emit_packet.py` star gated on routing | 1 assertion path in code | unit test at Phase 1.2 |
-| UI audit hook wired | Entry in hooks.json | `rg post_cascade_author_gate_ui_audit .windsurf/hooks.json` |
+| UI audit hook wired | Entry in hooks.json | `rg post_cursor_agent_author_gate_ui_audit .cursor/hooks.json` |
 | CI gate wired | Entry in pre-commit | `rg author-gate-ui-conformance .pre-commit-config.yaml` |
 | Tests passing | 100% of new tests | pytest exit 0 |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Doctrine lean: keep rules short; procedural detail is in the skill template.
 - Evidence-before-synthesis: every change cites the specific file+line.

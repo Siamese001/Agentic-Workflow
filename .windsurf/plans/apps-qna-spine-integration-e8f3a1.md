@@ -4,7 +4,7 @@
 **Tier**: T3 (architecture decision, cross-layer, multi-wave, irreversible boundary changes)
 **Decision class**: `architecture_choice` (per author-gate-enforcement.md)
 **Status**: Drafted — pending Author-Gate per Wave entry
-**Owner**: Cascade (drafted) → Amit (approver)
+**Owner**: Cursor Agent (drafted) → Amit (approver)
 **Created**: 2026-04-30
 **Persona**: SVP Engineering (per constitutional §9 — operational simplicity, dependency hygiene, archival over deletion, ADRs, zero-regression)
 

@@ -5,7 +5,7 @@
 **Status:** Completed (all 3 waves shipped 2026-05-02; W2 closed as wall-clock-passive ongoing — does not gate plan closure)
 **Tier:** T2 (rule + script tweaks; no agentic_core changes)
 **Predecessor:** `windsurf-token-burn-augmentation-b7a3f1` (Completed 2026-05-02 — `35427693-f55c-8107-80d8-c832fb46f3e2`)
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Goal
 
@@ -23,32 +23,32 @@ Close the data-gated and operational items deferred from the predecessor plan no
 | Wave | Phases | Outcome |
 |------|--------|---------|
 | W1 | P1 — Read-budget hook | ≤10 reads/turn; bypass `READ_BUDGET_BYPASS=1`; native handler + standalone hook + 11 tests |
-| W2 | P3 — Per-turn telemetry | `artifacts/windsurf/turn_budget.jsonl`; weekly rollup `ops_scripts/calibration/token_burn_weekly_report.py` |
+| W2 | P3 — Per-turn telemetry | `artifacts/cursor/turn_budget.jsonl`; weekly rollup `ops_scripts/calibration/token_burn_weekly_report.py` |
 | W2 | P6 — MCP schema audit | `tools/diagnostics/mcp_schema_cost.py`; 9/10 stdio MCPs measured = 57,961 bytes / ~14,490 tokens / 88 tools |
 | W3 | P2 — Trim always-on | 51,108 → 43,651 bytes (14.6% reduction); 7,549-byte headroom |
 | W4 | P4, P5 | `SCOPE_RESET:` marker + summarize-before-return discipline added to `scope-containment.md` |
 | Open-scope | §12.2 | Constitutional §34 codified per-turn retrieval budgets |
 
-Predecessor plan path: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.md`
+Predecessor plan path: `.cursor/plans/windsurf-token-burn-augmentation-b7a3f1.md`
 
 ## 4. Files In Scope
 
 **Wave 1 (Playwright audit):**
 - `tools/diagnostics/mcp_schema_cost.py` — investigate npx-on-Windows resolution failure for `io.windsurf/mcp-playwright`
-- `artifacts/windsurf/mcp_schema_cost.json` (rewritten output)
+- `artifacts/cursor/mcp_schema_cost.json` (rewritten output)
 - `docs/reports/token-burn/mcp_schema_cost.md` (rewritten report)
 
 **Wave 2 (passive — data collection only):**
-- `artifacts/windsurf/turn_budget.jsonl` (grows organically)
-- `artifacts/windsurf/read_budget_violations.jsonl` (grows organically)
+- `artifacts/cursor/turn_budget.jsonl` (grows organically)
+- `artifacts/cursor/read_budget_violations.jsonl` (grows organically)
 - No file edits — wall-clock duration only
 
 **Wave 3 (data-driven adjustments):**
-- `.windsurf/scripts/_post_handlers/read_budget.py` — possible `SOFT_CAP` retune
-- `.windsurf/scripts/post_cascade_read_budget_audit.py` — same
+- `.cursor/scripts/_post_handlers/read_budget.py` — possible `SOFT_CAP` retune
+- `.cursor/scripts/post_cursor_agent_read_budget_audit.py` — same
 - `.windsurf/mcp_config.json` — possible `disabled: true` flips for retirement candidates
-- `.windsurf/rules/scope-containment.md` — possible cap-number update if threshold changes
-- `.windsurf/rules/constitutional.md` §34 — same
+- `.cursor/rules/scope-containment.md` — possible cap-number update if threshold changes
+- `.cursor/rules/constitutional.md` §34 — same
 - `tests/unit/windsurf_scripts/test_read_budget.py` — update threshold expectations if changed
 - New ADR if MCP retirement is recommended: `docs/adr/ADR-NNN-mcp-retirement-<server>.md`
 
@@ -66,10 +66,10 @@ Predecessor plan path: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.
 |----------|-------|-------|-------------|--------|
 | **F1** | Playwright MCP audit fix | `tools/diagnostics/mcp_schema_cost.py` (Windows npx resolution) | Root cause: `mcp_config.json` has bare `"command": "npx"`; Windows `npx.cmd` is a `.cmd` shim that `subprocess.Popen(shell=False)` cannot resolve via PATHEXT. Fix: added `shutil.which()` PATHEXT-aware resolution before `Popen` (lines 125-135). Defensive — also returns clean `command not found on PATH` error if missing. Re-ran with `--timeout 60` (Playwright bootstraps a browser-driver subprocess); 10/10 measured. | **Completed** 2026-05-02 |
 | **F2** | Telemetry data collection | passive — `turn_budget.jsonl` / `read_budget_violations.jsonl` / `grep_budget_violations.jsonl` accumulate organically | Wall-clock-passive; runs forever. Weekly report via `python ops_scripts/calibration/token_burn_weekly_report.py`. | **Ongoing-passive** |
-| **F3** | Read-budget threshold calibration | `.windsurf/scripts/_post_handlers/read_budget.py` `SOFT_CAP`; rule §34; tests | Author-Gate verdict: **keep cap=10**. Score keep=0.85, tighten=0.30, loosen=0.30. Rationale: <50 rows of telemetry; current cap is conservative-default; tightening or loosening without data risks false-positive cap violations or wasted permissive headroom. Re-evaluate when `turn_budget.jsonl` ≥ 50 rows. No file edits required — current configuration is the verdict. | **Completed** 2026-05-02 |
+| **F3** | Read-budget threshold calibration | `.cursor/scripts/_post_handlers/read_budget.py` `SOFT_CAP`; rule §34; tests | Author-Gate verdict: **keep cap=10**. Score keep=0.85, tighten=0.30, loosen=0.30. Rationale: <50 rows of telemetry; current cap is conservative-default; tightening or loosening without data risks false-positive cap violations or wasted permissive headroom. Re-evaluate when `turn_budget.jsonl` ≥ 50 rows. No file edits required — current configuration is the verdict. | **Completed** 2026-05-02 |
 | **F4** | High-cost MCP retirement review | `.windsurf/mcp_config.json` (`disabled: true` for filesystem + task_manager); ADR-095 published | Author-Gate per candidate: **playwright keep** (0.88 — unique value, per-tool efficient at 185); **filesystem shadow-disable** (0.78 — 3,056 token savings, full native substitute coverage); **task_manager shadow-disable** (0.82 — 2,524 token savings, structured-reasoning skill substitute, worst per-tool ratio at 631); **context7 keep** (0.72 — low absolute cost, unique versioned-doc value). Total potential savings: 5,580 tokens (29.8% of MCP fleet always-on cost). 30-day inspection criterion: count `mcp4_*` and `mcp11_*` rows in `turn_budget.jsonl` after 2026-06-01; if 0, retire; if >0, re-enable with substitute-insufficiency ADR. | **Completed** 2026-05-02 |
 
-## 7. Decision Gates (Author-Gate per `.windsurf/rules/author-gate-enforcement.md`)
+## 7. Decision Gates (Author-Gate per `.cursor/rules/author-gate-enforcement.md`)
 
 - **F3 trigger** — fires if calibrated cap differs from current 10 by ≥2. Options: tighten | keep | loosen | add-hard-cap. Score against P95 actual + violation rate + false-positive cost.
 - **F4 trigger** — fires per MCP retirement candidate. Options: retire | keep | shadow-disable (set `disabled: true` for 1 week, monitor). Score against usage frequency + substitute availability + per-turn fixed cost. **Updated candidate list after W1** (sorted by absolute cost): `io.windsurf/mcp-playwright` (4,250 tokens / 23 tools — heavy but tools/token efficient at ~185), `filesystem` (3,056 tokens / 14 tools — overlaps with native read_file/write_to_file), `task_manager` (2,524 tokens / 4 tools — ~630/tool worst per-tool ratio), `context7` (1,273 tokens / 2 tools — ~636/tool — highest per-tool). Native tools cover most filesystem use cases; structured-reasoning skill covers most task_manager use cases. Author-Gate fires for each.
@@ -79,7 +79,7 @@ Predecessor plan path: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.
 - W1: re-run audit → 10 servers measured (currently 9)
 - W2: `len(json.loads(...) for line in turn_budget.jsonl) >= 50`; weekly reports rendered for W18 and W19
 - W3 F3: if cap changed, all 11 read-budget unit tests still pass with updated expected values
-- W3 F4: if any MCP retired, `pre_mcp_gate.py` smoke test confirms tool calls to retired server fail closed; ADR posted to ADR Registry; AGENTS.md auto-regenerated via `python .windsurf/scripts/sync_mcp_config.py`
+- W3 F4: if any MCP retired, `pre_mcp_gate.py` smoke test confirms tool calls to retired server fail closed; ADR posted to ADR Registry; AGENTS.md auto-regenerated via `python .cursor/scripts/sync_mcp_config.py`
 
 ## 9. Rollback
 
@@ -103,14 +103,14 @@ Predecessor plan path: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.
 
 ## 12.1 Open-Scope Capture (post-W3 closeout, 2026-05-02)
 
-After W3 closure, residual deferred items captured to Backlog Items DB via `DEFERRED_SCOPE:` markers (constitutional §24 auto-post via `post_cascade_deferred_scope_capture.py`):
+After W3 closure, residual deferred items captured to Backlog Items DB via `DEFERRED_SCOPE:` markers (constitutional §24 auto-post via `post_cursor_agent_deferred_scope_capture.py`):
 
 | Item | Disposition | Marker Type | Action Taken |
 |------|-------------|-------------|--------------|
 | **30-day MCP retirement re-evaluation script** | **Implemented** 2026-05-02 | — (no marker — closed inline) | Wrote `tools/diagnostics/mcp_30day_retirement_review.py` (190 LOC, smoke-tested). Operator runs on/after 2026-06-01. |
 | **ADR-095 re-evaluation criterion methodology fix** | **Implemented** 2026-05-02 | — (no marker — closed inline) | Amended ADR-095 §"Re-Enablement / Retirement Criteria" with the correct methodology (operator judgment informed by diagnostic script; raw call counts always 0 for disabled MCPs and are not the signal). |
-| **AGENTS.md non-autogen content trim** | **Implemented** 2026-05-02 | — (was backlog → closed) | Extracted Plans DB Status Taxonomy + Backlog Snapshot sections (~2,900 bytes) to new conditional rule `@.windsurf/rules/notion-plans-taxonomy.md` (trigger: model_decision on plans/status/taxonomy queries). AGENTS.md 20,075 → 17,173 bytes (-14.5%, **-725 tokens always-loaded**). Auto-gen sync gate `check_agents_md_sync.py` PASS; always-on budget PASS (44,062 / 51,200). |
-| **Weekly token-burn report cadence automation** | **Implemented** 2026-05-02 | — (was backlog → closed) | Wrote `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\pre_user_prompt_weekly_report.py` — ISO-week cadence trigger with sentinel at `.windsurf/state/weekly_report_<YYYY-Www>.flag`. Registered in `.windsurf/hooks.json` `pre_user_prompt` chain (7th and final entry). Smoke-tested: triggered W18 report, wrote sentinel, idempotent on re-run. Fail-open per constitutional §30 precedent. 30s subprocess timeout; never blocks user prompts. |
+| **AGENTS.md non-autogen content trim** | **Implemented** 2026-05-02 | — (was backlog → closed) | Extracted Plans DB Status Taxonomy + Backlog Snapshot sections (~2,900 bytes) to new conditional rule `@.cursor/rules/notion-plans-taxonomy.md` (trigger: model_decision on plans/status/taxonomy queries). AGENTS.md 20,075 → 17,173 bytes (-14.5%, **-725 tokens always-loaded**). Auto-gen sync gate `check_agents_md_sync.py` PASS; always-on budget PASS (44,062 / 51,200). |
+| **Weekly token-burn report cadence automation** | **Implemented** 2026-05-02 | — (was backlog → closed) | Wrote `@c:\Git\Agentic-Workflow-FRESH\.windsurf\scripts\pre_user_prompt_weekly_report.py` — ISO-week cadence trigger with sentinel at `.cursor/state/weekly_report_<YYYY-Www>.flag`. Registered in `.cursor/hooks.json` `pre_user_prompt` chain (7th and final entry). Smoke-tested: triggered W18 report, wrote sentinel, idempotent on re-run. Fail-open per constitutional §30 precedent. 30s subprocess timeout; never blocks user prompts. |
 | **Per-MCP usage attribution verification** | **Verified** 2026-05-02 | — (no marker — closed inline) | Inspected `_post_handlers/token_telemetry.py:36-40`: `_count_tool_calls` extracts `name="..."` from `<invoke>` tags via regex; counts are aggregated by exact tool name in `tool_call_counts`. The 30-day diagnostic script matches by suffix patterns (e.g., `read_text_file` → filesystem) since prefix `mcpN_` is unstable. Working as designed. |
 
 **Both deferred items closed 2026-05-02 (same session).** Original `DEFERRED_SCOPE:` markers are preserved for historical context but the items are now fully implemented — see table above for evidence pointers.

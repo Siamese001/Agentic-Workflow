@@ -4,7 +4,7 @@ post_cascade_ag_queue_seed_capture.py — Capture AG_QUEUE_SEED markers.
 
 Hook: post_cascade_response (show_output=false).
 
-Scans the Cascade response for `AG_QUEUE_SEED:` markers and writes each
+Scans the Cursor Agent response for `AG_QUEUE_SEED:` markers and writes each
 into the corresponding plan's queue JSONL. Idempotent — re-running on
 the same response does not create duplicates (enqueue is id-keyed).
 

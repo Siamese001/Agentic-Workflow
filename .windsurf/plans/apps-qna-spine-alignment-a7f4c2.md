@@ -763,7 +763,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - **Plan type**: refactor → ADG graph-layer evidence required (§22)
 - **Tier**: T3 (multi-wave, cross-layer, architecture decisions)

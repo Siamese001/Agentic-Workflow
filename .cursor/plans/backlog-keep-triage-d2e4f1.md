@@ -83,9 +83,9 @@ Companion to `bulk_flip_stale_drafts` (2026-05-02): of the 298 Draft rows in the
 | 1 | P1 | 676.6 | [P1] 2_authority_boundary P0 17 cross-layer authority breaches | `l6-gravity-hybrid-7c4e2a.md` |
 | 2 | P1 | 443.9 | [P1] L4 blueprint policy version migration tests (00B.9) | `gap-closure-test-impl-b77a11.md` |
 | 3 | P1 | 404.5 | [P1] L3-L2 step handoff checkpoint resume tests (03.9) | `gap-closure-test-impl-b77a11.md` |
-| 4 | P1 | 390.3 | [P1] C2_l5_bypass_pview P0 L5 safety plane bypass | `.windsurf/plans/adg-architectural-p0-violations-cl` |
+| 4 | P1 | 390.3 | [P1] C2_l5_bypass_pview P0 L5 safety plane bypass | `.cursor/plans/adg-architectural-p0-violations-cl` |
 | 5 | P1 | 384.1 | [P1] 4_capability_egress P0 outbound calls bypass capability adapter | `phase-b-blocker-burndown-a8c4f1.md` |
-| 6 | P1 | 360.8 | [P1] W7 W7.4 — D7 gate over-flags subsystems dispatched via dynamic im | `.windsurf/plans/audit-uncovered-gates-and-remediat` |
+| 6 | P1 | 360.8 | [P1] W7 W7.4 — D7 gate over-flags subsystems dispatched via dynamic im | `.cursor/plans/audit-uncovered-gates-and-remediat` |
 | 7 | P1 | 351.9 | [P1] W-LATER SSOT-HARDCODING-W2 — DEFERRED top 10 hardcoded path liter | `repo-tech-debt-wave1-b3c8d1.md` |
 | 8 | P1 | 336.1 | [P1] W2 W2.P1 — move similarity_threshold and abstain threshold litera | `l0-routing-calibration-gap-audit-b3c9d4.md` |
 | 9 | P1 | 318.8 | [P1] v_p0_write_bypass_uwg P0 state write does not flow through L4 UWG | `phase-b-blocker-burndown-a8c4f1.md` |

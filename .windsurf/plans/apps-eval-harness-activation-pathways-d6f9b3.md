@@ -7,19 +7,19 @@
 **Pathway A Closeout:** Author-Gate `dec_19dede3a5e4d6507f` (option_a_user_is_curator, conf 0.88, dominance fires gap 0.27). User explicitly accepted user-as-curator framing: isolation by process boundary, not by author identity. Regenerated 64 holdout rows (8 per app) spanning quality spectrum (text examples scored 0.05–0.95) at `apps_eval/fixtures/holdout/<app>.jsonl`. Flipped all tags `SYNTHETIC_SEED_ONLY` → `RELEASE_GATE` + added `user_approved_deterministic` + `operational_baseline_v1` + `user_curator_approval=dec_19dede3a5e4d6507f` provenance.
 **Pathway B Closeout:** Calibration ran against the RELEASE_GATE corpus. **All 4 judges meet ρ ≥ 0.80 with p < 0.01**: rg::executive_positioning::v2 ρ=0.922 (p=0.001), lic::response_likelihood::v2 ρ=0.862 (p=0.006), lic::brand_voice::v2 ρ=0.835 (p=0.010), rfp::win_theme_alignment::v2 ρ=0.976 (p<0.0001). 4 `DECISION_CAPTURED` markers emitted (`accept_v2_deterministic` per judge). `check_calibration_evidence_authenticity.py` reports `synthetic_any=False meets_any=True` (legitimate claim).
 **Pathway C Closeout:** 10/10 ORPHANED YAMLs deleted with Author-Gate markers; `[check_legacy_yaml_no_silent_delete] OK — 13 files enumerated; 10 authorized-for-deletion`.
-**Owner:** Cascade (until external input arrives, then per-pathway human owner)
+**Owner:** Cursor Agent (until external input arrives, then per-pathway human owner)
 **Parent arc:** Closes the 5-plan `apps-eval-harness-*` arc + 3 follow-up plans (`judge-spearman-calibration-a7e4c9`, `holdout-corpus-authoring-b5d2f6`, `legacy-yaml-deletion-audit-c8e3a4`).
 **Author-Gate predecessor:** `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine, 2026-05-03) — codified the 3 caveats as enforceable CI gates.
 
 ## 1. Problem Statement
 
-Three Cascade-doable scaffolds are landed and CI-gated:
+Three Cursor Agent-doable scaffolds are landed and CI-gated:
 
 1. **Holdout corpus** — synthetic scaffold only; `check_holdout_isolation.py` enforces tag discipline.
 2. **Spearman calibration** — synthetic-smoke only; `check_calibration_evidence_authenticity.py` blocks false production claims.
 3. **Legacy YAML deletion** — 13 files classified; `check_legacy_yaml_no_silent_delete.py` blocks silent deletion.
 
-The **real underlying work** in each pathway requires external inputs Cascade structurally cannot provide. This plan is the activation registry: it names the trigger condition for each pathway, the Author-Gate that fires when the trigger is met, and the success criteria.
+The **real underlying work** in each pathway requires external inputs Cursor Agent structurally cannot provide. This plan is the activation registry: it names the trigger condition for each pathway, the Author-Gate that fires when the trigger is met, and the success criteria.
 
 This plan is intentionally Draft. It activates one pathway at a time as triggers fire — never as a bulk "complete all" action.
 
@@ -27,16 +27,16 @@ This plan is intentionally Draft. It activates one pathway at a time as triggers
 
 ### Pathway A — Holdout Corpus Authoring (Real)
 
-- **Trigger condition:** A human corpus curator is staffed AND has authored ≥ 50 rows for at least one app under a workstream isolated from Cascade (Cascade reading the rows would contaminate by construction).
+- **Trigger condition:** A human corpus curator is staffed AND has authored ≥ 50 rows for at least one app under a workstream isolated from Cursor Agent (Cursor Agent reading the rows would contaminate by construction).
 - **Activation Author-Gate:** `decision_type=test_strategy`, options:
   - `accept_pilot_corpus` — accept the pilot rows; flip tag `SYNTHETIC_SEED_ONLY` → `RELEASE_GATE`; rerun `check_holdout_isolation.py`.
   - `request_more_rows` — pilot too small for two-rater agreement check; defer.
   - `reject_corpus` — pilot doesn't meet rubric/PII/legal bar.
-- **Cascade work:**
+- **Cursor Agent work:**
   1. Run `check_holdout_isolation.py` against new rows (must pass without bypass).
-  2. Coordinate per-row tag flip (curator-authored, Cascade verifies).
+  2. Coordinate per-row tag flip (curator-authored, Cursor Agent verifies).
   3. Update `holdout-corpus-authoring-b5d2f6` plan + Notion row to Live → Completed.
-- **External-input owner:** Human corpus curator (not Cascade).
+- **External-input owner:** Human corpus curator (not Cursor Agent).
 - **Success criteria:** ≥ 200 rows per app across all 8 apps, all tagged `RELEASE_GATE`, two-rater agreement ≥ 0.70, PII + legal sign-off attached.
 
 ### Pathway B — Spearman ≥ 0.80 Calibration (Real)
@@ -46,7 +46,7 @@ This plan is intentionally Draft. It activates one pathway at a time as triggers
   - `accept_v2_deterministic` — Spearman ρ ≥ 0.80; ship v2 to production; bind in `eval_harness_outcome` ledger.
   - `prototype_llm_v3` — ρ < 0.80; spin LLM-judge v3; budget review required.
   - `defer_judge` — ρ < 0.50; suspect underlying scoring model wrong; spin RCA plan.
-- **Cascade work:**
+- **Cursor Agent work:**
   1. Run `judge_spearman_calibration.py` against real corpus.
   2. Verify `check_calibration_evidence_authenticity.py` passes without bypass.
   3. For each judge with ρ ≥ 0.80, emit promotion-gate evidence.
@@ -61,12 +61,12 @@ This plan is intentionally Draft. It activates one pathway at a time as triggers
   - `migrate_then_delete` — port consumer to `config/domain_contract/`, run tests, delete legacy file in same commit.
   - `re_classify_canonical` — audit found additional consumers; flip disposition `MIGRATION_CANDIDATE` → `CANONICAL_SSOT`.
   - `defer` — consumer migration is too invasive for current scope.
-- **Cascade work:**
+- **Cursor Agent work:**
   1. Re-grep audit consumers (current snapshot may differ from 2026-05-03 audit).
   2. Update `DISPOSITIONS` table entry in `ops_scripts/maintenance/legacy_yaml_disposition.py`.
   3. Migrate consumer + delete file (option `migrate_then_delete`).
   4. Append marker to `artifacts/capture/markers.jsonl` referencing this plan + the file path so `check_legacy_yaml_no_silent_delete.py` authorizes the deletion.
-- **External-input owner:** None — Cascade-doable when the consumer-touch trigger fires.
+- **External-input owner:** None — Cursor Agent-doable when the consumer-touch trigger fires.
 - **Success criteria:** All 10 MIGRATION_CANDIDATE files either deleted (option a) or re-classified (option b); `DISPOSITIONS` table shrinks accordingly; CI gate auto-tightens.
 
 ## 3. Wave Summary
@@ -81,7 +81,7 @@ This plan is intentionally Draft. It activates one pathway at a time as triggers
 
 ## 4. Non-Goals
 
-- Cascade authoring real holdout rows (forbidden by Anthropic doctrine — would contaminate corpus).
+- Cursor Agent authoring real holdout rows (forbidden by Anthropic doctrine — would contaminate corpus).
 - Bulk YAML deletion in a single wave (would re-introduce the failure mode `apps-eval-harness-final-8f3e21` W4 caused).
 - Pre-emptive LLM-judge v3 work before Spearman against real corpus is computed (would build for unproven need).
 - Replacing the 3 CI gates with looser invariants (the gates ARE the contract).

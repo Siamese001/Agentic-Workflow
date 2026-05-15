@@ -7,7 +7,7 @@ dod_exempt: false
 
 # Notion Sync Enforcement Hardening — Bidirectional Consistency & Failure Recovery
 
-Closes enforcement gaps in Cascade→Notion write pipeline: adds bidirectional sync validation, automatic retry with backoff, conflict detection, and sync health observability. Aligns with constitutional §25 (MCP serialization), §36 (plan registration), and existing NP1-NP10 gate family.
+Closes enforcement gaps in Cursor Agent→Notion write pipeline: adds bidirectional sync validation, automatic retry with backoff, conflict detection, and sync health observability. Aligns with constitutional §25 (MCP serialization), §36 (plan registration), and existing NP1-NP10 gate family.
 
 ---
 
@@ -15,9 +15,9 @@ Closes enforcement gaps in Cascade→Notion write pipeline: adds bidirectional s
 
 **Situation**: The current Notion integration has strong write-time validation (NP2 status taxonomy, NP9 registration, NP10 Waiting For) and post-cascade audits, but operates as a unidirectional "fire-and-forget" pipeline. Wave lifecycle writes via `wave_lifecycle_writer.py` are fail-soft (log + exit 0 on HTTP error), with no retry, no reconciliation, and no detection of external Notion changes that create drift from on-disk state.
 
-**Complication**: Production incidents reveal three failure modes: (1) Notion writes fail silently during high-volume operations (rate limits, transient 5xx) and remain failed because no retry exists; (2) manual edits in Notion UI create drift that Cascade never detects; (3) bulk operations (e.g., retiring 50 plans) are slow and brittle because no batch API exists in the tooling. Data consistency is eventually-consistent by accident, not by design.
+**Complication**: Production incidents reveal three failure modes: (1) Notion writes fail silently during high-volume operations (rate limits, transient 5xx) and remain failed because no retry exists; (2) manual edits in Notion UI create drift that Cursor Agent never detects; (3) bulk operations (e.g., retiring 50 plans) are slow and brittle because no batch API exists in the tooling. Data consistency is eventually-consistent by accident, not by design.
 
-**Question**: How do we harden the Cascade→Notion sync pipeline to guarantee at-least-once delivery, detect and reconcile drift automatically, and provide observability into sync health?
+**Question**: How do we harden the Cursor Agent→Notion sync pipeline to guarantee at-least-once delivery, detect and reconcile drift automatically, and provide observability into sync health?
 
 **Answer**: Introduce a four-layer enforcement stack: (W1) pre-flight schema validation + rate-limit aware batching; (W2) exponential-backoff retry with circuit breaker; (W3) bidirectional drift detection + reconciliation loop; (W4) sync health ledger + alerting. Each layer adds a gate (NP11-NP14), a hook, and CI enforcement.
 
@@ -87,7 +87,7 @@ Closes enforcement gaps in Cascade→Notion write pipeline: adds bidirectional s
 - Impact: Wave completion markers never reach Notion; plan status drift undetected
 
 **GAP-2: No Schema Validation Before Write**
-- Cascade can attempt to write to renamed/deleted properties; Notion returns 400 but no pre-flight check exists
+- Cursor Agent can attempt to write to renamed/deleted properties; Notion returns 400 but no pre-flight check exists
 - Impact: Wasted API calls, late failure discovery, retry on non-retryable errors
 
 **GAP-3: No Rate Limit Awareness**
@@ -95,11 +95,11 @@ Closes enforcement gaps in Cascade→Notion write pipeline: adds bidirectional s
 - Impact: Burst writes (bulk retire) hit rate limits, no backoff logic
 
 **GAP-4: No Bidirectional Drift Detection**
-- Manual Notion UI edits (status flips, summary edits) create divergent state Cascade never sees
+- Manual Notion UI edits (status flips, summary edits) create divergent state Cursor Agent never sees
 - Impact: Source of truth becomes unclear; "what's the real status?" confusion
 
-**GAP-5: No Circuit Breaker for Cascade Failures**
-- If Notion API is degraded, every Cascade turn attempts writes, all fail, no degradation path
+**GAP-5: No Circuit Breaker for Cursor Agent Failures**
+- If Notion API is degraded, every Cursor Agent turn attempts writes, all fail, no degradation path
 - Impact: Log spam, false-positives in other gates, wasted compute
 
 **GAP-6: No Sync Health Observability**
@@ -341,7 +341,7 @@ Emergency: Revert `wave_lifecycle_writer.py` to pre-retry version (git revert).
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - **Hook pattern**: Pure helpers + pre/post hooks + CI gates (matches NP1-NP10)
 - **Bypass discipline**: Every new gate has `*_BYPASS=1` and `*_FAIL_CLOSED=1`

@@ -28,7 +28,7 @@ LAST_UPDATED: 2026-05-14
 
 ## Context (SCQA)
 
-- **Situation** — The `post_cascade_wave_lifecycle_capture.py` hook + `_plan_wave_table_updater.py` are wired and running, but wave/phase green-check updates never actually appear in plan files.
+- **Situation** — The `post_cursor_agent_wave_lifecycle_capture.py` hook + `_plan_wave_table_updater.py` are wired and running, but wave/phase green-check updates never actually appear in plan files.
 - **Complication** — Three silent failure modes: (1) `SLUG_RE` rejects any slug that doesn't end in exactly 6 hex chars, so master plans and numerically-prefixed plans are silently dropped; (2) `_find_plan_file` only does an exact filename match, so `01_apps-rg-...md` is never found when slug=`apps-rg-...`; (3) S-series phase IDs (`S0`, `S1`…) don't match `_PHASE_ROW_RE` which only accepts `W`-prefix. Additionally the plan template buries status tables far below the context, making them hard for both humans and enforcement hooks to locate.
 - **Question** — How do we make wave/phase completions automatically update the correct plan file tables, and make the template structure enforcer-friendly?
 - **Answer** — Apply targeted hotfixes to the slug matching + file lookup + phase regex (already done as hotfixes), then restructure the template so status tables are the first thing after the header, and add auto-capture of test/scope additions per wave.
@@ -71,12 +71,12 @@ Plans like `apps-rg-master-governed-runtime-hardening` or `01_apps-rg-master-...
 
 ### Root Cause 2 — _find_plan_file Exact Match Only (FIXED)
 
-`_find_plan_file(repo_root, slug)` only tried `.windsurf/plans/<slug>.md`. File `01_apps-rg-master-governed-runtime-hardening.md` is never found for slug `apps-rg-master-governed-runtime-hardening`.
+`_find_plan_file(repo_root, slug)` only tried `.cursor/plans/<slug>.md`. File `01_apps-rg-master-governed-runtime-hardening.md` is never found for slug `apps-rg-master-governed-runtime-hardening`.
 
 **Fix**: Three-tier resolution:
 1. Exact match `<slug>.md`
 2. Strip numeric prefix (`01_`, `02-`, etc.) and match bare stem
-3. Scan frontmatter `plan_id:` value for any `.windsurf/plans/*.md`
+3. Scan frontmatter `plan_id:` value for any `.cursor/plans/*.md`
 
 ### Root Cause 3 — _PHASE_ROW_RE Only Matches W-Prefix (FIXED)
 
@@ -94,7 +94,7 @@ Current template puts Wave Manifest at line ~44 and status tables don't exist as
 
 ### Root Cause 6 — No Auto-Capture of Test/Scope Additions (PENDING — W3)
 
-When Cascade adds tests or new files during a wave and emits `WAVE_COMPLETE: plan=... wave=N note="+12 tests, 4 files"`, the hook writes the Notion Summary but doesn't update the plan's wave table with the test/scope data. W3 adds this.
+When Cursor Agent adds tests or new files during a wave and emits `WAVE_COMPLETE: plan=... wave=N note="+12 tests, 4 files"`, the hook writes the Notion Summary but doesn't update the plan's wave table with the test/scope data. W3 adds this.
 
 ---
 
@@ -109,7 +109,7 @@ CHECKPOINT: A
 **Files changed**:
 - `tools/notion/_wave_lifecycle_helpers.py` — SLUG_RE relaxed
 - `tools/windsurf/_plan_wave_table_updater.py` — _find_plan_file 3-tier lookup + S-prefix _PHASE_ROW_RE
-- `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` — _warn_unresolvable_slugs added
+- `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` — _warn_unresolvable_slugs added
 
 **Phases**:
 - **W1.1** — Fuzzy slug lookup in _find_plan_file | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
@@ -202,9 +202,9 @@ DoD-6: `agentic_core/` untouched
 
 ### KD-1 — Pre-existing Hook Schema Test Failure
 
-- **Test**: `tests/unit/windsurf_scripts/test_post_cascade_wave_lifecycle_capture.py::TestHooksJsonRegistration::test_hook_entry_schema_pure`
+- **Test**: `tests/unit/windsurf_scripts/test_post_cursor_agent_wave_lifecycle_capture.py::TestHooksJsonRegistration::test_hook_entry_schema_pure`
 - **Status**: FAILING — pre-existing, not introduced by this plan
 - **Cause**: Commit `809d847c2d` (`refactor(governance): consolidate windsurf rules + enrich hooks.json with full metadata`) enriched all hooks.json entries with governance metadata fields (`hook_id`, `lifecycle_stage`, `priority`, `entrypoint`, `blocking_mode`, `bypass_env_var`, `emits_receipt`, `owner_rule_ref`, `replacement_for`). The test still asserts the older minimal schema (`command`, `working_directory`, `show_output` only), per constitutional §27.
-- **Evidence**: `git log --oneline -1 .windsurf/hooks.json` → `809d847c2d`; all hook entries in hooks.json carry the extra fields, not just the wave lifecycle entry.
+- **Evidence**: `git log --oneline -1 .cursor/hooks.json` → `809d847c2d`; all hook entries in hooks.json carry the extra fields, not just the wave lifecycle entry.
 - **Disposition**: Outside scope of this plan. Requires a separate contract decision: either (a) update the test to allow the enriched schema as the new §27-compliant surface, or (b) strip the extra keys from hooks.json back to minimal schema. Neither is a regression from this plan's changes.
 - **Blocking this plan**: NO

@@ -38,7 +38,7 @@ LAST_UPDATED: 2026-05-12
 - **W3** — OTEL reconcile path | TODO
 - **W4** — L7 closure vs scope-out | TODO
 
-PLAN_CREATED: slug=agentic-core-signoff-hardening-b8e2c4 path=.windsurf/plans/agentic-core-signoff-hardening-b8e2c4.md
+PLAN_CREATED: slug=agentic-core-signoff-hardening-b8e2c4 path=.cursor/plans/agentic-core-signoff-hardening-b8e2c4.md
 
 AG_QUEUE_SEED: plan=agentic-core-signoff-hardening-b8e2c4 id=AG-W3-otel-reconcile depends_on= title=OTEL replay 020/022 reconcile path (launch collector vs authority-manifest scope)
 AG_QUEUE_SEED: plan=agentic-core-signoff-hardening-b8e2c4 id=AG-W4-l7-closure depends_on= title=L7 route-family 8-of-9 closure vs scope-out manifest
@@ -284,15 +284,15 @@ For completeness: the agentic_core arm's static enforcement claims (30 STATIC_EN
 
 ## 10. Notion Registration
 
-- **Plans DB**: page registered with `Slug = agentic-core-signoff-hardening-b8e2c4`, `Status = Draft`, `Exists On Disk = true`, `Plan File Path = .windsurf/plans/agentic-core-signoff-hardening-b8e2c4.md`, bullet-style `AI Summary `.
+- **Plans DB**: page registered with `Slug = agentic-core-signoff-hardening-b8e2c4`, `Status = Draft`, `Exists On Disk = true`, `Plan File Path = .cursor/plans/agentic-core-signoff-hardening-b8e2c4.md`, bullet-style `AI Summary `.
 - **Lifecycle**: Draft → Live (when execution starts) → Completed (when all 6 waves close + closeout report written).
 
 ## 11. References
 
 - Constitutional §32 (Fort Knox certification integrity, two arms — agentic_core + apps_e2e)
 - Constitutional §36 (plan registration enforcement)
-- `.windsurf/rules/fortknox-certification-discipline.md`
-- `.windsurf/skills/fortknox-evidence/SKILL.md`
+- `.cursor/rules/fortknox-certification-discipline.md`
+- `.cursor/skills/fortknox-evidence/SKILL.md`
 - Sibling apps_e2e signer + verifier (`tools/cert/apps_e2e/`)
 - Bundle's own `GAP-2_external_attestation` declaration in `HUNDRED_PERCENT_RUNTIME_PROOF.json` (caps signed-arm trust at SIGNED_PROOF until cosign)
 - Audit findings dated 2026-05-03 (pre-plan analysis in conversation; not committed as ADR pending plan completion)

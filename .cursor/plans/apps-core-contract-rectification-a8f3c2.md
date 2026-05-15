@@ -60,7 +60,7 @@ Close the gaps in apps_* domain contracts identified in the architectural bounda
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| 1.1 | Repair profile schema design | `.windsurf/schemas/repair_profile.schema.yaml` (new) | No repair schema exists | ~2K | ✅ DONE |
+| 1.1 | Repair profile schema design | `.cursor/schemas/repair_profile.schema.yaml` (new) | No repair schema exists | ~2K | ✅ DONE |
 | 1.2 | Repair profiles for apps_qna, apps_rg, apps_lic | 3 YAML files | PP-1, GAP-1 | ~3K | ✅ DONE |
 | 1.3 | Repair profiles for remaining 5 apps | 5 YAML files | PP-1, GAP-1 | ~4K | ✅ DONE |
 | 1.4 | UWG registration for repair profiles | `agentic_core/L4_state/contracts/app_domain.py` | L4 record extension | ~2K | ✅ DONE |
@@ -122,7 +122,7 @@ Close the gaps in apps_* domain contracts identified in the architectural bounda
 **Scope**: Create canonical schema for repair menu contracts defining stage-specific recovery actions, rollback policies, and healing triggers.
 
 **Files**:
-- `.windsurf/schemas/repair_profile.schema.yaml` (new)
+- `.cursor/schemas/repair_profile.schema.yaml` (new)
 
 **Acceptance**:
 - Schema validates with jsonschema
@@ -211,7 +211,7 @@ Close the gaps in apps_* domain contracts identified in the architectural bounda
 **Scope**: Create cache policy schema and YAML profiles for all 8 apps.
 
 **Files**:
-- `.windsurf/schemas/cache_profile.schema.yaml` (new)
+- `.cursor/schemas/cache_profile.schema.yaml` (new)
 - `apps_*/config/domain_contract/cache_profiles.yaml` (8 files)
 
 **Acceptance**:
@@ -223,7 +223,7 @@ Close the gaps in apps_* domain contracts identified in the architectural bounda
 **Scope**: Create learning promotion policy schema and YAML profiles for all 8 apps.
 
 **Files**:
-- `.windsurf/schemas/learning_profile.schema.yaml` (new)
+- `.cursor/schemas/learning_profile.schema.yaml` (new)
 - `apps_*/config/domain_contract/learning_profiles.yaml` (8 files)
 
 **Acceptance**:

@@ -28,7 +28,7 @@ Collapse the 8-source Author-Gate output sprawl into **one canonical schema file
 ## Non-Goals
 
 - Forcing schema validation into `pre_author_gate.py` blocking path. Audit stays advisory + fail-open per current discipline.
-- Replacing `ask_user_question`. The Cascade-clickable envelope is generated FROM the schema; the tool stays unchanged.
+- Replacing `ask_user_question`. The Cursor Agent-clickable envelope is generated FROM the schema; the tool stays unchanged.
 - Token-budget rule trims that exceed the always-on budget gate (T7r). Trims are bounded by current budget headroom.
 
 ## Baseline (8-source sprawl)
@@ -86,7 +86,7 @@ No JSON Schema file exists. Each consumer reinvents the shape.
 
 ### W2 — Skill refactor
 
-- **2.1**: `emit_packet.py` reads schema at startup; validates output before emit. Contract: any schema-violating packet raises `AuthorGatePacketError` (caught by skill harness, surfaced to Cascade as recovery hint).
+- **2.1**: `emit_packet.py` reads schema at startup; validates output before emit. Contract: any schema-violating packet raises `AuthorGatePacketError` (caught by skill harness, surfaced to Cursor Agent as recovery hint).
 - **2.2**: `tools/author_gate/render_template.py` generates `packet_template.md` from schema (field names + types + constraints). CI gate `check_packet_template_generated.py` recomputes hash; fails if hand-edited.
 
 ### W3 — Audit hook refactor
@@ -122,7 +122,7 @@ No JSON Schema file exists. Each consumer reinvents the shape.
 
 ```
 AG_QUEUE_SEED: plan=author-gate-ssot-consolidation-b7c3e1 id=schema-version-policy depends_on= title=Schema versioning — semver vs dated breaking-bump
-AG_QUEUE_SEED: plan=author-gate-ssot-consolidation-b7c3e1 id=template-generation-ownership depends_on=schema-version-policy title=packet_template.md generation — Cascade-driven vs CI-driven regeneration
+AG_QUEUE_SEED: plan=author-gate-ssot-consolidation-b7c3e1 id=template-generation-ownership depends_on=schema-version-policy title=packet_template.md generation — Cursor Agent-driven vs CI-driven regeneration
 AG_QUEUE_SEED: plan=author-gate-ssot-consolidation-b7c3e1 id=miss-detector-vs-new-audit-overlap depends_on=template-generation-ownership title=Audit-hook overlap — keep both with distinct codes vs merge into one
 AG_QUEUE_SEED: plan=author-gate-ssot-consolidation-b7c3e1 id=rule-trim-aggressiveness depends_on=miss-detector-vs-new-audit-overlap title=Rule trim aggressiveness — minimal-invariants vs aggressive-defer-to-schema
 ```

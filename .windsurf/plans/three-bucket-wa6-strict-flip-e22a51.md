@@ -4,7 +4,7 @@
 - **Status**: Waiting (calendar-gated until 2026-05-22)
 - **Tier**: T1 (single-wave, ~4,000 tokens)
 - **Created**: 2026-05-03
-- **Owner**: Cascade (proposes); operator (approves WA6 gate)
+- **Owner**: Cursor Agent (proposes); operator (approves WA6 gate)
 - **SSOT**: this file
 
 ## 1. Mission

@@ -6,13 +6,13 @@ completed: 2026-05-10
 slug: apps-rg-app-payload-consumption-wiring-b3a449
 exists_on_disk: true
 related:
-  - .windsurf/plans/apps-rg-u0-reflection-live-wiring-105147.md  # AG-1.d (predecessor)
-  - .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md      # harness
+  - .cursor/plans/apps-rg-u0-reflection-live-wiring-105147.md  # AG-1.d (predecessor)
+  - .cursor/plans/apps-rg-u0-reflection-harness-79d032.md      # harness
 ---
 
 # AG-2 — apps_rg `app_payload` Consumption Wiring
 
-PLAN_CREATED: plan=apps-rg-app-payload-consumption-wiring-b3a449 path=.windsurf/plans/apps-rg-app-payload-consumption-wiring-b3a449.md status=in-progress
+PLAN_CREATED: plan=apps-rg-app-payload-consumption-wiring-b3a449 path=.cursor/plans/apps-rg-app-payload-consumption-wiring-b3a449.md status=in-progress
 
 PLAN_COMPLETE: plan=apps-rg-app-payload-consumption-wiring-b3a449 note="14 files; 33/33 AG-2 tests pass; 42/42 CI checks pass; 52/52 AG-1.d predecessor tests still green; 26 app_payload fields inspected (16 L1, 7 L0, 4 C0, 9 PA consumed); 5 bypasses closed; 4 artifacts emitted; AG-2 invariant met"
 

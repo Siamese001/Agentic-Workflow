@@ -619,4 +619,4 @@ async def structural_query(self, query: str, top_k: int = 10) -> list[RetrievalR
 **Document Version**: 2.0 (HARDENED with Live ADG Data)
 **Last Updated**: 2026-04-06
 **ADG Snapshot**: adg_indexed_04062026_1246.sqlite (86,273 nodes, 624,058 edges)
-**Author**: Cascade (Agentic Workflow Analysis)
+**Author**: Cursor Agent (Agentic Workflow Analysis)

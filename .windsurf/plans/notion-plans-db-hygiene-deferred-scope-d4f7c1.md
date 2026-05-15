@@ -78,7 +78,7 @@ background refresh. This requires:
 
 ---
 
-### DS-3 — Pre-MCP gate: block Cascade-direct `mcp7_API-post-page` to Plans DB
+### DS-3 — Pre-MCP gate: block Cursor Agent-direct `mcp7_API-post-page` to Plans DB
 
 **Source**: RCA §3.2/§3.4 layer-1 defense (partially implemented — CI gate done, hook-level block
 not done)  

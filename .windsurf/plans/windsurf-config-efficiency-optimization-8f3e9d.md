@@ -76,11 +76,11 @@
 - **Gap**: Lines 68-78 "Enforcement" table duplicates hook references. Lines 61-66 "Escape Hatches" detail could move to skill. The "Summarize-Before-Return" behavioral guidance is verbose.
 - **Impact**: 11.2% of budget; procedural detail that belongs in skill
 
-### Gap 3: Post-Cascade Hook Chain Overhead
+### Gap 3: Post-Cursor Agent Hook Chain Overhead
 - **Location**: `.windsurf/hooks.json` → `post_cascade_response`
 - **Count**: 25 hooks
 - **Gap**: Many hooks are audit-only (`show_output=false`) but still consume process spawn overhead on every response. No consolidation layer exists. Hooks like `post_cascade_author_gate_*` (4 hooks) could be merged.
-- **Impact**: Latency on every Cascade response
+- **Impact**: Latency on every Cursor Agent response
 
 ### Gap 4: Model_Decision Rules Approaching Limit
 - **Files**: `adg-hotspot-enforcement.md` (11,714 bytes), `adg-graph-layer-enforcement.md` (11,519 bytes)

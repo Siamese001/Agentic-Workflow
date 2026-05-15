@@ -11,7 +11,7 @@
 - `apps-eval-harness-residual-a2d9c7.md`
 - `apps-eval-harness-final-8f3e21.md`
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 
@@ -70,5 +70,5 @@ None — all mechanical execution using the established v2-heuristic pattern.
 
 ## 8. Metadata
 
-- Plan file path: `.windsurf/plans/apps-eval-harness-terminal-3c9f81.md`
+- Plan file path: `.cursor/plans/apps-eval-harness-terminal-3c9f81.md`
 - Notion Plans row: create on W6 completion with Status=Completed

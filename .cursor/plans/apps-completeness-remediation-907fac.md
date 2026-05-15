@@ -52,7 +52,7 @@ Close all real (non-intentional) gaps in `apps_*` flagged by the ADG completenes
 
 ## ADG_HOTSPOT_REPORT
 
-Skipped: this is a **completeness/gap-fill** plan, not a hotspot-driven refactor. Ranked-hotspot ordering does not apply because targets are determined by structural-completeness gaps already enumerated by the upstream review. Per `.windsurf/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
+Skipped: this is a **completeness/gap-fill** plan, not a hotspot-driven refactor. Ranked-hotspot ordering does not apply because targets are determined by structural-completeness gaps already enumerated by the upstream review. Per `.cursor/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 

@@ -107,7 +107,7 @@ Per-wave. Scaffold engines committed in plan `apps-hop-substrate-f7751b` are the
 | HOP6 fact-check precision on synthetic fixtures | ≥0.90 | unit test |
 | HOP7 compliance gate false-positive rate | ≤0.05 on golden fixtures | unit test |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

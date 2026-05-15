@@ -218,7 +218,7 @@ This is structurally identical to `apps_underwriting_ai/engines/hop_assemble_dec
 3. `python -m compileall apps_research apps_rfp apps_exec apps_eval` exits 0.
 4. No imports from `apps_<app>/…` into another app or into `agentic_core/` from adapter modules (layer-gravity).
 5. ADR-081 addendum row appended and committed.
-6. Plan file saved to `.windsurf/plans/apps-hop-substrate-four-apps-b4a2c9.md` and a matching Plans DB row created in Notion.
+6. Plan file saved to `.cursor/plans/apps-hop-substrate-four-apps-b4a2c9.md` and a matching Plans DB row created in Notion.
 
 ---
 
@@ -239,4 +239,4 @@ Per-wave rollback: since every new file is greenfield and nothing existing is ed
 
 ## Notion Writeback
 
-Plan-creation event → post a row to Plans DB (parent database_id `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9`) with Status=Active, Exists On Disk=true, Plan File Path=`.windsurf/plans/apps-hop-substrate-four-apps-b4a2c9.md`, linked parent plan = `apps-hop-substrate-f7751b`.
+Plan-creation event → post a row to Plans DB (parent database_id `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9`) with Status=Active, Exists On Disk=true, Plan File Path=`.cursor/plans/apps-hop-substrate-four-apps-b4a2c9.md`, linked parent plan = `apps-hop-substrate-f7751b`.

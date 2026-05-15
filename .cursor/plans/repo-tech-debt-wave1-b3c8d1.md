@@ -74,7 +74,7 @@ Strategy: for each, ADG query `adg_edge_fanin` against the canonical constant no
 Candidates (verified as SSOT-bearing in Tier-C):
 - Path literals that should come from `path_constants.py`
 - Layer name literals (`"L0"`, `"L5"`, etc.) that should come from `agentic_core/adg/severity_bands.py` or equivalent
-- Repeated magic directory strings (`artifacts/adg/`, `.windsurf/plans/`, `docs/reports/`)
+- Repeated magic directory strings (`artifacts/adg/`, `.cursor/plans/`, `docs/reports/`)
 
 Selection driven by Phase 2.1 probe (not pre-baked here — ADG answers, not guesses).
 
@@ -164,7 +164,7 @@ Execution of the six DEFERRED_SCOPE markers emitted at W4 exit. Ordered by lever
 | 2.1 | Identify top 10 hardcoded-SSOT literals via `adg_edge_fanin` on `path_constants` and `severity_bands` nodes | probe only | Some "hardcoded" strings may be legitimate (log format strings, etc.); must disambiguate | 6k | Todo |
 | 2.2 | Replace top 10 literals with imports from canonical SSOT | ~10 files | Must not break import ordering (constitutional rule: imports at top) | 12k | Todo |
 | 3.1 | Run both MCP sync integrity gates | — | — | 2k | Todo |
-| 3.2 | Repair AGENTS.md ↔ mcp_config.json drift if present | `AGENTS.md` or `.windsurf/mcp_config.json` | Auto-regen via `.windsurf/scripts/sync_mcp_config.py` | 4k | Todo |
+| 3.2 | Repair AGENTS.md ↔ mcp_config.json drift if present | `AGENTS.md` or `.windsurf/mcp_config.json` | Auto-regen via `.cursor/scripts/sync_mcp_config.py` | 4k | Todo |
 | 4.1 | Run `python tools/generate_full_adg.py`, verify HIGH=0, ratchet movement, commit new snapshot | — | Regeneration takes 5–10 min | 8k | Todo |
 
 ---

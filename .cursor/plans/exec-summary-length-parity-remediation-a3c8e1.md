@@ -269,4 +269,4 @@ After W5 complete:
 
 ## 12. Plan Registration
 
-`PLAN_CREATED: slug=exec-summary-length-parity-remediation-a3c8e1 path=.windsurf/plans/exec-summary-length-parity-remediation-a3c8e1.md status=Not Started`
+`PLAN_CREATED: slug=exec-summary-length-parity-remediation-a3c8e1 path=.cursor/plans/exec-summary-length-parity-remediation-a3c8e1.md status=Not Started`

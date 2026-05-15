@@ -12,10 +12,10 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 
 ## Context (SCQA)
 
-- **Situation**: The wave lifecycle system (`wave_execution_state.py`, `post_cascade_wave_lifecycle_capture.py`, `wave_lifecycle_writer.py`) captures markers and syncs to Notion. However, the on-disk plan file's Wave Structure table does not automatically update to reflect completed waves.
+- **Situation**: The wave lifecycle system (`wave_execution_state.py`, `post_cursor_agent_wave_lifecycle_capture.py`, `wave_lifecycle_writer.py`) captures markers and syncs to Notion. However, the on-disk plan file's Wave Structure table does not automatically update to reflect completed waves.
 - **Complication**: Users must manually edit plan files to mark waves complete, creating drift between actual work done and documented state. The Wave Structure table status column (🔲 TODO · 🔄 IN PROGRESS · ✅ DONE) is purely cosmetic without enforcement.
 - **Question**: How do we automatically update plan wave status to ✅ DONE when `WAVE_COMPLETE:` markers are emitted, ensuring the on-disk plan reflects actual execution state?
-- **Answer**: Extend `post_cascade_wave_lifecycle_capture.py` to not only sync to Notion but also rewrite the plan file's Wave Structure table, flipping status emojis from 🔲/🔄 to ✅ as waves complete.
+- **Answer**: Extend `post_cursor_agent_wave_lifecycle_capture.py` to not only sync to Notion but also rewrite the plan file's Wave Structure table, flipping status emojis from 🔲/🔄 to ✅ as waves complete.
 
 ---
 
@@ -23,10 +23,10 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/notion-plan-wave-deferral.md` | governing lifecycle marker protocol | ✅ |
-| `tools/windsurf/wave_execution_state.py` | wave state CLI | ✅ |
+| `.cursor/rules/notion-plan-wave-deferral.md` | governing lifecycle marker protocol | ✅ |
+| `tools/plan_lifecycle/wave_execution_state.py` | wave state CLI | ✅ |
 | `tools/notion/wave_lifecycle_writer.py` | Notion HTTP writer | ✅ |
-| `post_cascade_wave_lifecycle_capture.py` | marker capture hook | ✅ |
+| `post_cursor_agent_wave_lifecycle_capture.py` | marker capture hook | ✅ |
 
 ---
 
@@ -47,7 +47,7 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 ## Out Of Scope
 
 - Notion MCP tool migration (OAuth-hosted variant)
-- Backlog Items auto-sync (handled by `post_cascade_deferred_scope_capture.py`)
+- Backlog Items auto-sync (handled by `post_cursor_agent_deferred_scope_capture.py`)
 - Phase-level status tracking (keep at wave granularity)
 
 ---
@@ -59,7 +59,7 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 | 1.1 | Wave table parser | `tools/windsurf/plan_wave_parser.py`: parse Wave Structure markdown table, extract row status emojis | Markdown table parsing edge cases (multiline cells, emoji width) | ~4k | 🔲 TODO |
 | 1.2 | Status flip logic | `tools/windsurf/plan_wave_writer.py`: rewrite specific wave row from 🔲→✅ or 🔄→✅ | Preserving table formatting, column alignment | ~4k | 🔲 TODO |
 | 2.1 | File updater | `tools/windsurf/plan_wave_writer.py`: safe read-modify-write with atomic rename | Concurrent edits, Windows file locking | ~3k | 🔲 TODO |
-| 3.1 | Hook extension | `post_cascade_wave_lifecycle_capture.py`: call plan writer after Notion sync | Ensure Notion sync succeeds before plan rewrite | ~4k | 🔲 TODO |
+| 3.1 | Hook extension | `post_cursor_agent_wave_lifecycle_capture.py`: call plan writer after Notion sync | Ensure Notion sync succeeds before plan rewrite | ~4k | 🔲 TODO |
 | 4.1 | E2E smoke test | Full flow: emit WAVE_COMPLETE → verify plan file has ✅ | Requires temporary test plan file | ~3k | 🔲 TODO |
 | 4.2 | Edge case tests | Parser tests: malformed tables, missing wave rows | ~2k | 🔲 TODO |
 
@@ -76,7 +76,7 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 
 **GAP-2: Concurrent modification on Windows**
 - Windows file locking prevents atomic rename while file is open
-- Plan file may be open in editor during Cascade response
+- Plan file may be open in editor during Cursor Agent response
 
 ---
 
@@ -124,12 +124,12 @@ python -m tools.windsurf.plan_wave_writer --plan wave-status-completion-enforcem
 ---
 
 ### Phase 3.1 — Hook Extension
-**Scope**: Extend `post_cascade_wave_lifecycle_capture.py` to call plan writer after successful Notion sync
+**Scope**: Extend `post_cursor_agent_wave_lifecycle_capture.py` to call plan writer after successful Notion sync
 
 **Commands**:
 ```bash
 # Verify hook wiring
-python .windsurf/scripts/post_cascade_wave_lifecycle_capture.py --test-mode
+python .cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py --test-mode
 ```
 
 **Acceptance**: Hook processes markers, writes to Notion, then rewrites plan file
@@ -162,8 +162,8 @@ python tests/e2e/test_wave_status_auto_update.py
 
 - [ ] Wave Structure table auto-updates to ✅ when corresponding WAVE_COMPLETE marker emitted
 - [ ] Plan file backup created before any modification
-- [ ] Parser handles all existing plans in `.windsurf/plans/` without error
-- [ ] Hook logs plan_rewrite events to `artifacts/windsurf/wave_lifecycle_capture.jsonl`
+- [ ] Parser handles all existing plans in `.cursor/plans/` without error
+- [ ] Hook logs plan_rewrite events to `artifacts/cursor/wave_lifecycle_capture.jsonl`
 
 ---
 
@@ -171,7 +171,7 @@ python tests/e2e/test_wave_status_auto_update.py
 
 ```bash
 # W0: Baseline verification
-python tools/windsurf/wave_execution_state.py status
+python tools/plan_lifecycle/wave_execution_state.py status
 python ops_scripts/ci/check_plan_notion_wave_freshness.py
 
 # W1: Parser + Writer development
@@ -179,7 +179,7 @@ python -m tools.windsurf.plan_wave_parser --validate-all-plans
 python -m tools.windsurf.plan_wave_writer --plan wave-status-completion-enforcement-d4f8e2 --wave 1
 
 # W3: Hook extension
-# (Modify post_cascade_wave_lifecycle_capture.py)
+# (Modify post_cursor_agent_wave_lifecycle_capture.py)
 
 # W4: E2E test
 pytest tests/e2e/test_wave_status_auto_update.py -v
@@ -214,7 +214,7 @@ If things go wrong:
 | DoD-2 | Parser handles all existing plans | `python -m tools.windsurf.plan_wave_parser --validate-all-plans` exits 0 | 🔲 |
 | DoD-3 | ≥15 new unit tests, all green | `pytest tests/unit/windsurf_scripts/test_plan_wave_*.py -v` shows 15+ pass | 🔲 |
 | DoD-4 | CI gate green | `python ops_scripts/ci/run_contract_gates.py` exits 0 | 🔲 |
-| DoD-5 | Rule + memory writeback | `.windsurf/rules/notion-plan-wave-deferral.md` updated with plan rewrite section | 🔲 |
+| DoD-5 | Rule + memory writeback | `.cursor/rules/notion-plan-wave-deferral.md` updated with plan rewrite section | 🔲 |
 
 **Verification-vs-Deferral table**:
 
@@ -225,7 +225,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Always-on rules lean; detailed parsing logic in skill/module
 - Parser tested against all existing plans before any rewrite

@@ -25,8 +25,8 @@ to keep that plan bounded. This plan captures all of them in one place so they c
 and sequenced independently.
 
 Parent RCA: `docs/architecture/rca/NOTION_PLANS_STATUS_RCA_2026-05-10.md`  
-Parent recovery plan: `.windsurf/plans/notion-plans-status-bulk-recovery-c4e2f9.md`  
-Immediate fix plan: `.windsurf/plans/notion-plans-status-rca-followups-b8e3f2.md`
+Parent recovery plan: `.cursor/plans/notion-plans-status-bulk-recovery-c4e2f9.md`  
+Immediate fix plan: `.cursor/plans/notion-plans-status-rca-followups-b8e3f2.md`
 
 ---
 
@@ -40,7 +40,7 @@ Immediate fix plan: `.windsurf/plans/notion-plans-status-rca-followups-b8e3f2.md
 Notion-writing files were out of scope.
 
 **Detail**:  
-Run `grep -r "API-post-page\|mcp7_API-post-page\|/v1/pages" tools/ .windsurf/scripts/` and produce
+Run `grep -r "API-post-page\|mcp7_API-post-page\|/v1/pages" tools/ .cursor/scripts/` and produce
 a complete inventory. For each file that creates a Plans DB row:
 - Replace the raw POST with `register_plan_idempotent()` from `tools/notion/_plan_registration_helpers.py`.
 - Add `log_plans_db_write()` telemetry at all PATCH/status-update paths.
@@ -48,8 +48,8 @@ a complete inventory. For each file that creates a Plans DB row:
 
 Files known to have raw Plans-DB write paths (non-exhaustive):
 - `tools/notion/plan_registration_backfill.py` (disabled writes)
-- `.windsurf/scripts/_plan_registration.py` (queue flush path)
-- `tools/windsurf/wave_execution_state.py` (start command's `_register_if_needed`)
+- `.cursor/scripts/_plan_registration.py` (queue flush path)
+- `tools/plan_lifecycle/wave_execution_state.py` (start command's `_register_if_needed`)
 - `tools/notion/apply_plan_derived_status.py` (PATCH status only — add telemetry)
 - `tools/notion/repair_notion_plan_statuses.py` (PATCH status only — add telemetry)
 - `tools/notion/backfill_historical_plan_statuses.py` (PATCH status only — add telemetry)
@@ -65,7 +65,7 @@ deeper change.
 
 **Detail**:  
 Every successful Plans-DB write should invalidate + update the relevant cache entry in
-`.windsurf/state/plan_registration_cache.json` immediately, without waiting for the next hourly
+`.cursor/state/plan_registration_cache.json` immediately, without waiting for the next hourly
 background refresh. This requires:
 
 1. `register_plan_idempotent()` calls `_update_cache_entry(slug, page_id, status)` after a
@@ -78,16 +78,16 @@ background refresh. This requires:
 
 ---
 
-### DS-3 — Pre-MCP gate: block Cascade-direct `mcp7_API-post-page` to Plans DB
+### DS-3 — Pre-MCP gate: block Cursor Agent-direct `mcp7_API-post-page` to Plans DB
 
 **Source**: RCA §3.2/§3.4 layer-1 defense (partially implemented — CI gate done, hook-level block
 not done)  
 **Priority**: P2  
-**Why deferred**: `post_cascade_plans_dup_audit.py` is advisory only; hard block via
+**Why deferred**: `post_cursor_agent_plans_dup_audit.py` is advisory only; hard block via
 `pre_mcp_tool_use` hook was deferred from b8e3f2.
 
 **Detail**:  
-Extend `.windsurf/scripts/pre_mcp_gate.py` (or add a `pre_mcp_tool_use` hook) to:
+Extend `.cursor/scripts/pre_mcp_gate.py` (or add a `pre_mcp_tool_use` hook) to:
 
 1. When `API-post-page` is invoked and parent is Plans DB (`data_source_id ac53d31b-…`):
    - Extract `Slug` from the payload.
@@ -106,11 +106,11 @@ Extend `.windsurf/scripts/pre_mcp_gate.py` (or add a `pre_mcp_tool_use` hook) to
 **Why deferred**: Log was created this session; rotation is premature until volume is observed.
 
 **Detail**:  
-- `artifacts/windsurf/plans_db_writes.jsonl` and `artifacts/windsurf/wave_lifecycle_notion.jsonl`:
+- `artifacts/cursor/plans_db_writes.jsonl` and `artifacts/cursor/wave_lifecycle_notion.jsonl`:
   rotate when > 10 MB (move to `plans_db_writes.jsonl.1`, clear active file).
 - Rotation function in `tools/notion/_plan_registration_helpers.py::_rotate_if_large()`, called
   inside `_log()`.
-- Confirm both paths are in `.gitignore` (they should be — `artifacts/windsurf/*.jsonl` is
+- Confirm both paths are in `.gitignore` (they should be — `artifacts/cursor/*.jsonl` is
   gitignored; verify).
 - Add CI gate `ops_scripts/ci/check_notion_telemetry_log_size.py` that warns at > 5 MB,
   errors at > 20 MB.
@@ -123,14 +123,14 @@ Extend `.windsurf/scripts/pre_mcp_gate.py` (or add a `pre_mcp_tool_use` hook) to
 **Priority**: P3 (observation only — no code change unless pollution reappears)
 
 **Detail**:  
-From 2026-05-17 onwards, inspect `artifacts/windsurf/wave_lifecycle_notion.jsonl` for entries
+From 2026-05-17 onwards, inspect `artifacts/cursor/wave_lifecycle_notion.jsonl` for entries
 with `slug` matching `x-aaaaaa`, `demo-plan-abc123`, or `page-123`. If any appear after that
 date, the `tests/unit/tools_notion/conftest.py` autouse fixture is not working as intended and
 a deeper fix (e.g. blanket env-var patch in conftest.py root) is needed.
 
 Check script (one-liner):
 ```bash
-grep -E '"x-aaaaaa"|"demo-plan-abc123"|"page-123"' artifacts/windsurf/wave_lifecycle_notion.jsonl \
+grep -E '"x-aaaaaa"|"demo-plan-abc123"|"page-123"' artifacts/cursor/wave_lifecycle_notion.jsonl \
   | grep -v '"2026-05-1[0]T'
 ```
 If output is non-empty after 2026-05-17, open a bug and implement the root fix.
@@ -219,7 +219,7 @@ exemption count without it inflating the drift total.
 | DoD-1 | All 40+ Plans-DB POST paths use `register_plan_idempotent` | grep shows zero raw `mcp7_API-post-page` to Plans parent outside helper |
 | DoD-2 | Cache-on-write: every successful POST/PATCH updates cache immediately | Unit test: POST → inspect cache file within 100ms |
 | DoD-3 | Pre-MCP gate hard-blocks duplicate POST | Test: synthetic payload for existing slug → `DUPLICATE_BLOCKED` returned |
-| DoD-4 | Telemetry logs rotated at 10MB; both paths in `.gitignore` | CI gate green; `git check-ignore artifacts/windsurf/*.jsonl` shows ignored |
+| DoD-4 | Telemetry logs rotated at 10MB; both paths in `.gitignore` | CI gate green; `git check-ignore artifacts/cursor/*.jsonl` shows ignored |
 | DoD-5 | `backfill --ci` excludes no-ground-truth rows from drift count | Unit test: plan with no frontmatter status → not counted in drift |
 | DoD-6 | Backlog Items DB dedup gate passes on clean state, fails on synthetic dup | CI gate test fixture |
 | DoD-7 | No test slugs appear in `wave_lifecycle_notion.jsonl` for 7 days post b8e3f2 merge | Manual grep check on 2026-05-17 |
@@ -229,10 +229,10 @@ exemption count without it inflating the drift total.
 ## 7. References
 
 - Parent RCA: `docs/architecture/rca/NOTION_PLANS_STATUS_RCA_2026-05-10.md`
-- Completed fix plan: `.windsurf/plans/notion-plans-status-rca-followups-b8e3f2.md`
+- Completed fix plan: `.cursor/plans/notion-plans-status-rca-followups-b8e3f2.md`
 - Helper module: `tools/notion/_plan_registration_helpers.py`
 - Dedup CI gate: `ops_scripts/ci/check_notion_plans_no_duplicates.py`
-- Cache refresh hook: `.windsurf/scripts/pre_user_prompt_plan_registration_refresh.py`
+- Cache refresh hook: `.cursor/scripts/pre_user_prompt_plan_registration_refresh.py`
 - Telemetry viewer: `tools/notion/show_plans_db_writes.py`
 - Constitutional: §25 (MCP serialization), §28 (SQLite/grep hierarchy), §36 (plan registration)
 - Rules: `notion-plans-taxonomy.md`, `plan-registration-enforcement.md`

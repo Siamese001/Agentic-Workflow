@@ -9,7 +9,7 @@ Reads JSON payload from stdin. Blocks (exit 2) on:
 SSOT for PowerShell ban enforcement (2026-04-08):
   Pre-commit T7.8 file scanner (check_powershell_ban.py) was archived because
   retroactive file scanning caused 7,244 false positives. This hook is the
-  single enforcement point — blocks Cascade from running pwsh/powershell at
+  single enforcement point — blocks Cursor Agent from running pwsh/powershell at
   execution time, which is where the actual hang risk exists.
 
 Fail policy: CLOSED — malformed/missing JSON → exit 2 with diagnostic.
@@ -47,8 +47,8 @@ _allowed_script_suffixes = (
 # Windows paths with or without spaces (C:/Program Files/PowerShell/7/pwsh.exe).
 # The pattern anchors to start of string and allows an optional path prefix
 # containing any chars except spaces — OR a quoted path.
-# Interactive / stdin-blocking commands that hang Cascade's turn forever.
-# Cascade's terminal cannot send keystrokes, so any command that waits for
+# Interactive / stdin-blocking commands that hang Cursor Agent's turn forever.
+# Cursor Agent's terminal cannot send keystrokes, so any command that waits for
 # keyboard input (pagers, editors, watchers, REPLs) blocks indefinitely.
 # Constitutional §14 (`subprocess.run` timeout=) covers Python invocations,
 # but the shell pipeline itself is the blocking entity here — a Python-level
@@ -241,7 +241,7 @@ def check_command(command_line: str) -> int:
     if interactive_kind is not None:
         return _exit_block(
             f"Interactive / stdin-blocking command detected ({interactive_kind}). "
-            "Cascade's terminal cannot send keystrokes, so the command will hang "
+            "Cursor Agent's terminal cannot send keystrokes, so the command will hang "
             "the turn forever. Recovery: (a) redirect output to a file with `> out.txt` "
             "and read it back via read_file; (b) use `head -n N` for long output; "
             "(c) for genuine long-runners, set Blocking=false + WaitMsBeforeAsync. "

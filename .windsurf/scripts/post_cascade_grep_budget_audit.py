@@ -1,10 +1,10 @@
 """post_cascade_grep_budget_audit.py — advisory grep/code_search budget cap.
 
 Counts native text-search tool invocations (`grep_search`, `code_search`) in
-each Cascade response and logs a violation row when the combined total exceeds
+each Cursor Agent response and logs a violation row when the combined total exceeds
 the soft cap. This exists because:
 
-  1. `grep_search` / `code_search` are native Cascade tools with NO pre-hook,
+  1. `grep_search` / `code_search` are native Cursor Agent tools with NO pre-hook,
      so only retroactive detection is possible (see global_rules.md ADG-First).
   2. Unbounded text search is a proxy for "reviewing entire codebase every
      run" — the containment failure mode the grep budget targets.
@@ -35,7 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "grep_budget_violations.jsonl"
 SOFT_CAP = 3
 
-# Match the tool-invocation markers Cascade emits in its response envelope.
+# Match the tool-invocation markers Cursor Agent emits in its response envelope.
 # We look for the tool name appearing as a function-call name token — same
 # detection shape as post_cascade_adg_audit.py.
 _GREP_PAT = re.compile(r'<invoke\s+name="grep_search"', re.IGNORECASE)
@@ -43,7 +43,7 @@ _CODE_SEARCH_PAT = re.compile(r'<invoke\s+name="code_search"', re.IGNORECASE)
 
 
 def _read_response_text() -> str:
-    """Read the Cascade response envelope from stdin.
+    """Read the Cursor Agent response envelope from stdin.
 
     Windsurf delivers the post-hook payload on stdin as JSON. We try to parse
     it; if that fails, we treat stdin as raw text (covers manual smoke tests).

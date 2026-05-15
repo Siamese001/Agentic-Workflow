@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_cascade_long_command_audit.py — session-level timeout observability.
 
-Reads the Cascade response from stdin (post_cascade_response payload).
+Reads the Cursor Agent response from stdin (post_cascade_response payload).
 Scans ``run_command`` invocations in the response for patterns known to
 run long (pytest, pre-commit run, git commit at root, npm/pnpm install,
 docker build, cargo build, python ``tools/generate_full_adg.py``) and

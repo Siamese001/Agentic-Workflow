@@ -612,7 +612,7 @@ python -m apps_qna --interview test-slug --company "Test Corp" --role "Test Role
 ## Plan Metadata
 
 - Created: 2026-05-11
-- Author: Cascade
+- Author: Cursor
 - Status: Not Started → In Progress (at Wave 1 start)
 - Target completion: 8 waves, ~130K tokens
 - Blockers: None

@@ -33,7 +33,7 @@ Harden the agentic_core spine documentation/specs so every runtime layer has exp
 | `docs/reference/00A_L5_Governance_Safety/` | L5 certification requirements to cross-reference | ✅ AVAILABLE — comprehensive |
 | `docs/reference/contracts/step1/` REQ_MATRIX files with contract gate requirements embedded | contract gate requirements mapped to layer handoffs | ✅ PATCHED — contract gate terminology applied |
 | `docs/reference/0[1-9]_*/*_parent.md` | Layer parent REQ_ID contract templates | ✅ AVAILABLE — 12 files |
-| `.windsurf/schemas/` | Machine-readable contract schemas | ✅ AVAILABLE — 8 files |
+| `.cursor/schemas/` | Machine-readable contract schemas | ✅ AVAILABLE — 8 files |
 | `W0_REQ_MATRIX_GAP_REGISTER.md` | Baseline inventory with TBD locations | ✅ CREATED — 1,164 TBD placeholders documented |
 | `W0_R_REPAIR_RECEIPT.md` | 00C cleanup completion record | ✅ CREATED — 00C quarantined to archived status |
 | `W0_R_ACTIVE_SURFACE_VERIFICATION.md` | Active-layer 00C verification | ✅ CREATED — 0 active references confirmed |
@@ -89,8 +89,8 @@ Harden the agentic_core spine documentation/specs so every runtime layer has exp
 | W4.P3 | L6_REQ_MATRIX harden | 06_L6_REQ_MATRIX.md | TBD→concrete for shadow eval | ~5K | ✅ DONE |
 | W5.P1 | 99_E2E_REQ_MATRIX harden | 99_E2E_REQ_MATRIX.md | TBD→concrete for proof auditor | ~5K | ✅ DONE |
 | W5.P2 | Unified contract matrix | New file: LAYER_CONTRACT_MATRIX.md | Cross-layer handoff view | ~5K | ✅ DONE |
-| W6.P1 | Schema sync audit | .windsurf/schemas/ | Validate contract schema alignment | ~4K | ✅ DONE |
-| W6.P2 | Schema updates (if gaps) | .windsurf/schemas/*.json/*.yaml | No updates required — semantic coverage adequate | ~4K | ✅ DONE |
+| W6.P1 | Schema sync audit | .cursor/schemas/ | Validate contract schema alignment | ~4K | ✅ DONE |
+| W6.P2 | Schema updates (if gaps) | .cursor/schemas/*.json/*.yaml | No updates required — semantic coverage adequate | ~4K | ✅ DONE |
 
 **Status legend**: 🔲 TODO · 🔄 IN PROGRESS · ✅ DONE · ❌ BLOCKED
 
@@ -331,7 +331,7 @@ grep -c "TBD_" docs/reference/contracts/step1/*_REQ_MATRIX.md
 - Contract chain traceability: U0→L1→L0→C0/PA/L3/L2→Exit→UWG→L4→L6
 
 ### Phase W6.P1 — Schema Sync Audit
-**Scope**: Validate .windsurf/schemas/ against hardened contract requirements
+**Scope**: Validate .cursor/schemas/ against hardened contract requirements
 
 **Acceptance**:
 - Schema files checked for BaseContractEnvelope fields

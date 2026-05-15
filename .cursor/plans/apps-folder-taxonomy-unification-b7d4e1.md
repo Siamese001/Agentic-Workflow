@@ -1,10 +1,10 @@
 # Apps Folder Taxonomy Unification — Plan
 
 > **Status**: Draft
-> **Author**: Cascade (2026-05-01)
+> **Author**: Cursor Agent (2026-05-01)
 > **Tier**: T3 (cross-app, cross-layer, ~dozens of files per app, import rewrites)
 > **Execution**: Plan-only this session. No code changes until waves are dispatched.
-> **SSOT location**: `.windsurf/plans/apps-folder-taxonomy-unification-b7d4e1.md`
+> **SSOT location**: `.cursor/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 > **Related**: ADR (TBD — proposed `ADR-081-apps-folder-taxonomy.md`), `AGENTS.md` §Notion Workspace Map
 
 ---
@@ -17,7 +17,7 @@ The nine `apps_*` folders (`apps_eval`, `apps_exec`, `apps_lic`, `apps_qna`, `ap
 - **Import drift**: cross-app consumers (`apps_shared`, `system_learning`, tests) reference heterogeneous paths; refactors cascade unpredictably.
 - **SSOT violations** — new files land in legacy-only folders (e.g., `apps_rg/scripts/` has 76 items) when they belong elsewhere.
 - **Documentation gaps** — `README.md`, `TECHNICAL_SPEC.md`, `TEST_STRATEGY.md` exist for some apps, absent from others.
-- **Blocks constitutional §31** (SSOT folder routing) extension to the apps layer — currently only enforced on `ops_scripts/` / `.windsurf/scripts/` / `tools/`.
+- **Blocks constitutional §31** (SSOT folder routing) extension to the apps layer — currently only enforced on `ops_scripts/` / `.cursor/scripts/` / `tools/`.
 
 ---
 
@@ -226,7 +226,7 @@ Layer multipliers (§23(d)): L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75 �
 | **W7 — apps_underwriting_ai normalization** | P7.1..P7.3 | `ingestion/` + `parsers/` → `engines/*`, `examples/` → `docs/examples/` or delete | 8k | app still pre-production | Todo | 3 folders moved; tests green |
 | **W8 — apps_rg normalization** | P8.1..P8.4 | `enforcement/` reloc, `runtime/` → `services/runtime/`, `schemas/` → `config/schemas/`, `scripts/` budget audit (76 items) | 22k | High blast radius expected | Todo | All moves applied; apps_rg `scripts/` trimmed to ≤5 files or migrated to `ops_scripts/apps_rg/` |
 | **W9 — apps_shared consolidation** | P9.1..P9.6 | `adapters/`+`data_adapters/`→`integrations/`, `mixins/`→`utils/mixins/`, `orchestration/`→`reasoning/orchestration/`, `prompts/`→`data/prompts/`, `proof/`→`validators/proof/`, `enforcement/`→`validators/enforcement/` | 28k | Highest blast radius — ALL apps consume shared | Todo | 6 folders moved; all 9 apps still import cleanly; full pytest green |
-| **W10 — Enforcement** | P10.1, P10.2 | CI gate `check_apps_folder_taxonomy.py` + `.windsurf/rules/apps-folder-taxonomy.md` + constitutional §32 entry | 10k | All prior waves done | Todo | Gate blocks forbidden folders on new PRs; rule loaded always-on |
+| **W10 — Enforcement** | P10.1, P10.2 | CI gate `check_apps_folder_taxonomy.py` + `.cursor/rules/apps-folder-taxonomy.md` + constitutional §32 entry | 10k | All prior waves done | Todo | Gate blocks forbidden folders on new PRs; rule loaded always-on |
 
 **Total est.**: ~136k tokens across 10 waves, 39 phases.
 
@@ -276,7 +276,7 @@ Layer multipliers (§23(d)): L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75 �
 | P9.5 | `apps_shared/proof/` → `apps_shared/validators/proof/` | 24 files | Validator path already used | 8k | Todo |
 | P9.6 | `apps_shared/enforcement/` → `apps_shared/validators/enforcement/` | 18 files | Highest fan-in; SAFETY_GATEKEEPER | 8k | Todo |
 | P10.1 | Author `ops_scripts/ci/check_apps_folder_taxonomy.py` + pre-commit hook `T7r` | 1 new | Extends constitutional §31 helper pattern | 6k | Todo |
-| P10.2 | Author `.windsurf/rules/apps-folder-taxonomy.md` (always_on) + constitutional §32 | 2 new | Loaded-at-start enforcement | 4k | Todo |
+| P10.2 | Author `.cursor/rules/apps-folder-taxonomy.md` (always_on) + constitutional §32 | 2 new | Loaded-at-start enforcement | 4k | Todo |
 
 ---
 
@@ -338,7 +338,7 @@ Every move-phase follows this fixed sequence:
 - ✅ No root-level `_*.py` files in any `apps_*` folder
 - ✅ `apps_rg/scripts/` ≤5 files; remainder in `ops_scripts/apps_rg/`
 - ✅ CI gate `check_apps_folder_taxonomy.py` green
-- ✅ `.windsurf/rules/apps-folder-taxonomy.md` loaded always-on
+- ✅ `.cursor/rules/apps-folder-taxonomy.md` loaded always-on
 - ✅ Full pytest suite green (pytest_mcp scoped to `tests/`)
 - ✅ ADG regen produces zero NEW P0 violations
 - ✅ All compat shims removed after 2-week window

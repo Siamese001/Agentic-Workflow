@@ -36,7 +36,7 @@ LAST_UPDATED: 2026-05-12
 | # | Root Cause | Location | Fix |
 |---|------------|----------|-----|
 | RC-1 | `phase_complete` markers skipped in capture hook | `post_cascade_wave_lifecycle_capture.py:131` | Added `_update_phase_in_plan()` call |
-| RC-2 | User expectation mismatch — markers must be emitted with specific format | Cascade response text | Documented required marker grammar |
+| RC-2 | User expectation mismatch — markers must be emitted with specific format | Cursor Agent response text | Documented required marker grammar |
 | RC-3 | Missing `WAVE_COMPLETE:`/`PHASE_COMPLETE:` markers in responses | Human process | Documented marker requirements |
 
 ---

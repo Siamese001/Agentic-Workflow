@@ -430,7 +430,7 @@ A new gate `RG-GOV-1 apps_rg declarative-only governance` registered in
 `ops_scripts/ci/run_contract_gates.py`, reading from a helper at
 `ops_scripts/ci/check_apps_rg_declarative_only.py`. Advisory by default; fail-closed via
 `APPS_RG_DECLARATIVE_FAIL_CLOSED=1`. The pre-write hook (existing
-`.windsurf/scripts/pre_write_gate.py`) is extended with an `apps_rg` runtime-authority check.
+`.cursor/scripts/pre_write_gate.py`) is extended with an `apps_rg` runtime-authority check.
 
 ---
 
@@ -502,7 +502,7 @@ All tests under `tests/_apps_contract/`:
 | W7.2 | Generate `L7RuntimeAuditTrace` per request | wire into Exit | stage_owner_map + no-shadow-pipeline receipt | ~1 k |
 | W8.1 | All 8 §11 tests | `tests/_apps_contract/` | Coverage on contracts + scanner + L7 | ~3 k |
 | W8.2 | `ops_scripts/ci/check_apps_rg_declarative_only.py` (RG-GOV-1) | new helper + gate registration | Advisory + fail-closed env | ~1.5 k |
-| W8.3 | Pre-write hook extension | `.windsurf/scripts/pre_write_gate.py` | Block writes that introduce forbidden patterns under `apps_rg/` (live path) | ~1 k |
+| W8.3 | Pre-write hook extension | `.cursor/scripts/pre_write_gate.py` | Block writes that introduce forbidden patterns under `apps_rg/` (live path) | ~1 k |
 | W8.4 | Mutation guard fixtures | `tests/_apps_contract/test_apps_rg_bypass_mutations.py` | Fake planner injected → tests must fail | ~0.5 k |
 | W9.1 | Contract-chain receipt | `artifacts/apps_rg/contract_chain_receipt.json` | | ~0.3 k |
 | W9.2 | OTEL span-chain proof | OTEL collector | Chain U0→L1→L0→[C0]→[PA]→L2→Exit→L7 | ~0.5 k |
@@ -625,7 +625,7 @@ The plan is accepted only when **all 27 conditions** hold:
 
 ### Modified
 - `apps_rg/__main__.py` — full rewrite as ingress-only
-- `.windsurf/scripts/pre_write_gate.py` — extend with apps_rg runtime-authority check
+- `.cursor/scripts/pre_write_gate.py` — extend with apps_rg runtime-authority check
 
 ### Archived (to `_archive/`)
 - `apps_rg/L1_cognition/jd_planner.py`
@@ -657,7 +657,7 @@ AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG
 
 AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-5 chosen=CORE_OWNED_FEC_ONLY title=FEC producer pattern survival — `apps_rg/cert/fec_producer.py` must NOT remain a live FEC producer. Core C0 owns `FinalEvidenceContract` emission. `apps_rg` may supply `evidence_profile_ref` only (declarative reference to evidence profile). Live producer code quarantined or removed.
 
-AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6 chosen=DECLARATIVE_PROFILE_ONLY classification_delivered=2026-05-09 title=`agent_spec_config.py` reduction — `agent_spec_config.py` may contribute static fields to `apps_rg/profiles/*.yaml` only. Any runtime behavior, model authority, routing, planning, prompt, execution, provider, or agent behavior is quarantined. Classification: 15 fields migrate cleanly, 5 migrate with advisory flags, 1 needs review, 25+ runtime symbols quarantined. See `.windsurf/state/AG_RGGOV_6_CLASSIFICATION.md`.
+AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6 chosen=DECLARATIVE_PROFILE_ONLY classification_delivered=2026-05-09 title=`agent_spec_config.py` reduction — `agent_spec_config.py` may contribute static fields to `apps_rg/profiles/*.yaml` only. Any runtime behavior, model authority, routing, planning, prompt, execution, provider, or agent behavior is quarantined. Classification: 15 fields migrate cleanly, 5 migrate with advisory flags, 1 needs review, 25+ runtime symbols quarantined. See `.cursor/state/AG_RGGOV_6_CLASSIFICATION.md`.
 
 AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-7 chosen=HITL_INPUT_ONLY_FOR_APPS_RG title=HITL boundary classification — `apps_rg` may collect human text as ingress/re-entry data only. HITL review, approval, re-clearance, and disposition belong to `agentic_core` Exit/L5.
 
@@ -735,7 +735,7 @@ AG_DECIDED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG
 
 ✅ **W3 COMPLETE** — AG-RGGOV-6 classification and all 4 ambiguities resolved:
 - `agent_spec_config.py` fields mapped: 15 clean migrate, 5 advisory flags (all resolved as advisory), 25+ symbols quarantined
-- Profile schemas finalized per `.windsurf/state/AG_RGGOV_6_CLASSIFICATION.md`
+- Profile schemas finalized per `.cursor/state/AG_RGGOV_6_CLASSIFICATION.md`
 - Ready for W3.1–W3.6 profile file creation
 
 ### §19.3 All Author-Gate Decisions Summary

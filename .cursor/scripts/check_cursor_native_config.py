@@ -84,7 +84,7 @@ def check():
             for event, entries in (hooks.get('hooks') or {}).items():
                 for idx, entry in enumerate(entries or []):
                     cmd = str(entry.get('command',''))
-                    if '.windsurf' in cmd or 'post_cascade' in cmd or 'pre_cascade' in cmd:
+                    if '.windsurf' in cmd or 'post_cursor_agent' in cmd or 'pre_cursor_agent' in cmd:
                         failures.append({'type': 'legacy_hook_command', 'event': event, 'index': idx, 'command': cmd})
         except Exception as exc:
             failures.append({'type': 'invalid_hooks_json', 'path': rel(hooks_path), 'error': str(exc)})

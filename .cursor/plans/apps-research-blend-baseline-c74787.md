@@ -69,7 +69,7 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 | P1.2 | Tavily retrieval adapter | `apps_research/integrations/tavily_retrieval.py`; env `TAVILY_API_KEY`; `.env.example` entry | PP-2 no external retrieval | ~5k | ✅ DONE |
 | P1.3 | Reranker wiring | `apps_research/integrations/reranker_adapter.py` (score-based thin adapter) | PP-3 relevance drift | ~4k | ✅ DONE |
 | P1.4 | Improve `CompanyBriefEngine` content quality (flag `APPS_RESEARCH_RETRIEVAL_V2=1`) | `apps_research/engines/company_brief_engine.py` | V2 retrieval pipeline, backward-compatible | ~6k | ✅ DONE |
-| P1.5 | INVESTIGATION — `hop_*` engines triage | memo `.windsurf/plans/hop-engines-triage-a7e4b2.md` | verdict: ALIVE (dynamic import via HopStageSpec) | ~2k | ✅ DONE |
+| P1.5 | INVESTIGATION — `hop_*` engines triage | memo `.cursor/plans/hop-engines-triage-a7e4b2.md` | verdict: ALIVE (dynamic import via HopStageSpec) | ~2k | ✅ DONE |
 | P2.1 | URL-cited source register renderer | `apps_research/outputs/source_register_renderer.py` | PP-4 no URL-level provenance | ~6k | ✅ DONE |
 | P2.2 | Stat-table renderer | `apps_research/outputs/stat_table_renderer.py` | PP-5 no structured stat surface | ~5k | ✅ DONE |
 | P2.3 | `role_profile` mode | `apps_research/engines/role_profile_engine.py` + `types/role_profile.py` + CLI | PP-6 no role-scoped output | ~6k | ✅ DONE |
@@ -198,7 +198,7 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 #### P1.5 — INVESTIGATION (no code) — hop_* engines triage
 - **Scope**: determine whether `hop_company_brief_engine.py`, `hop_research_assembly_engine.py`, `hop_research_retrieval_engine.py` are reachable via any runtime path.
 - **Commands**: targeted grep (≤3 calls) for `"hop_company_brief_engine"` / `"hop_research_"`; check `apps_research/config/route_registry.yaml`.
-- **Acceptance**: investigation memo `.windsurf/plans/hop-engines-triage-<6hex>.md` with verdict (alive/dead/dormant); **NO file deletions this phase**; if verdict=dead, open follow-on plan.
+- **Acceptance**: investigation memo `.cursor/plans/hop-engines-triage-<6hex>.md` with verdict (alive/dead/dormant); **NO file deletions this phase**; if verdict=dead, open follow-on plan.
 
 ### Wave 2 — Rendering + `role_profile` + parallelism
 
@@ -287,7 +287,7 @@ Baseline `apps_research` output against the Blend360 SVP Agentic Transformation 
 python tools/generate_full_adg.py
 
 # Pre-wave: verify this plan's enrichment is complete
-python ops_scripts/ci/check_graph_layer_evidence.py --plan .windsurf/plans/apps-research-blend-baseline-c74787.md
+python ops_scripts/ci/check_graph_layer_evidence.py --plan .cursor/plans/apps-research-blend-baseline-c74787.md
 
 # Wave 1 verification (skeleton — exact commands deferred to enrichment turn)
 python -m pytest tests/ -k "apps_research and company_brief"
@@ -323,7 +323,7 @@ If a wave breaks `apps_research/` or downstream consumers:
 | `hop_company_brief_engine` in ADG | present | ADG query (requires regen to confirm) |
 | Citation-density gate (post-P4.4) | passing | `python ops_scripts/ci/check_research_citation_density.py` |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Plan reconstructed from Notion SSOT; gaps surfaced explicitly in GAP-R1/R2/R3 rather than fabricated.
 - Scope containment: `apps_research/` edits deferred until taxonomy refactor lands (GAP-R4).

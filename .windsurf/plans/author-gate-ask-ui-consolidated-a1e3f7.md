@@ -17,7 +17,7 @@
 |-----------|----------|--------|-------|
 | **Enriched Choice Builder** | `tools/decisions/enriched_choice_builder.py` | ✅ Complete | All UI invariants: confidence prefix, ⭐ star, trade-off segment |
 | **ASK_USER_QUESTION_PACKET Schema** | `tools/decisions/enriched_choice_builder.TelemetryPacket` | ✅ Complete | Returns packet; caller emits |
-| **Post-Cascade Audit** | `post_cascade_ask_user_question_packet_audit.py` | ✅ Complete | Vacuum-closure audit for ask_user_question without packet |
+| **Post-Cursor Agent Audit** | `post_cascade_ask_user_question_packet_audit.py` | ✅ Complete | Vacuum-closure audit for ask_user_question without packet |
 | **CI Gate** | `ops_scripts/ci/check_enriched_choice_ui_invariants.py` | ✅ Complete | AST-based scanner for UI invariant violations |
 | **CI Gate (AST)** | `ops_scripts/ci/check_enriched_choice_ui_invariants_ast.py` | ✅ Complete | Alternative AST-based implementation |
 | **Author-Gate Pipeline** | `emit_packet.py` → `render_card.py` | ✅ Complete | AUTHOR_GATE_PACKET + ROUTER_DECISION emission |
@@ -175,7 +175,7 @@ Register `check_enriched_choice_ui_invariants.py` in `run_contract_gates.py` ass
 
 - **Superseded Plans:** d9e4f2, d9e5f2 (Notion), b8c3e1, a7e3d2
 - **Existing Implementation:** `tools/decisions/enriched_choice_builder.py`
-- **Post-Cascade Audit:** `.windsurf/scripts/post_cascade_ask_user_question_packet_audit.py`
+- **Post-Cursor Agent Audit:** `.windsurf/scripts/post_cascade_ask_user_question_packet_audit.py`
 - **CI Gate:** `ops_scripts/ci/check_enriched_choice_ui_invariants.py`
 - **Rule:** `.windsurf/rules/author-gate-enforcement.md`
 

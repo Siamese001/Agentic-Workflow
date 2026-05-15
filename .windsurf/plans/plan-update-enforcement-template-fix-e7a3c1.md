@@ -94,7 +94,7 @@ Current template puts Wave Manifest at line ~44 and status tables don't exist as
 
 ### Root Cause 6 — No Auto-Capture of Test/Scope Additions (PENDING — W3)
 
-When Cascade adds tests or new files during a wave and emits `WAVE_COMPLETE: plan=... wave=N note="+12 tests, 4 files"`, the hook writes the Notion Summary but doesn't update the plan's wave table with the test/scope data. W3 adds this.
+When Cursor Agent adds tests or new files during a wave and emits `WAVE_COMPLETE: plan=... wave=N note="+12 tests, 4 files"`, the hook writes the Notion Summary but doesn't update the plan's wave table with the test/scope data. W3 adds this.
 
 ---
 

@@ -74,7 +74,7 @@ Update via `add_observations` on status change; do NOT create a new entity per w
 
 ## §3. Architectural Invariants (stored as ProceduralPattern)
 
-Use for: rules about code topology that must not be violated. Companion to constitutional rules; stored in memory so Cascade recalls them during analysis.
+Use for: rules about code topology that must not be violated. Companion to constitutional rules; stored in memory so Cursor Agent recalls them during analysis.
 
 > ⚠️ **MCP constraint**: The memory MCP's `ALLOWED_ENTITY_TYPES` does NOT include `ArchitecturalInvariant`. Use `ProceduralPattern` with an `INVARIANT:` prefix in the first observation — the type-router treats it as a first-class invariant and the entity is still protected from auto-purge.
 

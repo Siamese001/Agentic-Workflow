@@ -23,7 +23,7 @@ Successor plan capturing all scope explicitly deferred during `apps-rg-runtime-w
 
 | Source | Why needed | Status |
 |---|---|---|
-| Parent plan `.windsurf/plans/apps-rg-runtime-wiring-completion-d4e8a1.md` | source of deferred items (RCA §2, Verification-vs-Deferral) | 🔲 |
+| Parent plan `.cursor/plans/apps-rg-runtime-wiring-completion-d4e8a1.md` | source of deferred items (RCA §2, Verification-vs-Deferral) | 🔲 |
 | Memory entity `bf13593c-65f1-4541-83c9-13ef837eb2b7` | session-end deferred-scope inventory | 🔲 |
 | `tests/_apps_contract/test_apps_rg_*.py` (24 files) | classify negative-pattern vs capability per W1.P2 audit | 🔲 |
 | `agentic_core/runtime/entry/apps_rg_dispatch.py` | binding chain to assert capabilities against | 🔲 |
@@ -75,14 +75,14 @@ Total: ~44k tokens, 9 phases, 4 waves.
 | P2.2 | C0 PDF parsing + retrieval | `agentic_core/runtime/c0/apps_rg_c0_binding.py` + new pypdf dep | pypdf adds dep; need text-extraction fail-soft; chunking strategy decision | ~9k | Not Started |
 | P3.1 | OTEL spans for dispatch chain | `agentic_core/runtime/entry/apps_rg_dispatch.py` (instrument try/except blocks) | Existing OTEL bridge available; per-stage span name conventions | ~5k | Not Started |
 | P3.2 | Optional SovereignLLMGateway path | `agentic_core/L2_execution/apps_rg_l2_binding.py` (opt-in env var) | Gateway is heavier; default stays on direct urllib | ~5k | Not Started |
-| P4.1 | DoD backlog cleanup | `.windsurf/plans/*.md` (301 files) | Mostly mechanical: add `dod_exempt: true` to RCA/doc plans; add real DoD to active plans | ~5k | Not Started |
+| P4.1 | DoD backlog cleanup | `.cursor/plans/*.md` (301 files) | Mostly mechanical: add `dod_exempt: true` to RCA/doc plans; add real DoD to active plans | ~5k | Not Started |
 | P4.2 | L3 managed-workflow opt-in | `agentic_core/L0_routing/apps_rg_l0_binding.py` + L3 binding (NEW) | Route profile permits but binding doesn't exist; large architectural addition | ~3k | Not Started |
 
 ---
 
 ## 4. Definition of Done
 
-> Mandatory per `.windsurf/rules/plan-location.md` §5 (added by parent plan W6).
+> Mandatory per `.cursor/rules/plan-location.md` §5 (added by parent plan W6).
 
 | # | Criterion | Verification command / evidence | Status |
 |---|---|---|---|
@@ -120,7 +120,7 @@ Total: ~44k tokens, 9 phases, 4 waves.
 | `agentic_core/runtime/entry/apps_rg_dispatch.py` | EDIT (OTEL spans) | W3 |
 | `agentic_core/L2_execution/apps_rg_l2_binding.py` | EDIT (gateway opt-in) | W3 |
 | `pyproject.toml` or `requirements.txt` | EDIT (pypdf dep) | W2 |
-| `.windsurf/plans/*.md` (301 files) | EDIT (add DoD or `dod_exempt: true`) | W4 |
+| `.cursor/plans/*.md` (301 files) | EDIT (add DoD or `dod_exempt: true`) | W4 |
 
 ---
 
@@ -193,7 +193,7 @@ Per-wave rollback is straightforward because each wave touches an isolated set o
 
 ---
 
-## 12. Cascade Alignment Checks
+## 12. Cursor Agent Alignment Checks
 
 - ADG-first: all routing decisions consult `agentic_core/L0_routing/apps_rg_l0_binding.py` and `route_profiles.yaml` before changing variant selection logic
 - DoD-first: every wave has DoD rows in its own success criteria column above; plan template enforced

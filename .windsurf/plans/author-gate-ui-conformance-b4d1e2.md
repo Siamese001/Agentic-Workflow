@@ -12,7 +12,7 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 ## Context (SCQA)
 
 - **Situation** — Author-Gate packets are produced by `@c:\Git\Agentic-Workflow-FRESH\.windsurf\skills\author-gate-packet-builder\emit_packet.py:286-305` which stars the highest-confidence surfaced option unconditionally. The ledger record carries `surface_label` and `surface_description_prefix` fields with confidence numbers and star glyphs.
-- **Complication** — Four doctrine sources disagree on when the star fires. Template + code + SVP calibration say "always star the top". The user's corrected packet (top=0.77, dominance did_not_fire) shows no star. Additionally, nothing enforces that `ask_user_question` descriptions mirror the packet's confidence prefix, so Cascade's prose drops the number on many turns.
+- **Complication** — Four doctrine sources disagree on when the star fires. Template + code + SVP calibration say "always star the top". The user's corrected packet (top=0.77, dominance did_not_fire) shows no star. Additionally, nothing enforces that `ask_user_question` descriptions mirror the packet's confidence prefix, so Cursor Agent's prose drops the number on many turns.
 - **Question** — How do we make the Author-Gate UI (star + confidence prefix) match a single, unambiguous rule on every turn?
 - **Answer** — Adopt "star iff `routing.rule_applied == dominance_fires`", make `[confidence=0.NN]` mandatory on every surfaced option, and add a post-cascade UI audit + CI twin that fails on drift.
 
@@ -66,7 +66,7 @@ Lock star semantics to "dominance-fires-only", make `[confidence=0.NN]` mandator
 **GAP-1: Doctrine split on star-firing condition**
 - Template + SVP calibration table + code treat star as "always top surfaced".
 - User's corrected packet (top=0.77, did_not_fire) treats star as "dominance only".
-- Cascade picks per-turn, producing inconsistent UI.
+- Cursor Agent picks per-turn, producing inconsistent UI.
 
 **GAP-2: Code follows the wrong doctrine**
 - `emit_packet.py` `build_packet()` sets `is_recommended=True` on `surfaced_sorted[0]` unconditionally.
@@ -151,7 +151,7 @@ New tests at `tests/unit/author_gate/test_author_gate_ui_audit.py` covering:
 | CI gate wired | Entry in pre-commit | `rg author-gate-ui-conformance .pre-commit-config.yaml` |
 | Tests passing | 100% of new tests | pytest exit 0 |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Doctrine lean: keep rules short; procedural detail is in the skill template.
 - Evidence-before-synthesis: every change cites the specific file+line.

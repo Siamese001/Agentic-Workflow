@@ -193,7 +193,7 @@ Per-wave rollback is straightforward because each wave touches an isolated set o
 
 ---
 
-## 12. Cascade Alignment Checks
+## 12. Cursor Agent Alignment Checks
 
 - ADG-first: all routing decisions consult `agentic_core/L0_routing/apps_rg_l0_binding.py` and `route_profiles.yaml` before changing variant selection logic
 - DoD-first: every wave has DoD rows in its own success criteria column above; plan template enforced

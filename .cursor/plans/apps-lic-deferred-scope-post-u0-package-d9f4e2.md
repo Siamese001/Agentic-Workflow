@@ -222,7 +222,7 @@ python ops_scripts/calibration/production_log_miner.py \
 | DoD-2 | Dependencies identified | Each item lists blocking prerequisites |
 | DoD-3 | Sequencing recommended | Phase 1-4 ordering provided |
 | DoD-4 | Cross-referenced to parent | Parent plan non-goals map to this plan items |
-| DoD-5 | Saved to disk | `.windsurf/plans/apps-lic-deferred-scope-post-u0-package-d9f4e2.md` |
+| DoD-5 | Saved to disk | `.cursor/plans/apps-lic-deferred-scope-post-u0-package-d9f4e2.md` |
 | DoD-6 | Registered in Notion | Plans DB row exists with Status=Deferred |
 
 ## Notes

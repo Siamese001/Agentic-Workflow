@@ -6,7 +6,7 @@
 - **Tier**: T3 (cross-layer — L2 runtime emit + L0 pipeline wiring + architectural decision)
 - **Status**: Completed (2026-05-03)
 - **Authored from**: W10/P6.1 live investigation findings 2026-05-03
-- **Investigation source**: `.windsurf/state/apps-rg-w10-p61-investigation-findings.md`
+- **Investigation source**: `.cursor/state/apps-rg-w10-p61-investigation-findings.md`
 
 ## 1. Goal
 

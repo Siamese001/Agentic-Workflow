@@ -449,7 +449,7 @@ This is a read-only observational plan. No rollback needed.
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - ADG-first retrieval for dependency analysis (no grep for imports)
 - Evidence paths required for every claim

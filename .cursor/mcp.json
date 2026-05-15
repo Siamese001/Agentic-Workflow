@@ -165,9 +165,11 @@
       "disabled": false
     },
     "playwright": {
-      "_note": "Official Microsoft Playwright MCP (@playwright/mcp). Thin npx wrapper, no custom server file. Browser session output lands in repo-root .playwright-mcp/ which should be gitignored.",
-      "command": "npx",
+      "_note": "Official Microsoft Playwright MCP (@playwright/mcp). Thin npx wrapper, no custom server file. Browser session output lands in repo-root .playwright-mcp/ which should be gitignored. Uses cmd /c on Windows like other npx MCP entries.",
+      "command": "cmd",
       "args": [
+        "/c",
+        "npx",
         "-y",
         "@playwright/mcp"
       ],

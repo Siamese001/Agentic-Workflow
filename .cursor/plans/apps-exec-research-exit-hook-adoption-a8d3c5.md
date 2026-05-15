@@ -4,11 +4,11 @@
 **Created:** 2026-05-03
 **Status:** Completed
 **Completed:** 2026-05-03
-**Owner:** Cascade
-**Pattern source:** `.windsurf/plans/apps-rfp-c0-fec-producer-wiring-b9d4f1.md` (Completed) — apps_rfp carries the canonical `_build_exit_receipts` + `maybe_invoke_exit_eval` + cert_route_registry.yaml shape to copy.
+**Owner:** Cursor Agent
+**Pattern source:** `.cursor/plans/apps-rfp-c0-fec-producer-wiring-b9d4f1.md` (Completed) — apps_rfp carries the canonical `_build_exit_receipts` + `maybe_invoke_exit_eval` + cert_route_registry.yaml shape to copy.
 **Parent plans:**
-- `.windsurf/plans/apps-exec-c0-fec-producer-wiring-c2e8a5.md` (Completed)
-- `.windsurf/plans/apps-research-c0-fec-producer-wiring-e7a2c3.md` (Completed)
+- `.cursor/plans/apps-exec-c0-fec-producer-wiring-c2e8a5.md` (Completed)
+- `.cursor/plans/apps-research-c0-fec-producer-wiring-e7a2c3.md` (Completed)
 
 ## 1. Problem Statement
 

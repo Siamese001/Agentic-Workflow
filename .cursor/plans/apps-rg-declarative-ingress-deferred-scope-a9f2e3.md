@@ -287,7 +287,7 @@ The following remain **permanently non-activated** (governance violations):
 
 All deferred scope from apps_rg W0-W9 is now **COMPLETE**.
 
-**Plan File Path:** `.windsurf/plans/apps-rg-declarative-ingress-deferred-scope-a9f2e3.md`
+**Plan File Path:** `.cursor/plans/apps-rg-declarative-ingress-deferred-scope-a9f2e3.md`
 **Notion Registration:** (pending if user requests)
 
 ---

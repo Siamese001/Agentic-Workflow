@@ -158,7 +158,7 @@
 | apps_qna | Documented exemption noting no DAG required | `apps_qna/RUNBOOK.md` or registry entry | Audit requires evidence of correct DAG-less verdict | NOT FOUND — exemption is implicit, not written | P2 |
 | apps_shared (chassis) | Gating-mode field (`None`/`Judge`/`Ensemble`/`Hybrid`) on `HopStageSpec` | `apps_shared/orchestration/hop_pipeline.py` `HopStageSpec` | Cannot declaratively encode gating recommendations from Table 3 | Recommendations cannot be enforced via spec | P1 |
 | apps_shared (chassis) | UWG handoff field (`uwg_handoff: bool`) on `HopStageSpec` | Same | Constraint §10 enforcement at topology level | See above | P0 |
-| apps_lic, apps_rg | Imperative-vs-substrate SSOT decision | `.windsurf/plans/` or `docs/architecture/adr/` | Author-Gate 2026-05-01 selected substrate as SSOT for apps_lic; apps_rg has no equivalent decision | Drift risk | P1 |
+| apps_lic, apps_rg | Imperative-vs-substrate SSOT decision | `.cursor/plans/` or `docs/architecture/adr/` | Author-Gate 2026-05-01 selected substrate as SSOT for apps_lic; apps_rg has no equivalent decision | Drift risk | P1 |
 
 ## Table 7 — Final recommendation
 

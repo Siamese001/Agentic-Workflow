@@ -4,7 +4,7 @@ description: Surface Tavily's best-practices guidance for incorporating Tavily w
 
 # /tavily-best-practices
 
-Meta-workflow. Use when the user asks Cascade to **build something that uses Tavily** (a chatbot with real-time search, a lead-enrichment tool, a news dashboard, a competitive-intel agent), not when they ask Cascade to **search the web for them**.
+Meta-workflow. Use when the user asks Cursor Agent to **build something that uses Tavily** (a chatbot with real-time search, a lead-enrichment tool, a news dashboard, a competitive-intel agent), not when they ask Cursor Agent to **search the web for them**.
 
 ## When to use
 
@@ -13,7 +13,7 @@ Meta-workflow. Use when the user asks Cascade to **build something that uses Tav
 - "Build a news monitoring dashboard with Tavily" → use this workflow to design the integration.
 - "Implement a RAG pipeline using Tavily extract on industry reports" → use this workflow to design the integration.
 
-If the user just wants Cascade itself to search/extract/crawl/research, use the per-tool workflows instead (`/tavily-search`, `/tavily-extract`, `/tavily-crawl`, `/tavily-map`, `/tavily-research`).
+If the user just wants Cursor Agent itself to search/extract/crawl/research, use the per-tool workflows instead (`/tavily-search`, `/tavily-extract`, `/tavily-crawl`, `/tavily-map`, `/tavily-research`).
 
 ## Steps
 

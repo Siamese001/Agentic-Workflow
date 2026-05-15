@@ -1,4 +1,4 @@
-# Deferred Scope — apps_rg Interactive Wizard + vLLM/Synthesis Cascade Followups
+# Deferred Scope — apps_rg Interactive Wizard + vLLM/Synthesis Cursor Agent Followups
 
 **Slug**: `apps-rg-vllm-deferred-followup-f7d3a9`
 **Status**: Completed (2026-05-06)
@@ -29,7 +29,7 @@ Track and bound the deferred-scope items surfaced during the 2026-05-06 session 
 | P3.1 | Qwen restart policy | `docker inspect` config + topology doc | `--restart unless-stopped` requires docker stop/rm/run cycle; preserve env vars + GPU mapping | ~200 | Not Started |
 | P4.1 | LLM cascade extension | `apps_research/engines/company_brief_engine.py` + `.env.example` | Two new SDKs (openai, anthropic); shared cascade-iteration helper to reduce duplication; env vars `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_MODEL`, `ANTHROPIC_MODEL` | ~800 | Not Started |
 | P5.1 | WSL2 archive disposition | `archives/wsl2_vllm_legacy_2026-05-06/` | Gitignored — either retire entirely or formalize; user choice | ~80 | Not Started |
-| P6.1 | Rule always-on flip | `.windsurf/rules/apps-rg-interactive-discipline.md` frontmatter | Requires §33 budget headroom; W1 must land first to make rule worth always-on cost | ~150 | Not Started |
+| P6.1 | Rule always-on flip | `.cursor/rules/apps-rg-interactive-discipline.md` frontmatter | Requires §33 budget headroom; W1 must land first to make rule worth always-on cost | ~150 | Not Started |
 
 ## Files In Scope
 
@@ -52,7 +52,7 @@ Track and bound the deferred-scope items surfaced during the 2026-05-06 session 
 - `archives/wsl2_vllm_legacy_2026-05-06/` (delete or move to `docs/architecture/historical/`)
 
 **Code (W6)**:
-- `.windsurf/rules/apps-rg-interactive-discipline.md` (frontmatter only)
+- `.cursor/rules/apps-rg-interactive-discipline.md` (frontmatter only)
 
 **Tests (W1)**:
 - `tests/_apps_contract/test_apps_*_interactive_wizard.py` (one per app)
@@ -60,10 +60,10 @@ Track and bound the deferred-scope items surfaced during the 2026-05-06 session 
 ## Non-Goals
 
 - Hook-based enforcement of the wizard discipline (rejected during initial design as too heuristic for single-app concerns; revisit only if sibling apps reveal pattern)
-- Auto-detection of "user explicitly authorized" vs "Cascade inferred" (NLP-hard; not a viable enforcement layer)
+- Auto-detection of "user explicitly authorized" vs "Cursor Agent inferred" (NLP-hard; not a viable enforcement layer)
 - Real LLM-judge implementations for the apps_eval-harness backlog (separate plan: see memory `5ba9ca42` — STILL DEFERRED list)
 - C0 FEC producer wiring for grounded apps (separate plan, blocker #4 in apps_eval-harness audit)
-- apps_underwriting_ai analyst attestation flip from `PROVENANCE_PENDING` → `VERIFIED_ANALYST_ATTESTED` (separate plan: requires qualified-owner sign-off; not Cascade work)
+- apps_underwriting_ai analyst attestation flip from `PROVENANCE_PENDING` → `VERIFIED_ANALYST_ATTESTED` (separate plan: requires qualified-owner sign-off; not Cursor Agent work)
 
 ## Success Criteria
 
@@ -95,4 +95,4 @@ Same shape as `apps-rg-interactive-wizard-a3e7c1` (the parent plan). Same shape 
 - Status: `Not Started` (option id `503df59f-85d4-4ac0-baae-e457d0354b6f`, gray)
 - AI Summary: bullet-style per `notion-plans-taxonomy.md` invariant
 - Exists On Disk: true
-- Plan File Path: `.windsurf/plans/apps-rg-vllm-deferred-followup-f7d3a9.md`
+- Plan File Path: `.cursor/plans/apps-rg-vllm-deferred-followup-f7d3a9.md`

@@ -3,11 +3,11 @@
 **Slug:** `notion-wave-deferral-a3f5c2`
 **Status:** Completed
 **Created:** 2026-05-03
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## Problem
 
-During multi-wave plan execution, Cascade kept pausing mid-wave to call Notion MCP tools. Because remote MCPs are serialized per constitutional §25, each Notion call stalled the turn and forced the user to manually prompt "next wave" repeatedly, fragmenting execution.
+During multi-wave plan execution, Cursor Agent kept pausing mid-wave to call Notion MCP tools. Because remote MCPs are serialized per constitutional §25, each Notion call stalled the turn and forced the user to manually prompt "next wave" repeatedly, fragmenting execution.
 
 ## Goal
 
@@ -23,10 +23,10 @@ Deterministically block Notion MCP calls while a multi-wave plan is actively exe
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|--------------|-------------|-------------|--------|
-| P1 | Shared state helper | `.windsurf/scripts/_wave_execution_state.py` | Session isolation across IDE windows | ~1k | Completed |
-| P2 | CLI wrapper | `tools/windsurf/wave_execution_state.py` | — | ~1k | Completed |
-| P3 | Hook integration | `.windsurf/scripts/pre_mcp_gate.py` (check_notion_wave_deferral) | Fail-open on helper import failure; bypass env var | ~1k | Completed |
-| P4 | Always-on rule | `.windsurf/rules/notion-plan-wave-deferral.md` | Explicit protocol + bypass semantics | ~1k | Completed |
+| P1 | Shared state helper | `.cursor/scripts/_wave_execution_state.py` | Session isolation across IDE windows | ~1k | Completed |
+| P2 | CLI wrapper | `tools/plan_lifecycle/wave_execution_state.py` | — | ~1k | Completed |
+| P3 | Hook integration | `.cursor/scripts/pre_mcp_gate.py` (check_notion_wave_deferral) | Fail-open on helper import failure; bypass env var | ~1k | Completed |
+| P4 | Always-on rule | `.cursor/rules/notion-plan-wave-deferral.md` | Explicit protocol + bypass semantics | ~1k | Completed |
 | P5 | Unit + smoke tests | `tests/unit/windsurf_scripts/test_wave_execution_state.py` | Subprocess CLI tests with env-var session pinning | ~2k | Completed |
 
 ## Files In Scope
@@ -47,16 +47,16 @@ Deterministically block Notion MCP calls while a multi-wave plan is actively exe
 ## Design Notes
 
 - **Pattern**: single-helper + two-consumers (CLI + hook), same shape as `ssot-folder-enforcement.md` and `plan-location.md`
-- **Session isolation**: `VSCODE_PID` env var (fallback `os.getppid()`) → per-IDE-window state file at `artifacts/windsurf/wave_execution_<session>.json`
+- **Session isolation**: `VSCODE_PID` env var (fallback `os.getppid()`) → per-IDE-window state file at `artifacts/cursor/wave_execution_<session>.json`
 - **Fail-open guards**: malformed JSON, missing state file, missing helper module → allow (never brick Notion globally)
 - **Bypass**: `NOTION_WAVE_DEFERRAL_BYPASS=1` for rare exceptional mid-plan reads
 
 ## References
 
 - Constitutional §25 (MCP serialization — remote MCPs one per response)
-- `.windsurf/rules/mcp-serialization.md` (remote MCP allowlist)
-- `.windsurf/rules/plan-location.md` (plan SSOT + table shape)
-- `.windsurf/rules/notion-plan-wave-deferral.md` (this plan's authored rule)
+- `.cursor/rules/mcp-serialization.md` (remote MCP allowlist)
+- `.cursor/rules/plan-location.md` (plan SSOT + table shape)
+- `.cursor/rules/notion-plan-wave-deferral.md` (this plan's authored rule)
 
 ## Gap Register
 

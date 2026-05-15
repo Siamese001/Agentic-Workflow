@@ -14,9 +14,9 @@
 
 | File | Line(s) | Current Pattern | Classification | Reason |
 |------|---------|-----------------|----------------|--------|
-| `.windsurf/skills/author-gate-packet-builder/emit_packet.py` | 1-575 | AUTHOR_GATE_PACKET emitter | AUTHOR_GATE | Canonical emitter; emits 4-invariant options with confidence prefix, star, trade-off |
-| `.windsurf/skills/author-gate-ui-renderer/render_card.py` | 43-136 | OPTIONS_JSON builder | AUTHOR_GATE | Renders enriched options from packet; 4-invariants enforced |
-| `.windsurf/scripts/post_cascade_author_gate_ui_audit.py` | 1-362 | UI invariant audit | AUTHOR_GATE | Validates confidence prefix, star count, trade-off segment |
+| `.cursor/skills/author-gate-packet-builder/emit_packet.py` | 1-575 | AUTHOR_GATE_PACKET emitter | AUTHOR_GATE | Canonical emitter; emits 4-invariant options with confidence prefix, star, trade-off |
+| `.cursor/skills/author-gate-ui-renderer/render_card.py` | 43-136 | OPTIONS_JSON builder | AUTHOR_GATE | Renders enriched options from packet; 4-invariants enforced |
+| `.cursor/scripts/post_cursor_agent_author_gate_ui_audit.py` | 1-362 | UI invariant audit | AUTHOR_GATE | Validates confidence prefix, star count, trade-off segment |
 
 **Audit:** These already emit and enforce all 4 invariants. No changes required.
 
@@ -26,9 +26,9 @@
 
 | File | Line(s) | Current Pattern | Classification | Reason | Planned Change |
 |------|---------|-----------------|----------------|--------|----------------|
-| `.windsurf/skills/structured-reasoning/SKILL.md` | 144-151 | Plain `ask_user_question` with pros/cons in description | ENRICHED_CHOICE | Branch resolution decisions; not architecture-scale | Convert to `build_enriched_choice_question()` with confidence/trade-off |
-| `.windsurf/workflows/antipattern-author-gate.md` | 38-45 | Markdown blockquote prose options | ENRICHED_CHOICE | Anti-pattern remediation choices; governance scope but lightweight | Convert to `ask_user_question` + `build_enriched_choice_question()` |
-| `.windsurf/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (label/description only) | ENRICHED_CHOICE | Decision-gate instructions; needs confidence/trade-off upgrade | Update example to full enriched shape |
+| `.cursor/skills/structured-reasoning/SKILL.md` | 144-151 | Plain `ask_user_question` with pros/cons in description | ENRICHED_CHOICE | Branch resolution decisions; not architecture-scale | Convert to `build_enriched_choice_question()` with confidence/trade-off |
+| `.cursor/workflows/antipattern-author-gate.md` | 38-45 | Markdown blockquote prose options | ENRICHED_CHOICE | Anti-pattern remediation choices; governance scope but lightweight | Convert to `ask_user_question` + `build_enriched_choice_question()` |
+| `.cursor/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (label/description only) | ENRICHED_CHOICE | Decision-gate instructions; needs confidence/trade-off upgrade | Update example to full enriched shape |
 
 ---
 
@@ -47,8 +47,8 @@
 
 | File | Purpose | Coverage Gap |
 |------|---------|--------------|
-| `post_cascade_author_gate_ui_audit.py` | Validates 4 invariants for AG decisions | Does NOT audit native ask_user_question |
-| `post_cascade_ask_user_question_packet_audit.py` | Detects missing AUTHOR_GATE_PACKET | Does NOT enforce UI invariants |
+| `post_cursor_agent_author_gate_ui_audit.py` | Validates 4 invariants for AG decisions | Does NOT audit native ask_user_question |
+| `post_cursor_agent_ask_user_question_packet_audit.py` | Detects missing AUTHOR_GATE_PACKET | Does NOT enforce UI invariants |
 | `check_ask_user_question_packet_freshness.py` | CI freshness check for packet violations | Does NOT check UI conformance |
 
 **Gap:** No scanner enforces UI invariants on non-AG ask_user_question calls.
@@ -94,7 +94,7 @@ def build_enriched_choice_question(
 
 ---
 
-### 2.2 Scanner: Extend `post_cascade_author_gate_ui_audit.py`
+### 2.2 Scanner: Extend `post_cursor_agent_author_gate_ui_audit.py`
 
 **Change:** Add new invariants 6-10 for standard enriched choices:
 
@@ -112,7 +112,7 @@ _EXEMPT_PATHS = {
     "apps_shared/cli/interactive_wizard.py": "data_collection",
     "tests/": "test_fixture",
     "docs/": "docs_example",
-    ".windsurf/plans/": "docs_example",
+    ".cursor/plans/": "docs_example",
 }
 ```
 

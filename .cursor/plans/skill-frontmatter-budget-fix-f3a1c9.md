@@ -12,7 +12,7 @@ dod_exempt: false
 
 # Skill Frontmatter Budget Fix — mcp-integration SKILL.md
 
-Unblock `run_contract_gates.py` end-to-end from the `skill_frontmatter` pre-flight failure caused by `.windsurf/skills/mcp-integration/SKILL.md` exceeding the Anthropic 500-line budget.
+Unblock `run_contract_gates.py` end-to-end from the `skill_frontmatter` pre-flight failure caused by `.cursor/skills/mcp-integration/SKILL.md` exceeding the Anthropic 500-line budget.
 
 ---
 
@@ -32,7 +32,7 @@ LAST_UPDATED: 2026-05-13
 ## Context (SCQA)
 
 - **Situation** — `apps-rg-chroma-ingestion-wiring-c7f2d9` is fully complete (W1–W5 DONE, Notion=Completed). The CHECK-RG-CHROMA CI gate passes 9/9 via direct invocation (`python ops_scripts/ci/check_apps_rg_chroma_readiness.py`, exit 0).
-- **Complication** — `run_contract_gates.py` executes `check_skill_frontmatter.py` as part of `validate_mcp_health()` **before** the `--gate` selector is evaluated. `.windsurf/skills/mcp-integration/SKILL.md` is 547 lines, exceeding the Anthropic 500-line budget enforced by `BODY_MAX_LINES = 500` in `check_skill_frontmatter.py`. The runner exits 1 unconditionally on any `--gate` invocation, blocking clean end-to-end CI proof for CHECK-RG-CHROMA.
+- **Complication** — `run_contract_gates.py` executes `check_skill_frontmatter.py` as part of `validate_mcp_health()` **before** the `--gate` selector is evaluated. `.cursor/skills/mcp-integration/SKILL.md` is 547 lines, exceeding the Anthropic 500-line budget enforced by `BODY_MAX_LINES = 500` in `check_skill_frontmatter.py`. The runner exits 1 unconditionally on any `--gate` invocation, blocking clean end-to-end CI proof for CHECK-RG-CHROMA.
 - **Question** — What is the minimal safe fix that restores the skill_frontmatter gate to green without touching Chroma logic, agentic_core, or any plan state?
 - **Answer** — Split the two appendix-style sections (§13 Task Manager MCP detail + Appendix: Constitutional §25 + Redirects table) out of `SKILL.md` into a sibling `SUPPORTING.md`. No routing logic, no description text, no frontmatter changes — structural split only.
 
@@ -44,14 +44,14 @@ LAST_UPDATED: 2026-05-13
 |------|--------|
 | **Gate** | `check_skill_frontmatter.py` |
 | **Invocation path** | `run_contract_gates.py` → `validate_mcp_health()` → line 104 |
-| **Failing skill** | `.windsurf/skills/mcp-integration/SKILL.md` |
+| **Failing skill** | `.cursor/skills/mcp-integration/SKILL.md` |
 | **Observed lines** | 547 |
 | **Budget** | 500 (`BODY_MAX_LINES` in `check_skill_frontmatter.py:40`) |
 | **Over by** | 47 lines |
 | **Effect** | Runner exits 1 before reaching assurance_gates — CHECK-RG-CHROMA never runs via runner |
 | **CHECK-RG-CHROMA status** | ✅ 9/9 OK via direct invocation (unaffected) |
 | **Chroma plan status** | ✅ DONE, Notion=Completed (unaffected) |
-| **Fix scope** | `.windsurf/skills/mcp-integration/SKILL.md` + `.windsurf/skills/mcp-integration/SUPPORTING.md` only |
+| **Fix scope** | `.cursor/skills/mcp-integration/SKILL.md` + `.cursor/skills/mcp-integration/SUPPORTING.md` only |
 
 ---
 
@@ -79,8 +79,8 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 
 ## Files In Scope
 
-- `.windsurf/skills/mcp-integration/SKILL.md` — reduced to 499 lines (from 547)
-- `.windsurf/skills/mcp-integration/SUPPORTING.md` — new sibling for split content
+- `.cursor/skills/mcp-integration/SKILL.md` — reduced to 499 lines (from 547)
+- `.cursor/skills/mcp-integration/SUPPORTING.md` — new sibling for split content
 
 > Governance CI pre-flight fixes (`infra_wiring_scan.py`, `executor_theater_gate.py`, `graph_layer_evidence_baseline.json`) are attributed to plan `runner-preflight-unblock-3b7d4a`.
 
@@ -90,7 +90,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 - `data/cache/chromadb/` — DO NOT TOUCH
 - `agentic_core/` — DO NOT TOUCH
 - `artifacts/apps_rg/retrieval/` — DO NOT TOUCH
-- `.windsurf/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
+- `.cursor/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
 
 ---
 

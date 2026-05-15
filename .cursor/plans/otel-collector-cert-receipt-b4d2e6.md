@@ -1,11 +1,11 @@
 # OTEL Collector Certification Receipt — Close RTC-REQ-020/022 Collector Sub-Claim
 
 > **Plan slug**: `otel-collector-cert-receipt-b4d2e6`
-> **Plan path**: `.windsurf/plans/otel-collector-cert-receipt-b4d2e6.md`
+> **Plan path**: `.cursor/plans/otel-collector-cert-receipt-b4d2e6.md`
 > **Parent plan**: `agentic-core-signoff-hardening-b8e2c4` (AUTHORITY.md §4 deferral)
 > **Status**: Not Started
 
-PLAN_CREATED: slug=otel-collector-cert-receipt-b4d2e6 path=.windsurf/plans/otel-collector-cert-receipt-b4d2e6.md
+PLAN_CREATED: slug=otel-collector-cert-receipt-b4d2e6 path=.cursor/plans/otel-collector-cert-receipt-b4d2e6.md
 
 ## 1. Background
 

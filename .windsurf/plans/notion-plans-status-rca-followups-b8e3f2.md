@@ -24,7 +24,7 @@ On 2026-05-10 ~10:50 UTC, the Notion Plans DB suffered a bulk Status overwrite t
 Full RCA: `@docs/architecture/rca/NOTION_PLANS_STATUS_RCA_2026-05-10.md`. Three independent failure modes identified:
 
 - **Cause A**: `backfill_historical_plan_statuses.py:158` defaults to `"Not Started"` when plan markdown lacks frontmatter `status:` — overwrote 89 rows. Single-line fix.
-- **Cause B**: 41 files write to Notion; Cascade-direct `mcp7_API-post-page` calls don't dedup → 11 slugs got phantom duplicate rows.
+- **Cause B**: 41 files write to Notion; Cursor Agent-direct `mcp7_API-post-page` calls don't dedup → 11 slugs got phantom duplicate rows.
 - **Cause C**: `_plan_registration.py` cache TTL=1h but no scheduled refresh; 9h stale at incident time missed user edits.
 
 This plan implements the 6 RCA action items in 3 waves.

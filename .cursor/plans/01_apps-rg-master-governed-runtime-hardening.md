@@ -795,13 +795,13 @@ apps_rg may be used for local/dev resume generation after this lane passes. It m
 **Validation Commands (Plan-Only Scope):**
 ```bash
 # Verify all 8 source plans have consolidation banners (strict: only CONSOLIDATED_UNDER_MASTER in PORTFOLIO_STATUS)
-rg "PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
+rg "PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER" .cursor/plans/apps-rg-*.md .cursor/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
 
 # Verify dispositions are specific and correct
-rg "DISPOSITION: (ACTIVE_SEPARATE_CORE_PLAN|MERGED_INTO_MASTER|MERGED_INTO_MASTER_WITH_CORE_SPLIT|MERGED_INTO_MASTER_SPLIT_BY_PRIORITY|MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION|GAP_REPORT_REFERENCE|SUPERSEDED_REFERENCE_ONLY)" .windsurf/plans/apps-rg-*.md .windsurf/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
+rg "DISPOSITION: (ACTIVE_SEPARATE_CORE_PLAN|MERGED_INTO_MASTER|MERGED_INTO_MASTER_WITH_CORE_SPLIT|MERGED_INTO_MASTER_SPLIT_BY_PRIORITY|MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION|GAP_REPORT_REFERENCE|SUPERSEDED_REFERENCE_ONLY)" .cursor/plans/apps-rg-*.md .cursor/plans/core-l6-g29-promotion-proof-hardening-d9e3b2.md
 
 # Verify only plan files changed
-git diff --name-only | rg -v "^\.windsurf/plans/" && exit 1 || true
+git diff --name-only | rg -v "^\.cursor/plans/" && exit 1 || true
 ```
 
 **Stop Condition:**
@@ -1310,12 +1310,12 @@ Run after consolidation edits:
 ```bash
 git diff -- .windsurf/plans
 git diff --name-only
-git diff --name-only | rg -v "^\.windsurf/plans/" && exit 1 || true
+git diff --name-only | rg -v "^\.cursor/plans/" && exit 1 || true
 git diff -- agentic_core apps_rg ops_scripts tests
 ```
 
 **Expected:**
-- Only `.windsurf/plans/*` files changed
+- Only `.cursor/plans/*` files changed
 - No `agentic_core/` source files changed
 - No `apps_rg/` source files changed
 - No `ops_scripts/` files changed

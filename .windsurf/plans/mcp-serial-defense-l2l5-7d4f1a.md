@@ -2,7 +2,7 @@
 
 **ID**: `mcp-serial-defense-l2l5-7d4f1a`
 **Status**: Draft (not implemented)
-**Owner**: Cascade harness team
+**Owner**: Cursor Agent harness team
 **Created**: 2026-04-25
 **Tier**: T2 — multi-file, single concern (instrumentation), no cross-layer architectural change
 **Related**: Layer 1 already shipped (`_serialization_sentinel.py` + 4 pre-* gates, see Notion MCP Registry entry `34d27693-f55c-816d-84d7-ccd9a62b78dc`)
@@ -22,7 +22,7 @@ Layer 1 (deterministic, dispatch-time block) covers the high-probability cases: 
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| **W1** | L2.1 | Layer 2 — SR_MANDATE injection (pre-prompt) | ~3000 | `pre_prompt_classifier.py` MCP-intent detector already exists | Todo | Cascade emits `MCP_SERIAL_MANDATE:` in SR block when MCP intent present; unit test passes |
+| **W1** | L2.1 | Layer 2 — SR_MANDATE injection (pre-prompt) | ~3000 | `pre_prompt_classifier.py` MCP-intent detector already exists | Todo | Cursor Agent emits `MCP_SERIAL_MANDATE:` in SR block when MCP intent present; unit test passes |
 | **W2** | L3.1, L3.2 | Layer 3 — MCP response reminder wrapper | ~9000 | All 12 MCP servers use FastMCP `@mcp.tool()` decorators | Todo | Every MCP tool result begins with `[MCP_SERIAL_REMINDER]`; integration smoke pass; <20-token overhead per response |
 | **W3** | L4.1 | Layer 4 — Hang auto-recovery watchdog | ~4000 | `mcp_invocation_ledger.sqlite` has p99 latency per server (ADR-050) | Todo | Watchdog injects `MCP_HANG_SUSPECTED:` marker in next pre-prompt when prior turn exceeded p99×3 |
 | **W4** | L5.1 | Layer 5 — Session-start violations surfacer | ~2000 | `mcp_serialization_violations.jsonl` already maintained by Layer 0 audit | Todo | Banner appears in pre-prompt when ≥1 violation in last 24h; suppressed when zero |
@@ -199,7 +199,7 @@ Most recent: <timestamp> — <violation_type>
 | Layer 3 decorator breaks FastMCP introspection on some servers | Per-server smoke test in L3.2; rollback plan per-file |
 | Layer 3 perf overhead on hot tools (e.g., `adg_node`) | Reminder prepend is a string op (~12 tokens); benchmark before/after; reject if >5% latency |
 | Layer 4 false positives during cold-start (first 50 invocations have no p99) | Watchdog requires ≥50 samples per server before activating |
-| Reminder fatigue — Cascade ignores `[MCP_SERIAL_REMINDER]` after seeing it 100×/session | Layer 1 dispatch block remains the deterministic floor; reminders are reinforcement only |
+| Reminder fatigue — Cursor Agent ignores `[MCP_SERIAL_REMINDER]` after seeing it 100×/session | Layer 1 dispatch block remains the deterministic floor; reminders are reinforcement only |
 | Adding TTL file unsafely retires layers while race still exists | Operator gate in retirement procedure (Step 1: verify upstream changelog); 7-day soak before file deletion |
 
 ---

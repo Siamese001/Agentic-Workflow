@@ -51,7 +51,6 @@ In-house. ChromaDB-backed semantic search via BAAI/bge-m3 embeddings.
 
 1. **Never use for dependency analysis.** Constitutional rule — `adg_sqlite` is the only authority.
 2. **Readiness check before heavy queries.** `readiness` returns model warmup state; `query_collection` during prewarm will block-wait up to the timeout.
-3. **MCP serialization (§25):** One MCP call per response.
 4. **Zombie-process awareness:** If `query_collection` hangs, multiple `vector_db_server.py` processes may be deadlocked on ChromaDB SQLite WAL. The server now self-cleans via `_kill_zombie_siblings()` on startup, but if a query stalls, restart the MCP.
 
 ## Common Workflows

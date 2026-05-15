@@ -1,13 +1,16 @@
 {
   "allowed_legacy_paths": [
-    ".cursor/windsurf_compat/**",
+    ".cursor/CURSOR_NATIVE_MIGRATION_STATUS.md",
+    ".cursor/MIGRATION_MAP.md",
+    ".cursor/RULES_INDEX.windurf-original.md",
+    ".cursor/ZERO_LOSS_OVERWRITE_RECEIPT.json",
+    ".cursor/_zero_loss_originals/**",
+    ".cursor/hooks/lib/cursor_hook_common.py",
+    ".cursor/migration_allowlist.json",
     ".cursor/plans/_archive/**",
     ".cursor/scripts/_legacy_windsurf/**",
-    ".cursor/_zero_loss_originals/**",
     ".cursor/scripts/check_cursor_native_config.py",
-    ".cursor/migration_allowlist.json",
-    ".cursor/CURSOR_NATIVE_MIGRATION_STATUS.md",
-    ".cursor/ZERO_LOSS_OVERWRITE_RECEIPT.json"
+    ".cursor/windsurf_compat/**"
   ],
   "legacy_tokens": [
     "Cascade",

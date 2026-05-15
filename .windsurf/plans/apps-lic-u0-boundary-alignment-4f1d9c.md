@@ -257,7 +257,7 @@ Get-ChildItem -Path agentic_core/L5_safety -Recurse -Filter "apps_lic*"
 ### W0 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only audit — zero source file modifications)
+**Executed by:** Cursor Agent (read-only audit — zero source file modifications)
 
 ```
 W0_STATUS: PASS
@@ -378,7 +378,7 @@ Get-ChildItem -Path agentic_core -Recurse -Include "*.py" |
 ### W1 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only golden-template extraction — zero source file modifications)
+**Executed by:** Cursor Agent (read-only golden-template extraction — zero source file modifications)
 
 ```
 W1_STATUS: PASS
@@ -616,7 +616,7 @@ Each gap has a **post-remediation command** and **expected result**. These super
 ### W2 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (read-only boundary/gap audit — zero source file modifications)
+**Executed by:** Cursor Agent (read-only boundary/gap audit — zero source file modifications)
 
 ```
 W2_STATUS: PASS
@@ -968,7 +968,7 @@ Select-String -Path agentic_core/L2_execution/types/agent_taxonomy_registry.py -
 ### W3 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (planning-only migration design — zero source file modifications)
+**Executed by:** Cursor Agent (planning-only migration design — zero source file modifications)
 
 ```
 W3_STATUS: PASS
@@ -1475,7 +1475,7 @@ Select-String -Path agentic_core/L3_orchestration/apps_lic_l3_binding.py -Patter
 ### W4 Closeout Receipt
 
 **Executed:** 2026-05-12  
-**Executed by:** Cascade (planning-only alignment review — zero source file modifications)
+**Executed by:** Cursor Agent (planning-only alignment review — zero source file modifications)
 
 ```
 W4_STATUS: PASS

@@ -1,7 +1,7 @@
 # MCP Skill Installation — Per-MCP Coverage
 
 **Status:** Complete (W1–W4 Done)
-**Author:** Cascade (T2)
+**Author:** Cursor Agent (T2)
 **Doctrine:** Playwright "install vendor skills, don't author custom routing prose" — see https://playwright.dev/agent-cli/skills
 
 ## Wave Structure
@@ -11,19 +11,19 @@
 | W1 | W1.1 | Audit per-MCP skill coverage | ~1k | Done | Table below populated |
 | W2 | W2.1–W2.6 | Install/wrap vendor skills (6 MCPs) | ~10k | Done | 5 new skills + tavily-research already existed |
 | W3 | W3.1 | Confirm/stub house-skills (7 MCPs) | ~5k | Done | 8 in-house skills created/confirmed (excluding retired enhanced_http) |
-| W4 | W4.1 | Add Skill column to AGENTS.md MCP Quick Reference via sync_mcp_config.py | ~2k | Done | 14/14 rows link to `.windsurf/skills/<slug>/SKILL.md`; 3 drift gates + 16/16 unit tests green |
+| W4 | W4.1 | Add Skill column to AGENTS.md MCP Quick Reference via sync_mcp_config.py | ~2k | Done | 14/14 rows link to `.cursor/skills/<slug>/SKILL.md`; 3 drift gates + 16/16 unit tests green |
 
 ## Phase-Level Summary
 
 | Phase ID | Title | Scope | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | W1.1 | Per-MCP audit table | this file | none | 500 | Done |
-| W2.1 | Playwright skill install | `.windsurf/skills/playwright/` | npx availability | 1500 | Pending |
-| W2.2 | GitKraken skill install | `.windsurf/skills/gitkraken/` | gk CLI presence | 1500 | Pending |
-| W2.3 | Notion skill install | `.windsurf/skills/notion/` | Claude Code plugin format | 2000 | Pending |
-| W2.4 | Context7 skill install | `.windsurf/skills/context7/` | ctx7 CLI | 1500 | Pending |
-| W2.5 | Tavily skill — verify | `.windsurf/skills/tavily-research/` | already exists | 500 | Done |
-| W2.6 | DeepWiki skill install | `.windsurf/skills/deepwiki/` | mcp.directory zip | 1500 | Pending |
+| W2.1 | Playwright skill install | `.cursor/skills/playwright/` | npx availability | 1500 | Pending |
+| W2.2 | GitKraken skill install | `.cursor/skills/gitkraken/` | gk CLI presence | 1500 | Pending |
+| W2.3 | Notion skill install | `.cursor/skills/notion/` | Claude Code plugin format | 2000 | Pending |
+| W2.4 | Context7 skill install | `.cursor/skills/context7/` | ctx7 CLI | 1500 | Pending |
+| W2.5 | Tavily skill — verify | `.cursor/skills/tavily-research/` | already exists | 500 | Done |
+| W2.6 | DeepWiki skill install | `.cursor/skills/deepwiki/` | mcp.directory zip | 1500 | Pending |
 | W3.1 | House-skill stubs | 7 in-house MCPs | none | 5000 | Pending |
 | W4.1 | AGENTS.md trim | `AGENTS.md` Quick Reference | sync_mcp_config.py drift | 2000 | Pending |
 
@@ -49,7 +49,7 @@
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-This plan modifies `.windsurf/skills/` content (not source code). To satisfy
+This plan modifies `.cursor/skills/` content (not source code). To satisfy
 constitutional §22 the relevant MVs are those that consume MCP-tool routing
 metadata that skills inform:
 
@@ -60,21 +60,21 @@ metadata that skills inform:
 - **`mv_tool_surface_overlap`** — flags any new skill that documents a
   tool already documented by an existing skill (avoid duplicate guidance).
 
-Semantic edge: **`resolves_callsite`** (skills tell Cascade which MCP tools
+Semantic edge: **`resolves_callsite`** (skills tell Cursor Agent which MCP tools
 to call; resolution lands in this edge type at runtime).
 
-P-views: surface=none — `.windsurf/skills/` is documentation, not production
+P-views: surface=none — `.cursor/skills/` is documentation, not production
 code, so no `v_p0_*` / `v_p1_*` match is expected.
 
 ## ADG_HOTSPOT_REPORT
 
 | Hotspot | Layer | Fan-in | Archetype | Surface | Rationale |
 |---|---|---|---|---|---|
-| `.windsurf/skills/` (directory) | L_DOCS | high (every Cascade session reads this) | CENTRAL_DEPENDENCY | none | Skills directory drives MCP routing decisions for every turn |
+| `.cursor/skills/` (directory) | L_DOCS | high (every Cursor Agent session reads this) | CENTRAL_DEPENDENCY | none | Skills directory drives MCP routing decisions for every turn |
 | `.windsurf/mcp_config.json` | L_CONFIG | high (server registry) | CENTRAL_DEPENDENCY | Execution Surface | Each new skill must align with a registered MCP server |
 
 ## Notes
 
 - Tavily already done (`tavily-research/` is the upstream-adapted skill).
 - "Vendor skill" installations may not always produce a `playwright-cli`-equivalent. Where the vendor publishes via mcp.directory, the install is a curl+unzip; where they publish a Claude Code plugin, we extract the skill files and adapt the front-matter to Windsurf's format.
-- All vendor skills get a thin Windsurf wrapper (front-matter + "see also" pointer to upstream) to play nicely with `.windsurf/skills/` discovery.
+- All vendor skills get a thin Windsurf wrapper (front-matter + "see also" pointer to upstream) to play nicely with `.cursor/skills/` discovery.

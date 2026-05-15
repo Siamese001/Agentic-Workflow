@@ -9,14 +9,14 @@
 
 - **Plan**: `qwen-rollout-followup-burndown-d2a4f8`
 - **Created**: 2026-05-02
-- **Owner**: Cascade
+- **Owner**: Cursor Agent
 - **Predecessor**: `apps-eval-qwen32b-rollout-b7c4d9`
 - **Status**: Completed (2026-05-03)
 
 ## Supersedes / Related
 
 - Inherits the Deferred + Open Scope Register from
-  `.windsurf/plans/apps-eval-qwen32b-rollout-b7c4d9.md`
+  `.cursor/plans/apps-eval-qwen32b-rollout-b7c4d9.md`
   (also captured in the Notion plan page body of the predecessor).
 
 ## Wave Structure
@@ -63,10 +63,10 @@ For P1.1 the relevant graph fact is the existing edge: `apps_lic.HOP5GenerationA
 ## Burndown Order
 
 1. **P1.1** (immediate, this session) — wire HOP5 composition root.
-2. **P2.x** — passive observation; no scheduled response from Cascade until calibration weekly Markdown surfaces eligibility.
+2. **P2.x** — passive observation; no scheduled response from Cursor Agent until calibration weekly Markdown surfaces eligibility.
 3. **P4.1** — fires conditionally on P2.4 producing latency p95-under-SLO evidence.
 4. **P3.x** — fires conditionally on agreement-drift or section-taxonomy-change triggers.
-5. **P5.1, P6.1** — out-of-scope / external; not Cascade work items.
+5. **P5.1, P6.1** — out-of-scope / external; not Cursor Agent work items.
 
 ## Closeout — 2026-05-03
 

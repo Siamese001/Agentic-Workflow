@@ -122,7 +122,7 @@ pytest tests/unit/windsurf_scripts/test_pre_author_gate.py
 
 **Self-Test:**
 ```
-python .windsurf/scripts/pre_author_gate.py --self-test
+python .cursor/scripts/pre_author_gate.py --self-test
 [self-test] OK — 10 triggers, 5 bypass conditions
 ```
 

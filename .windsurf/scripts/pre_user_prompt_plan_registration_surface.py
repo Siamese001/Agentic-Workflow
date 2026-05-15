@@ -2,14 +2,14 @@
 """
 pre_user_prompt_plan_registration_surface.py — Surface unregistered plans.
 
-Hook: pre_user_prompt (show_output=true, so Cascade sees the output).
+Hook: pre_user_prompt (show_output=true, so Cursor Agent sees the output).
 
 At the start of each user turn, emits one line per plan in the registration
 queue that still has ``registered=False``::
 
     PLAN_REGISTRATION_PENDING: slug=<slug> path=<path> status=<declared> captured=<iso>
 
-Empty queue → no output (silent). Cascade uses the signal to post the
+Empty queue → no output (silent). Cursor Agent uses the signal to post the
 matching Notion Plans DB row before proceeding with wave work.
 
 Constitutional tie-in: §36.

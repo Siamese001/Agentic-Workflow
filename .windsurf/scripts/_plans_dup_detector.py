@@ -32,7 +32,7 @@ _PLANS_IDS: frozenset[str] = frozenset({
 
 
 # ---------------------------------------------------------------------------
-# Cascade-response invocation parsing
+# Cursor Agent-response invocation parsing
 # ---------------------------------------------------------------------------
 
 # Matches <invoke name="API-post-page">...</invoke> (with or without mcpN_ prefix).
@@ -60,14 +60,14 @@ def _is_plans_id(candidate: str) -> bool:
 
 @dataclass(frozen=True)
 class PlansPostInvocation:
-    """One Cascade-response invocation that POSTs to the Plans DB."""
+    """One Cursor Agent-response invocation that POSTs to the Plans DB."""
 
     invoke_index: int
     slug: str  # extracted from the payload; "" when not parseable
 
 
 def extract_plans_post_invocations(response_text: str) -> list[PlansPostInvocation]:
-    """Find every Cascade-response API-post-page targeting the Plans DB.
+    """Find every Cursor Agent-response API-post-page targeting the Plans DB.
 
     Returns a list of (invoke_index, slug). Slug may be "" when the payload
     didn't include a parseable Slug.title field.

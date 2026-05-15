@@ -4,7 +4,7 @@
 - **Status**: Planning — Author-Gate APPROVED 2026-05-01 for plan authorship; per-wave Author-Gates required for each WA execution
 - **Tier**: T2 (multi-file, multi-wave, cross-thread)
 - **Created**: 2026-05-01
-- **Owner**: Cascade (proposes); operator (approves wave gates)
+- **Owner**: Cursor Agent (proposes); operator (approves wave gates)
 - **SSOT**: this file
 
 ## 1. Mission

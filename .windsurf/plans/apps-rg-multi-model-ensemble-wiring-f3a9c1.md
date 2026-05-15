@@ -1,7 +1,7 @@
 ---
 plan_id: apps-rg-multi-model-ensemble-wiring-f3a9c1
 status: In Progress
-owner: Cascade
+owner: Cursor Agent
 created_at: "2026-05-11"
 dod_exempt: false
 ---

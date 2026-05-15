@@ -3,11 +3,11 @@
 **Slug:** `notion-wave-deferral-a3f5c2`
 **Status:** Completed
 **Created:** 2026-05-03
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## Problem
 
-During multi-wave plan execution, Cascade kept pausing mid-wave to call Notion MCP tools. Because remote MCPs are serialized per constitutional §25, each Notion call stalled the turn and forced the user to manually prompt "next wave" repeatedly, fragmenting execution.
+During multi-wave plan execution, Cursor Agent kept pausing mid-wave to call Notion MCP tools. Because remote MCPs are serialized per constitutional §25, each Notion call stalled the turn and forced the user to manually prompt "next wave" repeatedly, fragmenting execution.
 
 ## Goal
 

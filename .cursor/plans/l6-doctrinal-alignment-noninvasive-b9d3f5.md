@@ -190,9 +190,9 @@ The non-invasive plan **does not preclude** the invasive plan later — it actua
 ## 11. References
 
 - Mental model: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\_notes\L6_mental_model.md`
-- Invasive sibling (Deprioritized): `.windsurf/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
+- Invasive sibling (Deprioritized): `.cursor/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md`
 - Doc chapters: `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Shadow_Evaluation_System_Learning`
-- ADG canonical invariants §8 (Static vs Runtime ADG): `.windsurf/rules/adg-canonical-invariants.md`
+- ADG canonical invariants §8 (Static vs Runtime ADG): `.cursor/rules/adg-canonical-invariants.md`
 - Observer-law doctrine: chapter `06.2_L6_Observer_Law_Surface_Isolation_and_Eval_Readiness.md`
 - Constitutional §22 (graph-layer primary), §36 (plan registration)
 

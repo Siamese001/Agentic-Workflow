@@ -156,7 +156,7 @@ Result: 28 passed, 15 failed
 ### Wave G2: Session State and Receipt Infrastructure
 
 **Phase G2.P1:** Session State Metadata — ✅ **DONE**
-- **Scope:** `artifacts/windsurf/session_state.json`
+- **Scope:** `artifacts/cursor/session_state.json`
 - **Task:**
   - Add `plan_type: platform_core_change` metadata for active maintenance
   - Add `touches_agentic_core: true` flag

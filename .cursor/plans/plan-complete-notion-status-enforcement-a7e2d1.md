@@ -12,7 +12,7 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 
 ## Context (SCQA)
 
-- **Situation** — Three automation paths exist to flip a plan's Notion status to "Completed": (1) `wave_execution_state.py complete`, (2) `PLAN_COMPLETE:` marker → `post_cascade_wave_lifecycle_capture.py` hook, (3) `post_cascade_plan_complete_audit.py` advisory warning. The code in `_wave_lifecycle_helpers.py` line 302-309 correctly flips `plan_complete` → `Completed`.
+- **Situation** — Three automation paths exist to flip a plan's Notion status to "Completed": (1) `wave_execution_state.py complete`, (2) `PLAN_COMPLETE:` marker → `post_cursor_agent_wave_lifecycle_capture.py` hook, (3) `post_cursor_agent_plan_complete_audit.py` advisory warning. The code in `_wave_lifecycle_helpers.py` line 302-309 correctly flips `plan_complete` → `Completed`.
 
 - **Complication** — Plan `apps-lic-quarantine-u0-coverage-review-d9f4a2` completed all 11 waves but Notion remained at `Archived`. Root cause chain: (A) plan was pre-emptively set to `Archived` with a stale context note before W8–W10 resumed, (B) `wave_execution_state.py start/complete` was never called — plan predates the wave-lifecycle autosync and was driven by ad-hoc user instructions, (C) the `PLAN_COMPLETE:` marker was emitted in the previous response but the hook either had no `NOTION_TOKEN` available, the HTTP PATCH failed silently (fail-open), or the hook did fire but the plan had already been manually fixed before verification. The capture log shows only test entries — no real invocation for this plan's slug.
 
@@ -27,10 +27,10 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 | Source | Why needed | Status |
 |---|---|---|
 | `tools/notion/_wave_lifecycle_helpers.py:302-309` | `plan_complete` flip logic | ✅ REVIEWED |
-| `tools/windsurf/wave_execution_state.py:448-519` | `_cmd_complete` deferred-scope reconciliation | ✅ REVIEWED |
-| `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` | Hook that parses `PLAN_COMPLETE:` markers | ✅ REVIEWED |
-| `artifacts/windsurf/wave_lifecycle_capture.jsonl` | No real entries for this plan slug | ✅ REVIEWED |
-| `.windsurf/hooks.json` | Hook registered, show_output=false | ✅ REVIEWED |
+| `tools/plan_lifecycle/wave_execution_state.py:448-519` | `_cmd_complete` deferred-scope reconciliation | ✅ REVIEWED |
+| `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` | Hook that parses `PLAN_COMPLETE:` markers | ✅ REVIEWED |
+| `artifacts/cursor/wave_lifecycle_capture.jsonl` | No real entries for this plan slug | ✅ REVIEWED |
+| `.cursor/hooks.json` | Hook registered, show_output=false | ✅ REVIEWED |
 | Plan `apps-lic-quarantine-u0-coverage-review-d9f4a2` Notion row | Was `Archived`, manually patched to `Completed` | ✅ REVIEWED |
 
 ---
@@ -41,8 +41,8 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 1. Plan created → registered in Notion (unknown initial status)
 2. Plan set to "Archived" + stale "Waiting For" note (before W8-W10 work)
 3. W8–W10 executed via ad-hoc user instructions (no wave_execution_state.py start/complete)
-4. PLAN_COMPLETE: marker emitted in Cascade response
-5. post_cascade_wave_lifecycle_capture.py hook:
+4. PLAN_COMPLETE: marker emitted in Cursor Agent response
+5. post_cursor_agent_wave_lifecycle_capture.py hook:
    - Either NOTION_TOKEN absent → skipped silently (no stderr, show_output=false)
    - Or HTTP PATCH failed → swallowed (fail-open policy)
    - Or hook didn't receive the response text (payload extraction issue)
@@ -74,7 +74,7 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W1.P1 | Add visible stderr warning in `post_cascade_wave_lifecycle_capture.py` when `NOTION_TOKEN` is absent | 1 file | Silent skip makes failures invisible | ~3K | ✅ DONE |
+| W1.P1 | Add visible stderr warning in `post_cursor_agent_wave_lifecycle_capture.py` when `NOTION_TOKEN` is absent | 1 file | Silent skip makes failures invisible | ~3K | ✅ DONE |
 | W1.P2 | Add visible stderr warning in `wave_lifecycle_writer.emit_from_markers` when token is absent | 1 file | Same silent-skip pattern | ~2K | ✅ DONE |
 | W2.P1 | New CI gate `check_plan_done_notion_status.py` | 1 new file in `ops_scripts/ci/` | Detects all-waves-done on disk + Notion ≠ Completed | ~5K | ✅ DONE |
 | W2.P2 | Register gate in `run_contract_gates.py` | 1 file | Advisory, fail-closed via env var | ~1K | ✅ DONE |
@@ -87,17 +87,17 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 
 | File | Action | Wave |
 |------|--------|------|
-| `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` | Add token-absent warning | W1 |
+| `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` | Add token-absent warning | W1 |
 | `tools/notion/wave_lifecycle_writer.py` | Add token-absent warning | W1 |
 | `ops_scripts/ci/check_plan_done_notion_status.py` | NEW — CI gate | W2 |
 | `ops_scripts/ci/run_contract_gates.py` | Register NP-DONE gate | W2 |
-| `.windsurf/rules/notion-plan-wave-deferral.md` | Add RCA reference | W3 |
+| `.cursor/rules/notion-plan-wave-deferral.md` | Add RCA reference | W3 |
 
 ---
 
 ## Out Of Scope
 
-- Changing the fail-open policy of the hook (by design — hooks must never block Cascade)
+- Changing the fail-open policy of the hook (by design — hooks must never block Cursor Agent)
 - Making `wave_execution_state.py start/complete` mandatory for all plans (too disruptive for ad-hoc work)
 - Retroactively fixing other plans with stale Notion status (separate maintenance task)
 - Changing `show_output` on the wave lifecycle capture hook (it's noisy by design)
@@ -108,7 +108,7 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 
 | DoD | Criteria | Verification | Status |
 |-----|----------|-------------|--------|
-| DoD-1 | `post_cascade_wave_lifecycle_capture.py` emits `[wave_lifecycle_capture] WARN: NOTION_TOKEN not set` to stderr when token absent | Code review + test | 🔲 TODO |
+| DoD-1 | `post_cursor_agent_wave_lifecycle_capture.py` emits `[wave_lifecycle_capture] WARN: NOTION_TOKEN not set` to stderr when token absent | Code review + test | 🔲 TODO |
 | DoD-2 | `wave_lifecycle_writer.py` emits similar warning | Code review | 🔲 TODO |
 | DoD-3 | `check_plan_done_notion_status.py` detects all-done-on-disk + Notion ≠ Completed | Dry run against Plans DB | 🔲 TODO |
 | DoD-4 | Gate registered in `run_contract_gates.py` as advisory | `python ops_scripts/ci/run_contract_gates.py` exits 0 | 🔲 TODO |

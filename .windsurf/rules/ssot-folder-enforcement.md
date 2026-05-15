@@ -15,7 +15,7 @@ description: SSOT folder routing — every NEW Python file must land in its cano
 | Calibration / weekly report / ledger binder | `*_calibration.py`, `*_binder.py`, `*_poller.py`, `*_weekly_report.py` | `ops_scripts/calibration/` |
 | Maintenance / cleanup | `purge_*.py`, `cleanup_*.py` | `ops_scripts/maintenance/` |
 | Windsurf hook script | `pre_*_*.py`, `post_*_*.py` (matching `.windsurf/hooks.json`) | `.windsurf/scripts/` |
-| Cascade-invoked utility | other | `tools/<domain>/` |
+| Cursor Agent-invoked utility | other | `tools/<domain>/` |
 | Plan | `<slug>-<6hex>.md` | `.windsurf/plans/` (enforced by `plan-location.md`) |
 | Report / evidence | `.md` | `docs/reports/` (enforced by `validate_report_location.py`) |
 

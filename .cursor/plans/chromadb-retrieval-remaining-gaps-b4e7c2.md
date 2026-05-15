@@ -43,7 +43,7 @@ Addresses the unfixed gaps from the parent plan `chromadb-bge-retrieval-hardenin
 |---|---|---|---|
 | **G5** | `repo_adg_graph` collection corrupt | Pipeline comment (`pipeline.py:86-88`) says "stage removed W5.2" and references `tools/retrieval/drop_repo_adg_graph.py`. | **Verify** the collection is actually dropped from the canonical store. If it still exists on disk (corrupt), run the teardown script. |
 | **G8** | No post-ingest validation in orchestrator | `pipeline.py:280-295` calls `_validate_stage` after each stage. | **Verify** `_validate_stage.py` validates metadata contract fields (not just row counts). If it only checks counts, add ChunkMetadataV1 field validation. |
-| **G9** | Coverage: `apps_*` / `system_learning` / `tools` / `ops_scripts` uningested | `pipeline.py:68-80` adds 12 per-root code ingest stages covering all `apps_*`, `system_learning`, `infrastructure`, `tools`, `ops_scripts`. | **Verify** `ingest_docs.py` covers `AGENTS.md`, `.windsurf/rules/*`, `.windsurf/plans/*`, `.windsurf/skills/*`, ADR bodies. Currently `--source-dir docs` only ingests `docs/`. Need additional doc ingest scope. |
+| **G9** | Coverage: `apps_*` / `system_learning` / `tools` / `ops_scripts` uningested | `pipeline.py:68-80` adds 12 per-root code ingest stages covering all `apps_*`, `system_learning`, `infrastructure`, `tools`, `ops_scripts`. | **Verify** `ingest_docs.py` covers `AGENTS.md`, `.cursor/rules/*`, `.cursor/plans/*`, `.cursor/skills/*`, ADR bodies. Currently `--source-dir docs` only ingests `docs/`. Need additional doc ingest scope. |
 | **G15** | Two parallel ingestion systems | `pipeline.py:112-131` adds `GENERATE_STAGES` under `--with-generate` flag, integrating `tools/generate/ingestion/*` scripts. | The two systems are unified at orchestrator level but the individual scripts still live in separate dirs. Archival of truly duplicated scripts not yet done. Low priority — functional parity achieved. |
 
 ### OPEN (requires new work)
@@ -52,7 +52,7 @@ Addresses the unfixed gaps from the parent plan `chromadb-bge-retrieval-hardenin
 |---|---|---|---|
 | **G11** | `traces` and `agentic_best_practices` empty | Pipeline skips `traces` when corpus file missing (`pipeline.py:93`). `agentic_best_practices` likely still empty (web stage requires seed URLs). | W1: Verify corpus file exists; if missing, generate from healing contexts. For `agentic_best_practices`, decide: populate or drop. |
 | **G12** | BM25 parity — only `code_chunks` has sparse index | `build_sparse_index.py` exists but is not wired into the main pipeline for all collections. | W2: Wire BM25 sidecar build into pipeline for all primary collections; validate via `validate_sparse_index.py`. |
-| **G9-docs** | Doc ingest covers only `docs/` | `ingest_docs.py` default `--source-dir docs`; pipeline only invokes with this default. | W1: Add pipeline stages for `AGENTS.md`, `.windsurf/rules/`, `.windsurf/skills/`, `docs/architecture/adr/`. |
+| **G9-docs** | Doc ingest covers only `docs/` | `ingest_docs.py` default `--source-dir docs`; pipeline only invokes with this default. | W1: Add pipeline stages for `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, `docs/architecture/adr/`. |
 | **G5-verify** | `repo_adg_graph` may still be corrupt on disk | Teardown script exists but may not have been run. | W1: Verify and clean up. |
 | **G8-meta** | `_validate_stage` depth unknown | May only validate counts, not contract fields. | W1: Verify and enhance if needed. |
 | **NEW-1** | `SovereignChromaClient.__init__` default is hardcoded string | `chroma_client.py:56` uses `"data/cache/chromadb"` literal instead of `canonical_persist_dir_str()`. Callers override, but the default should use the SSOT. | W1: Point default at SSOT function. |
@@ -151,7 +151,7 @@ Addresses the unfixed gaps from the parent plan `chromadb-bge-retrieval-hardenin
 
 ## References
 
-- Parent plan: `.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md`
+- Parent plan: `.cursor/plans/chromadb-bge-retrieval-hardening-e9aa09.md`
 - `agentic_core/L4_state/config/chroma_paths.py` — SSOT persist_dir
 - `agentic_core/L4_state/utils/chunk_metadata.py` — ChunkMetadataV1 contract
 - `tools/ingestion/pipeline.py` — unified orchestrator

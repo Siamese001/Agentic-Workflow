@@ -323,7 +323,7 @@ If a wave breaks `apps_research/` or downstream consumers:
 | `hop_company_brief_engine` in ADG | present | ADG query (requires regen to confirm) |
 | Citation-density gate (post-P4.4) | passing | `python ops_scripts/ci/check_research_citation_density.py` |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Plan reconstructed from Notion SSOT; gaps surfaced explicitly in GAP-R1/R2/R3 rather than fabricated.
 - Scope containment: `apps_research/` edits deferred until taxonomy refactor lands (GAP-R4).

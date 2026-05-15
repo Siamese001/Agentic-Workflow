@@ -63,7 +63,7 @@ These are **T3 architectural refactors**, not bulk narrowings. Each requires:
 1. Per-site intent analysis (fail-soft required? or safe to fail-loud?)
 2. Test-suite verification (callers may rely on swallowing behavior)
 3. Author-Gate decision per decision-class
-4. Dedicated plan under `.windsurf/plans/`
+4. Dedicated plan under `.cursor/plans/`
 
 **Priority order by fan-in + structural feasibility:**
 1. **`double_logging` scrub wave** (199 edges, mechanical dedup, low-risk) — best candidate for automated pass

@@ -11,7 +11,7 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 
 ## Context (SCQA)
 
-**Situation:** The workspace uses Notion Plans DB to track ~130 plans across all execution states. Plans are identified by slugs in `.windsurf/plans/<slug>-<6hex>.md` and have corresponding Notion pages with matching slugs in the `Slug` title property. Status updates use `mcp7_API-patch-page` with Notion page IDs.
+**Situation:** The workspace uses Notion Plans DB to track ~130 plans across all execution states. Plans are identified by slugs in `.cursor/plans/<slug>-<6hex>.md` and have corresponding Notion pages with matching slugs in the `Slug` title property. Status updates use `mcp7_API-patch-page` with Notion page IDs.
 
 **Complication:** During the 2026-05-10 status update session, I mistakenly marked the wrong plans as "Deferred" because I used incorrect Notion page IDs. I updated `author-gate-ask-ui-consolidated-a1e3f7` and `w6-emit-contract-enrichment-d8b2a4` (both Completed) instead of `l6-alignment-deferred-scope-c5e8a7` and `l5-cert-ref-deferred-scope-f3a1b8` (the actual targets). This happened because I relied on stale page IDs from context rather than querying the database.
 
@@ -25,8 +25,8 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/notion-plans-taxonomy.md` | Existing status taxonomy | ✅ |
-| `.windsurf/scripts/_notion_plans_status_check.py` | Existing status validation helper | ✅ |
+| `.cursor/rules/notion-plans-taxonomy.md` | Existing status taxonomy | ✅ |
+| `.cursor/scripts/_notion_plans_status_check.py` | Existing status validation helper | ✅ |
 | `ops_scripts/ci/check_notion_plans_status_drift.py` | Existing drift detection | ✅ |
 | ADG SQLite `nodes` table | Plan file to slug mapping | ✅ |
 | Notion Plans DB query API | Live slug → page_id resolution | ✅ |
@@ -37,8 +37,8 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 
 | Wave | Focus | Deliverable | Checkpoint | Tokens |
 |------|-------|-------------|------------|--------|
-| W1 | Pre-write hook for plan identity verification | `.windsurf/scripts/pre_notion_plan_write_gate.py` | Hook blocks on slug/page mismatch | ~8k ✅ |
-| W2 | Rule documentation | `.windsurf/rules/notion-plan-identity-verification.md` | Rule enshrines prevention pattern | ~4k ✅ |
+| W1 | Pre-write hook for plan identity verification | `.cursor/scripts/pre_notion_plan_write_gate.py` | Hook blocks on slug/page mismatch | ~8k ✅ |
+| W2 | Rule documentation | `.cursor/rules/notion-plan-identity-verification.md` | Rule enshrines prevention pattern | ~4k ✅ |
 | W3 | CI gate for status history audit | `ops_scripts/ci/check_notion_plan_status_anomalies.py` | Gate detects suspicious status flips | ~10k ✅ |
 | W4 | Integration and testing | Hook registered, gate active, tests pass | End-to-end verification | ~6k ✅ |
 
@@ -67,7 +67,7 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 | 3.1 | Anomaly detection algorithm | `check_notion_plan_status_anomalies.py` | Defining "suspicious" status change | ~4k | ✅ DONE |
 | 3.2 | Historical audit implementation | Same file | Querying Notion page history | ~4k | ✅ DONE |
 | 3.3 | Gate registration and reporting | Same file + `run_contract_gates.py` | Advisory vs fail-closed mode | ~2k | ✅ DONE |
-| 4.1 | Hook registration in `hooks.json` | `.windsurf/hooks.json` | JSON editing safely | ~2k | ✅ DONE |
+| 4.1 | Hook registration in `hooks.json` | `.cursor/hooks.json` | JSON editing safely | ~2k | ✅ DONE |
 | 4.2 | End-to-end testing | Test files | Verification the hook actually blocks | ~4k | ✅ DONE |
 
 ---
@@ -96,8 +96,8 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 ### Wave 1 — Pre-Write Hook for Plan Identity Verification
 
 **Phase 1.1: Hook scaffold and slug extraction**
-- Create `.windsurf/scripts/pre_notion_plan_write_gate.py`
-- Parse Cascade context to extract intended plan slug (from file content, response text, or explicit parameter)
+- Create `.cursor/scripts/pre_notion_plan_write_gate.py`
+- Parse Cursor Agent context to extract intended plan slug (from file content, response text, or explicit parameter)
 - Handle cases where slug is in `PLAN_CREATED:` marker, plan file path, or prose
 
 **Phase 1.2: Notion DB query integration**
@@ -113,7 +113,7 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 **Acceptance:**
 ```bash
 # Test: hook blocks on mismatched page ID
-python .windsurf/scripts/pre_notion_plan_write_gate.py \
+python .cursor/scripts/pre_notion_plan_write_gate.py \
   --intended-slug l6-alignment-deferred-scope-c5e8a7 \
   --notion-page-id WRONG_ID
 # Exit code 2, stderr: "PLAN_IDENTITY_MISMATCH: ..."
@@ -122,17 +122,17 @@ python .windsurf/scripts/pre_notion_plan_write_gate.py \
 ### Wave 2 — Rule Documentation
 
 **Phase 2.1: Rule draft and review**
-- Create `.windsurf/rules/notion-plan-identity-verification.md`
+- Create `.cursor/rules/notion-plan-identity-verification.md`
 - Document the prevention pattern: "Always verify plan identity by querying Notion DB when page IDs are uncertain"
 - Include examples of correct vs incorrect targeting
 
 **Phase 2.2: Rule registration and cross-links**
 - Link from `notion-plans-taxonomy.md` § "Status Changes"
 - Link from `deferred-scope-capture.md` § "Notion Writeback"
-- Add to `.windsurf/RULES_INDEX.md`
+- Add to `.cursor/RULES_INDEX.md`
 
 **Acceptance:**
-- Rule is discoverable via `grep -r "verify plan identity" .windsurf/rules/`
+- Rule is discoverable via `grep -r "verify plan identity" .cursor/rules/`
 - Cross-links resolve correctly
 
 ### Wave 3 — CI Gate for Status History Audit
@@ -162,21 +162,21 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 
 ### Wave 4 — Integration and Testing
 
-**Phase 4.1: Hook registration (PIVOTED to post-cascade audit)**
-- Create `post_cascade_notion_plan_identity_audit.py` — scans Cascade response for `mcp7_API-patch-page` calls targeting Plans DB
+**Phase 4.1: Hook registration (PIVOTED to post-cursor-agent audit)**
+- Create `post_cursor_agent_notion_plan_identity_audit.py` — scans Cursor Agent response for `mcp7_API-patch-page` calls targeting Plans DB
 - Extracts intended slug from context and targeted page_id from API call
 - Queries Notion DB to verify match
-- Logs mismatches to `artifacts/windsurf/plan_identity_violations.jsonl`
+- Logs mismatches to `artifacts/cursor/plan_identity_violations.jsonl`
 - **Reason for pivot:** `pre_mcp_tool_use` hooks cannot see tool arguments per `pre_mcp_gate.py:1042-1051`
 
 **Phase 4.2: End-to-end testing**
-- Create `tests/unit/windsurf_scripts/test_post_cascade_notion_plan_identity_audit.py`
+- Create `tests/unit/windsurf_scripts/test_post_cursor_agent_notion_plan_identity_audit.py`
 - Test cases: correct match, mismatch detection, missing slug, context extraction
 - All tests pass
 
 **Acceptance:**
-- Audit fires automatically after Cascade responses with Notion plan status updates
-- Test suite: `pytest tests/unit/windsurf_scripts/test_post_cascade_notion_plan_identity_audit.py -v` passes
+- Audit fires automatically after Cursor Agent responses with Notion plan status updates
+- Test suite: `pytest tests/unit/windsurf_scripts/test_post_cursor_agent_notion_plan_identity_audit.py -v` passes
 
 ---
 
@@ -184,7 +184,7 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 
 - **PLAN_IDENTITY_VERIFY_FIRST:** When Notion page ID is not 100% certain, query Plans DB by slug before any `API-patch-page` call
 - **FAIL_CLOSED_ON_MISMATCH:** If slug/page_id mismatch detected, block operation (exit 2) unless bypass env var set
-- **LOG_ALL_VERIFICATIONS:** Every verification attempt logs to `artifacts/windsurf/plan_identity_verifications.jsonl`
+- **LOG_ALL_VERIFICATIONS:** Every verification attempt logs to `artifacts/cursor/plan_identity_verifications.jsonl`
 - **BYPASS_AUDIT_TRAIL:** Bypasses are permitted but logged with `WARNING:` prefix and user confirmation
 
 ---
@@ -192,7 +192,7 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 ## Success Criteria
 
 - [x] Hook `pre_notion_plan_write_gate.py` exists with verification logic
-- [x] Post-cascade audit `post_cascade_notion_plan_identity_audit.py` registered in hooks.json
+- [x] Post-cursor-agent audit `post_cursor_agent_notion_plan_identity_audit.py` registered in hooks.json
 - [x] Hook blocks on slug/page mismatch (verified by test)
 - [x] Rule `notion-plan-identity-verification.md` exists with 2026-05-10 incident documentation
 - [x] CI gate `check_notion_plan_status_anomalies.py` registered as NP8 (advisory)
@@ -208,7 +208,7 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 python -c "
 import os
 os.makedirs('.windsurf/scripts', exist_ok=True)
-with open('.windsurf/scripts/pre_notion_plan_write_gate.py', 'w') as f:
+with open('.cursor/scripts/pre_notion_plan_write_gate.py', 'w') as f:
     f.write('#!/usr/bin/env python3\n\"\"\"Pre-write gate for Notion plan identity verification.\"\"\"\n')
 "
 
@@ -245,9 +245,9 @@ If hook causes excessive false positives:
 
 | Metric | Target | Verification |
 |---|---|---|
-| Hook false positive rate | <5% | Review `artifacts/windsurf/plan_identity_verifications.jsonl` |
+| Hook false positive rate | <5% | Review `artifacts/cursor/plan_identity_verifications.jsonl` |
 | Anomaly detection recall | 100% of known incidents | Historical validation against 2026-05-10 incident |
-| Rule discoverability | Top-3 search result | `grep -r "verify plan identity" .windsurf/rules/` shows rule |
+| Rule discoverability | Top-3 search result | `grep -r "verify plan identity" .cursor/rules/` shows rule |
 | Test coverage | ≥90% | `pytest --cov` on hook module |
 
 ---
@@ -256,8 +256,8 @@ If hook causes excessive false positives:
 
 | # | Criterion | Verification command / evidence | Status |
 |---|---|---|---|
-| DoD-1 | Hook exists and blocks on mismatch | `python .windsurf/scripts/pre_notion_plan_write_gate.py --test-mismatch` exits 2 | ✅ |
-| DoD-2 | Rule documents prevention pattern | Rule file exists at `.windsurf/rules/notion-plan-identity-verification.md` | ✅ |
+| DoD-1 | Hook exists and blocks on mismatch | `python .cursor/scripts/pre_notion_plan_write_gate.py --test-mismatch` exits 2 | ✅ |
+| DoD-2 | Rule documents prevention pattern | Rule file exists at `.cursor/rules/notion-plan-identity-verification.md` | ✅ |
 | DoD-3 | CI gate detects anomalies | `python ops_scripts/ci/check_notion_plan_status_anomalies.py` runs without error | ✅ |
 | DoD-4 | Tests pass | `pytest tests/unit/windsurf_scripts/test_pre_notion_plan_write_gate.py -v` shows 25 pass | ✅ |
 | DoD-5 | Memory updated | `mem:` entity created for prevention pattern | 🔲 |
@@ -281,7 +281,7 @@ AG_QUEUE_SEED: plan=notion-plan-identity-verification-enforcement-f2a9c1 id=AG-W
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - This plan is **governance** type → ADG graph-layer evidence SKIPPED per template
 - Enforcement belongs in hooks/gates, not always-on rules (per §33 token budget)

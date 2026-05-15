@@ -19,8 +19,8 @@ This document inventories **all pipelines** in the Agentic-Workflow codebase tha
 
 | Component | Path | UI Invariants | Telemetry |
 |-----------|------|---------------|-----------|
-| `emit_packet.py` | `.windsurf/skills/author-gate-packet-builder/` | ✅ All 4 | `AUTHOR_GATE_PACKET:` |
-| `render_card.py` | `.windsurf/skills/author-gate-ui-renderer/` | ✅ All 4 | Pass-through |
+| `emit_packet.py` | `.cursor/skills/author-gate-packet-builder/` | ✅ All 4 | `AUTHOR_GATE_PACKET:` |
+| `render_card.py` | `.cursor/skills/author-gate-ui-renderer/` | ✅ All 4 | Pass-through |
 
 **Invariants Enforced:**
 1. `[confidence=X.XX]` prefix on all options
@@ -77,7 +77,7 @@ ask_user_question(
 
 | Workflow | Location | Pattern | Issue |
 |----------|----------|---------|-------|
-| **antipattern-author-gate** | `.windsurf/workflows/antipattern-author-gate.md:38-45` | Markdown blockquote | ❌ No `ask_user_question` at all |
+| **antipattern-author-gate** | `.cursor/workflows/antipattern-author-gate.md:38-45` | Markdown blockquote | ❌ No `ask_user_question` at all |
 
 **Current (Non-Standard):**
 ```markdown
@@ -142,20 +142,20 @@ WizardField("description", "Job description", kind="multiline_or_file")
 
 | File | Line(s) | Current Pattern | Needed Change |
 |------|---------|---------------|---------------|
-| `.windsurf/skills/structured-reasoning/SKILL.md` | 144-149 | Plain ask_user_question | Route through universal enricher |
+| `.cursor/skills/structured-reasoning/SKILL.md` | 144-149 | Plain ask_user_question | Route through universal enricher |
 
 ### 4.2 Workflows (High Priority)
 
 | File | Line(s) | Current Pattern | Needed Change |
 |------|---------|---------------|---------------|
-| `.windsurf/workflows/antipattern-author-gate.md` | 38-45 | Markdown blockquote | Convert to ask_user_question + enricher |
-| `.windsurf/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (no confidence) | Update to full AG-10 shape |
+| `.cursor/workflows/antipattern-author-gate.md` | 38-45 | Markdown blockquote | Convert to ask_user_question + enricher |
+| `.cursor/workflows/author-gate-decision-gate.md` | 45-48 | Minimal shape (no confidence) | Update to full AG-10 shape |
 
 ### 4.3 Plans (Documentation Only)
 
 | File | Context |
 |------|---------|
-| `.windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md` | Example in plan doc |
+| `.cursor/plans/adg-chromadb-retrieval-assessment-8a3f2b.md` | Example in plan doc |
 
 ### 4.4 Tests (Reference Implementations)
 
@@ -182,8 +182,8 @@ WizardField("description", "Job description", kind="multiline_or_file")
 
 | Hook | Coverage | Gap |
 |------|----------|-----|
-| `post_cascade_author_gate_ui_audit.py` | Author-Gate decisions only | ❌ Does not audit native ask_user_question |
-| `post_cascade_ask_user_question_packet_audit.py` | Packet presence | ❌ Does not enforce UI invariants |
+| `post_cursor_agent_author_gate_ui_audit.py` | Author-Gate decisions only | ❌ Does not audit native ask_user_question |
+| `post_cursor_agent_ask_user_question_packet_audit.py` | Packet presence | ❌ Does not enforce UI invariants |
 | `pre_user_prompt_author_gate_reminder.py` | Pre-prompt reminder | ❌ Does not intercept tool calls |
 
 ---
@@ -249,7 +249,7 @@ WizardField("description", "Job description", kind="multiline_or_file")
 - **Harmonization Plan:** `ask-user-question-author-gate-harmonization-a7e3d2.md`
 - **RCA:** `author-gate-canonical-emitter-rca-c7f9d1.md`
 - **Rule:** `author-gate-enforcement.md` §"Canonical-emitter invariant"
-- **Schema:** `.windsurf/schemas/author_gate_packet.schema.json`
+- **Schema:** `.cursor/schemas/author_gate_packet.schema.json`
 
 ---
 

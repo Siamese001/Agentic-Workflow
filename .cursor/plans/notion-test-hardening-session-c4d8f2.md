@@ -27,7 +27,7 @@ with a slug cross-check in `find_plan_page` and 16 new `TestWrongPlanGuard` test
 |----------|-------|---------------|-------------|-------------|--------|
 | W1.P1 | Harden test_notion_plans_status_check.py | tests/unit/windsurf_scripts/ | Wrong Backlog DB assumption fixed; 14 new cases added | ~2K | ✅ DONE |
 | W1.P2 | Harden test_wave_lifecycle_writer.py | tests/unit/tools_notion/ | Slug validation, patch_for_marker edge states, coalesce, parse failure patterns | ~3K | ✅ DONE |
-| W1.P3 | Harden test_post_cascade_wave_lifecycle_capture.py | tests/unit/windsurf_scripts/ | Raw text stdin, truncated JSON, multiple slugs, fail-soft, updater integration | ~2K | ✅ DONE |
+| W1.P3 | Harden test_post_cursor_agent_wave_lifecycle_capture.py | tests/unit/windsurf_scripts/ | Raw text stdin, truncated JSON, multiple slugs, fail-soft, updater integration | ~2K | ✅ DONE |
 | W1.P4 | Harden test_plan_registration.py | tests/unit/windsurf_scripts/ | Stale cache, Retired/Archived rejection, queue ordering, all canonical statuses | ~2K | ✅ DONE |
 | W2.P1 | Cardinal-sin guard: wrong-plan-patch prevention | tools/notion/wave_lifecycle_writer.py | Slug cross-check in find_plan_page + _extract_slug_from_properties + TestWrongPlanGuard (16 tests) | ~5K | ✅ DONE |
 
@@ -59,7 +59,7 @@ Web-research-driven audit of 5 more Notion test files. +85 new tests, 0 failures
 
 ### Session 2 Files Changed
 
-- `tests/unit/windsurf_scripts/test_post_cascade_notion_plans_status_audit.py` — +37 tests (6 new classes)
+- `tests/unit/windsurf_scripts/test_post_cursor_agent_notion_plans_status_audit.py` — +37 tests (6 new classes)
 - `tests/unit/windsurf_scripts/test_notion_status_transitions.py` — +21 tests (3 new classes)
 - `tests/unit/ops_scripts/ci/test_check_notion_plans_no_duplicates.py` — +8 tests
 - `tests/unit/ops_scripts/ci/test_check_notion_plans_new_status.py` — +14 tests (2 extended/new classes)
@@ -90,7 +90,7 @@ Web-research-driven audit of 5 more Notion test files. +85 new tests, 0 failures
 ### Tests
 - `tests/unit/windsurf_scripts/test_notion_plans_status_check.py` — Fixed 2 wrong Backlog DB assertions; added 14 hardened cases
 - `tests/unit/tools_notion/test_wave_lifecycle_writer.py` — Added `TestSlugValidation` (8), `TestPatchForMarkerEdgeCases` (9), `TestCoalesceHardened`, `TestPatchStatusPublicAPI`, `TestParseMarkersHardened` (6), `TestWrongPlanGuard` (16)
-- `tests/unit/windsurf_scripts/test_post_cascade_wave_lifecycle_capture.py` — Added `TestMainRawTextStdin` (3), `TestMainMultipleSlugs` (2), `TestUpdatePlanFilesIntegration` (4), `TestHooksJsonRegistration` (1)
+- `tests/unit/windsurf_scripts/test_post_cursor_agent_wave_lifecycle_capture.py` — Added `TestMainRawTextStdin` (3), `TestMainMultipleSlugs` (2), `TestUpdatePlanFilesIntegration` (4), `TestHooksJsonRegistration` (1)
 - `tests/unit/windsurf_scripts/test_plan_registration.py` — Added 22 hardened cases (cache TTL, Archived/Waiting/Completed status, queue ordering, drift_report parity, iter_unregistered_on_disk)
 
 ---
@@ -101,7 +101,7 @@ Web-research-driven audit of 5 more Notion test files. +85 new tests, 0 failures
 |------|--------|-------|-----|
 | test_notion_plans_status_check.py | 28 | 42 | +14 |
 | test_wave_lifecycle_writer.py | 40 | 85 | +45 |
-| test_post_cascade_wave_lifecycle_capture.py | 18 | 28 | +10 |
+| test_post_cursor_agent_wave_lifecycle_capture.py | 18 | 28 | +10 |
 | test_plan_registration.py | 41 | 63 | +22 |
 | **Total** | **127** | **218** | **+91** |
 
@@ -113,7 +113,7 @@ Web-research-driven audit of 5 more Notion test files. +85 new tests, 0 failures
 
 | # | Criterion | Verification | Status |
 |---|---|---|---|
-| DoD-1 | All 4 hardened test files green | `pytest tests/unit/windsurf_scripts/test_notion_plans_status_check.py tests/unit/tools_notion/test_wave_lifecycle_writer.py tests/unit/windsurf_scripts/test_post_cascade_wave_lifecycle_capture.py tests/unit/windsurf_scripts/test_plan_registration.py` → 0 failed | ✅ DONE |
+| DoD-1 | All 4 hardened test files green | `pytest tests/unit/windsurf_scripts/test_notion_plans_status_check.py tests/unit/tools_notion/test_wave_lifecycle_writer.py tests/unit/windsurf_scripts/test_post_cursor_agent_wave_lifecycle_capture.py tests/unit/windsurf_scripts/test_plan_registration.py` → 0 failed | ✅ DONE |
 | DoD-2 | Wrong-plan-patch guard in production code | `find_plan_page` refuses page_id when returned slug ≠ queried slug | ✅ DONE |
 | DoD-3 | `TestWrongPlanGuard` 16 tests cover all threat vectors | `pytest tests/unit/tools_notion/test_wave_lifecycle_writer.py::TestWrongPlanGuard` → 16 passed | ✅ DONE |
 | DoD-4 | No regressions in any existing test | Full run 0 failures | ✅ DONE |
@@ -126,4 +126,4 @@ Web-research-driven audit of 5 more Notion test files. +85 new tests, 0 failures
 | Wrong-plan guard for `apply_plan_derived_status.py` (separate writer) | Out of scope this session | NEXT_STEP |
 | Wrong-plan guard for `repair_notion_plan_statuses.py` | Out of scope this session | NEXT_STEP |
 
-PLAN_CREATED: slug=notion-test-hardening-session-c4d8f2 path=.windsurf/plans/notion-test-hardening-session-c4d8f2.md status=Completed
+PLAN_CREATED: slug=notion-test-hardening-session-c4d8f2 path=.cursor/plans/notion-test-hardening-session-c4d8f2.md status=Completed

@@ -3,7 +3,7 @@
 
 Bypass for the Windsurf 2.0.67 bug where ``post_cascade_response`` hooks
 silently stop firing mid-session. When the heartbeat log shows the hook
-chain is dark, Cascade invokes this script directly via ``run_command``
+chain is dark, Cursor Agent invokes this script directly via ``run_command``
 in the same response that emits the marker — guaranteeing the Author-Gate
 ledger captures the decision without depending on the broken hook channel.
 

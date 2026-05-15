@@ -12,7 +12,7 @@ Completes the Notion writeback that MCP serialization (constitutional §25) prev
 ## Context (SCQA)
 
 - **Situation** — Plan `apps-hop-substrate-f7751b` completed all engineering waves (substrate module, apps_lic port, apps_rg adoption, apps_underwriting_ai adoption, CI gate, ADR-081). ADR-081 was posted to the Notion ADR Registry on 2026-05-01 at `https://app.notion.com/p/35327693f55c816a9455d01d7c6077d4`.
-- **Complication** — Constitutional §25 limits Cascade to one MCP call per response. The parent plan's Wave 4.3 called for 3+ Notion rows (ADR Registry + Plans + Wave/Phase Convergence); only the ADR row landed in the final session.
+- **Complication** — Constitutional §25 limits Cursor Agent to one MCP call per response. The parent plan's Wave 4.3 called for 3+ Notion rows (ADR Registry + Plans + Wave/Phase Convergence); only the ADR row landed in the final session.
 - **Question** — What Notion writes are still owed, and in what priority?
 - **Answer** — Two remaining posts. This plan is a lightweight tracker of those posts so they don't fall off the ledger.
 
@@ -22,7 +22,7 @@ Completes the Notion writeback that MCP serialization (constitutional §25) prev
 
 | # | Target DB | Write DB ID | Shape | Priority |
 |---|-----------|-------------|-------|----------|
-| 1 | Plans | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | Plan row for `apps-hop-substrate-f7751b`: Status=Done, Plan File Path=`.windsurf/plans/apps-hop-substrate-f7751b.md`, Summary = "Canonical HOP pipeline substrate + apps_lic full port + apps_rg/apps_underwriting_ai additive adoption + CI gate + ADR-081" | P3 |
+| 1 | Plans | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | Plan row for `apps-hop-substrate-f7751b`: Status=Done, Plan File Path=`.cursor/plans/apps-hop-substrate-f7751b.md`, Summary = "Canonical HOP pipeline substrate + apps_lic full port + apps_rg/apps_underwriting_ai additive adoption + CI gate + ADR-081" | P3 |
 | 2 | Wave/Phase Convergence | `aa8d2507-101e-4384-81d9-60ea3fe33876` | 3 rows summarizing Wave 1 (substrate+tests, DONE), Wave 2 (apps_lic full port, DONE), Wave 3+4 (apps_rg+underwriting_ai shallow adoption + CI gate + ADR, DONE) | P4 |
 
 Sub-plans spawned by the session (`apps-lic-hop-domain-logic-b8c4c4`, `apps-rg-substrate-deep-migration-600595`) also need Plans rows eventually but are lower priority than closing out the parent.
@@ -36,7 +36,7 @@ Sub-plans spawned by the session (`apps-lic-hop-domain-logic-b8c4c4`, `apps-rg-s
 `API-post-page` into `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` with:
 - Title: "apps-hop-substrate — Canonical HOP Pipeline Substrate + apps_lic Port"
 - Status: Done
-- Plan File Path: `.windsurf/plans/apps-hop-substrate-f7751b.md`
+- Plan File Path: `.cursor/plans/apps-hop-substrate-f7751b.md`
 - Exists On Disk: true
 
 ### Phase 2 — Wave/Phase Convergence rows
@@ -61,7 +61,7 @@ Post Plans rows for `apps-lic-hop-domain-logic-b8c4c4` and `apps-rg-substrate-de
 
 Notion rows are append-only from this plan's perspective; no rollback needed beyond archiving misposted rows via `API-patch-page` `in_trash=true`.
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

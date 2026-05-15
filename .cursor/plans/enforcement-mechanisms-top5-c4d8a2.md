@@ -6,7 +6,7 @@ dod_exempt: false
 
 # Top 5 Enforcement Mechanisms — Wave 2 Implementation
 
-Implements the five highest-impact Notion/Cascade enforcement gaps identified from prior session analysis: NP9 new-plan status enforcement, NP10 waiting-for completeness, MCP config schema validation, plan-wave lifecycle sync, and deferred scope capture compliance.
+Implements the five highest-impact Notion/Cursor Agent enforcement gaps identified from prior session analysis: NP9 new-plan status enforcement, NP10 waiting-for completeness, MCP config schema validation, plan-wave lifecycle sync, and deferred scope capture compliance.
 
 ---
 
@@ -23,7 +23,7 @@ Implements the five highest-impact Notion/Cascade enforcement gaps identified fr
 
 **Question** — How do we close these five gaps with minimal blast radius following the established "helper + hook + CI gate + tests" pattern?
 
-**Answer** — Implement all five gates following SSOT patterns from prior plans (notion-plans-status-enforcement-7a1e2d, ssot-folder-enforcement-d4a7d9a, etc.): pure helpers in `.windsurf/scripts/`, CI gates in `ops_scripts/ci/`, post-cascade audits where applicable, registration in `run_contract_gates.py` assurance_gates list.
+**Answer** — Implement all five gates following SSOT patterns from prior plans (notion-plans-status-enforcement-7a1e2d, ssot-folder-enforcement-d4a7d9a, etc.): pure helpers in `.cursor/scripts/`, CI gates in `ops_scripts/ci/`, post-cursor-agent audits where applicable, registration in `run_contract_gates.py` assurance_gates list.
 
 ---
 
@@ -31,11 +31,11 @@ Implements the five highest-impact Notion/Cascade enforcement gaps identified fr
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/notion-plans-taxonomy.md` | Defines NP9/NP10 requirements | ✅ Loaded |
+| `.cursor/rules/notion-plans-taxonomy.md` | Defines NP9/NP10 requirements | ✅ Loaded |
 | `ops_scripts/ci/run_contract_gates.py` | Verify gate registration pattern | ✅ Loaded |
 | ADG SQLite snapshot | Check for existing gate patterns | 🔲 W1 |
 | `.windsurf/mcp_config.json` | Current schema baseline | 🔲 W2 |
-| `.windsurf/plans/*.md` corpus | Deferred scope pattern analysis | 🔲 W5 |
+| `.cursor/plans/*.md` corpus | Deferred scope pattern analysis | 🔲 W5 |
 
 ---
 
@@ -61,7 +61,7 @@ Implements the five highest-impact Notion/Cascade enforcement gaps identified fr
 - Frontend/UI changes to Notion (API-only)
 - Pre-commit hook wiring (separate concern)
 - Rule file frontmatter validation (deferred to future wave)
-- Real-time cascade interception (post-cascade audits only)
+- Real-time cascade interception (post-cursor-agent audits only)
 
 ---
 
@@ -112,13 +112,13 @@ Implements the five highest-impact Notion/Cascade enforcement gaps identified fr
 **Scope**: Create canonical status checker and new-plan detection gate
 
 **Files**:
-- `.windsurf/scripts/_notion_plans_new_status_check.py` — helper with `decide_new_plan_status()`
+- `.cursor/scripts/_notion_plans_new_status_check.py` — helper with `decide_new_plan_status()`
 - `ops_scripts/ci/check_notion_plans_new_status.py` — CI gate with 24h window logic
 
 **Commands**:
 ```bash
 # Create helper following _notion_plans_status_check.py pattern
-cat > .windsurf/scripts/_notion_plans_new_status_check.py << 'EOF'
+cat > .cursor/scripts/_notion_plans_new_status_check.py << 'EOF'
 """Pure helper for NP9 new-plan status validation."""
 CANONICAL_NEW_STATUSES = {"Not Started"}
 NEW_PLAN_WINDOW_HOURS = 24
@@ -149,12 +149,12 @@ EOF
 **Scope**: Cross-field validation between Status and Waiting For
 
 **Files**:
-- `.windsurf/scripts/_notion_plans_waiting_for_check.py` — helper
-- Update `.windsurf/scripts/post_cascade_notion_plans_status_audit.py` — add WAITING_EMPTY_WAITING_FOR detection
+- `.cursor/scripts/_notion_plans_waiting_for_check.py` — helper
+- Update `.cursor/scripts/post_cursor_agent_notion_plans_status_audit.py` — add WAITING_EMPTY_WAITING_FOR detection
 
 **Acceptance**:
 - Helper validates: Status="Waiting" implies Waiting For non-blank
-- Post-cascade audit logs violations to existing `notion_plans_status_violations.jsonl`
+- Post-cursor-agent audit logs violations to existing `notion_plans_status_violations.jsonl`
 - Rejects "TBD", "unknown", empty string as invalid Waiting For values
 
 ### Phase 2.2 — NP10 CI Gate + Tests
@@ -174,8 +174,8 @@ EOF
 **Scope**: JSON Schema for mcp_config.json validation
 
 **Files**:
-- `.windsurf/schemas/mcp_config.schema.json` — formal schema
-- `.windsurf/scripts/_mcp_config_validate.py` — pure validation helper
+- `.cursor/schemas/mcp_config.schema.json` — formal schema
+- `.cursor/scripts/_mcp_config_validate.py` — pure validation helper
 
 **Schema requirements**:
 - `mcpServers` object with required keys: `GitKraken`, `adg_sqlite`, `memory`, `notion`
@@ -200,7 +200,7 @@ EOF
 **Scope**: Pattern matching for wave markers vs Notion Summary
 
 **Files**:
-- `.windsurf/scripts/_wave_lifecycle_sync_check.py` — helper
+- `.cursor/scripts/_wave_lifecycle_sync_check.py` — helper
 - Parses `WAVE_START:`, `WAVE_COMPLETE:`, `PHASE_COMPLETE:` markers
 - Parses Notion Summary column for `[Wave-Log <ts>] W{N} DONE` entries
 
@@ -217,7 +217,7 @@ EOF
 - `tests/unit/ops_scripts/ci/test_check_plan_notion_wave_freshness.py`
 
 **Acceptance**:
-- Gate scans `.windsurf/plans/*.md` for wave markers
+- Gate scans `.cursor/plans/*.md` for wave markers
 - Queries Notion for corresponding plan rows
 - Reports drift where markers don't match Summary entries
 - Advisory by default; fail-closed via `PLAN_WAVE_FRESHNESS_FAIL_CLOSED=1`
@@ -227,7 +227,7 @@ EOF
 **Scope**: Detect deferred work mentions and marker presence
 
 **Files**:
-- `.windsurf/scripts/_deferred_scope_scanner.py` — helper
+- `.cursor/scripts/_deferred_scope_scanner.py` — helper
 
 **Pattern matching**:
 - Deferred indicators: "deferred", "future work", "out of scope", "we'll handle X later"
@@ -242,7 +242,7 @@ EOF
 - `tests/unit/ops_scripts/ci/test_check_deferred_scope_markers.py`
 
 **Acceptance**:
-- Gate scans `.windsurf/plans/*.md` for deferred indicators
+- Gate scans `.cursor/plans/*.md` for deferred indicators
 - Verifies corresponding `DEFERRED_SCOPE:` marker exists in file
 - Reports violations where prose mentions deferral without marker
 - Advisory by default; fail-closed via `DEFERRED_SCOPE_MARKER_FAIL_CLOSED=1`
@@ -252,12 +252,12 @@ EOF
 
 ## Rules
 
-- All gates follow SSOT folder routing: helpers to `.windsurf/scripts/`, gates to `ops_scripts/ci/`
+- All gates follow SSOT folder routing: helpers to `.cursor/scripts/`, gates to `ops_scripts/ci/`
 - All gates have bypass env var and fail-closed env var
 - All gates emit JSON reports to `artifacts/ci/<gate_name>.json`
 - All gates have 8+ test cases following existing patterns
 - All helpers are pure functions with no side effects
-- Post-cascade audits (where applicable) log to `artifacts/windsurf/*_violations.jsonl`
+- Post-cursor-agent audits (where applicable) log to `artifacts/cursor/*_violations.jsonl`
 
 ---
 
@@ -324,7 +324,7 @@ If gates are too noisy:
 | NP10 false positive | <5% | Manual audit of 20 "Waiting" plans, verify all true positives |
 | MCP schema coverage | 100% | All 10 MCP servers from AGENTS.md validated |
 | Wave drift detection | <5 min latency | Markers emitted, gate detects within 5 minutes |
-| Deferred marker compliance | 90%+ | Scan all `.windsurf/plans/*.md`, verify 90% have markers where needed |
+| Deferred marker compliance | 90%+ | Scan all `.cursor/plans/*.md`, verify 90% have markers where needed |
 
 ---
 
@@ -350,7 +350,7 @@ If gates are too noisy:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

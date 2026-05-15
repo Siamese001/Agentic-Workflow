@@ -46,7 +46,6 @@ metadata:
 1. **SQLite is canonical, Redis is hot projection.** When the two disagree, SQLite wins.
 2. **`redis_flush_namespace` defaults to `dry_run=true` for safety.** Set `dry_run=false` only when you've inspected the matched keys.
 3. **Use `redis_keys` (SCAN), never `KEYS *` patterns.** SCAN is cursor-based and bounded; KEYS blocks the server.
-4. **MCP serialization (§25):** One MCP call per response.
 5. **MCP green light:** Before T2/T3 work, check Redis hot cache status as the preferred fast path before falling back to `adg_health`.
 
 ## Common Workflows

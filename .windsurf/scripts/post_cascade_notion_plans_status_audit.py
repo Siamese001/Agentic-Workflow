@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_cascade_notion_plans_status_audit.py — Plans DB Status drift detector.
 
-Reads the Cascade response from stdin (post_cascade_response payload).
+Reads the Cursor Agent response from stdin (post_cascade_response payload).
 Detects any API-post-page / API-patch-page invocation in the response that
 targets the Plans DB and writes a non-canonical Status value.
 

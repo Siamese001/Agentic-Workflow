@@ -69,7 +69,7 @@ Full MV + semantic-edge evidence will be re-derived per phase before execution �
 
 ## References
 
-- Parent plan: `.windsurf/plans/adg-wiring-ci-hardening-7a5d84.md`
+- Parent plan: `.cursor/plans/adg-wiring-ci-hardening-7a5d84.md`
 - Fleet last run: `artifacts/adg/adg_gate_results_20260423_161634.json` (48 gates, overall_exit=1 on real violations)
-- Deferred-scope rule: `.windsurf/rules/deferred-scope-capture.md`
-- Constitutional §22 (graph-layer evidence): `.windsurf/rules/constitutional.md`
+- Deferred-scope rule: `.cursor/rules/deferred-scope-capture.md`
+- Constitutional §22 (graph-layer evidence): `.cursor/rules/constitutional.md`

@@ -1,7 +1,7 @@
 ---
 description: |
   SSOT folder routing — every NEW Python file must land in its canonical folder. scripts/, repo-root, tools/_oneoff/, tools/_oneshot/ are forbidden for new files. Hook scripts MUST live in .cursor/scripts/. Constitutional §31.
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/ssot-folder-enforcement.md`. Original Cursor trigger: `always_on`. -->

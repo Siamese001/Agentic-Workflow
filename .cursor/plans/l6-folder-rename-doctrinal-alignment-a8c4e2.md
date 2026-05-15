@@ -156,7 +156,7 @@ Update internal markdown links via `rg -l '06_L6_Shadow_Evaluation_System_Learni
 ## 12. References
 
 - `@c:\Git\Agentic-Workflow-FRESH\docs\reference\06_L6_Observability_and_System_Learning` (folder pending W4 rename; currently `06_L6_Shadow_Evaluation_System_Learning/`)
-- ADG canonical invariants: `.windsurf/rules/adg-canonical-invariants.md`
+- ADG canonical invariants: `.cursor/rules/adg-canonical-invariants.md`
 - Constitutional §5 (ADG before T2/T3), §22 (graph-layer primary driver), §36 (plan registration)
 - Apps folder taxonomy precedent (ADR-082) — same shim+grace-period pattern.
 

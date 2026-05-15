@@ -34,7 +34,7 @@ Bypass: env `AUTHOR_GATE_UI_BYPASS=1` logs a row with reason="bypass" and return
 
 The hook reads the response payload from stdin in the Windsurf post_cascade_response
 contract; payload shape is a JSON object with a "response" or "text" key containing
-Cascade's composed response. If stdin is empty or not JSON, exits 0 silently.
+Cursor Agent's composed response. If stdin is empty or not JSON, exits 0 silently.
 """
 
 from __future__ import annotations

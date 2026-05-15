@@ -1,5 +1,5 @@
 ---
-description: Scaffold a new Cascade skill (.windsurf/skills/<slug>/SKILL.md) from the house-style template. Use when authoring a new skill so it inherits the canonical frontmatter, trigger table, hard rules, procedure, forbidden patterns, and references shape.
+description: Scaffold a new Cursor Agent skill (.windsurf/skills/<slug>/SKILL.md) from the house-style template. Use when authoring a new skill so it inherits the canonical frontmatter, trigger table, hard rules, procedure, forbidden patterns, and references shape.
 ---
 
 # /skill-creator — Scaffold a New Skill
@@ -23,7 +23,7 @@ Do NOT use for: editing an existing skill (just edit it directly), or for one-sh
 | Invocation triggers | "Invoke when the user asks about Redis cache state, ADG hot-cache status, …" | 1–3 sentences, matched by auto-invoke |
 | Sibling distinctions | "Distinguishes Redis MCP (cache state) from adg_sqlite (canonical truth)." | 1 sentence per sibling |
 | Upstream source (if any) | `https://docs.upstream.com/skills` | Cite if adapting external docs |
-| Underlying tool/MCP | `redis` MCP server | Or "native Cascade tool" |
+| Underlying tool/MCP | `redis` MCP server | Or "native Cursor Agent tool" |
 
 ## Steps
 
@@ -99,7 +99,7 @@ Both must pass before commit.
 - **Reference siblings explicitly.** Every skill that overlaps another must declare the boundary in the description and again in the body. Prevents drift.
 - **Cite upstream when adapting.** External skill ports MUST link back; differences from upstream MUST be called out.
 - **No emojis** unless the user explicitly requested them (constitutional convention).
-- **Third-person, deterministic prose.** Skills are read by Cascade, not authored as a chat reply.
+- **Third-person, deterministic prose.** Skills are read by Cursor Agent, not authored as a chat reply.
 
 ## References
 

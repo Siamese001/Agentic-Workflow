@@ -4,9 +4,9 @@ plan_type: governance
 dod_exempt: false
 ---
 
-# RCA: Wave Lifecycle Markers Never Emitted by Cascade
+# RCA: Wave Lifecycle Markers Never Emitted by Cursor Agent
 
-Cascade omitted `WAVE_START:` / `WAVE_COMPLETE:` markers during W0–W2 of
+Cursor Agent omitted `WAVE_START:` / `WAVE_COMPLETE:` markers during W0–W2 of
 `chroma-graphrag-lic-rg-research-f4a2e9`, leaving the plan markdown stale and
 the audit safety-net silenced. This plan hardens the enforcement chain so the
 failure mode cannot recur silently.
@@ -19,7 +19,7 @@ failure mode cannot recur silently.
   `_plan_wave_table_updater.update_wave_in_plan()`, registered in `hooks.json` at line 281) is
   fully wired and unit-tested. The safety-net audit (`post_cascade_wave_completion_audit.py`)
   fires an advisory when ≥3 file writes occur without a marker.
-- **Complication** — Cascade executed W0, W1, and W2 of
+- **Complication** — Cursor Agent executed W0, W1, and W2 of
   `chroma-graphrag-lic-rg-research-f4a2e9` without emitting any `WAVE_START:` or
   `WAVE_COMPLETE:` markers. The safety-net also silenced itself because
   `wave_execution_state.py start` was never called, causing `_has_active_plan()`
@@ -27,7 +27,7 @@ failure mode cannot recur silently.
   `wave_lifecycle_capture.jsonl` log contained only unit-test fixture entries
   (`demo-plan-abc123`, `alpha-plan-abc123`) — zero real-slug entries.
 - **Question** — How do we make the "missing wave marker" failure mode
-  self-detectable and self-correcting without relying on Cascade voluntarily
+  self-detectable and self-correcting without relying on Cursor Agent voluntarily
   emitting markers?
 - **Answer** — Strengthen the safety-net audit to fire unconditionally (remove the
   `_has_active_plan()` short-circuit), surface its output visibly
@@ -41,10 +41,10 @@ failure mode cannot recur silently.
 
 ### Primary root cause
 
-**Cascade never emitted `WAVE_START:` / `WAVE_COMPLETE:` markers.**
+**Cursor Agent never emitted `WAVE_START:` / `WAVE_COMPLETE:` markers.**
 
 The hook chain is reactive-only — it parses markers from response text and applies
-updates. If Cascade omits the markers, nothing fires. The chain has no
+updates. If Cursor Agent omits the markers, nothing fires. The chain has no
 proactive assertion that forces marker emission.
 
 ### Secondary root cause
@@ -53,7 +53,7 @@ proactive assertion that forces marker emission.
 `post_cascade_wave_completion_audit.py` (line 123) returned `False` and the
 function returned `0` immediately. The audit advisory — the one safety-net that
 could have surfaced a visible warning — silenced itself because its own guard
-predicate relied on a state file that Cascade never wrote.
+predicate relied on a state file that Cursor Agent never wrote.
 
 ### Compounding factor
 
@@ -152,4 +152,4 @@ the user.
 |------|-------------|---------|
 | Retroactive marker emission for prior plans | Manual — already applied for chroma plan | Not deferred |
 | Real-time Notion sync | Existing chain, not changed | Not in scope |
-| Marker injection by hook (auto-emit) | Out of scope — Cascade must emit | Permanent out-of-scope |
+| Marker injection by hook (auto-emit) | Out of scope — Cursor Agent must emit | Permanent out-of-scope |

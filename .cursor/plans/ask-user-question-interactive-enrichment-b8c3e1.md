@@ -128,9 +128,9 @@ ASK_USER_QUESTION_PACKET: emission (NEW telemetry)
 | `tools/decisions/universal_option_enricher.py` | Create | Core enrichment logic |
 | `tools/decisions/ask_user_question_ui_renderer.py` | Create | Shared UI formatting |
 | `tools/decisions/heuristic_scorer.py` | Create | Non-gated confidence calculation |
-| `.windsurf/schemas/ask_user_question_packet.schema.json` | Create | Telemetry schema |
-| `.windsurf/scripts/post_cascade_ask_user_question_capture.py` | Modify | Add packet emission |
-| `.windsurf/skills/author-gate-packet-builder/emit_packet.py` | Modify | Delegate to shared renderer |
+| `.cursor/schemas/ask_user_question_packet.schema.json` | Create | Telemetry schema |
+| `.cursor/scripts/post_cursor_agent_ask_user_question_capture.py` | Modify | Add packet emission |
+| `.cursor/skills/author-gate-packet-builder/emit_packet.py` | Modify | Delegate to shared renderer |
 
 ---
 
@@ -225,8 +225,8 @@ ASK_USER_QUESTION_PACKET: emission (NEW telemetry)
 - **Rule:** `author-gate-enforcement.md` §"Canonical-emitter invariant"
 - **Skill:** `author-gate-packet-builder/emit_packet.py`
 - **Skill:** `author-gate-ui-renderer/render_card.py`
-- **Schema:** `.windsurf/schemas/author_gate_packet.schema.json`
-- **Hook:** `post_cascade_ask_user_question_packet_audit.py`
+- **Schema:** `.cursor/schemas/author_gate_packet.schema.json`
+- **Hook:** `post_cursor_agent_ask_user_question_packet_audit.py`
 
 ---
 

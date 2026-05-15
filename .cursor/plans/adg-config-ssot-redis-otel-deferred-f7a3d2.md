@@ -78,7 +78,7 @@ Implementation backlog for remaining deferred items from `adg-config-ssot-uber-d
 
 ## References
 
-- Parent Plan: `.windsurf/plans/adg-config-ssot-uber-deferred-e8f2a3.md`
-- Grandparent Plan: `.windsurf/plans/adg-config-ssot-deferred-d7e3a1.md`
-- Great-grandparent Plan: `.windsurf/plans/adg-config-ssot-audit-c7e4a2.md`
+- Parent Plan: `.cursor/plans/adg-config-ssot-uber-deferred-e8f2a3.md`
+- Grandparent Plan: `.cursor/plans/adg-config-ssot-deferred-d7e3a1.md`
+- Great-grandparent Plan: `.cursor/plans/adg-config-ssot-audit-c7e4a2.md`
 - Constitutional: §22 (graph-layer), §31 (SSOT folder routing), §23 (static vs runtime)

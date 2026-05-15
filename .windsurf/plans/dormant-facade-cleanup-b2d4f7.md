@@ -3,7 +3,7 @@
 Status: **CLOSED 2026-05-01.** W1 done; W2/R1/R6 cancelled-by-evidence; W3 done; W4 blocked-by-P2-ratchet (deferred-scope filed); W5 done.
 Created: 2026-05-01
 Last updated: 2026-05-01 (W5 closure)
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `dormant-facade-cleanup-b2d4f7` (renamed in spirit — the "dormant" framing was wrong)
 
 ## Mission

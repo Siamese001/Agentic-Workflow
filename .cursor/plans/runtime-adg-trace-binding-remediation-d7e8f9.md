@@ -7,7 +7,7 @@ plan_type: audit
 
 - **Status**: Planning — Author-Gate pending
 - **Authored**: 2026-05-02
-- **Predecessor audit**: `.windsurf/plans/runtime-adg-coverage-audit-4f7a21.md`
+- **Predecessor audit**: `.cursor/plans/runtime-adg-coverage-audit-4f7a21.md`
 - **Backlog row**: 1 P2 row (impact 297) — "runtime-adg trace binding remediation"
 
 ## Context (SCQA)
@@ -46,6 +46,6 @@ plan_type: audit
 
 ## References
 
-- Parent audit: `.windsurf/plans/runtime-adg-coverage-audit-4f7a21.md`
+- Parent audit: `.cursor/plans/runtime-adg-coverage-audit-4f7a21.md`
 - Runtime ADG MCP: `otel_mcp` (distinct from static `adg_sqlite` per `adg-canonical-invariants` §8)
-- Tracker plan: `.windsurf/plans/d-bucket-w3-burndown-b3d5e2.md`
+- Tracker plan: `.cursor/plans/d-bucket-w3-burndown-b3d5e2.md`

@@ -18,7 +18,7 @@
 --
 -- prediction_json shape (event_kind="route_decision"):
 --   {
---     "decision_id":     "<uuid4-hex>",        -- Cascade marker decision_id
+--     "decision_id":     "<uuid4-hex>",        -- Cursor Agent marker decision_id
 --     "tier":            "HIGH"|"MEDIUM"|"LOW"|"HITL",
 --     "provider":        "deterministic"|"qwen"|"gemini_flash"|"gemini_pro"|"hitl",
 --     "target_model":    "<model-id>",         -- e.g. Qwen/Qwen2.5-32B-Instruct-AWQ

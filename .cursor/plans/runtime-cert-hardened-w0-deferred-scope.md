@@ -122,7 +122,7 @@ W0 (matrix) → W1 (cache) → W2b (live) → W3 (otel) → W4 (gates) → W5 (m
 
 ## References
 
-- Parent plan: `.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md`
+- Parent plan: `.cursor/plans/runtime-cert-hardened-w0-7e3c9a.md`
 - Source CSV: `docs/reference/contracts/certification/runtime_certification_requirements_100_percent_hardened.csv`
 - Implementation prompt: `docs/reference/windsurf_runtime_certification_implementation_prompt.md`
 - GAPS.md: `artifacts/runtime/requirements_proof/GAPS.md`

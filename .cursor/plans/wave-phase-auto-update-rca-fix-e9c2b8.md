@@ -35,8 +35,8 @@ LAST_UPDATED: 2026-05-12
 
 | # | Root Cause | Location | Fix |
 |---|------------|----------|-----|
-| RC-1 | `phase_complete` markers skipped in capture hook | `post_cascade_wave_lifecycle_capture.py:131` | Added `_update_phase_in_plan()` call |
-| RC-2 | User expectation mismatch — markers must be emitted with specific format | Cascade response text | Documented required marker grammar |
+| RC-1 | `phase_complete` markers skipped in capture hook | `post_cursor_agent_wave_lifecycle_capture.py:131` | Added `_update_phase_in_plan()` call |
+| RC-2 | User expectation mismatch — markers must be emitted with specific format | Cursor Agent response text | Documented required marker grammar |
 | RC-3 | Missing `WAVE_COMPLETE:`/`PHASE_COMPLETE:` markers in responses | Human process | Documented marker requirements |
 
 ---
@@ -55,7 +55,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 
 **Findings**:
 1. `_plan_wave_table_updater.py` inline field logic works correctly in isolation
-2. `post_cascade_wave_lifecycle_capture.py` had `if kind == "phase_complete": continue` at line 131
+2. `post_cursor_agent_wave_lifecycle_capture.py` had `if kind == "phase_complete": continue` at line 131
 3. Hook IS registered in `hooks.json` (priority 380)
 4. Log file shows hook fires but no markers detected (user wasn't emitting them)
 
@@ -73,7 +73,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 - **W2.2** — Verify syntax and test | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Changes**:
-- `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` lines 131-148
+- `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` lines 131-148
 - Added `_update_phase_in_plan()` call for `phase_complete` markers
 - Added logging for phase updates
 
@@ -145,7 +145,7 @@ PHASE_COMPLETE: plan=apps-rg-chroma-ingestion-wiring-c7f2d9 phase=W3.1 note="rub
 
 | File | Change | Lines |
 |------|--------|-------|
-| `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` | Added phase_complete handling | 131-148 |
+| `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` | Added phase_complete handling | 131-148 |
 
 ---
 
@@ -170,7 +170,7 @@ print(f"Result: {ok}, {msg}")
 
 **Check capture hook logs**:
 ```powershell
-Get-Content c:/Git/Agentic-Workflow-FRESH/artifacts/windsurf/wave_lifecycle_capture.jsonl -Tail 10
+Get-Content c:/Git/Agentic-Workflow-FRESH/artifacts/cursor/wave_lifecycle_capture.jsonl -Tail 10
 ```
 
 ---

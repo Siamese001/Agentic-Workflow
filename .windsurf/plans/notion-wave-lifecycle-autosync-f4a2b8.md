@@ -3,14 +3,14 @@ slug: notion-wave-lifecycle-autosync-f4a2b8
 status: Not Started
 tier: T3
 created: 2026-05-10
-target: Eliminate Notion drift on plan/wave/phase status without depending on Cascade discipline
+target: Eliminate Notion drift on plan/wave/phase status without depending on Cursor Agent discipline
 ---
 
 # Notion Wave-Lifecycle Auto-Sync
 
 ## 1. Problem statement
 
-Drift between the on-disk plan state (`.windsurf/plans/*.md`, `wave_execution_state.py` state, phase completion) and the Notion Plans DB is recurring. The user has to remind Cascade every session to update Notion. Constitutional §36 already enforces *plan registration* at wave-1 start, but **wave-by-wave progress, phase completion, and final plan status flip to Completed are not auto-synced**.
+Drift between the on-disk plan state (`.windsurf/plans/*.md`, `wave_execution_state.py` state, phase completion) and the Notion Plans DB is recurring. The user has to remind Cursor Agent every session to update Notion. Constitutional §36 already enforces *plan registration* at wave-1 start, but **wave-by-wave progress, phase completion, and final plan status flip to Completed are not auto-synced**.
 
 ## 2. Defense of the recommendation
 
@@ -22,34 +22,34 @@ Five things are already in place, but each has a gap:
 
 | Component | Status | Gap |
 |---|---|---|
-| `PLAN_CREATED:` marker | Wired (§36) | Hook only **enqueues**, does not call Notion. Cascade must still make the `API-post-page` call. |
+| `PLAN_CREATED:` marker | Wired (§36) | Hook only **enqueues**, does not call Notion. Cursor Agent must still make the `API-post-page` call. |
 | `wave_execution_state.py start` | Wired (§36) | Blocks unregistered plans, but does **not** patch Plans DB Status to `In Progress`. |
 | `WAVE_COMPLETE:` / `PHASE_COMPLETE:` markers | Wired (§35 — drains AG queue) | Drains Author-Gate queue only; **does not** patch Notion plan progress. |
 | `notion-plan-wave-deferral.md` | Wired | Forbids mid-wave Notion writes — correct, but is a "don't" rule, not a "do" path. |
 | `tools/notion/*.py` direct-HTTP scripts | 30 scripts in production | Only invoked manually or by CI; never tied to wave lifecycle markers. |
 
-The drift is therefore a **control-flow gap**: Cascade is the only thing that bridges the existing markers to the existing HTTP scripts. Cascade forgets. The user reminds. Drift returns next session.
+The drift is therefore a **control-flow gap**: Cursor Agent is the only thing that bridges the existing markers to the existing HTTP scripts. Cursor Agent forgets. The user reminds. Drift returns next session.
 
 ### 2.2 Why direct-HTTP from a hook is the right chokepoint
 
 | Alternative | Verdict |
 |---|---|
 | **A. Switch Notion MCP to OAuth-hosted (`https://mcp.notion.com/mcp`)** | ❌ Does not fix §25. The audit hook (`post_cascade_mcp_serialization_audit.py`) classifies remote by tool-name suffix pattern, not transport. Switching the variant changes the suffix but the rule still fires. Variant C also incurs migration cost: every existing skill, hook, and `tools/notion/*.py` script references the v1 OpenAPI tool names (`API-post-page`, `API-query-data-source`); v2.0 uses different verbs (`notion-search`, `notion-create-page`). |
-| **B. New always-on rule reminding Cascade to update Notion** | ❌ Adds tokens, not enforcement. The current rules (§25, §35, §36, deferral, status-taxonomy) already total ~50KB of always-on guidance. The drift proves rules don't replace deterministic execution. |
+| **B. New always-on rule reminding Cursor Agent to update Notion** | ❌ Adds tokens, not enforcement. The current rules (§25, §35, §36, deferral, status-taxonomy) already total ~50KB of always-on guidance. The drift proves rules don't replace deterministic execution. |
 | **C. Pre-MCP-gate intercepts** | ❌ Confirmed impossible: `pre_mcp_gate.py` cannot see tool arguments (memory `3ba710ed` references `pre_mcp_gate.py:1042-1051`). |
 | **D. CI gate posts retroactively** | ⚠️ Useful as a backstop only. Runs at commit time, not session time. CI environment may lack `NOTION_API_KEY`. |
-| **E. Marker hook + direct HTTP from hook (this plan)** | ✅ Cascade emits a one-line marker (cannot avoid in normal phrasing). Hook deterministically shells out to Python script. Script calls Notion REST API directly. Cascade is removed from the critical path. **Does not invoke any MCP tool — §25 does not apply.** |
+| **E. Marker hook + direct HTTP from hook (this plan)** | ✅ Cursor Agent emits a one-line marker (cannot avoid in normal phrasing). Hook deterministically shells out to Python script. Script calls Notion REST API directly. Cursor Agent is removed from the critical path. **Does not invoke any MCP tool — §25 does not apply.** |
 | **F. Extend `wave_execution_state.py` itself to call Notion** | ✅ Complementary to E. The CLI is already the chokepoint for §36 registration check; adding side-effect Notion patches at `start` and `complete` makes Notion writes mandatory at wave boundaries. |
 
 This plan combines **E + F**: a new post-cascade hook captures markers and invokes the CLI; the CLI is extended with a `wave-progress` subcommand and gains Notion side-effects on `start` / `complete`.
 
 ### 2.3 Why this does not violate `notion-plan-wave-deferral.md`
 
-The rule says "Cascade MUST NOT call any Notion **MCP** tool" mid-wave. Direct HTTP via `urllib.request` from a Python script invoked by a hook is **not an MCP tool call** — it does not go through the Windsurf MCP transport, does not appear in `<function_calls>` blocks, and is not visible to `post_cascade_mcp_serialization_audit.py`. The deferral rule is preserved verbatim; this plan adds a sanctioned non-MCP path.
+The rule says "Cursor Agent MUST NOT call any Notion **MCP** tool" mid-wave. Direct HTTP via `urllib.request` from a Python script invoked by a hook is **not an MCP tool call** — it does not go through the Windsurf MCP transport, does not appear in `<function_calls>` blocks, and is not visible to `post_cascade_mcp_serialization_audit.py`. The deferral rule is preserved verbatim; this plan adds a sanctioned non-MCP path.
 
 ### 2.4 Why this does not violate §25 (MCP serialization)
 
-Same reason. The audit classifies remote MCPs by inspecting `<invoke name="mcp\d+_API-...">` patterns in the Cascade response. Hook-spawned Python subprocesses do not emit those tags. The `tools/notion/*.py` scripts already do this in production (e.g. `sync_decision_ledger.py` runs as a CI job and writes 100s of rows; never trips §25).
+Same reason. The audit classifies remote MCPs by inspecting `<invoke name="mcp\d+_API-...">` patterns in the Cursor Agent response. Hook-spawned Python subprocesses do not emit those tags. The `tools/notion/*.py` scripts already do this in production (e.g. `sync_decision_ledger.py` runs as a CI job and writes 100s of rows; never trips §25).
 
 ## 3. Files in scope
 
@@ -146,7 +146,7 @@ Verification-vs-deferral table: DoD-1 through DoD-5 mandatory; DoD-6 best-effort
 | `NOTION_TOKEN` rotation breaks writer | Already a known failure mode; writer fails-soft; NP4 surfaces stale state at commit time |
 | Notion API rate limit (3 req/sec) | Writer uses `THROTTLE_S = 0.35` matching `apply_plan_derived_status.py`; one wave completion = 1 PATCH call (well under limit) |
 | Plans DB schema drift (e.g. property rename) | Helper accepts property names as constants imported from `_notion_constants.py`; renames update one place |
-| Two parallel Cascade sessions on same plan | Notion PATCH is idempotent on `last_edited_time`; last-writer-wins acceptable for status field |
+| Two parallel Cursor Agent sessions on same plan | Notion PATCH is idempotent on `last_edited_time`; last-writer-wins acceptable for status field |
 | `wave_execution_state.py complete` called when AI Summary needs refresh | Deferred — manual `tools/notion/repair_notion_plan_summaries.py` handles batch repair; in-scope auto-refresh would expand wave count |
 
 ## 11. Why not switch to OAuth-hosted MCP in this plan (variant C)
@@ -170,8 +170,8 @@ Separate Author-Gate decision required:
 ## 13. Author-Gate decisions required before W1
 
 One. The marker grammar in §6 introduces two new markers (`WAVE_START:`, `PLAN_COMPLETE:`). Decision:
-- **Option A**: New explicit markers Cascade must emit (high precision, requires Cascade discipline).
+- **Option A**: New explicit markers Cursor Agent must emit (high precision, requires Cursor Agent discipline).
 - **Option B**: Hook derives both from existing `WAVE_COMPLETE:` boundaries (zero new markers, slightly less precise — `WAVE_START:` inferred as `WAVE_COMPLETE: wave=N-1` end).
-- **Option C** (recommended ⭐): Hybrid — `PLAN_COMPLETE:` is auto-emitted by `wave_execution_state.py complete` (deterministic, no Cascade involvement); `WAVE_START:` inferred from first `WAVE_COMPLETE:` boundary in the session (zero Cascade burden, sufficient precision for status display).
+- **Option C** (recommended ⭐): Hybrid — `PLAN_COMPLETE:` is auto-emitted by `wave_execution_state.py complete` (deterministic, no Cursor Agent involvement); `WAVE_START:` inferred from first `WAVE_COMPLETE:` boundary in the session (zero Cursor Agent burden, sufficient precision for status display).
 
 Surfaces via `ask_user_question` before W1 begins.

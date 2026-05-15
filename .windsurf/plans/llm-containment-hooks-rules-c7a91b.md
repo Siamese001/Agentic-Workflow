@@ -12,7 +12,7 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 ## Context (SCQA)
 
-- **Situation** — `.windsurf/rules/` carries 15+ always_on rules and deterministic hooks cover pre-read/write/run/mcp + 13 post_cascade audits; however the repo has no `.codeiumignore`, no enforcement against unbounded `grep_search`/`code_search` calls, and no explicit scope-limitation rule. Cascade indexes `archives/`, `artifacts/`, `reports/`, `data/` on every session and is free to grep-bomb the whole tree.
+- **Situation** — `.windsurf/rules/` carries 15+ always_on rules and deterministic hooks cover pre-read/write/run/mcp + 13 post_cascade audits; however the repo has no `.codeiumignore`, no enforcement against unbounded `grep_search`/`code_search` calls, and no explicit scope-limitation rule. Cursor Agent indexes `archives/`, `artifacts/`, `reports/`, `data/` on every session and is free to grep-bomb the whole tree.
 - **Complication** — Web research (Cursor, Windsurf docs, Augment Intent, Anthropic skills, MintMCP, Addy Osmani) converges on three control points: (a) shrink what the agent can see, (b) cap how many text-search shots per response, (c) hard-rule scope drift. Without these, the agent reviews the entire codebase on every run and scope creeps silently.
 - **Question** — How do we add the highest-ROI containment controls (ignore file + grep audit + scope rule) without breaking existing workflows or hook chain?
 - **Answer** — Add `.codeiumignore` (indexing shrink), `post_cascade_grep_budget_audit.py` (advisory post-hook, ≤3 grep_search/code_search per response, logs violations, fail-open), and `.windsurf/rules/scope-containment.md` (always_on, codifies "no gold plating / one task in progress / changes outside scope EXPRESSLY PROHIBITED"). Wire the new audit into `post_cascade_response` chain after `post_cascade_adg_audit.py`.
@@ -64,12 +64,12 @@ Implement three highest-ROI containment controls from web-research review: repo-
 - Impact: slower indexing, noisier Fast Context results, larger effective context per session start.
 
 **GAP-2: No grep-budget enforcement**
-- `grep_search` and `code_search` are native Cascade tools with NO pre-execution hook (per `global_rules.md` ADG-First section). Only retroactive detection is possible.
-- Impact: without an audit, Cascade can issue unlimited text searches — an attention-tax behavior and a proxy for "reviewing entire codebase every run" that the user is trying to contain.
+- `grep_search` and `code_search` are native Cursor Agent tools with NO pre-execution hook (per `global_rules.md` ADG-First section). Only retroactive detection is possible.
+- Impact: without an audit, Cursor Agent can issue unlimited text searches — an attention-tax behavior and a proxy for "reviewing entire codebase every run" that the user is trying to contain.
 
 **GAP-3: No explicit scope-containment rule**
 - Constitutional §18 says "no hidden scope expansion" but is silent on gold-plating, one-task-in-progress, and the "EXPRESSLY PROHIBITED" framing that the PBI canonical rule set uses.
-- Impact: rules are advisory-too-soft on scope drift; Cascade will still volunteer out-of-scope edits.
+- Impact: rules are advisory-too-soft on scope drift; Cursor Agent will still volunteer out-of-scope edits.
 
 ---
 
@@ -88,7 +88,7 @@ Implement three highest-ROI containment controls from web-research review: repo-
 **Scope**: new post-response audit script in `.windsurf/scripts/`.
 
 **Behavior**:
-- Reads the Cascade response text (same input-mechanism as sibling post-hooks).
+- Reads the Cursor Agent response text (same input-mechanism as sibling post-hooks).
 - Counts `grep_search` and `code_search` tool invocations in the response.
 - Soft-cap: **3 combined per response**. Above cap → append JSONL row to `artifacts/windsurf/grep_budget_violations.jsonl` with `{timestamp, response_id, grep_count, code_search_count, total, cap, bypass}`.
 - Bypass env var: `GREP_BUDGET_BYPASS=1` — logs row with `bypass=true`, still permitted (advisory).
@@ -102,11 +102,11 @@ Implement three highest-ROI containment controls from web-research review: repo-
 
 **Content (summarized)**:
 - Scope is what the current plan's `Files In Scope` names + what the user explicitly asked for — nothing more.
-- No gold-plating, no "while I'm here" edits, no refactors Cascade "noticed needed doing".
+- No gold-plating, no "while I'm here" edits, no refactors Cursor Agent "noticed needed doing".
 - Improvements outside scope → emit `NEXT_STEP:` marker, DO NOT implement in current response.
 - One active task at a time; concurrent scopes require explicit user approval.
 - Cross-references constitutional §18 (no hidden scope expansion) and `next-step-capture.md`.
-- Keeps rule body lean per Cascade alignment (procedural detail lives in the skill, not the rule).
+- Keeps rule body lean per Cursor Agent alignment (procedural detail lives in the skill, not the rule).
 
 **Acceptance**: rule file valid, frontmatter `trigger: always_on`, passes `check_windsurf_config_schema.py` if it runs over rules (it doesn't — rules are free-form md).
 
@@ -185,7 +185,7 @@ A follow-up `NEXT_STEP:` marker will capture these for the Wave/Phase Convergenc
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

@@ -4,7 +4,7 @@ Reconcile MCP config + AGENTS.md drift by symlinking the actual-read paths, slim
 
 ## Objective
 
-Eliminate the recurring drift between `.windsurf/mcp_config.json` ↔ `~/.codeium/windsurf/mcp_config.json` and between `mcp_config.json` ↔ `AGENTS.md` while **preserving cross-tool (Codex/Cursor/Cascade-Code) interop** via a symlinked root `AGENTS.md`.
+Eliminate the recurring drift between `.windsurf/mcp_config.json` ↔ `~/.codeium/windsurf/mcp_config.json` and between `mcp_config.json` ↔ `AGENTS.md` while **preserving cross-tool (Codex/Cursor/Cursor Agent-Code) interop** via a symlinked root `AGENTS.md`.
 
 ## Scope
 
@@ -23,7 +23,7 @@ Out of scope (deferred):
 ## Tier & Constraints
 
 - **Tier**: T3 — cross-layer (repo config + CI + docs + contributor onboarding), >5 files.
-- **Must preserve**: `AGENTS.md` at repo root (as symlink) for Codex/Cursor/Cascade-Code interop.
+- **Must preserve**: `AGENTS.md` at repo root (as symlink) for Codex/Cursor/Cursor Agent-Code interop.
 - **Must respect**: `.windsurf/rules/*.md` 12,000-char cap per file; `global_rules.md` 6,000-char cap.
 - **Must not break**: existing pre-commit hooks `mcp-sync-integrity` (T6b) and `agents-mcp-coverage` (T6c).
 - **No PowerShell in runtime**; setup script is contributor-run, one-time, and `.ps1` is acceptable there.
@@ -149,7 +149,7 @@ Per phase (executed at phase completion):
 - **P2.2/P2.3**: `python .windsurf/scripts/sync_mcp_config.py` regenerates idempotently (diff empty on second run). Notion MCP Registry row upserts to correct DB ID.
 - **P2.4**: manually corrupt Notion map in AGENTS.md → `check_agents_md_sync.py` fails with clear message. Regenerate → passes.
 - **P3.1**: inventory table documents every AGENTS.md H2 section.
-- **P3.2**: `wc -c` on each new rule file <12000. Cascade invoked with a T2 task still cites the moved rule via model_decision activation.
+- **P3.2**: `wc -c` on each new rule file <12000. Cursor Agent invoked with a T2 task still cites the moved rule via model_decision activation.
 - **P3.3**: `RULES_INDEX.md` lists all rule files; no broken in-repo links to old AGENTS.md sections.
 - **P4.1**: full PR-target-branch run on a test branch shows all 5 sync gates pass.
 - **P4.2**: docs describe both symlink and fallback paths accurately; SSOT rule mentions no-op detection.
@@ -177,7 +177,7 @@ Per phase (executed at phase completion):
 |---|---|---|---|
 | Windows symlink creation fails for contributor without Dev Mode | High | Low | Post-write hook fallback works unchanged |
 | Autogen regeneration produces unstable output (ordering, whitespace) | Medium | High | Deterministic key sorting + snapshot test before CI wiring |
-| `.windsurf/rules/*.md` split changes Cascade behavior (rules loaded differently) | Medium | Medium | Stage-wise: keep always-on content equivalent in P3.2 before relying on model_decision activation |
+| `.windsurf/rules/*.md` split changes Cursor Agent behavior (rules loaded differently) | Medium | Medium | Stage-wise: keep always-on content equivalent in P3.2 before relying on model_decision activation |
 | Root AGENTS.md as symlink breaks cross-tool discovery on some CI systems | Low | Medium | Keep `.windsurf/AGENTS.md` itself well-formed; tools that don't resolve symlinks can point directly at `.windsurf/AGENTS.md` |
 | GHA workflow adds meaningful CI latency | Low | Low | All 5 checks are pure Python stdlib + YAML parse; <30s total |
 

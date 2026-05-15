@@ -33,7 +33,7 @@ dod_exempt: false
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | 1.1 | Promote TSP1 gate to fail-closed | `run_contract_gates.py` + `.pre-commit-config.yaml` | **Depends on**: `artifacts/ci/check_apps_test_surface_parity_*.json` showing ≥30 consecutive exit-0 runs. Earliest unblock: 2026-06-09. | ~3K | ⏳ WAITING |
-| 2.1 | Drop `tests/` from `apps-folder-taxonomy.md` | `.windsurf/rules/apps-folder-taxonomy.md` | Rule prose may be load-bearing for other gates | ~2K | ✅ DONE |
+| 2.1 | Drop `tests/` from `apps-folder-taxonomy.md` | `.cursor/rules/apps-folder-taxonomy.md` | Rule prose may be load-bearing for other gates | ~2K | ✅ DONE |
 | 2.2 | Cross-link new taxonomy rule | `apps-folder-taxonomy.md` → `apps-test-surface-taxonomy.md` | — | ~1K | ✅ DONE |
 | 2.3 | Update `AGENTS.md` 3-surface declaration | `AGENTS.md` | Doc-only; low risk | ~1K | ✅ DONE |
 | 3.1 | Remove `tests/` from blueprint ssot.py apps-subfolder map | `ops_scripts/ci/check_apps_folder_taxonomy.py` | `tests` in `FORBIDDEN_ROOT_FOLDERS`; no ssot.py change needed | ~3K | ✅ DONE |
@@ -56,7 +56,7 @@ dod_exempt: false
 
 ### D2 — `apps-folder-taxonomy.md` still lists `tests/` as valid subdir (GAP-1)
 **From**: parent plan Gap Register GAP-1
-**Location**: `.windsurf/rules/apps-folder-taxonomy.md`
+**Location**: `.cursor/rules/apps-folder-taxonomy.md`
 **Action**: Remove `tests/` row from the "Canonical folder taxonomy" table. Add cross-reference: "App-local tests are FORBIDDEN — see `apps-test-surface-taxonomy.md`."
 
 ### D3 — Blueprint ssot.py includes `tests/` in apps-subfolder map (GAP-3)
@@ -106,7 +106,7 @@ dod_exempt: false
 | # | Criterion | Verification |
 |---|---|---|
 | DoD-1 | TSP1 gate is fail-closed in CI | `APPS_TEST_SURFACE_FAIL_CLOSED=1` verified in `.pre-commit-config.yaml` + gate exits 1 on violation |
-| DoD-2 | `apps-folder-taxonomy.md` has no `tests/` row | `grep -n "tests/" .windsurf/rules/apps-folder-taxonomy.md` returns empty |
+| DoD-2 | `apps-folder-taxonomy.md` has no `tests/` row | `grep -n "tests/" .cursor/rules/apps-folder-taxonomy.md` returns empty |
 | DoD-3 | Blueprint ssot.py does not return `tests/` in subfolder map | Unit test verifying `"tests" not in get_apps_wildcard_subfolder_map(app)` |
 | DoD-4 | All 10 apps have ≥1 contract test | `ls tests/_apps_contract/test_apps_*.py` count = 10 |
 | DoD-5 | `pytest --collect-only` whole-tree exits 0 with no ImportError on relocated files | Exit code + grep for ImportError |
@@ -115,7 +115,7 @@ dod_exempt: false
 
 ## References
 
-- Parent plan (Completed): `.windsurf/plans/apps-test-surface-consolidation-11acd9-v2.md`
-- Enforcement rule: `.windsurf/rules/apps-test-surface-taxonomy.md`
+- Parent plan (Completed): `.cursor/plans/apps-test-surface-consolidation-11acd9-v2.md`
+- Enforcement rule: `.cursor/rules/apps-test-surface-taxonomy.md`
 - TSP1 gate: `ops_scripts/ci/check_apps_test_surface_parity.py`
 - ADR-082: `docs/architecture/adr/ADR-082-apps-folder-taxonomy.md`

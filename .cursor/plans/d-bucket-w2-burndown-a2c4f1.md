@@ -67,7 +67,7 @@ plan_type: tracker
 
 ## Recommended Entry
 
-**Start with `phase-b-blocker` phase** — 3 P1 rows, non-gated, ~9k tokens, closes 3 P0 constitutional violations. Author focused T2 plan at `.windsurf/plans/phase-b-blocker-3p1-burndown-<6hex>.md` with ADG_HOTSPOT_REPORT + ADG_GRAPH_LAYER_EVIDENCE.
+**Start with `phase-b-blocker` phase** — 3 P1 rows, non-gated, ~9k tokens, closes 3 P0 constitutional violations. Author focused T2 plan at `.cursor/plans/phase-b-blocker-3p1-burndown-<6hex>.md` with ADG_HOTSPOT_REPORT + ADG_GRAPH_LAYER_EVIDENCE.
 
 ## Success Criteria
 
@@ -76,6 +76,6 @@ plan_type: tracker
 
 ## References
 
-- Parent (retired): `.windsurf/plans/d-bucket-burndown-e4f2c9.md`
+- Parent (retired): `.cursor/plans/d-bucket-burndown-e4f2c9.md`
 - Phase E.1 status: `docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md` §9
-- ADG canonical invariants: `.windsurf/rules/adg-canonical-invariants.md`
+- ADG canonical invariants: `.cursor/rules/adg-canonical-invariants.md`

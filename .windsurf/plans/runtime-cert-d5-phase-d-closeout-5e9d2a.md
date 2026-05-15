@@ -109,7 +109,7 @@ The report MUST include all of the following sections, in this order. Every sect
 # Phase D Runtime-Certification Closeout — Week of <YYYY-MM-DD>
 
 - **Week**: <YYYY-Www>
-- **Author**: Cascade (documentation pass only)
+- **Author**: Cursor Agent (documentation pass only)
 - **Status**: Reporting
 - **Scope**: Phase D — cert-decision schema, evaluator, ledger writer, smoke harness
 - **Certification outcome**: **NONE**. Phase D does not certify apps.
@@ -259,7 +259,7 @@ The report closes with:
 
 ---
 
-## 7. Phase E / Phase F Boundary (restated for Cascade clarity)
+## 7. Phase E / Phase F Boundary (restated for Cursor Agent clarity)
 
 Repeating the boundary rules so the implementation turn cannot blur them:
 

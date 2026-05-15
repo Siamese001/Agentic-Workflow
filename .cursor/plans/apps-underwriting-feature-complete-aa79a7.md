@@ -6,9 +6,9 @@
 **Driver:** DEFERRED_SCOPE row from `apps-completeness-remediation-907fac` (completed 2026-05-02)
 **Status:** Completed (2026-05-02)
 **Predecessors:**
-- `.windsurf/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02 — built canonical skeleton)
-- `.windsurf/plans/apps-completeness-followups-287d2a.md` (Completed 2026-05-02 — docs + contract tests)
-- `.windsurf/plans/apps-underwriting-ai-activation-e8a3c5.md` (concurrent, in motion — already landed `DeterministicRiskScorer` + LLM rationale enrichment)
+- `.cursor/plans/apps-completeness-remediation-907fac.md` (Completed 2026-05-02 — built canonical skeleton)
+- `.cursor/plans/apps-completeness-followups-287d2a.md` (Completed 2026-05-02 — docs + contract tests)
+- `.cursor/plans/apps-underwriting-ai-activation-e8a3c5.md` (concurrent, in motion — already landed `DeterministicRiskScorer` + LLM rationale enrichment)
 
 ## Goal
 
@@ -122,7 +122,7 @@ DEFERRED_SCOPE: title=`apps_underwriting_ai real OCR evidence ingestion` reason=
 
 ## ADG_HOTSPOT_REPORT
 
-Skipped: this is a **structural-completeness / skeleton-graduation** plan, not a hotspot-driven refactor. Targets are determined by apps_rfp parity-gap enumeration. Per `.windsurf/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
+Skipped: this is a **structural-completeness / skeleton-graduation** plan, not a hotspot-driven refactor. Targets are determined by apps_rfp parity-gap enumeration. Per `.cursor/rules/adg-graph-layer-enforcement.md`, hotspot ordering is required for **anti-pattern burndown / refactoring** plans; this is neither.
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
@@ -154,8 +154,8 @@ Plan `apps-underwriting-ai-activation-e8a3c5` is in motion concurrently. Coordin
 
 ## References
 
-- Predecessor plan (skeleton build): `.windsurf/plans/apps-completeness-remediation-907fac.md`
-- Predecessor plan (docs + tests): `.windsurf/plans/apps-completeness-followups-287d2a.md`
-- Concurrent plan: `.windsurf/plans/apps-underwriting-ai-activation-e8a3c5.md`
+- Predecessor plan (skeleton build): `.cursor/plans/apps-completeness-remediation-907fac.md`
+- Predecessor plan (docs + tests): `.cursor/plans/apps-completeness-followups-287d2a.md`
+- Concurrent plan: `.cursor/plans/apps-underwriting-ai-activation-e8a3c5.md`
 - Canonical sibling pattern: `apps_rfp/` (tests, services, tools, integrations)
 - Constitutional §22 (graph-layer primary), §28 (ADG over grep)

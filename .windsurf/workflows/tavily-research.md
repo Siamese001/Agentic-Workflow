@@ -22,7 +22,7 @@ Runs Tavily's research engine — multi-step, multi-source, citation-grounded sy
    - `pro` — broad tasks with many subtopics. Slower (60–180 s), more thorough.
    - `auto` (default) — Tavily picks. Use when unsure.
 4. Invoke `tavily-research` (sole MCP call this response — and likely sole tool of any kind for that response, since it can take 30–180 s).
-5. Carry the report's citations forward — every claim Cascade re-states in subsequent prose must keep its source URL.
+5. Carry the report's citations forward — every claim Cursor Agent re-states in subsequent prose must keep its source URL.
 6. If the report is reusable (upstream-issue dossier, competitive baseline), capture key findings in Memory MCP as a `ProceduralPattern` or `ProjectContext` entity (see `memory-notion-writeback.md`).
 
 ## Examples

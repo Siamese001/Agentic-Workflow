@@ -35,15 +35,15 @@ Per `notion-plan-wave-deferral.md`, multi-wave plans **must** use the sanctioned
 
 ```bash
 # REQUIRED at W1 start
-python tools/windsurf/wave_execution_state.py start --plan <slug>
+python tools/plan_lifecycle/wave_execution_state.py start --plan <slug>
   → Sets Notion Status → "In Progress"
 
 # REQUIRED after each wave
-python tools/windsurf/wave_execution_state.py wave-progress --wave N
+python tools/plan_lifecycle/wave_execution_state.py wave-progress --wave N
   → Appends [Wave-Log <ts>] W{N} DONE to Summary
 
 # REQUIRED at completion
-python tools/windsurf/wave_execution_state.py complete --plan <slug>
+python tools/plan_lifecycle/wave_execution_state.py complete --plan <slug>
   → Sets Status → "Completed"; appends PLAN COMPLETE
 ```
 
@@ -51,12 +51,12 @@ python tools/windsurf/wave_execution_state.py complete --plan <slug>
 
 ### RC2: Missing WAVE_START/WAVE_COMPLETE Markers
 
-Per §35, Cascade should emit markers:
+Per §35, Cursor Agent should emit markers:
 ```
 WAVE_COMPLETE: plan=notion-sync-enforcement-hardening-f5a2c1 wave=1 note="property validator + NP11 gate"
 ```
 
-These trigger `post_cascade_wave_lifecycle_capture.py` → `wave_lifecycle_writer.py` → Notion.  
+These trigger `post_cursor_agent_wave_lifecycle_capture.py` → `wave_lifecycle_writer.py` → Notion.  
 **Violation**: Zero markers emitted.
 
 ### RC3: Direct API Manipulation at Completion
@@ -100,16 +100,16 @@ Used `API-patch-page` directly instead of `wave_execution_state.py complete`, by
 
 | Action | Implementation | Owner |
 |--------|---------------|-------|
-| Pre-flight lifecycle call | `wave_execution_state.py start` before W1 | Cascade |
-| Per-wave markers | Emit `WAVE_COMPLETE:` with note after tests pass | Cascade |
-| Verification step | Query Notion API to confirm "In Progress" before W2 | Cascade |
+| Pre-flight lifecycle call | `wave_execution_state.py start` before W1 | Cursor Agent |
+| Per-wave markers | Emit `WAVE_COMPLETE:` with note after tests pass | Cursor Agent |
+| Verification step | Query Notion API to confirm "In Progress" before W2 | Cursor Agent |
 | Hook automation | Consider `pre_user_prompt` gate to warn if plan active but status dormant | CI |
 
 ### Tooling Improvements
 
 1. **wave_execution_state.py --verify**: Check current status vs expected for active plan
 2. **Pre-flight gate**: Block multi-file work if plan registered but status ≠ "In Progress"
-3. **Auto-marker injection**: Hook at `post_cascade_response` to detect implementation turns and auto-emit WAVE_PROGRESS
+3. **Auto-marker injection**: Hook at `post_cursor_agent_response` to detect implementation turns and auto-emit WAVE_PROGRESS
 
 ---
 
@@ -137,11 +137,11 @@ Used `API-patch-page` directly instead of `wave_execution_state.py complete`, by
 
 ## Related
 
-- Rule: `.windsurf/rules/notion-plan-wave-deferral.md`
+- Rule: `.cursor/rules/notion-plan-wave-deferral.md`
 - Constitutional: §35 (Author-Gate queue drain), §36 (Plan registration)
 - Parent plan: `notion-sync-enforcement-hardening-f5a2c1` (Completed)
 - Pattern: Multi-wave execution lifecycle
 
 ---
 
-PLAN_CREATED: slug=rca-notion-status-transition-failure-f5a2c1 path=.windsurf/plans/rca-notion-status-transition-failure-f5a2c1.md status=Not Started
+PLAN_CREATED: slug=rca-notion-status-transition-failure-f5a2c1 path=.cursor/plans/rca-notion-status-transition-failure-f5a2c1.md status=Not Started

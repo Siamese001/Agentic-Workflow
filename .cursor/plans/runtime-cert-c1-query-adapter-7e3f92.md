@@ -510,7 +510,7 @@ during the implementation Author-Gate session:
 
 | Item | Value |
 |---|---|
-| **Plan path** | `.windsurf/plans/runtime-cert-c1-query-adapter-7e3f92.md` (this file) |
+| **Plan path** | `.cursor/plans/runtime-cert-c1-query-adapter-7e3f92.md` (this file) |
 | **Files inspected for this plan** | `tools/adg/runtime_query.py`, `system_learning/runtime_adg/snapshot.py`, `tools/runtime_cert/negative_controls.py` (lines 1–60), `docs/plans/runtime_cert_phase_c_trace_collector_plan.md` (full) |
 | **Proposed adapter module** | `tools/runtime_cert/runtime_adg_query_adapter.py` |
 | **Proposed test file** | `tests/unit/tools/runtime_cert/test_runtime_adg_query_adapter.py` |

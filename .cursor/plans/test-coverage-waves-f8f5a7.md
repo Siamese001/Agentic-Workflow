@@ -15,7 +15,7 @@ ADG Provenance: backend=sqlite, snapshot=`adg_indexed_04242026_0558.sqlite.tmp` 
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/adg-canonical-invariants.md` §6 | Layer multipliers (L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75) | ✅ |
+| `.cursor/rules/adg-canonical-invariants.md` §6 | Layer multipliers (L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75) | ✅ |
 | `ops_scripts/verification/report_test_gaps_top15.py` | Fan-in + fan-out analyzer (built this session) | ✅ |
 | `artifacts/test_gaps/top15_04252026_0114.{json,md}` | Top-15 ranked output | ✅ |
 | ADG SQLite `nodes`/`edges` tables, `relation_type='imports'` | Structural truth for test-importer + prod fan-in/out | ✅ |

@@ -102,4 +102,4 @@ All edits are additive with default values — fan-in surface remains backward-c
 
 ADG Provenance: backend=sqlite, snapshot=adg_indexed_05052026_0722.sqlite
 
-PLAN_CREATED: slug=ag4-evidence-contract-carrier-repair-d2f9a3 path=.windsurf/plans/ag4-evidence-contract-carrier-repair-d2f9a3.md
+PLAN_CREATED: slug=ag4-evidence-contract-carrier-repair-d2f9a3 path=.cursor/plans/ag4-evidence-contract-carrier-repair-d2f9a3.md

@@ -2,7 +2,7 @@
 description: Generate weekly Author-Gate calibration report — firing rate, FP rate, flip-readiness. Invokes `.windsurf/scripts/generate_calibration_report.py` and writes `docs/reports/author-gate/<YYYY-Www>.md`.
 ---
 
-> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules.
+> **Cursor Agent workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules.
 
 # Author-Gate Calibration Report
 

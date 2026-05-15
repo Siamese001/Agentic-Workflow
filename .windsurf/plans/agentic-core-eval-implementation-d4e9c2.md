@@ -30,7 +30,7 @@ The gap-closure audit returned `RECOMMENDATION_AUDIT_NEEDS_TARGETED_FIXES`. The 
 
 ## 3 · Items NOT in Scope
 
-- Hybrid trigger doc tightening for parent audit rows #61/#63/#66/#104 — `docs/reports/` is `.codeiumignore`-blocked for Cascade native edits; would also force re-issuing the parent audit. Tracked as documentation backlog, not enforceable through this plan.
+- Hybrid trigger doc tightening for parent audit rows #61/#63/#66/#104 — `docs/reports/` is `.codeiumignore`-blocked for Cursor Agent native edits; would also force re-issuing the parent audit. Tracked as documentation backlog, not enforceable through this plan.
 - ADG fan-in trace for `g22_output_quality.py` upstream scorer (`P-3`) — discovery only, not actionable code change.
 - L1 semantic judge abstain → HITL wiring (`P-5`) — separate per-module audit needed first.
 - `mixture_of_experts.py` / `ensemble_router.py` naming-vs-logic confirmation (`P-6`) — read-only, no code change.

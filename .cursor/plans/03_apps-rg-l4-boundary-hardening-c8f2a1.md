@@ -12,7 +12,7 @@ dod_exempt: false
 
 > [!IMPORTANT]
 > PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
-> MASTER_PLAN_REF: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md
+> MASTER_PLAN_REF: .cursor/plans/01_apps-rg-master-governed-runtime-hardening.md
 > DISPOSITION: MERGED_INTO_MASTER
 > SUPERSEDED_BY_PHASES: Phase 0, Phase 1, Phase 2, Phase 3, Phase 13
 > RETAINED_SCOPE:

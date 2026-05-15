@@ -24,7 +24,7 @@
 | `apps_rg/contracts/apps_rg_ingress_contract_v1.py` | Current contract definition | ✅ Read (lines 134-198) |
 | `apps_rfp/contracts/` | Pattern reference for comparison | 🔲 Read if needed |
 | `apps_underwriting_ai/contracts/` | Pattern reference for comparison | 🔲 Read if needed |
-| `.windsurf/rules/apps-folder-taxonomy.md` | Folder structure enforcement | ✅ Verified |
+| `.cursor/rules/apps-folder-taxonomy.md` | Folder structure enforcement | ✅ Verified |
 
 ---
 

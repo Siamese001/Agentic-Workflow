@@ -2,7 +2,7 @@
 
 **Plan ID**: `shadow-eval-v6-gap-d4a9c2`
 **Created**: 2026-04-25
-**Owner**: Cascade
+**Owner**: Cursor Agent
 **Reference**: `docs/reference/06_Shadow_Evaluation_System_Learning/06_Shadow_Evaluation_System_Learning_v6.md`
 **Tier**: T3 (cross-layer, multi-module, new surfaces)
 **Status**: Active

@@ -322,7 +322,7 @@ All waves use the existing integrity stack (`git_commit`, bundle merkle/sha256/s
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - This plan is `plan_type: governance`; ADG hotspot + graph-layer-evidence gates do not apply (per `.windsurf/rules/adg-graph-layer-enforcement.md` § "Plan Scope via Frontmatter").
 - Every acceptance criterion is expressible as a deterministic JSON / sha256 check — no LLM rubric dependence in the gate path.

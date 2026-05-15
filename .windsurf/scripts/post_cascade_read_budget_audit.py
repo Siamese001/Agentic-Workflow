@@ -1,6 +1,6 @@
 """post_cascade_read_budget_audit.py - advisory read-budget cap.
 
-Counts native and MCP file-read tool invocations in each Cascade response and
+Counts native and MCP file-read tool invocations in each Cursor Agent response and
 logs a violation row when the combined total exceeds the soft cap. Mirrors
 `post_cascade_grep_budget_audit.py` exactly in shape.
 
@@ -40,7 +40,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
 SOFT_CAP = 10
 
-# Match the tool-invocation markers Cascade emits in its response envelope.
+# Match the tool-invocation markers Cursor Agent emits in its response envelope.
 # Native read tools first, then MCP filesystem reads (any prefix mcpN_ is fine).
 _READ_FILE_PAT = re.compile(r'<invoke\s+name="read_file"', re.IGNORECASE)
 _READ_NOTEBOOK_PAT = re.compile(r'<invoke\s+name="read_notebook"', re.IGNORECASE)
@@ -52,7 +52,7 @@ _MCP_READ_MULTI_PAT = re.compile(r'<invoke\s+name="mcp\d+_read_multiple_files"',
 
 
 def _read_response_text() -> str:
-    """Read the Cascade response envelope from stdin.
+    """Read the Cursor Agent response envelope from stdin.
 
     Same shape as post_cascade_grep_budget_audit.py.
     """

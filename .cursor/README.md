@@ -1,30 +1,43 @@
-# Cursor-native agentic project controls
+# Cursor-native Agentic AI controls
 
-This folder is the Cursor-native operating surface for the Agentic AI project. It preserves the uploaded legacy material without making it active.
+This folder is the active Cursor operating surface for the Agentic AI project.
 
-## Active Cursor entry points
+## Active always-on rules
 
-- `.cursor/rules/*.mdc` — Cursor project rules. Keep always-on rules small and high-signal.
-- `.cursor/skills/**/SKILL.md` — Cursor Agent Skills for reusable task procedures.
-- `.cursor/agents/*.md` — specialized Cursor subagents for bounded audits and verification tasks.
-- `.cursor/hooks.json` and `.cursor/hooks/**` — Cursor hook wrappers for deterministic guardrails.
-- `.cursor/mcp.json` — project-scoped Cursor MCP configuration.
-- `.cursor/scripts/check_cursor_native_config.py` — strict validation for active Cursor surfaces.
+Only three rules are always-on after the optimization pass:
 
-## Archive and compatibility boundaries
+- `.cursor/rules/000-agentic-core-operating-contract.mdc`
+- `.cursor/rules/001-cursor-runtime-seam-execution.mdc`
+- `.cursor/rules/002-pass-blocked-proof-contract.mdc`
 
-- `.cursor/cursor_compat/**` is retained for migration reference only.
-- `.cursor/scripts/_legacy_cursor/**` contains legacy hook scripts that were not activated as Cursor hooks.
-- `.cursor/plans/_archive/**` preserves converted historical plans.
-- `.cursor/_zero_loss_originals/**` contains the uploaded source archive and original migrated reference files.
+Everything else is task-scoped reference material, a skill, an agent, a hook, a script, a schema, or archived history.
 
-Archived material is not active Cursor automation unless explicitly promoted into a rule, skill, agent, command, hook, or script.
+## Operating model
+
+Cursor should execute like a bounded repo agent:
+
+1. Patch one narrow runtime seam.
+2. Avoid plan sprawl.
+3. Avoid deferred-scope escape hatches.
+4. Run exact commands and gates.
+5. Report PASS, PARTIAL, FAIL, or BLOCKED with evidence.
+
+## Historical material
+
+Historical migrated plans are retained under:
+
+- `.cursor/plans/_archive/**`
+- `.cursor/_zero_loss_originals/**`
+- `.cursor/windsurf_compat/**`
+
+They are reference-only. They are not active execution instructions.
 
 ## Validation
 
-Run this from the repository root after unzipping:
+Run from the repo root after unzipping:
 
 ```bash
+python .cursor/scripts/check_cursor_optimized_config.py --strict
 python .cursor/scripts/check_cursor_native_config.py --strict
 python -m json.tool .cursor/mcp.json
 python -m json.tool .cursor/hooks.json

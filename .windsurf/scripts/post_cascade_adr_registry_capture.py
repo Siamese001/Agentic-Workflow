@@ -8,7 +8,7 @@ This hook no longer writes to Notion; it logs detected ADR paths to the
 filesystem JSONL only, providing an audit trail without dead-DB writes.
 
 Original purpose: auto-post new ADR markdown files to the Notion ADR Registry.
-Current purpose: detect ADR file references in Cascade responses, parse
+Current purpose: detect ADR file references in Cursor Agent responses, parse
 metadata, and log to ``artifacts/windsurf/adr_registry_capture.jsonl``
 (filesystem-only).
 

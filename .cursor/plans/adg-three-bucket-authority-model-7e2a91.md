@@ -3,7 +3,7 @@
 Status: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30)
 Predecessor status preserved below. Open Notion Wave/Phase rows migrated to the unified plan slug.
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 
 ## Mission
 

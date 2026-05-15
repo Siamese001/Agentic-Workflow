@@ -149,4 +149,4 @@ Current `fetch_live_plans` does a single POST with `page_size=100` and stops. Pl
 | ETag / last-edited-time concurrency guard | Requires Notion `retrieve page` extra call; latency tradeoff needs Author-Gate | D-4 |
 | R1B / ChromaDB Notion sync | Out of scope for all Notion test hardening | Different domain |
 
-PLAN_CREATED: slug=notion-test-hardening-deferred-scope-a7b4c9 path=.windsurf/plans/notion-test-hardening-deferred-scope-a7b4c9.md status=Not Started
+PLAN_CREATED: slug=notion-test-hardening-deferred-scope-a7b4c9 path=.cursor/plans/notion-test-hardening-deferred-scope-a7b4c9.md status=Not Started

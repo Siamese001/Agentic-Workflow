@@ -4,7 +4,7 @@
 - **Status**: Waiting (calendar-gated until 2026-05-22)
 - **Tier**: T1 (single-wave, ~4,000 tokens)
 - **Created**: 2026-05-03
-- **Owner**: Cascade (proposes); operator (approves WA6 gate)
+- **Owner**: Cursor Agent (proposes); operator (approves WA6 gate)
 - **SSOT**: this file
 
 ## 1. Mission
@@ -20,8 +20,8 @@ once the soak counter qualifies.
 
 | Source plan | Disposition |
 |---|---|
-| `.windsurf/plans/three-bucket-and-apps-spine-closeout-a4f8c2.md` | **Completed 2026-05-03** — WA1/WA4 landed in-session; WA2/WA3/WA5 already green; WA6 spun out into this plan |
-| `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` | Parent W6 thread; mechanism done; this plan finishes W6 calendar gate |
+| `.cursor/plans/three-bucket-and-apps-spine-closeout-a4f8c2.md` | **Completed 2026-05-03** — WA1/WA4 landed in-session; WA2/WA3/WA5 already green; WA6 spun out into this plan |
+| `.cursor/plans/adg-three-bucket-unified-c4f8e2.md` | Parent W6 thread; mechanism done; this plan finishes W6 calendar gate |
 
 ## 3. Wait Conditions (all must be true before execution)
 
@@ -76,8 +76,8 @@ Per constitutional §22:
 
 ## 11. References
 
-- `@.windsurf/plans/three-bucket-and-apps-spine-closeout-a4f8c2.md` (parent plan, Completed 2026-05-03)
-- `@.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (W6 mechanism)
+- `@.cursor/plans/three-bucket-and-apps-spine-closeout-a4f8c2.md` (parent plan, Completed 2026-05-03)
+- `@.cursor/plans/adg-three-bucket-unified-c4f8e2.md` (W6 mechanism)
 - `@docs/architecture/adr/ADR-079-l2-agent-graph-layer-contract.md`
 
 DEFERRED_SCOPE: plan=three-bucket-wa6-strict-flip-e22a51 wave=WA6 phase=WA6.P1 layer=L6 fan_in=3 surface=Observability coverage_gap_pct=0.0 est_tokens=2000 reason=ADG_CERTIFIED_STRICT flip soak-gated on P5.5 counter >= 4 (earliest 2026-05-22)

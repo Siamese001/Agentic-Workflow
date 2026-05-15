@@ -33,6 +33,6 @@
 
 ## Rules
 
-- Do NOT implement without a new plan at .windsurf/plans/
+- Do NOT implement without a new plan at .cursor/plans/
 - Architectural items need ADRs before implementation
 - This document is a capture artifact only

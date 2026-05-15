@@ -153,7 +153,7 @@ if repetition_rate > 0.05:
 
 ## 8. References
 
-- Source plan: `.windsurf/plans/exec-summary-length-parity-remediation-a3c8e1.md`
+- Source plan: `.cursor/plans/exec-summary-length-parity-remediation-a3c8e1.md`
 - Implementation commit: `1c284c04f0`
 - Tests: `tests/_apps_contract/test_exec_summary_w1_length_parity_remediation.py`
 - Success criteria: Notion Plans DB row (slug above)
@@ -162,4 +162,4 @@ if repetition_rate > 0.05:
 
 ## 9. Plan Registration
 
-`PLAN_CREATED: slug=exec-summary-deferred-scope-f8d2a3 path=.windsurf/plans/exec-summary-deferred-scope-f8d2a3.md status=Not Started`
+`PLAN_CREATED: slug=exec-summary-deferred-scope-f8d2a3 path=.cursor/plans/exec-summary-deferred-scope-f8d2a3.md status=Not Started`

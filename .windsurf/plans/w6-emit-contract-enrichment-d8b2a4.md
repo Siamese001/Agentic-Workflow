@@ -301,7 +301,7 @@ ADG snapshot `05052026_0722` returned zero `nodes_by_file` results for several s
 
 ## 15. Pre-Wave Prerequisites
 
-- **Parent plan `l5-cert-ref-emit-chain-threading-c4e7f1` reports `Status=Completed` in Notion Plans DB.** This is the hard gate. Cascade MUST verify via `API-query-data-source` before any wave starts.
+- **Parent plan `l5-cert-ref-emit-chain-threading-c4e7f1` reports `Status=Completed` in Notion Plans DB.** This is the hard gate. Cursor Agent MUST verify via `API-query-data-source` before any wave starts.
 - ADG re-ingest: `python tools/generate_full_adg.py` then `python tools/adg/adg_redis_ingest.py --check` to ensure all 11 contract dataclasses are indexed.
 - W0 Author-Gate queue drained — at most 6 unresolved packets answered (D6, D7, D8, D9, D11, D12) and captured to refactor decision ledger.
 - W0 ledger lookup confirms parent plan answered D2, D3, D4, D5, D10 — adopt those answers; only escalate to fresh AG if the parent plan ledger row is missing or contradicts intent.

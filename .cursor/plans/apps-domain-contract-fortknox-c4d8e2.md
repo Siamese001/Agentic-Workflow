@@ -171,5 +171,5 @@ pytest tests/_apps_contract/ -v
 - **Tier**: T3 (cross-layer, cross-app, multi-Wave).
 - **Constitutional rule binding**: §22 (graph-layer evidence), §23 (ADG canonical invariants), §28 (no grep for deps), §29 (router emission for any new router-class decisions — likely none here, but P5.2 should verify), §31 (SSOT folder routing for new files).
 - **Author-Gate triggers**: see "Author-Gate decisions anticipated" above.
-- **Plan location**: `.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md` — repo SSOT per `plan-location.md`.
+- **Plan location**: `.cursor/plans/apps-domain-contract-fortknox-c4d8e2.md` — repo SSOT per `plan-location.md`.
 - **Discovery report location**: `docs/reference/apps_domain_contract_discovery.md` — the user explicitly requested this path in §8 of the spec.

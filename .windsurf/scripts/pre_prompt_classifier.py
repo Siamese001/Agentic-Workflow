@@ -6,12 +6,12 @@ Reads JSON payload from stdin. Payload field:
   tool_info.prompt  — the user's prompt text
 
 Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
-tier tag + mandatory requirements to stderr so Cascade sees them (show_output: true).
+tier tag + mandatory requirements to stderr so Cursor Agent sees them (show_output: true).
 
 Exits 0 for T0/T1.
 Exits 2 (BLOCK) for T2/T3 when ADG health is red or Redis is down (hard gate).
 Exits 0 for T2/T3 when healthy — but emits MANDATORY structured reasoning requirements
-so Cascade is instructed to call mcp8_create_task before proceeding.
+so Cursor Agent is instructed to call mcp8_create_task before proceeding.
 
 Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG/Redis.
 Zero hardcoded paths.
@@ -286,8 +286,8 @@ def _detect_semantic_retrieval(prompt: str) -> bool:
     return any(sig in lower for sig in _SEMANTIC_SIGNALS)
 
 
-# Structured reasoning mandate injected into Cascade context for every T2/T3 prompt.
-# show_output: true ensures Cascade sees this output before responding.
+# Structured reasoning mandate injected into Cursor Agent context for every T2/T3 prompt.
+# show_output: true ensures Cursor Agent sees this output before responding.
 _sr_mandate = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
@@ -343,7 +343,7 @@ _sr_mandate = """
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
   4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
   5. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Cascade reasoning.
+  Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Cursor Agent reasoning.
   Rule: .windsurf/rules/sequential-thinking-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
@@ -834,7 +834,7 @@ def main() -> int:
     # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
 
-    # Human diagnostic (exit 0 stderr — not injected into Cascade context).
+    # Human diagnostic (exit 0 stderr — not injected into Cursor Agent context).
     # Gate enforces recall via exit 2 in pre_mcp_gate.py.
     if emit_memory_mandate:
         print(_memory_mandate, file=sys.stderr)
@@ -883,8 +883,8 @@ def main() -> int:
                 )
                 return 2
 
-        # Infrastructure healthy — inject structured reasoning mandate into Cascade context.
-        # show_output: true in hooks.json ensures Cascade sees this before responding.
+        # Infrastructure healthy — inject structured reasoning mandate into Cursor Agent context.
+        # show_output: true in hooks.json ensures Cursor Agent sees this before responding.
         mandate = _sr_mandate.format(tier=tier)
         if any(kw in prompt.lower() for kw in notion_keywords):
             mandate = mandate + "\n" + _notion_sr_hint

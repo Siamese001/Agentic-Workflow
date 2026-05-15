@@ -108,7 +108,7 @@ N/A — Tracking plan only. Success is accurate capture of deferred work.
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - This plan follows constitutional §24 deferred scope capture requirement
 - All items tagged with clear activation criteria

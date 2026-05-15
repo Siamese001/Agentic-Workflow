@@ -4,7 +4,7 @@ post_cascade_author_gate_miss_detector.py — Retroactive Author-Gate miss audit
 
 Hooks post_cascade_response. Scans the response for signals that a genuine
 Author-Gate decision point was reached but NO capture marker was emitted —
-i.e. Cascade made an ambiguous decision without surfacing it to the user.
+i.e. Cursor Agent made an ambiguous decision without surfacing it to the user.
 
 Signals (any one is a candidate; count must exceed threshold to flag):
     - multiple `edit`/`write_to_file` calls to different files (>=2 distinct paths)

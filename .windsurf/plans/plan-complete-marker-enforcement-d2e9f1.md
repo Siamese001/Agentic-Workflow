@@ -6,15 +6,15 @@ dod_exempt: false
 
 # Plan COMPLETE Marker Enforcement
 
-Enforce that Cascade always emits a `PLAN_COMPLETE: plan=<slug>` marker (or calls `wave_execution_state.py complete`) when all plan tasks are done, so Notion status auto-flips to `Completed` without manual intervention.
+Enforce that Cursor Agent always emits a `PLAN_COMPLETE: plan=<slug>` marker (or calls `wave_execution_state.py complete`) when all plan tasks are done, so Notion status auto-flips to `Completed` without manual intervention.
 
 ---
 
 ## Context (SCQA)
 
-- **Situation** — The wave-lifecycle auto-sync machinery (`post_cascade_wave_lifecycle_capture.py` + `tools/notion/wave_lifecycle_writer.py`) is fully functional. A `PLAN_COMPLETE: plan=<slug>` marker in any Cascade response triggers a direct-HTTP PATCH that flips the Plans DB row to `Completed`. The hook fires on every `post_cascade_response` event (line 246 of `hooks.json`).
-- **Complication** — Cascade routinely finishes all plan tasks and closes the session without emitting the marker. Root cause confirmed 2026-05-10: `notion-np10-deferred-scope-c8f1a4` was left at `Not Started` after all 7 DS items were implemented and tested. The Notion row had to be patched manually. No existing post-cascade audit script detects "plan appears done but `PLAN_COMPLETE:` was never emitted."
-- **Question** — How do we make Cascade reliably emit `PLAN_COMPLETE: plan=<slug>` when a plan's work is finished, with a CI/audit backstop that catches omissions?
+- **Situation** — The wave-lifecycle auto-sync machinery (`post_cascade_wave_lifecycle_capture.py` + `tools/notion/wave_lifecycle_writer.py`) is fully functional. A `PLAN_COMPLETE: plan=<slug>` marker in any Cursor Agent response triggers a direct-HTTP PATCH that flips the Plans DB row to `Completed`. The hook fires on every `post_cascade_response` event (line 246 of `hooks.json`).
+- **Complication** — Cursor Agent routinely finishes all plan tasks and closes the session without emitting the marker. Root cause confirmed 2026-05-10: `notion-np10-deferred-scope-c8f1a4` was left at `Not Started` after all 7 DS items were implemented and tested. The Notion row had to be patched manually. No existing post-cascade audit script detects "plan appears done but `PLAN_COMPLETE:` was never emitted."
+- **Question** — How do we make Cursor Agent reliably emit `PLAN_COMPLETE: plan=<slug>` when a plan's work is finished, with a CI/audit backstop that catches omissions?
 - **Answer** — Three-layer enforcement: (1) a new post-cascade audit hook `post_cascade_plan_complete_audit.py` that warns when a response's todo list goes all-completed without a `PLAN_COMPLETE:` marker; (2) a CI gate `check_plan_complete_marker_freshness.py` that detects Plans DB rows stuck in `In Progress` longer than a staleness threshold; (3) a rule addition to `notion-plan-wave-deferral.md` making the marker emission explicit and machine-checkable.
 
 ---
@@ -75,7 +75,7 @@ Enforce that Cascade always emits a `PLAN_COMPLETE: plan=<slug>` marker (or call
 
 **GAP-3: `notion-plan-wave-deferral.md` does not explicitly require `PLAN_COMPLETE:`**
 - The rule documents `wave_execution_state.py complete` and the marker grammar in the `Sanctioned non-MCP path` section, but the marker is not listed as a hard requirement with enforcement language.
-- Impact: Cascade treats the marker as optional prose; no author-gate fires when it is omitted.
+- Impact: Cursor Agent treats the marker as optional prose; no author-gate fires when it is omitted.
 
 ---
 
@@ -85,7 +85,7 @@ Enforce that Cascade always emits a `PLAN_COMPLETE: plan=<slug>` marker (or call
 
 **Scope**: New script `.windsurf/scripts/post_cascade_plan_complete_audit.py`.
 
-Heuristic: scan the Cascade response text for both:
+Heuristic: scan the Cursor Agent response text for both:
 1. A "todo_list all-completed" signal — the response contains a `todo_list` tool call where every item has `"status": "completed"`.
 2. Absence of a `PLAN_COMPLETE:` marker at line-start.
 

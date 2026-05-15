@@ -12,7 +12,7 @@ dod_exempt: false
 
 > [!IMPORTANT]
 > PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
-> MASTER_PLAN_REF: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md
+> MASTER_PLAN_REF: .cursor/plans/01_apps-rg-master-governed-runtime-hardening.md
 > DISPOSITION: MERGED_INTO_MASTER_WITH_CONFLICT_RESOLUTION
 > SUPERSEDED_BY_PHASES: Phase 0, Phase 10, Phase 11, Phase 12
 > RETAINED_SCOPE:
@@ -170,7 +170,7 @@ LAST_UPDATED: 2026-05-14
 | `agentic_core/**/*` | Core must remain app-agnostic | CI gate BLOCKS, checkpoint fails |
 | Canonical G01-G29 gate definitions | Governance stability | CI gate BLOCKS, checkpoint fails |
 | Canonical X1/X2/X3 schemas | Exit eval stability | CI gate BLOCKS, checkpoint fails |
-| `.windsurf/rules/*` | Global governance rules | Exception: rule update plans only |
+| `.cursor/rules/*` | Global governance rules | Exception: rule update plans only |
 | Global plan templates (`execution-plan-template.md`) | Cross-plan consistency | Exception: template update plans only |
 
 ## Wave Manifest
@@ -968,8 +968,8 @@ python -m pytest tests/_apps_contract/ -v --tb=short
 - Quarantined gates: `apps_rg/integrations/gates/online_judges.py`
 
 ### Related Plans
-- Plan d4e8a1 (runtime wiring): `.windsurf/plans/apps-rg-runtime-wiring-completion-d4e8a1.md`
-- Plan c8b3e1 (governance): `.windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md`
+- Plan d4e8a1 (runtime wiring): `.cursor/plans/apps-rg-runtime-wiring-completion-d4e8a1.md`
+- Plan c8b3e1 (governance): `.cursor/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md`
 
 ---
 

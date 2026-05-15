@@ -97,7 +97,7 @@ Add enforcement mechanisms (hooks, rules, CI gates) to prevent plan identity con
 
 **Phase 1.1: Hook scaffold and slug extraction**
 - Create `.windsurf/scripts/pre_notion_plan_write_gate.py`
-- Parse Cascade context to extract intended plan slug (from file content, response text, or explicit parameter)
+- Parse Cursor Agent context to extract intended plan slug (from file content, response text, or explicit parameter)
 - Handle cases where slug is in `PLAN_CREATED:` marker, plan file path, or prose
 
 **Phase 1.2: Notion DB query integration**
@@ -163,7 +163,7 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 ### Wave 4 — Integration and Testing
 
 **Phase 4.1: Hook registration (PIVOTED to post-cascade audit)**
-- Create `post_cascade_notion_plan_identity_audit.py` — scans Cascade response for `mcp7_API-patch-page` calls targeting Plans DB
+- Create `post_cascade_notion_plan_identity_audit.py` — scans Cursor Agent response for `mcp7_API-patch-page` calls targeting Plans DB
 - Extracts intended slug from context and targeted page_id from API call
 - Queries Notion DB to verify match
 - Logs mismatches to `artifacts/windsurf/plan_identity_violations.jsonl`
@@ -175,7 +175,7 @@ python ops_scripts/ci/check_notion_plan_status_anomalies.py
 - All tests pass
 
 **Acceptance:**
-- Audit fires automatically after Cascade responses with Notion plan status updates
+- Audit fires automatically after Cursor Agent responses with Notion plan status updates
 - Test suite: `pytest tests/unit/windsurf_scripts/test_post_cascade_notion_plan_identity_audit.py -v` passes
 
 ---
@@ -281,7 +281,7 @@ AG_QUEUE_SEED: plan=notion-plan-identity-verification-enforcement-f2a9c1 id=AG-W
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - This plan is **governance** type → ADG graph-layer evidence SKIPPED per template
 - Enforcement belongs in hooks/gates, not always-on rules (per §33 token budget)

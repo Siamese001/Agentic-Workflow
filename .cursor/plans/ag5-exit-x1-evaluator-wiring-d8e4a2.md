@@ -265,7 +265,7 @@ New files per constitutional §31:
 
 ## AG-4 Parent Reference
 
-AG-4 plan: `.windsurf/plans/ag4-evidence-contract-carrier-repair-d2f9a3.md`
+AG-4 plan: `.cursor/plans/ag4-evidence-contract-carrier-repair-d2f9a3.md`
 AG-4 acceptance: `artifacts/apps_embedding_gap_analysis/ag4_acceptance_evidence.json`
 
 ## Plan Metadata
@@ -273,7 +273,7 @@ AG-4 acceptance: `artifacts/apps_embedding_gap_analysis/ag4_acceptance_evidence.
 - Created: 2026-05-10
 - Slug: ag5-exit-x1-evaluator-wiring-d8e4a2
 - Status: In Progress
-- Author: Cascade
+- Author: Cursor
 - Estimated Waves: 9
 - Estimated Tokens: ~60k
 

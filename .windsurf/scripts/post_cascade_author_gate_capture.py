@@ -87,7 +87,7 @@ _packet_header_re = re.compile(
     re.DOTALL | re.MULTILINE,
 )
 
-# Structured capture marker emitted by Cascade post-Author-Gate:
+# Structured capture marker emitted by Cursor Agent post-Author-Gate:
 # v1: DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<label>, outcome=<status>
 # v2: ...[, confidence=0.NN, gap=0.NN, override=true|false, latency_ms=N, principle=<short>]
 # v2 optional fields are parsed via a second pass against the tail of the marker line.
@@ -804,7 +804,7 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     Returns True if a new record was inserted, False otherwise.
     Tries structured marker first, falls back to packet header heuristic.
     """
-    # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cascade post-Author-Gate)
+    # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cursor Agent post-Author-Gate)
     marker = _capture_marker_re.search(text)
     if marker:
         return _capture_from_marker(marker, text, conn)

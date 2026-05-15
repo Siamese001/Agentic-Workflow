@@ -11,8 +11,8 @@ Make `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` the ca
 
 ## Context (SCQA)
 
-- **Situation** — Three capture paths exist for Author-Gate decisions: (1) Windsurf `post_cascade_response` hook `post_cascade_author_gate_capture.py` writes a 27-column row to SQLite `decisions` table, (2) `tools/capture/append_marker.py` writes thin `DECISION_CAPTURED:` lines to `artifacts/capture/markers.jsonl`, (3) Cascade manually posts full rows to Notion HITL Decision Ledger via `mcp7_API-post-page`. The on-disk SQLite has rich schema (incl. `prev_hash`/`row_hash`/`signature` for tamper-evident chaining) but **0 rows**. Notion has full-rationale rows (latest 2026-05-02). JSONL has 14 thin markers.
-- **Complication** — The `post_cascade_author_gate_capture.py` hook is firing but receiving truncated stdin (`text_len=30..47` chars per `author_gate_capture.log`), so detection always returns `marker=False` and SQLite stays empty. Meanwhile `append_marker.py` writes JSONL but never SQLite. Notion is the only durable record but is human-driven (Cascade manually posts), creating a single point of failure: skip the manual post → decision is lost.
+- **Situation** — Three capture paths exist for Author-Gate decisions: (1) Windsurf `post_cascade_response` hook `post_cascade_author_gate_capture.py` writes a 27-column row to SQLite `decisions` table, (2) `tools/capture/append_marker.py` writes thin `DECISION_CAPTURED:` lines to `artifacts/capture/markers.jsonl`, (3) Cursor Agent manually posts full rows to Notion HITL Decision Ledger via `mcp7_API-post-page`. The on-disk SQLite has rich schema (incl. `prev_hash`/`row_hash`/`signature` for tamper-evident chaining) but **0 rows**. Notion has full-rationale rows (latest 2026-05-02). JSONL has 14 thin markers.
+- **Complication** — The `post_cascade_author_gate_capture.py` hook is firing but receiving truncated stdin (`text_len=30..47` chars per `author_gate_capture.log`), so detection always returns `marker=False` and SQLite stays empty. Meanwhile `append_marker.py` writes JSONL but never SQLite. Notion is the only durable record but is human-driven (Cursor Agent manually posts), creating a single point of failure: skip the manual post → decision is lost.
 - **Question** — How do we make on-disk SQLite the canonical, automated, tamper-evident SSOT while keeping Notion as a human-readable mirror?
 - **Answer** — (a) Diagnose and fix the truncated-stdin issue OR route around it by having `append_marker.py` ALSO insert a SQLite row, (b) build a one-way `tools/notion/sync_decision_ledger.py` that mirrors SQLite → Notion, (c) backfill existing JSONL + Notion rows into SQLite, (d) make Notion read-only (sync overwrites manual edits), (e) update constitutional §30 to reference SQLite as canonical.
 
@@ -83,17 +83,17 @@ Make `.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite` the ca
 ## Gap Register
 
 **GAP-1: Truncated stdin to post_cascade hooks**
-- The Windsurf `post_cascade_response` hook chain delivers only 30-47 chars to `post_cascade_author_gate_capture.py`. Should be the full Cascade response.
+- The Windsurf `post_cascade_response` hook chain delivers only 30-47 chars to `post_cascade_author_gate_capture.py`. Should be the full Cursor Agent response.
 - May be a Windsurf hook-config issue, a buffering issue, or the hook reads the wrong field.
 - Impact: SQLite `decisions` table has 0 rows despite the writer being correct.
-- Resolution path forks at Phase 1.2: either fix the hook (Cascade-side) or route around it (use `append_marker.py` as the SQLite writer).
+- Resolution path forks at Phase 1.2: either fix the hook (Cursor Agent-side) or route around it (use `append_marker.py` as the SQLite writer).
 
 **GAP-2: `append_marker.py` writes JSONL only**
 - Currently only writes to `artifacts/capture/markers.jsonl`. The marker shape captures `selected`, `outcome`, `confidence`, `gap`, `principle`, `precedent` — enough to populate most SQLite columns.
 - Needs to be extended to ALSO insert into SQLite, OR a new wrapper introduced.
 
 **GAP-3: No SQLite → Notion sync**
-- Notion HITL Decision Ledger has rich rows but is populated by Cascade manually calling `API-post-page`. If Cascade forgets, the decision is lost.
+- Notion HITL Decision Ledger has rich rows but is populated by Cursor Agent manually calling `API-post-page`. If Cursor Agent forgets, the decision is lost.
 - Needs a deterministic batch sync job that reads new SQLite rows and creates/updates Notion rows.
 
 **GAP-4: 14 existing JSONL markers + Notion rows not in SQLite**
@@ -239,7 +239,7 @@ Each phase is independently revertable; no irreversible operation.
 | CI gate works | passes clean, fails on synthetic regression | run `check_decision_ledger_sqlite_freshness.py` in both states |
 | Constitutional budget | still green | `python ops_scripts/ci/check_always_on_token_budget.py` |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Reuses existing `_init_db()` and 27-col schema instead of re-defining
 - Lifts shared logic into `tools/capture/_decision_ledger_writer.py` per SSOT folder discipline

@@ -403,7 +403,7 @@ L5 External Governance Profile
 | ID | Criterion | Verification Method |
 |----|-----------|---------------------|
 | DoD-1 | Gap analysis document complete and reviewed | This document |
-| DoD-2 | Plan file saved to disk | `.windsurf/plans/nist-ai-rmf-l5-profile-e7a3c1.md` |
+| DoD-2 | Plan file saved to disk | `.cursor/plans/nist-ai-rmf-l5-profile-e7a3c1.md` |
 | DoD-3 | Plan registered in Notion | Plans DB row with Status="Not Started" |
 | DoD-4 | AI Summary follows bullet-style format per NP1 | Notion row includes target/scope/key files/non-goals/success |
 | DoD-5 | Phase boundaries clear with decision gates | Each phase has explicit entry/exit criteria |

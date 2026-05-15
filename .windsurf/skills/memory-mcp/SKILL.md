@@ -1,6 +1,6 @@
 ---
 name: memory-mcp
-description: Persistent SQLite-backed knowledge graph for Cascade — survives Windsurf restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from Windsurf's built-in create_memory and from vector_db (semantic search, not episodic recall). See sibling skill writeback-discipline for entity/observation shapes.
+description: Persistent SQLite-backed knowledge graph for Cursor Agent — survives Windsurf restarts. Invoke at session start (REQUIRED — constitutional §17), when the user asks about past context, before HITL decisions, when debugging modules with prior history, or when significant decisions/patterns/architectural invariants need to persist across sessions. Distinguishes the persistent memory MCP from Windsurf's built-in create_memory and from vector_db (semantic search, not episodic recall). See sibling skill writeback-discipline for entity/observation shapes.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -73,7 +73,7 @@ Only these types survive `mem_cleanup_stale`. Anything else (including `"general
 1. **Constitutional §17:** First tool call of every session is `mem_recall_session_start`.
 2. **15/3 Rule (writeback-discipline):** If solving took >15 min, spend up to 3 min writing back.
 3. **MCP serialization (§25):** One MCP call per response — plan accordingly.
-4. **Observations must be recall-actionable** — generic strings like "fixed bug" are useless to next-session Cascade.
+4. **Observations must be recall-actionable** — generic strings like "fixed bug" are useless to next-session Cursor Agent.
 5. **Stale-source sniff test before writing `Project:*` entities.** Verify status against git log + filesystem before persisting.
 
 ## Common Workflows
@@ -89,4 +89,4 @@ Only these types survive `mem_cleanup_stale`. Anything else (including `"general
 
 ## Cross-Reference
 
-Notion holds the searchable row for human audit; Memory holds the recall-actionable observation for next-session Cascade. For cross-cutting decisions, write to **both** with a Notion URL inside the Memory observation.
+Notion holds the searchable row for human audit; Memory holds the recall-actionable observation for next-session Cursor Agent. For cross-cutting decisions, write to **both** with a Notion URL inside the Memory observation.

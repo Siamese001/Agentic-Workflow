@@ -1,4 +1,4 @@
-# Deferred Scope — apps_rg Interactive Wizard + vLLM/Synthesis Cascade Followups
+# Deferred Scope — apps_rg Interactive Wizard + vLLM/Synthesis Cursor Agent Followups
 
 **Slug**: `apps-rg-vllm-deferred-followup-f7d3a9`
 **Status**: Completed (2026-05-06)
@@ -60,10 +60,10 @@ Track and bound the deferred-scope items surfaced during the 2026-05-06 session 
 ## Non-Goals
 
 - Hook-based enforcement of the wizard discipline (rejected during initial design as too heuristic for single-app concerns; revisit only if sibling apps reveal pattern)
-- Auto-detection of "user explicitly authorized" vs "Cascade inferred" (NLP-hard; not a viable enforcement layer)
+- Auto-detection of "user explicitly authorized" vs "Cursor Agent inferred" (NLP-hard; not a viable enforcement layer)
 - Real LLM-judge implementations for the apps_eval-harness backlog (separate plan: see memory `5ba9ca42` — STILL DEFERRED list)
 - C0 FEC producer wiring for grounded apps (separate plan, blocker #4 in apps_eval-harness audit)
-- apps_underwriting_ai analyst attestation flip from `PROVENANCE_PENDING` → `VERIFIED_ANALYST_ATTESTED` (separate plan: requires qualified-owner sign-off; not Cascade work)
+- apps_underwriting_ai analyst attestation flip from `PROVENANCE_PENDING` → `VERIFIED_ANALYST_ATTESTED` (separate plan: requires qualified-owner sign-off; not Cursor Agent work)
 
 ## Success Criteria
 

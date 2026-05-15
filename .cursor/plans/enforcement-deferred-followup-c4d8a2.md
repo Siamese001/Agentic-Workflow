@@ -42,10 +42,10 @@ status: completed
 
 ### Item 2: Rule Frontmatter Validation ✅ IMPLEMENTED
 
-**What**: Formal JSON Schema validation for `.windsurf/rules/*.md` frontmatter
+**What**: Formal JSON Schema validation for `.cursor/rules/*.md` frontmatter
 
 **Implementation**:
-- `.windsurf/schemas/rule_frontmatter.schema.json` — canonical schema
+- `.cursor/schemas/rule_frontmatter.schema.json` — canonical schema
 - `ops_scripts/ci/check_rule_frontmatter_schema.py` — validation gate
 - Baseline: many rules lack frontmatter (advisory mode)
 - CI registered: RULE-FMT (advisory baseline)
@@ -101,14 +101,14 @@ N/A — Tracking plan only. Success is accurate capture of deferred work.
 | # | Criterion | Verification | Status |
 |---|---|---|---|
 | DoD-1 | Plan created in Notion | Notion Plans DB shows `enforcement-deferred-followup-c4d8a2` | ✅ |
-| DoD-2 | Plan file on disk | `.windsurf/plans/enforcement-deferred-followup-c4d8a2.md` exists | ✅ |
+| DoD-2 | Plan file on disk | `.cursor/plans/enforcement-deferred-followup-c4d8a2.md` exists | ✅ |
 | DoD-3 | All 3 items captured | Deferred scope table lists all items from parent plan | ✅ |
 | DoD-4 | Cross-reference maintained | Parent plan has link to this deferred plan | ✅ |
 | DoD-5 | All 3 items implemented | Code changes completed for each deferred item | ✅ |
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - This plan follows constitutional §24 deferred scope capture requirement
 - All items tagged with clear activation criteria
@@ -119,7 +119,7 @@ N/A — Tracking plan only. Success is accurate capture of deferred work.
 ## References
 
 - Parent Plan: `enforcement-mechanisms-top5-c4d8a2.md` (Completed)
-- Rule: `.windsurf/rules/deferred-scope-capture.md` §24
+- Rule: `.cursor/rules/deferred-scope-capture.md` §24
 - Constitutional: §18 (no hidden scope expansion)
 
 ---

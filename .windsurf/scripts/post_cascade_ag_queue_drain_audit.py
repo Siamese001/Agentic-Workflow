@@ -4,7 +4,7 @@ post_cascade_ag_queue_drain_audit.py — Author-Gate queue drain audit.
 
 Hooks post_cascade_response. Detects the "completed a wave but did not
 emit the next queued AUTHOR_GATE_PACKET" failure mode, which the
-2026-05-03 session demonstrated is Cascade's default behavioral gap.
+2026-05-03 session demonstrated is Cursor Agent's default behavioral gap.
 
 Logic:
     1. Read response from stdin (JSON payload or raw text).

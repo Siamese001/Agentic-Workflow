@@ -25,8 +25,8 @@ Refactor apps_qna from a legacy static card builder to a governed, evidence-back
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/adg-canonical-invariants.md` | ADG structural dependencies | ✅ |
-| `.windsurf/rules/plan-location.md` | Plan SSOT location | ✅ |
+| `.cursor/rules/adg-canonical-invariants.md` | ADG structural dependencies | ✅ |
+| `.cursor/rules/plan-location.md` | Plan SSOT location | ✅ |
 | `apps_qna/__main__.py` | Entrypoint impurity baseline | ✅ |
 | `apps_qna/spine_manifest.yaml` | Current route claims | ✅ |
 | `apps_qna/builder/card_pack_builder.py` | Legacy builder coupling | ✅ |
@@ -763,7 +763,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - **Plan type**: refactor → ADG graph-layer evidence required (§22)
 - **Tier**: T3 (multi-wave, cross-layer, architecture decisions)
@@ -783,4 +783,4 @@ AG_QUEUE_SEED: plan=apps-qna-spine-alignment-a7f4c2 id=p1.5-template-audit depen
 
 ---
 
-PLAN_CREATED: slug=apps-qna-spine-alignment-a7f4c2 path=.windsurf/plans/apps-qna-spine-alignment-a7f4c2.md waves=7 phases=33 tokens=275K
+PLAN_CREATED: slug=apps-qna-spine-alignment-a7f4c2 path=.cursor/plans/apps-qna-spine-alignment-a7f4c2.md waves=7 phases=33 tokens=275K

@@ -23,11 +23,11 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 | Source | Why needed | Status |
 |---|---|---|
 | `ops_scripts/ci/check_always_on_token_budget.py` | Budget gate — verification after each wave | 🔲 |
-| `.windsurf/rules/apps-rg-interactive-discipline.md` (5,914 bytes) | Compression target #1 | 🔲 |
-| `.windsurf/rules/mcp-serialization.md` (5,031 bytes) | Compression target #2 | 🔲 |
-| `.windsurf/rules/notion-plan-wave-deferral.md` (3,164 bytes) | Compression target #3 | 🔲 |
-| `.windsurf/rules/adg-canonical-invariants.md` (5,073 bytes) | Compression target #4 | 🔲 |
-| `.windsurf/rules/author-gate-enforcement.md` (9,941 bytes) | Promotion target — also compress | 🔲 |
+| `.cursor/rules/apps-rg-interactive-discipline.md` (5,914 bytes) | Compression target #1 | 🔲 |
+| `.cursor/rules/mcp-serialization.md` (5,031 bytes) | Compression target #2 | 🔲 |
+| `.cursor/rules/notion-plan-wave-deferral.md` (3,164 bytes) | Compression target #3 | 🔲 |
+| `.cursor/rules/adg-canonical-invariants.md` (5,073 bytes) | Compression target #4 | 🔲 |
+| `.cursor/rules/author-gate-enforcement.md` (9,941 bytes) | Promotion target — also compress | 🔲 |
 
 ---
 
@@ -86,7 +86,7 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 
 **Scope**: Remove "Why this rule exists" section (~400 bytes), incident narrative §"Empirical incident" (~250 bytes), defense-in-depth table (~350 bytes), forbidden-patterns table (~400 bytes), sibling-apps section (~150 bytes), "Non-TTY contexts" section (~200 bytes). Keep: ⛔ callout, single-prompt template, hard rules 1-3, stale-file rule 4, references.
 
-**Acceptance**: Rule ≤2,200 bytes; `check_always_on_token_budget.py` passes; all content preserved in Cascade memory (the rule already has a memory entry `aa3e66d1` covering full detail).
+**Acceptance**: Rule ≤2,200 bytes; `check_always_on_token_budget.py` passes; all content preserved in Cursor Agent memory (the rule already has a memory entry `aa3e66d1` covering full detail).
 
 ### Phase 2.1 — Compress `mcp-serialization.md`
 
@@ -133,7 +133,7 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 - [ ] `author-gate-enforcement.md` has `trigger: always_on`
 - [ ] `check_always_on_token_budget.py` passes with ≥500 bytes margin
 - [ ] All ⛔ callouts and hard rules preserved verbatim in compressed rules
-- [ ] Moved content preserved in skills or Cascade memories
+- [ ] Moved content preserved in skills or Cursor Agent memories
 - [ ] No behavioral regression: Author-Gate pipeline still fires correctly
 
 ---
@@ -141,7 +141,7 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 ## Rollback Strategy
 
 If things go wrong:
-1. `git checkout -- .windsurf/rules/` restores all rules to pre-compression state
+1. `git checkout -- .cursor/rules/` restores all rules to pre-compression state
 2. Revert `author-gate-enforcement.md` frontmatter to `trigger: model_decision`
 3. Budget gate will pass again (returns to 362 bytes free)
 
@@ -153,10 +153,10 @@ If things go wrong:
 |---|---|---|
 | Always-on budget total | ≤50,700 bytes | `python ops_scripts/ci/check_always_on_token_budget.py` |
 | Free headroom | ≥500 bytes | Same gate output |
-| author-gate-enforcement trigger | `always_on` | `head -3 .windsurf/rules/author-gate-enforcement.md` |
+| author-gate-enforcement trigger | `always_on` | `head -3 .cursor/rules/author-gate-enforcement.md` |
 | Invariant preservation | 100% ⛔ blocks retained | Manual diff audit per wave |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

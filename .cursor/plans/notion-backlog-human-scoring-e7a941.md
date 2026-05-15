@@ -16,8 +16,8 @@ Human-driven scoring pass for the 63 Wave/Phase Convergence rows that no automat
 | `artifacts/notion/human_scoring_worksheet.md` | Pre-populated row list for human | ✅ generated |
 | `artifacts/notion/human_scoring_worksheet.json` | Machine-readable worksheet (applier consumes this) | ✅ generated |
 | `artifacts/notion/_pending_rescore.json` | Original rescore dry-run (shows unscorable reasons) | ✅ exists |
-| `.windsurf/rules/constitutional.md` §24 | Priority scoring formula | ✅ |
-| `.windsurf/rules/deferred-scope-capture.md` | Band thresholds SSOT | ✅ |
+| `.cursor/rules/constitutional.md` §24 | Priority scoring formula | ✅ |
+| `.cursor/rules/deferred-scope-capture.md` | Band thresholds SSOT | ✅ |
 | `tools/priority/deferred_scope_scorer.py` | Formula reference (same thresholds) | ✅ |
 
 ---
@@ -76,7 +76,7 @@ Human-driven scoring pass for the 63 Wave/Phase Convergence rows that no automat
 
 ## Execution Plan
 
-### Waves 1–4: Human Fills Worksheet (no Cascade work)
+### Waves 1–4: Human Fills Worksheet (no Cursor Agent work)
 
 **Deliverable**: `artifacts/notion/human_scoring_worksheet.json` populated with one of these values per row:
 
@@ -103,7 +103,7 @@ surface_boost:     Security=1.5, Write=1.4, Execution=1.3, State=1.2, Observabil
 Bands: P1 ≥300, P2 ≥150, P3 ≥75, P4 ≥30, P5 <30
 ```
 
-### Wave 5: Cascade Applies Worksheet
+### Wave 5: Cursor Agent Applies Worksheet
 
 **Script**: `tools/debug/_apply_human_scoring.py`
 - Loads filled `human_scoring_worksheet.json`
@@ -117,7 +117,7 @@ Bands: P1 ≥300, P2 ≥150, P3 ≥75, P4 ≥30, P5 <30
 
 ## Rules
 
-- Cascade never assigns a BAND value — that's the human's job. This plan exists because automated scoring was exhausted.
+- Cursor Agent never assigns a BAND value — that's the human's job. This plan exists because automated scoring was exhausted.
 - Applier script MUST be idempotent — re-running on an already-scored row patches the same values (detects no-op via current state).
 - No MCP calls — direct Notion REST (consistent with prior waves).
 - Receipts append-only; never truncate.

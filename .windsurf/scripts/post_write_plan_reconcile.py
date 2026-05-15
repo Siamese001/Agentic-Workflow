@@ -2,7 +2,7 @@
 """
 post_write_plan_reconcile.py — Windsurf post_write_code hook wrapper.
 
-Runs plan_driven_closer.py scoped to a SINGLE plan file, ONLY when Cascade
+Runs plan_driven_closer.py scoped to a SINGLE plan file, ONLY when Cursor Agent
 just edited a file under .windsurf/plans/*.md. Any other write → immediate
 exit 0 (no Notion query, no work).
 

@@ -4,7 +4,7 @@
 **Status:** In Progress
 **Tier:** T3
 **Type:** Wave-based execution plan for deferred scope
-**Owner:** Cascade
+**Owner:** Cursor Agent
 **Authored:** 2026-05-09
 **Parent index plan:** `apps-rg-spine-hardening-deferred-d4e7a3`
 **Grandparent plan:** `apps-rg-spine-hardening-7e3b9c` (Completed 2026-05-09)
@@ -116,7 +116,7 @@ W5 apps (P5.1–P5.6) are parallel within W5 but each earns its own child plan s
 
 | ID | Gap | Owner | Status |
 |---|---|---|---|
-| G1 | D3–D8 each need own child plan slug before W5 executes | Future Cascade session | Open |
+| G1 | D3–D8 each need own child plan slug before W5 executes | Future Cursor Agent session | Open |
 | G2 | 30-day clean baseline required before W4 can execute | CI/time-gated | Open |
 | G3 | ADG snapshot may drift between W1 and W3; regen required at W3 start | ADG tooling | Open |
 

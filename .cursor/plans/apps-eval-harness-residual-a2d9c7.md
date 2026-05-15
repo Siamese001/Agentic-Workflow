@@ -6,10 +6,10 @@
 **Last Updated:** 2026-05-03
 **Completion Note:** All 6 waves executed in one session. 312 tests pass in `tests/_apps_contract/` (+57 net). `check_app_domain_harness_parity` gate: ERROR=0, WARN=0 across all 8 apps.
 **Parent plans:**
-- `.windsurf/plans/apps-eval-harness-parity-f8d4a2.md` (Completed)
-- `.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md` (Completed)
+- `.cursor/plans/apps-eval-harness-parity-f8d4a2.md` (Completed)
+- `.cursor/plans/apps-eval-harness-deferred-e4a1b7.md` (Completed)
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 
@@ -84,9 +84,9 @@ None anticipated — all pre-decided by parent plans' AG packets. Residual work 
 
 ## 9. Metadata
 
-- Plan file path: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md`
+- Plan file path: `.cursor/plans/apps-eval-harness-residual-a2d9c7.md`
 - Notion Plans row: create on W6 completion with Status=Completed
-- Template: `.windsurf/templates/execution-plan-template.md`
+- Template: `.cursor/templates/execution-plan-template.md`
 
 ## AG_QUEUE_SEED
 

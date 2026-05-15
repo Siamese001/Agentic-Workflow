@@ -6,7 +6,7 @@
 - **Working branch**: `rtc-w2b-consensus-jury-rewrite`
 - **Tier**: T3 (cross-layer — L0 model registry + certification-path code + tests + CI)
 - **Status**: DRAFT — awaiting execution
-- **Author**: Cascade, 2026-05-01
+- **Author**: Cursor Agent, 2026-05-01
 - **User directive**: 2026-05-01 11:59 UTC — "start working now but update the base models to these three — the ones in the SSOT are old"
 
 ---
@@ -23,7 +23,7 @@ The original W2b (`rtc-w2b-live-provider-allow-proof-b24f8e.md`) shipped with an
 | Model ids | Hardcoded strings in LLMJudgeVeto | Imported from `agentic_core.L0_routing.config.model_registry` |
 | Stale models | `claude-3-haiku-20240307` (2024), `gpt-4o` (old), `gemini-2.5-pro` (old) | User's 2026 pins: `gpt-5.4-mini`, `claude-sonnet-4-6`, `gemini-3.1-pro-preview` |
 
-Root cause: W2b was implemented without an Author-Gate. The provider choices were made by Cascade in isolation without consulting the L0 routing SSOT.
+Root cause: W2b was implemented without an Author-Gate. The provider choices were made by Cursor Agent in isolation without consulting the L0 routing SSOT.
 
 ### Evidence from 2026-05-01 Scenario A execution
 
@@ -187,7 +187,7 @@ Queried against `artifacts/adg/adg_indexed_<latest>.sqlite` (see per-run snapsho
 
 ## 10. Open Questions (to resolve during execution, not blockers)
 
-- **Q1**: Should the 4th Qwen juror (`USE_CERT_JURY_QWEN=1`) be enabled by default for Cascade-hosted runs, or opt-in only? Default: opt-in.
+- **Q1**: Should the 4th Qwen juror (`USE_CERT_JURY_QWEN=1`) be enabled by default for Cursor Agent-hosted runs, or opt-in only? Default: opt-in.
 - **Q2**: Does `asyncio.gather` raise when one juror times out? Need to verify each SDK's timeout behavior; may need per-juror try/except wrapping.
 - **Q3**: Gemini 3.1 Pro Preview — stable API? Same request format as gemini-2.5-pro? Discover during R2.2.
 - **Q4**: Should schema-v1 attestations be auto-migrated or rejected at the verifier? Default: rejected (forces fresh run under new scheme).

@@ -7,7 +7,7 @@
 **Author-Gate Closeout:** `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine, conf 0.91). CI gate `ops_scripts/ci/check_calibration_evidence_authenticity.py` blocks any commit where `artifacts/calibration/judge_spearman.json` claims `meets_threshold=true` while any result has `is_synthetic_smoke=true`. Synthetic smoke runs can never falsely claim production readiness.
 **Completion Note:** Calibration scaffold landed at `ops_scripts/calibration/judge_spearman_calibration.py`. Consumes `apps_eval/fixtures/holdout/<app>.jsonl` rows with `rubric_dim_human_scores`, runs scipy.stats.spearmanr per judge, emits `artifacts/calibration/judge_spearman.json`. HARD GUARD: when any row carries the `SYNTHETIC_SEED_ONLY` tag, `meets_threshold` is forced to `False` regardless of computed ρ — prevents synthetic smoke from falsely claiming production readiness. Current synthetic smoke run: 4/4 judges import cleanly, n=5 per judge, ρ meaningless (synthetic_smoke=true). Real calibration activates when `holdout-corpus-authoring-b5d2f6` lands human-labeled corpus.
 **Parent arc:** `apps-eval-harness-{parity-f8d4a2,deferred-e4a1b7,residual-a2d9c7,final-8f3e21,terminal-3c9f81}` (all Completed)
-**Owner:** Cascade (draft) → human owner on activation
+**Owner:** Cursor Agent (draft) → human owner on activation
 
 ## 1. Problem Statement
 
@@ -52,6 +52,6 @@ This plan CANNOT start until ALL of the following are provided:
 
 ## 7. Metadata
 
-- Plan file path: `.windsurf/plans/judge-spearman-calibration-a7e4c9.md`
+- Plan file path: `.cursor/plans/judge-spearman-calibration-a7e4c9.md`
 - Notion Plans row: Draft on creation
 - Activation trigger: human operator supplies holdout corpus under `apps_eval/fixtures/holdout/` with real (non-synthetic) labels.

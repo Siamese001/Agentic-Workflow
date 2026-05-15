@@ -22,11 +22,11 @@ Tracks deferred scope items from `author-gate-pipeline-hardening-d7e3f9` that we
 
 | Source | Why needed | Status |
 |---|---|---|
-| `artifacts/windsurf/author_gate_violations.jsonl` | FP-rate measurement for shadow → block flip | ✅ |
-| `.windsurf/schemas/author_gate_triggers.yaml` | `enforcement` field to flip | ✅ (`enforcement: block`) |
-| `.windsurf/rules/author-gate-enforcement.md` | trigger frontmatter to evaluate | ✅ (`trigger: always_on`) |
+| `artifacts/cursor/author_gate_violations.jsonl` | FP-rate measurement for shadow → block flip | ✅ |
+| `.cursor/schemas/author_gate_triggers.yaml` | `enforcement` field to flip | ✅ (`enforcement: block`) |
+| `.cursor/rules/author-gate-enforcement.md` | trigger frontmatter to evaluate | ✅ (`trigger: always_on`) |
 | `ops_scripts/ci/check_always_on_token_budget.py` | §33 budget gate — must pass before always_on promotion | ✅ (8,199 bytes headroom) |
-| `.windsurf/hooks.json` | CI gate would verify hook wiring invariant | ✅ (AG-WIRE-1..4 pass) |
+| `.cursor/hooks.json` | CI gate would verify hook wiring invariant | ✅ (AG-WIRE-1..4 pass) |
 
 ---
 
@@ -52,10 +52,10 @@ Tracks deferred scope items from `author-gate-pipeline-hardening-d7e3f9` that we
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W1.P1 | Measure shadow FP rate | `artifacts/windsurf/author_gate_violations.jsonl` scan | Need ≥7 days shadow data, FP rate < 5% | ~3K | ✅ DONE |
-| W1.P2 | Flip enforcement to block | `.windsurf/schemas/author_gate_triggers.yaml` | Single field change; must have FP evidence first | ~1K | ✅ DONE |
+| W1.P1 | Measure shadow FP rate | `artifacts/cursor/author_gate_violations.jsonl` scan | Need ≥7 days shadow data, FP rate < 5% | ~3K | ✅ DONE |
+| W1.P2 | Flip enforcement to block | `.cursor/schemas/author_gate_triggers.yaml` | Single field change; must have FP evidence first | ~1K | ✅ DONE |
 | W2.P1 | Audit §33 budget headroom | `ops_scripts/ci/check_always_on_token_budget.py` run | Two-tier compliance §33 — must confirm headroom | ~2K | ✅ DONE (43,001 / 51,200 bytes; 8,199 headroom) |
-| W2.P2 | Promote rule to always_on | `.windsurf/rules/author-gate-enforcement.md` frontmatter | Only if W2.P1 confirms headroom | ~1K | ✅ DONE (promoted 2026-05-09) |
+| W2.P2 | Promote rule to always_on | `.cursor/rules/author-gate-enforcement.md` frontmatter | Only if W2.P1 confirms headroom | ~1K | ✅ DONE (promoted 2026-05-09) |
 | W3.P1 | CI gate for hook wiring | `ops_scripts/ci/check_ag_hook_wiring.py` (new) | No structural guarantee hooks stay wired | ~5K | ✅ DONE (commit d37b3711b5) |
 | W3.P2 | Register gate | `ops_scripts/ci/run_contract_gates.py` | Gate must appear in contract gate sweep | ~1K | ✅ DONE |
 | W3.P3 | Tests | `tests/unit/ops_scripts/ci/test_check_ag_hook_wiring.py` | Coverage for new CI gate | ~4K | ✅ DONE (23 tests) |

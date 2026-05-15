@@ -18,7 +18,7 @@ Upgrade ADG from "knows syntax and patterns" to "knows truth": hidden write path
 | `agentic_core/adg/artifact/multi_writer.py` | DDL for `precision_side_effects` table — A8 populates it | ✅ READ |
 | `tools/generate/infra_wiring_views.py` | Existing `v_p0_write_bypass_uwg` — A8 creates v2 with behavior-based detection | ✅ READ |
 | `tools/generate/materialized_views/` | 42 existing MVs — A6/A8 add new MVs | ✅ READ |
-| `.windsurf/hooks.json` | Hook entrypoints — A6 scans for `entrypoint_kind=hook` | ✅ READ |
+| `.cursor/hooks.json` | Hook entrypoints — A6 scans for `entrypoint_kind=hook` | ✅ READ |
 | `ops_scripts/ci/check_*.py` (61 files) | A12 scans docstring vs actual enforcement | ✅ READ |
 | ADG snapshot 04252026_0521 | Baseline — 82835 nodes, 581345 edges | ✅ VERIFIED |
 
@@ -193,7 +193,7 @@ class _EntrypointKindVisitor(BaseADGVisitor):
       - test: module path matches tests/ pattern
     
     Non-AST kinds (populated by entrypoint_scanner.py):
-      - hook: referenced in .windsurf/hooks.json
+      - hook: referenced in .cursor/hooks.json
       - ci: referenced in .github/workflows/*.yml or .pre-commit-config.yaml
       - mcp: referenced in .windsurf/mcp_config.json
     
@@ -219,7 +219,7 @@ This allows downstream MVs to join on `relation_type='entrypoint_kind'` to compu
 
 | Source File | Field | entrypoint_kind |
 |-------------|-------|-----------------|
-| `.windsurf/hooks.json` | `hooks.*.[].command` | `hook` |
+| `.cursor/hooks.json` | `hooks.*.[].command` | `hook` |
 | `.windsurf/mcp_config.json` | `mcpServers.*.command` + `mcpServers.*.args[]` | `mcp` |
 | `.pre-commit-config.yaml` | `repos.*.hooks[].entry` | `hook` |
 | `.github/workflows/*.yml` | `jobs.*.steps[].run` (python invocations) | `ci` |

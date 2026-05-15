@@ -194,7 +194,7 @@ If F1..F5 ever produces evidence-input shapes that the formula refuses to flip t
 
 ## 10. Cross-References
 
-- Master plan: `.windsurf/plans/runtime-cert-100-percent-completion-e3f1a2.md`
+- Master plan: `.cursor/plans/runtime-cert-100-percent-completion-e3f1a2.md`
 - Predecessor — wave-level CSV update model: `tools/cert/update_csv_signoff.py`
 - New helper (F0.4): `tools/cert/update_evidence_inputs.py`
 - New SSOT (F0.1): `tools/cert/required_evidence_matrix.yaml`

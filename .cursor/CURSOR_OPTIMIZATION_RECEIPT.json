@@ -1,0 +1,35 @@
+{
+  "created_at": "2026-05-15T09:14:11Z",
+  "optimization": "cursor_runtime_seam_full_overwrite",
+  "active_always_on_rules": [
+    "000-agentic-core-operating-contract.mdc",
+    "001-cursor-runtime-seam-execution.mdc",
+    "002-pass-blocked-proof-contract.mdc"
+  ],
+  "archived_direct_plan_entries": 452,
+  "historical_archive": ".cursor/plans/_archive/historical_plans_20260515_cursor_optimization",
+  "hook_policy": "legacy execution blocked/warned narrowly; PASS proof enforced on stop payload when repo work cues present",
+  "status_semantics": [
+    "PASS requires commands/tests/gates",
+    "PARTIAL for missing proof",
+    "FAIL for executed failed command",
+    "BLOCKED for unavailable dependency/policy/permission"
+  ],
+  "validation": {
+    "check_cursor_optimized_config": "PASS",
+    "check_cursor_native_config": "PASS",
+    "mcp_json_valid": true,
+    "hooks_json_valid": true,
+    "hook_smoke": {
+      "shell_allows_cursor_validation_command": true,
+      "shell_blocks_legacy_execution_surface": true,
+      "stop_allows_pass_with_proof_sections": true,
+      "stop_blocks_repo_work_without_status": true
+    }
+  },
+  "active_plan_files": [
+    "CURSOR_RUNTIME_SEAM_TEMPLATE.md",
+    "README.md"
+  ],
+  "validated_at": "2026-05-15T09:17:01Z"
+}

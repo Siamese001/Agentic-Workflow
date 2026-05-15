@@ -5,12 +5,12 @@ pre_user_prompt_grep_for_deps_warning.py — Pre-prompt grep-for-deps detector (
 Windsurf ``pre_user_prompt`` hook. Scans the user's prompt text for
 dependency-analysis intent ("grep for imports of X", "who uses Y",
 "find references to Z", "what depends on W") and prints a warning to
-stderr so Cascade sees the injected signal in the next turn.
+stderr so Cursor Agent sees the injected signal in the next turn.
 
 Does NOT block the prompt — advisory only. The companion post-response
 hook ``post_cascade_adg_audit.py`` remains the enforcement point.
 
-Rationale: Wave 14 changelog — "Users can now configure Cascade Hooks
+Rationale: Wave 14 changelog — "Users can now configure Cursor Agent Hooks
 on user prompts for logging all user prompts and blocking policy-violating
 prompts." We use the logging facet, not the blocking facet, because the
 user phrasing is not itself a violation — only the downstream tool choice

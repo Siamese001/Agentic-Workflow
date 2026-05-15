@@ -59,7 +59,7 @@ The hook parses these receipts; missing receipts when a trigger fired → violat
 
 ## Doctrine
 
-- Memory is for **Cascade's next-5-minutes recall** — observations must be recall-actionable ("run `python X` with flag `-n 0`"), not diary prose ("fixed the bug today").
+- Memory is for **Cursor Agent's next-5-minutes recall** — observations must be recall-actionable ("run `python X` with flag `-n 0`"), not diary prose ("fixed the bug today").
 - Notion is for **human audit over days/weeks** — rows carry typed properties (status, date, owner), not narrative.
 - **Never duplicate disk content into Notion** — row links to `docs/...` file, doesn't repeat it.
 - **Never use `entityType: "general"`** for anything you want to persist — 30-day auto-purge applies. Use the 4 protected types only.

@@ -7,7 +7,7 @@
 ## Context (SCQA)
 
 - **Situation** — AGENTS.md documents a "Constitutional Rules Registry" in Notion with write trigger "On rule addition/modification". User repeatedly tries to sync rules to Notion, but it never works.
-- **Complication** — The Constitutional Rules Registry database (`1c1379bc-32ca-4216-898a-3672f0316f69`) was **archived on 2026-05-02** per `notion_db_consolidation_2026_05_02.py`. It was an aspirational mirror that never had working automation. Rules are actually filesystem-SSOT at `.windsurf/rules/*.md`.
+- **Complication** — The Constitutional Rules Registry database (`1c1379bc-32ca-4216-898a-3672f0316f69`) was **archived on 2026-05-02** per `notion_db_consolidation_2026_05_02.py`. It was an aspirational mirror that never had working automation. Rules are actually filesystem-SSOT at `.cursor/rules/*.md`.
 - **Question** — How do we align documentation with reality, remove the broken expectation, and add lightweight validation without re-introducing Notion complexity?
 - **Answer** — Update AGENTS.md to remove stale registry entry, add filesystem-SSOT clarity, and create a CI gate for rule validation. Do NOT recreate the Notion database.
 
@@ -19,8 +19,8 @@
 |---|---|---|
 | `AGENTS.md` Notion Workspace Map | Contains stale Constitutional Rules Registry entry | 🔲 Read + Edit |
 | `ops_scripts/maintenance/notion_db_consolidation_2026_05_02.py` | Confirms registry archived 2026-05-02 | ✅ Read |
-| `.windsurf/rules/` directory | Filesystem-SSOT for 47 rules | ✅ Verified |
-| `.windsurf/hooks.json` | No rule-specific hooks exist | 🔲 Verify |
+| `.cursor/rules/` directory | Filesystem-SSOT for 47 rules | ✅ Verified |
+| `.cursor/hooks.json` | No rule-specific hooks exist | 🔲 Verify |
 
 ---
 
@@ -39,7 +39,7 @@
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | 1.1 | AGENTS.md cleanup | `AGENTS.md` Notion Workspace Map | Must preserve other registry entries | ~2K | 🔲 |
-| 1.2 | Filesystem-SSOT annotation | `AGENTS.md` + `.windsurf/rules/README.md` | Clarify authority boundary | ~2K | 🔲 |
+| 1.2 | Filesystem-SSOT annotation | `AGENTS.md` + `.cursor/rules/README.md` | Clarify authority boundary | ~2K | 🔲 |
 | 1.3 | Rules validation gate | `ops_scripts/ci/check_rules_filesystem_integrity.py` | Lightweight schema check | ~5K | 🔲 |
 | 1.4 | Notion registration | Create Plans DB row via `API-post-page` | Requires canonical status | ~3K | 🔲 |
 
@@ -53,7 +53,7 @@
 
 Edit `AGENTS.md` Notion Workspace Map:
 - Delete the "Constitutional Rules Registry" row
-- Add footnote: "Rules are filesystem-SSOT at `.windsurf/rules/` — no Notion mirror exists"
+- Add footnote: "Rules are filesystem-SSOT at `.cursor/rules/` — no Notion mirror exists"
 
 **Phase 1.2 — Add filesystem-SSOT clarity**
 
@@ -63,7 +63,7 @@ Add to AGENTS.md after Notion Workspace Map:
 
 | Content | Path | Write Trigger |
 |---------|------|---------------|
-| Rules | `.windsurf/rules/*.md` | Filesystem only; no automated Notion sync |
+| Rules | `.cursor/rules/*.md` | Filesystem only; no automated Notion sync |
 | ADRs | `docs/architecture/adr/*.md` | Filesystem only since 2026-05-02 consolidation |
 ```
 
@@ -72,7 +72,7 @@ Add to AGENTS.md after Notion Workspace Map:
 New file: `ops_scripts/ci/check_rules_filesystem_integrity.py`
 
 Checks:
-- All `.md` files in `.windsurf/rules/` have frontmatter
+- All `.md` files in `.cursor/rules/` have frontmatter
 - No duplicate rule titles
 - File names match kebab-case convention
 - References in rules actually point to valid files

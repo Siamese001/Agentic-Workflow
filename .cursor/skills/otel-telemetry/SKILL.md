@@ -51,7 +51,6 @@ In-house. The canonical surface for runtime telemetry: OTEL spans, healing chain
 
 1. **Stale-process runbook:** When `otel_mcp` tools appear unhealthy, call `otel_server_info` FIRST. If `source_is_stale=true`, restart the MCP server. Do not debug internals before this check.
 2. **Static vs runtime separation:** Structural questions ("who imports X?") go to `adg_sqlite`. Runtime questions ("what happened when Y was called?") go to `otel_mcp`. Mixing them up wastes tool budget and produces wrong answers.
-3. **MCP serialization (§25):** One MCP call per response.
 
 ## Common Workflows
 

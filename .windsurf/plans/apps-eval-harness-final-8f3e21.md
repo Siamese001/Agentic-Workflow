@@ -10,7 +10,7 @@
 - `apps-eval-harness-deferred-e4a1b7.md` (Completed)
 - `apps-eval-harness-residual-a2d9c7.md` (Completed)
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 

@@ -5,7 +5,7 @@
 **Tier:** T3 (multi-layer; touches L1 cognition safety and L0 routing SSOT)
 **Date:** 2026-04-21
 **Parent RCA:** `docs/reports/plans/rca-h4-consensus-validator-juror-set.md`
-**Related plans:** `.windsurf/plans/routing-unification-qwen-abe735.md` (parent §9 marks this a non-goal), `.windsurf/plans/routing-followups-7a2c91.md` F3.3
+**Related plans:** `.cursor/plans/routing-unification-qwen-abe735.md` (parent §9 marks this a non-goal), `.cursor/plans/routing-followups-7a2c91.md` F3.3
 
 ---
 
@@ -143,6 +143,6 @@ Layer multipliers per `adg-canonical-invariants.md` §6: L1 ×1.0, L5-type safet
 ## 10. References
 
 - RCA: `docs/reports/plans/rca-h4-consensus-validator-juror-set.md`
-- Parent plan: `.windsurf/plans/routing-unification-qwen-abe735.md` §9 (non-goal confirmation)
+- Parent plan: `.cursor/plans/routing-unification-qwen-abe735.md` §9 (non-goal confirmation)
 - Precedent ADR pattern: `docs/architecture/adr/ADR-025-unified-heal-router-otel-schema.md`
-- Constitutional rules: `.windsurf/rules/constitutional.md` §22, `.windsurf/rules/adg-canonical-invariants.md`
+- Constitutional rules: `.cursor/rules/constitutional.md` §22, `.cursor/rules/adg-canonical-invariants.md`

@@ -3,7 +3,7 @@
 Status: **W0+W1 fully done; W2+ gated on three-bucket completion**
 Last updated: 2026-04-29
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-underwriting-ai-first-principles-refactor-4b1c8e`
 
 ## Phase B severity ranking

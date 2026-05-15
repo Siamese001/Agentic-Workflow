@@ -80,7 +80,7 @@ AUTHORIZATION_STATUS: GRANTED
 CHECKPOINT: B
 
 **Authorization Granted**: 2026-05-12
-User explicitly authorized modification of `.windsurf/templates/execution-plan-template.md`.
+User explicitly authorized modification of `.cursor/templates/execution-plan-template.md`.
 
 **Phases**:
 - **W2.1** — Self-hosting format demonstration | ~2K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
@@ -88,7 +88,7 @@ User explicitly authorized modification of `.windsurf/templates/execution-plan-t
 
 **Acceptance**:
 - ✅ This plan file self-hosts the simplified format (verified by validator)
-- ✅ `.windsurf/templates/execution-plan-template.md` updated with simplified format markers
+- ✅ `.cursor/templates/execution-plan-template.md` updated with simplified format markers
 
 ---
 
@@ -361,7 +361,7 @@ CHECKPOINT: A
 
 **Optional Helper**:
 ```bash
-python tools/analysis/check_plan_format_forward.py .windsurf/plans/my-plan.md
+python tools/analysis/check_plan_format_forward.py .cursor/plans/my-plan.md
 ```
 
 ### W2.1 — Design Simplified Format
@@ -496,7 +496,7 @@ DoD-1: Simplified format spec published
 - Status: DONE
 
 DoD-2: Template updated with new format
-- Evidence: `.windsurf/templates/execution-plan-template.md` has simplified sections with FORMAT_VERSION, per-wave markers, AUTHORIZATION_STATUS, per-phase markers, DoD markers, scope expansion markers
+- Evidence: `.cursor/templates/execution-plan-template.md` has simplified sections with FORMAT_VERSION, per-wave markers, AUTHORIZATION_STATUS, per-phase markers, DoD markers, scope expansion markers
 - Status: DONE
 
 DoD-3: 3 pilot plans migrated
@@ -575,7 +575,7 @@ SCOPE_EXPANSION: plan=<slug-6hex> reason="<summary>" added="<waves/phases/gaps>"
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

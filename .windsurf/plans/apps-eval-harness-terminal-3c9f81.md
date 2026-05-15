@@ -11,7 +11,7 @@
 - `apps-eval-harness-residual-a2d9c7.md`
 - `apps-eval-harness-final-8f3e21.md`
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 

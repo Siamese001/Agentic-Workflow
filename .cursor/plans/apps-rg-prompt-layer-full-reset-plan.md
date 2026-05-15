@@ -400,7 +400,7 @@ Each stop point **MUST** produce a receipt under `artifacts/apps_rg/prompt_reset
 
 | Check | Status Required |
 |-------|-----------------|
-| Updated plan path | `.windsurf/plans/apps-rg-prompt-layer-full-reset-plan.md` exists |
+| Updated plan path | `.cursor/plans/apps-rg-prompt-layer-full-reset-plan.md` exists |
 | Diff limited to plan artifact | No implementation files changed |
 | agentic_core diff empty | Zero changes to core/shims |
 | JSON SSOT specified | Canonical base resume JSON, not DOCX |
@@ -1712,7 +1712,7 @@ If PA/L2 bindings are missing or broken:
 ### Final Closeout Summary
 
 **1. Updated plan path:**  
-`.windsurf/plans/apps-rg-prompt-layer-full-reset-plan.md`
+`.cursor/plans/apps-rg-prompt-layer-full-reset-plan.md`
 
 **2. Confirmation only plan artifact changed:**  
 ✅ CONFIRMED — Zero implementation file edits

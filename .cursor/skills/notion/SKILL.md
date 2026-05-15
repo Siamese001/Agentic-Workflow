@@ -81,5 +81,3 @@ Notion holds the searchable rows; disk holds the full artifact. Never duplicate 
 When deciding **whether** to write to Notion vs Memory vs neither, consult `writeback-discipline/SKILL.md`. This skill (`notion/`) is the **how**; `writeback-discipline` is the **when and which database**.
 
 ## MCP Serialization
-
-Per constitutional §25, Notion MCP calls (`API-*`) MUST be issued one per response with no sibling tool calls. Plan accordingly — batch the read up front, do non-MCP work, then a single Notion write.

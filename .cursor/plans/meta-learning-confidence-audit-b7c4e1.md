@@ -5,7 +5,7 @@
 **Tier:** T3 (cross-subsystem; touches L1/L2 + meta-learning pipeline)
 **Date:** 2026-04-21
 **Parent RCA:** `docs/reports/plans/rca-h5-system-learning-confidence-engine.md`
-**Related plans:** `.windsurf/plans/routing-unification-qwen-abe735.md` (parent §9 marks this a non-goal), `.windsurf/plans/routing-followups-7a2c91.md` F3.4
+**Related plans:** `.cursor/plans/routing-unification-qwen-abe735.md` (parent §9 marks this a non-goal), `.cursor/plans/routing-followups-7a2c91.md` F3.4
 
 ---
 
@@ -158,6 +158,6 @@ Per `adg-canonical-invariants.md` §6: `system_learning/` is outside the L0–L6
 ## 10. References
 
 - RCA: `docs/reports/plans/rca-h5-system-learning-confidence-engine.md`
-- Parent plan: `.windsurf/plans/routing-unification-qwen-abe735.md` §9 (non-goal confirmation)
-- Sibling plan: `.windsurf/plans/consensus-validator-unification-5e9f3a.md` (H4 — separate concern, similar pattern)
-- Constitutional rules: `.windsurf/rules/constitutional.md` §22, `.windsurf/rules/adg-canonical-invariants.md`
+- Parent plan: `.cursor/plans/routing-unification-qwen-abe735.md` §9 (non-goal confirmation)
+- Sibling plan: `.cursor/plans/consensus-validator-unification-5e9f3a.md` (H4 — separate concern, similar pattern)
+- Constitutional rules: `.cursor/rules/constitutional.md` §22, `.cursor/rules/adg-canonical-invariants.md`

@@ -40,15 +40,15 @@ Close the 5 observed gaps in the Author-Gate (refactor-decision) ledger so predi
 | W1.1 | Verify L5/hitl bootstrap | (read-only) `artifacts/ledgers/router_l5_hitl.sqlite` | None — already populated | 0.5k | Done |
 | W1.2 | Regen W18 calibration report | `docs/reports/calibration/2026-W18.md` | Existing report is W17, stale | 1.5k | Done |
 | W2.1 | Retro git-walk rebinder | `tools/refactor_decisions/rebind_outcomes_from_git.py`, tests | Heuristics may misclassify; idempotent guard | 8k | Done |
-| W3.1 | exit_criteria parser | `.windsurf/scripts/post_cascade_author_gate_capture.py` | Regex must tolerate JSON or simple list values | 4k | Done |
-| W3.2 | Marker contract docs | `.windsurf/rules/author-gate-enforcement.md` | Backward compat with v2 markers | 2k | Done |
+| W3.1 | exit_criteria parser | `.cursor/scripts/post_cursor_agent_author_gate_capture.py` | Regex must tolerate JSON or simple list values | 4k | Done |
+| W3.2 | Marker contract docs | `.cursor/rules/author-gate-enforcement.md` | Backward compat with v2 markers | 2k | Done |
 | W4.1 | Key generation + .env.example | `.env.example`, key file | Key must be gitignored; doc placement | 1k | Done |
 | W4.2 | Retro --resign 63 rows | (run existing) `author_gate_ledger_integrity.py --resign` | Must commit signature column updates | 4k | Done |
 | W5.1 | v2 completeness CI gate | `ops_scripts/ci/check_author_gate_v2_completeness.py`, tests | Sentinel for silent-marker rows | 5k | Done |
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-- **Layer**: harness (`.windsurf/scripts/`, `ops_scripts/ci/`, `tools/refactor_decisions/`) — does not touch L0–L6 of `agentic_core/`
+- **Layer**: harness (`.cursor/scripts/`, `ops_scripts/ci/`, `tools/refactor_decisions/`) — does not touch L0–L6 of `agentic_core/`
 - **MV evidence**: not applicable — this is harness/governance code, not subject to `mv_*` hotspot ranking. Constitutional §22 graph-layer requirement applies to `agentic_core/`/`apps_*/` refactoring; harness exemption per ADR-031.
 - **Semantic edges**: N/A (no production data flow)
 - **P-views**: not applicable to harness layer

@@ -3,7 +3,7 @@ title: Windsurf Governance Infrastructure Consolidation — Hardened
 slug: windsurf-governance-consolidation-a7c3e9
 created: 2026-05-12
 last_updated: 2026-05-12 16:15 UTC-04 (W5 COMPLETE — P1/P1-R/P2/P3/P3-R all done — 43 CI gates — NO W5.P4 — FINAL CLOSEOUT)
-author: Cascade
+author: Cursor Agent
 tier: T3
 status: In Progress
 dod_exempt: false

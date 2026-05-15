@@ -72,7 +72,6 @@ Only these types survive `mem_cleanup_stale`. Anything else (including `"general
 
 1. **Constitutional §17:** First tool call of every session is `mem_recall_session_start`.
 2. **15/3 Rule (writeback-discipline):** If solving took >15 min, spend up to 3 min writing back.
-3. **MCP serialization (§25):** One MCP call per response — plan accordingly.
 4. **Observations must be recall-actionable** — generic strings like "fixed bug" are useless to next-session Cursor Agent.
 5. **Stale-source sniff test before writing `Project:*` entities.** Verify status against git log + filesystem before persisting.
 

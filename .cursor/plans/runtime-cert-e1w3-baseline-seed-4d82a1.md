@@ -85,9 +85,9 @@ Rationale:
 #   - docs/reports/runtime_cert/phase_e_runs/<YYYY-Www>.md (evidence)
 #
 # REFERENCES
-#   - Phase E.1 plan: .windsurf/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md
-#   - E1.W2 plan:     .windsurf/plans/runtime-cert-e1w2-gate-module-9a4b2e.md
-#   - E1.W3 plan:     .windsurf/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md
+#   - Phase E.1 plan: .cursor/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md
+#   - E1.W2 plan:     .cursor/plans/runtime-cert-e1w2-gate-module-9a4b2e.md
+#   - E1.W3 plan:     .cursor/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md
 #   - ADR anchor:     docs/architecture/adr/ADR-080-runtime-cert-phase-d-planning.md
 
 schema_version = "e1-baseline-v1"
@@ -253,7 +253,7 @@ W3.B / W3.C halt and surface back for Author-Gate review if ANY of these is dete
 
 ### This plan's commit (W3.A — current turn)
 
-- Staged set: **only** `.windsurf/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md`
+- Staged set: **only** `.cursor/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md`
 - Subject: `plan(runtime_cert): E1.W3 baseline seed`
 
 ### W3.B implementation commit (future, separate scoped prompt)

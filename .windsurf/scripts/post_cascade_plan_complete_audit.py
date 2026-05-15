@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-post_cascade_plan_complete_audit.py — Warn when Cascade closes a plan without
+post_cascade_plan_complete_audit.py — Warn when Cursor Agent closes a plan without
 emitting a PLAN_COMPLETE: marker.
 
 Hook: post_cascade_response (show_output=true).
@@ -11,7 +11,7 @@ line start in the response text, emit a WARNING to stderr and log to
 ``artifacts/windsurf/plan_complete_audit.jsonl``.
 
 This is advisory-only — the hook ALWAYS exits 0 regardless of findings. It
-never blocks Cascade or the user. Its purpose is visibility: making the
+never blocks Cursor Agent or the user. Its purpose is visibility: making the
 omission obvious so the next response can include the marker.
 
 Bypass: ``PLAN_COMPLETE_AUDIT_BYPASS=1``

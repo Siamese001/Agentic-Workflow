@@ -3,7 +3,7 @@
     "pre_read_code": [
       {
         "command": "python .windsurf/scripts/pre_read_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_read_gate",
         "lifecycle_stage": "pre_read_code",
@@ -23,7 +23,7 @@
     "pre_run_command": [
       {
         "command": "python tools/governance/receipt_required_guard.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "receipt_required_guard",
         "lifecycle_stage": "pre_run_command",
@@ -41,7 +41,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_run_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_run_gate",
         "lifecycle_stage": "pre_run_command",
@@ -61,7 +61,7 @@
     "pre_write_code": [
       {
         "command": "python tools/governance/core_write_guard.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "core_write_guard",
         "lifecycle_stage": "pre_write_code",
@@ -79,7 +79,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_author_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_author_gate",
         "lifecycle_stage": "pre_write_code",
@@ -97,7 +97,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_write_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_write_gate",
         "lifecycle_stage": "pre_write_code",
@@ -115,7 +115,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_write_plan_scope_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_write_plan_scope_gate",
         "lifecycle_stage": "pre_write_code",
@@ -133,7 +133,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_write_fortknox_guard.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_write_fortknox_guard",
         "lifecycle_stage": "pre_write_code",
@@ -153,7 +153,7 @@
     "pre_mcp_tool_use": [
       {
         "command": "python .windsurf/scripts/unified_plan_creation_auditor.py pre_flight",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "unified_plan_creation_auditor",
         "lifecycle_stage": "pre_mcp_tool_use",
@@ -176,7 +176,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_mcp_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_mcp_gate",
         "lifecycle_stage": "pre_mcp_tool_use",
@@ -196,7 +196,7 @@
     "pre_user_prompt": [
       {
         "command": "python .windsurf/scripts/pre_prompt_classifier.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_prompt_classifier",
         "lifecycle_stage": "pre_user_prompt",
@@ -214,7 +214,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_reminder_check.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_reminder_check",
         "lifecycle_stage": "pre_user_prompt",
@@ -232,7 +232,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_deferred_scope_recovery.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_deferred_scope_recovery",
         "lifecycle_stage": "pre_user_prompt",
@@ -250,7 +250,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_hook_health_check.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_hook_health_check",
         "lifecycle_stage": "pre_user_prompt",
@@ -268,7 +268,7 @@
       },
       {
         "command": "python tools/capture/ledger_staleness_check.py --advisory --quiet",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "ledger_staleness_check",
         "lifecycle_stage": "pre_user_prompt",
@@ -286,7 +286,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_grep_for_deps_warning.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "pre_user_prompt_grep_for_deps_warning",
         "lifecycle_stage": "pre_user_prompt",
@@ -304,7 +304,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_weekly_report.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "pre_user_prompt_weekly_report",
         "lifecycle_stage": "pre_user_prompt",
@@ -322,7 +322,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_author_gate_reminder.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_author_gate_reminder",
         "lifecycle_stage": "pre_user_prompt",
@@ -340,7 +340,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_ag_queue_surface.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_ag_queue_surface",
         "lifecycle_stage": "pre_user_prompt",
@@ -358,7 +358,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_deferred_plan_gate.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_deferred_plan_gate",
         "lifecycle_stage": "pre_user_prompt",
@@ -376,7 +376,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_surface.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_plan_registration_surface",
         "lifecycle_stage": "pre_user_prompt",
@@ -394,7 +394,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plan_registration_refresh.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "pre_user_prompt_plan_registration_refresh",
         "lifecycle_stage": "pre_user_prompt",
@@ -412,7 +412,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_user_prompt_plans_dup_surface.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "pre_user_prompt_plans_dup_surface",
         "lifecycle_stage": "pre_user_prompt",
@@ -430,7 +430,7 @@
       },
       {
         "command": "python .windsurf/scripts/pre_ask_user_question_gate.py --hook-mode",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "pre_ask_user_question_gate",
         "lifecycle_stage": "pre_user_prompt",
@@ -450,7 +450,7 @@
     "post_write_code": [
       {
         "command": "python .windsurf/scripts/post_write_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_write_audit",
         "lifecycle_stage": "post_write_code",
@@ -468,7 +468,7 @@
       },
       {
         "command": "python tools/governance/core_leakage_scan.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "core_leakage_scan",
         "lifecycle_stage": "post_write_code",
@@ -486,7 +486,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_write_mcp_config_sync.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_write_mcp_config_sync",
         "lifecycle_stage": "post_write_code",
@@ -504,7 +504,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_write_plan_reconcile.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_write_plan_reconcile",
         "lifecycle_stage": "post_write_code",
@@ -522,7 +522,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_write_cert_stage.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_write_cert_stage",
         "lifecycle_stage": "post_write_code",
@@ -542,7 +542,7 @@
     "post_run_command": [
       {
         "command": "python .windsurf/scripts/post_run_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_run_audit",
         "lifecycle_stage": "post_run_command",
@@ -562,7 +562,7 @@
     "post_mcp_tool_use": [
       {
         "command": "python .windsurf/scripts/post_mcp_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_mcp_audit",
         "lifecycle_stage": "post_mcp_tool_use",
@@ -582,7 +582,7 @@
     "post_cascade_response": [
       {
         "command": "python .windsurf/scripts/post_cascade_heartbeat.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_cascade_heartbeat",
         "lifecycle_stage": "post_cascade_response",
@@ -600,7 +600,7 @@
       },
       {
         "command": "python tools/governance/app_runtime_package_scan.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "app_runtime_package_scan",
         "lifecycle_stage": "post_cascade_response",
@@ -618,7 +618,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_cleanup.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_cleanup",
         "lifecycle_stage": "post_cascade_response",
@@ -636,7 +636,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_author_gate_audit.py run_all",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_cascade_author_gate_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -666,7 +666,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_adg_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_adg_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -684,7 +684,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_resource_budget_audit.py run_all",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_resource_budget_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -709,7 +709,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_read_budget_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_read_budget_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -727,7 +727,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_token_telemetry.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_token_telemetry",
         "lifecycle_stage": "post_cascade_response",
@@ -745,7 +745,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_scope_drift_detector.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_scope_drift_detector",
         "lifecycle_stage": "post_cascade_response",
@@ -763,7 +763,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_writeback_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_writeback_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -781,7 +781,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_deferred_scope_capture.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_deferred_scope_capture",
         "lifecycle_stage": "post_cascade_response",
@@ -799,7 +799,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_next_step_capture.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_next_step_capture",
         "lifecycle_stage": "post_cascade_response",
@@ -817,7 +817,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_adr_registry_capture.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_adr_registry_capture",
         "lifecycle_stage": "post_cascade_response",
@@ -835,7 +835,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_mcp_hygiene_audit.py run_all",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_mcp_hygiene_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -860,7 +860,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_mcp_preflight_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_mcp_preflight_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -878,7 +878,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_long_command_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_long_command_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -896,7 +896,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plan_lifecycle_audit.py run_all",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_plan_lifecycle_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -922,7 +922,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_fortknox_integrity_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_fortknox_integrity_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -940,7 +940,7 @@
       },
       {
         "command": "python .windsurf/scripts/unified_notion_status_auditor.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "unified_notion_status_auditor",
         "lifecycle_stage": "post_cascade_response",
@@ -964,7 +964,7 @@
       },
       {
         "command": "python .windsurf/scripts/unified_plan_creation_auditor.py post_flight",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "unified_plan_creation_auditor_post",
         "lifecycle_stage": "post_cascade_response",
@@ -987,7 +987,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plans_dup_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_plans_dup_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -1005,7 +1005,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_wave_lifecycle_capture.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_wave_lifecycle_capture",
         "lifecycle_stage": "post_cascade_response",
@@ -1059,7 +1059,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_plan_complete_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_cascade_plan_complete_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -1077,7 +1077,7 @@
       },
       {
         "command": "python .windsurf/scripts/post_cascade_wave_completion_audit.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": false,
         "hook_id": "post_cascade_wave_completion_audit",
         "lifecycle_stage": "post_cascade_response",
@@ -1097,7 +1097,7 @@
     "post_setup_worktree": [
       {
         "command": "python .windsurf/scripts/post_setup_worktree.py",
-        "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
+        "working_directory": ".",
         "show_output": true,
         "hook_id": "post_setup_worktree",
         "lifecycle_stage": "post_setup_worktree",
@@ -1115,5 +1115,5 @@
       }
     ]
   },
-  "_note": "Cascade alignment: keep hooks deterministic and compact; use scripts for fail-closed enforcement and audits, and keep heavy procedure in skills/workflows. 2026-04-23 RCA: the non-schema 'powershell' field added earlier today silently disabled the entire hook chain across a session reload and a full process restart; removed per docs.windsurf.com/windsurf/cascade/hooks (schema is command + show_output + working_directory only). post_cascade_heartbeat.show_output=true kept for visible chain-firing diagnostic."
+  "_note": "Cursor Agent alignment: keep hooks deterministic and compact; use scripts for fail-closed enforcement and audits, and keep heavy procedure in skills/workflows. 2026-04-23 RCA: the non-schema 'powershell' field added earlier today silently disabled the entire hook chain across a session reload and a full process restart; removed per docs.windsurf.com/windsurf/cascade/hooks (schema is command + show_output + working_directory only). post_cascade_heartbeat.show_output=true kept for visible chain-firing diagnostic."
 }

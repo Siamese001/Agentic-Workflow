@@ -76,7 +76,7 @@ Implement automated wave status tracking that updates plan sections with ✅ (gr
 
 **GAP-2: Concurrent modification on Windows**
 - Windows file locking prevents atomic rename while file is open
-- Plan file may be open in editor during Cascade response
+- Plan file may be open in editor during Cursor Agent response
 
 ---
 
@@ -225,7 +225,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Always-on rules lean; detailed parsing logic in skill/module
 - Parser tested against all existing plans before any rewrite

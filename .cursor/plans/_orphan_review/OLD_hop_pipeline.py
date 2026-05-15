@@ -22,7 +22,7 @@ See ``apps_rg/engines/hop_pipeline_adapters.py`` for the BaseModelΓåödict
 adapters that keep this declaration side-by-side with the Pydantic-typed
 ``BaseRGEngine`` line.
 
-Plan: .windsurf/plans/apps-hop-substrate-f7751b.md (Wave 3)
+Plan: .cursor/plans/apps-hop-substrate-f7751b.md (Wave 3)
 """
 
 from __future__ import annotations

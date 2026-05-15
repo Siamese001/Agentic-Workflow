@@ -44,5 +44,5 @@ Start with `W3.audit-uncovered-gates` (highest impact). Query Notion for current
 
 ## References
 
-- Parent (retired): `.windsurf/plans/d-bucket-burndown-e4f2c9.md`
+- Parent (retired): `.cursor/plans/d-bucket-burndown-e4f2c9.md`
 - Sibling waves: `d-bucket-w2-burndown-a2c4f1.md`, `d-bucket-w4-burndown-c4e6f3.md`

@@ -9,7 +9,7 @@ rebaseline_date: 2026-05-09
 
 Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `tests/unit/<app>/`, `tests/<app>/`) across all 10 `apps_*` packages, relocate ~70 legacy app-internal test files, and update all SSOT folder-definition files to reflect the new surface.
 
-**Supersedes**: `.windsurf/plans/apps-test-surface-consolidation-11acd9.md` (archived — pre-dates 2026-05-09 repo state; all baseline counts, gap analysis, and Author-Gate decisions from v1 remain valid and are incorporated here).
+**Supersedes**: `.cursor/plans/apps-test-surface-consolidation-11acd9.md` (archived — pre-dates 2026-05-09 repo state; all baseline counts, gap analysis, and Author-Gate decisions from v1 remain valid and are incorporated here).
 
 ---
 
@@ -35,7 +35,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 ## Context (SCQA)
 
 - **Situation** — Test files for `apps_*` packages live in 4+ inconsistent locations: `tests/_apps_contract/test_<app>_*.py` (cross-app contract, all apps), `tests/unit/<app>/` (10/10 populated as of rebaseline), `tests/<app>/` (4/10 populated), AND legacy `apps_<app>/tests/` dirs inside the app packages (~70 files across 8 apps). Additionally `apps_rg/profiles/tests/` was discovered as a 5th split surface. `tests/governance/test_apps_*` (77 files, architecture-compliance) remain intentionally separate per Q3=A. `tests/integration/apps_*/` (6 files) are misplaced.
-- **Complication** — Two (now three) roots for app tests violate the "consistent testing surface" goal, fragment pytest collection, duplicate conftest fixtures, and confuse readers. The `.windsurf/rules/apps-folder-taxonomy.md` rule still lists `tests/` as a legitimate app-internal subdir. Wave 6 enforcement hasn't landed. `tests/unit/<app>/` scaffolding is complete but `tests/<app>/` scaffolding is incomplete.
+- **Complication** — Two (now three) roots for app tests violate the "consistent testing surface" goal, fragment pytest collection, duplicate conftest fixtures, and confuse readers. The `.cursor/rules/apps-folder-taxonomy.md` rule still lists `tests/` as a legitimate app-internal subdir. Wave 6 enforcement hasn't landed. `tests/unit/<app>/` scaffolding is complete but `tests/<app>/` scaffolding is incomplete.
 - **Question** — How do we converge on a single canonical 3-surface test taxonomy for every `apps_*` package without breaking the governance suite, the AEH1 parity gate, or pytest collection?
 - **Answer** — Complete remaining `tests/<app>/` scaffolding (6 apps), `git mv` all ~70 + 2 legacy files, add Wave 6 enforcement gate, verify clean.
 
@@ -45,7 +45,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/apps-folder-taxonomy.md` | Current rule lists `tests/` as legitimate app-internal subdir; must drop | 🔲 |
+| `.cursor/rules/apps-folder-taxonomy.md` | Current rule lists `tests/` as legitimate app-internal subdir; must drop | 🔲 |
 | `agentic_core/L0_routing/config/path_constants.py` | Primary path constants SSOT | 🔲 |
 | `agentic_core/interfaces/path_constants.py` | Interface-layer copy | 🔲 |
 | `agentic_core/L5_safety/config/structure_blueprint/{__init__,_constants,ssot,derived}.py` | Canonical blueprint SSOT package | 🔲 |
@@ -106,8 +106,8 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 | 4.9 | Relocate apps_rg/profiles/tests/ (1 file) | `test_profiles_declarative.py` → `tests/apps_rg/` | GAP-5b | ~1K | ✅ DONE |
 | 4.10 | Remove empty `apps_<x>/tests/` dirs | 8 dirs + apps_rg/profiles/tests/ | — | ~1K | ✅ DONE |
 | 5.1 | Relocate misplaced `tests/integration/apps_*/` | 16 app-specific files → `tests/<app>/`; `test_apps_otel_runtime_coverage.py` kept (cross-cutting) | GAP-6 | ~3K | ✅ DONE |
-| 6.1 | New rule | `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | ✅ DONE |
-| 6.2 | Helper | `.windsurf/scripts/_apps_test_surface_check.py` | GAP-7 | ~3K | ✅ DONE |
+| 6.1 | New rule | `.cursor/rules/apps-test-surface-taxonomy.md` (always_on advisory) | GAP-7 | ~2K | ✅ DONE |
+| 6.2 | Helper | `.cursor/scripts/_apps_test_surface_check.py` | GAP-7 | ~3K | ✅ DONE |
 | 6.3 | CI gate | `ops_scripts/ci/check_apps_test_surface_parity.py` (registered after AEH1) | GAP-7 | ~3K | ✅ DONE |
 | 6.4 | Tests | `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` (25 cases) | — | ~3K | ✅ DONE |
 | 7.1 | Verification | TSP1 gate ✅; ADR-082 tests/ violations = 0; 25/25 tests pass | — | ~4K | ✅ DONE |
@@ -132,7 +132,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 ## Gap Register
 
 **GAP-1: Rule lists `tests/` as legitimate apps_<x>/ subdir**
-- `.windsurf/rules/apps-folder-taxonomy.md` still includes `tests/` as "App-local unit tests" inside an `apps_*` package.
+- `.cursor/rules/apps-folder-taxonomy.md` still includes `tests/` as "App-local unit tests" inside an `apps_*` package.
 - Fix: drop the row; explicitly forbid `apps_<x>/tests/`; cross-link to new `apps-test-surface-taxonomy.md`.
 
 **GAP-2: Path-constant SSOT files have no apps_* test-surface constants**
@@ -183,7 +183,7 @@ Establish a single canonical 3-surface test taxonomy (`tests/_apps_contract/`, `
 
 | # | File | Edit |
 |---|---|---|
-| 1 | `.windsurf/rules/apps-folder-taxonomy.md` | drop `tests/` row; cross-link new rule |
+| 1 | `.cursor/rules/apps-folder-taxonomy.md` | drop `tests/` row; cross-link new rule |
 | 2 | `agentic_core/L0_routing/config/path_constants.py` | add `APPS_TEST_SURFACES`, helper functions |
 | 3 | `agentic_core/interfaces/path_constants.py` | re-export new names |
 | 4 | `agentic_core/L5_safety/config/structure_blueprint/_constants.py` | add `APPS_TEST_SURFACE_DEFINITION` dict |
@@ -233,8 +233,8 @@ git mv tests/integration/test_apps_qna_c0_retrieval.py tests/apps_qna/
 
 ### Phase 6.1–6.4 — New CI enforcement
 
-- `.windsurf/rules/apps-test-surface-taxonomy.md` (always_on advisory)
-- `.windsurf/scripts/_apps_test_surface_check.py` — `decide(app, fp) -> Violation | None`
+- `.cursor/rules/apps-test-surface-taxonomy.md` (always_on advisory)
+- `.cursor/scripts/_apps_test_surface_check.py` — `decide(app, fp) -> Violation | None`
 - `ops_scripts/ci/check_apps_test_surface_parity.py` — registered in `run_contract_gates.py` after AEH1; bypass `APPS_TEST_SURFACE_BYPASS=1`
 - `tests/unit/windsurf_scripts/test_apps_test_surface_check.py` — ≥30 cases
 

@@ -1,7 +1,7 @@
 ---
 description: |
   Converted from Cursor rule scope-containment.md
-alwaysApply: true
+alwaysApply: false
 ---
 
 <!-- Converted from `.cursor/rules/scope-containment.md`. Original Cursor trigger: `always_on`. -->

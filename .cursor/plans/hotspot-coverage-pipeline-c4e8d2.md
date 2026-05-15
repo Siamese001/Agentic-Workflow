@@ -4,7 +4,7 @@
 **Tier**: T3 (cross-layer: tools/adg, tools/generate, system_learning, conftest, ops_scripts)
 **Created**: 2026-04-28
 **Status**: In progress
-**Author**: Cascade
+**Author**: Cursor Agent
 **ADG Snapshot Baseline**: `artifacts/adg/adg_indexed_04252026_0843.sqlite` (Redis HOT)
 
 ## Problem

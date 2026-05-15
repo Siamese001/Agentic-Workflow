@@ -2,7 +2,7 @@
 
 **Plan ID:** `author-gate-hardening-a3b8f2`
 **Status:** � Completed — all 5 waves shipped 2026-05-03 (tests 9/9 green, smoke-tested end-to-end)
-**Owner:** Cascade (author-loop)
+**Owner:** Cursor Agent (author-loop)
 **Constitutional:** §6 (Author-Gate), §29 (closed-loop router), §30 (capture health), §17 (memory lifecycle)
 **Related:** `author-gate-enforcement.md`, `author-gate-decision-points.md`, `closed-loop-router-enforcement.md`, ADR-050 (intelligence-ledger-family)
 **Scope:** Architecture + mechanism design only. **No code changes in this plan** — this is a gap-analysis + implementation design document. Code waves are scaffolded but gated behind Author-Gate approval per §6.
@@ -124,13 +124,13 @@ Total: ~57k tokens across 5 waves. No single wave exceeds 15k.
 
 ## 6. Confidence-Score Design (G1 detail)
 
-**Current:** `confidence_score ∈ [0,1]` per candidate in packet JSON, hand-provided by Cascade.
+**Current:** `confidence_score ∈ [0,1]` per candidate in packet JSON, hand-provided by Cursor Agent.
 
 **Proposed vector** (per candidate, stored in `decision_signals` table, one row per signal):
 
 ```
 signals = {
-  verbalized:              <Cascade's own 0..1>,           # weight 0.15
+  verbalized:              <Cursor Agent's own 0..1>,           # weight 0.15
   precedent_agreement:     <0|0.5|1 from lookup>,         # weight 0.30
   blast_radius_penalty:    <1 - min(hops/5, 1)>,          # weight 0.20
   hotspot_penalty:         <1 - mv_hotspot_rank/top_N>,   # weight 0.15
@@ -204,7 +204,7 @@ CREATE TABLE decision_calibration_snapshots (
 
 Already in schema (§4 of capture hook) but zero-row. W1.P1.2 adds:
 
-- `DECISION_OUTCOME:` marker appended by Cascade at end of execution turn (or by post-commit hook matching branch→decision_id).
+- `DECISION_OUTCOME:` marker appended by Cursor Agent at end of execution turn (or by post-commit hook matching branch→decision_id).
 - Fields: `decision_id`, `execution_completed`, `tests_passed`, `regression_found`, `rollback_required`, `followup_decision_id`, `promote_to_pattern`, `outcome_notes`, `time_to_outcome_s`.
 - Outcome = **selected option landed without rollback AND tests_passed AND no regression for 7 days** → `promote_to_pattern=1`, fed to bandit.
 
@@ -219,7 +219,7 @@ Author-Gate is today a **parallel sidecar** to the 10 routers (§29). Integratin
 3. **`emit_ledger_event`** parallel to `ROUTER_DECISION:` per §29. New ledger: `intelligence_ledgers/author_gate_decision` (follows ADR-050 writer contract). Consulting skill: inherit from `ledger-consulter`.
 4. **Exit-gate criteria enforced at outcome time:** `exit_criteria_json` (already in schema) is a list of JSON-encoded testable conditions; `DECISION_OUTCOME:` is only emitted `promote_to_pattern=1` if ALL exit criteria verified.
 5. **Wilson-CI promotion (§6D parallel):** calibrator fit only runs on a class when n≥30 and Wilson-CI lower bound on outcome rate ≥ 0.60 (precedent from L6/promo).
-6. **Regret ledger (§29 L6/regret):** each Author-Gate override (`selected ≠ recommended`) emits a `regret_sample` when the outcome lands — measures whether the Cascade recommendation would have been better.
+6. **Regret ledger (§29 L6/regret):** each Author-Gate override (`selected ≠ recommended`) emits a `regret_sample` when the outcome lands — measures whether the Cursor Agent recommendation would have been better.
 
 ---
 
@@ -227,7 +227,7 @@ Author-Gate is today a **parallel sidecar** to the 10 routers (§29). Integratin
 
 **Problem:** `ask_user_question` accepts `options: [{label, description}]` max 4. User sees labels first, descriptions second. Confidence, precedent, and "what would flip" are dropped.
 
-**Proposal (P3.2):** Before calling `ask_user_question`, Cascade emits a **recommendation card** in the response body via the `author-gate-ui-renderer` skill:
+**Proposal (P3.2):** Before calling `ask_user_question`, Cursor Agent emits a **recommendation card** in the response body via the `author-gate-ui-renderer` skill:
 
 ```
 🎯 Recommended: <option.id> — <one-line thesis>
@@ -283,7 +283,7 @@ decisions + decision_outcomes + decision_signals
 
 **Bandit cell:** `(decision_type, reason_code)` — e.g. `(refactor_scope, override_recommendation)` has its own Beta(α,β) posterior reflecting "how often did overrides in this class land without regression?"
 
-**Write-back to precedent:** `precedent_injector.py` gains a `bandit_prior` field in the verdict block. A decision class with 40/50 successful overrides gets a `bandit_prior: 0.80 (n=50)` injection, telling Cascade "in this class, override-the-recommendation historically wins — don't anchor too hard on your own recommendation."
+**Write-back to precedent:** `precedent_injector.py` gains a `bandit_prior` field in the verdict block. A decision class with 40/50 successful overrides gets a `bandit_prior: 0.80 (n=50)` injection, telling Cursor Agent "in this class, override-the-recommendation historically wins — don't anchor too hard on your own recommendation."
 
 **Weekly report `<YYYY-Www>.md`** surfaces:
 
@@ -292,7 +292,7 @@ decisions + decision_outcomes + decision_signals
 3. Flip-readiness: fraction in 0.72–0.85 gap (rubric refinement signal)
 4. Top-5 overrides that led to promote_to_pattern=1 (learning candidates)
 5. Top-5 recommendations that led to rollback=1 (calibration failures)
-6. Precedent-agreement % (did Cascade's pick match historical winning pick?)
+6. Precedent-agreement % (did Cursor Agent's pick match historical winning pick?)
 
 ---
 

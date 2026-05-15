@@ -47,7 +47,6 @@ In-house. **Selective use only.** This MCP is for durable, queryable task state 
 1. **Decomposition is mandatory before execution** for any task with `estimatedComplexity` above `low`. (`decompose_task` first, then update + execute subtasks.)
 2. **Status discipline:** `update_task` to `in-progress` before executing, to `done`/`failed` when finished. Always include `lessonsLearned` on completion.
 3. **Parallelizable subtasks share the same `sequenceOrder`.** Sequential subtasks increment.
-4. **MCP serialization (§25):** One MCP call per response.
 5. **Don't replicate plan-file content.** Plans are SSOT in `.cursor/plans/`. Tasks are queryable handles, not narrative.
 
 ## Common Workflows

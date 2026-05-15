@@ -3,7 +3,7 @@
 
 Purpose:
     Answer "are all 12 MCP servers healthy?" in ONE command. Before this
-    script existed, Cascade had to call each server's idiosyncratic
+    script existed, Cursor Agent had to call each server's idiosyncratic
     health endpoint separately (adg_health, redis_health, otel_status,
     readiness, API-get-self, mem_get_stats, ...) and reconstruct the
     fleet picture. That interrogation pattern missed the 2026-04-22

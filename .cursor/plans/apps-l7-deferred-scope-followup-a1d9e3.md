@@ -4,11 +4,11 @@
 **Tier**: T3
 **Status**: Completed (W1 done, W2-W4 split to follow-up)
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 **Parent**: `apps-l7-coverage-spine-wide-c5e8d2` (W1-W3 completed 2026-05-06)
 **Depends On**: `apps-l7-coverage-spine-wide-c5e8d2` (must be Completed)
 
-PLAN_CREATED: slug=apps-l7-deferred-scope-followup-a1d9e3 path=.windsurf/plans/apps-l7-deferred-scope-followup-a1d9e3.md tier=T3
+PLAN_CREATED: slug=apps-l7-deferred-scope-followup-a1d9e3 path=.cursor/plans/apps-l7-deferred-scope-followup-a1d9e3.md tier=T3
 
 ## 1. Problem Statement
 
@@ -110,7 +110,7 @@ Decision required: wire with L7 emit OR retire/archive. ADR needed.
 
 ## 8. References
 
-- Parent: `.windsurf/plans/apps-l7-coverage-spine-wide-c5e8d2.md`
+- Parent: `.cursor/plans/apps-l7-coverage-spine-wide-c5e8d2.md`
 - `apps_eval/__main__.py` — current entrypoint
 - `apps_repo_brief/` — current runner structure
 - `tools/cert/emit_l7_plane_evidence.py` — Fort Knox binder
@@ -125,7 +125,7 @@ Decision required: wire with L7 emit OR retire/archive. ADR needed.
 - Created regression test `test_governed_run_integration.py`
 - Git commit: `8865c87c56`
 
-**Remaining W2-W4 captured in:** `.windsurf/plans/apps-l7-w2-w4-followup-a2e8f4.md`
+**Remaining W2-W4 captured in:** `.cursor/plans/apps-l7-w2-w4-followup-a2e8f4.md`
 
 ## 10. Implementation Notice
 

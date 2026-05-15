@@ -82,7 +82,7 @@ class AlertEvent:
 # =============================================================================
 
 def _get_payload_from_stdin() -> dict[str, Any] | None:
-    """Parse JSON payload from stdin (Cascade hook contract)."""
+    """Parse JSON payload from stdin (Cursor Agent hook contract)."""
     try:
         data = sys.stdin.read()
         if not data:
@@ -93,7 +93,7 @@ def _get_payload_from_stdin() -> dict[str, Any] | None:
 
 
 def _extract_plans_creation_payloads(response_text: str) -> list[dict[str, Any]]:
-    """Extract API-post-page payloads targeting Plans DB from Cascade response."""
+    """Extract API-post-page payloads targeting Plans DB from Cursor Agent response."""
     payloads: list[dict[str, Any]] = []
     
     invoke_pattern = re.compile(
@@ -246,7 +246,7 @@ def _log_alert(event: AlertEvent):
 
 
 def _extract_plan_creation_from_response(response_text: str) -> list[dict[str, Any]]:
-    """Extract successful plan creation events from Cascade response."""
+    """Extract successful plan creation events from Cursor Agent response."""
     creations = []
     
     invoke_pattern = re.compile(
@@ -431,7 +431,7 @@ def run_post_flight() -> int:
     """
     Post-flight audit (advisory mode).
     
-    Runs after Cascade response.
+    Runs after Cursor Agent response.
     Always exits 0, logs corrections/alerts.
     """
     input_data = _get_payload_from_stdin()

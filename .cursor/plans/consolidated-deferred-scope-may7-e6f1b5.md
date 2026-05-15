@@ -1,7 +1,7 @@
 # Consolidated Deferred Scope — May 7, 2026
 
 > Auto-generated from all completed plans. Items below are captured only.
-> Do NOT implement without a new plan at `.windsurf/plans/`.
+> Do NOT implement without a new plan at `.cursor/plans/`.
 
 ---
 

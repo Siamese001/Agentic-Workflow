@@ -114,7 +114,7 @@ For test mock verification:
 **Commands**:
 ```bash
 # Verify path per SSOT folder routing
-python .windsurf/scripts/_ssot_folder_check.py tests/unit/apps/apps_lic/engines/test_generation_engine.py --exists=false
+python .cursor/scripts/_ssot_folder_check.py tests/unit/apps/apps_lic/engines/test_generation_engine.py --exists=false
 
 # Create test file (manual — not implemented in this plan)
 ```
@@ -238,7 +238,7 @@ If tests fail or coverage is incomplete:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - SSOT folder routing verified for test file path
 - No gold-plating: tests only, no production edits

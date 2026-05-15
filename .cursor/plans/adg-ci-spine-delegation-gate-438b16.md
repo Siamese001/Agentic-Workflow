@@ -3,7 +3,7 @@
 **Plan ID**: `adg-ci-spine-delegation-gate-438b16`
 **Status**: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30) — folded into unified W3 (advisory) + W5 (strict flip)
 **Tier**: T2
-**Owner**: Cascade (proposes); operator (approves)
+**Owner**: Cursor Agent (proposes); operator (approves)
 **Created**: 2026-04-30
 
 ## Problem
@@ -127,7 +127,7 @@ ADG provenance line for evidence in W1.2: `backend=sqlite, snapshot=adg_indexed_
 
 ## Dependencies
 
-- Pairs with new conditional rule `core-vs-apps-routing.md` (separate plan) — the advisory tier informing Cascade where new modules should live; this plan is the deterministic tier catching violators.
+- Pairs with new conditional rule `core-vs-apps-routing.md` (separate plan) — the advisory tier informing Cursor Agent where new modules should live; this plan is the deterministic tier catching violators.
 - Constitutional §22 (graph-layer primary driver), §28 (SQLite-first fallback), §31 (SSOT folder routing — gate file lands in `ops_scripts/ci/`).
 
 ## Success Criteria (plan-level)

@@ -313,6 +313,6 @@ Search for and remove/quarantine:
 
 - Memory: `6e7e9afe-46fc-4476-85f7-9e9e0729c1bb` (author-gate-deferred-scope)
 - Memory: `78c557a4-e0a4-4cfd-92d8-d22c05a2d2fa` (Plans DB AI Summary)
-- Rule: `.windsurf/rules/adg-canonical-invariants.md`
-- Rule: `.windsurf/rules/plan-location.md`
+- Rule: `.cursor/rules/adg-canonical-invariants.md`
+- Rule: `.cursor/rules/plan-location.md`
 

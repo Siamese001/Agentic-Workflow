@@ -17,7 +17,7 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 
 - **Question** — How do we build an app that continuously observes recent methodological evolution, computes drift from current repo patterns, and emits actionable hardening guidance with automatic documentation sync?
 
-- **Answer** — apps_architect: an R3_grounded_read app that scans recent plans/ADG/rules (C0 over `.windsurf/plans/` + `agentic_core/` patterns), computes delta via ADG layer violation detection, generates hardening rule recommendations, and publishes findings to a living README with GitHub API integration.
+- **Answer** — apps_architect: an R3_grounded_read app that scans recent plans/ADG/rules (C0 over `.cursor/plans/` + `agentic_core/` patterns), computes delta via ADG layer violation detection, generates hardening rule recommendations, and publishes findings to a living README with GitHub API integration.
 
 ---
 
@@ -25,7 +25,7 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/plans/` (last 30 days) | Recent methodological evolution | 🔲 |
+| `.cursor/plans/` (last 30 days) | Recent methodological evolution | 🔲 |
 | ADG `mv_hotspot_centrality` + `v_p0_*` views | Pattern violations & hotspots | 🔲 |
 | `agentic_core/` layer contracts | Genetic architecture patterns | 🔲 |
 | `apps_*/spine_manifest.yaml` | App spine patterns | 🔲 |
@@ -84,7 +84,7 @@ Build an app that continuously collects best-in-class methodologies and genetic 
 ## Gap Register
 
 **GAP-1: C0 collection scope definition**
-- Need to define exact C0 collections for `.windsurf/plans/`, `agentic_core/`, and rules
+- Need to define exact C0 collections for `.cursor/plans/`, `agentic_core/`, and rules
 - Impact: Blocks W1 C0 retrieval profile completion
 
 **GAP-2: Pattern schema versioning**
@@ -113,7 +113,7 @@ claimed_routes:
   - type: R3_grounded_read
     description: >-
       Pattern collection and delta analysis over recent methodology.
-      Scans .windsurf/plans/, agentic_core/, and .windsurf/rules/
+      Scans .cursor/plans/, agentic_core/, and .cursor/rules/
       via C0 retrieval to extract canonical patterns, computes drift
       from current repo state, emits hardening rules.
     c0_required: true
@@ -178,7 +178,7 @@ claimed_routes:
 ---
 
 ### Phase 2.2 — Plan File Pattern Extractor
-**Scope**: Parse `.windsurf/plans/*.md` for methodological patterns
+**Scope**: Parse `.cursor/plans/*.md` for methodological patterns
 
 **Files**:
 - `apps_architect/engines/plan_pattern_engine.py`
@@ -194,7 +194,7 @@ claimed_routes:
 ---
 
 ### Phase 2.3 — Rule Pattern Extractor
-**Scope**: Parse `.windsurf/rules/*.md` for hardening patterns
+**Scope**: Parse `.cursor/rules/*.md` for hardening patterns
 
 **Files**:
 - `apps_architect/engines/rule_pattern_engine.py`
@@ -453,7 +453,7 @@ If pattern detection is too noisy:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Leverages ADG graph-layer primitives (mv_hotspot_centrality, v_p views) per §22
 - C0 retrieval over structured collections per R3_grounded_read pattern
@@ -467,7 +467,7 @@ If pattern detection is too noisy:
 
 - `apps_research/` — Canonical R3_grounded_read reference implementation
 - `apps_repo_brief/spine_manifest.yaml` — R3_grounded_read route declaration
-- `.windsurf/rules/adg-graph-layer-enforcement.md` — Graph-layer evidence requirements
+- `.cursor/rules/adg-graph-layer-enforcement.md` — Graph-layer evidence requirements
 - `docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md` — Route taxonomy
 - `apps-eval-harness-parity-f8d4a2` — Eval harness wiring pattern
 

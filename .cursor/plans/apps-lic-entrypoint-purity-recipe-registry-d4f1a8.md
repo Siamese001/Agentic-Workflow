@@ -25,7 +25,7 @@ Prevent the apps_rg intermediate wiring pattern by ensuring apps_lic/__main__.py
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/rules/adg-graph-layer-enforcement.md` | T2/T3 refactor procedure | ✅ |
+| `.cursor/rules/adg-graph-layer-enforcement.md` | T2/T3 refactor procedure | ✅ |
 | `apps_lic/__main__.py` | Current entrypoint to refactor | ✅ |
 | `apps_lic/tools/run_workflow_lic.py` | Current l2_callable construction site | ✅ |
 | `apps_lic/config/apps_lic_static_dag.yaml` | Target R4 recipe definition | ✅ |
@@ -1275,7 +1275,7 @@ wc -l apps_lic/prompt_assembly/templates/*.yaml  # Should show substantial line 
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - **Scope containment**: This plan touches only entrypoint, registry, step adapter, and Prompt Assembly files. HOP agent internals are out of scope.
 - **ADG-first**: Before W1, query ADG for `adg_nodes_by_file` on `apps_lic/__main__.py` to verify no new outbound edges to HOP agents or prompt strings are introduced.

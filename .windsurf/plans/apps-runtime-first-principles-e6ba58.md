@@ -3,7 +3,7 @@
 **Plan ID**: `apps-runtime-first-principles-e6ba58`
 **Status**: ALL WAVES COMPLETE (W1–W7) — 2026-04-30
 **Tier**: T3 — architecture, multi-app, cross-layer
-**Author**: Cascade (greenfield first-principles framing per author-gate decision 2026-04-29)
+**Author**: Cursor Agent (greenfield first-principles framing per author-gate decision 2026-04-29)
 **ADG Provenance**: backend=sqlite, snapshot=`artifacts/adg/adg_indexed_04292026_1606.sqlite`
 **Scope**: `apps_eval`, `apps_exec`, `apps_lic`, `apps_research`, `apps_rfp`, `apps_underwriting_ai`
 **Out of scope**: `apps_rg` (already settled and explicitly excluded by user)

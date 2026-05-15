@@ -1,11 +1,11 @@
 # Agentic-Core Standalone Runtime Harnesses — Eliminate apps_rg Overlay Dependency
 
 > **Plan slug**: `agentic-core-standalone-harnesses-f2c7a9`
-> **Plan path**: `.windsurf/plans/agentic-core-standalone-harnesses-f2c7a9.md`
+> **Plan path**: `.cursor/plans/agentic-core-standalone-harnesses-f2c7a9.md`
 > **Parent plan**: `agentic-core-signoff-hardening-b8e2c4` (AUTHORITY.md §4 deferral)
 > **Status**: Completed
 
-PLAN_CREATED: slug=agentic-core-standalone-harnesses-f2c7a9 path=.windsurf/plans/agentic-core-standalone-harnesses-f2c7a9.md
+PLAN_CREATED: slug=agentic-core-standalone-harnesses-f2c7a9 path=.cursor/plans/agentic-core-standalone-harnesses-f2c7a9.md
 
 ## 1. Background
 

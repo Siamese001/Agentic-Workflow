@@ -4,7 +4,7 @@
 - **Status**: Planning — Author-Gate APPROVED 2026-05-01 for plan authorship; per-wave Author-Gates required for each WA execution
 - **Tier**: T2 (multi-file, multi-wave, cross-thread)
 - **Created**: 2026-05-01
-- **Owner**: Cascade (proposes); operator (approves wave gates)
+- **Owner**: Cursor Agent (proposes); operator (approves wave gates)
 - **SSOT**: this file
 
 ## 1. Mission
@@ -29,9 +29,9 @@ success criteria.
 
 | Source plan | Disposition |
 |---|---|
-| `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` | W1–W5 ✅ done; W6 ⏳ partially done; **WA1 + WA6 of THIS plan finish W6** |
-| `.windsurf/plans/adg-ci-spine-delegation-gate-438b16.md` | Already superseded by three-bucket-unified; gate ships strict via P5.1 |
-| `.windsurf/plans/apps-qna-spine-integration-e8f3a1.md` | Sibling per-app plan (apps_qna); pattern reused for apps_exec/apps_lic/apps_rfp here |
+| `.cursor/plans/adg-three-bucket-unified-c4f8e2.md` | W1–W5 ✅ done; W6 ⏳ partially done; **WA1 + WA6 of THIS plan finish W6** |
+| `.cursor/plans/adg-ci-spine-delegation-gate-438b16.md` | Already superseded by three-bucket-unified; gate ships strict via P5.1 |
+| `.cursor/plans/apps-qna-spine-integration-e8f3a1.md` | Sibling per-app plan (apps_qna); pattern reused for apps_exec/apps_lic/apps_rfp here |
 | W8 (chat-only) — apps_eval, apps_underwriting_ai → `FORMAL_EXCEPTION_STATIC_EVIDENCE` | Done |
 | W9 (chat-only) — apps_research → `APP_OVERLAY_STATIC_EVIDENCE` | Done; commit `f8e9366` |
 
@@ -141,8 +141,8 @@ posts them to Wave/Phase Convergence with computed P-band.
 
 ## 11. References
 
-- `@.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` (parent W6 thread)
-- `@.windsurf/plans/adg-ci-spine-delegation-gate-438b16.md` (superseded
+- `@.cursor/plans/adg-three-bucket-unified-c4f8e2.md` (parent W6 thread)
+- `@.cursor/plans/adg-ci-spine-delegation-gate-438b16.md` (superseded
   spine-delegation gate predecessor)
 - `@docs/architecture/adr/ADR-079-l2-agent-graph-layer-contract.md`
 - `@docs/architecture/adr/ADR-078-apps-spine-delegation.md`

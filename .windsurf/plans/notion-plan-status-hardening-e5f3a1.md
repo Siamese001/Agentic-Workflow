@@ -13,7 +13,7 @@ Harden the wave lifecycle system to prevent retrospective/completed plans from
 having their Notion status incorrectly flipped to "In Progress". This closes
 the race condition where:
 
-1. Cascade emits `PLAN_CREATED:` for a plan that is simultaneously set to
+1. Cursor Agent emits `PLAN_CREATED:` for a plan that is simultaneously set to
    Completed via `API-post-page`.
 2. On the next turn `wave_execution_state.py start` is called, which calls
    `_notion_sync(plan, "wave_start", wave=1)`.

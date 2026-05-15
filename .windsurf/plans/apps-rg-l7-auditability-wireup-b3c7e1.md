@@ -4,7 +4,7 @@
 **Tier**: T2 (single-file edit in shared L4 entrypoint; behavior change propagates to every consumer of `run_integrated_r4_deterministic_pipeline`)
 **Status**: Not Started
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 
 PLAN_CREATED: slug=apps-rg-l7-auditability-wireup-b3c7e1 path=.windsurf/plans/apps-rg-l7-auditability-wireup-b3c7e1.md tier=T2
 

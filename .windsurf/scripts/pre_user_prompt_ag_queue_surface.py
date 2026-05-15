@@ -2,14 +2,14 @@
 """
 pre_user_prompt_ag_queue_surface.py — Proactive Author-Gate queue surfacing.
 
-Hook: pre_user_prompt (show_output=true, so Cascade sees the output).
+Hook: pre_user_prompt (show_output=true, so Cursor Agent sees the output).
 
 At the start of each user turn, checks the Author-Gate queue state and
 emits one line per plan that has pending packets:
 
     AG_QUEUE_PENDING: plan=<slug> next=<packet_id> depends_on=<id1,id2> title=<short>
 
-Empty queue → no output (silent). Cascade uses this signal to remember
+Empty queue → no output (silent). Cursor Agent uses this signal to remember
 the drain obligation before composing a response.
 
 Constitutional tie-in: §35 (queue drain mandatory).

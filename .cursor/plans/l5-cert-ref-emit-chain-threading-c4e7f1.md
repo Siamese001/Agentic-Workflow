@@ -239,4 +239,4 @@ ADG snapshot `05052026_0722` had zero `nodes_by_file` results for the small cont
 
 ---
 
-PLAN_CREATED: slug=l5-cert-ref-emit-chain-threading-c4e7f1 path=.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md status=not_started tier=T3 layer=cross-cutting
+PLAN_CREATED: slug=l5-cert-ref-emit-chain-threading-c4e7f1 path=.cursor/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md status=not_started tier=T3 layer=cross-cutting

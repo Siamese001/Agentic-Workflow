@@ -2,7 +2,7 @@
 description: RCA workflow for ADG SQLite (`adg_sqlite`), Redis (`redis`), PyTest (`pytest_mcp`), and OTel (`otel_mcp`) MCP failures. Sequential Thinking MCP is permanently retired — do not attempt recovery.
 ---
 
-> **Cascade workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
+> **Cursor Agent workflow note:** This workflow is a reusable procedural lane, not always-on policy. Use it to hold staged retrieval, evidence gathering, execution order, and verification steps that would otherwise overload rules. For deep research, separate retrieval, quote extraction, synthesis, and final verification into distinct phases.
 
 # MCP Failure RCA & Auto-Fix Workflow
 
@@ -183,7 +183,7 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 
 **Do not attempt to recover the Sequential Thinking MCP.** It has been permanently retired.
 
-**Why**: stdio transport fragility on Windows, zombie node.exe processes, no reliable timeout, oversized opaque tool surface, architectural mismatch with Cascade's native reasoning.
+**Why**: stdio transport fragility on Windows, zombie node.exe processes, no reliable timeout, oversized opaque tool surface, architectural mismatch with Cursor Agent's native reasoning.
 
 **Replacement**: Use the structured reasoning pattern instead:
 - Workflow: `/structured-reasoning`

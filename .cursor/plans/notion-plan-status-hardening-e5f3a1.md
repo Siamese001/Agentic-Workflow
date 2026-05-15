@@ -13,7 +13,7 @@ Harden the wave lifecycle system to prevent retrospective/completed plans from
 having their Notion status incorrectly flipped to "In Progress". This closes
 the race condition where:
 
-1. Cascade emits `PLAN_CREATED:` for a plan that is simultaneously set to
+1. Cursor Agent emits `PLAN_CREATED:` for a plan that is simultaneously set to
    Completed via `API-post-page`.
 2. On the next turn `wave_execution_state.py start` is called, which calls
    `_notion_sync(plan, "wave_start", wave=1)`.
@@ -61,11 +61,11 @@ preventing `wave_execution_state.py start` from being called on them.
 
 | Phase ID | Title | Scope (files) | Status |
 |----------|-------|---------------|--------|
-| W1.P1 | Start guard | tools/windsurf/wave_execution_state.py | ✅ DONE |
+| W1.P1 | Start guard | tools/plan_lifecycle/wave_execution_state.py | ✅ DONE |
 | W2.P1 | Helper guard | tools/notion/_wave_lifecycle_helpers.py | ✅ DONE |
 | W3.P1 | CI gate | ops_scripts/ci/check_notion_plan_lifecycle_guard.py | ✅ DONE |
 | W3.P2 | Tests | tests/unit/tools/notion/test_wave_lifecycle_guard.py | ✅ DONE |
-| W4.P1 | Rule + memory | .windsurf/rules/notion-plan-wave-deferral.md | ✅ DONE |
+| W4.P1 | Rule + memory | .cursor/rules/notion-plan-wave-deferral.md | ✅ DONE |
 
 ## Definition of Done
 
@@ -75,7 +75,7 @@ preventing `wave_execution_state.py start` from being called on them.
 | DoD-2 | `patch_for_marker(wave_start, "Completed")` returns is_noop=True for status | Unit test |
 | DoD-3 | CI gate exits 0 with no violations | `python ops_scripts/ci/check_notion_plan_lifecycle_guard.py` |
 | DoD-4 | All new + existing tests pass | pytest tests/ |
-| DoD-5 | Rule updated with retrospective-plan protocol | `.windsurf/rules/notion-plan-wave-deferral.md` |
+| DoD-5 | Rule updated with retrospective-plan protocol | `.cursor/rules/notion-plan-wave-deferral.md` |
 
 ## Verification-vs-Deferral
 

@@ -37,7 +37,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 _HEARTBEAT_PATH = _ROOT / "artifacts" / "cursor" / "post_cursor_agent_heartbeat.jsonl"
 
 # Default stale threshold: 30 minutes. Override with
-# POST_CASCADE_HEARTBEAT_STALE_SECONDS env var.
+# POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS env var.
 # W10.1 (RCA 2026-04-23): tightened from 6h → 30min so that the 1h34m
 # hook-silence window that triggered the HOOK_OUTAGE RCA would have
 # surfaced the banner instead of hiding behind a stale 6h threshold.
@@ -45,7 +45,7 @@ _DEFAULT_STALE_SECONDS = 30 * 60
 
 
 def _stale_threshold() -> int:
-    raw = os.getenv("POST_CASCADE_HEARTBEAT_STALE_SECONDS")
+    raw = os.getenv("POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS")
     if not raw:
         return _DEFAULT_STALE_SECONDS
     try:
@@ -120,7 +120,7 @@ def check_heartbeat_health(
 
 
 def main() -> int:
-    if os.getenv("POST_CASCADE_HEARTBEAT_HEALTH_DISABLE") == "1":
+    if os.getenv("POST_CURSOR_AGENT_HEARTBEAT_HEALTH_DISABLE") == "1":
         return 0
     try:
         result = check_heartbeat_health()

@@ -1,18 +1,18 @@
 # Rules + Hooks + Memories Consolidation
 
 **Plan ID**: `rules-hooks-memories-consolidation-48b4d6`
-**Status**: W1 DONE · W2 DONE · W3 DONE · W4 DONE (Phase A native handlers + Phase B legacy wrappers; all 16 scripts in-process; measured 842→120 ms per response = 7× faster; opt-in via `POST_CASCADE_DISPATCHER=1`; hooks.json cutover deferred to operator post-shadow per §30) · W5 DONE · W6 DONE (Anthropic two-tier compliance, 51 KB always-on)
-**Owner**: Cascade
+**Status**: W1 DONE · W2 DONE · W3 DONE · W4 DONE (Phase A native handlers + Phase B legacy wrappers; all 16 scripts in-process; measured 842→120 ms per response = 7× faster; opt-in via `POST_CURSOR_AGENT_DISPATCHER=1`; hooks.json cutover deferred to operator post-shadow per §30) · W5 DONE · W6 DONE (Anthropic two-tier compliance, 51 KB always-on)
+**Owner**: Cursor Agent
 **Created**: 2026-05-01
-**Tier**: T3 — touches `.windsurf/rules/`, `.windsurf/hooks.json`, `.windsurf/scripts/`, multiple constitutional invariants
+**Tier**: T3 — touches `.cursor/rules/`, `.cursor/hooks.json`, `.cursor/scripts/`, multiple constitutional invariants
 
 ## 0. Goal
 
 Reduce the constitutional surface area without losing any operational invariant.
 Three layers, three problems:
 
-1. **`.windsurf/rules/`** — 37 files, ~270 KB; ~80 KB of restated prose across overlapping rules.
-2. **`.windsurf/hooks.json`** — 16-script `post_cascade_response` chain, each subprocess re-parses the same response.
+1. **`.cursor/rules/`** — 37 files, ~270 KB; ~80 KB of restated prose across overlapping rules.
+2. **`.cursor/hooks.json`** — 16-script `post_cursor_agent_response` chain, each subprocess re-parses the same response.
 3. **Memory layer** — `<user_rules>` block injects ~80 KB of constitutional-duplicate prose into every turn.
 
 Per constitutional §21 (zero-loss overwrite discipline): every constraint, gate name, bypass var, and reference MUST be preserved. Consolidation = dedupe, not deletion.
@@ -31,14 +31,14 @@ Per constitutional §21 (zero-loss overwrite discipline): every constraint, gate
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | Delete deprecated shim | `.windsurf/rules/anti-pattern-hitl-gate.md` (341 B file marked DEPRECATED, sunset 2026-07-21 in description) | Risk: scripts may grep for the filename | 500 | Todo |
-| P1.2 | Dedupe constitutional §0/§14 | `.windsurf/rules/constitutional.md` lines 21, 35 | Both restate "no PowerShell, subprocess timeout=30" verbatim | 800 | Todo |
+| P1.1 | Delete deprecated shim | `.cursor/rules/anti-pattern-hitl-gate.md` (341 B file marked DEPRECATED, sunset 2026-07-21 in description) | Risk: scripts may grep for the filename | 500 | Todo |
+| P1.2 | Dedupe constitutional §0/§14 | `.cursor/rules/constitutional.md` lines 21, 35 | Both restate "no PowerShell, subprocess timeout=30" verbatim | 800 | Todo |
 | P1.3 | Strip 3-bullet preamble from always-on rules | ~12 rule files with the verbatim "always-on discipline / retrieval / enforcement split" header | Loads in every turn; ~60 lines × 6 chars/line × 30 turns/session = wasted context | 2700 | Todo |
 | P2.1 | Constitutional ADG consolidation | constitutional.md §5/§13/§22/§23/§28 → one §ADG block with sub-clauses (a)–(e); Decision Tree → `graph-analysis` skill | Five separate "grep forbidden / MV primary" statements | 5000 | Todo |
 | P2.2 | Constitutional Discipline grouping | §6/§8 merge; §18–§21 group under §Process Discipline; trim Quick Non-Negotiables to a rule-number index | Four 1-line invariants in a row, each with "see X.md" footer | 3000 | Todo |
 | P3.1 | Memory cluster merge | Merge `memory-management.md` + `agents-memory-lifecycle.md` into `memory-notion-writeback.md` (canonical) | All three say recall-at-session-start + write-back-significant-decisions | 5000 | Todo |
 | P3.2 | Author-Gate cluster trim | Fold `author-gate-svp-calibration.md` into `author-gate-decision-points.md` §calibration; trim `approval-exception-policy.md` overlap with `anti-pattern-author-gate.md` | Each restates the scoring/dominance/marker contract | 7000 | Todo |
-| P4.1 | post_cascade dispatcher | New `post_cascade_dispatch.py` + refactor 16 scripts into importable handlers; `.windsurf/hooks.json` chain shrinks to dispatcher entry + 3-4 long-tail orthogonal handlers | Each subprocess ~200ms on Windows; 16× = 3.2s of hook-chain overhead per response | 10000 | Todo |
+| P4.1 | post_cascade dispatcher | New `post_cursor_agent_dispatch.py` + refactor 16 scripts into importable handlers; `.cursor/hooks.json` chain shrinks to dispatcher entry + 3-4 long-tail orthogonal handlers | Each subprocess ~200ms on Windows; 16× = 3.2s of hook-chain overhead per response | 10000 | Todo |
 | P5.1 | Verify + writeback | Regenerate `RULES_INDEX.md` from front-matter; post ADR-NEW row to Notion; write Memory entity | Cross-reference resolution must hold | 3000 | Todo |
 
 ## 3. Inventory: What Each Wave Touches
@@ -46,10 +46,10 @@ Per constitutional §21 (zero-loss overwrite discipline): every constraint, gate
 ### Wave 1 (in-progress)
 
 **P1.1** — Files modified:
-- DELETE: `.windsurf/rules/anti-pattern-hitl-gate.md`
+- DELETE: `.cursor/rules/anti-pattern-hitl-gate.md`
 
 **P1.2** — Files modified:
-- EDIT: `.windsurf/rules/constitutional.md` — merge §0 into §14; renumber? No: leave §0 stub pointing to §14 for stable numbering.
+- EDIT: `.cursor/rules/constitutional.md` — merge §0 into §14; renumber? No: leave §0 stub pointing to §14 for stable numbering.
 
 **P1.3** — Files with verbatim 3-bullet preamble:
 - `constitutional.md`
@@ -66,7 +66,7 @@ Per constitutional §21 (zero-loss overwrite discipline): every constraint, gate
 - `plan-location.md`
 
 For each: replace 5-line preamble with single line:
-> See `.windsurf/RULES_INDEX.md#always-on-discipline` for retrieval / enforcement guidance.
+> See `.cursor/RULES_INDEX.md#always-on-discipline` for retrieval / enforcement guidance.
 
 ### Wave 2 (planned)
 
@@ -82,7 +82,7 @@ For each: replace 5-line preamble with single line:
 
 ### Wave 4 (planned)
 
-**P4.1**: New `.windsurf/scripts/post_cascade_dispatch.py`:
+**P4.1**: New `.cursor/scripts/post_cursor_agent_dispatch.py`:
 1. Reads response text once (or stdin once).
 2. Builds `ParsedResponse` struct: tool calls, markers, code blocks, prose flags.
 3. Imports each handler module: `_handler_author_gate_capture`, `_handler_adg_audit`, `_handler_marker_capture` (deferred + next-step + adr), `_handler_mcp_audit` (serialization + preflight), `_handler_grep_budget`, `_handler_writeback`, `_handler_long_command`, `_handler_plan_evidence`, `_handler_fortknox`, `_handler_heartbeat`, `_handler_cleanup`, `_handler_scope_drift`.
@@ -91,8 +91,8 @@ For each: replace 5-line preamble with single line:
 
 `hooks.json`:
 ```
-"post_cascade_response": [
-    { "command": "python .windsurf/scripts/post_cascade_dispatch.py", ... }
+"post_cursor_agent_response": [
+    { "command": "python .cursor/scripts/post_cursor_agent_dispatch.py", ... }
 ]
 ```
 
@@ -101,7 +101,7 @@ Estimated win: 16 subprocess starts → 1; 3.2 s → 0.6 s per response.
 ### Wave 5 (planned)
 
 **P5.1**:
-- Run `RULES_INDEX.md` regeneration (script exists at `.windsurf/scripts/build_rules_index.py` — verify; create if missing).
+- Run `RULES_INDEX.md` regeneration (script exists at `.cursor/scripts/build_rules_index.py` — verify; create if missing).
 - Post ADR-NEW row to Notion ADR Registry: "Rules+Hooks+Memories Consolidation 2026Q2".
 - Write Memory `ProceduralPattern:RulesConsolidation2026Q2` with: cluster identification heuristic, dedupe methodology, zero-loss verification checklist.
 - Final size report committed to `docs/reports/rules-consolidation-48b4d6.md`.
@@ -110,7 +110,7 @@ Estimated win: 16 subprocess starts → 1; 3.2 s → 0.6 s per response.
 
 | Risk | Mitigation |
 |------|------------|
-| A script references a deleted preamble line by exact-match | Pre-flight grep for any literal preamble lines in `.windsurf/scripts/`, `ops_scripts/`, `tools/` before P1.3 |
+| A script references a deleted preamble line by exact-match | Pre-flight grep for any literal preamble lines in `.cursor/scripts/`, `ops_scripts/`, `tools/` before P1.3 |
 | `anti-pattern-hitl-gate.md` referenced by name | Pre-flight grep across repo before delete |
 | Dispatcher refactor (P4.1) breaks an existing handler invariant | Each handler module gets its own unit test; old script paths kept as shims for one release cycle |
 | Notion ADR row drift | Post + verify + link in plan |
@@ -120,7 +120,7 @@ Estimated win: 16 subprocess starts → 1; 3.2 s → 0.6 s per response.
 
 - [ ] Constitutional.md ≤ 80 lines (from 137)
 - [ ] Rules folder ≤ 30 files (from 37)
-- [ ] post_cascade_response hook chain ≤ 5 entries (from 16)
+- [ ] post_cursor_agent_response hook chain ≤ 5 entries (from 16)
 - [ ] Always-on memory budget reduced by ≥50 KB
 - [ ] Zero broken cross-references (verify with `grep_search` on rule names)
 - [ ] All pre-commit gates green
@@ -133,7 +133,7 @@ After each phase:
 1. `python -m pytest tests/unit/windsurf_scripts/ -x` — script unit tests
 2. `python ops_scripts/ci/run_contract_gates.py` — full contract suite
 3. `grep_search` for any rule filename or constitutional § number that was renamed/removed — ensure zero unintended hits
-4. Heartbeat log inspection (`artifacts/windsurf/post_cascade_heartbeat.jsonl`) for hook chain timing
+4. Heartbeat log inspection (`artifacts/cursor/post_cursor_agent_heartbeat.jsonl`) for hook chain timing
 
 ## 7. Out of Scope
 
@@ -152,19 +152,19 @@ After each phase:
 
 ### Verified preconditions
 
-- All 16 `post_cascade_*` scripts use `sys.stdin.read()` to receive the response payload — uniform interface confirmed via `Select-String` across `.windsurf/scripts/post_cascade_*.py`.
+- All 16 `post_cursor_agent_*` scripts use `sys.stdin.read()` to receive the response payload — uniform interface confirmed via `Select-String` across `.cursor/scripts/post_cursor_agent_*.py`.
 - All scripts are fail-soft (exit 0 on error per their docstrings) so a dispatcher refactor cannot make any single script harder to fail.
-- Total LOC: ~200 KB across 16 files. Largest: `post_cascade_author_gate_capture.py` (33 KB), `post_cascade_adr_registry_capture.py` (24 KB), `post_cascade_deferred_scope_capture.py` (23 KB), `post_cascade_adg_audit.py` (19 KB).
+- Total LOC: ~200 KB across 16 files. Largest: `post_cursor_agent_author_gate_capture.py` (33 KB), `post_cursor_agent_adr_registry_capture.py` (24 KB), `post_cursor_agent_deferred_scope_capture.py` (23 KB), `post_cursor_agent_adg_audit.py` (19 KB).
 
 ### Proposed dispatcher architecture
 
 ```
-.windsurf/scripts/
-  post_cascade_dispatch.py         <-- new entry point; reads stdin once
+.cursor/scripts/
+  post_cursor_agent_dispatch.py         <-- new entry point; reads stdin once
   _post_handlers/
     __init__.py
-    heartbeat.py                   <-- imports from post_cascade_heartbeat.py
-    cleanup.py                     <-- imports from post_cascade_cleanup.py
+    heartbeat.py                   <-- imports from post_cursor_agent_heartbeat.py
+    cleanup.py                     <-- imports from post_cursor_agent_cleanup.py
     author_gate.py                 <-- merges capture + miss_detector
     adg_audit.py                   <-- merges adg + grep_budget + scope_drift
     marker_capture.py              <-- merges deferred + next_step + adr
@@ -175,10 +175,10 @@ After each phase:
     fortknox.py
 ```
 
-Hooks.json `post_cascade_response` chain shrinks to:
+Hooks.json `post_cursor_agent_response` chain shrinks to:
 ```json
-"post_cascade_response": [
-    { "command": "python .windsurf/scripts/post_cascade_dispatch.py", "show_output": true, "working_directory": "C:\\Git\\Agentic-Workflow" }
+"post_cursor_agent_response": [
+    { "command": "python .cursor/scripts/post_cursor_agent_dispatch.py", "show_output": true, "working_directory": "C:\\Git\\Agentic-Workflow" }
 ]
 ```
 
@@ -193,9 +193,9 @@ Hooks.json `post_cascade_response` chain shrinks to:
 
 Per constitutional §30: a single regression in this hook chain caused a 96-hour silent capture outage 2026-04-23 → 2026-04-27. Implementation MUST therefore:
 
-1. Land each handler module behind a feature flag (e.g. `POST_CASCADE_DISPATCHER=1`)
+1. Land each handler module behind a feature flag (e.g. `POST_CURSOR_AGENT_DISPATCHER=1`)
 2. Run the dispatcher in **parallel** with the existing chain for at least 7 days, comparing violations-log outputs
-3. Have unit tests for each handler that consume captured-response fixtures from `artifacts/windsurf/`
+3. Have unit tests for each handler that consume captured-response fixtures from `artifacts/cursor/`
 4. Have an instant-rollback path: keep all 16 original scripts as-is during shadow window
 5. Cut over only when 7 days of zero output divergence are recorded
 
@@ -216,12 +216,12 @@ NEXT_STEP: plan=NEW:hook-dispatcher-consolidation title=Hook chain dispatcher re
 
 | File | Change | Lines before | Lines after |
 |---|---|---:|---:|
-| `.windsurf/rules/constitutional.md` | §0/§14 deduped, §18-§21 grouped under §Process Discipline, Decision Tree trimmed to pointer, Quick Non-Negotiables trimmed to rule-index, generic preamble removed | 137 | 72 |
-| `.windsurf/rules/agents-memory-lifecycle.md` | Content merged into memory-management.md; replaced with deprecation shim (sunset 2026-08-01) | 24 | 12 |
-| `.windsurf/rules/memory-management.md` | Absorbed lifecycle invariants from agents-memory-lifecycle.md | 113 | ~127 |
-| 19 rules in `.windsurf/rules/` | Generic 3-bullet preamble stripped; replaced with single-line pointer to RULES_INDEX | varies | -5 each |
-| `.windsurf/RULES_INDEX.md` | Added §Always-On Discipline as SSOT for the deduped preamble | 395 | ~410 |
-| `.windsurf/plans/rules-hooks-memories-consolidation-48b4d6.md` | Created | 0 | ~200 |
+| `.cursor/rules/constitutional.md` | §0/§14 deduped, §18-§21 grouped under §Process Discipline, Decision Tree trimmed to pointer, Quick Non-Negotiables trimmed to rule-index, generic preamble removed | 137 | 72 |
+| `.cursor/rules/agents-memory-lifecycle.md` | Content merged into memory-management.md; replaced with deprecation shim (sunset 2026-08-01) | 24 | 12 |
+| `.cursor/rules/memory-management.md` | Absorbed lifecycle invariants from agents-memory-lifecycle.md | 113 | ~127 |
+| 19 rules in `.cursor/rules/` | Generic 3-bullet preamble stripped; replaced with single-line pointer to RULES_INDEX | varies | -5 each |
+| `.cursor/RULES_INDEX.md` | Added §Always-On Discipline as SSOT for the deduped preamble | 395 | ~410 |
+| `.cursor/plans/rules-hooks-memories-consolidation-48b4d6.md` | Created | 0 | ~200 |
 
 ### Net byte/line reduction
 
@@ -252,7 +252,7 @@ NEXT_STEP: plan=NEW:hook-dispatcher-consolidation title=Hook chain dispatcher re
 
 ```
 # Constitutional invariant count
-python -c "import re; t=open('.windsurf/rules/constitutional.md',encoding='utf-8').read(); print(len(re.findall(r'^\d+\. \*\*', t, re.M)))"
+python -c "import re; t=open('.cursor/rules/constitutional.md',encoding='utf-8').read(); print(len(re.findall(r'^\d+\. \*\*', t, re.M)))"
 # expect: 33
 
 # Cross-reference resolution (should be 0)

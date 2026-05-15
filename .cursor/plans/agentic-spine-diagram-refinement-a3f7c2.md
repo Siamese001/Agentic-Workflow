@@ -33,7 +33,7 @@ Extend the agentic spine diagram with accurate sub-categories for every layer (X
 | `agentic_core/L1_cognition/bridges/u0_to_l1_plan.py` | L1 deterministic bridge (no LLM in R4) | ✅ |
 | `agentic_core/L5_safety/enforcement/hitl_gate.py` | L5 inline guardrail pattern | ✅ |
 | `artifacts/apps_rg/runs/r4_72afb54f/agentic_core_how_trace.json` | Current flat HowTrace output (confirmed gap) | ✅ |
-| `.windsurf/templates/execution-plan-template.md` | Plan format | ✅ |
+| `.cursor/templates/execution-plan-template.md` | Plan format | ✅ |
 
 ---
 
@@ -249,7 +249,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

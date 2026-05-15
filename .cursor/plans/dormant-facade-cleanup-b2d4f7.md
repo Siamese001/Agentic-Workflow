@@ -3,7 +3,7 @@
 Status: **CLOSED 2026-05-01.** W1 done; W2/R1/R6 cancelled-by-evidence; W3 done; W4 blocked-by-P2-ratchet (deferred-scope filed); W5 done.
 Created: 2026-05-01
 Last updated: 2026-05-01 (W5 closure)
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `dormant-facade-cleanup-b2d4f7` (renamed in spirit — the "dormant" framing was wrong)
 
 ## Mission
@@ -83,7 +83,7 @@ The archive target has zero fan-in — that's the entire reason it's safe to rem
 
 - `apps_rg/integrations/company_research_loader.py:112` — `from apps_shared.adapters.research_facade import fetch_company_brief` (production import inside `_try_apps_research()`, mode 2 of the 4-mode CompanyBrief loader).
 - `apps_rg/types/company_research.py:6` — documentation cross-reference listing the facade as one of the canonical brief sources.
-- HOP-0.6-COMPANY-RESEARCH design (per `.windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md` P2.1) treats `research_facade` as the *cross-app generation* mode of a 4-mode loader (manual upload | apps_research subprocess | internal engine | tavily supplement).
+- HOP-0.6-COMPANY-RESEARCH design (per `.cursor/plans/apps-rg-narrative-and-company-research-e3f8c1.md` P2.1) treats `research_facade` as the *cross-app generation* mode of a 4-mode loader (manual upload | apps_research subprocess | internal engine | tavily supplement).
 
 Why the ADG showed zero callers: `company_research_loader.py` was added today, after the 06:32 snapshot. This is the THIRD instance this session of stale-snapshot-misses-today's-edits.
 

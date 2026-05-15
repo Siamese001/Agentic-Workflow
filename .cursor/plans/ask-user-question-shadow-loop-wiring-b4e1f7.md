@@ -20,8 +20,8 @@ dod_exempt: false
 
 **Files in scope**:
 - `tools/ledgers/schema_registry.py` — add `LedgerSpec(name="ask_user_question", ...)`
-- `.windsurf/schemas/ask_user_question_ledger.schema.sql` — formalize the CREATE TABLE + indexes
-- `.windsurf/skills/ledger-consulter-ask-user-question/SKILL.md` — consulting skill
+- `.cursor/schemas/ask_user_question_ledger.schema.sql` — formalize the CREATE TABLE + indexes
+- `.cursor/skills/ledger-consulter-ask-user-question/SKILL.md` — consulting skill
 - `tools/ledgers/consulter.py` — verify `LedgerConsulter.search()` works with the ask_user_question table
 - Tests for the above
 

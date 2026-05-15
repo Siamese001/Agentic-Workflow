@@ -1,11 +1,11 @@
 ---
 trigger: model_decision
-description: Apply when Cascade suggests a follow-up action — "could do later", "consider X", optional polish. Demoted from always_on 2026-05-01 per Anthropic two-tier compliance.
+description: Apply when Cursor Agent suggests a follow-up action — "could do later", "consider X", optional polish. Demoted from always_on 2026-05-01 per Anthropic two-tier compliance.
 ---
 
 # Next-Step Capture — Invariant-Only Stub
 
-> ⛔ **When Cascade suggests a next step, it MUST emit a `NEXT_STEP:` marker in the same response.** Prose-only "could do later" language is a constitutional violation (§24-bis): suggestions historically vanish between sessions.
+> ⛔ **When Cursor Agent suggests a next step, it MUST emit a `NEXT_STEP:` marker in the same response.** Prose-only "could do later" language is a constitutional violation (§24-bis): suggestions historically vanish between sessions.
 
 ## Invariant
 

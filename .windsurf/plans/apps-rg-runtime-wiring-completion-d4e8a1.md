@@ -45,7 +45,7 @@ Subsequent inspection identified **6 distinct defects** declared resolved by W5/
 | D3 | `apps_rg/__main__.py` references `args.research_via` — argparse never defines `--research-via` | `apps_rg/__main__.py:216` (pre-fix) | This session |
 | D4 | `apps_rg/__main__.py` instantiates `AppIngressRunner()` with no kwargs — class requires `dispatch=`/`parse=`/`required_fields=` | `apps_rg/__main__.py:241` | This session |
 | D5 | `apps_rg/__main__.py` calls `runner.run(payload_dict)` — class exposes `handle_chat()`/`handle_http()` only | `apps_rg/__main__.py:233` | This session |
-| D6 | Wizard crashes with `EOFError` traceback in non-TTY contexts (e.g. all Cascade runs) | `apps_rg/__main__.py:_interactive_wizard` (pre-fix) | This session |
+| D6 | Wizard crashes with `EOFError` traceback in non-TTY contexts (e.g. all Cursor Agent runs) | `apps_rg/__main__.py:_interactive_wizard` (pre-fix) | This session |
 
 D1, D2, D3, D6 were patched ad-hoc this session. D4 and D5 are the architectural gaps — the W6/W7 work that was never landed.
 
@@ -374,7 +374,7 @@ AG_QUEUE_SEED: plan=apps-rg-runtime-wiring-completion-d4e8a1 id=ARW-5 depends_on
 - Constitutional §6 (Author-Gate), §22 (graph-layer evidence), §32 (Fort Knox / DoD), §35 (queue drain), §36 (plan registration)
 - Memory `01483ea2` (vLLM Qwen 32B canonical topology — provider for L2 execution)
 - Memory `e24c888b` (apps_qna FEC producer wiring — pattern for apps_rg C0 binding)
-- Memory `aa3e66d1` (Cascade single-prompt template — applies to running this plan's E2E test)
+- Memory `aa3e66d1` (Cursor Agent single-prompt template — applies to running this plan's E2E test)
 
 ---
 

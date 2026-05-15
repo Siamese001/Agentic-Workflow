@@ -14,13 +14,13 @@ Establish hooks, rules, CI gates, and template discipline to ensure markdown pla
 
 ## Context (SCQA)
 
-- **Situation** — The current plan infrastructure creates comprehensive pre-execution plans with Wave Structure tables, Phase-Level Summary tables, Gap Registers, and Definition of Done sections. The `post_cascade_wave_lifecycle_capture.py` hook updates wave status cells (🔲→🔄→✅) when `WAVE_COMPLETE` markers are emitted. However, plans remain static documents — they don't reflect scope expansions, newly discovered gaps, or expanded DoD criteria that emerge during execution.
+- **Situation** — The current plan infrastructure creates comprehensive pre-execution plans with Wave Structure tables, Phase-Level Summary tables, Gap Registers, and Definition of Done sections. The `post_cursor_agent_wave_lifecycle_capture.py` hook updates wave status cells (🔲→🔄→✅) when `WAVE_COMPLETE` markers are emitted. However, plans remain static documents — they don't reflect scope expansions, newly discovered gaps, or expanded DoD criteria that emerge during execution.
 
 - **Complication** — During the `apps-rg-exit-gate-fix-g24-hardening-d7c4b1` session, W3 revealed new gaps (G22 diagnostics, G28 receipt ordering) that required expanding from 4→6 waves and adding W5.P8, W5.P9, W6.P10 phases. While this was documented, the pattern risks becoming: "discover gap → do work → retroactively update plan." This is scope drift with documentation, not authorization. Without an **authorization gate** between discovery and execution, plans become post-hoc rationalizations rather than governing constraints.
 
 - **Question** — How do we enforce that plans are living documents **with explicit authorization discipline** — requiring discovery markers, authorization decisions, and documented justification before scope expansion proceeds?
 
-- **Answer** — (W1) Create a governance rule mandating the four-step scope expansion protocol: **DISCOVERED_SCOPE** → **AUTHORIZATION_DECISION** → **plan file updates** → **SCOPE_EXPANSION** marker. (W2) Build a helper to parse authorization markers and detect unauthorized drift. (W3) Create a post-cascade hook that **blocks** (advisory → strict mode) when substantial work occurs without preceding authorization. (W4) Extend updater for Phase-Level Summary. (W5) Add CI gate detecting unauthorized expansions. (W6) Update template with **Scope Expansion Authorization** section.
+- **Answer** — (W1) Create a governance rule mandating the four-step scope expansion protocol: **DISCOVERED_SCOPE** → **AUTHORIZATION_DECISION** → **plan file updates** → **SCOPE_EXPANSION** marker. (W2) Build a helper to parse authorization markers and detect unauthorized drift. (W3) Create a post-cursor-agent hook that **blocks** (advisory → strict mode) when substantial work occurs without preceding authorization. (W4) Extend updater for Phase-Level Summary. (W5) Add CI gate detecting unauthorized expansions. (W6) Update template with **Scope Expansion Authorization** section.
 
 ---
 
@@ -90,7 +90,7 @@ Must complete ALL before SCOPE_EXPANSION marker:
 
 | Layer | Advisory Mode | Strict Mode |
 |---|---|---|
-| Post-cascade hook | Warn when work >3 files without preceding authorization | Block (exit 2) |
+| Post-cursor-agent hook | Warn when work >3 files without preceding authorization | Block (exit 2) |
 | CI gate | Flag unauthorized expansions in weekly report | Fail build |
 | Pre-write gate | — | Block writes outside plan scope without authorization |
 
@@ -102,12 +102,12 @@ Bypass (emergency only): `SCOPE_AUTHORIZATION_BYPASS=1`
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/plans/apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md` | Example of successful plan update pattern after scope expansion | ✅ Reference |
-| `.windsurf/scripts/post_cascade_wave_lifecycle_capture.py` | Existing wave status update mechanism | ✅ Read |
+| `.cursor/plans/apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md` | Example of successful plan update pattern after scope expansion | ✅ Reference |
+| `.cursor/scripts/post_cursor_agent_wave_lifecycle_capture.py` | Existing wave status update mechanism | ✅ Read |
 | `tools/windsurf/_plan_wave_table_updater.py` | Current table update logic (waves only) | ✅ Read |
-| `.windsurf/templates/execution-plan-template.md` | Template to extend with scope expansion guidance | ✅ Read |
-| `.windsurf/hooks.json` | Hook registration point | ✅ Read |
-| `.windsurf/rules/plan-location.md` | Sibling rule for pattern reference | ✅ Read |
+| `.cursor/templates/execution-plan-template.md` | Template to extend with scope expansion guidance | ✅ Read |
+| `.cursor/hooks.json` | Hook registration point | ✅ Read |
+| `.cursor/rules/plan-location.md` | Sibling rule for pattern reference | ✅ Read |
 
 ---
 
@@ -117,7 +117,7 @@ Bypass (emergency only): `SCOPE_AUTHORIZATION_BYPASS=1`
 |------|-----------|-------|-------------|--------|
 | W1 | P1 | Rule with four-step authorization protocol (DISCOVERED_SCOPE → AUTHORIZATION_DECISION → updates → SCOPE_EXPANSION) | ~1,200 | ✅ DONE |
 | W2 | P2 | Helper parsing auth markers + `AuthorizationState.is_authorized_for_scope()` | ~800 | ✅ DONE |
-| W3 | P3 | Post-cascade hook: advisory/strict mode unauthorized drift detection | ~1,000 | ✅ DONE |
+| W3 | P3 | Post-cursor-agent hook: advisory/strict mode unauthorized drift detection | ~1,000 | ✅ DONE |
 | W4 | P4 | Updater: Phase-Level Summary + `last_updated` refresh | ~1,000 | ✅ DONE |
 | W5 | P5 | CI gate: unauthorized expansion detection + stale plan detection | ~800 | ✅ DONE |
 | W6 | P6 | Template: Scope Expansion Authorization section + 20+ tests | ~800 | ✅ DONE |
@@ -130,12 +130,12 @@ Bypass (emergency only): `SCOPE_AUTHORIZATION_BYPASS=1`
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| W1.P1 | Hardened rule with authorization protocol | `.windsurf/rules/plan-update-enforcement.md` | Rule defines four-step discipline, 4 decision types (ACCEPTED/DEFERRED/SPLIT_TO_NEW_PLAN/REJECTED), required updates checklist, fail-closed enforcement layers, negative-control retroactive detection, marker recency check | ~1,200 | ✅ DONE |
-| W2.P2 | Scope expansion check helper with auth parsing | `.windsurf/scripts/_plan_scope_expansion_check.py` | Parse all 3 marker types; `AuthorizationState` with `is_authorized_for_scope()`; retroactive detection; 4 decision types; recency window; 32 unit tests passing | ~800 | ✅ DONE |
-| W3.P3 | Post-cascade scope authorization audit hook | `.windsurf/scripts/post_cascade_plan_scope_audit.py` | Advisory → strict mode; warn/block when >3 files modified without preceding AUTHORIZATION_DECISION; check auth marker recency; logs to JSONL; 24 unit tests passing | ~1,000 | ✅ DONE |
+| W1.P1 | Hardened rule with authorization protocol | `.cursor/rules/plan-update-enforcement.md` | Rule defines four-step discipline, 4 decision types (ACCEPTED/DEFERRED/SPLIT_TO_NEW_PLAN/REJECTED), required updates checklist, fail-closed enforcement layers, negative-control retroactive detection, marker recency check | ~1,200 | ✅ DONE |
+| W2.P2 | Scope expansion check helper with auth parsing | `.cursor/scripts/_plan_scope_expansion_check.py` | Parse all 3 marker types; `AuthorizationState` with `is_authorized_for_scope()`; retroactive detection; 4 decision types; recency window; 32 unit tests passing | ~800 | ✅ DONE |
+| W3.P3 | Post-cursor-agent scope authorization audit hook | `.cursor/scripts/post_cursor_agent_plan_scope_audit.py` | Advisory → strict mode; warn/block when >3 files modified without preceding AUTHORIZATION_DECISION; check auth marker recency; logs to JSONL; 24 unit tests passing | ~1,000 | ✅ DONE |
 | W4.P4 | Updater extension for Phase tables | `tools/windsurf/_plan_wave_table_updater.py` | Add `_update_phase_in_plan()`; handle phase status cells (🔄→✅) for W<N>.P<M> IDs; refresh `last_updated` on change; 35 total tests (27 wave + 8 phase) | ~1,000 | ✅ DONE |
 | W5.P5 | Plan freshness + unauthorized expansion CI gate | `ops_scripts/ci/check_plan_freshness.py` | Detect stale `last_updated`; detect unauthorized scope expansions (work evidence without auth markers); advisory → fail-closed | ~800 | ✅ DONE |
-| W6.P6 | Template + hooks + tests for authorization | `.windsurf/templates/execution-plan-template.md`, `.windsurf/hooks.json`, `tests/unit/windsurf_scripts/test_w6_template_hook.py` | Template "## Scope Expansion Authorization" section with four-step protocol; hook registration; 6 W6 tests | ~800 | ✅ DONE |
+| W6.P6 | Template + hooks + tests for authorization | `.cursor/templates/execution-plan-template.md`, `.cursor/hooks.json`, `tests/unit/windsurf_scripts/test_w6_template_hook.py` | Template "## Scope Expansion Authorization" section with four-step protocol; hook registration; 6 W6 tests | ~800 | ✅ DONE |
 
 ---
 
@@ -155,9 +155,9 @@ Bypass (emergency only): `SCOPE_AUTHORIZATION_BYPASS=1`
 
 | ID | Criterion | Verification | Status |
 |---|---|---|---|
-| DoD-1 | Rule `plan-update-enforcement.md` exists with four-step authorization protocol | `grep -q "DISCOVERED_SCOPE.*AUTHORIZATION_DECISION" .windsurf/rules/plan-update-enforcement.md` | ✅ |
+| DoD-1 | Rule `plan-update-enforcement.md` exists with four-step authorization protocol | `grep -q "DISCOVERED_SCOPE.*AUTHORIZATION_DECISION" .cursor/rules/plan-update-enforcement.md` | ✅ |
 | DoD-2 | Helper exports `AuthorizationState` with `is_authorized_for_scope()` method | `pytest tests/unit/windsurf_scripts/test_plan_scope_expansion_check.py -v` → 32 passed | ✅ |
-| DoD-3 | Hook `post_cascade_plan_scope_audit.py` detects unauthorized work | `pytest tests/unit/windsurf_scripts/test_post_cascade_plan_scope_audit.py -v` → 24 passed | ✅ |
+| DoD-3 | Hook `post_cursor_agent_plan_scope_audit.py` detects unauthorized work | `pytest tests/unit/windsurf_scripts/test_post_cursor_agent_plan_scope_audit.py -v` → 24 passed | ✅ |
 | DoD-4 | Hook strict mode blocks writes without authorization | `test_strict_blocks_unauthorized` passes: strict mode → exit 2 | ✅ |
 | DoD-5 | Updater handles Phase-Level Summary AND refreshes `last_updated` | 8 phase tests pass incl. `test_phase_update_refreshes_last_updated` | ✅ |
 | DoD-6 | CI gate detects unauthorized scope expansions | `pytest tests/unit/ops_scripts/ci/test_check_plan_freshness.py -v` → 36 passed | ✅ |
@@ -171,12 +171,12 @@ Bypass (emergency only): `SCOPE_AUTHORIZATION_BYPASS=1`
 ## Rollback Strategy
 
 If enforcement is too noisy:
-1. Set `PLAN_SCOPE_AUDIT_BYPASS=1` — disables post-cascade hook entirely
+1. Set `PLAN_SCOPE_AUDIT_BYPASS=1` — disables post-cursor-agent hook entirely
 2. Set `PLAN_SCOPE_AUDIT_STRICT=0` — keeps advisory mode only (default)
 3. Set `SCOPE_AUTHORIZATION_BYPASS=1` — emergency override for all authorization checks
 4. Set `PLAN_FRESHNESS_BYPASS=1` — disables CI gate staleness check
 5. Revert hooks.json to remove the hook entry
-6. Archive rule to `.windsurf/rules/_archive/`
+6. Archive rule to `.cursor/rules/_archive/`
 
 **Mitigation for excessive false positives**: If advisory warnings fire on legitimate work, increase `MIN_FILES_FOR_AUDIT` threshold (default: 3) or adjust `AUTH_MARKER_RECENCY_SEC` window (default: 300 seconds).
 
@@ -209,11 +209,11 @@ pytest tests/unit/windsurf_scripts/test_plan_scope_expansion*.py -v
 **Log:**
 - 2026-05-12 08:29Z: Initial plan creation — baseline scope authorized by user directive
 - 2026-05-12 08:32Z: Plan hardened with authorization protocol (negative-control test added)
-- 2026-05-12 08:35Z: **W1 COMPLETE** — Rule `.windsurf/rules/plan-update-enforcement.md` implemented with four-step authorization protocol
-- 2026-05-12 08:40Z: **W2 COMPLETE** — Helper `.windsurf/scripts/_plan_scope_expansion_check.py` + 32 unit tests passing
+- 2026-05-12 08:35Z: **W1 COMPLETE** — Rule `.cursor/rules/plan-update-enforcement.md` implemented with four-step authorization protocol
+- 2026-05-12 08:40Z: **W2 COMPLETE** — Helper `.cursor/scripts/_plan_scope_expansion_check.py` + 32 unit tests passing
   - Exports: `AuthorizationState`, parse functions, retroactive detection
   - Tests cover: valid expansion, missing markers, 4 decision types, retroactive detection, recency window, malformed markers, multiple discoveries
-- 2026-05-12 08:45Z: **W3 COMPLETE** — Post-cascade hook `.windsurf/scripts/post_cascade_plan_scope_audit.py` + 24 unit tests passing
+- 2026-05-12 08:45Z: **W3 COMPLETE** — Post-cursor-agent hook `.cursor/scripts/post_cursor_agent_plan_scope_audit.py` + 24 unit tests passing
   - Uses W2 `check_scope_authorization()` API — zero marker parsing reimplemented
   - Advisory mode: warnings + JSONL logging; Strict mode: exit 2 on unauthorized drift
   - Detects: MISSING_DISCOVERED_SCOPE, MISSING_AUTHORIZATION_DECISION, RETROACTIVE_AUTHORIZATION_DETECTED
@@ -231,10 +231,10 @@ pytest tests/unit/windsurf_scripts/test_plan_scope_expansion*.py -v
   - Strict mode: fail CI build on violations
   - All 77 tests across W2-W5 passing (32 + 24 + 35 + 36 = 127 total)
 - 2026-05-12 12:00Z: **W6 COMPLETE** — Template + hook registration + 6 unit tests
-  - Template `.windsurf/templates/execution-plan-template.md` has "## Scope Expansion Authorization" section
+  - Template `.cursor/templates/execution-plan-template.md` has "## Scope Expansion Authorization" section
   - Four-step protocol (DISCOVERED_SCOPE → AUTHORIZATION_DECISION → updates → SCOPE_EXPANSION)
   - Decision vocabulary documented (ACCEPTED, DEFERRED, SPLIT_TO_NEW_PLAN, REJECTED)
   - Required update checklist with 6 items
   - RETROACTIVE_AUTHORIZATION_DETECTED negative-control language
-  - `post_cascade_plan_scope_audit.py` registered in `.windsurf/hooks.json` (advisory mode)
+  - `post_cursor_agent_plan_scope_audit.py` registered in `.cursor/hooks.json` (advisory mode)
   - All 78 tests across W2-W6 passing (32 + 24 + 35 + 36 + 6 = 133 total)

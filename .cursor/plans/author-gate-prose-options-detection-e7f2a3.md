@@ -12,7 +12,7 @@ dod_exempt: false
 
 # Author-Gate Prose-Options Detection — Fix Prose Menu Miss
 
-Fix the root cause identified in RCA (2026-05-12): Cascade presented a multi-option next-phase decision as a Markdown prose menu ("Option A / B / C") without invoking the Author-Gate pipeline. The miss detector did not catch it because no multi-file edits occurred and keyword density was too low.
+Fix the root cause identified in RCA (2026-05-12): Cursor Agent presented a multi-option next-phase decision as a Markdown prose menu ("Option A / B / C") without invoking the Author-Gate pipeline. The miss detector did not catch it because no multi-file edits occurred and keyword density was too low.
 
 ---
 
@@ -35,9 +35,9 @@ PLAN_COMPLETE: plan=author-gate-prose-options-detection-e7f2a3 note="All 3 waves
 
 | File | Wave | Change |
 |------|------|--------|
-| `.windsurf/scripts/post_cascade_author_gate_miss_detector.py` | W1 | Added `_PROSE_OPTIONS_PATTERNS`, `_has_author_gate_completion_marker()`, `_has_prose_options_menu()`, Signal 5 `prose_options_menu` (+3) |
-| `.windsurf/rules/author-gate-enforcement.md` | W2 | Added "Prose Options Menu — Explicit Prohibition" block under Continuous Execution Invariant |
-| `.windsurf/scripts/pre_user_prompt_author_gate_reminder.py` | W2 | Added `prose_options_menu` key to `VIOLATION_REMEDIATION` with canonical remediation text |
+| `.cursor/scripts/post_cursor_agent_author_gate_miss_detector.py` | W1 | Added `_PROSE_OPTIONS_PATTERNS`, `_has_author_gate_completion_marker()`, `_has_prose_options_menu()`, Signal 5 `prose_options_menu` (+3) |
+| `.cursor/rules/author-gate-enforcement.md` | W2 | Added "Prose Options Menu — Explicit Prohibition" block under Continuous Execution Invariant |
+| `.cursor/scripts/pre_user_prompt_author_gate_reminder.py` | W2 | Added `prose_options_menu` key to `VIOLATION_REMEDIATION` with canonical remediation text |
 | `tests/unit/windsurf/scripts/test_author_gate_prose_options_detection.py` | W3 | Created with 27 test cases (TC-1..TC-9 + helpers); moved from windsurf_scripts/ to match co-located miss detector convention |
 
 ### Verification Outputs — Final Bundle (2026-05-13)
@@ -48,21 +48,21 @@ pytest tests/unit/windsurf/scripts/test_author_gate_prose_options_detection.py -
 → 27 passed, 0 failed
 
 # 2. Existing miss detector tests — zero regressions:
-pytest tests/unit/windsurf/scripts/test_post_cascade_author_gate_miss_detector.py -v
+pytest tests/unit/windsurf/scripts/test_post_cursor_agent_author_gate_miss_detector.py -v
 → 28 passed, 0 failed
 
 # 3. Miss detector: prose_options_menu symbol present at lines 164, 223, 225:
-grep -n "prose_options_menu" .windsurf/scripts/post_cascade_author_gate_miss_detector.py
+grep -n "prose_options_menu" .cursor/scripts/post_cursor_agent_author_gate_miss_detector.py
 → 164: def _has_prose_options_menu(text: str) -> bool:
 → 223: if _has_prose_options_menu(text) and not _has_author_gate_completion_marker(text):
 → 225:     positive_signals.append("prose_options_menu")
 
 # 4. Enforcement rule: prohibition block present at line 53:
-grep -n "Prose Options Menu" .windsurf/rules/author-gate-enforcement.md
+grep -n "Prose Options Menu" .cursor/rules/author-gate-enforcement.md
 → 53: ### Prose Options Menu — Explicit Prohibition
 
 # 5. Reminder script: remediation entry present at line 123:
-grep -n "prose_options_menu" .windsurf/scripts/pre_user_prompt_author_gate_reminder.py
+grep -n "prose_options_menu" .cursor/scripts/pre_user_prompt_author_gate_reminder.py
 → 123:     "prose_options_menu": (...)
 ```
 
@@ -85,14 +85,14 @@ This is a **prose options menu** presented as a Markdown table with bold headers
 
 | Violation | Rule |
 |-----------|------|
-| Options in prose, not `ask_user_question` | Cascade-clickable requirement (§7) |
+| Options in prose, not `ask_user_question` | Cursor Agent-clickable requirement (§7) |
 | No `AUTHOR_GATE_PACKET:` block | Canonical-emitter invariant |
 | No confidence prefix, no ⭐, no tradeoff segment | Four-requirement contract |
 | No `DECISION_CAPTURED:` marker emitted | Silent-marker invariant |
 
 ### Why the Miss Detector Did Not Catch It
 
-`post_cascade_author_gate_miss_detector.py` scores misses on:
+`post_cursor_agent_author_gate_miss_detector.py` scores misses on:
 1. `multi_file_edit` — requires ≥2 distinct file paths edited. **Not triggered** — this response had zero file edits.
 2. `decision_keywords` — "refactor", "delete", "archive", etc. **Not triggered** — no qualifying keywords in "Option A/B/C continue G2 metadata" text.
 3. `plan_file_touched` — plan path in response. **Partially triggered** (score=+1) but threshold is 2.
@@ -102,7 +102,7 @@ This is a **prose options menu** presented as a Markdown table with bold headers
 
 ### Two-Layer Fix Required
 
-1. **`post_cascade_author_gate_miss_detector.py`** — Add `prose_options_menu` signal: detect bold-labeled option patterns (`**Option A`, `**Option B`, `Option A —`, `Option B —`, `Option 1`, `Option 2`) without a corresponding `DECISION_CAPTURED:` or `AUTHOR_GATE_PACKET:` marker. Score: +3 (high weight — this is an almost-certain miss).
+1. **`post_cursor_agent_author_gate_miss_detector.py`** — Add `prose_options_menu` signal: detect bold-labeled option patterns (`**Option A`, `**Option B`, `Option A —`, `Option B —`, `Option 1`, `Option 2`) without a corresponding `DECISION_CAPTURED:` or `AUTHOR_GATE_PACKET:` marker. Score: +3 (high weight — this is an almost-certain miss).
 
 2. **`author-gate-enforcement.md`** — Add explicit prohibition: "Presenting options as Markdown bold/table prose is FORBIDDEN. Options MUST reach `ask_user_question`. Markdown option menus are not Author-Gate."
 
@@ -142,7 +142,7 @@ WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: A
 
-**Authorization**: NOT_REQUIRED — single-file edit to `.windsurf/scripts/post_cascade_author_gate_miss_detector.py`.
+**Authorization**: NOT_REQUIRED — single-file edit to `.cursor/scripts/post_cursor_agent_author_gate_miss_detector.py`.
 
 **Phases**:
 - **W1.1** — Add `_PROSE_OPTIONS_PATTERNS` regex + `_has_prose_options_menu()` detector | ~1.5K tokens | PHASE_STATUS: ✅ DONE | PHASE_COMPLETE: YES
@@ -186,7 +186,7 @@ WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
-**Authorization**: NOT_REQUIRED — updates to `.windsurf/rules/author-gate-enforcement.md` (always_on rule, not a new rule).
+**Authorization**: NOT_REQUIRED — updates to `.cursor/rules/author-gate-enforcement.md` (always_on rule, not a new rule).
 
 **Phases**:
 - **W2.1** — Add explicit prohibition block to `author-gate-enforcement.md` Continuous Execution Invariant section | ~1K tokens | PHASE_STATUS: ✅ DONE | PHASE_COMPLETE: YES
@@ -202,7 +202,7 @@ CHECKPOINT: B
 > - Markdown table of options without `ask_user_question`
 > - "Recommended Next Phase/Step/Action" menus in prose
 >
-> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cascade making the decision unilaterally.
+> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cursor Agent making the decision unilaterally.
 >
 > **Correct path**: If a genuine decision point exists → invoke the full pipeline: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question`. If no genuine decision exists → continue execution per the Continuous Execution Invariant.
 ```
@@ -225,7 +225,7 @@ CHECKPOINT: C
 
 **Phases**:
 - **W3.1** — New test file `tests/unit/windsurf/scripts/test_author_gate_prose_options_detection.py` | ~2K tokens | PHASE_STATUS: ✅ DONE | PHASE_COMPLETE: YES
-- **W3.2** — Verify existing `post_cascade_author_gate_miss_detector.py` test file still passes; add prose_options cases to it if it exists | ~0.5K tokens | PHASE_STATUS: ✅ DONE | PHASE_COMPLETE: YES
+- **W3.2** — Verify existing `post_cursor_agent_author_gate_miss_detector.py` test file still passes; add prose_options cases to it if it exists | ~0.5K tokens | PHASE_STATUS: ✅ DONE | PHASE_COMPLETE: YES
 
 **Test cases (W3.1)**:
 
@@ -243,7 +243,7 @@ CHECKPOINT: C
 **Acceptance**:
 - ≥8 test cases pass.
 - Existing miss detector tests (if any) still pass — zero regressions.
-- No new CI gate registration required (detector already runs via `post_cascade_author_gate_audit.py` miss_detector subcommand).
+- No new CI gate registration required (detector already runs via `post_cursor_agent_author_gate_audit.py` miss_detector subcommand).
 
 ---
 
@@ -259,7 +259,7 @@ CHECKPOINT: C
 ## Gap Register
 
 **GAP-1: ask_user_question without canonical packet**
-- Already handled by `post_cascade_ask_user_question_packet_audit.py` and `post_cascade_author_gate_pipeline_audit.py`.
+- Already handled by `post_cursor_agent_ask_user_question_packet_audit.py` and `post_cursor_agent_author_gate_pipeline_audit.py`.
 - This plan adds detection for the case where NEITHER `ask_user_question` NOR a packet is present — only prose options.
 
 **GAP-2: False positive on legitimate "Option" usage**
@@ -271,8 +271,8 @@ CHECKPOINT: C
 
 ## Definition of Done
 
-DoD-1: `post_cascade_author_gate_miss_detector.py` contains `_PROSE_OPTIONS_PATTERNS` and Signal 5 with weight +3.
-- Evidence: `grep -n "prose_options_menu" .windsurf/scripts/post_cascade_author_gate_miss_detector.py` returns ≥2 hits.
+DoD-1: `post_cursor_agent_author_gate_miss_detector.py` contains `_PROSE_OPTIONS_PATTERNS` and Signal 5 with weight +3.
+- Evidence: `grep -n "prose_options_menu" .cursor/scripts/post_cursor_agent_author_gate_miss_detector.py` returns ≥2 hits.
 - Status: ✅ DONE — grep returns 3 hits (lines 164, 223, 225)
 
 DoD-2: The exact G1.P3 "Option A/B/C" response text scores miss_score ≥ 2 (detector fires).
@@ -284,7 +284,7 @@ DoD-3: ≥8 new unit tests pass; zero existing test regressions.
 - Status: ✅ DONE
 
 DoD-4: `author-gate-enforcement.md` contains the "Prose Options Menu — Explicit Prohibition" block.
-- Evidence: `grep -n "Prose Options Menu" .windsurf/rules/author-gate-enforcement.md` returns line 53.
+- Evidence: `grep -n "Prose Options Menu" .cursor/rules/author-gate-enforcement.md` returns line 53.
 - Status: ✅ DONE
 
 DoD-5: Memory writeback: this plan slug + pattern documented in memory for future sessions.

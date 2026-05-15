@@ -63,7 +63,6 @@ metadata:
 
 ### Hard Rules
 1. **Native first** — use `read_file`/`edit` before this MCP
-2. **MCP serialization (§25)** — one MCP call per response
 3. **Allowed-directories sandbox** — paths must be within allowed roots
 4. **`edit_file` supports `dryRun=true`** — preview changes
 
@@ -236,7 +235,6 @@ Browser automation/E2E. **Upstream:** https://playwright.dev/agent-cli/skills
 ### Hard Rules
 1. **Never use for dependency analysis** — `adg_sqlite` only
 2. **Readiness check before heavy queries**
-3. **MCP serialization (§25)**
 4. **Zombie-process awareness** — restart MCP if query hangs
 
 ---
@@ -283,7 +281,6 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 ### Hard Rules
 1. **Backlog Snapshot first** — for dashboard queries, fetch page `34b27693-f55c-81b4-93ba-efec5755a20e`
 2. **Stale-source sniff test** — verify plan status against git + filesystem before writeback
-3. **MCP serialization (§25)** — one Notion call per response
 
 ---
 
@@ -307,7 +304,6 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 ### Hard Rules
 1. **Tavily ONLY for external web content** — this repo → `adg_sqlite`, library docs → `context7`, GitHub → `deepwiki`
 2. **Prefer direct `httpx` for known API endpoints**
-3. **One MCP call per response (§25)**
 4. **`tavily-research` takes 30–120s** — don't pre-empt
 
 ---
@@ -345,7 +341,6 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 ### Hard Rules
 1. **Stale-process runbook** — `otel_server_info` FIRST if MCP appears stale
 2. **Static vs runtime separation** — structural → `adg_sqlite`, runtime → `otel_mcp`
-3. **MCP serialization (§25)**
 
 ---
 
@@ -378,7 +373,6 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 1. **No `pytest.mark.skip`** without `strict=True` — constitutional §1
 2. **No weakened assertions** — constitutional §1
 3. **ADG-backed scope selection** — use `adg_sqlite` for blast radius
-4. **MCP serialization (§25)**
 5. **Timeouts** — always set `timeout` for runs that may stall
 
 ---
@@ -477,8 +471,7 @@ Only these survive `mem_cleanup_stale`:
 ### Hard Rules
 1. **Constitutional §17** — first tool call is `mem_recall_session_start`
 2. **15/3 Rule** — if solving took >15 min, spend up to 3 min writing back
-3. **MCP serialization (§25)**
-4. **Observations must be recall-actionable**
+3. **Observations must be recall-actionable**
 
 ---
 
@@ -486,13 +479,6 @@ Only these survive `mem_cleanup_stale`:
 
 **In-house. Selective use only.** For durable, queryable task state — not ordinary planning.
 Use when user explicitly requests tracked multi-step work across sessions ("track this as tasks", "decompose into subtasks"). ❌ Not for in-session work (use `structured-reasoning`) or plan-file work.
-Tools: `create_task`, `decompose_task`, `task_info`, `update_task`. Decompose before executing tasks above `low` complexity. MCP serialization (§25) applies.
+Tools: `create_task`, `decompose_task`, `task_info`, `update_task`. Decompose before executing tasks above `low` complexity.
 > Full routing tables: `SUPPORTING.md §13`
 
-## Appendix: Constitutional §25 — MCP Serialization
-
-> ⛔ **Remote MCP tool calls MUST be isolated: one remote-MCP call per response.**
-
-**Remote MCPs** (one per block): `notion`, `tavily`, `deepwiki`, `context7`, `GitKraken`.
-**Local MCPs** (batch freely): `adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `playwright`.
-**Bypass**: `MCP_SERIAL_BYPASS=1` — logged. Redirect table: `SUPPORTING.md §Redirects`

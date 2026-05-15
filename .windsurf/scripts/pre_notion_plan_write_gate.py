@@ -231,7 +231,7 @@ def verify_plan_identity(
 
 
 def extract_slug_from_context(context: str) -> Optional[str]:
-    """Extract plan slug from Cascade context text.
+    """Extract plan slug from Cursor Agent context text.
     
     Looks for:
     - PLAN_CREATED markers: slug=xxx

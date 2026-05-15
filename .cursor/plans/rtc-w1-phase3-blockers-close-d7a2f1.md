@@ -1,8 +1,8 @@
 # RTC-REQ-055 W1 Phase 3 — Close Remaining Blockers (Honestly)
 
 Status: Draft (authored 2026-04-30T22:21Z)
-Plan SSOT: `.windsurf/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
-Parent plan: `.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md` (W1 track)
+Plan SSOT: `.cursor/plans/rtc-w1-phase3-blockers-close-d7a2f1.md`
+Parent plan: `.cursor/plans/runtime-cert-hardened-w0-7e3c9a.md` (W1 track)
 Phase: W1 phase 3 (post-commit `61cfb3adbb`)
 Tier classification: **T3** (new runtime code path, new CI gate, new artifacts, cross-layer evidence chain)
 

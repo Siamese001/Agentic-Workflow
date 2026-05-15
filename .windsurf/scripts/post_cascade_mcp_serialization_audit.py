@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """post_cascade_mcp_serialization_audit.py — MCP serialization enforcement.
 
-Reads the Cascade response from stdin (post_cascade_response payload). Detects
+Reads the Cursor Agent response from stdin (post_cascade_response payload). Detects
 responses that batch an MCP tool call (`mcp*_` prefix) with any other tool call
 in the same turn — the pattern that trips the Anthropic MCP client transport
 race (see `anthropics/claude-agent-sdk-typescript#41`). Logs violations to
@@ -61,7 +61,7 @@ _REMOTE_MCP_SUFFIX_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"^(git_|gitkraken_|gitlens_|issues_|pull_request_|repository_)"),  # GitKraken
 )
 
-# Native Cascade tools that can be batched freely with each other but NOT
+# Native Cursor Agent tools that can be batched freely with each other but NOT
 # with an mcp*_ call. This set is the authoritative allow-list; anything
 # not here and not mcp*_ is treated as unknown (ignored).
 _NATIVE_TOOL_NAMES: frozenset[str] = frozenset(
@@ -99,9 +99,9 @@ _NATIVE_TOOL_NAMES: frozenset[str] = frozenset(
     }
 )
 
-# Match <invoke name="TOOL"> from the function_calls XML that Cascade emits.
+# Match <invoke name="TOOL"> from the function_calls XML that Cursor Agent emits.
 # This is the most reliable signal for detecting an actually-dispatched tool
-# call (prose mentions in Cascade's own analysis don't emit invoke tags).
+# call (prose mentions in Cursor Agent's own analysis don't emit invoke tags).
 _INVOKE_TAG_RE = re.compile(r'<invoke\s+name="([^"]+)"', re.IGNORECASE)
 
 # Match <function_calls> ... </function_calls> blocks so we can scope the

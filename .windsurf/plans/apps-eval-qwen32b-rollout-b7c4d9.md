@@ -34,7 +34,7 @@ Score=0.90, dominance gap=0.15). Existing surfaces reused as-is:
 
 ## Source Artifacts
 
-- Audit tables (Cascade response 2026-05-02)
+- Audit tables (Cursor Agent response 2026-05-02)
 - Qwen-32B leverage addendum (same date)
 - Constitutional §29 (closed-loop router enforcement)
 - `.windsurf/rules/local-llm-wsl2-gpu.md`

@@ -41,14 +41,14 @@ LAST_UPDATED: 2026-05-12
 | 5 | wave_complete + child phases | `wave_complete` does **NOT** flip child `PHASE_STATUS`/`PHASE_COMPLETE` fields. Child phases are only updated by explicit `PHASE_COMPLETE:` markers. Test TC-9 proves this. `plan_complete` flips all remaining child fields. |
 | 6 | Drift detection scope | `plan_driven_closer.parse_plan_file()` extended to scan `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`, and `- Status:` (DoD) inline fields. Any open value when header=COMPLETED → `plan_header_inline_drift`. |
 | 7 | Negative tests | 8 negative/edge-case tests added (TC-N1..TC-N8) on top of 8 happy-path tests. |
-| 8 | agentic_core | Not touched. Scope is `tools/windsurf/`, `.windsurf/scripts/`, `tests/unit/windsurf/`. |
+| 8 | agentic_core | Not touched. Scope is `tools/windsurf/`, `.cursor/scripts/`, `tests/unit/windsurf/`. |
 | 9 | Implementation receipt | W3 produces a receipt section with files, test commands, pass counts, before/after diff, and code-fence / table-row non-regression confirmations. |
 
 ---
 
 ## Context (SCQA)
 
-- **Situation** — `post_cascade_wave_lifecycle_capture.py` fires on `WAVE_COMPLETE:` /
+- **Situation** — `post_cursor_agent_wave_lifecycle_capture.py` fires on `WAVE_COMPLETE:` /
   `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers and calls
   `_plan_wave_table_updater.update_wave_in_plan()`. That function updates pipe-table rows
   (Wave Structure table, Phase-Level Summary table) from `TODO` → `✅ DONE`.
@@ -313,7 +313,7 @@ Under `### Required Per-Wave Markers` in Format Reference, append:
 ```
 > **Auto-maintained**: `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`,
 > and DoD `- Status:` fields are updated automatically by
-> `post_cascade_wave_lifecycle_capture.py` when `WAVE_COMPLETE:` / `PHASE_COMPLETE:` /
+> `post_cursor_agent_wave_lifecycle_capture.py` when `WAVE_COMPLETE:` / `PHASE_COMPLETE:` /
 > `PLAN_COMPLETE:` markers are emitted. Manual edits are only needed if a marker was
 > never emitted or the hook was bypassed (`WAVE_TABLE_UPDATE_BYPASS=1`).
 ```
@@ -386,7 +386,7 @@ CHECKPOINT: C
 |------|--------|
 | `tools/windsurf/_plan_wave_table_updater.py` | Added _split_wave_sections, _strip_fenced_blocks, _restore_fenced_blocks, _update_inline_fields_in_plan; wired into update_wave_in_plan + _update_phase_in_plan |
 | `tools/windsurf/plan_driven_closer.py` | Extended parse_plan_file + reconcile with inline drift detection |
-| `.windsurf/templates/execution-plan-template.md` | Added auto-maintenance note under Required Per-Wave Markers |
+| `.cursor/templates/execution-plan-template.md` | Added auto-maintenance note under Required Per-Wave Markers |
 | `tests/unit/windsurf/test_plan_wave_inline_status_sync.py` | NEW — 16 tests |
 
 ### Test Commands and Results
@@ -425,8 +425,8 @@ wave_complete. Confirmed by TC-6.
 - Any changes to `agentic_core/` — this is Windsurf plan lifecycle tooling only.
 - New CI gate — `plan_driven_closer.py` drift detection is sufficient.
 - Retroactive bulk-repair of stale plans — advisory `--show-drift` only.
-- `post_cascade_wave_completion_audit.py` — it audits for missing WAVE markers in
-  Cascade responses, not for plan file field state.
+- `post_cursor_agent_wave_completion_audit.py` — it audits for missing WAVE markers in
+  Cursor Agent responses, not for plan file field state.
 - `MISS_SCORE_THRESHOLD` or Author-Gate signal changes.
 
 ---

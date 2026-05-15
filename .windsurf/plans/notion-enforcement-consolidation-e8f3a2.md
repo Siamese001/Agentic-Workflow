@@ -249,7 +249,7 @@ def main():
     # Exit codes preserved
 ```
 
-### Phase 2.3 — Post-Cascade Hook Consolidation
+### Phase 2.3 — Post-Cursor Agent Hook Consolidation
 
 **Scope**: New `.windsurf/scripts/post_cascade_lifecycle_capture.py`
 

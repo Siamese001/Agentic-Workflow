@@ -2,7 +2,7 @@
 
 **Slug**: `apps-qna-rag-skills-alignment-7d2c4e`
 **Status**: in-progress
-**Owner**: Cascade
+**Owner**: Cursor Agent
 **Created**: 2026-04-30
 **Parent**: `apps-qna-bootstrap-c4f2a8` (Waves 1-3 complete)
 

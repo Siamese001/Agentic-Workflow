@@ -2,7 +2,7 @@
 """Fort Knox pre-write guard — Constitutional §32.
 
 Fires on every Windsurf `pre_write_code` event. Blocks (exit 2) when
-Cascade attempts to write to a compiler-output artifact or to inject
+Cursor Agent attempts to write to a compiler-output artifact or to inject
 hand-authored assertions that bypass the hostile verifier.
 
 Blocking conditions (fail-closed):

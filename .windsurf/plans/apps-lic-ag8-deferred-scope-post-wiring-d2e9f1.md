@@ -1,7 +1,7 @@
 ---
 description: AG-8 Deferred Scope — Post-Wiring Follow-ups for apps_lic
 title: AG-8 Deferred Scope — Real LLM, Calibration, Full L3 DAG, R1B Cache
-author: Cascade (AG-8 execution)
+author: Cursor Agent (AG-8 execution)
 date: 2026-05-10
 parent_plan: apps-lic-ag8-golden-template-adoption-f3c2e1
 dod_exempt: false

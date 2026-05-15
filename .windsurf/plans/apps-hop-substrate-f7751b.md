@@ -296,7 +296,7 @@ Per-wave rollback — waves are independent once merged.
 | New anti-pattern violations | 0 | `python tools/generate_full_adg.py` diff |
 | CI gate catches drift | true | intentional failing fixture → gate fails |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

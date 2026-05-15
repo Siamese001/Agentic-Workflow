@@ -3,7 +3,7 @@ title: W2 Hook Consolidation — B6B Shadow Mode Unblock
 slug: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2
 created: 2026-05-12
 last_updated: 2026-05-12 17:00 UTC-04
-author: Cascade
+author: Cursor Agent
 tier: T3
 status: Retired
 dod_exempt: false
@@ -88,12 +88,12 @@ W2 Hook Consolidation was **intentionally blocked** in parent plan `windsurf-gov
 |--------|-----------|--------------|--------|
 | DoD-1 | B6B shadow mode 14+ days data | `artifacts/b6b/shadow_data_14d.json` | ⏹️ WAIVED — W1C R4 replaced this requirement |
 | DoD-2 | 35 hooks validated | `b6b_validation_manifest.md` | ⏹️ WAIVED — C4 phase-local validation substituted |
-| DoD-3 | W2.P0 GO status | `artifacts/windsurf/governance-baseline-2026-05-12/w2p0_go_no_go.md` | ✅ SATISFIED — GO_WITH_CONTROLS issued |
+| DoD-3 | W2.P0 GO status | `artifacts/cursor/governance-baseline-2026-05-12/w2p0_go_no_go.md` | ✅ SATISFIED — GO_WITH_CONTROLS issued |
 | DoD-4 | 59→~20 hooks consolidated | `w2_final_hook_count_report.md` | ⏹️ NOT EXECUTED — future scope; requires new plan + Author-Gate |
-| DoD-5 | Zero enforcement loss | `artifacts/windsurf/governance-baseline-2026-05-12/w2_final_consolidation_receipt.json` | ✅ SATISFIED — verified for W2.P1-P5 scope |
+| DoD-5 | Zero enforcement loss | `artifacts/cursor/governance-baseline-2026-05-12/w2_final_consolidation_receipt.json` | ✅ SATISFIED — verified for W2.P1-P5 scope |
 | DoD-6 | No orphaned behaviors | per-phase C2/C3 validation receipts | ✅ SATISFIED — C2/C3 enforced each phase |
 | DoD-7 | All 43 CI gates pass | `python ops_scripts/ci/run_contract_gates.py` | ✅ SATISFIED — 43 gates active |
-| DoD-8 | W2 FINAL receipt | `artifacts/windsurf/governance-baseline-2026-05-12/w2_final_consolidation_receipt.json` | ✅ SATISFIED — COMPLETE status, C1-C6 satisfied |
+| DoD-8 | W2 FINAL receipt | `artifacts/cursor/governance-baseline-2026-05-12/w2_final_consolidation_receipt.json` | ✅ SATISFIED — COMPLETE status, C1-C6 satisfied |
 
 ## 6. Blocker Register
 

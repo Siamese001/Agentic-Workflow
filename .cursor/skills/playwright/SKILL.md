@@ -19,7 +19,7 @@ metadata:
 
 # Playwright Skill (Legacy)
 
-Cursor-native adaptation of the upstream Playwright agent skills. The MCP server is `io.cursor/mcp-playwright` (Microsoft's `@playwright/mcp` thin wrapper).
+Cursor-native adaptation of the upstream Playwright agent skills. The MCP server ID is `playwright` in `.cursor/mcp.json` (Microsoft's `@playwright/mcp` thin wrapper).
 
 **Upstream:** https://playwright.dev/agent-cli/skills
 

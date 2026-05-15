@@ -3,12 +3,12 @@
 Status: **W0–W10 Done. End-to-end pipeline + anti-overfit gate + lifecycle-emit boilerplate extraction.**
 Last updated: 2026-04-29 (W10 lifecycle-emit helper extraction — Author-Gate Option B)
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-rg-first-principles-refactor-7e9c4a`
 Predecessor concepts:
 - `requirements/contracts/REQ-CROSS-APP-AGENTSPEC-001.contract.yaml`
-- `.windsurf/plans/three-bucket-gap-remediation-069806.md` (W1 done; runtime store available)
-- Sibling: `.windsurf/plans/apps-{lic,eval,exec,rfp,research,underwriting-ai}-first-principles-refactor-*.md`
+- `.cursor/plans/three-bucket-gap-remediation-069806.md` (W1 done; runtime store available)
+- Sibling: `.cursor/plans/apps-{lic,eval,exec,rfp,research,underwriting-ai}-first-principles-refactor-*.md`
 
 ## Mission
 
@@ -169,7 +169,7 @@ NEXT_STEP: plan=NEW:apps-rg-unused-imports-cleanup title=Remove now-unused _emit
 - Static evidence: `docs/reports/apps_rg_three_bucket_evidence.md`
 - Generated resume: `apps_rg/scripts/generated_resume_20260429_191634.json`
 - Tools: `tools/analyze_runtime_adg_payload.py`, `tools/collect_apps_rg_three_bucket_evidence.py`
-- Three-bucket parent: `.windsurf/plans/three-bucket-gap-remediation-069806.md`
+- Three-bucket parent: `.cursor/plans/three-bucket-gap-remediation-069806.md`
 
 
 ## ADG_GRAPH_LAYER_EVIDENCE

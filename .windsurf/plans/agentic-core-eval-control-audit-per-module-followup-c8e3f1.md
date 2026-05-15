@@ -109,7 +109,7 @@ The 13th column (`divergence_from_parent_group`) is new vs parent: `yes` when th
 - Use `list_dir` first per directory to get the module list without symbol-level noise.
 - Use `read_file` with `limit=40` per module to confirm role from docstring + imports — do NOT read full files unless role is ambiguous after the first 40 lines.
 - ADG MCP (`adg_nodes_by_file`, `adg_edge_fanin`) is the canonical fan-in authority when a module's role is unclear from source.
-- `.codeiumignore` blocks `docs/reports/` for Cascade's native `write_to_file`. Parent used the workaround: stage at repo-root, then `cmd /c move` to final path. Reuse.
+- `.codeiumignore` blocks `docs/reports/` for Cursor Agent's native `write_to_file`. Parent used the workaround: stage at repo-root, then `cmd /c move` to final path. Reuse.
 - Per MCP serialization rule §25, any Notion writeback (Plans row for this plan; row update on completion) must be its own response.
 
 ## 12. Dependencies

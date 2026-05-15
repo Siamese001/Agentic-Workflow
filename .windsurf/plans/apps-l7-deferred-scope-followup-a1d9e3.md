@@ -4,7 +4,7 @@
 **Tier**: T3
 **Status**: Completed (W1 done, W2-W4 split to follow-up)
 **Created**: 2026-05-06
-**Authors**: Cascade
+**Authors**: Cursor Agent
 **Parent**: `apps-l7-coverage-spine-wide-c5e8d2` (W1-W3 completed 2026-05-06)
 **Depends On**: `apps-l7-coverage-spine-wide-c5e8d2` (must be Completed)
 

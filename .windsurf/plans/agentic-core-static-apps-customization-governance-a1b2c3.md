@@ -509,7 +509,7 @@ If skills/workflows are incomplete:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - All rules follow always-on or model_decision trigger discipline
 - Skills follow SKILL.md frontmatter contract per AGENTS.md
@@ -1071,7 +1071,7 @@ trigger: model_decision
 # Boundary Audit Required
 
 Trigger this skill when:
-- Cascade detects agentic_core files changed
+- Cursor Agent detects agentic_core files changed
 - App-specific literals appear in core context
 - app_id branching patterns detected
 - Hardcoded app behavior suspected

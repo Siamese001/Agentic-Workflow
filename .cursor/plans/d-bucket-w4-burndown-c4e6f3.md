@@ -73,5 +73,5 @@ plan_type: tracker
 
 ## References
 
-- Parent (retired): `.windsurf/plans/d-bucket-burndown-e4f2c9.md`
+- Parent (retired): `.cursor/plans/d-bucket-burndown-e4f2c9.md`
 - Sibling waves: `d-bucket-w2-burndown-a2c4f1.md`, `d-bucket-w3-burndown-b3d5e2.md`

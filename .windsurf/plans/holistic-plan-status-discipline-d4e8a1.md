@@ -6,8 +6,8 @@
 
 ## Context (SCQA)
 
-- **Situation** — Plan `notion-integration-consistency-audit-b2c4d8` was created with Status="In Progress" instead of "Not Started". Root cause: Cascade (the AI) mistakenly used wrong status in `API-post-page` call. This is a recurring pattern — manual plan creation via MCP calls is error-prone.
-- **Complication** — Multiple paths can create plans: Cascade direct MCP calls, `wave_execution_state.py start`, retrospective plan creation, scripted batch creation. Each path has different status semantics. No automated validation exists to catch wrong initial status.
+- **Situation** — Plan `notion-integration-consistency-audit-b2c4d8` was created with Status="In Progress" instead of "Not Started". Root cause: Cursor Agent (the AI) mistakenly used wrong status in `API-post-page` call. This is a recurring pattern — manual plan creation via MCP calls is error-prone.
+- **Complication** — Multiple paths can create plans: Cursor Agent direct MCP calls, `wave_execution_state.py start`, retrospective plan creation, scripted batch creation. Each path has different status semantics. No automated validation exists to catch wrong initial status.
 - **Question** — How do we ensure EVERY new plan starts as "Not Started" regardless of creation path, with automated detection and correction if wrong?
 - **Answer** — Multi-layer defense: (1) Canonical creation helper that enforces correct status, (2) Pre-flight validation gate, (3) Post-creation audit hook, (4) CI gate for drift detection, (5) Documentation + template updates.
 
@@ -19,7 +19,7 @@
 
 | Creation Path | Current Behavior | Risk |
 |-------------|-----------------|------|
-| **Cascade direct MCP** | Manual `API-post-page` with hardcoded Status | High — developer (AI) can choose wrong value |
+| **Cursor Agent direct MCP** | Manual `API-post-page` with hardcoded Status | High — developer (AI) can choose wrong value |
 | **`wave_execution_state.py start`** | Flips to "In Progress" correctly | Low — designed for this |
 | **Retrospective plan (same-turn)** | Created "Completed" correctly | Low — special case handled |
 | **Scripted batch** | Depends on script implementation | Medium — may copy wrong pattern |
@@ -106,7 +106,7 @@ Internal validation that raises `ValueError` if:
 
 **Phase 1.3 — Create `pre_notion_plan_creation_gate.py`**
 
-Pre-flight hook that intercepts Cascade responses containing `API-post-page` targeting Plans DB.
+Pre-flight hook that intercepts Cursor Agent responses containing `API-post-page` targeting Plans DB.
 
 Checks payload BEFORE Notion call:
 - If Status != "Not Started" → BLOCK with error message

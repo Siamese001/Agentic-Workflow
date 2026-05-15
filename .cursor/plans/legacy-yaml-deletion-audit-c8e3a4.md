@@ -8,7 +8,7 @@
 **Completion Note:** All 13 files classified via `ops_scripts/maintenance/legacy_yaml_disposition.py` DISPOSITIONS table. Result: **3 CANONICAL_SSOT** (`config/routing_thresholds.yaml`, `apps_eval/config/eval_policies.yaml`, `apps_rg/config/rg_thresholds.yaml`) + **10 MIGRATION_CANDIDATE** (per-app policies/thresholds with migration target `config/domain_contract/`). Per-file header stamps written. No deletions executed — each MIGRATION_CANDIDATE requires its own Author-Gate to progress to deletion. 430 tests pass; parity gate green.
 **Parent arc:** `apps-eval-harness-final-8f3e21` (deprecation headers added) + `apps-eval-harness-terminal-3c9f81` W5 (bogus headers reverted because files ARE active).
 
-**Owner:** Cascade
+**Owner:** Cursor Agent
 
 ## 1. Problem Statement
 
@@ -74,6 +74,6 @@ Each wave: (1) grep audit downstream consumers; (2) classify a/b/c; (3) emit Aut
 
 ## 8. Metadata
 
-- Plan file path: `.windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md`
+- Plan file path: `.cursor/plans/legacy-yaml-deletion-audit-c8e3a4.md`
 - Notion Plans row: Draft on creation
 - Activation trigger: ready to execute this session; however queued behind the 4 per-app FEC producer plans for priority.

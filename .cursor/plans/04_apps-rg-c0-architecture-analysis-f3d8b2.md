@@ -17,7 +17,7 @@ updated_at: "2026-05-14"
 
 > [!IMPORTANT]
 > PORTFOLIO_STATUS: CONSOLIDATED_UNDER_MASTER
-> MASTER_PLAN_REF: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md
+> MASTER_PLAN_REF: .cursor/plans/01_apps-rg-master-governed-runtime-hardening.md
 > DISPOSITION: MERGED_INTO_MASTER_SPLIT_BY_PRIORITY
 > SUPERSEDED_BY_PHASES: Phase 9 and Phase 11
 > RETAINED_SCOPE:

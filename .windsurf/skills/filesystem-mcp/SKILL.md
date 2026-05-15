@@ -1,6 +1,6 @@
 ---
 name: filesystem-mcp
-description: Filesystem operations — directory trees, multi-file reads, recursive search, write/move/edit — via the in-house filesystem MCP server. Invoke ONLY when native Cascade file tools are insufficient — multi-file batch reads, full directory trees, or operations on directories outside the active workspace. For ordinary single-file reads, prefer native read_file. For ordinary single-file writes, prefer native edit/write_to_file. The filesystem MCP is the secondary path, not the default.
+description: Filesystem operations — directory trees, multi-file reads, recursive search, write/move/edit — via the in-house filesystem MCP server. Invoke ONLY when native Cursor Agent file tools are insufficient — multi-file batch reads, full directory trees, or operations on directories outside the active workspace. For ordinary single-file reads, prefer native read_file. For ordinary single-file writes, prefer native edit/write_to_file. The filesystem MCP is the secondary path, not the default.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: before_work
@@ -49,7 +49,7 @@ metadata:
 
 ## Hard Rules
 
-1. **Native first.** Reach for `read_file`/`edit`/`grep_search` before this MCP. The native tools have better integration with Cascade's plan/edit cycle.
+1. **Native first.** Reach for `read_file`/`edit`/`grep_search` before this MCP. The native tools have better integration with Cursor Agent's plan/edit cycle.
 2. **MCP serialization (§25):** One MCP call per response.
 3. **Allowed-directories sandbox:** All paths must be within `list_allowed_directories` output. The MCP enforces this.
 4. **`write_file` overwrites silently** — use `edit_file` for in-place modifications when possible.

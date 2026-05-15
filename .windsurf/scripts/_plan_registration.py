@@ -379,7 +379,7 @@ _PLAN_CREATED_KV_RE = re.compile(
 
 
 def parse_plan_created_markers(text: str) -> list[dict[str, str]]:
-    """Parse all PLAN_CREATED markers from Cascade response text.
+    """Parse all PLAN_CREATED markers from Cursor Agent response text.
 
     Returns a list of dicts with keys ``slug``, ``path``, ``status``.
     Rows missing ``slug`` are dropped; ``path`` and ``status`` default to

@@ -7,7 +7,7 @@ plan_type: infra
 
 # Notion Backlog Schema Refactor — Typed Fields + Projection Pattern
 
-Replace the broken mixed-schema `Priority` field and prose-embedded impact scores with typed properties, a `Plans` relation DB, and a single `Backlog Snapshot` projection page that Cascade reads with one API call instead of paginating 155+ rows.
+Replace the broken mixed-schema `Priority` field and prose-embedded impact scores with typed properties, a `Plans` relation DB, and a single `Backlog Snapshot` projection page that Cursor Agent reads with one API call instead of paginating 155+ rows.
 
 ---
 
@@ -33,7 +33,7 @@ Replace the broken mixed-schema `Priority` field and prose-embedded impact score
 | W2 | Backfill — parse legacy rows into new typed fields | Python script reads all rows, parses `[Pn]` from title + impact from `Blocking Items`, writes typed fields | B — 155 rows backfilled, 0 data loss | 3,000 🟢 |
 | W3 | `Plans` relation DB + migration from free-text | Create `Plans` DB; backfill one row per unique plan slug; convert `Plan File` rich_text to `relation` | C — every Backlog Item has `Plan` relation | 4,000 🟢 |
 | W4 | `Backlog Snapshot` projection page + hook wiring | Create single page; wire `post_cascade_deferred_scope_capture.py` to regenerate markdown snapshot on every write | D — `retrieve-a-page` returns full dashboard | 4,000 🟢 |
-| W5 | Consumer switchover + AGENTS.md update | Update `AGENTS.md` Notion Workspace Map; update memory-notion-writeback skill templates; default Cascade backlog query → `retrieve-a-page(Snapshot)` | E — `query notion backlog` answered in 1 call | 2,000 🟢 |
+| W5 | Consumer switchover + AGENTS.md update | Update `AGENTS.md` Notion Workspace Map; update memory-notion-writeback skill templates; default Cursor Agent backlog query → `retrieve-a-page(Snapshot)` | E — `query notion backlog` answered in 1 call | 2,000 🟢 |
 | W6 | Deprecate `Priority` number field + rename DB | After 1-week bake, archive legacy `Priority` property; rename `Wave/Phase Convergence` → `Backlog Items` | F — `Priority` removed, DB renamed | 2,000 🟢 |
 
 **Total: 17,000 tokens across 6 waves, all GREEN.**
@@ -97,7 +97,7 @@ Replace the broken mixed-schema `Priority` field and prose-embedded impact score
 
 **Scope**: Add typed properties to existing `aa8d2507-101e-4384-81d9-60ea3fe33876` database. Keep legacy `Priority` column for back-compat.
 
-**Commands** (via Cascade Notion MCP):
+**Commands** (via Cursor Agent Notion MCP):
 ```
 # W1.1 — W1.2: add properties via API-update-a-data-source
 # (or manually via Notion UI — either works; API gives provenance)
@@ -177,7 +177,7 @@ python .windsurf/scripts/sync_mcp_config.py  # regenerates Quick Reference if ne
 
 - [ ] Typed fields (`P-Band`, `Impact Score`, `Layer`, `Surface`) populated on 100% of rows
 - [ ] `Plans` DB exists with ≥ 20 plan rows and `Open Items` rollup working
-- [ ] `Backlog Snapshot` page is Cascade's new default for "query backlog"
+- [ ] `Backlog Snapshot` page is Cursor Agent's new default for "query backlog"
 - [ ] `query notion backlog` request resolves in 1 MCP call (down from 2 + client aggregation)
 - [ ] Response payload for dashboard query ≤ 5KB (down from ~170KB)
 - [ ] AGENTS.md Notion Workspace Map reflects new DB IDs and Snapshot page ID
@@ -217,7 +217,7 @@ python tools/notion/snapshot_renderer.py --regenerate  # test manually once
 1. Revert the commit for that wave (`git revert <sha>`).
 2. For schema additions: new properties are additive — simply leave them unused, or delete via Notion UI (does not affect existing Priority/prose data).
 3. For backfill writes: the legacy `Priority` number field and prose `Blocking Items` are never modified, so consumers fall back automatically.
-4. For W5 consumer switchover: revert `AGENTS.md` block; Cascade reverts to paginated query.
+4. For W5 consumer switchover: revert `AGENTS.md` block; Cursor Agent reverts to paginated query.
 5. For W6 rename: rename back via Notion UI; unarchive `Priority` from archived-properties.
 
 **Nuclear rollback (worst case):**
@@ -235,11 +235,11 @@ python tools/notion/snapshot_renderer.py --regenerate  # test manually once
 | Rows with typed `Impact Score` (auto-captured rows only) | 100% of 33 scored rows | filter `Impact Score: is_empty AND Plan contains DEFERRED_SCOPE` → 0 |
 | Unique `Plans` rows | ≥ 20 | `API-query-data-source(Plans)` count |
 | Snapshot page payload size | ≤ 5 KB | `retrieve-a-page` response byte count |
-| Default backlog query API call count | 1 | manual Cascade trace in fresh session |
+| Default backlog query API call count | 1 | manual Cursor Agent trace in fresh session |
 | Existing DEFERRED_SCOPE tests | all pass | `pytest tests/unit/ops_scripts/hooks/windsurf/ -v -k deferred_scope` |
 | Hook-added regression test for snapshot | pass | new `test_snapshot_renderer.py` |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; this plan's operational detail lives in the plan file, not in rules.
 - Retrieve local scoped evidence (existing row sample) before building backfill parsers.

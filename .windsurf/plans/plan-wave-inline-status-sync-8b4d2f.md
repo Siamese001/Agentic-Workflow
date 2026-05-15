@@ -426,7 +426,7 @@ wave_complete. Confirmed by TC-6.
 - New CI gate — `plan_driven_closer.py` drift detection is sufficient.
 - Retroactive bulk-repair of stale plans — advisory `--show-drift` only.
 - `post_cascade_wave_completion_audit.py` — it audits for missing WAVE markers in
-  Cascade responses, not for plan file field state.
+  Cursor Agent responses, not for plan file field state.
 - `MISS_SCORE_THRESHOLD` or Author-Gate signal changes.
 
 ---

@@ -2,7 +2,7 @@
 
 **Plan ID**: `collapse-apps-rg-runtime-b7e2f5`
 **Status**: **Completed** (all 4 waves shipped 2026-05-02 UTC-04:00)
-**Author**: Cascade
+**Author**: Cursor Agent
 **Tier**: T2 (single-layer migration; one app impacted; zero semantic change required)
 **Related plans**:
 - Predecessor (DONE): `apps-e2e-spine-cert-wireup-e1c4d7` — authored `apps_shared/spine_emission/` and wired 5 apps through it. §13 "What remains" #3 is exactly this plan.
@@ -121,4 +121,4 @@ Total: ~6k tokens.
 
 ### Plan SSOT
 
-`.windsurf/plans/collapse-apps-rg-runtime-b7e2f5.md` §9.
+`.cursor/plans/collapse-apps-rg-runtime-b7e2f5.md` §9.

@@ -1,7 +1,7 @@
 # MCP Skill Installation — Per-MCP Coverage
 
 **Status:** Complete (W1–W4 Done)
-**Author:** Cascade (T2)
+**Author:** Cursor Agent (T2)
 **Doctrine:** Playwright "install vendor skills, don't author custom routing prose" — see https://playwright.dev/agent-cli/skills
 
 ## Wave Structure
@@ -60,7 +60,7 @@ metadata that skills inform:
 - **`mv_tool_surface_overlap`** — flags any new skill that documents a
   tool already documented by an existing skill (avoid duplicate guidance).
 
-Semantic edge: **`resolves_callsite`** (skills tell Cascade which MCP tools
+Semantic edge: **`resolves_callsite`** (skills tell Cursor Agent which MCP tools
 to call; resolution lands in this edge type at runtime).
 
 P-views: surface=none — `.windsurf/skills/` is documentation, not production
@@ -70,7 +70,7 @@ code, so no `v_p0_*` / `v_p1_*` match is expected.
 
 | Hotspot | Layer | Fan-in | Archetype | Surface | Rationale |
 |---|---|---|---|---|---|
-| `.windsurf/skills/` (directory) | L_DOCS | high (every Cascade session reads this) | CENTRAL_DEPENDENCY | none | Skills directory drives MCP routing decisions for every turn |
+| `.windsurf/skills/` (directory) | L_DOCS | high (every Cursor Agent session reads this) | CENTRAL_DEPENDENCY | none | Skills directory drives MCP routing decisions for every turn |
 | `.windsurf/mcp_config.json` | L_CONFIG | high (server registry) | CENTRAL_DEPENDENCY | Execution Surface | Each new skill must align with a registered MCP server |
 
 ## Notes

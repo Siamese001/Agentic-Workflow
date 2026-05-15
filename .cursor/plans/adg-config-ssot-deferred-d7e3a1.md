@@ -21,7 +21,7 @@
 
 | Gap ID | Description | P-Band | Finding | Linked to Uber-Deferred Plan |
 |--------|-------------|--------|---------|------------------------------|
-| G-01 | Memory MCP schema hardcoded in Python | P2 | `_SCHEMA` string in `sqlite_memory_store.py`; no `.windsurf/schemas/memory*.sql` | D-01 |
+| G-01 | Memory MCP schema hardcoded in Python | P2 | `_SCHEMA` string in `sqlite_memory_store.py`; no `.cursor/schemas/memory*.sql` | D-01 |
 | G-02 | Redis Sentinel only in test compose | P3 | Production uses single-node; Sentinel config exists but profile-gated | D-02 |
 | G-03 | ADG generator relocated to `tools/generate/` | P3 | Path changed from `tools/adg/`; some docs may reference old path | D-03 |
 | G-04 | Vector cache uses dual SQLite+Chroma | P3 | `gptcache_client.py` has both; no unified cache layout SSOT | D-04 |
@@ -31,7 +31,7 @@
 
 **Finding:** Schema is defined inline as `_SCHEMA` string in `tools/memory/sqlite_memory_store.py` (lines 82-108). Migration system exists but uses additive column approach without version tracking.
 
-**SSOT Issue:** No separate `.windsurf/schemas/knowledge_graph.schema.sql` file violates SSOT folder routing (§31).
+**SSOT Issue:** No separate `.cursor/schemas/knowledge_graph.schema.sql` file violates SSOT folder routing (§31).
 
 **Recommendation:** Extract schema to canonical location; add version table for migration tracking.
 
@@ -69,7 +69,7 @@
 
 ## W6 — Uber-Deferred Plan Created ✅
 
-**Deliverable:** `.windsurf/plans/adg-config-ssot-uber-deferred-e8f2a3.md` — see separate plan for implementation backlog.
+**Deliverable:** `.cursor/plans/adg-config-ssot-uber-deferred-e8f2a3.md` — see separate plan for implementation backlog.
 
 ## Success Criteria (All Met)
 
@@ -81,6 +81,6 @@
 
 ## References
 
-- Parent Plan: `.windsurf/plans/adg-config-ssot-audit-c7e4a2.md`
-- Uber-Deferred Plan: `.windsurf/plans/adg-config-ssot-uber-deferred-e8f2a3.md`
+- Parent Plan: `.cursor/plans/adg-config-ssot-audit-c7e4a2.md`
+- Uber-Deferred Plan: `.cursor/plans/adg-config-ssot-uber-deferred-e8f2a3.md`
 - Constitutional: §22 (graph-layer), §31 (SSOT folder routing), §23 (static vs runtime)

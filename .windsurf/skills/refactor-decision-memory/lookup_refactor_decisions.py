@@ -2,7 +2,7 @@
 """
 lookup_refactor_decisions.py — Query the refactor decision ledger for precedent.
 
-Invoked by Cascade when the refactor-decision-memory skill is active.
+Invoked by Cursor Agent when the refactor-decision-memory skill is active.
 Reads a JSON query from stdin, searches the SQLite ledger using FTS5,
 and returns a structured precedent verdict to stdout.
 
@@ -258,7 +258,7 @@ def _run_query(
             continue
 
         # W5.2 — verify hash chain for this row. Fails closed: mismatch -> hash_ok=False
-        # but the match is still returned (so Cascade sees the warning) with a flag.
+        # but the match is still returned (so Cursor Agent sees the warning) with a flag.
         hash_ok: bool | None = None
         if _HASH_VERIFY_AVAILABLE and d.get("row_hash") and compute_row_hash is not None:
             hash_ok = _verify_row_hash(conn, did, d.get("prev_hash"), d.get("row_hash"))

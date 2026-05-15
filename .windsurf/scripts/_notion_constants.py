@@ -1,4 +1,4 @@
-"""SSOT for NOTION API/database constants used by Cascade hooks and scripts.
+"""SSOT for NOTION API/database constants used by Cursor Agent hooks and scripts.
 
 All `.windsurf/scripts/*.py` and `tools/*.py` scripts that hit Notion's
 REST API MUST import from this module instead of redefining literals.

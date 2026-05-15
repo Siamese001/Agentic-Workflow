@@ -1,7 +1,7 @@
 """Token-telemetry handler - per-turn token-cost telemetry.
 
 In-process equivalent of `.windsurf/scripts/post_cascade_token_telemetry.py`.
-Logs a row to `artifacts/windsurf/turn_budget.jsonl` for every Cascade response.
+Logs a row to `artifacts/windsurf/turn_budget.jsonl` for every Cursor Agent response.
 """
 
 from __future__ import annotations

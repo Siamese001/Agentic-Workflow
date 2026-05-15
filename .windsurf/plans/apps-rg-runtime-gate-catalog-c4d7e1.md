@@ -718,7 +718,7 @@ If critical regression detected:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - ADG query for `agentic_core/runtime_gates` existing abstractions before W0
 - ADG scan for direct `resume_data[...] = ` mutations in apps_rg

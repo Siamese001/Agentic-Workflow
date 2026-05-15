@@ -2,7 +2,7 @@
 
 **Plan ID**: `apps-fort-knox-parity-c5d9a3`
 **Status**: **Completed** — W1–W7 SHIPPED 2026-05-02; W8–W10 (open-scope closure) SHIPPED 2026-05-02 UTC-04:00 same session. Apps_e2e Fort Knox track at SIGNED_PROOF parity with agentic_core; FINAL_SIGNED_CERTIFICATION code paths + CI workflow shipped (closes on next tagged release).
-**Author**: Cascade
+**Author**: Cursor Agent
 **Tier**: T3 (5+ files, multi-layer, governance-critical, multi-wave)
 **Related plans**:
 - Predecessor (DONE): `apps-e2e-spine-cert-wireup-e1c4d7` — 8 of 8 apps SPINE_COMPLETE_CERTIFIED via shared spine emission

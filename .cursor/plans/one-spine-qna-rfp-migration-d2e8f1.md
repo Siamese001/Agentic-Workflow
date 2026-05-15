@@ -708,7 +708,7 @@ Source of truth: `git status --short` and `git ls-files --others --exclude-stand
 
 | File | git status | Notes |
 |------|-----------|-------|
-| `.windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md` | `??` new file to be added | Plan created; W0 audit results written inline |
+| `.cursor/plans/one-spine-qna-rfp-migration-d2e8f1.md` | `??` new file to be added | Plan created; W0 audit results written inline |
 
 ##### W1 — apps_qna Migration
 
@@ -881,7 +881,7 @@ python -m apps_rfp --rfp-document "/tmp/test.pdf" --target-company "TestCo" --dr
 
 ## Final Hardening Receipt (plan-only pass 2026-05-14)
 
-- **Plan path**: `.windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md`
+- **Plan path**: `.cursor/plans/one-spine-qna-rfp-migration-d2e8f1.md`
 - **git diff summary**: plan file only — no source, CI, test, or entrypoint files
 - **Files changed**: `one-spine-qna-rfp-migration-d2e8f1.md` (1 plan file)
 - **Verification commands**: none — hardening pass adds no executable code

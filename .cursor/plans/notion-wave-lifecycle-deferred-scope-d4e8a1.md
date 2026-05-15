@@ -1,7 +1,7 @@
 ---
 slug: notion-wave-lifecycle-deferred-scope
 title: Notion Wave Lifecycle — Deferred Scope Items
-author: Cascade
+author: Cursor Agent
 status: Deferred
 created: 2026-05-10
 updated: 2026-05-10
@@ -31,7 +31,7 @@ This plan captures those deferred items for future implementation.
 **Proposed Solution:** Evaluate and potentially migrate to an OAuth-hosted Notion MCP server (Variant C) where the MCP runs on a remote server with OAuth authentication. This would:
 - Remove the local stdio process management burden
 - Potentially allow different serialization behavior
-- Enable shared state across multiple Cascade instances
+- Enable shared state across multiple Cursor Agent instances
 
 **Blockers:**
 - Requires setting up/hosting an OAuth MCP server (notion-mcp-server with OAuth flow)
@@ -51,7 +51,7 @@ This plan captures those deferred items for future implementation.
 **Gap:** The new auto-sync only applies to plans going forward. Historical drift remains unaddressed.
 
 **Proposed Solution:** Run `tools/notion/repair_notion_plan_statuses.py` (already exists) as a one-time batch operation to:
-1. Enumerate all `.windsurf/plans/*.md` files
+1. Enumerate all `.cursor/plans/*.md` files
 2. Parse their frontmatter for `status` field
 3. Compare to Notion Plans DB `Status` property
 4. Patch Notion to match on-disk state where drift detected
@@ -74,7 +74,7 @@ This plan captures those deferred items for future implementation.
 
 ### Item 3: Backlog Items Mid-Plan Writeback (Clarification)
 
-**Current State:** `post_cascade_deferred_scope_capture.py` already handles Notion writeback for Backlog Items when `DEFERRED_SCOPE:` markers are emitted.
+**Current State:** `post_cursor_agent_deferred_scope_capture.py` already handles Notion writeback for Backlog Items when `DEFERRED_SCOPE:` markers are emitted.
 
 **Gap:** The parent plan mentioned this as "already handled," but there's potential confusion about whether the wave-lifecycle auto-sync chain should also update Backlog Items (not just Plans DB).
 
@@ -83,17 +83,17 @@ This plan captures those deferred items for future implementation.
 - Backlog Items DB = individual work items, their P-bands, and their completion status
 - The two databases serve different purposes and have different update cadences
 
-**Proposed Action:** Verify that `post_cascade_deferred_scope_capture.py` is correctly:
-1. Parsing `DEFERRED_SCOPE:` markers from Cascade responses
+**Proposed Action:** Verify that `post_cursor_agent_deferred_scope_capture.py` is correctly:
+1. Parsing `DEFERRED_SCOPE:` markers from Cursor Agent responses
 2. Scoring P1..P5 using the deferred-scope scorer
 3. Posting to Backlog Items DB with correct P-band
 4. Linking back to the parent plan via `Plan` relation
 
-**If Gaps Found:** Create follow-up plan to fix `post_cascade_deferred_scope_capture.py` integration.
+**If Gaps Found:** Create follow-up plan to fix `post_cursor_agent_deferred_scope_capture.py` integration.
 
 **Decision Gate:** Verify-only; if gaps found, separate plan required.
 
-**Files Touched:** `post_cascade_deferred_scope_capture.py` (if fixes needed), verification tests.
+**Files Touched:** `post_cursor_agent_deferred_scope_capture.py` (if fixes needed), verification tests.
 
 ## 3. Wave Structure
 
@@ -111,7 +111,7 @@ Total: ~9k tokens.
 |-----|------|--------------|
 | DoD-1 | OAuth decision captured | Author-Gate packet emitted and captured; decision recorded in ledger |
 | DoD-2 | Historical backfill complete | `repair_notion_plan_statuses.py` dry-run shows 0 remaining drift items |
-| DoD-3 | Backlog Items verified | `post_cascade_deferred_scope_capture.py` test suite passes; live verification shows DEFERRED_SCOPE markers post to Backlog Items DB |
+| DoD-3 | Backlog Items verified | `post_cursor_agent_deferred_scope_capture.py` test suite passes; live verification shows DEFERRED_SCOPE markers post to Backlog Items DB |
 
 ## 5. Risks and Dependencies
 
@@ -121,10 +121,10 @@ Total: ~9k tokens.
 
 ## 6. Cross-References
 
-- Parent Plan: `.windsurf/plans/notion-wave-lifecycle-autosync-f4a2b8.md`
-- Rule: `.windsurf/rules/notion-plan-wave-deferral.md` (sanctioned non-MCP path)
+- Parent Plan: `.cursor/plans/notion-wave-lifecycle-autosync-f4a2b8.md`
+- Rule: `.cursor/rules/notion-plan-wave-deferral.md` (sanctioned non-MCP path)
 - Script: `tools/notion/repair_notion_plan_statuses.py` (existing backfill capability)
-- Hook: `.windsurf/scripts/post_cascade_deferred_scope_capture.py` (Backlog Items writeback)
+- Hook: `.cursor/scripts/post_cursor_agent_deferred_scope_capture.py` (Backlog Items writeback)
 
 ---
 

@@ -7,7 +7,7 @@
 - **Predecessors** (all complete on `rtc-w2b-live-provider-allow-proof-b24f8e` / `rtc-w2-clean`):
   - D.1 schema — `tools/runtime_cert/decisions/cert_decision_record.py` (54 tests)
   - D.2 evaluator — `tools/runtime_cert/decisions/cert_decision_evaluator.py` (50 tests)
-  - D.3 ledger writer — `tools/runtime_cert/decisions/cert_decision_ledger.py` + `.windsurf/schemas/cert_decision_ledger.schema.sql` (35 tests)
+  - D.3 ledger writer — `tools/runtime_cert/decisions/cert_decision_ledger.py` + `.cursor/schemas/cert_decision_ledger.schema.sql` (35 tests)
   - D.4 smoke harness — `tools/runtime_cert/smoke/cert_decision_smoke.py` (27 tests)
 
 > **Planning pass only.** This file authorizes **no** closeout-report writing, **no** Python code, **no** new ledger, **no** schema change, **no** scanner edit, **no** CI gate, **no** emitter change, **no** app behavior change, and **no** certification claim. D.5 report authoring begins only after a separate Author-Gate approves this plan. `runtime_certification_status` for every app remains `NOT_CERTIFIED` throughout and after this plan.
@@ -93,7 +93,7 @@ docs/reports/runtime_cert/phase_d_closeout/<YYYY-Www>.md
 
 First expected path: `docs/reports/runtime_cert/phase_d_closeout/2026-W18.md`.
 
-Sibling to `docs/reports/runtime_cert/phase_c_closeout/` (when that directory exists). Respects the `validate_report_location.py` SSOT contract (`docs/reports/` for all human-readable reports — `.windsurf/rules/plan-location.md` companion invariant).
+Sibling to `docs/reports/runtime_cert/phase_c_closeout/` (when that directory exists). Respects the `validate_report_location.py` SSOT contract (`docs/reports/` for all human-readable reports — `.cursor/rules/plan-location.md` companion invariant).
 
 No new test is added. No existing test touches `docs/reports/`; if a docs-lint step exists elsewhere in pre-commit, the Markdown must pass it (link-check, heading levels).
 
@@ -109,7 +109,7 @@ The report MUST include all of the following sections, in this order. Every sect
 # Phase D Runtime-Certification Closeout — Week of <YYYY-MM-DD>
 
 - **Week**: <YYYY-Www>
-- **Author**: Cascade (documentation pass only)
+- **Author**: Cursor Agent (documentation pass only)
 - **Status**: Reporting
 - **Scope**: Phase D — cert-decision schema, evaluator, ledger writer, smoke harness
 - **Certification outcome**: **NONE**. Phase D does not certify apps.
@@ -151,7 +151,7 @@ The report MUST include all of the following sections, in this order. Every sect
 ### 5.5 D.3 ledger writer summary
 
 - Module: `tools/runtime_cert/decisions/cert_decision_ledger.py`
-- DDL: `.windsurf/schemas/cert_decision_ledger.schema.sql` (21 columns, 3 indexes, 2 `CHECK` constraints)
+- DDL: `.cursor/schemas/cert_decision_ledger.schema.sql` (21 columns, 3 indexes, 2 `CHECK` constraints)
 - Public surface: `CertDecisionLedgerWriteResult` (frozen); `ledger_path_for_app(app_name, *, repo_root=None)`; `ensure_cert_decision_ledger(path)`; `write_cert_decision_record(record, *, repo_root=None, fail_soft=True)`; `read_cert_decision_records(app_name, *, repo_root=None)`.
 - Per-app file layout: `artifacts/ledgers/cert_decision_<app_name>.sqlite` — one file per app, not a shared ledger.
 - Idempotency: `INSERT OR IGNORE` on `decision_id` + `total_changes==0` pattern.
@@ -198,7 +198,7 @@ Verification command: `python -m pytest tests/unit/tools/runtime_cert/decisions/
 | C.8 input | `PhaseCCloseoutReport.__post_init__` | `tools/runtime_cert/reports/phase_c_closeout.py` | `runtime_certification_status != NOT_CERTIFIED` → `ValueError` |
 | D.1 construction | `CertificationDecisionRecord.__post_init__` | `tools/runtime_cert/decisions/cert_decision_record.py` | Both status fields must equal `NOT_CERTIFIED` |
 | D.2 evaluator | Structural — every record it constructs goes through D.1 | `tools/runtime_cert/decisions/cert_decision_evaluator.py` | Inherits D.1 guard; cross-checks input `report.runtime_certification_status` |
-| D.3 SQL | `CHECK` constraints | `.windsurf/schemas/cert_decision_ledger.schema.sql` | `CHECK (runtime_certification_status_before = 'NOT_CERTIFIED')` + same for `_after` |
+| D.3 SQL | `CHECK` constraints | `.cursor/schemas/cert_decision_ledger.schema.sql` | `CHECK (runtime_certification_status_before = 'NOT_CERTIFIED')` + same for `_after` |
 | D.3 read-back | `_hydrate_one` + D.1 `__post_init__` + `compute_decision_id` recheck | `tools/runtime_cert/decisions/cert_decision_ledger.py` | Direct SQL tamper surfaces as `ValueError` on read |
 | D.4 smoke | `CertDecisionSmokeReport.__post_init__` | `tools/runtime_cert/smoke/cert_decision_smoke.py` | Smoke report status pin + read-back row status pin + disclaimer phrase pin |
 
@@ -259,7 +259,7 @@ The report closes with:
 
 ---
 
-## 7. Phase E / Phase F Boundary (restated for Cascade clarity)
+## 7. Phase E / Phase F Boundary (restated for Cursor Agent clarity)
 
 Repeating the boundary rules so the implementation turn cannot blur them:
 
@@ -286,8 +286,8 @@ The next turn (D.5 report authoring, after Author-Gate approval) MUST honor:
 4. **Unrelated working-tree changes** — mention in the commit message body but DO NOT stage. Known unrelated state on this branch:
    - `M agentic_core/L0_routing/logs/guardian_report.json` (auto-updated guardian artifact)
    - `?? tests/runtime/test_live_provider_attestation.py`, `?? tests/runtime/test_live_provider_readiness.py` (separate rtc-w2b workflow)
-   - `?? .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md` (separate plan)
-   - Any new `?? .windsurf/plans/runtime-cert-d5-phase-d-closeout-*.md` produced by this current planning turn (will become staged by the *current* turn, not D5.W2's).
+   - `?? .cursor/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md` (separate plan)
+   - Any new `?? .cursor/plans/runtime-cert-d5-phase-d-closeout-*.md` produced by this current planning turn (will become staged by the *current* turn, not D5.W2's).
 5. **If any unrelated path is staged**, stop and report — do not commit.
 6. **Commit message** — explicit per-phase summary with test counts and hard-constraint confirmation, mirroring the D.3 / D.4 commit bodies. One-liner subject + structured `-m` body sections: summary, files added, public surface (N/A for D.5), content summary, verification, hard constraints, staging discipline, recommended next phase.
 
@@ -338,7 +338,7 @@ Not applicable — no code, no tests. The "evidence table" that appears in the r
 
 Implementation halts and surfaces back for Author-Gate review if any of these is detected during D5.W2:
 
-- Any of `tools/runtime_cert/decisions/cert_decision_record.py`, `cert_decision_evaluator.py`, `cert_decision_ledger.py`, `.windsurf/schemas/cert_decision_ledger.schema.sql`, `tools/runtime_cert/smoke/cert_decision_smoke.py` is missing → **stop**.
+- Any of `tools/runtime_cert/decisions/cert_decision_record.py`, `cert_decision_evaluator.py`, `cert_decision_ledger.py`, `.cursor/schemas/cert_decision_ledger.schema.sql`, `tools/runtime_cert/smoke/cert_decision_smoke.py` is missing → **stop**.
 - ADR-080 §11 shows any of D.1, D.2, D.3, D.4 NOT marked ✅ → **stop**.
 - Writing D.5 begins to require any Python code change → **stop**.
 - Writing D.5 begins to require any ledger schema change → **stop**.

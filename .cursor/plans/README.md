@@ -1,10 +1,11 @@
-# Cursor plans
+# Cursor plans directory
 
-Active Cursor-facing implementation plans should be created here. Legacy converted plans were preserved under:
+Active Cursor work should normally avoid plan sprawl.
 
-```text
-.cursor/plans/_archive/cursor_legacy_plans/
-.cursor/plans/_archive/orphan_review_legacy/
-```
+Use a plan file only when the task truly needs multi-step design or audit work. For implementation work, prefer one runtime seam, exact commands, and proof status.
 
-Do not treat archived Cursor-era plans as active Cursor automation. Promote current procedures into Cursor rules, skills, agents, commands, or hooks.
+Historical migrated plans were archived under:
+
+`plans/_archive/historical_plans_20260515_cursor_optimization/`
+
+They are retained for reference only. They are not active execution instructions.

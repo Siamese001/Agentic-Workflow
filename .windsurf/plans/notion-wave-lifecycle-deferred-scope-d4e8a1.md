@@ -1,7 +1,7 @@
 ---
 slug: notion-wave-lifecycle-deferred-scope
 title: Notion Wave Lifecycle — Deferred Scope Items
-author: Cascade
+author: Cursor Agent
 status: Deferred
 created: 2026-05-10
 updated: 2026-05-10
@@ -31,7 +31,7 @@ This plan captures those deferred items for future implementation.
 **Proposed Solution:** Evaluate and potentially migrate to an OAuth-hosted Notion MCP server (Variant C) where the MCP runs on a remote server with OAuth authentication. This would:
 - Remove the local stdio process management burden
 - Potentially allow different serialization behavior
-- Enable shared state across multiple Cascade instances
+- Enable shared state across multiple Cursor Agent instances
 
 **Blockers:**
 - Requires setting up/hosting an OAuth MCP server (notion-mcp-server with OAuth flow)
@@ -84,7 +84,7 @@ This plan captures those deferred items for future implementation.
 - The two databases serve different purposes and have different update cadences
 
 **Proposed Action:** Verify that `post_cascade_deferred_scope_capture.py` is correctly:
-1. Parsing `DEFERRED_SCOPE:` markers from Cascade responses
+1. Parsing `DEFERRED_SCOPE:` markers from Cursor Agent responses
 2. Scoring P1..P5 using the deferred-scope scorer
 3. Posting to Backlog Items DB with correct P-band
 4. Linking back to the parent plan via `Plan` relation

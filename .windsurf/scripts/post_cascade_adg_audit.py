@@ -7,7 +7,7 @@ Detects grep_search calls used for dependency analysis (imports, references,
 consumers, fan-in/fan-out) and logs violations.
 
 This is the ONLY retroactive detection layer for the ADG-first enforcement rule
-because Windsurf has no pre-tool-use hook for native Cascade tools (grep_search,
+because Windsurf has no pre-tool-use hook for native Cursor Agent tools (grep_search,
 find_by_name, list_dir).
 
 Detection heuristic:
@@ -60,7 +60,7 @@ _literal_confirm_patterns = [
     re.compile(r"DEPRECATED|REMOVED|ARCHIVED", re.IGNORECASE),
 ]
 
-# Regex to find grep_search tool calls in the Cascade response markdown
+# Regex to find grep_search tool calls in the Cursor Agent response markdown
 # The response contains tool call blocks with Query and SearchPath parameters
 _GREP_CALL_RE = re.compile(
     r"grep_search.*?Query[\"']?\s*[:=]\s*[\"'](.+?)[\"']",
@@ -193,7 +193,7 @@ def detect_violations(response_text: str) -> list[dict]:
       called first, severity is upgraded to 'critical' (silent fallback).
     - If mcp1_adg_health WAS called and returned unhealthy, grep is tolerated
       if DEGRADED_FALLBACK reason is present (severity: 'warning').
-    - Remediation guidance is always attached to help Cascade self-correct.
+    - Remediation guidance is always attached to help Cursor Agent self-correct.
     """
     violations = []
 

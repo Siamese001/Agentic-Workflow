@@ -22,7 +22,7 @@
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---:|---|---|---|
 | D3.W1 | D3.P1 | Author-Gate approval of this plan | ~1 200 | ADR-080 §11 permits per-sub-phase gating | Pending | User approves one of AG options in §11 |
-| D3.W2 | D3.P2, D3.P3 | DDL + writer module + ≥16 unit tests | ~9 000 | D.1/D.2 stable; existing ledger helper NOT reused (see §6) | Blocked on D3.W1 | Module under `tools/runtime_cert/decisions/cert_decision_ledger.py`, DDL file under `.windsurf/schemas/`, tests use `tmp_path` exclusively |
+| D3.W2 | D3.P2, D3.P3 | DDL + writer module + ≥16 unit tests | ~9 000 | D.1/D.2 stable; existing ledger helper NOT reused (see §6) | Blocked on D3.W1 | Module under `tools/runtime_cert/decisions/cert_decision_ledger.py`, DDL file under `.cursor/schemas/`, tests use `tmp_path` exclusively |
 | D3.W3 | D3.P4 | Minimal doc updates: ADR-080 §11 ✅ D.3, binding matrix footnote | ~700 | D3.W2 merged | Blocked on D3.W2 | ADR row marked ✅; §14 disclaimer preserved verbatim |
 
 ## Phase-Level Summary
@@ -30,7 +30,7 @@
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---:|---|---|
 | D3.P1 | Author-Gate approval | This plan file | Five trade-offs in §11 need explicit sign-off | ~1 200 | Pending |
-| D3.P2 | DDL + ensure-ledger helper | `.windsurf/schemas/cert_decision_<app>.schema.sql` (template), `cert_decision_ledger.py::ensure_cert_decision_ledger()` | First use of per-app SQLite file pattern in this repo; must not clash with `.windsurf/schemas/` conventions for LEDGER_REGISTRY | ~3 000 | Blocked |
+| D3.P2 | DDL + ensure-ledger helper | `.cursor/schemas/cert_decision_<app>.schema.sql` (template), `cert_decision_ledger.py::ensure_cert_decision_ledger()` | First use of per-app SQLite file pattern in this repo; must not clash with `.cursor/schemas/` conventions for LEDGER_REGISTRY | ~3 000 | Blocked |
 | D3.P3 | Writer + reader + result object + tests | `cert_decision_ledger.py` full surface + `test_cert_decision_ledger.py` | Idempotency on `decision_id`; fail-soft vs. fail-hard toggle; `tmp_path`-only tests; no scanner/CI coupling | ~6 000 | Blocked |
 | D3.P4 | Doc updates | ADR-080 §11, binding matrix footnote | Preserve §14 disclaimer verbatim | ~700 | Blocked |
 
@@ -165,10 +165,10 @@ tests/unit/tools/runtime_cert/decisions/test_cert_decision_ledger.py
 
 DDL file (new):
 ```
-.windsurf/schemas/cert_decision_ledger.schema.sql
+.cursor/schemas/cert_decision_ledger.schema.sql
 ```
 
-The DDL lives under `.windsurf/schemas/` to match the repo-wide
+The DDL lives under `.cursor/schemas/` to match the repo-wide
 convention established by `tools/ledgers/schema_registry.py`, **but is
 NOT registered in `LEDGER_REGISTRY`** — see §6 for why.
 
@@ -218,7 +218,7 @@ D.3 WILL inherit these disciplines from `tools.ledgers.writer` via
 
 ## 7. Ledger Schema (DDL)
 
-File: `.windsurf/schemas/cert_decision_ledger.schema.sql`
+File: `.cursor/schemas/cert_decision_ledger.schema.sql`
 
 ```sql
 -- Phase D.3 cert-decision ledger. Per-app SQLite file. Append-only.
@@ -303,7 +303,7 @@ def ledger_path_for_app(
 def ensure_cert_decision_ledger(path: str | Path) -> None:
     """Apply the DDL idempotently. Creates parent dirs.
 
-    Reads .windsurf/schemas/cert_decision_ledger.schema.sql and executes
+    Reads .cursor/schemas/cert_decision_ledger.schema.sql and executes
     it. Safe to call repeatedly (all statements are IF NOT EXISTS).
     """
 
@@ -492,7 +492,7 @@ implementation begins.
 
 ### AG-4: DDL location
 
-- **⭐ Recommended**: `.windsurf/schemas/cert_decision_ledger.schema.sql`
+- **⭐ Recommended**: `.cursor/schemas/cert_decision_ledger.schema.sql`
   (convention-aligned with existing ledger schemas) but NOT registered
   in `LEDGER_REGISTRY`. Ensure-ledger helper reads and applies this file.
 - **Alternative A**: inline DDL as a Python string constant in
@@ -575,7 +575,7 @@ if any of these is detected during D3.W2:
 - `tools.ledgers.writer`'s threading-lock pattern turns out to be
   insufficient under pytest-xdist (tests must be xdist-disabled anyway
   per plan §12, so this is a non-issue by design)
-- The DDL file at `.windsurf/schemas/` conflicts with
+- The DDL file at `.cursor/schemas/` conflicts with
   `tools/ledgers/apply_schema.py`'s sweep behavior (need to verify
   `apply_schema.py` iterates `LEDGER_REGISTRY`, not the schemas directory
   — if it sweeps the directory, the D.3 DDL filename must be chosen to
@@ -591,7 +591,7 @@ if any of these is detected during D3.W2:
 | 2 | Per-app file at `artifacts/ledgers/cert_decision_<app>.sqlite` | ADR-080 §6, §11 AG-2 | Inherited + reaffirmed |
 | 3 | `decision_id` as PRIMARY KEY — idempotency via INSERT OR IGNORE | §9, plan spec §2 | Recommended; pending AG |
 | 4 | `fail_soft=True` default; returns `CertDecisionLedgerWriteResult` | §10, §11 AG-3 | Recommended; pending AG |
-| 5 | DDL in `.windsurf/schemas/cert_decision_ledger.schema.sql`, **not** in `LEDGER_REGISTRY` | §5, §11 AG-4 | Recommended; pending AG |
+| 5 | DDL in `.cursor/schemas/cert_decision_ledger.schema.sql`, **not** in `LEDGER_REGISTRY` | §5, §11 AG-4 | Recommended; pending AG |
 | 6 | `CHECK` constraints on both status columns (belt-and-suspenders with D.1) | §7 | Recommended; pending AG |
 | 7 | Read-back re-validates every row via D.1 | §9, §11 AG-5 | Recommended; pending AG |
 | 8 | `CERT_DECISION_LEDGER_BYPASS=1` env var (distinct from `LEDGER_WRITER_BYPASS`) | §6, §10 | Recommended; pending AG |
@@ -601,7 +601,7 @@ if any of these is detected during D3.W2:
 
 ## 15. Unresolved Questions
 
-1. **Does `tools/ledgers/apply_schema.py` sweep `.windsurf/schemas/` or
+1. **Does `tools/ledgers/apply_schema.py` sweep `.cursor/schemas/` or
    iterate `LEDGER_REGISTRY`?** If the former, the D.3 DDL filename must
    not match an existing pattern that triggers registration. Verification
    step, not a design change. Resolve at D3.P2 start.
@@ -666,7 +666,7 @@ Suggested gate question for the follow-up turn:
 
 On approval, work proceeds in three commits per plan §Wave Structure:
 
-1. **D3.W2 commit 1**: `.windsurf/schemas/cert_decision_ledger.schema.sql`
+1. **D3.W2 commit 1**: `.cursor/schemas/cert_decision_ledger.schema.sql`
    DDL + `ensure_cert_decision_ledger` + `ledger_path_for_app` + tests
    1–4, 17, 19.
 2. **D3.W2 commit 2**: `CertDecisionLedgerWriteResult` +

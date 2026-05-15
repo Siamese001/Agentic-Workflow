@@ -5,7 +5,7 @@
 Status: **W0.1 + W1.1 done; W1.2 deferred (code change); cross-app independence verified in integrated plan; W2+ gated on three-bucket**
 Last updated: 2026-05-01
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `apps-exec-first-principles-refactor-5e6a4b`
 
 ## Phase B severity ranking

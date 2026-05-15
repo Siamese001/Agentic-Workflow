@@ -7,7 +7,7 @@
 **Updated:** 2026-05-10 01:13 UTC-04 — W0 Author-Gate complete; all 12 decisions resolved
 **Authoring mode:** plan only — no code changes in this session
 
-**Depends on:** `.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` (parent plan covering concern #2 L5 authority certification end-to-end). This umbrella plan **may not start** until the parent plan is `Status=Completed` in Notion Plans DB. Per user direction 2026-05-09 19:25 UTC-04, AG-W0-D1 is resolved as **(c) chain**: the narrow L5 plan executes first; this umbrella picks up the remaining 9 concerns.
+**Depends on:** `.cursor/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` (parent plan covering concern #2 L5 authority certification end-to-end). This umbrella plan **may not start** until the parent plan is `Status=Completed` in Notion Plans DB. Per user direction 2026-05-09 19:25 UTC-04, AG-W0-D1 is resolved as **(c) chain**: the narrow L5 plan executes first; this umbrella picks up the remaining 9 concerns.
 
 This is the umbrella plan covering **9 of 10 concerns** from the gap analysis 2026-05-09 19:17 UTC-04. Concern #2 (L5 authority certification) is delivered by the parent plan — it is documented here for completeness only and does **not** consume waves/phases/tokens in this plan.
 
@@ -301,7 +301,7 @@ ADG snapshot `05052026_0722` returned zero `nodes_by_file` results for several s
 
 ## 15. Pre-Wave Prerequisites
 
-- **Parent plan `l5-cert-ref-emit-chain-threading-c4e7f1` reports `Status=Completed` in Notion Plans DB.** This is the hard gate. Cascade MUST verify via `API-query-data-source` before any wave starts.
+- **Parent plan `l5-cert-ref-emit-chain-threading-c4e7f1` reports `Status=Completed` in Notion Plans DB.** This is the hard gate. Cursor Agent MUST verify via `API-query-data-source` before any wave starts.
 - ADG re-ingest: `python tools/generate_full_adg.py` then `python tools/adg/adg_redis_ingest.py --check` to ensure all 11 contract dataclasses are indexed.
 - W0 Author-Gate queue drained — at most 6 unresolved packets answered (D6, D7, D8, D9, D11, D12) and captured to refactor decision ledger.
 - W0 ledger lookup confirms parent plan answered D2, D3, D4, D5, D10 — adopt those answers; only escalate to fresh AG if the parent plan ledger row is missing or contradicts intent.
@@ -327,7 +327,7 @@ ADG snapshot `05052026_0722` returned zero `nodes_by_file` results for several s
 
 - Spec source: user request 2026-05-09 19:17 UTC-04.
 - Validation report: prior turn (10-concern × 11-contract gap matrix).
-- Parent plan (hard prerequisite): `.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` — delivers concern #2 L5 authority cert ref end-to-end. Must be `Status=Completed` before this umbrella starts.
+- Parent plan (hard prerequisite): `.cursor/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` — delivers concern #2 L5 authority cert ref end-to-end. Must be `Status=Completed` before this umbrella starts.
 - Constitutional §22 — graph-layer evidence required for T2/T3 plans.
 - Constitutional §23 — ADG canonical invariants, archetype + surface classification.
 - Constitutional §30 — `DECISION_CAPTURED:` for refactor-class Author-Gate answers.
@@ -337,4 +337,4 @@ ADG snapshot `05052026_0722` returned zero `nodes_by_file` results for several s
 
 ---
 
-PLAN_CREATED: slug=w6-emit-contract-enrichment-d8b2a4 path=.windsurf/plans/w6-emit-contract-enrichment-d8b2a4.md status=not_started tier=T3 layer=cross-cutting
+PLAN_CREATED: slug=w6-emit-contract-enrichment-d8b2a4 path=.cursor/plans/w6-emit-contract-enrichment-d8b2a4.md status=not_started tier=T3 layer=cross-cutting

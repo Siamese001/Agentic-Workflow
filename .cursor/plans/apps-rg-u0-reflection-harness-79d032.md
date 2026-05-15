@@ -9,7 +9,7 @@ exists_on_disk: true
 
 # apps_rg U0 Payload Reflection Harness
 
-PLAN_CREATED: plan=apps-rg-u0-reflection-harness-79d032 path=.windsurf/plans/apps-rg-u0-reflection-harness-79d032.md status=in-progress
+PLAN_CREATED: plan=apps-rg-u0-reflection-harness-79d032 path=.cursor/plans/apps-rg-u0-reflection-harness-79d032.md status=in-progress
 
 PLAN_COMPLETE: plan=apps-rg-u0-reflection-harness-79d032 note="13 files; 30/30 tests pass; valid fixture: 56 pointers (20 MAPPED, 12 DERIVED, 24 DEFERRED, 0 silently_dropped, 0 unknown_mappings); deterministic digests; all 4 invalid fixtures fail-closed with named exceptions"
 

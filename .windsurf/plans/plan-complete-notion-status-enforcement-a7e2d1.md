@@ -41,7 +41,7 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 1. Plan created → registered in Notion (unknown initial status)
 2. Plan set to "Archived" + stale "Waiting For" note (before W8-W10 work)
 3. W8–W10 executed via ad-hoc user instructions (no wave_execution_state.py start/complete)
-4. PLAN_COMPLETE: marker emitted in Cascade response
+4. PLAN_COMPLETE: marker emitted in Cursor Agent response
 5. post_cascade_wave_lifecycle_capture.py hook:
    - Either NOTION_TOKEN absent → skipped silently (no stderr, show_output=false)
    - Or HTTP PATCH failed → swallowed (fail-open policy)
@@ -97,7 +97,7 @@ Harden the plan-complete lifecycle so Notion status reliably flips to "Completed
 
 ## Out Of Scope
 
-- Changing the fail-open policy of the hook (by design — hooks must never block Cascade)
+- Changing the fail-open policy of the hook (by design — hooks must never block Cursor Agent)
 - Making `wave_execution_state.py start/complete` mandatory for all plans (too disruptive for ad-hoc work)
 - Retroactively fixing other plans with stale Notion status (separate maintenance task)
 - Changing `show_output` on the wave lifecycle capture hook (it's noisy by design)

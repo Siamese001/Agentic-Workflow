@@ -52,7 +52,6 @@ In-house MCP — no upstream vendor. The canonical static dependency graph for t
 ## Hard Rules
 
 1. **`grep_search` for dependency analysis is FORBIDDEN.** Always use ADG. (Constitutional §22, §28.)
-2. **MCP serialization (§25):** one MCP call per response. Plan reads accordingly.
 3. **SQLite-direct fallback supersedes grep.** When MCP is blocked, query `artifacts/adg/adg_indexed_<ts>.sqlite` directly via the `sqlite3` module — NOT grep. (See `graph-analysis/SKILL.md`.)
 4. **Provenance stamping required** for ADG-backed answers in plans/reports: `ADG Provenance: backend=<redis_cache|sqlite|degraded_grep>, snapshot=adg_indexed_<ts>.sqlite`.
 5. **Lock protocol before MCP restart:** `adg_close_connections` → restart → `adg_reopen_connections` → `adg_health` to verify.

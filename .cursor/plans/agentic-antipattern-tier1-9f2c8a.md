@@ -4,7 +4,7 @@
 **Tier:** T3 (cross-layer: registry + AST detectors + burndown report + ADG regen)
 **ADG snapshot at plan time:** `adg_indexed_04202026_1802.sqlite` (healthy sqlite+redis)
 **Decision source:** Author-Gate Tier 1 selection (9 patterns) — DECISION_CAPTURED emitted
-**SSOT:** `.windsurf/plans/agentic-antipattern-tier1-9f2c8a.md` (this file)
+**SSOT:** `.cursor/plans/agentic-antipattern-tier1-9f2c8a.md` (this file)
 
 ---
 

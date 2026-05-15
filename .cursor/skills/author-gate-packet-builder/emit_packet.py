@@ -53,7 +53,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 # Legacy decision_record.schema.json remains the ledger-row schema; this
 # packet schema is the emit-time SSOT shared with all 4 audit hooks.
 SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "author_gate_packet.schema.json"
-RULE_PATH = REPO_ROOT / ".cursor" / "rules" / "author-gate-enforcement.md"
+RULE_PATH = REPO_ROOT / ".cursor" / "rules" / "author-gate-enforcement.mdc"
 PRECEDENT_SCRIPT = Path(__file__).resolve().parent / "precedent_injector.py"
 
 # Shared schema loader — single import surface for emit + audits.
@@ -326,32 +326,27 @@ def build_packet(spec: dict[str, Any]) -> dict[str, Any]:
 
     annotated, routing = apply_routing([dict(c) for c in candidates_in])
 
-    # recommended_option_id is set ONLY when dominance fires; otherwise no recommendation exists.
-    recommended_id = (
-        ranked[0].get("id") if ranked and routing.get("rule_applied") == "dominance_fires" else None
-    )
-
-    # Gold-star ONLY when dominance fires (author-gate-enforcement.md Pipeline step 7).
-    # In any other routing verdict (surface_top_N, low_confidence_ambiguity, empty)
-    # no option is starred — the gate verdict is "user-decision-required" and there
-    # is no recommendation. Every surfaced option still carries a [confidence=0.NN]
-    # prefix so the UI always shows the score.
-    dominance_fired = routing.get("rule_applied") == "dominance_fires"
     surfaced_sorted = sorted(
         (c for c in annotated if c.get("surfaced")),
         key=lambda c: float(c.get("confidence_score", 0)),
         reverse=True,
     )
+    # Leading option (top surfaced score) drives Cursor ask_user_question UI.
+    # Dominance routing still controls auto-proceed vs multi-option surface count.
+    recommended_id = surfaced_sorted[0].get("id") if surfaced_sorted else None
+    dominance_fired = routing.get("rule_applied") == "dominance_fires"
+
     for idx, opt in enumerate(surfaced_sorted):
         score = float(opt.get("confidence_score", 0))
         title = opt.get("thesis", opt.get("id", ""))[:80]
-        if dominance_fired and idx == 0:
+        pill = "🟢" if score >= 0.85 else ("🟡" if score >= 0.72 else "🔴")
+        if idx == 0:
             opt["is_recommended"] = True
-            opt["surface_label"] = f"⭐ Recommended — {title}"
+            opt["surface_label"] = f"⭐ Recommended — {pill} {score:.0%} — {title}"
             prefix = f"[RECOMMENDED ⭐ confidence={score:.2f}]"
         else:
             opt["is_recommended"] = False
-            opt["surface_label"] = title
+            opt["surface_label"] = f"{pill} {score:.0%} — {title}"
             prefix = f"[confidence={score:.2f}]"
         opt["surface_description_prefix"] = prefix
         # Plan author-gate-four-req-enforcement-c4d2a8 W1.P1.

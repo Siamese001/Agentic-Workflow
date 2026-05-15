@@ -27,7 +27,7 @@ Generated: 2026-05-02  ·  Status: Live  ·  No-code deliverable  ·  Companion 
 
 Per-wave execution packets for the 114 D-bucket Notion backlog rows. Each wave is sized for cross-session pickup: **one human-ready entry criterion, concrete ordered steps, files in scope, exit criterion, row-closure list**. 
 
-**Hard invariant**: a single Cascade turn cannot execute a wave. Each wave spans N sessions. Use this roadmap to resume cleanly between sessions.
+**Hard invariant**: a single Cursor Agent turn cannot execute a wave. Each wave spans N sessions. Use this roadmap to resume cleanly between sessions.
 
 ## Wave Structure (canonical from `d-bucket-burndown-e4f2c9`)
 
@@ -118,7 +118,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/l6-gravity-hybrid-7c4e2a.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -144,7 +144,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/gap-closure-test-impl-b77a11.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -152,17 +152,17 @@ Before declaring a wave complete:
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `34e27693-f55` | P1 | 444 | [P1] L4 blueprint policy version migration tests (00B.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P1 | 405 | [P1] L3-L2 step handoff checkpoint resume tests (03.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
+| `34e27693-f55` | P1 | 444 | [P1] L4 blueprint policy version migration tests (00B.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P1 | 405 | [P1] L3-L2 step handoff checkpoint resume tests (03.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
 | `34e27693-f55` | P2 | 287 | L2 sequencer orchestrator contract tests (04.0) | RESOLVED 2026-04-26: L2 sequencer orchestrator contracts (spec 04.0) implemented |
-| `34e27693-f55` | P2 | 286 | [P2] L2 StateDiffCandidate mutation intent tests (04.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P2 | 277 | [P2] PA authority red-team slot verification tests (PA.8) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P2 | 254 | [P2] PTC v2 sandbox hardening tests (04.7) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P2 | 240 | [P2] L2 verify-then-execute local critique tests (04.10) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
+| `34e27693-f55` | P2 | 286 | [P2] L2 StateDiffCandidate mutation intent tests (04.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P2 | 277 | [P2] PA authority red-team slot verification tests (PA.8) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P2 | 254 | [P2] PTC v2 sandbox hardening tests (04.7) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P2 | 240 | [P2] L2 verify-then-execute local critique tests (04.10) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
 | `35027693-f55` | P2 | 185 | [P2] G2_seam_test_export_coherence P1 6 test export coherenc | [REROUTE 2026-04-30] Re-routed from orphan slug `adg-seam-test-coherence-cleanup |
-| `34e27693-f55` | P2 | 161 | [P2] E2E fixtures replay harness commands tests (99.10) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P2 | 161 | [P2] E2E mutation testing boundary faults tests (99.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
-| `34e27693-f55` | P2 | 160 | [P2] L6 memory promotion interface tests (06.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cascade to fill o |
+| `34e27693-f55` | P2 | 161 | [P2] E2E fixtures replay harness commands tests (99.10) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P2 | 161 | [P2] E2E mutation testing boundary faults tests (99.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
+| `34e27693-f55` | P2 | 160 | [P2] L6 memory promotion interface tests (06.9) | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-26 — Cursor Agent to fill o |
 | `34b27693-f55` | P3 | 124 | [P3] W1 W1.1 — replace deleted test_pytest_server with tests | [REROUTE 2026-04-30] Re-routed from orphan slug `pytest-server-functional-tests` |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
@@ -176,7 +176,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/adg-architectural-p0-violations-cleanup-bced9c.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -185,7 +185,7 @@ Before declaring a wave complete:
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
 | `35027693-f55` | P1 | 390 | [P1] C2_l5_bypass_pview P0 L5 safety plane bypass | [REROUTE 2026-04-30] Re-routed from orphan slug `adg-l5-bypass-cleanup` (no plan |
-| `34c27693-f55` | P3 | 0 | [P3] Remediate the 3 SC-1 + 2 P0 architectural violations su | Success: TBD — Cascade suggested follow-up; fill on execution start. \| Blocking |
+| `34c27693-f55` | P3 | 0 | [P3] Remediate the 3 SC-1 + 2 P0 architectural violations su | Success: TBD — Cursor Agent suggested follow-up; fill on execution start. \| Blocking |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
 
@@ -198,7 +198,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/phase-b-blocker-burndown-a8c4f1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -206,9 +206,9 @@ Before declaring a wave complete:
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `35027693-f55` | P1 | 384 | [P1] 4_capability_egress P0 outbound calls bypass capability | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cascade to fill o |
-| `35027693-f55` | P1 | 319 | [P1] v_p0_write_bypass_uwg P0 state write does not flow thro | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cascade to fill o |
-| `35027693-f55` | P1 | 319 | [P1] C1_uwg_bypass_pview P0 single row UWG bypass pview | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cascade to fill o |
+| `35027693-f55` | P1 | 384 | [P1] 4_capability_egress P0 outbound calls bypass capability | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cursor Agent to fill o |
+| `35027693-f55` | P1 | 319 | [P1] v_p0_write_bypass_uwg P0 state write does not flow thro | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cursor Agent to fill o |
+| `35027693-f55` | P1 | 319 | [P1] C1_uwg_bypass_pview P0 single row UWG bypass pview | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cursor Agent to fill o |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
 
@@ -226,7 +226,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/audit-uncovered-gates-and-remediation-627368.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -235,7 +235,7 @@ Before declaring a wave complete:
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
 | `34b27693-f55` | P1 | 361 | [P1] W7 W7.4 — D7 gate over-flags subsystems dispatched via  | [REROUTE 2026-04-30] Re-routed from orphan slug `d7-anchor-tuning` (no plan on d |
-| `35027693-f55` | P2 | 240 | [P2] J1_canonical_pipeline_wiring P0 6 manifest violations o | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cascade to fill o |
+| `35027693-f55` | P2 | 240 | [P2] J1_canonical_pipeline_wiring P0 6 manifest violations o | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-28 — Cursor Agent to fill o |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
 
@@ -248,7 +248,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/repo-tech-debt-wave1-b3c8d1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -274,7 +274,7 @@ Before declaring a wave complete:
 1. Read parent plan `.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -312,7 +312,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -334,7 +334,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/NEW:adg-mcp-reopen-hardening (to be created)` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -362,7 +362,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/anthropic-rag-gaps-7f3c2a.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -384,7 +384,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/windsurf-maintenance-2026-q2-0f3564.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -405,7 +405,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -439,7 +439,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/adg-three-bucket-unified-c4f8e2.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -447,8 +447,8 @@ Row IDs (for bulk retire if that's the chosen path):
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `35127693-f55` | P3 | 148 | [P3] Prompt-slot registry resolver pending canonical declara | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-29 — Cascade to fill o |
-| `35127693-f55` | P5 | 0 | [P4] Schema graduation to column-level NOT NULL after 4-week | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-29 — Cascade to fill o |
+| `35127693-f55` | P3 | 148 | [P3] Prompt-slot registry resolver pending canonical declara | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-29 — Cursor Agent to fill o |
+| `35127693-f55` | P5 | 0 | [P4] Schema graduation to column-level NOT NULL after 4-week | Success: Auto-captured from DEFERRED_SCOPE marker 2026-04-29 — Cursor Agent to fill o |
 | `34a27693-f55` | P3 | 0 | [P3] Rewrite weak gates to use graph-layer primitives (MVs + | Depends on 1.3 precision audit. Replace name-match/flat-relational queries with  |
 | `34a27693-f55` | P3 | 0 | [P3] Burn down test-harness coverage baseline (1051 uncovere | Largest debt surface. 1051/1250 production modules have ZERO test-harness import |
 | `34a27693-f55` | P3 | 0 | [P3] Burn down lifecycle-pair baseline (142 legacy leaks) | 142 leaks across sqlite3.connect (error), open (error), redis.Redis (warn), chro |
@@ -464,7 +464,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/sc1-audit-to-enforce-promotion-b4e9d7.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -485,7 +485,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/notion-schema-refactor-cleanup-9f2e4a.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -513,7 +513,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/scorer-otel-autosource-layer-b-c5e4d1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -537,7 +537,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -558,7 +558,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -579,7 +579,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/decision-router-policy-tables-b3a4d2.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -639,7 +639,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/adg-tree-sitter-parser-exploration-b1c517.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -647,7 +647,7 @@ Row IDs (for bulk retire if that's the chosen path):
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `34f27693-f55` | P4 | 0 | [P4] Explore tree-sitter as ADG parser pass | Success: TBD — Cascade suggested follow-up; fill on execution start. \| Blocking |
+| `34f27693-f55` | P4 | 0 | [P4] Explore tree-sitter as ADG parser pass | Success: TBD — Cursor Agent suggested follow-up; fill on execution start. \| Blocking |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
 
@@ -660,7 +660,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/mcp-serial-defense-l2l5-7d4f1a.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -681,7 +681,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/adg-cascading-ratchet-defer-exit-a41828.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -689,7 +689,7 @@ Row IDs (for bulk retire if that's the chosen path):
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `34c27693-f55` | P4 | 0 | [P4] Extend defer-exit pattern to SC-1 / agentic-antipattern | Success: TBD — Cascade suggested follow-up; fill on execution start. \| Blocking |
+| `34c27693-f55` | P4 | 0 | [P4] Extend defer-exit pattern to SC-1 / agentic-antipattern | Success: TBD — Cursor Agent suggested follow-up; fill on execution start. \| Blocking |
 
 **Exit**: all rows above flipped Completed; parent plan regen-verified; no new P0/P1 ADG violations.
 
@@ -702,7 +702,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/notion-backlog-human-scoring-e7a941.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -710,7 +710,7 @@ Row IDs (for bulk retire if that's the chosen path):
 
 | Row ID | Band | Impact | Title | BI snippet |
 |---|---|---:|---|---|
-| `34c27693-f55` | P3 | 0 | [SCORING] Wave 5 — Apply filled worksheet to Notion | Cascade runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4.  |
+| `34c27693-f55` | P3 | 0 | [SCORING] Wave 5 — Apply filled worksheet to Notion | Cursor Agent runs tools/debug/_apply_human_scoring.py once human finishes waves 1-4.  |
 | `34c27693-f55` | P3 | 0 | [SCORING] Wave 4 — Score 22 singleton rows (H/B/EQ/ENH/misc) | Human reviews remaining H-series (H3/H6-H10 not in prior Wave D), B-series (B1-B |
 | `34c27693-f55` | P3 | 0 | [SCORING] Wave 3 — Score 8 baseline-burndown rows (GAP/W1-P0 | Human spot-checks baseline counts (153 env flags, 142 legacy leaks, 1051 uncover |
 | `34c27693-f55` | P3 | 0 | [SCORING] Wave 2 — Score 22 governance rows (W1.x / W2.x / W | Human audits each governance row against .windsurf/rules/ and .windsurf/hooks.js |
@@ -727,7 +727,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/shadow-learning-bestpractice-gap-7b3e4c.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -749,7 +749,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -770,7 +770,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/adg-wiring-ci-dispatcher-hardening-b2f4a1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -795,7 +795,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/judge-surface-harmonization-b9d3a7.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -816,7 +816,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/llm-judge-hardening-followups-f2c8e1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -837,7 +837,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/llm-as-judge-hardening-anthropic-e7b1a4.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -858,7 +858,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/moe-agentic-architecture-d4e9a2.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -879,7 +879,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/prompt-assembly-few-shot-exemplars-9c4e2b.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -900,7 +900,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/prompt-categories-coverage-audit-b8f5d3.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -921,7 +921,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/cot-reflexion-self-consistency-config-7a3f1c.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -942,7 +942,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/hybrid-search-adg-seed-rerank-c58e21.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -963,7 +963,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/ssot-violations-sweep-29caf4.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -985,7 +985,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/p2-burndown-wave-9e4c17.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 
@@ -1007,7 +1007,7 @@ Row IDs (for bulk retire if that's the chosen path):
 1. Read parent plan `.windsurf/plans/ssot-consolidation-cleanup-b7f3a1.md` to understand current wave status + any in-progress Phase ID
 2. For each row below (in impact-descending order), fetch the Notion row and inspect Evidence for prior partial execution
 3. Determine smallest complete sub-slice executable in current session (may be 1 row, rarely more than 3 for P1)
-4. Execute per the usual Cascade T2/T3 loop: analyze → plan → edit → verify → evidence
+4. Execute per the usual Cursor Agent T2/T3 loop: analyze → plan → edit → verify → evidence
 5. For each row completed: PATCH Notion Status=Completed, Evidence=commit SHA + delta summary, Last Updated=today
 6. Update parent plan's wave status table
 

@@ -193,7 +193,7 @@ The plural field should be removed once all callers confirm they use the singula
 
 ## 8. References
 
-- Parent plan: `.windsurf/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` (Completed)
+- Parent plan: `.cursor/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md` (Completed)
 - ADR: `docs/architecture/adr/ADR-100-l5-cert-ref-emit-chain-threading.md` — §5 Deferred section
 - ADR-080: runtime cert Phase D planning (DS-2/DS-6 gate)
 - Constitutional §32: Fort Knox certification discipline (DS-6 gate)
@@ -201,4 +201,4 @@ The plural field should be removed once all callers confirm they use the singula
 
 ---
 
-PLAN_CREATED: slug=l5-cert-ref-deferred-scope-f3a1b8 path=.windsurf/plans/l5-cert-ref-deferred-scope-f3a1b8.md status=not_started tier=T3 layer=cross-cutting
+PLAN_CREATED: slug=l5-cert-ref-deferred-scope-f3a1b8 path=.cursor/plans/l5-cert-ref-deferred-scope-f3a1b8.md status=not_started tier=T3 layer=cross-cutting

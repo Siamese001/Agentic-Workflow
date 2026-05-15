@@ -44,7 +44,7 @@ Advance ADR-023 (Runtime HITL Exit Control, v30 Step [5] ESCALATE) from **PROPOS
 6. Update Memory entity `Project:RuntimeHITL` with observation: `accepted 2026-04-28, ADR-023 formally closed`.
 7. Delete this reminder file or move it to `.windsurf/reminders/archived/`.
 
-## How this will surface to Cascade
+## How this will surface to Cursor Agent
 
 - Any future session calling `mem_recall_session_start` will see the REMINDER observation on `Project:RuntimeHITL`.
 - Any session asking about HITL / ADR-023 will hit this via `search_nodes("RuntimeHITL")` or `search_nodes("ADR-023")`.

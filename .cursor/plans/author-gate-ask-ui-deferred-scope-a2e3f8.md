@@ -68,11 +68,11 @@ This plan captures deferred scope from `author-gate-ask-ui-consolidated-a1e3f7` 
 **Gap:** `pre_ask_user_question_gate.py` exists but not registered in Windsurf hook system.
 
 **Required:**
-- Add entry to `.windsurf/hooks.json`:
+- Add entry to `.cursor/hooks.json`:
   ```json
   {
     "id": "pre_ask_user_question",
-    "command": "python .windsurf/scripts/pre_ask_user_question_gate.py",
+    "command": "python .cursor/scripts/pre_ask_user_question_gate.py",
     "timing": "pre_user_prompt",
     "show_output": false
   }

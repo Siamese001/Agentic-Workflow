@@ -3,7 +3,7 @@
 pre_read_gate.py — Windsurf pre_read_code hard gate.
 
 Reads JSON payload from stdin. Payload fields:
-  tool_info.file_path        — path Cascade is about to read
+  tool_info.file_path        — path Cursor Agent is about to read
 
 Behavior (FAIL-CLOSED on explicit violations, FAIL-OPEN on parse errors):
   - Block reads of paths outside the repo root (with narrow exceptions for
@@ -46,7 +46,7 @@ AUDIT_LOG = AUDIT_DIR / "secret_scan.jsonl"
 _ALLOWED_OUTSIDE_REPO = (
     # Windsurf docs mirror and cache
     "docs/windsurf",
-    # User screenshot temp paths — documented behavior in Cascade
+    # User screenshot temp paths — documented behavior in Cursor Agent
     "/Temp/TemporaryItems/",
     "\\Temp\\TemporaryItems\\",
     "/var/folders/",

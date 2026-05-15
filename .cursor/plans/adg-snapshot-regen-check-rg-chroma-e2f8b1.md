@@ -81,7 +81,7 @@ AUTHORIZATION_STATUS: NOT_REQUIRED
 
 - `agentic_core/` — DO NOT TOUCH
 - `apps_rg/runtime/bindings/c0_binding.py` — DO NOT TOUCH
-- `.windsurf/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
+- `.cursor/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md` — DO NOT REOPEN
 - `ops_scripts/ci/infra_wiring_scan.py` — already fixed, DO NOT REGRESS
 - `ops_scripts/ci/executor_theater_gate.py` — already fixed, DO NOT REGRESS
 - `ops_scripts/ci/baselines/graph_layer_evidence_baseline.json` — already fixed, DO NOT REGRESS

@@ -26,12 +26,12 @@ Consolidate 40+ fragmented Notion enforcement files into a unified Plan Lifecycl
 
 | Source | Why Needed | Status |
 |--------|-----------|--------|
-| `.windsurf/rules/*.md` (7 files) | Current rule surface for consolidation | ✅ inventoried |
-| `.windsurf/hooks.json` (20+ hooks) | Hook registration and show_output flags | ✅ inventoried |
+| `.cursor/rules/*.md` (7 files) | Current rule surface for consolidation | ✅ inventoried |
+| `.cursor/hooks.json` (20+ hooks) | Hook registration and show_output flags | ✅ inventoried |
 | `ops_scripts/ci/check_notion*.py` (13 gates) | NP1-NP13 gate functions | ✅ inventoried |
-| `.windsurf/scripts/post_cascade_*plan*.py` (6 hooks) | Current capture/audit hooks | ✅ inventoried |
-| `tools/windsurf/wave_execution_state.py` | Current CLI entry point | ✅ verified |
-| `artifacts/windsurf/wave_lifecycle_*.jsonl` | Log of recent activity | ✅ shows d2e9f1 never started |
+| `.cursor/scripts/post_cursor_agent_*plan*.py` (6 hooks) | Current capture/audit hooks | ✅ inventoried |
+| `tools/plan_lifecycle/wave_execution_state.py` | Current CLI entry point | ✅ verified |
+| `artifacts/cursor/wave_lifecycle_*.jsonl` | Log of recent activity | ✅ shows d2e9f1 never started |
 
 ---
 
@@ -55,9 +55,9 @@ Consolidate 40+ fragmented Notion enforcement files into a unified Plan Lifecycl
 | 1.3 | NP gate redundancy analysis | `docs/reference/np-gate-consolidation-map.md` NEW | Identify which gates can merge safely | ~4K | 🔲 TODO |
 | 1.4 | Rule consolidation spec | `notion-plan-lifecycle.md` NEW (replaces 2 rules) | Merge wave-deferral + registration | ~4K | 🔲 TODO |
 | 2.1 | UPLM module core | `tools/windsurf/plan_lifecycle_manager.py` NEW | State machine unification is complex | ~10K | 🔲 TODO |
-| 2.2 | UPLM CLI integration | `tools/windsurf/wave_execution_state.py` EDIT | Preserve CLI contract while delegating | ~5K | 🔲 TODO |
-| 2.3 | Hook consolidation (post-cascade) | `.windsurf/hooks.json` EDIT + 2 new hooks | 7 hooks → 1 unified capture hook | ~8K | 🔲 TODO |
-| 2.4 | Hook consolidation (pre-user-prompt) | `.windsurf/hooks.json` EDIT + 1 new hook | 4 hooks → 1 unified check hook | ~6K | 🔲 TODO |
+| 2.2 | UPLM CLI integration | `tools/plan_lifecycle/wave_execution_state.py` EDIT | Preserve CLI contract while delegating | ~5K | 🔲 TODO |
+| 2.3 | Hook consolidation (post-cursor-agent) | `.cursor/hooks.json` EDIT + 2 new hooks | 7 hooks → 1 unified capture hook | ~8K | 🔲 TODO |
+| 2.4 | Hook consolidation (pre-user-prompt) | `.cursor/hooks.json` EDIT + 1 new hook | 4 hooks → 1 unified check hook | ~6K | 🔲 TODO |
 | 2.5 | Helper module migration | `_plan_registration.py` → UPLM | Preserve queue format | ~6K | 🔲 TODO |
 | 3.1 | Prevention layer core | UPLM `pre_flight_check()` method | Detect unstarted but ready plans | ~6K | 🔲 TODO |
 | 3.2 | Auto-start prompt | UPLM `prompt_wave_start()` method | UX: prompt user, don't auto-execute | ~4K | 🔲 TODO |
@@ -83,7 +83,7 @@ Consolidate 40+ fragmented Notion enforcement files into a unified Plan Lifecycl
 - NP1 (AI summary), NP3 (status canonical), NP4 (wave freshness), NP12 (plan_complete) overlap in purpose
 - Impact: CI noise, maintenance burden, cognitive load
 
-**GAP-4: 11 hooks in post_cascade_response**
+**GAP-4: 11 hooks in post_cursor_agent_response**
 - Each hook parses JSON independently, adds latency, increases failure surface
 - Impact: Slower response processing, harder debugging
 
@@ -128,12 +128,12 @@ tools/windsurf/plan_lifecycle_manager.py
 | `pre_user_prompt_plan_registration_surface` | `pre_user_prompt_lifecycle_check` | Unified pre-flight check + prevention layer |
 | `pre_user_prompt_plan_registration_refresh` | *(merged)* | Cache refresh inside unified hook |
 | `pre_user_prompt_plans_dup_surface` | *(merged)* | Dup detection inside unified hook |
-| `post_cascade_plan_registration_capture` | `post_cascade_lifecycle_capture` | Unified marker capture |
-| `post_cascade_wave_lifecycle_capture` | *(merged)* | Wave markers captured by unified hook |
-| `post_cascade_plan_complete_audit` | *(merged)* | PLAN_COMPLETE checked by unified hook |
-| `post_cascade_notion_plans_status_audit` | *(merged)* | Status audit by unified hook |
-| `post_cascade_notion_plan_identity_audit` | *(merged)* | Identity audit by unified hook |
-| `post_cascade_plans_dup_audit` | *(merged)* | Dup audit by unified hook |
+| `post_cursor_agent_plan_registration_capture` | `post_cursor_agent_lifecycle_capture` | Unified marker capture |
+| `post_cursor_agent_wave_lifecycle_capture` | *(merged)* | Wave markers captured by unified hook |
+| `post_cursor_agent_plan_complete_audit` | *(merged)* | PLAN_COMPLETE checked by unified hook |
+| `post_cursor_agent_notion_plans_status_audit` | *(merged)* | Status audit by unified hook |
+| `post_cursor_agent_notion_plan_identity_audit` | *(merged)* | Identity audit by unified hook |
+| `post_cursor_agent_plans_dup_audit` | *(merged)* | Dup audit by unified hook |
 
 **Result: 11 hooks → 2 hooks**
 
@@ -222,7 +222,7 @@ Mark 6 files with `_deprecated_` prefix:
 - `_deprecated_plan_registration.py` (function merged to UPLM)
 - `_deprecated_notion_plans_status_check.py` (function merged to UPLM)
 - `_deprecated_plans_dup_detector.py` (function merged to UPLM)
-- Plus 3 redundant post-cascade hooks
+- Plus 3 redundant post-cursor-agent hooks
 
 ### Phase 2.1 — UPLM Core Module
 
@@ -236,7 +236,7 @@ Implement `PlanLifecycleManager` class with:
 
 ### Phase 2.2 — CLI Preservation
 
-**Scope**: `tools/windsurf/wave_execution_state.py` EDIT
+**Scope**: `tools/plan_lifecycle/wave_execution_state.py` EDIT
 
 Preserve CLI interface but delegate to UPLM:
 ```python
@@ -249,16 +249,16 @@ def main():
     # Exit codes preserved
 ```
 
-### Phase 2.3 — Post-Cascade Hook Consolidation
+### Phase 2.3 — Post-Cursor-Agent Hook Consolidation
 
-**Scope**: New `.windsurf/scripts/post_cascade_lifecycle_capture.py`
+**Scope**: New `.cursor/scripts/post_cursor_agent_lifecycle_capture.py`
 
 Single hook that:
 1. Parses all markers (PLAN_CREATED, WAVE_START, WAVE_COMPLETE, PHASE_COMPLETE, PLAN_COMPLETE)
 2. Delegates to UPLM for processing
 3. Logs unified audit entry
 
-Update `.windsurf/hooks.json` to register single hook, remove 7 old hooks.
+Update `.cursor/hooks.json` to register single hook, remove 7 old hooks.
 
 ### Phase 3.1 — Prevention Layer Implementation
 
@@ -301,7 +301,7 @@ Standard test and verification phases.
 |---|-----------|--------------|--------|
 | DoD-1 | 40-file inventory documented | `docs/reference/notion-enforcement-inventory.md` exists and is complete | 🔲 |
 | DoD-2 | UPLM module functional | `python -c "from tools.windsurf.plan_lifecycle_manager import PlanLifecycleManager; m = PlanLifecycleManager(); print('OK')"` exits 0 | 🔲 |
-| DoD-3 | 11 hooks consolidated to 2 | `grep -c "post_cascade.*plan\|pre_user_prompt.*plan" .windsurf/hooks.json` returns 2 | 🔲 |
+| DoD-3 | 11 hooks consolidated to 2 | `grep -c "post_cascade.*plan\|pre_user_prompt.*plan" .cursor/hooks.json` returns 2 | 🔲 |
 | DoD-4 | 13 NP gates consolidated to 5 | `grep -c "NP.*notion\|notion.*NP" ops_scripts/ci/run_contract_gates.py` returns 5 | 🔲 |
 | DoD-5 | Prevention layer catches unstarted plans | Test: create plan, don't start waves, verify prompt appears | 🔲 |
 | DoD-6 | Zero regressions in existing plans | `pytest tests/unit/tools/windsurf/ -v` passes | 🔲 |
@@ -321,7 +321,7 @@ Standard test and verification phases.
 
 - UPLM must preserve all existing fail-soft behavior (exit 0 on errors)
 - CLI interfaces (`wave_execution_state.py`) must remain backward compatible
-- Registration queue format must not change (preserve `.windsurf/state/plan_registration_queue.jsonl` format)
+- Registration queue format must not change (preserve `.cursor/state/plan_registration_queue.jsonl` format)
 - Consolidation must not lose coverage — each NP gate's unique check must map to a consolidated gate
 - Prevention layer must prompt, not auto-execute (user confirmation required)
 - All deprecated files must keep `_deprecated_` prefix for 30 days before deletion
@@ -339,4 +339,4 @@ Standard test and verification phases.
 
 ---
 
-PLAN_CREATED: slug=notion-enforcement-consolidation-e8f3a2 path=.windsurf/plans/notion-enforcement-consolidation-e8f3a2.md status=Not Started
+PLAN_CREATED: slug=notion-enforcement-consolidation-e8f3a2 path=.cursor/plans/notion-enforcement-consolidation-e8f3a2.md status=Not Started

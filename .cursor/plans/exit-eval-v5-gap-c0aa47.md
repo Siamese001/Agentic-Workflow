@@ -5,7 +5,7 @@
 - **Tier**: T3 (cross-layer L3+L5+config; safety-plane)
 - **ADG snapshot**: `artifacts/adg/adg_indexed_04252026_0843.sqlite`
 - **Status**: Active
-- **Author**: Cascade
+- **Author**: Cursor Agent
 
 ## SR_INTAKE
 

@@ -839,7 +839,7 @@ C0 briefing-grade retrieval standard?
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Wave 1 edits documentation only — no code changes; safe to execute first.
 - Wave 2 creates YAML files only — no runtime impact; safe to execute before engine work.

@@ -224,7 +224,7 @@ Prevent apps_* leakage into agentic_core through U0 runtime_customization_packag
 **Commands**:
 ```bash
 # List existing AGENTS.md and .windsurf/ governance
-find . -name "AGENTS.md" -o -name "*.md" -path "./.windsurf/rules/*" -o -path "./.windsurf/skills/*" | head -50
+find . -name "AGENTS.md" -o -name "*.md" -path "./.cursor/rules/*" -o -path "./.cursor/skills/*" | head -50
 
 # Scan agentic_core for app-specific literals
 grep -r "apps_lic\|apps_rg\|apps_qna\|if app_id\|app_id ==" agentic_core/ --include="*.py" | head -50
@@ -246,10 +246,10 @@ cat agentic_core/AGENTS.md
 cat apps_lic/AGENTS.md
 cat apps_rg/AGENTS.md
 cat apps_qna/AGENTS.md 2>/dev/null || echo "apps_qna/AGENTS.md optional"
-ls -la .windsurf/rules/agentic-core-static.md
-ls -la .windsurf/rules/agentic-core-glob-lock.md
-ls -la .windsurf/rules/apps-customization.md
-ls -la .windsurf/rules/boundary-audit-required.md
+ls -la .cursor/rules/agentic-core-static.md
+ls -la .cursor/rules/agentic-core-glob-lock.md
+ls -la .cursor/rules/apps-customization.md
+ls -la .cursor/rules/boundary-audit-required.md
 ```
 
 **Acceptance**: All 7 governance instruction files exist with complete content per §§6-9
@@ -260,15 +260,15 @@ ls -la .windsurf/rules/boundary-audit-required.md
 **Commands**:
 ```bash
 # Verify 5 skills + 4 workflows
-ls .windsurf/skills/core-boundary-audit/SKILL.md
-ls .windsurf/skills/u0-app-customization/SKILL.md
-ls .windsurf/skills/runtime-package-verifier/SKILL.md
-ls .windsurf/skills/receipt-auditor/SKILL.md
-ls .windsurf/skills/app-leakage-refactor/SKILL.md
-ls .windsurf/workflows/core-boundary-audit.md
-ls .windsurf/workflows/u0-customize-app.md
-ls .windsurf/workflows/pre-commit-agentic-cert.md
-ls .windsurf/workflows/migrate-app-binding-to-generic-core.md
+ls .cursor/skills/core-boundary-audit/SKILL.md
+ls .cursor/skills/u0-app-customization/SKILL.md
+ls .cursor/skills/runtime-package-verifier/SKILL.md
+ls .cursor/skills/receipt-auditor/SKILL.md
+ls .cursor/skills/app-leakage-refactor/SKILL.md
+ls .cursor/workflows/core-boundary-audit.md
+ls .cursor/workflows/u0-customize-app.md
+ls .cursor/workflows/pre-commit-agentic-cert.md
+ls .cursor/workflows/migrate-app-binding-to-generic-core.md
 ```
 
 **Acceptance**: All 9 skill/workflow files exist with complete content per §§10-11
@@ -279,7 +279,7 @@ ls .windsurf/workflows/migrate-app-binding-to-generic-core.md
 **Commands**:
 ```bash
 # Verify hooks.json syntax
-python -c "import json; json.load(open('.windsurf/hooks.json'))"
+python -c "import json; json.load(open('.cursor/hooks.json'))"
 
 # Verify scripts exist and are importable
 python -c "import tools.governance.core_write_guard"
@@ -396,7 +396,7 @@ grep -r "apps_lic\|apps_rg\|apps_qna\|if app_id" agentic_core/ --include="*.py" 
 python tools/governance/verify_agents_md_syntax.py
 
 # W3: Verify hooks and scripts
-python -c "import json; json.load(open('.windsurf/hooks.json'))"
+python -c "import json; json.load(open('.cursor/hooks.json'))"
 python tools/governance/core_leakage_scan.py --help
 
 # W4: Run governance tests
@@ -404,7 +404,7 @@ pytest tests/governance/ --tb=short -q
 
 # W7: Generate receipt and mark complete
 python tools/governance/generate_governance_receipt.py --plan agentic-core-static-apps-customization-governance-a1b2c3
-python tools/windsurf/wave_execution_state.py complete --plan agentic-core-static-apps-customization-governance-a1b2c3
+python tools/plan_lifecycle/wave_execution_state.py complete --plan agentic-core-static-apps-customization-governance-a1b2c3
 ```
 
 ---
@@ -491,9 +491,9 @@ If skills/workflows are incomplete:
 
 | # | Criterion | Verification command / evidence | Status |
 |---|---|---|---|
-| DoD-1 | 7 governance instruction files exist (root AGENTS.md + 3 scoped AGENTS.md + 4 rules) | `ls AGENTS.md agentic_core/AGENTS.md apps_lic/AGENTS.md apps_rg/AGENTS.md .windsurf/rules/agentic-core-static.md .windsurf/rules/agentic-core-glob-lock.md .windsurf/rules/apps-customization.md .windsurf/rules/boundary-audit-required.md` | ✅ W1 complete |
-| DoD-2 | 5 skills + 4 workflows created | `ls .windsurf/skills/{core-boundary-audit,u0-app-customization,runtime-package-verifier,receipt-auditor,app-leakage-refactor}/SKILL.md .windsurf/workflows/{core-boundary-audit,u0-customize-app,pre-commit-agentic-cert,migrate-app-binding-to-generic-core}.md` | ✅ W2 complete |
-| DoD-3 | 6 governance scripts + hooks.json created | `ls tools/governance/{core_write_guard,core_leakage_scan,receipt_required_guard,app_runtime_package_scan,boundary_receipt_validator}.py .windsurf/hooks.json` | ✅ W3 complete |
+| DoD-1 | 7 governance instruction files exist (root AGENTS.md + 3 scoped AGENTS.md + 4 rules) | `ls AGENTS.md agentic_core/AGENTS.md apps_lic/AGENTS.md apps_rg/AGENTS.md .cursor/rules/agentic-core-static.md .cursor/rules/agentic-core-glob-lock.md .cursor/rules/apps-customization.md .cursor/rules/boundary-audit-required.md` | ✅ W1 complete |
+| DoD-2 | 5 skills + 4 workflows created | `ls .cursor/skills/{core-boundary-audit,u0-app-customization,runtime-package-verifier,receipt-auditor,app-leakage-refactor}/SKILL.md .cursor/workflows/{core-boundary-audit,u0-customize-app,pre-commit-agentic-cert,migrate-app-binding-to-generic-core}.md` | ✅ W2 complete |
+| DoD-3 | 6 governance scripts + hooks.json created | `ls tools/governance/{core_write_guard,core_leakage_scan,receipt_required_guard,app_runtime_package_scan,boundary_receipt_validator}.py .cursor/hooks.json` | ✅ W3 complete |
 | DoD-4 | 6 CI governance tests passing with 17 negative controls | `pytest tests/governance/ -v` shows 6 pass, 0 fail | ✅ W4 complete |
 | DoD-5 | ≥3 existing bindings migrated with receipts | W5B P1 complete: P1a CERTIFIED, P1b BRIDGE_ACCEPTED, P1c CERTIFIED. Receipt v4.0: artifacts/governance/apps_lic_binding_migration_w5b_p1_receipt.json | ✅ W5B P1 complete |
 | DoD-6 | Post-migration negative controls verify enforcement | W6 TODO: Re-run negative controls after W5B P1 to prove migration did not weaken governance | 🔄 W4 baseline complete, W6 post-migration pending |
@@ -509,7 +509,7 @@ If skills/workflows are incomplete:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - All rules follow always-on or model_decision trigger discipline
 - Skills follow SKILL.md frontmatter contract per AGENTS.md
@@ -714,7 +714,7 @@ These laws govern the L0-L7 execution stack and are enforced by gates, hooks, an
 | `pre_write_code` | `core_write_guard.py` | Block core edits without receipt |
 | `post_write_code` | `core_leakage_scan.py` | Scan for app-specific literals |
 | `pre_run_command` | `receipt_required_guard.py` | Block broad commands without receipt |
-| `post_cascade_response` | `app_runtime_package_scan.py` | Check U0 package completeness |
+| `post_cursor_agent_response` | `app_runtime_package_scan.py` | Check U0 package completeness |
 
 **Hook law:** Exit code 2 blocks unsafe action; hooks are local guardrails, not final authority; CI remains final authority.
 
@@ -735,35 +735,35 @@ apps_qna/AGENTS.md (if apps_qna exists)
 ### Windsurf Rules
 
 ```
-.windsurf/rules/agentic-core-static.md
-.windsurf/rules/agentic-core-glob-lock.md
-.windsurf/rules/apps-customization.md
-.windsurf/rules/boundary-audit-required.md
+.cursor/rules/agentic-core-static.md
+.cursor/rules/agentic-core-glob-lock.md
+.cursor/rules/apps-customization.md
+.cursor/rules/boundary-audit-required.md
 ```
 
 ### Skills
 
 ```
-.windsurf/skills/core-boundary-audit/SKILL.md
-.windsurf/skills/u0-app-customization/SKILL.md
-.windsurf/skills/runtime-package-verifier/SKILL.md
-.windsurf/skills/receipt-auditor/SKILL.md
-.windsurf/skills/app-leakage-refactor/SKILL.md
+.cursor/skills/core-boundary-audit/SKILL.md
+.cursor/skills/u0-app-customization/SKILL.md
+.cursor/skills/runtime-package-verifier/SKILL.md
+.cursor/skills/receipt-auditor/SKILL.md
+.cursor/skills/app-leakage-refactor/SKILL.md
 ```
 
 ### Workflows
 
 ```
-.windsurf/workflows/core-boundary-audit.md
-.windsurf/workflows/u0-customize-app.md
-.windsurf/workflows/pre-commit-agentic-cert.md
-.windsurf/workflows/migrate-app-binding-to-generic-core.md
+.cursor/workflows/core-boundary-audit.md
+.cursor/workflows/u0-customize-app.md
+.cursor/workflows/pre-commit-agentic-cert.md
+.cursor/workflows/migrate-app-binding-to-generic-core.md
 ```
 
 ### Hooks and Scripts
 
 ```
-.windsurf/hooks.json (update)
+.cursor/hooks.json (update)
 tools/governance/core_write_guard.py
 tools/governance/core_leakage_scan.py
 tools/governance/receipt_required_guard.py
@@ -1071,7 +1071,7 @@ trigger: model_decision
 # Boundary Audit Required
 
 Trigger this skill when:
-- Cascade detects agentic_core files changed
+- Cursor Agent detects agentic_core files changed
 - App-specific literals appear in core context
 - app_id branching patterns detected
 - Hardcoded app behavior suspected
@@ -1533,7 +1533,7 @@ route = route_profile.select_route(context)
       }
     },
     {
-      "id": "post_cascade_response",
+      "id": "post_cursor_agent_response",
       "command": "python tools/governance/app_runtime_package_scan.py",
       "working_directory": "${workspace}",
       "show_output": false,
@@ -1882,7 +1882,7 @@ route = route_profile.select_route(context)
     ...
   ],
   "files_modified": [
-    ".windsurf/hooks.json"
+    ".cursor/hooks.json"
   ],
   "agentic_core_boundary_rules": {
     "rules_created": 4,
@@ -1894,7 +1894,7 @@ route = route_profile.select_route(context)
     "app_agents_md_created": 3,
     "u0_customization_documented": true
   },
-  "hooks_added": ["pre_write_code", "post_write_code", "pre_run_command", "post_cascade_response"],
+  "hooks_added": ["pre_write_code", "post_write_code", "pre_run_command", "post_cursor_agent_response"],
   "skills_added": ["core-boundary-audit", "u0-app-customization", "runtime-package-verifier", "receipt-auditor", "app-leakage-refactor"],
   "workflows_added": ["core-boundary-audit", "u0-customize-app", "pre-commit-agentic-cert", "migrate-app-binding-to-generic-core"],
   "ci_tests_added": [
@@ -1955,7 +1955,7 @@ route = route_profile.select_route(context)
 ## Section 20: Output Summary
 
 ### Plan Path
-`.windsurf/plans/agentic-core-static-apps-customization-governance-a1b2c3.md`
+`.cursor/plans/agentic-core-static-apps-customization-governance-a1b2c3.md`
 
 ### Current Wave Status
 

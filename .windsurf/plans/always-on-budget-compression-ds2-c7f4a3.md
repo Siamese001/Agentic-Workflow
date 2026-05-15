@@ -86,7 +86,7 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 
 **Scope**: Remove "Why this rule exists" section (~400 bytes), incident narrative §"Empirical incident" (~250 bytes), defense-in-depth table (~350 bytes), forbidden-patterns table (~400 bytes), sibling-apps section (~150 bytes), "Non-TTY contexts" section (~200 bytes). Keep: ⛔ callout, single-prompt template, hard rules 1-3, stale-file rule 4, references.
 
-**Acceptance**: Rule ≤2,200 bytes; `check_always_on_token_budget.py` passes; all content preserved in Cascade memory (the rule already has a memory entry `aa3e66d1` covering full detail).
+**Acceptance**: Rule ≤2,200 bytes; `check_always_on_token_budget.py` passes; all content preserved in Cursor Agent memory (the rule already has a memory entry `aa3e66d1` covering full detail).
 
 ### Phase 2.1 — Compress `mcp-serialization.md`
 
@@ -133,7 +133,7 @@ Free ≥9,579 bytes from existing always_on rules to promote `author-gate-enforc
 - [ ] `author-gate-enforcement.md` has `trigger: always_on`
 - [ ] `check_always_on_token_budget.py` passes with ≥500 bytes margin
 - [ ] All ⛔ callouts and hard rules preserved verbatim in compressed rules
-- [ ] Moved content preserved in skills or Cascade memories
+- [ ] Moved content preserved in skills or Cursor Agent memories
 - [ ] No behavioral regression: Author-Gate pipeline still fires correctly
 
 ---
@@ -156,7 +156,7 @@ If things go wrong:
 | author-gate-enforcement trigger | `always_on` | `head -3 .windsurf/rules/author-gate-enforcement.md` |
 | Invariant preservation | 100% ⛔ blocks retained | Manual diff audit per wave |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

@@ -29,7 +29,7 @@ Bypass: PLAN_REGISTRATION_BYPASS=1
 ```
 
 ### Query Before Claim
-> Cascade MUST NOT assert registration status without live `API-query-data-source` call in same response.
+> Cursor Agent MUST NOT assert registration status without live `API-query-data-source` call in same response.
 
 ---
 

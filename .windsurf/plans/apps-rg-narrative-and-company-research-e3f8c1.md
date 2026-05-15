@@ -4,7 +4,7 @@
 **Status:** Planned (not started)
 **Owner:** TBD
 **Created:** 2026-05-01
-**Triggering audit:** Send-to-Blend360 readiness assessment on 2026-05-01 surfaced 10 HOP-quality gaps. Top three (no exec summary, JD-keyword undercoverage, generic phrasing) are blocking. The architectural design discussion that produced this plan ran in the same Cascade conversation post-15:35 UTC-04:00.
+**Triggering audit:** Send-to-Blend360 readiness assessment on 2026-05-01 surfaced 10 HOP-quality gaps. Top three (no exec summary, JD-keyword undercoverage, generic phrasing) are blocking. The architectural design discussion that produced this plan ran in the same Cursor Agent conversation post-15:35 UTC-04:00.
 **Author-Gate decision:** `architecture_choice` — locked through 7 sub-decisions captured below in §3.
 **Bar to clear:** A single `python -m apps_rg --target-company <X>` invocation produces a recruiter-ready DOCX with: (a) executive summary aligned to a verified company brief, (b) headline aligned to JD + company language, (c) competencies/bullets respecting length parity (±15% of master_resume baseline) and anti-overfitting bounds (mirror density 8–18%, no buzzword soup), (d) all per-section gates pass strict OR pipeline aborts (critical-tier) or degrades with warning (medium-tier).
 
@@ -88,15 +88,15 @@ If `HOP-0.6-CO-RESEARCH` finds no brief: pipeline raises `CompanyBriefMissingErr
 | D1 | Input modes for company brief | Mode 1: manual upload at `apps_rg/scripts/company_research.json`. Mode 2: apps_research generates via `--mode company`. Mode 3: cross-app invocation via `apps_rg --research-via apps_research`. Mode 4: Tavily supplement only (fills `null` + stale fields, never produces from scratch). | User decision 2026-05-01 §1+§2 |
 | D2 | Behavior with no brief | **Fail loudly** — `CompanyBriefMissingError`, no JD-only fallback | User decision 2026-05-01 §1 |
 | D3 | Tavily auto-fetch | **Opt-in** via `--auto-research-tavily`, supplements existing brief; never produces from scratch | User decision 2026-05-01 §2 |
-| D4 | Tavily supplement scope | Refresh fields where `value is null` OR `fetched_at` older than `freshness_ttl_days` | Cascade recommendation (1c), accepted by silence-as-confirmation in user §1+§2 lock |
-| D5 | Cross-app composition trigger | **Explicit** — must pass `--research-via apps_research`. No surprise auto-invocation. | Cascade recommendation (2b), accepted by user "fine with above" |
-| D6 | Judge model diversity | Same provider, different model — **Anthropic Sonnet generator + Anthropic Haiku judge** (single auth, solid diversity, cheaper than cross-provider) | Cascade recommendation (3a), accepted by user "fine with above" |
+| D4 | Tavily supplement scope | Refresh fields where `value is null` OR `fetched_at` older than `freshness_ttl_days` | Cursor Agent recommendation (1c), accepted by silence-as-confirmation in user §1+§2 lock |
+| D5 | Cross-app composition trigger | **Explicit** — must pass `--research-via apps_research`. No surprise auto-invocation. | Cursor Agent recommendation (2b), accepted by user "fine with above" |
+| D6 | Judge model diversity | Same provider, different model — **Anthropic Sonnet generator + Anthropic Haiku judge** (single auth, solid diversity, cheaper than cross-provider) | Cursor Agent recommendation (3a), accepted by user "fine with above" |
 | D7 | Generation pattern per section | Ensemble+Judge for Critical (Headline, Exec Summary, Competencies, Unify, IBM); Judge-only for Medium (TraderSense, EY); Deterministic for Skip (Early Career) | User decision 2026-05-01 §"most critical are exec summary, headline, unify, competencies, IBM, all other" |
-| D8 | Per-section fail-closed | **Tier-based** — Critical-tier section failure aborts pipeline; Medium-tier failure degrades with `run_report.json` flag | Cascade recommendation (c), accepted by user "fine with above" |
+| D8 | Per-section fail-closed | **Tier-based** — Critical-tier section failure aborts pipeline; Medium-tier failure degrades with `run_report.json` flag | Cursor Agent recommendation (c), accepted by user "fine with above" |
 | D9 | Length parity | HARD gate, ±15% tolerance per bullet/section vs `master_resume.json` baseline. Headline 10–14 words, Exec Summary 80–120 words across 3–4 sentences. | User decision 2026-05-01 |
 | D10 | Anti-overfitting | HARD gates: mirror density 8%–18%, max 3 buzzwords from list per bullet, no adjacent-bullet keyword repetition | User decision 2026-05-01 |
-| D11 | Pool-first selection | For per-bullet sections, try `bullet_pool` variants first; fall through to LLM only when no pool variant clears hard gates with composite ≥ 0.85 | Cascade recommendation, follows naturally from D9 |
-| D12 | Always surface 3 candidates | Write all ensemble candidates to `narrative/candidates/` for human override; default = judge's pick | Cascade recommendation (a), accepted by user "fine with above" |
+| D11 | Pool-first selection | For per-bullet sections, try `bullet_pool` variants first; fall through to LLM only when no pool variant clears hard gates with composite ≥ 0.85 | Cursor Agent recommendation, follows naturally from D9 |
+| D12 | Always surface 3 candidates | Write all ensemble candidates to `narrative/candidates/` for human override; default = judge's pick | Cursor Agent recommendation (a), accepted by user "fine with above" |
 
 ---
 

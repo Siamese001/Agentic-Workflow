@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fort Knox integrity audit — Constitutional §32.
 
-Fires on every Cascade response via `post_cascade_response`. Fail-open
+Fires on every Cursor Agent response via `post_cascade_response`. Fail-open
 (never blocks). Appends structured violation rows to
-`artifacts/windsurf/fortknox_integrity_violations.jsonl` when Cascade
+`artifacts/windsurf/fortknox_integrity_violations.jsonl` when Cursor Agent
 has made a forbidden claim or edit in the current response.
 
 Detection (conservative — prefers false negatives over false positives
@@ -12,15 +12,15 @@ to avoid drowning the log):
    / "certified" / "trust level upgraded" / "acceptance complete"
    without a matching subprocess invocation of
    `compile_requirement_signoff.py` in the same response.
-2. Prose edit hint indicating Cascade touched
+2. Prose edit hint indicating Cursor Agent touched
    `final_requirement_signoff_report.json` manually (tool-call name
    `edit`/`write_to_file` with the report path).
 3. Use of the forbidden vocabulary `"all_pass"` / `"linked_req_ids"`
    outside a context that also names the atomic-assertions JSONL
-   (the two surface together when Cascade is correctly discussing
+   (the two surface together when Cursor Agent is correctly discussing
    the forbidden pattern — otherwise it is a regression).
 
-Input: Cascade response body on stdin (Windsurf convention), or a file
+Input: Cursor Agent response body on stdin (Windsurf convention), or a file
 path via `--response-path`. Silent no-op on empty stdin.
 
 Advisory rule: `.windsurf/rules/fortknox-certification-discipline.md`.

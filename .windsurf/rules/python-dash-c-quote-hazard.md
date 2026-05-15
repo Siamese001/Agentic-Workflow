@@ -10,7 +10,7 @@ description: Use when considering `python -c "..."` invocations via run_command 
 > triple-quotes (`\"\"\"`).** On Windows / pwsh, the outer double-quoted
 > string is parsed by the shell BEFORE Python sees it. These sequences
 > confuse pwsh's tokenizer, leave the outer string unterminated, and the
-> shell waits for the user to finish typing — Cascade's turn hangs forever.
+> shell waits for the user to finish typing — Cursor Agent's turn hangs forever.
 
 ## Failure Precedent (2026-04-26)
 
@@ -56,7 +56,7 @@ When tempted to write `python -c "..."` with embedded quotes, do **one** of:
 
 ## Enforcement
 
-- **Advisory tier** (this rule, always_on) — shapes Cascade's command authoring
+- **Advisory tier** (this rule, always_on) — shapes Cursor Agent's command authoring
 - **Deterministic tier** — `.windsurf/scripts/pre_run_gate.py`
   `_check_python_dash_c_quote_hazard()` blocks at exec time (exit 2)
 - **Test coverage** —
@@ -67,6 +67,6 @@ When tempted to write `python -c "..."` with embedded quotes, do **one** of:
 
 Sibling to constitutional **§0** (no PowerShell), **§14** (subprocess
 timeout), and **§26** (no interactive pagers in `run_command`). Same root
-concern: shell-pipeline behaviors that hang Cascade's turn forever, where
+concern: shell-pipeline behaviors that hang Cursor Agent's turn forever, where
 no Python-level `timeout=` can rescue it because the shell itself — not the
 Python process — is the blocking entity.

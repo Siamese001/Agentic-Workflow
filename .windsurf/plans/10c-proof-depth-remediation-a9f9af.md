@@ -167,6 +167,6 @@ This plan is COMPLETE when ALL of the following hold:
 - Overlay file: `C:\Users\amita\Documents\10c_requirement_proof_depth_certification_overlay.xlsx`
 - Overlay generated: 2026-04-30 17:56:38 UTC
 - Source ledger CSV: `docs/reports/design/10c_reconciliation/10c_semantic_requirement_ledger.csv`
-- Plan author: Cascade
+- Plan author: Cursor Agent
 - Plan created at git HEAD: `5ef982ea14`
 - Author-Gate decisions referenced: 2026-04-30 (refactor_scope, finish_two_items + single_ssot_home_retire_satellites)

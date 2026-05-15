@@ -1,7 +1,7 @@
 # SVP+ Apps Hardening — Multi-Wave Execution Plan
 
 **Plan ID:** apps-svp-plus-hardening-7c4e3a
-**Author:** Cascade (in service of the user's SVP+ Engineering job hunt @ $600K+)
+**Author:** Cursor Agent (in service of the user's SVP+ Engineering job hunt @ $600K+)
 **Status:** In-progress
 **Scope:** apps_eval, apps_exec, apps_lic, apps_research, apps_rfp, apps_underwriting_ai, apps_shared (apps_rg explicitly excluded per user)
 **Tier:** T3 (cross-app, cross-layer, multi-file)
@@ -10,7 +10,7 @@
 
 ## Why This Plan Exists
 
-A senior Cascade review of all `apps_*` (excl. `apps_rg`) found that the existing SVP_ENGINEERING_REVIEW.md files pass the user's own internal rubric but **do not yet demonstrate SVP+ judgment to an external hiring panel**. Three credibility risks in particular:
+A senior Cursor Agent review of all `apps_*` (excl. `apps_rg`) found that the existing SVP_ENGINEERING_REVIEW.md files pass the user's own internal rubric but **do not yet demonstrate SVP+ judgment to an external hiring panel**. Three credibility risks in particular:
 
 1. **Six near-identical SVP review docs** that differ only in noun substitution — reads as templated, not deliberate.
 2. **Test depth doesn't match the claim** — 26–31 tests at "100% pass" for 50–100 file domain apps is Pydantic-validator-only coverage.

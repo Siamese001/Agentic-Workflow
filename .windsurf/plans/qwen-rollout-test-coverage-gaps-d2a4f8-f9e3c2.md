@@ -238,7 +238,7 @@ If tests fail or coverage is incomplete:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - SSOT folder routing verified for test file path
 - No gold-plating: tests only, no production edits

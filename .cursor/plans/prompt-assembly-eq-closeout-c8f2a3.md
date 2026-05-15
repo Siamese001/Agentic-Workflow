@@ -24,7 +24,7 @@ plan_type: refactor
 
 | Source | Why needed | Status |
 |---|---|---|
-| `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md` | Parent plan with EQ-1..EQ-19 definitions | ✅ |
+| `.cursor/plans/prompt-assembly-best-practices-gap-b4e1c2.md` | Parent plan with EQ-1..EQ-19 definitions | ✅ |
 | `docs/reports/plans/prompt-assembly-gap-b4e1c2/execution_queue.md` | Detailed tranche specifications | ✅ |
 | ADR-PROMPT-ASSEMBLY-001/002 | Design anchors for EQ-18/EQ-19 | ✅ |
 | `agentic_core/prompt_governance/` | Implementation touchpoints | 🔲 ADG sweep at W1 |
@@ -139,7 +139,7 @@ This plan has been retired because:
 ## Parent Plan Reference
 
 ~~This plan closes the remaining scope from:~~
-- ~~**Plan**: `.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md`~~
+- ~~**Plan**: `.cursor/plans/prompt-assembly-best-practices-gap-b4e1c2.md`~~
 - ~~**Notion**: https://www.notion.so/prompt-assembly-best-practices-gap-b4e1c2-35527693f55c81c39676fc1edd615b61~~
 - ~~**Status to set**: Completed (with reference to this child plan)~~
 

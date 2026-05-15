@@ -18,7 +18,7 @@ Design:
 - **Path SSOT**: respects the plan-location rule (``.windsurf/plans/`` only;
   ``docs/reports/plans/`` is never used).
 
-Template kept intentionally minimal. Cascade will expand it on the next
+Template kept intentionally minimal. Cursor Agent will expand it on the next
 session when the deferred item becomes active work; the scaffold is just
 enough to satisfy the plan-location SSOT and the pre-commit marker gate.
 """
@@ -111,7 +111,7 @@ def _render_template(
 plan_id: {plan_id}
 plan_type: tracker
 # Auto-scaffolded {now_iso} by .windsurf/scripts/post_cascade_deferred_scope_capture.py
-# from a DEFERRED_SCOPE marker. Cascade should expand this plan on the next
+# from a DEFERRED_SCOPE marker. Cursor Agent should expand this plan on the next
 # session before execution starts.
 ---
 
@@ -140,7 +140,7 @@ est_tokens={est_tokens} reason={reason}
 
 | Waves | Metric | Scope | Checkpoint | Tokens |
 |-------|--------|-------|------------|--------|
-| {wave} | AUTO-SCAFFOLD | TBD — Cascade to fill | A | ~{est_tokens or "?"} 🟡 |
+| {wave} | AUTO-SCAFFOLD | TBD — Cursor Agent to fill | A | ~{est_tokens or "?"} 🟡 |
 
 ## Phase-Level Summary
 
@@ -158,7 +158,7 @@ est_tokens={est_tokens} reason={reason}
 
 ## Next Action
 
-Cascade must expand this plan on the first session that picks it up. The
+Cursor Agent must expand this plan on the first session that picks it up. The
 authoritative backlog row lives in Notion Wave/Phase Convergence
 (``Plan File = "{plan_id}.md"``).
 """

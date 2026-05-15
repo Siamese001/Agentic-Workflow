@@ -14,7 +14,7 @@ Continuation of CI gate remediation for P2 (structure/reference) and P3 (AG ledg
 ## Context (SCQA)
 
 - **Situation** — Parent plan P0/P1 waves completed. P0: 0 infra wiring violations. P1: Structure policy, reference orphans, MV count (69) all passing. P2 ratchets reset (module_loc: 369, uwg_bypass: 1099, unresolved_edges: 19947). Quick wins (seam exports, unused imports, dead folders) partially remediated.
-- **Complication** — ADG MCP reveals 3 critical P2 structural issues: (1) sqlite3 has 287 direct usages vs 4 wrapped — L4 UWG bypass at scale, (2) 3 duplicated adapter clusters (chromadb: 2, redis: 3, sqlite3: 4), (3) ~100 antipattern violations in .windsurf/scripts/. Additionally, 71 plans lack graph-layer evidence, AG ledger chain broken, 10C proof bundles stale.
+- **Complication** — ADG MCP reveals 3 critical P2 structural issues: (1) sqlite3 has 287 direct usages vs 4 wrapped — L4 UWG bypass at scale, (2) 3 duplicated adapter clusters (chromadb: 2, redis: 3, sqlite3: 4), (3) ~100 antipattern violations in .cursor/scripts/. Additionally, 71 plans lack graph-layer evidence, AG ledger chain broken, 10C proof bundles stale.
 - **Question** — How do we remediate remaining P2/P3 gates to achieve full green CI baseline?
 - **Answer** — ADG MCP-driven wave remediation: W1 (P2 structural — sqlite3 routing + adapter consolidation), W2 (P2 antipattern precision), W3 (P2 plan graph-layer evidence batch), W4 (P3 AG ledger rebuild), W5 (P3 10C proof + projection regeneration + final verification).
 
@@ -31,7 +31,7 @@ Continuation of CI gate remediation for P2 (structure/reference) and P3 (AG ledg
 | `adg_sqlite` MCP — `mv_hotspot_centrality` | Top-30 structural hotspots for impact ranking | ✅ Available |
 | `ops_scripts/ci/check_graph_layer_evidence.py` | 71 plans missing ADG_HOTSPOT_REPORT | ❌ 71 violations |
 | `ops_scripts/ci/check_snapshot_has_mvs.py` | Projection freshness check | ⚠️ Stale (bypass active) |
-| `.windsurf/state/author_gate_ledger.sqlite` | AG chain integrity | ❌ Chain broken |
+| `.cursor/state/author_gate_ledger.sqlite` | AG chain integrity | ❌ Chain broken |
 | `artifacts/requirements/proof_bundles/` | 10C proof validity | ❌ Hash drift |
 
 ---
@@ -41,7 +41,7 @@ Continuation of CI gate remediation for P2 (structure/reference) and P3 (AG ledg
 | Waves | Focus | Gates Targeted | Deliverable | Status |
 |-------|-------|----------------|-------------|--------|
 | W1 | P2 Structural — sqlite3 Routing + Adapter Consolidation | `v_p2_mixed_usage`, `v_p2_duplicated_adapters` | Created canonical L4 sqlite3 adapter; routed 4 adapters through it; updated infra_wiring_scan.py ceilings | ✅ DONE |
-| W2 | P2 Antipattern — Exception Precision | ~100 antipattern violations in .windsurf/scripts/ | Reset p2_ratchet.json ceiling 25→100 (90% false-positive constants) | ✅ DONE |
+| W2 | P2 Antipattern — Exception Precision | ~100 antipattern violations in .cursor/scripts/ | Reset p2_ratchet.json ceiling 25→100 (90% false-positive constants) | ✅ DONE |
 | W3 | P2 Plan Quality — Graph-Layer Evidence | graph-layer evidence (71→286 plans) | Grandfathered all 286 plans in baseline; gate PASS | ✅ DONE |
 | W4 | P3 AG Ledger — Chain Rebuild | AG ledger integrity, outcome coverage | Rebuilt hash chain from genesis (16 rows); reset outcome coverage baseline 1→6 | ✅ DONE |
 | W5 | P3 10C Proof + Projection — Bundle Refresh & Verify | 10c proof bundles, snapshot MVs | Regenerated proof bundles via emit_proof_bundles.py; all gates green | ✅ DONE |
@@ -104,7 +104,7 @@ Continuation of CI gate remediation for P2 (structure/reference) and P3 (AG ledg
 - [ ] W1: sqlite3 direct usages: 287 → 0 (all routed through canonical L4 adapter)
 - [ ] W1: redis adapters: 3 → 1 consolidated; chromadb: 2 → 1
 - [ ] W1: `v_p2_mixed_usage` and `v_p2_duplicated_adapters`: 0 violations
-- [ ] W2: Antipattern violations in .windsurf/scripts/: guardian-exempted or fixed
+- [ ] W2: Antipattern violations in .cursor/scripts/: guardian-exempted or fixed
 - [ ] W2: P2 ratchet ceiling updated to reflect precision fixes
 - [ ] W3: All 71 plans have `## ADG_GRAPH_LAYER_EVIDENCE` with ≥3 MVs + semantic edges
 - [ ] W3: All 71 plans have `## ADG_HOTSPOT_REPORT` with archetype + surface references

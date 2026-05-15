@@ -225,7 +225,7 @@ If things go wrong:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Plan saved at SSOT: `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md`.
 - plan_type=infra → §22 ADG graph-layer-evidence gate is correctly skipped (no refactor; new module bootstrap).

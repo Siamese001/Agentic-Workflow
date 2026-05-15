@@ -140,5 +140,5 @@ When this pilot completes:
 
 ---
 
-**Plan File:** `.windsurf/plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md`
+**Plan File:** `.cursor/plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md`
 **Notion Registration:** PENDING (registered on activation)

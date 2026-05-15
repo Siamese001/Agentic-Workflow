@@ -55,10 +55,10 @@ Collects the 4 items that were out-of-scope even from the deferred plan `apps-ar
 
 ## References
 
-- Grandparent: `.windsurf/plans/apps-architect-pattern-hardening-d7e4f9.md` (Completed)
-- Parent: `.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md` (Completed)
+- Grandparent: `.cursor/plans/apps-architect-pattern-hardening-d7e4f9.md` (Completed)
+- Parent: `.cursor/plans/apps-architect-deferred-scope-b8e3f1.md` (Completed)
 - `apps_research/` — Canonical R3_grounded_read reference
-- `.windsurf/rules/adg-canonical-invariants.md` — ADG doctrine
+- `.cursor/rules/adg-canonical-invariants.md` — ADG doctrine
 
 ---
 

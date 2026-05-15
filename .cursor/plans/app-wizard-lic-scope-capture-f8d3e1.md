@@ -103,7 +103,7 @@ plan_type: tracker
 2. **TTTY-only wizard** — Same pattern as apps_rg: `_interactive_wizard(args)` fires when stdin is TTY
 3. **`_interactive_*.json` output** — Write to `apps_lic/scripts/_interactive_{recipient,context,manifest}.json`
 4. **Cross-target guard** — Validate that loaded artifacts match the intended recipient/target
-5. **Cascade discipline** — Extend or duplicate always-on rule to cover `apps_lic`
+5. **Cursor Agent discipline** — Extend or duplicate always-on rule to cover `apps_lic`
 
 ---
 
@@ -112,7 +112,7 @@ plan_type: tracker
 - [ ] Wizard prompts for classified mandatory inputs when TTY and missing
 - [ ] `_interactive_*.json` files written and read as defaults
 - [ ] Cross-target contamination guard prevents stale artifact poisoning
-- [ ] Discipline rule blocks Cascade from pre-filling target flags
+- [ ] Discipline rule blocks Cursor Agent from pre-filling target flags
 - [ ] All tests pass; no regressions in non-wizard paths
 
 ---
@@ -153,4 +153,4 @@ plan_type: tracker
 - Status: `Not Started` (option id `503df59f-85d4-4ac0-baae-e457d0354b6f`, gray)
 - AI Summary: Scope capture for apps_lic interactive wizard — 8 deferred phases, 3 gaps identified, activation blocked on user design decision
 - Exists On Disk: true
-- Plan File Path: `.windsurf/plans/app-wizard-lic-scope-capture-f8d3e1.md`
+- Plan File Path: `.cursor/plans/app-wizard-lic-scope-capture-f8d3e1.md`

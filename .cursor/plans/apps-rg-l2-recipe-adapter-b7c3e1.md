@@ -231,7 +231,7 @@ If things go wrong:
 | New test suite | 3+ pass | `pytest tests/_apps_contract/test_apps_rg_no_domain_closure.py test_apps_rg_recipe_resolution.py test_apps_rg_l2_steps.py` |
 | Registry resolution | succeeds | `resolve_l2_callable(request)` returns callable |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

@@ -1,6 +1,6 @@
 # Apps Fort Knox Evidence Repackage — Close ChatGPT's Six Findings
 
-> **Status:** Draft · **Slug:** `apps-fortknox-evidence-repackage-30f5ab` · **Owner:** Cascade · **Related:** `apps-fort-knox-parity-c5d9a3.md`, ADR-080, constitutional §32
+> **Status:** Draft · **Slug:** `apps-fortknox-evidence-repackage-30f5ab` · **Owner:** Cursor Agent · **Related:** `apps-fort-knox-parity-c5d9a3.md`, ADR-080, constitutional §32
 >
 > **Trigger:** ChatGPT 2026-05-03 review of `certification/apps/` zip flagged six evidence-integrity gaps. None are app-behavior bugs; all are evidence-packaging / regeneration-lockstep gaps.
 

@@ -3,9 +3,9 @@
 Status: **Superseded by `adg-three-bucket-unified-c4f8e2`** (2026-04-30)
 Predecessor status preserved below. W1 producer-bucket wiring landed; W2–W8 (runtime traces, GenAI semconv, strict-mode flip, gap-report enforcement, in-toto signing, NOT NULL graduation, close-out) rolled into unified W2/W5/W6.
 Created: 2026-04-29
-Owner: Cascade
+Owner: Cursor Agent
 Plan slug: `three-bucket-gap-remediation-069806`
-Predecessor: `.windsurf/plans/three-bucket-otel-view-5db409.md` (W1–W8 complete)
+Predecessor: `.cursor/plans/three-bucket-otel-view-5db409.md` (W1–W8 complete)
 Related deferred scope:
 - `[P2] W9 W9.1` — GenAI SIG semconv migration across 20 OTel emit sites
 - `[P3] W11 W11.1` — Prompt-slot registry resolver pending canonical declarative manifest

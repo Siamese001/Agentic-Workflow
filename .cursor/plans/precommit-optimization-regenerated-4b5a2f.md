@@ -486,7 +486,7 @@ If things go wrong:
 
 ## ARTIFACTS
 
-- **Plan File**: `` `@.windsurf/plans/precommit-optimization-4b5a2f.md ``
+- **Plan File**: `` `@.cursor/plans/precommit-optimization-4b5a2f.md ``
 - **ADG SQLite**: `` `@C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04062026_0545.sqlite ``
 - **Pre-commit Config**: `` `@C:\Git\Agentic-Workflow\.pre-commit-config.yaml ``
 - **Gate Scripts**: 

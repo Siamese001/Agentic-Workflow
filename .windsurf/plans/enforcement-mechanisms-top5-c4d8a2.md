@@ -6,7 +6,7 @@ dod_exempt: false
 
 # Top 5 Enforcement Mechanisms — Wave 2 Implementation
 
-Implements the five highest-impact Notion/Cascade enforcement gaps identified from prior session analysis: NP9 new-plan status enforcement, NP10 waiting-for completeness, MCP config schema validation, plan-wave lifecycle sync, and deferred scope capture compliance.
+Implements the five highest-impact Notion/Cursor Agent enforcement gaps identified from prior session analysis: NP9 new-plan status enforcement, NP10 waiting-for completeness, MCP config schema validation, plan-wave lifecycle sync, and deferred scope capture compliance.
 
 ---
 
@@ -350,7 +350,7 @@ If gates are too noisy:
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

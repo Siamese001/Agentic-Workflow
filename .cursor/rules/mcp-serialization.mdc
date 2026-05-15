@@ -1,24 +1,27 @@
 ---
 description: |
-  Converted from Cursor rule mcp-serialization.md
-alwaysApply: true
+  Use when batching or ordering MCP tool calls, debugging remote MCP stalls, or when Notion/Tavily/GitKraken calls must serialize. Complements `pre_mcp_gate.py` and constitutional retrieval discipline.
+alwaysApply: false
 ---
-
-<!-- Converted from `.cursor/rules/mcp-serialization.md`. Original Cursor trigger: `always_on`. -->
 
 # MCP Serialization — Remote MCPs Only
 
-> ⛔ **REMOTE MCP tool calls MUST be isolated: one remote-MCP call per `<function_calls>` block, no siblings.** Sequential blocks OK. Local stdio MCPs batch freely.
+> **Remote MCP tool calls MUST be isolated: one remote MCP tool invocation per model tool block where the protocol batches MCP calls, with no sibling remote calls in the same batch.** Sequential separate batches are fine. Local stdio MCPs may batch together per project policy.
 
 ## Invariant
 
-1. **Remote MCPs isolate per block.** Remote servers: `notion`, `tavily`, `deepwiki`, `context7`, `GitKraken`. One call per block, no siblings.
-2. **Sequential remote blocks OK.** Multiple isolated blocks in one response is fine.
-3. **Local MCPs batch freely.** `adg_sqlite`, `redis`, `memory`, `filesystem`, `vector_db`, `pytest_mcp`, `otel_mcp`, `task_manager`, `io.cursor/mcp-playwright` — batch with each other and native tools.
-4. **No mixing** local + remote in the same block. No multiple remote calls in the same block.
+1. **Remote MCPs serialize per batch.** Treat as **remote** (network or external subprocess you do not fully colocate with repo-local Python): `notion`, `tavily`, `deepwiki`, `context7`, `GitKraken`, `playwright` (see `.cursor/mcp.json` — adjust this list when servers change).
+2. **Sequential remote batches OK.** Multiple isolated remote calls across separate model steps are fine.
+3. **Local stdio MCPs batch freely** with each other and native file tools where allowed: `adg_sqlite`, `redis`, `memory`, `vector_db`, `pytest_mcp`, `otel_mcp`, `filesystem` (when enabled), `task_manager` (when enabled).
+4. **No mixing** remote + local MCP invocations in the same serialized batch if your client batches them together in one transport unit — split across turns/blocks instead.
 
-> ⛔ **MCP serialization is NEVER an excuse to fall back to `grep_search` for dependency analysis.** Fallback: (1) ADG MCP → (2) direct SQLite → (3) grep FORBIDDEN. See `adg-sqlite` skill for SQL templates.
+> **MCP serialization is NEVER an excuse to use `grep_search` for dependency analysis.** Hierarchy: (1) `adg_sqlite` MCP → (2) direct SQLite on latest `artifacts/adg/adg_indexed_*.sqlite` → (3) emit `DEGRADED_FALLBACK:` before any grep fallback. See `graph-analysis` / `adg-sqlite` skills.
 
 ## Bypass
 
-`MCP_SERIAL_BYPASS=1` — logged to `artifacts/cursor/mcp_serialization_violations.jsonl`. Enforcement: `post_cursor_agent_mcp_serialization_audit.py`. Constitutional §25. Detail: `mcp-serialization` skill.
+`MCP_SERIAL_BYPASS=1` — advisory logging path when audits are enabled; do not use to bypass `pre_mcp_gate` hard blocks.
+
+## References
+
+- `.cursor/scripts/pre_mcp_gate.py` — Notion token gate, GitKraken upstream checks, wave deferral integration.
+- `.cursor/rules/mcp-config-ssot.mdc` — MCP SSOT and sync gates.

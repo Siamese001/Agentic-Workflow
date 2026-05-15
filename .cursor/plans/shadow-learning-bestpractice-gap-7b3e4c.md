@@ -1,7 +1,7 @@
 # Shadow Learning & Meta-Learning Bus — Best-Practice Gap Plan
 
 Status: Draft (no code changes yet)
-Owner: Cascade
+Owner: Cursor Agent
 Scope: §6 (L6 Shadow Evaluation → Future-Run Learning) of `docs/reference/_notes/agentic_process_mapping_v34.md`
 ADG snapshot: most-recent `artifacts/adg/adg_indexed_*.sqlite`
 Created: 2026-04-23

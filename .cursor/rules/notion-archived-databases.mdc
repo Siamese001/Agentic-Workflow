@@ -46,7 +46,8 @@ alwaysApply: false
 - ❌ NEVER add new Notion integrations without updating AGENTS.md Notion Workspace Map and this rule
 - ✅ Filesystem artifacts are the recovery path for any historical data from archived DBs
 - ✅ Constants in `_notion_constants.py` for archived DBs are **retained for reference** — do not delete them; they carry archival comments
+- ✅ Keep **AGENTS.md** ``NOTION-MAP`` table aligned with this file (same archived vs active rows)
 
 ## References
 
-Constitutional §25 (MCP serialization — remote MCPs only). AGENTS.md Notion Workspace Map (archived rows marked with ~~strikethrough~~). Plan `notion-integration-consistency-audit-b2c4d8`.
+AGENTS.md Notion Workspace Map (archived rows marked with ~~strikethrough~~). Plan `notion-integration-consistency-audit-b2c4d8`.

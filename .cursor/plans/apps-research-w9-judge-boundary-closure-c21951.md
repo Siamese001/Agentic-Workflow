@@ -56,7 +56,7 @@ quarantine notice to reflect accurate state.
 | `artifacts/apps_research/w9_judge_boundary_closure/w3_quarantine_notice_summary.md` | W3 summary | ✅ |
 | `apps_research/engines/judges/QUARANTINE_W9_BOUNDARY_REPAIR.md` | Accurate notice — rewritten W3 | ✅ |
 | `tests/_apps_contract/test_apps_research_spine_alignment.py::TestCoverageDepthJudge` | 6 spine tests — resolved by W2R core-backed facade | ✅ |
-| `.windsurf/rules/agentic-core-static.md` | Governing architecture law | ✅ |
+| `.cursor/rules/agentic-core-static.md` | Governing architecture law | ✅ |
 
 ---
 

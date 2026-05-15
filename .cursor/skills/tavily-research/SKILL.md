@@ -41,7 +41,6 @@ This skill is the Cursor-native adaptation of [Tavily's Agent Skills](https://do
 |---|---|
 | Use Tavily ONLY for **external** web content | This repo's code goes through `adg_sqlite`; semantic code search through `vector_db`; GitHub repo Q&A through `deepwiki`; library docs through `context7`. |
 | Prefer direct `httpx` for known programmatic API endpoints | Tavily extract is for human-readable pages; raw API responses go through `httpx` in code (or native `read_url_content` for one-off fetches with user approval). |
-| One MCP call per response (constitutional §25) | All `tavily-*` tools are MCP — they cannot be batched with other MCP calls in the same response. Plain reads (`read_file`, etc.) may accompany; other MCP calls cannot. |
 | `tavily-research` is the ONLY Tavily tool that uses chained internal calls | One `tavily-research` invocation may take 30–120s; treat its progress notice as authoritative and do not pre-empt with manual searches. |
 
 ## Topic / Time-Range / Domain Tuning (search & research)
@@ -79,7 +78,7 @@ This skill is the Cursor-native adaptation of [Tavily's Agent Skills](https://do
 1. **Identify intent** — match the user's prompt to one of the 5 tools above.
 2. **Check API key state** — if `pre_mcp_gate` blocks, surface its actionable message and stop. Do NOT attempt curl/grep workarounds.
 3. **Pick parameters** — use the topic/time-range/domain matrix; default to fast cost-conscious params unless the user asked for `advanced` or `pro`.
-4. **Invoke ONE Tavily tool** in its own response (constitutional §25 — no other MCP call in the same response).
+4. **Invoke the Tavily tool** chosen for the task.
 5. **Cite sources** — every web-derived fact in Cursor Agent's response must include the source URL inline so the user can verify.
 6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into Memory MCP as a `ProceduralPattern` entity (see `memory-notion-writeback.md`).
 
@@ -103,8 +102,6 @@ The user can invoke any Tavily tool explicitly with a slash command. Each maps 1
 - ❌ Calling `tavily-search` to look up **GitHub repository internals** — use `deepwiki` (`ask_question`).
 - ❌ Pre-emptively calling `tavily-search` "to be safe" before answering a question already grounded in repo state.
 - ❌ Hand-assembling a curl/scrape workflow because `pre_mcp_gate` blocked the call — the gate exists for a reason; surface the actionable message.
-- ❌ Batching a Tavily MCP call alongside any other MCP call in the same response (constitutional §25).
-
 ## References
 
 - Upstream documentation: <https://docs.tavily.com/documentation/agent-skills>
@@ -113,4 +110,3 @@ The user can invoke any Tavily tool explicitly with a slash command. Each maps 1
 - Intent detection: `.cursor/scripts/pre_prompt_classifier.py` (`_TAVILY_SIGNALS`)
 - Authority registry: `docs/guides/MCP_Registry.md` → `tavily`
 - Sibling skill (external library docs): `context7` MCP via `resolve-library-id` → `get-library-docs`
-- Constitutional rule §25 (MCP serialization): `.cursor/rules/mcp-serialization.md`

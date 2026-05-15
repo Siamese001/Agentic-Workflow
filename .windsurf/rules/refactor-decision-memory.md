@@ -44,7 +44,7 @@ This rule adds a precedent-lookup layer **under** that policy.
 ## Capture
 
 After a refactor decision is resolved, the `post_cascade_response` hook captures the decision
-**if and only if** Cascade emitted a `DECISION_CAPTURED:` marker in the response, as required
+**if and only if** Cursor Agent emitted a `DECISION_CAPTURED:` marker in the response, as required
 by `author-gate-enforcement.md` step 9. Without that emission the hook finds nothing to capture.
 
 Capture is **advisory** — missed captures are acceptable. The ledger grows over time.

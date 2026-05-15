@@ -14,6 +14,7 @@ alwaysApply: false
 .cursor/mcp.json                 ← EDIT HERE, project-scoped Cursor MCP config
 OS environment variables         ← secrets and credentials only
 .cursor/skills/**/SKILL.md       ← MCP usage procedures
+.cursor/rules/mcp-serialization.mdc  ← remote MCP serialization invariant (batching / ordering)
 .cursor/rules/*.mdc              ← governance invariants
 .cursor/hooks/**                 ← deterministic Cursor hook checks
 ```
@@ -45,3 +46,5 @@ Rules:
 - Do not rely on live `mcp0_`, `mcp1_`, or similar tool prefixes as stable identifiers.
 - Run `python -m json.tool .cursor/mcp.json` after edits.
 - Run `python .cursor/scripts/check_cursor_native_config.py --strict` before claiming completion.
+- CI gates: `check_mcp_sync_integrity.py`, `check_agents_mcp_coverage.py`, `check_mcp_config_schema.py --profile all`, `check_cursor_config_schema.py`, `check_mcp_editor_parity.py`.
+- After editing `.cursor/mcp.json`, run `python .cursor/scripts/sync_mcp_config.py` (refreshes AGENTS.md + global Cursor copy).

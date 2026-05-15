@@ -2,7 +2,7 @@
 
 **Plan ID**: `rules-hooks-memories-consolidation-48b4d6`
 **Status**: W1 DONE · W2 DONE · W3 DONE · W4 DONE (Phase A native handlers + Phase B legacy wrappers; all 16 scripts in-process; measured 842→120 ms per response = 7× faster; opt-in via `POST_CASCADE_DISPATCHER=1`; hooks.json cutover deferred to operator post-shadow per §30) · W5 DONE · W6 DONE (Anthropic two-tier compliance, 51 KB always-on)
-**Owner**: Cascade
+**Owner**: Cursor Agent
 **Created**: 2026-05-01
 **Tier**: T3 — touches `.windsurf/rules/`, `.windsurf/hooks.json`, `.windsurf/scripts/`, multiple constitutional invariants
 

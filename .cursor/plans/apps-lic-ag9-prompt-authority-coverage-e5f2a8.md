@@ -133,7 +133,7 @@ The following authority classes are specific to apps_lic's outreach messaging do
 
 | File | Purpose |
 |------|---------|
-| `.windsurf/plans/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md` | This plan |
+| `.cursor/plans/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md` | This plan |
 | `tests/_apps_contract/test_apps_lic_prompt_authority_coverage.py` | 21 acceptance tests |
 | `ops_scripts/ci/check_apps_lic_prompt_authority_coverage.py` | CI gate (advisory; bypass `PA_LIC_COV_BYPASS=1`) |
 | `artifacts/apps_lic/ag9_*` | All JSON and MD artifacts |
@@ -216,7 +216,7 @@ AG-9 is complete only when apps_lic has **complete prompt authority coverage** w
 
 ## Parent Plan Reference
 
-- **AG-8 spine wiring (apps_lic)**: `.windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md` — COMPLETED
-- **AG-8 prompt authority (apps_rg)**: `.windsurf/plans/apps-rg-ag8-prompt-authority-coverage-d9f4c2.md` — PATTERN REFERENCE
+- **AG-8 spine wiring (apps_lic)**: `.cursor/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md` — COMPLETED
+- **AG-8 prompt authority (apps_rg)**: `.cursor/plans/apps-rg-ag8-prompt-authority-coverage-d9f4c2.md` — PATTERN REFERENCE
 
 This plan follows the apps_rg AG-8 pattern but adapts for apps_lic's outreach messaging domain with appropriate authority classes and surface types.

@@ -2,7 +2,7 @@
 
 - **Plan ID**: `docs-reference-tier-split-a3c9f1`
 - **Status**: Draft (awaiting user approval)
-- **Author**: Cascade
+- **Author**: Cursor Agent
 - **Created**: 2026-04-27
 - **Tier**: T2 (multi-file documentation reorganization, single layer = `docs/`)
 - **Type**: Documentation reorg (not code refactoring — no ADG impact)
@@ -108,7 +108,7 @@ Root: `00X_Requirements_Traceability_and_No_Loss_Map.md`, `README.md`, `MANIFEST
 
 | Gap | Owner | Resolution Phase |
 |---|---|---|
-| Final allowlist for `_ALLOWED_EXEC_FILES` after move | Cascade | P4.2 |
+| Final allowlist for `_ALLOWED_EXEC_FILES` after move | Cursor Agent | P4.2 |
 | Decision on `00Z_Source_Alignment_Best_Practices.md` tier | User | P1.2 |
 | Decision on `98_Contextual_Refinement_Model_Primers/` — looks like Tier C but uses Tier A numbering | User | P1.2 |
 | External `MANIFEST.json` bundler — gitignore vs reconfigure | User | Out of scope (Step 3 of RCA, deferred) |

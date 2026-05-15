@@ -24,7 +24,7 @@ Capture the items from parent plan that were **not implemented** in 2026-05-06 s
 |---|---|---|---|
 | W1.P1 | `apps_rg/__main__.py`, `apps_rg/integrations/company_research_loader.py`, `apps_rg/integrations/preloaded_input_context_manifest.py`, `apps_rg/l2_recipe/steps.py`, `apps_rg/types/company_research.py`, `apps_rg/scripts/narrative_pass.py`, `ops_scripts/apps_rg/narrative_pass.py`, `agentic_core/runtime/l2_recipe_resolver.py`, `tools/calibrate_apps_rg_overfit_threshold.py`, `artifacts/_jd_extract_smoke.py` (10+ files) | ~600 | Refactor preserves cross-company guard semantics; delete only after grep confirms zero `company_research.json` / `job_description.json` references remain. |
 | W2.P1 | `apps_research/engines/company_brief_engine.py`, `.env.example`, new `apps_research/engines/_openai_synthesize.py`, new `apps_research/engines/_anthropic_synthesize.py` (or inline) | ~800 | Two new SDKs (`openai`, `anthropic`); shared cascade-iteration helper to reduce duplication; env vars `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_MODEL`, `ANTHROPIC_MODEL`. |
-| W3.P1 | `.windsurf/rules/apps-rg-interactive-discipline.md` frontmatter (1 line); upstream trimming of one always-on rule (varies) | ~150 (rule flip) + ~200-400 (trim work) | Identify which rule to trim or which procedural detail to move to a skill. Run gate before AND after change. |
+| W3.P1 | `.cursor/rules/apps-rg-interactive-discipline.md` frontmatter (1 line); upstream trimming of one always-on rule (varies) | ~150 (rule flip) + ~200-400 (trim work) | Identify which rule to trim or which procedural detail to move to a skill. Run gate before AND after change. |
 | W4.P1 | apps_lic wizard — deferred to `app-wizard-lic-scope-capture-f8d3e1.md` | ~2,500 total across 8 phases | Design TBD by user; 3 gaps identified (input classification, target identity field, manifest interaction). |
 
 ## Files In Scope
@@ -34,7 +34,7 @@ When activated. Plan is capture-only.
 ## Non-Goals
 
 - Hook-based enforcement of wizard discipline (rejected during initial design)
-- Auto-detection of "user explicitly authorized" vs "Cascade inferred" (NLP-hard)
+- Auto-detection of "user explicitly authorized" vs "Cursor Agent inferred" (NLP-hard)
 - Real LLM-judge implementations (separate plan family — see memory `5ba9ca42`)
 - C0 FEC producer wiring for grounded apps (separate plan, blocker #4)
 - apps_underwriting_ai analyst attestation flip (out-of-scope; requires qualified-owner sign-off)
@@ -65,4 +65,4 @@ Same shape as parent `apps-rg-vllm-deferred-followup-f7d3a9`. Same shape as `pla
 - Status: `Not Started` (option id `503df59f-85d4-4ac0-baae-e457d0354b6f`, gray)
 - AI Summary: bullet-style per `notion-plans-taxonomy.md` invariant
 - Exists On Disk: true
-- Plan File Path: `.windsurf/plans/apps-rg-vllm-followup-blocked-c4e8b2.md`
+- Plan File Path: `.cursor/plans/apps-rg-vllm-followup-blocked-c4e8b2.md`

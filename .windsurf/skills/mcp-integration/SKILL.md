@@ -34,7 +34,7 @@ metadata:
 
 ## §1 — Filesystem MCP
 
-**In-house.** Use **sparingly.** Native Cascade file tools are the default; this MCP is for batch or out-of-workspace operations.
+**In-house.** Use **sparingly.** Native Cursor Agent file tools are the default; this MCP is for batch or out-of-workspace operations.
 
 ### When To Use
 

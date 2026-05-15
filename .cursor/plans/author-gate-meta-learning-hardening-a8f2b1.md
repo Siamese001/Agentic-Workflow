@@ -2,7 +2,7 @@
 
 - **Plan ID**: `author-gate-meta-learning-hardening-a8f2b1`
 - **Tier**: T3 (multiple scripts + hooks + CI gate + schema, single logical subsystem)
-- **Owner**: Cascade
+- **Owner**: Cursor Agent
 - **Created**: 2026-04-24
 - **Status**: Active
 - **Parent**: follow-up from `author-gate-meta-learning-outcome-wiring-c3e1f7`
@@ -38,22 +38,22 @@ Token budget: 🟢 GREEN (~24k total, spread across 5 independently revertible c
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| W1.1 | Marker grammar validator | `.windsurf/scripts/post_cascade_author_gate_capture.py`; new `.windsurf/scripts/author_gate_marker_validator.py` | DECISION_CAPTURED marker today tolerates missing fields silently | 2500 | Todo |
-| W1.2 | Required-field audit + stats | `.windsurf/scripts/author_gate_ledger_integrity.py` (extend); new CLI `python -m .windsurf.scripts.audit_ledger_coverage` | No visibility into capture completeness | 1500 | Todo |
-| W1.3 | Scope auto-emit from marker | `.windsurf/scripts/post_cascade_author_gate_capture.py` | repo_area is captured but never written to decision_scope.file_path | 2000 | Todo |
-| W2.1 | Precedent lookup in pre_author_gate | `.windsurf/scripts/pre_author_gate.py`; reads `lookup_refactor_decisions.py` | Lookup skill never called → precedent unused | 3000 | Todo |
-| W2.2 | PRECEDENT block in packet header | `.windsurf/rules/author-gate-enforcement.md`; `pre_author_gate.py` writes `AUTHOR_GATE_PRECEDENT` sidecar | Packet shape doesn't include precedent surface | 2000 | Todo |
-| W3.1 | Capture-time scope inference | `.windsurf/scripts/post_cascade_author_gate_capture.py` | When marker has `repo_area=X` and X is a real path, emit `decision_scope(file_path=X, layer=infer)` | 2000 | Todo |
-| W3.2 | tests_passed signal | new pytest post-plugin in `tests/conftest.py` writing exit outcome into `artifacts/windsurf/last_test_signal.json`; binder reads on next bind | tests_passed=0 always | 2000 | Todo |
-| W3.3 | Immediate direct-bind at capture | `post_cascade_author_gate_capture.py` calls `_bind_from_current_head()` inline when `outcome=executed` AND commit_sha is HEAD | Binder runs only on push, loses data to rebases | 1000 | Todo |
+| W1.1 | Marker grammar validator | `.cursor/scripts/post_cursor_agent_author_gate_capture.py`; new `.cursor/scripts/author_gate_marker_validator.py` | DECISION_CAPTURED marker today tolerates missing fields silently | 2500 | Todo |
+| W1.2 | Required-field audit + stats | `.cursor/scripts/author_gate_ledger_integrity.py` (extend); new CLI `python -m .windsurf.scripts.audit_ledger_coverage` | No visibility into capture completeness | 1500 | Todo |
+| W1.3 | Scope auto-emit from marker | `.cursor/scripts/post_cursor_agent_author_gate_capture.py` | repo_area is captured but never written to decision_scope.file_path | 2000 | Todo |
+| W2.1 | Precedent lookup in pre_author_gate | `.cursor/scripts/pre_author_gate.py`; reads `lookup_refactor_decisions.py` | Lookup skill never called → precedent unused | 3000 | Todo |
+| W2.2 | PRECEDENT block in packet header | `.cursor/rules/author-gate-enforcement.md`; `pre_author_gate.py` writes `AUTHOR_GATE_PRECEDENT` sidecar | Packet shape doesn't include precedent surface | 2000 | Todo |
+| W3.1 | Capture-time scope inference | `.cursor/scripts/post_cursor_agent_author_gate_capture.py` | When marker has `repo_area=X` and X is a real path, emit `decision_scope(file_path=X, layer=infer)` | 2000 | Todo |
+| W3.2 | tests_passed signal | new pytest post-plugin in `tests/conftest.py` writing exit outcome into `artifacts/cursor/last_test_signal.json`; binder reads on next bind | tests_passed=0 always | 2000 | Todo |
+| W3.3 | Immediate direct-bind at capture | `post_cursor_agent_author_gate_capture.py` calls `_bind_from_current_head()` inline when `outcome=executed` AND commit_sha is HEAD | Binder runs only on push, loses data to rebases | 1000 | Todo |
 | W4.1 | Coverage CI gate | new `ops_scripts/ci/check_ledger_coverage.py`; wire into `.pre-commit-config.yaml` | Ledger rot is silent | 2500 | Todo |
 | W4.2 | Scheduled promotion hook | `.git/hooks/post-commit` extension invoking `promote_author_gate_patterns.py` every 10 commits | Manual only | 1500 | Todo |
-| W5.1 | Exit criteria JSON | Schema in `.windsurf/schemas/exit_criteria.schema.json`; new column `decisions.exit_criteria_json` (nullable, backfill null); validator | Notion Success Criteria is free text | 2500 | Todo |
-| W5.2 | Hash-chain verification on read | `.windsurf/skills/refactor-decision-memory/lookup_refactor_decisions.py` re-verifies chain on returned matches | No runtime tamper detection | 1500 | Todo |
+| W5.1 | Exit criteria JSON | Schema in `.cursor/schemas/exit_criteria.schema.json`; new column `decisions.exit_criteria_json` (nullable, backfill null); validator | Notion Success Criteria is free text | 2500 | Todo |
+| W5.2 | Hash-chain verification on read | `.cursor/skills/refactor-decision-memory/lookup_refactor_decisions.py` re-verifies chain on returned matches | No runtime tamper detection | 1500 | Todo |
 
 ## Execution Order
 
-**W1 + W2 this session (loop closure, highest leverage).** W3–W5 deferred via DEFERRED_SCOPE markers (auto-posted to Notion backlog by post-cascade hook).
+**W1 + W2 this session (loop closure, highest leverage).** W3–W5 deferred via DEFERRED_SCOPE markers (auto-posted to Notion backlog by post-cursor-agent hook).
 
 ## Exit Criteria (plan-level)
 

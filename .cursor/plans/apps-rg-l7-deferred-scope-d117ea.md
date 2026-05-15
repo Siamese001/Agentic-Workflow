@@ -26,7 +26,7 @@ Tracks two deferred items from completed plan `apps-rg-l7-route-family-cert-fix-
 | `agentic_core/runtime/entrypoints/integrated_exact_cache_run.py` | R1A cache replay entrypoint — needs L7 re-emission | 🔲 |
 | `agentic_core/L7_auditability/coverage/route_family_l7_coverage.py` | L7 classifier logic | 🔲 |
 | `scripts/verify_agentic_core_l7_route_family_coverage.py` | Current advisory verifier | 🔲 |
-| Parent plan `.windsurf/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md` | DEFERRED_SCOPE markers | ✅ |
+| Parent plan `.cursor/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md` | DEFERRED_SCOPE markers | ✅ |
 
 ---
 
@@ -90,4 +90,4 @@ Tracks two deferred items from completed plan `apps-rg-l7-route-family-cert-fix-
 - Parent plan: `apps-rg-l7-route-family-cert-fix-b8f3a1` (Completed 2026-05-08)
 - DEFERRED_SCOPE markers in parent plan §"Out of Scope (Deferred)"
 
-PLAN_CREATED: slug=apps-rg-l7-deferred-scope-d117ea path=.windsurf/plans/apps-rg-l7-deferred-scope-d117ea.md
+PLAN_CREATED: slug=apps-rg-l7-deferred-scope-d117ea path=.cursor/plans/apps-rg-l7-deferred-scope-d117ea.md

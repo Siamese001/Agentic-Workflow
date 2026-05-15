@@ -3,7 +3,7 @@ title: W2 Hook Consolidation — B6B Shadow Mode Unblock
 slug: windsurf-governance-w2-deferred-b6b-unblock-a8d4e2
 created: 2026-05-12
 last_updated: 2026-05-12 17:00 UTC-04
-author: Cascade
+author: Cursor Agent
 tier: T3
 status: Retired
 dod_exempt: false

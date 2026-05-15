@@ -247,7 +247,7 @@ Per-wave independent rollback:
 | Chassis extraction zero-regression | 100% per-app tests pass pre and post migration | existing test suites |
 | Cross-app envelope coverage | 4/4 producer→consumer handoffs typed | CI gate asserts |
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

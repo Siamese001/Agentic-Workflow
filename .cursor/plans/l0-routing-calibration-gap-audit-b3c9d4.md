@@ -4,7 +4,7 @@ Status: **ALL WAVES EXECUTED (W0 + W1 + W1b + W2 + W3 + W4 + W5)** · Tier: **T3
 Date: 2026-04-23 (audit + W0 + W1) · 2026-04-24 (W2 + W3 + W4 + W1b + W5 runtime wiring) · 267/267 tests pass
 Scope doc: `docs/reference/_notes/agentic_process_mapping_v34.md` §[3] Route Decision + Switching
 Authoritative doc: `docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v11.md`
-Sibling audit (structural, not this one): `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md`
+Sibling audit (structural, not this one): `.cursor/plans/l0-routing-best-practice-audit-1f9180.md`
 ADG Provenance: backend=degraded_grep, snapshot=n/a
 DEGRADED_FALLBACK: reason=adg_sqlite_mcp_transport_closed; used filesystem find_by_name + targeted read_file for code enumeration (constitutional §ADG-First — health probe attempted, fallback logged)
 
@@ -260,7 +260,7 @@ Files most likely to be touched during execution waves, ranked by layer-weighted
 
 ## ADG_GRAPH_LAYER_EVIDENCE
 
-ADG MCP degraded at audit start (transport closed). Per constitutional §ADG-First, fallback logged above with reason code. Consulted during prior sibling audit `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md` (snapshot `adg_indexed_04222026_1508.sqlite`):
+ADG MCP degraded at audit start (transport closed). Per constitutional §ADG-First, fallback logged above with reason code. Consulted during prior sibling audit `.cursor/plans/l0-routing-best-practice-audit-1f9180.md` (snapshot `adg_indexed_04222026_1508.sqlite`):
 
 - **Materialized views** referenced in sibling audit (carried forward by provenance):
   1. `mv_graph_reverse_dependency_hotspots` — PathRouter fan-in = 5

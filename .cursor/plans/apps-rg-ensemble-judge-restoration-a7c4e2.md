@@ -8,7 +8,7 @@ superseded_by: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2
 active_authority: false
 preserve_for: "historical reference and implementation detail only"
 do_not_execute_directly: true
-next_authority: ".windsurf/plans/apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md"
+next_authority: ".cursor/plans/apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md"
 ---
 
 > **ARCHIVAL NOTICE (2026-05-11)**
@@ -1196,7 +1196,7 @@ L6 learns only after the run boundary.
 
 ---
 
-## Cascade Alignment Checks
+## Cursor Agent Alignment Checks
 
 - Keep always-on rules lean; place detailed procedures in skills or workflows.
 - Retrieve local or scoped evidence before synthesis.

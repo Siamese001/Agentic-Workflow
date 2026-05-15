@@ -24,7 +24,7 @@ On 2026-05-10 ~10:50 UTC, the Notion Plans DB suffered a bulk Status overwrite t
 Full RCA: `@docs/architecture/rca/NOTION_PLANS_STATUS_RCA_2026-05-10.md`. Three independent failure modes identified:
 
 - **Cause A**: `backfill_historical_plan_statuses.py:158` defaults to `"Not Started"` when plan markdown lacks frontmatter `status:` — overwrote 89 rows. Single-line fix.
-- **Cause B**: 41 files write to Notion; Cascade-direct `mcp7_API-post-page` calls don't dedup → 11 slugs got phantom duplicate rows.
+- **Cause B**: 41 files write to Notion; Cursor Agent-direct `mcp7_API-post-page` calls don't dedup → 11 slugs got phantom duplicate rows.
 - **Cause C**: `_plan_registration.py` cache TTL=1h but no scheduled refresh; 9h stale at incident time missed user edits.
 
 This plan implements the 6 RCA action items in 3 waves.
@@ -37,7 +37,7 @@ This plan implements the 6 RCA action items in 3 waves.
 
 ## 3. ADG_HOTSPOT_REPORT
 
-Not applicable — this plan touches `tools/notion/` and `.windsurf/scripts/` which are infrastructure-layer, not L0..L6 code.
+Not applicable — this plan touches `tools/notion/` and `.cursor/scripts/` which are infrastructure-layer, not L0..L6 code.
 
 ## 4. ADG_GRAPH_LAYER_EVIDENCE
 
@@ -56,9 +56,9 @@ Not applicable — no production code paths in scope.
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
 | W1.P1 | Fix `backfill_historical_plan_statuses.py` default-to-Not-Started | `tools/notion/backfill_historical_plan_statuses.py` (1 line); test in `tests/unit/tools_notion/` | none — single-line change | 1k | 🟡 PENDING |
-| W1.P2 | Build `register_plan_idempotent()` helper + pre-MCP gate + weekly CI dedup gate | `tools/notion/_plan_registration_helpers.py` (new), `.windsurf/scripts/pre_mcp_gate.py` (extend), `ops_scripts/ci/check_notion_plans_no_duplicates.py` (new) | 3 surfaces; needs careful schema (block at MCP layer when slug exists) | 5k | 🟡 PENDING |
+| W1.P2 | Build `register_plan_idempotent()` helper + pre-MCP gate + weekly CI dedup gate | `tools/notion/_plan_registration_helpers.py` (new), `.cursor/scripts/pre_mcp_gate.py` (extend), `ops_scripts/ci/check_notion_plans_no_duplicates.py` (new) | 3 surfaces; needs careful schema (block at MCP layer when slug exists) | 5k | 🟡 PENDING |
 | W2.P1 | Triage remaining 8 non-Not-Started duplicate slugs | one-shot script in `artifacts/notion/`; manual user-judgement per slug | semantic ambiguity for some duplicates | 2k | 🟡 PENDING |
-| W2.P2 | Hourly cache auto-refresh | `.windsurf/scripts/pre_user_prompt_plan_registration_refresh.py` (new) | mustn't slow turn-start; needs background subprocess | 2k | 🟡 PENDING |
+| W2.P2 | Hourly cache auto-refresh | `.cursor/scripts/pre_user_prompt_plan_registration_refresh.py` (new) | mustn't slow turn-start; needs background subprocess | 2k | 🟡 PENDING |
 | W3.P1 | Fix wave-lifecycle-writer test pollution | `tests/unit/tools_notion/test_wave_lifecycle_writer.py` (mock or NOTION_TOKEN guard) | identifies which test fixtures leak | 1k | 🟡 PENDING |
 | W3.P2 | Plans DB write telemetry | `tools/notion/wave_lifecycle_writer.py` (extend logger), grep all Plans-DB writers and standardize log line | cross-cutting; many touch points | 2k | 🟡 PENDING |
 
@@ -73,7 +73,7 @@ Not applicable — no production code paths in scope.
 | DoD-5 | 8 remaining non-Not-Started duplicates resolved (each triaged + archived/kept) | `python artifacts/notion/_find_duplicates.py` shows 0 duplicate slugs |
 | DoD-6 | Cache refresh runs at session start when older than 1h | `pre_user_prompt_plan_registration_refresh.py` exits 0; `fetched_at_epoch` updates |
 | DoD-7 | Unit tests no longer hit prod Notion | `wave_lifecycle_notion.jsonl` shows no test-slug entries (`x-aaaaaa`, `demo-plan-abc123`, `page-123`) for 7 days post-fix |
-| DoD-8 | Every Plans-DB write logs to `artifacts/windsurf/plans_db_writes.jsonl` with slug + page_id + status_before + status_after + writer_path | Code grep shows every PATCH/POST in plans-related writers calls the logger |
+| DoD-8 | Every Plans-DB write logs to `artifacts/cursor/plans_db_writes.jsonl` with slug + page_id + status_before + status_after + writer_path | Code grep shows every PATCH/POST in plans-related writers calls the logger |
 
 ### Verification vs Deferral
 
@@ -86,12 +86,12 @@ Not applicable — no production code paths in scope.
 
 ## 8. Files In Scope
 
-- `.windsurf/plans/notion-plans-status-rca-followups-b8e3f2.md` (this plan)
+- `.cursor/plans/notion-plans-status-rca-followups-b8e3f2.md` (this plan)
 - `tools/notion/backfill_historical_plan_statuses.py` (1-line fix)
 - `tools/notion/_plan_registration_helpers.py` (NEW)
 - `tools/notion/wave_lifecycle_writer.py` (telemetry extension)
-- `.windsurf/scripts/pre_mcp_gate.py` (extend)
-- `.windsurf/scripts/pre_user_prompt_plan_registration_refresh.py` (NEW)
+- `.cursor/scripts/pre_mcp_gate.py` (extend)
+- `.cursor/scripts/pre_user_prompt_plan_registration_refresh.py` (NEW)
 - `ops_scripts/ci/check_notion_plans_no_duplicates.py` (NEW)
 - `tests/unit/tools_notion/test_backfill_historical_plan_statuses.py` (NEW or extend)
 - `tests/unit/tools_notion/test_wave_lifecycle_writer.py` (mock guards)
@@ -99,7 +99,7 @@ Not applicable — no production code paths in scope.
 
 ## 9. Out of Scope
 
-Anything outside `tools/notion/`, `.windsurf/scripts/`, `ops_scripts/ci/`, `tests/unit/tools_notion/`, `tests/unit/windsurf_scripts/`. Other Notion DBs (Backlog, MCP Registry, etc.) are intentionally excluded.
+Anything outside `tools/notion/`, `.cursor/scripts/`, `ops_scripts/ci/`, `tests/unit/tools_notion/`, `tests/unit/windsurf_scripts/`. Other Notion DBs (Backlog, MCP Registry, etc.) are intentionally excluded.
 
 ## 10. Risks
 
@@ -113,7 +113,7 @@ Anything outside `tools/notion/`, `.windsurf/scripts/`, `ops_scripts/ci/`, `test
 ## 11. References
 
 - RCA: `@docs/architecture/rca/NOTION_PLANS_STATUS_RCA_2026-05-10.md`
-- Recovery plan: `@.windsurf/plans/notion-plans-status-bulk-recovery-c4e2f9.md`
+- Recovery plan: `@.cursor/plans/notion-plans-status-bulk-recovery-c4e2f9.md`
 - Constitutional: §25, §35, §36
 - Rules: `notion-plans-taxonomy.md`, `notion-plan-wave-deferral.md`, `plan-registration-enforcement.md`
 - Bug source: `@tools/notion/backfill_historical_plan_statuses.py:127-158`

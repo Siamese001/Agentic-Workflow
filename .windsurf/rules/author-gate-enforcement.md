@@ -20,7 +20,7 @@ When facing an author-gate decision point:
 5. **Dominance**: top ≥0.85 AND gap ≥0.12 → surface alone
 6. **Material distinctness**: collapse cosmetic variants
 7. **Surface 1–N options** via `ask_user_question` — analysis INSIDE description, not chat prose. Every option MUST satisfy the **four-requirement contract**:
-   - **Cascade clickable** — options reach `ask_user_question` (not prose)
+   - **Cursor Agent clickable** — options reach `ask_user_question` (not prose)
    - **Confidence prefix** — `[confidence=0.NN]` or `[RECOMMENDED ⭐ confidence=0.NN]`
    - **Tradeoff segment** — ` · trade-off: <≥20 chars>`
    - **Dominance star** — `⭐` on exactly one option iff dominance fires
@@ -57,7 +57,7 @@ Execute continuously WITHOUT stopping UNLESS a genuine Author-Gate decision poin
 > - Markdown tables of options without `ask_user_question`
 > - "Recommended Next Phase/Step/Wave/Action" menus in prose
 >
-> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cascade making the decision unilaterally.
+> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cursor Agent making the decision unilaterally.
 >
 > **Correct path**: If a genuine decision point exists → invoke the full pipeline: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question`. If no genuine decision exists → continue execution per the Continuous Execution Invariant above.
 >

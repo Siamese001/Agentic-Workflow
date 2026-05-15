@@ -66,7 +66,7 @@ Author-Gate is currently not reliably firing because:
 ## Files to Modify
 
 ### Primary Changes
-1. **`.windsurf/scripts/pre_author_gate.py`** (752 lines)
+1. **`.cursor/scripts/pre_author_gate.py`** (752 lines)
    - Change enforcement default handling (line 721-745)
    - Modify `check_tier()` to check sensitive paths before early return (line 405-429)
    - Add `is_sensitive_path()` helper
@@ -76,7 +76,7 @@ Author-Gate is currently not reliably firing because:
    - Modify `_layers_in_changed_files()` with ADG fallback (line 432-447)
    - Add receipt logging for ADG-backed decisions
 
-2. **`.windsurf/schemas/author_gate_triggers.yaml`** (208 lines)
+2. **`.cursor/schemas/author_gate_triggers.yaml`** (208 lines)
    - Change `enforcement: shadow` → `enforcement: block` (line 17)
    - Add `sensitive_path_override` trigger (new)
    - Document `blast_radius_fan_in_min` feature (line 64)
@@ -101,7 +101,7 @@ Author-Gate is currently not reliably firing because:
 | `tests/unit/windsurf_scripts/test_pre_author_gate.py` | Main test suite | ~800 lines |
 | `tests/unit/windsurf_scripts/test_pre_author_gate_integration.py` | Integration tests | ~400 lines |
 | `tests/unit/windsurf_scripts/fixtures/adg_mock.py` | ADG mocking helpers | ~200 lines |
-| `.windsurf/schemas/author_gate_triggers_v2.yaml` | Schema backup/validation | 208 lines |
+| `.cursor/schemas/author_gate_triggers_v2.yaml` | Schema backup/validation | 208 lines |
 
 ---
 
@@ -163,9 +163,9 @@ enforcement: block  # Changed from shadow
 **New sensitive path patterns**:
 ```python
 SENSITIVE_PATH_PATTERNS = [
-    ".windsurf/rules/*",
-    ".windsurf/schemas/*",
-    ".windsurf/scripts/pre_author_gate.py",
+    ".cursor/rules/*",
+    ".cursor/schemas/*",
+    ".cursor/scripts/pre_author_gate.py",
     "apps_rg/config/*",
     "agentic_core/L5_safety/*",
     "agentic_core/L4_state/*",
@@ -276,10 +276,10 @@ After implementation, run:
 
 ```bash
 # 1. Self-test
-python .windsurf/scripts/pre_author_gate.py --self-test
+python .cursor/scripts/pre_author_gate.py --self-test
 
 # 2. Dry-run verbose
-python .windsurf/scripts/pre_author_gate.py --dry-run --verbose
+python .cursor/scripts/pre_author_gate.py --dry-run --verbose
 
 # 3. Targeted unit tests
 python -m pytest tests/unit/windsurf_scripts/test_pre_author_gate.py -v
@@ -317,7 +317,7 @@ python -m pytest tests/unit/windsurf/scripts/ -v -k "author_gate"
 - [ ] layer_crossing is ADG-backed where possible, path fallback otherwise
 - [ ] shadow mode remains available (configurable, not default)
 - [ ] All changes are small, local, and test-backed (25+ new tests)
-- [ ] Sensitive edit example: Editing `.windsurf/rules/ssot-folder-enforcement.md` (single file) now triggers Author-Gate
+- [ ] Sensitive edit example: Editing `.cursor/rules/ssot-folder-enforcement.md` (single file) now triggers Author-Gate
 - [ ] Low-risk edit example: Editing `tests/unit/test_foo.py` still passes in Tier-2
 
 ---
@@ -364,7 +364,7 @@ python -m pytest tests/unit/windsurf/scripts/ -v -k "author_gate"
 
 ## Plan Metadata
 
-- **Files In Scope**: `.windsurf/scripts/pre_author_gate.py`, `.windsurf/schemas/author_gate_triggers.yaml`, `tests/unit/windsurf_scripts/test_pre_author_gate*.py`
+- **Files In Scope**: `.cursor/scripts/pre_author_gate.py`, `.cursor/schemas/author_gate_triggers.yaml`, `tests/unit/windsurf_scripts/test_pre_author_gate*.py`
 - **Files Not In Scope**: Anything in `agentic_core/L5_safety/` (runtime HITL), `emit_packet.py`, `render_card.py`
 - **Estimated Duration**: 1-2 sessions
 - **Review Required**: Yes — Author-Gate behavior change
