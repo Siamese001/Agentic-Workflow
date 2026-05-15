@@ -1,6 +1,11 @@
 # Generated from config/excluded_paths.yaml
-# Do not edit manually - run: python tools/generate_gitignore.py --write
+# Do not edit manually - run: python tools/generate/generate_gitignore.py --write
 # Last generated: 2026-04-22T09:37:13.436833
+#
+# IMPORTANT: Repo policy extends this file with tracked manual rules below
+# (`artifacts/requirements/proof_bundles` negations, env/keys/playwright).
+# Until the generator merges a footer SSOT, do not run `--write` without
+# restoring those blocks.
 
 
 # Build & Cache
@@ -30,7 +35,6 @@ venv/
 venv_stable/
 
 # Coverage & Test Output
-.coverage/
 .test_artifacts/
 coverage_html/
 htmlcov/
@@ -118,9 +122,10 @@ tools/archive/
 *.tmp
 *.zip
 *_test/
-.coverage.*/
-Thumbs.db/
-repo_root.txt/
+.coverage
+.coverage.*
+Thumbs.db
+repo_root.txt
 # runtime_adg// (broken pattern — double-slash; superseded by anchored rule below)
 
 # Runtime ADG content-addressed cache (regenerated every run; never commit)

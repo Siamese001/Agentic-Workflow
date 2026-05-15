@@ -17,7 +17,20 @@ Run from repository root (or any working directory resolved to the workspace roo
 
 ---
 
-## 2. Exact command
+## 2. Exact command (normal usage)
+
+Canonical base resume **`apps_rg/resume/base/amit_ayer_base_resume_v1.json`** is applied automatically (pointer merge) when **`--base-resume` is omitted**. Omitting it is the default and recommended path for apps_rg.
+
+```bash
+python -m apps_rg.runtime.orchestrate_full_resume \
+  --provider qwen_vllm \
+  --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude \
+  --allow-non-allow-exit-zero \
+  --job-description artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_job_description.txt \
+  --briefing artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_briefing.txt
+```
+
+Minimal invocation without JD/briefing files (lanes use dispatch defaults):
 
 ```bash
 python -m apps_rg.runtime.orchestrate_full_resume \
@@ -26,23 +39,36 @@ python -m apps_rg.runtime.orchestrate_full_resume \
   --allow-non-allow-exit-zero
 ```
 
-With optional inputs (examples):
+Optional overrides:
 
 ```bash
 python -m apps_rg.runtime.orchestrate_full_resume \
   --provider qwen_vllm \
   --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude \
   --allow-non-allow-exit-zero \
-  --base-resume apps_rg/resume/base/amit_ayer_base_resume_v1.json \
   --job-description path/to/jd.txt \
   --briefing path/to/briefing.txt \
+  --base-resume apps_rg/resume/base/custom_base_resume.json \
   --output-docx artifacts/apps_rg/runtime_proofs/docx/amit_ayer_resume_v1.docx
 ```
 
+### 2.1 Input helper (JD + briefing only)
+
+Validate JD and briefing paths and print a suggested CLI. **Does not read or write base resume** or pointer JSON.
+
+```bash
+python -m apps_rg.runtime.prepare_orchestrator_inputs \
+  --job-description artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_job_description.txt \
+  --briefing artifacts/apps_rg/runtime_inputs/brown_brown_svp_it_briefing.txt
+```
+
+Add `--emit-json` for JSON-only output.
+
 Notes:
 
-- `--base-resume` temporarily merges `active_resume_path` into `apps_rg/resume/base/active_base_resume_pointer.json` and restores the prior file afterward.
-- `--output-docx` must keep basename `amit_ayer_resume_v1.docx` (DOCX proof contract).
+- **`--base-resume`** (when provided) temporarily merges `active_resume_path` into `apps_rg/resume/base/active_base_resume_pointer.json` and restores afterward. When omitted, the orchestrator merges the **canonical** `amit_ayer_base_resume_v1.json` after verifying it exists (**fail-fast before Qwen, judges, or DOCX**).
+- If the canonical default file is missing, correct the tree or pass `--base-resume` to a valid file under the repo.
+- **`--output-docx`** must keep basename `amit_ayer_resume_v1.docx` (DOCX proof contract).
 
 ---
 
@@ -50,9 +76,11 @@ Notes:
 
 | Input | Mechanism |
 |-------|-----------|
-| **Base resume** | Default resolved via `apps_rg/resume/base/active_base_resume_pointer.json`. Override path with `--base-resume`. |
+| **Base resume** | **Default:** `apps_rg/resume/base/amit_ayer_base_resume_v1.json` (merged into `active_base_resume_pointer.json` for the run). **Override:** `--base-resume <path under repo>`. |
 | **Job description** | Optional `--job-description path` → forwarded to lanes as JD text (`--jd-text` internally). |
 | **Briefing** | Optional `--briefing path` → forwarded to lanes as briefing text. |
+
+The orchestrator JSON output includes `base_resume_path`, `base_resume_default_used`, `base_resume_exists`, and `base_resume_hash` (SHA-256 of UTF-8 file contents, same convention as locked-copy manifest hashing).
 
 Lane-specific defaults still apply where optional files are omitted (see individual dispatch modules).
 

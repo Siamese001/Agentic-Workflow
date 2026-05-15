@@ -129,6 +129,18 @@ class TestGenerateGitignoreContent:
         content = generate_gitignore.generate_gitignore_content(set(), set())
         assert "# Generated from config/excluded_paths.yaml" in content
 
+    def test_file_patterns_no_directory_only_slash_on_dot_globs(self) -> None:
+        """Dot-prefixed file_patterns must not become directory-only rules."""
+        content = generate_gitignore.generate_gitignore_content(
+            set(),
+            {".coverage.*", "Thumbs.db", "*.log"},
+        )
+        assert ".coverage.*" in content
+        assert ".coverage.*/" not in content
+        assert "Thumbs.db" in content
+        assert "Thumbs.db/" not in content
+        assert "*.log" in content
+
 
 class TestGeneratePrecommitExclude:
     """Test generation of pre-commit exclude section."""

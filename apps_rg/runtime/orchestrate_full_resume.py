@@ -5,11 +5,9 @@ Post–lane steps (8–13) invoke no providers, Qwen, or judges."""
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
@@ -41,13 +39,6 @@ def find_repo_root(start: Path | None = None) -> Path:
 
 def _read_text_file(path: Path) -> str:
     return path.read_text(encoding="utf-8").strip()
-
-
-@dataclass(frozen=True)
-class BasePointerContext:
-    repo: Path
-    pointer: Path
-    previous_text: str | None  # None → file did not exist before run
 
 
 def _merge_active_resume_pointer(repo: Path, base_resume_abs: Path) -> Callable[[], None]:
@@ -93,11 +84,11 @@ def resolve_effective_base_resume(repo: Path, base_resume_override: Path | None)
     return cand.resolve(), False
 
 
-def validate_base_resume_for_orchestration(repo: Path, base_resume_override: Path | None) -> tuple[Path, bool, bool, str]:
+def validate_base_resume_for_orchestration(repo: Path, base_resume_override: Path | None) -> tuple[Path, bool, str, str]:
     """
     Fail fast before any subprocess if default or override resume is absent.
 
-    Returns (effective_path_abs, default_used, exists_always_true_here, hex_hash).
+    Returns (effective_path_abs, default_used, posix_rel, sha256_hex_digest).
     """
     eff, default_used = resolve_effective_base_resume(repo, base_resume_override)
     rr = repo.resolve()
@@ -121,7 +112,7 @@ def validate_base_resume_for_orchestration(repo: Path, base_resume_override: Pat
     raw = eff.read_text(encoding="utf-8")
     bhash = sha256_hex(raw)
     posix_rel = eff.relative_to(rr).as_posix()
-    return eff, default_used, True, posix_rel, bhash
+    return eff, default_used, posix_rel, bhash
 
 
 def _run_subprocess(argv: Sequence[str], *, cwd: Path, label: str) -> None:
@@ -224,7 +215,8 @@ def run_orchestration(
     output_docx: Path | None,
 ) -> dict[str, Any]:
     repo = repo.resolve()
-    restore_pointer = _apply_base_resume_pointer(repo, base_resume)
+    eff_abs, default_used, base_resume_path_posix, base_resume_hash = validate_base_resume_for_orchestration(repo, base_resume)
+    restore_pointer = _merge_active_resume_pointer(repo, eff_abs)
     try:
         for mod in LANE_MODULES:
             lane_argv = [
@@ -349,6 +341,10 @@ def run_orchestration(
         }
         result["rollup_id"] = rollup.get("rollup_id")
         result["explicit_waiver_needed"] = disposition.get("explicit_waiver_needed_for_allow_when_section_review")
+        result["base_resume_path"] = base_resume_path_posix
+        result["base_resume_default_used"] = default_used
+        result["base_resume_exists"] = True
+        result["base_resume_hash"] = base_resume_hash
         return result
     finally:
         if restore_pointer:
@@ -361,7 +357,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
     parser.add_argument("--mock-judges", action="store_true", help="Forward to lanes (typically with --provider mock).")
     parser.add_argument("--allow-non-allow-exit-zero", action="store_true")
-    parser.add_argument("--base-resume", type=Path, default=None, help="Temporary active_resume_path merge into base pointer.")
+    parser.add_argument(
+        "--base-resume",
+        type=Path,
+        default=None,
+        help=(
+            "Optional: override active_resume_path merge (repo-relative or absolute). "
+            f"Default when omitted: {CANONICAL_BASE_RESUME_REPO_REL.as_posix()}"
+        ),
+    )
     parser.add_argument("--job-description", type=Path, default=None, dest="jd_path")
     parser.add_argument("--briefing", type=Path, default=None, dest="briefing_path")
     parser.add_argument(

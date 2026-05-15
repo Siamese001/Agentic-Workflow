@@ -38,7 +38,6 @@ virtual_env_dirs:
 coverage_dirs:
   - "coverage_html"
   - "htmlcov"
-  - ".coverage"
   - ".test_artifacts"
   - "test_artifacts"
   # Note: 'reports' removed — docs/reports/ is needed and should not be blocked
@@ -223,6 +222,7 @@ file_patterns:
   - "*.so"
   - "*.dll"
   - "*.egg-info"
+  - ".coverage"
   - ".coverage.*"
   - "*.log"
   - "*.tmp"

@@ -173,6 +173,12 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
             continue
         lines.append(f"# {group_name}")
         for entry in entries:
+            # `file_patterns` from YAML are file/globs (e.g. `.coverage.*`, `Thumbs.db`).
+            # Never force a trailing `/` here: `.coverage.*/` only matches directories, but
+            # coverage.py parallel mode writes FILES named `.coverage.<hostname>.<pid>.*`.
+            if group_name == "File Patterns":
+                lines.append(entry)
+                continue
             # Add trailing slash for directories (no dot prefix needed for gitignore)
             if not entry.startswith(".") and not entry.startswith("*"):
                 # No leading slash — match directory name at any depth
