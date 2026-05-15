@@ -1,7 +1,7 @@
 {
   "gate": "G-ADG-SNAPSHOT-SIGNED",
   "tier": "B",
-  "timestamp": "2026-05-15T18:13:00.879781+00:00",
+  "timestamp": "2026-05-15T18:13:16.834631+00:00",
   "snapshot": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
   "envelope_path": "artifacts\\adg\\adg_indexed_05152026_1118.sqlite.intoto.jsonl",
   "public_key_path": "artifacts\\adg\\keys\\ed25519_ff20fefbbf6a6425.pub",

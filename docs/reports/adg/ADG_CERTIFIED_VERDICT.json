@@ -3,7 +3,7 @@
   "tier": "B",
   "verdict": "ADG_NOT_CERTIFIED",
   "strict_mode": false,
-  "timestamp": "2026-05-15T17:36:48.545813+00:00",
+  "timestamp": "2026-05-15T18:13:02.191541+00:00",
   "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_05152026_1118.sqlite",
   "blockers": [
     "consumer mode declared"
