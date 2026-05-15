@@ -1,0 +1,206 @@
+# =====================================================================
+# Author-Gate Triggers — Observable features that require a HITL packet
+# =====================================================================
+# SSOT for .cursor/scripts/pre_author_gate.py
+#
+# Design philosophy (per Anthropic Auto Mode + Fowler harness):
+#   - DEFAULT = BALANCED (low false-positive rate, real tier-3 actions only)
+#   - Tier model first: if tier permissions allow → no gate at all
+#   - Trigger evaluation only for Tier-3 actions
+#   - Every trigger below cites an observable feature — never intuition
+#
+# Change procedure: edit this file → run `pre_author_gate.py --self-test`
+# =====================================================================
+
+version: 1
+preset: balanced                # balanced | strict | lenient
+enforcement: block              # shadow | block — block = exit 2 with AUTHOR_GATE_REQUIRED; shadow = warn only
+defaults:
+  # Session denial escalation (mirrors Anthropic Auto Mode deny-and-continue)
+  max_consecutive_denials: 3
+  max_total_denials_per_session: 20
+  # Degraded mode: allow ADG-missing/stale queries to fall back to path heuristics
+  # without failing closed. Set to false for strict enforcement (recommended).
+  allow_degraded_mode: false
+
+# ---------------------------------------------------------------------
+# TRIGGERS (evaluated in order; first match wins; all recorded in packet)
+# ---------------------------------------------------------------------
+#
+# Each trigger:
+#   id              — stable ID used in decision_record.trigger.rule_id
+#   description     — one-line human-readable rationale
+#   decision_type   — maps to decisions.decision_type enum
+#   features        — observable conditions (all must match for trigger to fire)
+#   severity        — block | warn (block forces gate; warn logs only)
+#
+# ---------------------------------------------------------------------
+triggers:
+
+  # ---- Refactor scope triggers ------------------------------------
+  - id: HITL-1.1
+    description: Multi-file cross-layer edit
+    decision_type: refactor_scope
+    severity: block
+    features:
+      files_changed_min: 2
+      layer_crossing: true          # ADG layer count in changed files >= 2
+
+  - id: HITL-1.2
+    description: Large single-layer change (5+ files)
+    decision_type: refactor_scope
+    severity: block
+    features:
+      files_changed_min: 5
+      layer_crossing: false          # pure intra-layer
+
+  - id: HITL-1.3
+    description: High blast-radius change (fan_in >= 10)
+    decision_type: refactor_scope
+    severity: block
+    features:
+      files_changed_min: 1
+      blast_radius_fan_in_min: 10
+
+  # ---- Deletion triggers ------------------------------------------
+  - id: HITL-1.4
+    description: Production file deletion
+    decision_type: deletion_strategy
+    severity: block
+    features:
+      deletions_min: 1
+      path_globs_any:
+        - "agentic_core/**/*.py"
+        - "apps_*/**/*.py"
+        - "system_learning/**/*.py"
+        - "infrastructure/**/*.py"
+      exclude_globs_any:
+        - "**/__pycache__/**"
+        - "**/*_smoke.py"
+        - "tests/**"
+
+  - id: HITL-1.5
+    description: Agent class deletion (constitutional §3)
+    decision_type: deletion_strategy
+    severity: block
+    features:
+      deletions_min: 1
+      path_globs_any:
+        - "**/*Agent.py"
+
+  # ---- Dependency triggers ----------------------------------------
+  - id: HITL-1.6
+    description: Dependency addition or version change
+    decision_type: dependency_addition
+    severity: block
+    features:
+      path_globs_any:
+        - "pyproject.toml"
+        - "requirements*.txt"
+        - "poetry.lock"
+      content_regex_any:
+        - '^\+[-\w].+'              # added or modified line
+      diff_side: additions
+
+  # ---- Anti-pattern triggers --------------------------------------
+  - id: HITL-1.7
+    description: New bare `except` or broad `except Exception` introduced
+    decision_type: anti_pattern
+    severity: block
+    features:
+      path_globs_any:
+        - "**/*.py"
+      content_regex_any:
+        - '^\+\s*except\s*:\s*$'
+        - '^\+\s*except\s+Exception\b'
+      exclude_globs_any:
+        - "tests/**"
+        - ".cursor/skills/**"
+
+  - id: HITL-1.8
+    description: subprocess without timeout= (constitutional §14)
+    decision_type: anti_pattern
+    severity: block
+    features:
+      path_globs_any:
+        - "**/*.py"
+      content_regex_any:
+        - 'subprocess\.(run|Popen|check_output|check_call|call)\s*\([^)]*\)'
+      content_must_not_match:
+        - 'timeout\s*='
+
+  # ---- Architecture triggers --------------------------------------
+  - id: HITL-1.9
+    description: Rule or ADR addition/modification (architectural impact)
+    decision_type: architecture_choice
+    severity: block
+    features:
+      path_globs_any:
+        - ".cursor/rules/*.md"
+        - "docs/architecture/adr/*.md"
+        - ".cursor/hooks.json"
+        - "agentic_core/L5_safety/**"
+
+  # ---- Test strategy triggers -------------------------------------
+  - id: HITL-1.10
+    description: pytest.mark.skip / xfail without strict=True added
+    decision_type: test_strategy
+    severity: block
+    features:
+      path_globs_any:
+        - "tests/**/*.py"
+      content_regex_any:
+        - '^\+\s*@pytest\.mark\.skip'
+        - '^\+\s*@pytest\.mark\.xfail(?!.*strict\s*=\s*True)'
+
+# ---------------------------------------------------------------------
+# BYPASS CONDITIONS (even if triggers match, these skip the gate)
+# ---------------------------------------------------------------------
+# Mirrors author-gate-enforcement.md §Bypass Conditions
+bypass:
+  - description: Whitespace-only / formatting-only edits
+    condition: only_whitespace_and_imports
+
+  - description: Auto-fixable lint (ruff/black output)
+    condition: tool_attribution_is
+    value: lint_autofix
+
+  - description: Commit message contains [hitl:bypass] tag
+    condition: commit_message_contains
+    value: "[hitl:bypass]"
+
+  - description: User explicit directive in active decision session
+    condition: active_session_fingerprint_match
+
+  - description: Rollback / revert commit
+    condition: commit_message_matches
+    value: '^(Revert|Rollback)\b'
+
+# ---------------------------------------------------------------------
+# TIER MODEL (Anthropic Auto Mode alignment)
+# ---------------------------------------------------------------------
+# Evaluated BEFORE triggers — a Tier-1 action never reaches trigger evaluation.
+tiers:
+  tier_1_safe_allowlist:
+    description: Reads, search, navigation — never gate
+    patterns:
+      - tool: read_file
+      - tool: list_dir
+      - tool: grep_search
+      - tool: find_by_name
+      - tool: codebase_search
+      - tool: view_content_chunk
+
+  tier_2_in_project_edits:
+    description: Single-file in-project edits → skip gate (git reversible)
+    patterns:
+      - files_changed_max: 1
+      - path_under: "."            # repo-relative
+      - path_not_under:
+          - "agentic_core/L5_safety"
+          - "config/"
+
+  tier_3_classifier_required:
+    description: Everything else → trigger evaluation
+    patterns:
+      - default: true

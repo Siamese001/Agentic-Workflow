@@ -184,6 +184,9 @@ def load_data_file(filename: str) -> dict:
 
 async def main():
     Logger.info("🎯 RESUME GENERATION STARTED...")
+    _jd_prompt = ""
+    _run_completion = ""
+    _run_success = False
     # Install OTEL lifecycle bridge so adg.* DEBUG emissions are buffered as
     # spans and flushed to the runtime ADG store at end-of-run. This closes
     # the documented gap in ALL_REQUIREMENTS_ENFORCEMENT_BASELINE.md:181-185
@@ -195,6 +198,12 @@ async def main():
         _otel_bridge = install_bridge(app_id="apps_rg")
     except ImportError:  # guardian: allow-otel-optional -- bridge module absent in stripped builds
         _otel_bridge = None
+    try:
+        from tools.datarobot.dr_otel_config import configure_datarobot_otel  # noqa: PLC0415
+
+        configure_datarobot_otel()
+    except ImportError:  # guardian: allow-datarobot-optional -- plugin wiring absent in stripped builds
+        pass
 
     # Tag this run with the 6 priority REQs that apps_rg satisfies. Each emit
     # produces one DEBUG record on `adg.req_evidence`; the bridge promotes it
@@ -242,8 +251,15 @@ async def main():
     ctx.master_resume = resume_data
     Logger.info("⚡ Processing your resume against the job description...")
     orchestrator = ResumeOrchestratorEngine(ctx)
+    _jd_prompt = str(jd_data.get("description", ""))[:4000]
     try:
         result = await orchestrator.execute(jd_data["description"])
+        _run_success = True
+        _run_completion = (
+            f"status={result.get('status')} "
+            f"quality={result.get('final_quality_score', 0)} "
+            f"ats_valid={result.get('ats_valid', False)}"
+        )
         Logger.info("-" * 50)
         Logger.info(f"🏁 GENERATION COMPLETE in {(datetime.now() - start_time).total_seconds():.2f}s")
         Logger.info(f"STATUS: {result.get('status')}")
@@ -306,6 +322,28 @@ async def main():
             )
             if not ingest.get("success"):
                 Logger.warning("OTEL ingest issue: %s", ingest.get("error"))
+            try:
+                from tools.datarobot.dr_run_summary import (  # noqa: PLC0415
+                    edge_kinds_from_bridge,
+                    emit_datarobot_run_summary,
+                )
+
+                emit_datarobot_run_summary(
+                    "apps_rg.generate_resume",
+                    prompt=_jd_prompt,
+                    completion=_run_completion,
+                    tools=edge_kinds_from_bridge(_otel_bridge),
+                    span_count=int(stats.get("buffered", 0)),
+                    success=_run_success,
+                    extra_attributes={
+                        "agentic.app_id": "apps_rg",
+                        "agentic.runtime_adg_ingested": int(ingest.get("spans_ingested", 0)),
+                    },
+                )
+            except ImportError:  # guardian: allow-datarobot-optional
+                pass
+            except Exception as exc:  # guardian: allow-broad-exception -- observability never crashes host
+                Logger.warning("DataRobot run summary export skipped (%s)", exc)
 
 
 if __name__ == "__main__":

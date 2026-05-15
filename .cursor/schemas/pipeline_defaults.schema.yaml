@@ -1,0 +1,97 @@
+# Pipeline Defaults Profile Schema
+# Defines app-specific pipeline runner defaults for integrated_r4 pipelines
+
+schema_version: "1.0"
+profile_type: "pipeline_defaults"
+description: "App-specific pipeline runner default configuration"
+
+required_fields:
+  - app_id
+  - pipeline_config
+  - namespace_defaults
+
+fields:
+  app_id:
+    type: string
+    description: "Canonical app identifier"
+    pattern: "^apps_[a-z_]+$"
+    
+  pipeline_config:
+    type: object
+    description: "Pipeline execution configuration"
+    properties:
+      default_timeout_seconds:
+        type: integer
+        minimum: 1
+        maximum: 3600
+        default: 300
+      max_retries:
+        type: integer
+        minimum: 0
+        maximum: 5
+        default: 2
+      retry_backoff_seconds:
+        type: integer
+        default: 5
+      parallel_stage_execution:
+        type: boolean
+        default: false
+      stage_failure_behavior:
+        type: string
+        enum: ["fail_fast", "continue", "escalate"]
+        default: "fail_fast"
+    required:
+      - default_timeout_seconds
+      - max_retries
+      
+  namespace_defaults:
+    type: object
+    description: "Default namespace/prefix configurations"
+    properties:
+      artifact_namespace:
+        type: string
+        description: "Default artifact storage namespace"
+      log_namespace:
+        type: string
+        description: "Default logging namespace"
+      telemetry_prefix:
+        type: string
+        description: "OTEL span prefix for this app"
+    required:
+      - artifact_namespace
+      
+  routing_hints:
+    type: object
+    description: "Routing preference hints (not enforced, advisory)"
+    properties:
+      preferred_l2_provider:
+        type: string
+        enum: ["vllm", "anthropic", "openai", "stub"]
+      require_c0_ingest:
+        type: boolean
+        default: true
+      l6_writeback_enabled:
+        type: boolean
+        default: true
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED
+
+examples:
+  - app_id: "apps_lic"
+    pipeline_config:
+      default_timeout_seconds: 600
+      max_retries: 3
+      retry_backoff_seconds: 10
+      parallel_stage_execution: false
+      stage_failure_behavior: "fail_fast"
+    namespace_defaults:
+      artifact_namespace: "apps_lic/pipeline_artifacts"
+      log_namespace: "apps_lic/pipeline_logs"
+      telemetry_prefix: "apps_lic.pipeline"
+    routing_hints:
+      preferred_l2_provider: "vllm"
+      require_c0_ingest: true
+      l6_writeback_enabled: true

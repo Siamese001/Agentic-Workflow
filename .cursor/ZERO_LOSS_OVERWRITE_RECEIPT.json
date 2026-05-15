@@ -1,0 +1,2270 @@
+{
+  "status": "GENERATED",
+  "generated_at": "2026-05-15T08:10:44Z",
+  "source_zip_sha256": "d5156c3307ee5ee0eb09e8fac2d656257055f6bd0b69f259b19d3d4e93957e9e",
+  "output_mode": "zero_loss_cursor_native_overwrite",
+  "files_total": 975,
+  "active_files_scanned": 380,
+  "created": [
+    ".cursor/agents/boundary-auditor.md",
+    ".cursor/agents/hook-migration-auditor.md",
+    ".cursor/agents/mcp-governance-auditor.md",
+    ".cursor/agents/receipt-verifier.md",
+    ".cursor/hooks.json",
+    ".cursor/hooks/after_file_edit.py",
+    ".cursor/hooks/before_mcp_execution.py",
+    ".cursor/hooks/before_read_file.py",
+    ".cursor/hooks/before_shell_execution.py",
+    ".cursor/hooks/before_submit_prompt.py",
+    ".cursor/hooks/lib/cursor_hook_common.py",
+    ".cursor/hooks/stop_task_audit.py",
+    ".cursor/migration_allowlist.json",
+    ".cursor/plans/README.md",
+    ".cursor/rules/cursor-config-lookup.mdc",
+    ".cursor/scripts/check_cursor_native_config.py"
+  ],
+  "modified": [
+    ".cursor/MIGRATION_MAP.md",
+    ".cursor/README.md",
+    ".cursor/agents/hook-migration-auditor.md",
+    ".cursor/conversion_manifest.json",
+    ".cursor/hooks/after_file_edit.py",
+    ".cursor/hooks/before_mcp_execution.py",
+    ".cursor/hooks/before_read_file.py",
+    ".cursor/hooks/before_shell_execution.py",
+    ".cursor/hooks/before_submit_prompt.py",
+    ".cursor/hooks/lib/cursor_hook_common.py",
+    ".cursor/mcp.json",
+    ".cursor/plans/README.md",
+    ".cursor/reminders/2026-04-28-adr-023-acceptance.md",
+    ".cursor/rules/000-agentic-core-operating-contract.mdc",
+    ".cursor/rules/adg-analysis-procedures.mdc",
+    ".cursor/rules/adg-canonical-invariants.mdc",
+    ".cursor/rules/adg-graph-layer-enforcement.mdc",
+    ".cursor/rules/adg-hotspot-enforcement.mdc",
+    ".cursor/rules/adg-p7-analyst-artifacts.mdc",
+    ".cursor/rules/adg-repair-discipline.mdc",
+    ".cursor/rules/adg-test-accelerator-enforcement.mdc",
+    ".cursor/rules/agentic-core-glob-lock.mdc",
+    ".cursor/rules/agentic-core-static.mdc",
+    ".cursor/rules/anti-pattern-author-gate.mdc",
+    ".cursor/rules/approval-exception-policy.mdc",
+    ".cursor/rules/apps-customization.mdc",
+    ".cursor/rules/apps-folder-taxonomy.mdc",
+    ".cursor/rules/apps-rg-interactive-discipline.mdc",
+    ".cursor/rules/apps-rg-post-run-summary.mdc",
+    ".cursor/rules/apps-test-surface-taxonomy.mdc",
+    ".cursor/rules/artifact-provenance-discipline.mdc",
+    ".cursor/rules/author-gate-decision-points.mdc",
+    ".cursor/rules/author-gate-enforcement.mdc",
+    ".cursor/rules/author-gate-queue-drain.mdc",
+    ".cursor/rules/author-gate-svp-calibration.mdc",
+    ".cursor/rules/boundary-audit-required.mdc",
+    ".cursor/rules/closed-loop-router-enforcement.mdc",
+    ".cursor/rules/constitutional.mdc",
+    ".cursor/rules/cursor-config-lookup.mdc",
+    ".cursor/rules/deferred-scope-capture.mdc",
+    ".cursor/rules/evaluation-promotion-gate.mdc",
+    ".cursor/rules/fortknox-certification-discipline.mdc",
+    ".cursor/rules/global_rules.mdc",
+    ".cursor/rules/intelligence-ledger-family.mdc",
+    ".cursor/rules/judge-calibration-cadence.mdc",
+    ".cursor/rules/local-llm-wsl2-gpu.mdc",
+    ".cursor/rules/mcp-config-ssot.mdc",
+    ".cursor/rules/mcp-pytest-enforcement.mdc",
+    ".cursor/rules/mcp-serialization.mdc",
+    ".cursor/rules/memory-management.mdc",
+    ".cursor/rules/memory-notion-writeback.mdc",
+    ".cursor/rules/next-step-capture.mdc",
+    ".cursor/rules/notion-archived-databases.mdc",
+    ".cursor/rules/notion-backlog-plan-linkage.mdc",
+    ".cursor/rules/notion-plan-identity-verification.mdc",
+    ".cursor/rules/notion-plan-wave-deferral.mdc",
+    ".cursor/rules/notion-plans-taxonomy.mdc",
+    ".cursor/rules/plan-lifecycle-procedures.mdc",
+    ".cursor/rules/plan-location.mdc",
+    ".cursor/rules/plan-registration-enforcement.mdc",
+    ".cursor/rules/plan-update-enforcement.mdc",
+    ".cursor/rules/python-dash-c-quote-hazard.mdc",
+    ".cursor/rules/query-progress-bar.mdc",
+    ".cursor/rules/refactor-decision-memory.mdc",
+    ".cursor/rules/scope-containment.mdc",
+    ".cursor/rules/security-hardening.mdc",
+    ".cursor/rules/sequential-thinking-enforcement.mdc",
+    ".cursor/rules/ssot-folder-enforcement.mdc",
+    ".cursor/rules/wave-completion-discipline.mdc",
+    ".cursor/schemas/author_gate_packet.schema.json",
+    ".cursor/schemas/author_gate_triggers.yaml",
+    ".cursor/schemas/cache_profile.schema.yaml",
+    ".cursor/schemas/decision_record.schema.json",
+    ".cursor/schemas/exit_criteria.schema.json",
+    ".cursor/schemas/learning_profile.schema.yaml",
+    ".cursor/schemas/repair_profile.schema.yaml",
+    ".cursor/schemas/rule_frontmatter.schema.json",
+    ".cursor/scripts/_apps_test_surface_check.py",
+    ".cursor/scripts/_author_gate_pipeline_check.py",
+    ".cursor/scripts/_author_gate_queue.py",
+    ".cursor/scripts/_bypass_boilerplate.py",
+    ".cursor/scripts/_deferred_scope_plan_scaffold.py",
+    ".cursor/scripts/_notion_canonical.py",
+    ".cursor/scripts/_notion_constants.py",
+    ".cursor/scripts/_notion_plans_status_check.py",
+    ".cursor/scripts/_plan_lifecycle.py",
+    ".cursor/scripts/_plan_registration.py",
+    ".cursor/scripts/_plan_scope_expansion_check.py",
+    ".cursor/scripts/_plans_dup_detector.py",
+    ".cursor/scripts/_post_handlers/__init__.py",
+    ".cursor/scripts/_post_handlers/cleanup.py",
+    ".cursor/scripts/_post_handlers/grep_budget.py",
+    ".cursor/scripts/_post_handlers/heartbeat.py",
+    ".cursor/scripts/_post_handlers/read_budget.py",
+    ".cursor/scripts/_post_handlers/token_telemetry.py",
+    ".cursor/scripts/_progress_reporter.py",
+    ".cursor/scripts/_serialization_sentinel.py",
+    ".cursor/scripts/_session_id_shared.py",
+    ".cursor/scripts/_ssot_folder_check.py",
+    ".cursor/scripts/_wave_execution_state.py",
+    ".cursor/scripts/apply_append_only_triggers.py",
+    ".cursor/scripts/apply_ledger_schema.py",
+    ".cursor/scripts/audit_ledger_coverage.py",
+    ".cursor/scripts/author_gate_ledger_integrity.py",
+    ".cursor/scripts/author_gate_marker_validator.py",
+    ".cursor/scripts/backfill_cat4_decisions.py",
+    ".cursor/scripts/capture_author_gate.py",
+    ".cursor/scripts/defer.py",
+    ".cursor/scripts/filesystem_mcp_launcher.js",
+    ".cursor/scripts/generate_calibration_report.py",
+    ".cursor/scripts/generate_rules_index.py",
+    ".cursor/scripts/install_git_hooks.py",
+    ".cursor/scripts/install_post_commit_phase_closer.py",
+    ".cursor/scripts/mcp_fleet_health.py",
+    ".cursor/scripts/mcp_python_heartbeat.py",
+    ".cursor/scripts/mcp_python_supervisor.py",
+    ".cursor/scripts/plan_driven_closer.py",
+    ".cursor/scripts/post_commit_outcome_binder.py",
+    ".cursor/scripts/post_commit_phase_closer.py",
+    ".cursor/scripts/post_mcp_audit.py",
+    ".cursor/scripts/post_run_audit.py",
+    ".cursor/scripts/post_setup_worktree.py",
+    ".cursor/scripts/post_write_audit.py",
+    ".cursor/scripts/post_write_cert_stage.py",
+    ".cursor/scripts/post_write_mcp_config_sync.py",
+    ".cursor/scripts/post_write_plan_reconcile.py",
+    ".cursor/scripts/pre_ask_user_question_gate.py",
+    ".cursor/scripts/pre_author_gate.py",
+    ".cursor/scripts/pre_mcp_gate.py",
+    ".cursor/scripts/pre_notion_plan_creation_gate.py",
+    ".cursor/scripts/pre_notion_plan_write_gate.py",
+    ".cursor/scripts/pre_prompt_classifier.py",
+    ".cursor/scripts/pre_read_gate.py",
+    ".cursor/scripts/pre_run_gate.py",
+    ".cursor/scripts/pre_user_prompt_ag_queue_surface.py",
+    ".cursor/scripts/pre_user_prompt_author_gate_reminder.py",
+    ".cursor/scripts/pre_user_prompt_deferred_plan_gate.py",
+    ".cursor/scripts/pre_user_prompt_deferred_scope_recovery.py",
+    ".cursor/scripts/pre_user_prompt_grep_for_deps_warning.py",
+    ".cursor/scripts/pre_user_prompt_hook_health_check.py",
+    ".cursor/scripts/pre_user_prompt_plan_registration_refresh.py",
+    ".cursor/scripts/pre_user_prompt_plan_registration_surface.py",
+    ".cursor/scripts/pre_user_prompt_plans_dup_surface.py",
+    ".cursor/scripts/pre_user_prompt_reminder_check.py",
+    ".cursor/scripts/pre_user_prompt_weekly_report.py",
+    ".cursor/scripts/pre_write_fortknox_guard.py",
+    ".cursor/scripts/pre_write_gate.py",
+    ".cursor/scripts/pre_write_plan_scope_gate.py",
+    ".cursor/scripts/promote_author_gate_patterns.py",
+    ".cursor/scripts/rollback_bad_patches.py",
+    ".cursor/scripts/sync_mcp_config.py",
+    ".cursor/scripts/unified_notion_status_auditor.py",
+    ".cursor/scripts/unified_plan_creation_auditor.py",
+    ".cursor/skills/adg-sqlite/SKILL.md",
+    ".cursor/skills/artifact-management/SKILL.md",
+    ".cursor/skills/artifact-management/artifact_type_resolver.md",
+    ".cursor/skills/artifact-management/evidence_standards.md",
+    ".cursor/skills/artifact-management/path_validation_checklist.md",
+    ".cursor/skills/author-gate-packet-builder/SKILL.md",
+    ".cursor/skills/author-gate-packet-builder/emit_packet.py",
+    ".cursor/skills/author-gate-packet-builder/packet_template.md",
+    ".cursor/skills/author-gate-packet-builder/precedent_injector.py",
+    ".cursor/skills/author-gate-ui-renderer/SKILL.md",
+    ".cursor/skills/author-gate-ui-renderer/render_card.py",
+    ".cursor/skills/context7/SKILL.md",
+    ".cursor/skills/core-boundary-audit/SKILL.md",
+    ".cursor/skills/deepwiki/SKILL.md",
+    ".cursor/skills/filesystem-mcp/SKILL.md",
+    ".cursor/skills/fortknox-evidence/SKILL.md",
+    ".cursor/skills/gitkraken/SKILL.md",
+    ".cursor/skills/graph-analysis/fail_closed_discipline.md",
+    ".cursor/skills/ledger-consulter-ask-user-question/SKILL.md",
+    ".cursor/skills/ledger-consulter/SKILL.md",
+    ".cursor/skills/mcp-integration/SKILL.md",
+    ".cursor/skills/mcp-integration/SUPPORTING.md",
+    ".cursor/skills/memory-mcp/SKILL.md",
+    ".cursor/skills/notion/SKILL.md",
+    ".cursor/skills/otel-telemetry/SKILL.md",
+    ".cursor/skills/playwright/SKILL.md",
+    ".cursor/skills/pytest-mcp/SKILL.md",
+    ".cursor/skills/redis-cache/SKILL.md",
+    ".cursor/skills/refactor-decision-memory/SKILL.md",
+    ".cursor/skills/refactor-decision-memory/lookup_refactor_decisions.py",
+    ".cursor/skills/scope-containment/SKILL.md",
+    ".cursor/skills/structured-reasoning/SKILL.md",
+    ".cursor/skills/task-manager-mcp/SKILL.md",
+    ".cursor/skills/tavily-research/SKILL.md",
+    ".cursor/skills/u0-app-customization/SKILL.md",
+    ".cursor/skills/vector-db/SKILL.md",
+    ".cursor/skills/writeback-discipline/SKILL.md",
+    ".cursor/skills/writeback-discipline/templates/memory_entity_shapes.md",
+    ".cursor/skills/writeback-discipline/templates/notion_row_shapes.md",
+    ".cursor/state/AG_RGGOV_6_QUARANTINE_METADATA.json",
+    ".cursor/state/apps_rg_pending.json",
+    ".cursor/state/plan_registration_cache.json",
+    ".cursor/templates/execution-plan-template.md",
+    ".cursor/templates/skill-template.md",
+    ".cursor/workflows/adg-redis-refresh.md",
+    ".cursor/workflows/adg-repair-loop.md",
+    ".cursor/workflows/adg-test-triage-gate.md",
+    ".cursor/workflows/adg-timeout-recovery.md",
+    ".cursor/workflows/agent-deletion-gate.md",
+    ".cursor/workflows/antipattern-author-gate.md",
+    ".cursor/workflows/author-gate-calibration-report.md",
+    ".cursor/workflows/author-gate-decision-gate.md",
+    ".cursor/workflows/core-boundary-audit.md",
+    ".cursor/workflows/mcp-failure-rca.md",
+    ".cursor/workflows/memory-purge-sync.md",
+    ".cursor/workflows/pre-commit-agentic-cert.md",
+    ".cursor/workflows/progress-display-enforcement.md",
+    ".cursor/workflows/refresh-windsurf-docs.md",
+    ".cursor/workflows/skill-creator.md",
+    ".cursor/workflows/structured-reasoning.md",
+    ".cursor/workflows/tavily-best-practices.md",
+    ".cursor/workflows/tavily-research.md",
+    ".cursor/workflows/timeout-progress-enforcement.md"
+  ],
+  "moved": [
+    {
+      "from": ".cursor/plans/01_apps-rg-master-governed-runtime-hardening.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/01_apps-rg-master-governed-runtime-hardening.md"
+    },
+    {
+      "from": ".cursor/plans/02_apps-rg-structured-resume-refactor-f8c2a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/02_apps-rg-structured-resume-refactor-f8c2a1.md"
+    },
+    {
+      "from": ".cursor/plans/03_apps-rg-l4-boundary-hardening-c8f2a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/03_apps-rg-l4-boundary-hardening-c8f2a1.md"
+    },
+    {
+      "from": ".cursor/plans/04_apps-rg-c0-architecture-analysis-f3d8b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/04_apps-rg-c0-architecture-analysis-f3d8b2.md"
+    },
+    {
+      "from": ".cursor/plans/10c-binding-wave-sweep-a3f2e7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/10c-binding-wave-sweep-a3f2e7.md"
+    },
+    {
+      "from": ".cursor/plans/10c-proof-depth-remediation-a9f9af.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/10c-proof-depth-remediation-a9f9af.md"
+    },
+    {
+      "from": ".cursor/plans/acceptance-gates-master-tracking-b5c3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/acceptance-gates-master-tracking-b5c3e1.md"
+    },
+    {
+      "from": ".cursor/plans/adg-antipattern-hardening-e5a569.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-antipattern-hardening-e5a569.md"
+    },
+    {
+      "from": ".cursor/plans/adg-architectural-p0-violations-cleanup-bced9c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-architectural-p0-violations-cleanup-bced9c.md"
+    },
+    {
+      "from": ".cursor/plans/adg-audit-pipeline-integration-7f2c93.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-audit-pipeline-integration-7f2c93.md"
+    },
+    {
+      "from": ".cursor/plans/adg-cascading-ratchet-defer-exit-a41828.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-cascading-ratchet-defer-exit-a41828.md"
+    },
+    {
+      "from": ".cursor/plans/adg-chromadb-retrieval-assessment-8a3f2b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-chromadb-retrieval-assessment-8a3f2b.md"
+    },
+    {
+      "from": ".cursor/plans/adg-ci-agentic-core-purity-a7c3e9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-ci-agentic-core-purity-a7c3e9.md"
+    },
+    {
+      "from": ".cursor/plans/adg-ci-spine-delegation-gate-438b16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-ci-spine-delegation-gate-438b16.md"
+    },
+    {
+      "from": ".cursor/plans/adg-config-ssot-audit-c7e4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-config-ssot-audit-c7e4a2.md"
+    },
+    {
+      "from": ".cursor/plans/adg-config-ssot-deferred-d7e3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-config-ssot-deferred-d7e3a1.md"
+    },
+    {
+      "from": ".cursor/plans/adg-config-ssot-redis-otel-deferred-f7a3d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-config-ssot-redis-otel-deferred-f7a3d2.md"
+    },
+    {
+      "from": ".cursor/plans/adg-config-ssot-uber-deferred-e8f2a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-config-ssot-uber-deferred-e8f2a3.md"
+    },
+    {
+      "from": ".cursor/plans/adg-distilled-followups-c8e4a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-distilled-followups-c8e4a1.md"
+    },
+    {
+      "from": ".cursor/plans/adg-snapshot-regen-check-rg-chroma-e2f8b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-snapshot-regen-check-rg-chroma-e2f8b1.md"
+    },
+    {
+      "from": ".cursor/plans/adg-three-bucket-authority-model-7e2a91.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-three-bucket-authority-model-7e2a91.md"
+    },
+    {
+      "from": ".cursor/plans/adg-three-bucket-unified-c4f8e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-three-bucket-unified-c4f8e2.md"
+    },
+    {
+      "from": ".cursor/plans/adg-three-graph-harness-e57cc7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-three-graph-harness-e57cc7.md"
+    },
+    {
+      "from": ".cursor/plans/adg-tree-sitter-parser-exploration-b1c517.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-tree-sitter-parser-exploration-b1c517.md"
+    },
+    {
+      "from": ".cursor/plans/adg-truth-expansion-r5w1-a8f3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-truth-expansion-r5w1-a8f3c2.md"
+    },
+    {
+      "from": ".cursor/plans/adg-wiring-ci-dispatcher-hardening-b2f4a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-wiring-ci-dispatcher-hardening-b2f4a1.md"
+    },
+    {
+      "from": ".cursor/plans/adg-write-sovereignty-cleanup-8bf0da.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/adg-write-sovereignty-cleanup-8bf0da.md"
+    },
+    {
+      "from": ".cursor/plans/ag-purity-open-work-remediation-roadmap.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ag-purity-open-work-remediation-roadmap.md"
+    },
+    {
+      "from": ".cursor/plans/ag4-evidence-contract-carrier-repair-d2f9a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ag4-evidence-contract-carrier-repair-d2f9a3.md"
+    },
+    {
+      "from": ".cursor/plans/ag5-exit-x1-evaluator-wiring-d8e4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ag5-exit-x1-evaluator-wiring-d8e4a2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-antipattern-tier1-9f2c8a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-antipattern-tier1-9f2c8a.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-eval-control-audit-b7d4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-eval-control-audit-b7d4a2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-eval-control-audit-backlog-closeout-e7f2a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-eval-control-audit-backlog-closeout-e7f2a8.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-eval-control-audit-per-module-followup-c8e3f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-eval-control-audit-per-module-followup-c8e3f1.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-eval-implementation-d4e9c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-eval-implementation-d4e9c2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-governance-remediation-c4e8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-governance-remediation-c4e8a2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-governance-w6-core-migration-d4e8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-governance-w6-core-migration-d4e8a2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-governance-w7-non-delegation-violations-d4e8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-governance-w7-non-delegation-violations-d4e8a2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-governance-w8-scanner-taxonomy-alignment-e5f2b1.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-governance-w9-runtime-migration-a7e3b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-governance-w9-runtime-migration-a7e3b2.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-signoff-hardening-b8e2c4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-signoff-hardening-b8e2c4.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-spine-contract-hardening-a7d4e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-spine-contract-hardening-a7d4e1.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-standalone-harnesses-f2c7a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-standalone-harnesses-f2c7a9.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-core-static-apps-customization-governance-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-core-static-apps-customization-governance-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-repo-gap-analysis-351a91.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-repo-gap-analysis-351a91.md"
+    },
+    {
+      "from": ".cursor/plans/agentic-spine-diagram-refinement-a3f7c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/agentic-spine-diagram-refinement-a3f7c2.md"
+    },
+    {
+      "from": ".cursor/plans/always-on-budget-compression-ds2-c7f4a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/always-on-budget-compression-ds2-c7f4a3.md"
+    },
+    {
+      "from": ".cursor/plans/anthropic-rag-gaps-7f3c2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/anthropic-rag-gaps-7f3c2a.md"
+    },
+    {
+      "from": ".cursor/plans/antipattern-reclassify-e5a569.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/antipattern-reclassify-e5a569.md"
+    },
+    {
+      "from": ".cursor/plans/app-wizard-lic-scope-capture-f8d3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/app-wizard-lic-scope-capture-f8d3e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-architect-deferred-scope-2-c9d4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-architect-deferred-scope-2-c9d4e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-architect-deferred-scope-b8e3f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-architect-deferred-scope-b8e3f1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-architect-pattern-hardening-d7e4f9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-architect-pattern-hardening-d7e4f9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-completeness-followups-287d2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-completeness-followups-287d2a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-completeness-remediation-907fac.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-completeness-remediation-907fac.md"
+    },
+    {
+      "from": ".cursor/plans/apps-core-contract-rectification-a8f3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-core-contract-rectification-a8f3c2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-cross-app-precursors-c94c71.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-cross-app-precursors-c94c71.md"
+    },
+    {
+      "from": ".cursor/plans/apps-dag-coverage-audit-7c3f2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-dag-coverage-audit-7c3f2a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-dom-real-evidence-enhancement-c7f4d8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-dom-real-evidence-enhancement-c7f4d8.md"
+    },
+    {
+      "from": ".cursor/plans/apps-dom-runtime-evidence-real-b4c9e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-dom-runtime-evidence-real-b4c9e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-dom-runtime-harness-followup-f2a7b3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-dom-runtime-harness-followup-f2a7b3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-domain-contract-fortknox-c4d8e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-domain-contract-fortknox-c4d8e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-e2e-auditability-harness-7c2a91.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-e2e-auditability-harness-7c2a91.md"
+    },
+    {
+      "from": ".cursor/plans/apps-e2e-spine-cert-wireup-e1c4d7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-e2e-spine-cert-wireup-e1c4d7.md"
+    },
+    {
+      "from": ".cursor/plans/apps-e2e-two-gate-certification-d8b3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-e2e-two-gate-certification-d8b3a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-embedding-deferred-scope-f9a3b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-embedding-deferred-scope-f9a3b2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-embedding-gap-analysis-8f7d2e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-embedding-gap-analysis-8f7d2e.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-first-principles-refactor-7b9f1d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-first-principles-refactor-7b9f1d.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-harness-activation-pathways-d6f9b3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-harness-activation-pathways-d6f9b3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-harness-final-8f3e21.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-harness-final-8f3e21.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-harness-residual-a2d9c7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-harness-residual-a2d9c7.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-harness-terminal-3c9f81.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-harness-terminal-3c9f81.md"
+    },
+    {
+      "from": ".cursor/plans/apps-eval-qwen32b-rollout-b7c4d9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-eval-qwen32b-rollout-b7c4d9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-exec-first-principles-refactor-5e6a4b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-exec-first-principles-refactor-5e6a4b.md"
+    },
+    {
+      "from": ".cursor/plans/apps-exec-research-exit-hook-adoption-a8d3c5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-exec-research-exit-hook-adoption-a8d3c5.md"
+    },
+    {
+      "from": ".cursor/plans/apps-exec-to-repo-brief-rename-d3f8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-exec-to-repo-brief-rename-d3f8a2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-folder-taxonomy-unification-b7d4e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-folder-taxonomy-unification-b7d4e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-fort-knox-parity-c5d9a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-fort-knox-parity-c5d9a3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-fortknox-evidence-repackage-30f5ab.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-fortknox-evidence-repackage-30f5ab.md"
+    },
+    {
+      "from": ".cursor/plans/apps-hop-notion-writeback-followup-9bd916.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-hop-notion-writeback-followup-9bd916.md"
+    },
+    {
+      "from": ".cursor/plans/apps-hop-substrate-f7751b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-hop-substrate-f7751b.md"
+    },
+    {
+      "from": ".cursor/plans/apps-hop-substrate-four-apps-b4a2c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-hop-substrate-four-apps-b4a2c9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-l7-coverage-spine-wide-c5e8d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-l7-coverage-spine-wide-c5e8d2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-l7-deferred-scope-followup-a1d9e3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-l7-deferred-scope-followup-a1d9e3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-l7-w2-w4-followup-a2e8f4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-l7-w2-w4-followup-a2e8f4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-ag8-deferred-scope-post-wiring-d2e9f1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-ag9-prompt-authority-coverage-e5f2a8.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-deferred-scope-post-u0-package-d9f4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-deferred-scope-post-u0-package-d9f4e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-entrypoint-purity-recipe-registry-d4f1a8.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-first-principles-refactor-8a3c2e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-first-principles-refactor-8a3c2e.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-hop-domain-logic-b8c4c4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-hop-domain-logic-b8c4c4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-quarantine-u0-coverage-review-d9f4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-quarantine-u0-coverage-review-d9f4a2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-r3r4-managed-workflow-w3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-r3r4-managed-workflow-w3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-signal-enhancements-p2p3-f4b8d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-signal-enhancements-p2p3-f4b8d1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-u0-boundary-alignment-4f1d9c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-u0-boundary-alignment-4f1d9c.md"
+    },
+    {
+      "from": ".cursor/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-lic-u0-runtime-package-complete-f8e2a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-pa-spine-w5-remaining-7e820f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-pa-spine-w5-remaining-7e820f.md"
+    },
+    {
+      "from": ".cursor/plans/apps-portfolio-integrated-evaluation-7d3a91.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-portfolio-integrated-evaluation-7d3a91.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-audio-rehearsal-9c4e72.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-audio-rehearsal-9c4e72.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-bootstrap-c4f2a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-bootstrap-c4f2a8.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-dag-enhancements-e4c7b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-dag-enhancements-e4c7b2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-golden-spine-restoration-a7c8d3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-golden-spine-restoration-a7c8d3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-grounded-spine-refactor-v2-d7e3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-grounded-spine-refactor-v2-d7e3a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-intake-llm-extraction-b7d4f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-intake-llm-extraction-b7d4f1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-intake-rag-enrichment-c5e8d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-intake-rag-enrichment-c5e8d2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-l4-chromadb-init-p0-a7e4c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-l4-chromadb-init-p0-a7e4c3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-pa-spine-hardening-498d20.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-pa-spine-hardening-498d20.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-rag-skills-alignment-7d2c4e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-rag-skills-alignment-7d2c4e.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-realtime-copilot-3a8b1f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-realtime-copilot-3a8b1f.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-spine-alignment-a7f4c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-spine-alignment-a7f4c2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-qna-spine-integration-e8f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-qna-spine-integration-e8f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-ag9-deferred-scope-f3c1b7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-ag9-deferred-scope-f3c1b7.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-ag9-golden-template-adoption-e4f2b8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-ag9-golden-template-adoption-e4f2b8.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-blend-baseline-c74787.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-blend-baseline-c74787.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-declarative-ingress-only-governance-pilot-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-deferred-scope-2-f3a9c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-deferred-scope-2-f3a9c1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-deferred-scope-f3c1a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-deferred-scope-f3c1a9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-first-principles-refactor-2f5e7a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-first-principles-refactor-2f5e7a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-rich-content-runtime-customization-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-rich-content-runtime-customization-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-rich-content-runtime-customization-v2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-rich-content-runtime-customization-v2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-spine-alignment-c0-briefing-2f8a4b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-spine-alignment-c0-briefing-2f8a4b.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-spine-deferred-followup-9c3e1a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-spine-deferred-followup-9c3e1a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-research-w9-judge-boundary-closure-c21951.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-research-w9-judge-boundary-closure-c21951.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rfp-first-principles-refactor-9c8d3f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rfp-first-principles-refactor-9c8d3f.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-ag8-prompt-authority-coverage-d9f4c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-ag8-prompt-authority-coverage-d9f4c2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-app-payload-consumption-wiring-b3a449.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-app-payload-consumption-wiring-b3a449.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-canonical-emit-and-hop4a-wiring-b8e2f4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-chroma-ingestion-wiring-c7f2d9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-ci-runtime-enforcement-0be75b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-ci-runtime-enforcement-0be75b.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-customization-uplift-7c4f12.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-customization-uplift-7c4f12.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-declarative-ingress-deferred-scope-a9f2e3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-declarative-ingress-deferred-scope-a9f2e3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-deferred-activation-w8-a7f4d9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-deferred-activation-w8-a7f4d9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-deferred-follow-ons-b3e9f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-deferred-follow-ons-b3e9f1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-deferred-scope-completion-record-d9e4f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-deferred-scope-completion-record-d9e4f2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-ensemble-judge-restoration-a7c4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-ensemble-judge-restoration-a7c4e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-exit-gate-fix-g24-hardening-d7c4b1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-exit-gate-harness-wiring-e4b7f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-exit-gate-harness-wiring-e4b7f2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-first-principles-refactor-7e9c4a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-first-principles-refactor-7e9c4a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-global-verification-maintenance-before-w4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-global-verification-maintenance-before-w4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-golden-state-section-generation-a4f9e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-golden-state-section-generation-a4f9e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-governed-runtime-b8d4f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-governed-runtime-b8d4f1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-hop4a-authority-and-judging-c3d7e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-hop4a-authority-and-judging-c3d7e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-ingress-contract-patch-d8e3a5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-ingress-contract-patch-d8e3a5.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-interactive-wizard-a3e7c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-interactive-wizard-a3e7c1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-critical-corrections-e7c4a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-critical-corrections-e7c4a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-recipe-adapter-b7c3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-recipe-adapter-b7c3e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W1-AUDIT.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W1-AUDIT.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W2-REPORT.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W2-REPORT.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W3-REPORT.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W3-REPORT.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W4-REPORT.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-v4-envelope-adoption-e9f2b1-W4-REPORT.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l2-v4-envelope-adoption-e9f2b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l2-v4-envelope-adoption-e9f2b1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l7-auditability-wireup-b3c7e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l7-auditability-wireup-b3c7e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l7-deferred-scope-d117ea.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l7-deferred-scope-d117ea.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-l7-route-family-cert-fix-b8f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-multi-model-ensemble-wiring-f3a9c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-multi-model-ensemble-wiring-f3a9c1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-narrative-and-company-research-e3f8c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-narrative-and-company-research-e3f8c1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-pa-bom-compiled-artifact-final-b8e2d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-pa-bom-compiled-artifact-final-b8e2d1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-pa-full-wave-plan-a7f3d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-pa-full-wave-plan-a7f3d2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-pipeline-deferred-e9f2a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-pipeline-deferred-e9f2a4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-prior-art-gap-closure-3e3d5b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-prior-art-gap-closure-3e3d5b.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-prompt-authority-coverage-ag8-4f9e1a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-prompt-authority-coverage-ag8-4f9e1a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-prompt-layer-full-reset-plan.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-prompt-layer-full-reset-plan.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-quarantine-gap-remediation-8f405c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-quarantine-gap-remediation-8f405c.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-r1b-semantic-cache-hardening-c8d4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-r1b-semantic-cache-hardening-c8d4a2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-rb17-guarded-activation-plan-d9f4a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-rb17-guarded-activation-plan-d9f4a2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-runtime-cert-hardening-a3f8c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-runtime-cert-hardening-a3f8c2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-runtime-gate-catalog-c4d7e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-runtime-gate-catalog-c4d7e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-runtime-gate-deferred-a9f8b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-runtime-gate-deferred-a9f8b2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-runtime-wiring-completion-d4e8a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-runtime-wiring-completion-d4e8a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spearman-spine-remediation-f3c9a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spearman-spine-remediation-f3c9a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spinal-execution-refactor-4a7f2c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spinal-execution-refactor-4a7f2c.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spine-hardening-7e3b9c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spine-hardening-7e3b9c.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spine-hardening-deferred-d4e7a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spine-hardening-deferred-d4e7a3.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spine-hardening-deferred-wave-2f8b1d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spine-hardening-deferred-wave-2f8b1d.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-spine-narrative-unification-d8e4a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-spine-narrative-unification-d8e4a1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-stub-gap-closure-f4b2e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-stub-gap-closure-f4b2e1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-substrate-deep-migration-600595.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-substrate-deep-migration-600595.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-u0-gap-closure-lf03-lf27-a4b9c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-u0-gap-closure-lf03-lf27-a4b9c1.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-u0-reflection-harness-79d032.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-u0-reflection-harness-79d032.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-u0-reflection-live-wiring-105147.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-u0-reflection-live-wiring-105147.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-vllm-deferred-followup-f7d3a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-vllm-deferred-followup-f7d3a9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-vllm-followup-blocked-c4e8b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-vllm-followup-blocked-c4e8b2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-runtime-domain-enforcement-a7e9d4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-runtime-domain-enforcement-a7e9d4.md"
+    },
+    {
+      "from": ".cursor/plans/apps-runtime-first-principles-e6ba58.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-runtime-first-principles-e6ba58.md"
+    },
+    {
+      "from": ".cursor/plans/apps-shared-stub-audit-7dfe16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-shared-stub-audit-7dfe16.md"
+    },
+    {
+      "from": ".cursor/plans/apps-svp-plus-hardening-7c4e3a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-svp-plus-hardening-7c4e3a.md"
+    },
+    {
+      "from": ".cursor/plans/apps-test-surface-consolidation-11acd9-v2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-test-surface-consolidation-11acd9-v2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-test-surface-consolidation-11acd9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-test-surface-consolidation-11acd9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-test-surface-deferred-f3c8b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-test-surface-deferred-f3c8b2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-underwriting-ai-activation-e8a3c5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-underwriting-ai-activation-e8a3c5.md"
+    },
+    {
+      "from": ".cursor/plans/apps-underwriting-ai-first-principles-refactor-4b1c8e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-underwriting-ai-first-principles-refactor-4b1c8e.md"
+    },
+    {
+      "from": ".cursor/plans/apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md"
+    },
+    {
+      "from": ".cursor/plans/apps-underwriting-ai-shadow-spine-docstring-cleanup-b3f1c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-underwriting-ai-shadow-spine-docstring-cleanup-b3f1c9.md"
+    },
+    {
+      "from": ".cursor/plans/apps-underwriting-feature-complete-aa79a7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/apps-underwriting-feature-complete-aa79a7.md"
+    },
+    {
+      "from": ".cursor/plans/artifacts-reorganization-7a3f2d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/artifacts-reorganization-7a3f2d.md"
+    },
+    {
+      "from": ".cursor/plans/ask-user-question-author-gate-harmonization-a7e3d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ask-user-question-author-gate-harmonization-a7e3d2.md"
+    },
+    {
+      "from": ".cursor/plans/ask-user-question-interactive-enrichment-b8c3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ask-user-question-interactive-enrichment-b8c3e1.md"
+    },
+    {
+      "from": ".cursor/plans/ask-user-question-shadow-loop-wiring-b4e1f7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ask-user-question-shadow-loop-wiring-b4e1f7.md"
+    },
+    {
+      "from": ".cursor/plans/ask-user-question-test-hardening-a7f2e3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ask-user-question-test-hardening-a7f2e3.md"
+    },
+    {
+      "from": ".cursor/plans/assurance-p1-gates-ab4758.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/assurance-p1-gates-ab4758.md"
+    },
+    {
+      "from": ".cursor/plans/audit-uncovered-gates-and-remediation-627368.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/audit-uncovered-gates-and-remediation-627368.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ask-ui-consolidated-a1e3f7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ask-ui-consolidated-a1e3f7.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ask-ui-deferred-scope-a2e3f8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ask-ui-deferred-scope-a2e3f8.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-deferred-scope-b8c1d4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-deferred-scope-b8c1d4.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-enforcement-deferred-d7f5e3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-enforcement-deferred-d7f5e3.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-enforcement-deferred-scope-complete-d7f5e3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-enforcement-deferred-scope-complete-d7f5e3.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-enforcement-fix-c9d4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-enforcement-fix-c9d4e2.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-hardening-a3b8f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-hardening-a3b8f2.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ledger-hardening-1f4c8a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ledger-hardening-1f4c8a.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-meta-learning-hardening-a8f2b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-meta-learning-hardening-a8f2b1.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-pipeline-hardening-deferred-b3e1d7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-pipeline-hardening-deferred-b3e1d7.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-prose-options-detection-e7f2a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-prose-options-detection-e7f2a3.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ssot-consolidation-b7c3e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ssot-consolidation-b7c3e1.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ui-conformance-b4d1e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ui-conformance-b4d1e2.md"
+    },
+    {
+      "from": ".cursor/plans/author-gate-ui-renderer-hardening-a7f3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/author-gate-ui-renderer-hardening-a7f3c2.md"
+    },
+    {
+      "from": ".cursor/plans/backlog-keep-triage-d2e4f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/backlog-keep-triage-d2e4f1.md"
+    },
+    {
+      "from": ".cursor/plans/backlog-linkage-followup-c2e9f3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/backlog-linkage-followup-c2e9f3.md"
+    },
+    {
+      "from": ".cursor/plans/backlog-plan-linkage-enforcement-a4b2f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/backlog-plan-linkage-enforcement-a4b2f1.md"
+    },
+    {
+      "from": ".cursor/plans/bundle-c1-blocker-remediation-a4f9e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/bundle-c1-blocker-remediation-a4f9e2.md"
+    },
+    {
+      "from": ".cursor/plans/c0-context-assembly-best-practices-b7c3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/c0-context-assembly-best-practices-b7c3a1.md"
+    },
+    {
+      "from": ".cursor/plans/c0-policy-rectification-deferred-f7b2a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/c0-policy-rectification-deferred-f7b2a9.md"
+    },
+    {
+      "from": ".cursor/plans/c0-policy-rectification-f7b2a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/c0-policy-rectification-f7b2a9.md"
+    },
+    {
+      "from": ".cursor/plans/c0-policy-rectification-phase2-deferred-a3f7e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/c0-policy-rectification-phase2-deferred-a3f7e2.md"
+    },
+    {
+      "from": ".cursor/plans/chroma-graphrag-core-wiring-gaps-b3f7a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/chroma-graphrag-core-wiring-gaps-b3f7a1.md"
+    },
+    {
+      "from": ".cursor/plans/chroma-graphrag-lic-rg-research-f4a2e9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/chroma-graphrag-lic-rg-research-f4a2e9.md"
+    },
+    {
+      "from": ".cursor/plans/chromadb-bge-retrieval-hardening-e9aa09.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/chromadb-bge-retrieval-hardening-e9aa09.md"
+    },
+    {
+      "from": ".cursor/plans/chromadb-retrieval-remaining-gaps-b4e7c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/chromadb-retrieval-remaining-gaps-b4e7c2.md"
+    },
+    {
+      "from": ".cursor/plans/ci-gate-deferred-scope-b8f5e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ci-gate-deferred-scope-b8f5e1.md"
+    },
+    {
+      "from": ".cursor/plans/ci-gate-remediation-p2-p3-a7e4d9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ci-gate-remediation-p2-p3-a7e4d9.md"
+    },
+    {
+      "from": ".cursor/plans/codebase-refactoring-deadcode-ssot-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/codebase-refactoring-deadcode-ssot-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/collapse-apps-rg-runtime-b7e2f5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/collapse-apps-rg-runtime-b7e2f5.md"
+    },
+    {
+      "from": ".cursor/plans/config-drift-reconciliation-6e83dd.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/config-drift-reconciliation-6e83dd.md"
+    },
+    {
+      "from": ".cursor/plans/config-refactoring-remove-core-a3b2c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/config-refactoring-remove-core-a3b2c1.md"
+    },
+    {
+      "from": ".cursor/plans/consensus-validator-unification-5e9f3a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/consensus-validator-unification-5e9f3a.md"
+    },
+    {
+      "from": ".cursor/plans/consolidated-deferred-scope-may7-e6f1b5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/consolidated-deferred-scope-may7-e6f1b5.md"
+    },
+    {
+      "from": ".cursor/plans/control-surface-followups-a7b2c4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/control-surface-followups-a7b2c4.md"
+    },
+    {
+      "from": ".cursor/plans/core-addition-author-gate-governance-f3b9e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/core-addition-author-gate-governance-f3b9e2.md"
+    },
+    {
+      "from": ".cursor/plans/cot-reflexion-self-consistency-config-7a3f1c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/cot-reflexion-self-consistency-config-7a3f1c.md"
+    },
+    {
+      "from": ".cursor/plans/d-bucket-burndown-e4f2c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/d-bucket-burndown-e4f2c9.md"
+    },
+    {
+      "from": ".cursor/plans/d-bucket-burndown-roadmap-f8a3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/d-bucket-burndown-roadmap-f8a3c2.md"
+    },
+    {
+      "from": ".cursor/plans/d-bucket-w2-burndown-a2c4f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/d-bucket-w2-burndown-a2c4f1.md"
+    },
+    {
+      "from": ".cursor/plans/d-bucket-w3-burndown-b3d5e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/d-bucket-w3-burndown-b3d5e2.md"
+    },
+    {
+      "from": ".cursor/plans/d-bucket-w4-burndown-c4e6f3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/d-bucket-w4-burndown-c4e6f3.md"
+    },
+    {
+      "from": ".cursor/plans/dead-import-refactor-wave-plan-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/dead-import-refactor-wave-plan-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/decision-router-policy-tables-b3a4d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/decision-router-policy-tables-b3a4d2.md"
+    },
+    {
+      "from": ".cursor/plans/deferred-scope-closeout-2026-05-02-e4f8a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/deferred-scope-closeout-2026-05-02-e4f8a1.md"
+    },
+    {
+      "from": ".cursor/plans/deferred-scope-implementation-h8b3d7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/deferred-scope-implementation-h8b3d7.md"
+    },
+    {
+      "from": ".cursor/plans/deferred-scope-spine-refinement-5e3d1b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/deferred-scope-spine-refinement-5e3d1b.md"
+    },
+    {
+      "from": ".cursor/plans/docs-reference-tier-split-a3c9f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/docs-reference-tier-split-a3c9f1.md"
+    },
+    {
+      "from": ".cursor/plans/dom007-fec-producers-followup-e9f3c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/dom007-fec-producers-followup-e9f3c1.md"
+    },
+    {
+      "from": ".cursor/plans/dormant-facade-cleanup-b2d4f7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/dormant-facade-cleanup-b2d4f7.md"
+    },
+    {
+      "from": ".cursor/plans/ds1-telemetry-remaining-writers-a8c4f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ds1-telemetry-remaining-writers-a8c4f2.md"
+    },
+    {
+      "from": ".cursor/plans/enforcement-deferred-followup-c4d8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/enforcement-deferred-followup-c4d8a2.md"
+    },
+    {
+      "from": ".cursor/plans/enforcement-mechanisms-top5-c4d8a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/enforcement-mechanisms-top5-c4d8a2.md"
+    },
+    {
+      "from": ".cursor/plans/exec-summary-deferred-scope-f8d2a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/exec-summary-deferred-scope-f8d2a3.md"
+    },
+    {
+      "from": ".cursor/plans/exec-summary-length-parity-remediation-a3c8e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/exec-summary-length-parity-remediation-a3c8e1.md"
+    },
+    {
+      "from": ".cursor/plans/exit-eval-spine-gap-ce683b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/exit-eval-spine-gap-ce683b.md"
+    },
+    {
+      "from": ".cursor/plans/exit-eval-v5-gap-c0aa47.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/exit-eval-v5-gap-c0aa47.md"
+    },
+    {
+      "from": ".cursor/plans/final-closeout-may7-h9c3e8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/final-closeout-may7-h9c3e8.md"
+    },
+    {
+      "from": ".cursor/plans/final-deferred-scope-may7-g7a2c6.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/final-deferred-scope-may7-g7a2c6.md"
+    },
+    {
+      "from": ".cursor/plans/fix-rules-notion-drift-c4e7b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/fix-rules-notion-drift-c4e7b2.md"
+    },
+    {
+      "from": ".cursor/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/fortknox-100pct-static-runtime-gap-9a3d4f.md"
+    },
+    {
+      "from": ".cursor/plans/gap-closure-test-impl-b77a11.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/gap-closure-test-impl-b77a11.md"
+    },
+    {
+      "from": ".cursor/plans/governance-deferred-scope-next-actions-f3b7c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/governance-deferred-scope-next-actions-f3b7c1.md"
+    },
+    {
+      "from": ".cursor/plans/hardcoded-exclusion-burndown-4a8f2c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/hardcoded-exclusion-burndown-4a8f2c.md"
+    },
+    {
+      "from": ".cursor/plans/holdout-corpus-authoring-b5d2f6.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/holdout-corpus-authoring-b5d2f6.md"
+    },
+    {
+      "from": ".cursor/plans/holistic-plan-status-discipline-d4e8a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/holistic-plan-status-discipline-d4e8a1.md"
+    },
+    {
+      "from": ".cursor/plans/hook-consolidation-debt-cleanup-f2b8d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/hook-consolidation-debt-cleanup-f2b8d1.md"
+    },
+    {
+      "from": ".cursor/plans/hop-engines-triage-a7e4b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/hop-engines-triage-a7e4b2.md"
+    },
+    {
+      "from": ".cursor/plans/hotspot-coverage-pipeline-c4e8d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/hotspot-coverage-pipeline-c4e8d2.md"
+    },
+    {
+      "from": ".cursor/plans/hybrid-search-adg-seed-rerank-c58e21.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/hybrid-search-adg-seed-rerank-c58e21.md"
+    },
+    {
+      "from": ".cursor/plans/infra-wiring-scan-remediation-927628.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/infra-wiring-scan-remediation-927628.md"
+    },
+    {
+      "from": ".cursor/plans/judge-base-and-four-judges-c5e1f3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/judge-base-and-four-judges-c5e1f3.md"
+    },
+    {
+      "from": ".cursor/plans/judge-spearman-calibration-a7e4c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/judge-spearman-calibration-a7e4c9.md"
+    },
+    {
+      "from": ".cursor/plans/judge-surface-harmonization-b9d3a7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/judge-surface-harmonization-b9d3a7.md"
+    },
+    {
+      "from": ".cursor/plans/kill-shadow-pipelines-a7f3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/kill-shadow-pipelines-a7f3c2.md"
+    },
+    {
+      "from": ".cursor/plans/l0-authority-burndown-3a7b21.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l0-authority-burndown-3a7b21.md"
+    },
+    {
+      "from": ".cursor/plans/l0-routing-calibration-gap-audit-b3c9d4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l0-routing-calibration-gap-audit-b3c9d4.md"
+    },
+    {
+      "from": ".cursor/plans/l1-reasoning-bestpractices-gaps-a7b2c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l1-reasoning-bestpractices-gaps-a7b2c9.md"
+    },
+    {
+      "from": ".cursor/plans/l5-cert-ref-deferred-scope-f3a1b8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l5-cert-ref-deferred-scope-f3a1b8.md"
+    },
+    {
+      "from": ".cursor/plans/l5-cert-ref-emit-chain-threading-c4e7f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l5-cert-ref-emit-chain-threading-c4e7f1.md"
+    },
+    {
+      "from": ".cursor/plans/l5-v4-g04-identity-propagation-0b9d22.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l5-v4-g04-identity-propagation-0b9d22.md"
+    },
+    {
+      "from": ".cursor/plans/l6-alignment-deferred-scope-c5e8a7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l6-alignment-deferred-scope-c5e8a7.md"
+    },
+    {
+      "from": ".cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md"
+    },
+    {
+      "from": ".cursor/plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l6-folder-rename-doctrinal-alignment-a8c4e2.md"
+    },
+    {
+      "from": ".cursor/plans/l6-gravity-hybrid-7c4e2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l6-gravity-hybrid-7c4e2a.md"
+    },
+    {
+      "from": ".cursor/plans/l7-route-family-closure-d3e8f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/l7-route-family-closure-d3e8f1.md"
+    },
+    {
+      "from": ".cursor/plans/legacy-yaml-deletion-audit-c8e3a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/legacy-yaml-deletion-audit-c8e3a4.md"
+    },
+    {
+      "from": ".cursor/plans/llm-containment-hooks-rules-c7a91b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/llm-containment-hooks-rules-c7a91b.md"
+    },
+    {
+      "from": ".cursor/plans/llm-judge-hardening-followups-f2c8e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/llm-judge-hardening-followups-f2c8e1.md"
+    },
+    {
+      "from": ".cursor/plans/mcp-hardening-antipattern-registry-d05031.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/mcp-hardening-antipattern-registry-d05031.md"
+    },
+    {
+      "from": ".cursor/plans/mcp-serial-defense-l2l5-7d4f1a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/mcp-serial-defense-l2l5-7d4f1a.md"
+    },
+    {
+      "from": ".cursor/plans/mcp-skill-installation-2ee0d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/mcp-skill-installation-2ee0d2.md"
+    },
+    {
+      "from": ".cursor/plans/meta-learning-confidence-audit-b7c4e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/meta-learning-confidence-audit-b7c4e1.md"
+    },
+    {
+      "from": ".cursor/plans/moe-agentic-architecture-d4e9a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/moe-agentic-architecture-d4e9a2.md"
+    },
+    {
+      "from": ".cursor/plans/next-step-gate-ci-workflow-8733a6.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/next-step-gate-ci-workflow-8733a6.md"
+    },
+    {
+      "from": ".cursor/plans/nist-ai-rmf-l5-profile-e7a3c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/nist-ai-rmf-l5-profile-e7a3c1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-adapter-scaffold-test-hardening-d7e2f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-adapter-scaffold-test-hardening-d7e2f1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-audit-deferred-scope-f3c9a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-audit-deferred-scope-f3c9a1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-backlog-human-scoring-e7a941.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-backlog-human-scoring-e7a941.md"
+    },
+    {
+      "from": ".cursor/plans/notion-backlog-residual-cleanup-c3d8f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-backlog-residual-cleanup-c3d8f2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-backlog-schema-refactor-7c3d9e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-backlog-schema-refactor-7c3d9e.md"
+    },
+    {
+      "from": ".cursor/plans/notion-enforcement-consolidation-e8f3a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-enforcement-consolidation-e8f3a2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-integration-consistency-audit-b2c4d8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-integration-consistency-audit-b2c4d8.md"
+    },
+    {
+      "from": ".cursor/plans/notion-np10-deferred-scope-c8f1a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-np10-deferred-scope-c8f1a4.md"
+    },
+    {
+      "from": ".cursor/plans/notion-np10-waiting-for-enforcement-b3d7c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-np10-waiting-for-enforcement-b3d7c2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plan-identity-deferred-scope-a3b7e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plan-identity-deferred-scope-a3b7e2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plan-identity-verification-enforcement-f2a9c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plan-identity-verification-enforcement-f2a9c1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plan-status-hardening-e5f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plan-status-hardening-e5f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plan-status-reconciliation-a3f2e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plan-status-reconciliation-a3f2e1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plans-db-hygiene-deferred-scope-d4f7c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plans-db-hygiene-deferred-scope-d4f7c1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plans-new-status-enforcement-c9f2a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plans-new-status-enforcement-c9f2a3.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plans-status-bulk-recovery-c4e2f9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plans-status-bulk-recovery-c4e2f9.md"
+    },
+    {
+      "from": ".cursor/plans/notion-plans-status-rca-followups-b8e3f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-plans-status-rca-followups-b8e3f2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-sync-enforcement-hardening-f5a2c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-sync-enforcement-hardening-f5a2c1.md"
+    },
+    {
+      "from": ".cursor/plans/notion-test-hardening-deferred-scope-a7b4c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-test-hardening-deferred-scope-a7b4c9.md"
+    },
+    {
+      "from": ".cursor/plans/notion-test-hardening-session-c4d8f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-test-hardening-session-c4d8f2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-wave-deferral-a3f5c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-wave-deferral-a3f5c2.md"
+    },
+    {
+      "from": ".cursor/plans/notion-wave-lifecycle-autosync-f4a2b8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-wave-lifecycle-autosync-f4a2b8.md"
+    },
+    {
+      "from": ".cursor/plans/notion-wave-lifecycle-deferred-scope-d4e8a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/notion-wave-lifecycle-deferred-scope-d4e8a1.md"
+    },
+    {
+      "from": ".cursor/plans/one-spine-qna-rfp-migration-d2e8f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/one-spine-qna-rfp-migration-d2e8f1.md"
+    },
+    {
+      "from": ".cursor/plans/otel-collector-cert-receipt-b4d2e6.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/otel-collector-cert-receipt-b4d2e6.md"
+    },
+    {
+      "from": ".cursor/plans/p0-layer-violation-remediation-7c4e1a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p0-layer-violation-remediation-7c4e1a.md"
+    },
+    {
+      "from": ".cursor/plans/p1-d2-default-enable-b7e3f9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p1-d2-default-enable-b7e3f9.md"
+    },
+    {
+      "from": ".cursor/plans/p1-p4-enforcement-hardening-8a3f2b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p1-p4-enforcement-hardening-8a3f2b.md"
+    },
+    {
+      "from": ".cursor/plans/p1p2-burndown-current-3f9a8e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p1p2-burndown-current-3f9a8e.md"
+    },
+    {
+      "from": ".cursor/plans/p1p2-burndown-graph-driven-7e4a9c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p1p2-burndown-graph-driven-7e4a9c.md"
+    },
+    {
+      "from": ".cursor/plans/p2-antipattern-remediation-a3f1b7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2-antipattern-remediation-a3f1b7.md"
+    },
+    {
+      "from": ".cursor/plans/p2-apps-qna-product-spine-b3e8d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2-apps-qna-product-spine-b3e8d2.md"
+    },
+    {
+      "from": ".cursor/plans/p2-burndown-session-summary-2a8f4c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2-burndown-session-summary-2a8f4c.md"
+    },
+    {
+      "from": ".cursor/plans/p2-burndown-wave-9e4c17.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2-burndown-wave-9e4c17.md"
+    },
+    {
+      "from": ".cursor/plans/p2.1_core-l5-certification-packet-producer-hardening.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2.1_core-l5-certification-packet-producer-hardening.md"
+    },
+    {
+      "from": ".cursor/plans/p2.2_core-l6-g29-promotion-proof-hardening-d9e3b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p2.2_core-l6-g29-promotion-proof-hardening-d9e3b2.md"
+    },
+    {
+      "from": ".cursor/plans/p3-apps-research-spine-envelope-c4e9f3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p3-apps-research-spine-envelope-c4e9f3.md"
+    },
+    {
+      "from": ".cursor/plans/p3.1_apps-rg-l1-contract-wiring-3e7f92.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p3.1_apps-rg-l1-contract-wiring-3e7f92.md"
+    },
+    {
+      "from": ".cursor/plans/p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md"
+    },
+    {
+      "from": ".cursor/plans/p4-implementation-f6a1c7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p4-implementation-f6a1c7.md"
+    },
+    {
+      "from": ".cursor/plans/p4-implementation-notes-w3w5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p4-implementation-notes-w3w5.md"
+    },
+    {
+      "from": ".cursor/plans/p4-out-of-scope-backlog-d5f0a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p4-out-of-scope-backlog-d5f0a4.md"
+    },
+    {
+      "from": ".cursor/plans/p4.1_apps-rg-l5-governance-gap-report-hardened-f8c2e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p4.1_apps-rg-l5-governance-gap-report-hardened-f8c2e1.md"
+    },
+    {
+      "from": ".cursor/plans/p4.2_apps-rg-l6-shadow-learning-hardening-7e4c2f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p4.2_apps-rg-l6-shadow-learning-hardening-7e4c2f.md"
+    },
+    {
+      "from": ".cursor/plans/p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/p5.1_apps-rg-x1d-human-benchmark-plan-9e4c2f.md"
+    },
+    {
+      "from": ".cursor/plans/phase-b-blocker-burndown-a8c4f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/phase-b-blocker-burndown-a8c4f1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-complete-marker-enforcement-d2e9f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-complete-marker-enforcement-d2e9f1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-complete-notion-status-enforcement-a7e2d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-complete-notion-status-enforcement-a7e2d1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-format-simplification-rca-d4f8e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-format-simplification-rca-d4f8e2.md"
+    },
+    {
+      "from": ".cursor/plans/plan-markdown-update-enforcement-a7d4e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-markdown-update-enforcement-a7d4e1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-notion-registration-enforcement-c8f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-notion-registration-enforcement-c8f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-update-enforcement-template-fix-e7a3c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-update-enforcement-template-fix-e7a3c1.md"
+    },
+    {
+      "from": ".cursor/plans/plan-wave-inline-status-sync-8b4d2f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/plan-wave-inline-status-sync-8b4d2f.md"
+    },
+    {
+      "from": ".cursor/plans/precommit-optimization-regenerated-4b5a2f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/precommit-optimization-regenerated-4b5a2f.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-assembly-best-practices-gap-b4e1c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-assembly-best-practices-gap-b4e1c2.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-assembly-detailed-spec-gaps-7c9f3a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-assembly-detailed-spec-gaps-7c9f3a.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-assembly-eq-closeout-c8f2a3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-assembly-eq-closeout-c8f2a3.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-assembly-few-shot-exemplars-9c4e2b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-assembly-few-shot-exemplars-9c4e2b.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-assembly-reception-hardening-9c4e2b.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-assembly-reception-hardening-9c4e2b.md"
+    },
+    {
+      "from": ".cursor/plans/prompt-categories-coverage-audit-b8f5d3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/prompt-categories-coverage-audit-b8f5d3.md"
+    },
+    {
+      "from": ".cursor/plans/qwen-confidence-routing-hardening-d4e7b1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/qwen-confidence-routing-hardening-d4e7b1.md"
+    },
+    {
+      "from": ".cursor/plans/qwen-rollout-followup-burndown-d2a4f8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/qwen-rollout-followup-burndown-d2a4f8.md"
+    },
+    {
+      "from": ".cursor/plans/qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/qwen-rollout-test-coverage-gaps-d2a4f8-f9e3c2.md"
+    },
+    {
+      "from": ".cursor/plans/rag-dim-activation-c4f8b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rag-dim-activation-c4f8b2.md"
+    },
+    {
+      "from": ".cursor/plans/rag-semantic-chunker-gap-c4f1a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rag-semantic-chunker-gap-c4f1a8.md"
+    },
+    {
+      "from": ".cursor/plans/rca-notion-status-transition-failure-f5a2c1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rca-notion-status-transition-failure-f5a2c1.md"
+    },
+    {
+      "from": ".cursor/plans/rca-wave-marker-emission-gap-c7d3f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rca-wave-marker-emission-gap-c7d3f1.md"
+    },
+    {
+      "from": ".cursor/plans/refactor_to_interactions_api.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/refactor_to_interactions_api.md"
+    },
+    {
+      "from": ".cursor/plans/refactor_to_interactions_api_v3_titanium.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/refactor_to_interactions_api_v3_titanium.md"
+    },
+    {
+      "from": ".cursor/plans/repo-dedup-deferred-followup-d5e2a9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/repo-dedup-deferred-followup-d5e2a9.md"
+    },
+    {
+      "from": ".cursor/plans/repo-tech-debt-wave1-b3c8d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/repo-tech-debt-wave1-b3c8d1.md"
+    },
+    {
+      "from": ".cursor/plans/repo-wide-deduplication-c5d2a8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/repo-wide-deduplication-c5d2a8.md"
+    },
+    {
+      "from": ".cursor/plans/routing-decision-process-enhancement-9c7e4d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/routing-decision-process-enhancement-9c7e4d.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w1-phase3-blockers-close-d7a2f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w1-phase3-blockers-close-d7a2f1.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w1-phase4-threshold-adr-b4c9e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w1-phase4-threshold-adr-b4c9e1.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w1-phase5-cache-safety-veto-e8a4d2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w1-phase5-cache-safety-veto-e8a4d2.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w2b-live-provider-allow-proof-b24f8e.md"
+    },
+    {
+      "from": ".cursor/plans/rtc-w2b-scenario-a-local-qwen-bd70e0.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rtc-w2b-scenario-a-local-qwen-bd70e0.md"
+    },
+    {
+      "from": ".cursor/plans/rules-hooks-memories-consolidation-48b4d6.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/rules-hooks-memories-consolidation-48b4d6.md"
+    },
+    {
+      "from": ".cursor/plans/runner-preflight-unblock-3b7d4a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runner-preflight-unblock-3b7d4a.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-adg-tier1-5-span-naming-a31bcf.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-adg-tier1-5-span-naming-a31bcf.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-adg-tier2h-tier3-c4d8e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-adg-tier2h-tier3-c4d8e2.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-adg-tier3-broader-adoption-8f2d1c.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-adg-trace-binding-remediation-d7e8f9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-adg-trace-binding-remediation-d7e8f9.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-100-percent-completion-e3f1a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-100-percent-completion-e3f1a2.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-c1-query-adapter-7e3f92.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-c1-query-adapter-7e3f92.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-completion-waves-g-b9d4e1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-completion-waves-g-b9d4e1.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-d2-decision-evaluator-227b38.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-d2-decision-evaluator-227b38.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-d3-cert-decision-ledger-85989c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-d3-cert-decision-ledger-85989c.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-d4-cert-decision-smoke-7acad5.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-d4-cert-decision-smoke-7acad5.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-d5-phase-d-closeout-5e9d2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-d5-phase-d-closeout-5e9d2a.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-e-ci-gate-e7b3f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-e-ci-gate-e7b3f1.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-e1-fail-closed-ci-gate-c71f3d.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-e1w2-gate-module-9a4b2e.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-e1w2-gate-module-9a4b2e.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-e1w3-baseline-seed-4d82a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-e1w3-baseline-seed-4d82a1.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-e1w3-cli-ux-975c93.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-e1w3-cli-ux-975c93.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-formula-driven-signoff-a8f5c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-formula-driven-signoff-a8f5c2.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-hardened-w0-7e3c9a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-hardened-w0-7e3c9a.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-cert-hardened-w0-deferred-scope.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-cert-hardened-w0-deferred-scope.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-evidence-foundation-54ad39.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-evidence-foundation-54ad39.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-gate-coverage-hardening-7e3f1a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-gate-coverage-hardening-7e3f1a.md"
+    },
+    {
+      "from": ".cursor/plans/runtime-otel-spec-coverage-7c4d2a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/runtime-otel-spec-coverage-7c4d2a.md"
+    },
+    {
+      "from": ".cursor/plans/sc1-audit-to-enforce-promotion-b4e9d7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/sc1-audit-to-enforce-promotion-b4e9d7.md"
+    },
+    {
+      "from": ".cursor/plans/scanner-exclusion-sync-two-wave-6d6151.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/scanner-exclusion-sync-two-wave-6d6151.md"
+    },
+    {
+      "from": ".cursor/plans/scorer-otel-autosource-layer-b-c5e4d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/scorer-otel-autosource-layer-b-c5e4d1.md"
+    },
+    {
+      "from": ".cursor/plans/semantic-cache-reconciliation-0a0f93.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/semantic-cache-reconciliation-0a0f93.md"
+    },
+    {
+      "from": ".cursor/plans/session-burndown-2026-05-02-c8f3a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/session-burndown-2026-05-02-c8f3a4.md"
+    },
+    {
+      "from": ".cursor/plans/shadow-eval-v6-gap-d4a9c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/shadow-eval-v6-gap-d4a9c2.md"
+    },
+    {
+      "from": ".cursor/plans/shadow-learning-bestpractice-gap-7b3e4c.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/shadow-learning-bestpractice-gap-7b3e4c.md"
+    },
+    {
+      "from": ".cursor/plans/skill-frontmatter-budget-fix-f3a1c9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/skill-frontmatter-budget-fix-f3a1c9.md"
+    },
+    {
+      "from": ".cursor/plans/sqlite-graphstore-implementation-7a3b2f.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/sqlite-graphstore-implementation-7a3b2f.md"
+    },
+    {
+      "from": ".cursor/plans/ssot-consolidation-cleanup-b7f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ssot-consolidation-cleanup-b7f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/ssot-consolidation-wave-plan.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ssot-consolidation-wave-plan.md"
+    },
+    {
+      "from": ".cursor/plans/ssot-violations-sweep-29caf4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ssot-violations-sweep-29caf4.md"
+    },
+    {
+      "from": ".cursor/plans/streamline-constants-territories-d0cb16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/streamline-constants-territories-d0cb16.md"
+    },
+    {
+      "from": ".cursor/plans/streamline-constants-trace-emitters-d0cb16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/streamline-constants-trace-emitters-d0cb16.md"
+    },
+    {
+      "from": ".cursor/plans/streamline-constants-waves3-4-migration-d0cb16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/streamline-constants-waves3-4-migration-d0cb16.md"
+    },
+    {
+      "from": ".cursor/plans/subatomic_hardening_opportunities.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/subatomic_hardening_opportunities.md"
+    },
+    {
+      "from": ".cursor/plans/test-coverage-improvement-a1b2c3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/test-coverage-improvement-a1b2c3.md"
+    },
+    {
+      "from": ".cursor/plans/test-coverage-waves-f8f5a7.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/test-coverage-waves-f8f5a7.md"
+    },
+    {
+      "from": ".cursor/plans/three-bucket-and-apps-spine-closeout-a4f8c2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/three-bucket-and-apps-spine-closeout-a4f8c2.md"
+    },
+    {
+      "from": ".cursor/plans/three-bucket-gap-remediation-069806.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/three-bucket-gap-remediation-069806.md"
+    },
+    {
+      "from": ".cursor/plans/three-bucket-otel-view-5db409.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/three-bucket-otel-view-5db409.md"
+    },
+    {
+      "from": ".cursor/plans/three-bucket-wa6-strict-flip-e22a51.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/three-bucket-wa6-strict-flip-e22a51.md"
+    },
+    {
+      "from": ".cursor/plans/token-burn-followup-f8c2d1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/token-burn-followup-f8c2d1.md"
+    },
+    {
+      "from": ".cursor/plans/ui-choice-consistency-deferred-scope-a4f2b8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ui-choice-consistency-deferred-scope-a4f2b8.md"
+    },
+    {
+      "from": ".cursor/plans/ui-choice-consistency-zero-loss-d9e4f2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ui-choice-consistency-zero-loss-d9e4f2.md"
+    },
+    {
+      "from": ".cursor/plans/ui-choice-consistency-zero-loss-hardened-d9f3a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ui-choice-consistency-zero-loss-hardened-d9f3a1.md"
+    },
+    {
+      "from": ".cursor/plans/ui-choice-pipelines-inventory-c9e4d3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/ui-choice-pipelines-inventory-c9e4d3.md"
+    },
+    {
+      "from": ".cursor/plans/v10-refactoring-implementation-plan-v3.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/v10-refactoring-implementation-plan-v3.md"
+    },
+    {
+      "from": ".cursor/plans/w4-p8-guardrail-family-e93f8a.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/w4-p8-guardrail-family-e93f8a.md"
+    },
+    {
+      "from": ".cursor/plans/w6-emit-contract-deferred-scope-c3f7a1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/w6-emit-contract-deferred-scope-c3f7a1.md"
+    },
+    {
+      "from": ".cursor/plans/w6-emit-contract-enrichment-d8b2a4.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/w6-emit-contract-enrichment-d8b2a4.md"
+    },
+    {
+      "from": ".cursor/plans/wave-completion-markdown-enforcement-c4e7b2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave-completion-markdown-enforcement-c4e7b2.md"
+    },
+    {
+      "from": ".cursor/plans/wave-phase-auto-update-rca-fix-e9c2b8.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave-phase-auto-update-rca-fix-e9c2b8.md"
+    },
+    {
+      "from": ".cursor/plans/wave-status-completion-enforcement-d4f8e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave-status-completion-enforcement-d4f8e2.md"
+    },
+    {
+      "from": ".cursor/plans/wave1-baseline-evidence-d0cb16.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave1-baseline-evidence-d0cb16.md"
+    },
+    {
+      "from": ".cursor/plans/wave1-p1-remediation-revision-0f0783.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave1-p1-remediation-revision-0f0783.md"
+    },
+    {
+      "from": ".cursor/plans/wave2-l2-native-persistence-0a0f93.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wave2-l2-native-persistence-0a0f93.md"
+    },
+    {
+      "from": ".cursor/plans/windsurf-config-efficiency-optimization-8f3e9d.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/windsurf-config-efficiency-optimization-8f3e9d.md"
+    },
+    {
+      "from": ".cursor/plans/windsurf-governance-consolidation-a7c3e9.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/windsurf-governance-consolidation-a7c3e9.md"
+    },
+    {
+      "from": ".cursor/plans/windsurf-governance-w2-deferred-b6b-unblock-a8d4e2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/windsurf-governance-w2-deferred-b6b-unblock-a8d4e2.md"
+    },
+    {
+      "from": ".cursor/plans/windsurf-maintenance-2026-q2-0f3564.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/windsurf-maintenance-2026-q2-0f3564.md"
+    },
+    {
+      "from": ".cursor/plans/windsurf-token-burn-augmentation-b7a3f1.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/windsurf-token-burn-augmentation-b7a3f1.md"
+    },
+    {
+      "from": ".cursor/plans/wire-sqlite-decision-ledger-e8f3a2.md",
+      "to": ".cursor/plans/_archive/windsurf_legacy_plans/wire-sqlite-decision-ledger-e8f3a2.md"
+    },
+    {
+      "from": ".cursor/plans/_orphan_review",
+      "to": ".cursor/plans/_archive/orphan_review_legacy"
+    },
+    {
+      "from": ".cursor/RULES_INDEX.windurf-original.md",
+      "to": ".cursor/_zero_loss_originals/RULES_INDEX.windurf-original.md"
+    },
+    {
+      "from": ".cursor/scripts/manual_post_cascade_replay.py",
+      "to": ".cursor/scripts/_legacy_windsurf/manual_post_cascade_replay.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_adg_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_adg_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_adr_registry_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_adr_registry_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_ag_queue_drain_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_ag_queue_drain_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_ag_queue_seed_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_ag_queue_seed_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_ask_user_question_packet_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_ask_user_question_packet_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_miss_detector.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_miss_detector.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_pipeline_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_pipeline_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_schema_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_schema_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_suite.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_suite.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_author_gate_ui_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_author_gate_ui_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_cleanup.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_cleanup.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_deferred_scope_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_deferred_scope_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_dispatch.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_dispatch.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_fortknox_integrity_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_fortknox_integrity_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_grep_budget_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_grep_budget_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_heartbeat.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_heartbeat.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_long_command_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_long_command_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_mcp_hygiene_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_mcp_hygiene_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_mcp_orphan_reap.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_mcp_orphan_reap.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_mcp_preflight_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_mcp_preflight_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_mcp_serialization_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_mcp_serialization_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_next_step_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_next_step_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_next_step_miss_detector.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_next_step_miss_detector.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_notion_plans_status_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_notion_plans_status_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_notion_plan_identity_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_notion_plan_identity_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plans_dup_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plans_dup_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_complete_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_complete_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_creation_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_creation_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_evidence_gate.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_evidence_gate.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_lifecycle_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_lifecycle_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_registration_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_registration_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_plan_scope_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_plan_scope_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_read_budget_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_read_budget_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_resource_budget_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_resource_budget_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_router_decision_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_router_decision_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_scope_drift_detector.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_scope_drift_detector.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_token_telemetry.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_token_telemetry.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_wave_completion_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_wave_completion_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_wave_lifecycle_capture.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_wave_lifecycle_capture.py"
+    },
+    {
+      "from": ".cursor/scripts/post_cascade_writeback_audit.py",
+      "to": ".cursor/scripts/_legacy_windsurf/post_cascade_writeback_audit.py"
+    },
+    {
+      "from": ".cursor/scripts/refresh-windsurf-docs.ps1",
+      "to": ".cursor/scripts/_legacy_windsurf/refresh-windsurf-docs.ps1"
+    },
+    {
+      "from": ".cursor/scripts/_post_cascade_payload.py",
+      "to": ".cursor/scripts/_legacy_windsurf/_post_cascade_payload.py"
+    },
+    {
+      "from": ".cursor/rules/windsurf-config-lookup.mdc",
+      "to": ".cursor/_zero_loss_originals/rules/windsurf-config-lookup.mdc"
+    },
+    {
+      "from": ".cursor/schemas/router_l2_cascade_ledger.schema.sql",
+      "to": ".cursor/schemas/router_l2_cursor_agent_ledger.schema.sql"
+    }
+  ],
+  "legacy_preserved_under": [
+    ".cursor/windsurf_compat/**",
+    ".cursor/scripts/_legacy_windsurf/**",
+    ".cursor/plans/_archive/**",
+    ".cursor/_zero_loss_originals/**"
+  ],
+  "required_validation_commands": [
+    "python .cursor/scripts/check_cursor_native_config.py --strict",
+    "python -m json.tool .cursor/mcp.json",
+    "python -m json.tool .cursor/hooks.json"
+  ],
+  "validation_outputs": {
+    "check_cursor_native_config": {
+      "sha256": "9a0ad1042f619c3e496032703e687bb60e01acce467dbbb139933492084dd669",
+      "bytes": 87
+    },
+    "mcp_json_tool": {
+      "sha256": "8ca5e459241f07ec650fc8059b10a5fdbb1975a4bbeb6bfa8c3c7cf906984b8a",
+      "bytes": 8324
+    },
+    "hooks_json_tool": {
+      "sha256": "b3edc77deef2419a1b043a5e1f65649db9821abfdf7b40d9e5e86f42a64a01c9",
+      "bytes": 879
+    }
+  },
+  "final_validation_status": "PASS",
+  "active_legacy_hits_excluding_allowlist": [],
+  "finalized_at": "2026-05-15T08:11:55Z"
+}

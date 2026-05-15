@@ -78,6 +78,10 @@ ALLOWED_TOP_LEVEL_FIELDS = {
     "self_check",
     "text_claim_coverage",
     "source_sensitive_phrase_ledger",
+    "input_payload_hash",
+    "output_payload_hash",
+    "claim_ledger_hash",
+    "allowed_fact_ids_hash",
 }
 
 # Required runtime artifacts

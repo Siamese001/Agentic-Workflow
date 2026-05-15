@@ -1,0 +1,101 @@
+{
+  "quarantine_id": "AG-RGGOV-6",
+  "decision": "profiles_only",
+  "classification_date": "2026-05-09",
+  "files_quarantined": [
+    {
+      "path": "apps_rg/config/agent_spec_config.py",
+      "contamination": "172+ OTEL/lifecycle trace emissions, OrchestrationTopology, AgentSpec, GenerationConfig, GateConfig, OrchestratorConfig",
+      "quarantine_target": "archives/apps_rg/orchestration_config_20260509/",
+      "action": "QUARANTINE — move to archives/ manually (blocked by .cursorignore)",
+      "lines_affected": [1, 410],
+      "symbols_quarantined": [
+        "AgentSpec", "OrchestrationTopology", "OrchestrationTopology.validate_agents_exist",
+        "GenerationConfig", "GateConfig", "OrchestratorConfig", "RGAgentSpecs"
+      ]
+    },
+    {
+      "path": "apps_rg/utils/sovereign_config_loader_util.py",
+      "contamination": "100+ OTEL emissions, imports AgentSpec/OrchestrationTopology, SovereignConfigLoader",
+      "quarantine_target": "archives/apps_rg/runtime_traces_20260509/",
+      "action": "QUARANTINE — move to archives/ manually (blocked by .cursorignore)",
+      "lines_affected": [17, 293]
+    },
+    {
+      "path": "apps_rg/engines/_lifecycle_emits.py",
+      "contamination": "Centralized emit boilerplate — 75 emissions per engine",
+      "quarantine_target": "archives/apps_rg/runtime_traces_20260509/",
+      "action": "QUARANTINE — move to archives/ manually (blocked by .cursorignore)"
+    }
+  ],
+  "files_migrated": [
+    {
+      "path": "apps_rg/profiles/rg_evidence_profile.yaml",
+      "migrated_from": "ClerkExtractionConfig, ValidationConfig, QAReportConfig",
+      "fields": ["extraction_rules.metrics_patterns", "validation_scope.rule_categories", "quality_thresholds", "scoring_dimensions"]
+    },
+    {
+      "path": "apps_rg/profiles/rg_prompt_profile.yaml",
+      "migrated_from": "EnrichmentConfig",
+      "fields": ["style_constraints.forbidden_phrases", "content_constraints.duplicate_similarity_threshold"]
+    },
+    {
+      "path": "apps_rg/profiles/rg_style_profile.yaml",
+      "migrated_from": "EnrichmentConfig (style-related)",
+      "fields": ["voice_and_tone", "vocabulary.power_verbs", "avoid.passive_phrases"]
+    },
+    {
+      "path": "apps_rg/profiles/rg_output_schema.json",
+      "migrated_from": "ClerkExtractionConfig (output constraints)",
+      "fields": ["constraints.bullets_per_section", "constraints.section_word_limits", "report_structure.required_sections"]
+    },
+    {
+      "path": "apps_rg/profiles/rg_capability_profile.yaml",
+      "migrated_from": "RefinementConfig",
+      "fields": ["declared_capabilities.supported_formats", "declared_capabilities.optimization_targets"]
+    },
+    {
+      "path": "apps_rg/profiles/rg_planning_profile.yaml",
+      "migrated_from": "QAReportConfig (planning constraints)",
+      "fields": ["planning_constraints.max_sections", "output_structure.required_sections"]
+    }
+  ],
+  "ag_queue_seed_pending": [
+    {
+      "id": "AG-RGGOV-6a",
+      "title": "Duplicate threshold behavioral semantics",
+      "depends_on": "AG-RGGOV-6",
+      "question": "Is EnrichmentConfig.duplicate_threshold (0.85) advisory target or exact runtime requirement?"
+    },
+    {
+      "id": "AG-RGGOV-6b",
+      "title": "Quality score threshold semantics",
+      "depends_on": "AG-RGGOV-6",
+      "question": "Is ValidationConfig.min_quality_score (0.7) a 'target' and GateConfig.pass_threshold (0.8) a 'gate'? Or are they redundant?"
+    },
+    {
+      "id": "AG-RGGOV-6c",
+      "title": "Scoring weights runtime binding",
+      "depends_on": "AG-RGGOV-6",
+      "question": "Does core judge use QAReportConfig.scoring_weights exactly, or as hints?"
+    },
+    {
+      "id": "AG-RGGOV-6d",
+      "title": "Power verbs enforcement level",
+      "depends_on": "AG-RGGOV-6",
+      "question": "Is EnrichmentConfig.power_verbs a hard constraint or advisory style guide?"
+    }
+  ],
+  "manual_actions_required": [
+    "Move apps_rg/config/agent_spec_config.py to archives/apps_rg/orchestration_config_20260509/",
+    "Move apps_rg/utils/sovereign_config_loader_util.py to archives/apps_rg/runtime_traces_20260509/",
+    "Move apps_rg/engines/_lifecycle_emits.py to archives/apps_rg/runtime_traces_20260509/",
+    "Update any imports in apps_rg/__main__.py that reference the quarantined files",
+    "Resolve AG-RGGOV-6a through AG-RGGOV-6d Author-Gate decisions before finalizing profile schemas"
+  ],
+  "notes": [
+    ".cursorignore blocks writes to archives/ — quarantine files must be moved manually",
+    "All 6 YAML profile files created with MIGRATE_WITH_FLAG annotations where ambiguity exists",
+    "Runtime authority successfully quarantined from apps_rg declarative surface"
+  ]
+}

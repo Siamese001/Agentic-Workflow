@@ -1,0 +1,120 @@
+
+============================================================
+ATTEMPTING REAL LLM: qwen_vllm
+============================================================
+Provider available at http://localhost:8000/v1
+Generating prompt payload...
+Calling vLLM at http://localhost:8000/v1...
+Parsing LLM output...
+
+REAL_LLM_GENERATION_COMPLETE
+product_quality_status: PARTIAL
+sentence_count: 11
+has_bullet_patterns: False
+
+============================================================
+L2_EXECUTIVE_SUMMARY_OUTPUT [partial] [TEMP=0.45]:
+============================================================
+At Synthetic Enterprise Corp., I spearheaded the transformation of core agentic AI primitives into a robust, reusable platform, driving significant commercial impact and operational excellence. Initially tasked with enhancing enterprise retrieval quality and context assembly, I architected a governed agentic AI platform that integrated deterministic routing, multi-agent orchestration, and GraphRAG retrieval, ensuring reliable and compliant execution within regulated environments. This platform was further fortified with sandboxed execution, policy gating, validation controls, and replayable execution traces, significantly bolstering the reliability and auditability of our AI-driven processes. 
+
+To support this vision, I scaled the ML engineering team from 8 to 28 specialists, enabling the productization of these advanced capabilities and generating $22 million in IP-led revenue. The expansion of the team also facilitated the enhancement of enterprise data pipelines, vector services, and API gateways, all integrated within a cloud-native microservices architecture across AWS and Databricks Lakehouse. This infrastructure ensured high availability and seamless integration with existing enterprise systems, while also implementing stringent identity controls and telemetry instrumentation for comprehensive monitoring and rollback capabilities.
+
+The result was a 20% increase in gross margins, reflecting the efficiency and scalability of the new platform. By standardizing AI CI/CD processes, we achieved a more agile and responsive development lifecycle, aligning closely with the evolving needs of our enterprise clients. This strategic approach not only enhanced the technical foundation but also positioned Synthetic Enterprise Corp. as a leader in delivering sophisticated, governed AI solutions to the market.
+
+QUALITY_NOTES: FAIL: first-person references found; FAIL: target company mentioned in resume (cover letter pattern)
+TEMPERATURE_USED: 0.45 (valid range: 0.35-0.55, target: 0.45)
+
+============================================================
+X1D_LLM_JUDGE_OUTPUTS [THREE-PROVIDER EVALUATION]:
+============================================================
+Provider             | Mode                         | Score | Thr | Pass | Decisive Fail | Error
+------------------------------------------------------------------------------------------------------------------------
+  Gemini Pro           | BLOCKED_PROVIDER_UNAVAILABLE | 0.00 | 0.80 | FAIL | YES | Error: GEMINI_API_KEY environment variable not set
+  OpenAI ChatGPT       | BLOCKED_PROVIDER_UNAVAILABLE | 0.00 | 0.80 | FAIL | YES | Error: OPENAI_API_KEY environment variable not set
+  Anthropic Claude     | BLOCKED_PROVIDER_UNAVAILABLE | 0.00 | 0.80 | FAIL | YES | Error: ANTHROPIC_API_KEY environment variable not set
+
+============================================================
+X1D_LEGACY_JUDGE_OUTPUTS [ALL MOCKED]:
+============================================================
+  x1d_factual_support_001   | [MOCKED] | score=0.92 | threshold=0.80 | PASS
+  x1d_exec_signal_001       | [MOCKED] | score=0.88 | threshold=0.75 | PASS
+  x1d_ats_align_001         | [MOCKED] | score=0.85 | threshold=0.70 | PASS
+  x1d_voice_001             | [MOCKED] | score=0.90 | threshold=0.80 | PASS
+  x1d_anti_overfit_001      | [MOCKED] | score=0.95 | threshold=0.85 | PASS
+
+X1D_NEGATIVE_CONTROLS (5 negative control judges):
+  x1d_factual_support_FAIL    | MOCKED | FAIL | expected=X3_BLOCK
+  x1d_exec_signal_BORDERLINE  | MOCKED | FAIL | expected=X3_REVIEW
+  x1d_ats_align_STUFFING      | MOCKED | FAIL | expected=X3_BLOCK
+  x1d_voice_FILLER            | MOCKED | FAIL | expected=X3_BLOCK
+  x1d_anti_overfit_COPY       | MOCKED | FAIL | expected=X3_BLOCK
+
+============================================================
+X2_DETERMINISTIC_GATE_OUTPUTS:
+============================================================
+  x2_schema_valid                | PASS
+  x2_claim_ledger_present        | PASS
+  x2_sentence_coverage_present   | PASS
+  x2_source_fact_coverage        | FAIL
+  x2_unsupported_claim_zero      | PASS
+  x2_overbroad_claim_zero        | PASS
+  x2_mixed_claim_zero            | FAIL
+  x2_jd_copy_violation_zero      | PASS
+  x2_em_dash_count_zero          | PASS
+  x2_no_inline_source_tags       | PASS
+  x2_no_word_count_target        | PASS
+  x2_no_monolithic_prompt        | PASS
+  x2_no_strategic_tailor_v1      | PASS
+  x2_temperature_in_profile      | PASS
+  x2_first_person_zero           | FAIL
+  x2_target_company_as_experience_zero | FAIL
+
+X2_NEGATIVE_CONTROLS (9 failure modes):
+  x2_unsupported_claim_FAIL        | FAIL | expected=X3_BLOCK
+  x2_overbroad_claim_FAIL          | FAIL | expected=X3_BLOCK
+  x2_claim_ledger_missing_FAIL     | FAIL | expected=X3_BLOCK
+  x2_coverage_missing_FAIL         | FAIL | expected=X3_BLOCK
+  x2_inline_source_tag_FAIL        | FAIL | expected=X3_BLOCK
+  x2_em_dash_FAIL                  | FAIL | expected=X3_BLOCK
+  x2_jd_copy_FAIL                  | FAIL | expected=X3_BLOCK
+  x2_monolithic_prompt_FAIL        | FAIL | expected=X3_BLOCK
+  x2_strategic_tailor_v1_FAIL      | FAIL | expected=X3_BLOCK
+
+============================================================
+X3_DISPOSITION [HARDENED]:
+============================================================
+  x3_code=X3_BLOCK
+  authorization_scope=PLUMBING_ONLY
+  proceed_to_runtime=False
+  pass=False
+  decisive_reason=X2 gates failed: ['x2_source_fact_coverage', 'x2_mixed_claim_zero', 'x2_first_person_zero', 'x2_target_company_as_experience_zero']
+  ---
+  runtime_generation_status=REAL_LLM
+  x1d_evaluator_mode=BLOCKED_PROVIDER_UNAVAILABLE
+  product_quality_status=PARTIAL
+
+============================================================
+L6_SHADOW_EVAL_PACKAGE [OFFLINE-ONLY]:
+============================================================
+  offline_only=True
+  promotion_allowed=False
+  learning_mutation_performed=False
+  human_label_required=True
+
+============================================================
+ARTIFACTS_WRITTEN:
+============================================================
+  x1d_llm_judge_outputs.json (three-provider: Gemini Pro, OpenAI ChatGPT, Anthropic Claude)
+  x1d_provider_request_*.json (per-provider request artifacts)
+  x1d_provider_response_*.json (per-provider response artifacts)
+  x3_disposition.json
+  x3_disposition_matrix.json
+  l6_shadow_eval_package.json
+  l6_shadow_boundary_check.json
+  section_metric_receipt.json
+  real_l2_generation_result.json
+
+ARTIFACTS_DIR: C:\Git\Agentic-Workflow-FRESH\artifacts\apps_rg\runtime_proofs\executive_summary
+
+
+ΓÜá∩╕Å  X3_BLOCK ΓÇö not production-ready

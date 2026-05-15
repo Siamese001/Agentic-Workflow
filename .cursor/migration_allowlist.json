@@ -1,0 +1,29 @@
+{
+  "allowed_legacy_paths": [
+    ".cursor/windsurf_compat/**",
+    ".cursor/plans/_archive/**",
+    ".cursor/scripts/_legacy_windsurf/**",
+    ".cursor/_zero_loss_originals/**",
+    ".cursor/scripts/check_cursor_native_config.py",
+    ".cursor/migration_allowlist.json",
+    ".cursor/CURSOR_NATIVE_MIGRATION_STATUS.md",
+    ".cursor/ZERO_LOSS_OVERWRITE_RECEIPT.json"
+  ],
+  "legacy_tokens": [
+    "Cascade",
+    "Windsurf",
+    "Codeium",
+    ".windsurf",
+    "post_cascade",
+    "pre_cascade",
+    "mcp_config.json"
+  ],
+  "cursor_hook_events": [
+    "beforeSubmitPrompt",
+    "beforeShellExecution",
+    "beforeMCPExecution",
+    "beforeReadFile",
+    "afterFileEdit",
+    "stop"
+  ]
+}

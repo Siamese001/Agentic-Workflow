@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "python .cursor/hooks/before_submit_prompt.py"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python .cursor/hooks/before_shell_execution.py"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "python .cursor/hooks/before_mcp_execution.py"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "python .cursor/hooks/before_read_file.py"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "python .cursor/hooks/after_file_edit.py"
+      }
+    ],
+    "stop": [
+      {
+        "command": "python .cursor/hooks/stop_task_audit.py"
+      }
+    ]
+  }
+}

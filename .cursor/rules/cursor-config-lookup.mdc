@@ -1,0 +1,29 @@
+---
+description: |
+  Use for Cursor IDE configuration, rules, hooks, skills, agents, MCP, workflows, and local Cursor documentation lookup questions.
+alwaysApply: false
+---
+
+# Cursor Config Lookup
+
+## Local-first lookup order
+
+When the question is about Cursor behavior or this `.cursor` folder, search in this order:
+
+1. `.cursor/README.md`
+2. `.cursor/rules/*.mdc`
+3. `.cursor/skills/**/SKILL.md` plus supporting checklists/templates/resources
+4. `.cursor/agents/*.md`
+5. `.cursor/hooks.json` and `.cursor/hooks/**`
+6. `.cursor/mcp.json`
+7. `.cursor/commands/*.md` if present
+8. `.cursor/workflows/*.md` as reference only
+9. `.cursor/scripts/*` when behavior is implemented in code rather than prose
+
+## Use
+
+Use this rule to locate the governing Cursor surface before answering configuration questions. Keep answers grounded in file paths and avoid treating archived compatibility files as active runtime behavior.
+
+## Archive boundary
+
+`.cursor/cursor_compat/**`, `.cursor/_zero_loss_originals/**`, `.cursor/scripts/_legacy_cursor/**`, and `.cursor/plans/_archive/**` are historical compatibility material unless a user explicitly asks for migration history.

@@ -1,0 +1,111 @@
+# L6 Learning Profile Schema
+# Defines app-specific L6 writeback configuration for learning adapters
+
+schema_version: "1.0"
+profile_type: "l6_learning"
+description: "App-specific L6 learning/writeback adapter configuration"
+
+required_fields:
+  - app_id
+  - writeback_config
+  - learning_policy
+
+fields:
+  app_id:
+    type: string
+    description: "Canonical app identifier"
+    pattern: "^apps_[a-z_]+$"
+    
+  writeback_config:
+    type: object
+    description: "L6 writeback configuration"
+    properties:
+      writeback_enabled:
+        type: boolean
+        default: true
+      writeback_async:
+        type: boolean
+        default: true
+      default_writeback_store:
+        type: string
+        enum: ["sqlite", "redis", "file", "none"]
+        default: "sqlite"
+      writeback_batch_size:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 100
+      writeback_flush_interval_seconds:
+        type: integer
+        default: 60
+    required:
+      - writeback_enabled
+      - default_writeback_store
+      
+  learning_policy:
+    type: object
+    description: "Learning aggregation policy"
+    properties:
+      aggregation_mode:
+        type: string
+        enum: ["immediate", "windowed", "batched", "manual"]
+        default: "windowed"
+      aggregation_window_seconds:
+        type: integer
+        default: 300
+      dim_score_learning_enabled:
+        type: boolean
+        default: true
+      dim_score_fields:
+        type: array
+        items:
+          type: string
+        description: "Fields to include in dim score learning"
+      exclude_patterns:
+        type: array
+        items:
+          type: string
+        description: "Field patterns to exclude from learning"
+    required:
+      - aggregation_mode
+      
+  writeback_filter:
+    type: object
+    description: "Filter criteria for writeback eligibility"
+    properties:
+      min_confidence_threshold:
+        type: number
+        minimum: 0.0
+        maximum: 1.0
+        default: 0.5
+      require_success_status:
+        type: boolean
+        default: true
+      excluded_tenant_patterns:
+        type: array
+        items:
+          type: string
+        description: "Tenant ID patterns to exclude from writeback"
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED
+
+examples:
+  - app_id: "apps_rg"
+    writeback_config:
+      writeback_enabled: true
+      writeback_async: true
+      default_writeback_store: "sqlite"
+      writeback_batch_size: 50
+      writeback_flush_interval_seconds: 30
+    learning_policy:
+      aggregation_mode: "windowed"
+      aggregation_window_seconds: 600
+      dim_score_learning_enabled: true
+      dim_score_fields: ["executive_positioning", "role_alignment", "technical_depth"]
+      exclude_patterns: ["draft", "temp", "test"]
+    writeback_filter:
+      min_confidence_threshold: 0.6
+      require_success_status: true

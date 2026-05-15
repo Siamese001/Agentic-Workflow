@@ -10,5 +10,11 @@
     "**/.git/**",
     "**/__pycache__/**",
     "**/artifacts/**"
+  ],
+  "cursorpyright.analysis.exclude": [
+    "**/.venv/**",
+    "**/.git/**",
+    "**/__pycache__/**",
+    "**/artifacts/**"
   ]
 }

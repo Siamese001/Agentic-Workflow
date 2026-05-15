@@ -1,0 +1,5 @@
+DECISION_CAPTURED: timestamp=2026-05-09T08:39:00-04:00 plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 decision_id=AG-RGGOV-6-resolution classification_delivered=true path=.cursor/state/AG_RGGOV_6_CLASSIFICATION.md
+AG_QUEUE_SEED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6a depends_on=AG-RGGOV-6 title=Duplicate threshold behavioral semantics — Is 0.85 exact runtime requirement or advisory target?
+AG_QUEUE_SEED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6b depends_on=AG-RGGOV-6 title=Quality score threshold semantics — 0.7 vs 0.8 distinction (target vs gate or floor?)
+AG_QUEUE_SEED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6c depends_on=AG-RGGOV-6 title=Scoring weights runtime binding — Exact weights (sum=1.0) or advisory hints?
+AG_QUEUE_SEED: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 id=AG-RGGOV-6d depends_on=AG-RGGOV-6 title=Power verbs enforcement level — Hard constraint or advisory preference?

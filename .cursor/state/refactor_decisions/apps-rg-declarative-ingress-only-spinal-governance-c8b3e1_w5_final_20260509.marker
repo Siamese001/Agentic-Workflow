@@ -1,0 +1,36 @@
+WAVE_COMPLETE: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 wave=W5-FINAL
+DATE: 2026-05-09
+STATUS: COMPLETE — Ownership check passed
+
+OWNERSHIP_CHECK:
+- AppsRgIngressPayload: IMPORTED from agentic_core.runtime.contracts.apps_rg_ingress_payload
+- RequestEnvelope: IMPORTED from agentic_core.runtime.contracts.apps_rg_ingress_payload
+- Local class definitions: REMOVED from apps_rg/__main__.py
+- apps_rg role: Build instances only — does not define runtime contract classes
+
+FILES_MODIFIED:
+1. apps_rg/__main__.py:
+   - Removed local @dataclass definitions for AppsRgIngressPayload and RequestEnvelope
+   - Added import: from agentic_core.runtime.contracts.apps_rg_ingress_payload import (AppsRgIngressPayload, RequestEnvelope)
+   - Updated field names to match core contract: candidate_profile_path → source_resume_ref, jd_path → job_description_ref
+   - Retained: CLI parsing, interactive wizard, envelope building, runner delegation, output presentation
+
+2. agentic_core/runtime/contracts/apps_rg_ingress_payload.py:
+   - Added CLI input fields: target_company, target_role, target_level
+   - Added research delegation fields: auto_research_internal, auto_research_tavily, research_via
+   - Added manual_brief_path field
+   - Added RequestEnvelope class for runner delegation
+   - Updated __post_init__ validation for new field shapes
+
+3. tests/_apps_contract/test_w5_ingress_only.py:
+   - Updated tests to verify imports from core, not local definitions
+
+CONTRACT_OWNERSHIP_VERIFIED:
+- Core contracts (agentic_core) own: AppsRgIngressPayload, RequestEnvelope
+- apps_rg owns: Ingress payload instance building only
+- No runtime contract classes defined in apps_rg
+
+TESTS: 15/15 passing
+TOTAL (W4+W5): 30/30 passing
+
+W5 STATUS: ✅ COMPLETE — Proceed to W6

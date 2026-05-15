@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cursor.agentic-workflow/decision_record.schema.json",
+  "title": "Decision Record (Harness Author-Gate)",
+  "description": "Canonical shape of a single row across decisions + decision_scope + decision_outcomes. Used by post_cursor_agent_author_gate_capture.py emission and ops_scripts/ci/author_gate/check_ledger_schema.py validation.",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "created_at",
+    "decision_type",
+    "status"
+  ],
+  "properties": {
+    "decision_id":           {"type": "string", "pattern": "^dec_[a-z0-9]{6,}$"},
+    "created_at":            {"type": "string", "format": "date-time"},
+    "branch":                {"type": ["string", "null"]},
+    "commit_sha":            {"type": ["string", "null"], "pattern": "^[a-f0-9]{7,40}$|^$"},
+
+    "decision_type": {
+      "type": "string",
+      "enum": [
+        "architecture_choice",
+        "refactor_scope",
+        "anti_pattern",
+        "dependency_addition",
+        "test_strategy",
+        "deletion_strategy",
+        "error_handling",
+        "unknown"
+      ]
+    },
+    "request_summary":       {"type": ["string", "null"]},
+    "normalized_intent":     {"type": ["string", "null"]},
+    "user_goal":             {"type": ["string", "null"]},
+    "principle_at_stake":    {"type": ["string", "null"]},
+
+    "recommended_option_id": {"type": ["string", "null"]},
+    "selected_option_id":    {"type": ["string", "null"]},
+    "selection_rationale":   {"type": ["string", "null"]},
+
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "confidence_score"],
+        "properties": {
+          "id":              {"type": "string"},
+          "thesis":          {"type": "string"},
+          "confidence_score":{"type": "number", "minimum": 0, "maximum": 1},
+          "surfaced":        {"type": "boolean"},
+          "suppression_reason": {
+            "type": ["string", "null"],
+            "enum": ["below_surface_threshold", "non_distinct", "dominance_fired", null]
+          },
+          "key_tradeoffs":   {"type": ["array", "null"], "items": {"type": "string"}},
+          "what_youd_miss":  {"type": ["string", "null"]},
+          "what_would_flip": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "confidence_top":               {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "confidence_dominance_gap":     {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "override_vs_recommendation":   {"type": ["boolean", "integer", "null"]},
+    "selection_latency_ms":         {"type": ["integer", "null"], "minimum": 0},
+
+    "policy_snapshot":              {"type": ["string", "null"]},
+    "context_fingerprint": {
+      "type": ["object", "null"],
+      "properties": {
+        "adg_snapshot":      {"type": ["string", "null"]},
+        "git_sha":           {"type": ["string", "null"]},
+        "branch":            {"type": ["string", "null"]},
+        "files_in_scope":    {"type": "array", "items": {"type": "string"}},
+        "blast_radius": {
+          "type": ["object", "null"],
+          "properties": {
+            "fan_in":  {"type": "integer"},
+            "fan_out": {"type": "integer"},
+            "layers":  {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    },
+
+    "integrity": {
+      "type": ["object", "null"],
+      "properties": {
+        "prev_hash": {"type": ["string", "null"]},
+        "row_hash":  {"type": ["string", "null"]},
+        "sig_alg":   {"type": ["string", "null"], "enum": ["ed25519", "none", null]},
+        "signature": {"type": ["string", "null"]}
+      }
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["surfaced", "executed", "rolled_back", "failed"]
+    },
+
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_path":   {"type": ["string", "null"]},
+          "symbol_name": {"type": ["string", "null"]},
+          "symbol_kind": {"type": ["string", "null"]},
+          "layer":       {"type": ["string", "null"]},
+          "repo_area":   {"type": ["string", "null"]},
+          "tags":        {"type": ["string", "null"]}
+        }
+      }
+    },
+
+    "outcome": {
+      "type": ["object", "null"],
+      "properties": {
+        "execution_completed":        {"type": ["boolean", "integer"]},
+        "tests_passed":               {"type": ["boolean", "integer"]},
+        "regression_found":           {"type": ["boolean", "integer"]},
+        "rollback_required":          {"type": ["boolean", "integer"]},
+        "promote_to_pattern":         {"type": ["boolean", "integer"]},
+        "commit_shas":                {"type": "array", "items": {"type": "string"}},
+        "files_written":              {"type": "array", "items": {"type": "string"}},
+        "tests_run":                  {"type": "array", "items": {"type": "string"}},
+        "latency_to_outcome_s":       {"type": ["integer", "null"]},
+        "pattern_promotion_eligible": {"type": ["boolean", "integer"]},
+        "outcome_label": {
+          "type": ["string", "null"],
+          "enum": ["success", "rework", "rollback", "undecided", null]
+        },
+        "bound_at":                   {"type": ["string", "null"]},
+        "outcome_notes":              {"type": ["string", "null"]}
+      }
+    }
+  },
+  "additionalProperties": true
+}

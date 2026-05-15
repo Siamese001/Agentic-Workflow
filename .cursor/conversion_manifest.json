@@ -1,0 +1,24 @@
+{
+  "source_zip": ".cursor.zip",
+  "migration_mode": "zero_loss_cursor_native_overwrite",
+  "generated_at": "2026-05-15T08:10:44Z",
+  "rules_converted_from_legacy_export": 55,
+  "active_cursor_surfaces": [
+    "rules",
+    "skills",
+    "agents",
+    "hooks",
+    "mcp",
+    "scripts"
+  ],
+  "legacy_material_preserved_under": [
+    ".cursor/cursor_compat",
+    ".cursor/scripts/_legacy_cursor",
+    ".cursor/plans/_archive",
+    ".cursor/_zero_loss_originals"
+  ],
+  "notes": [
+    "Uploaded source archive preserved in .cursor/_zero_loss_originals/original_dot_cursor_upload.zip",
+    "Active hooks are Cursor wrappers, not direct legacy lifecycle hooks"
+  ]
+}

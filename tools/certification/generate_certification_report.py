@@ -190,12 +190,104 @@ This report certifies the runtime certification hardened matrix implementation f
     return md
 
 
+def _html_wave_summary_rows(req_counts: dict[str, int]) -> str:
+    """Wave table rows with progress bars (animated by GSAP in the HTML report)."""
+    waves: list[tuple[str, str]] = [
+        ("W0", str(req_counts["W0"])),
+        ("W1", str(req_counts["W1"])),
+        ("W2b", str(req_counts["W2b"])),
+        ("W3", str(req_counts["W3"])),
+        ("W4", "Structural"),
+        ("W5", str(req_counts["W5"])),
+    ]
+    rows = ""
+    for wave_id, label in waves:
+        rows += (
+            f'        <tr class="wave-row" data-wave="{wave_id}">\n'
+            f"            <td>{wave_id}</td>\n"
+            f"            <td>{label}</td>\n"
+            f'            <td class="wave-status-cell">\n'
+            f'                <div class="wave-progress" aria-hidden="true">'
+            f'<span class="wave-fill"></span></div>\n'
+            f'                <span class="status-valid wave-label">✅ Complete</span>\n'
+            f"            </td>\n"
+            f"        </tr>\n"
+        )
+    rows += (
+        f'        <tr class="wave-row wave-row-total" data-wave="Total">\n'
+        f"            <td><strong>Total</strong></td>\n"
+        f"            <td><strong>{req_counts['Total']}</strong></td>\n"
+        f'            <td class="wave-status-cell">\n'
+        f'                <div class="wave-progress wave-progress-total" aria-hidden="true">'
+        f'<span class="wave-fill"></span></div>\n'
+        f'                <span class="status-valid wave-label"><strong>✅ Certified</strong></span>\n'
+        f"            </td>\n"
+        f"        </tr>\n"
+    )
+    return rows
+
+
+def _html_gsap_animation_block() -> str:
+    """GSAP + ScrollTrigger for certification report (gsap-core / gsap-scrolltrigger)."""
+    return """
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script>
+    gsap.registerPlugin(ScrollTrigger);
+    const mm = gsap.matchMedia();
+    mm.add(
+      { reduceMotion: "(prefers-reduced-motion: reduce)" },
+      (context) => {
+        const reduceMotion = context.conditions.reduceMotion;
+        const dur = reduceMotion ? 0 : 0.85;
+        const stagger = reduceMotion ? 0 : 0.12;
+
+        gsap.set(".report-title, .summary-box, .section-heading", { autoAlpha: 0, y: reduceMotion ? 0 : 16 });
+        gsap.set(".wave-fill", { scaleX: reduceMotion ? 1 : 0, transformOrigin: "left center" });
+        gsap.set(".evidence-row", { autoAlpha: reduceMotion ? 1 : 0, x: reduceMotion ? 0 : 12 });
+
+        const intro = gsap.timeline({ defaults: { ease: "power2.out", duration: dur } });
+        intro
+          .to(".report-title", { autoAlpha: 1, y: 0 })
+          .to(".summary-box", { autoAlpha: 1, y: 0 }, "-=0.35")
+          .to(".section-heading", { autoAlpha: 1, y: 0 }, "-=0.5")
+          .to(".wave-fill", {
+            scaleX: 1,
+            stagger: { each: stagger, from: "start" },
+            ease: "power3.out",
+            duration: reduceMotion ? 0 : 1.1,
+          }, "-=0.25");
+
+        if (!reduceMotion) {
+          ScrollTrigger.batch(".evidence-row", {
+            start: "top 92%",
+            onEnter: (batch) => gsap.to(batch, {
+              autoAlpha: 1,
+              x: 0,
+              stagger: 0.06,
+              duration: 0.45,
+              ease: "power1.out",
+              overwrite: true,
+            }),
+            once: true,
+          });
+        }
+        return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+      }
+    );
+    </script>"""
+
+
 def generate_html_report(tree: dict[str, Any] | None, evidence: list[dict[str, Any]]) -> str:
     """Generate HTML certification report."""
     merkle_root = load_merkle_root()
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     req_counts = count_requirements()
-    
+    cert_valid = tree is not None
+    status_class = "status-valid" if cert_valid else "status-invalid"
+    status_label = "✅ VALID" if cert_valid else "❌ INVALID"
+    wave_rows = _html_wave_summary_rows(req_counts)
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -215,32 +307,48 @@ def generate_html_report(tree: dict[str, Any] | None, evidence: list[dict[str, A
         .summary-box {{ background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 15px; margin: 20px 0; }}
         .cert-statement {{ background: #f5f5f5; border-left: 4px solid #2196F3; padding: 20px; margin: 30px 0; font-style: italic; }}
         code {{ background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }}
+        .wave-status-cell {{ min-width: 220px; }}
+        .wave-progress {{
+            display: block;
+            height: 6px;
+            background: #c8e6c9;
+            border-radius: 3px;
+            margin-bottom: 6px;
+            overflow: hidden;
+        }}
+        .wave-fill {{
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #43a047, #2e7d32);
+            border-radius: 3px;
+        }}
+        .wave-progress-total .wave-fill {{
+            background: linear-gradient(90deg, #1b5e20, #4CAF50);
+        }}
+        .wave-label {{ display: inline-block; }}
+        @media (prefers-reduced-motion: reduce) {{
+            .wave-fill {{ transform: scaleX(1) !important; }}
+        }}
     </style>
 </head>
 <body>
-    <h1>Runtime Certification Report</h1>
+    <h1 class="report-title">Runtime Certification Report</h1>
     
     <div class="summary-box">
         <strong>Generated:</strong> {timestamp}<br>
         <strong>Merkle Root:</strong> <code>{merkle_root}</code><br>
-        <strong>Status:</strong> <span class="status-valid">✅ VALID</span>
+        <strong>Status:</strong> <span class="{status_class}">{status_label}</span>
     </div>
     
-    <h2>Executive Summary</h2>
+    <h2 class="section-heading">Executive Summary</h2>
     <p>This report certifies the runtime certification hardened matrix implementation for W0-W5.</p>
     
-    <table>
+    <table id="wave-summary">
         <tr><th>Wave</th><th>Requirements</th><th>Status</th></tr>
-        <tr><td>W0</td><td>{req_counts['W0']}</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td>W1</td><td>{req_counts['W1']}</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td>W2b</td><td>{req_counts['W2b']}</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td>W3</td><td>{req_counts['W3']}</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td>W4</td><td>Structural</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td>W5</td><td>{req_counts['W5']}</td><td class="status-valid">✅ Complete</td></tr>
-        <tr><td><strong>Total</strong></td><td><strong>{req_counts['Total']}</strong></td><td class="status-valid"><strong>✅ Certified</strong></td></tr>
-    </table>
+{wave_rows}    </table>
     
-    <h2>Merkle Tree Validation</h2>
+    <h2 class="section-heading">Merkle Tree Validation</h2>
     <table>
         <tr><th>Property</th><th>Value</th></tr>
         <tr><td>Root Hash</td><td><code>{merkle_root[:32]}...</code></td></tr>
@@ -249,14 +357,23 @@ def generate_html_report(tree: dict[str, Any] | None, evidence: list[dict[str, A
         <tr><td>Leaf Nodes</td><td>{tree.get('metadata', {}).get('total_leaves', 'N/A') if tree else 'N/A'}</td></tr>
     </table>
     
-    <h2>Evidence Artifacts</h2>
-    <table>
+    <h2 class="section-heading">Evidence Artifacts</h2>
+    <table id="evidence-table">
         <tr><th>File</th><th>Probe/Verifier</th><th>Status</th><th>Timestamp</th></tr>
 """
     
     for item in sorted(evidence, key=lambda x: x["file"]):
-        status_class = "status-valid" if item["status"] in ["VALID", "CONSISTENT", "MERKLE_VALID", "OTEL_READY", "REPLAY_VERIFIED", "REFERENCE_CREATED"] else "status-invalid"
-        html += f"        <tr><td>{item['file']}</td><td>{item['probe']}</td><td class='{status_class}'>{item['status']}</td><td>{item['timestamp'][:19] if len(item['timestamp']) > 19 else item['timestamp']}</td></tr>\n"
+        row_status_class = (
+            "status-valid"
+            if item["status"]
+            in ["VALID", "CONSISTENT", "MERKLE_VALID", "OTEL_READY", "REPLAY_VERIFIED", "REFERENCE_CREATED"]
+            else "status-invalid"
+        )
+        html += (
+            f"        <tr class='evidence-row'><td>{item['file']}</td>"
+            f"<td>{item['probe']}</td><td class='{row_status_class}'>{item['status']}</td>"
+            f"<td>{item['timestamp'][:19] if len(item['timestamp']) > 19 else item['timestamp']}</td></tr>\n"
+        )
     
     html += f"""    </table>
     
@@ -286,6 +403,7 @@ def generate_html_report(tree: dict[str, Any] | None, evidence: list[dict[str, A
     
     <hr>
     <p><small>Report generated by <code>generate_certification_report.py</code> | Plan: runtime-cert-hardened-w0-deferred-scope.md</small></p>
+{_html_gsap_animation_block()}
 </body>
 </html>"""
     

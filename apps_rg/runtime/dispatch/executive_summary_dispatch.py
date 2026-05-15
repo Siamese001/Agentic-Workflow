@@ -23,7 +23,7 @@ try:
 except ImportError:
     pass  # dotenv not installed, rely on system env
 
-from apps_rg.runtime.providers.qwen_vllm_provider import build_qwen_request, call_qwen_vllm
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request, call_qwen_vllm
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
@@ -251,6 +251,70 @@ def infer_product_quality(runtime_generation_status: str, x2_gates: list[dict[st
     return "PASS", "REAL_LLM output passed all deterministic gates and synthesis quality."
 
 
+def enrich_parsed_for_x2(
+    parsed: dict[str, Any] | None,
+    *,
+    coverage: dict[str, Any],
+    input_payload_hash: str,
+    allowed_fact_ids: set[str],
+) -> dict[str, Any] | None:
+    """Attach coverage and stable hashes for X2 metadata gates (same coverage object as artifact)."""
+    if parsed is None:
+        return None
+    enriched = dict(parsed)
+    enriched["text_claim_coverage"] = coverage
+    output_body = {
+        key: enriched[key]
+        for key in (
+            "resume_display_text",
+            "selected_fact_plan",
+            "claim_ledger",
+            "jd_alignment",
+            "gap_notes",
+            "change_log",
+            "self_check",
+            "text_claim_coverage",
+        )
+        if key in enriched
+    }
+    enriched["input_payload_hash"] = input_payload_hash
+    enriched["output_payload_hash"] = sha16(json.dumps(output_body, sort_keys=True))
+    enriched["claim_ledger_hash"] = sha16(json.dumps(enriched.get("claim_ledger") or [], sort_keys=True))
+    enriched["allowed_fact_ids_hash"] = sha16(json.dumps(sorted(allowed_fact_ids), sort_keys=True))
+    return enriched
+
+
+def resolve_provider_model_name(
+    provider_request_data: dict[str, Any] | None,
+    provider_result_data: dict[str, Any] | None,
+) -> str | None:
+    if provider_result_data:
+        model = provider_result_data.get("model")
+        if model:
+            return model
+    if provider_request_data:
+        model = provider_request_data.get("model")
+        if model:
+            return model
+    return None
+
+
+def write_x2_gate_outputs(path: Path, gates: list[dict[str, Any]]) -> None:
+    failed = [g["gate_id"] for g in gates if not g["pass"]]
+    passed_count = sum(1 for g in gates if g["pass"])
+    failed_count = len(failed)
+    write_json(
+        path,
+        {
+            "gates": gates,
+            "failed_gates": failed,
+            "x2_passed": passed_count,
+            "x2_failed": failed_count,
+            "total_x2_gates": len(gates),
+        },
+    )
+
+
 def run_dispatch(args: argparse.Namespace) -> int:
     ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
     base, base_path, base_hash = load_base_resume()
@@ -266,11 +330,11 @@ def run_dispatch(args: argparse.Namespace) -> int:
         briefing=args.briefing,
     )
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
-    prompt_text = PROMPT_TEMPLATE.read_text(encoding="utf-8") if PROMPT_TEMPLATE.exists() else PROMPT_ID
-    prompt_hash = sha16(prompt_text)
     messages = build_prompt_messages(runtime_payload)
+    compiled_prompt = json.dumps(messages, indent=2)
+    prompt_hash = sha16(compiled_prompt)
     write_json(ARTIFACT_DIR / "runtime_payload.json", runtime_payload)
-    (ARTIFACT_DIR / "compiled_prompt.txt").write_text(json.dumps(messages, indent=2), encoding="utf-8")
+    (ARTIFACT_DIR / "compiled_prompt.txt").write_text(compiled_prompt, encoding="utf-8")
 
     provider_request_data = None
     provider_result_data = None
@@ -302,43 +366,35 @@ def run_dispatch(args: argparse.Namespace) -> int:
         parsed = build_mock_output(runtime_payload)
         raw_output = json.dumps(parsed, indent=2)
         runtime_generation_status = "MOCKED"
-        provider_request_data = {"provider_requested": "mock", "provider_attempted": False, "mock_fallback_allowed": True}
+        provider_request_data = {
+            "provider_requested": "mock",
+            "provider_attempted": False,
+            "mock_fallback_allowed": True,
+            "model": DEFAULT_QWEN_MODEL,
+            "prompt_hash": prompt_hash,
+            "input_payload_hash": input_payload_hash,
+        }
         write_json(ARTIFACT_DIR / "provider_request.json", provider_request_data)
 
     resume_display_text = (parsed or {}).get("resume_display_text") or raw_output or ""
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
     coverage = build_sentence_claim_coverage(resume_display_text, claim_ledger, allowed_fact_ids)
-    selected_facts_for_x2 = (parsed or {}).get("selected_fact_plan", {}).get("facts", selected_fact_plan.get("facts", []))
-    x2 = [g.to_dict() for g in run_x2_gates(
-        resume_display_text=resume_display_text,
-        parsed_output=parsed,
-        claim_ledger=claim_ledger,
-        text_claim_coverage=coverage,
+    parsed_for_x2 = enrich_parsed_for_x2(
+        parsed,
+        coverage=coverage,
+        input_payload_hash=input_payload_hash,
         allowed_fact_ids=allowed_fact_ids,
-        target_company=args.target_company,
-        jd_text=args.jd_text,
-        temperature=args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT,
-        runtime_generation_status=runtime_generation_status,
-        monolithic_prompt_invoked=False,
-        strategic_tailor_v1_invoked=False,
-        artifacts_dir=ARTIFACT_DIR,
-        provider_requested=args.provider,
-        provider_attempted=args.provider,
-        model_name=parsed.get("model_name") if parsed else None,
-        prompt_hash=prompt_hash,
-        compiled_prompt=compiled_prompt,
-        raw_output=raw_output,
-        target_role=args.target_role if hasattr(args, "target_role") else None,
-        selected_facts=selected_facts_for_x2,
-    )]
-    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2, resume_display_text)
+    )
+    model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
+    selected_facts_for_x2 = (parsed or {}).get("selected_fact_plan", {}).get("facts", selected_fact_plan.get("facts", []))
+    temperature = args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT
 
     l2_output = {
         "run_id": runtime_payload["run_id"],
         "section_id": "executive_summary",
         "runtime_generation_status": runtime_generation_status,
-        "product_quality_status": product_quality_status,
-        "product_quality_reason": product_quality_reason,
+        "product_quality_status": "PENDING",
+        "product_quality_reason": "",
         "resume_display_text": resume_display_text,
         "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
         "claim_ledger": claim_ledger,
@@ -350,50 +406,83 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
         "input_payload_hash": input_payload_hash,
+        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
+        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
+        "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
     }
     write_json(ARTIFACT_DIR / "l2_output.json", l2_output)
     (ARTIFACT_DIR / "resume_display_text.txt").write_text(resume_display_text + "\n", encoding="utf-8")
     write_json(ARTIFACT_DIR / "selected_fact_plan.json", l2_output["selected_fact_plan"])
     write_json(ARTIFACT_DIR / "claim_ledger.json", claim_ledger)
     write_json(ARTIFACT_DIR / "text_claim_coverage.json", coverage)
-    write_json(ARTIFACT_DIR / "x2_gate_outputs.json", {"gates": x2, "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]})
 
     judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
     judge_mode = "mocked" if args.mock_judges else "blocked_if_unavailable"
     x1d = [j.to_dict() for j in run_llm_judges(resume_display_text=resume_display_text, claim_ledger=claim_ledger, judge_keys=judge_keys, mode=judge_mode)]
     write_json(ARTIFACT_DIR / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
-    # Second X2 pass with x1d_judges to check judge-related gates
-    x2_with_judges = [g.to_dict() for g in run_x2_gates(
+    trace = {
+        "runtime_path": "apps_rg.runtime.dispatch.executive_summary_dispatch",
+        "prompt_id": PROMPT_ID,
+        "provider": args.provider,
+        "temperature": temperature,
+        "strategic_tailor_v1_invoked": False,
+        "monolithic_prompt_invoked": False,
+    }
+    write_json(ARTIFACT_DIR / "prompt_selection_trace.json", trace)
+    write_json(ARTIFACT_DIR / "fact_check_result.json", {"passed": False, "failed_gates": [], "status": "pending"})
+    write_json(
+        ARTIFACT_DIR / "real_l2_generation_result.json",
+        {
+            "provider_attempted": args.provider,
+            "runtime_generation_status": runtime_generation_status,
+            "prompt_hash": prompt_hash,
+            "model": model_name,
+            "input_payload_hash": input_payload_hash,
+            "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
+            "status": "pending",
+        },
+    )
+    write_json(ARTIFACT_DIR / "x3_disposition.json", {"x3_code": "PENDING", "status": "pending"})
+    write_json(ARTIFACT_DIR / "section_metric_receipt.json", {"status": "pending", "prompt_hash": prompt_hash})
+    write_x2_gate_outputs(ARTIFACT_DIR / "x2_gate_outputs.json", [])
+
+    x2 = [g.to_dict() for g in run_x2_gates(
         resume_display_text=resume_display_text,
-        parsed_output=parsed,
+        parsed_output=parsed_for_x2,
         claim_ledger=claim_ledger,
         text_claim_coverage=coverage,
         allowed_fact_ids=allowed_fact_ids,
         target_company=args.target_company,
         jd_text=args.jd_text,
-        temperature=args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT,
+        temperature=temperature,
         runtime_generation_status=runtime_generation_status,
         monolithic_prompt_invoked=False,
         strategic_tailor_v1_invoked=False,
         artifacts_dir=ARTIFACT_DIR,
         provider_requested=args.provider,
         provider_attempted=args.provider,
-        model_name=parsed.get("model_name") if parsed else None,
+        model_name=model_name,
         prompt_hash=prompt_hash,
         compiled_prompt=compiled_prompt,
         raw_output=raw_output,
         target_role=args.target_role if hasattr(args, "target_role") else None,
         selected_facts=selected_facts_for_x2,
-        x1d_judges=x1d,  # Now judges are available
+        x1d_judges=x1d,
     )]
-    # Merge: keep all gates from first pass, update/add judge-related gates
-    x2_gate_dict = {g["gate_id"]: g for g in x2}
-    for g in x2_with_judges:
-        if g["gate_id"].startswith("x2_x1d_"):
-            x2_gate_dict[g["gate_id"]] = g
-    x2 = list(x2_gate_dict.values())
-    write_json(ARTIFACT_DIR / "x2_gate_outputs.json", {"gates": x2, "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]})
+    write_x2_gate_outputs(ARTIFACT_DIR / "x2_gate_outputs.json", x2)
+    write_json(
+        ARTIFACT_DIR / "fact_check_result.json",
+        {
+            "passed": not [g for g in x2 if not g["pass"]],
+            "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
+        },
+    )
+
+    product_quality_status, product_quality_reason = infer_product_quality(runtime_generation_status, x2, resume_display_text)
+    l2_output["product_quality_status"] = product_quality_status
+    l2_output["product_quality_reason"] = product_quality_reason
+    write_json(ARTIFACT_DIR / "l2_output.json", l2_output)
 
     x3 = aggregate_x3(
         resume_display_text=resume_display_text,
@@ -420,10 +509,14 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "runtime_generation_status": runtime_generation_status,
         "prompt_id": PROMPT_ID,
         "prompt_hash": prompt_hash,
-        "temperature": args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT,
+        "model": model_name,
+        "temperature": temperature,
         "input_payload_hash": input_payload_hash,
+        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
+        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
+        "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
         "raw_model_output": raw_output,
-        "parsed_model_output": parsed,
+        "parsed_model_output": parsed_for_x2,
         "resume_display_text": resume_display_text,
         "selected_fact_plan": l2_output["selected_fact_plan"],
         "claim_ledger": claim_ledger,
@@ -438,21 +531,15 @@ def run_dispatch(args: argparse.Namespace) -> int:
         "run_id": runtime_payload["run_id"],
         "lane_id": "executive_summary",
         "prompt_id": PROMPT_ID,
+        "prompt_hash": prompt_hash,
+        "input_payload_hash": input_payload_hash,
+        "output_payload_hash": (parsed_for_x2 or {}).get("output_payload_hash"),
+        "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
         "runtime_generation_status": runtime_generation_status,
         "product_quality_status": product_quality_status,
         "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
         "x3_code": x3.x3_code,
     })
-    trace = {
-        "runtime_path": "apps_rg.runtime.dispatch.executive_summary_dispatch",
-        "prompt_id": PROMPT_ID,
-        "provider": args.provider,
-        "temperature": args.temperature if args.provider == "qwen_vllm" else EXEC_SUMMARY_TEMP_DEFAULT,
-        "strategic_tailor_v1_invoked": False,
-        "monolithic_prompt_invoked": False,
-    }
-    write_json(ARTIFACT_DIR / "prompt_selection_trace.json", trace)
-
     output_lines = []
     output_lines.append("L2_EXECUTIVE_SUMMARY_OUTPUT:")
     output_lines.append(resume_display_text if resume_display_text else f"BLOCKED: {parse_error}")

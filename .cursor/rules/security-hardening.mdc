@@ -1,0 +1,110 @@
+---
+description: |
+  Use this rule when handling credentials, environment variables, secrets, API keys, or any code path that touches external service authentication.
+alwaysApply: false
+---
+
+<!-- Converted from `.cursor/rules/security-hardening.md`. Original Cursor trigger: `model_decision`. -->
+
+> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+
+# Security Hardening Rule
+
+## Constitutional Rule
+
+**All code changes MUST pass security validation before commit.**
+
+## Scope
+
+This rule applies to:
+- All production code changes (`agentic_core/`, `apps_*/`, `system_learning/`)
+- Configuration files
+- Dependency additions or updates
+
+## Mandatory Security Checks
+
+### 1. No Hardcoded Secrets
+
+**FORBIDDEN patterns in production code:**
+- Hardcoded passwords, API keys, tokens, or credentials
+- Hardcoded database connection strings with credentials
+- Hardcoded private keys or certificates
+- Secrets in environment variable assignments
+
+**Allowed patterns:**
+- References to environment variables: `os.environ.get("API_KEY")`
+- References to config files: `config.get_api_key()`
+- Placeholder values in tests: `"test_api_key"` or `"dummy_secret"`
+- Documentation examples with clear `"YOUR_KEY_HERE"` markers
+
+**CI Enforcement:**
+- Pre-commit hook: `security-secrets-scan` (T20)
+- Gate: `ops_scripts/ci/check_secrets_scan.py`
+
+### 2. No Sensitive Data in Logs
+
+**FORBIDDEN in log output:**
+- API keys, tokens, passwords
+- Personal identifiable information (PII)
+- Credit card numbers or financial data
+- Session tokens or cookies
+- Database connection strings with credentials
+
+**Required:**
+- Mask sensitive values: `"API_KEY: ***"` or `"password: [REDACTED]"`
+- Log only non-sensitive identifiers: user_id, request_id
+
+**CI Enforcement:**
+- Static analysis: `ops_scripts/ci/check_sensitive_logs.py`
+- Manual review required for logging changes
+
+### 3. Dependency Security
+
+**Required before adding dependencies:**
+- Scan package for known vulnerabilities: `pip-audit` or `safety`
+- Check package maintainability score
+- Verify package is actively maintained
+- Document security assessment in PR
+
+**CI Enforcement:**
+- Gate: `ops_scripts/ci/dependency_security_scan.py`
+- Blocks commits with high/critical CVE vulnerabilities
+
+### 4. Authorization Checks
+
+**Required for sensitive operations:**
+- Agent deletion: `/agent-deletion-gate` workflow
+- Config changes: MCP config SSOT validation
+- Database operations: Permission checks
+- File system writes: Path validation and authorization
+
+**CI Enforcement:**
+- Pre-commit hook: `guard-agent-deletion` (T15)
+- Gate: `ops_scripts/ci/check_authorization.py`
+
+## Failure Modes
+
+| Check | Failure Action |
+|-------|----------------|
+| Hardcoded secrets detected | Block commit, require remediation |
+| Sensitive data in logs | Block commit, require masking |
+| Vulnerable dependencies | Block commit, require upgrade or justification |
+| Missing authorization | Block commit, require Author-Gate approval |
+
+## Security Review Triggers
+
+Author-Gate approval required for:
+- Adding new external dependencies
+- Changing authentication/authorization logic
+- Modifying security-related configuration
+- Implementing new logging for sensitive data
+- Database schema changes affecting security
+
+## Enforcement
+
+All security checks are enforced via:
+- Pre-commit hooks (`.pre-commit-config.yaml`)
+- CI gates (`python ops_scripts/ci/run_contract_gates.py`)
+- Manual review for security-sensitive changes
+
+**No bypass exceptions.** Security violations must be fixed before commit.

@@ -1,0 +1,52 @@
+WAVE_COMPLETE: plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 wave=W5
+DATE: 2026-05-09
+STATUS: COMPLETE
+
+DECISIONS_IMPLEMENTED:
+- AG-RGGOV-1: CORE_OWNED_RUNNER — apps_rg/__main__.py rewritten as pure ingress shim
+
+FILES_MODIFIED:
+- apps_rg/__main__.py (complete rewrite, ~230 lines → ~240 lines)
+  - Removed: All runtime imports (cache, intent_builder, OTEL, hashlib, os)
+  - Removed: All HOP orchestration, routing, prompt assembly
+  - Added: AppsRgIngressPayload dataclass (immutable, frozen)
+  - Added: RequestEnvelope dataclass (app_id, version, payload)
+  - Added: _collect_inputs_interactive() — interactive wizard
+  - Added: _collect_inputs_cli() — CLI argument parsing
+  - Added: _present_output() — Exit-approved output presentation
+  - Added: main() — delegates to AppIngressRunner.run(envelope)
+  - Added: Fail-closed guard — RuntimeError if AppIngressRunner unavailable
+
+FILES_CREATED:
+- tests/_apps_contract/test_w5_ingress_only.py (15 tests)
+  - TestW5IngressOnlyConstraints: 8 tests (no planner/router/orchestrator/prompt/executor/provider/quarantine/runtime)
+  - TestW5IngressPayloadTypes: 2 tests (dataclasses exist)
+  - TestW5IngressFlow: 4 tests (delegation, no model calls, CLI, interactive)
+  - TestW5FailClosedBehavior: 1 test (runner import guard)
+
+HARD CONSTRAINTS ENFORCED:
+- NO planner — verified by AST import scan
+- NO router — verified by AST import scan
+- NO orchestrator — verified by AST import scan
+- NO prompt assembly — verified by AST import scan
+- NO executor — verified by AST import scan
+- NO provider call — verified by source pattern scan (get_llm_gateway, SovereignLLMGateway, etc.)
+- NO quarantine import — verified by AST import scan
+- NO core runtime contract emission — verified by function naming patterns
+
+INGRESS FLOW:
+1. Parse CLI args (--target-company, --target-role, etc.) OR interactive wizard
+2. Build AppsRgIngressPayload (immutable frozen dataclass)
+3. Build RequestEnvelope (app_id="apps_rg", version="W5.0", payload)
+4. Instantiate AppIngressRunner from agentic_core
+5. runner.run(envelope) — ALL runtime authority delegated to agentic_core
+6. _present_output(result) — display Exit-approved artifacts
+
+FAIL-CLOSED BEHAVIOR:
+- If AppIngressRunner import fails: RuntimeError raised immediately
+- apps_rg cannot function without core runner — enforced at module load time
+
+TESTS: 15/15 passing
+TOTAL TESTS (W4+W5): 30/30 passing
+
+NEXT: W6 — C0 FEC Binding per AG-RGGOV-W2-P1/P2

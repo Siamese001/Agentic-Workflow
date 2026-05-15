@@ -1,0 +1,89 @@
+# U0 Validation Profile Schema
+# Defines app-specific U0 validation behavior for profile-driven runtime
+
+schema_version: "1.0"
+profile_type: "u0_validation"
+description: "App-specific U0 validation configuration"
+
+required_fields:
+  - app_id
+  - validation_rules
+  - fail_closed_behavior
+
+fields:
+  app_id:
+    type: string
+    description: "Canonical app identifier (e.g., apps_lic, apps_rg)"
+    pattern: "^apps_[a-z_]+$"
+    
+  validation_rules:
+    type: object
+    description: "U0 validation rules for this app"
+    properties:
+      required_payload_fields:
+        type: array
+        items:
+          type: string
+        description: "Fields required in U0 payload"
+      max_payload_size_bytes:
+        type: integer
+        minimum: 1024
+        maximum: 10485760  # 10MB
+      allowed_content_types:
+        type: array
+        items:
+          type: string
+          enum: ["application/json", "text/plain", "application/yaml"]
+      schema_validation_enabled:
+        type: boolean
+        default: true
+      custom_validators:
+        type: array
+        items:
+          type: object
+          properties:
+            validator_name:
+              type: string
+            validator_path:
+              type: string
+              description: "Dot-path to validator function in app package"
+        description: "App-specific validator references (no core code)"
+    required:
+      - required_payload_fields
+      - max_payload_size_bytes
+      
+  fail_closed_behavior:
+    type: object
+    description: "Behavior when validation fails"
+    properties:
+      on_missing_field:
+        type: string
+        enum: ["reject", "log_and_continue", "escalate"]
+        default: "reject"
+      on_schema_mismatch:
+        type: string
+        enum: ["reject", "log_and_continue", "escalate"]
+        default: "reject"
+      on_size_exceeded:
+        type: string
+        enum: ["reject", "truncate", "escalate"]
+        default: "reject"
+    required:
+      - on_missing_field
+      - on_schema_mismatch
+
+validation_behavior:
+  missing_profile: FAIL_CLOSED
+  invalid_profile: FAIL_CLOSED
+  unknown_app: FAIL_CLOSED
+
+examples:
+  - app_id: "apps_lic"
+    validation_rules:
+      required_payload_fields: ["tenant_id", "capability", "domain_contract"]
+      max_payload_size_bytes: 1048576
+      allowed_content_types: ["application/json"]
+      schema_validation_enabled: true
+    fail_closed_behavior:
+      on_missing_field: "reject"
+      on_schema_mismatch: "reject"

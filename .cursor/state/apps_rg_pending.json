@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "status": "pending_inputs",
+  "exit_code": 7,
+  "missing_fields": [
+    "target_company",
+    "target_role",
+    "jd",
+    "briefing"
+  ],
+  "field_specs": {
+    "target_company": {
+      "label": "Target company",
+      "example": "Brown & Brown",
+      "type": "string",
+      "cli_flag": "--target-company",
+      "required": true
+    },
+    "target_role": {
+      "label": "Target role / job title",
+      "example": "SVP IT Strategy",
+      "type": "string",
+      "cli_flag": "--target-role",
+      "required": true
+    },
+    "jd": {
+      "label": "Job description source",
+      "type": "file_path",
+      "cli_flag": "--jd",
+      "required": true,
+      "available_files": [
+        "apps_rg/scripts/jd_brown_brown_svp_it_strategy.json",
+        "apps_rg/scripts/jd_brown_brown_svp_it_strategy_20260507.json",
+        "apps_rg/scripts/job_description.json",
+        "apps_rg/scripts/job_description_brownandbrown.json"
+      ],
+      "note": "Pass a path to a JD JSON. Choose from available_files or supply a custom path."
+    },
+    "briefing": {
+      "label": "Company briefing source",
+      "type": "choice",
+      "required": true,
+      "choices": [
+        {
+          "id": "auto_research_tavily",
+          "label": "Auto-research via Tavily (web)",
+          "cli_flag": "--auto-research-tavily",
+          "cli_value": null
+        },
+        {
+          "id": "auto_research_internal",
+          "label": "Auto-research via apps_research (internal)",
+          "cli_flag": "--auto-research-internal",
+          "cli_value": null
+        },
+        {
+          "id": "manual_brief",
+          "label": "Path to existing brief JSON",
+          "cli_flag": "--manual-brief",
+          "cli_value": "<path-to-brief.json>"
+        }
+      ]
+    }
+  },
+  "next_invocation_template": "python -m apps_rg --target-company \"<TARGET_COMPANY>\" --target-role \"<TARGET_ROLE>\" --jd <JD_PATH> [--auto-research-tavily | --auto-research-internal | --manual-brief <BRIEF_PATH>]",
+  "discipline_note": "apps-rg-interactive-discipline.md: Cursor Agent MUST collect each value via ask_user_question \u2014 never auto-fill from prior turns, session memory, or scanned files. Each field is the user's explicit decision.",
+  "current_args": {
+    "target_company": null,
+    "target_role": null,
+    "jd": null,
+    "manual_brief": null,
+    "auto_research_tavily": false,
+    "auto_research_internal": false
+  }
+}

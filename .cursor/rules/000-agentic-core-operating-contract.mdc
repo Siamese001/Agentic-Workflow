@@ -1,0 +1,17 @@
+---
+description: |
+  Always-on operating contract for this repo in Cursor. Keeps Cursor anchored to the same high-level invariants that were previously enforced through Cursor rules.
+alwaysApply: true
+---
+
+# Agentic Core Operating Contract for Cursor
+
+- Do not treat plans, receipts, mocked outputs, or sidecar harnesses as production runtime proof.
+- No `agentic_core` edits unless explicitly authorized and justified as generic, app-agnostic spine work.
+- Keep app-specific behavior inside `apps_*` overlays and app-owned runtime customization packages.
+- For apps_rg, distinguish clearly between sidecar/dry-run proof, app-local dispatch seam, and production resume runtime.
+- Do not call mocked or blocked-provider paths `X3_ALLOW`.
+- Qwen/vLLM proof requires an actual provider attempt, request artifact, response artifact, and honest BLOCKED status if unavailable.
+- X1D LLM judges assess semantic quality; X2 deterministic gates enforce hard correctness; X3 aggregates; L6 remains offline shadow learning only.
+- Do not weaken gates to make a bad output pass.
+- Every implementation claim must include command output, artifacts, and tests, not only a summary.

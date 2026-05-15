@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "CoreAdditionAuthorGateReceipt",
+  "title": "CoreAdditionAuthorGateReceipt",
+  "description": "Proof that a proposed agentic_core addition passed all author-gate checks. Required before any agentic_core/ write that adds a new mechanism, layer, contract, or capability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_type",
+    "plan_id",
+    "plan_type",
+    "changed_paths",
+    "decision",
+    "tests",
+    "artifacts",
+    "signature"
+  ],
+  "properties": {
+    "receipt_type": {
+      "type": "string",
+      "const": "CoreAdditionAuthorGateReceipt"
+    },
+    "plan_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Slug of the plan that owns this receipt, e.g. core-addition-author-gate-governance-f3b9e2"
+    },
+    "plan_type": {
+      "type": "string",
+      "const": "platform_core_change"
+    },
+    "changed_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^agentic_core/"
+      },
+      "description": "Paths under agentic_core/ that this receipt covers."
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "rationale", "decided_at"],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spine_substrate_test",
+        "any_app_capability_test",
+        "app_owned_meaning_test",
+        "no_app_literal_test",
+        "plugin_test",
+        "negative_control_test",
+        "platform_approval_test",
+        "boundary_preservation_test",
+        "contract_compatibility_test",
+        "runtime_proof_compatibility_test"
+      ],
+      "properties": {
+        "spine_substrate_test":             { "$ref": "#/$defs/testResult" },
+        "any_app_capability_test":          { "$ref": "#/$defs/testResult" },
+        "app_owned_meaning_test":           { "$ref": "#/$defs/testResult" },
+        "no_app_literal_test":              { "$ref": "#/$defs/testResult" },
+        "plugin_test":                      { "$ref": "#/$defs/testResult" },
+        "negative_control_test":            { "$ref": "#/$defs/testResult" },
+        "platform_approval_test":           { "$ref": "#/$defs/testResult" },
+        "boundary_preservation_test":       { "$ref": "#/$defs/testResult" },
+        "contract_compatibility_test":      { "$ref": "#/$defs/testResult" },
+        "runtime_proof_compatibility_test": { "$ref": "#/$defs/testResult" }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no_app_literal_scan_ref",
+        "strict_scan_ref",
+        "negative_control_results_ref",
+        "plugin_proof_ref",
+        "boundary_scan_ref",
+        "contract_schema_scan_ref"
+      ],
+      "properties": {
+        "no_app_literal_scan_ref":        { "$ref": "#/$defs/artifactRef" },
+        "strict_scan_ref":                { "$ref": "#/$defs/artifactRef" },
+        "negative_control_results_ref":   { "$ref": "#/$defs/artifactRef" },
+        "plugin_proof_ref":               { "$ref": "#/$defs/artifactRef" },
+        "boundary_scan_ref":              { "$ref": "#/$defs/artifactRef" },
+        "contract_schema_scan_ref":       { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_digest"],
+      "properties": {
+        "receipt_digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signed_by": {
+          "type": "string"
+        },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "testResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "evidence"],
+      "properties": {
+        "result": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest", "verdict", "plan_id", "freshness_ts", "changed_paths_covered"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["PASS", "FAIL"]
+        },
+        "plan_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "freshness_ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "changed_paths_covered": {
+          "oneOf": [
+            {
+              "type": "boolean",
+              "const": true
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "pattern": "^agentic_core/"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -31,7 +31,11 @@ def test_mock_command_executes_and_prints_output():
 def test_mocked_judges_cannot_allow():
     run_cmd("--provider", "mock", "--mock-judges")
     x3 = load_json("x3_disposition.json")
-    assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+    x2 = load_json("x2_gate_outputs.json")
+    if not x2.get("failed_gates"):
+        assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+    else:
+        assert x3["x3_code"] == "X3_BLOCK"
     assert x3["authorization_scope"] == "PLUMBING_ONLY"
     assert x3["proceed_to_runtime"] is False
 
@@ -59,14 +63,14 @@ def test_judge_provider_status_tracking():
     for j in judges:
         assert "evaluator_mode" in j
         assert "provider_status" in j
-        # If blocked, should have decisive_failure=True
-        if j["evaluator_mode"].startswith("BLOCKED_"):
-            assert j.get("decisive_failure") is True
+        if j.get("provider_blocked") or str(j.get("provider_status", "")).startswith("BLOCKED_"):
+            assert j.get("provider_blocked") is True
+            assert j.get("decisive_failure") is False
             assert j.get("pass") is False
-    
-    # X3 should block when any judge is blocked (not mocked mode)
+            assert str(j.get("provider_status", "")).startswith("BLOCKED_")
+
     x3 = load_json("x3_disposition.json")
-    assert x3["x3_code"] != "X3_ALLOW"  # Should not allow when judges blocked
+    assert x3["x3_code"] != "X3_ALLOW"
     assert x3["proceed_to_runtime"] is False
 
 
